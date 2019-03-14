@@ -9,7 +9,6 @@ using UnityEngine;
 using UnityEngine.Assertions;
 
 
-
 #region DEFINITIONS
 
 public class GxDisplayList : IBinarySerializable
@@ -35,8 +34,6 @@ public class GxDisplayList : IBinarySerializable
         throw new NotImplementedException();
     }
 }
-
-
 
 [Flags]
 public enum GMA_WrapFlagsU8 : byte
@@ -233,26 +230,34 @@ public enum GMA_GXAnisotropyU8 : byte
     GX_ANISO_4,
 }
 
-[System.Serializable]
-public class GMA : IBinarySerializable
+[Serializable]
+public class GMA : IBinarySerializable, INamedFile
 {
     #region MEMBERS
 
     private const int kGmaHeaderSize = 8;
 
     [SerializeField] private string fileName;
-    [SerializeField] private int modelCount;
+    [SerializeField] private int gcmfCount;
     [SerializeField] private uint headerEndPosition;
-    [SerializeField] private Model[] models;
+
+    public const uint kNullPtr = 0xFFFFFFFF;
+    [SerializeField] private GCMF[] gcmf;
 
     #endregion
 
     #region PROPERTIES
 
     public uint HeaderEndPosition => headerEndPosition;
-    public int ModelCount => modelCount;
-    public int ModelNamePtr => (0x08) + modelCount * 0x08;
-    public Model[] Models => models;
+    public int GcmfCount => gcmfCount;
+    public int GcmfNamePtr => (0x08) + gcmfCount * 0x08;
+    public GCMF[] GCMF => gcmf;
+
+    public string FileName
+    {
+        get => fileName;
+        set => fileName = value;
+    }
 
     #endregion
 
@@ -260,17 +265,36 @@ public class GMA : IBinarySerializable
 
     public void Deserialize(BinaryReader reader)
     {
-        reader.ReadX(ref modelCount);
+        reader.ReadX(ref gcmfCount);
         reader.ReadX(ref headerEndPosition);
 
-        // Init models with parent
-        models = new Model[ModelCount];
-        for (int i = 0; i < models.Length; i++)
+        gcmf = new GCMF[GcmfCount];
+        for (int i = 0; i < gcmf.Length; i++)
         {
-            models[i] = new Model();
-            models[i].SetGMA(this);
+            uint gcmfRelativePtr = 0;
+            uint nameRelativePtr = 0;
+            reader.ReadX(ref gcmfRelativePtr);
+            reader.ReadX(ref nameRelativePtr);
+
+            // If 1st pointer is null, skip
+            if (gcmfRelativePtr == kNullPtr)
+                continue;
+
+            var endPosition = reader.BaseStream.Position;
+
+            gcmf[i] = new GCMF();
+            var gcmfPtr = gcmfRelativePtr + HeaderEndPosition;
+            reader.BaseStream.Seek(gcmfPtr, SeekOrigin.Begin);
+            reader.ReadX(ref gcmf[i], true);
+
+            var fileName = string.Empty;
+            var modelNamePtr = nameRelativePtr + GcmfNamePtr;
+            reader.BaseStream.Seek(modelNamePtr, SeekOrigin.Begin);
+            reader.ReadXCString(ref fileName, Encoding.ASCII);
+            gcmf[i].FileName = fileName;
+
+            reader.BaseStream.Seek(endPosition, SeekOrigin.Begin);
         }
-        reader.ReadX(ref models, modelCount, false);
     }
 
     public void Serialize(BinaryWriter writer)
@@ -282,57 +306,59 @@ public class GMA : IBinarySerializable
 }
 
 // Model and GMA should be combined
+//[Serializable]
+//public class Model : IBinarySerializable
+//{
+//    public const uint kNullPtr = 0xFFFFFFFF;
+
+//    private GMA gma;
+
+//    private uint gcmfRelativePtr;
+//    private uint nameRelativePtr;
+//    [SerializeField] private string name;
+//    [SerializeField] private GCMF gcmf;
+
+//    public void Deserialize(BinaryReader reader)
+//    {
+//        //Debug.Log(debugIterationIndex++);
+
+//        reader.ReadX(ref gcmfRelativePtr);
+//        reader.ReadX(ref nameRelativePtr);
+
+//        if (gcmfRelativePtr == kNullPtr)
+//            return;
+
+//        var endPosition = reader.BaseStream.Position;
+
+//        var gcmfPtr = gcmfRelativePtr + gma.HeaderEndPosition;
+//        reader.BaseStream.Seek(gcmfPtr, SeekOrigin.Begin);
+//        reader.ReadX(ref gcmf, true);
+
+//        var modelNamePtr = nameRelativePtr + gma.ModelNamePtr;
+//        reader.BaseStream.Seek(modelNamePtr, SeekOrigin.Begin);
+//        reader.ReadXCString(ref name, Encoding.ASCII);
+
+//        reader.BaseStream.Seek(endPosition, SeekOrigin.Begin);
+//    }
+
+//    public void Serialize(BinaryWriter writer)
+//    {
+//        throw new NotImplementedException();
+//    }
+
+//    public void SetGMA(GMA gma)
+//    {
+//        this.gma = gma;
+//    }
+//}
+
 [Serializable]
-public class Model : IBinarySerializable
-{
-    public const uint kNullPtr = 0xFFFFFFFF;
-
-    private GMA gma;
-
-    private uint gcmfRelativePtr;
-    private uint nameRelativePtr;
-    [SerializeField] private string name;
-    [SerializeField] private GCMF gcmf;
-
-    public void Deserialize(BinaryReader reader)
-    {
-        //Debug.Log(debugIterationIndex++);
-
-        reader.ReadX(ref gcmfRelativePtr);
-        reader.ReadX(ref nameRelativePtr);
-
-        if (gcmfRelativePtr == kNullPtr)
-            return;
-
-        var endPosition = reader.BaseStream.Position;
-
-        var gcmfPtr = gcmfRelativePtr + gma.HeaderEndPosition;
-        reader.BaseStream.Seek(gcmfPtr, SeekOrigin.Begin);
-        reader.ReadX(ref gcmf, true);
-
-        var modelNamePtr = nameRelativePtr + gma.ModelNamePtr;
-        reader.BaseStream.Seek(modelNamePtr, SeekOrigin.Begin);
-        reader.ReadXCString(ref name, Encoding.ASCII);
-
-        reader.BaseStream.Seek(endPosition, SeekOrigin.Begin);
-    }
-
-    public void Serialize(BinaryWriter writer)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void SetGMA(GMA gma)
-    {
-        this.gma = gma;
-    }
-}
-
-[Serializable]
-public class GCMF : IBinarySerializable
+public class GCMF : IBinarySerializable, INamedFile
 {
     public const uint kGCMF = 0x47434D46; // 47 43 4D 46 - GCMF in ASCII
     public const int kTransformMatrixDefaultLength = 8;
+
+    public string fileName;
 
     private uint gcmfMagic;
     [SerializeField] private uint unk0x04; // GxUtils: Section flags (16Bit: 0x01; Stitching Model: 0x04; Skin Model: 0x08; Effective Model: 0x10)
@@ -354,6 +380,12 @@ public class GCMF : IBinarySerializable
     [SerializeField] private Material material;
     // GxUtils: Some transform thing here
     [SerializeField] private Mesh mesh;
+
+    public string FileName
+    { 
+        get => fileName;
+        set => fileName = value;
+    }
 
     public void Deserialize(BinaryReader reader)
     {
@@ -720,7 +752,6 @@ public class GxVertexAttributeFormat
         }
     }
 }
-
 
 [Serializable]
 public struct GxVert : IBinarySerializable

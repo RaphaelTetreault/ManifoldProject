@@ -29,6 +29,11 @@ public abstract class ImportSobj : ScriptableObject
         get;
     }
 
+    public abstract string TypeName
+    {
+        get;
+    }
+
     #endregion
 
     #region METHODS 
@@ -50,7 +55,6 @@ public abstract class ImportSobj : ScriptableObject
         var sobj = CreateInstance<TSobj>();
         var filePath = $"Assets/{destinationDir}/{fileName}.asset";
         AssetDatabase.CreateAsset(sobj, filePath);
-        AssetDatabase.ImportAsset(filePath, ImportAssetOptions.ForceUpdate);
         sobj.Deserialize(reader);
         return sobj;
     }

@@ -28,52 +28,13 @@ public abstract class ImportSobjs<T> : ImportSobj
     [SerializeField]
     protected string extension;
 
+    [SerializeField]
+    protected bool ignoreErrors;
+
     [SerializeField, BrowseFileField(false)]
     protected string[] importFiles;
 
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="filePath"></param>
-    /// <param name="extensions">Extension without period</param>
-    /// <returns></returns>
-    public bool FileExtensionMatch(string filePath, params string[] extensions)
-    {
-        var fileExtension = Path.GetExtension(filePath);
 
-        foreach (var extension in extensions)
-        {
-            if (extension == fileExtension)
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="files"></param>
-    /// <param name="extension">Extension without period</param>
-    /// <returns></returns>
-    public string[] GetFilesOfExtension(string[] files, string extension)
-    {
-        var matchingFiles = new List<string>(files.Length);
-        extension = $".{extension}";
-
-        foreach (var file in files)
-        {
-            if (FileExtensionMatch(file, extension))
-            {
-                var systemFile = UnityPathUtility.EnforceSystemSeparators(file);
-                matchingFiles.Add(systemFile);
-            }
-        }
-
-        return matchingFiles.ToArray();
-    }
 
     public override void Import()
     {
@@ -83,18 +44,24 @@ public abstract class ImportSobjs<T> : ImportSobj
                 break;
 
             case ImportMode.ImportFilesFromFolder:
-                var files = Directory.GetFiles(importFolder);
-                importFiles = GetFilesOfExtension(files, extension);
-                break;
+                {
+                    importFiles = Directory.GetFiles(importFolder, $"*.{extension}", SearchOption.TopDirectoryOnly);
+                    break;
+                }
 
             case ImportMode.ImportFilesFromFolderTree:
-                var entries = Directory.GetFileSystemEntries(importFolder);
-                importFiles = GetFilesOfExtension(entries, extension);
-                break;
+                {
+                    importFiles = Directory.GetFiles(importFolder, $"*.{extension}", SearchOption.AllDirectories);
+                    break;
+                }
 
             default:
                 throw new NotImplementedException();
         }
+
+        var count = 0;
+        var total = importFiles.Length;
+        var title = $"Importing {total} {TypeName}";
 
         foreach (var importFile in importFiles)
         {
@@ -115,8 +82,8 @@ public abstract class ImportSobjs<T> : ImportSobj
                         folder = Path.GetDirectoryName(folder);
 
                         // (A) prevent null/empty AND (B) prevent "/" or "\\"
-                        if (!string.IsNullOrEmpty(folder) && folder.Length > 1) 
-                            dest = UnityPathUtility.CombineSystemPath(dest, folder);
+                        if (!string.IsNullOrEmpty(folder) && folder.Length > 1)
+                            dest = dest + folder;
 
                         if (!Directory.Exists(dest))
                         {
@@ -124,20 +91,37 @@ public abstract class ImportSobjs<T> : ImportSobj
                             Debug.Log($"Created path <i>{dest}</i>");
                         }
 
+                        var unityPath = UnityPathUtility.ToUnityFolderPath(dest, UnityPathUtility.UnityFolder.Assets);
                         var fileName = Path.GetFileNameWithoutExtension(importFile);
-                        var sobj = CreateFromBinary<T>(destinationDirectory, fileName, reader);
+                        var sobj = CreateFromBinary<T>(unityPath, fileName, reader);
                         sobj.FileName = fileName;
-                        var filePath = UnityEditor.AssetDatabase.GetAssetPath(sobj);
-                        AssetDatabase.ImportAsset(filePath, ImportAssetOptions.ForceUpdate);
-                        AssetDatabase.SaveAssets();
+                        var filePath = AssetDatabase.GetAssetPath(sobj);
+                        var progress = count / (float)total;
+                        var currentIndexStr = (count + 1).ToString().PadLeft(total.ToString().Length);
+                        var info = $"({currentIndexStr}/{total}) {unityPath}/{fileName}";
+                        EditorUtility.DisplayProgressBar(title, info, progress);
+                        EditorUtility.SetDirty(sobj);
                     }
                 }
             }
             catch (Exception e)
             {
-                Debug.LogError($"Failed to read <b>{importFile}</b>)");
-                throw e;
+                var msg = $"Failed to read <b>{importFile}</b>)";
+                Debug.LogError(msg);
+
+                if (!ignoreErrors)
+                {
+                    EditorUtility.ClearProgressBar();
+                    bool proceed = EditorUtility.DisplayDialog("Import Error", msg, "Proceed", "Cancel");
+
+                    if (!proceed)
+                        throw e;
+                }
             }
+            count++;
         }
+        AssetDatabase.SaveAssets();
+        EditorUtility.ClearProgressBar();
+        AssetDatabase.Refresh();
     }
 }
