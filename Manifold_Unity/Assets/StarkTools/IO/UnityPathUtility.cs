@@ -218,12 +218,12 @@ namespace UnityEngine
         /// <param name="directory">The value to converts</param>
         /// <param name="relativeDirectory">The folder to trim relative to</param>
         /// <returns></returns>
-        public static string ToUnityFolderPath(string directory, UnityFolder relativeToDirectory)
+        public static string ToUnityFolderPath(string directory, UnityFolder relativeToDirectory, bool enableWarnings = true)
         {
             bool isUnityProjectPath;
             directory = ToUnityFolderPath(directory, relativeToDirectory, out isUnityProjectPath);
 
-            if (!isUnityProjectPath)
+            if (enableWarnings && !isUnityProjectPath)
                 Debug.LogWarningFormat(ToUnityFolderPathWarningFormat0, directory);
 
             return directory;

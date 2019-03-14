@@ -1,9 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 [CreateAssetMenu(menuName = "Manifold/Export/" + "GMA Exporter")]
-public class GMAExporter : ExportSobj<GMASobj>
+public class GMAExporter : ExportSobjs<GMASobj>
 {
     public override string ProcessMessage => "Export successful";
 

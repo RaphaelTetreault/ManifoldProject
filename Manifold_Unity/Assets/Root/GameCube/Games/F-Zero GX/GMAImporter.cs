@@ -3,7 +3,7 @@ using System.IO;
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "Manifold/Import/" + "GMA Importer")]
-public class GMAImporter : ImportSobj<GMASobj>
+public class GMAImporter : ImportSobjs<GMASobj>
 {
     public override string ProcessMessage => $"{GetType().Name} process";
 
