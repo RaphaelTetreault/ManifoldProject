@@ -10,4 +10,6 @@ public class GMAImporter : ImportSobjs<GMASobj>
     public override string HelpBoxMessage => string.Empty; //$"{GetType().Name} help box message";
 
     public override string TypeName => typeof(GMASobj).Name;
+
+    protected override string DefaultQueryFormat => "*.gma";
 }

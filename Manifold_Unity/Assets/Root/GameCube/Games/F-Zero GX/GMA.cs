@@ -381,6 +381,8 @@ public class GCMF : IBinarySerializable, INamedFile
     // GxUtils: Some transform thing here
     [SerializeField] private Mesh mesh;
 
+    public uint Unk0x04 => unk0x04;
+
     public string FileName
     { 
         get => fileName;
@@ -544,8 +546,8 @@ public class Material : IBinarySerializable
         reader.ReadX(ref vertexRenderFlags);
         reader.ReadX(ref unk_0x14);
         //
-        if (unk_0x14 == 0xFF00)
-            Assert.IsTrue(unk_0x12 == 1 || unk_0x12 == 2);
+        //if (unk_0x14 == 0xFF00)
+        //    Assert.IsTrue(unk_0x12 == 1 || unk_0x12 == 2);
         //
         reader.ReadX(ref tex0Index);
         reader.ReadX(ref tex1Index);
@@ -561,8 +563,8 @@ public class Material : IBinarySerializable
         // 0x40+
         reader.ReadX(ref unk_0x40);
         reader.ReadX(ref fifoPadding, kFifoPaddingSize);
-        foreach (var @byte in fifoPadding)
-            Assert.IsTrue(@byte == 0x00);
+        //foreach (var @byte in fifoPadding)
+        //    Assert.IsTrue(@byte == 0x00);
 
 
         Debug.LogWarning(this.ToString());

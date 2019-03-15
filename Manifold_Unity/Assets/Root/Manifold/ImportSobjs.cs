@@ -5,28 +5,29 @@ using System.IO;
 using UnityEngine;
 using UnityEditor;
 
+public enum ImportMode
+{
+    ImportFilesList,
+    ImportFilesFromFolder,
+    ImportFilesFromFolderTree,
+}
+
 public abstract class ImportSobjs<T> : ImportSobj
         where T : ScriptableObject, IBinarySerializable, INamedFile
 {
-    public enum ImportMode
-    {
-        ImportFilesList,
-        ImportFilesFromFolder,
-        ImportFilesFromFolderTree,
-    }
-
-    [Header("Export Settings")]
-    [SerializeField, BrowseFolderField("Assets/")]
-    protected string destinationDirectory;
-
+    [Header("Import Settings")]
     [SerializeField]
     protected ImportMode importMode = ImportMode.ImportFilesFromFolderTree;
 
     [SerializeField, BrowseFolderField]
     protected string importFolder;
 
+    [SerializeField, BrowseFolderField("Assets/")]
+    protected string destinationDirectory;
+
+
     [SerializeField]
-    protected string extension;
+    protected string queryFormat;
 
     [SerializeField]
     protected bool ignoreErrors;
@@ -34,30 +35,17 @@ public abstract class ImportSobjs<T> : ImportSobj
     [SerializeField, BrowseFileField(false)]
     protected string[] importFiles;
 
+    // PROPERTIES
+    protected abstract string DefaultQueryFormat
+    {
+        get;
+    }
 
-
+    // METHODS
     public override void Import()
     {
-        switch (importMode)
-        {
-            case ImportMode.ImportFilesList:
-                break;
-
-            case ImportMode.ImportFilesFromFolder:
-                {
-                    importFiles = Directory.GetFiles(importFolder, $"*.{extension}", SearchOption.TopDirectoryOnly);
-                    break;
-                }
-
-            case ImportMode.ImportFilesFromFolderTree:
-                {
-                    importFiles = Directory.GetFiles(importFolder, $"*.{extension}", SearchOption.AllDirectories);
-                    break;
-                }
-
-            default:
-                throw new NotImplementedException();
-        }
+        if (importMode != ImportMode.ImportFilesList)
+            importFiles = GetFilesFromDirectory(importMode, importFolder, queryFormat);
 
         var count = 0;
         var total = importFiles.Length;
@@ -67,7 +55,7 @@ public abstract class ImportSobjs<T> : ImportSobj
         {
             try
             {
-                using (var fileStream = File.Open(importFile, Read.mode, Read.access, Read.share))
+                using (var fileStream = File.Open(importFile, read.mode, read.access, read.share))
                 {
                     using (var reader = new BinaryReader(fileStream))
                     {
@@ -95,6 +83,8 @@ public abstract class ImportSobjs<T> : ImportSobj
                         var fileName = Path.GetFileNameWithoutExtension(importFile);
                         var sobj = CreateFromBinary<T>(unityPath, fileName, reader);
                         sobj.FileName = fileName;
+
+                        // Progress bar update
                         var filePath = AssetDatabase.GetAssetPath(sobj);
                         var progress = count / (float)total;
                         var currentIndexStr = (count + 1).ToString().PadLeft(total.ToString().Length);
@@ -106,7 +96,7 @@ public abstract class ImportSobjs<T> : ImportSobj
             }
             catch (Exception e)
             {
-                var msg = $"Failed to read <b>{importFile}</b>)";
+                var msg = $"Failed to read Index[{count}] {importFile})";
                 Debug.LogError(msg);
 
                 if (!ignoreErrors)
@@ -123,5 +113,10 @@ public abstract class ImportSobjs<T> : ImportSobj
         AssetDatabase.SaveAssets();
         EditorUtility.ClearProgressBar();
         AssetDatabase.Refresh();
+    }
+
+    protected virtual void Reset()
+    {
+        queryFormat = DefaultQueryFormat;
     }
 }

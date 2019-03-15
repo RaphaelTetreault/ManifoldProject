@@ -1,4 +1,5 @@
 ﻿using StarkTools.IO;
+using System;
 using System.IO;
 using UnityEngine;
 using UnityEditor;
@@ -7,7 +8,7 @@ public abstract class ImportSobj : ScriptableObject
 {
     [Header("File Read")]
     [SerializeField]
-    protected FileStreamSettings Read = FileStreamSettings.Read;
+    protected FileStreamSettings read = FileStreamSettings.Read;
 
     #region PROPERTIES
 
@@ -57,6 +58,32 @@ public abstract class ImportSobj : ScriptableObject
         AssetDatabase.CreateAsset(sobj, filePath);
         sobj.Deserialize(reader);
         return sobj;
+    }
+
+
+    /// <summary>
+    /// TODO: move this somewhere else
+    /// </summary>
+    /// <param name="importMode"></param>
+    /// <param name="importFolder"></param>
+    /// <param name="queryFormat"></param>
+    /// <returns></returns>
+    public static string[] GetFilesFromDirectory(ImportMode importMode, string importFolder, string queryFormat)
+    {
+        switch (importMode)
+        {
+            case ImportMode.ImportFilesFromFolder:
+                return Directory.GetFiles(importFolder, queryFormat, SearchOption.TopDirectoryOnly);
+
+            case ImportMode.ImportFilesFromFolderTree:
+                return Directory.GetFiles(importFolder, queryFormat, SearchOption.AllDirectories);
+
+            case ImportMode.ImportFilesList:
+                throw new ArgumentException();
+
+            default:
+                throw new NotImplementedException();
+        }
     }
 
     #endregion
