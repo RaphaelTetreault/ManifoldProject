@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEditor;
 
 public abstract class AnalyzerSobjs<T> : AnalyzerSobj
-    where T : IBinarySerializable, INamedFile, new()
+    where T : IBinarySerializable, IFile, new()
 {
     [Header("Analyzer Settings")]
     [SerializeField]
@@ -36,8 +36,8 @@ public abstract class AnalyzerSobjs<T> : AnalyzerSobj
 
         foreach (var importFile in importFiles)
         {
-            //try
-            //{
+            try
+            {
                 using (var fileStream = File.Open(importFile, Read.mode, Read.access, Read.share))
                 {
                     using (var reader = new BinaryReader(fileStream))
@@ -54,21 +54,96 @@ public abstract class AnalyzerSobjs<T> : AnalyzerSobj
                         CreateAnalysis(value);
                     }
                 }
-            //}
-            //catch (Exception e)
-            //{
-            //    var msg = $"Failed to read Index[{count}] {importFile})";
-            //    Debug.LogError(msg);
+            }
+            catch (Exception e)
+            {
+                var msg = $"Failed to read Index[{count}] {importFile})";
+                Debug.LogError(msg);
 
-            //    if (!ignoreErrors)
-            //    {
-            //        EditorUtility.ClearProgressBar();
-            //        bool proceed = EditorUtility.DisplayDialog("Import Error", msg, "Proceed", "Cancel");
+                if (!ignoreErrors)
+                {
+                    EditorUtility.ClearProgressBar();
+                    bool proceed = EditorUtility.DisplayDialog("Import Error", msg, "Proceed", "Cancel");
 
-            //        if (!proceed)
-            //            throw e;
-            //    }
-            //}
+                    if (!proceed)
+                        throw e;
+                }
+            }
+            count++;
+        }
+        EditorUtility.ClearProgressBar();
+    }
+
+    public abstract void CreateAnalysis(T value);
+}
+
+
+public abstract class NewAnalyzerSobjs<T> : AnalyzerSobj
+    where T : ScriptableObject, IBinarySerializable, IFile, new()
+{
+    [Header("Analyzer Settings")]
+    [SerializeField]
+    [BrowseFolderField]
+    protected string destinationDirectory;
+    [SerializeField]
+    protected bool preserveFolderStructure = true;
+    [SerializeField]
+    protected T[] analyseSobjs;
+
+    //[SerializeField]
+    //protected ImportMode analysis = ImportMode.ImportFilesFromFolderTree;
+    //[SerializeField]
+    //protected string queryFormat;
+
+    //// PROPERTIES
+    //protected abstract string DefaultQueryFormat
+    //{
+    //    get;
+    //}
+
+    //public virtual void FindAllReferences()
+    //{
+    //    var files = ImportSobj.GetFilesFromDirectory(analysis, UnityPathUtility.ProjectRootDirectory, queryFormat);
+    //}
+
+    public override void Analyze()
+    {
+        var count = 0;
+        var total = analyseSobjs.Length;
+        var title = $"Analyzing {total} {TypeName}";
+
+        foreach (var sobj in analyseSobjs)
+        {
+            if (sobj is null)
+                continue;
+
+            var dest = destinationDirectory;
+            if (preserveFolderStructure)
+            {
+                var folderPath = AssetDatabase.GetAssetPath(sobj);
+                folderPath = UnityPathUtility.EnforceSystemSeparators(folderPath);
+                folderPath = Path.GetDirectoryName(folderPath);
+                var length = "Assets/".Length;
+                folderPath = folderPath.Remove(0, length);
+                dest = UnityPathUtility.CombineSystemPath(dest, folderPath);
+
+                if (!Directory.Exists(dest))
+                {
+                    Directory.CreateDirectory(dest);
+                    Debug.Log($"Created path <i>{dest}</i>");
+                }
+            }
+
+            // Get file without .asset
+            var fileName = Path.GetFileNameWithoutExtension(sobj.FileName);
+
+            // Progress bar update
+            var progress = count / (float)total;
+            var currentIndexStr = (count + 1).ToString().PadLeft(total.ToString().Length);
+            var info = $"({currentIndexStr}/{total}) {fileName}";
+            EditorUtility.DisplayProgressBar(title, info, progress);
+            CreateAnalysis(sobj);
+
             count++;
         }
         EditorUtility.ClearProgressBar();

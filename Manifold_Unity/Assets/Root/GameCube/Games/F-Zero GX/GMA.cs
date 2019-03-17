@@ -8,32 +8,54 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Assertions;
 
+// BobJrSr
+// https://github.com/bobjrsenior/GxUtils/blob/master/GxUtils/LibGxFormat/Gma/GMAFormat.xml
+// https://github.com/bobjrsenior/GxUtils/blob/master/GxUtils/LibGxFormat/Gma/GcmfMesh.cs
 
-#region DEFINITIONS
+// My old docs
+// http://www.gc-forever.com/forums/viewtopic.php?f=35&t=1897&p=26717&hilit=TPL#p26717
+// http://www.gc-forever.com/forums/viewtopic.php?t=2311
+// https://docs.google.com/spreadsheets/d/1WS9H2GcPGnjbOo7KS37tiySXDHRIHE3kcTbHLG0ICgc/edit#gid=0
 
-public class GxDisplayList : IBinarySerializable
+// LZ resources
+// https://www.google.com/search?q=lempel+ziv&rlz=1C1CHBF_enCA839CA839&oq=lempel+&aqs=chrome.0.0j69i57j0l4.2046j0j4&sourceid=chrome&ie=UTF-8
+
+// noclip.website
+// https://github.com/magcius/noclip.website/blob/master/src/metroid_prime/mrea.ts
+
+// Dolphin (for patching files)
+// https://forums.dolphin-emu.org/Thread-how-to-decompile-patch-a-gamecube-game
+
+namespace GameCube.Games
 {
-    public GXPrimitive primitive;
-    public GXVtxFmt vertexFormat;
-    private ushort gxCommand; 
-    public ushort vertCount;
-    public GxVert[] verts;
-
-    public void Deserialize(BinaryReader reader)
+    public static class ZeroGX
     {
-        reader.ReadX(ref gxCommand);
-        reader.ReadX(ref vertCount);
-        primitive = (GXPrimitive)(gxCommand & 0b_1111_1000); // 5 highest bits
-        vertexFormat = (GXVtxFmt)(gxCommand & 0b_0000_0111); // 3 lowest bits
+        // TODO
+        // pass GXAttrType at render time (where is index array?)
 
-        reader.ReadX(ref verts, vertCount, true);
-    }
+        private static readonly GxVertexAttributeFormat vaf0 = new GxVertexAttributeFormat()
+        {
+            pos = new GxVertexAttribute(GXAttrType.GX_DIRECT, GXAttr.GX_VA_POS, GXCompCnt_Rev2.GX_POS_XYZ, GXCompType.GX_F32, 0),
+            nrm = new GxVertexAttribute(GXAttrType.GX_DIRECT, GXAttr.GX_VA_NRM, GXCompCnt_Rev2.GX_NRM_XYZ, GXCompType.GX_F32, 0),
+            clr0 = new GxVertexAttribute(GXAttrType.GX_DIRECT, GXAttr.GX_VA_CLR0, GXCompCnt_Rev2.GX_CLR_RGBA, GXCompType.GX_F32, 0),
+            tex0 = new GxVertexAttribute(GXAttrType.GX_DIRECT, GXAttr.GX_VA_TEX0, GXCompCnt_Rev2.GX_TEX_ST, GXCompType.GX_F32, 0),
+            tex1 = new GxVertexAttribute(GXAttrType.GX_DIRECT, GXAttr.GX_VA_TEX1, GXCompCnt_Rev2.GX_TEX_ST, GXCompType.GX_F32, 0),
+            tex2 = new GxVertexAttribute(GXAttrType.GX_DIRECT, GXAttr.GX_VA_TEX2, GXCompCnt_Rev2.GX_TEX_ST, GXCompType.GX_F32, 0),
+            nbt = new GxVertexAttribute(GXAttrType.GX_DIRECT, GXAttr.GX_VA_NBT, GXCompCnt_Rev2.GX_NRM_NBT, GXCompType.GX_F32, 0),
+        };
 
-    public void Serialize(BinaryWriter writer)
-    {
-        throw new NotImplementedException();
+        private static readonly GxVertexAttributeFormat vaf1 = new GxVertexAttributeFormat()
+        {
+            pos = new GxVertexAttribute(GXAttrType.GX_INDEX16, GXAttr.GX_VA_POS, GXCompCnt_Rev2.GX_POS_XYZ, GXCompType.GX_S16, 0),
+            nrm = new GxVertexAttribute(GXAttrType.GX_INDEX16, GXAttr.GX_VA_NRM, GXCompCnt_Rev2.GX_POS_XYZ, GXCompType.GX_S16, 0),
+            tex0 = new GxVertexAttribute(GXAttrType.GX_INDEX16, GXAttr.GX_VA_TEX0, GXCompCnt_Rev2.GX_TEX_ST, GXCompType.GX_S16, 0),
+        };
+
+        public static readonly GxVertexAttributeTable VAT = new GxVertexAttributeTable(vaf0, vaf1);
     }
 }
+
+#region DEFINITIONS
 
 [Flags]
 public enum GMA_WrapFlagsU8 : byte
@@ -230,8 +252,9 @@ public enum GMA_GXAnisotropyU8 : byte
     GX_ANISO_4,
 }
 
+
 [Serializable]
-public class GMA : IBinarySerializable, INamedFile
+public class GMA : IBinarySerializable, IFile
 {
     #region MEMBERS
 
@@ -353,13 +376,14 @@ public class GMA : IBinarySerializable, INamedFile
 //}
 
 [Serializable]
-public class GCMF : IBinarySerializable, INamedFile
+public class GCMF : IBinarySerializable, IFile
 {
     public const uint kGCMF = 0x47434D46; // 47 43 4D 46 - GCMF in ASCII
     public const int kTransformMatrixDefaultLength = 8;
 
     public string fileName;
 
+    // THIS...
     private uint gcmfMagic;
     [SerializeField] private uint unk0x04; // GxUtils: Section flags (16Bit: 0x01; Stitching Model: 0x04; Skin Model: 0x08; Effective Model: 0x10)
     [SerializeField] private Vector3 origin;
@@ -370,27 +394,50 @@ public class GCMF : IBinarySerializable, INamedFile
     [SerializeField] private byte transformMatrixCount; // Matrix Num
     [SerializeField] private byte const0x00;
     [SerializeField] private uint indicesRelPtr; // GxUtils: Header Size
-    [SerializeField] private uint unk0x24; // GxUtils: const 0x0000_0000
+    [SerializeField] private uint unk0x24; // GxUtils: const 0
     [SerializeField] private byte[] transformMatrixDefaultIndices;
     [SerializeField] private uint unk0x30; // padding FIFO 32
     [SerializeField] private uint unk0x34; // padding FIFO 32
     [SerializeField] private uint unk0x38; // padding FIFO 32
     [SerializeField] private uint unk0x3C; // padding FIFO 32
+    // is the object definition
     [SerializeField] private Texture[] texture;
+    // THIS....
+    [SerializeField] private UnknownMaterialStructure? unkMatStruct;
+    [SerializeField] private TransformMatrix3x4[] transformMatrices;
     [SerializeField] private Material material;
-    // GxUtils: Some transform thing here
     [SerializeField] private Mesh mesh;
+    // might be one type
 
     public uint Unk0x04 => unk0x04;
+    public Vector3 Origin => origin;
+    public float Radius => radius;
+    public ushort Texturecount => textureCount;
+    public ushort Materialcount => materialCount;
+    public ushort Translucidmaterialcount => translucidMaterialCount;
+    public byte Transformmatrixcount => transformMatrixCount;
+    public byte Const0X00 => const0x00;
+    public uint Indicesrelptr => indicesRelPtr;
+    public uint Unk0X24 => unk0x24;
+    public byte[] Transformmatrixdefaultindices => transformMatrixDefaultIndices;
+    public uint Unk0X30 => unk0x30;
+    public uint Unk0X34 => unk0x34;
+    public uint Unk0X38 => unk0x38;
+    public uint Unk0X3C => unk0x3C;
+    public Texture[] Texture => texture;
+    public TransformMatrix3x4[] TransformMatrix => transformMatrices;
+    public Material Material => material;
 
     public string FileName
-    { 
+    {
         get => fileName;
         set => fileName = value;
     }
 
     public void Deserialize(BinaryReader reader)
     {
+        var absPtr = reader.BaseStream.Position;
+
         reader.ReadX(ref gcmfMagic); Assert.IsTrue(gcmfMagic == kGCMF);
         reader.ReadX(ref unk0x04);
         reader.ReadX(ref origin);
@@ -408,6 +455,13 @@ public class GCMF : IBinarySerializable, INamedFile
         reader.ReadX(ref unk0x38);
         reader.ReadX(ref unk0x3C);
         reader.ReadX(ref texture, textureCount, true);
+
+        // Multiple matrices[]!
+        // Ex: "zoda_100.gma"
+        reader.ReadX(ref transformMatrices, transformMatrixCount, true);
+
+        // TEMP seeking because multiple matrices can exist
+        reader.BaseStream.Seek(absPtr + indicesRelPtr, SeekOrigin.Begin);
         reader.ReadX(ref material, true);
 
         // TODO DisplayLists
@@ -425,6 +479,7 @@ public class GCMF : IBinarySerializable, INamedFile
         throw new NotImplementedException();
     }
 }
+
 
 [Serializable]
 public class Texture : IBinarySerializable
@@ -444,6 +499,18 @@ public class Texture : IBinarySerializable
     [SerializeField] private uint unk_0x10; // Could be flags, 0x30 is 0b_0110_0000
     [SerializeField] private byte[] fifoPadding;
 
+    public ushort Unkflag => unkFlag;
+    public GMA_UvFlagsU8 Uvflags => uvFlags;
+    public GMA_WrapFlagsU8 Wrapflags => wrapFlags;
+    public ushort Tpltextureid => tplTextureID;
+    public byte Unk_0X06 => unk_0x06;
+    public GMA_GXAnisotropyU8 Anisotropiclevel => anisotropicLevel;
+    public uint Unk_0X08 => unk_0x08;
+    public byte Unk_Flags_0X0C => unk_flags_0x0C;
+    public byte Unk_0X0D => unk_0x0D;
+    public ushort Index => index;
+    public uint Unk_0X10 => unk_0x10;
+    public byte[] Fifopadding => fifoPadding;
 
     public void Deserialize(BinaryReader reader)
     {
@@ -478,7 +545,7 @@ public class Texture : IBinarySerializable
 public class Material : IBinarySerializable
 {
     public const int kTransformArrayLength = 8;
-    public const int kFifoPaddingSize = 28;
+    public const int kFifoPaddingSize = 24;
 
     // 0x00
     [SerializeField] private uint unk_flags_0x00;
@@ -504,9 +571,34 @@ public class Material : IBinarySerializable
     [SerializeField] private uint unk_0x3C;
     // 0x40
     [SerializeField] private uint unk_0x40;
+    [SerializeField] private uint unk_0x44;
     [SerializeField] private byte[] fifoPadding;
+    //[SerializeField] private GxDisplayListBigCheese matDisplayList;
+    //[SerializeField] private GxDisplayListBigCheese tlMatDisplayList;
+    // 0x50
+    public GxDisplayCommand cmd; // temp
 
-    public GMA_GXAttrFlagU32 VertexDescriptorFlags => vertexDescriptorFlags;
+    public uint Unk_Flags_0X00 => unk_flags_0x00;
+    public uint Unk_0X04 => unk_0x04;
+    public uint Unk_0X08 => unk_0x08;
+    public uint Unk_0X0C => unk_0x0C;
+    public byte Unk_0X10 => unk_0x10;
+    public byte Unk_Count => unk_Count;
+    public byte Unk_0X12 => unk_0x12;
+    public GMA_VertexRenderFlagU8 Vertexrenderflags => vertexRenderFlags;
+    public ushort Unk_0X14 => unk_0x14;
+    public ushort Tex0Index => tex0Index;
+    public ushort Tex1Index => tex1Index;
+    public ushort Tex2Index => tex2Index;
+    public GMA_GXAttrFlagU32 Vertexdescriptorflags => vertexDescriptorFlags;
+    public byte[] Transformmatrixspecidicindices => transformMatrixSpecidicIndices;
+    public uint Matdisplaylistsize => matDisplayListSize;
+    public uint Tlmatdisplaylistsize => tlMatDisplayListSize;
+    public Vector3 Uvwcoordinates => uvwCoordinates;
+    public uint Unk_0X3C => unk_0x3C;
+    public uint Unk_0X40 => unk_0x40;
+    public uint Unk_0X44 => unk_0x44;
+    public byte[] Fifopadding => fifoPadding;
 
     // temp, bad debugging
     public override string ToString()
@@ -545,10 +637,6 @@ public class Material : IBinarySerializable
         reader.ReadX(ref unk_0x12);
         reader.ReadX(ref vertexRenderFlags);
         reader.ReadX(ref unk_0x14);
-        //
-        //if (unk_0x14 == 0xFF00)
-        //    Assert.IsTrue(unk_0x12 == 1 || unk_0x12 == 2);
-        //
         reader.ReadX(ref tex0Index);
         reader.ReadX(ref tex1Index);
         reader.ReadX(ref tex2Index);
@@ -562,10 +650,26 @@ public class Material : IBinarySerializable
         reader.ReadX(ref unk_0x3C);
         // 0x40+
         reader.ReadX(ref unk_0x40);
+        reader.ReadX(ref unk_0x44);
         reader.ReadX(ref fifoPadding, kFifoPaddingSize);
-        //foreach (var @byte in fifoPadding)
-        //    Assert.IsTrue(@byte == 0x00);
+        foreach (var @byte in fifoPadding)
+            Assert.IsTrue(@byte == 0x00);
 
+        reader.ReadX(ref cmd, true);
+        //var absPtr = reader.BaseStream.Position;
+        //if (matDisplayListSize > 0)
+        //{
+        //    matDisplayList = new GxDisplayListBigCheese(GameCube.Games.ZeroGX.VAT, matDisplayListSize);
+        //    reader.ReadX(ref matDisplayList, false);
+        //}
+
+        //absPtr += matDisplayListSize;
+        //reader.BaseStream.Seek(absPtr, SeekOrigin.Begin);
+        //if (matDisplayListSize > 0)
+        //{
+        //    tlMatDisplayList = new GxDisplayListBigCheese(GameCube.Games.ZeroGX.VAT, tlMatDisplayListSize);
+        //    reader.ReadX(ref tlMatDisplayList, false);
+        //}
 
         Debug.LogWarning(this.ToString());
 
@@ -583,6 +687,120 @@ public class Material : IBinarySerializable
         throw new NotImplementedException();
     }
 
+}
+
+[Serializable]
+public struct TransformMatrix3x4 : IBinarySerializable
+{
+    private Vector3 row0;
+    private Vector3 row1;
+    private Vector3 row2;
+    private Vector3 row3;
+
+    public Vector3 Row0
+    {
+        get => row0;
+        set => row0 = value;
+    }
+
+    public Vector3 Row1
+    {
+        get => row1;
+        set => row1 = value;
+    }
+
+    public Vector3 Row2
+    {
+        get => row2;
+        set => row2 = value;
+    }
+
+    public Vector3 Row3
+    {
+        get => row3;
+        set => row3 = value;
+    }
+
+    public Vector4 Col0
+    {
+        get => new Vector4(row0.x, row1.x, row2.x, row3.x);
+        set
+        {
+            row0.x = value.x;
+            row1.x = value.y;
+            row2.x = value.z;
+            row3.x = value.w;
+        }
+    }
+
+    public Vector4 Col1
+    {
+        get => new Vector4(row0.x, row1.x, row2.x, row3.x);
+        set
+        {
+            row0.y = value.x;
+            row1.y = value.y;
+            row2.y = value.z;
+            row3.y = value.w;
+        }
+    }
+
+    public Vector4 Col2
+    {
+        get => new Vector4(row0.x, row1.x, row2.x, row3.x);
+        set
+        {
+            row0.z = value.x;
+            row1.z = value.y;
+            row2.z = value.z;
+            row3.z = value.w;
+        }
+    }
+
+    public void Deserialize(BinaryReader reader)
+    {
+        reader.ReadX(ref row0);
+        reader.ReadX(ref row1);
+        reader.ReadX(ref row2);
+        reader.ReadX(ref row3);
+    }
+
+    public void Serialize(BinaryWriter writer)
+    {
+        throw new NotImplementedException();
+    }
+}
+
+[Serializable]
+public struct UnknownMaterialStructure : IBinarySerializable
+{
+    public uint unk_0x00;
+    public uint unk_0x04;
+    public uint unk_0x08;
+    public uint unk_0x0C;
+    public uint unk_0x10;
+    public uint unk_0x14;
+    public ushort unk_0x18;
+    public ushort unk_0x1A; // const 0
+    public uint unk_0x1C;
+
+    public void Deserialize(BinaryReader reader)
+    {
+        reader.ReadX(ref unk_0x00);
+        reader.ReadX(ref unk_0x04);
+        reader.ReadX(ref unk_0x08);
+        reader.ReadX(ref unk_0x0C);
+        reader.ReadX(ref unk_0x10);
+        reader.ReadX(ref unk_0x14);
+        reader.ReadX(ref unk_0x18);
+        reader.ReadX(ref unk_0x1A);
+        reader.ReadX(ref unk_0x1C);
+    }
+
+    public void Serialize(BinaryWriter writer)
+    {
+        throw new NotImplementedException();
+    }
 }
 
 [Serializable]
@@ -616,7 +834,7 @@ public class Mesh : IBinarySerializable
     {
         // REquires initialization before use
         reader.ReadX(ref matMeshes, matMeshes.Length, false);
-        reader.ReadX(ref tlMatMeshes,tlMatMeshes.Length, false);
+        reader.ReadX(ref tlMatMeshes, tlMatMeshes.Length, false);
     }
 
     public void Serialize(BinaryWriter writer)
@@ -656,7 +874,20 @@ public class SubMesh : IBinarySerializable
 public class GxVertexAttributeTable
 {
     public GxVertexAttributeFormat[] gxVertexAttributeFormats
-    { get; set; } = new GxVertexAttributeFormat[8];
+    { get; } = new GxVertexAttributeFormat[8];
+
+    public GxVertexAttributeTable(params GxVertexAttributeFormat[] formats)
+    {
+        if (formats.Length > 8)
+            throw new ArgumentOutOfRangeException();
+
+        // Update formats
+        for (int i = 0; i < formats.Length; i++)
+            gxVertexAttributeFormats[i] = formats[i];
+        // Clear old refs
+        for (int i = formats.Length; i < gxVertexAttributeFormats.Length; i++)
+            gxVertexAttributeFormats[i] = null;
+    }
 
     public void SetVtxAttrFmt(GXVtxFmt index, GXAttrType vcd, GXAttr attribute, GXCompCnt_Rev2 nElements, GXCompType format, int nFracBits = 0)
     {
@@ -668,11 +899,11 @@ public class GxVertexAttributeTable
 [Serializable]
 public struct GxVertexAttribute
 {
-    public GXAttrType vcd;
-    public GXAttr attribute;
-    public GXCompCnt_Rev2 nElements;
-    public GXCompType componentFormat;
-    public int nFracBits;
+    [SerializeField] public GXAttrType vcd;
+    [SerializeField] public GXAttr attribute;
+    [SerializeField] public GXCompCnt_Rev2 nElements;
+    [SerializeField] public GXCompType componentFormat;
+    [SerializeField] public int nFracBits;
 
     public GxVertexAttribute(GXAttrType vcd, GXAttr attribute, GXCompCnt_Rev2 nElements, GXCompType format, int nFracBits = 0)
     {
@@ -692,29 +923,29 @@ public struct GxVertexAttribute
 [Serializable]
 public class GxVertexAttributeFormat
 {
-    public GXAttrType attributeType;
+    [SerializeField] public GXAttrType attributeType;
 
-    public GxVertexAttribute pos;
-    public GxVertexAttribute? nrm;
-    public GxVertexAttribute? nbt;
-    public GxVertexAttribute? clr0;
-    public GxVertexAttribute? clr1;
-    public GxVertexAttribute? tex0;
-    public GxVertexAttribute? tex1;
-    public GxVertexAttribute? tex2;
-    public GxVertexAttribute? tex3;
-    public GxVertexAttribute? tex4;
-    public GxVertexAttribute? tex5;
-    public GxVertexAttribute? tex6;
-    public GxVertexAttribute? tex7;
+    [SerializeField] public GxVertexAttribute pos;
+    [SerializeField] public GxVertexAttribute? nrm;
+    [SerializeField] public GxVertexAttribute? nbt;
+    [SerializeField] public GxVertexAttribute? clr0;
+    [SerializeField] public GxVertexAttribute? clr1;
+    [SerializeField] public GxVertexAttribute? tex0;
+    [SerializeField] public GxVertexAttribute? tex1;
+    [SerializeField] public GxVertexAttribute? tex2;
+    [SerializeField] public GxVertexAttribute? tex3;
+    [SerializeField] public GxVertexAttribute? tex4;
+    [SerializeField] public GxVertexAttribute? tex5;
+    [SerializeField] public GxVertexAttribute? tex6;
+    [SerializeField] public GxVertexAttribute? tex7;
 
     public GxVertexAttribute? GetAttr(GXAttr attribute)
     {
         switch (attribute)
         {
-            case GXAttr.GX_VA_POS:  return pos;
-            case GXAttr.GX_VA_NRM:  return nrm;
-            case GXAttr.GX_VA_NBT:  return nbt;
+            case GXAttr.GX_VA_POS: return pos;
+            case GXAttr.GX_VA_NRM: return nrm;
+            case GXAttr.GX_VA_NBT: return nbt;
             case GXAttr.GX_VA_CLR0: return clr0;
             case GXAttr.GX_VA_CLR1: return clr1;
             case GXAttr.GX_VA_TEX0: return tex0;
@@ -756,25 +987,25 @@ public class GxVertexAttributeFormat
 }
 
 [Serializable]
-public struct GxVert : IBinarySerializable
+public struct GxVertex : IBinarySerializable
 {
-    public GxVertexAttributeFormat vertAttr;
+    [SerializeField] public GxVertexAttributeFormat vertAttr;
 
     // (Raph:) Missing any other data
-    public Vector3 position;
-    public Vector3? normal;
-    public Vector3? binormal;
-    public Vector3? tangent;
-    public Color32? color0;
-    public Color32? color1;
-    public Vector2? tex0;
-    public Vector2? tex1;
-    public Vector2? tex2;
-    public Vector2? tex3;
-    public Vector2? tex4;
-    public Vector2? tex5;
-    public Vector2? tex6;
-    public Vector2? tex7;
+    [SerializeField] public Vector3 position;
+    [SerializeField] public Vector3? normal;
+    [SerializeField] public Vector3? binormal;
+    [SerializeField] public Vector3? tangent;
+    [SerializeField] public Color32? color0;
+    [SerializeField] public Color32? color1;
+    [SerializeField] public Vector2? tex0;
+    [SerializeField] public Vector2? tex1;
+    [SerializeField] public Vector2? tex2;
+    [SerializeField] public Vector2? tex3;
+    [SerializeField] public Vector2? tex4;
+    [SerializeField] public Vector2? tex5;
+    [SerializeField] public Vector2? tex6;
+    [SerializeField] public Vector2? tex7;
 
     public void Deserialize(BinaryReader reader)
     {
@@ -828,6 +1059,112 @@ public struct GxVert : IBinarySerializable
     }
 }
 
+[Serializable]
+public struct GxDisplayCommand : IBinarySerializable
+{
+    [SerializeField] public GXPrimitive primitive;
+    [SerializeField] public GXVtxFmt vertexFormat;
+    public ushort command;
+
+    public void Deserialize(BinaryReader reader)
+    {
+        reader.ReadX(ref command);
+        primitive = (GXPrimitive)(command & 0b_1111_1000); // 5 highest bits
+        vertexFormat = (GXVtxFmt)(command & 0b_0000_0111); // 3 lowest bits
+    }
+
+    public void Serialize(BinaryWriter writer)
+    {
+        throw new NotImplementedException();
+    }
+}
+
+
+[Serializable]
+public class GxDisplayList : IBinarySerializable
+{
+    // property or...?
+    [SerializeField] public GxDisplayCommand gxCommand;
+    [SerializeField] public ushort vertCount;
+    [SerializeField] public GxVertex[] verts;
+    [SerializeField] public GxVertexAttributeTable vat;
+
+    public void Deserialize(BinaryReader reader)
+    {
+        reader.ReadX(ref gxCommand, true);
+        reader.ReadX(ref vertCount);
+
+        // Init vertex VAT references
+        for (int i = 0; i < vertCount; i++)
+        {
+            var vertexFormat = gxCommand.vertexFormat;
+            var vatIndex = (int)vertexFormat;
+            var vertex = new GxVertex()
+            {
+                vertAttr = vat.gxVertexAttributeFormats[vatIndex],
+            };
+        }
+
+        reader.ReadX(ref verts, vertCount, true);
+    }
+
+    public void Serialize(BinaryWriter writer)
+    {
+        throw new NotImplementedException();
+    }
+}
+
+[Serializable]
+public sealed class GxDisplayListBigCheese : IBinarySerializable
+{
+    [SerializeField] private GxDisplayList[] command;
+    [SerializeField] private uint gxBufferSize;
+    [SerializeField] private GxVertexAttributeTable vat;
+
+    public GxDisplayListBigCheese() { }
+
+    public GxDisplayListBigCheese(GxVertexAttributeTable vaf, uint gxBufferSize)
+    {
+        this.vat = vaf;
+        this.gxBufferSize = gxBufferSize;
+    }
+
+    public void Deserialize(BinaryReader reader)
+    {
+        // RAPH: this could be better and cleaner if I made
+        // utility scripts like Jasper/noclip.website to
+        // calculate the components' sizes.
+
+        // Temp list to store commands for this list
+        var command = new List<GxDisplayList>();
+
+        while (true)
+        {
+            var absPtr = reader.BaseStream.Position;
+            var gxCommand = new GxDisplayCommand();
+            reader.ReadX(ref gxCommand, true);
+            reader.BaseStream.Seek(absPtr, SeekOrigin.Begin);
+
+            if (gxCommand.command != 0)
+            {
+                // Read command into list
+                var displayList = new GxDisplayList();
+                displayList.vat = vat;
+                reader.ReadX(ref displayList, false);
+                command.Add(displayList);
+            }
+            // Break when we are reading GX_NOP (0)
+            else break;
+        }
+
+        this.command = command.ToArray();
+    }
+
+    public void Serialize(BinaryWriter writer)
+    {
+        throw new NotImplementedException();
+    }
+}
 #endregion
 
 

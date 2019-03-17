@@ -3,8 +3,8 @@ using System.IO;
 using UnityEngine;
 
 [System.Serializable]
-public class ManifoldAsset<T> : ScriptableObject, IBinarySerializable, INamedFile
-    where T : IBinarySerializable, INamedFile
+public class ManifoldAsset<T> : ScriptableObject, IBinarySerializable, IFile
+    where T : IBinarySerializable, IFile
 {
     [SerializeField]
     public T value;

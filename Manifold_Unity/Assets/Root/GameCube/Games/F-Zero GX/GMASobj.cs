@@ -6,5 +6,8 @@ using UnityEngine;
 [System.Serializable]
 public class GMASobj : ManifoldAsset<GMA>
 {
-    //public int i;
+    public static implicit operator GMA(GMASobj sobj)
+    {
+        return sobj.Value;
+    }
 }

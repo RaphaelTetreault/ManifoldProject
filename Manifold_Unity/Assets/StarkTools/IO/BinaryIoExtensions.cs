@@ -24,7 +24,7 @@ namespace StarkTools.IO
             return BinaryIoUtility.ReadBool(reader);
         }
 
-        public static byte ReadX_Uint8(this BinaryReader reader)
+        public static byte ReadX_UInt8(this BinaryReader reader)
         {
             return BinaryIoUtility.ReadUInt8(reader);
         }
@@ -34,7 +34,7 @@ namespace StarkTools.IO
             return BinaryIoUtility.ReadInt8(reader);
         }
 
-        public static ushort ReadX_Uint16(this BinaryReader reader)
+        public static ushort ReadX_UInt16(this BinaryReader reader)
         {
             return BinaryIoUtility.ReadUInt16(reader);
         }
@@ -44,7 +44,7 @@ namespace StarkTools.IO
             return BinaryIoUtility.ReadInt16(reader);
         }
 
-        public static uint ReadX_Uint32(this BinaryReader reader)
+        public static uint ReadX_UInt32(this BinaryReader reader)
         {
             return BinaryIoUtility.ReadUInt32(reader);
         }
@@ -54,7 +54,7 @@ namespace StarkTools.IO
             return BinaryIoUtility.ReadInt32(reader);
         }
 
-        public static ulong ReadX_Uint64(this BinaryReader reader)
+        public static ulong ReadX_UInt64(this BinaryReader reader)
         {
             return BinaryIoUtility.ReadUInt64(reader);
         }

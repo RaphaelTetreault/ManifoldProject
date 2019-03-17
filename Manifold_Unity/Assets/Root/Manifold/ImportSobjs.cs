@@ -13,7 +13,7 @@ public enum ImportMode
 }
 
 public abstract class ImportSobjs<T> : ImportSobj
-        where T : ScriptableObject, IBinarySerializable, INamedFile
+        where T : ScriptableObject, IBinarySerializable, IFile
 {
     [Header("Import Settings")]
     [SerializeField]
@@ -24,7 +24,6 @@ public abstract class ImportSobjs<T> : ImportSobj
 
     [SerializeField, BrowseFolderField("Assets/")]
     protected string destinationDirectory;
-
 
     [SerializeField]
     protected string queryFormat;
@@ -53,34 +52,35 @@ public abstract class ImportSobjs<T> : ImportSobj
 
         foreach (var importFile in importFiles)
         {
-            try
+            using (var fileStream = File.Open(importFile, read.mode, read.access, read.share))
             {
-                using (var fileStream = File.Open(importFile, read.mode, read.access, read.share))
+                using (var reader = new BinaryReader(fileStream))
                 {
-                    using (var reader = new BinaryReader(fileStream))
+                    // Get path to root import folder
+                    var path = UnityPathUtility.GetUnityDirectory(UnityPathUtility.UnityFolder.Assets);
+                    var dest = UnityPathUtility.CombineSystemPath(path, destinationDirectory);
+
+                    // get path to file import folder
+                    // TODO: Regex instead of this hack
+                    var length = importFolder.Length;
+                    var folder = importFile.Remove(0, length);
+                    folder = Path.GetDirectoryName(folder);
+
+                    // (A) prevent null/empty AND (B) prevent "/" or "\\"
+                    if (!string.IsNullOrEmpty(folder) && folder.Length > 1)
+                        dest = dest + folder;
+
+                    if (!Directory.Exists(dest))
                     {
-                        // Get path to root import folder
-                        var path = UnityPathUtility.GetUnityDirectory(UnityPathUtility.UnityFolder.Assets);
-                        var dest = UnityPathUtility.CombineSystemPath(path, destinationDirectory);
+                        Directory.CreateDirectory(dest);
+                        Debug.Log($"Created path <i>{dest}</i>");
+                    }
 
-                        // get path to file import folder
-                        // TODO: Regex instead of this hack
-                        var length = importFolder.Length;
-                        var folder = importFile.Remove(0, length);
-                        folder = Path.GetDirectoryName(folder);
+                    var unityPath = UnityPathUtility.ToUnityFolderPath(dest, UnityPathUtility.UnityFolder.Assets);
+                    var fileName = Path.GetFileName(importFile);
 
-                        // (A) prevent null/empty AND (B) prevent "/" or "\\"
-                        if (!string.IsNullOrEmpty(folder) && folder.Length > 1)
-                            dest = dest + folder;
-
-                        if (!Directory.Exists(dest))
-                        {
-                            Directory.CreateDirectory(dest);
-                            Debug.Log($"Created path <i>{dest}</i>");
-                        }
-
-                        var unityPath = UnityPathUtility.ToUnityFolderPath(dest, UnityPathUtility.UnityFolder.Assets);
-                        var fileName = Path.GetFileNameWithoutExtension(importFile);
+                    try
+                    {
                         var sobj = CreateFromBinary<T>(unityPath, fileName, reader);
                         sobj.FileName = fileName;
 
@@ -92,20 +92,20 @@ public abstract class ImportSobjs<T> : ImportSobj
                         EditorUtility.DisplayProgressBar(title, info, progress);
                         EditorUtility.SetDirty(sobj);
                     }
-                }
-            }
-            catch (Exception e)
-            {
-                var msg = $"Failed to read Index[{count}] {importFile})";
-                Debug.LogError(msg);
+                    catch (Exception e)
+                    {
+                        var msg = $"Failed to read Index[{count}] {importFile})";
+                        Debug.LogError(msg);
 
-                if (!ignoreErrors)
-                {
-                    EditorUtility.ClearProgressBar();
-                    bool proceed = EditorUtility.DisplayDialog("Import Error", msg, "Proceed", "Cancel");
+                        if (!ignoreErrors)
+                        {
+                            EditorUtility.ClearProgressBar();
+                            bool proceed = EditorUtility.DisplayDialog("Import Error", msg, "Proceed", "Cancel");
 
-                    if (!proceed)
-                        throw e;
+                            if (!proceed)
+                                throw e;
+                        }
+                    }
                 }
             }
             count++;

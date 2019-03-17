@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEditor;
 
 public abstract class ExportSobjs<T> : ExportSobj
-    where T : ScriptableObject, IBinarySerializable, INamedFile
+    where T : ScriptableObject, IBinarySerializable, IFile
 {
     [Header("Export Settings")]
     [SerializeField]
