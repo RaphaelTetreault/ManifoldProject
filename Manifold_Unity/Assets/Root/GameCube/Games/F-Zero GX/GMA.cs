@@ -60,41 +60,47 @@ namespace GameCube.Games
 [Flags]
 public enum GMA_WrapFlagsU8 : byte
 {
-    unk0 = 1 << 0, // Unused AFAIK
-    unk1 = 1 << 1, // Unused AFAIK
-    repeatX = 1 << 2,
-    mirrorX = 1 << 3,
-    repeatY = 1 << 4,
-    mirrorY = 1 << 5,
-    unk6 = 1 << 6, // Double check, was named 'isRegular1'
-    unk7 = 1 << 7, // Double check, was named 'isRegular2'
+    UNK_FLAG_0 = 1 << 0, // Unused AFAIK
+    UNK_FLAG_1 = 1 << 1, // Unused AFAIK
+    REPEAT_X = 1 << 2,
+    MIRROR_X = 1 << 3,
+    REPEAT_Y = 1 << 4,
+    MIRROR_Y = 1 << 5,
+    UNK_FLAG_6 = 1 << 6, // Double check, was named 'isRegular1'
+    UNK_FLAG_7 = 1 << 7, // Double check, was named 'isRegular2'
 }
 
 [Flags]
 public enum GMA_UvFlagsU8 : byte
 {
-    unk1 = 1 << 0,
-    unk2 = 1 << 1,
-    unk3 = 1 << 2,
-    unk4 = 1 << 3,
-    unk5 = 1 << 4,
-    unk6 = 1 << 5,
-    unk7 = 1 << 6,
-    unk8 = 1 << 7,
+    UNK_FLAG_1 = 1 << 0,
+    UNK_FLAG_2 = 1 << 1,
+    UNK_FLAG_3 = 1 << 2,
+    UNK_FLAG_4 = 1 << 3,
+    UNK_FLAG_5 = 1 << 4,
+    UNK_FLAG_6 = 1 << 5,
+    UNK_FLAG_7 = 1 << 6,
+    UNK_FLAG_8 = 1 << 7,
 }
 
 [Flags]
 public enum GMA_VertexRenderFlagU8 : byte
 {
-    renderMaterials = 1 << 0,
-    renderTranslucidMaterials = 1 << 1,
+    RENDER_MATERIALS = 1 << 0,
+    RENDER_TRANSLUCID_MATERIALS = 1 << 1,
+    UNK_FLAG_2 = 1 << 2,
+    UNK_FLAG_3 = 1 << 3,
+    UNK_FLAG_4 = 1 << 4,
+    UNK_FLAG_5 = 1 << 5,
+    UNK_FLAG_6 = 1 << 6,
+    UNK_FLAG_7 = 1 << 7,
 }
 
 /// <summary>
 /// Code from https://github.com/bobjrsenior/GxUtils/blob/master/GxUtils/LibGxFormat/Gma/Gcmf.cs
 /// </summary>
 [Flags]
-enum GcmfSectionFlagsU32 : UInt32
+public enum GcmfAttributes : UInt32
 {
     /// <summary>
     /// 16 bit flag (vertices are stored as uint16 format instead of float)
@@ -299,22 +305,27 @@ public class GMA : IBinarySerializable, IFile
             reader.ReadX(ref gcmfRelativePtr);
             reader.ReadX(ref nameRelativePtr);
 
-            // If 1st pointer is null, skip
+            // If 1st of 2 pointers is null, skip
             if (gcmfRelativePtr == kNullPtr)
+            {
+                gcmf[i] = null;
                 continue;
+            }
 
             var endPosition = reader.BaseStream.Position;
 
-            gcmf[i] = new GCMF();
-            var gcmfPtr = gcmfRelativePtr + HeaderEndPosition;
-            reader.BaseStream.Seek(gcmfPtr, SeekOrigin.Begin);
-            reader.ReadX(ref gcmf[i], true);
-
-            var fileName = string.Empty;
+            var modelName = string.Empty;
             var modelNamePtr = nameRelativePtr + GcmfNamePtr;
             reader.BaseStream.Seek(modelNamePtr, SeekOrigin.Begin);
-            reader.ReadXCString(ref fileName, Encoding.ASCII);
-            gcmf[i].FileName = fileName;
+            reader.ReadXCString(ref modelName, Encoding.ASCII);
+
+            gcmf[i] = new GCMF();
+            gcmf[i].ModelName = modelName;
+            gcmf[i].FileName = FileName;
+
+            var gcmfPtr = gcmfRelativePtr + HeaderEndPosition;
+            reader.BaseStream.Seek(gcmfPtr, SeekOrigin.Begin);
+            reader.ReadX(ref gcmf[i], false);
 
             reader.BaseStream.Seek(endPosition, SeekOrigin.Begin);
         }
@@ -328,150 +339,152 @@ public class GMA : IBinarySerializable, IFile
     #endregion
 }
 
-// Model and GMA should be combined
-//[Serializable]
-//public class Model : IBinarySerializable
-//{
-//    public const uint kNullPtr = 0xFFFFFFFF;
-
-//    private GMA gma;
-
-//    private uint gcmfRelativePtr;
-//    private uint nameRelativePtr;
-//    [SerializeField] private string name;
-//    [SerializeField] private GCMF gcmf;
-
-//    public void Deserialize(BinaryReader reader)
-//    {
-//        //Debug.Log(debugIterationIndex++);
-
-//        reader.ReadX(ref gcmfRelativePtr);
-//        reader.ReadX(ref nameRelativePtr);
-
-//        if (gcmfRelativePtr == kNullPtr)
-//            return;
-
-//        var endPosition = reader.BaseStream.Position;
-
-//        var gcmfPtr = gcmfRelativePtr + gma.HeaderEndPosition;
-//        reader.BaseStream.Seek(gcmfPtr, SeekOrigin.Begin);
-//        reader.ReadX(ref gcmf, true);
-
-//        var modelNamePtr = nameRelativePtr + gma.ModelNamePtr;
-//        reader.BaseStream.Seek(modelNamePtr, SeekOrigin.Begin);
-//        reader.ReadXCString(ref name, Encoding.ASCII);
-
-//        reader.BaseStream.Seek(endPosition, SeekOrigin.Begin);
-//    }
-
-//    public void Serialize(BinaryWriter writer)
-//    {
-//        throw new NotImplementedException();
-//    }
-
-//    public void SetGMA(GMA gma)
-//    {
-//        this.gma = gma;
-//    }
-//}
-
 [Serializable]
-public class GCMF : IBinarySerializable, IFile
+public class GCMF : IBinarySerializable, IBinaryAddressable, IFile
 {
     public const uint kGCMF = 0x47434D46; // 47 43 4D 46 - GCMF in ASCII
     public const int kTransformMatrixDefaultLength = 8;
+    public const int kFifoPaddingSize = 16;
 
-    public string fileName;
+    [Header("Debugging")]
+    [SerializeField] long startAddress;
+    [SerializeField] long endAddress;
+    [SerializeField] string modelName;
+    [SerializeField] string fileName;
 
-    // THIS...
+    [Header("Content")]
+    /// <summary>
+    /// 2019/03/31 VERIFIED: constant GCMF in ASCII
+    /// </summary>
     private uint gcmfMagic;
-    [SerializeField] private uint unk0x04; // GxUtils: Section flags (16Bit: 0x01; Stitching Model: 0x04; Skin Model: 0x08; Effective Model: 0x10)
+    /// <summary>
+    /// 2019/03/31 VERIFIED VALUES: 0, 1, 4, 5, 8, 16
+    /// </summary>
+    [SerializeField] private GcmfAttributes attributes;
+    /// <summary>
+    /// 2019/03/31 : origin point
+    /// </summary>
     [SerializeField] private Vector3 origin;
+    /// <summary>
+    /// 2019/03/31 : bounding sphere radius
+    /// </summary>
     [SerializeField] private float radius;
+    /// <summary>
+    /// 2019/03/31 : number of texture references
+    /// </summary>
     [SerializeField] private ushort textureCount;
-    [SerializeField] private ushort materialCount; // nb mat
-    [SerializeField] private ushort translucidMaterialCount; // nb tl mat
-    [SerializeField] private byte transformMatrixCount; // Matrix Num
-    [SerializeField] private byte const0x00;
+    /// <summary>
+    /// 2019/03/31 : number (nb) of materials
+    /// </summary>
+    [SerializeField] private ushort materialCount;
+    /// <summary>
+    /// 2019/03/31 : number (nb) of translucid (tl) materials
+    /// </summary>
+    [SerializeField] private ushort translucidMaterialCount;
+    /// <summary>
+    /// 2019/03/31 : number of matrix entries
+    /// </summary>
+    [SerializeField] private byte transformMatrixCount;
+    /// <summary>
+    /// 2019/03/31 VERIFIED VALUES: only value is 0
+    /// </summary>
+    [SerializeField] private byte zero_0x1F;
+    /// <summary>
+    /// 
+    /// </summary>
     [SerializeField] private uint indicesRelPtr; // GxUtils: Header Size
-    [SerializeField] private uint unk0x24; // GxUtils: const 0
+    /// <summary>
+    /// 2019/03/31 VERIFIED VALUES: only 0 
+    /// </summary>
+    [SerializeField] private uint zero_0x24;
+    /// <summary>
+    /// 
+    /// </summary>
     [SerializeField] private byte[] transformMatrixDefaultIndices;
-    [SerializeField] private uint unk0x30; // padding FIFO 32
-    [SerializeField] private uint unk0x34; // padding FIFO 32
-    [SerializeField] private uint unk0x38; // padding FIFO 32
-    [SerializeField] private uint unk0x3C; // padding FIFO 32
-    // is the object definition
+    /// <summary>
+    /// 2019/03/31 VERIFIED VALUES: GameCube GX FIFO Padding to 32 bytes
+    /// </summary>
+    private byte[] fifoPadding;
+
     [SerializeField] private Texture[] texture;
-    // THIS....
     [SerializeField] private UnknownMaterialStructure? unkMatStruct;
     [SerializeField] private TransformMatrix3x4[] transformMatrices;
     [SerializeField] private Material material;
-    [SerializeField] private Mesh mesh;
-    // might be one type
+    //[SerializeField] private Mesh mesh;
 
-    public uint Unk0x04 => unk0x04;
+    public GcmfAttributes Attributes => attributes;
     public Vector3 Origin => origin;
     public float Radius => radius;
-    public ushort Texturecount => textureCount;
+    public ushort TextureCount => textureCount;
     public ushort Materialcount => materialCount;
     public ushort Translucidmaterialcount => translucidMaterialCount;
     public byte Transformmatrixcount => transformMatrixCount;
-    public byte Const0X00 => const0x00;
+    public byte Zero_0x1F => zero_0x1F;
     public uint Indicesrelptr => indicesRelPtr;
-    public uint Unk0X24 => unk0x24;
+    public uint Zero_0x24 => zero_0x24;
     public byte[] Transformmatrixdefaultindices => transformMatrixDefaultIndices;
-    public uint Unk0X30 => unk0x30;
-    public uint Unk0X34 => unk0x34;
-    public uint Unk0X38 => unk0x38;
-    public uint Unk0X3C => unk0x3C;
+
     public Texture[] Texture => texture;
+    public UnknownMaterialStructure? UnknownMaterialStructure => unkMatStruct;
     public TransformMatrix3x4[] TransformMatrix => transformMatrices;
     public Material Material => material;
 
+    // Metadata
+    public long StartAddress
+    {
+        get => startAddress;
+        set => startAddress = value;
+    }
+    public long EndAddress
+    {
+        get => endAddress;
+        set => endAddress = value;
+    }
     public string FileName
     {
         get => fileName;
         set => fileName = value;
     }
+    public string ModelName
+    {
+        get => modelName;
+        set => modelName = value;
+    }
 
     public void Deserialize(BinaryReader reader)
     {
-        var absPtr = reader.BaseStream.Position;
+        StartAddress = reader.BaseStream.Position;
 
         reader.ReadX(ref gcmfMagic); Assert.IsTrue(gcmfMagic == kGCMF);
-        reader.ReadX(ref unk0x04);
+        reader.ReadX(ref attributes);
         reader.ReadX(ref origin);
         reader.ReadX(ref radius);
         reader.ReadX(ref textureCount);
         reader.ReadX(ref materialCount);
         reader.ReadX(ref translucidMaterialCount);
         reader.ReadX(ref transformMatrixCount);
-        reader.ReadX(ref const0x00);
+        reader.ReadX(ref zero_0x1F); Assert.IsTrue(zero_0x1F == 0);
         reader.ReadX(ref indicesRelPtr);
-        reader.ReadX(ref unk0x24);
+        reader.ReadX(ref zero_0x24); Assert.IsTrue(zero_0x24 == 0);
         reader.ReadX(ref transformMatrixDefaultIndices, kTransformMatrixDefaultLength);
-        reader.ReadX(ref unk0x30);
-        reader.ReadX(ref unk0x34);
-        reader.ReadX(ref unk0x38);
-        reader.ReadX(ref unk0x3C);
+        reader.ReadX(ref fifoPadding, kFifoPaddingSize); foreach (var fifoPad in fifoPadding) Assert.IsTrue(fifoPad == 0);
         reader.ReadX(ref texture, textureCount, true);
+        reader.ReadX(ref transformMatrices, transformMatrixCount, true); reader.Align(GxUtility.GX_FIFO_ALIGN);
 
-        // Multiple matrices[]!
-        // Ex: "zoda_100.gma"
-        reader.ReadX(ref transformMatrices, transformMatrixCount, true);
+        EndAddress = reader.BaseStream.Position;
 
-        // TEMP seeking because multiple matrices can exist
-        reader.BaseStream.Seek(absPtr + indicesRelPtr, SeekOrigin.Begin);
-        reader.ReadX(ref material, true);
+        // TODO: see if there are multiple materials per "mt_count"
+        // If so, we need to create a Material[] instead of a simple check
+        var matCount = materialCount + translucidMaterialCount;
+        if (matCount > 0)
+        {
+            material = new Material(); // temp
+            material.ModelName = modelName;
+            material.FileName = fileName;
+            reader.ReadX(ref material, false);
+        }
 
         // TODO DisplayLists
-
-        if (unk0x04 != 0) Debug.Log($"unk0x04 is not 0. ({unk0x04.ToString("X")})"); // 1
-        if (unk0x24 != 0) Debug.Log($"unk0x24 is not 0. ({unk0x24.ToString("X")})");
-        if (unk0x30 != 0) Debug.Log($"unk0x30 is not 0. ({unk0x30.ToString("X")})");
-        if (unk0x34 != 0) Debug.Log($"unk0x34 is not 0. ({unk0x34.ToString("X")})");
-        if (unk0x38 != 0) Debug.Log($"unk0x38 is not 0. ({unk0x38.ToString("X")})");
-        if (unk0x3C != 0) Debug.Log($"unk0x3C is not 0. ({unk0x3C.ToString("X")})");
     }
 
     public void Serialize(BinaryWriter writer)
@@ -482,22 +495,27 @@ public class GCMF : IBinarySerializable, IFile
 
 
 [Serializable]
-public class Texture : IBinarySerializable
+public class Texture : IBinarySerializable, IBinaryAddressable
 {
     public const int kFifoPaddingSize = 12;
 
-    [SerializeField] private ushort unkFlag;
-    [SerializeField, EnumFlags] private GMA_UvFlagsU8 uvFlags;
-    [SerializeField, EnumFlags] private GMA_WrapFlagsU8 wrapFlags;
-    [SerializeField] private ushort tplTextureID;
-    [SerializeField] private byte unk_0x06;
-    [SerializeField] private GMA_GXAnisotropyU8 anisotropicLevel;
-    [SerializeField] private uint unk_0x08;
-    [SerializeField] private byte unk_flags_0x0C;
-    [SerializeField] private byte unk_0x0D;
-    [SerializeField] private ushort index;
-    [SerializeField] private uint unk_0x10; // Could be flags, 0x30 is 0b_0110_0000
-    [SerializeField] private byte[] fifoPadding;
+    [Header("Debugging")]
+    [SerializeField] long startAddress;
+    [SerializeField] long endAddress;
+
+    [Header("Content")]
+    [SerializeField] ushort unkFlag;
+    [SerializeField, EnumFlags] GMA_UvFlagsU8 uvFlags;
+    [SerializeField, EnumFlags] GMA_WrapFlagsU8 wrapFlags;
+    [SerializeField] ushort tplTextureID;
+    [SerializeField] byte unk_0x06;
+    [SerializeField] GMA_GXAnisotropyU8 anisotropicLevel;
+    [SerializeField] uint unk_0x08;
+    [SerializeField] byte unk_flags_0x0C;
+    [SerializeField] byte unk_0x0D;
+    [SerializeField] ushort index;
+    [SerializeField] uint unk_0x10; // Could be flags, 0x30 is 0b_0110_0000
+    [SerializeField] byte[] fifoPadding;
 
     public ushort Unkflag => unkFlag;
     public GMA_UvFlagsU8 Uvflags => uvFlags;
@@ -506,14 +524,27 @@ public class Texture : IBinarySerializable
     public byte Unk_0X06 => unk_0x06;
     public GMA_GXAnisotropyU8 Anisotropiclevel => anisotropicLevel;
     public uint Unk_0X08 => unk_0x08;
-    public byte Unk_Flags_0X0C => unk_flags_0x0C;
+    public byte UnkFlags_0x0C => unk_flags_0x0C;
     public byte Unk_0X0D => unk_0x0D;
     public ushort Index => index;
     public uint Unk_0X10 => unk_0x10;
     public byte[] Fifopadding => fifoPadding;
 
+    public long StartAddress
+    {
+        get => startAddress;
+        set => startAddress = value;
+    }
+    public long EndAddress
+    {
+        get => endAddress;
+        set => endAddress = value;
+    }
+
     public void Deserialize(BinaryReader reader)
     {
+        StartAddress = reader.BaseStream.Position;
+
         reader.ReadX(ref unkFlag);
         reader.ReadX(ref uvFlags);
         reader.ReadX(ref wrapFlags);
@@ -529,10 +560,7 @@ public class Texture : IBinarySerializable
         foreach (var @byte in fifoPadding)
             Assert.IsTrue(@byte == 0x00);
 
-        if (unk_0x08 != 0) Debug.Log($"unk_0x08 is not 0. ({unk_0x08.ToString("X")}) ({Convert.ToString(unk_0x08, 2)})");
-        if (unk_flags_0x0C != 0) Debug.Log($"unk_flags_0x0C is not 0. ({unk_flags_0x0C.ToString("X")}) ({Convert.ToString(unk_flags_0x0C, 2)})"); // 1, 5, 11.x6, 14, 2B, 2F, B2.x2, 54, 55, 30.x35, 3A, 3C, F6, FF.x2
-        if (unk_0x0D != 0) Debug.Log($"unk_0x0D is not 0. ({unk_0x0D.ToString("X")}) ({Convert.ToString(unk_0x0D, 2)})");
-        if (unk_0x10 != 0) Debug.Log($"unk_0x10 is not 0. ({unk_0x10.ToString("X")}) ({Convert.ToString(unk_0x10, 2)})");
+        EndAddress= reader.BaseStream.Position;
     }
 
     public void Serialize(BinaryWriter writer)
@@ -542,11 +570,18 @@ public class Texture : IBinarySerializable
 }
 
 [Serializable]
-public class Material : IBinarySerializable
+public class Material : IBinarySerializable, IBinaryAddressable, IFile
 {
     public const int kTransformArrayLength = 8;
-    public const int kFifoPaddingSize = 24;
+    public const int kFifoPaddingSize = 4;
 
+    [Header("Debugging")]
+    [SerializeField] string modelName;
+    [SerializeField] string fileName;
+    [SerializeField] long startAddress;
+    [SerializeField] long endAddress;
+
+    [Header("Contents")]
     // 0x00
     [SerializeField] private uint unk_flags_0x00;
     [SerializeField] private uint unk_0x04;
@@ -572,60 +607,111 @@ public class Material : IBinarySerializable
     // 0x40
     [SerializeField] private uint unk_0x40;
     [SerializeField] private uint unk_0x44;
-    [SerializeField] private byte[] fifoPadding;
-    //[SerializeField] private GxDisplayListBigCheese matDisplayList;
-    //[SerializeField] private GxDisplayListBigCheese tlMatDisplayList;
+    [SerializeField] private uint unk_0x48;
+    [SerializeField] private uint unk_0x4C;
     // 0x50
-    public GxDisplayCommand cmd; // temp
+    [SerializeField] private uint unk_0x50;
+    [SerializeField] private uint unk_0x54;
+    [SerializeField] private uint unk_0x58;
+    [SerializeField] private byte[] fifoPadding;
+    // 0x60
+    [SerializeField] private GxDisplayListGroup matDisplayList;
 
+    // 0x00
     public uint Unk_Flags_0X00 => unk_flags_0x00;
-    public uint Unk_0X04 => unk_0x04;
-    public uint Unk_0X08 => unk_0x08;
-    public uint Unk_0X0C => unk_0x0C;
-    public byte Unk_0X10 => unk_0x10;
+    public uint Unk_0x04 => unk_0x04; // color RGBA 32? B2B2B2FF x2094, 
+    public uint Unk_0x08 => unk_0x08; // color RGBA 32? 7F7F7FFF x2544,
+    public uint Unk_0x0C => unk_0x0C; // color RGBA 32? FFFFFFFF x1120,
+    // 0x10
+    public byte Unk_0x10 => unk_0x10; // 0x2A x1497, 
     public byte Unk_Count => unk_Count;
-    public byte Unk_0X12 => unk_0x12;
+    public byte Unk_0x12 => unk_0x12;
     public GMA_VertexRenderFlagU8 Vertexrenderflags => vertexRenderFlags;
-    public ushort Unk_0X14 => unk_0x14;
+    public ushort Unk_0X14 => unk_0x14; // 0xFF00 x3485
     public ushort Tex0Index => tex0Index;
     public ushort Tex1Index => tex1Index;
     public ushort Tex2Index => tex2Index;
     public GMA_GXAttrFlagU32 Vertexdescriptorflags => vertexDescriptorFlags;
+    // 0x20
     public byte[] Transformmatrixspecidicindices => transformMatrixSpecidicIndices;
     public uint Matdisplaylistsize => matDisplayListSize;
     public uint Tlmatdisplaylistsize => tlMatDisplayListSize;
+    // 0x30
     public Vector3 Uvwcoordinates => uvwCoordinates;
-    public uint Unk_0X3C => unk_0x3C;
-    public uint Unk_0X40 => unk_0x40;
-    public uint Unk_0X44 => unk_0x44;
+    public uint Unk_0x3C => unk_0x3C;
+    // 0x40
+    public uint Unk_0x40 => unk_0x40;
+    public uint Unk_0x44 => unk_0x44;
+    public uint Unk_0x48 => unk_0x48;
+    public uint Unk_0x4C => unk_0x4C;
+    // 0x50
+    public uint Unk_0x50 => unk_0x50;
+    public uint Unk_0x54 => unk_0x54;
+    public uint Unk_0x58 => unk_0x58;
     public byte[] Fifopadding => fifoPadding;
+    // 0x60
+
+
+    // Metadata
+    public string FileName
+    {
+        get => fileName;
+        set => fileName = value;
+    }
+    public string ModelName
+    {
+        get => modelName;
+        set => modelName = value;
+    }
+    public long StartAddress
+    {
+        get => startAddress;
+        set => startAddress = value;
+    }
+    public long EndAddress
+    {
+        get => endAddress;
+        set => endAddress = value;
+    }
 
     // temp, bad debugging
     public override string ToString()
     {
         return
+            $"GMA Material Log:\n" +
+            $"File : {FileName}\n" +
+            $"Model: {ModelName}\n" +
+            $"Start: {StartAddress.ToString("X8")}\n" +
+            $"End  : {EndAddress.ToString("X8")}\n" +
+            $"===0x00===\n" +
             $"unk_flags_0x00: {unk_flags_0x00}\n" +
             $"unk_0x04: {unk_0x04}\n" +
             $"unk_0x08: {unk_0x08}\n" +
             $"unk_0x0C: {unk_0x0C}\n" +
+            $"===0x10===\n" +
             $"unk_0x10: {unk_0x10}\n" +
             $"unk_Count: {unk_Count}\n" +
             $"unk_0x12: {unk_0x12}\n" +
             $"vertexRenderFlags: {vertexRenderFlags}\n" +
             $"unk_0x14: {unk_0x14}\n" +
-            $"unk_0x16: {tex0Index}\n" +
-            $"unk_0x18: {tex1Index}\n" +
-            $"unk_0x1A: {tex2Index}\n" +
+            $"tex0Index: {tex0Index} {tex0Index.ToString("X4")}\n" +
+            $"tex1Index: {tex1Index} {tex1Index.ToString("X4")}\n" +
+            $"tex2Index: {tex2Index} {tex2Index.ToString("X4")}\n" +
             $"GXAttrFlag: {vertexDescriptorFlags}\n" +
-            $"vertexCount1: {matDisplayListSize}\n" +
-            $"vertexCount2: {tlMatDisplayListSize}\n" +
+            $"===0x20===\n" +
+            $"matDisplayListSize: {matDisplayListSize}\n" +
+            $"tlMatDisplayListSize: {tlMatDisplayListSize}\n" +
+            $"===0x30===\n" +
             $"uvwCoordinates: {uvwCoordinates}\n" +
             $"unk_0x3C: {unk_0x3C}\n" +
+            $"===0x40===\n" +
             $"unk_0x40: {unk_0x40}";
     }
 
     public void Deserialize(BinaryReader reader)
     {
+        StartAddress = reader.BaseStream.Position;
+
         // 0x00
         reader.ReadX(ref unk_flags_0x00);
         reader.ReadX(ref unk_0x04);
@@ -651,35 +737,20 @@ public class Material : IBinarySerializable
         // 0x40+
         reader.ReadX(ref unk_0x40);
         reader.ReadX(ref unk_0x44);
+        reader.ReadX(ref unk_0x48);
+
+        // THE FOLLOWING IS USED EXCLUSIVELY BY [*_vtx] AND [*_SKL] FILES
+        // Figure out what their type actually is
+        reader.ReadX(ref unk_0x4C);
+        reader.ReadX(ref unk_0x50);
+        reader.ReadX(ref unk_0x54);
+        reader.ReadX(ref unk_0x58);
         reader.ReadX(ref fifoPadding, kFifoPaddingSize);
-        foreach (var @byte in fifoPadding)
-            Assert.IsTrue(@byte == 0x00);
 
-        reader.ReadX(ref cmd, true);
-        //var absPtr = reader.BaseStream.Position;
-        //if (matDisplayListSize > 0)
-        //{
-        //    matDisplayList = new GxDisplayListBigCheese(GameCube.Games.ZeroGX.VAT, matDisplayListSize);
-        //    reader.ReadX(ref matDisplayList, false);
-        //}
+        EndAddress = reader.BaseStream.Position;
 
-        //absPtr += matDisplayListSize;
-        //reader.BaseStream.Seek(absPtr, SeekOrigin.Begin);
-        //if (matDisplayListSize > 0)
-        //{
-        //    tlMatDisplayList = new GxDisplayListBigCheese(GameCube.Games.ZeroGX.VAT, tlMatDisplayListSize);
-        //    reader.ReadX(ref tlMatDisplayList, false);
-        //}
-
-        Debug.LogWarning(this.ToString());
-
-        if (unk_0x04 != 0) Debug.Log($"unk_0x04 is not 0. ({unk_0x04.ToString("X")})");
-        if (unk_0x08 != 0) Debug.Log($"unk_0x08 is not 0. ({unk_0x08.ToString("X")})");
-        if (unk_0x0C != 0) Debug.Log($"unk_0x0C is not 0. ({unk_0x0C.ToString("X")})");
-        if (unk_0x10 != 0) Debug.Log($"unk_0x10 is not 0. ({unk_0x10.ToString("X")})");
-        if (unk_0x14 != 0) Debug.Log($"unk_0x14 is not 0. ({unk_0x14.ToString("X")})");
-        if (unk_0x3C != 0) Debug.Log($"unk_0x3C is not 0. ({unk_0x3C.ToString("X")})");
-        if (unk_0x40 != 0) Debug.Log($"unk_0x40 is not 0. ({unk_0x40.ToString("X")})");
+        for (int i = 0; i < fifoPadding.Length; i++)
+            Assert.IsTrue(fifoPadding[i] == 0x00, $"{FileName} - {ModelName} - {reader.BaseStream.Position.ToString("X8")} - {fifoPadding[i]} - {i}");
     }
 
     public void Serialize(BinaryWriter writer)
@@ -1079,7 +1150,6 @@ public struct GxDisplayCommand : IBinarySerializable
     }
 }
 
-
 [Serializable]
 public class GxDisplayList : IBinarySerializable
 {
@@ -1115,17 +1185,17 @@ public class GxDisplayList : IBinarySerializable
 }
 
 [Serializable]
-public sealed class GxDisplayListBigCheese : IBinarySerializable
+public sealed class GxDisplayListGroup : IBinarySerializable
 {
-    [SerializeField] private GxDisplayList[] command;
-    [SerializeField] private uint gxBufferSize;
-    [SerializeField] private GxVertexAttributeTable vat;
+    [SerializeField] GxDisplayList[] command;
+    [SerializeField] uint gxBufferSize;
+    [SerializeField] GxVertexAttributeTable vat;
 
-    public GxDisplayListBigCheese() { }
+    public GxDisplayListGroup() { }
 
-    public GxDisplayListBigCheese(GxVertexAttributeTable vaf, uint gxBufferSize)
+    public GxDisplayListGroup(GxVertexAttributeTable vat, uint gxBufferSize)
     {
-        this.vat = vaf;
+        this.vat = vat;
         this.gxBufferSize = gxBufferSize;
     }
 
@@ -1170,6 +1240,8 @@ public sealed class GxDisplayListBigCheese : IBinarySerializable
 
 public static class GxUtility
 {
+    public const long GX_FIFO_ALIGN = 32;
+
     public static Vector3 ReadVectorXYZ(BinaryReader reader, GxVertexAttribute vertexAttributes)
     {
         if (vertexAttributes.nElements == GXCompCnt_Rev2.GX_POS_XY)
@@ -1351,4 +1423,11 @@ public static class GxUtility
     //{
     //    throw new NotImplementedException();
     //}
+}
+
+// TODO: move to own file
+public interface IBinaryAddressable
+{
+    long StartAddress { get; set; }
+    long EndAddress { get; set; }
 }

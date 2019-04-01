@@ -1,116 +1,222 @@
-﻿using System;
+﻿using StarkTools.IO;
+using System;
+using System.IO;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using UnityEngine;
-
+using UnityEditor;
 
 [CreateAssetMenu]
-public class GMAAnalyzer : NewTextAnalyzerSobj<GMASobj>
+public class GMAAnalyzer : AnalyzerSobj<GMASobj>
 {
-    [Header("Export Settings")]
+    const string ExistsStr = "X";
+    const string NullStr = "null";
+
     [SerializeField]
     protected string gcmfFile;
     [SerializeField]
     protected string textureFile;
     [SerializeField]
     protected string materialFile;
+    [SerializeField]
+    protected string texUnkFlagsFile;
 
     public override string ProcessMessage => string.Empty;
 
-    public override string TypeName => typeof(GMASobj).Name;
+    public override string TypeName => string.Empty;
 
-    public override void CreateAnalysis(GMASobj value)
+    public override void Analyze()
     {
-        var gcfmAnalysisFile = Path.Combine(destinationDirectory, $"{gcmfFile}.tsv");
-        var texAnalysisFile = Path.Combine(destinationDirectory, $"{textureFile}.tsv");
-        var matAnalysisFile = Path.Combine(destinationDirectory, $"{materialFile}.tsv");
+        var numProcesses = 4f;
+        var processIndex = 0;
+        var time = DateTime.Now.ToString("(yyyy-MM-dd)(HH-mm-ss-FFFFFF)");
+        var gcfmAnalysisFile = Path.Combine(destinationDirectory, $"{gcmfFile}_{time}.tsv");
+        var texAnalysisFile = Path.Combine(destinationDirectory, $"{textureFile}_{time}.tsv");
+        var matAnalysisFile = Path.Combine(destinationDirectory, $"{materialFile}_{time}.tsv");
+        var texFlagAnalysisFile = Path.Combine(destinationDirectory, $"{texUnkFlagsFile}_{time}.tsv");
 
-        CreateAnalysis(value, gcfmAnalysisFile, WriteGcmfAnalysis);
-        CreateAnalysis(value, texAnalysisFile, WriteTexAnalysis);
-        CreateAnalysis(value, matAnalysisFile, WriteMatAnalysis);
+        // EX
+        EditorUtility.DisplayProgressBar(ButtonText, texFlagAnalysisFile, processIndex++ / numProcesses);
+        WriteGcmfTexUnkFlagsAnalysis(texFlagAnalysisFile);
+
+        // GCMF
+        EditorUtility.DisplayProgressBar(ButtonText, gcfmAnalysisFile, processIndex++ / numProcesses);
+        WriteGcmfAnalysis(gcfmAnalysisFile);
+
+        // GCMF TEX
+        EditorUtility.DisplayProgressBar(ButtonText, texAnalysisFile, processIndex++ / numProcesses);
+        WriteTexAnalysis(texAnalysisFile);
+
+        // GCMF MAT
+        EditorUtility.DisplayProgressBar(ButtonText, matAnalysisFile, processIndex++ / numProcesses);
+        WriteMatAnalysis(matAnalysisFile);
+
+        // END
+        EditorUtility.ClearProgressBar();
     }
 
-    public void WriteGcmfAnalysis(GMASobj sobj, StreamWriter writer)
+    public StreamWriter OpenWriter(string fileName)
     {
-        writer.GoToEnd();
+        var writeFile = Path.Combine(destinationDirectory, fileName);
+        var fileStream = File.Open(writeFile, write.mode, write.access, write.share);
+        var writer = new StreamWriter(fileStream);
+        return writer;
+    }
 
+    public void WriteGcmfTexUnkFlagsAnalysis(string fileName)
+    {
+        var size = 8;
+        var unkFlags0x00 = new int[size];
+        var unkFlags0x02 = new int[size];
+        var unkFlags0x03 = new int[size];
+        var unkFlags0x0C = new int[size];
+        var unkFlags0x10 = new int[size];
+
+        foreach (var sobj in analysisSobjs)
+        {
+            foreach (var gcmf in sobj.Value.GCMF)
+            {
+                if (gcmf == null)
+                    continue;
+
+                foreach (var tex in gcmf.Texture)
+                {
+                    for (int i = 0; i < size; i++)
+                    {
+                        var isFlagEnabled = (tex.Unkflag >> i) & 1;
+                        unkFlags0x00[i] += isFlagEnabled;
+
+                        isFlagEnabled = ((int)tex.Uvflags >> i) & 1;
+                        unkFlags0x02[i] += isFlagEnabled;
+
+                        isFlagEnabled = ((int)tex.Wrapflags >> i) & 1;
+                        unkFlags0x03[i] += isFlagEnabled;
+
+                        isFlagEnabled = ((int)tex.UnkFlags_0x0C >> i) & 1;
+                        unkFlags0x0C[i] += isFlagEnabled;
+
+                        isFlagEnabled = ((int)tex.Unk_0X10 >> i) & 1;
+                        unkFlags0x10[i] += isFlagEnabled;
+                    }
+                }
+            }
+        }
+
+        var writer = OpenWriter(fileName);
+
+        writer.PushCol();
+        for (int i = 0; i < size; i++)
+            writer.PushCol($"Flag Bit {i}");
+        writer.PushRow();
+
+        writer.PushCol("UnkFlags0x00");
+        for (int i = 0; i < unkFlags0x00.Length; i++)
+            writer.PushCol(unkFlags0x00[i]);
+        writer.PushRow();
+
+        writer.PushCol("UnkFlags0x02");
+        for (int i = 0; i < unkFlags0x02.Length; i++)
+            writer.PushCol(unkFlags0x02[i]);
+        writer.PushRow();
+
+        writer.PushCol("UnkFlags0x03");
+        for (int i = 0; i < unkFlags0x03.Length; i++)
+            writer.PushCol(unkFlags0x03[i]);
+        writer.PushRow();
+
+        writer.PushCol("UnkFlags0x0C");
+        for (int i = 0; i < unkFlags0x0C.Length; i++)
+            writer.PushCol(unkFlags0x0C[i]);
+        writer.PushRow();
+
+        writer.PushCol("UnkFlags0x10");
+        for (int i = 0; i < unkFlags0x10.Length; i++)
+            writer.PushCol(unkFlags0x10[i]);
+        writer.PushRow();
+
+        writer.Close();
+    }
+
+    public void WriteGcmfAnalysis(string fileName)
+    {
+        var writer = OpenWriter(fileName);
         // Write header
         if (writer.BaseStream.Length <= 0)
         {
             writer.PushCol("File Name");
             writer.PushCol("GCMF File Name");
-            writer.PushCol("Unk0x04");
-            writer.PushCol("unk0x04 bits");
+            writer.PushCol("Address");
+            writer.PushCol("Attributes");
             writer.PushCol("Origin");
             writer.PushCol("Radius");
             writer.PushCol("Texturecount");
             writer.PushCol("Materialcount");
             writer.PushCol("Translucidmaterialcount");
             writer.PushCol("Transformmatrixcount");
-            writer.PushCol("Const0X00");
+            writer.PushCol("Zero_0x1F");
             writer.PushCol("Indicesrelptr");
-            writer.PushCol("Unk0X24");
+            writer.PushCol("Zero_0x24");
             writer.PushCol("Transformmatrixdefaultindices");
-            writer.PushCol("Unk0X30");
-            writer.PushCol("Unk0X34");
-            writer.PushCol("Unk0X38");
-            writer.PushCol("Unk0X3C");
             writer.PushCol("Texture");
             writer.PushCol("TransformMatrix");
             writer.PushCol("Material");
             writer.PushRow();
         }
 
-        // Write contents
-        var isFirstEntry = true;
-        foreach (var gcmf in sobj.Value.GCMF)
+        foreach (var sobj in analysisSobjs)
         {
-            if (isFirstEntry)
+            // Write contents
+            var isFirstEntry = true;
+            foreach (var gcmf in sobj.Value.GCMF)
             {
-                writer.PushCol(sobj.FileName);
-                isFirstEntry = false;
-            }
-            else writer.PushCol();
+                if (isFirstEntry)
+                {
+                    writer.PushCol(sobj.FileName);
+                    isFirstEntry = false;
+                }
+                else writer.PushCol();
 
-            if (gcmf == null)
-            {
-                writer.PushRow("null");
-                continue;
-            }
+                if (string.IsNullOrEmpty(gcmf.ModelName))
+                {
+                    writer.PushRow(NullStr);
+                    continue;
+                }
+                else
+                {
+                    writer.PushCol(gcmf.FileName);
+                }
 
-            writer.PushCol(gcmf.FileName);
-            writer.PushCol(gcmf.Unk0x04);
-            writer.PushCol(Convert.ToString(gcmf.Unk0x04, 2).PadLeft(32, '0'));
-            writer.PushCol(gcmf.Origin);
-            writer.PushCol(gcmf.Radius);
-            writer.PushCol(gcmf.Texturecount);
-            writer.PushCol(gcmf.Materialcount);
-            writer.PushCol(gcmf.Translucidmaterialcount);
-            writer.PushCol(gcmf.Transformmatrixcount);
-            writer.PushCol(gcmf.Const0X00);
-            writer.PushCol(gcmf.Indicesrelptr);
-            writer.PushCol(gcmf.Unk0X24);
-            writer.PushCol(gcmf.Transformmatrixdefaultindices == null ? "null" : "exists");
-            writer.PushCol(gcmf.Unk0X30);
-            writer.PushCol(gcmf.Unk0X34);
-            writer.PushCol(gcmf.Unk0X38);
-            writer.PushCol(gcmf.Unk0X3C);
-            writer.PushCol(gcmf.Texture == null ? "null" : "exists");
-            writer.PushCol(gcmf.TransformMatrix == null ? "null" : "exists");
-            writer.PushCol(gcmf.Material == null ? "null" : "exists");
-            writer.PushRow();
+                writer.PushCol(gcmf.StartAddress.ToString("X8"));
+                writer.PushCol(gcmf.Attributes);
+                writer.PushCol(gcmf.Origin);
+                writer.PushCol(gcmf.Radius);
+                writer.PushCol(gcmf.TextureCount);
+                writer.PushCol(gcmf.Materialcount);
+                writer.PushCol(gcmf.Translucidmaterialcount);
+                writer.PushCol(gcmf.Transformmatrixcount);
+                writer.PushCol(gcmf.Zero_0x1F);
+                writer.PushCol(gcmf.Indicesrelptr);
+                writer.PushCol(gcmf.Zero_0x24);
+                writer.PushCol(gcmf.Transformmatrixdefaultindices == null ? NullStr : ExistsStr);
+                writer.PushCol(gcmf.Texture == null ? NullStr : ExistsStr);
+                writer.PushCol(gcmf.TransformMatrix == null ? NullStr : ExistsStr);
+                writer.PushCol(gcmf.Material == null ? NullStr : ExistsStr);
+                writer.PushRow();
+            }
         }
+        writer.Close();
     }
 
-    public void WriteTexAnalysis(GMASobj sobj, StreamWriter writer)
+    public void WriteTexAnalysis(string fileName)
     {
-        writer.GoToEnd();
+        var writer = OpenWriter(fileName);
 
         if (writer.BaseStream.Length <= 0)
         {
             writer.PushCol("File Name");
-            writer.PushCol("GCMF File Name");
+            writer.PushCol("Model Name");
+            writer.PushCol("Texture Index");
+            writer.PushCol("Address");
             writer.PushCol("Unkflag");
             writer.PushCol("Uvflags");
             writer.PushCol("Wrapflags");
@@ -127,65 +233,80 @@ public class GMAAnalyzer : NewTextAnalyzerSobj<GMASobj>
             writer.PushRow();
         }
 
-        // Write contents
-        var isFirstEntry = true;
-        foreach (var gcmf in sobj.Value.GCMF)
+        foreach (var sobj in analysisSobjs)
         {
-            if (gcmf == null)
-                continue;
-
-            var isFirstTex = true;
-            foreach (var tex in gcmf.Texture)
+            // Write contents
+            var isFirstEntry = true;
+            foreach (var gcmf in sobj.Value.GCMF)
             {
-                if (isFirstEntry)
+                if (gcmf == null)
                 {
-                    writer.PushCol(sobj.FileName);
-                    isFirstEntry = false;
+                    writer.PushRow(NullStr);
+                    continue;
                 }
-                else writer.PushCol();
 
-                if (isFirstTex)
+                var index = 0;
+                var maxIndex = gcmf.TextureCount;
+                var isFirstTex = true;
+                foreach (var tex in gcmf.Texture)
                 {
-                    writer.PushCol(gcmf.FileName);
-                    isFirstTex = false;
-                }
-                else writer.PushCol();
+                    if (isFirstEntry)
+                    {
+                        writer.PushCol(sobj.FileName);
+                        isFirstEntry = false;
+                    }
+                    else writer.PushCol();
 
-                //writer.PushCol(tex.Unkflag);
-                writer.PushCol(Convert.ToString(tex.Unkflag, 2).PadLeft(16, '0'));
-                writer.PushCol(tex.Uvflags);
-                writer.PushCol(tex.Wrapflags);
-                writer.PushCol(tex.Tpltextureid);
-                writer.PushCol(tex.Unk_0X06);
-                writer.PushCol(tex.Anisotropiclevel);
-                writer.PushCol(tex.Unk_0X08);
-                writer.PushCol(tex.Unk_Flags_0X0C);
-                writer.PushCol(tex.Unk_0X0D);
-                writer.PushCol(tex.Index);
-                writer.PushCol(tex.Unk_0X10);
-                foreach (var @byte in tex.Fifopadding)
-                    writer.PushCol(@byte);
-                writer.PushRow();
+                    if (isFirstTex)
+                    {
+                        writer.PushCol(gcmf.ModelName);
+                        isFirstTex = false;
+                    }
+                    else writer.PushCol();
+
+                    writer.PushCol($"{index}/{maxIndex}");
+                    writer.PushCol(tex.StartAddress.ToString("X8"));
+                    writer.PushCol(Convert.ToString(tex.Unkflag, 2).PadLeft(16, '0'));
+                    writer.PushCol(tex.Uvflags);
+                    writer.PushCol(tex.Wrapflags);
+                    writer.PushCol(tex.Tpltextureid);
+                    writer.PushCol(tex.Unk_0X06);
+                    writer.PushCol(tex.Anisotropiclevel);
+                    writer.PushCol(tex.Unk_0X08);
+                    writer.PushCol(tex.UnkFlags_0x0C);
+                    writer.PushCol(tex.Unk_0X0D);
+                    writer.PushCol(tex.Index);
+                    writer.PushCol(tex.Unk_0X10);
+                    foreach (var @byte in tex.Fifopadding)
+                        writer.PushCol(@byte);
+                    writer.PushRow();
+
+                    index++;
+                }
             }
         }
+
+        writer.Close();
     }
 
-    public void WriteMatAnalysis(GMASobj sobj, StreamWriter writer)
+    public void WriteMatAnalysis(string fileName)
     {
-        writer.GoToEnd();
+        var writer = OpenWriter(fileName);
 
         if (writer.BaseStream.Length <= 0)
         {
             writer.PushCol("File Name");
+            writer.PushCol("Model Name");
+            writer.PushCol("Address");
             writer.PushCol("Unk_Flags_0X00");
-            writer.PushCol("Unk_0X04");
-            writer.PushCol("Unk_0X08");
-            writer.PushCol("Unk_0X0C");
-            writer.PushCol("Unk_0X10");
+            writer.PushCol("Unk_0x04");
+            writer.PushCol("Unk_0x08");
+            writer.PushCol("Unk_0x0C");
+            writer.PushCol("Unk_0x10");
             writer.PushCol("Unk_Count");
-            writer.PushCol("Unk_0X12");
+            writer.PushCol("Unk_0x12");
             writer.PushCol("Vertexrenderflags");
-            writer.PushCol("Unk_0X14");
+            writer.PushCol("Unk_0x14");
             writer.PushCol("Tex0Index");
             writer.PushCol("Tex1Index");
             writer.PushCol("Tex2Index");
@@ -194,54 +315,77 @@ public class GMAAnalyzer : NewTextAnalyzerSobj<GMASobj>
             writer.PushCol("Matdisplaylistsize");
             writer.PushCol("Tlmatdisplaylistsize");
             writer.PushCol("Uvwcoordinates");
-            writer.PushCol("Unk_0X3C");
-            writer.PushCol("Unk_0X40");
-            writer.PushCol("Unk_0X44");
+            writer.PushCol("Unk_0x3C");
+            writer.PushCol("Unk_0x40");
+            writer.PushCol("Unk_0x44");
+            writer.PushCol("Unk_0x48");
+            writer.PushCol("Unk_0x4C");
+            writer.PushCol("Unk_0x50");
+            writer.PushCol("Unk_0x54");
+            writer.PushCol("Unk_0x58");
             for (int i = 0; i < Material.kFifoPaddingSize; i++)
                 writer.PushCol($"FifoPadding {i}");
             writer.PushRow();
         }
 
-        // Write contents
-        var isFirstEntry = true;
-        foreach (var gcmf in sobj.Value.GCMF)
+        foreach (var sobj in analysisSobjs)
         {
-            if (isFirstEntry)
-            {
-                writer.PushCol(sobj.FileName);
-                isFirstEntry = false;
-            }
-            else writer.PushCol();
 
-            if (gcmf == null)
+            // Write contents
+            var isFirstEntry = true;
+            foreach (var gcmf in sobj.Value.GCMF)
             {
-                writer.PushRow("null");
-                continue;
-            }
+                if (isFirstEntry)
+                {
+                    writer.PushCol(sobj.FileName);
+                    isFirstEntry = false;
+                }
+                else writer.PushCol();
 
-            writer.PushCol(gcmf.Material.Unk_Flags_0X00);
-            writer.PushCol(gcmf.Material.Unk_0X04);
-            writer.PushCol(gcmf.Material.Unk_0X08);
-            writer.PushCol(gcmf.Material.Unk_0X0C);
-            writer.PushCol(gcmf.Material.Unk_0X10);
-            writer.PushCol(gcmf.Material.Unk_Count);
-            writer.PushCol(gcmf.Material.Unk_0X12);
-            writer.PushCol(gcmf.Material.Vertexrenderflags);
-            writer.PushCol(gcmf.Material.Unk_0X14);
-            writer.PushCol(gcmf.Material.Tex0Index);
-            writer.PushCol(gcmf.Material.Tex1Index);
-            writer.PushCol(gcmf.Material.Tex2Index);
-            writer.PushCol(gcmf.Material.Vertexdescriptorflags);
-            writer.PushCol(gcmf.Material.Transformmatrixspecidicindices);
-            writer.PushCol(gcmf.Material.Matdisplaylistsize);
-            writer.PushCol(gcmf.Material.Tlmatdisplaylistsize);
-            writer.PushCol(gcmf.Material.Uvwcoordinates);
-            writer.PushCol(gcmf.Material.Unk_0X3C);
-            writer.PushCol(gcmf.Material.Unk_0X40);
-            writer.PushCol(gcmf.Material.Unk_0X44);
-            foreach (var @byte in gcmf.Material.Fifopadding)
-                writer.PushCol(@byte);
-            writer.PushRow();
+                if (string.IsNullOrEmpty(gcmf.ModelName))
+                {
+                    writer.PushRow(NullStr);
+                    continue;
+                }
+                else
+                {
+                    writer.PushCol(gcmf.FileName);
+                }
+
+                writer.PushCol(gcmf.Material.StartAddress.ToString("X8"));
+                writer.PushCol(gcmf.Material.Unk_Flags_0X00);
+                writer.PushCol(gcmf.Material.Unk_0x04);
+                writer.PushCol(gcmf.Material.Unk_0x08);
+                writer.PushCol(gcmf.Material.Unk_0x0C);
+                writer.PushCol(gcmf.Material.Unk_0x10);
+                writer.PushCol(gcmf.Material.Unk_Count);
+                writer.PushCol(gcmf.Material.Unk_0x12);
+                writer.PushCol(gcmf.Material.Vertexrenderflags);
+                writer.PushCol(gcmf.Material.Unk_0X14);
+                writer.PushCol(gcmf.Material.Tex0Index);
+                writer.PushCol(gcmf.Material.Tex1Index);
+                writer.PushCol(gcmf.Material.Tex2Index);
+                writer.PushCol(gcmf.Material.Vertexdescriptorflags);
+                writer.PushCol(gcmf.Material.Transformmatrixspecidicindices);
+                writer.PushCol(gcmf.Material.Matdisplaylistsize);
+                writer.PushCol(gcmf.Material.Tlmatdisplaylistsize);
+                writer.PushCol(gcmf.Material.Uvwcoordinates);
+                writer.PushCol(gcmf.Material.Unk_0x3C);
+                writer.PushCol(gcmf.Material.Unk_0x40);
+                writer.PushCol(gcmf.Material.Unk_0x44);
+                writer.PushCol(gcmf.Material.Unk_0x48);
+                writer.PushCol(gcmf.Material.Unk_0x4C);
+                writer.PushCol(gcmf.Material.Unk_0x50);
+                writer.PushCol(gcmf.Material.Unk_0x54);
+                writer.PushCol(gcmf.Material.Unk_0x58);
+
+                foreach (var @byte in gcmf.Material.Fifopadding)
+                    writer.PushCol(@byte);
+                writer.PushRow();
+            }
         }
+        writer.Close();
     }
+
+
 }

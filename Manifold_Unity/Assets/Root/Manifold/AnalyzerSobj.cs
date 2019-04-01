@@ -5,34 +5,21 @@ using UnityEngine;
 
 public abstract class AnalyzerSobj : ScriptableObject
 {
-    [Header("File Read")]
+    [Header("File IO")]
     [SerializeField]
-    protected FileStreamSettings Read = FileStreamSettings.Read;
+    protected FileStreamSettings read = FileStreamSettings.Read;
+    [SerializeField]
+    protected FileStreamSettings write = FileStreamSettings.Write;
 
     #region PROPERTIES
 
-    public virtual string ButtonText
-    {
-        get
-        {
-            return $"Analyze {TypeName}";
-        }
-    }
+    public virtual string ButtonText => $"Analyze {TypeName}";
 
-    public abstract string ProcessMessage
-    {
-        get;
-    }
+    public virtual string ProcessMessage => string.Empty;
 
-    public virtual string HelpBoxMessage
-    {
-        get { return string.Empty; }
-    }
+    public virtual string HelpBoxMessage => string.Empty;
 
-    public abstract string TypeName
-    {
-        get;
-    }
+    public virtual string TypeName => GetType().Name;
 
     #endregion
 

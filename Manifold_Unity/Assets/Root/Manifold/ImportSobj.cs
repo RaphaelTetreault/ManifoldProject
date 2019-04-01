@@ -60,6 +60,17 @@ public abstract class ImportSobj : ScriptableObject
         return sobj;
     }
 
+    public static TSobj CreateFromBinaryFile<TSobj>(string destinationDir, string fileName, BinaryReader reader)
+    where TSobj : ScriptableObject, IBinarySerializable, IFile
+    {
+        var sobj = CreateInstance<TSobj>();
+        var filePath = $"Assets/{destinationDir}/{fileName}.asset";
+        AssetDatabase.CreateAsset(sobj, filePath);
+        sobj.FileName = fileName;
+        sobj.Deserialize(reader);
+        return sobj;
+    }
+
 
     /// <summary>
     /// TODO: move this somewhere else

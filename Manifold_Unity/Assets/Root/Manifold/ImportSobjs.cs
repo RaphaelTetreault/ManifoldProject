@@ -48,7 +48,6 @@ public abstract class ImportSobjs<T> : ImportSobj
 
         var count = 0;
         var total = importFiles.Length;
-        var title = $"Importing {total} {TypeName}";
 
         foreach (var importFile in importFiles)
         {
@@ -81,15 +80,17 @@ public abstract class ImportSobjs<T> : ImportSobj
 
                     try
                     {
-                        var sobj = CreateFromBinary<T>(unityPath, fileName, reader);
+                        var sobj = CreateFromBinaryFile<T>(unityPath, fileName, reader);
                         sobj.FileName = fileName;
 
                         // Progress bar update
                         var filePath = AssetDatabase.GetAssetPath(sobj);
-                        var progress = count / (float)total;
                         var currentIndexStr = (count + 1).ToString().PadLeft(total.ToString().Length);
-                        var info = $"({currentIndexStr}/{total}) {unityPath}/{fileName}";
+                        var title = $"Importing {TypeName} ({currentIndexStr}/{total})";
+                        var info = $"{unityPath}{fileName}";
+                        var progress = count / (float)total;
                         EditorUtility.DisplayProgressBar(title, info, progress);
+
                         EditorUtility.SetDirty(sobj);
                     }
                     catch (Exception e)

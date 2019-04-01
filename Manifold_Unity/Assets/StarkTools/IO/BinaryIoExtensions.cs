@@ -15,6 +15,13 @@ namespace StarkTools.IO
             return !(reader.BaseStream.Position < reader.BaseStream.Length);
         }
 
+        public static long Align(this BinaryReader reader, long alignment)
+        {
+            var bytesToAlign = reader.BaseStream.Position % alignment;
+            reader.BaseStream.Seek(bytesToAlign, SeekOrigin.Current);
+            return reader.BaseStream.Position;
+        }
+
         #region ReadX
 
         #region ReadX Value
