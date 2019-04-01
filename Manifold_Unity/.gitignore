@@ -5,10 +5,12 @@
 /[Bb]uilds/
 /Assets/[Rr]oot/[Uu]ntracked/
 
-# GAMES TO IGNORE
-# GAMECUBE
-/Assets/GFZE01/ # F-Zero GX (US)
-/Assets/GFZJ01/ # F-Zero GX (JP)
+# IGNORE GAME FOLDERS
+## GAMECUBE
+### F-Zero GX
+/Assets/GFZE01/
+/Assets/GFZJ01/
+/Assets/GFZP01/
 
 # Visual Studio 2015 cache directory
 /.vs/
