@@ -28,7 +28,7 @@ using UnityEngine.Assertions;
 
 namespace GameCube.Games
 {
-    public static class ZeroGX
+    public static class FZeroGX
     {
         // TODO
         // pass GXAttrType at render time (where is index array?)
@@ -57,34 +57,72 @@ namespace GameCube.Games
 
 #region DEFINITIONS
 
+#region MATERIAL ENUMS
 [Flags]
-public enum GMA_WrapFlagsU8 : byte
+public enum MatFlags0x00_U32 : uint
 {
-    UNK_FLAG_0 = 1 << 0, // Unused AFAIK
-    UNK_FLAG_1 = 1 << 1, // Unused AFAIK
-    REPEAT_X = 1 << 2,
-    MIRROR_X = 1 << 3,
-    REPEAT_Y = 1 << 4,
-    MIRROR_Y = 1 << 5,
-    UNK_FLAG_6 = 1 << 6, // Double check, was named 'isRegular1'
-    UNK_FLAG_7 = 1 << 7, // Double check, was named 'isRegular2'
+    UNK_FLAG_0 = 1 << 0,
+    UNK_FLAG_1 = 1 << 1,
+    UNK_FLAG_2 = 1 << 2,
+    UNK_FLAG_3 = 1 << 3,
+    UNK_FLAG_4 = 1 << 4,
+    UNK_FLAG_5 = 1 << 5,
+    UNK_FLAG_6 = 1 << 6,
+    UNK_FLAG_7 = 1 << 7,
+    UNK_FLAG_8 = 1 << 8,
+    UNK_FLAG_9 = 1 << 9,
+    UNK_FLAG_10 = 1 << 10,
+    UNK_FLAG_11 = 1 << 11,
+    UNK_FLAG_12 = 1 << 12,
+    UNK_FLAG_13 = 1 << 13,
+    UNK_FLAG_14 = 1 << 14,
+    UNK_FLAG_15 = 1 << 15,
 }
 
 [Flags]
-public enum GMA_UvFlagsU8 : byte
+public enum MatFlags0x10_U8 : byte
 {
-    UNK_FLAG_1 = 1 << 0,
-    UNK_FLAG_2 = 1 << 1,
-    UNK_FLAG_3 = 1 << 2,
-    UNK_FLAG_4 = 1 << 3,
-    UNK_FLAG_5 = 1 << 4,
-    UNK_FLAG_6 = 1 << 5,
-    UNK_FLAG_7 = 1 << 6,
-    UNK_FLAG_8 = 1 << 7,
+    UNK_FLAG_0 = 1 << 0,
+    UNK_FLAG_1 = 1 << 1,
+    UNK_FLAG_2 = 1 << 2,
+    UNK_FLAG_3 = 1 << 3,
+    UNK_FLAG_4 = 1 << 4,
+    UNK_FLAG_5 = 1 << 5,
+    UNK_FLAG_6 = 1 << 6,
+    UNK_FLAG_7 = 1 << 7,
 }
 
 [Flags]
-public enum GMA_VertexRenderFlagU8 : byte
+public enum MatFlags0x11_U8 : byte
+{
+    UNK_FLAG_0 = 1 << 0,
+    UNK_FLAG_1 = 1 << 1,
+    UNK_FLAG_2 = 1 << 2,
+    UNK_FLAG_3 = 1 << 3,
+    UNK_FLAG_4 = 1 << 4,
+    UNK_FLAG_5 = 1 << 5,
+    UNK_FLAG_6 = 1 << 6,
+    UNK_FLAG_7 = 1 << 7,
+}
+
+[Flags]
+public enum MatFlags0x12_U8 : byte
+{
+    UNK_FLAG_0 = 1 << 0,
+    UNK_FLAG_1 = 1 << 1,
+    UNK_FLAG_2 = 1 << 2,
+    UNK_FLAG_3 = 1 << 3,
+    UNK_FLAG_4 = 1 << 4,
+    UNK_FLAG_5 = 1 << 5,
+    UNK_FLAG_6 = 1 << 6,
+    UNK_FLAG_7 = 1 << 7,
+}
+
+/// <summary>
+/// 0x13
+/// </summary>
+[Flags]
+public enum MatVertexRenderFlag_U8 : byte
 {
     RENDER_MATERIALS = 1 << 0,
     RENDER_TRANSLUCID_MATERIALS = 1 << 1,
@@ -95,6 +133,134 @@ public enum GMA_VertexRenderFlagU8 : byte
     UNK_FLAG_6 = 1 << 6,
     UNK_FLAG_7 = 1 << 7,
 }
+
+/// <summary>
+/// 0x14
+/// </summary>
+[Flags]
+public enum MatFlags0x14_U16 : ushort
+{
+    UNK_FLAG_0 = 1 << 0,
+    UNK_FLAG_1 = 1 << 1,
+    UNK_FLAG_2 = 1 << 2,
+    UNK_FLAG_3 = 1 << 3,
+    UNK_FLAG_4 = 1 << 4,
+    UNK_FLAG_5 = 1 << 5,
+    UNK_FLAG_6 = 1 << 6,
+    UNK_FLAG_7 = 1 << 7,
+    UNK_FLAG_8 = 1 << 8,
+    UNK_FLAG_9 = 1 << 9,
+    UNK_FLAG_10 = 1 << 10,
+    UNK_FLAG_11 = 1 << 11,
+    UNK_FLAG_12 = 1 << 12,
+    UNK_FLAG_13 = 1 << 13,
+    UNK_FLAG_14 = 1 << 14,
+    UNK_FLAG_15 = 1 << 15,
+}
+#endregion
+
+#region TEXTURE ENUMS
+
+[Flags]
+public enum TexFlags0x00_U16 : ushort
+{
+    UNK_FLAG_0 = 1 << 0,
+    UNK_FLAG_1 = 1 << 1,
+    UNK_FLAG_2 = 1 << 2,
+    UNK_FLAG_3 = 1 << 3,
+    UNK_FLAG_4 = 1 << 4,
+    UNK_FLAG_5 = 1 << 5,
+    UNK_FLAG_6 = 1 << 6,
+    UNK_FLAG_7 = 1 << 7,
+    UNK_FLAG_8 = 1 << 8,
+    UNK_FLAG_9 = 1 << 9,
+    UNK_FLAG_10 = 1 << 10,
+    UNK_FLAG_11 = 1 << 11,
+    UNK_FLAG_12 = 1 << 12,
+    UNK_FLAG_13 = 1 << 13,
+    UNK_FLAG_14 = 1 << 14,
+    UNK_FLAG_15 = 1 << 15,
+}
+
+[Flags]
+public enum TexWrapFlags_U8 : byte
+{
+    UNK_FLAG_0 = 1 << 0,
+    UNK_FLAG_1 = 1 << 1,
+    REPEAT_X = 1 << 2,
+    MIRROR_X = 1 << 3,
+    REPEAT_Y = 1 << 4,
+    MIRROR_Y = 1 << 5,
+    UNK_FLAG_6 = 1 << 6,
+    UNK_FLAG_7 = 1 << 7,
+}
+
+[Flags]
+public enum TexFlags0x02_U8 : byte
+{
+    UNK_FLAG_0 = 1 << 0,
+    UNK_FLAG_1 = 1 << 1,
+    UNK_FLAG_2 = 1 << 2,
+    UNK_FLAG_3 = 1 << 3,
+    UNK_FLAG_4 = 1 << 4,
+    UNK_FLAG_5 = 1 << 5,
+    UNK_FLAG_6 = 1 << 6,
+    UNK_FLAG_7 = 1 << 7,
+}
+
+[Flags]
+public enum TexFlags0x06_U8 : byte
+{
+    UNK_FLAG_0 = 1 << 0,
+    UNK_FLAG_1 = 1 << 1,
+    UNK_FLAG_2 = 1 << 2,
+    UNK_FLAG_3 = 1 << 3,
+    UNK_FLAG_4 = 1 << 4,
+    UNK_FLAG_5 = 1 << 5,
+    UNK_FLAG_6 = 1 << 6,
+    UNK_FLAG_7 = 1 << 7,
+}
+
+[Flags]
+public enum TexFlags0x0C_U8 : byte
+{
+    UNK_FLAG_0 = 1 << 0,
+    UNK_FLAG_1 = 1 << 1,
+    UNK_FLAG_2 = 1 << 2,
+    UNK_FLAG_3 = 1 << 3,
+    UNK_FLAG_4 = 1 << 4,
+    UNK_FLAG_5 = 1 << 5,
+    UNK_FLAG_6 = 1 << 6,
+    UNK_FLAG_7 = 1 << 7,
+}
+
+[Flags]
+public enum TexFlags0x0D_U8 : byte
+{
+    UNK_FLAG_0 = 1 << 0,
+    UNK_FLAG_1 = 1 << 1,
+    UNK_FLAG_2 = 1 << 2,
+    UNK_FLAG_3 = 1 << 3,
+    UNK_FLAG_4 = 1 << 4,
+    UNK_FLAG_5 = 1 << 5,
+    UNK_FLAG_6 = 1 << 6,
+    UNK_FLAG_7 = 1 << 7,
+}
+
+[Flags]
+public enum TexFlags0x10_U32 : uint
+{
+    UNK_FLAG_0 = 1 << 0,
+    UNK_FLAG_1 = 1 << 1,
+    UNK_FLAG_2 = 1 << 2,
+    UNK_FLAG_3 = 1 << 3,
+    UNK_FLAG_4 = 1 << 4,
+    UNK_FLAG_5 = 1 << 5,
+    UNK_FLAG_6 = 1 << 6,
+    UNK_FLAG_7 = 1 << 7,
+}
+
+#endregion
 
 /// <summary>
 /// Code from https://github.com/bobjrsenior/GxUtils/blob/master/GxUtils/LibGxFormat/Gma/Gcmf.cs
@@ -504,30 +670,45 @@ public class Texture : IBinarySerializable, IBinaryAddressable
     [SerializeField] long endAddress;
 
     [Header("Content")]
-    [SerializeField] ushort unkFlag;
-    [SerializeField, EnumFlags] GMA_UvFlagsU8 uvFlags;
-    [SerializeField, EnumFlags] GMA_WrapFlagsU8 wrapFlags;
+    [SerializeField, EnumFlags] TexFlags0x00_U16 unk_0x00;
+    [SerializeField, EnumFlags] TexFlags0x02_U8 unk_0x02;
+    [SerializeField, EnumFlags] TexWrapFlags_U8 wrapFlags;
     [SerializeField] ushort tplTextureID;
-    [SerializeField] byte unk_0x06;
+    [SerializeField, EnumFlags] TexFlags0x06_U8 unk_0x06;
     [SerializeField] GMA_GXAnisotropyU8 anisotropicLevel;
-    [SerializeField] uint unk_0x08;
-    [SerializeField] byte unk_flags_0x0C;
-    [SerializeField] byte unk_0x0D;
+    /// <summary>
+    /// 2019/04/01 VERIFIED: only 0
+    /// </summary>
+    [SerializeField] uint zero_0x08;
+    /// <summary>
+    /// 019/04/01 VERIFIED: All values from 0-255. May NOT be flags...
+    /// </summary>
+    [SerializeField, EnumFlags] TexFlags0x0C_U8 unk_0x0C;
+    /// <summary>
+    /// 2019/04/01 VERIFIED: only values are 0, 1.
+    /// </summary>
+    [SerializeField, EnumFlags] TexFlags0x0D_U8 unk_0x0D;
+    /// <summary>
+    /// Texture index
+    /// </summary>
     [SerializeField] ushort index;
-    [SerializeField] uint unk_0x10; // Could be flags, 0x30 is 0b_0110_0000
+    /// <summary>
+    /// 2019/04/01 VERIFIED: all unique values: 0, 1, 48, 49, 256, 304, 305, 512, 560, 561, 816, 818
+    /// </summary>
+    [SerializeField, EnumFlags] TexFlags0x10_U32 unk_0x10;
     [SerializeField] byte[] fifoPadding;
 
-    public ushort Unkflag => unkFlag;
-    public GMA_UvFlagsU8 Uvflags => uvFlags;
-    public GMA_WrapFlagsU8 Wrapflags => wrapFlags;
+    public TexFlags0x00_U16 Unk_0x00 => unk_0x00;
+    public TexFlags0x02_U8 Unk_0x02 => unk_0x02;
+    public TexWrapFlags_U8 Wrapflags => wrapFlags;
     public ushort Tpltextureid => tplTextureID;
-    public byte Unk_0X06 => unk_0x06;
+    public TexFlags0x06_U8 Unk_0x06 => unk_0x06;
     public GMA_GXAnisotropyU8 Anisotropiclevel => anisotropicLevel;
-    public uint Unk_0X08 => unk_0x08;
-    public byte UnkFlags_0x0C => unk_flags_0x0C;
-    public byte Unk_0X0D => unk_0x0D;
+    public uint Zero_0x08 => zero_0x08;
+    public TexFlags0x0C_U8 Unk_0x0C => unk_0x0C;
+    public TexFlags0x0D_U8 Unk_0x0D => unk_0x0D;
     public ushort Index => index;
-    public uint Unk_0X10 => unk_0x10;
+    public TexFlags0x10_U32 Unk_0x10 => unk_0x10;
     public byte[] Fifopadding => fifoPadding;
 
     public long StartAddress
@@ -545,14 +726,14 @@ public class Texture : IBinarySerializable, IBinaryAddressable
     {
         StartAddress = reader.BaseStream.Position;
 
-        reader.ReadX(ref unkFlag);
-        reader.ReadX(ref uvFlags);
+        reader.ReadX(ref unk_0x00);
+        reader.ReadX(ref unk_0x02);
         reader.ReadX(ref wrapFlags);
         reader.ReadX(ref tplTextureID);
         reader.ReadX(ref unk_0x06);
         reader.ReadX(ref anisotropicLevel);
-        reader.ReadX(ref unk_0x08);
-        reader.ReadX(ref unk_flags_0x0C);
+        reader.ReadX(ref zero_0x08);
+        reader.ReadX(ref unk_0x0C);
         reader.ReadX(ref unk_0x0D);
         reader.ReadX(ref index);
         reader.ReadX(ref unk_0x10);
@@ -560,7 +741,7 @@ public class Texture : IBinarySerializable, IBinaryAddressable
         foreach (var @byte in fifoPadding)
             Assert.IsTrue(@byte == 0x00);
 
-        EndAddress= reader.BaseStream.Position;
+        EndAddress = reader.BaseStream.Position;
     }
 
     public void Serialize(BinaryWriter writer)
@@ -583,57 +764,57 @@ public class Material : IBinarySerializable, IBinaryAddressable, IFile
 
     [Header("Contents")]
     // 0x00
-    [SerializeField] private uint unk_flags_0x00;
-    [SerializeField] private uint unk_0x04;
-    [SerializeField] private uint unk_0x08;
-    [SerializeField] private uint unk_0x0C;
+    [SerializeField, EnumFlags] MatFlags0x00_U32 unk_flags_0x00;
+    [SerializeField] /********/ uint unk_0x04;
+    [SerializeField] /********/ uint unk_0x08;
+    [SerializeField] /********/ uint unk_0x0C;
     // 0x10
-    [SerializeField] private byte unk_0x10;
-    [SerializeField] private byte unk_Count; // mostly FF, but can be other things // GxUtils: Used Material Count
-    [SerializeField] private byte unk_0x12; // 0, 1, or 2
-    [SerializeField, EnumFlags] private GMA_VertexRenderFlagU8 vertexRenderFlags;
-    [SerializeField] private ushort unk_0x14; // is 0xFF00 if (unk_0x12) is 1 or 2, and not when 3. // 2 bytes one is null?
-    [SerializeField] private ushort tex0Index; //////////////////////////
-    [SerializeField] private ushort tex1Index; // Can be nulled 0xFFFF //
-    [SerializeField] private ushort tex2Index; //////////////////////////
-    [SerializeField, EnumFlags] private GMA_GXAttrFlagU32 vertexDescriptorFlags; // GC Manual: Vertex and primitive data
+    [SerializeField, EnumFlags] MatFlags0x10_U8 unk_0x10;
+    [SerializeField, EnumFlags] MatFlags0x11_U8 unk_0x11; // mostly FF, but can be other things // GxUtils: Used Material Count
+    [SerializeField, EnumFlags] MatFlags0x12_U8 unk_0x12; // 0, 1, or 2
+    [SerializeField, EnumFlags] MatVertexRenderFlag_U8 vertexRenderFlags;
+    [SerializeField, EnumFlags] MatFlags0x14_U16 unk_0x14; // is 0xFF00 if (unk_0x12) is 1 or 2, and not when 3. // 2 bytes one is null?
+    [SerializeField] /********/ ushort tex0Index; //////////////////////////
+    [SerializeField] /********/ ushort tex1Index; // Can be nulled 0xFFFF //
+    [SerializeField] /********/ ushort tex2Index; //////////////////////////
+    [SerializeField, EnumFlags] GMA_GXAttrFlagU32 vertexDescriptorFlags; // GC Manual: Vertex and primitive data
     // 0x20
-    [SerializeField] private byte[] transformMatrixSpecidicIndices; // GxUtils: Transformation Matrix Specific Indexes Object 1 (8 separate bytes)
-    [SerializeField] private uint matDisplayListSize; // Section 1 length, 32 byte aligned
-    [SerializeField] private uint tlMatDisplayListSize; // Section 2 length, 32 byte aligned
+    [SerializeField] /********/ byte[] transformMatrixSpecidicIndices; // GxUtils: Transformation Matrix Specific Indexes Object 1 (8 separate bytes)
+    [SerializeField] /********/ uint matDisplayListSize; // Section 1 length, 32 byte aligned
+    [SerializeField] /********/ uint tlMatDisplayListSize; // Section 2 length, 32 byte aligned
     // 0x30
-    [SerializeField] private Vector3 uvwCoordinates;
-    [SerializeField] private uint unk_0x3C;
+    [SerializeField] /********/ Vector3 uvwCoordinates;
+    [SerializeField] /********/ uint unk_0x3C;
     // 0x40
-    [SerializeField] private uint unk_0x40;
-    [SerializeField] private uint unk_0x44;
-    [SerializeField] private uint unk_0x48;
-    [SerializeField] private uint unk_0x4C;
+    [SerializeField] /********/ uint unk_0x40;
+    [SerializeField] /********/ uint unk_0x44;
+    [SerializeField] /********/ uint unk_0x48;
+    [SerializeField] /********/ uint unk_0x4C;
     // 0x50
-    [SerializeField] private uint unk_0x50;
-    [SerializeField] private uint unk_0x54;
-    [SerializeField] private uint unk_0x58;
-    [SerializeField] private byte[] fifoPadding;
+    [SerializeField] /********/ uint unk_0x50;
+    [SerializeField] /********/ uint unk_0x54;
+    [SerializeField] /********/ uint unk_0x58;
+    [SerializeField] /********/ byte[] fifoPadding;
     // 0x60
-    [SerializeField] private GxDisplayListGroup matDisplayList;
+    [SerializeField] GxDisplayListGroup matDisplayList;
 
     // 0x00
-    public uint Unk_Flags_0X00 => unk_flags_0x00;
+    public MatFlags0x00_U32 Unk_Flags_0x00 => unk_flags_0x00;
     public uint Unk_0x04 => unk_0x04; // color RGBA 32? B2B2B2FF x2094, 
     public uint Unk_0x08 => unk_0x08; // color RGBA 32? 7F7F7FFF x2544,
     public uint Unk_0x0C => unk_0x0C; // color RGBA 32? FFFFFFFF x1120,
     // 0x10
-    public byte Unk_0x10 => unk_0x10; // 0x2A x1497, 
-    public byte Unk_Count => unk_Count;
-    public byte Unk_0x12 => unk_0x12;
-    public GMA_VertexRenderFlagU8 Vertexrenderflags => vertexRenderFlags;
-    public ushort Unk_0X14 => unk_0x14; // 0xFF00 x3485
+    public MatFlags0x10_U8 Unk_0x10 => unk_0x10; // 0x2A x1497, 
+    public MatFlags0x11_U8 Unk_Count => unk_0x11;
+    public MatFlags0x12_U8 Unk_0x12 => unk_0x12;
+    public MatVertexRenderFlag_U8 Vertexrenderflags => vertexRenderFlags;
+    public MatFlags0x14_U16 Unk_0X14 => unk_0x14; // 0xFF00 x3485
     public ushort Tex0Index => tex0Index;
     public ushort Tex1Index => tex1Index;
     public ushort Tex2Index => tex2Index;
     public GMA_GXAttrFlagU32 Vertexdescriptorflags => vertexDescriptorFlags;
     // 0x20
-    public byte[] Transformmatrixspecidicindices => transformMatrixSpecidicIndices;
+    public byte[] TransformMatrixSpecificIndices => transformMatrixSpecidicIndices;
     public uint Matdisplaylistsize => matDisplayListSize;
     public uint Tlmatdisplaylistsize => tlMatDisplayListSize;
     // 0x30
@@ -690,7 +871,7 @@ public class Material : IBinarySerializable, IBinaryAddressable, IFile
             $"unk_0x0C: {unk_0x0C}\n" +
             $"===0x10===\n" +
             $"unk_0x10: {unk_0x10}\n" +
-            $"unk_Count: {unk_Count}\n" +
+            $"unk_Count: {unk_0x11}\n" +
             $"unk_0x12: {unk_0x12}\n" +
             $"vertexRenderFlags: {vertexRenderFlags}\n" +
             $"unk_0x14: {unk_0x14}\n" +
@@ -719,7 +900,7 @@ public class Material : IBinarySerializable, IBinaryAddressable, IFile
         reader.ReadX(ref unk_0x0C);
         // 0x10
         reader.ReadX(ref unk_0x10);
-        reader.ReadX(ref unk_Count);
+        reader.ReadX(ref unk_0x11);
         reader.ReadX(ref unk_0x12);
         reader.ReadX(ref vertexRenderFlags);
         reader.ReadX(ref unk_0x14);

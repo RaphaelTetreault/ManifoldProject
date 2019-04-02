@@ -76,6 +76,7 @@ public abstract class ImportSobjs<T> : ImportSobj
                     }
 
                     var unityPath = UnityPathUtility.ToUnityFolderPath(dest, UnityPathUtility.UnityFolder.Assets);
+                    unityPath = UnityPathUtility.EnforceUnitySeparators(unityPath);
                     var fileName = Path.GetFileName(importFile);
 
                     try
@@ -84,10 +85,10 @@ public abstract class ImportSobjs<T> : ImportSobj
                         sobj.FileName = fileName;
 
                         // Progress bar update
-                        var filePath = AssetDatabase.GetAssetPath(sobj);
+                        //var filePath = AssetDatabase.GetAssetPath(sobj);
                         var currentIndexStr = (count + 1).ToString().PadLeft(total.ToString().Length);
                         var title = $"Importing {TypeName} ({currentIndexStr}/{total})";
-                        var info = $"{unityPath}{fileName}";
+                        var info = $"{unityPath}/{fileName}";
                         var progress = count / (float)total;
                         EditorUtility.DisplayProgressBar(title, info, progress);
 

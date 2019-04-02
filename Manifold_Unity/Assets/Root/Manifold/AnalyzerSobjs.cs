@@ -83,31 +83,32 @@ public abstract class AnalyzerSobj<T> : AnalyzerSobj
 {
     [Header("Analyzer Settings")]
     [SerializeField]
-    [BrowseFolderField]
+    protected bool loadAllOfType = false;
+    [SerializeField, BrowseFolderField]
     protected string destinationDirectory;
     [SerializeField]
     protected bool preserveFolderStructure = true;
     [SerializeField]
     protected T[] analysisSobjs;
 
-    public void AnalyzeIndividual(Action<T> AnalyzeSobj)
-    {
-        var title = $"Analyzing {analysisSobjs.Length} {TypeName}";
+    //public void AnalyzeIndividual(Action<T> AnalyzeSobj)
+    //{
+    //    var title = $"Analyzing {analysisSobjs.Length} {TypeName}";
 
-        var count = 0;
-        foreach (var sobj in analysisSobjs)
-        {
-            if (sobj is null)
-                continue;
+    //    var count = 0;
+    //    foreach (var sobj in analysisSobjs)
+    //    {
+    //        if (sobj is null)
+    //            continue;
 
-            CheckFolderHierarchy(sobj);
-            DisplayProgressBar(title, count, analysisSobjs);
-            AnalyzeSobj(sobj);
+    //        CheckFolderHierarchy(sobj);
+    //        DisplayProgressBar(title, count, analysisSobjs);
+    //        AnalyzeSobj(sobj);
 
-            count++;
-        }
-        EditorUtility.ClearProgressBar();
-    }
+    //        count++;
+    //    }
+    //    EditorUtility.ClearProgressBar();
+    //}
 
     //public void WriteAnalysis(T sobj, string fileName, Action<T, StreamWriter> writeAnalysis)
     //{
@@ -131,20 +132,20 @@ public abstract class AnalyzerSobj<T> : AnalyzerSobj
     //    }
     //}
 
-    public void DisplayProgressBar(string title, int index, T[] sobjs)
-    {
-        var sobj = sobjs[index];
-        var total = sobjs.Length;
+    //public void DisplayProgressBar(string title, int index, T[] sobjs)
+    //{
+    //    var sobj = sobjs[index];
+    //    var total = sobjs.Length;
 
-        // Get file without .asset
-        var fileName = Path.GetFileNameWithoutExtension(sobj.FileName);
+    //    // Get file without .asset
+    //    var fileName = Path.GetFileNameWithoutExtension(sobj.FileName);
 
-        // Progress bar update
-        var progress = index / (float)total;
-        var currentIndexStr = (index + 1).ToString().PadLeft(total.ToString().Length);
-        var info = $"({currentIndexStr}/{total}) {fileName}";
-        EditorUtility.DisplayProgressBar(title, info, progress);
-    }
+    //    // Progress bar update
+    //    var progress = index / (float)total;
+    //    var currentIndexStr = (index + 1).ToString().PadLeft(total.ToString().Length);
+    //    var info = $"({currentIndexStr}/{total}) {fileName}";
+    //    EditorUtility.DisplayProgressBar(title, info, progress);
+    //}
 
     public void CheckFolderHierarchy(T sobj)
     {
@@ -165,4 +166,18 @@ public abstract class AnalyzerSobj<T> : AnalyzerSobj
         }
     }
 
+    public T[] LoadAllOfType()
+    {
+        var assetGUIDs = AssetDatabase.FindAssets($"t:{typeof(T).Name}");
+        var assetCount = assetGUIDs.Length;
+        var assets = new T[assetCount];
+        for (int i = 0; i < assetCount; i++)
+        {
+            var assetPath = AssetDatabase.GUIDToAssetPath(assetGUIDs[i]);
+            var asset = AssetDatabase.LoadAssetAtPath<T>(assetPath);
+            assets[i] = asset;
+        }
+
+        return assets;
+    }
 }
