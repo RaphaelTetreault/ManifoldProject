@@ -75,7 +75,6 @@ public class GMAAnalyzer : AnalyzerSobj<GMASobj>
         var unkFlags0x02 = new int[size];
         var unkFlags0x03 = new int[size];
         var unkFlags0x0C = new int[size];
-        var unkFlags0x0D = new int[size];
         var unkFlags0x10 = new int[size];
 
         foreach (var sobj in analysisSobjs)
@@ -92,7 +91,7 @@ public class GMAAnalyzer : AnalyzerSobj<GMASobj>
                         var isFlagEnabled = ((int)tex.Unk_0x00 >> i) & 1;
                         unkFlags0x00[i] += isFlagEnabled;
 
-                        isFlagEnabled = ((int)tex.Unk_0x02 >> i) & 1;
+                        isFlagEnabled = ((int)tex.MipmapSettings >> i) & 1;
                         unkFlags0x02[i] += isFlagEnabled;
 
                         isFlagEnabled = ((int)tex.Wrapflags >> i) & 1;
@@ -100,9 +99,6 @@ public class GMAAnalyzer : AnalyzerSobj<GMASobj>
 
                         isFlagEnabled = ((int)tex.Unk_0x0C >> i) & 1;
                         unkFlags0x0C[i] += isFlagEnabled;
-
-                        isFlagEnabled = ((int)tex.IsSwappableTexture >> i) & 1;
-                        unkFlags0x0D[i] += isFlagEnabled;
 
                         isFlagEnabled = ((int)tex.Unk_0x10 >> i) & 1;
                         unkFlags0x10[i] += isFlagEnabled;
@@ -136,11 +132,6 @@ public class GMAAnalyzer : AnalyzerSobj<GMASobj>
         writer.PushCol("UnkFlags0x0C");
         for (int i = 0; i < unkFlags0x0C.Length; i++)
             writer.PushCol(unkFlags0x0C[i]);
-        writer.PushRow();
-
-        writer.PushCol("UnkFlags0x0D");
-        for (int i = 0; i < unkFlags0x0D.Length; i++)
-            writer.PushCol(unkFlags0x0D[i]);
         writer.PushRow();
 
         writer.PushCol("UnkFlags0x10");
@@ -209,8 +200,8 @@ public class GMAAnalyzer : AnalyzerSobj<GMASobj>
                 writer.PushCol(gcmf.Origin);
                 writer.PushCol(gcmf.Radius);
                 writer.PushCol(gcmf.TextureCount);
-                writer.PushCol(gcmf.Materialcount);
-                writer.PushCol(gcmf.Translucidmaterialcount);
+                writer.PushCol(gcmf.MaterialCount);
+                writer.PushCol(gcmf.TranslucidMaterialCount);
                 writer.PushCol(gcmf.Transformmatrixcount);
                 writer.PushCol(gcmf.Zero_0x1F);
                 writer.PushCol(gcmf.Indicesrelptr);
@@ -234,27 +225,30 @@ public class GMAAnalyzer : AnalyzerSobj<GMASobj>
         if (writer.BaseStream.Length <= 0)
         {
             writer.PushCol("File Name");
+            writer.PushCol("Model Index");
             writer.PushCol("Model Name");
             writer.PushCol("Texture Index");
             writer.PushCol("Address");
-            writer.PushCol("Unkflag");
-            writer.PushCol("Uvflags");
+            writer.PushCol("Unk_0x00");
+            writer.PushCol("Mipmap");
             writer.PushCol("Wrapflags");
             writer.PushCol("Tpltextureid");
-            writer.PushCol("Unk_0X06");
+            writer.PushCol("Unk_0x06");
             writer.PushCol("Anisotropiclevel");
-            writer.PushCol("Unk_0X08");
+            writer.PushCol("Unk_0x08");
             writer.PushCol("Unk_Flags_0X0C");
-            writer.PushCol("Unk_0X0D");
+            writer.PushCol("Unk_0x0D");
             writer.PushCol("Index");
-            writer.PushCol("Unk_0X10");
+            writer.PushCol("Unk_0x10");
             writer.PushRow();
         }
 
         foreach (var sobj in analysisSobjs)
         {
             // Write contents
-            var isFirstEntry = true;
+            var modelIndex = 0;
+            var modelIndexMax = sobj.value.GcmfCount;
+            var isFirstGCMF = true;
             foreach (var gcmf in sobj.Value.GCMF)
             {
                 if (gcmf == null)
@@ -263,29 +257,35 @@ public class GMAAnalyzer : AnalyzerSobj<GMASobj>
                     continue;
                 }
 
-                var index = 0;
-                var maxIndex = gcmf.TextureCount;
+                var texIndex = 1; // debugger is not zero-indexed
+                var texIndexMax = gcmf.TextureCount;
                 var isFirstTex = true;
                 foreach (var tex in gcmf.Texture)
                 {
-                    if (isFirstEntry || printAllNames)
+                    if (isFirstGCMF || printAllNames)
                     {
                         writer.PushCol(sobj.FileName);
-                        isFirstEntry = false;
+                        isFirstGCMF = false;
                     }
                     else writer.PushCol();
+
 
                     if (isFirstTex || printAllNames)
                     {
+                        writer.PushCol($"[{modelIndex}/{modelIndexMax}]");
                         writer.PushCol(gcmf.ModelName);
                         isFirstTex = false;
                     }
-                    else writer.PushCol();
+                    else
+                    {
+                        writer.PushCol();
+                        writer.PushCol();
+                    }
 
-                    writer.PushCol($"[{index}/{maxIndex}]");
+                    writer.PushCol($"[{texIndex}/{texIndexMax}]");
                     writer.PushCol("0x" + tex.StartAddress.ToString("X8"));
                     writer.PushCol(tex.Unk_0x00);
-                    writer.PushCol(tex.Unk_0x02);
+                    writer.PushCol(tex.MipmapSettings);
                     writer.PushCol(tex.Wrapflags);
                     writer.PushCol(tex.Tpltextureid);
                     writer.PushCol(tex.Unk_0x06);
@@ -297,8 +297,9 @@ public class GMAAnalyzer : AnalyzerSobj<GMASobj>
                     writer.PushCol(tex.Unk_0x10);
                     writer.PushRow();
 
-                    index++;
+                    texIndex++;
                 }
+                modelIndex++;
             }
         }
 
@@ -312,8 +313,8 @@ public class GMAAnalyzer : AnalyzerSobj<GMASobj>
         if (writer.BaseStream.Length <= 0)
         {
             writer.PushCol("File Name");
+            writer.PushCol("Model Index");
             writer.PushCol("Model Name");
-            writer.PushCol("Material Index");
             writer.PushCol("Address");
             writer.PushCol("Unk_0x00");
             writer.PushCol("Unk_0x04");
@@ -351,6 +352,10 @@ public class GMAAnalyzer : AnalyzerSobj<GMASobj>
             var isFirstEntry = true;
             foreach (var gcmf in sobj.Value.GCMF)
             {
+                // skip null models
+                if (string.IsNullOrEmpty(gcmf.ModelName))
+                    continue;
+
                 if (isFirstEntry || printAllNames)
                 {
                     writer.PushCol(sobj.FileName);
@@ -358,17 +363,8 @@ public class GMAAnalyzer : AnalyzerSobj<GMASobj>
                 }
                 else writer.PushCol();
 
-                if (string.IsNullOrEmpty(gcmf.ModelName))
-                {
-                    writer.PushRow(NullStr);
-                    continue;
-                }
-                else
-                {
-                    writer.PushCol(gcmf.ModelName);
-                }
-
                 writer.PushCol($"[{index}/{maxIndex}]");
+                writer.PushCol(gcmf.ModelName);
                 writer.PushCol("0x" + gcmf.Material.StartAddress.ToString("X8"));
                 writer.PushCol(gcmf.Material.Unk_Flags_0x00);
                 writer.PushCol(gcmf.Material.Unk_0x04);
@@ -386,7 +382,7 @@ public class GMAAnalyzer : AnalyzerSobj<GMASobj>
                 //writer.PushCol(gcmf.Material.TransformMatrixSpecificIndices);
                 writer.PushCol(gcmf.Material.Matdisplaylistsize);
                 writer.PushCol(gcmf.Material.Tlmatdisplaylistsize);
-                writer.PushCol(gcmf.Material.Uvwcoordinates);
+                writer.PushCol(gcmf.Material.Unk_0x30);
                 writer.PushCol(gcmf.Material.Unk_0x3C);
                 writer.PushCol(gcmf.Material.Unk_0x40);
                 writer.PushCol(gcmf.Material.Unk_0x44);

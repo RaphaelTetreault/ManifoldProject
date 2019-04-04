@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using UnityEngine.Assertions;
+using UnityEngine.Serialization;
 
 // BobJrSr
 // https://github.com/bobjrsenior/GxUtils/blob/master/GxUtils/LibGxFormat/Gma/GMAFormat.xml
@@ -54,6 +55,7 @@ namespace GameCube.Games
         public static readonly GxVertexAttributeTable VAT = new GxVertexAttributeTable(vaf0, vaf1);
     }
 }
+
 
 #region DEFINITIONS
 
@@ -161,25 +163,38 @@ public enum MatFlags0x14_U16 : ushort
 
 #region TEXTURE ENUMS
 
+/// <summary>
+/// Notes:
+/// Combinations: 4&5 (x1986), 1&3 (x7), 1&4 (x1)
+/// Flags used: 1, 3, 4, 5, 6
+/// </summary>
+
 [Flags]
 public enum TexFlags0x00_U16 : ushort
 {
-    UNK_FLAG_0 = 1 << 0,
-    UNK_FLAG_1 = 1 << 1,
-    UNK_FLAG_2 = 1 << 2,
+    //UNK_FLAG_0 = 1 << 0, // unused
+    /// <summary>
+    /// Based on st24 models, uv scroll. Perhaps x/y depends on another flag?
+    /// </summary>
+    ENABLE_UV_SCROLL = 1 << 1,
+    //UNK_FLAG_2 = 1 << 2, // unused
+    /// <summary>
+    /// 7 occurences total. (st21,lz.gma, [75,76,77/130] guide_light*, [1/6]
+    /// </summary>
     UNK_FLAG_3 = 1 << 3,
+    /// <summary>
+    /// Appears to be used whenever tex is for bg reflections
+    /// </summary>
     UNK_FLAG_4 = 1 << 4,
+    /// <summary>
+    /// ..?
+    /// </summary>
     UNK_FLAG_5 = 1 << 5,
+    /// <summary>
+    /// Appears to be used whenever tex is for bg reflections
+    /// </summary>
     UNK_FLAG_6 = 1 << 6,
-    UNK_FLAG_7 = 1 << 7,
-    UNK_FLAG_8 = 1 << 8,
-    UNK_FLAG_9 = 1 << 9,
-    UNK_FLAG_10 = 1 << 10,
-    UNK_FLAG_11 = 1 << 11,
-    UNK_FLAG_12 = 1 << 12,
-    UNK_FLAG_13 = 1 << 13,
-    UNK_FLAG_14 = 1 << 14,
-    UNK_FLAG_15 = 1 << 15,
+    //UNK_FLAG_7 = 1 << 7, // unused
 }
 
 [Flags]
@@ -195,16 +210,45 @@ public enum TexWrapFlags_U8 : byte
     UNK_FLAG_7 = 1 << 7,
 }
 
+// if 0&1, enable 2
+/// <summary>
+/// MIPMAP Settings
+/// </summary>
 [Flags]
-public enum TexFlags0x02_U8 : byte
+public enum TexMipmapSettings_U8 : byte
 {
-    UNK_FLAG_0 = 1 << 0,
-    UNK_FLAG_1 = 1 << 1,
-    UNK_FLAG_2 = 1 << 2,
-    UNK_FLAG_3 = 1 << 3,
+    /// <summary>
+    /// 2019/04/03 VERIFIED: Enable (large preview) mipmaps
+    /// </summary>
+    ENABLE_MIPMAP = 1 << 0,
+    /// <summary>
+    /// 2019/04/03 THEORY: when only flag, "use custom mip-map"
+    /// See: bg_san_s [39/41] tex [3/8] - RIVER01
+    /// See: bg_big [118/120] tex [1/1] - OCE_OCEAN_C14_B_ltmp2
+    /// See: any recovery pad
+    /// </summary>
+    UNK_FLAG_1 = 1 << 1, // Working together?
+    UNK_FLAG_2 = 1 << 2, // Working together?
+    /// <summary>
+    /// 2019/04/03 VERIFIED: Enable Mipmap NEAR
+    /// </summary>
+    ENABLE_NEAR = 1 << 3,
+    /// <summary>
+    /// Height map? Blend? (they are greyscale)
+    /// Low occurences: 188 for tracks and st2 boulders
+    /// </summary>
     UNK_FLAG_4 = 1 << 4,
+    /// <summary>
+    /// Used as alpha mask? (likely?) Perhaps some mip preservation stuff.
+    /// </summary>
     UNK_FLAG_5 = 1 << 5,
-    UNK_FLAG_6 = 1 << 6,
+    /// <summary>
+    /// Total occurences = 3. Only MCSO, on a single geometry set. Perhaps error from devs?
+    /// </summary>
+    UNK_FLAG_6 = 1 << 6, // only on 3?
+    /// <summary>
+    /// On many vehicles
+    /// </summary>
     UNK_FLAG_7 = 1 << 7,
 }
 
@@ -253,7 +297,7 @@ public enum TexFlags0x10_U32 : uint
 /// Code from https://github.com/bobjrsenior/GxUtils/blob/master/GxUtils/LibGxFormat/Gma/Gcmf.cs
 /// </summary>
 [Flags]
-public enum GcmfAttributes : UInt32
+public enum GcmfAttributes_U32 : UInt32
 {
     /// <summary>
     /// 16 bit flag (vertices are stored as uint16 format instead of float)
@@ -264,7 +308,7 @@ public enum GcmfAttributes : UInt32
     /// </summary>
     StitchingModel = 1 << 2, //0x04,
     /// <summary>
-    /// Called "Skin Model" in the debug menu. Has associated transform matrices and indexed vartices.
+    /// Called "Skin Model" in the debug menu. Has associated transform matrices and indexed vertices.
     /// </summary>
     SkinModel = 1 << 3, //0x08,
     /// <summary>
@@ -273,14 +317,11 @@ public enum GcmfAttributes : UInt32
     EffectiveModel = 1 << 4 // 0x10,
 }
 
-
 /// <summary>
 /// Flag form of Gx.GXAttr
-/// 
-/// Is it off-by-one-shift or does GX used a shifted set?
 /// </summary>
 [Flags]
-public enum GMA_GXAttrFlagU32 : UInt32
+public enum GXAttrFlag_U32 : UInt32
 {
     /// <summary>
     /// position/normal matrix index
@@ -404,7 +445,7 @@ public enum GMA_GXAttrFlagU32 : UInt32
 /// <summary>
 /// MEANT AS TEMP until you solve this enum compression thing
 /// </summary>
-public enum GMA_GXAnisotropyU8 : byte
+public enum GXAnisotropy_U8 : byte
 {
     GX_ANISO_1,
     GX_ANISO_2,
@@ -418,12 +459,18 @@ public class GMA : IBinarySerializable, IFile
     #region MEMBERS
 
     private const int kGmaHeaderSize = 8;
+    public const uint kNullPtr = 0xFFFFFFFF; // or int -1
 
-    [SerializeField] private string fileName;
-    [SerializeField] private int gcmfCount;
-    [SerializeField] private uint headerEndPosition;
+    [Header("Debugging")]
+    [SerializeField]
+    private string fileName;
+    [SerializeField, Hex(format: "X8")]
+    private int gcmfCount;
+    [SerializeField, Hex(format: "X8")]
+    private uint headerEndPosition;
 
-    public const uint kNullPtr = 0xFFFFFFFF;
+
+    [Header("Contents")]
     [SerializeField] private GCMF[] gcmf;
 
     #endregion
@@ -467,19 +514,23 @@ public class GMA : IBinarySerializable, IFile
 
             var endPosition = reader.BaseStream.Position;
 
+            // Get name of model
             var modelName = string.Empty;
             var modelNamePtr = nameRelativePtr + GcmfNamePtr;
             reader.BaseStream.Seek(modelNamePtr, SeekOrigin.Begin);
             reader.ReadXCString(ref modelName, Encoding.ASCII);
 
+            // Init GCMF with file name and model name for debugging
             gcmf[i] = new GCMF();
             gcmf[i].ModelName = modelName;
             gcmf[i].FileName = FileName;
 
+            // Load GCMF
             var gcmfPtr = gcmfRelativePtr + HeaderEndPosition;
             reader.BaseStream.Seek(gcmfPtr, SeekOrigin.Begin);
             reader.ReadX(ref gcmf[i], false);
 
+            // reset stream for next entry
             reader.BaseStream.Seek(endPosition, SeekOrigin.Begin);
         }
     }
@@ -505,7 +556,6 @@ public class GCMF : IBinarySerializable, IBinaryAddressable, IFile
     [SerializeField] string modelName;
     [SerializeField] string fileName;
 
-    [Header("Content")]
     /// <summary>
     /// 2019/03/31 VERIFIED: constant GCMF in ASCII
     /// </summary>
@@ -513,72 +563,107 @@ public class GCMF : IBinarySerializable, IBinaryAddressable, IFile
     /// <summary>
     /// 2019/03/31 VERIFIED VALUES: 0, 1, 4, 5, 8, 16
     /// </summary>
-    [SerializeField] private GcmfAttributes attributes;
+    [Header("GCMF")]
+    [SerializeField, HexEnumFlags("04 -", "X2")]
+    private GcmfAttributes_U32 attributes;
     /// <summary>
     /// 2019/03/31 : origin point
     /// </summary>
-    [SerializeField] private Vector3 origin;
+    [SerializeField, LabelPrefix("08 -")]
+    private Vector3 origin;
     /// <summary>
     /// 2019/03/31 : bounding sphere radius
     /// </summary>
-    [SerializeField] private float radius;
+    [SerializeField, LabelPrefix("14 -")]
+    private float radius;
     /// <summary>
     /// 2019/03/31 : number of texture references
     /// </summary>
-    [SerializeField] private ushort textureCount;
+    [SerializeField, LabelPrefix("18 -")]
+    private ushort textureCount;
     /// <summary>
     /// 2019/03/31 : number (nb) of materials
     /// </summary>
-    [SerializeField] private ushort materialCount;
+    [SerializeField, LabelPrefix("1A -")]
+    private ushort materialCount;
     /// <summary>
     /// 2019/03/31 : number (nb) of translucid (tl) materials
     /// </summary>
-    [SerializeField] private ushort translucidMaterialCount;
+    [SerializeField, LabelPrefix("1C -")]
+    private ushort translucidMaterialCount;
     /// <summary>
     /// 2019/03/31 : number of matrix entries
     /// </summary>
-    [SerializeField] private byte transformMatrixCount;
+    [SerializeField, LabelPrefix("1E -")]
+    private byte transformMatrixCount;
     /// <summary>
     /// 2019/03/31 VERIFIED VALUES: only value is 0
     /// </summary>
-    [SerializeField] private byte zero_0x1F;
+    [SerializeField, LabelPrefix("1F -")]
+    private byte zero_0x1F;
     /// <summary>
     /// 
     /// </summary>
-    [SerializeField] private uint indicesRelPtr; // GxUtils: Header Size
+    [SerializeField, LabelPrefix("20 -")]
+    private uint indicesRelPtr; // GxUtils: Header Size
     /// <summary>
     /// 2019/03/31 VERIFIED VALUES: only 0 
     /// </summary>
-    [SerializeField] private uint zero_0x24;
+    [SerializeField, LabelPrefix("24 -")]
+    private uint zero_0x24;
     /// <summary>
     /// 
     /// </summary>
-    [SerializeField] private byte[] transformMatrixDefaultIndices;
+    [SerializeField, LabelPrefix("28 -")]
+    private byte[] transformMatrixDefaultIndices;
     /// <summary>
     /// 2019/03/31 VERIFIED VALUES: GameCube GX FIFO Padding to 32 bytes
     /// </summary>
     private byte[] fifoPadding;
 
     [SerializeField] private Texture[] texture;
-    [SerializeField] private UnknownMaterialStructure? unkMatStruct;
     [SerializeField] private TransformMatrix3x4[] transformMatrices;
     [SerializeField] private Material material;
-    //[SerializeField] private Mesh mesh;
+    [SerializeField] private Mesh mesh;
 
-    public GcmfAttributes Attributes => attributes;
-    public Vector3 Origin => origin;
-    public float Radius => radius;
-    public ushort TextureCount => textureCount;
-    public ushort Materialcount => materialCount;
-    public ushort Translucidmaterialcount => translucidMaterialCount;
-    public byte Transformmatrixcount => transformMatrixCount;
-    public byte Zero_0x1F => zero_0x1F;
-    public uint Indicesrelptr => indicesRelPtr;
-    public uint Zero_0x24 => zero_0x24;
-    public byte[] Transformmatrixdefaultindices => transformMatrixDefaultIndices;
+    #region PROPERTIES
+
+    public GcmfAttributes_U32 Attributes
+        => attributes;
+
+    public Vector3 Origin
+        => origin;
+
+    public float Radius
+        => radius;
+
+    public ushort TextureCount
+        => textureCount;
+
+    public ushort MaterialCount
+        => materialCount;
+
+    public ushort TranslucidMaterialCount
+        => translucidMaterialCount;
+
+    public byte Transformmatrixcount
+        => transformMatrixCount;
+
+    public byte Zero_0x1F
+        => zero_0x1F;
+
+    public uint Indicesrelptr
+        => indicesRelPtr;
+
+    public uint Zero_0x24
+        => zero_0x24;
+
+    public byte[] Transformmatrixdefaultindices
+        => transformMatrixDefaultIndices;
+
+    #endregion
 
     public Texture[] Texture => texture;
-    public UnknownMaterialStructure? UnknownMaterialStructure => unkMatStruct;
     public TransformMatrix3x4[] TransformMatrix => transformMatrices;
     public Material Material => material;
 
@@ -638,6 +723,9 @@ public class GCMF : IBinarySerializable, IBinaryAddressable, IFile
         }
 
         // TODO DisplayLists
+        var vat = GameCube.Games.FZeroGX.VAT;
+        mesh = new Mesh(vat, this);
+        reader.ReadX(ref mesh, false);
     }
 
     public void Serialize(BinaryWriter writer)
@@ -646,58 +734,132 @@ public class GCMF : IBinarySerializable, IBinaryAddressable, IFile
     }
 }
 
-
 [Serializable]
 public class Texture : IBinarySerializable, IBinaryAddressable
 {
     public const int kFifoPaddingSize = 12;
 
     [Header("Debugging")]
-    [SerializeField] long startAddress;
-    [SerializeField] long endAddress;
+    [SerializeField, Hex] long startAddress;
+    [SerializeField, Hex] long endAddress;
 
-    [Header("Content")]
-    [SerializeField, EnumFlags] TexFlags0x00_U16 unk_0x00;
-    [SerializeField, EnumFlags] TexFlags0x02_U8 unk_0x02;
-    [SerializeField, EnumFlags] TexWrapFlags_U8 wrapFlags;
-    [SerializeField] ushort tplTextureID;
-    [SerializeField, EnumFlags] TexFlags0x06_U8 unk_0x06;
-    [SerializeField] GMA_GXAnisotropyU8 anisotropicLevel;
+    #region MEMBERS
+
+    /// <summary>
+    /// 2019/04/03: Appears to be shader scrolling flags
+    /// A good example is HOROGRAM
+    /// </summary>
+    [Header("Texture")]
+    [SerializeField, HexEnumFlags("00 -", "X2")]
+    TexFlags0x00_U16 unk_0x00;
+
+    /// <summary>
+    /// Flags for mipmap generation(?)
+    /// </summary>
+    [SerializeField, HexEnumFlags("02 -", "X2")]
+    TexMipmapSettings_U8 mipmapSettings;
+
+    /// <summary>
+    /// 
+    /// </summary>
+    [SerializeField, HexEnumFlags("03 -", "X2")]
+    TexWrapFlags_U8 wrapFlags;
+
+    /// <summary>
+    /// 
+    /// </summary>
+    [SerializeField, LabelPrefix("04 -")]
+    ushort tplTextureIndex;
+
+    /// <summary>
+    /// 
+    /// </summary>
+    [SerializeField, HexEnumFlags("06 -", "X2")]
+    TexFlags0x06_U8 unk_0x06;
+
+    /// <summary>
+    /// 
+    /// </summary>
+    [SerializeField, HexEnumFlags("07 -", "X2")]
+    GXAnisotropy_U8 anisotropicLevel;
+
     /// <summary>
     /// 2019/04/01 VERIFIED: only 0
     /// </summary>
-    [SerializeField] uint zero_0x08;
+    [SerializeField, LabelPrefix("08 -")]
+    uint zero_0x08;
+
     /// <summary>
     /// 019/04/01 VERIFIED: All values from 0-255. May NOT be flags...
     /// </summary>
-    [SerializeField, EnumFlags] TexFlags0x0C_U8 unk_0x0C;
+    [SerializeField, HexEnumFlags("0C -", "X2")]
+    TexFlags0x0C_U8 unk_0x0C;
+
     /// <summary>
     /// 2019/04/03 VERIFIED: bool on models (13 total) that use swappable textures such as
     /// "Lap Gate" which indicates laps remaining and countdown display (3,2,1,GO!).
     /// </summary>
-    [SerializeField, EnumFlags] bool isSwappableTexture;
+    [SerializeField, LabelPrefix("0D -")]
+    bool isSwappableTexture;
+
     /// <summary>
     /// Texture index
     /// </summary>
-    [SerializeField] ushort index;
+    [SerializeField, LabelPrefix("0E -")]
+    ushort index;
+
     /// <summary>
     /// 2019/04/01 VERIFIED: all unique values: 0, 1, 48, 49, 256, 304, 305, 512, 560, 561, 816, 818
     /// </summary>
-    [SerializeField, EnumFlags] TexFlags0x10_U32 unk_0x10;
-    [SerializeField] byte[] fifoPadding;
+    [SerializeField, HexEnumFlags("10 -", "X2")]
+    TexFlags0x10_U32 unk_0x10;
 
-    public TexFlags0x00_U16 Unk_0x00 => unk_0x00;
-    public TexFlags0x02_U8 Unk_0x02 => unk_0x02;
-    public TexWrapFlags_U8 Wrapflags => wrapFlags;
-    public ushort Tpltextureid => tplTextureID;
-    public TexFlags0x06_U8 Unk_0x06 => unk_0x06;
-    public GMA_GXAnisotropyU8 Anisotropiclevel => anisotropicLevel;
-    public uint Zero_0x08 => zero_0x08;
-    public TexFlags0x0C_U8 Unk_0x0C => unk_0x0C;
-    public bool IsSwappableTexture => isSwappableTexture;
-    public ushort Index => index;
-    public TexFlags0x10_U32 Unk_0x10 => unk_0x10;
-    public byte[] Fifopadding => fifoPadding;
+    /// <summary>
+    /// 
+    /// </summary>
+    byte[] fifoPadding;
+
+    #endregion
+
+    #region PROEPRTIES
+
+    public TexFlags0x00_U16 Unk_0x00
+        => unk_0x00;
+
+    public TexMipmapSettings_U8 MipmapSettings
+        => mipmapSettings;
+
+    public TexWrapFlags_U8 Wrapflags
+        => wrapFlags;
+
+    public ushort Tpltextureid
+        => tplTextureIndex;
+
+    public TexFlags0x06_U8 Unk_0x06
+        => unk_0x06;
+
+    public GXAnisotropy_U8 Anisotropiclevel
+        => anisotropicLevel;
+
+    public uint Zero_0x08
+        => zero_0x08;
+
+    public TexFlags0x0C_U8 Unk_0x0C
+        => unk_0x0C;
+
+    public bool IsSwappableTexture
+        => isSwappableTexture;
+
+    public ushort Index
+        => index;
+
+    public TexFlags0x10_U32 Unk_0x10
+        => unk_0x10;
+
+    public byte[] Fifopadding
+        => fifoPadding;
+
+    #endregion
 
     public long StartAddress
     {
@@ -715,9 +877,9 @@ public class Texture : IBinarySerializable, IBinaryAddressable
         StartAddress = reader.BaseStream.Position;
 
         reader.ReadX(ref unk_0x00);
-        reader.ReadX(ref unk_0x02);
+        reader.ReadX(ref mipmapSettings);
         reader.ReadX(ref wrapFlags);
-        reader.ReadX(ref tplTextureID);
+        reader.ReadX(ref tplTextureIndex);
         reader.ReadX(ref unk_0x06);
         reader.ReadX(ref anisotropicLevel);
         reader.ReadX(ref zero_0x08);
@@ -747,44 +909,93 @@ public class Material : IBinarySerializable, IBinaryAddressable, IFile
     [Header("Debugging")]
     [SerializeField] string modelName;
     [SerializeField] string fileName;
-    [SerializeField] long startAddress;
-    [SerializeField] long endAddress;
+    [SerializeField, Hex] long startAddress;
+    [SerializeField, Hex] long endAddress;
 
-    [Header("Contents")]
-    // 0x00
-    [SerializeField, EnumFlags] MatFlags0x00_U32 unk_flags_0x00;
-    [SerializeField] /********/ uint unk_0x04;
-    [SerializeField] /********/ uint unk_0x08;
-    [SerializeField] /********/ uint unk_0x0C;
-    // 0x10
-    [SerializeField, EnumFlags] MatFlags0x10_U8 unk_0x10;
-    [SerializeField, EnumFlags] MatFlags0x11_U8 unk_0x11; // mostly FF, but can be other things // GxUtils: Used Material Count
-    [SerializeField, EnumFlags] MatFlags0x12_U8 unk_0x12; // 0, 1, or 2
-    [SerializeField, EnumFlags] MatVertexRenderFlag_U8 vertexRenderFlags;
-    [SerializeField, EnumFlags] MatFlags0x14_U16 unk_0x14; // is 0xFF00 if (unk_0x12) is 1 or 2, and not when 3. // 2 bytes one is null?
-    [SerializeField] /********/ ushort tex0Index; //////////////////////////
-    [SerializeField] /********/ ushort tex1Index; // Can be nulled 0xFFFF //
-    [SerializeField] /********/ ushort tex2Index; //////////////////////////
-    [SerializeField, EnumFlags] GMA_GXAttrFlagU32 vertexDescriptorFlags; // GC Manual: Vertex and primitive data
-    // 0x20
-    [SerializeField] /********/ byte[] transformMatrixSpecidicIndices; // GxUtils: Transformation Matrix Specific Indexes Object 1 (8 separate bytes)
-    [SerializeField] /********/ uint matDisplayListSize; // Section 1 length, 32 byte aligned
-    [SerializeField] /********/ uint tlMatDisplayListSize; // Section 2 length, 32 byte aligned
-    // 0x30
-    [SerializeField] /********/ Vector3 uvwCoordinates;
-    [SerializeField] /********/ uint unk_0x3C;
-    // 0x40
-    [SerializeField] /********/ uint unk_0x40;
-    [SerializeField] /********/ uint unk_0x44;
-    [SerializeField] /********/ uint unk_0x48;
-    [SerializeField] /********/ uint unk_0x4C;
-    // 0x50
-    [SerializeField] /********/ uint unk_0x50;
-    [SerializeField] /********/ uint unk_0x54;
-    [SerializeField] /********/ uint unk_0x58;
-    [SerializeField] /********/ byte[] fifoPadding;
-    // 0x60
-    [SerializeField] GxDisplayListGroup matDisplayList;
+    #region MEMBERS
+
+    [Header("Material")]
+    [SerializeField, HexEnumFlags("00 -", "X8")]
+    MatFlags0x00_U32 unk_flags_0x00;
+
+    [SerializeField, Hex("04 -", "X8")]
+    uint unk_0x04;
+
+    [SerializeField, Hex("08 -", "X8")]
+    uint unk_0x08;
+
+    [SerializeField, Hex("0C -", "X8")]
+    uint unk_0x0C;
+
+    [SerializeField, HexEnumFlags("10 -", "X2")]
+    MatFlags0x10_U8 unk_0x10;
+
+    [SerializeField, HexEnumFlags("11 -", "X2")]
+    MatFlags0x11_U8 unk_0x11; // mostly FF, but can be other things // GxUtils: Used Material Count
+
+    [SerializeField, HexEnumFlags("12 -", "X2")]
+    MatFlags0x12_U8 unk_0x12; // 0, 1, or 2
+
+    [SerializeField, HexEnumFlags("13 -", "X2")]
+    MatVertexRenderFlag_U8 vertexRenderFlags;
+
+    [SerializeField, HexEnumFlags("14 -", "X4")]
+    MatFlags0x14_U16 unk_0x14; // is 0xFF00 if (unk_0x12) is 1 or 2, and not when 3. // 2 bytes one is null?
+
+    [SerializeField, LabelPrefix("16 -")]
+    short tex0Index = -1;
+
+    [SerializeField, LabelPrefix("18 -")]
+    short tex1Index = -1;
+
+    [SerializeField, LabelPrefix("1A -")]
+    short tex2Index = -1;
+
+    [SerializeField, HexEnumFlags("1C -", "X8")]
+    GXAttrFlag_U32 vertexDescriptorFlags;
+
+    // TODO: label prefix on top node, not members
+    [SerializeField, LabelPrefix("20 -")]
+    byte[] transformMatrixSpecidicIndices;
+
+    [SerializeField, LabelPrefix("28 -")]
+    uint matDisplayListSize;
+
+    [SerializeField, LabelPrefix("2C -")]
+    uint tlMatDisplayListSize;
+
+    [SerializeField, LabelPrefix("30 -")]
+    Vector3 unk_0x30;
+
+    [SerializeField, LabelPrefix("3C -")]
+    uint unk_0x3C;
+
+    [SerializeField, LabelPrefix("40 -")]
+    uint unk_0x40;
+
+    [SerializeField, LabelPrefix("44 -")]
+    uint unk_0x44;
+
+    [SerializeField, LabelPrefix("48 -")]
+    uint unk_0x48;
+
+    [SerializeField, LabelPrefix("4C -")]
+    uint unk_0x4C;
+
+    [SerializeField, LabelPrefix("50 -")]
+    uint unk_0x50;
+
+    [SerializeField, LabelPrefix("54 -")]
+    uint unk_0x54;
+
+    [SerializeField, LabelPrefix("58 -")]
+    uint unk_0x58;
+
+    byte[] fifoPadding;
+
+    #endregion
+
+    #region PROPERTIES
 
     // 0x00
     public MatFlags0x00_U32 Unk_Flags_0x00 => unk_flags_0x00;
@@ -797,16 +1008,16 @@ public class Material : IBinarySerializable, IBinaryAddressable, IFile
     public MatFlags0x12_U8 Unk_0x12 => unk_0x12;
     public MatVertexRenderFlag_U8 Vertexrenderflags => vertexRenderFlags;
     public MatFlags0x14_U16 Unk_0X14 => unk_0x14; // 0xFF00 x3485
-    public ushort Tex0Index => tex0Index;
-    public ushort Tex1Index => tex1Index;
-    public ushort Tex2Index => tex2Index;
-    public GMA_GXAttrFlagU32 Vertexdescriptorflags => vertexDescriptorFlags;
+    public short Tex0Index => tex0Index;
+    public short Tex1Index => tex1Index;
+    public short Tex2Index => tex2Index;
+    public GXAttrFlag_U32 Vertexdescriptorflags => vertexDescriptorFlags;
     // 0x20
     public byte[] TransformMatrixSpecificIndices => transformMatrixSpecidicIndices;
     public uint Matdisplaylistsize => matDisplayListSize;
     public uint Tlmatdisplaylistsize => tlMatDisplayListSize;
     // 0x30
-    public Vector3 Uvwcoordinates => uvwCoordinates;
+    public Vector3 Unk_0x30 => unk_0x30;
     public uint Unk_0x3C => unk_0x3C;
     // 0x40
     public uint Unk_0x40 => unk_0x40;
@@ -820,6 +1031,7 @@ public class Material : IBinarySerializable, IBinaryAddressable, IFile
     public byte[] Fifopadding => fifoPadding;
     // 0x60
 
+    #endregion
 
     // Metadata
     public string FileName
@@ -841,40 +1053,6 @@ public class Material : IBinarySerializable, IBinaryAddressable, IFile
     {
         get => endAddress;
         set => endAddress = value;
-    }
-
-    // temp, bad debugging
-    public override string ToString()
-    {
-        return
-            $"GMA Material Log:\n" +
-            $"File : {FileName}\n" +
-            $"Model: {ModelName}\n" +
-            $"Start: {StartAddress.ToString("X8")}\n" +
-            $"End  : {EndAddress.ToString("X8")}\n" +
-            $"===0x00===\n" +
-            $"unk_flags_0x00: {unk_flags_0x00}\n" +
-            $"unk_0x04: {unk_0x04}\n" +
-            $"unk_0x08: {unk_0x08}\n" +
-            $"unk_0x0C: {unk_0x0C}\n" +
-            $"===0x10===\n" +
-            $"unk_0x10: {unk_0x10}\n" +
-            $"unk_Count: {unk_0x11}\n" +
-            $"unk_0x12: {unk_0x12}\n" +
-            $"vertexRenderFlags: {vertexRenderFlags}\n" +
-            $"unk_0x14: {unk_0x14}\n" +
-            $"tex0Index: {tex0Index} {tex0Index.ToString("X4")}\n" +
-            $"tex1Index: {tex1Index} {tex1Index.ToString("X4")}\n" +
-            $"tex2Index: {tex2Index} {tex2Index.ToString("X4")}\n" +
-            $"GXAttrFlag: {vertexDescriptorFlags}\n" +
-            $"===0x20===\n" +
-            $"matDisplayListSize: {matDisplayListSize}\n" +
-            $"tlMatDisplayListSize: {tlMatDisplayListSize}\n" +
-            $"===0x30===\n" +
-            $"uvwCoordinates: {uvwCoordinates}\n" +
-            $"unk_0x3C: {unk_0x3C}\n" +
-            $"===0x40===\n" +
-            $"unk_0x40: {unk_0x40}";
     }
 
     public void Deserialize(BinaryReader reader)
@@ -901,7 +1079,7 @@ public class Material : IBinarySerializable, IBinaryAddressable, IFile
         reader.ReadX(ref matDisplayListSize);
         reader.ReadX(ref tlMatDisplayListSize);
         // 0x30
-        reader.ReadX(ref uvwCoordinates);
+        reader.ReadX(ref unk_0x30);
         reader.ReadX(ref unk_0x3C);
         // 0x40+
         reader.ReadX(ref unk_0x40);
@@ -932,10 +1110,10 @@ public class Material : IBinarySerializable, IBinaryAddressable, IFile
 [Serializable]
 public struct TransformMatrix3x4 : IBinarySerializable
 {
-    private Vector3 row0;
-    private Vector3 row1;
-    private Vector3 row2;
-    private Vector3 row3;
+    [SerializeField] Vector3 row0;
+    [SerializeField] Vector3 row1;
+    [SerializeField] Vector3 row2;
+    [SerializeField] Vector3 row3;
 
     public Vector3 Row0
     {
@@ -1046,35 +1224,45 @@ public struct UnknownMaterialStructure : IBinarySerializable
 [Serializable]
 public class Mesh : IBinarySerializable
 {
-    private int materialCount;
-    private int translucidMaterialCount;
+    [Header("Mesh")]
+    [SerializeField] private int materialCount;
+    [SerializeField] private int translucidMaterialCount;
 
-    private GxVertexAttributeFormat vertexFormat;
-    private SubMesh[] matMeshes;
-    private SubMesh[] tlMatMeshes;
+    [SerializeField] private GxVertexAttributeTable vat;
+    [SerializeField] private GxDisplayListGroup[] matMeshes;
+    [SerializeField] private GxDisplayListGroup[] tlMatMeshes;
 
     public Mesh() { }
 
-    public Mesh(GxVertexAttributeFormat vertexFormat, int materialCount, int translucidMaterialCount)
+    public Mesh(GxVertexAttributeTable vat, GCMF gcmf)
     {
-        this.materialCount = materialCount;
-        this.translucidMaterialCount = translucidMaterialCount;
-        this.vertexFormat = vertexFormat;
+        this.materialCount = gcmf.MaterialCount;
+        this.translucidMaterialCount = gcmf.TranslucidMaterialCount;
+        this.vat = vat;
 
-        matMeshes = new SubMesh[this.materialCount];
+        var matBuffer = gcmf.Material.Matdisplaylistsize;
+        matMeshes = new GxDisplayListGroup[this.materialCount];
         for (int i = 0; i < matMeshes.Length; i++)
-            matMeshes[i] = new SubMesh(vertexFormat);
+            matMeshes[i] = new GxDisplayListGroup(vat, matBuffer);
 
-        tlMatMeshes = new SubMesh[this.translucidMaterialCount];
+        var tlMatBuffer = gcmf.Material.Tlmatdisplaylistsize;
+        tlMatMeshes = new GxDisplayListGroup[this.translucidMaterialCount];
         for (int i = 0; i < tlMatMeshes.Length; i++)
-            tlMatMeshes[i] = new SubMesh(vertexFormat);
+            tlMatMeshes[i] = new GxDisplayListGroup(vat, tlMatBuffer);
     }
 
     public void Deserialize(BinaryReader reader)
     {
-        // REquires initialization before use
-        reader.ReadX(ref matMeshes, matMeshes.Length, false);
-        reader.ReadX(ref tlMatMeshes, tlMatMeshes.Length, false);
+        // Requires initialization before use
+
+        for (int i = 0; i < matMeshes.Length; i++)
+            reader.ReadX(ref matMeshes[i], false);
+        reader.Align(GxUtility.GX_FIFO_ALIGN);
+
+        for (int i = 0; i < tlMatMeshes.Length; i++)
+            reader.ReadX(ref tlMatMeshes, tlMatMeshes.Length, false);
+        reader.Align(GxUtility.GX_FIFO_ALIGN);
+
     }
 
     public void Serialize(BinaryWriter writer)
@@ -1083,101 +1271,27 @@ public class Mesh : IBinarySerializable
     }
 }
 
-[Serializable]
-public class SubMesh : IBinarySerializable
-{
-    private GxVertexAttributeFormat vertexFormat;
-    [SerializeField] private GXPrimitive gxPrimitive;
-    [SerializeField] private ushort gxVertsCount;
-    [SerializeField] private GxDisplayList[] gxDisplayList;
-
-    public SubMesh() { }
-
-    public SubMesh(GxVertexAttributeFormat vertexFormat)
-    {
-        this.vertexFormat = vertexFormat;
-    }
-
-    public void Deserialize(BinaryReader reader)
-    {
-        reader.ReadX(ref gxPrimitive);
-        reader.ReadX(ref gxVertsCount);
-    }
-
-    public void Serialize(BinaryWriter writer)
-    {
-        throw new NotImplementedException();
-    }
-}
-
-[Serializable]
-public class GxVertexAttributeTable
-{
-    public GxVertexAttributeFormat[] gxVertexAttributeFormats
-    { get; } = new GxVertexAttributeFormat[8];
-
-    public GxVertexAttributeTable(params GxVertexAttributeFormat[] formats)
-    {
-        if (formats.Length > 8)
-            throw new ArgumentOutOfRangeException();
-
-        // Update formats
-        for (int i = 0; i < formats.Length; i++)
-            gxVertexAttributeFormats[i] = formats[i];
-        // Clear old refs
-        for (int i = formats.Length; i < gxVertexAttributeFormats.Length; i++)
-            gxVertexAttributeFormats[i] = null;
-    }
-
-    public void SetVtxAttrFmt(GXVtxFmt index, GXAttrType vcd, GXAttr attribute, GXCompCnt_Rev2 nElements, GXCompType format, int nFracBits = 0)
-    {
-        var value = new GxVertexAttribute(vcd, attribute, nElements, format, nFracBits);
-        gxVertexAttributeFormats[(int)index].SetAttr(value);
-    }
-}
-
-[Serializable]
-public struct GxVertexAttribute
-{
-    [SerializeField] public GXAttrType vcd;
-    [SerializeField] public GXAttr attribute;
-    [SerializeField] public GXCompCnt_Rev2 nElements;
-    [SerializeField] public GXCompType componentFormat;
-    [SerializeField] public int nFracBits;
-
-    public GxVertexAttribute(GXAttrType vcd, GXAttr attribute, GXCompCnt_Rev2 nElements, GXCompType format, int nFracBits = 0)
-    {
-        // Assert that we aren't shifting more bits than we have
-        Assert.IsTrue((nFracBits < 8) & (format == GXCompType.GX_S8 | format == GXCompType.GX_U8));
-        Assert.IsTrue((nFracBits < 16) & (format == GXCompType.GX_S16 | format == GXCompType.GX_U16));
-
-        this.vcd = vcd;
-        this.attribute = attribute;
-        this.nElements = nElements;
-        this.componentFormat = format;
-        this.nFracBits = nFracBits;
-    }
-}
-
-//What would compromise a column in GX VAT - Vertex Attribute Table
+/// <summary>
+/// What would compromise a column in GX VAT - Vertex Attribute Table
+/// </summary>
 [Serializable]
 public class GxVertexAttributeFormat
 {
     [SerializeField] public GXAttrType attributeType;
 
     [SerializeField] public GxVertexAttribute pos;
-    [SerializeField] public GxVertexAttribute? nrm;
-    [SerializeField] public GxVertexAttribute? nbt;
-    [SerializeField] public GxVertexAttribute? clr0;
-    [SerializeField] public GxVertexAttribute? clr1;
-    [SerializeField] public GxVertexAttribute? tex0;
-    [SerializeField] public GxVertexAttribute? tex1;
-    [SerializeField] public GxVertexAttribute? tex2;
-    [SerializeField] public GxVertexAttribute? tex3;
-    [SerializeField] public GxVertexAttribute? tex4;
-    [SerializeField] public GxVertexAttribute? tex5;
-    [SerializeField] public GxVertexAttribute? tex6;
-    [SerializeField] public GxVertexAttribute? tex7;
+    [SerializeField] public GxVertexAttribute nrm;
+    [SerializeField] public GxVertexAttribute nbt;
+    [SerializeField] public GxVertexAttribute clr0;
+    [SerializeField] public GxVertexAttribute clr1;
+    [SerializeField] public GxVertexAttribute tex0;
+    [SerializeField] public GxVertexAttribute tex1;
+    [SerializeField] public GxVertexAttribute tex2;
+    [SerializeField] public GxVertexAttribute tex3;
+    [SerializeField] public GxVertexAttribute tex4;
+    [SerializeField] public GxVertexAttribute tex5;
+    [SerializeField] public GxVertexAttribute tex6;
+    [SerializeField] public GxVertexAttribute tex7;
 
     public GxVertexAttribute? GetAttr(GXAttr attribute)
     {
@@ -1227,25 +1341,77 @@ public class GxVertexAttributeFormat
 }
 
 [Serializable]
+public class GxVertexAttributeTable
+{
+    [SerializeField] GxVertexAttributeFormat[] gxVertexAttributeFormats = new GxVertexAttributeFormat[8];
+
+    public GxVertexAttributeFormat[] GxVertexAttributeFormats => gxVertexAttributeFormats;
+
+    public GxVertexAttributeTable(params GxVertexAttributeFormat[] formats)
+    {
+        if (formats.Length > 8)
+            throw new ArgumentOutOfRangeException();
+
+        // Update formats
+        for (int i = 0; i < formats.Length; i++)
+            GxVertexAttributeFormats[i] = formats[i];
+        // Clear old refs
+        for (int i = formats.Length; i < GxVertexAttributeFormats.Length; i++)
+            GxVertexAttributeFormats[i] = null;
+    }
+
+    public void SetVtxAttrFmt(GXVtxFmt index, GXAttrType vcd, GXAttr attribute, GXCompCnt_Rev2 nElements, GXCompType format, int nFracBits = 0)
+    {
+        var value = new GxVertexAttribute(vcd, attribute, nElements, format, nFracBits);
+        GxVertexAttributeFormats[(int)index].SetAttr(value);
+    }
+}
+
+[Serializable]
+public struct GxVertexAttribute
+{
+    [SerializeField] public bool enabled;
+    [SerializeField] public GXAttrType vcd;
+    [SerializeField] public GXAttr attribute;
+    [SerializeField] public GXCompCnt_Rev2 nElements;
+    [SerializeField] public GXCompType componentFormat;
+    [SerializeField] public int nFracBits;
+
+    public GxVertexAttribute(GXAttrType vcd, GXAttr attribute, GXCompCnt_Rev2 nElements, GXCompType format, int nFracBits = 0)
+    {
+        // Assert that we aren't shifting more bits than we have
+        if (format == GXCompType.GX_S8 | format == GXCompType.GX_U8) Assert.IsTrue(nFracBits < 8);
+        if (format == GXCompType.GX_S16 | format == GXCompType.GX_U16) Assert.IsTrue(nFracBits < 16);
+
+        this.enabled = true;
+        this.vcd = vcd;
+        this.attribute = attribute;
+        this.nElements = nElements;
+        this.componentFormat = format;
+        this.nFracBits = nFracBits;
+    }
+}
+
+[Serializable]
 public struct GxVertex : IBinarySerializable
 {
     [SerializeField] public GxVertexAttributeFormat vertAttr;
 
-    // (Raph:) Missing any other data
+    // (Raph:) Missing any other data?
     [SerializeField] public Vector3 position;
-    [SerializeField] public Vector3? normal;
-    [SerializeField] public Vector3? binormal;
-    [SerializeField] public Vector3? tangent;
-    [SerializeField] public Color32? color0;
-    [SerializeField] public Color32? color1;
-    [SerializeField] public Vector2? tex0;
-    [SerializeField] public Vector2? tex1;
-    [SerializeField] public Vector2? tex2;
-    [SerializeField] public Vector2? tex3;
-    [SerializeField] public Vector2? tex4;
-    [SerializeField] public Vector2? tex5;
-    [SerializeField] public Vector2? tex6;
-    [SerializeField] public Vector2? tex7;
+    [SerializeField] public Vector3 normal;
+    [SerializeField] public Vector3 binormal;
+    [SerializeField] public Vector3 tangent;
+    [SerializeField] public Color32 color0;
+    [SerializeField] public Color32 color1;
+    [SerializeField] public Vector2 tex0;
+    [SerializeField] public Vector2 tex1;
+    [SerializeField] public Vector2 tex2;
+    [SerializeField] public Vector2 tex3;
+    [SerializeField] public Vector2 tex4;
+    [SerializeField] public Vector2 tex5;
+    [SerializeField] public Vector2 tex6;
+    [SerializeField] public Vector2 tex7;
 
     public void Deserialize(BinaryReader reader)
     {
@@ -1253,44 +1419,44 @@ public struct GxVertex : IBinarySerializable
         position = GxUtility.ReadVectorXYZ(reader, vertAttr.pos);
 
         // NORMALS
-        if (vertAttr.nrm != null)
+        if (vertAttr.nrm.enabled)
         {
-            normal = GxUtility.ReadVectorXYZ(reader, (GxVertexAttribute)vertAttr.nrm);
+            normal = GxUtility.ReadVectorXYZ(reader, vertAttr.nrm);
         }
-        else if (vertAttr.nbt != null)
+        else if (vertAttr.nbt.enabled)
         {
             // This code is untested...
             // And it lacks another case for NBT3
             throw new NotImplementedException();
 
-            normal = GxUtility.ReadVectorXYZ(reader, (GxVertexAttribute)vertAttr.nbt);
-            binormal = GxUtility.ReadVectorXYZ(reader, (GxVertexAttribute)vertAttr.nbt);
-            tangent = GxUtility.ReadVectorXYZ(reader, (GxVertexAttribute)vertAttr.nbt);
+            normal = GxUtility.ReadVectorXYZ(reader, vertAttr.nbt);
+            binormal = GxUtility.ReadVectorXYZ(reader, vertAttr.nbt);
+            tangent = GxUtility.ReadVectorXYZ(reader, vertAttr.nbt);
         }
 
         // COLOR
-        if (vertAttr.clr0 != null)
-            color0 = GxUtility.ReadGXColor(reader, (GxVertexAttribute)vertAttr.clr0);
-        if (vertAttr.clr1 != null)
-            color1 = GxUtility.ReadGXColor(reader, (GxVertexAttribute)vertAttr.clr1);
+        if (vertAttr.clr0.enabled)
+            color0 = GxUtility.ReadGXColor(reader, vertAttr.clr0);
+        if (vertAttr.clr1.enabled)
+            color1 = GxUtility.ReadGXColor(reader, vertAttr.clr1);
 
         // TEX
-        if (vertAttr.tex0 != null)
-            tex0 = GxUtility.ReadGxTextureST(reader, (GxVertexAttribute)vertAttr.tex0);
-        if (vertAttr.tex1 != null)
-            tex0 = GxUtility.ReadGxTextureST(reader, (GxVertexAttribute)vertAttr.tex1);
-        if (vertAttr.tex2 != null)
-            tex0 = GxUtility.ReadGxTextureST(reader, (GxVertexAttribute)vertAttr.tex2);
-        if (vertAttr.tex3 != null)
-            tex0 = GxUtility.ReadGxTextureST(reader, (GxVertexAttribute)vertAttr.tex3);
-        if (vertAttr.tex4 != null)
-            tex0 = GxUtility.ReadGxTextureST(reader, (GxVertexAttribute)vertAttr.tex4);
-        if (vertAttr.tex5 != null)
-            tex0 = GxUtility.ReadGxTextureST(reader, (GxVertexAttribute)vertAttr.tex5);
-        if (vertAttr.tex6 != null)
-            tex0 = GxUtility.ReadGxTextureST(reader, (GxVertexAttribute)vertAttr.tex6);
-        if (vertAttr.tex7 != null)
-            tex0 = GxUtility.ReadGxTextureST(reader, (GxVertexAttribute)vertAttr.tex7);
+        if (vertAttr.tex0.enabled)
+            tex0 = GxUtility.ReadGxTextureST(reader, vertAttr.tex0);
+        if (vertAttr.tex1.enabled)
+            tex0 = GxUtility.ReadGxTextureST(reader, vertAttr.tex1);
+        if (vertAttr.tex2.enabled)
+            tex0 = GxUtility.ReadGxTextureST(reader, vertAttr.tex2);
+        if (vertAttr.tex3.enabled)
+            tex0 = GxUtility.ReadGxTextureST(reader, vertAttr.tex3);
+        if (vertAttr.tex4.enabled)
+            tex0 = GxUtility.ReadGxTextureST(reader, vertAttr.tex4);
+        if (vertAttr.tex5.enabled)
+            tex0 = GxUtility.ReadGxTextureST(reader, vertAttr.tex5);
+        if (vertAttr.tex6.enabled)
+            tex0 = GxUtility.ReadGxTextureST(reader, vertAttr.tex6);
+        if (vertAttr.tex7.enabled)
+            tex0 = GxUtility.ReadGxTextureST(reader, vertAttr.tex7);
     }
 
     public void Serialize(BinaryWriter writer)
@@ -1320,31 +1486,58 @@ public struct GxDisplayCommand : IBinarySerializable
 }
 
 [Serializable]
-public class GxDisplayList : IBinarySerializable
+public class GxDisplayList : IBinarySerializable, IBinaryAddressable
 {
+    [Header("Debugging")]
+    [SerializeField] long startAddress;
+    [SerializeField] long endAddress;
+
     // property or...?
+    [Header("GxDisplayList")]
     [SerializeField] public GxDisplayCommand gxCommand;
     [SerializeField] public ushort vertCount;
     [SerializeField] public GxVertex[] verts;
     [SerializeField] public GxVertexAttributeTable vat;
 
+    public long StartAddress
+    {
+        get => startAddress;
+        set => startAddress = value;
+    }
+    public long EndAddress
+    {
+        get => endAddress;
+        set => endAddress = value;
+    }
+
+    public GxDisplayList() { }
+
+    public GxDisplayList(GxVertexAttributeTable vat)
+    {
+        this.vat = vat;
+    }
+
     public void Deserialize(BinaryReader reader)
     {
+        startAddress = reader.BaseStream.Position;
+
         reader.ReadX(ref gxCommand, true);
         reader.ReadX(ref vertCount);
 
         // Init vertex VAT references
-        for (int i = 0; i < vertCount; i++)
+        verts = new GxVertex[vertCount];
+        for (int i = 0; i < verts.Length; i++)
         {
             var vertexFormat = gxCommand.vertexFormat;
             var vatIndex = (int)vertexFormat;
-            var vertex = new GxVertex()
+            verts[i] = new GxVertex()
             {
-                vertAttr = vat.gxVertexAttributeFormats[vatIndex],
+                vertAttr = vat.GxVertexAttributeFormats[vatIndex],
             };
+            reader.ReadX(ref verts[i], false);
         }
 
-        reader.ReadX(ref verts, vertCount, true);
+        endAddress = reader.BaseStream.Position;
     }
 
     public void Serialize(BinaryWriter writer)
@@ -1356,9 +1549,25 @@ public class GxDisplayList : IBinarySerializable
 [Serializable]
 public sealed class GxDisplayListGroup : IBinarySerializable
 {
+    [Header("Debugging")]
+    [SerializeField] long startAddress;
+    [SerializeField] long endAddress;
+
+    [SerializeField] GxVertexAttributeTable vat;
     [SerializeField] GxDisplayList[] command;
     [SerializeField] uint gxBufferSize;
-    [SerializeField] GxVertexAttributeTable vat;
+
+
+    public long StartAddress
+    {
+        get => startAddress;
+        set => startAddress = value;
+    }
+    public long EndAddress
+    {
+        get => endAddress;
+        set => endAddress = value;
+    }
 
     public GxDisplayListGroup() { }
 

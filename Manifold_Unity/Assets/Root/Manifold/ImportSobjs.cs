@@ -79,8 +79,8 @@ public abstract class ImportSobjs<T> : ImportSobj
                     unityPath = UnityPathUtility.EnforceUnitySeparators(unityPath);
                     var fileName = Path.GetFileName(importFile);
 
-                    try
-                    {
+                    //try
+                    //{
                         var sobj = CreateFromBinaryFile<T>(unityPath, fileName, reader);
                         sobj.FileName = fileName;
 
@@ -93,21 +93,21 @@ public abstract class ImportSobjs<T> : ImportSobj
                         EditorUtility.DisplayProgressBar(title, info, progress);
 
                         EditorUtility.SetDirty(sobj);
-                    }
-                    catch (Exception e)
-                    {
-                        var msg = $"Failed to read Index[{count}] {importFile})";
-                        Debug.LogError(msg);
+                    //}
+                    //catch (Exception e)
+                    //{
+                    //    var msg = $"Failed to read Index[{count}] {importFile})";
+                    //    Debug.LogError(msg);
 
-                        if (!ignoreErrors)
-                        {
-                            EditorUtility.ClearProgressBar();
-                            bool proceed = EditorUtility.DisplayDialog("Import Error", msg, "Proceed", "Cancel");
+                    //    if (!ignoreErrors)
+                    //    {
+                    //        EditorUtility.ClearProgressBar();
+                    //        bool proceed = EditorUtility.DisplayDialog("Import Error", msg, "Proceed", "Cancel");
 
-                            if (!proceed)
-                                throw e;
-                        }
-                    }
+                    //        if (!proceed)
+                    //            throw e;
+                    //    }
+                    //}
                 }
             }
             count++;
