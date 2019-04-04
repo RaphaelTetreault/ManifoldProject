@@ -20,6 +20,8 @@ public class GMAAnalyzer : AnalyzerSobj<GMASobj>
     protected string materialFile;
     [SerializeField]
     protected string texUnkFlagsFile;
+    [SerializeField]
+    protected bool printAllNames;
 
     public override string ProcessMessage => string.Empty;
 
@@ -99,7 +101,7 @@ public class GMAAnalyzer : AnalyzerSobj<GMASobj>
                         isFlagEnabled = ((int)tex.Unk_0x0C >> i) & 1;
                         unkFlags0x0C[i] += isFlagEnabled;
 
-                        isFlagEnabled = ((int)tex.Unk_0x0D >> i) & 1;
+                        isFlagEnabled = ((int)tex.IsSwappableTexture >> i) & 1;
                         unkFlags0x0D[i] += isFlagEnabled;
 
                         isFlagEnabled = ((int)tex.Unk_0x10 >> i) & 1;
@@ -184,7 +186,7 @@ public class GMAAnalyzer : AnalyzerSobj<GMASobj>
             var isFirstEntry = true;
             foreach (var gcmf in sobj.Value.GCMF)
             {
-                if (isFirstEntry)
+                if (isFirstEntry || printAllNames)
                 {
                     writer.PushCol(sobj.FileName);
                     isFirstEntry = false;
@@ -266,14 +268,14 @@ public class GMAAnalyzer : AnalyzerSobj<GMASobj>
                 var isFirstTex = true;
                 foreach (var tex in gcmf.Texture)
                 {
-                    if (isFirstEntry)
+                    if (isFirstEntry || printAllNames)
                     {
                         writer.PushCol(sobj.FileName);
                         isFirstEntry = false;
                     }
                     else writer.PushCol();
 
-                    if (isFirstTex)
+                    if (isFirstTex || printAllNames)
                     {
                         writer.PushCol(gcmf.ModelName);
                         isFirstTex = false;
@@ -290,7 +292,7 @@ public class GMAAnalyzer : AnalyzerSobj<GMASobj>
                     writer.PushCol(tex.Anisotropiclevel);
                     writer.PushCol(tex.Zero_0x08);
                     writer.PushCol(tex.Unk_0x0C);
-                    writer.PushCol(tex.Unk_0x0D);
+                    writer.PushCol(tex.IsSwappableTexture);
                     writer.PushCol(tex.Index);
                     writer.PushCol(tex.Unk_0x10);
                     writer.PushRow();
@@ -349,7 +351,7 @@ public class GMAAnalyzer : AnalyzerSobj<GMASobj>
             var isFirstEntry = true;
             foreach (var gcmf in sobj.Value.GCMF)
             {
-                if (isFirstEntry)
+                if (isFirstEntry || printAllNames)
                 {
                     writer.PushCol(sobj.FileName);
                     isFirstEntry = false;
@@ -373,7 +375,7 @@ public class GMAAnalyzer : AnalyzerSobj<GMASobj>
                 writer.PushCol(gcmf.Material.Unk_0x08);
                 writer.PushCol(gcmf.Material.Unk_0x0C);
                 writer.PushCol(gcmf.Material.Unk_0x10);
-                writer.PushCol(gcmf.Material.Unk_Count);
+                writer.PushCol(gcmf.Material.Unk_0x11);
                 writer.PushCol(gcmf.Material.Unk_0x12);
                 writer.PushCol(gcmf.Material.Vertexrenderflags);
                 writer.PushCol(gcmf.Material.Unk_0X14);

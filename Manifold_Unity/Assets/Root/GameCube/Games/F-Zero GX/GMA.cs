@@ -235,19 +235,6 @@ public enum TexFlags0x0C_U8 : byte
 }
 
 [Flags]
-public enum TexFlags0x0D_U8 : byte
-{
-    UNK_FLAG_0 = 1 << 0,
-    UNK_FLAG_1 = 1 << 1,
-    UNK_FLAG_2 = 1 << 2,
-    UNK_FLAG_3 = 1 << 3,
-    UNK_FLAG_4 = 1 << 4,
-    UNK_FLAG_5 = 1 << 5,
-    UNK_FLAG_6 = 1 << 6,
-    UNK_FLAG_7 = 1 << 7,
-}
-
-[Flags]
 public enum TexFlags0x10_U32 : uint
 {
     UNK_FLAG_0 = 1 << 0,
@@ -685,9 +672,10 @@ public class Texture : IBinarySerializable, IBinaryAddressable
     /// </summary>
     [SerializeField, EnumFlags] TexFlags0x0C_U8 unk_0x0C;
     /// <summary>
-    /// 2019/04/01 VERIFIED: only values are 0, 1.
+    /// 2019/04/03 VERIFIED: bool on models (13 total) that use swappable textures such as
+    /// "Lap Gate" which indicates laps remaining and countdown display (3,2,1,GO!).
     /// </summary>
-    [SerializeField, EnumFlags] TexFlags0x0D_U8 unk_0x0D;
+    [SerializeField, EnumFlags] bool isSwappableTexture;
     /// <summary>
     /// Texture index
     /// </summary>
@@ -706,7 +694,7 @@ public class Texture : IBinarySerializable, IBinaryAddressable
     public GMA_GXAnisotropyU8 Anisotropiclevel => anisotropicLevel;
     public uint Zero_0x08 => zero_0x08;
     public TexFlags0x0C_U8 Unk_0x0C => unk_0x0C;
-    public TexFlags0x0D_U8 Unk_0x0D => unk_0x0D;
+    public bool IsSwappableTexture => isSwappableTexture;
     public ushort Index => index;
     public TexFlags0x10_U32 Unk_0x10 => unk_0x10;
     public byte[] Fifopadding => fifoPadding;
@@ -734,7 +722,7 @@ public class Texture : IBinarySerializable, IBinaryAddressable
         reader.ReadX(ref anisotropicLevel);
         reader.ReadX(ref zero_0x08);
         reader.ReadX(ref unk_0x0C);
-        reader.ReadX(ref unk_0x0D);
+        reader.ReadX(ref isSwappableTexture);
         reader.ReadX(ref index);
         reader.ReadX(ref unk_0x10);
         reader.ReadX(ref fifoPadding, kFifoPaddingSize);
@@ -805,7 +793,7 @@ public class Material : IBinarySerializable, IBinaryAddressable, IFile
     public uint Unk_0x0C => unk_0x0C; // color RGBA 32? FFFFFFFF x1120,
     // 0x10
     public MatFlags0x10_U8 Unk_0x10 => unk_0x10; // 0x2A x1497, 
-    public MatFlags0x11_U8 Unk_Count => unk_0x11;
+    public MatFlags0x11_U8 Unk_0x11 => unk_0x11;
     public MatFlags0x12_U8 Unk_0x12 => unk_0x12;
     public MatVertexRenderFlag_U8 Vertexrenderflags => vertexRenderFlags;
     public MatFlags0x14_U16 Unk_0X14 => unk_0x14; // 0xFF00 x3485
