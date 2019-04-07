@@ -1,0 +1,22 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\Documentation",
+    "\\Documentation\\GameCube",
+    "\\Documentation\\GameCube\\Games",
+    "\\Documentation\\GameCube\\Games\\F-Zero GX",
+    "\\Documentation\\GameCube\\Games\\F-Zero GX\\GMA",
+    "\\Documentation\\GameCube\\Games\\F-Zero GX\\GMA\\GCMF Analysis 2019-04-01",
+    "\\Documentation\\GameCube\\Games\\F-Zero GX\\GMA\\res",
+    "\\Manifold_Unity",
+    "\\Manifold_Unity\\Assets",
+    "\\Manifold_Unity\\Assets\\Root",
+    "\\Manifold_Unity\\Assets\\Root\\GameCube",
+    "\\Manifold_Unity\\Assets\\Root\\GameCube\\Games",
+    "\\Manifold_Unity\\Assets\\Root\\GameCube\\Games\\F-Zero GX",
+    "\\Manifold_Unity\\Assets\\Root\\GameCube\\GX",
+    "\\Manifold_Unity\\Assets\\Scenes"
+  ],
+  "SelectedNode": "\\Manifold_Unity\\Assets\\Root\\GameCube\\GX\\EnumeratedTypes.cs",
+  "PreviewInSolutionExplorer": false
+}

@@ -62,7 +62,7 @@ public abstract class ImportSobjs<T> : ImportSobj
                     // get path to file import folder
                     // TODO: Regex instead of this hack
                     var length = importFolder.Length;
-                    var folder = importFile.Remove(0, length);
+                    var folder = importFile.Remove(0, length+1);
                     folder = Path.GetDirectoryName(folder);
 
                     // (A) prevent null/empty AND (B) prevent "/" or "\\"

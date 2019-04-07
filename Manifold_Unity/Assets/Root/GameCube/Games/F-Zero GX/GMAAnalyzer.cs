@@ -325,6 +325,7 @@ public class GMAAnalyzer : AnalyzerSobj<GMASobj>
             writer.PushCol("Unk_0x12");
             writer.PushCol("Vertex render flags");
             writer.PushCol("Unk_0x14");
+            writer.PushCol("Unk_0x15");
             writer.PushCol("Tex0Index");
             writer.PushCol("Tex1Index");
             writer.PushCol("Tex2Index");
@@ -332,7 +333,7 @@ public class GMAAnalyzer : AnalyzerSobj<GMASobj>
             //writer.PushCol("Transform matrix specific indices");
             writer.PushCol("Mat display list size");
             writer.PushCol("Tl mat display list size");
-            writer.PushCol("Uvw coordinates");
+            writer.PushCol("Unk_0x30");
             writer.PushCol("Unk_0x3C");
             writer.PushCol("Unk_0x40");
             writer.PushCol("Unk_0x44");
@@ -374,7 +375,8 @@ public class GMAAnalyzer : AnalyzerSobj<GMASobj>
                 writer.PushCol(gcmf.Material.Unk_0x11);
                 writer.PushCol(gcmf.Material.Unk_0x12);
                 writer.PushCol(gcmf.Material.Vertexrenderflags);
-                writer.PushCol(gcmf.Material.Unk_0X14);
+                writer.PushCol(gcmf.Material.Unk_0x14);
+                writer.PushCol(gcmf.Material.Unk_0x15);
                 writer.PushCol(gcmf.Material.Tex0Index);
                 writer.PushCol(gcmf.Material.Tex1Index);
                 writer.PushCol(gcmf.Material.Tex2Index);
