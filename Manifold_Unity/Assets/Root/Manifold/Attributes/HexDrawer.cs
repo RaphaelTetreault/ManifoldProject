@@ -38,13 +38,19 @@ public class HexDrawer : PropertyDrawer
             text = text.Substring(text.Length - attr.numDigits, attr.numDigits);
         var color = GUI.color;
         GUI.color *= kColorMult;
-        var numberHex = EditorGUI.DelayedTextField(pos, text);
+        var textField = EditorGUI.DelayedTextField(pos, text);
         GUI.color = color;
 
-        if (text == numberHex)
+        if (text == textField)
             return;
 
-        property.intValue = (int)System.Convert.ToUInt32(numberHex, 16);
-
+        var hexPattern = @"^[a-fA-F0-9]+";
+        var regex = new System.Text.RegularExpressions.Regex(hexPattern);
+        var regexMatch = regex.Match(textField).ToString();
+        var isHex = regexMatch == textField;
+        if (isHex)
+        {
+            property.intValue = System.Convert.ToInt32(textField, 16);
+        }
     }
 }

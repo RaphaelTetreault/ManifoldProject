@@ -30,8 +30,6 @@ public class HexFlagsDrawer : PropertyDrawer
         var text = property.intValue.ToString(attr.Format);
         if (attr.NumDigits > 0)
             text = text.Substring(text.Length - attr.NumDigits, attr.NumDigits);
-        if (attr.Prepend0x)
-            text = $"0x{text}";
 
         var color = GUI.color;
         GUI.color *= kColorMult;

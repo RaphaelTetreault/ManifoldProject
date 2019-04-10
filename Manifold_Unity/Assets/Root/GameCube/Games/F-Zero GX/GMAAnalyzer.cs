@@ -19,6 +19,8 @@ public class GMAAnalyzer : AnalyzerSobj<GMASobj>
     [SerializeField]
     protected string materialFile;
     [SerializeField]
+    protected string materialAnimFile;
+    [SerializeField]
     protected string texUnkFlagsFile;
     [SerializeField]
     protected bool printAllNames;
@@ -32,12 +34,13 @@ public class GMAAnalyzer : AnalyzerSobj<GMASobj>
         if (loadAllOfType)
             analysisSobjs = LoadAllOfType();
 
-        var numProcesses = 4f;
+        var numProcesses = 5f;
         var processIndex = 0;
-        var time = DateTime.Now.ToString("(yyyy-MM-dd)(HH-mm-ss-FFFFFF)");
+        var time = DateTime.Now.ToString("(yyyy-MM-dd)-(HH-mm-ss)");
         var gcfmAnalysisFile = Path.Combine(destinationDirectory, $"{gcmfFile}_{time}.tsv");
         var texAnalysisFile = Path.Combine(destinationDirectory, $"{textureFile}_{time}.tsv");
         var matAnalysisFile = Path.Combine(destinationDirectory, $"{materialFile}_{time}.tsv");
+        var matAnimAnalysisFile = Path.Combine(destinationDirectory, $"{materialAnimFile}_{time}.tsv");
         var texFlagAnalysisFile = Path.Combine(destinationDirectory, $"{texUnkFlagsFile}_{time}.tsv");
 
         // EX
@@ -55,6 +58,10 @@ public class GMAAnalyzer : AnalyzerSobj<GMASobj>
         // GCMF MAT
         EditorUtility.DisplayProgressBar(ButtonText, matAnalysisFile, processIndex++ / numProcesses);
         WriteMatAnalysis(matAnalysisFile);
+
+        // GCMF MAT
+        EditorUtility.DisplayProgressBar(ButtonText, matAnimAnalysisFile, processIndex++ / numProcesses);
+        WriteMatAnimAnalysis(matAnimAnalysisFile);
 
         // END
         EditorUtility.ClearProgressBar();
@@ -81,7 +88,7 @@ public class GMAAnalyzer : AnalyzerSobj<GMASobj>
         {
             foreach (var gcmf in sobj.Value.GCMF)
             {
-                if (gcmf == null)
+                if (gcmf == null || gcmf.ModelName == GCMF.kNullEntryName)
                     continue;
 
                 foreach (var tex in gcmf.Texture)
@@ -162,10 +169,6 @@ public class GMAAnalyzer : AnalyzerSobj<GMASobj>
             writer.PushCol("Zero_0x1F");
             writer.PushCol("Indices Rel Ptr");
             writer.PushCol("Zero_0x24");
-            //writer.PushCol("Transform Matrix Default Indices");
-            writer.PushCol("Texture");
-            writer.PushCol("TransformMatrix");
-            writer.PushCol("Material");
             writer.PushRow();
         }
 
@@ -174,26 +177,14 @@ public class GMAAnalyzer : AnalyzerSobj<GMASobj>
             // Write contents
             var index = 0;
             var maxIndex = sobj.value.GcmfCount;
-            var isFirstEntry = true;
             foreach (var gcmf in sobj.Value.GCMF)
             {
-                if (isFirstEntry || printAllNames)
-                {
-                    writer.PushCol(sobj.FileName);
-                    isFirstEntry = false;
-                }
-                else writer.PushCol();
-
-                if (string.IsNullOrEmpty(gcmf.ModelName))
-                {
-                    writer.PushRow(NullStr);
+                if (string.IsNullOrEmpty(gcmf.ModelName) ||
+                    gcmf.ModelName == GCMF.kNullEntryName)
                     continue;
-                }
-                else
-                {
-                    writer.PushCol(gcmf.ModelName);
-                }
 
+                writer.PushCol(sobj.FileName);
+                writer.PushCol(gcmf.ModelName);
                 writer.PushCol($"[{index}/{maxIndex}]");
                 writer.PushCol("0x" + gcmf.StartAddress.ToString("X8"));
                 writer.PushCol(gcmf.Attributes);
@@ -206,10 +197,6 @@ public class GMAAnalyzer : AnalyzerSobj<GMASobj>
                 writer.PushCol(gcmf.Zero_0x1F);
                 writer.PushCol(gcmf.Indicesrelptr);
                 writer.PushCol(gcmf.Zero_0x24);
-                //writer.PushCol(gcmf.Transformmatrixdefaultindices == null ? NullStr : ExistsStr);
-                writer.PushCol(gcmf.Texture == null ? NullStr : ExistsStr);
-                writer.PushCol(gcmf.TransformMatrix == null ? NullStr : ExistsStr);
-                writer.PushCol(gcmf.Material == null ? NullStr : ExistsStr);
                 writer.PushRow();
 
                 index++;
@@ -230,14 +217,13 @@ public class GMAAnalyzer : AnalyzerSobj<GMASobj>
             writer.PushCol("Texture Index");
             writer.PushCol("Address");
             writer.PushCol("Unk_0x00");
-            writer.PushCol("Mipmap");
-            writer.PushCol("Wrapflags");
-            writer.PushCol("Tpltextureid");
+            writer.PushCol("Mipmap Settings");
+            writer.PushCol("Wrap Flags");
+            writer.PushCol("Tpl Texture Index");
             writer.PushCol("Unk_0x06");
-            writer.PushCol("Anisotropiclevel");
-            writer.PushCol("Unk_0x08");
-            writer.PushCol("Unk_Flags_0X0C");
-            writer.PushCol("Unk_0x0D");
+            writer.PushCol("Anisotropic Level");
+            writer.PushCol("Unk_0x0C");
+            writer.PushCol("Is Swappable Texture?");
             writer.PushCol("Index");
             writer.PushCol("Unk_0x10");
             writer.PushRow();
@@ -248,40 +234,15 @@ public class GMAAnalyzer : AnalyzerSobj<GMASobj>
             // Write contents
             var modelIndex = 0;
             var modelIndexMax = sobj.value.GcmfCount;
-            var isFirstGCMF = true;
             foreach (var gcmf in sobj.Value.GCMF)
             {
-                if (gcmf == null)
-                {
-                    writer.PushRow(NullStr);
-                    continue;
-                }
-
                 var texIndex = 1; // debugger is not zero-indexed
                 var texIndexMax = gcmf.TextureCount;
-                var isFirstTex = true;
                 foreach (var tex in gcmf.Texture)
                 {
-                    if (isFirstGCMF || printAllNames)
-                    {
-                        writer.PushCol(sobj.FileName);
-                        isFirstGCMF = false;
-                    }
-                    else writer.PushCol();
-
-
-                    if (isFirstTex || printAllNames)
-                    {
-                        writer.PushCol($"[{modelIndex}/{modelIndexMax}]");
-                        writer.PushCol(gcmf.ModelName);
-                        isFirstTex = false;
-                    }
-                    else
-                    {
-                        writer.PushCol();
-                        writer.PushCol();
-                    }
-
+                    writer.PushCol(sobj.FileName);
+                    writer.PushCol($"[{modelIndex}/{modelIndexMax}]");
+                    writer.PushCol(gcmf.ModelName);
                     writer.PushCol($"[{texIndex}/{texIndexMax}]");
                     writer.PushCol("0x" + tex.StartAddress.ToString("X8"));
                     writer.PushCol(tex.Unk_0x00);
@@ -290,7 +251,6 @@ public class GMAAnalyzer : AnalyzerSobj<GMASobj>
                     writer.PushCol(tex.Tpltextureid);
                     writer.PushCol(tex.Unk_0x06);
                     writer.PushCol(tex.Anisotropiclevel);
-                    writer.PushCol(tex.Zero_0x08);
                     writer.PushCol(tex.Unk_0x0C);
                     writer.PushCol(tex.IsSwappableTexture);
                     writer.PushCol(tex.Index);
@@ -317,31 +277,24 @@ public class GMAAnalyzer : AnalyzerSobj<GMASobj>
             writer.PushCol("Model Name");
             writer.PushCol("Address");
             writer.PushCol("Unk_0x00");
-            writer.PushCol("Unk_0x04");
-            writer.PushCol("Unk_0x08");
-            writer.PushCol("Unk_0x0C");
+            writer.PushCol("Color0");
+            writer.PushCol("Color1");
+            writer.PushCol("Color2");
             writer.PushCol("Unk_0x10");
             writer.PushCol("Unk_0x11");
             writer.PushCol("Unk_0x12");
-            writer.PushCol("Vertex render flags");
+            writer.PushCol("Vertex Render Flags");
             writer.PushCol("Unk_0x14");
             writer.PushCol("Unk_0x15");
-            writer.PushCol("Tex0Index");
-            writer.PushCol("Tex1Index");
-            writer.PushCol("Tex2Index");
-            writer.PushCol("Vertex descriptor flags");
+            writer.PushCol("Tex 0 Index");
+            writer.PushCol("Tex 1 Index");
+            writer.PushCol("Tex 2 Index");
+            writer.PushCol("Vertex Descriptor Flags");
             //writer.PushCol("Transform matrix specific indices");
             writer.PushCol("Mat display list size");
             writer.PushCol("Tl mat display list size");
-            writer.PushCol("Unk_0x30");
-            writer.PushCol("Unk_0x3C");
+            writer.PushCol("Bounding Sphere Origin");
             writer.PushCol("Unk_0x40");
-            writer.PushCol("Unk_0x44");
-            writer.PushCol("Unk_0x48");
-            writer.PushCol("Unk_0x4C");
-            writer.PushCol("Unk_0x50");
-            writer.PushCol("Unk_0x54");
-            writer.PushCol("Unk_0x58");
             writer.PushRow();
         }
 
@@ -350,49 +303,37 @@ public class GMAAnalyzer : AnalyzerSobj<GMASobj>
             // Write contents
             var index = 0;
             var maxIndex = sobj.value.GcmfCount;
-            var isFirstEntry = true;
             foreach (var gcmf in sobj.Value.GCMF)
             {
                 // skip null models
-                if (string.IsNullOrEmpty(gcmf.ModelName))
+                if (string.IsNullOrEmpty(gcmf.ModelName) ||
+                    gcmf.ModelName == GCMF.kNullEntryName ||
+                    string.IsNullOrEmpty(gcmf.Material.ModelName))
                     continue;
 
-                if (isFirstEntry || printAllNames)
-                {
-                    writer.PushCol(sobj.FileName);
-                    isFirstEntry = false;
-                }
-                else writer.PushCol();
-
+                writer.PushCol(sobj.FileName);
                 writer.PushCol($"[{index}/{maxIndex}]");
                 writer.PushCol(gcmf.ModelName);
                 writer.PushCol("0x" + gcmf.Material.StartAddress.ToString("X8"));
-                writer.PushCol(gcmf.Material.Unk_Flags_0x00);
-                writer.PushCol(gcmf.Material.Unk_0x04);
-                writer.PushCol(gcmf.Material.Unk_0x08);
-                writer.PushCol(gcmf.Material.Unk_0x0C);
+                writer.PushCol(gcmf.Material.Unk_0x00);
+                writer.PushCol(gcmf.Material.Color0);
+                writer.PushCol(gcmf.Material.Color1);
+                writer.PushCol(gcmf.Material.Color2);
                 writer.PushCol(gcmf.Material.Unk_0x10);
                 writer.PushCol(gcmf.Material.Unk_0x11);
                 writer.PushCol(gcmf.Material.Unk_0x12);
-                writer.PushCol(gcmf.Material.Vertexrenderflags);
+                writer.PushCol(gcmf.Material.VertexRenderFlags);
                 writer.PushCol(gcmf.Material.Unk_0x14);
                 writer.PushCol(gcmf.Material.Unk_0x15);
                 writer.PushCol(gcmf.Material.Tex0Index);
                 writer.PushCol(gcmf.Material.Tex1Index);
                 writer.PushCol(gcmf.Material.Tex2Index);
-                writer.PushCol(gcmf.Material.Vertexdescriptorflags);
+                writer.PushCol(gcmf.Material.VertexDescriptorFlags);
                 //writer.PushCol(gcmf.Material.TransformMatrixSpecificIndices);
-                writer.PushCol(gcmf.Material.Matdisplaylistsize);
-                writer.PushCol(gcmf.Material.Tlmatdisplaylistsize);
-                writer.PushCol(gcmf.Material.Unk_0x30);
-                writer.PushCol(gcmf.Material.Unk_0x3C);
+                writer.PushCol(gcmf.Material.MatDisplayListSize);
+                writer.PushCol(gcmf.Material.TlMatDisplayListSize);
+                writer.PushCol(gcmf.Material.BoudingSphereOrigin);
                 writer.PushCol(gcmf.Material.Unk_0x40);
-                writer.PushCol(gcmf.Material.Unk_0x44);
-                writer.PushCol(gcmf.Material.Unk_0x48);
-                writer.PushCol(gcmf.Material.Unk_0x4C);
-                writer.PushCol(gcmf.Material.Unk_0x50);
-                writer.PushCol(gcmf.Material.Unk_0x54);
-                writer.PushCol(gcmf.Material.Unk_0x58);
                 writer.PushRow();
 
                 index++;
@@ -401,5 +342,120 @@ public class GMAAnalyzer : AnalyzerSobj<GMASobj>
         writer.Close();
     }
 
+    public void WriteMatAnimAnalysis(string fileName)
+    {
+        var writer = OpenWriter(fileName);
 
+        if (writer.BaseStream.Length <= 0)
+        {
+            writer.PushCol("File Name");
+            writer.PushCol("Model Index");
+            writer.PushCol("Model Name");
+            writer.PushCol("Address");
+            writer.PushCol("Unk_0x00");
+            writer.PushCol("Unk_0x04");
+            //writer.PushCol("< HEX");
+            writer.PushCol("Unk_0x08");
+            //writer.PushCol("< HEX");
+            writer.PushCol("Unk_0x0C");
+            //writer.PushCol("< HEX");
+            writer.PushCol("Unk_0x10");
+            writer.PushCol("Unk_0x11");
+            writer.PushCol("Unk_0x12");
+            writer.PushCol("Vertex Render Flags");
+            writer.PushCol("Unk_0x14");
+            writer.PushCol("Unk_0x15");
+            writer.PushCol("Tex 0 Index");
+            writer.PushCol("Tex 1 Index");
+            writer.PushCol("Tex 2 Index");
+            writer.PushCol("Vertex Descriptor Flags");
+            //writer.PushCol("Transform matrix specific indices");
+            writer.PushCol("Mat display list size");
+            writer.PushCol("Tl mat display list size");
+            writer.PushCol("Unk_0x30");
+            writer.PushCol("Unk_0x3C");
+            writer.PushCol("< HEX");
+            writer.PushCol("< BIN");
+            writer.PushCol("Unk_0x40");
+            //writer.PushCol("< HEX");
+            writer.PushCol("Unk_0x44");
+            //writer.PushCol("< HEX");
+            writer.PushCol("Unk_0x48");
+            writer.PushCol("< HEX");
+            writer.PushCol("< BIN");
+            writer.PushCol("Unk_0x4C");
+            writer.PushCol("< HEX");
+            writer.PushCol("< BIN");
+            writer.PushCol("Unk_0x50");
+            //writer.PushCol("< HEX");
+            writer.PushCol("Unk_0x54");
+            //writer.PushCol("< HEX");
+            writer.PushCol("Unk_0x58");
+            //writer.PushCol("< HEX");
+            writer.PushRow();
+        }
+
+        foreach (var sobj in analysisSobjs)
+        {
+            // Write contents
+            var index = 0;
+            var maxIndex = sobj.value.GcmfCount;
+            foreach (var gcmf in sobj.Value.GCMF)
+            {
+                // skip null models
+                if (string.IsNullOrEmpty(gcmf.ModelName) ||
+                    gcmf.ModelName == GCMF.kNullEntryName ||
+                    string.IsNullOrEmpty(gcmf.MaterialAnim.ModelName))
+                    continue;
+
+                writer.PushCol(sobj.FileName);
+                writer.PushCol($"[{index}/{maxIndex}]");
+                writer.PushCol(gcmf.ModelName);
+                writer.PushCol("0x" + gcmf.MaterialAnim.StartAddress.ToString("X8"));
+                writer.PushCol(gcmf.MaterialAnim.Unk_0x00);
+                writer.PushCol("0x" + gcmf.MaterialAnim.Unk_0x04.ToString("X8"));
+                //writer.PushCol(gcmf.MaterialAnim.Unk_0x08);
+                writer.PushCol("0x" + gcmf.MaterialAnim.Unk_0x08.ToString("X8"));
+                //writer.PushCol(gcmf.MaterialAnim.Unk_0x0C);
+                writer.PushCol("0x" + gcmf.MaterialAnim.Unk_0x0C.ToString("X8"));
+                writer.PushCol(gcmf.MaterialAnim.Unk_0x10);
+                writer.PushCol(gcmf.MaterialAnim.Unk_0x11);
+                writer.PushCol(gcmf.MaterialAnim.Unk_0x12);
+                writer.PushCol(gcmf.MaterialAnim.VertexRenderFlags);
+                writer.PushCol(gcmf.MaterialAnim.Unk_0x14);
+                writer.PushCol(gcmf.MaterialAnim.Unk_0x15);
+                writer.PushCol(gcmf.MaterialAnim.Tex0Index);
+                writer.PushCol(gcmf.MaterialAnim.Tex1Index);
+                writer.PushCol(gcmf.MaterialAnim.Tex2Index);
+                writer.PushCol(gcmf.MaterialAnim.Vertexdescriptorflags);
+                //writer.PushCol(gcmf.MaterialAnim.TransformMatrixSpecificIndices);
+                writer.PushCol(gcmf.MaterialAnim.Matdisplaylistsize);
+                writer.PushCol(gcmf.MaterialAnim.Tlmatdisplaylistsize);
+                writer.PushCol(gcmf.MaterialAnim.Unk_0x30);
+                writer.PushCol(gcmf.MaterialAnim.Unk_0x3C);
+                writer.PushCol("0x" + gcmf.MaterialAnim.Unk_0x3C.ToString("X8"));
+                writer.PushCol("0b_" + Convert.ToString(gcmf.MaterialAnim.Unk_0x3C, 2).PadLeft(32, '0'));
+                //writer.PushCol(gcmf.MaterialAnim.Unk_0x40);
+                writer.PushCol("0x" + gcmf.MaterialAnim.Unk_0x40.ToString("X8"));
+                //writer.PushCol(gcmf.MaterialAnim.Unk_0x44);
+                writer.PushCol("0x" + gcmf.MaterialAnim.Unk_0x44.ToString("X8"));
+                writer.PushCol(gcmf.MaterialAnim.Unk_0x48);
+                writer.PushCol("0x" + gcmf.MaterialAnim.Unk_0x48.ToString("X8"));
+                writer.PushCol("0b_" + Convert.ToString(gcmf.MaterialAnim.Unk_0x48, 2).PadLeft(32, '0'));
+                writer.PushCol(gcmf.MaterialAnim.Unk_0x4C);
+                writer.PushCol("0x" + gcmf.MaterialAnim.Unk_0x4C.ToString("X8"));
+                writer.PushCol("0b_" + Convert.ToString(gcmf.MaterialAnim.Unk_0x4C, 2).PadLeft(32, '0'));
+                //writer.PushCol(gcmf.MaterialAnim.Unk_0x50);
+                writer.PushCol("0x" + gcmf.MaterialAnim.Unk_0x50.ToString("X8"));
+                //writer.PushCol(gcmf.MaterialAnim.Unk_0x54);
+                writer.PushCol("0x" + gcmf.MaterialAnim.Unk_0x54.ToString("X8"));
+                //writer.PushCol(gcmf.MaterialAnim.Unk_0x58);
+                writer.PushCol("0x" + gcmf.MaterialAnim.Unk_0x58.ToString("X8"));
+                writer.PushRow();
+
+                index++;
+            }
+        }
+        writer.Close();
+    }
 }

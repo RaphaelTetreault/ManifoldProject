@@ -16,6 +16,7 @@ namespace GameCube.GX
         GX_AOP_XNOR,
         GX_MAX_ALPHAOP,
     }
+
     /// <summary>
     /// Texture Environment (Tev) control.
     /// </summary>
@@ -34,6 +35,7 @@ namespace GameCube.GX
         /// </summary>
         GX_READ_NONE,
     }
+
     /// <summary>
     /// Maximum anisotropic filter control.
     /// </summary>
@@ -44,6 +46,7 @@ namespace GameCube.GX
         GX_ANISO_4,
         GX_MAX_ANISOTROPY,
     }
+
     /// <summary>
     /// Lighting attenuation control.
     /// </summary>
@@ -62,6 +65,7 @@ namespace GameCube.GX
         /// </summary>
         GX_AF_NONE,
     }
+
     /// <summary>
     /// Name of vertex attribute or array. Attributes are listed in the ascending order vertex data is required to be sent to the GP.
     /// 
@@ -195,7 +199,6 @@ namespace GameCube.GX
         GX_VA_NULL = 0xff,
     }
 
-
     /// <summary>
     /// Type of attribute reference.
     /// </summary>
@@ -255,6 +258,7 @@ namespace GameCube.GX
         /// </summary>
         GX_BL_INVDSTCLR = GX_BL_INVSRCCLR,
     }
+
     /// <summary>
     /// Blending type.
     /// </summary>
@@ -274,6 +278,7 @@ namespace GameCube.GX
         GX_BM_LOGIC,
         GX_MAX_BLENDMODE,
     }
+
     /// <summary>
     /// Blending type.
     /// </summary>
@@ -298,6 +303,7 @@ namespace GameCube.GX
         GX_BM_SUBTRACT,
         GX_MAX_BLENDMODE,
     }
+
     /// <summary>
     /// Boolean type.
     /// </summary>
@@ -351,6 +357,7 @@ namespace GameCube.GX
         GX_TF_C8 = 0x9,
         GX_TF_C14X2 = 0xa,
     }
+
     /// <summary>
     /// Clipping modes. Note that they are backwards of the typical enable/disable enums. This is by design.
     /// </summary>
@@ -360,6 +367,7 @@ namespace GameCube.GX
         GX_CLIP_ENABLE = 0,
         GX_CLIP_DISABLE = 1,
     }
+
     /// <summary>
     /// Source of incoming color.
     /// </summary>
@@ -368,6 +376,7 @@ namespace GameCube.GX
         GX_SRC_REG = 0,
         GX_SRC_VTX,
     }
+
     /// <summary>
     /// Compare types.
     /// </summary>
@@ -382,6 +391,7 @@ namespace GameCube.GX
         GX_GEQUAL,
         GX_ALWAYS
     }
+
     /// <summary>
     /// GX Component Count
     /// </summary>
@@ -426,6 +436,7 @@ namespace GameCube.GX
         /// </summary>
         GX_TEX_ST = 1,
     }
+
     /// <summary>
     /// GX Component Count
     /// </summary>
@@ -474,6 +485,7 @@ namespace GameCube.GX
         /// </summary>
         GX_TEX_ST = 1,
     }
+
     /// <summary>
     /// GX Component Type
     /// Related to GXVtxFmt
@@ -526,6 +538,7 @@ namespace GameCube.GX
         /// </summary>
         GX_RGBA8,
     }
+
     /// <summary>
     /// Controls whether all lines, only even lines, or only odd lines are copied from the EFB
     /// </summary>
@@ -535,6 +548,7 @@ namespace GameCube.GX
         GX_COPY_INTLC_EVEN = 2,
         GX_COPY_INTLC_ODD = 3,
     }
+
     /// <summary>
     /// Backface culling modes.
     /// </summary>
@@ -556,6 +570,7 @@ namespace GameCube.GX
         GX_DF_SIGN,
         GX_DF_CLAMP,
     }
+
     /// <summary>
     /// Type of the brightness decreasing function by distance.
     /// </summary>
@@ -577,6 +592,7 @@ namespace GameCube.GX
         GX_CLAMP_TOP,
         GX_CLAMP_BOTTOM,
     }
+
     /// <summary>
     /// Fog equation control.
     /// </summary>
@@ -628,6 +644,7 @@ namespace GameCube.GX
         GX_ITB_STU,
         GX_MAX_ITBIAS,
     }
+
     /// <summary>
     /// Indirect texture formats.  Bits for the indirect offsets are extracted from the high end of each component byte.  Bits for the bump alpha are extraced off the low end of the byte.  For GX_ITF_8, the byte is duplicated for the offset and the bump alpha.
     /// </summary>
@@ -651,6 +668,7 @@ namespace GameCube.GX
         GX_ITF_3,
         GX_MAX_ITFORMAT,
     }
+
     /// <summary>
     /// Indirect texture stage ID.  Specifies which of the four indirect hardware stages to use.
     /// </summary>
@@ -665,6 +683,7 @@ namespace GameCube.GX
         GX_INDTEXSTAGE3,
         GX_MAX_INDTEXSTAGE,
     }
+
     /// <summary>
     /// Indirect texture wrap value.  This indicates whether the regular texture coordinate should be wrapped before being added to the offset.  GX_ITW_OFF specifies no wrapping.  GX_ITW_0 will zero out the regular texture coordinate.
     /// </summary>
@@ -700,6 +719,7 @@ namespace GameCube.GX
         GX_ITW_0,
         GX_MAX_ITWRAP,
     }
+
     /// <summary>
     /// Indirect texture scale value.  Specifies an additional scale value that may be applied to the texcoord used for an indirect initial lookup (not a TEV stage regular lookup).  The scale value is a fraction; thus GX_ITS_32 means to divide the texture coordinate values by 32.
     /// </summary>
@@ -743,6 +763,7 @@ namespace GameCube.GX
         GX_ITS_256,
         GX_MAX_ITSCALE,
     }
+
     /// <summary>
     /// Indirect texture matrix ID.  Indicates which indirect texture matrix and associated scale value should be used for a given TEV stage offset computation.   Three static matrices are available as well as two types of dynamic matrices.   Each dynamic matrix shares the scale values used with the static matrices.
     /// </summary>
@@ -807,6 +828,7 @@ namespace GameCube.GX
         GX_MAX_LIGHT = 0x100,
         GX_LIGHT_NULL = 0x000,
     }
+
     /// <summary>
     /// WARNING: UNSURE IF ORDER IS CORRECT, IT DIFFERS FROM liboGC
     /// </summary>
@@ -887,6 +909,7 @@ namespace GameCube.GX
         GX_PERF0_CLOCKS,
         GX_PERF0_NONE,
     }
+
     /// <summary>
     /// Performance counter 1 metrics.
     /// </summary>
@@ -919,6 +942,7 @@ namespace GameCube.GX
         GX_PERF1_CLOCKS,
         GX_PERF1_NONE,
     }
+
     /// <summary>
     /// Frame buffer pixel formats.
     /// </summary>
@@ -933,6 +957,7 @@ namespace GameCube.GX
         GX_PF_V8,
         GX_PF_YUV420,
     }
+
     /// <summary>
     /// Position-Normal matrix index.
     /// </summary>
@@ -950,6 +975,7 @@ namespace GameCube.GX
         GX_PNMTX9 = 27,
 
     }
+
     /// <summary>
     /// Primitive type.
     /// </summary>
@@ -963,6 +989,7 @@ namespace GameCube.GX
         GX_LINESTRIP                = 0xB0, // 0b10110000
         GX_POINTS                   = 0xB8, // 0b10111000
     }
+
     /// <summary>
     /// Projection type.
     /// </summary>
@@ -971,6 +998,7 @@ namespace GameCube.GX
         GX_PERSPECTIVE,
         GX_ORTHOGRAPHIC,
     }
+
     /// <summary>
     /// Post-transform texture matrix index.
     /// Revision 2 or greater only
@@ -1030,6 +1058,7 @@ namespace GameCube.GX
         GX_CA_ONE,
         GX_CA_ZERO,
     }
+
     /// <summary>
     /// Texture Environment (Tev) input control.
     /// </summary>
@@ -1044,6 +1073,7 @@ namespace GameCube.GX
         GX_CA_KONST,
         GX_CA_ZERO,
     }
+
     /// <summary>
     /// Tev bias values.
     /// </summary>
@@ -1054,6 +1084,7 @@ namespace GameCube.GX
         GX_TB_SUBHALF,
         GX_MAX_TEVBIAS,
     }
+
     /// <summary>
     /// Texture Environment (Tev) clamp modes.
     /// </summary>
@@ -1065,6 +1096,7 @@ namespace GameCube.GX
         GX_TC_LE,
         GX_MAX_TEVCLAMPMODE
     }
+
     /// <summary>
     /// Texture Environment (Tev) input control.
     /// </summary>
@@ -1091,6 +1123,7 @@ namespace GameCube.GX
         GX_CC_TEXGGG,
         GX_CC_TEXBBB
     }
+
     /// <summary>
     /// Texture Environment (Tev) input control.
     /// </summary>
@@ -1113,6 +1146,7 @@ namespace GameCube.GX
         GX_CC_KONST,
         GX_CC_ZERO
     }
+
     /// <summary>
     /// TEV color channel components.
     /// GX Revision 2 or later only
@@ -1124,6 +1158,7 @@ namespace GameCube.GX
         GX_CH_BLUE,
         GX_CH_ALPHA
     }
+
     /// <summary>
     /// TEV constant alpha input selection.
     /// GX Revision 2 or later only
@@ -1156,6 +1191,7 @@ namespace GameCube.GX
         GX_TEV_KASEL_K2_A = 0x1E,
         GX_TEV_KASEL_K3_A = 0x1F
     }
+
     /// <summary>
     /// Texture Environment "konstant" color register name.
     /// </summary>
@@ -1167,6 +1203,7 @@ namespace GameCube.GX
         GX_KCOLOR3,
         GX_MAX_KCOLOR
     }
+
     /// <summary>
     /// TEV constant color input selection.
     /// GX Revision 2 or later only
@@ -1202,8 +1239,8 @@ namespace GameCube.GX
         GX_TEV_KCSEL_K1_A = 0x1D,
         GX_TEV_KCSEL_K2_A = 0x1E,
         GX_TEV_KCSEL_K3_A = 0x1F
-
     }
+
     /// <summary>
     /// Texture Environment (Tev) control.
     /// </summary>
@@ -1215,6 +1252,7 @@ namespace GameCube.GX
         GX_REPLACE,
         GX_PASSCLR
     }
+
     /// <summary>
     /// Texture Environment (Tev) control.
     /// </summary>
@@ -1223,6 +1261,7 @@ namespace GameCube.GX
         GX_TEV_ADD,
         GX_TEV_SUB
     }
+
     /// <summary>
     /// Texture Environment (Tev) control.
     /// </summary>
@@ -1249,6 +1288,7 @@ namespace GameCube.GX
         /// </summary>
         GX_TEV_COMP_A8_EQ = GX_TEV_COMP_RGB8_EQ,
     }
+
     /// <summary>
     /// Texture Environment source/destination register name.  GX_TEVPREV is used as the default register for passing results from one stage to another. GX_TEVPREV must be used as the output register in the last active Tev stage.
     /// </summary>
@@ -1259,8 +1299,8 @@ namespace GameCube.GX
         GX_TEVREG1,
         GX_TEVREG2,
         GX_MAX_TEVREG
-
     }
+
     /// <summary>
     /// Texture Environment (Tev)  control.
     /// </summary>
@@ -1272,6 +1312,7 @@ namespace GameCube.GX
         GX_CS_DIVIDE_2,
         GX_MAX_TEVSCALE
     }
+
     /// <summary>
     /// Texture Environment (Tev) stage name.
     /// </summary>
@@ -1295,6 +1336,7 @@ namespace GameCube.GX
         GX_TEVSTAGE15,
         GX_MAX_TEVSTAGE
     }
+
     /// <summary>
     /// TEV color swap table entries.
     /// GX Revision 2 or later only
@@ -1307,6 +1349,7 @@ namespace GameCube.GX
         GX_TEV_SWAP3,
         GX_MAX_TEVSWAP
     }
+
     /// <summary>
     /// Size of texture cache regions.
     /// </summary>
@@ -1317,6 +1360,7 @@ namespace GameCube.GX
         GX_TEXCACHE_512K,
         GX_TEXCACHE_NONE
     }
+
     /// <summary>
     /// Name of texture coordinate.
     /// </summary>
@@ -1356,8 +1400,8 @@ namespace GameCube.GX
         GX_TEXCOORD7,
         GX_MAX_TEXCOORD = 8,
         GX_TEXCOORD_NULL = 0xff
-
     }
+
     /// <summary>
     /// Texture filter types.
     /// </summary>
@@ -1370,6 +1414,7 @@ namespace GameCube.GX
         GX_NEAR_MIP_LIN,
         GX_LIN_MIP_LIN
     }
+
     /// <summary>
     /// RGB, RGBA, Intensity, Intensity/Alpha, Compressed, and Z texture format types.   See GXCITexFmt for color index formats.
     ///
@@ -1390,6 +1435,7 @@ namespace GameCube.GX
         GX_TF_Z16 = (0x10 | GX_TF_IA8),
         GX_TF_Z24X8 = (0x10 | GX_TF_RGBA8)
     }
+
     /// <summary>
     /// RGB, RGBA, Intensity, Intensity/Alpha, Compressed, and Z texture format types.   See GXCITexFmt for color index formats.
     ///
@@ -1433,6 +1479,7 @@ namespace GameCube.GX
 
         GX_TF_A8 = GX_CTF_A8 // to keep compatibility
     }
+
     /// <summary>
     /// Texture coordinate source parameter.
     /// </summary>
@@ -1460,6 +1507,7 @@ namespace GameCube.GX
         GX_TG_COLOR0,
         GX_TG_COLOR1
     }
+
     /// <summary>
     /// Texture coordinate generation method.
     /// </summary>
@@ -1477,6 +1525,7 @@ namespace GameCube.GX
         GX_TG_BUMP7,
         GX_TG_SRTG
     }
+
     /// <summary>
     /// Texture map name.
     /// </summary>
@@ -1498,6 +1547,7 @@ namespace GameCube.GX
         /// </summary>
         GX_TEX_DISABLE = 0x100
     }
+
     /// <summary>
     /// Texture matrix index.
     /// </summary>
@@ -1515,6 +1565,7 @@ namespace GameCube.GX
         GX_TEXMTX9 = 57,
         GX_IDENTITY = 60
     }
+
     /// <summary>
     /// Texture matrix type.
     /// </summary>
@@ -1523,6 +1574,7 @@ namespace GameCube.GX
         GX_MTX3x4 = 0,
         GX_MTX2x4
     }
+
     /// <summary>
     /// Texture offset values.
     /// </summary>
@@ -1536,6 +1588,7 @@ namespace GameCube.GX
         GX_TO_ONE,
         GX_MAX_TEXOFFSET
     }
+
     /// <summary>
     /// Texture coordinate controls.
     /// </summary>
@@ -1546,6 +1599,7 @@ namespace GameCube.GX
         GX_MIRROR,
         GX_MAX_TEXWRAPMODE
     }
+
     /// <summary>
     /// Name of Texture Look-Up Table (TLUT) in texture memory.  Each table GX_TLUT0-15  contains 256 entries, 16b per entry.  GX_BIGTLUT0-3 contains 1024 entries, 16b per entry.  Used for configuring texture memory in GXInit.
     /// </summary>
@@ -1573,6 +1627,7 @@ namespace GameCube.GX
         GX_BIGTLUT2,
         GX_BIGTLUT3,
     }
+
     /// <summary>
     /// Texture Look-Up Table (TLUT) formats.
     /// </summary>
@@ -1583,6 +1638,7 @@ namespace GameCube.GX
         GX_TL_RGB5A3 = 0x2,
         GX_MAX_TLUTFMT
     }
+
     /// <summary>
     /// Size of the Texture Look-Up Table (TLUT) in texture memory.
     /// </summary>
@@ -1600,6 +1656,7 @@ namespace GameCube.GX
         GX_TLUT_8K = 512,
         GX_TLUT_16K = 1024
     }
+
     /// <summary>
     /// Vertex cache performance counter parameters.
     /// </summary>
@@ -1672,6 +1729,7 @@ namespace GameCube.GX
         GX_ZC_MID,
         GX_ZC_FAR
     }
+
     /// <summary>
     /// Z texture operations.
     /// </summary>
