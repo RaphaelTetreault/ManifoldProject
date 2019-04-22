@@ -13,7 +13,6 @@ namespace DumpHex
         {
             while (true)
             {
-            LOOP_BEGIN:
                 Console.WriteLine("Enter file name:");
                 string input = Console.ReadLine();
                 Console.WriteLine();
@@ -22,9 +21,8 @@ namespace DumpHex
                 if (!fileExists)
                 {
                     Console.WriteLine($"File {input} does not exists!\n");
-                    goto LOOP_BEGIN;
+                    continue;
                 }
-
 
                 using (var file = File.OpenRead(input))
                 {
@@ -39,6 +37,8 @@ namespace DumpHex
                             using (var writer = new StreamWriter(outputFile))
                             {
                                 // HEADER
+                                writer.WriteNextCol($"Address");
+                                //
                                 var endianness = BitConverter.IsLittleEndian ? "LE" : "BE";
                                 writer.WriteNextCol($"Hex 32 ({endianness})");
                                 writer.WriteNextCol("Integer 32");
@@ -57,6 +57,8 @@ namespace DumpHex
                                 int stride = 4;
                                 while (reader.BaseStream.Position < reader.BaseStream.Length - stride)
                                 {
+                                    writer.WriteNextCol("0x" + reader.BaseStream.Position.ToString("X8"));
+
                                     var bytes32 = reader.ReadBytes(stride);
                                     var bytes16_1 = new byte[] { bytes32[0], bytes32[1] };
                                     var bytes16_2 = new byte[] { bytes32[2], bytes32[3] };
@@ -70,7 +72,7 @@ namespace DumpHex
                                     var uint16_2 = BitConverter.ToUInt16(bytes16_2, 0);
                                     var @float = BitConverter.ToSingle(bytes32, 0);
 
-                                    writer.WriteNextCol(uint32.ToString("X8"));
+                                    writer.WriteNextCol("0x" + uint32.ToString("X8"));
                                     writer.WriteNextCol(uint32.ToString());
                                     writer.WriteNextCol(uint16_1.ToString());
                                     writer.WriteNextCol(uint16_2.ToString());
@@ -85,7 +87,7 @@ namespace DumpHex
                                     uint16_1 = BitConverter.ToUInt16(bytes16_1, 0);
                                     uint16_2 = BitConverter.ToUInt16(bytes16_2, 0);
                                     @float = BitConverter.ToSingle(bytes32, 0);
-                                    writer.WriteNextCol(uint32.ToString("X8"));
+                                    writer.WriteNextCol("0x" + uint32.ToString("X8"));
                                     writer.WriteNextCol(uint32.ToString());
                                     writer.WriteNextCol(uint16_1.ToString());
                                     writer.WriteNextCol(uint16_2.ToString());

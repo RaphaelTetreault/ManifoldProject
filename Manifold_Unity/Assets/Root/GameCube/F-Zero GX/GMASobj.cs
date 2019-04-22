@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
+using GameCube.FZeroGX.GMA;
+
 [System.Serializable]
 public class GMASobj : ManifoldAsset<GMA>
 {
