@@ -81,6 +81,13 @@ namespace GameCube.FZeroGX.GMA
         {
             StartAddress = reader.BaseStream.Position;
 
+            reader.ReadX(ref vertexCount);
+            reader.ReadX(ref unk_type1_relPtr);
+            reader.ReadX(ref unk_type2_relPtr);
+            reader.ReadX(ref unk_type3_relPtr);
+            reader.ReadX(ref unk_type4_relPtr);
+            reader.ReadX(ref fifoPadding, kFifoPaddingSize);
+
             EndAddress = reader.BaseStream.Position;
         }
 

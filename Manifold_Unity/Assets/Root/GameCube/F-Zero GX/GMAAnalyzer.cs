@@ -197,7 +197,7 @@ public class GMAAnalyzer : AnalyzerSobj<GMASobj>
                 writer.PushCol(gcmf.TranslucidMaterialCount);
                 writer.PushCol(gcmf.Transformmatrixcount);
                 writer.PushCol(gcmf.Zero_0x1F);
-                writer.PushCol(gcmf.Indicesrelptr);
+                writer.PushCol(gcmf.GcmfSize);
                 writer.PushCol(gcmf.Zero_0x24);
                 writer.PushRow();
 
@@ -275,10 +275,14 @@ public class GMAAnalyzer : AnalyzerSobj<GMASobj>
         if (writer.BaseStream.Length <= 0)
         {
             writer.PushCol("File Name");
-            writer.PushCol("Model Index");
             writer.PushCol("Model Name");
             writer.PushCol("Address");
-            writer.PushCol("Unk_0x00");
+            writer.PushCol("Model Index");
+            writer.PushCol("Mat Index");
+            writer.PushCol("Tex Index");
+            writer.PushCol("Zero 0x00");
+            writer.PushCol("Unk_0x02");
+            writer.PushCol("Unk_0x03");
             writer.PushCol("Color0");
             writer.PushCol("Color1");
             writer.PushCol("Color2");
@@ -296,6 +300,7 @@ public class GMAAnalyzer : AnalyzerSobj<GMASobj>
             writer.PushCol("Mat display list size");
             writer.PushCol("Tl mat display list size");
             writer.PushCol("Bounding Sphere Origin");
+            writer.PushCol("Zero 0x3C");
             writer.PushCol("Unk_0x40");
             writer.PushRow();
         }
@@ -303,44 +308,57 @@ public class GMAAnalyzer : AnalyzerSobj<GMASobj>
         foreach (var sobj in analysisSobjs)
         {
             // Write contents
-            var index = 0;
-            var maxIndex = sobj.value.GcmfCount;
+            var gcmfIndex = 1;
+            var gcmfIndexMax = sobj.value.GcmfCount;
             foreach (var gcmf in sobj.Value.GCMF)
             {
                 // skip null models
-                if (string.IsNullOrEmpty(gcmf.ModelName) ||
-                    gcmf.ModelName == GCMF.kNullEntryName ||
-                    string.IsNullOrEmpty(gcmf.Material.ModelName))
+                if (string.IsNullOrEmpty(gcmf.ModelName) || gcmf.ModelName == GCMF.kNullEntryName)
                     continue;
 
-                writer.PushCol(sobj.FileName);
-                writer.PushCol($"GCMF[{index}/{maxIndex}]");
-                writer.PushCol(gcmf.ModelName);
-                writer.PushCol("0x" + gcmf.Material.StartAddress.ToString("X8"));
-                // FOR LOOP
-                writer.PushCol(gcmf.Material.Unk_0x00);
-                writer.PushCol(gcmf.Material.Color0);
-                writer.PushCol(gcmf.Material.Color1);
-                writer.PushCol(gcmf.Material.Color2);
-                writer.PushCol(gcmf.Material.Unk_0x10);
-                writer.PushCol(gcmf.Material.Unk_0x11);
-                writer.PushCol(gcmf.Material.Unk_0x12);
-                writer.PushCol(gcmf.Material.VertexRenderFlags);
-                writer.PushCol(gcmf.Material.Unk_0x14);
-                writer.PushCol(gcmf.Material.Unk_0x15);
-                writer.PushCol(gcmf.Material.Tex0Index);
-                writer.PushCol(gcmf.Material.Tex1Index);
-                writer.PushCol(gcmf.Material.Tex2Index);
-                writer.PushCol(gcmf.Material.VertexDescriptorFlags);
-                //writer.PushCol(gcmf.Material.TransformMatrixSpecificIndices);
-                writer.PushCol(gcmf.Material.MatDisplayListSize);
-                writer.PushCol(gcmf.Material.TlMatDisplayListSize);
-                writer.PushCol(gcmf.Material.BoudingSphereOrigin);
-                writer.PushCol(gcmf.Material.Unk_0x40);
-                writer.PushRow();
-                // END FOR LOOP
+                var matIndex = 1;
+                var texIndex = 1;
+                var matIndexMax = gcmf.Materials.Length;
+                var texIndexMax = 0;
+                foreach (var mat in gcmf.Materials)
+                    texIndexMax += mat.TexturesUsedCount;
 
-                index++;
+                foreach (var material in gcmf.Materials)
+                {
+                    writer.PushCol(sobj.FileName);
+                    writer.PushCol(gcmf.ModelName);
+                    writer.PushCol("0x" + material.StartAddress.ToString("X8"));
+                    writer.PushCol($"GCMF[{gcmfIndex}/{gcmfIndexMax}]");
+                    writer.PushCol($"MAT[{matIndex}/{matIndexMax}]");
+                    writer.PushCol($"TEX[{texIndex}/{texIndexMax}]");
+                    writer.PushCol(material.Zero_0x00);
+                    writer.PushCol(material.Unk_0x02);
+                    writer.PushCol(material.Unk_0x03);
+                    writer.PushCol(material.Color0);
+                    writer.PushCol(material.Color1);
+                    writer.PushCol(material.Color2);
+                    writer.PushCol(material.Unk_0x10);
+                    writer.PushCol(material.Unk_0x11);
+                    writer.PushCol(material.TexturesUsedCount);
+                    writer.PushCol(material.VertexRenderFlags);
+                    writer.PushCol(material.Unk_0x14);
+                    writer.PushCol(material.Unk_0x15);
+                    writer.PushCol(material.Tex0Index);
+                    writer.PushCol(material.Tex1Index);
+                    writer.PushCol(material.Tex2Index);
+                    writer.PushCol(material.VertexDescriptorFlags);
+                    //writer.PushCol(gcmf.Material.TransformMatrixSpecificIndices);
+                    writer.PushCol(material.MatDisplayListSize);
+                    writer.PushCol(material.TlMatDisplayListSize);
+                    writer.PushCol(material.BoudingSphereOrigin);
+                    writer.PushCol(material.Unk_0x3C);
+                    writer.PushCol(material.Unk_0x40);
+                    writer.PushRow();
+
+                    matIndex++;
+                    texIndex += material.TexturesUsedCount;
+                }
+                gcmfIndex++;
             }
         }
         writer.Close();

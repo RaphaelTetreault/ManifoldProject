@@ -8,8 +8,6 @@ using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.Serialization;
 
-using GameCube.Games;
-
 namespace GameCube.FZeroGX.GMA
 {
     [Serializable]
@@ -31,15 +29,17 @@ namespace GameCube.FZeroGX.GMA
             this.translucidMaterialCount = gcmf.TranslucidMaterialCount;
             this.vat = vat;
 
-            var matBuffer = gcmf.Material.MatDisplayListSize;
-            matMeshes = new GxDisplayList[this.materialCount];
-            for (int i = 0; i < matMeshes.Length; i++)
-                matMeshes[i] = new GxDisplayList(vat, matBuffer);
+            throw new NotImplementedException();
 
-            var tlMatBuffer = gcmf.Material.TlMatDisplayListSize;
-            tlMatMeshes = new GxDisplayList[this.translucidMaterialCount];
-            for (int i = 0; i < tlMatMeshes.Length; i++)
-                tlMatMeshes[i] = new GxDisplayList(vat, tlMatBuffer);
+            //var matBuffer = gcmf.Materials.MatDisplayListSize;
+            //matMeshes = new GxDisplayList[this.materialCount];
+            //for (int i = 0; i < matMeshes.Length; i++)
+            //    matMeshes[i] = new GxDisplayList(vat, matBuffer);
+
+            //var tlMatBuffer = gcmf.Materials.TlMatDisplayListSize;
+            //tlMatMeshes = new GxDisplayList[this.translucidMaterialCount];
+            //for (int i = 0; i < tlMatMeshes.Length; i++)
+            //    tlMatMeshes[i] = new GxDisplayList(vat, tlMatBuffer);
         }
 
         public void Deserialize(BinaryReader reader)

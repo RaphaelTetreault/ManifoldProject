@@ -10,7 +10,7 @@ namespace GameCube.FZeroGX.GMA
 {
     #region MATERIAL ENUMS
     [Flags]
-    public enum MatFlags0x00_U32 : uint
+    public enum MatFlags0x03_U8 : byte
     {
         UNK_FLAG_0 = 1 << 0,
         UNK_FLAG_1 = 1 << 1,
@@ -20,16 +20,27 @@ namespace GameCube.FZeroGX.GMA
         UNK_FLAG_5 = 1 << 5,
         UNK_FLAG_6 = 1 << 6,
         UNK_FLAG_7 = 1 << 7,
-        UNK_FLAG_8 = 1 << 8,
-        UNK_FLAG_9 = 1 << 9,
-        UNK_FLAG_10 = 1 << 10,
-        UNK_FLAG_11 = 1 << 11,
-        UNK_FLAG_12 = 1 << 12,
-        UNK_FLAG_13 = 1 << 13,
-        UNK_FLAG_14 = 1 << 14,
-        UNK_FLAG_15 = 1 << 15,
     }
 
+    /// <summary>
+    /// Onlys uses Flag 1 for 
+    /// </summary>
+    [Flags]
+    public enum MatFlags0x02_U8 : byte
+    {
+        UNK_FLAG_0 = 1 << 0,
+        UNK_FLAG_1 = 1 << 1,
+        UNK_FLAG_2 = 1 << 2,
+        UNK_FLAG_3 = 1 << 3,
+        UNK_FLAG_4 = 1 << 4,
+        UNK_FLAG_5 = 1 << 5,
+        UNK_FLAG_6 = 1 << 6,
+        UNK_FLAG_7 = 1 << 7,
+    }
+
+    /// <summary>
+    /// 2019/04/23 - looks like flags - 14 combinations
+    /// </summary>
     [Flags]
     public enum MatFlags0x10_U8 : byte
     {
@@ -43,21 +54,11 @@ namespace GameCube.FZeroGX.GMA
         UNK_FLAG_7 = 1 << 7,
     }
 
+    /// <summary>
+    /// 2019/04/23 - Could be flags, but lots of 0xFF suggest it isn't
+    /// </summary>
     [Flags]
     public enum MatFlags0x11_U8 : byte
-    {
-        UNK_FLAG_0 = 1 << 0,
-        UNK_FLAG_1 = 1 << 1,
-        UNK_FLAG_2 = 1 << 2,
-        UNK_FLAG_3 = 1 << 3,
-        UNK_FLAG_4 = 1 << 4,
-        UNK_FLAG_5 = 1 << 5,
-        UNK_FLAG_6 = 1 << 6,
-        UNK_FLAG_7 = 1 << 7,
-    }
-
-    [Flags]
-    public enum MatFlags0x12_U8 : byte
     {
         UNK_FLAG_0 = 1 << 0,
         UNK_FLAG_1 = 1 << 1,
@@ -77,30 +78,17 @@ namespace GameCube.FZeroGX.GMA
     {
         RENDER_MATERIALS = 1 << 0,
         RENDER_TRANSLUCID_MATERIALS = 1 << 1,
-        UNK_FLAG_2 = 1 << 2,
-        UNK_FLAG_3 = 1 << 3,
-        UNK_FLAG_4 = 1 << 4,
-        UNK_FLAG_5 = 1 << 5,
-        UNK_FLAG_6 = 1 << 6,
-        UNK_FLAG_7 = 1 << 7,
+        RENDER_SKIN_OR_EFFECTIVE_A = 1 << 2,
+        RENDER_SKIN_OR_EFFECTIVE_B = 1 << 3,
+        UNUSED_FLAG_4 = 1 << 4,
+        UNUSED_FLAG_5 = 1 << 5,
+        UNUSED_FLAG_6 = 1 << 6,
+        UNUSED_FLAG_7 = 1 << 7,
     }
 
     /// <summary>
-    /// 0x14
+    /// 2019/04/23 - Definitely flags
     /// </summary>
-    [Flags]
-    public enum MatFlags0x14_U8 : byte
-    {
-        UNK_FLAG_0 = 1 << 0,
-        UNK_FLAG_1 = 1 << 1,
-        UNK_FLAG_2 = 1 << 2,
-        UNK_FLAG_3 = 1 << 3,
-        UNK_FLAG_4 = 1 << 4,
-        UNK_FLAG_5 = 1 << 5,
-        UNK_FLAG_6 = 1 << 6,
-        UNK_FLAG_7 = 1 << 7,
-    }
-
     [Flags]
     public enum MatFlags0x15_U8 : byte
     {
@@ -108,10 +96,23 @@ namespace GameCube.FZeroGX.GMA
         UNK_FLAG_1 = 1 << 1,
         UNK_FLAG_2 = 1 << 2,
         UNK_FLAG_3 = 1 << 3,
-        UNK_FLAG_4 = 1 << 4,
+        UNUSED_FLAG_4 = 1 << 4,
         UNK_FLAG_5 = 1 << 5,
         UNK_FLAG_6 = 1 << 6,
-        UNK_FLAG_7 = 1 << 7,
+        UNUSED_FLAG_7 = 1 << 7,
+    }
+
+    /// <summary>
+    /// 2019/04/23 - All values 0, 17, 18, 20, 36, 48
+    /// </summary>
+    [Flags]
+    public enum MatFlags0x40_U32 : UInt32
+    {
+        UNK_FLAG_0 = 1 << 0,
+        UNK_FLAG_1 = 1 << 1,
+        UNK_FLAG_2 = 1 << 2,
+        UNK_FLAG_4 = 1 << 4,
+        UNK_FLAG_5 = 1 << 5,
     }
 
     #endregion
@@ -257,15 +258,24 @@ namespace GameCube.FZeroGX.GMA
         #region MEMBERS
 
         [SerializeField, HexFlags("00 -", 8)]
-        MatFlags0x00_U32 unk_0x00;
+        ushort zero_0x00;
 
-        [SerializeField, Hex("04 -", 8)]
+        /// <summary>
+        /// Literally only used once for Mat [7/7] on st13 C13_ROAD01. See unk_0x3C
+        /// </summary>
+        [SerializeField, HexFlags("02 -", 8)]
+        MatFlags0x02_U8 unk_0x02;
+
+        [SerializeField, HexFlags("03 -", 8)]
+        MatFlags0x03_U8 unk_0x03;
+
+        [SerializeField, LabelPrefix("04 -")]
         Color32 color0;
 
-        [SerializeField, Hex("04 -", 8)]
+        [SerializeField, LabelPrefix("08 -")]
         Color32 color1;
 
-        [SerializeField, Hex("04 -", 8)]
+        [SerializeField, LabelPrefix("0C -")]
         Color32 color2;
 
         [SerializeField, HexFlags("10 -", 2)]
@@ -275,17 +285,16 @@ namespace GameCube.FZeroGX.GMA
         MatFlags0x11_U8 unk_0x11;
 
         [SerializeField, HexFlags("12 -", 2)]
-        MatFlags0x12_U8 unk_0x12;
+        sbyte texturesUsedCount;
 
         [SerializeField, HexFlags("13 -", 2)]
         MatVertexRenderFlag_U8 vertexRenderFlags;
 
-        // GxUtils: used textures count
         [SerializeField, HexFlags("14 -", 2)]
-        MatFlags0x14_U8 unk_0x14;
+        sbyte unk_0x14;
 
         [SerializeField, HexFlags("15 -", 2)]
-        MatFlags0x14_U8 unk_0x15;
+        MatFlags0x15_U8 unk_0x15;
 
         [SerializeField, Hex("16 -", 4)]
         short tex0Index = -1;
@@ -309,16 +318,17 @@ namespace GameCube.FZeroGX.GMA
         [SerializeField, Hex("2C -", 8)]
         uint tlMatDisplayListSize;
 
-        // origin bounding box
         [SerializeField, LabelPrefix("30 -")]
         Vector3 boundingSphereOrigin;
 
+        /// <summary>
+        /// Literally only used once for Mat [7/7] on st13 C13_ROAD01. Value is 1f
+        /// </summary>
         [SerializeField, LabelPrefix("3C -")]
-        [FormerlySerializedAs("unk_0x3C")]
-        uint zero_0x3C;
+        uint unk_0x3C;
 
         [SerializeField, LabelPrefix("40 -")]
-        uint unk_0x40;
+        MatFlags0x40_U32 unk_0x40;
 
         byte[] fifoPadding;
 
@@ -327,17 +337,19 @@ namespace GameCube.FZeroGX.GMA
         #region PROPERTIES
 
         // 0x00
-        public MatFlags0x00_U32 Unk_0x00 => unk_0x00;
+        public ushort Zero_0x00 => zero_0x00;
+        public MatFlags0x02_U8 Unk_0x02 => unk_0x02;
+        public MatFlags0x03_U8 Unk_0x03 => unk_0x03;
         public Color32 Color0 => color0;
         public Color32 Color1 => color1;
         public Color32 Color2 => color2;
         // 0x10
         public MatFlags0x10_U8 Unk_0x10 => unk_0x10;
         public MatFlags0x11_U8 Unk_0x11 => unk_0x11;
-        public MatFlags0x12_U8 Unk_0x12 => unk_0x12;
+        public sbyte TexturesUsedCount => texturesUsedCount;
         public MatVertexRenderFlag_U8 VertexRenderFlags => vertexRenderFlags;
-        public MatFlags0x14_U8 Unk_0x14 => unk_0x14;
-        public MatFlags0x14_U8 Unk_0x15 => unk_0x15;
+        public sbyte Unk_0x14 => unk_0x14;
+        public MatFlags0x15_U8 Unk_0x15 => unk_0x15;
         public short Tex0Index => tex0Index;
         public short Tex1Index => tex1Index;
         public short Tex2Index => tex2Index;
@@ -348,8 +360,8 @@ namespace GameCube.FZeroGX.GMA
         public uint TlMatDisplayListSize => tlMatDisplayListSize;
         // 0x30
         public Vector3 BoudingSphereOrigin => boundingSphereOrigin;
-        public uint Zero_0x3C => zero_0x3C;
-        public uint Unk_0x40 => unk_0x40;
+        public float Unk_0x3C => unk_0x3C;
+        public MatFlags0x40_U32 Unk_0x40 => unk_0x40;
         public byte[] Fifopadding => fifoPadding;
         // 0x60
 
@@ -382,14 +394,16 @@ namespace GameCube.FZeroGX.GMA
             StartAddress = reader.BaseStream.Position;
 
             // 0x00
-            reader.ReadX(ref unk_0x00);
+            reader.ReadX(ref zero_0x00); Assert.IsTrue(zero_0x00 == 0);
+            reader.ReadX(ref unk_0x02);
+            reader.ReadX(ref unk_0x03);
             reader.ReadX(ref color0);
             reader.ReadX(ref color1);
             reader.ReadX(ref color2);
             // 0x10
             reader.ReadX(ref unk_0x10);
             reader.ReadX(ref unk_0x11);
-            reader.ReadX(ref unk_0x12);
+            reader.ReadX(ref texturesUsedCount);
             reader.ReadX(ref vertexRenderFlags);
             reader.ReadX(ref unk_0x14);
             reader.ReadX(ref unk_0x15);
@@ -403,14 +417,14 @@ namespace GameCube.FZeroGX.GMA
             reader.ReadX(ref tlMatDisplayListSize);
             // 0x30
             reader.ReadX(ref boundingSphereOrigin);
-            reader.ReadX(ref zero_0x3C);
+            reader.ReadX(ref unk_0x3C);
             reader.ReadX(ref unk_0x40);
             reader.ReadX(ref fifoPadding, kFifoPaddingSize);
 
             EndAddress = reader.BaseStream.Position;
 
             for (int i = 0; i < fifoPadding.Length; i++)
-                Assert.IsTrue(fifoPadding[i] == 0x00, $"Index {i}");
+                Assert.IsTrue(fifoPadding[i] == 0x00, $"Addr:{startAddress.ToString("X8")} {FileName}/{ModelName}: Index {i}");
         }
 
         public void Serialize(BinaryWriter writer)

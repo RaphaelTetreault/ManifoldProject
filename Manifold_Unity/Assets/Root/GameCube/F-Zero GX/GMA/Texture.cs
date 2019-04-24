@@ -26,7 +26,7 @@ namespace GameCube.FZeroGX.GMA
         ENABLE_UV_SCROLL = 1 << 1,
         //UNK_FLAG_2 = 1 << 2, // unused
         /// <summary>
-        /// 7 occurences total. (st21,lz.gma, [75,76,77/130] guide_light*, [1/6]
+        /// 7 occurences total. (st21,lz.gma, [75,76,77/130] guide_light*, [1/6])
         /// </summary>
         UNK_FLAG_3 = 1 << 3,
         /// <summary>
@@ -77,9 +77,9 @@ namespace GameCube.FZeroGX.GMA
         /// </summary>
         UNK_FLAG_1 = 1 << 1, // Working together?
         UNK_FLAG_2 = 1 << 2, // Working together?
-                             /// <summary>
-                             /// 2019/04/03 VERIFIED: Enable Mipmap NEAR
-                             /// </summary>
+        /// <summary>
+        /// 2019/04/03 VERIFIED: Enable Mipmap NEAR
+        /// </summary>
         ENABLE_NEAR = 1 << 3,
         /// <summary>
         /// Height map? Blend? (they are greyscale)
@@ -94,9 +94,9 @@ namespace GameCube.FZeroGX.GMA
         /// Total occurences = 3. Only MCSO, on a single geometry set. Perhaps error from devs?
         /// </summary>
         UNK_FLAG_6 = 1 << 6, // only on 3?
-                             /// <summary>
-                             /// On many vehicles
-                             /// </summary>
+        /// <summary>
+        /// On many vehicles
+        /// </summary>
         UNK_FLAG_7 = 1 << 7,
     }
 

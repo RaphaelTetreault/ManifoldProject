@@ -11,10 +11,17 @@ namespace GameCube.FZeroGX.GMA
     [Serializable]
     public struct TransformMatrix3x4 : IBinarySerializable
     {
-        [SerializeField] Vector3 row0;
-        [SerializeField] Vector3 row1;
-        [SerializeField] Vector3 row2;
-        [SerializeField] Vector3 row3;
+        [SerializeField, LabelPrefix("00")]
+        Vector3 row0;
+
+        [SerializeField, LabelPrefix("0C")]
+        Vector3 row1;
+
+        [SerializeField, LabelPrefix("18")]
+        Vector3 row2;
+
+        [SerializeField, LabelPrefix("24")]
+        Vector3 row3;
 
         public Vector3 Row0
         {

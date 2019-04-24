@@ -22,7 +22,7 @@ public class HexDrawer : PropertyDrawer
 
         var newLabel = new GUIContent(label.text);
         if (!string.IsNullOrEmpty(attr.prefix))
-            newLabel.text = $"{attr.prefix} {newLabel.text}";
+            newLabel.text = $"{attr.prefix} - {newLabel.text}";
 
         var labelWidth = (pos.width - halfWidth);
         pos.width = labelWidth;

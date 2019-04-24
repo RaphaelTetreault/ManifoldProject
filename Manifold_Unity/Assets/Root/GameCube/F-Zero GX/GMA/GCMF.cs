@@ -20,21 +20,21 @@ namespace GameCube.FZeroGX.GMA
     public enum GcmfAttributes_U32 : UInt32
     {
         /// <summary>
-        /// 16 bit flag (vertices are stored as uint16 format instead of float)
+        /// Vertices are stored in 16-bit compressed floating point number format using GameCube GX conventions.
         /// </summary>
-        _16Bit = 1 << 0, //0x01,
-                         /// <summary>
-                         /// Called "Stitching Model" in the debug menu. Has associated transform matrices.
-                         /// </summary>
-        StitchingModel = 1 << 2, //0x04,
-                                 /// <summary>
-                                 /// Called "Skin Model" in the debug menu. Has associated transform matrices and indexed vertices.
-                                 /// </summary>
-        SkinModel = 1 << 3, //0x08,
-                            /// <summary>
-                            /// Called "Effective Model" in the debug menu. Has indexed vertices.
-                            /// </summary>
-        EffectiveModel = 1 << 4 // 0x10,
+        IS_16_BIT = 1 << 0, //0x01,
+        /// <summary>
+        /// Called "Stitching Model" in the debug menu. Has associated transform matrices.
+        /// </summary>
+        IS_STITCHING_MODEL = 1 << 2, //0x04,
+        /// <summary>
+        /// Called "Skin Model" in the debug menu. Has associated transform matrices and indexed vertices.
+        /// </summary>
+        IS_SKIN_MODEL = 1 << 3, //0x08,
+        /// <summary>
+        /// Called "Effective Model" in the debug menu. Has physics-driven indexed vertices.
+        /// </summary>
+        IS_EFFECTIVE_MODEL = 1 << 4 // 0x10,
     }
 
     [Serializable]
@@ -54,63 +54,76 @@ namespace GameCube.FZeroGX.GMA
         /// <summary>
         /// 2019/03/31 VERIFIED: constant GCMF in ASCII
         /// </summary>
+        [SerializeField, Hex("00", 8), Space]
         uint gcmfMagic;
+
         /// <summary>
         /// 2019/03/31 VERIFIED VALUES: 0, 1, 4, 5, 8, 16
         /// </summary>
-        [Space]
         [SerializeField, HexFlags("04 -", 2)]
         GcmfAttributes_U32 attributes;
+
         /// <summary>
         /// 2019/03/31 : origin point
         /// </summary>
         [SerializeField, LabelPrefix("08 -")]
         Vector3 origin;
+
         /// <summary>
         /// 2019/03/31 : bounding sphere radius
         /// </summary>
         [SerializeField, LabelPrefix("14 -")]
         float radius;
+
         /// <summary>
         /// 2019/03/31 : number of texture references
         /// </summary>
         [SerializeField, Hex("18 -", 4)]
-        ushort textureCount;
+        short textureCount;
+
         /// <summary>
         /// 2019/03/31 : number (nb) of materials
         /// </summary>
         [SerializeField, Hex("1A -", 4)]
-        ushort materialCount;
+        short materialCount;
+
         /// <summary>
         /// 2019/03/31 : number (nb) of translucid (tl) materials
         /// </summary>
         [SerializeField, Hex("1C -", 2)]
-        ushort translucidMaterialCount;
+        short translucidMaterialCount;
+
         /// <summary>
         /// 2019/03/31 : number of matrix entries
         /// </summary>
         [SerializeField, Hex("1E -", 2)]
         byte transformMatrixCount;
+
         /// <summary>
         /// 2019/03/31 VERIFIED VALUES: only value is 0
         /// </summary>
         [SerializeField, Hex("1F -", 2)]
         byte zero_0x1F;
+
         /// <summary>
-        /// 
+        /// Size of GCMF including Texture[] and TransformMatrix[], excluding
+        /// VertexControlData (and associated data) and Material[]
         /// </summary>
         [SerializeField, Hex("20 -", 8)]
-        uint indicesRelPtr; // GxUtils: Header Size (size of header = offset)
-                            /// <summary>
+        int gcmfSize;
+
+        /// <summary>
                             /// 2019/03/31 VERIFIED VALUES: only 0 
                             /// </summary>
         [SerializeField, Hex("24 -", 8)]
         uint zero_0x24;
+
         /// <summary>
         /// 
         /// </summary>
         [SerializeField, Hex("28 -", 2)]
         byte[] transformMatrixDefaultIndices;
+
         /// <summary>
         /// 2019/03/31 VERIFIED VALUES: GameCube GX FIFO Padding to 32 bytes
         /// </summary>
@@ -119,7 +132,7 @@ namespace GameCube.FZeroGX.GMA
         [SerializeField] Texture[] texture;
         [SerializeField] TransformMatrix3x4[] transformMatrices;
         [SerializeField] VertexControlData vcd;
-        [SerializeField] Material material;
+        [SerializeField] Material[] materials;
         // Mesh data - is it part of Material or not?
 
         #region PROPERTIES
@@ -133,13 +146,13 @@ namespace GameCube.FZeroGX.GMA
         public float Radius
             => radius;
 
-        public ushort TextureCount
+        public short TextureCount
             => textureCount;
 
-        public ushort MaterialCount
+        public short MaterialCount
             => materialCount;
 
-        public ushort TranslucidMaterialCount
+        public short TranslucidMaterialCount
             => translucidMaterialCount;
 
         public byte Transformmatrixcount
@@ -148,13 +161,13 @@ namespace GameCube.FZeroGX.GMA
         public byte Zero_0x1F
             => zero_0x1F;
 
-        public uint Indicesrelptr
-            => indicesRelPtr;
+        public int GcmfSize
+            => gcmfSize;
 
         public uint Zero_0x24
             => zero_0x24;
 
-        public byte[] Transformmatrixdefaultindices
+        public byte[] TransformMatrixDefaultIndices
             => transformMatrixDefaultIndices;
 
         #endregion
@@ -162,7 +175,7 @@ namespace GameCube.FZeroGX.GMA
         public Texture[] Texture => texture;
         public TransformMatrix3x4[] TransformMatrix => transformMatrices;
         public VertexControlData VCD => vcd;
-        public Material Material => material;
+        public Material[] Materials => materials;
 
         // Metadata
         public long StartAddress
@@ -199,18 +212,17 @@ namespace GameCube.FZeroGX.GMA
             reader.ReadX(ref translucidMaterialCount);
             reader.ReadX(ref transformMatrixCount);
             reader.ReadX(ref zero_0x1F); Assert.IsTrue(zero_0x1F == 0);
-            reader.ReadX(ref indicesRelPtr);
+            reader.ReadX(ref gcmfSize);
             reader.ReadX(ref zero_0x24); Assert.IsTrue(zero_0x24 == 0);
             reader.ReadX(ref transformMatrixDefaultIndices, kTransformMatrixDefaultLength);
             reader.ReadX(ref fifoPadding, kFifoPaddingSize); foreach (var fifoPad in fifoPadding) Assert.IsTrue(fifoPad == 0);
             reader.ReadX(ref texture, textureCount, true);
             reader.ReadX(ref transformMatrices, transformMatrixCount, true); reader.Align(GxUtility.GX_FIFO_ALIGN);
 
-            EndAddress = reader.BaseStream.Position;
 
             // Only present in certain models
-            var isSkinModel = (attributes & GcmfAttributes_U32.SkinModel) != 0;
-            var isEffectiveModel = (attributes & GcmfAttributes_U32.EffectiveModel) != 0;
+            var isSkinModel = (attributes & GcmfAttributes_U32.IS_SKIN_MODEL) != 0;
+            var isEffectiveModel = (attributes & GcmfAttributes_U32.IS_EFFECTIVE_MODEL) != 0;
             if (isSkinModel || isEffectiveModel)
             {
                 vcd = new VertexControlData
@@ -224,20 +236,47 @@ namespace GameCube.FZeroGX.GMA
             // TODO: see if there are multiple materials per "mt_count"
             // If so, we need to create a Material[] instead of a simple check
             var matCount = materialCount + translucidMaterialCount;
-            if (matCount > 0)
+            materials = new Material[matCount];
+            //Debug.Log($"ADDR:{reader.BaseStream.Position.ToString("X8")} - {matCount}");
+            for (int i = 0; i < matCount; i++)
             {
-                material = new Material
+                var startAddr = reader.BaseStream.Position;
+                var material = new Material
                 {
                     ModelName = name,
                     FileName = fileName
                 };
                 reader.ReadX(ref material, false);
+
+                // looks like this can have a value even if no verts for effective model?
+                // Count for something else?
+                var matDLSize = (isEffectiveModel || isSkinModel) ? 0 : material.MatDisplayListSize;
+                var tlMatDLSize = (isEffectiveModel || isSkinModel) ? 0 : material.TlMatDisplayListSize;
+
+                var seekAddr = startAddr + matDLSize + tlMatDLSize + 0x60;
+                reader.BaseStream.Seek(seekAddr, SeekOrigin.Begin);
+
+                materials[i] = material;
+
+                var isRenderFlag2 = (material.VertexRenderFlags & MatVertexRenderFlag_U8.RENDER_SKIN_OR_EFFECTIVE_A) != 0;
+                var isRenderFlag3 = (material.VertexRenderFlags & MatVertexRenderFlag_U8.RENDER_SKIN_OR_EFFECTIVE_B) != 0;
+                if (isRenderFlag2 && isRenderFlag3)
+                {
+                    // Only temp ATM
+                    var temp = new SkinRenderHeader();
+                    reader.ReadX(ref temp, true);
+
+                    var offset = temp.VertexSize0 + temp.VertexSize1;
+                    reader.BaseStream.Seek(offset, SeekOrigin.Current);
+                }
             }
 
             // TODO DisplayLists
             //var vat = GameCube.Games.FZeroGX.VAT;
             //mesh = new Mesh(vat, this);
             //reader.ReadX(ref mesh, false);
+
+            EndAddress = reader.BaseStream.Position;
         }
 
         public void Serialize(BinaryWriter writer)
