@@ -9,7 +9,8 @@ using UnityEngine.Serialization;
 
 namespace GameCube.FZeroGX.GMA
 {
-    public class SkinRenderHeader : IBinarySerializable, IBinaryAddressable
+    [Serializable]
+    public class SkinData : IBinarySerializable, IBinaryAddressable
     {
         public const int kFifoPaddingSize = 16;
 
@@ -24,7 +25,7 @@ namespace GameCube.FZeroGX.GMA
         int unk_0x00;
 
         [SerializeField, Hex("04 -", 8)]
-        uint unk_0x04;
+        int unk_0x04;
 
         [SerializeField, Hex("08 -", 8)]
         int vertexSize0; // MAT?
@@ -71,9 +72,13 @@ namespace GameCube.FZeroGX.GMA
 
         public void Serialize(BinaryWriter writer)
         {
-            throw new NotImplementedException();
+            writer.WriteX(unk_0x00);
+            writer.WriteX(unk_0x04);
+            writer.WriteX(vertexSize0);
+            writer.WriteX(vertexSize1);
+
+            for (int i = 0; i < kFifoPaddingSize; i++)
+                writer.WriteX((byte)0x00);
         }
     }
-
-
 }

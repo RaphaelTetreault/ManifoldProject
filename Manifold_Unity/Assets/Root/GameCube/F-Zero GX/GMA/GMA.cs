@@ -112,7 +112,6 @@ namespace GameCube.FZeroGX.GMA
                 gcmf[i] = new GCMF
                 {
                     ModelName = modelName,
-                    FileName = FileName
                 };
 
                 // Load GCMF data
@@ -127,7 +126,49 @@ namespace GameCube.FZeroGX.GMA
 
         public void Serialize(BinaryWriter writer)
         {
-            throw new NotImplementedException();
+            gcmfCount = gcmf.Length;
+            writer.WriteX(gcmfCount);
+
+            // Write blank length until we know the size
+            writer.WriteX(0);
+
+            // Write blank data for now
+            var pointerPairs = new GcmfPointerPair[gcmf.Length];
+            var nameOffset = 0;
+            for (int i = 0; i < gcmf.Length; i++)
+            {
+                pointerPairs[i] = new GcmfPointerPair()
+                {
+                    gcmfDataRelPtr = GcmfPointerPair.kNullPtr,
+                    gcmfNameRelPtr = nameOffset,
+                };
+                writer.WriteX(pointerPairs[i]);
+                nameOffset += gcmf[i].ModelName.Length + 1;
+            }
+
+            // Write GCMF model names in C String format
+            BinaryIoUtility.PushEncoding(Encoding.ASCII);
+            foreach (var gcmf in gcmf)
+                writer.WriteXCString(gcmf.ModelName);
+            BinaryIoUtility.PopEncoding();
+
+            // Get FIFO sized header size, writer it in correct position
+            headerSize = (int)writer.Align(GxUtility.GX_FIFO_ALIGN);
+            writer.BaseStream.Seek(0x04, SeekOrigin.Begin);
+            writer.WriteX(headerSize);
+            writer.BaseStream.Seek(headerSize, SeekOrigin.Begin);
+
+            // Write GCMFs
+            for (int i = 0; i < gcmf.Length; i++)
+            {
+                pointerPairs[i].gcmfDataRelPtr = (int)(writer.BaseStream.Position - headerSize);
+                writer.WriteX(gcmf[i]);
+            }
+
+            // Rewrite pointers
+            writer.BaseStream.Seek(0x08, SeekOrigin.Begin);
+            for (int i = 0; i < gcmf.Length; i++)
+                writer.WriteX(pointerPairs[i]);
         }
 
         #endregion

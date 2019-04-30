@@ -257,77 +257,78 @@ namespace GameCube.FZeroGX.GMA
 
         #region MEMBERS
 
-        [SerializeField, HexFlags("00 -", 8)]
+        [SerializeField, Hex("00", 8)]
         ushort zero_0x00;
 
         /// <summary>
         /// Literally only used once for Mat [7/7] on st13 C13_ROAD01. See unk_0x3C
         /// </summary>
-        [SerializeField, HexFlags("02 -", 8)]
+        [SerializeField, HexFlags("02", 8)]
         MatFlags0x02_U8 unk_0x02;
 
-        [SerializeField, HexFlags("03 -", 8)]
+        [SerializeField, HexFlags("03", 8)]
         MatFlags0x03_U8 unk_0x03;
 
-        [SerializeField, LabelPrefix("04 -")]
+        [SerializeField, LabelPrefix("04")]
         Color32 color0;
 
-        [SerializeField, LabelPrefix("08 -")]
+        [SerializeField, LabelPrefix("08")]
         Color32 color1;
 
-        [SerializeField, LabelPrefix("0C -")]
+        [SerializeField, LabelPrefix("0C")]
         Color32 color2;
 
-        [SerializeField, HexFlags("10 -", 2)]
+        [SerializeField, HexFlags("10", 2)]
         MatFlags0x10_U8 unk_0x10;
 
-        [SerializeField, HexFlags("11 -", 2)]
+        [SerializeField, HexFlags("11", 2)]
         MatFlags0x11_U8 unk_0x11;
 
-        [SerializeField, HexFlags("12 -", 2)]
+        [SerializeField, Hex("12", 2)]
         sbyte texturesUsedCount;
 
-        [SerializeField, HexFlags("13 -", 2)]
+        [SerializeField, HexFlags("13", 2)]
         MatVertexRenderFlag_U8 vertexRenderFlags;
 
-        [SerializeField, HexFlags("14 -", 2)]
+        [SerializeField, Hex("14", 2)]
         sbyte unk_0x14;
 
-        [SerializeField, HexFlags("15 -", 2)]
+        [SerializeField, HexFlags("15", 2)]
         MatFlags0x15_U8 unk_0x15;
 
-        [SerializeField, Hex("16 -", 4)]
+        [SerializeField, Hex("16", 4)]
         short tex0Index = -1;
 
-        [SerializeField, Hex("18 -", 4)]
+        [SerializeField, Hex("18", 4)]
         short tex1Index = -1;
 
-        [SerializeField, Hex("1A -", 4)]
+        [SerializeField, Hex("1A", 4)]
         short tex2Index = -1;
 
-        [SerializeField, HexFlags("1C -", 8)]
-        GXAttrFlag_U32 vertexDescriptorFlags;
+        [SerializeField, HexFlags("1C", 8)]
+        [FormerlySerializedAs("vertexDescriptorFlags")]
+        GXAttrFlag_U32 vertexAttributeFlags;
 
         // TODO: label prefix on top node, not members
-        [SerializeField, Hex("20 -")]
+        [SerializeField, Hex("20")]
         byte[] transformMatrixSpecidicIndices;
 
-        [SerializeField, Hex("28 -", 8)]
-        uint matDisplayListSize;
+        [SerializeField, Hex("28", 8)]
+        int matDisplayListSize;
 
-        [SerializeField, Hex("2C -", 8)]
-        uint tlMatDisplayListSize;
+        [SerializeField, Hex("2C", 8)]
+        int tlMatDisplayListSize;
 
-        [SerializeField, LabelPrefix("30 -")]
+        [SerializeField, LabelPrefix("30")]
         Vector3 boundingSphereOrigin;
 
         /// <summary>
         /// Literally only used once for Mat [7/7] on st13 C13_ROAD01. Value is 1f
         /// </summary>
-        [SerializeField, LabelPrefix("3C -")]
-        uint unk_0x3C;
+        [SerializeField, LabelPrefix("3C")]
+        float unk_0x3C;
 
-        [SerializeField, LabelPrefix("40 -")]
+        [SerializeField, HexFlags("40")]
         MatFlags0x40_U32 unk_0x40;
 
         byte[] fifoPadding;
@@ -353,11 +354,11 @@ namespace GameCube.FZeroGX.GMA
         public short Tex0Index => tex0Index;
         public short Tex1Index => tex1Index;
         public short Tex2Index => tex2Index;
-        public GXAttrFlag_U32 VertexDescriptorFlags => vertexDescriptorFlags;
+        public GXAttrFlag_U32 VertexDescriptorFlags => vertexAttributeFlags;
         // 0x20
         public byte[] TransformMatrixSpecificIndices => transformMatrixSpecidicIndices;
-        public uint MatDisplayListSize => matDisplayListSize;
-        public uint TlMatDisplayListSize => tlMatDisplayListSize;
+        public int MatDisplayListSize => matDisplayListSize;
+        public int TlMatDisplayListSize => tlMatDisplayListSize;
         // 0x30
         public Vector3 BoudingSphereOrigin => boundingSphereOrigin;
         public float Unk_0x3C => unk_0x3C;
@@ -410,7 +411,7 @@ namespace GameCube.FZeroGX.GMA
             reader.ReadX(ref tex0Index);
             reader.ReadX(ref tex1Index);
             reader.ReadX(ref tex2Index);
-            reader.ReadX(ref vertexDescriptorFlags);
+            reader.ReadX(ref vertexAttributeFlags);
             // 0x20
             reader.ReadX(ref transformMatrixSpecidicIndices, kTransformArrayLength);
             reader.ReadX(ref matDisplayListSize);
@@ -429,7 +430,35 @@ namespace GameCube.FZeroGX.GMA
 
         public void Serialize(BinaryWriter writer)
         {
-            throw new NotImplementedException();
+            // 0x00
+            writer.WriteX(zero_0x00); Assert.IsTrue(zero_0x00 == 0);
+            writer.WriteX(unk_0x02);
+            writer.WriteX(unk_0x03);
+            writer.WriteX(color0);
+            writer.WriteX(color1);
+            writer.WriteX(color2);
+            // 0x10
+            writer.WriteX(unk_0x10);
+            writer.WriteX(unk_0x11);
+            writer.WriteX(texturesUsedCount);
+            writer.WriteX(vertexRenderFlags);
+            writer.WriteX(unk_0x14);
+            writer.WriteX(unk_0x15);
+            writer.WriteX(tex0Index);
+            writer.WriteX(tex1Index);
+            writer.WriteX(tex2Index);
+            writer.WriteX(vertexAttributeFlags);
+            // 0x20
+            writer.WriteX(transformMatrixSpecidicIndices, false);
+            writer.WriteX(matDisplayListSize);
+            writer.WriteX(tlMatDisplayListSize);
+            // 0x30
+            writer.WriteX(boundingSphereOrigin);
+            writer.WriteX(unk_0x3C);
+            writer.WriteX(unk_0x40);
+
+            for (int i = 0; i < kFifoPaddingSize; i++)
+                writer.WriteX((byte)0x00);
         }
 
     }

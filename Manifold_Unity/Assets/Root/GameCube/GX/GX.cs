@@ -156,12 +156,12 @@ namespace GameCube.GX
         public void Deserialize(BinaryReader reader)
         {
             // POSITION
-            position = GxUtility.ReadVectorXYZ(reader, vertAttr.pos);
+            position = GxUtility.ReadGxVectorXYZ(reader, vertAttr.pos);
 
             // NORMALS
             if (vertAttr.nrm.enabled)
             {
-                normal = GxUtility.ReadVectorXYZ(reader, vertAttr.nrm);
+                normal = GxUtility.ReadGxVectorXYZ(reader, vertAttr.nrm);
             }
             else if (vertAttr.nbt.enabled)
             {
@@ -169,9 +169,9 @@ namespace GameCube.GX
                 // And it lacks another case for NBT3
                 throw new NotImplementedException();
 
-                normal = GxUtility.ReadVectorXYZ(reader, vertAttr.nbt);
-                binormal = GxUtility.ReadVectorXYZ(reader, vertAttr.nbt);
-                tangent = GxUtility.ReadVectorXYZ(reader, vertAttr.nbt);
+                normal = GxUtility.ReadGxVectorXYZ(reader, vertAttr.nbt);
+                binormal = GxUtility.ReadGxVectorXYZ(reader, vertAttr.nbt);
+                tangent = GxUtility.ReadGxVectorXYZ(reader, vertAttr.nbt);
             }
 
             // COLOR
@@ -205,19 +205,18 @@ namespace GameCube.GX
         }
     }
 
-    // Name: GX Command?
     [Serializable]
     public struct GxDisplayCommand : IBinarySerializable
     {
         [SerializeField] public GXPrimitive primitive;
         [SerializeField] public GXVtxFmt vertexFormat;
-        public byte command;
+        public ushort command;
 
         public void Deserialize(BinaryReader reader)
         {
             reader.ReadX(ref command);
-            primitive = (GXPrimitive)(command & 0b_1111_1000); // 5 highest bits
-            vertexFormat = (GXVtxFmt)(command & 0b_0000_0111); // 3 lowest bits
+            primitive = (GXPrimitive)(command & 0b_00000000_11111000); // 5 highest bits
+            vertexFormat = (GXVtxFmt)(command & 0b_00000000_00000111); // 3 lowest bits
         }
 
         public void Serialize(BinaryWriter writer)
@@ -363,9 +362,9 @@ namespace GameCube.GX
 
     public static class GxUtility
     {
-        public const long GX_FIFO_ALIGN = 32;
+        public const int GX_FIFO_ALIGN = 32;
 
-        public static Vector3 ReadVectorXYZ(BinaryReader reader, GxVertexAttribute vertexAttributes)
+        public static Vector3 ReadGxVectorXYZ(BinaryReader reader, GxVertexAttribute vertexAttributes)
         {
             if (vertexAttributes.nElements == GXCompCnt_Rev2.GX_POS_XY)
             {

@@ -151,7 +151,7 @@ namespace GameCube.FZeroGX.GMA
 
 
     [Serializable]
-    public class Texture : IBinarySerializable, IBinaryAddressable
+    public struct Texture : IBinarySerializable, IBinaryAddressable
     {
         public const int kFifoPaddingSize = 12;
 
@@ -166,7 +166,6 @@ namespace GameCube.FZeroGX.GMA
         /// 2019/04/03: Appears to be shader scrolling flags
         /// A good example is HOROGRAM
         /// </summary>
-        [Header("Texture")]
         [SerializeField, HexFlags("00 -", 2)]
         TexFlags0x00_U16 unk_0x00;
 
@@ -313,7 +312,20 @@ namespace GameCube.FZeroGX.GMA
 
         public void Serialize(BinaryWriter writer)
         {
-            throw new NotImplementedException();
+            writer.WriteX(unk_0x00);
+            writer.WriteX(mipmapSettings);
+            writer.WriteX(wrapFlags);
+            writer.WriteX(tplTextureIndex);
+            writer.WriteX(unk_0x06);
+            writer.WriteX(anisotropicLevel);
+            writer.WriteX(zero_0x08);
+            writer.WriteX(unk_0x0C);
+            writer.WriteX(isSwappableTexture);
+            writer.WriteX(index);
+            writer.WriteX(unk_0x10);
+
+            for (int i = 0; i < kFifoPaddingSize; i++)
+            writer.WriteX((byte)0x00);
         }
     }
 }

@@ -19,6 +19,7 @@ namespace GameCube.FZeroGX.GMA
         /// Two's compliment, 0xFFFFFFFF
         /// </summary>
         public const int kNullPtr = -1;
+        public const int BinarySize = 0x08;
 
         #region MEMBERS
 
@@ -32,10 +33,10 @@ namespace GameCube.FZeroGX.GMA
         // DATA
         [Space]
         [SerializeField, Hex("00", 8)]
-        int gcmfDataRelPtr;
+        public int gcmfDataRelPtr;
 
         [SerializeField, Hex("04", 8)]
-        int gcmfNameRelPtr;
+        public int gcmfNameRelPtr;
 
         #endregion
 
@@ -75,7 +76,8 @@ namespace GameCube.FZeroGX.GMA
 
         public void Serialize(BinaryWriter writer)
         {
-            throw new NotImplementedException();
+            writer.WriteX(gcmfDataRelPtr);
+            writer.WriteX(gcmfNameRelPtr);
         }
 
         #endregion

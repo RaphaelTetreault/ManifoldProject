@@ -22,6 +22,15 @@ namespace StarkTools.IO
             return reader.BaseStream.Position;
         }
 
+        public static long Align(this BinaryWriter writer, long alignment)
+        {
+            var bytesToAlign = alignment - (writer.BaseStream.Position % alignment);
+            for (int i = 0; i < bytesToAlign; i++)
+                writer.Write((byte)0x00);
+
+            return writer.BaseStream.Position;
+        }
+
         #region ReadX
 
         #region ReadX Value
@@ -687,7 +696,7 @@ namespace StarkTools.IO
         }
 
 #if NET_4_7_3
-        public static void WriteE<TEnum>(this BinaryWriter writer, TEnum value)
+        public static void WriteX<TEnum>(this BinaryWriter writer, TEnum value, EnumCompression enumCompression = EnumCompression.none)
             where TEnum : struct, System.Enum
         {
             BinaryIoUtility.WriteEnum(writer, value);
@@ -782,6 +791,16 @@ namespace StarkTools.IO
             where T : IBinarySerializable, new()
         {
             BinaryIoUtility.Write(writer, value, writeLengthHeader);
+        }
+
+        public static void WriteXCString(this BinaryWriter writer, string value, Encoding encoding)
+        {
+            BinaryIoUtility.WriteCString(writer, value, encoding);
+        }
+
+        public static void WriteXCString(this BinaryWriter writer, string value)
+        {
+            BinaryIoUtility.WriteCString(writer, value);
         }
 
 #if NET_4_7_3

@@ -1091,42 +1091,42 @@ namespace StarkTools.IO
             /**/ if (type == typeof(int))
             {
                 int writeValue = (int)(object)value;
-                writer.Write(writeValue);
+                writer.WriteX(writeValue);
             }
             else if (type == typeof(uint))
             {
                 uint writeValue = (uint)(object)value;
-                writer.Write(writeValue);
+                writer.WriteX(writeValue);
             }
             else if (type == typeof(short))
             {
                 short writeValue = (short)(object)value;
-                writer.Write(writeValue);
+                writer.WriteX(writeValue);
             }
             else if (type == typeof(ushort))
             {
                 ushort writeValue = (ushort)(object)value;
-                writer.Write(writeValue);
+                writer.WriteX(writeValue);
             }
             else if (type == typeof(sbyte))
             {
                 sbyte writeValue = (sbyte)(object)value;
-                writer.Write(writeValue);
+                writer.WriteX(writeValue);
             }
             else if (type == typeof(byte))
             {
                 byte writeValue = (byte)(object)value;
-                writer.Write(writeValue);
+                writer.WriteX(writeValue);
             }
             else if (type == typeof(long))
             {
                 long writeValue = (long)(object)value;
-                writer.Write(writeValue);
+                writer.WriteX(writeValue);
             }
             else if (type == typeof(ulong))
             {
                 ulong writeValue = (ulong)(object)value;
-                writer.Write(writeValue);
+                writer.WriteX(writeValue);
             }
             else
             {
@@ -1265,6 +1265,18 @@ namespace StarkTools.IO
 
             //byte[] bytes = encoding.GetBytes(value.ToCharArray());
             //writer.Write(bytes);
+        }
+
+        public static void WriteCString(BinaryWriter writer, string value, Encoding encoding)
+        {
+            Write(writer, value, encoding, false);
+            Write(writer, (byte)0x00);
+        }
+
+        public static void WriteCString(BinaryWriter writer, string value)
+        {
+            Write(writer, value, _Encoding, false);
+            Write(writer, (byte)0x00);
         }
 
         public static void Write(BinaryWriter writer, string[] value, Encoding encoding, bool writeLengthHeader)

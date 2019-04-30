@@ -20,7 +20,7 @@ public class HexFlagsDrawer : PropertyDrawer
 
         var newLabel = new GUIContent(label.text);
         if (!string.IsNullOrEmpty(attr.prefix))
-            newLabel.text = $"{attr.prefix} {newLabel.text}";
+            newLabel.text = $"{attr.prefix} - {newLabel.text}";
 
         pos.width -= halfWidth;
         property.intValue = EditorGUI.MaskField(pos, newLabel, property.intValue, property.enumNames);

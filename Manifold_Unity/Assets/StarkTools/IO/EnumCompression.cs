@@ -3,12 +3,11 @@
 #if NET_4_7_3
     public enum EnumCompression
     {
-        int32,
-        int16,
-        int8,
-        uint32,
-        uint16,
-        uint8,
+        none,
+        _8bit,
+        _16bit,
+        _32bit,
+        _64bit,
     }
 #endif
 }

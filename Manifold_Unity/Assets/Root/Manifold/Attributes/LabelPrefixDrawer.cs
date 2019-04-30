@@ -10,7 +10,7 @@ public class LabelPrefixDrawer : PropertyDrawer
     {
         var attr = attribute as LabelPrefix;
         var str = (!string.IsNullOrEmpty(attr.prefix))
-            ? $"{attr.prefix} {label.text}"
+            ? $"{attr.prefix} - {label.text}"
             : label.text;
         var text = new GUIContent(str);
         EditorGUI.PropertyField(position, property, text);

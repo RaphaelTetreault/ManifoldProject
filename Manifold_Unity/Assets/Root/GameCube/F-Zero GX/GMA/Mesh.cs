@@ -23,7 +23,7 @@ namespace GameCube.FZeroGX.GMA
 
         public Mesh() { }
 
-        public Mesh(GxVertexAttributeTable vat, GCMF gcmf)
+        public Mesh(GxVertexAttributeTable vat, GcmfProperties gcmf)
         {
             this.materialCount = gcmf.MaterialCount;
             this.translucidMaterialCount = gcmf.TranslucidMaterialCount;

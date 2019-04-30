@@ -11,6 +11,8 @@ namespace GameCube.FZeroGX.GMA
     [Serializable]
     public struct TransformMatrix3x4 : IBinarySerializable
     {
+        public const int kBinarySize = 0x30;
+
         [SerializeField, LabelPrefix("00")]
         Vector3 row0;
 
@@ -93,7 +95,10 @@ namespace GameCube.FZeroGX.GMA
 
         public void Serialize(BinaryWriter writer)
         {
-            throw new NotImplementedException();
+            writer.WriteX(row0);
+            writer.WriteX(row1);
+            writer.WriteX(row2);
+            writer.WriteX(row3);
         }
     }
 }

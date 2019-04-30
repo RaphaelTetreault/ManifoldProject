@@ -52,20 +52,20 @@ public abstract class ExportSobjs<T> : ExportSobj
             var outputFilePath = $"{dest}/{fileName}.{OutputFileExtension}";
             outputFilePath = UnityPathUtility.EnforceSystemSeparators(outputFilePath);
 
-            try
-            {
+            //try
+            //{
                 using (var fileStream = File.Open(outputFilePath, write.mode, write.access, write.share))
                 {
                     using (var writer = new BinaryWriter(fileStream))
                     {
-                        writer.WriteX(exportSobj);
+                        exportSobj.Serialize(writer);
                     }
                 }
-            }
-            catch (Exception e)
-            {
-                Debug.LogError($"Failed to write <b>{outputFilePath}</b>.\n{e.Message}");
-            }
+            //}
+            //catch (Exception e)
+            //{
+            //    Debug.LogError($"Failed to write <b>{outputFilePath}</b>.\n{e.Message}");
+            //}
         }
     }
 }
