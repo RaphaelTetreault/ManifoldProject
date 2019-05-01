@@ -22,8 +22,9 @@ namespace GameCube.FZeroGX.GMA
         [SerializeField] GcmfProperties gcmfProperties;
         [SerializeField] Texture[] textures;
         [SerializeField] TransformMatrix3x4Collection transformMatrixCollection;
-        [SerializeField] VertexControlData vertexControlData;
+        [SerializeField] VertexControlHeader vertexControlHeader;
         [SerializeField] GcmfRenderData[] gcmfRenderData;
+        [SerializeField] VertexControlCollection vertexControlCollection;
 
         #endregion
 
@@ -57,11 +58,11 @@ namespace GameCube.FZeroGX.GMA
         public TransformMatrix3x4Collection TransformMatrixCollection
             => transformMatrixCollection;
 
-        public VertexControlData VertexControlData
-            => VertexControlData;
+        public VertexControlHeader VertexControlHeader
+            => vertexControlHeader;
 
         public GcmfRenderData[] GcmfRenderData
-            => GcmfRenderData;
+            => gcmfRenderData;
 
         #endregion
 
@@ -81,11 +82,8 @@ namespace GameCube.FZeroGX.GMA
             reader.ReadX(ref transformMatrixCollection, false);
 
             // Read VertexControlData on appropriate GCMFs
-            var isSkinModel = (gcmfProperties.Attributes & GcmfAttributes_U32.IS_SKIN_MODEL) != 0;
-            var isEffectiveModel = (gcmfProperties.Attributes & GcmfAttributes_U32.IS_EFFECTIVE_MODEL) != 0;
-            var isSkinOrEffective = isSkinModel || isEffectiveModel;
-            if (isSkinOrEffective)
-                reader.ReadX(ref vertexControlData, true);
+            if (gcmfProperties.IsSkinOrEffective)
+                reader.ReadX(ref vertexControlHeader, true);
 
             // Properly paramatize render data based on GCMF properties
             gcmfRenderData = new GcmfRenderData[materialCount];
@@ -95,6 +93,9 @@ namespace GameCube.FZeroGX.GMA
                 gcmfRenderData[i] = new GcmfRenderData(gcmfProperties.IsSkinOrEffective);
                 reader.ReadX(ref gcmfRenderData[i], false);
             }
+
+            vertexControlCollection = new VertexControlCollection(vertexControlHeader);
+            reader.ReadX(ref vertexControlCollection, false);
 
             endAddress = reader.BaseStream.Position;
         }
@@ -108,7 +109,7 @@ namespace GameCube.FZeroGX.GMA
                 writer.WriteX(transformMatrixCollection);
 
             if (gcmfProperties.IsSkinOrEffective)
-                writer.WriteX(vertexControlData);
+                writer.WriteX(vertexControlHeader);
 
             foreach (var gcmf in gcmfRenderData)
             {
