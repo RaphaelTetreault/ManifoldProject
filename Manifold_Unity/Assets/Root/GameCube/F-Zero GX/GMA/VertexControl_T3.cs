@@ -58,22 +58,26 @@ namespace GameCube.FZeroGX.GMA
         {
             StartAddress = reader.BaseStream.Position;
 
-            //var value = 0;
-            //while (!reader.EndOfStream())
-            //{
-            //    reader.ReadX(ref count);
-            //    if (count == GcmfProperties.kGCMF)
-            //        break;
+            count = 0;
+            var value = 0;
+            while (!reader.EndOfStream())
+            {
+                var numEntries = 0;
+                reader.ReadX(ref numEntries);
 
-            //    for (int i = 0; i < count; i++)
-            //    {
-            //        reader.ReadX(ref value);
-            //        if (value == GcmfProperties.kGCMF)
-            //            break;
-            //    }
-            //}
+                if (numEntries > 0x30 || numEntries < 0)
+                {
+                    reader.BaseStream.Position -= 4;
+                    break;
+                }
 
-            //reader.BaseStream.Position -= 4;
+                for (int i = 0; i < numEntries; i++)
+                {
+                    reader.ReadX(ref value);
+                }
+                count++;
+            }
+
 
             //reader.ReadX(ref unk_0x00);
             //reader.ReadX(ref fifoPadding, kFifoPaddingSize);

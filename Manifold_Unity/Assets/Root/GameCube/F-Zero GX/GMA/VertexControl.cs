@@ -10,32 +10,30 @@ using UnityEngine.Serialization;
 namespace GameCube.FZeroGX.GMA
 {
     [Serializable]
-    public class VertexControlHeader : IBinarySerializable, IBinaryAddressable, IFile
+    public class VertexControlHeader : IBinarySerializable, IBinaryAddressable
     {
         public const int kFifoPaddingSize = 12;
 
-        [Header("Skl Vtx")]
-        [SerializeField] string name;
-        [SerializeField, HideInInspector] string fileName;
+        [Header("Vertex Control Header")]
         [SerializeField, Hex] long startAddress;
         [SerializeField, Hex] long endAddress;
         [Space]
 
         #region MEMBERS
 
-        [SerializeField, Hex("00 -", 8)]
+        [SerializeField, Hex("00", 8)]
         int vertexCount;
 
-        [SerializeField, Hex("04 -", 8)]
+        [SerializeField, Hex("04", 8)]
         int unk_type1_relPtr;
 
-        [SerializeField, Hex("08 -", 8)]
+        [SerializeField, Hex("08", 8)]
         int unk_type2_relPtr;
 
-        [SerializeField, Hex("0C -", 8)]
+        [SerializeField, Hex("0C", 8)]
         int unk_type3_relPtr;
 
-        [SerializeField, Hex("10 -", 8)]
+        [SerializeField, Hex("10", 8)]
         int unk_type4_relPtr;
 
         byte[] fifoPadding;
@@ -63,16 +61,6 @@ namespace GameCube.FZeroGX.GMA
         #endregion
 
         // Metadata
-        public string FileName
-        {
-            get => fileName;
-            set => fileName = value;
-        }
-        public string ModelName
-        {
-            get => name;
-            set => name = value;
-        }
         public long StartAddress
         {
             get => startAddress;

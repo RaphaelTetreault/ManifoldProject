@@ -88,7 +88,7 @@ namespace GameCube.FZeroGX.GMA
         /// <summary>
         /// 2019/03/31 : number (nb) of translucid (tl) materials
         /// </summary>
-        [SerializeField, Hex("1C", 2)]
+        [SerializeField, Hex("1C", 4)]
         short translucidMaterialCount;
 
         /// <summary>

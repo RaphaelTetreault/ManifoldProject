@@ -10,12 +10,9 @@ using UnityEngine.Serialization;
 namespace GameCube.FZeroGX.GMA
 {
     [Serializable]
-    public class VertexControlCollection : IBinarySerializable, IBinaryAddressable
+    public class VertexControlCollection : IBinarySerializable //, IBinaryAddressable
     {
-        [Header("X")]
-        [SerializeField, Hex(8)] long startAddress;
-        [SerializeField, Hex(8)] long endAddress;
-
+        [Header("Vertex Control Collection")]
         [SerializeField] VertexControlHeader vertexControlHeader;
         [SerializeField] VertexControl_T1[] t1;
         [SerializeField] VertexControl_T2[] t2;
@@ -34,34 +31,20 @@ namespace GameCube.FZeroGX.GMA
         public VertexControl_T3 T3 => t3;
         public VertexControl_T4 T4 => t4;
 
-        // Metadata
-        public long StartAddress
-        {
-            get => startAddress;
-            set => startAddress = value;
-        }
-        public long EndAddress
-        {
-            get => endAddress;
-            set => endAddress = value;
-        }
 
         public void Deserialize(BinaryReader reader)
         {
-            StartAddress = reader.BaseStream.Position;
-
             var count = vertexControlHeader.VertexCount;
+            var rootAddress = vertexControlHeader.StartAddress;
 
-            reader.BaseStream.Seek(startAddress + vertexControlHeader.Unk_type1_relPtr, SeekOrigin.Begin);
+            reader.BaseStream.Seek(rootAddress + vertexControlHeader.Unk_type1_relPtr, SeekOrigin.Begin);
             reader.ReadX(ref t1, count, true);
-            reader.BaseStream.Seek(startAddress + vertexControlHeader.Unk_type2_relPtr, SeekOrigin.Begin);
+            reader.BaseStream.Seek(rootAddress + vertexControlHeader.Unk_type2_relPtr, SeekOrigin.Begin);
             reader.ReadX(ref t2, count, true);
-            reader.BaseStream.Seek(startAddress + vertexControlHeader.Unk_type3_relPtr, SeekOrigin.Begin);
+            reader.BaseStream.Seek(rootAddress + vertexControlHeader.Unk_type3_relPtr, SeekOrigin.Begin);
             reader.ReadX(ref t3, true);
-            reader.BaseStream.Seek(startAddress + vertexControlHeader.Unk_type4_relPtr, SeekOrigin.Begin);
+            reader.BaseStream.Seek(rootAddress + vertexControlHeader.Unk_type4_relPtr, SeekOrigin.Begin);
             reader.ReadX(ref t4, true);
-
-            EndAddress = reader.BaseStream.Position;
         }
 
         public void Serialize(BinaryWriter writer)

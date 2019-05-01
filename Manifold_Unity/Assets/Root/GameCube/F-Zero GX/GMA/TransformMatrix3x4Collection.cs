@@ -9,6 +9,7 @@ using UnityEngine.Serialization;
 
 namespace GameCube.FZeroGX.GMA
 {
+    [Serializable]
     public class TransformMatrix3x4Collection : IBinarySerializable, IBinaryAddressable
     {
         [Header("Transform Matrix3x4 Collection")]

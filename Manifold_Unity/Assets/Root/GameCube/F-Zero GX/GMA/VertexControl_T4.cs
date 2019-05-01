@@ -18,9 +18,11 @@ namespace GameCube.FZeroGX.GMA
         [SerializeField, Hex(8)] long startAddress;
         [SerializeField, Hex(8)] long endAddress;
 
-        // is this it?
         [SerializeField]
         ushort unk_0x00;
+
+        [SerializeField]
+        ushort[] unknown_values;
 
         byte[] fifoPadding;
 
@@ -41,7 +43,8 @@ namespace GameCube.FZeroGX.GMA
             StartAddress = reader.BaseStream.Position;
 
             reader.ReadX(ref unk_0x00);
-            reader.ReadX(ref fifoPadding, kFifoPaddingSize);
+            reader.ReadX(ref unknown_values, 0);
+            //reader.ReadX(ref fifoPadding, kFifoPaddingSize);
 
             EndAddress = reader.BaseStream.Position;
         }
