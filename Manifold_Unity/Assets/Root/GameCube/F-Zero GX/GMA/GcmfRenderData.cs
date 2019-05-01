@@ -16,6 +16,8 @@ namespace GameCube.FZeroGX.GMA
         [Header("GCMF Render Data")]
         [SerializeField, Hex] long startAddress;
         [SerializeField, Hex] long endAddress;
+        [SerializeField] bool isSkinOrEffective;
+
         #region MEMBERS
 
         // Perhaps find way to distinguish translucid mats from mats?
@@ -27,6 +29,13 @@ namespace GameCube.FZeroGX.GMA
         [SerializeField] FzgxDisplayList skinDisplayObjectB;
 
         #endregion
+
+        public GcmfRenderData() { }
+
+        public GcmfRenderData(bool isSkinOrEffective)
+        {
+            this.isSkinOrEffective = isSkinOrEffective;
+        }
 
         #region PROPERTIES
 
@@ -43,17 +52,17 @@ namespace GameCube.FZeroGX.GMA
             set => endAddress = value;
         }
 
-        public bool IsRenderSkinOrEffectiveAB
+        public bool IsRenderExtraDisplayLists
         {
             get
             {
                 if (material is null)
                     return false;
 
-                var isRenderSkinOrEffectiveA = (material.VertexRenderFlags & MatVertexRenderFlag_U8.RENDER_SKIN_OR_EFFECTIVE_A) != 0;
-                var isRenderSkinOrEffectiveB = (material.VertexRenderFlags & MatVertexRenderFlag_U8.RENDER_SKIN_OR_EFFECTIVE_B) != 0;
-                var isRenderSkinOrEffectiveAB = isRenderSkinOrEffectiveA && isRenderSkinOrEffectiveB;
-                return isRenderSkinOrEffectiveAB;
+                var renderExtraDisplayList0 = (material.VertexRenderFlags & MatVertexRenderFlag_U8.RENDER_EX_DISPLAY_LIST_0) != 0;
+                var renderExtraDisplayList1 = (material.VertexRenderFlags & MatVertexRenderFlag_U8.RENDER_EX_DISPLAY_LIST_1) != 0;
+                var renderExtraDisplayList01 = renderExtraDisplayList0 && renderExtraDisplayList1;
+                return renderExtraDisplayList01;
             }
         }
 
@@ -73,24 +82,21 @@ namespace GameCube.FZeroGX.GMA
 
             reader.ReadX(ref material, true);
 
-            // MATERIAL
-            //if (!isSkinOrEffective)
-            if (IsRenderSkinOrEffectiveAB)
+            if (!isSkinOrEffective)
             {
                 matDisplayObjectA = new FzgxDisplayList(material.MatDisplayListSize);
                 matDisplayObjectB = new FzgxDisplayList(material.TlMatDisplayListSize);
                 reader.ReadX(ref matDisplayObjectA, false);
                 reader.ReadX(ref matDisplayObjectB, false);
-            }
 
-            // SKIN
-            if (IsRenderSkinOrEffectiveAB)
-            {
-                reader.ReadX(ref skinData, true);
-                skinDisplayObjectA = new FzgxDisplayList(skinData.VertexSize0);
-                skinDisplayObjectB = new FzgxDisplayList(skinData.VertexSize1);
-                reader.ReadX(ref skinDisplayObjectA, false);
-                reader.ReadX(ref skinDisplayObjectB, false);
+                if (IsRenderExtraDisplayLists)
+                {
+                    reader.ReadX(ref skinData, true);
+                    skinDisplayObjectA = new FzgxDisplayList(skinData.VertexSize0);
+                    skinDisplayObjectB = new FzgxDisplayList(skinData.VertexSize1);
+                    reader.ReadX(ref skinDisplayObjectA, false);
+                    reader.ReadX(ref skinDisplayObjectB, false);
+                }
             }
 
             endAddress = reader.BaseStream.Position;
@@ -100,21 +106,19 @@ namespace GameCube.FZeroGX.GMA
         {
             writer.WriteX(material);
 
-            // MATERIAL
-            //if (!isSkinOrEffective)
-            if (!IsRenderSkinOrEffectiveAB)
+            if (!isSkinOrEffective)
             {
                 writer.WriteX(matDisplayObjectA);
                 writer.WriteX(matDisplayObjectB);
-            }
 
-            // SKIN
-            if (IsRenderSkinOrEffectiveAB)
-            {
-                writer.WriteX(skinData);
-                writer.WriteX(skinDisplayObjectA);
-                writer.WriteX(skinDisplayObjectB);
+                if (IsRenderExtraDisplayLists)
+                {
+                    writer.WriteX(skinData);
+                    writer.WriteX(skinDisplayObjectA);
+                    writer.WriteX(skinDisplayObjectB);
+                }
             }
         }
+
     }
 }

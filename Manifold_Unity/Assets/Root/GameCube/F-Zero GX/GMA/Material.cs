@@ -76,10 +76,10 @@ namespace GameCube.FZeroGX.GMA
     [Flags]
     public enum MatVertexRenderFlag_U8 : byte
     {
-        RENDER_MATERIALS = 1 << 0,
-        RENDER_TRANSLUCID_MATERIALS = 1 << 1,
-        RENDER_SKIN_OR_EFFECTIVE_A = 1 << 2,
-        RENDER_SKIN_OR_EFFECTIVE_B = 1 << 3,
+        RENDER_DISPLAY_LIST_0 = 1 << 0,
+        RENDER_DISPLAY_LIST_1 = 1 << 1,
+        RENDER_EX_DISPLAY_LIST_0 = 1 << 2,
+        RENDER_EX_DISPLAY_LIST_1 = 1 << 3,
         UNUSED_FLAG_4 = 1 << 4,
         UNUSED_FLAG_5 = 1 << 5,
         UNUSED_FLAG_6 = 1 << 6,

@@ -127,11 +127,6 @@ namespace GameCube.FZeroGX.GMA
         /// </summary>
         byte[] fifoPadding;
 
-        //[SerializeField] Texture[] texture;
-        //[SerializeField] TransformMatrix3x4[] transformMatrices;
-        //[SerializeField] VertexControlData vcd;
-        //[SerializeField] Material[] materials;
-        // Mesh data - is it part of Material or not?
 
         #region PROPERTIES
 
@@ -171,12 +166,21 @@ namespace GameCube.FZeroGX.GMA
         public byte[] TransformMatrixDefaultIndices
             => transformMatrixDefaultIndices;
 
+        public bool IsSkinOrEffective
+        {
+            get
+            {
+                var isSkinModel = (attributes & GcmfAttributes_U32.IS_SKIN_MODEL) != 0;
+                var isEffectiveModel = (attributes & GcmfAttributes_U32.IS_EFFECTIVE_MODEL) != 0;
+                var isSkinOrEffective = isSkinModel || isEffectiveModel;
+
+                return isSkinOrEffective;
+            }
+        }
+
         #endregion
 
-        //public Texture[] Texture => texture;
-        //public TransformMatrix3x4[] TransformMatrix => transformMatrices;
-        //public VertexControlData VCD => vcd;
-        //public Material[] Materials => materials;
+
 
         // Metadata
         public long StartAddress

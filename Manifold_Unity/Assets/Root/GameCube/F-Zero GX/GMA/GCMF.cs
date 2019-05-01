@@ -92,7 +92,7 @@ namespace GameCube.FZeroGX.GMA
             for (int i = 0; i < gcmfRenderData.Length; i++)
             {
                 // Not fond of passing this parameter in. Feels dissassociated from rest
-                //gcmfRenderData[i] = new GcmfRenderData(isSkinOrEffective);
+                gcmfRenderData[i] = new GcmfRenderData(gcmfProperties.IsSkinOrEffective);
                 reader.ReadX(ref gcmfRenderData[i], false);
             }
 
@@ -107,15 +107,11 @@ namespace GameCube.FZeroGX.GMA
             if (!(transformMatrixCollection is null))
                 writer.WriteX(transformMatrixCollection);
 
-            var isSkinModel = (gcmfProperties.Attributes & GcmfAttributes_U32.IS_SKIN_MODEL) != 0;
-            var isEffectiveModel = (gcmfProperties.Attributes & GcmfAttributes_U32.IS_EFFECTIVE_MODEL) != 0;
-            var isSkinOrEffective = isSkinModel || isEffectiveModel;
-            if (isSkinOrEffective)
+            if (gcmfProperties.IsSkinOrEffective)
                 writer.WriteX(vertexControlData);
 
             foreach (var gcmf in gcmfRenderData)
             {
-                //gcmf.
                 writer.WriteX(gcmf);
             }
         }
