@@ -19,12 +19,15 @@ namespace GameCube.FZeroGX.GMA
 
         #region MEMBERS
 
-        [SerializeField] GcmfProperties gcmfProperties;
+        [SerializeField] GcmfProperties properties;
         [SerializeField] Texture[] textures;
-        [SerializeField] TransformMatrix3x4Collection transformMatrixCollection;
+        [SerializeField] GcmfTransformMatrices transformMatrices;
         [SerializeField] VertexControlHeader vertexControlHeader;
-        [SerializeField] GcmfRenderData[] gcmfRenderData;
-        [SerializeField] VertexControlCollection vertexControlCollection;
+        [SerializeField] GcmfRenderData[] renderData;
+        [SerializeField] VertexControl_T1[] vertexControl_T1;
+        [SerializeField] VertexControl_T2[] vertexControl_T2;
+        [SerializeField] VertexControl_T3 vertexControl_T3;
+        [SerializeField] VertexControl_T4 vertexControl_T4;
 
         #endregion
 
@@ -50,19 +53,31 @@ namespace GameCube.FZeroGX.GMA
         }
 
         public GcmfProperties GcmfProperties
-            => gcmfProperties;
+            => properties;
 
         public Texture[] Textures
             => textures;
 
-        public TransformMatrix3x4Collection TransformMatrixCollection
-            => transformMatrixCollection;
+        public GcmfTransformMatrices TransformMatrices
+            => transformMatrices;
 
         public VertexControlHeader VertexControlHeader
             => vertexControlHeader;
 
-        public GcmfRenderData[] GcmfRenderData
-            => gcmfRenderData;
+        public GcmfRenderData[] RenderData
+            => renderData;
+
+        public VertexControl_T1[] VertexControl_T1
+            => vertexControl_T1;
+
+        public VertexControl_T2[] VertexControl_T2
+            => vertexControl_T2;
+
+        public VertexControl_T3 VertexControl_T3
+            => vertexControl_T3;
+
+        public VertexControl_T4 VertexControl_T4
+            => vertexControl_T4;
 
         #endregion
 
@@ -72,37 +87,47 @@ namespace GameCube.FZeroGX.GMA
             startAddress = reader.BaseStream.Position;
 
             // Load properties
-            reader.ReadX(ref gcmfProperties, true);
-            var textureCount = gcmfProperties.TextureCount;
-            var matrixCount = gcmfProperties.TransformMatrixCount;
-            var materialCount = gcmfProperties.TotalMaterialCount;
+            reader.ReadX(ref properties, true);
+            var textureCount = properties.TextureCount;
+            var matrixCount = properties.TransformMatrixCount;
+            var materialCount = properties.TotalMaterialCount;
 
             // Read textures array
             reader.ReadX(ref textures, textureCount, true);
 
             // Init matrix collection. If size is 0, this init doesn't move the stream forward.
-            transformMatrixCollection = new TransformMatrix3x4Collection(matrixCount);
-            reader.ReadX(ref transformMatrixCollection, false);
+            transformMatrices = new GcmfTransformMatrices(matrixCount);
+            reader.ReadX(ref transformMatrices, false);
 
             // Read VertexControlData on appropriate GCMFs
-            if (gcmfProperties.IsSkinOrEffective)
+            if (properties.IsSkinOrEffective)
             {
                 reader.ReadX(ref vertexControlHeader, true);
             }
 
             // Properly paramatize render data based on GCMF properties
-            gcmfRenderData = new GcmfRenderData[materialCount];
-            for (int i = 0; i < gcmfRenderData.Length; i++)
+            renderData = new GcmfRenderData[materialCount];
+            for (int i = 0; i < renderData.Length; i++)
             {
                 // Not fond of passing this parameter in. Feels dissassociated from rest
-                gcmfRenderData[i] = new GcmfRenderData(gcmfProperties.IsSkinOrEffective);
-                reader.ReadX(ref gcmfRenderData[i], false);
+                renderData[i] = new GcmfRenderData(properties.IsSkinOrEffective);
+                reader.ReadX(ref renderData[i], false);
             }
 
-            if (gcmfProperties.IsSkinOrEffective)
+            if (properties.IsSkinOrEffective)
             {
-                vertexControlCollection = new VertexControlCollection(vertexControlHeader);
-                reader.ReadX(ref vertexControlCollection, false);
+                var count = vertexControlHeader.VertexCount;
+                var rootAddress = vertexControlHeader.StartAddress;
+
+                reader.BaseStream.Seek(rootAddress + vertexControlHeader.Unk_type1_relPtr, SeekOrigin.Begin);
+                reader.ReadX(ref vertexControl_T1, count, true);
+                reader.BaseStream.Seek(rootAddress + vertexControlHeader.Unk_type2_relPtr, SeekOrigin.Begin);
+                reader.ReadX(ref vertexControl_T2, count, true);
+                reader.BaseStream.Seek(rootAddress + vertexControlHeader.Unk_type3_relPtr, SeekOrigin.Begin);
+                reader.ReadX(ref vertexControl_T3, true);
+                reader.BaseStream.Seek(rootAddress + vertexControlHeader.Unk_type4_relPtr, SeekOrigin.Begin);
+                vertexControl_T4 = new VertexControl_T4(matrixCount);
+                reader.ReadX(ref vertexControl_T4, false);
             }
 
             endAddress = reader.BaseStream.Position;
@@ -110,26 +135,23 @@ namespace GameCube.FZeroGX.GMA
 
         public void Serialize(BinaryWriter writer)
         {
-            writer.WriteX(gcmfProperties);
+            writer.WriteX(properties);
             writer.WriteX(textures, false);
             // If size is 0, this should not write anything
-            writer.WriteX(transformMatrixCollection);
+            writer.WriteX(transformMatrices);
 
-            if (gcmfProperties.IsSkinOrEffective)
+            if (properties.IsSkinOrEffective)
             {
                 writer.WriteX(vertexControlHeader);
             }
 
-            foreach (var gcmf in gcmfRenderData)
+            foreach (var gcmf in renderData)
             {
                 // Ensure gcmfProperties.IsSkinOrEffective?
                 writer.WriteX(gcmf);
             }
 
-            if (gcmfProperties.IsSkinOrEffective)
-            {
-                writer.WriteX(vertexControlCollection);
-            }
+            throw new NotImplementedException();
         }
     }
 }

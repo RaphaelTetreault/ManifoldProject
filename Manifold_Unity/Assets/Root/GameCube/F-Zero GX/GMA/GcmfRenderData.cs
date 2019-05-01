@@ -22,11 +22,11 @@ namespace GameCube.FZeroGX.GMA
 
         // Perhaps find way to distinguish translucid mats from mats?
         [SerializeField] Material material;
-        [SerializeField] FzgxDisplayList matDisplayObjectA;
-        [SerializeField] FzgxDisplayList matDisplayObjectB;
-        [SerializeField] SkinData skinData;
-        [SerializeField] FzgxDisplayList skinDisplayObjectA;
-        [SerializeField] FzgxDisplayList skinDisplayObjectB;
+        [SerializeField] FzgxDisplayList displayList0;
+        [SerializeField] FzgxDisplayList displayList1;
+        [SerializeField] ExtraDisplayListHeader extraDisplayListHeader;
+        [SerializeField] FzgxDisplayList extraDisplayList0;
+        [SerializeField] FzgxDisplayList extraDisplayList1;
 
         #endregion
 
@@ -39,7 +39,6 @@ namespace GameCube.FZeroGX.GMA
 
         #region PROPERTIES
 
-        // Metadata
         public long StartAddress
         {
             get => startAddress;
@@ -67,11 +66,11 @@ namespace GameCube.FZeroGX.GMA
         }
 
         public Material Material => material;
-        public FzgxDisplayList MatDisplayObjectA => matDisplayObjectA;
-        public FzgxDisplayList MatDisplayObjectB => matDisplayObjectB;
-        public SkinData SkinData => skinData;
-        public FzgxDisplayList SkinDisplayObjectA => skinDisplayObjectA;
-        public FzgxDisplayList SkinDisplayObjectB => skinDisplayObjectB;
+        public FzgxDisplayList DisplayList0 => displayList0;
+        public FzgxDisplayList DisplayList1 => displayList1;
+        public ExtraDisplayListHeader ExtraDisplayListHeader => extraDisplayListHeader;
+        public FzgxDisplayList ExtraDisplayList0 => extraDisplayList0;
+        public FzgxDisplayList ExtraDisplayList1 => extraDisplayList1;
 
         #endregion
 
@@ -84,18 +83,18 @@ namespace GameCube.FZeroGX.GMA
 
             if (!isSkinOrEffective)
             {
-                matDisplayObjectA = new FzgxDisplayList(material.MatDisplayListSize);
-                matDisplayObjectB = new FzgxDisplayList(material.TlMatDisplayListSize);
-                reader.ReadX(ref matDisplayObjectA, false);
-                reader.ReadX(ref matDisplayObjectB, false);
+                displayList0 = new FzgxDisplayList(material.MatDisplayListSize);
+                displayList1 = new FzgxDisplayList(material.TlMatDisplayListSize);
+                reader.ReadX(ref displayList0, false);
+                reader.ReadX(ref displayList1, false);
 
                 if (IsRenderExtraDisplayLists)
                 {
-                    reader.ReadX(ref skinData, true);
-                    skinDisplayObjectA = new FzgxDisplayList(skinData.VertexSize0);
-                    skinDisplayObjectB = new FzgxDisplayList(skinData.VertexSize1);
-                    reader.ReadX(ref skinDisplayObjectA, false);
-                    reader.ReadX(ref skinDisplayObjectB, false);
+                    reader.ReadX(ref extraDisplayListHeader, true);
+                    extraDisplayList0 = new FzgxDisplayList(extraDisplayListHeader.VertexSize0);
+                    extraDisplayList1 = new FzgxDisplayList(extraDisplayListHeader.VertexSize1);
+                    reader.ReadX(ref extraDisplayList0, false);
+                    reader.ReadX(ref extraDisplayList1, false);
                 }
             }
 
@@ -108,14 +107,14 @@ namespace GameCube.FZeroGX.GMA
 
             if (!isSkinOrEffective)
             {
-                writer.WriteX(matDisplayObjectA);
-                writer.WriteX(matDisplayObjectB);
+                writer.WriteX(displayList0);
+                writer.WriteX(displayList1);
 
                 if (IsRenderExtraDisplayLists)
                 {
-                    writer.WriteX(skinData);
-                    writer.WriteX(skinDisplayObjectA);
-                    writer.WriteX(skinDisplayObjectB);
+                    writer.WriteX(extraDisplayListHeader);
+                    writer.WriteX(extraDisplayList0);
+                    writer.WriteX(extraDisplayList1);
                 }
             }
         }

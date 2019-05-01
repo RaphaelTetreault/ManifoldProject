@@ -10,11 +10,12 @@ using UnityEngine.Serialization;
 namespace GameCube.FZeroGX.GMA
 {
     [Serializable]
-    public class TransformMatrix3x4Collection : IBinarySerializable, IBinaryAddressable
+    public class GcmfTransformMatrices : IBinarySerializable, IBinaryAddressable
     {
-        [Header("Transform Matrix3x4 Collection")]
+        [Header("Gcmf Transform Matrices")]
         [SerializeField, Hex] long startAddress;
         [SerializeField, Hex] long endAddress;
+        [SerializeField, Hex] int matrixCount;
         byte[] fifoPadding;
 
         #region MEMBERS
@@ -24,9 +25,9 @@ namespace GameCube.FZeroGX.GMA
 
         #endregion
 
-        public TransformMatrix3x4Collection() { }
+        public GcmfTransformMatrices() { }
 
-        public TransformMatrix3x4Collection(int matrixCount)
+        public GcmfTransformMatrices(int matrixCount)
         {
             SetMatrixCount(matrixCount);
         }
@@ -97,6 +98,7 @@ namespace GameCube.FZeroGX.GMA
         public void SetMatrixCount(int matrixCount)
         {
             matrices = new TransformMatrix3x4[matrixCount];
+            this.matrixCount = matrixCount;
         }
     }
 }

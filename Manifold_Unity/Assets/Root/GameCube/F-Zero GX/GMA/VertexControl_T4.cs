@@ -7,6 +7,8 @@ using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.Serialization;
 
+using GameCube.GX;
+
 namespace GameCube.FZeroGX.GMA
 {
     [Serializable]
@@ -17,14 +19,21 @@ namespace GameCube.FZeroGX.GMA
         [Header("Vtx Ctrl T4")]
         [SerializeField, Hex(8)] long startAddress;
         [SerializeField, Hex(8)] long endAddress;
-
-        [SerializeField]
-        ushort unk_0x00;
+        [SerializeField, Hex(8)] int matrixCount;
 
         [SerializeField]
         ushort[] unknown_values;
 
         byte[] fifoPadding;
+
+
+        public VertexControl_T4() { }
+
+        public VertexControl_T4(int matrixCount)
+        {
+            this.matrixCount = matrixCount;
+        }
+
 
         // Metadata
         public long StartAddress
@@ -42,9 +51,8 @@ namespace GameCube.FZeroGX.GMA
         {
             StartAddress = reader.BaseStream.Position;
 
-            reader.ReadX(ref unk_0x00);
-            reader.ReadX(ref unknown_values, 0);
-            //reader.ReadX(ref fifoPadding, kFifoPaddingSize);
+            reader.ReadX(ref unknown_values, matrixCount);
+            reader.Align(GxUtility.GX_FIFO_ALIGN);
 
             EndAddress = reader.BaseStream.Position;
         }

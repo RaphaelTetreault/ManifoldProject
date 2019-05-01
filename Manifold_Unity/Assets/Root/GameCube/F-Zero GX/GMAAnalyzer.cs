@@ -321,12 +321,12 @@ public class GMAAnalyzer : AnalyzerSobj<GMASobj>
 
                 var matIndex = 1;
                 var texIndex = 1;
-                var matIndexMax = gcmf.GcmfRenderData.Length;
+                var matIndexMax = gcmf.RenderData.Length;
                 var texIndexMax = 0;
-                foreach (var gcmfRenderData in gcmf.GcmfRenderData)
+                foreach (var gcmfRenderData in gcmf.RenderData)
                     texIndexMax += gcmfRenderData.Material.TexturesUsedCount;
 
-                foreach (var gcmfRenderData in gcmf.GcmfRenderData)
+                foreach (var gcmfRenderData in gcmf.RenderData)
                 {
                     var material = gcmfRenderData.Material;
 

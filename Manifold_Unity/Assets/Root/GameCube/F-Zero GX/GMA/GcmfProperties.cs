@@ -104,11 +104,10 @@ namespace GameCube.FZeroGX.GMA
         byte zero_0x1F;
 
         /// <summary>
-        /// Size of GCMF including Texture[] and TransformMatrix[], excluding
-        /// VertexControlData (and associated data) and Material[]
+        /// Size of GcmfProperties, Texture[] and TransformMatrix[]
         /// </summary>
         [SerializeField, Hex("20", 8)]
-        int gcmfSize;
+        int gcmfTexMtxSize;
 
         /// <summary>
         /// 2019/03/31 VERIFIED VALUES: only 0 
@@ -158,7 +157,7 @@ namespace GameCube.FZeroGX.GMA
             => zero_0x1F;
 
         public int GcmfSize
-            => gcmfSize;
+            => gcmfTexMtxSize;
 
         public uint Zero_0x24
             => zero_0x24;
@@ -207,7 +206,7 @@ namespace GameCube.FZeroGX.GMA
             reader.ReadX(ref translucidMaterialCount);
             reader.ReadX(ref transformMatrixCount);
             reader.ReadX(ref zero_0x1F); Assert.IsTrue(zero_0x1F == 0);
-            reader.ReadX(ref gcmfSize);
+            reader.ReadX(ref gcmfTexMtxSize);
             reader.ReadX(ref zero_0x24); Assert.IsTrue(zero_0x24 == 0);
             reader.ReadX(ref transformMatrixDefaultIndices, kTransformMatrixDefaultLength);
             reader.ReadX(ref fifoPadding, kFifoPaddingSize);
@@ -228,7 +227,7 @@ namespace GameCube.FZeroGX.GMA
             writer.WriteX(translucidMaterialCount);
             writer.WriteX(transformMatrixCount);
             writer.WriteX(zero_0x1F); Assert.IsTrue(zero_0x1F == 0);
-            writer.WriteX(gcmfSize);
+            writer.WriteX(gcmfTexMtxSize);
             writer.WriteX(zero_0x24); Assert.IsTrue(zero_0x24 == 0);
             writer.WriteX(transformMatrixDefaultIndices, false);
 

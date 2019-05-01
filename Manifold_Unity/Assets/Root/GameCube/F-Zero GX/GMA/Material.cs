@@ -243,14 +243,12 @@ namespace GameCube.FZeroGX.GMA
     }
 
     [Serializable]
-    public class Material : IBinarySerializable, IBinaryAddressable, IFile
+    public class Material : IBinarySerializable, IBinaryAddressable
     {
         public const int kTransformArrayLength = 8;
         public const int kFifoPaddingSize = 28;
 
         [Header("Material")]
-        [SerializeField] string name;
-        [SerializeField, HideInInspector] string fileName;
         [SerializeField, Hex] long startAddress;
         [SerializeField, Hex] long endAddress;
         [Space]
@@ -369,16 +367,6 @@ namespace GameCube.FZeroGX.GMA
         #endregion
 
         // Metadata
-        public string FileName
-        {
-            get => fileName;
-            set => fileName = value;
-        }
-        public string ModelName
-        {
-            get => name;
-            set => name = value;
-        }
         public long StartAddress
         {
             get => startAddress;
@@ -425,7 +413,7 @@ namespace GameCube.FZeroGX.GMA
             EndAddress = reader.BaseStream.Position;
 
             for (int i = 0; i < fifoPadding.Length; i++)
-                Assert.IsTrue(fifoPadding[i] == 0x00, $"Addr:{startAddress.ToString("X8")} {FileName}/{ModelName}: Index {i}");
+                Assert.IsTrue(fifoPadding[i] == 0x00);
         }
 
         public void Serialize(BinaryWriter writer)

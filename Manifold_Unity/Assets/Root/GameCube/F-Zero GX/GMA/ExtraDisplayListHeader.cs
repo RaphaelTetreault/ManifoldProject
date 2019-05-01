@@ -10,7 +10,7 @@ using UnityEngine.Serialization;
 namespace GameCube.FZeroGX.GMA
 {
     [Serializable]
-    public class SkinData : IBinarySerializable, IBinaryAddressable
+    public class ExtraDisplayListHeader : IBinarySerializable, IBinaryAddressable
     {
         public const int kFifoPaddingSize = 16;
 
