@@ -97,7 +97,11 @@ namespace GameCube.FZeroGX.GMA
 
         public void Serialize(BinaryWriter writer)
         {
-            throw new NotImplementedException();
+            foreach (var value in intArrays)
+            {
+                writer.WriteX(value);
+            }
+            writer.Align(GameCube.GX.GxUtility.GX_FIFO_ALIGN);
         }
     }
 }

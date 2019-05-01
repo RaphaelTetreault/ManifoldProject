@@ -25,24 +25,18 @@ namespace GameCube.FZeroGX.GMA
         int vertexCount;
 
         [SerializeField, Hex("04", 8)]
-        int unk_type1_relPtr;
+        int vertexControlT1RelPtr;
 
         [SerializeField, Hex("08", 8)]
-        int unk_type2_relPtr;
+        int vertexControlT2RelPtr;
 
         [SerializeField, Hex("0C", 8)]
-        int unk_type3_relPtr;
+        int vertexControlT3RelPtr;
 
         [SerializeField, Hex("10", 8)]
-        int unk_type4_relPtr;
+        int vertexControlT4RelPtr;
 
         byte[] fifoPadding;
-
-        //
-        VertexControl_T1[] vtx1;
-        VertexControl_T2[] vtx2;
-        VertexControl_T3 vtx3;
-        VertexControl_T4 vtx4;
 
         #endregion
 
@@ -50,37 +44,43 @@ namespace GameCube.FZeroGX.GMA
 
         public int VertexCount => vertexCount;
 
-        public int Unk_type1_relPtr => unk_type1_relPtr;
+        public int VertexControlT1RelPtr => vertexControlT1RelPtr;
 
-        public int Unk_type2_relPtr => unk_type2_relPtr;
+        public int VertexControlT2RelPtr => vertexControlT2RelPtr;
 
-        public int Unk_type3_relPtr => unk_type3_relPtr;
+        public int VertexControlT3RelPtr => vertexControlT3RelPtr;
 
-        public int Unk_type4_relPtr => unk_type4_relPtr;
+        public int VertexControlT4RelPtr => vertexControlT4RelPtr;
 
         #endregion
 
-        // Metadata
+        #region IBinaryAddressable
+
         public long StartAddress
         {
             get => startAddress;
             set => startAddress = value;
         }
+
         public long EndAddress
         {
             get => endAddress;
             set => endAddress = value;
         }
 
+        #endregion
+
+        #region IBinarySerializable
+
         public void Deserialize(BinaryReader reader)
         {
             StartAddress = reader.BaseStream.Position;
 
             reader.ReadX(ref vertexCount);
-            reader.ReadX(ref unk_type1_relPtr);
-            reader.ReadX(ref unk_type2_relPtr);
-            reader.ReadX(ref unk_type3_relPtr);
-            reader.ReadX(ref unk_type4_relPtr);
+            reader.ReadX(ref vertexControlT1RelPtr);
+            reader.ReadX(ref vertexControlT2RelPtr);
+            reader.ReadX(ref vertexControlT3RelPtr);
+            reader.ReadX(ref vertexControlT4RelPtr);
             reader.ReadX(ref fifoPadding, kFifoPaddingSize);
 
             EndAddress = reader.BaseStream.Position;
@@ -88,8 +88,16 @@ namespace GameCube.FZeroGX.GMA
 
         public void Serialize(BinaryWriter writer)
         {
-            throw new NotImplementedException();
+            writer.WriteX(vertexCount);
+            writer.WriteX(vertexControlT1RelPtr);
+            writer.WriteX(vertexControlT2RelPtr);
+            writer.WriteX(vertexControlT3RelPtr);
+            writer.WriteX(vertexControlT4RelPtr);
+            var align = writer.Align(GameCube.GX.GxUtility.GX_FIFO_ALIGN);
+            Assert.IsTrue(align == kFifoPaddingSize);
         }
+
+        #endregion
 
     }
 }

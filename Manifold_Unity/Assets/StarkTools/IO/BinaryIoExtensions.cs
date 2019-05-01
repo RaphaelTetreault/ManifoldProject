@@ -18,19 +18,19 @@ namespace StarkTools.IO
         public static long Align(this BinaryReader reader, long alignment)
         {
             var bytesToAlign = alignment - (reader.BaseStream.Position % alignment);
-            bytesToAlign = (bytesToAlign == alignment) ? 0 : alignment;
+            bytesToAlign = (bytesToAlign == alignment) ? 0 : bytesToAlign;
             reader.BaseStream.Seek(bytesToAlign, SeekOrigin.Current);
-            return reader.BaseStream.Position;
+            return bytesToAlign;
         }
 
-        public static long Align(this BinaryWriter writer, long alignment)
+        public static long Align(this BinaryWriter writer, long alignment, byte padding = 0x00)
         {
             var bytesToAlign = alignment - (writer.BaseStream.Position % alignment);
-            bytesToAlign = (bytesToAlign == alignment) ? 0 : alignment;
+            bytesToAlign = (bytesToAlign == alignment) ? 0 : bytesToAlign;
             for (int i = 0; i < bytesToAlign; i++)
-                writer.Write((byte)0x00);
+                writer.Write(padding);
 
-            return writer.BaseStream.Position;
+            return bytesToAlign;
         }
 
         #region ReadX

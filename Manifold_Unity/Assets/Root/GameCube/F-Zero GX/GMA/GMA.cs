@@ -108,7 +108,7 @@ namespace GameCube.FZeroGX.GMA
                 reader.BaseStream.Seek(modelNamePtr, SeekOrigin.Begin);
                 reader.ReadXCString(ref modelName, Encoding.ASCII);
 
-                // Init GCMF with file name and model name for debugging
+                // Init GCMF with model name
                 gcmf[i] = new GCMF
                 {
                     ModelName = modelName,
@@ -130,7 +130,7 @@ namespace GameCube.FZeroGX.GMA
             writer.WriteX(gcmfCount);
 
             // Write blank length until we know the size
-            writer.WriteX(0);
+            writer.WriteX(-1);
 
             // Write blank data for now
             var pointerPairs = new GcmfPointerPair[gcmf.Length];
@@ -153,7 +153,8 @@ namespace GameCube.FZeroGX.GMA
             BinaryIoUtility.PopEncoding();
 
             // Get FIFO sized header size, writer it in correct position
-            headerSize = (int)writer.Align(GxUtility.GX_FIFO_ALIGN);
+            writer.Align(GxUtility.GX_FIFO_ALIGN);
+            headerSize = (int)writer.BaseStream.Position;
             writer.BaseStream.Seek(0x04, SeekOrigin.Begin);
             writer.WriteX(headerSize);
             writer.BaseStream.Seek(headerSize, SeekOrigin.Begin);

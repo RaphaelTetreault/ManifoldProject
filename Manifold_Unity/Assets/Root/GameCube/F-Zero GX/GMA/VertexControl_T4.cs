@@ -14,8 +14,6 @@ namespace GameCube.FZeroGX.GMA
     [Serializable]
     public class VertexControl_T4 : IBinarySerializable, IBinaryAddressable
     {
-        public const int kFifoPaddingSize = 30;
-
         [Header("Vtx Ctrl T4")]
         [SerializeField, Hex(8)] long startAddress;
         [SerializeField, Hex(8)] long endAddress;
@@ -59,7 +57,8 @@ namespace GameCube.FZeroGX.GMA
 
         public void Serialize(BinaryWriter writer)
         {
-            throw new NotImplementedException();
+            writer.WriteX(unknown_values, false);
+            writer.Align(GxUtility.GX_FIFO_ALIGN);
         }
     }
 }

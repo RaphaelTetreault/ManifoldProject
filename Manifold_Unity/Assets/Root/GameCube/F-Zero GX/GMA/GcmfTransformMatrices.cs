@@ -25,12 +25,16 @@ namespace GameCube.FZeroGX.GMA
 
         #endregion
 
+        #region CONSTRUCTORS
+
         public GcmfTransformMatrices() { }
 
         public GcmfTransformMatrices(int matrixCount)
         {
             SetMatrixCount(matrixCount);
         }
+
+        #endregion
 
         #region PROPERTIES
 

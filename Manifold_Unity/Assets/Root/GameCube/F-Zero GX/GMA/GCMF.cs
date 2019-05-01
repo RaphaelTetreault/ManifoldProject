@@ -15,7 +15,11 @@ namespace GameCube.FZeroGX.GMA
         [Header("GCMF")]
         [SerializeField, Hex] long startAddress;
         [SerializeField, Hex] long endAddress;
+        /// <summary>
+        /// Name of this GCMF model
+        /// </summary>
         [SerializeField] string name;
+        [SerializeField, Hex] int t1Size;
 
         #region MEMBERS
 
@@ -23,7 +27,7 @@ namespace GameCube.FZeroGX.GMA
         [SerializeField] Texture[] textures;
         [SerializeField] GcmfTransformMatrices transformMatrices;
         [SerializeField] VertexControlHeader vertexControlHeader;
-        [SerializeField] GcmfRenderData[] renderData;
+        [SerializeField] GcmfSubmesh[] submeshes;
         [SerializeField] VertexControl_T1[] vertexControl_T1;
         [SerializeField] VertexControl_T2[] vertexControl_T2;
         [SerializeField] VertexControl_T3 vertexControl_T3;
@@ -64,8 +68,8 @@ namespace GameCube.FZeroGX.GMA
         public VertexControlHeader VertexControlHeader
             => vertexControlHeader;
 
-        public GcmfRenderData[] RenderData
-            => renderData;
+        public GcmfSubmesh[] Submeshes
+            => submeshes;
 
         public VertexControl_T1[] VertexControl_T1
             => vertexControl_T1;
@@ -95,7 +99,7 @@ namespace GameCube.FZeroGX.GMA
             // Read textures array
             reader.ReadX(ref textures, textureCount, true);
 
-            // Init matrix collection. If size is 0, this init doesn't move the stream forward.
+            // Init matrix collection. If size is 0, this init/read doesn't move the stream forward.
             transformMatrices = new GcmfTransformMatrices(matrixCount);
             reader.ReadX(ref transformMatrices, false);
 
@@ -105,29 +109,36 @@ namespace GameCube.FZeroGX.GMA
                 reader.ReadX(ref vertexControlHeader, true);
             }
 
-            // Properly paramatize render data based on GCMF properties
-            renderData = new GcmfRenderData[materialCount];
-            for (int i = 0; i < renderData.Length; i++)
+            // Get submeshes and materials
+            submeshes = new GcmfSubmesh[materialCount];
+            for (int i = 0; i < submeshes.Length; i++)
             {
-                // Not fond of passing this parameter in. Feels dissassociated from rest
-                renderData[i] = new GcmfRenderData(properties.IsSkinOrEffective);
-                reader.ReadX(ref renderData[i], false);
+                // Properly paramatize render data based on GCMF properties
+                // Not fond of passing this parameter in. When serializing, this data
+                // will need to be double checked before seriaalization.
+                submeshes[i] = new GcmfSubmesh(properties.IsSkinOrEffective);
+                reader.ReadX(ref submeshes[i], false);
             }
 
+            // Read vertex control data if appropriate
             if (properties.IsSkinOrEffective)
             {
                 var count = vertexControlHeader.VertexCount;
                 var rootAddress = vertexControlHeader.StartAddress;
 
-                reader.BaseStream.Seek(rootAddress + vertexControlHeader.Unk_type1_relPtr, SeekOrigin.Begin);
-                reader.ReadX(ref vertexControl_T1, count, true);
-                reader.BaseStream.Seek(rootAddress + vertexControlHeader.Unk_type2_relPtr, SeekOrigin.Begin);
+                t1Size = vertexControlHeader.VertexControlT4RelPtr - vertexControlHeader.VertexControlT1RelPtr;
+                t1Size /= 0x20; // format to structure size
+
+                reader.BaseStream.Seek(rootAddress + vertexControlHeader.VertexControlT1RelPtr, SeekOrigin.Begin);
+                reader.ReadX(ref vertexControl_T1, t1Size, true);
+                reader.BaseStream.Seek(rootAddress + vertexControlHeader.VertexControlT2RelPtr, SeekOrigin.Begin);
                 reader.ReadX(ref vertexControl_T2, count, true);
-                reader.BaseStream.Seek(rootAddress + vertexControlHeader.Unk_type3_relPtr, SeekOrigin.Begin);
+                reader.BaseStream.Seek(rootAddress + vertexControlHeader.VertexControlT3RelPtr, SeekOrigin.Begin);
                 reader.ReadX(ref vertexControl_T3, true);
-                reader.BaseStream.Seek(rootAddress + vertexControlHeader.Unk_type4_relPtr, SeekOrigin.Begin);
+                reader.BaseStream.Seek(rootAddress + vertexControlHeader.VertexControlT4RelPtr, SeekOrigin.Begin);
                 vertexControl_T4 = new VertexControl_T4(matrixCount);
                 reader.ReadX(ref vertexControl_T4, false);
+
             }
 
             endAddress = reader.BaseStream.Position;
@@ -140,18 +151,39 @@ namespace GameCube.FZeroGX.GMA
             // If size is 0, this should not write anything
             writer.WriteX(transformMatrices);
 
+            var vchAddress = writer.BaseStream.Position;
             if (properties.IsSkinOrEffective)
             {
                 writer.WriteX(vertexControlHeader);
             }
 
-            foreach (var gcmf in renderData)
+            foreach (var submesh in submeshes)
             {
                 // Ensure gcmfProperties.IsSkinOrEffective?
-                writer.WriteX(gcmf);
+                writer.WriteX(submesh);
             }
 
-            throw new NotImplementedException();
+            if (properties.IsSkinOrEffective)
+            {
+                var address2 = writer.BaseStream.Position;
+                writer.WriteX(vertexControl_T2, false);
+                var address1 = writer.BaseStream.Position;
+                writer.WriteX(vertexControl_T1, false);
+                var address4 = writer.BaseStream.Position;
+                writer.WriteX(vertexControl_T4);
+                var address3 = writer.BaseStream.Position;
+                writer.WriteX(vertexControl_T3);
+
+                //Temp for now - make sure relative pointers are the same
+                Assert.IsTrue(vertexControlHeader.VertexControlT1RelPtr == address1 - vchAddress);
+                Assert.IsTrue(vertexControlHeader.VertexControlT2RelPtr == address2 - vchAddress);
+                Assert.IsTrue(vertexControlHeader.VertexControlT3RelPtr == address3 - vchAddress);
+                Assert.IsTrue(vertexControlHeader.VertexControlT4RelPtr == address4 - vchAddress);
+
+                // We would normally have to go back and write the proper pointers
+                //writer.BaseStream.Seek(vchAddress, SeekOrigin.Begin);
+            }
         }
+
     }
 }

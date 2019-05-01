@@ -11,7 +11,7 @@ using UnityEngine.Serialization;
 namespace GameCube.FZeroGX.GMA
 {
     [Serializable]
-    public class GcmfRenderData : IBinarySerializable, IBinaryAddressable
+    public class GcmfSubmesh : IBinarySerializable, IBinaryAddressable
     {
         [Header("GCMF Render Data")]
         [SerializeField, Hex] long startAddress;
@@ -30,9 +30,9 @@ namespace GameCube.FZeroGX.GMA
 
         #endregion
 
-        public GcmfRenderData() { }
+        public GcmfSubmesh() { }
 
-        public GcmfRenderData(bool isSkinOrEffective)
+        public GcmfSubmesh(bool isSkinOrEffective)
         {
             this.isSkinOrEffective = isSkinOrEffective;
         }

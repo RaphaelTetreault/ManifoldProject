@@ -79,7 +79,15 @@ namespace GameCube.FZeroGX.GMA
 
         public void Serialize(BinaryWriter writer)
         {
-            throw new NotImplementedException();
+            writer.WriteX(position);
+            writer.WriteX(normal);
+            writer.WriteX(tex0uv);
+            writer.WriteX(tex1uv);
+            writer.WriteX(tex2uv);
+            writer.WriteX(color);
+            writer.WriteX(unk_0x34);
+            writer.WriteX(unk_0x38);
+            writer.WriteX(unk_0x3C);
         }
     }
 }
