@@ -17,7 +17,8 @@ namespace StarkTools.IO
 
         public static long Align(this BinaryReader reader, long alignment)
         {
-            var bytesToAlign = reader.BaseStream.Position % alignment;
+            var bytesToAlign = alignment - (reader.BaseStream.Position % alignment);
+            bytesToAlign = (bytesToAlign == alignment) ? 0 : alignment;
             reader.BaseStream.Seek(bytesToAlign, SeekOrigin.Current);
             return reader.BaseStream.Position;
         }
@@ -25,6 +26,7 @@ namespace StarkTools.IO
         public static long Align(this BinaryWriter writer, long alignment)
         {
             var bytesToAlign = alignment - (writer.BaseStream.Position % alignment);
+            bytesToAlign = (bytesToAlign == alignment) ? 0 : alignment;
             for (int i = 0; i < bytesToAlign; i++)
                 writer.Write((byte)0x00);
 
