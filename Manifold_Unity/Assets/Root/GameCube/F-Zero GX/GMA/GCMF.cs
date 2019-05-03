@@ -19,7 +19,8 @@ namespace GameCube.FZeroGX.GMA
         /// Name of this GCMF model
         /// </summary>
         [SerializeField] string name;
-        [SerializeField, Hex] int t1Size;
+        [FormerlySerializedAs("t1Size")]
+        [SerializeField, Hex] int t1Count;
 
         #region MEMBERS
 
@@ -114,25 +115,26 @@ namespace GameCube.FZeroGX.GMA
             for (int i = 0; i < submeshes.Length; i++)
             {
                 // Properly paramatize render data based on GCMF properties
-                // Not fond of passing this parameter in. When serializing, this data
-                // will need to be double checked before seriaalization.
-                submeshes[i] = new GcmfSubmesh(properties.IsSkinOrEffective);
+                submeshes[i] = new GcmfSubmesh()
+                {
+                    IsSkinOrEffective = properties.IsSkinOrEffective
+                };
                 reader.ReadX(ref submeshes[i], false);
             }
 
             // Read vertex control data if appropriate
             if (properties.IsSkinOrEffective)
             {
-                var count = vertexControlHeader.VertexCount;
+                var t2Count = vertexControlHeader.VertexCount;
                 var rootAddress = vertexControlHeader.StartAddress;
 
-                t1Size = vertexControlHeader.VertexControlT4RelPtr - vertexControlHeader.VertexControlT1RelPtr;
-                t1Size /= 0x20; // format to structure size
+                t1Count = vertexControlHeader.VertexControlT4RelPtr - vertexControlHeader.VertexControlT1RelPtr;
+                t1Count /= 0x20; // format to structure size
 
                 reader.BaseStream.Seek(rootAddress + vertexControlHeader.VertexControlT1RelPtr, SeekOrigin.Begin);
-                reader.ReadX(ref vertexControl_T1, t1Size, true);
+                reader.ReadX(ref vertexControl_T1, t1Count, true);
                 reader.BaseStream.Seek(rootAddress + vertexControlHeader.VertexControlT2RelPtr, SeekOrigin.Begin);
-                reader.ReadX(ref vertexControl_T2, count, true);
+                reader.ReadX(ref vertexControl_T2, t2Count, true);
                 reader.BaseStream.Seek(rootAddress + vertexControlHeader.VertexControlT3RelPtr, SeekOrigin.Begin);
                 reader.ReadX(ref vertexControl_T3, true);
                 reader.BaseStream.Seek(rootAddress + vertexControlHeader.VertexControlT4RelPtr, SeekOrigin.Begin);
@@ -148,7 +150,7 @@ namespace GameCube.FZeroGX.GMA
         {
             writer.WriteX(properties);
             writer.WriteX(textures, false);
-            // If size is 0, this should not write anything
+            // If size is 0, this will not write anything
             writer.WriteX(transformMatrices);
 
             var vchAddress = writer.BaseStream.Position;
@@ -160,6 +162,7 @@ namespace GameCube.FZeroGX.GMA
             foreach (var submesh in submeshes)
             {
                 // Ensure gcmfProperties.IsSkinOrEffective?
+                submesh.IsSkinOrEffective = properties.IsSkinOrEffective;
                 writer.WriteX(submesh);
             }
 
@@ -175,13 +178,29 @@ namespace GameCube.FZeroGX.GMA
                 writer.WriteX(vertexControl_T3);
 
                 //Temp for now - make sure relative pointers are the same
-                Assert.IsTrue(vertexControlHeader.VertexControlT1RelPtr == address1 - vchAddress);
-                Assert.IsTrue(vertexControlHeader.VertexControlT2RelPtr == address2 - vchAddress);
-                Assert.IsTrue(vertexControlHeader.VertexControlT3RelPtr == address3 - vchAddress);
-                Assert.IsTrue(vertexControlHeader.VertexControlT4RelPtr == address4 - vchAddress);
+                var pointer1 = (int)(address1 - vchAddress);
+                var pointer2 = (int)(address2 - vchAddress);
+                var pointer3 = (int)(address3 - vchAddress);
+                var pointer4 = (int)(address4 - vchAddress);
+                Assert.IsTrue(vertexControlHeader.VertexControlT1RelPtr == pointer1);
+                Assert.IsTrue(vertexControlHeader.VertexControlT2RelPtr == pointer2);
+                Assert.IsTrue(vertexControlHeader.VertexControlT3RelPtr == pointer3);
+                Assert.IsTrue(vertexControlHeader.VertexControlT4RelPtr == pointer4);
 
-                // We would normally have to go back and write the proper pointers
-                //writer.BaseStream.Seek(vchAddress, SeekOrigin.Begin);
+                // Write back pointers
+                var header = new VertexControlHeader()
+                {
+                    VertexCount = vertexControl_T2.Length,
+                    VertexControlT1RelPtr = pointer1,
+                    VertexControlT2RelPtr = pointer2,
+                    VertexControlT3RelPtr = pointer3,
+                    VertexControlT4RelPtr = pointer4,
+                };
+                var position = writer.BaseStream.Position;
+                writer.BaseStream.Seek(vchAddress, SeekOrigin.Begin);
+                writer.WriteX(header);
+                // Reset position, though this shouldn't be needed
+                writer.BaseStream.Seek(position, SeekOrigin.Begin);
             }
         }
 

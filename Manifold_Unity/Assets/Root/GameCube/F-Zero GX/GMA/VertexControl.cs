@@ -42,15 +42,35 @@ namespace GameCube.FZeroGX.GMA
 
         #region PROPERTIES
 
-        public int VertexCount => vertexCount;
+        public int VertexCount
+        {
+            get => vertexCount;
+            set => vertexCount = value;
+        }
 
-        public int VertexControlT1RelPtr => vertexControlT1RelPtr;
+        public int VertexControlT1RelPtr
+        {
+            get => vertexControlT1RelPtr;
+            set => vertexControlT1RelPtr = value;
+        }
 
-        public int VertexControlT2RelPtr => vertexControlT2RelPtr;
+        public int VertexControlT2RelPtr
+        {
+            get => vertexControlT2RelPtr;
+            set => vertexControlT2RelPtr = value;
+        }
 
-        public int VertexControlT3RelPtr => vertexControlT3RelPtr;
+        public int VertexControlT3RelPtr
+        {
+            get => vertexControlT3RelPtr;
+            set => vertexControlT3RelPtr = value;
+        }
 
-        public int VertexControlT4RelPtr => vertexControlT4RelPtr;
+        public int VertexControlT4RelPtr
+        {
+            get => vertexControlT4RelPtr;
+            set => vertexControlT4RelPtr = value;
+        }
 
         #endregion
 

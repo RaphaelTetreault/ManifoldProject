@@ -21,16 +21,16 @@ namespace GameCube.FZeroGX.GMA
 
         #region MEMBERS
 
-        [SerializeField, Hex("00 -", 8)]
+        [SerializeField, Hex("00", 8)]
         int unk_0x00;
 
-        [SerializeField, Hex("04 -", 8)]
+        [SerializeField, Hex("04", 8)]
         int unk_0x04;
 
-        [SerializeField, Hex("08 -", 8)]
+        [SerializeField, Hex("08", 8)]
         int vertexSize0; // MAT?
 
-        [SerializeField, Hex("0C -", 8)]
+        [SerializeField, Hex("0C", 8)]
         int vertexSize1; // TL MAT?
 
         byte[] fifoPadding;

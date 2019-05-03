@@ -51,6 +51,12 @@ namespace GameCube.FZeroGX.GMA
             set => endAddress = value;
         }
 
+        public bool IsSkinOrEffective
+        {
+            get => isSkinOrEffective;
+            set => isSkinOrEffective = value;
+        }
+
         public bool IsRenderExtraDisplayLists
         {
             get

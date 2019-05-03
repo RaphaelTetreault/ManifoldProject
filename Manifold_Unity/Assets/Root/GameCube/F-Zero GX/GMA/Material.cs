@@ -378,6 +378,17 @@ namespace GameCube.FZeroGX.GMA
             set => endAddress = value;
         }
 
+        public bool IsRenderExtraDisplayLists
+        {
+            get
+            {
+                var renderExtraDisplayList0 = (vertexRenderFlags & MatVertexRenderFlag_U8.RENDER_EX_DISPLAY_LIST_0) != 0;
+                var renderExtraDisplayList1 = (vertexRenderFlags & MatVertexRenderFlag_U8.RENDER_EX_DISPLAY_LIST_1) != 0;
+                var renderExtraDisplayList01 = renderExtraDisplayList0 && renderExtraDisplayList1;
+                return renderExtraDisplayList01;
+            }
+        }
+
         public void Deserialize(BinaryReader reader)
         {
             StartAddress = reader.BaseStream.Position;

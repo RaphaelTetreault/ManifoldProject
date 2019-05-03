@@ -218,7 +218,7 @@ namespace GameCube.FZeroGX.GMA
 
         public void Serialize(BinaryWriter writer)
         {
-            writer.WriteX(gcmfMagic); Assert.IsTrue(gcmfMagic == kGCMF);
+            writer.WriteX(kGCMF);
             writer.WriteX(attributes);
             writer.WriteX(origin);
             writer.WriteX(radius);
@@ -226,9 +226,9 @@ namespace GameCube.FZeroGX.GMA
             writer.WriteX(materialCount);
             writer.WriteX(translucidMaterialCount);
             writer.WriteX(transformMatrixCount);
-            writer.WriteX(zero_0x1F); Assert.IsTrue(zero_0x1F == 0);
+            writer.WriteX((byte)0);
             writer.WriteX(gcmfTexMtxSize);
-            writer.WriteX(zero_0x24); Assert.IsTrue(zero_0x24 == 0);
+            writer.WriteX((uint)0);
             writer.WriteX(transformMatrixDefaultIndices, false);
 
             for (int i = 0; i < kFifoPaddingSize; i++)

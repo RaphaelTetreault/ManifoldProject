@@ -311,7 +311,7 @@ public class GMAAnalyzer : AnalyzerSobj<GMASobj>
         foreach (var sobj in analysisSobjs)
         {
             // Write contents
-            var gcmfIndex = 1;
+            var gcmfIndex = 0; // 0 indexed in debugger
             var gcmfIndexMax = sobj.value.GcmfCount;
             foreach (var gcmf in sobj.Value.GCMF)
             {
@@ -320,7 +320,7 @@ public class GMAAnalyzer : AnalyzerSobj<GMASobj>
                     continue;
 
                 var matIndex = 1;
-                var texIndex = 1;
+                var texIndex = 1; // not zero indexed in debugger
                 var matIndexMax = gcmf.Submeshes.Length;
                 var texIndexMax = 0;
                 foreach (var gcmfRenderData in gcmf.Submeshes)
