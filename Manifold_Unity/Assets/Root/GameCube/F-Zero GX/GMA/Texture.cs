@@ -19,12 +19,18 @@ namespace GameCube.FZeroGX.GMA
     [Flags]
     public enum TexFlags0x00_U16 : ushort
     {
-        //UNK_FLAG_0 = 1 << 0, // unused
+        /// <summary>
+        /// Unused
+        /// </summary>
+        UNUSED_FLAG_0 = 1 << 0,
         /// <summary>
         /// Based on st24 models, uv scroll. Perhaps x/y depends on another flag?
         /// </summary>
         ENABLE_UV_SCROLL = 1 << 1,
-        //UNK_FLAG_2 = 1 << 2, // unused
+        /// <summary>
+        /// Unused
+        /// </summary>
+        UNUSED_FLAG_2 = 1 << 2,
         /// <summary>
         /// 7 occurences total. (st21,lz.gma, [75,76,77/130] guide_light*, [1/6])
         /// </summary>
@@ -41,7 +47,10 @@ namespace GameCube.FZeroGX.GMA
         /// Appears to be used whenever tex is for bg reflections
         /// </summary>
         UNK_FLAG_6 = 1 << 6,
-        //UNK_FLAG_7 = 1 << 7, // unused
+        /// <summary>
+        /// Unused
+        /// </summary>
+        UNUSED_FLAG_7 = 1 << 7,
     }
 
     [Flags]
@@ -151,7 +160,7 @@ namespace GameCube.FZeroGX.GMA
 
 
     [Serializable]
-    public struct Texture : IBinarySerializable, IBinaryAddressable
+    public struct TextureDescriptor : IBinarySerializable, IBinaryAddressable
     {
         public const int kFifoPaddingSize = 12;
 

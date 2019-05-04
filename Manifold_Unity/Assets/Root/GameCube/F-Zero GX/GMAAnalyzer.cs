@@ -90,7 +90,7 @@ public class GMAAnalyzer : AnalyzerSobj<GMASobj>
         {
             foreach (var gcmf in sobj.Value.GCMF)
             {
-                if (gcmf == null || gcmf.ModelName == GcmfProperties.kNullEntryName)
+                if (gcmf == null || string.IsNullOrEmpty(gcmf.ModelName))
                     continue;
 
                 foreach (var tex in gcmf.Textures)
@@ -181,8 +181,7 @@ public class GMAAnalyzer : AnalyzerSobj<GMASobj>
             var maxIndex = sobj.value.GcmfCount;
             foreach (var gcmf in sobj.Value.GCMF)
             {
-                if (string.IsNullOrEmpty(gcmf.ModelName) ||
-                    gcmf.ModelName == GcmfProperties.kNullEntryName)
+                if (string.IsNullOrEmpty(gcmf.ModelName))
                     continue;
 
                 // Get reference to type less
@@ -299,7 +298,7 @@ public class GMAAnalyzer : AnalyzerSobj<GMASobj>
             writer.PushCol("Tex 1 Index");
             writer.PushCol("Tex 2 Index");
             writer.PushCol("Vertex Descriptor Flags");
-            //writer.PushCol("Transform matrix specific indices");
+            writer.PushCol("Transform Matrix Indexes");
             writer.PushCol("Mat display list size");
             writer.PushCol("Tl mat display list size");
             writer.PushCol("Bounding Sphere Origin");
@@ -316,7 +315,7 @@ public class GMAAnalyzer : AnalyzerSobj<GMASobj>
             foreach (var gcmf in sobj.Value.GCMF)
             {
                 // skip null models
-                if (string.IsNullOrEmpty(gcmf.ModelName) || gcmf.ModelName == GcmfProperties.kNullEntryName)
+                if (string.IsNullOrEmpty(gcmf.ModelName))
                     continue;
 
                 var matIndex = 1;
@@ -352,7 +351,7 @@ public class GMAAnalyzer : AnalyzerSobj<GMASobj>
                     writer.PushCol(material.Tex1Index);
                     writer.PushCol(material.Tex2Index);
                     writer.PushCol(material.VertexDescriptorFlags);
-                    //writer.PushCol(gcmf.Material.TransformMatrixSpecificIndices);
+                    writer.PushCol(material.MatrixIndexes);
                     writer.PushCol(material.MatDisplayListSize);
                     writer.PushCol(material.TlMatDisplayListSize);
                     writer.PushCol(material.BoudingSphereOrigin);

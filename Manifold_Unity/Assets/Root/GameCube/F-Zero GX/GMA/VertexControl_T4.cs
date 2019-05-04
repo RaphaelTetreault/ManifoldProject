@@ -20,7 +20,7 @@ namespace GameCube.FZeroGX.GMA
         [SerializeField, Hex(8)] int matrixCount;
 
         [SerializeField]
-        ushort[] unknown_values;
+        ushort[] matrixIndexes;
 
         byte[] fifoPadding;
 
@@ -49,7 +49,7 @@ namespace GameCube.FZeroGX.GMA
         {
             StartAddress = reader.BaseStream.Position;
 
-            reader.ReadX(ref unknown_values, matrixCount);
+            reader.ReadX(ref matrixIndexes, matrixCount);
             reader.Align(GxUtility.GX_FIFO_ALIGN);
 
             EndAddress = reader.BaseStream.Position;
@@ -57,7 +57,7 @@ namespace GameCube.FZeroGX.GMA
 
         public void Serialize(BinaryWriter writer)
         {
-            writer.WriteX(unknown_values, false);
+            writer.WriteX(matrixIndexes, false);
             writer.Align(GxUtility.GX_FIFO_ALIGN);
         }
     }

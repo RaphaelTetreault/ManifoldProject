@@ -13,7 +13,7 @@ namespace GameCube.FZeroGX.GMA
     [Serializable]
     public class GcmfSubmesh : IBinarySerializable, IBinaryAddressable
     {
-        [Header("GCMF Render Data")]
+        [Header("GCMF Submesh")]
         [SerializeField, Hex] long startAddress;
         [SerializeField, Hex] long endAddress;
         [SerializeField] bool isSkinOrEffective;

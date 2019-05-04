@@ -17,34 +17,34 @@ namespace GameCube.FZeroGX.GMA
         [SerializeField, Hex(8)] long endAddress;
 
         //
-        [SerializeField]
+        [SerializeField, LabelPrefix("00")]
         Vector3 position;
 
         /// <summary>
         /// Not always unit vector
         /// </summary>
-        [SerializeField]
+        [SerializeField, LabelPrefix("0C")]
         Vector3 normal;
 
-        [SerializeField]
+        [SerializeField, LabelPrefix("18")]
         Vector2 tex0uv;
 
-        [SerializeField]
+        [SerializeField, LabelPrefix("20")]
         Vector2 tex1uv;
 
-        [SerializeField]
+        [SerializeField, LabelPrefix("28")]
         Vector2 tex2uv;
 
-        [SerializeField]
+        [SerializeField, LabelPrefix("30")]
         Color32 color;
 
-        [SerializeField]
+        [SerializeField, Hex("34", 8)]
         uint unk_0x34;
 
-        [SerializeField]
+        [SerializeField, Hex("38", 8)]
         uint unk_0x38;
 
-        [SerializeField]
+        [SerializeField, Hex("3C", 8)]
         uint unk_0x3C;
 
 

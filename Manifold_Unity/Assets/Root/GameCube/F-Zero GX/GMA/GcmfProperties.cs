@@ -23,6 +23,7 @@ namespace GameCube.FZeroGX.GMA
         /// Vertices are stored in 16-bit compressed floating point number format using GameCube GX conventions.
         /// </summary>
         IS_16_BIT = 1 << 0, //0x01,
+        UNUSED_1 = 1 << 1,
         /// <summary>
         /// Called "Stitching Model" in the debug menu. Has associated transform matrices.
         /// </summary>
@@ -34,16 +35,17 @@ namespace GameCube.FZeroGX.GMA
         /// <summary>
         /// Called "Effective Model" in the debug menu. Has physics-driven indexed vertices.
         /// </summary>
-        IS_EFFECTIVE_MODEL = 1 << 4 // 0x10,
+        IS_EFFECTIVE_MODEL = 1 << 4, // 0x10,
+        UNUSED_5 = 1 << 5,
+        UNUSED_6 = 1 << 6,
+        UNUSED_7 = 1 << 7,
     }
 
     [Serializable]
     public class GcmfProperties : IBinarySerializable, IBinaryAddressable
     {
         public const uint kGCMF = 0x47434D46; // 47 43 4D 46 - GCMF in ASCII
-        public const int kTransformMatrixDefaultLength = 8;
         public const int kFifoPaddingSize = 16;
-        public const string kNullEntryName = "null";
 
         [Header("GCMF Properties")]
         [SerializeField, Hex(8)] long startAddress;
@@ -118,8 +120,8 @@ namespace GameCube.FZeroGX.GMA
         /// <summary>
         /// 
         /// </summary>
-        [SerializeField, Hex("28", 2)]
-        byte[] transformMatrixDefaultIndices;
+        [SerializeField]//, LabelPrefix("28")]
+        TransformMatrixIndexes8 defaultIndexes;
 
         /// <summary>
         /// 2019/03/31 VERIFIED VALUES: GameCube GX FIFO Padding to 32 bytes
@@ -162,8 +164,8 @@ namespace GameCube.FZeroGX.GMA
         public uint Zero_0x24
             => zero_0x24;
 
-        public byte[] TransformMatrixDefaultIndices
-            => transformMatrixDefaultIndices;
+        public TransformMatrixIndexes8 DefaultIndexes
+            => defaultIndexes;
 
         public bool IsSkinOrEffective
         {
@@ -208,7 +210,7 @@ namespace GameCube.FZeroGX.GMA
             reader.ReadX(ref zero_0x1F); Assert.IsTrue(zero_0x1F == 0);
             reader.ReadX(ref gcmfTexMtxSize);
             reader.ReadX(ref zero_0x24); Assert.IsTrue(zero_0x24 == 0);
-            reader.ReadX(ref transformMatrixDefaultIndices, kTransformMatrixDefaultLength);
+            reader.ReadX(ref defaultIndexes, false);
             reader.ReadX(ref fifoPadding, kFifoPaddingSize);
             foreach (var fifoPad in fifoPadding)
                 Assert.IsTrue(fifoPad == 0);
@@ -229,7 +231,7 @@ namespace GameCube.FZeroGX.GMA
             writer.WriteX((byte)0);
             writer.WriteX(gcmfTexMtxSize);
             writer.WriteX((uint)0);
-            writer.WriteX(transformMatrixDefaultIndices, false);
+            writer.WriteX(defaultIndexes);
 
             for (int i = 0; i < kFifoPaddingSize; i++)
                 writer.WriteX((byte)0x00);

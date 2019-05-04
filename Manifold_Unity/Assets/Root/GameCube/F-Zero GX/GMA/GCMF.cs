@@ -13,19 +13,20 @@ namespace GameCube.FZeroGX.GMA
     public class GCMF : IBinarySerializable, IBinaryAddressable
     {
         [Header("GCMF")]
+        [SerializeField] string name;
         [SerializeField, Hex] long startAddress;
         [SerializeField, Hex] long endAddress;
         /// <summary>
         /// Name of this GCMF model
         /// </summary>
-        [SerializeField] string name;
         [FormerlySerializedAs("t1Size")]
         [SerializeField, Hex] int t1Count;
 
         #region MEMBERS
 
+        [Space]
         [SerializeField] GcmfProperties properties;
-        [SerializeField] Texture[] textures;
+        [SerializeField] TextureDescriptor[] textures;
         [SerializeField] GcmfTransformMatrices transformMatrices;
         [SerializeField] VertexControlHeader vertexControlHeader;
         [SerializeField] GcmfSubmesh[] submeshes;
@@ -60,7 +61,7 @@ namespace GameCube.FZeroGX.GMA
         public GcmfProperties GcmfProperties
             => properties;
 
-        public Texture[] Textures
+        public TextureDescriptor[] Textures
             => textures;
 
         public GcmfTransformMatrices TransformMatrices

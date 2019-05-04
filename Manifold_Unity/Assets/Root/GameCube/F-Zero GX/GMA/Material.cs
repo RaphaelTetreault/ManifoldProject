@@ -309,7 +309,7 @@ namespace GameCube.FZeroGX.GMA
 
         // TODO: label prefix on top node, not members
         [SerializeField, Hex("20")]
-        byte[] transformMatrixSpecidicIndices;
+        TransformMatrixIndexes8 matrixIndexes;
 
         [SerializeField, Hex("28", 8)]
         int matDisplayListSize;
@@ -354,7 +354,7 @@ namespace GameCube.FZeroGX.GMA
         public short Tex2Index => tex2Index;
         public GXAttrFlag_U32 VertexDescriptorFlags => vertexAttributeFlags;
         // 0x20
-        public byte[] TransformMatrixSpecificIndices => transformMatrixSpecidicIndices;
+        public TransformMatrixIndexes8 MatrixIndexes => matrixIndexes;
         public int MatDisplayListSize => matDisplayListSize;
         public int TlMatDisplayListSize => tlMatDisplayListSize;
         // 0x30
@@ -412,7 +412,7 @@ namespace GameCube.FZeroGX.GMA
             reader.ReadX(ref tex2Index);
             reader.ReadX(ref vertexAttributeFlags);
             // 0x20
-            reader.ReadX(ref transformMatrixSpecidicIndices, kTransformArrayLength);
+            reader.ReadX(ref matrixIndexes, false);
             reader.ReadX(ref matDisplayListSize);
             reader.ReadX(ref tlMatDisplayListSize);
             // 0x30
@@ -448,7 +448,7 @@ namespace GameCube.FZeroGX.GMA
             writer.WriteX(tex2Index);
             writer.WriteX(vertexAttributeFlags);
             // 0x20
-            writer.WriteX(transformMatrixSpecidicIndices, false);
+            writer.WriteX(matrixIndexes);
             writer.WriteX(matDisplayListSize);
             writer.WriteX(tlMatDisplayListSize);
             // 0x30

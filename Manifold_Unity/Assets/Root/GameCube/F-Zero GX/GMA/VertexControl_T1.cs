@@ -17,16 +17,16 @@ namespace GameCube.FZeroGX.GMA
         [SerializeField, Hex(8)] long endAddress;
 
         // This is a guess
-        [SerializeField]
+        [SerializeField, LabelPrefix("00")]
         Vector3 position;
 
-        [SerializeField]
+        [SerializeField, LabelPrefix("0C")]
         Vector3 normal;
 
-        [SerializeField]
+        [SerializeField, Hex("18", 8)]
         uint unk_0x18;
 
-        [SerializeField]
+        [SerializeField, LabelPrefix("1C")]
         float unk_0x1C;
 
         // Metadata
