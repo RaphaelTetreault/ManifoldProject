@@ -36,8 +36,13 @@ namespace GameCube.FZeroGX.CarData
             {
                 using (var fileStream = File.Open(importFile, read.mode, read.access, read.share))
                 {
-                    using (var reader = new BinaryReader(fileStream))
+                    var unpackedStream = new MemoryStream();
+                    LibGxFormat.Lz.Lz.UnpackAvLz(fileStream, unpackedStream, LibGxFormat.AvGame.FZeroGX);
+
+                    using (var reader = new BinaryReader(unpackedStream))
                     {
+                        reader.BaseStream.Seek(0, SeekOrigin.Begin);
+
                         var unityPath = UnityPath(importFolder, importFile, destinationDirectory);
                         var fileName = Path.GetFileName(importFile);
 

@@ -31,7 +31,8 @@ namespace GameCube.FZeroGX.CarData
         #region MEMBERS
 
         [Space]
-        public uint unused_0x00;
+        [Tooltip("Runtime variable")]
+        public uint namePointer;
         public float weight;
         public float acceleration;
         public float maxSpeed;
@@ -88,7 +89,7 @@ namespace GameCube.FZeroGX.CarData
         {
             startAddress = reader.BaseStream.Position;
 
-            reader.ReadX(ref unused_0x00);
+            reader.ReadX(ref namePointer);
             reader.ReadX(ref weight);
             reader.ReadX(ref acceleration);
             reader.ReadX(ref maxSpeed);
@@ -125,7 +126,7 @@ namespace GameCube.FZeroGX.CarData
 
         public void Serialize(BinaryWriter writer)
         {
-            writer.WriteX(unused_0x00);
+            writer.WriteX(namePointer);
             writer.WriteX(weight);
             writer.WriteX(acceleration);
             writer.WriteX(maxSpeed);

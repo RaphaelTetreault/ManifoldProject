@@ -472,7 +472,6 @@ namespace GameCube.FZeroGX.CarData
         {
             BinaryIoUtility.PushEndianess(kBigEndian);
 
-            reader.ReadX(ref DarkSchneider, true);
             reader.ReadX(ref RedGazelle, true);
             reader.ReadX(ref WhiteCat, true);
             reader.ReadX(ref GoldenFox, true);
@@ -503,6 +502,7 @@ namespace GameCube.FZeroGX.CarData
             reader.ReadX(ref MightyHurricane, true);
             reader.ReadX(ref CrazyBear, true);
             reader.ReadX(ref BlackBull, true);
+            reader.ReadX(ref DarkSchneider, true);
             reader.ReadX(ref FatShark, true);
             reader.ReadX(ref CosmicDolphin, true);
             reader.ReadX(ref PinkSpider, true);
@@ -620,7 +620,6 @@ namespace GameCube.FZeroGX.CarData
         {
             BinaryIoUtility.PushEndianess(kBigEndian);
 
-            writer.WriteX(DarkSchneider);
             writer.WriteX(RedGazelle);
             writer.WriteX(WhiteCat);
             writer.WriteX(GoldenFox);
@@ -651,6 +650,7 @@ namespace GameCube.FZeroGX.CarData
             writer.WriteX(MightyHurricane);
             writer.WriteX(CrazyBear);
             writer.WriteX(BlackBull);
+            writer.WriteX(DarkSchneider);
             writer.WriteX(FatShark);
             writer.WriteX(CosmicDolphin);
             writer.WriteX(PinkSpider);
