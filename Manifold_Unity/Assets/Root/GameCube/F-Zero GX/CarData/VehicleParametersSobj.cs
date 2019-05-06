@@ -11,14 +11,14 @@ using GameCube.FZeroGX.CarData;
 public class VehicleParametersSobj : ScriptableObject, IBinarySerializable
 {
     [SerializeField]
-    protected VehicleParameters vehicleParameters;
+    public VehicleParameters vehicleParameters;
 
-    public VehicleParameters Value
-        => vehicleParameters;
+
+
 
     public static implicit operator VehicleParameters(VehicleParametersSobj sobj)
     {
-        return sobj.Value;
+        return sobj.vehicleParameters;
     }
 
     public void Deserialize(BinaryReader reader)

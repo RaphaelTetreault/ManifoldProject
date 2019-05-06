@@ -71,7 +71,6 @@ namespace GameCube.FZeroGX.GMA
             List<IntArray> temp = new List<IntArray>();
 
             arrayCount = addressCount = 0;
-            var value = 0;
             while (!reader.EndOfStream())
             {
                 var numEntries = 0;

@@ -11,6 +11,11 @@ namespace GameCube.FZeroGX.CarData
     [Serializable]
     public class CarData : IBinarySerializable, IBinaryAddressable, IFile
     {
+        public const int MachineCount = 41;
+        public const int BodyCount = 25;
+        public const int CockpitCount = 25;
+        public const int BoosterCount = 25;
+
         public const int kPaddingSize = 12;
         public const bool kBigEndian = true;
         public const bool kLittleEndian = false;
@@ -67,7 +72,7 @@ namespace GameCube.FZeroGX.CarData
 
         [Header("String Table")]
         public byte[] padding; // 12 bytes
-        public string[] vehicleNames;
+        public string[] machineNames;
 
         [Header("Body")]
         public VehicleParameters BraveEagle;
@@ -166,7 +171,7 @@ namespace GameCube.FZeroGX.CarData
             set => endAddress = value;
         }
 
-        public VehicleParameters[] Vehicles
+        public VehicleParameters[] Machines
             => new VehicleParameters[]
         {
             RedGazelle,
@@ -302,6 +307,52 @@ namespace GameCube.FZeroGX.CarData
             Triple_Z,
         };
 
+        public readonly int[] VehicleIndex = new int[]
+        {
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27,
+            28,
+            29,
+            30,
+            0,
+            31,
+            32,
+            33,
+            34,
+            35,
+            36,
+            37,
+            38,
+            39,
+            40,
+        };
+
+
         public string FileName
         {
             get => fileName;
@@ -364,10 +415,10 @@ namespace GameCube.FZeroGX.CarData
                 Assert.IsTrue(pad == 0);
 
             BinaryIoUtility.PushEndianess(kLittleEndian);
-            vehicleNames = new string[kStringTableEntries];
-            for (int i = 0; i < vehicleNames.Length; i++)
+            machineNames = new string[kStringTableEntries];
+            for (int i = 0; i < machineNames.Length; i++)
             {
-                reader.ReadXCString(ref vehicleNames[i], System.Text.Encoding.ASCII);
+                reader.ReadXCString(ref machineNames[i], System.Text.Encoding.ASCII);
             }
             BinaryIoUtility.PopEndianess();
 
@@ -501,7 +552,7 @@ namespace GameCube.FZeroGX.CarData
 
             BinaryIoUtility.PushEncoding(System.Text.Encoding.ASCII);
             BinaryIoUtility.PushEndianess(kLittleEndian);
-            foreach (var name in vehicleNames)
+            foreach (var name in machineNames)
             {
                 writer.WriteXCString(name);
             }

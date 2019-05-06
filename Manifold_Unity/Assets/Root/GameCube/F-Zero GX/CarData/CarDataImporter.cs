@@ -43,112 +43,106 @@ namespace GameCube.FZeroGX.CarData
                         var unityPath = UnityPath(importFolder, importFile, destinationDirectory);
                         var fileName = Path.GetFileName(importFile);
 
-                        // Create the cardata file
+                        // Load cardata as type only
                         var carData = new CarData();
                         carData.Deserialize(reader);
                         carData.FileName = fileName;
 
+                        // Create the cardata file
+                        var carDataSobj = CreateInstance<CarDataSobj>();
+                        var filePath = $"Assets/{unityPath}/{fileName}.asset";
+                        AssetDatabase.CreateAsset(carDataSobj, filePath);
+                        carDataSobj.FileName = fileName;
 
+                        // For progress bar
+                        var baseIndex = 0;
+                        var totalIndices =
+                            CarDataSobj.MachineCount +
+                            CarDataSobj.BodyCount +
+                            CarDataSobj.CockpitCount +
+                            CarDataSobj.BoosterCount;
 
-                        //BinaryIoUtility.PushEndianess(true);
-                        //BinaryIoUtility.PushEncoding(System.Text.Encoding.ASCII);
+                        // MACHINE
+                        var machines = carData.Machines;
+                        for (int i = 0; i < CarDataSobj.MachineCount; i++)
+                        {
+                            var index = carDataSobj.VehicleIndex[i];
+                            var name = (MachineName)index;
+                            var indexPrint = index.ToString("D2");
+                            var assetName = $"cardata_machine_{indexPrint}_{name}";
 
-                        //var unityPath = UnityPath(importFolder, importFile, destinationDirectory);
-                        //var fileName = Path.GetFileName(importFile);
+                            UpdateProgressBar(i + baseIndex, totalIndices, unityPath, assetName);
 
-                        //// Create the cardata file
-                        //var sobj = CreateInstance<CarDataSobj>();
-                        //var filePath = $"Assets/{unityPath}/{fileName}.asset";
-                        //AssetDatabase.CreateAsset(sobj, filePath);
-                        //sobj.FileName = fileName;
+                            var asset = CreateInstance<VehicleParametersSobj>();
+                            asset.vehicleParameters = machines[i];
+                            var assetPath = $"Assets/{unityPath}/{assetName}.asset";
+                            AssetDatabase.CreateAsset(asset, assetPath);
+                            carDataSobj.SetVehicle(index, asset);
+                        }
+                        baseIndex += CarDataSobj.MachineCount;
 
-                        //// For progress bar
-                        //var baseIndex = 0;
-                        //var totalIndices =
-                        //    CarDataSobj.MachineCount +
-                        //    CarDataSobj.BodyCount +
-                        //    CarDataSobj.CockpitCount +
-                        //    CarDataSobj.BoosterCount;
+                        // BODY
+                        var bodyParts = carData.BodyParts;
+                        for (int i = 0; i < CarDataSobj.BodyCount; i++)
+                        {
+                            var index = i;
+                            var name = (CustomBodyPartName)index;
+                            var indexPrint = (index + 1).ToString("D2");
+                            var assetName = $"cardata_body_{indexPrint}_{name}";
 
-                        //// MACHINE
-                        //for (int i = 0; i < CarDataSobj.MachineCount; i++)
-                        //{
-                        //    var vehicleIndex = sobj.VehicleIndex[i];
-                        //    var vehicleName = (VehicleName)vehicleIndex;
-                        //    var vehicleIndexPrint = vehicleIndex.ToString("D2");
-                        //    var assetName = $"cardata_machine_{vehicleIndexPrint}_{vehicleName}";
+                            UpdateProgressBar(i + baseIndex, totalIndices, unityPath, assetName);
 
-                        //    UpdateProgressBar(i + baseIndex, totalIndices, unityPath, assetName);
+                            var asset = CreateInstance<VehicleParametersSobj>();
+                            asset.vehicleParameters = bodyParts[i];
+                            var assetPath = $"Assets/{unityPath}/{assetName}.asset";
+                            AssetDatabase.CreateAsset(asset, assetPath);
+                            carDataSobj.SetBody(index, asset);
+                        }
+                        baseIndex += CarDataSobj.BodyCount;
 
-                        //    var asset = CreateFromBinary<VehicleParametersSobj>(unityPath, assetName, reader);
-                        //    sobj.SetVehicle(vehicleIndex, asset);
-                        //}
-                        //baseIndex += CarDataSobj.MachineCount;
+                        // COCKPIT
+                        var cockpitParts = carData.CockpitParts;
+                        for (int i = 0; i < CarDataSobj.CockpitCount; i++)
+                        {
+                            var index = i;
+                            var name = (CustomCockpitPartName)index;
+                            var indexPrint = (index + 1).ToString("D2");
+                            var assetName = $"cardata_cockpit_{indexPrint}_{name}";
 
-                        //// Read some padding
-                        //reader.ReadX(ref sobj.padding, 12);
-                        //foreach (var pad in sobj.padding)
-                        //    Assert.IsTrue(pad == 0);
+                            UpdateProgressBar(i + baseIndex, totalIndices, unityPath, assetName);
 
-                        //BinaryIoUtility.PopEndianess();
-                        //sobj.vehicleNames = new string[43];
-                        //for (int i = 0; i < sobj.vehicleNames.Length; i++)
-                        //{
-                        //    reader.ReadXCString(ref sobj.vehicleNames[i], System.Text.Encoding.ASCII);
-                        //}
-                        //BinaryIoUtility.PushEndianess(true);
+                            var asset = CreateInstance<VehicleParametersSobj>();
+                            asset.vehicleParameters = cockpitParts[i];
+                            var assetPath = $"Assets/{unityPath}/{assetName}.asset";
+                            AssetDatabase.CreateAsset(asset, assetPath);
+                            carDataSobj.SetCockpit(index, asset);
+                        }
+                        baseIndex += CarDataSobj.CockpitCount;
 
-                        //// Skip area we don't know things about
-                        ////reader.BaseStream.Seek(0x1F04, SeekOrigin.Begin);
+                        // BOOSTER
+                        var boosterParts = carData.BoosterParts;
+                        for (int i = 0; i < CarDataSobj.BoosterCount; i++)
+                        {
+                            var index = i;
+                            var name = (CustomBoosterPartName)index;
+                            var indexPrint = (index + 1).ToString("D2");
+                            var assetName = $"cardata_booster_{indexPrint}_{name}";
 
-                        //// BODY
-                        //for (int i = 0; i < CarDataSobj.BodyCount; i++)
-                        //{
-                        //    var index = i;
-                        //    var name = (CustomBodyPartName)index;
-                        //    var indexPrint = (index + 1).ToString("D2");
-                        //    var assetName = $"cardata_body_{indexPrint}_{name}";
+                            UpdateProgressBar(i + baseIndex, totalIndices, unityPath, assetName);
 
-                        //    UpdateProgressBar(i + baseIndex, totalIndices, unityPath, assetName);
+                            var asset = CreateInstance<VehicleParametersSobj>();
+                            asset.vehicleParameters = boosterParts[i];
+                            var assetPath = $"Assets/{unityPath}/{assetName}.asset";
+                            AssetDatabase.CreateAsset(asset, assetPath);
+                            carDataSobj.SetBooster(index, asset);
+                        }
+                        //baseIndex += CarDataSobj.BoosterCount;
 
-                        //    var asset = CreateFromBinary<VehicleParametersSobj>(unityPath, assetName, reader);
-                        //    sobj.SetBody(index, asset);
-                        //}
-                        //baseIndex += CarDataSobj.BodyCount;
+                        //
+                        carDataSobj.padding = carData.padding;
+                        carDataSobj.machineNames = carData.machineNames;
 
-                        //// COCKPIT
-                        //for (int i = 0; i < CarDataSobj.CockpitCount; i++)
-                        //{
-                        //    var index = i;
-                        //    var name = (CustomCockpitPartName)index;
-                        //    var indexPrint = (index + 1).ToString("D2");
-                        //    var assetName = $"cardata_cockpit_{indexPrint}_{name}";
-
-                        //    UpdateProgressBar(i + baseIndex, totalIndices, unityPath, assetName);
-
-                        //    var asset = CreateFromBinary<VehicleParametersSobj>(unityPath, assetName, reader);
-                        //    sobj.SetCockpit(index, asset);
-                        //}
-                        //baseIndex += CarDataSobj.CockpitCount;
-
-                        //// BOOSTER
-                        //for (int i = 0; i < CarDataSobj.BoosterCount; i++)
-                        //{
-                        //    var index = i;
-                        //    var name = (CustomBoosterPartName)index;
-                        //    var indexPrint = (index + 1).ToString("D2");
-                        //    var assetName = $"cardata_booster_{indexPrint}_{name}";
-
-                        //    UpdateProgressBar(i + baseIndex, totalIndices, unityPath, assetName);
-
-                        //    var asset = CreateFromBinary<VehicleParametersSobj>(unityPath, assetName, reader);
-                        //    sobj.SetBooster(index, asset);
-                        //}
-                        ////baseIndex += CarDataSobj.BoosterCount;
-
-                        //EditorUtility.SetDirty(sobj);
-                        //BinaryIoUtility.PopEndianess();
-                        //BinaryIoUtility.PopEncoding();
+                        EditorUtility.SetDirty(carDataSobj);
                     }
                 }
                 count++;

@@ -25,14 +25,12 @@ namespace GameCube.FZeroGX.CarData
     [Serializable]
     public struct VehicleParameters : IBinarySerializable, IBinaryAddressable
     {
-        [SerializeField] string name;
         [SerializeField, Hex] long startAddress;
         [SerializeField, Hex] long endAddress;
 
         #region MEMBERS
 
         [Space]
-        //[HideInInspector]
         public uint unused_0x00;
         public float weight;
         public float acceleration;
@@ -54,7 +52,6 @@ namespace GameCube.FZeroGX.CarData
         [HexFlags(numDigits:2)]
         public CarDataFlags1 unk_0x48;
         public byte unk_0x49;
-        //[HideInInspector]
         public ushort unused_0x4A;
         public float cameraReorientation;
         public float cameraRepositioning;
@@ -84,6 +81,8 @@ namespace GameCube.FZeroGX.CarData
         }
 
         #endregion
+
+        #region MEMBERS
 
         public void Deserialize(BinaryReader reader)
         {
@@ -158,5 +157,7 @@ namespace GameCube.FZeroGX.CarData
             writer.WriteX(wallCollisionBackRight);
             writer.WriteX(wallCollisionBackLeft);
         }
+
+        #endregion
     }
 }

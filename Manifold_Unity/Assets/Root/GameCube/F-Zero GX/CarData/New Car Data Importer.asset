@@ -18,7 +18,7 @@ MonoBehaviour:
     share: 1
   importMode: 2
   importFolder: D:/Game Reverse Engineering/GameCube/Disassembled/GFZE01
-  destinationDirectory: GFZJ01
+  destinationDirectory: GFZJ01/
   queryFormat: cardata,lz
   ignoreErrors: 0
   importFiles:
