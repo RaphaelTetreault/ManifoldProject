@@ -24,8 +24,6 @@ namespace GameCube.FZeroGX.CarData
         protected override string DefaultQueryFormat
             => "cardata,lz";
 
-
-
         public override void Import()
         {
             if (importMode != ImportMode.ImportFilesList)
@@ -57,16 +55,14 @@ namespace GameCube.FZeroGX.CarData
                         // For progress bar
                         var baseIndex = 0;
                         var totalIndices =
-                            CarDataSobj.MachineCount +
-                            CarDataSobj.BodyCount +
-                            CarDataSobj.CockpitCount +
-                            CarDataSobj.BoosterCount;
+                            CarData.MachineCount + CarData.BodyCount +
+                            CarData.CockpitCount + CarData.BoosterCount;
 
                         // MACHINE
                         var machines = carData.Machines;
-                        for (int i = 0; i < CarDataSobj.MachineCount; i++)
+                        for (int i = 0; i < CarData.MachineCount; i++)
                         {
-                            var index = carDataSobj.VehicleIndex[i];
+                            var index = carDataSobj.MachineIndex[i];
                             var name = (MachineName)index;
                             var indexPrint = index.ToString("D2");
                             var assetName = $"cardata_machine_{indexPrint}_{name}";
@@ -77,13 +73,13 @@ namespace GameCube.FZeroGX.CarData
                             asset.vehicleParameters = machines[i];
                             var assetPath = $"Assets/{unityPath}/{assetName}.asset";
                             AssetDatabase.CreateAsset(asset, assetPath);
-                            carDataSobj.SetVehicle(index, asset);
+                            carDataSobj.SetMachine(index, asset);
                         }
-                        baseIndex += CarDataSobj.MachineCount;
+                        baseIndex += CarData.MachineCount;
 
                         // BODY
                         var bodyParts = carData.BodyParts;
-                        for (int i = 0; i < CarDataSobj.BodyCount; i++)
+                        for (int i = 0; i < CarData.BodyCount; i++)
                         {
                             var index = i;
                             var name = (CustomBodyPartName)index;
@@ -102,7 +98,7 @@ namespace GameCube.FZeroGX.CarData
 
                         // COCKPIT
                         var cockpitParts = carData.CockpitParts;
-                        for (int i = 0; i < CarDataSobj.CockpitCount; i++)
+                        for (int i = 0; i < CarData.CockpitCount; i++)
                         {
                             var index = i;
                             var name = (CustomCockpitPartName)index;
@@ -121,7 +117,7 @@ namespace GameCube.FZeroGX.CarData
 
                         // BOOSTER
                         var boosterParts = carData.BoosterParts;
-                        for (int i = 0; i < CarDataSobj.BoosterCount; i++)
+                        for (int i = 0; i < CarData.BoosterCount; i++)
                         {
                             var index = i;
                             var name = (CustomBoosterPartName)index;
@@ -136,11 +132,11 @@ namespace GameCube.FZeroGX.CarData
                             AssetDatabase.CreateAsset(asset, assetPath);
                             carDataSobj.SetBooster(index, asset);
                         }
-                        //baseIndex += CarDataSobj.BoosterCount;
 
-                        //
+                        // 
                         carDataSobj.padding = carData.padding;
                         carDataSobj.machineNames = carData.machineNames;
+                        carDataSobj.unknownNames = carData.unknownNames;
 
                         EditorUtility.SetDirty(carDataSobj);
                     }

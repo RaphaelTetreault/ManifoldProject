@@ -1,18 +1,21 @@
-﻿using System.Collections;
+﻿using StarkTools.IO;
+using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
+using UnityEngine.Assertions;
+using UnityEditor;
 
-public class CarDataExporter : MonoBehaviour
+namespace GameCube.FZeroGX.CarData
 {
-    // Start is called before the first frame update
-    void Start()
+    [CreateAssetMenu(menuName = "Manifold/Export/" + "CarData Exporter")]
+    public class CarDataExporter : ExportSobjs<CarDataSobj>
     {
-        
-    }
+        public override string HelpBoxMessage
+            => null;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        public override string OutputFileExtension
+            => null;
     }
 }

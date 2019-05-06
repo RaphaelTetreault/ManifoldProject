@@ -49,23 +49,17 @@ public abstract class ExportSobjs<T> : ExportSobj
 
             // Get file without .asset
             var fileName = Path.GetFileNameWithoutExtension(exportSobj.FileName);
-            var outputFilePath = $"{dest}/{fileName}.{OutputFileExtension}";
+            var extension = string.IsNullOrEmpty(OutputFileExtension) ? "" : $".{OutputFileExtension}"; 
+            var outputFilePath = $"{dest}/{fileName}.{extension}";
             outputFilePath = UnityPathUtility.EnforceSystemSeparators(outputFilePath);
 
-            //try
-            //{
-                using (var fileStream = File.Open(outputFilePath, write.mode, write.access, write.share))
+            using (var fileStream = File.Open(outputFilePath, write.mode, write.access, write.share))
+            {
+                using (var writer = new BinaryWriter(fileStream))
                 {
-                    using (var writer = new BinaryWriter(fileStream))
-                    {
-                        exportSobj.Serialize(writer);
-                    }
+                    exportSobj.Serialize(writer);
                 }
-            //}
-            //catch (Exception e)
-            //{
-            //    Debug.LogError($"Failed to write <b>{outputFilePath}</b>.\n{e.Message}");
-            //}
+            }
         }
     }
 }

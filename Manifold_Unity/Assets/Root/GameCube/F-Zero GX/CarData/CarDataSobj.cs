@@ -11,14 +11,26 @@ namespace GameCube.FZeroGX.CarData
     [Serializable]
     public class CarDataSobj : ScriptableObject, IBinarySerializable, IFile
     {
-        public const int MachineCount = CarData.BodyCount;
+        public const int MachineCount = CarData.MachineCount;
         public const int BodyCount = CarData.BodyCount;
         public const int CockpitCount = CarData.CockpitCount;
         public const int BoosterCount = CarData.BoosterCount;
+        public const int kPaddingSize = CarData.kPaddingSize;
+        public const bool kBigEndian = CarData.kBigEndian;
+        public const bool kLittleEndian = CarData.kLittleEndian;
+        public const int kMachineNameTable = CarData.kMachineNameTable;
+        public const int kUnknownTable = CarData.kUnknownTable;
+
 
         [SerializeField] string fileName;
 
         #region MEMBERS
+
+        [Header("String Table")]
+        public byte[] padding; // 12 bytes
+        public string[] machineNames;
+        public string[] unknownNames;
+
 
         [Header("Vehicles")]
         [LabelPrefix("00")]
@@ -103,10 +115,6 @@ namespace GameCube.FZeroGX.CarData
         public VehicleParametersSobj RollingTurtle;
         [LabelPrefix("40")]
         public VehicleParametersSobj RainbowPhoenix;
-
-        [Header("String Table")]
-        public byte[] padding; // 12 bytes
-        public string[] machineNames;
 
         [Header("Body")]
         [LabelPrefix("01")]
@@ -411,7 +419,7 @@ namespace GameCube.FZeroGX.CarData
             Triple_Z,
         };
 
-        public readonly int[] VehicleIndex = new int[]
+        public readonly int[] MachineIndex = new int[]
         {
             1,
             2,
@@ -458,11 +466,11 @@ namespace GameCube.FZeroGX.CarData
 
         #endregion
 
-        #region MEMBERS
+        #region METHODS
 
         public void Deserialize(BinaryReader reader)
         {
-            BinaryIoUtility.PushEndianess(CarData.kBigEndian);
+            BinaryIoUtility.PushEndianess(kBigEndian);
 
             reader.ReadX(ref DarkSchneider, true);
             reader.ReadX(ref RedGazelle, true);
@@ -507,12 +515,12 @@ namespace GameCube.FZeroGX.CarData
             reader.ReadX(ref RainbowPhoenix, true);
 
             // Read some padding
-            reader.ReadX(ref padding, CarData.kPaddingSize);
+            reader.ReadX(ref padding, kPaddingSize);
             foreach (var pad in padding)
                 Assert.IsTrue(pad == 0);
 
-            BinaryIoUtility.PushEndianess(CarData.kLittleEndian);
-            machineNames = new string[CarData.kStringTableEntries];
+            BinaryIoUtility.PushEndianess(kLittleEndian);
+            machineNames = new string[kMachineNameTable];
             for (int i = 0; i < machineNames.Length; i++)
             {
                 reader.ReadXCString(ref machineNames[i], System.Text.Encoding.ASCII);
@@ -596,11 +604,21 @@ namespace GameCube.FZeroGX.CarData
             reader.ReadX(ref Comet_V, true);
             reader.ReadX(ref Crown_77, true);
             reader.ReadX(ref Triple_Z, true);
+
+            BinaryIoUtility.PushEndianess(kLittleEndian);
+            unknownNames = new string[kUnknownTable];
+            for (int i = 0; i < unknownNames.Length; i++)
+            {
+                reader.ReadXCString(ref unknownNames[i], System.Text.Encoding.ASCII);
+            }
+            BinaryIoUtility.PopEndianess();
+
+            BinaryIoUtility.PopEndianess();
         }
 
         public void Serialize(BinaryWriter writer)
         {
-            BinaryIoUtility.PushEndianess(CarData.kBigEndian);
+            BinaryIoUtility.PushEndianess(kBigEndian);
 
             writer.WriteX(DarkSchneider);
             writer.WriteX(RedGazelle);
@@ -644,11 +662,11 @@ namespace GameCube.FZeroGX.CarData
             writer.WriteX(RollingTurtle);
             writer.WriteX(RainbowPhoenix);
 
-            for (int i = 0; i < CarData.kPaddingSize; i++)
+            for (int i = 0; i < kPaddingSize; i++)
                 writer.WriteX((byte)0);
 
             BinaryIoUtility.PushEncoding(System.Text.Encoding.ASCII);
-            BinaryIoUtility.PushEndianess(CarData.kLittleEndian);
+            BinaryIoUtility.PushEndianess(kLittleEndian);
             foreach (var name in machineNames)
             {
                 writer.WriteXCString(name);
@@ -734,10 +752,20 @@ namespace GameCube.FZeroGX.CarData
             writer.WriteX(Crown_77);
             writer.WriteX(Triple_Z);
 
+
+            BinaryIoUtility.PushEncoding(System.Text.Encoding.ASCII);
+            BinaryIoUtility.PushEndianess(kLittleEndian);
+            foreach (var name in unknownNames)
+            {
+                writer.WriteXCString(name);
+            }
+            BinaryIoUtility.PopEndianess();
+            BinaryIoUtility.PopEncoding();
+
             BinaryIoUtility.PopEndianess();
         }
 
-        internal void SetVehicle(int index, VehicleParametersSobj value)
+        internal void SetMachine(int index, VehicleParametersSobj value)
         {
             switch (index)
             {

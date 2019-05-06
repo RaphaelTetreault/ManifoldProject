@@ -260,10 +260,11 @@ namespace StarkTools.IO
 
             if (lengthOfChar > 1)
             {
+                // 2 bytes
                 if (BitConverter.IsLittleEndian ^ _IsLittleEndian)
                     Array.Reverse(bytes);
             }
-            else // size 2
+            else
             {
                 // Create LittleEndian array as char is 2 bytes in C#
                 bytes = new byte[] { 0, bytes[0] };
@@ -314,7 +315,7 @@ namespace StarkTools.IO
         {
             var value = new StringBuilder();
             char c;
-            while ((c = ReadChar(binaryReader, encoding)) != (char)0 || binaryReader.EndOfStream())
+            while ((c = ReadChar(binaryReader, encoding)) != (char)0 && !binaryReader.EndOfStream())
             {
                 value.Append(c);
             }
