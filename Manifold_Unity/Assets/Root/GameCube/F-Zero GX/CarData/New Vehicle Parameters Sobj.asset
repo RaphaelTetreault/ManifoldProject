@@ -1,0 +1,49 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a93ae1a949a18149aa149f88ba6db74, type: 3}
+  m_Name: New Vehicle Parameters Sobj
+  m_EditorClassIdentifier: 
+  vehicleParameters:
+    name: 
+    startAddress: 0
+    endAddress: 0
+    unused_0x00: 0
+    weight: 0
+    acceleration: 0
+    maxSpeed: 0
+    grip1: 0
+    grip3: 0
+    turnTension: 0
+    driftAcceleration: 0
+    turnMovement: 0
+    strafeTurn: 0
+    strafe: 0
+    turnReaction: 0
+    grip2: 0
+    boostStrength: 0
+    boostDuration: 0
+    turnDeceleration: 0
+    drag: 0
+    body: 0
+    unk_0x48: 0
+    unk_0x49: 0
+    unused_0x4A: 0
+    cameraReorientation: 0
+    cameraRepositioning: 0
+    tiltFrontRight: {x: 0, y: 0, z: 0}
+    tiltFrontLeft: {x: 0, y: 0, z: 0}
+    tiltBackRight: {x: 0, y: 0, z: 0}
+    tiltBackLeft: {x: 0, y: 0, z: 0}
+    wallCollisionFrontRight: {x: 0, y: 0, z: 0}
+    wallCollisionFrontLeft: {x: 0, y: 0, z: 0}
+    wallCollisionBackRight: {x: 0, y: 0, z: 0}
+    wallCollisionBackLeft: {x: 0, y: 0, z: 0}
