@@ -303,7 +303,7 @@ namespace LibGxFormat.Lz
             int uncompressedSize = inputBinaryStream.ReadInt32();
 
             int compressedSize = headerSizeField;
-            if (game == AvGame.SuperMonkeyBall_1 || game == AvGame.SuperMonkeyBall_2)
+            if (game != AvGame.FZeroGX)
                 compressedSize -= 8; // SMB counts the 8 bytes of header in the compressed size field
 
             // Check that the size of the input matches the expected value
@@ -343,8 +343,8 @@ namespace LibGxFormat.Lz
 
             // Write file header and data
             int headerSizeField = compressedData.Length;
-            if (game == AvGame.SuperMonkeyBall_1 || game == AvGame.SuperMonkeyBall_2)
-                headerSizeField += 8; // SMB counts the 8 bytes of header in the compressed size field
+            if (game != AvGame.FZeroGX)
+                 headerSizeField += 8; // SMB counts the 8 bytes of header in the compressed size field
 
             EndianBinaryWriter outputBinaryWriter = new EndianBinaryWriter(EndianBitConverter.Little, outputStream);
             outputBinaryWriter.Write(headerSizeField);

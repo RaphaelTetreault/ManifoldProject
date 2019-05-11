@@ -10,7 +10,19 @@ namespace GameCube.FZeroGX.CarData
     // Structure
     // https://github.com/yoshifan/fzerogx-docs/blob/master/addresses/base_machine_stat_blocks.md
 
-    public enum CarDataFlags1 : byte
+    public enum CarDataFlags0x48_U8 : byte
+    {
+        UNK_FLAG_0 = 1 << 0,
+        UNK_FLAG_1 = 1 << 1,
+        UNK_FLAG_2 = 1 << 2,
+        UNK_FLAG_3 = 1 << 3,
+        UNK_FLAG_4 = 1 << 4,
+        UNK_FLAG_5 = 1 << 5,
+        UNK_FLAG_6 = 1 << 6,
+        UNK_FLAG_7 = 1 << 7,
+    }
+
+    public enum CarDataFlags0x49_U8 : byte
     {
         UNK_FLAG_0 = 1 << 0,
         UNK_FLAG_1 = 1 << 1,
@@ -51,9 +63,10 @@ namespace GameCube.FZeroGX.CarData
         public float drag;
         public float body;
         [HexFlags(numDigits:2)]
-        public CarDataFlags1 unk_0x48;
-        public byte unk_0x49;
-        public ushort unused_0x4A;
+        public CarDataFlags0x48_U8 unk_0x48;
+        [HexFlags(numDigits: 2)]
+        public CarDataFlags0x49_U8 unk_0x49;
+        public ushort zero_0x4A;
         public float cameraReorientation;
         public float cameraRepositioning;
         public Vector3 tiltFrontRight;
@@ -109,7 +122,7 @@ namespace GameCube.FZeroGX.CarData
             reader.ReadX(ref body);
             reader.ReadX(ref unk_0x48);
             reader.ReadX(ref unk_0x49);
-            reader.ReadX(ref unused_0x4A);
+            reader.ReadX(ref zero_0x4A);
             reader.ReadX(ref cameraReorientation);
             reader.ReadX(ref cameraRepositioning);
             reader.ReadX(ref tiltFrontRight);
@@ -146,7 +159,7 @@ namespace GameCube.FZeroGX.CarData
             writer.WriteX(body);
             writer.WriteX(unk_0x48);
             writer.WriteX(unk_0x49);
-            writer.WriteX(unused_0x4A);
+            writer.WriteX(zero_0x4A);
             writer.WriteX(cameraReorientation);
             writer.WriteX(cameraRepositioning);
             writer.WriteX(tiltFrontRight);

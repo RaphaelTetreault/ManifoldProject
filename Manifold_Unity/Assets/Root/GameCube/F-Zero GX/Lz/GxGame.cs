@@ -12,6 +12,7 @@ namespace LibGxFormat
 		SuperMonkeyBall_1,
 		SuperMonkeyBall_2,
 		FZeroGX,
+		FZeroAX,
 	}
 }
 
