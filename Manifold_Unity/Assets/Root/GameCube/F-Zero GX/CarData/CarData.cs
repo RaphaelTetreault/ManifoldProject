@@ -22,6 +22,91 @@ namespace GameCube.FZeroGX.CarData
         public const int kMachineNameTable = 43;
         public const int kUnknownTable = 32;
 
+        public static string[] GetUnknownNamesTable()
+        {
+            return new string[]
+            {
+                "GC-D3",
+                "GC-E2",
+                "AC-B2",
+                "AC-C1",
+                "GC-C1",
+                "GC-C2",
+                "GC-C4",
+                "GC-D2",
+                "AC-C2",
+                "AC-A2",
+                "GC-B2",
+                "GC-A2",
+                "GC-A1",
+                "AC-B3",
+                "AC-D2",
+                "GC-D1",
+                "GC-C3",
+                "AC-C3",
+                "GC-B1",
+                "AC-B4",
+                "AC-E1",
+                "AC-A1",
+                "AC-B1",
+                "GC-E1",
+                "AC-D1",
+                "AC-C4",
+                "GC-B3",
+                "AC-E2",
+                "GC-A3",
+                "AC-D3",
+            };
+        }
+
+        public static string[] GetMachineNamesTable()
+        {
+            return new string[]
+            {
+            "Rainbow Phoenix",
+            "Rolling Turtle",
+            "Groovy Taxi",
+            "Bunny Flash",
+            "Spark Moon",
+            "Silver Rat",
+            "Magic Seagull",
+            "Pink Spider",
+            "Cosmic Dolphin",
+            "Fat Shark",
+            "Dark Schneider",
+            "Black Bull",
+            "Crazy Bear",
+            "Mighty Hurricane",
+            "Mighty Typhoon",
+            "Wonder Wasp",
+            "Blood Hawk",
+            "Wild Boar",
+            "Night Thunder",
+            "Twin Noritta",
+            "Queen Meteor",
+            "King Meteor",
+            "Space Angler",
+            "Hyper Speeder",
+            "Green Panther",
+            "Sonic Phantom",
+            "Big Fang",
+            "Astro Robin",
+            "Death Anchor",
+            "Super Piranha",
+            "Mad Wolf",
+            "Little Wyvern",
+            "Great Star",
+            "Deep Claw",
+            "Blue Falcon",
+            "Wild Goose",
+            "Fire Stingray",
+            "Iron Tiger",
+            "Golden Fox",
+            "White Cat",
+            "Red Gazelle",
+            };
+        }
+
         [SerializeField] string fileName;
         [SerializeField, Hex] long startAddress;
         [SerializeField, Hex] long endAddress;

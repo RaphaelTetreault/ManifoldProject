@@ -43,7 +43,7 @@ namespace GameCube.FZeroGX.CarData
                     {
                         reader.BaseStream.Seek(0, SeekOrigin.Begin);
 
-                        var unityPath = UnityPath(importFolder, importFile, destinationDirectory);
+                        var unityPath = GetOutputUnityPath(importFolder, importFile, destinationDirectory);
                         var fileName = Path.GetFileName(importFile);
 
                         // Load cardata as type only
@@ -151,34 +151,6 @@ namespace GameCube.FZeroGX.CarData
             AssetDatabase.SaveAssets();
             EditorUtility.ClearProgressBar();
             AssetDatabase.Refresh();
-        }
-
-        public string UnityPath(string importFolder, string importFile, string destinationDirectory)
-        {
-            // Get path to root import folder
-            var path = UnityPathUtility.GetUnityDirectory(UnityPathUtility.UnityFolder.Assets);
-            var dest = UnityPathUtility.CombineSystemPath(path, destinationDirectory);
-
-            // get path to file import folder
-            // TODO: Regex instead of this hack
-            var length = importFolder.Length;
-            var folder = importFile.Remove(0, length + 1);
-            folder = Path.GetDirectoryName(folder);
-
-            // (A) prevent null/empty AND (B) prevent "/" or "\\"
-            if (!string.IsNullOrEmpty(folder) && folder.Length > 1)
-                dest = dest + folder;
-
-            if (!Directory.Exists(dest))
-            {
-                Directory.CreateDirectory(dest);
-                Debug.Log($"Created path <i>{dest}</i>");
-            }
-
-            var unityPath = UnityPathUtility.ToUnityFolderPath(dest, UnityPathUtility.UnityFolder.Assets);
-            unityPath = UnityPathUtility.EnforceUnitySeparators(unityPath);
-
-            return unityPath;
         }
 
         public void UpdateProgressBar(int index, int total, string unityPath, string fileName)

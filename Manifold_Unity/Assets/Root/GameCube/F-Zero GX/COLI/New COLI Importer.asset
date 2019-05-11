@@ -1,0 +1,138 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e485387c563033340867ae39424ce57a, type: 3}
+  m_Name: New COLI Importer
+  m_EditorClassIdentifier: 
+  read:
+    access: 1
+    mode: 3
+    share: 1
+  importMode: 2
+  importFolder: D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P
+  destinationDirectory: GFZJ8P/
+  queryFormat: COLI*lz
+  ignoreErrors: 0
+  importFiles:
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE00.avlz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE00.lz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE01.avlz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE01.lz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE03.avlz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE03.lz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE05.avlz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE05.lz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE07.avlz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE07.lz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE08.avlz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE08.lz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE09.avlz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE09.lz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE10.avlz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE10.lz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE101.avlz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE101.lz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE102.avlz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE102.lz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE103.avlz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE103.lz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE104.avlz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE104.lz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE105.avlz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE105.lz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE107.avlz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE107.lz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE108.avlz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE108.lz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE11.avlz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE11.lz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE110.avlz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE110.lz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE13.avlz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE13.lz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE14.avlz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE14.lz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE15.avlz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE15.lz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE16.avlz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE16.lz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE17.avlz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE17.lz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE21.avlz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE21.lz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE24.avlz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE24.lz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE25.avlz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE25.lz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE26.avlz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE26.lz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE27.avlz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE27.lz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE28.avlz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE28.lz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE29.avlz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE29.lz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE31.avlz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE31.lz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE32.avlz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE32.lz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE33.avlz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE33.lz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE34.avlz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE34.lz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE35.avlz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE35.lz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE36.avlz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE36.lz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE37.avlz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE37.lz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE38.avlz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE38.lz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE39.avlz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE39.lz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE40.avlz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE40.lz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE41.avlz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE41.lz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE42.avlz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE42.lz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE43.avlz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE43.lz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE44.avlz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE44.lz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE45.avlz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE45.lz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE49.avlz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE49.lz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE50.avlz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE50.lz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE77.avlz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE77.lz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE86.avlz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE86.lz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE87.avlz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE87.lz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE91.avlz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE91.lz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE92.avlz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE92.lz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE93.avlz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE93.lz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE94.avlz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE94.lz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE95.avlz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE95.lz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE96.avlz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE96.lz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE97.avlz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE97.lz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE98.avlz
+  - D:/Game Reverse Engineering/GameCube/Disassembled/GFZJ8P\stage\COLI_COURSE98.lz
