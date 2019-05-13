@@ -13,7 +13,8 @@ namespace GameCube.FZeroGX.COLI_COURSE
         [SerializeField] string name;
 
         public Header header;
-        public TrackInformation trackInformation;
+        public TrackNode[] trackNodes;
+        public TrackLength trackInformation;
 
         public string FileName
         {
@@ -27,6 +28,11 @@ namespace GameCube.FZeroGX.COLI_COURSE
 
             reader.ReadX(ref header, true);
 
+            // 0x08
+            reader.BaseStream.Seek(header.trackNodeAbsPtr, SeekOrigin.Begin);
+            reader.ReadX(ref trackNodes, header.trackNodeCount, true);
+
+            // 0x90
             reader.BaseStream.Seek(header.trackInfoAbsPtr, SeekOrigin.Begin);
             reader.ReadX(ref trackInformation, true);
 

@@ -8,7 +8,7 @@ using UnityEngine;
 namespace GameCube.FZeroGX.COLI_COURSE
 {
     [Serializable]
-    public struct TrackInformation : IBinarySerializable, IBinaryAddressable
+    public struct TrackLength : IBinarySerializable, IBinaryAddressable
     {
         #region MEMBERS
 
