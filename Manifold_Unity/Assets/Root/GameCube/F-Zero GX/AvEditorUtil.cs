@@ -16,5 +16,12 @@ namespace GameCube.FZeroGX
             value.x = -value.x;
             return value;
         }
+
+        public static void SwapHandedness(ref Vector3 rotation)
+        {
+            var quat = Quaternion.Euler(rotation);
+            quat *= Quaternion.Euler(0,0,180f);
+            rotation = quat.eulerAngles;
+        }
     }
 }

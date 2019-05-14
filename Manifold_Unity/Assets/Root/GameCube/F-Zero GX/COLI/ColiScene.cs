@@ -3,6 +3,7 @@ using System;
 using System.IO;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace GameCube.FZeroGX.COLI_COURSE
@@ -15,6 +16,8 @@ namespace GameCube.FZeroGX.COLI_COURSE
         public Header header;
         public TrackNode[] trackNodes;
         public TrackLength trackInformation;
+
+        public List<TrackTransform> trackTransforms = new List<TrackTransform>();
 
         public string FileName
         {
@@ -35,6 +38,22 @@ namespace GameCube.FZeroGX.COLI_COURSE
             // 0x90
             reader.BaseStream.Seek(header.trackInfoAbsPtr, SeekOrigin.Begin);
             reader.ReadX(ref trackInformation, true);
+
+            // Let's build the transform after-the-fact
+            var usedKeys = new List<int>();
+            foreach (var node in trackNodes)
+            {
+                var transformAbsPtr = node.trackTransformAbsPtr;
+                if (!usedKeys.Contains(transformAbsPtr))
+                {
+                    usedKeys.Add(transformAbsPtr);
+
+                    reader.BaseStream.Seek(transformAbsPtr, SeekOrigin.Begin);
+                    var value = new TrackTransform();
+                    value.Deserialize(reader);
+                    trackTransforms.Add(value);
+                }
+            }
 
             BinaryIoUtility.PopEndianess();
         }

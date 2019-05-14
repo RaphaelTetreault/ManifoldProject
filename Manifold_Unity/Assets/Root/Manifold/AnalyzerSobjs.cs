@@ -180,4 +180,17 @@ public abstract class AnalyzerSobj<T> : AnalyzerSobj
 
         return assets;
     }
+
+    public StreamWriter OpenWriter(string fileName)
+    {
+        var writeFile = Path.Combine(destinationDirectory, fileName);
+        var fileStream = File.Open(writeFile, write.mode, write.access, write.share);
+        var writer = new StreamWriter(fileStream);
+        return writer;
+    }
+
+    public string FileTimestamp()
+    {
+        return DateTime.Now.ToString("(yyyy-MM-dd)-(HH-mm-ss)");
+    }
 }

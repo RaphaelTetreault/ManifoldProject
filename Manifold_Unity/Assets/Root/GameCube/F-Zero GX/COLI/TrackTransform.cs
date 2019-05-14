@@ -4,9 +4,10 @@ using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Assertions;
 using System.Diagnostics;
 
-namespace GameCube.FZeroGX
+namespace GameCube.FZeroGX.COLI_COURSE
 {
     public enum TrackTransformHierarchyDepth : byte
     {
@@ -26,6 +27,7 @@ namespace GameCube.FZeroGX
 
         #region MEMBERS
 
+        public const byte kStructureSize = 0x50;
         public const byte kHasChildren = 0x0C;
         public const byte kSizeOfZero0x44 = 12;
 
@@ -37,8 +39,10 @@ namespace GameCube.FZeroGX
         public byte hasChildren;
         public byte zero_0x03;
         public int topologyParamsAbsPtr;
-        public uint zero_0x08;
+        public uint unk_0x08_absPtr;
+        [Hex(8)]
         public int childCount;
+        [Hex(8)]
         public int childrenAbsPtr;
         public Vector3 localScale;
         public Vector3 localRotation;
@@ -46,9 +50,13 @@ namespace GameCube.FZeroGX
         public uint unk_0x38;
         public float unk_0x3C;
         public float unk_0x40;
-        public byte[] zero_0x44;
+        public uint zero_0x44;
+        public uint zero_0x48;
+        public uint unk_0x4C;
 
+        public ExtraTransform extraTransform;
         public TopologyParameters topologyParameters;
+        public TrackTransform[] children = new TrackTransform[0];
 
         #endregion
 
@@ -79,27 +87,40 @@ namespace GameCube.FZeroGX
             reader.ReadX(ref hasChildren);
             reader.ReadX(ref zero_0x03);
             reader.ReadX(ref topologyParamsAbsPtr);
-            reader.ReadX(ref zero_0x08);
+            reader.ReadX(ref unk_0x08_absPtr);
             reader.ReadX(ref childCount);
             reader.ReadX(ref childrenAbsPtr);
             reader.ReadX(ref localScale);
             reader.ReadX(ref localRotation);
-            reader.ReadX(ref localPosition); AvEditorUtil.InvertX(ref localPosition);
+            reader.ReadX(ref localPosition); //AvEditorUtil.InvertX(ref localPosition);
             reader.ReadX(ref unk_0x38);
             reader.ReadX(ref unk_0x3C);
             reader.ReadX(ref unk_0x40);
-            reader.ReadX(ref zero_0x44, kSizeOfZero0x44);
+            reader.ReadX(ref zero_0x44);
+            reader.ReadX(ref zero_0x48);
+            reader.ReadX(ref unk_0x4C);
 
             endAddress = reader.BaseStream.Position;
 
-            System.Diagnostics.Debug.Assert(zero_0x01 == 0);
-            System.Diagnostics.Debug.Assert(zero_0x03 == 0);
-            System.Diagnostics.Debug.Assert(zero_0x08 == 0);
-            foreach (var zero in zero_0x44)
-                System.Diagnostics.Debug.Assert(zero == 0);
-
+            // Read Topology
             reader.BaseStream.Seek(topologyParamsAbsPtr, SeekOrigin.Begin);
             reader.ReadX(ref topologyParameters, true);
+
+            // Read Extra Transform
+            if (unk_0x08_absPtr != 0)
+            {
+                reader.BaseStream.Seek(unk_0x08_absPtr, SeekOrigin.Begin);
+                reader.ReadX(ref extraTransform, true);
+            }
+
+            // Read Children (recursive)
+            children = new TrackTransform[childCount];
+            for (int i = 0; i < children.Length; i++)
+            {
+                var offset = kStructureSize * i;
+                reader.BaseStream.Seek(childrenAbsPtr + offset, SeekOrigin.Begin);
+                reader.ReadX(ref children[i], true);
+            }
 
             reader.BaseStream.Seek(endAddress, SeekOrigin.Begin);
         }
@@ -114,7 +135,7 @@ namespace GameCube.FZeroGX
             writer.WriteX(hasChildren);
             writer.WriteX(zero_0x03);
             writer.WriteX(topologyParamsAbsPtr);
-            writer.WriteX(zero_0x08);
+            writer.WriteX(unk_0x08_absPtr);
             writer.WriteX(childCount);
             writer.WriteX(childrenAbsPtr);
             writer.WriteX(localScale);
@@ -123,8 +144,11 @@ namespace GameCube.FZeroGX
             writer.WriteX(unk_0x38);
             writer.WriteX(unk_0x3C);
             writer.WriteX(unk_0x40);
-            for (int i = 0; i < kSizeOfZero0x44; i++)
-                writer.WriteX((byte)0);
+            writer.WriteX(zero_0x44);
+            writer.WriteX(zero_0x48);
+            writer.WriteX(unk_0x4C);
+            //for (int i = 0; i < kSizeOfZero0x44; i++)
+            //    writer.WriteX((byte)0);
         }
 
         #endregion

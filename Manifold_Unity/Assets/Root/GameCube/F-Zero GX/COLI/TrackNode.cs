@@ -18,11 +18,11 @@ namespace GameCube.FZeroGX.COLI_COURSE
         [SerializeField, Hex] long endAddress;
 
         [Hex(8), Space]
-        public uint trackBranchCount;
+        public int trackBranchCount;
         [Hex(8)]
-        public uint trackPointAbsPtr;
+        public int trackPointAbsPtr;
         [Hex(8)]
-        public uint trackTransformAbsPtr;
+        public int trackTransformAbsPtr;
 
         public TrackPoint point;
         public TrackTransform transform;
@@ -62,8 +62,8 @@ namespace GameCube.FZeroGX.COLI_COURSE
             reader.ReadX(ref point, true);
 
             // Get transform
-            reader.BaseStream.Seek(trackTransformAbsPtr, SeekOrigin.Begin);
-            reader.ReadX(ref transform, true);
+            //reader.BaseStream.Seek(trackTransformAbsPtr, SeekOrigin.Begin);
+            //reader.ReadX(ref transform, true);
 
             reader.BaseStream.Seek(endAddress, SeekOrigin.Begin);
         }

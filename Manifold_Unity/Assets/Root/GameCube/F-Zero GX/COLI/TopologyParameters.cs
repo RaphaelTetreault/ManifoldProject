@@ -11,6 +11,7 @@ namespace GameCube.FZeroGX
     [Serializable]
     public class TopologyParameters : IBinarySerializable, IBinaryAddressable
     {
+        public const int kFieldCount = 9;
 
         #region MEMBERS
 
@@ -20,7 +21,7 @@ namespace GameCube.FZeroGX
         //public int[] counts;
         //public int[] absPtrs;
 
-        [Hex(8)]
+        [Hex(8), Space]
         public int count1;
         [Hex(8)]
         public int count2;
@@ -151,44 +152,45 @@ namespace GameCube.FZeroGX
 
             endAddress = reader.BaseStream.Position;
 
-            var @params = Params();
-            var absPtrs = AbsPtrs();
-            var counts = Counts();
-            for (int i = 0; i < 9; i++)
-            {
-                reader.BaseStream.Seek(absPtrs[i], SeekOrigin.Begin);
-                reader.ReadX(ref @params[i], counts[i], true);
-            }
+            //var @params = Params();
+            //var absPtrs = AbsPtrs();
+            //var counts = Counts();
+            //for (int i = 0; i < 9; i++)
+            //{
+            //    reader.BaseStream.Seek(absPtrs[i], SeekOrigin.Begin);
+            //    reader.ReadX(ref @params[i], counts[i], true);
+            //}
+
+
+            // 1
+            reader.BaseStream.Seek(absPtr1, SeekOrigin.Begin);
+            reader.ReadX(ref params1, count1, true);
+            // 2
+            reader.BaseStream.Seek(absPtr2, SeekOrigin.Begin);
+            reader.ReadX(ref params2, count2, true);
+            // 3
+            reader.BaseStream.Seek(absPtr3, SeekOrigin.Begin);
+            reader.ReadX(ref params3, count3, true);
+            // 4
+            reader.BaseStream.Seek(absPtr4, SeekOrigin.Begin);
+            reader.ReadX(ref params4, count4, true);
+            // 5
+            reader.BaseStream.Seek(absPtr5, SeekOrigin.Begin);
+            reader.ReadX(ref params5, count5, true);
+            // 6
+            reader.BaseStream.Seek(absPtr6, SeekOrigin.Begin);
+            reader.ReadX(ref params6, count6, true);
+            // 7
+            reader.BaseStream.Seek(absPtr7, SeekOrigin.Begin);
+            reader.ReadX(ref params7, count7, true);
+            // 8
+            reader.BaseStream.Seek(absPtr8, SeekOrigin.Begin);
+            reader.ReadX(ref params8, count8, true);
+            // 9
+            reader.BaseStream.Seek(absPtr9, SeekOrigin.Begin);
+            reader.ReadX(ref params9, count9, true);
 
             reader.BaseStream.Seek(endAddress, SeekOrigin.Begin);
-
-            //// 1
-            //reader.BaseStream.Seek(absPtr1, SeekOrigin.Begin);
-            //reader.ReadX(ref params1, count1, true);
-            //// 2
-            //reader.BaseStream.Seek(absPtr2, SeekOrigin.Begin);
-            //reader.ReadX(ref params2, count2, true);
-            //// 3
-            //reader.BaseStream.Seek(absPtr3, SeekOrigin.Begin);
-            //reader.ReadX(ref params3, count3, true);
-            //// 4
-            //reader.BaseStream.Seek(absPtr4, SeekOrigin.Begin);
-            //reader.ReadX(ref params4, count4, true);
-            //// 5
-            //reader.BaseStream.Seek(absPtr5, SeekOrigin.Begin);
-            //reader.ReadX(ref params5, count5, true);
-            //// 6
-            //reader.BaseStream.Seek(absPtr6, SeekOrigin.Begin);
-            //reader.ReadX(ref params6, count6, true);
-            //// 1
-            //reader.BaseStream.Seek(absPtr1, SeekOrigin.Begin);
-            //reader.ReadX(ref params1, count1, true);
-            //// 1
-            //reader.BaseStream.Seek(absPtr1, SeekOrigin.Begin);
-            //reader.ReadX(ref params1, count1, true);
-            //// 1
-            //reader.BaseStream.Seek(absPtr1, SeekOrigin.Begin);
-            //reader.ReadX(ref params1, count1, true);
         }
 
         public void Serialize(BinaryWriter writer)

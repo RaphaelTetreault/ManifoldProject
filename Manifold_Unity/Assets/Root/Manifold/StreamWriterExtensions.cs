@@ -38,4 +38,16 @@ public static class StreamWriterExtensions
         writer.Write(value);
         PushRow(writer);
     }
+
+    public static void PushCol(this StreamWriter writer, string value)
+    {
+        writer.Write(value);
+        PushCol(writer);
+    }
+
+    public static void PushRow(this StreamWriter writer, string value)
+    {
+        writer.Write(value);
+        PushRow(writer);
+    }
 }

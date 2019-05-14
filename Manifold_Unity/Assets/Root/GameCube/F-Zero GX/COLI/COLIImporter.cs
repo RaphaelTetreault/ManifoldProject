@@ -62,14 +62,21 @@ namespace GameCube.FZeroGX.COLI_COURSE
                         var unityPath = GetOutputUnityPath(importFolder, importFile, destinationDirectory);
                         var fileName = Path.GetFileName(importFile);
 
+                        var filePath = UnityPathUtility.CombineUnityPath(unityPath, fileName);
                         var assetPath = UnityPathUtility.CombineUnityPath("Assets", unityPath, $"{fileName}.asset");
                         var sobj = AssetDatabase.LoadAssetAtPath<ColiSceneSobj>(assetPath);
                         var isCreateSobj = sobj == null;
                         if (isCreateSobj)
                         {
                             sobj = CreateFromBinaryFile<ColiSceneSobj>(unityPath, fileName, reader);
-                            sobj.FileName = fileName;
                         }
+                        else
+                        {
+                            sobj.scene = new ColiScene();
+                            sobj.Deserialize(reader);
+                        }
+                        sobj.FileName = fileName;
+                        sobj.filePath = filePath;
 
                         // Progress bar update
                         var currentIndexStr = (count + 1).ToString().PadLeft(total.ToString().Length);

@@ -62,11 +62,11 @@ namespace GameCube.FZeroGX.COLI_COURSE
             reader.ReadX(ref unk_0x00);
             reader.ReadX(ref unk_0x04);
             reader.ReadX(ref trackDistanceStart);
-            reader.ReadX(ref tangentStart); AvEditorUtil.InvertX(ref tangentStart);
-            reader.ReadX(ref positionStart); AvEditorUtil.InvertX(ref positionStart);
+            reader.ReadX(ref tangentStart); //AvEditorUtil.InvertX(ref tangentStart);
+            reader.ReadX(ref positionStart); //AvEditorUtil.InvertX(ref positionStart);
             reader.ReadX(ref trackDistanceEnd);
-            reader.ReadX(ref tangentEnd); AvEditorUtil.InvertX(ref tangentEnd);
-            reader.ReadX(ref positionEnd); AvEditorUtil.InvertX(ref positionEnd);
+            reader.ReadX(ref tangentEnd); //AvEditorUtil.InvertX(ref tangentEnd);
+            reader.ReadX(ref positionEnd); //AvEditorUtil.InvertX(ref positionEnd);
             reader.ReadX(ref transformDistanceEnd);
             reader.ReadX(ref transformDistanceStart);
             reader.ReadX(ref trackWidth);

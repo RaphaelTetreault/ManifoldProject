@@ -38,7 +38,7 @@ public class GMAAnalyzer : AnalyzerSobj<GMASobj>
 
         var numProcesses = 5f;
         var processIndex = 0;
-        var time = DateTime.Now.ToString("(yyyy-MM-dd)-(HH-mm-ss)");
+        var time = FileTimestamp();
         var gcfmAnalysisFile = Path.Combine(destinationDirectory, $"{gcmfFile}_{time}.tsv");
         var texAnalysisFile = Path.Combine(destinationDirectory, $"{textureFile}_{time}.tsv");
         var matAnalysisFile = Path.Combine(destinationDirectory, $"{materialFile}_{time}.tsv");
@@ -67,14 +67,6 @@ public class GMAAnalyzer : AnalyzerSobj<GMASobj>
 
         // END
         EditorUtility.ClearProgressBar();
-    }
-
-    public StreamWriter OpenWriter(string fileName)
-    {
-        var writeFile = Path.Combine(destinationDirectory, fileName);
-        var fileStream = File.Open(writeFile, write.mode, write.access, write.share);
-        var writer = new StreamWriter(fileStream);
-        return writer;
     }
 
     public void WriteGcmfTexUnkFlagsAnalysis(string fileName)
