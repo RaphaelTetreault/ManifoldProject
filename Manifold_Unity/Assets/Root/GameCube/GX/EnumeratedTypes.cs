@@ -2,7 +2,7 @@
 /// A C# equivalent of GXEnums.h from the Nintendo GameCube SDK.
 /// Comments taken from Nintendo GameCube SDK manual and code GXEnums.h comments.
 /// </summary>
-namespace GameCube.GX
+namespace GameCube.RealGX
 {
     // A
     /// <summary>

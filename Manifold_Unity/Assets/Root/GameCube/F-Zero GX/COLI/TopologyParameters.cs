@@ -59,15 +59,15 @@ namespace GameCube.FZeroGX
         public int absPtr9;
 
         //
-        public TopologyParam[] params1;
-        public TopologyParam[] params2;
-        public TopologyParam[] params3;
-        public TopologyParam[] params4;
-        public TopologyParam[] params5;
-        public TopologyParam[] params6;
-        public TopologyParam[] params7;
-        public TopologyParam[] params8;
-        public TopologyParam[] params9;
+        public TopologyParam[] params1 = new TopologyParam[0];
+        public TopologyParam[] params2 = new TopologyParam[0];
+        public TopologyParam[] params3 = new TopologyParam[0];
+        public TopologyParam[] params4 = new TopologyParam[0];
+        public TopologyParam[] params5 = new TopologyParam[0];
+        public TopologyParam[] params6 = new TopologyParam[0];
+        public TopologyParam[] params7 = new TopologyParam[0];
+        public TopologyParam[] params8 = new TopologyParam[0];
+        public TopologyParam[] params9 = new TopologyParam[0];
 
         public TopologyParam[][] Params()
         {
@@ -100,6 +100,11 @@ namespace GameCube.FZeroGX
                 absPtr7, absPtr8, absPtr9,
             };
         }
+
+        //public Vector3[] Scale()
+        //{
+        //    var value = new Vector3[];
+        //}
 
         #endregion
 

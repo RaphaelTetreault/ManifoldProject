@@ -29,7 +29,6 @@ public class TempTrackVis : MonoBehaviour
             Gizmos.DrawLine(from, to);
             Gizmos.DrawWireSphere(to, kRadius);
             Gizmos.DrawSphere(from, kRadius);
-
         }
 
         Gizmos.color = transformColor;
@@ -37,6 +36,7 @@ public class TempTrackVis : MonoBehaviour
         {
             DrawRecursive(trackTransform, Quaternion.identity, Vector3.zero, Vector3.one);
         }
+
     }
 
     public void DrawRecursive(TrackTransform trackTransform, Quaternion parentRotation, Vector3 parentPosition, Vector3 parentScale)
@@ -68,7 +68,14 @@ public class TempTrackVis : MonoBehaviour
                 DrawRecursive(child, rotation, position, scale);
             }
         }
+
+        foreach (var param in trackTransform.topologyParameters.Params())
+        {
+           
+        }
     }
+
+
 }
 
 [CustomEditor(typeof(TempTrackVis))]
@@ -98,11 +105,12 @@ public class TempTrackVisEditor : Editor
         var rot = Quaternion.Euler(track.localRotation);
         var sca = track.localScale;
         var obj = new GameObject();
-        obj.AddComponent<TempDebugEmpty>();
+        var comp = obj.AddComponent<TempDebugEmpty>();
+        //comp.track = track;
 
         obj.transform.localPosition = pos;
         obj.transform.localRotation = rot;
-        obj.transform.localScale = sca;
+        //obj.transform.localScale = sca;
         obj.transform.parent = parent;
 
         foreach (var child in track.children)

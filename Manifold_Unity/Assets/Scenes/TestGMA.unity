@@ -221,15 +221,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 1592101611}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5fb7141c5a01c0f4f864eb0e7812060a, type: 3}
+  m_Script: {fileID: 11500000, guid: bb362e77ebda32647ad527febb4e94d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  file: stage\st01,lz.gma
-  gma:
-    fileName: 
-    modelCount: 0
-    headerEndPosition: 0
-    models: []
+  kRadius: 10
+  coli: {fileID: 11400000, guid: 451f7f57a284d1942a258c3658af732b, type: 2}
+  debugColor: {r: 1, g: 1, b: 1, a: 1}
+  transformColor: {r: 1, g: 1, b: 1, a: 1}
+  mesh: {fileID: 0}
 --- !u!108 &1592101613
 Light:
   m_ObjectHideFlags: 0

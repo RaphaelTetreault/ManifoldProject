@@ -10,13 +10,276 @@ using UnityEngine.Serialization;
 namespace GameCube.GX
 {
     /// <summary>
+    /// Primitive type.
+    /// </summary>
+    public enum GXPrimitive : byte
+    {
+        GX_QUADS                    = 0x80, // 0b10000000
+        GX_TRIANGLES                = 0x90, // 0b10010000
+        GX_TRIANGLESTRIP            = 0x98, // 0b10011000
+        GX_TRIANGLEFAN              = 0xA0, // 0b10100000
+        GX_LINES                    = 0xA8, // 0b10101000
+        GX_LINESTRIP                = 0xB0, // 0b10110000
+        GX_POINTS                   = 0xB8, // 0b10111000
+    }
+
+    /// <summary>
+    /// Vertex format number.
+    /// </summary>
+    public enum GXVtxFmt
+    {
+        GX_VTXFMT0 = 0,
+        GX_VTXFMT1,
+        GX_VTXFMT2,
+        GX_VTXFMT3,
+        GX_VTXFMT4,
+        GX_VTXFMT5,
+        GX_VTXFMT6,
+        GX_VTXFMT7,
+        GX_MAX_VTXFMT,
+    }
+
+    /// <summary>
+    /// GX Component Type
+    /// Related to GXVtxFmt
+    /// </summary>
+    public enum GXCompType
+    {
+        /// <summary>
+        /// Unsigned 8-bit integer
+        /// </summary>
+        GX_U8 = 0,
+        /// <summary>
+        /// Signed 8-bit integer
+        /// </summary>
+        GX_S8,
+        /// <summary>
+        /// Unsigned 16-bit integer
+        /// </summary>
+        GX_U16,
+        /// <summary>
+        /// Signed 16-bit integer
+        /// </summary>
+        GX_S16,
+        /// <summary>
+        /// 32-bit floating-point
+        /// </summary>
+        GX_F32,
+
+        /// <summary>
+        /// 16-bit RGB
+        /// </summary>
+        GX_RGB565 = 0,
+        /// <summary>
+        /// 24-bit RGB
+        /// </summary>
+        GX_RGB8,
+        /// <summary>
+        /// 32-bit RGBX
+        /// </summary>
+        GX_RGBX8,
+        /// <summary>
+        /// 16-bit RGBA
+        /// </summary>
+        GX_RGBA4,
+        /// <summary>
+        /// 24-bit RGBA
+        /// </summary>
+        GX_RGBA6,
+        /// <summary>
+        /// 32-bit RGBA
+        /// </summary>
+        GX_RGBA8,
+    }
+
+    /// <summary>
+    /// GX Component Count
+    /// </summary>
+    public enum GXCompCnt_Rev2
+    {
+        /// <summary>
+        /// X,Y position
+        /// </summary>
+        GX_POS_XY = 0,
+        /// <summary>
+        /// X,Y,Z position
+        /// </summary>
+        GX_POS_XYZ = 1,
+
+
+        /// <summary>
+        /// X,Y,Z normal
+        /// </summary>
+        GX_NRM_XYZ = 0,
+        /// <summary>
+        /// Normal, Binormal, Tangent
+        /// one index per NBT
+        /// </summary>
+        GX_NRM_NBT = 1,
+        /// <summary>
+        /// Normal, Binormal, Tangent x3 (HW2 only)
+        /// one index per each of N/B/T
+        /// </summary>
+        GX_NRM_NBT3 = 2,
+
+        /// <summary>
+        /// RGB color
+        /// </summary>
+        GX_CLR_RGB = 0,
+        /// <summary>
+        /// RGBA color
+        /// </summary>
+        GX_CLR_RGBA = 1,
+
+        /// <summary>
+        /// One texture dimension
+        /// </summary>
+        GX_TEX_S = 0,
+        /// <summary>
+        /// Two texture dimensions
+        /// </summary>
+        GX_TEX_ST = 1,
+    }
+
+    /// <summary>
+    /// Name of vertex attribute or array. Attributes are listed in the ascending order vertex data is required to be sent to the GP.
+    /// 
+    /// Notes:
+    /// Tells GX what to expect from oncoming vertex information.
+    /// The data provided should be 32-byte aligned. Refer to GX FIFO.
+    /// 
+    /// There appears to be conflict between this and some information in the 
+    /// "Vertex and primitive data" Nintendo SDK manual. The manual says
+    /// GX_VA_NRM and GX_VA_NBT both share a value of 10, but that's not what
+    /// the enum here had, and I recall copying from the SDK enum script.
+    /// </summary>
+    public enum GXAttr
+    {
+        /// <summary>
+        /// position/normal matrix index
+        /// </summary>
+        GX_VA_PNMTXIDX = 0,
+        /// <summary>
+        /// texture 0 matrix index
+        /// </summary>
+        GX_VA_TEX0MTXIDX,
+        /// <summary>
+        /// texture 1 matrix index
+        /// </summary>
+        GX_VA_TEX1MTXIDX,
+        /// <summary>
+        /// texture 2 matrix index
+        /// </summary>
+        GX_VA_TEX2MTXIDX,
+        /// <summary>
+        /// texture 3 matrix index
+        /// </summary>
+        GX_VA_TEX3MTXIDX,
+        /// <summary>
+        /// texture 4 matrix index
+        /// </summary>
+        GX_VA_TEX4MTXIDX,
+        /// <summary>
+        /// texture 5 matrix index
+        /// </summary>
+        GX_VA_TEX5MTXIDX,
+        /// <summary>
+        /// texture 6 matrix index
+        /// </summary>
+        GX_VA_TEX6MTXIDX,
+        /// <summary>
+        /// texture 7 matrix index
+        /// </summary>
+        GX_VA_TEX7MTXIDX,
+
+        /// <summary>
+        /// position
+        /// </summary>
+        GX_VA_POS,
+        /// <summary>
+        /// normal
+        /// </summary>
+        GX_VA_NRM,
+
+        /// <summary>
+        /// color 0
+        /// </summary>
+        GX_VA_CLR0,
+        /// <summary>
+        /// color 1
+        /// </summary>
+        GX_VA_CLR1,
+
+        /// <summary>
+        /// input texture coordinate 0
+        /// </summary>
+        GX_VA_TEX0,
+        /// <summary>
+        /// input texture coordinate 1
+        /// </summary>
+        GX_VA_TEX1,
+        /// <summary>
+        /// input texture coordinate 2
+        /// </summary>
+        GX_VA_TEX2,
+        /// <summary>
+        /// input texture coordinate 3
+        /// </summary>
+        GX_VA_TEX3,
+        /// <summary>
+        /// input texture coordinate 4
+        /// </summary>
+        GX_VA_TEX4,
+        /// <summary>
+        /// input texture coordinate 5
+        /// </summary>
+        GX_VA_TEX5,
+        /// <summary>
+        /// input texture coordinate 6
+        /// </summary>
+        GX_VA_TEX6,
+        /// <summary>
+        /// input texture coordinate 7
+        /// </summary>
+        GX_VA_TEX7,
+
+        /// <summary>
+        /// position matrix array pointer
+        /// </summary>
+        GX_VA_POS_MTX_ARRAY,
+        /// <summary>
+        /// normal matrix array pointer
+        /// </summary>
+        GX_VA_NRM_MTX_ARRAY,
+        /// <summary>
+        /// texture matrix array pointer
+        /// </summary>
+        GX_VA_TEX_MTX_ARRAY,
+        /// <summary>
+        /// light matrix array pointer
+        /// </summary>
+        GX_VA_LIGHT_ARRAY,
+        /// <summary>
+        /// normal, bi-normal, tangent 
+        /// </summary>
+        GX_VA_NBT,
+        /// <summary>
+        /// maximum number of vertex attributes
+        /// </summary>
+        GX_VA_MAX_ATTR,
+
+        /// <summary>
+        /// NULL attribute (to mark end of lists)
+        /// </summary>
+        GX_VA_NULL = 0xff,
+    }
+
+    /// <summary>
     /// What would compromise a column in GX VAT - Vertex Attribute Table
     /// </summary>
     [Serializable]
     public class GxVertexAttributeFormat
     {
-        [SerializeField] public GXAttrType attributeType;
-
         [SerializeField] public GxVertexAttribute pos;
         [SerializeField] public GxVertexAttribute nrm;
         [SerializeField] public GxVertexAttribute nbt;
@@ -54,9 +317,9 @@ namespace GameCube.GX
             }
         }
 
-        public void SetAttr(GxVertexAttribute value)
+        public void SetAttr(GXAttr attribute, GxVertexAttribute value)
         {
-            switch (value.attribute)
+            switch (attribute)
             {
                 case GXAttr.GX_VA_POS: pos = value; break;
                 case GXAttr.GX_VA_NRM: nrm = value; break;
@@ -98,10 +361,10 @@ namespace GameCube.GX
                 GxVertexAttributeFormats[i] = null;
         }
 
-        public void SetVtxAttrFmt(GXVtxFmt index, GXAttrType vcd, GXAttr attribute, GXCompCnt_Rev2 nElements, GXCompType format, int nFracBits = 0)
+        public void SetVtxAttrFmt(GXVtxFmt index, /*/GXAttrType vcd, GXAttr attribute,/*/ GXCompCnt_Rev2 nElements, GXCompType format, int nFracBits = 0)
         {
-            var value = new GxVertexAttribute(vcd, attribute, nElements, format, nFracBits);
-            GxVertexAttributeFormats[(int)index].SetAttr(value);
+            //var value = new GxVertexAttribute(vcd, attribute, nElements, format, nFracBits);
+            //GxVertexAttributeFormats[(int)index].SetAttr(value);
         }
     }
 
@@ -109,13 +372,13 @@ namespace GameCube.GX
     public struct GxVertexAttribute
     {
         [SerializeField] public bool enabled;
-        [SerializeField] public GXAttrType vcd;
-        [SerializeField] public GXAttr attribute;
+        //[SerializeField] public GXAttrType vcd;
+        //[SerializeField] public GXAttr attribute;
         [SerializeField] public GXCompCnt_Rev2 nElements;
         [SerializeField] public GXCompType componentFormat;
         [SerializeField] public int nFracBits;
 
-        public GxVertexAttribute(GXAttrType vcd, GXAttr attribute, GXCompCnt_Rev2 nElements, GXCompType format, int nFracBits = 0)
+        public GxVertexAttribute(/*/GXAttrType vcd, GXAttr attribute,/*/ GXCompCnt_Rev2 nElements, GXCompType format, int nFracBits = 0)
         {
             // Assert that we aren't shifting more bits than we have
             if (format == GXCompType.GX_S8 | format == GXCompType.GX_U8)
@@ -124,8 +387,8 @@ namespace GameCube.GX
                 Assert.IsTrue(nFracBits < 16);
 
             this.enabled = true;
-            this.vcd = vcd;
-            this.attribute = attribute;
+            //this.vcd = vcd;
+            //this.attribute = attribute;
             this.nElements = nElements;
             this.componentFormat = format;
             this.nFracBits = nFracBits;
@@ -137,7 +400,7 @@ namespace GameCube.GX
     {
         [SerializeField] public GxVertexAttributeFormat vertAttr;
 
-        // (Raph:) Missing any other data?
+        // (Raph:) Missing other data
         [SerializeField] public Vector3 position;
         [SerializeField] public Vector3 normal;
         [SerializeField] public Vector3 binormal;
@@ -155,48 +418,48 @@ namespace GameCube.GX
 
         public void Deserialize(BinaryReader reader)
         {
-            // POSITION
-            position = GxUtility.ReadGxVectorXYZ(reader, vertAttr.pos);
+            //// POSITION
+            //position = GxUtility.ReadGxVectorXYZ(reader, vertAttr.pos);
 
-            // NORMALS
-            if (vertAttr.nrm.enabled)
-            {
-                normal = GxUtility.ReadGxVectorXYZ(reader, vertAttr.nrm);
-            }
-            else if (vertAttr.nbt.enabled)
-            {
-                // This code is untested...
-                // And it lacks another case for NBT3
-                throw new NotImplementedException();
+            //// NORMALS
+            //if (vertAttr.nrm.enabled)
+            //{
+            //    normal = GxUtility.ReadGxVectorXYZ(reader, vertAttr.nrm);
+            //}
+            //else if (vertAttr.nbt.enabled)
+            //{
+            //    // This code is untested...
+            //    // And it lacks another case for NBT3
+            //    throw new NotImplementedException();
 
-                normal = GxUtility.ReadGxVectorXYZ(reader, vertAttr.nbt);
-                binormal = GxUtility.ReadGxVectorXYZ(reader, vertAttr.nbt);
-                tangent = GxUtility.ReadGxVectorXYZ(reader, vertAttr.nbt);
-            }
+            //    normal = GxUtility.ReadGxVectorXYZ(reader, vertAttr.nbt);
+            //    binormal = GxUtility.ReadGxVectorXYZ(reader, vertAttr.nbt);
+            //    tangent = GxUtility.ReadGxVectorXYZ(reader, vertAttr.nbt);
+            //}
 
-            // COLOR
-            if (vertAttr.clr0.enabled)
-                color0 = GxUtility.ReadGXColor(reader, vertAttr.clr0);
-            if (vertAttr.clr1.enabled)
-                color1 = GxUtility.ReadGXColor(reader, vertAttr.clr1);
+            //// COLOR
+            //if (vertAttr.clr0.enabled)
+            //    color0 = GxUtility.ReadGXColor(reader, vertAttr.clr0);
+            //if (vertAttr.clr1.enabled)
+            //    color1 = GxUtility.ReadGXColor(reader, vertAttr.clr1);
 
-            // TEX
-            if (vertAttr.tex0.enabled)
-                tex0 = GxUtility.ReadGxTextureST(reader, vertAttr.tex0);
-            if (vertAttr.tex1.enabled)
-                tex1 = GxUtility.ReadGxTextureST(reader, vertAttr.tex1);
-            if (vertAttr.tex2.enabled)
-                tex2 = GxUtility.ReadGxTextureST(reader, vertAttr.tex2);
-            if (vertAttr.tex3.enabled)
-                tex3 = GxUtility.ReadGxTextureST(reader, vertAttr.tex3);
-            if (vertAttr.tex4.enabled)
-                tex4 = GxUtility.ReadGxTextureST(reader, vertAttr.tex4);
-            if (vertAttr.tex5.enabled)
-                tex5 = GxUtility.ReadGxTextureST(reader, vertAttr.tex5);
-            if (vertAttr.tex6.enabled)
-                tex6 = GxUtility.ReadGxTextureST(reader, vertAttr.tex6);
-            if (vertAttr.tex7.enabled)
-                tex7 = GxUtility.ReadGxTextureST(reader, vertAttr.tex7);
+            //// TEX
+            //if (vertAttr.tex0.enabled)
+            //    tex0 = GxUtility.ReadGxTextureST(reader, vertAttr.tex0.nElements, );
+            //if (vertAttr.tex1.enabled)
+            //    tex1 = GxUtility.ReadGxTextureST(reader, vertAttr.tex1);
+            //if (vertAttr.tex2.enabled)
+            //    tex2 = GxUtility.ReadGxTextureST(reader, vertAttr.tex2);
+            //if (vertAttr.tex3.enabled)
+            //    tex3 = GxUtility.ReadGxTextureST(reader, vertAttr.tex3);
+            //if (vertAttr.tex4.enabled)
+            //    tex4 = GxUtility.ReadGxTextureST(reader, vertAttr.tex4);
+            //if (vertAttr.tex5.enabled)
+            //    tex5 = GxUtility.ReadGxTextureST(reader, vertAttr.tex5);
+            //if (vertAttr.tex6.enabled)
+            //    tex6 = GxUtility.ReadGxTextureST(reader, vertAttr.tex6);
+            //if (vertAttr.tex7.enabled)
+            //    tex7 = GxUtility.ReadGxTextureST(reader, vertAttr.tex7);
         }
 
         public void Serialize(BinaryWriter writer)
@@ -221,7 +484,7 @@ namespace GameCube.GX
 
         public void Serialize(BinaryWriter writer)
         {
-            throw new NotImplementedException();
+            //command = 
         }
     }
 
@@ -364,21 +627,22 @@ namespace GameCube.GX
     {
         public const int GX_FIFO_ALIGN = 32;
 
-        public static Vector3 ReadGxVectorXYZ(BinaryReader reader, GxVertexAttribute vertexAttributes)
+        // Split into POS ans NRM?
+        public static Vector3 ReadVectorComponent(BinaryReader reader, GXCompCnt_Rev2 nElements, GXCompType componentType, int nFracs)
         {
-            if (vertexAttributes.nElements == GXCompCnt_Rev2.GX_POS_XY)
+            if (nElements == GXCompCnt_Rev2.GX_POS_XY)
             {
                 return new Vector2(
-                    ReadVertexFloat(reader, vertexAttributes),
-                    ReadVertexFloat(reader, vertexAttributes));
+                    ReadNumericComponent(reader, componentType, nFracs),
+                    ReadNumericComponent(reader, componentType, nFracs));
             }
-            else if (vertexAttributes.nElements == GXCompCnt_Rev2.GX_NRM_XYZ
-                  || vertexAttributes.nElements == GXCompCnt_Rev2.GX_POS_XYZ)
+            else if (nElements == GXCompCnt_Rev2.GX_NRM_XYZ
+                  || nElements == GXCompCnt_Rev2.GX_POS_XYZ)
             {
                 return new Vector3(
-                    ReadVertexFloat(reader, vertexAttributes),
-                    ReadVertexFloat(reader, vertexAttributes),
-                    ReadVertexFloat(reader, vertexAttributes));
+                    ReadNumericComponent(reader, componentType, nFracs),
+                    ReadNumericComponent(reader, componentType, nFracs),
+                    ReadNumericComponent(reader, componentType, nFracs));
             }
             else
             {
@@ -386,56 +650,23 @@ namespace GameCube.GX
             }
         }
 
-        public static Vector2 ReadGxTextureST(BinaryReader reader, GxVertexAttribute vertexAttributes)
+        public static Vector2 ReadGxTextureST(BinaryReader reader, GXCompCnt_Rev2 nElements, GXCompType componentType, int nFracs)
         {
-            if (vertexAttributes.nElements == GXCompCnt_Rev2.GX_TEX_S)
-            {
-                return new Vector2(ReadVertexFloat(reader, vertexAttributes), 0f);
-            }
-            else if (vertexAttributes.nElements == GXCompCnt_Rev2.GX_TEX_ST)
+            if (nElements == GXCompCnt_Rev2.GX_TEX_S)
             {
                 return new Vector2(
-                    ReadVertexFloat(reader, vertexAttributes),
-                    ReadVertexFloat(reader, vertexAttributes));
+                    ReadNumericComponent(reader, componentType, nFracs),
+                    0f);
+            }
+            else if (nElements == GXCompCnt_Rev2.GX_TEX_ST)
+            {
+                return new Vector2(
+                    ReadNumericComponent(reader, componentType, nFracs),
+                    ReadNumericComponent(reader, componentType, nFracs));
             }
             else
             {
                 throw new NotImplementedException();
-            }
-        }
-
-        public static Color32 ReadGXColor(BinaryReader reader, GxVertexAttribute vertexAttributes)
-        {
-            switch (vertexAttributes.attribute)
-            {
-                case GXAttr.GX_VA_CLR0:
-                case GXAttr.GX_VA_CLR1:
-                    return ReadColorComponent(reader, vertexAttributes.componentFormat);
-
-                default:
-                    throw new NotImplementedException();
-            }
-        }
-
-        public static float ReadVertexFloat(BinaryReader reader, GxVertexAttribute vertexAttributes)
-        {
-            switch (vertexAttributes.attribute)
-            {
-                case GXAttr.GX_VA_POS:
-                case GXAttr.GX_VA_NRM:
-                case GXAttr.GX_VA_NBT:
-                case GXAttr.GX_VA_TEX0:
-                case GXAttr.GX_VA_TEX1:
-                case GXAttr.GX_VA_TEX2:
-                case GXAttr.GX_VA_TEX3:
-                case GXAttr.GX_VA_TEX4:
-                case GXAttr.GX_VA_TEX5:
-                case GXAttr.GX_VA_TEX6:
-                case GXAttr.GX_VA_TEX7:
-                    return ReadNumericComponent(reader, vertexAttributes.componentFormat, vertexAttributes.nFracBits);
-
-                default:
-                    throw new NotImplementedException();
             }
         }
 
@@ -494,9 +725,6 @@ namespace GameCube.GX
 
                 case GXCompType.GX_RGBX8:
                     {
-                        // review this code. Is X discarded?
-                        throw new NotImplementedException();
-
                         var r = BinaryIoUtility.ReadUInt8(reader);
                         var g = BinaryIoUtility.ReadUInt8(reader);
                         var b = BinaryIoUtility.ReadUInt8(reader);
@@ -533,6 +761,7 @@ namespace GameCube.GX
             }
         }
 
+        // TODO: replace with lookup table
         public static float FixedToFloat(float value, int nFracBits)
         {
             value = (float)Math.Pow(2, value);
@@ -540,10 +769,5 @@ namespace GameCube.GX
             value = value / divisor;
             return value;
         }
-
-        //public static sbyte Float32ToS8(GXCompType componentType, int nFractionBits, float value)
-        //{
-        //    throw new NotImplementedException();
-        //}
     }
 }
