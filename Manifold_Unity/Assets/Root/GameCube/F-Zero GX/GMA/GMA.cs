@@ -39,9 +39,13 @@ namespace GameCube.FZeroGX.GMA
 
         #region MEMBERS
 
+        /// <summary>
+        /// Filename. This variable is called name to enable Unity to
+        /// display this name in the Inspector.
+        /// </summary>
         [Header("GMA")]
         [SerializeField]
-        string name; // File Name
+        string name;
 
         [SerializeField, Hex("00", 8)]
         int gcmfCount;
@@ -152,7 +156,7 @@ namespace GameCube.FZeroGX.GMA
                 writer.WriteXCString(gcmf.ModelName);
             BinaryIoUtility.PopEncoding();
 
-            // Get FIFO sized header size, writer it in correct position
+            // Get FIFO header size, write it in correct position
             writer.Align(GxUtility.GX_FIFO_ALIGN);
             headerSize = (int)writer.BaseStream.Position;
             writer.BaseStream.Seek(0x04, SeekOrigin.Begin);

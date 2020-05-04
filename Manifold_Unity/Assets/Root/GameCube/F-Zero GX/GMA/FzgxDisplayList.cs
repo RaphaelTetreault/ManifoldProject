@@ -25,7 +25,7 @@ namespace GameCube.FZeroGX.GMA
 
         [SerializeField] GxDisplayCommand displayCommand;
         [SerializeField] short nElements;
-        [SerializeField] GxVertex[] vertices;
+        [SerializeField] GxVtx[] vertices;
 
         #endregion
 
