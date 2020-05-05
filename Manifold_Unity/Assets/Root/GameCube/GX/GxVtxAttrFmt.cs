@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.Serialization;
+using GameCube.FZeroGX.GMA;
 
 namespace GameCube.GX
 {
@@ -51,6 +52,29 @@ namespace GameCube.GX
                 case GXAttr.GX_VA_TEX5: return tex5;
                 case GXAttr.GX_VA_TEX6: return tex6;
                 case GXAttr.GX_VA_TEX7: return tex7;
+
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+
+        public GxVtxAttr GetAttr(GXAttrFlag_U32 attribute)
+        {
+            switch (attribute)
+            {
+                case GXAttrFlag_U32.GX_VA_POS: return pos;
+                case GXAttrFlag_U32.GX_VA_NRM: return nrm;
+                case GXAttrFlag_U32.GX_VA_NBT: return nbt;
+                case GXAttrFlag_U32.GX_VA_CLR0: return clr0;
+                case GXAttrFlag_U32.GX_VA_CLR1: return clr1;
+                case GXAttrFlag_U32.GX_VA_TEX0: return tex0;
+                case GXAttrFlag_U32.GX_VA_TEX1: return tex1;
+                case GXAttrFlag_U32.GX_VA_TEX2: return tex2;
+                case GXAttrFlag_U32.GX_VA_TEX3: return tex3;
+                case GXAttrFlag_U32.GX_VA_TEX4: return tex4;
+                case GXAttrFlag_U32.GX_VA_TEX5: return tex5;
+                case GXAttrFlag_U32.GX_VA_TEX6: return tex6;
+                case GXAttrFlag_U32.GX_VA_TEX7: return tex7;
 
                 default:
                     throw new NotImplementedException();

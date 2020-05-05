@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.Serialization;
+using GameCube.FZeroGX.GMA;
 
 namespace GameCube.GX
 {
@@ -15,7 +16,7 @@ namespace GameCube.GX
     {
         [SerializeField] GxVtxAttrFmt[] gxVertexAttributeFormats = new GxVtxAttrFmt[8];
 
-        public GxVtxAttrFmt[] GxVertexAttributeFormats
+        public GxVtxAttrFmt[] GxVtxAttrFmts
             => gxVertexAttributeFormats;
 
         public GxVtxAttrTable(params GxVtxAttrFmt[] formats)
@@ -25,17 +26,45 @@ namespace GameCube.GX
 
             // Update formats
             for (int i = 0; i < formats.Length; i++)
-                GxVertexAttributeFormats[i] = formats[i];
+                GxVtxAttrFmts[i] = formats[i];
+
             // Clear old refs
-            for (int i = formats.Length; i < GxVertexAttributeFormats.Length; i++)
-                GxVertexAttributeFormats[i] = null;
+            for (int i = formats.Length; i < GxVtxAttrFmts.Length; i++)
+                GxVtxAttrFmts[i] = null;
         }
 
-        public void SetVtxAttrFmt(GXVtxFmt index, /*/GXAttrType vcd, GXAttr attribute,/*/ GXCompCnt_Rev2 nElements, GXCompType format, int nFracBits = 0)
+        public bool VatHasAttr(GxDisplayCommand gxCmd, GXAttr attribute)
         {
-            //var value = new GxVertexAttribute(vcd, attribute, nElements, format, nFracBits);
-            //GxVertexAttributeFormats[(int)index].SetAttr(value);
+            Assert.IsTrue((byte)gxCmd.VertexFormat < 8);
+
+            if (attribute == 0)
+            {
+                return false;
+            }
+            else
+            {
+                var vatIndex = (int)gxCmd.VertexFormat;
+                var attr = gxVertexAttributeFormats[vatIndex].GetAttr(attribute);
+                return attr != null;
+            }
         }
+
+        public bool VatHasAttr(GxDisplayCommand gxCmd, GXAttrFlag_U32 attribute)
+        {
+            Assert.IsTrue((byte)gxCmd.VertexFormat < 8);
+
+            if (attribute == 0)
+            {
+                return false;
+            }
+            else
+            {
+                var vatIndex = (int)gxCmd.VertexFormat;
+                var attr = gxVertexAttributeFormats[vatIndex].GetAttr(attribute);
+                return attr != null;
+            }
+        }
+
     }
 
 }

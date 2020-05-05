@@ -24,12 +24,12 @@ namespace GameCube.FZeroGX
                 // VAT 1
                 new GxVtxAttrFmt()
                 {
-                    pos = new GxVtxAttr(GXCompCnt_Rev2.GX_POS_XYZ, GXCompType.GX_S16),
-                    nrm = new GxVtxAttr(GXCompCnt_Rev2.GX_NRM_XYZ, GXCompType.GX_S16),
+                    pos = new GxVtxAttr(GXCompCnt_Rev2.GX_POS_XYZ, GXCompType.GX_S16, 8), //
+                    nrm = new GxVtxAttr(GXCompCnt_Rev2.GX_NRM_XYZ, GXCompType.GX_S16, 14),
                     clr0 = new GxVtxAttr(GXCompCnt_Rev2.GX_CLR_RGBA, GXCompType.GX_RGBA8), // same as VAT0?
-                    tex0 = new GxVtxAttr(GXCompCnt_Rev2.GX_TEX_ST, GXCompType.GX_S16), // uncheck is s16 is correct
-                    tex1 = new GxVtxAttr(GXCompCnt_Rev2.GX_TEX_ST, GXCompType.GX_S16), // same
-                    tex2 = new GxVtxAttr(GXCompCnt_Rev2.GX_TEX_ST, GXCompType.GX_S16), // remember fifo padding
+                    tex0 = new GxVtxAttr(GXCompCnt_Rev2.GX_TEX_ST, GXCompType.GX_S16, 14), // uncheck is s16 is correct
+                    tex1 = new GxVtxAttr(GXCompCnt_Rev2.GX_TEX_ST, GXCompType.GX_S16, 14), // same
+                    tex2 = new GxVtxAttr(GXCompCnt_Rev2.GX_TEX_ST, GXCompType.GX_S16, 14), // remember fifo padding
                 },
             }
         );

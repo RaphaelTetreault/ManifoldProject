@@ -34,6 +34,14 @@ namespace StarkTools.IO
             return bytesToAlign;
         }
 
+        // 2020-05-05
+        public static byte PeekByte(this BinaryReader reader)
+        {
+            byte b = ReadX_UInt8(reader);
+            reader.BaseStream.Position--;
+            return b;
+        }
+
         #region ReadX
 
         #region ReadX Value

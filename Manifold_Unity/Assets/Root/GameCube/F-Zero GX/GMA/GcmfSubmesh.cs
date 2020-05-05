@@ -24,6 +24,7 @@ namespace GameCube.FZeroGX.GMA
         [SerializeField] Material material;
         [SerializeField] FzgxDisplayList displayList0;
         [SerializeField] FzgxDisplayList displayList1;
+
         [SerializeField] ExtraDisplayListHeader extraDisplayListHeader;
         [SerializeField] FzgxDisplayList extraDisplayList0;
         [SerializeField] FzgxDisplayList extraDisplayList1;
@@ -87,18 +88,20 @@ namespace GameCube.FZeroGX.GMA
 
             reader.ReadX(ref material, true);
 
+            var attrFlags = material.VertexDescriptorFlags;
+
             if (!isSkinOrEffective)
             {
-                displayList0 = new FzgxDisplayList(material.MatDisplayListSize);
-                displayList1 = new FzgxDisplayList(material.TlMatDisplayListSize);
+                displayList0 = new FzgxDisplayList(attrFlags, material.MatDisplayListSize);
+                displayList1 = new FzgxDisplayList(attrFlags, material.TlMatDisplayListSize);
                 reader.ReadX(ref displayList0, false);
                 reader.ReadX(ref displayList1, false);
 
                 if (IsRenderExtraDisplayLists)
                 {
                     reader.ReadX(ref extraDisplayListHeader, true);
-                    extraDisplayList0 = new FzgxDisplayList(extraDisplayListHeader.VertexSize0);
-                    extraDisplayList1 = new FzgxDisplayList(extraDisplayListHeader.VertexSize1);
+                    extraDisplayList0 = new FzgxDisplayList(attrFlags, extraDisplayListHeader.VertexSize0);
+                    extraDisplayList1 = new FzgxDisplayList(attrFlags, extraDisplayListHeader.VertexSize1);
                     reader.ReadX(ref extraDisplayList0, false);
                     reader.ReadX(ref extraDisplayList1, false);
                 }

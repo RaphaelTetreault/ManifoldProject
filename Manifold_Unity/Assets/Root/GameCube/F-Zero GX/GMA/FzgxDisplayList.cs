@@ -18,27 +18,22 @@ namespace GameCube.FZeroGX.GMA
         [SerializeField, Hex] long startAddress;
         [SerializeField, Hex] long endAddress;
 
-        [SerializeField, Hex] int size; 
-        [SerializeField, HideInInspector] byte[] data; 
+        [SerializeField] GXAttrFlag_U32 attrFlags;
+        [SerializeField, Hex] int size;
 
         #region MEMBERS
 
-        [SerializeField] GxDisplayCommand displayCommand;
-        [SerializeField] short nElements;
-        [SerializeField] GxVtx[] vertices;
+        [SerializeField] byte gxBegin;
+        [SerializeField] GxVtxPage[] gxVtxes;
+        [SerializeField] byte gxEnd;
 
         #endregion
 
-        public GxDisplayCommand HACK_DispCmd
-            => new GxDisplayCommand() {
-
-                command = data == null || data.Length < 1 ? (ushort)0 : data[1]
-            };
-
         public FzgxDisplayList() { }
 
-        public FzgxDisplayList(int size)
+        public FzgxDisplayList(GXAttrFlag_U32 attrFlags, int size)
         {
+            this.attrFlags = attrFlags;
             this.size = size;
         }
 
@@ -62,22 +57,49 @@ namespace GameCube.FZeroGX.GMA
 
         public void Deserialize(BinaryReader reader)
         {
-            startAddress = reader.BaseStream.Position;
+            if (!(size > 0))
+            {
+                return;
+            }
 
-            // Read real
-            //reader.ReadX(ref displayCommand, true);
-            //throw new NotImplementedException();
-            //reader.ReadX(ref vertices, true);
+            try
+            {
+                startAddress = reader.BaseStream.Position;
 
-            // Read fake
-            reader.ReadX(ref data, size);
+                // Read real
+                reader.ReadX(ref gxBegin);
+                Assert.IsTrue(gxBegin == 0x00);
 
-            endAddress = reader.BaseStream.Position;
+                var gxVtxList = new List<GxVtxPage>();
+                while (reader.PeekByte() != 0x00)
+                {
+                    GxVtxPage vtx = new GxVtxPage(attrFlags);
+                    vtx.Deserialize(reader);
+                    gxVtxList.Add(vtx);
+                }
+                reader.ReadX(ref gxEnd);
+
+                gxVtxes = gxVtxList.ToArray();
+                // padding
+
+                // Read fake
+                //reader.ReadX(ref data, size);
+
+                endAddress = reader.BaseStream.Position;
+
+                var fifoPadding = 32 - reader.BaseStream.Position % 32;
+                reader.BaseStream.Position += fifoPadding;
+
+            } catch
+            {
+                Debug.LogError($"Error at: {reader.BaseStream.Position:X8} {attrFlags}");
+            }
         }
 
         public void Serialize(BinaryWriter writer)
         {
-            writer.WriteX(data, false);
+            throw new NotImplementedException();
+            //writer.WriteX(data, false);
         }
 
     }
