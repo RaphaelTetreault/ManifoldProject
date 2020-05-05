@@ -394,7 +394,9 @@ namespace GameCube.FZeroGX.GMA
             StartAddress = reader.BaseStream.Position;
 
             // 0x00
-            reader.ReadX(ref zero_0x00); Assert.IsTrue(zero_0x00 == 0);
+            reader.ReadX(ref zero_0x00);
+            Assert.IsTrue(zero_0x00 == 0, $"{typeof(Material).Name}. Addr:{startAddress:X8}");
+
             reader.ReadX(ref unk_0x02);
             reader.ReadX(ref unk_0x03);
             reader.ReadX(ref color0);

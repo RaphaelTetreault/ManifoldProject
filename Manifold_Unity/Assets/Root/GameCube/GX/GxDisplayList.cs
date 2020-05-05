@@ -11,47 +11,8 @@ using GameCube.FZeroGX.GMA;
 
 namespace GameCube.GX
 {
-
-
     [Serializable]
-    public sealed class GxDisplayList : IBinarySerializable
-    {
-        [Header("GX Display List Group")]
-        [SerializeField, Hex(8)] long startAddress;
-        [SerializeField, Hex(8)] long endAddress;
-
-        [SerializeField]
-
-
-        public long StartAddress
-        {
-            get => startAddress;
-            set => startAddress = value;
-        }
-        public long EndAddress
-        {
-            get => endAddress;
-            set => endAddress = value;
-        }
-
-        public GxDisplayList() { }
-
-        public void Deserialize(BinaryReader reader)
-        {
-            startAddress = reader.BaseStream.Position;
-
-
-
-            endAddress = reader.BaseStream.Position;
-        }
-
-        public void Serialize(BinaryWriter writer)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    public class GxVtxPage : IBinarySerializable, IBinaryAddressable
+    public class GxDisplayList : IBinarySerializable, IBinaryAddressable
     {
         [Header("GX Vertex Page")]
         [SerializeField, Hex(8)] long startAddress;
@@ -104,7 +65,7 @@ namespace GameCube.GX
             set => endAddress = value;
         }
 
-        public GxVtxPage(GXAttrFlag_U32 attr)
+        public GxDisplayList(GXAttrFlag_U32 attr)
         {
             this.attr = attr;
         }
@@ -123,10 +84,32 @@ namespace GameCube.GX
             //mtx
             if ((attr & GXAttrFlag_U32.GX_VA_PNMTXIDX) != 0)
                 pn_mtx_idx = new byte[count];
+
             if ((attr & GXAttrFlag_U32.GX_VA_TEX0MTXIDX) != 0)
                 throw new NotImplementedException();
-            //tex0_mtx_idx = new byte[count];
+            if ((attr & GXAttrFlag_U32.GX_VA_TEX1MTXIDX) != 0)
+                throw new NotImplementedException();
+            if ((attr & GXAttrFlag_U32.GX_VA_TEX2MTXIDX) != 0)
+                throw new NotImplementedException();
+            if ((attr & GXAttrFlag_U32.GX_VA_TEX3MTXIDX) != 0)
+                throw new NotImplementedException();
+            if ((attr & GXAttrFlag_U32.GX_VA_TEX4MTXIDX) != 0)
+                throw new NotImplementedException();
+            if ((attr & GXAttrFlag_U32.GX_VA_TEX5MTXIDX) != 0)
+                throw new NotImplementedException();
+            if ((attr & GXAttrFlag_U32.GX_VA_TEX6MTXIDX) != 0)
+                throw new NotImplementedException();
+            if ((attr & GXAttrFlag_U32.GX_VA_TEX7MTXIDX) != 0)
+                throw new NotImplementedException();
 
+            if ((attr & GXAttrFlag_U32.GX_VA_POS_MTX_ARRAY) != 0)
+                throw new NotImplementedException();
+            if ((attr & GXAttrFlag_U32.GX_VA_NRM_MTX_ARRAY) != 0)
+                throw new NotImplementedException();
+            if ((attr & GXAttrFlag_U32.GX_VA_TEX_MTX_ARRAY) != 0)
+                throw new NotImplementedException();
+            if ((attr & GXAttrFlag_U32.GX_VA_LIGHT_ARRAY) != 0)
+                throw new NotImplementedException();
 
             // Pos
             if (vat.VatHasAttr(gxCmd, attr & GXAttrFlag_U32.GX_VA_POS))

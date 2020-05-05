@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.Serialization;
+using GameCube.FZeroGX.GMA;
 
 namespace GameCube.GX
 {
@@ -178,5 +179,109 @@ namespace GameCube.GX
         {
             return (float)value / (1 << nFracBits);
         }
+
+        public static int CalcGxVtxStride(GXAttrFlag_U32 attrFlag, GxVtxAttrFmt fmt)
+        {
+            int size = 0;
+            const int mtxIdxSize = 1;
+
+            if ((attrFlag & GXAttrFlag_U32.GX_VA_PNMTXIDX) != 0)
+                size += mtxIdxSize;
+
+            if ((attrFlag & GXAttrFlag_U32.GX_VA_TEX0MTXIDX) != 0)
+                throw new NotImplementedException();
+            if ((attrFlag & GXAttrFlag_U32.GX_VA_TEX1MTXIDX) != 0)
+                throw new NotImplementedException();
+            if ((attrFlag & GXAttrFlag_U32.GX_VA_TEX2MTXIDX) != 0)
+                throw new NotImplementedException();
+            if ((attrFlag & GXAttrFlag_U32.GX_VA_TEX3MTXIDX) != 0)
+                throw new NotImplementedException();
+            if ((attrFlag & GXAttrFlag_U32.GX_VA_TEX4MTXIDX) != 0)
+                throw new NotImplementedException();
+            if ((attrFlag & GXAttrFlag_U32.GX_VA_TEX5MTXIDX) != 0)
+                throw new NotImplementedException();
+            if ((attrFlag & GXAttrFlag_U32.GX_VA_TEX6MTXIDX) != 0)
+                throw new NotImplementedException();
+            if ((attrFlag & GXAttrFlag_U32.GX_VA_TEX7MTXIDX) != 0)
+                throw new NotImplementedException();
+
+            if ((attrFlag & GXAttrFlag_U32.GX_VA_POS_MTX_ARRAY) != 0)
+                throw new NotImplementedException();
+            if ((attrFlag & GXAttrFlag_U32.GX_VA_NRM_MTX_ARRAY) != 0)
+                throw new NotImplementedException();
+            if ((attrFlag & GXAttrFlag_U32.GX_VA_TEX_MTX_ARRAY) != 0)
+                throw new NotImplementedException();
+            if ((attrFlag & GXAttrFlag_U32.GX_VA_LIGHT_ARRAY) != 0)
+                throw new NotImplementedException();
+
+
+            if (fmt.pos != null && (attrFlag & GXAttrFlag_U32.GX_VA_POS) != 0)
+                size += CompSizeColor(fmt.pos.componentFormat);
+
+            if (fmt.nrm != null && (attrFlag & GXAttrFlag_U32.GX_VA_NRM) != 0)
+                size += CompSizeNumber(fmt.nrm.componentFormat);
+            if (fmt.nbt != null && (attrFlag & GXAttrFlag_U32.GX_VA_NBT) != 0)
+                size += CompSizeNumber(fmt.nbt.componentFormat);
+
+            // Get size of colors
+            if (fmt.clr0 != null && (attrFlag & GXAttrFlag_U32.GX_VA_CLR0) != 0)
+                size += CompSizeColor(fmt.clr0.componentFormat);
+            if (fmt.clr1 != null && (attrFlag & GXAttrFlag_U32.GX_VA_CLR1) != 0)
+                size += CompSizeColor(fmt.clr1.componentFormat);
+
+            if (fmt.tex0 != null && (attrFlag & GXAttrFlag_U32.GX_VA_TEX0) != 0)
+                size += CompSizeNumber(fmt.tex0.componentFormat);
+            if (fmt.tex1 != null && (attrFlag & GXAttrFlag_U32.GX_VA_TEX1) != 0)
+                size += CompSizeNumber(fmt.tex1.componentFormat);
+            if (fmt.tex2 != null && (attrFlag & GXAttrFlag_U32.GX_VA_TEX2) != 0)
+                size += CompSizeNumber(fmt.tex2.componentFormat);
+            if (fmt.tex3 != null && (attrFlag & GXAttrFlag_U32.GX_VA_TEX3) != 0)
+                size += CompSizeNumber(fmt.tex3.componentFormat);
+            if (fmt.tex4 != null && (attrFlag & GXAttrFlag_U32.GX_VA_TEX4) != 0)
+                size += CompSizeNumber(fmt.tex4.componentFormat);
+            if (fmt.tex5 != null && (attrFlag & GXAttrFlag_U32.GX_VA_TEX5) != 0)
+                size += CompSizeNumber(fmt.tex5.componentFormat);
+            if (fmt.tex6 != null && (attrFlag & GXAttrFlag_U32.GX_VA_TEX6) != 0)
+                size += CompSizeNumber(fmt.tex6.componentFormat);
+            if (fmt.tex7 != null && (attrFlag & GXAttrFlag_U32.GX_VA_TEX7) != 0)
+                size += CompSizeNumber(fmt.tex7.componentFormat);
+
+            return size;
+        }
+
+        private static int CompSizeNumber(GXCompType compType)
+        {
+            switch (compType)
+            {
+                case GXCompType.GX_U8: return 1;
+                case GXCompType.GX_S8: return 1;
+                case GXCompType.GX_U16: return 2;
+                case GXCompType.GX_S16: return 2;
+                case GXCompType.GX_F32: return 4;
+
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+
+        private static int CompSizeColor(GXCompType compType)
+        {
+            switch (compType)
+            {
+                case GXCompType.GX_RGB565: return 2;
+                case GXCompType.GX_RGB8: return 1;
+                case GXCompType.GX_RGBX8: return 4;
+                case GXCompType.GX_RGBA4: return 2;
+                case GXCompType.GX_RGBA6: return 3;
+                case GXCompType.GX_RGBA8: return 4;
+
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+
+
+
+
     }
 }

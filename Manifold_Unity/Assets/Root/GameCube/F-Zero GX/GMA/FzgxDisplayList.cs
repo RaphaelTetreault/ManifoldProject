@@ -8,6 +8,7 @@ using UnityEngine.Assertions;
 using UnityEngine.Serialization;
 
 using GameCube.GX;
+using System.Net;
 
 namespace GameCube.FZeroGX.GMA
 {
@@ -24,8 +25,7 @@ namespace GameCube.FZeroGX.GMA
         #region MEMBERS
 
         [SerializeField] byte gxBegin;
-        [SerializeField] GxVtxPage[] gxVtxes;
-        [SerializeField] byte gxEnd;
+        [SerializeField] GxDisplayList[] gxDisplayLists;
 
         #endregion
 
@@ -57,7 +57,7 @@ namespace GameCube.FZeroGX.GMA
 
         public void Deserialize(BinaryReader reader)
         {
-            if (!(size > 0))
+            if (size <= 0)
             {
                 return;
             }
@@ -70,31 +70,32 @@ namespace GameCube.FZeroGX.GMA
                 reader.ReadX(ref gxBegin);
                 Assert.IsTrue(gxBegin == 0x00);
 
-                var gxVtxList = new List<GxVtxPage>();
-                while (reader.PeekByte() != 0x00)
+                var gxDisplayList = new List<GxDisplayList>();
+
+                // I'm sure this is going to break.
+                // Perhaps use size in this equation? 
+                while (!reader.EndOfStream() && reader.PeekByte() != 0x00)
                 {
-                    GxVtxPage vtx = new GxVtxPage(attrFlags);
+                    GxDisplayList vtx = new GxDisplayList(attrFlags);
                     vtx.Deserialize(reader);
-                    gxVtxList.Add(vtx);
+                    gxDisplayList.Add(vtx);
                 }
-                reader.ReadX(ref gxEnd);
-
-                gxVtxes = gxVtxList.ToArray();
-                // padding
-
-                // Read fake
-                //reader.ReadX(ref data, size);
+                gxDisplayLists = gxDisplayList.ToArray();
 
                 endAddress = reader.BaseStream.Position;
 
-                var fifoPadding = 32 - reader.BaseStream.Position % 32;
+                var fifoPadding = (32 - reader.BaseStream.Position % 32) % 32;
                 reader.BaseStream.Position += fifoPadding;
+                //Debug.Log($"Begin:{StartAddress:X8} End:{EndAddress:X8}");
 
-            } catch
+            }
+            catch
             {
                 Debug.LogError($"Error at: {reader.BaseStream.Position:X8} {attrFlags}");
             }
         }
+
+
 
         public void Serialize(BinaryWriter writer)
         {
