@@ -7,6 +7,8 @@ using UnityEngine;
 using UnityEditor;
 
 using GameCube.FZeroGX.GMA;
+using GameCube.GX;
+using UnityEngine.Rendering;
 
 [CreateAssetMenu]
 public class GMAAnalyzer : AnalyzerSobj<GMASobj>
@@ -290,6 +292,14 @@ public class GMAAnalyzer : AnalyzerSobj<GMASobj>
             writer.PushCol("Tex 1 Index");
             writer.PushCol("Tex 2 Index");
             writer.PushCol("Vertex Descriptor Flags");
+            writer.PushCol("DISP0 FMT");
+            writer.PushCol("DISP0 PRIM");
+            writer.PushCol("DISP1 FMT");
+            writer.PushCol("DISP1 PRIM");
+            writer.PushCol("DISP EX0 FMT");
+            writer.PushCol("DISP EX0 PRIM");
+            writer.PushCol("DISP EX1 FMT");
+            writer.PushCol("DISP EX1 PRIM");
             writer.PushCol("Transform Matrix Indexes");
             writer.PushCol("Mat display list size");
             writer.PushCol("Tl mat display list size");
@@ -343,6 +353,25 @@ public class GMAAnalyzer : AnalyzerSobj<GMASobj>
                     writer.PushCol(material.Tex1Index);
                     writer.PushCol(material.Tex2Index);
                     writer.PushCol(material.VertexDescriptorFlags);
+
+                    //
+                    var submesh = gcmfRenderData;
+                    var disp0 = gcmfRenderData.DisplayList0;
+                    writer.PushCol(disp0.HACK_DispCmd.VertexFormat);
+                    writer.PushCol(disp0.HACK_DispCmd.Primitive);
+                    //
+                    var disp1 = gcmfRenderData.DisplayList1;
+                    writer.PushCol(disp1.HACK_DispCmd.VertexFormat);
+                    writer.PushCol(disp1.HACK_DispCmd.Primitive);
+                    //
+                    var dispEx0 = gcmfRenderData.ExtraDisplayList0;
+                    writer.PushCol(submesh.IsRenderExtraDisplayLists ? dispEx0.HACK_DispCmd.VertexFormat.ToString() : string.Empty);
+                    writer.PushCol(submesh.IsRenderExtraDisplayLists ? dispEx0.HACK_DispCmd.Primitive.ToString() : string.Empty);
+                    //
+                    var dispEx1 = gcmfRenderData.ExtraDisplayList1;
+                    writer.PushCol(submesh.IsRenderExtraDisplayLists ? dispEx1.HACK_DispCmd.VertexFormat.ToString() : string.Empty);
+                    writer.PushCol(submesh.IsRenderExtraDisplayLists ? dispEx1.HACK_DispCmd.Primitive.ToString() : string.Empty);
+
                     writer.PushCol(material.MatrixIndexes);
                     writer.PushCol(material.MatDisplayListSize);
                     writer.PushCol(material.TlMatDisplayListSize);

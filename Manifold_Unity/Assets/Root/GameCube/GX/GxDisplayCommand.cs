@@ -17,6 +17,9 @@ namespace GameCube.GX
         [SerializeField] public GXVtxFmt vertexFormat;
         public ushort command;
 
+        public GXPrimitive Primitive { get { return (GXPrimitive)(command & 0b_00000000_11111000); } }// 5 highest bits
+        public GXVtxFmt VertexFormat { get { return (GXVtxFmt)(command & 0b_00000000_00000111); } } // 3 lowest bits
+
         public void Deserialize(BinaryReader reader)
         {
             reader.ReadX(ref command);

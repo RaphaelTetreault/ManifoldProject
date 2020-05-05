@@ -15,6 +15,7 @@ namespace DumpHex
             {
                 Console.WriteLine("Enter file name:");
                 string input = Console.ReadLine();
+                input = input.Replace("\"", string.Empty);
                 Console.WriteLine();
 
                 bool fileExists = File.Exists(input);

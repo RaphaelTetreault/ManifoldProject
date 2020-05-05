@@ -29,6 +29,12 @@ namespace GameCube.FZeroGX.GMA
 
         #endregion
 
+        public GxDisplayCommand HACK_DispCmd
+            => new GxDisplayCommand() {
+
+                command = data == null || data.Length < 1 ? (ushort)0 : data[1]
+            };
+
         public FzgxDisplayList() { }
 
         public FzgxDisplayList(int size)

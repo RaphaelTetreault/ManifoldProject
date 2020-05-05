@@ -18,6 +18,8 @@ namespace GameCube.GX
     [Serializable]
     public class GxVtxAttrFmt
     {
+        // 2020-05-04 Raph: I worry this can have errors when if someone
+        // accidentally modifies a value
         [SerializeField] public GxVtxAttr pos;
         [SerializeField] public GxVtxAttr nrm;
         [SerializeField] public GxVtxAttr nbt;

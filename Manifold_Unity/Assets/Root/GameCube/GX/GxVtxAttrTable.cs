@@ -9,7 +9,6 @@ using UnityEngine.Serialization;
 
 namespace GameCube.GX
 {
-
     // GameCube VAT
     [Serializable]
     public class GxVtxAttrTable
