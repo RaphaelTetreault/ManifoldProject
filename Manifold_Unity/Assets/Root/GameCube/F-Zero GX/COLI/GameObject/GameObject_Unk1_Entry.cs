@@ -14,7 +14,8 @@ namespace GameCube.FZeroGX.COLI_COURSE
         [SerializeField, Hex] long startAddress;
         [SerializeField, Hex] long endAddress;
 
-
+        public uint unk_0x00;
+        public uint unk_0x04;
 
         #endregion
 
@@ -40,14 +41,16 @@ namespace GameCube.FZeroGX.COLI_COURSE
         {
             startAddress = reader.BaseStream.Position;
 
-
+            reader.ReadX(ref unk_0x00);
+            reader.ReadX(ref unk_0x04);
 
             endAddress = reader.BaseStream.Position;
         }
 
         public void Serialize(BinaryWriter writer)
         {
-
+            writer.WriteX(unk_0x00);
+            writer.WriteX(unk_0x04);
         }
 
         #endregion

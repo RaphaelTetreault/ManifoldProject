@@ -8,13 +8,15 @@ namespace GameCube.FZeroGX.COLI_COURSE
     [Serializable]
     public class ObjectTable_Unk1 : IBinarySerializable, IBinaryAddressable
     {
+        const int count = 12;
+
 
         #region MEMBERS
 
         [SerializeField, Hex] long startAddress;
         [SerializeField, Hex] long endAddress;
 
-
+        public uint[] unkRelPtrs;
 
         #endregion
 
@@ -40,14 +42,14 @@ namespace GameCube.FZeroGX.COLI_COURSE
         {
             startAddress = reader.BaseStream.Position;
 
-
+            reader.ReadX(ref unkRelPtrs, count);
 
             endAddress = reader.BaseStream.Position;
         }
 
         public void Serialize(BinaryWriter writer)
         {
-
+            writer.WriteX(unkRelPtrs, false);
         }
 
         #endregion
