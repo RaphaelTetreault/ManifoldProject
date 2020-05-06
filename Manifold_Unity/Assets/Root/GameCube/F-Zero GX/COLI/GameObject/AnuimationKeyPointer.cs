@@ -1,26 +1,29 @@
 ﻿using StarkTools.IO;
-using System;
 using System.IO;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 namespace GameCube.FZeroGX.COLI_COURSE
 {
     [Serializable]
-    public class Animation : IBinarySerializable, IBinaryAddressable
+    public class AnimationKeyPointer : IBinarySerializable, IBinaryAddressable
     {
-        const int kSizeKeyPtrs = 6;
-        const int kSizeZero_0x08 = 0x10;
 
         #region MEMBERS
 
         [SerializeField, Hex] long startAddress;
         [SerializeField, Hex] long endAddress;
 
-        public float unk_0x00;
-        public float unk_0x04;
-        public byte[] zero_0x08;
-        public EnumLayers32 unk_layer_0x18;
-        public AnimationKeyPointer[] keyPtrs;
+        public uint unk_0x00;
+        public uint unk_0x04;
+        public uint unk_0x08;
+        public uint unk_0x0C;
+        public int keyCount;
+        public uint keyRelPtr;
+
+        public AnimationKey[] keys;
 
         #endregion
 
@@ -48,22 +51,21 @@ namespace GameCube.FZeroGX.COLI_COURSE
 
             reader.ReadX(ref unk_0x00);
             reader.ReadX(ref unk_0x04);
-            reader.ReadX(ref zero_0x08, kSizeZero_0x08);
-            reader.ReadX(ref unk_layer_0x18);
-            reader.ReadX(ref keyPtrs, kSizeKeyPtrs, true);
+            reader.ReadX(ref unk_0x08);
+            reader.ReadX(ref unk_0x0C);
+            reader.ReadX(ref keyCount);
+            reader.ReadX(ref keyRelPtr);
 
             endAddress = reader.BaseStream.Position;
+
+            throw new NotImplementedException();
+            //reader.BaseStream.Seek();
+            reader.ReadX(ref keys, keyCount, true);
+            reader.BaseStream.Seek(endAddress, SeekOrigin.Begin);
         }
 
         public void Serialize(BinaryWriter writer)
         {
-            writer.WriteX(unk_0x00);
-            writer.WriteX(unk_0x04);
-            writer.WriteX(zero_0x08, false);
-            writer.WriteX(unk_layer_0x18);
-            writer.WriteX(keyPtrs, false);
-
-            // Ensure the ptr addresses are correct
             throw new NotImplementedException();
         }
 

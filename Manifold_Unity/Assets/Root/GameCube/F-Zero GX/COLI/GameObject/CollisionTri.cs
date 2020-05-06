@@ -1,9 +1,11 @@
 ﻿using StarkTools.IO;
+using System;
 using System.IO;
 using UnityEngine;
 
 namespace GameCube.FZeroGX.COLI_COURSE
 {
+    [Serializable]
     public class CollisionTri : IBinarySerializable, IBinaryAddressable
     {
 

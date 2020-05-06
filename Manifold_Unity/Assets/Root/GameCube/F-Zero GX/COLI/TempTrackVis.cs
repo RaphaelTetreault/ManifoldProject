@@ -99,7 +99,7 @@ public class TempTrackVisEditor : Editor
         base.OnInspectorGUI();
     }
 
-    public void CreateTransform(TrackTransform track, Transform parent)
+    public void CreateTransform(TrackTransform track, UnityEngine.Transform parent)
     {
         var pos = track.localPosition;
         var rot = Quaternion.Euler(track.localRotation);

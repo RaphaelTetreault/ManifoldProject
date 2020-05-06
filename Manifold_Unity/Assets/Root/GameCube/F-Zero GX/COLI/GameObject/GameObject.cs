@@ -7,6 +7,7 @@ using System;
 
 namespace GameCube.FZeroGX.COLI_COURSE
 {
+    [Serializable]
     public class GameObject : IBinarySerializable, IBinaryAddressable
     {
 

@@ -1,11 +1,12 @@
 ﻿using StarkTools.IO;
+using System;
 using System.IO;
-using System.Collections;
-using System.Collections.Generic;
+
 using UnityEngine;
 
 namespace GameCube.FZeroGX.COLI_COURSE
 {
+    [Serializable]
     public class LOD : IBinarySerializable, IBinaryAddressable
     {
 

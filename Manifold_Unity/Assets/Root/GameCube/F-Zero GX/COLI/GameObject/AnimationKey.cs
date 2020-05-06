@@ -1,11 +1,11 @@
 ﻿using StarkTools.IO;
 using System.IO;
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
 
 namespace GameCube.FZeroGX.COLI_COURSE
 {
+    [Serializable]
     public class AnimationKey : IBinarySerializable, IBinaryAddressable
     {
 
@@ -14,7 +14,9 @@ namespace GameCube.FZeroGX.COLI_COURSE
         [SerializeField, Hex] long startAddress;
         [SerializeField, Hex] long endAddress;
 
-
+        public uint unk_0x00;
+        public float time;
+        public Vector3 vector;
 
         #endregion
 
@@ -40,14 +42,18 @@ namespace GameCube.FZeroGX.COLI_COURSE
         {
             startAddress = reader.BaseStream.Position;
 
-
+            reader.ReadX(ref unk_0x00);
+            reader.ReadX(ref time);
+            reader.ReadX(ref vector);
 
             endAddress = reader.BaseStream.Position;
         }
 
         public void Serialize(BinaryWriter writer)
         {
-
+            writer.WriteX(unk_0x00);
+            writer.WriteX(time);
+            writer.WriteX(vector);
         }
 
         #endregion
