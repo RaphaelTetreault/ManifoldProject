@@ -27,6 +27,8 @@ namespace GameCube.FZeroGX.GMA
         [SerializeField] byte gxBegin;
         [SerializeField] GxDisplayList[] gxDisplayLists;
 
+        public GxDisplayList[] GxDisplayLists => gxDisplayLists;
+
         #endregion
 
         public FzgxDisplayList() { }
