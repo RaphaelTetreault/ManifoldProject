@@ -16,6 +16,8 @@ namespace GameCube.FZeroGX.COLI_COURSE
         public Header header;
         public TrackNode[] trackNodes;
         public TrackLength trackInformation;
+        // some other stuff goes here...
+        public GameObject[] gameObject;
 
         public List<TrackTransform> trackTransforms = new List<TrackTransform>();
 
@@ -31,15 +33,20 @@ namespace GameCube.FZeroGX.COLI_COURSE
 
             reader.ReadX(ref header, true);
 
-            // 0x08
+            // 0x08 - Track Nodes
             reader.BaseStream.Seek(header.trackNodeAbsPtr, SeekOrigin.Begin);
             reader.ReadX(ref trackNodes, header.trackNodeCount, true);
 
-            // 0x90
+            // 0x48 - Game Objects
+            reader.BaseStream.Seek(header.gameObjectAbsPtr, SeekOrigin.Begin);
+            reader.ReadX(ref gameObject, header.gameObjectCount, true);
+
+            // 0x90 - Track Transforms
             reader.BaseStream.Seek(header.trackInfoAbsPtr, SeekOrigin.Begin);
             reader.ReadX(ref trackInformation, true);
 
             // Let's build the transform after-the-fact
+            // We want to remove duplicate references to the same instance.
             var usedKeys = new List<int>();
             foreach (var node in trackNodes)
             {

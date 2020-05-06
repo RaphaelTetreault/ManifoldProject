@@ -87,7 +87,7 @@ public class TempTrackVisEditor : Editor
         {
             var editorTarget = target as TempTrackVis;
 
-            var root = new GameObject();
+            var root = new UnityEngine.GameObject();
             root.name = editorTarget.Coli.name;
 
             foreach (var transform in editorTarget.Coli.scene.trackTransforms)
@@ -104,7 +104,7 @@ public class TempTrackVisEditor : Editor
         var pos = track.localPosition;
         var rot = Quaternion.Euler(track.localRotation);
         var sca = track.localScale;
-        var obj = new GameObject();
+        var obj = new UnityEngine.GameObject();
         var comp = obj.AddComponent<TempDebugEmpty>();
         //comp.track = track;
 
