@@ -88,13 +88,13 @@ public class TempGmaViewer : MonoBehaviour
 
                     var idx = submeshIndex;
 
-                    //submesh.baseVertex = ;
-                    //submesh.bounds = ;
+                    submeshes[idx].baseVertex = mesh.vertexCount;
                     submeshes[idx].firstVertex = mesh.vertexCount;
                     submeshes[idx].indexCount = triangles.Length;
-                    submeshes[idx].indexStart = mesh.vertexCount;
+                    submeshes[idx].indexStart = mesh.triangles.Length;
                     submeshes[idx].topology = MeshTopology.Triangles;
                     submeshes[idx].vertexCount = vertices.Length;
+                    //submeshes[idx];
 
                     // Append to mesh
                     var verticesConcat = mesh.vertices.Concat(vertices).ToArray();
@@ -125,6 +125,8 @@ public class TempGmaViewer : MonoBehaviour
             {
                 mesh.SetSubMesh(i, submeshes[i], MeshUpdateFlags.Default);
             }
+            mesh.RecalculateBounds();
+
             string name = $"{gcmf.ModelName}.asset";
             AssetDatabase.CreateAsset(mesh, $"Assets/{folder}/{name}");
         }
