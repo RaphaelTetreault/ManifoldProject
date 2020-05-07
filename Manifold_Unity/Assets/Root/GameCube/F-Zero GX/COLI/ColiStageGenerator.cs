@@ -83,10 +83,7 @@ public class ColiStageGenerator : ImportSobjs<ColiSceneSobj>
                 instance.name = pfPrintName;
 
                 // Set Unity Transform values
-                //gobj.transform.SetUnityTransform(instance.transform);
-                instance.transform.localPosition = gobj.position;
-                instance.transform.localScale = gobj.scale;
-                instance.transform.rotation = gobj.transform.Rotation;
+                gobj.transform.SetUnityTransform(instance.transform);
 
                 count++;
             }

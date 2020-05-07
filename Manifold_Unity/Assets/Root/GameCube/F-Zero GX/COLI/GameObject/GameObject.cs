@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
+using GameCube.FZeroGX.GMA;
 
 namespace GameCube.FZeroGX.COLI_COURSE
 {
@@ -17,14 +18,14 @@ namespace GameCube.FZeroGX.COLI_COURSE
         [SerializeField, Hex] long startAddress;
         [SerializeField, Hex] long endAddress;
 
-        public uint unk_0x00;
-        public uint unk_0x04;
-        public uint collisionBindingAbsPtr;
-        public Vector3 position;
-        public uint unk_0x18;
-        public uint unk_0x1C;
-        public Vector3 scale;
-        public uint zero_0x2C; // Abs or Rel?
+        public int unk_0x00;
+        public int unk_0x04;
+        public int collisionBindingAbsPtr;
+        public Vector3 collisionPosition;
+        public int unk_0x18;
+        public int unk_0x1C;
+        public Vector3 collisionScale;
+        public int zero_0x2C; // Abs or Rel?
         public uint animationAbsPtr; // Abs or Rel?
         public uint unkPtr_0x34; // Abs or Rel?
         public uint unkPtr_0x38; // Abs or Rel?
@@ -65,10 +66,10 @@ namespace GameCube.FZeroGX.COLI_COURSE
                 reader.ReadX(ref unk_0x00);
                 reader.ReadX(ref unk_0x04);
                 reader.ReadX(ref collisionBindingAbsPtr);
-                reader.ReadX(ref position);
+                reader.ReadX(ref collisionPosition);
                 reader.ReadX(ref unk_0x18);
                 reader.ReadX(ref unk_0x1C);
-                reader.ReadX(ref scale);
+                reader.ReadX(ref collisionScale);
                 reader.ReadX(ref zero_0x2C);
                 reader.ReadX(ref animationAbsPtr);
                 reader.ReadX(ref unkPtr_0x34);
@@ -120,10 +121,10 @@ namespace GameCube.FZeroGX.COLI_COURSE
             writer.WriteX(unk_0x00);
             writer.WriteX(unk_0x04);
             writer.WriteX(collisionBindingAbsPtr);
-            writer.WriteX(position);
+            writer.WriteX(collisionPosition);
             writer.WriteX(unk_0x18);
             writer.WriteX(unk_0x1C);
-            writer.WriteX(scale);
+            writer.WriteX(collisionScale);
             writer.WriteX(zero_0x2C);
             writer.WriteX(animationAbsPtr);
             writer.WriteX(unkPtr_0x34);
