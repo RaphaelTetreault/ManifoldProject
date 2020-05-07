@@ -163,8 +163,9 @@ namespace GameCube.GX
                 if (nbt.Length > 0)
                 {
                     var fmt = vaf.nbt;
-                    nbt[i].tangent = GxUtility.ReadNormal(reader, fmt.nElements, fmt.componentFormat, fmt.nFracBits);
+                    nbt[i].normal = GxUtility.ReadNormal(reader, fmt.nElements, fmt.componentFormat, fmt.nFracBits);
                     nbt[i].binormal = GxUtility.ReadNormal(reader, fmt.nElements, fmt.componentFormat, fmt.nFracBits);
+                    nbt[i].tangent = GxUtility.ReadNormal(reader, fmt.nElements, fmt.componentFormat, fmt.nFracBits);
                 }
 
                 if (clr0.Length > 0)
@@ -234,23 +235,26 @@ namespace GameCube.GX
 
     }
 
-    public struct VectorNBT : IBinarySerializable
+    [Serializable]
+    public struct VectorNBT //: IBinarySerializable
     {
+        public Vector3 normal;
         public Vector3 binormal;
         public Vector3 tangent;
 
-        public void Deserialize(BinaryReader reader)
-        {
-            reader.ReadX(ref binormal);
-            reader.ReadX(ref tangent);
-            // this requires parameters!
-            throw new NotImplementedException();
-        }
+        //public void Deserialize(BinaryReader reader)
+        //{
+        //    reader.ReadX(ref normal);
+        //    reader.ReadX(ref binormal);
+        //    reader.ReadX(ref tangent);
+        //    // this requires parameters!
+        //    throw new NotImplementedException();
+        //}
 
-        public void Serialize(BinaryWriter writer)
-        {
-            writer.WriteX(binormal);
-            writer.WriteX(tangent);
-        }
+        //public void Serialize(BinaryWriter writer)
+        //{
+        //    writer.WriteX(binormal);
+        //    writer.WriteX(tangent);
+        //}
     }
 }

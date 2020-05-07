@@ -39,7 +39,7 @@ namespace GameCube.GX
 
         public static Vector3 ReadNormal(BinaryReader reader, GXCompCnt_Rev2 nElements, GXCompType componentType, int nFracs)
         {
-            if (nElements == GXCompCnt_Rev2.GX_NRM_XYZ)
+            if (nElements == GXCompCnt_Rev2.GX_NRM_XYZ || nElements == GXCompCnt_Rev2.GX_NRM_NBT)
             {
                 return new Vector3(
                     ReadNumericComponent(reader, componentType, nFracs),

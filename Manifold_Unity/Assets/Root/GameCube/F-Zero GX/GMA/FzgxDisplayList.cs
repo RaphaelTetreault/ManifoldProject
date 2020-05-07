@@ -66,13 +66,13 @@ namespace GameCube.FZeroGX.GMA
                 return;
             }
 
-            try
+            //try
             {
                 startAddress = reader.BaseStream.Position;
 
                 // Read real
                 reader.ReadX(ref gxBegin);
-                Assert.IsTrue(gxBegin == 0x00);
+                Assert.IsTrue(gxBegin == 0x00, $"{startAddress:X8} {attrFlags}");
 
                 var gxDisplayList = new List<GxDisplayList>();
 
@@ -95,10 +95,10 @@ namespace GameCube.FZeroGX.GMA
                 //Debug.Log($"Begin:{StartAddress:X8} End:{EndAddress:X8}");
 
             }
-            catch
-            {
-                Debug.LogError($"Error at: {reader.BaseStream.Position:X8} {attrFlags}");
-            }
+            //catch (Exception e)
+            //{
+            //    Debug.LogError($"Error {e.GetType().Name} at: {reader.BaseStream.Position:X8} {attrFlags}");
+            //}
         }
 
 

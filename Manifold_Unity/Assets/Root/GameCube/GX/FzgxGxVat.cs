@@ -13,7 +13,7 @@ namespace GameCube.FZeroGX
                 {
                     pos = new GxVtxAttr(GXCompCnt_Rev2.GX_POS_XYZ, GXCompType.GX_F32),
                     nrm = new GxVtxAttr(GXCompCnt_Rev2.GX_NRM_XYZ, GXCompType.GX_F32),
-                    nbt = new GxVtxAttr(GXCompCnt_Rev2.GX_NRM_NBT, GXCompType.GX_S16, 14), // compressed
+                    nbt = new GxVtxAttr(GXCompCnt_Rev2.GX_NRM_NBT, GXCompType.GX_F32), // compressed
                     clr0 = new GxVtxAttr(GXCompCnt_Rev2.GX_CLR_RGBA, GXCompType.GX_RGBA8),
                     tex0 = new GxVtxAttr(GXCompCnt_Rev2.GX_TEX_ST, GXCompType.GX_F32),
                     tex1 = new GxVtxAttr(GXCompCnt_Rev2.GX_TEX_ST, GXCompType.GX_F32),
