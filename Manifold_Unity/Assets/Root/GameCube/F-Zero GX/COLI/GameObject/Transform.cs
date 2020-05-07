@@ -52,11 +52,12 @@ namespace GameCube.FZeroGX.COLI_COURSE
 
             endAddress = reader.BaseStream.Position;
 
-            var matrix = new Matrix4x4();
-            matrix.SetRow(0, mtx0);
-            matrix.SetRow(1, mtx1);
-            matrix.SetRow(2, mtx2);
-            matrix.SetRow(3, new Vector4(0, 0, 0, 1));
+            matrix = new Matrix4x4(
+                new Vector4(mtx0.x, mtx1.x, mtx2.x, 0),
+                new Vector4(mtx0.y, mtx1.y, mtx2.y, 0),
+                new Vector4(mtx0.z, mtx1.z, mtx2.z, 0),
+                new Vector4(mtx0.w, mtx1.w, mtx2.w, 1)
+                );
 
         }
 
