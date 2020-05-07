@@ -62,7 +62,7 @@ namespace GameCube.FZeroGX.COLI_COURSE
 
             Position = new Vector3(positionX, positionY, positionZ);
             Scale = new Vector3(normalX.magnitude, normalY.magnitude, normalZ.magnitude);
-            Rotation = Quaternion.LookRotation(normalZ, normalY);
+            Rotation = Quaternion.LookRotation(normalZ, normalY); // this is wrong
         }
 
         public void Serialize(BinaryWriter writer)

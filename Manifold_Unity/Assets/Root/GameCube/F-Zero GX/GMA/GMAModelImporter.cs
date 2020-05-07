@@ -208,7 +208,9 @@ public class GMAModelImporter : ImportSobjs<GMASobj>
         var uv1 = list.tex0;
         var uv2 = list.tex1;
         var uv3 = list.tex2;
-        var colors = list.clr0 != null ? list.clr0 : new Color32[0];
+        // Find a better solution to deal with null
+        // You could implement size 0 arrays.
+        var colors = list.clr0 ?? (new Color32[0]);
         var triangles = GetTriangleFromTriangleStrip_Both(vertices.Length);
 
         // Build submesh

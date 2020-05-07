@@ -34,8 +34,8 @@ namespace GameCube.FZeroGX.COLI_COURSE
         public int headerSize;
         public byte[] zero_0x28;
         public int unk_0x48;
+        public int unk_0x4C; // One of these not in AX
         public int gameObjectCount; // One of these not in AX
-        public int unk_0x50; // One of these not in AX
         public int gameObjectAbsPtr;
         public int unk_0x58;
         public int zero_0x5C;
@@ -97,9 +97,9 @@ namespace GameCube.FZeroGX.COLI_COURSE
             reader.ReadX(ref headerSize);
             reader.ReadX(ref zero_0x28, kSizeOfZero0x28);
             reader.ReadX(ref unk_0x48);
-            reader.ReadX(ref gameObjectCount);
-            if (IsGX) // Appears to be exclusive to GX
-                reader.ReadX(ref unk_0x50);
+            if (IsGX)
+                reader.ReadX(ref unk_0x4C); ////////////
+            reader.ReadX(ref gameObjectCount);//////////
             reader.ReadX(ref gameObjectAbsPtr);
             reader.ReadX(ref unk_0x58);
             reader.ReadX(ref zero_0x5C);
