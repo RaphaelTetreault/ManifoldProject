@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using System.Text;
 
 namespace GameCube.FZeroGX.COLI_COURSE
 {
@@ -17,7 +18,7 @@ namespace GameCube.FZeroGX.COLI_COURSE
         [SerializeField, Hex] long endAddress;
 
         public uint unk_0x00;
-        public uint nameRelPtr;
+        public uint nameAbsPtr;
         public uint unk_0x08;
         public float unk_0x0C;
 
@@ -46,22 +47,24 @@ namespace GameCube.FZeroGX.COLI_COURSE
         public void Deserialize(BinaryReader reader)
         {
             startAddress = reader.BaseStream.Position;
-
-            reader.ReadX(ref unk_0x00);
-            reader.ReadX(ref nameRelPtr);
-            reader.ReadX(ref unk_0x08);
-            reader.ReadX(ref unk_0x0C);
-
+            {
+                reader.ReadX(ref unk_0x00);
+                reader.ReadX(ref nameAbsPtr);
+                reader.ReadX(ref unk_0x08);
+                reader.ReadX(ref unk_0x0C);
+            }
             endAddress = reader.BaseStream.Position;
-
-            // read string name
-            throw new NotImplementedException();
+            {
+                reader.BaseStream.Seek(nameAbsPtr, SeekOrigin.Begin);
+                reader.ReadXCString(ref name, Encoding.ASCII);
+            }
+            reader.BaseStream.Seek(endAddress, SeekOrigin.Begin);
         }
 
         public void Serialize(BinaryWriter writer)
         {
             writer.WriteX(unk_0x00);
-            writer.WriteX(nameRelPtr);
+            writer.WriteX(nameAbsPtr);
             writer.WriteX(unk_0x08);
             writer.WriteX(unk_0x0C);
 

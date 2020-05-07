@@ -73,6 +73,7 @@ namespace GameCube.FZeroGX.COLI_COURSE
                         else
                         {
                             sobj.scene = new ColiScene();
+                            sobj.scene.FileName = fileName;
                             sobj.Deserialize(reader);
                         }
                         sobj.FileName = fileName;

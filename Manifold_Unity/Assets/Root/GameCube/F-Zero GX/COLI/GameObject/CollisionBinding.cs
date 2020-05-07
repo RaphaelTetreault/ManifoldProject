@@ -1,9 +1,8 @@
 ﻿using StarkTools.IO;
-using System.IO;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using System;
+using System.IO;
+using UnityEngine;
+using UnityEngine.Assertions;
 
 namespace GameCube.FZeroGX.COLI_COURSE
 {
@@ -57,10 +56,21 @@ namespace GameCube.FZeroGX.COLI_COURSE
 
             endAddress = reader.BaseStream.Position;
 
-            // Get/set offsets!
-            throw new NotImplementedException();
-            reader.ReadX(ref referenceBinding, true);
-            reader.ReadX(ref collision, true);
+            {
+                Assert.IsTrue(referenceBindingRelPtr != 0);
+                reader.BaseStream.Seek(referenceBindingRelPtr, SeekOrigin.Begin);
+                reader.ReadX(ref referenceBinding, true);
+            }
+
+            //if (collisionRelPtr > 0)
+            //{
+            //    Debug.Log(referenceBinding.name);
+            //    var absPtr = collisionRelPtr;
+            //    reader.BaseStream.Seek(absPtr, SeekOrigin.Begin);
+            //    reader.ReadX(ref collision, true);
+            //}
+
+            reader.BaseStream.Seek(endAddress, SeekOrigin.Begin);
         }
 
         public void Serialize(BinaryWriter writer)

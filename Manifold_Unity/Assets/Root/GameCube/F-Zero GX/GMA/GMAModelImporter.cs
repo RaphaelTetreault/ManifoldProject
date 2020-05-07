@@ -16,14 +16,25 @@ public class GMAModelImporter : ImportSobjs<GMASobj>
     protected override string DefaultQueryFormat => "";
 
 
+    [SerializeField] protected UnityEngine.Material tempMat;
     [SerializeField] protected GMASobj[] gmaSobjs;
 
     public override void Import()
     {
         foreach (GMASobj sobj in gmaSobjs)
         {
-            CreateMeshFromGcmf(sobj.value);
+            foreach (var gcmf in sobj.value.GCMF)
+            {
+                if (string.IsNullOrEmpty(gcmf.ModelName))
+                    continue;
+
+                var mesh = CreateSingleMeshFromGcmf(gcmf);
+                var prefab = CreatePrefabFromModel(mesh);
+            }
         }
+        AssetDatabase.SaveAssets();
+        EditorUtility.ClearProgressBar();
+        AssetDatabase.Refresh();
     }
 
     public int[] GetTriangleFromTriangleStrip(int numVerts)
@@ -138,6 +149,54 @@ public class GMAModelImporter : ImportSobjs<GMASobj>
         AssetDatabase.Refresh();
     }
 
+    public Mesh CreateSingleMeshFromGcmf(GCMF gcmf)
+    {
+        // Count how many submeshes we will need to iterate through
+        var numSubmeshes = 0;
+        foreach (var gcmfMesh in gcmf.Submeshes)
+        {
+            numSubmeshes += gcmfMesh.DisplayList0.GxDisplayLists.Length;
+            numSubmeshes += gcmfMesh.DisplayList1.GxDisplayLists.Length;
+        }
+
+        var mesh = new Mesh();
+        int subIndex = 0;
+        var submeshes = new SubMeshDescriptor[numSubmeshes];
+
+        // Go over each mesh in submeshes
+        foreach (var gcmfMesh in gcmf.Submeshes)
+        {
+            // Temp progress bar
+            var progress = (float)subIndex / numSubmeshes;
+            EditorUtility.DisplayProgressBar("Importing Mesh Data", gcmf.ModelName, progress);
+
+            // Go over each list0
+            foreach (var list in gcmfMesh.DisplayList0.GxDisplayLists)
+            {
+                var submesh = CreateSubMesh(list, ref mesh);
+                submeshes[subIndex] = submesh;
+                subIndex++;
+            }
+            // Go over each list0
+            foreach (var list in gcmfMesh.DisplayList1.GxDisplayLists)
+            {
+                var submesh = CreateSubMesh(list, ref mesh);
+                submeshes[subIndex] = submesh;
+                subIndex++;
+            }
+        }
+        mesh.subMeshCount = submeshes.Length;
+        for (int i = 0; i < submeshes.Length; i++)
+        {
+            mesh.SetSubMesh(i, submeshes[i], MeshUpdateFlags.Default);
+        }
+        mesh.RecalculateBounds();
+
+        string name = $"{gcmf.ModelName}.asset";
+        AssetDatabase.CreateAsset(mesh, $"Assets/{destinationDirectory}/{name}");
+        return mesh;
+    }
+
     public SubMeshDescriptor CreateSubMesh(GameCube.GX.GxDisplayList list, ref Mesh mesh)
     {
         var submesh = new SubMeshDescriptor();
@@ -180,5 +239,20 @@ public class GMAModelImporter : ImportSobjs<GMASobj>
         mesh.triangles = trianglesConcat;
 
         return submesh;
+    }
+
+    public GameObject CreatePrefabFromModel(Mesh mesh)
+    {
+        var pfPath = $"Assets/{destinationDirectory}pf_{mesh.name}.prefab";
+        var prefab = new GameObject();
+        var meshFilter = prefab.AddComponent<MeshFilter>();
+        meshFilter.mesh = mesh;
+        var meshRenderer = prefab.AddComponent<MeshRenderer>();
+        var mats = new UnityEngine.Material[mesh.subMeshCount];
+        for (int i = 0; i < mats.Length; i++)
+            mats[i] = tempMat;
+        meshRenderer.sharedMaterials = mats;
+        PrefabUtility.SaveAsPrefabAsset(prefab, pfPath);
+        return prefab;
     }
 }

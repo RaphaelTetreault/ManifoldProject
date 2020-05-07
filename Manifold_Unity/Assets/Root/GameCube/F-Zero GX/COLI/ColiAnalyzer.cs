@@ -33,7 +33,12 @@ namespace GameCube.FZeroGX.COLI_COURSE
 
             var TrackTransformsFilename = $"TrackTransforms-{time}.tsv";
             AnalyzeTransforms(TrackTransformsFilename);
+
+            var animationFilename = $"Animations-{time}.tsv";
+            AnalyzeGameObjectAnimations(animationFilename);
         }
+
+        #region Track Data / Transforms
 
         public void AnalyzeTrackData(string filename, int paramIndex)
         {
@@ -173,5 +178,59 @@ namespace GameCube.FZeroGX.COLI_COURSE
             writer.PushRow();
         }
 
+        #endregion
+
+        #region GameObject Animations
+
+        public void AnalyzeGameObjectAnimations(string filename)
+        {
+            using (var writer = OpenWriter(filename))
+            {
+                // Write header
+                writer.PushCol("File Path");
+                writer.PushCol("Game Object #");
+                writer.PushCol("Game Object");
+                writer.PushCol("Anim Addr");
+                writer.PushCol("Key Addr");
+                writer.PushCol("Anim Index [0-10]");
+                writer.PushCol("Unk_0x00");
+                writer.PushCol("Time");
+                writer.PushCol("X");
+                writer.PushCol("Y");
+                writer.PushCol("Z");
+                writer.PushRow();
+
+                foreach (var file in analysisSobjs)
+                {
+                    int gameObjectIndex = 0;
+                    foreach (var gameObject in file.scene.gameObjects)
+                    {
+                        int animIndex = 0;
+                        foreach (var animation in gameObject.animation.animKeysAbsPtrs)
+                        {
+                            foreach (var keyFrame in animation.keysFrames)
+                            {
+                                writer.PushCol(file.fileName);
+                                writer.PushCol(gameObjectIndex);
+                                writer.PushCol(gameObject.name);
+                                writer.PushCol($"0x{animation.StartAddress:X8}");
+                                writer.PushCol($"0x{keyFrame.StartAddress:X8}");
+                                writer.PushCol(animIndex);
+                                writer.PushCol(keyFrame.unk_0x00);
+                                writer.PushCol(keyFrame.time);
+                                writer.PushCol(keyFrame.vector.x);
+                                writer.PushCol(keyFrame.vector.y);
+                                writer.PushCol(keyFrame.vector.z);
+                                writer.PushRow();
+                            }
+                            animIndex++;
+                        }
+                        gameObjectIndex++;
+                    }
+                }
+            }
+        }
+
+        #endregion
     }
 }

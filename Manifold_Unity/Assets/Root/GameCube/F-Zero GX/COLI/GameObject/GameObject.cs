@@ -1,9 +1,10 @@
 ﻿using StarkTools.IO;
+using System;
 using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System;
+using UnityEngine.Assertions;
 
 namespace GameCube.FZeroGX.COLI_COURSE
 {
@@ -18,21 +19,24 @@ namespace GameCube.FZeroGX.COLI_COURSE
 
         public uint unk_0x00;
         public uint unk_0x04;
-        public uint lodRelPtr;
+        public uint collisionBindingAbsPtr;
         public Vector3 position;
         public uint unk_0x18;
         public uint unk_0x1C;
         public Vector3 scale;
-        public uint collisionPtr; // Abs or Rel?
-        public uint animationPtr; // Abs or Rel?
+        public uint zero_0x2C; // Abs or Rel?
+        public uint animationAbsPtr; // Abs or Rel?
         public uint unkPtr_0x34; // Abs or Rel?
         public uint unkPtr_0x38; // Abs or Rel?
         public uint transformPtr; // Abs or Rel?
 
-        //public LOD lod;
         public CollisionBinding collisionBinding;
+        public Animation animation;
+        public ObjectTable_Unk1 unk1;
+        public ObjectTable_Unk2 unk2;
+        public Transform transform;
 
-
+        public string name;
 
         #endregion
 
@@ -57,37 +61,71 @@ namespace GameCube.FZeroGX.COLI_COURSE
         public void Deserialize(BinaryReader reader)
         {
             startAddress = reader.BaseStream.Position;
-
-            reader.ReadX(ref unk_0x00);
-            reader.ReadX(ref unk_0x04);
-            reader.ReadX(ref lodRelPtr);
-            reader.ReadX(ref position);
-            reader.ReadX(ref unk_0x18);
-            reader.ReadX(ref unk_0x1C);
-            reader.ReadX(ref scale);
-            reader.ReadX(ref collisionPtr);
-            reader.ReadX(ref animationPtr);
-            reader.ReadX(ref unkPtr_0x34);
-            reader.ReadX(ref unkPtr_0x38);
-            reader.ReadX(ref transformPtr);
-
+            {
+                reader.ReadX(ref unk_0x00);
+                reader.ReadX(ref unk_0x04);
+                reader.ReadX(ref collisionBindingAbsPtr);
+                reader.ReadX(ref position);
+                reader.ReadX(ref unk_0x18);
+                reader.ReadX(ref unk_0x1C);
+                reader.ReadX(ref scale);
+                reader.ReadX(ref zero_0x2C);
+                reader.ReadX(ref animationAbsPtr);
+                reader.ReadX(ref unkPtr_0x34);
+                reader.ReadX(ref unkPtr_0x38);
+                reader.ReadX(ref transformPtr);
+            }
             endAddress = reader.BaseStream.Position;
+            {
+                Assert.IsTrue(zero_0x2C == 0);
 
-            // Set address
-            throw new NotImplementedException();
+                Assert.IsTrue(collisionBindingAbsPtr > 0);
+                reader.BaseStream.Seek(collisionBindingAbsPtr, SeekOrigin.Begin);
+                reader.ReadX(ref collisionBinding, true);
+                name = collisionBinding.referenceBinding.name;
+
+                if (animationAbsPtr > 0)
+                {
+                    reader.BaseStream.Seek(animationAbsPtr, SeekOrigin.Begin);
+                    reader.ReadX(ref animation, true);
+                }
+
+                if (unkPtr_0x34 > 0)
+                {
+                    reader.BaseStream.Seek(unkPtr_0x34, SeekOrigin.Begin);
+                    reader.ReadX(ref unk1, true);
+                }
+
+                if (unkPtr_0x38 > 0)
+                {
+                    reader.BaseStream.Seek(unkPtr_0x38, SeekOrigin.Begin);
+                    reader.ReadX(ref unk2, true);
+                }
+
+                if (transformPtr > 0)
+                {
+                    reader.BaseStream.Seek(transformPtr, SeekOrigin.Begin);
+                    reader.ReadX(ref transform, true);
+                }
+                else
+                {
+                    Debug.Log($"{name} at 0x{endAddress:X8}");
+                }
+            }
+            reader.BaseStream.Seek(endAddress, SeekOrigin.Begin);
         }
 
         public void Serialize(BinaryWriter writer)
         {
             writer.WriteX(unk_0x00);
             writer.WriteX(unk_0x04);
-            writer.WriteX(lodRelPtr);
+            writer.WriteX(collisionBindingAbsPtr);
             writer.WriteX(position);
             writer.WriteX(unk_0x18);
             writer.WriteX(unk_0x1C);
             writer.WriteX(scale);
-            writer.WriteX(collisionPtr);
-            writer.WriteX(animationPtr);
+            writer.WriteX(zero_0x2C);
+            writer.WriteX(animationAbsPtr);
             writer.WriteX(unkPtr_0x34);
             writer.WriteX(unkPtr_0x38);
             writer.WriteX(transformPtr);

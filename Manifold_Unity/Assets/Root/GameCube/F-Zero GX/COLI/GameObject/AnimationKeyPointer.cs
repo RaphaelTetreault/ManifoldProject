@@ -21,9 +21,9 @@ namespace GameCube.FZeroGX.COLI_COURSE
         public uint unk_0x08;
         public uint unk_0x0C;
         public int keyCount;
-        public uint keyRelPtr;
+        public uint keyAbsPtr;
 
-        public AnimationKey[] keys;
+        public AnimationKey[] keysFrames;
 
         #endregion
 
@@ -48,19 +48,23 @@ namespace GameCube.FZeroGX.COLI_COURSE
         public void Deserialize(BinaryReader reader)
         {
             startAddress = reader.BaseStream.Position;
-
-            reader.ReadX(ref unk_0x00);
-            reader.ReadX(ref unk_0x04);
-            reader.ReadX(ref unk_0x08);
-            reader.ReadX(ref unk_0x0C);
-            reader.ReadX(ref keyCount);
-            reader.ReadX(ref keyRelPtr);
-
+            {
+                reader.ReadX(ref unk_0x00);
+                reader.ReadX(ref unk_0x04);
+                reader.ReadX(ref unk_0x08);
+                reader.ReadX(ref unk_0x0C);
+                reader.ReadX(ref keyCount);
+                reader.ReadX(ref keyAbsPtr);
+            }
             endAddress = reader.BaseStream.Position;
-
-            throw new NotImplementedException();
-            //reader.BaseStream.Seek();
-            reader.ReadX(ref keys, keyCount, true);
+            {
+                keysFrames = new AnimationKey[keyCount];
+                if (keyAbsPtr > 0)
+                {
+                    reader.BaseStream.Seek(keyAbsPtr, SeekOrigin.Begin);
+                    reader.ReadX(ref keysFrames, keyCount, true);
+                }
+            }
             reader.BaseStream.Seek(endAddress, SeekOrigin.Begin);
         }
 

@@ -14,6 +14,9 @@ namespace GameCube.FZeroGX.COLI_COURSE
         [SerializeField, Hex] long startAddress;
         [SerializeField, Hex] long endAddress;
 
+        /// <summary>
+        /// All values: 1, 2, or 3.
+        /// </summary>
         public uint unk_0x00;
         public float time;
         public Vector3 vector;
