@@ -41,6 +41,7 @@ public class ColiStageGenerator : ImportSobjs<ColiSceneSobj>
             {
                 var pfName = $"pf_{gobj.name}";
                 var assets = AssetDatabase.FindAssets(pfName);
+                var pfPrintName = pfName;
                 // Temp. triage
                 string path = string.Empty;
                 if (assets.Length == 1)
@@ -50,15 +51,14 @@ public class ColiStageGenerator : ImportSobjs<ColiSceneSobj>
                 {
                     // Load empty
                     assets = AssetDatabase.FindAssets("pf_NotFound");
+                    pfPrintName = $"MISSING_MODEL_{pfName}";
                     path = assets[0];
                 }
                 else
                 {
                     // Implement folder search
-                    // Exception: Can return 2 objects even if only 1 of each name.
-                    // Ex: MUT_TUNNEL_B and MUT_TUNNEL_BAR
-                    //throw new NotImplementedException($"More than 1 asset found for {pfName}!");
-
+                    // Exception: Can return 2+ objects even if only 1 of each name.
+                    // Ex: MUT_TUNNEL_B and MUT_TUNNEL_BAR both get flagged if input is "MUT_TUNNEL_B"
                     foreach (var assetStr in assets)
                     {
                         if (assetStr.Equals(pfName))
@@ -74,13 +74,20 @@ public class ColiStageGenerator : ImportSobjs<ColiSceneSobj>
                 UnityEngine.GameObject asset = AssetDatabase.LoadAssetAtPath<UnityEngine.GameObject>(path);
 
                 //// Progress bar update
-                var title = $"Generating Ssene {coli.name})";
-                var info = $"{pfName}";
+                var title = $"Generating Scene {coli.name})";
+                var info = $"{pfPrintName}";
                 var progress = count / (float)total;
                 EditorUtility.DisplayProgressBar(title, info, progress);
 
                 var instance = Instantiate(asset);
-                gobj.transform.SetUnityTransform(instance.transform);
+                instance.name = pfPrintName;
+
+                // Set Unity Transform values
+                //gobj.transform.SetUnityTransform(instance.transform);
+                instance.transform.localPosition = gobj.position;
+                instance.transform.localScale = gobj.scale;
+                instance.transform.rotation = gobj.transform.Rotation;
+
                 count++;
             }
             AssetDatabase.SaveAssets();

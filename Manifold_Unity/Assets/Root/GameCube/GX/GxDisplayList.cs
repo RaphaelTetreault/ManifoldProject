@@ -82,8 +82,8 @@ namespace GameCube.GX
             var vaf = vat.GxVtxAttrFmts[vatIdx];
 
             //mtx
-            if ((attr & GXAttrFlag_U32.GX_VA_PNMTXIDX) != 0)
-                pn_mtx_idx = new byte[count];
+            pn_mtx_idx = (attr & GXAttrFlag_U32.GX_VA_PNMTXIDX) != 0
+                ? new byte[count] : new byte[0];
 
             if ((attr & GXAttrFlag_U32.GX_VA_TEX0MTXIDX) != 0)
                 throw new NotImplementedException();
@@ -112,111 +112,112 @@ namespace GameCube.GX
                 throw new NotImplementedException();
 
             // Pos
-            if (vat.VatHasAttr(gxCmd, attr & GXAttrFlag_U32.GX_VA_POS))
-                pos = new Vector3[count];
+            pos = vat.HasAttr(gxCmd, attr & GXAttrFlag_U32.GX_VA_POS)
+                ? new Vector3[count] : new Vector3[0];
             // Normal
-            if (vat.VatHasAttr(gxCmd, attr & GXAttrFlag_U32.GX_VA_NRM))
-                nrm = new Vector3[count];
-            if (vat.VatHasAttr(gxCmd, attr & GXAttrFlag_U32.GX_VA_NBT))
-                nbt = new VectorNBT[count];
+            nrm = vat.HasAttr(gxCmd, attr & GXAttrFlag_U32.GX_VA_NRM)
+                ? new Vector3[count] : new Vector3[0];
+            nbt = vat.HasAttr(gxCmd, attr & GXAttrFlag_U32.GX_VA_NBT)
+                ? new VectorNBT[count] : new VectorNBT[0];
             // Color
-            if (vat.VatHasAttr(gxCmd, attr & GXAttrFlag_U32.GX_VA_CLR0))
-                clr0 = new Color32[count];
-            if (vat.VatHasAttr(gxCmd, attr & GXAttrFlag_U32.GX_VA_CLR1))
-                clr1 = new Color32[count];
+            clr0 = vat.HasAttr(gxCmd, attr & GXAttrFlag_U32.GX_VA_CLR0)
+                ? new Color32[count] : new Color32[0];
+            clr1 = vat.HasAttr(gxCmd, attr & GXAttrFlag_U32.GX_VA_CLR1)
+                ? new Color32[count] : new Color32[0];
             // Tex
-            if (vat.VatHasAttr(gxCmd, attr & GXAttrFlag_U32.GX_VA_TEX0))
-                tex0 = new Vector2[count];
-            if (vat.VatHasAttr(gxCmd, attr & GXAttrFlag_U32.GX_VA_TEX1))
-                tex1 = new Vector2[count];
-            if (vat.VatHasAttr(gxCmd, attr & GXAttrFlag_U32.GX_VA_TEX2))
-                tex2 = new Vector2[count];
-            if (vat.VatHasAttr(gxCmd, attr & GXAttrFlag_U32.GX_VA_TEX3))
-                tex3 = new Vector2[count];
-            if (vat.VatHasAttr(gxCmd, attr & GXAttrFlag_U32.GX_VA_TEX4))
-                tex4 = new Vector2[count];
-            if (vat.VatHasAttr(gxCmd, attr & GXAttrFlag_U32.GX_VA_TEX5))
-                tex5 = new Vector2[count];
-            if (vat.VatHasAttr(gxCmd, attr & GXAttrFlag_U32.GX_VA_TEX6))
-                tex6 = new Vector2[count];
-            if (vat.VatHasAttr(gxCmd, attr & GXAttrFlag_U32.GX_VA_TEX7))
-                tex7 = new Vector2[count];
+            tex0 = vat.HasAttr(gxCmd, attr & GXAttrFlag_U32.GX_VA_TEX0)
+                ? new Vector2[count] : new Vector2[0];
+            tex1 = vat.HasAttr(gxCmd, attr & GXAttrFlag_U32.GX_VA_TEX1)
+                ? new Vector2[count] : new Vector2[0];
+            tex2 = vat.HasAttr(gxCmd, attr & GXAttrFlag_U32.GX_VA_TEX2)
+                ? new Vector2[count] : new Vector2[0];
+            tex3 = vat.HasAttr(gxCmd, attr & GXAttrFlag_U32.GX_VA_TEX3)
+                ? new Vector2[count] : new Vector2[0];
+            tex4 = vat.HasAttr(gxCmd, attr & GXAttrFlag_U32.GX_VA_TEX4)
+                ? new Vector2[count] : new Vector2[0];
+            tex5 = vat.HasAttr(gxCmd, attr & GXAttrFlag_U32.GX_VA_TEX5)
+                ? new Vector2[count] : new Vector2[0];
+            tex6 = vat.HasAttr(gxCmd, attr & GXAttrFlag_U32.GX_VA_TEX6)
+                ? new Vector2[count] : new Vector2[0];
+            tex7 = vat.HasAttr(gxCmd, attr & GXAttrFlag_U32.GX_VA_TEX7)
+                ? new Vector2[count] : new Vector2[0];
+
 
             for (int i = 0; i < count; i++)
             {
-                if (pn_mtx_idx != null)
+                if (pn_mtx_idx.Length > 0)
                     reader.ReadX(ref pn_mtx_idx[i]);
 
 
-                if (pos != null)
+                if (pos.Length > 0)
                 {
                     var fmt = vaf.pos;
                     pos[i] = GxUtility.ReadPos(reader, fmt.nElements, fmt.componentFormat, fmt.nFracBits);
                 }
 
-                if (nrm != null)
+                if (nrm.Length > 0)
                 {
                     var fmt = vaf.nrm;
                     nrm[i] = GxUtility.ReadNormal(reader, fmt.nElements, fmt.componentFormat, fmt.nFracBits);
                 }
-                if (nbt != null)
+                if (nbt.Length > 0)
                 {
                     var fmt = vaf.nbt;
                     nbt[i].tangent = GxUtility.ReadNormal(reader, fmt.nElements, fmt.componentFormat, fmt.nFracBits);
                     nbt[i].binormal = GxUtility.ReadNormal(reader, fmt.nElements, fmt.componentFormat, fmt.nFracBits);
                 }
 
-                if (clr0 != null)
+                if (clr0.Length > 0)
                 {
                     var fmt = vaf.clr0;
                     clr0[i] = GxUtility.ReadColorComponent(reader, fmt.componentFormat);
                 }
-                if (clr1 != null)
+                if (clr1.Length > 0)
                 {
                     var fmt = vaf.clr1;
                     clr1[i] = GxUtility.ReadColorComponent(reader, fmt.componentFormat);
 
                 }
 
-                if (tex0 != null)
+                if (tex0.Length > 0)
                 {
                     var fmt = vaf.tex0;
                     tex0[i] = GxUtility.ReadGxTextureST(reader, fmt.nElements, fmt.componentFormat, fmt.nFracBits);
                 }
-                if (tex1 != null)
+                if (tex1.Length > 0)
                 {
                     var fmt = vaf.tex1;
                     tex1[i] = GxUtility.ReadGxTextureST(reader, fmt.nElements, fmt.componentFormat, fmt.nFracBits);
 
                 }
-                if (tex2 != null)
+                if (tex2.Length > 0)
                 {
                     var fmt = vaf.tex2;
                     tex2[i] = GxUtility.ReadGxTextureST(reader, fmt.nElements, fmt.componentFormat, fmt.nFracBits);
                 }
-                if (tex3 != null)
+                if (tex3.Length > 0)
                 {
                     var fmt = vaf.tex3;
                     tex3[i] = GxUtility.ReadGxTextureST(reader, fmt.nElements, fmt.componentFormat, fmt.nFracBits);
 
                 }
-                if (tex4 != null)
+                if (tex4.Length > 0)
                 {
                     var fmt = vaf.tex4;
                     tex4[i] = GxUtility.ReadGxTextureST(reader, fmt.nElements, fmt.componentFormat, fmt.nFracBits);
 
                 }
-                if (tex5 != null)
+                if (tex5.Length > 0)
                 {
                     var fmt = vaf.tex5;
                     tex5[i] = GxUtility.ReadGxTextureST(reader, fmt.nElements, fmt.componentFormat, fmt.nFracBits);
                 }
-                if (tex6 != null)
+                if (tex6.Length > 0)
                 {
                     var fmt = vaf.tex6;
                     tex6[i] = GxUtility.ReadGxTextureST(reader, fmt.nElements, fmt.componentFormat, fmt.nFracBits);
                 }
-                if (tex7 != null)
+                if (tex7.Length > 0)
                 {
                     var fmt = vaf.tex7;
                     tex7[i] = GxUtility.ReadGxTextureST(reader, fmt.nElements, fmt.componentFormat, fmt.nFracBits);

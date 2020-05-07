@@ -61,6 +61,8 @@ namespace GameCube.FZeroGX.GMA
         {
             if (size <= 0)
             {
+                // Init as empty
+                gxDisplayLists = new GxDisplayList[0];
                 return;
             }
 
@@ -76,7 +78,9 @@ namespace GameCube.FZeroGX.GMA
 
                 // I'm sure this is going to break.
                 // Perhaps use size in this equation? 
-                while (!reader.EndOfStream() && reader.PeekByte() != 0x00)
+                while (!reader.EndOfStream()
+                    && reader.BaseStream.Position < (startAddress + size)
+                    && reader.PeekByte() != 0x00)
                 {
                     GxDisplayList vtx = new GxDisplayList(attrFlags);
                     vtx.Deserialize(reader);

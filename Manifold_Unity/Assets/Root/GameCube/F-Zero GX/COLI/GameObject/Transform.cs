@@ -39,9 +39,27 @@ namespace GameCube.FZeroGX.COLI_COURSE
             set => endAddress = value;
         }
 
-        public Vector3 Position { get; private set; }
-        public Vector3 Scale { get; private set; }
-        public Quaternion Rotation { get; private set; }
+        //public Vector3 Position { get; private set; }
+        //public Vector3 Scale { get; private set; }
+        //public Quaternion Rotation { get; private set; }
+
+        public Vector3 Position => new Vector3(positionX, positionY, positionZ);
+        public Vector3 Scale => new Vector3(normalX.magnitude, normalY.magnitude, normalZ.magnitude);
+        public Quaternion Rotation => SwapHandedness(Quaternion.LookRotation(normalZ, normalY));
+
+        // Source: post #23
+        // https://forum.unity.com/threads/right-hand-to-left-handed-conversions.80679/
+        private Quaternion SwapHandedness(Quaternion input)
+        {
+            Vector3 rotation = input.eulerAngles;
+            Vector3 flippedRotation = new Vector3(rotation.x, -rotation.y, -rotation.z); // flip Y and Z axis for right->left handed conversion
+            // convert XYZ to ZYX
+            Quaternion qx = Quaternion.AngleAxis(flippedRotation.x, Vector3.right);
+            Quaternion qy = Quaternion.AngleAxis(flippedRotation.y, Vector3.up);
+            Quaternion qz = Quaternion.AngleAxis(flippedRotation.z, Vector3.forward);
+            Quaternion qq = qz * qy * qx; // this is the order
+            return qq;
+        }
 
         #endregion
 
@@ -59,10 +77,6 @@ namespace GameCube.FZeroGX.COLI_COURSE
             reader.ReadX(ref positionZ);
 
             endAddress = reader.BaseStream.Position;
-
-            Position = new Vector3(positionX, positionY, positionZ);
-            Scale = new Vector3(normalX.magnitude, normalY.magnitude, normalZ.magnitude);
-            Rotation = Quaternion.LookRotation(normalZ, normalY); // this is wrong
         }
 
         public void Serialize(BinaryWriter writer)

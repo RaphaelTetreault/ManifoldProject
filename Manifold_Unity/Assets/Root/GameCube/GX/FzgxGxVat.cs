@@ -13,8 +13,7 @@ namespace GameCube.FZeroGX
                 {
                     pos = new GxVtxAttr(GXCompCnt_Rev2.GX_POS_XYZ, GXCompType.GX_F32),
                     nrm = new GxVtxAttr(GXCompCnt_Rev2.GX_NRM_XYZ, GXCompType.GX_F32),
-                    nbt = new GxVtxAttr(GXCompCnt_Rev2.GX_NRM_NBT, GXCompType.GX_U8), // index
-                    // not 100% sure on colour, all I've seen are alpha=FF
+                    nbt = new GxVtxAttr(GXCompCnt_Rev2.GX_NRM_NBT, GXCompType.GX_S16, 14), // compressed
                     clr0 = new GxVtxAttr(GXCompCnt_Rev2.GX_CLR_RGBA, GXCompType.GX_RGBA8),
                     tex0 = new GxVtxAttr(GXCompCnt_Rev2.GX_TEX_ST, GXCompType.GX_F32),
                     tex1 = new GxVtxAttr(GXCompCnt_Rev2.GX_TEX_ST, GXCompType.GX_F32),
@@ -24,7 +23,7 @@ namespace GameCube.FZeroGX
                 // VAT 1
                 new GxVtxAttrFmt()
                 {
-                    pos = new GxVtxAttr(GXCompCnt_Rev2.GX_POS_XYZ, GXCompType.GX_S16, 8), //
+                    pos = new GxVtxAttr(GXCompCnt_Rev2.GX_POS_XYZ, GXCompType.GX_S16, 8), // Unverified
                     nrm = new GxVtxAttr(GXCompCnt_Rev2.GX_NRM_XYZ, GXCompType.GX_S16, 14),
                     clr0 = new GxVtxAttr(GXCompCnt_Rev2.GX_CLR_RGBA, GXCompType.GX_RGBA8), // same as VAT0?
                     tex0 = new GxVtxAttr(GXCompCnt_Rev2.GX_TEX_ST, GXCompType.GX_S16, 14), // uncheck is s16 is correct
