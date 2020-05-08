@@ -6,7 +6,7 @@ using UnityEngine;
 namespace GameCube.FZeroGX.COLI_COURSE
 {
     [Serializable]
-    public class AnimationKey : IBinarySerializable, IBinaryAddressable
+    public class KeyableAttribute : IBinarySerializable, IBinaryAddressable
     {
 
         #region MEMBERS
@@ -19,7 +19,9 @@ namespace GameCube.FZeroGX.COLI_COURSE
         /// </summary>
         public uint unk_0x00;
         public float time;
-        public Vector3 vector;
+        public float value;
+        public float unk_0x0C;
+        public float unk_0x10;
 
         #endregion
 
@@ -47,7 +49,9 @@ namespace GameCube.FZeroGX.COLI_COURSE
 
             reader.ReadX(ref unk_0x00);
             reader.ReadX(ref time);
-            reader.ReadX(ref vector);
+            reader.ReadX(ref value);
+            reader.ReadX(ref unk_0x0C);
+            reader.ReadX(ref unk_0x10);
 
             endAddress = reader.BaseStream.Position;
         }
@@ -56,7 +60,9 @@ namespace GameCube.FZeroGX.COLI_COURSE
         {
             writer.WriteX(unk_0x00);
             writer.WriteX(time);
-            writer.WriteX(vector);
+            writer.WriteX(value);
+            writer.WriteX(unk_0x0C);
+            writer.WriteX(unk_0x10);
         }
 
         #endregion

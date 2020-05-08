@@ -8,7 +8,7 @@ using System;
 namespace GameCube.FZeroGX.COLI_COURSE
 {
     [Serializable]
-    public class AnimationKeyPointer : IBinarySerializable, IBinaryAddressable
+    public class AnimationCurve : IBinarySerializable, IBinaryAddressable
     {
 
         #region MEMBERS
@@ -20,10 +20,10 @@ namespace GameCube.FZeroGX.COLI_COURSE
         public uint unk_0x04;
         public uint unk_0x08;
         public uint unk_0x0C;
-        public int keyCount;
-        public uint keyAbsPtr;
+        public int keyableCount;
+        public uint keyableAbsPtr;
 
-        public AnimationKey[] keysFrames;
+        public KeyableAttribute[] keyableAttributes;
 
         #endregion
 
@@ -53,16 +53,16 @@ namespace GameCube.FZeroGX.COLI_COURSE
                 reader.ReadX(ref unk_0x04);
                 reader.ReadX(ref unk_0x08);
                 reader.ReadX(ref unk_0x0C);
-                reader.ReadX(ref keyCount);
-                reader.ReadX(ref keyAbsPtr);
+                reader.ReadX(ref keyableCount);
+                reader.ReadX(ref keyableAbsPtr);
             }
             endAddress = reader.BaseStream.Position;
             {
-                keysFrames = new AnimationKey[keyCount];
-                if (keyAbsPtr > 0)
+                keyableAttributes = new KeyableAttribute[keyableCount];
+                if (keyableCount > 0)
                 {
-                    reader.BaseStream.Seek(keyAbsPtr, SeekOrigin.Begin);
-                    reader.ReadX(ref keysFrames, keyCount, true);
+                    reader.BaseStream.Seek(keyableAbsPtr, SeekOrigin.Begin);
+                    reader.ReadX(ref keyableAttributes, keyableCount, true);
                 }
             }
             reader.BaseStream.Seek(endAddress, SeekOrigin.Begin);

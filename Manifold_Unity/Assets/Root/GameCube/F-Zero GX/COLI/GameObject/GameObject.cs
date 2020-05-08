@@ -110,7 +110,9 @@ namespace GameCube.FZeroGX.COLI_COURSE
                 }
                 else
                 {
-                    Debug.Log($"{name} at 0x{endAddress:X8}");
+                    // 1356 objects without transform
+                    // They appear to use "Collision Position" but
+                    // they don't have collision, they have animations.'
                 }
             }
             reader.BaseStream.Seek(endAddress, SeekOrigin.Begin);
