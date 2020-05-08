@@ -23,7 +23,7 @@ namespace GameCube.FZeroGX.COLI_COURSE
             var time = FileTimestamp();
             for (int i = 0; i < TopologyParameters.kFieldCount; i++)
             {
-                var topologyFilename = $"TopologyParameters{i + 1}-{time}.tsv";
+                var topologyFilename = $"{time} TopologyParameters{i + 1}.tsv";
                 topologyFilename = Path.Combine(destinationDirectory, topologyFilename);
                 EditorUtility.DisplayProgressBar(ButtonText, topologyFilename, (float)(i + 1) / TopologyParameters.kFieldCount);
                 AnalyzeTrackData(topologyFilename, i);
@@ -31,11 +31,17 @@ namespace GameCube.FZeroGX.COLI_COURSE
             }
             EditorUtility.ClearProgressBar();
 
-            var TrackTransformsFilename = $"TrackTransforms-{time}.tsv";
+            var TrackTransformsFilename = $"{time} TrackTransforms.tsv";
             AnalyzeTransforms(TrackTransformsFilename);
 
-            var animationFilename = $"Animations-{time}.tsv";
+            var animationFilename = $"{time} Animations.tsv";
             AnalyzeGameObjectAnimations(animationFilename);
+
+            for (int i = 0; i < Animation.kSizeCurvesPtrs; i++)
+            {
+                var filename = $"{time} Animations {i}.tsv";
+                AnalyzeGameObjectAnimationsIndex(filename, i);
+            }
         }
 
         #region Track Data / Transforms
@@ -195,9 +201,61 @@ namespace GameCube.FZeroGX.COLI_COURSE
                 writer.PushCol("Anim Index [0-10]");
                 writer.PushCol("Unk_0x00");
                 writer.PushCol("Time");
-                writer.PushCol("X");
-                writer.PushCol("Y");
-                writer.PushCol("Z");
+                writer.PushCol("Value");
+                writer.PushCol("Unk_0x0C");
+                writer.PushCol("Unk_0x10");
+                writer.PushRow();
+
+                foreach (var file in analysisSobjs)
+                {
+                    int gameObjectIndex = 0;
+                    foreach (var gameObject in file.scene.gameObjects)
+                    {
+                        if (gameObject.animation == null)
+                            continue;
+
+                        int animIndex = 0;
+                        foreach (var animationCurve in gameObject.animation.animCurves)
+                        {
+                            foreach (var keyable in animationCurve.keyableAttributes)
+                            {
+                                writer.PushCol(file.fileName);
+                                writer.PushCol(gameObjectIndex);
+                                writer.PushCol(gameObject.name);
+                                writer.PushCol($"0x{animationCurve.StartAddress:X8}");
+                                writer.PushCol($"0x{keyable.StartAddress:X8}");
+                                writer.PushCol(animIndex);
+                                writer.PushCol(keyable.unk_0x00);
+                                writer.PushCol(keyable.time);
+                                writer.PushCol(keyable.value);
+                                writer.PushCol(keyable.unk_0x0C);
+                                writer.PushCol(keyable.unk_0x10);
+                                writer.PushRow();
+                            }
+                            animIndex++;
+                        }
+                        gameObjectIndex++;
+                    }
+                }
+            }
+        }
+
+        public void AnalyzeGameObjectAnimationsIndex(string filename, int index)
+        {
+            using (var writer = OpenWriter(filename))
+            {
+                // Write header
+                writer.PushCol("File Path");
+                writer.PushCol("Game Object #");
+                writer.PushCol("Game Object");
+                writer.PushCol("Anim Addr");
+                writer.PushCol("Key Addr");
+                writer.PushCol("Anim Index [0-10]");
+                writer.PushCol("Unk_0x00");
+                writer.PushCol("Time");
+                writer.PushCol("Value");
+                writer.PushCol("Unk_0x0C");
+                writer.PushCol("Unk_0x10");
                 writer.PushRow();
 
                 foreach (var file in analysisSobjs)
@@ -206,21 +264,25 @@ namespace GameCube.FZeroGX.COLI_COURSE
                     foreach (var gameObject in file.scene.gameObjects)
                     {
                         int animIndex = 0;
-                        foreach (var animation in gameObject.animation.animKeysAbsPtrs)
+                        foreach (var animationCurve in gameObject.animation.animCurves)
                         {
-                            foreach (var keyFrame in animation.keysFrames)
+                            foreach (var keyable in animationCurve.keyableAttributes)
                             {
+                                /// HACK, write each anim index as separate file
+                                if (animIndex != index)
+                                    continue;
+
                                 writer.PushCol(file.fileName);
                                 writer.PushCol(gameObjectIndex);
                                 writer.PushCol(gameObject.name);
-                                writer.PushCol($"0x{animation.StartAddress:X8}");
-                                writer.PushCol($"0x{keyFrame.StartAddress:X8}");
+                                writer.PushCol($"0x{animationCurve.StartAddress:X8}");
+                                writer.PushCol($"0x{keyable.StartAddress:X8}");
                                 writer.PushCol(animIndex);
-                                writer.PushCol(keyFrame.unk_0x00);
-                                writer.PushCol(keyFrame.time);
-                                writer.PushCol(keyFrame.vector.x);
-                                writer.PushCol(keyFrame.vector.y);
-                                writer.PushCol(keyFrame.vector.z);
+                                writer.PushCol(keyable.unk_0x00);
+                                writer.PushCol(keyable.time);
+                                writer.PushCol(keyable.value);
+                                writer.PushCol(keyable.unk_0x0C);
+                                writer.PushCol(keyable.unk_0x10);
                                 writer.PushRow();
                             }
                             animIndex++;
