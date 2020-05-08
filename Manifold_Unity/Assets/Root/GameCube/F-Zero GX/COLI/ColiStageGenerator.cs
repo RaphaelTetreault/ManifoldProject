@@ -35,7 +35,8 @@ public class ColiStageGenerator : ImportSobjs<ColiSceneSobj>
             var scenePath = $"Assets/_Scene/{sceneName}.unity";
             var scene = EditorSceneManager.NewScene(NewSceneSetup.DefaultGameObjects, NewSceneMode.Single);
             EditorSceneManager.SaveScene(scene, scenePath);
-            EditorSceneManager.OpenScene(scenePath);
+            // Keep reference of new scene
+            scene = EditorSceneManager.OpenScene(scenePath);
 
             foreach (var gobj in coli.scene.gameObjects)
             {
@@ -87,7 +88,7 @@ public class ColiStageGenerator : ImportSobjs<ColiSceneSobj>
 
                 count++;
             }
-            AssetDatabase.SaveAssets();
+            EditorSceneManager.SaveScene(scene, scenePath, false);
             EditorUtility.ClearProgressBar();
             AssetDatabase.Refresh();
         }
