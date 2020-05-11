@@ -58,7 +58,6 @@ namespace GameCube.FZeroGX.COLI_COURSE
                 new Vector4(mtx0.z, mtx1.z, mtx2.z, 0),
                 new Vector4(mtx0.w, mtx1.w, mtx2.w, 1)
                 );
-
         }
 
         public void Serialize(BinaryWriter writer)

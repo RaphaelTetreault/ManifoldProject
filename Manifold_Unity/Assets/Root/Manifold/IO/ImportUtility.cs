@@ -3,6 +3,7 @@ using System.IO;
 using UnityEngine;
 using UnityEditor;
 using System.Runtime.Remoting.Metadata;
+using System.Security.Cryptography;
 
 namespace Manifold.IO
 {
@@ -11,18 +12,24 @@ namespace Manifold.IO
         public static TSobj Create<TSobj>(string destinationDir, string fileName)
             where TSobj : ScriptableObject
         {
-            var sobj = ScriptableObject.CreateInstance<TSobj>();
-            var filePath = $"{destinationDir}/{fileName}.asset";
-            AssetDatabase.CreateAsset(sobj, filePath);
-            return sobj;
+            var filePath = $"Assets/{destinationDir}/{fileName}.asset";
+            var asset = AssetDatabase.LoadAssetAtPath<TSobj>(filePath);
+            if (asset != null)
+            {
+                return asset;
+            }
+            else
+            {
+                var sobj = ScriptableObject.CreateInstance<TSobj>();
+                AssetDatabase.CreateAsset(sobj, filePath);
+                return sobj;
+            }
         }
 
         public static TSobj CreateFromBinary<TSobj>(string destinationDir, string fileName, BinaryReader reader)
             where TSobj : ScriptableObject, IBinarySerializable
         {
-            var sobj = ScriptableObject.CreateInstance<TSobj>();
-            var filePath = $"Assets/{destinationDir}/{fileName}.asset";
-            AssetDatabase.CreateAsset(sobj, filePath);
+            var sobj = Create<TSobj>(destinationDir, fileName);
             sobj.Deserialize(reader);
             return sobj;
         }
@@ -30,11 +37,8 @@ namespace Manifold.IO
         public static TSobj CreateFromBinaryFile<TSobj>(string destinationDir, string fileName, BinaryReader reader)
         where TSobj : ScriptableObject, IBinarySerializable, IFile
         {
-            var sobj = ScriptableObject.CreateInstance<TSobj>();
-            var filePath = $"Assets/{destinationDir}/{fileName}.asset";
-            AssetDatabase.CreateAsset(sobj, filePath);
+            var sobj = CreateFromBinary<TSobj>(destinationDir, fileName, reader);
             sobj.FileName = fileName;
-            sobj.Deserialize(reader);
             return sobj;
         }
 
@@ -108,6 +112,8 @@ namespace Manifold.IO
             sobj.FileName = fileName;
 
             EditorUtility.SetDirty(sobj);
+            // Thus fixes overwriting assets losing their contents.
+            AssetDatabase.SaveAssets();
 
             // Out params
             filePath = $"{unityPath}/{fileName}";
