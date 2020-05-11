@@ -31,7 +31,7 @@ namespace Manifold.IO.GFZX01
 
         public void Import()
         {
-            var importFiles = Directory.GetFiles(importPath, searchPattern, fileSearchOption);
+            importFiles = Directory.GetFiles(importPath, searchPattern, fileSearchOption);
             importFiles = ImportUtility.EnforceUnityPath(importFiles);
             var importFilesUncompressed = GFZX01Utility.DecompressAnyLZ(importFiles);
             ImportUtility.ImportManyAs<GMASobj>(importFilesUncompressed, importPath, importDestination);

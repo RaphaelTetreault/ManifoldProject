@@ -2,6 +2,7 @@
 using System.IO;
 using UnityEngine;
 using UnityEditor;
+using System.Runtime.Remoting.Metadata;
 
 namespace Manifold.IO
 {
@@ -119,7 +120,12 @@ namespace Manifold.IO
         public static T[] GetAllOfTypeFromAssetDatabase<T>(string[] searchInFolders)
             where T : ScriptableObject
         {
-            var guids = searchInFolders == null || searchInFolders.Length > 0
+            for (int i = 0; i < searchInFolders.Length; i++)
+            {
+                searchInFolders[i] = $"Assets/{searchInFolders[i]}";
+            }
+
+            var guids = searchInFolders != null || searchInFolders.Length > 0
                 ? AssetDatabase.FindAssets($"t:{typeof(T).Name}", searchInFolders)
                 : AssetDatabase.FindAssets($"t:{typeof(T).Name}");
 

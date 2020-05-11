@@ -17,8 +17,8 @@ namespace Manifold.IO.GFZX01
     public enum ImportOption
     {
         selectedFiles,
-        allOfTypeInImportSource,
-        allOfType,
+        allFromImportSource,
+        allFromAssetDatabase,
     }
 
 
@@ -54,11 +54,11 @@ namespace Manifold.IO.GFZX01
                     // Do nothing and use files set up in inspector
                     break;
 
-                case ImportOption.allOfTypeInImportSource:
+                case ImportOption.allFromImportSource:
                     gmaSobjs = ImportUtility.GetAllOfTypeFromAssetDatabase<GMASobj>(importSource);
                     break;
 
-                case ImportOption.allOfType:
+                case ImportOption.allFromAssetDatabase:
                     gmaSobjs = ImportUtility.GetAllOfTypeFromAssetDatabase<GMASobj>();
                     break;
 

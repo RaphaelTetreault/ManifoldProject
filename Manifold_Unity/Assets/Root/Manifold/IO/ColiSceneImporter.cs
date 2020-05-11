@@ -35,11 +35,11 @@ namespace Manifold.IO.GFZX01
                     // Do nothing and use files set up in inspector
                     break;
 
-                case ImportOption.allOfTypeInImportSource:
+                case ImportOption.allFromImportSource:
                     colis = ImportUtility.GetAllOfTypeFromAssetDatabase<ColiSceneSobj>(importSource);
                     break;
 
-                case ImportOption.allOfType:
+                case ImportOption.allFromAssetDatabase:
                     colis = ImportUtility.GetAllOfTypeFromAssetDatabase<ColiSceneSobj>();
                     break;
 
@@ -53,7 +53,7 @@ namespace Manifold.IO.GFZX01
                 var total = coliCourse.scene.gameObjects.Length;
 
                 var sceneName = coliCourse.name;
-                var scenePath = $"Assets/_Scene/{sceneName}.unity";
+                var scenePath = $"Assets/{sceneName}.unity";
                 var scene = EditorSceneManager.NewScene(NewSceneSetup.DefaultGameObjects, NewSceneMode.Single);
                 EditorSceneManager.SaveScene(scene, scenePath);
                 // Keep reference of new scene
@@ -97,7 +97,7 @@ namespace Manifold.IO.GFZX01
                     UnityEngine.GameObject asset = AssetDatabase.LoadAssetAtPath<UnityEngine.GameObject>(path);
 
                     //// Progress bar update
-                    var title = $"Generating Scene {coliCourse.name})";
+                    var title = $"Generating Scene ({coliCourse.name})";
                     var info = $"{pfPrintName}";
                     var progress = count / (float)total;
                     EditorUtility.DisplayProgressBar(title, info, progress);
