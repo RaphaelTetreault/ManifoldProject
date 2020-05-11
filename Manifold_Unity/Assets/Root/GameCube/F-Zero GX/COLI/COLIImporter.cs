@@ -85,9 +85,7 @@ namespace GameCube.FZeroGX.COLI_COURSE
                         var info = $"{unityPath}/{fileName}";
                         var progress = count / (float)total;
                         EditorUtility.DisplayProgressBar(title, info, progress);
-
                         EditorUtility.SetDirty(sobj);
-
                     }
                 }
                 count++;

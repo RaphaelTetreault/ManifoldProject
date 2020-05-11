@@ -7,9 +7,6 @@ using System;
 
 namespace Manifold.IO
 {
-
-
-
     [CreateAssetMenu(menuName = "Manifold/Export/" + "NEW GMA Exporter")]
     public class GMAExporter : ExecutableScriptableObject,
           IExportable

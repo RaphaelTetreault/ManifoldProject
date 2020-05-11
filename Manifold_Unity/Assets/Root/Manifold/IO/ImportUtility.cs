@@ -114,34 +114,5 @@ namespace Manifold.IO
             return sobj;
         }
 
-        public static void DecompressAv(string importFile, LibGxFormat.AvGame game, bool saveDecompressed, out string filePath)
-        {
-            using (var fileStream = File.Open(importFile, FileMode.Open, FileAccess.Read, FileShare.Read))
-            {
-                var file = new MemoryStream();
-                LibGxFormat.Lz.Lz.UnpackAvLz(fileStream, file, game);
-
-                if (saveDecompressed)
-                {
-                    // See if files has been decompressed before
-                    var dir = Path.GetDirectoryName(importFile);
-                    var filename = Path.GetFileNameWithoutExtension(importFile);
-                    // out param
-                    filePath = UnityPathUtility.CombineSystemPath(dir, filename);
-
-                    using (var writer = File.Create(filePath, (int)file.Length))
-                    {
-                        file.Seek(0, SeekOrigin.Begin);
-                        file.CopyTo(writer);
-                        file.Flush();
-                    }
-                }
-                else
-                {
-                    filePath = string.Empty;
-                }
-            }
-        }//
-
     }
 }
