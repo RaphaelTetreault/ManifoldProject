@@ -9,17 +9,31 @@ using UnityEditor;
 using GameCube.FZeroGX.GMA;
 using UnityEngine.Rendering;
 using System.Linq;
-
+using System.Linq.Expressions;
+using System;
 
 namespace Manifold.IO.GFZX01
 {
+    public enum ImportOption
+    {
+        selectedFiles,
+        allOfTypeInImportSource,
+        allOfType,
+    }
+
+
     [CreateAssetMenu(menuName = "Manifold/Import/" + "NEW GMA Model Importer")]
     public class GMAModelImporter : ExecutableScriptableObject,
         IImportable
     {
         [Header("Import Settings")]
         [SerializeField, BrowseFolderField("Assets/")]
+        protected string importSource;
+        [SerializeField, BrowseFolderField("Assets/")]
         protected string importDestination;
+        [SerializeField]
+        protected ImportOption importOption = ImportOption.selectedFiles;
+
 
         [Header("TEMP: Apply basic material")]
         [SerializeField] protected UnityEngine.Material defaultMat;
@@ -33,24 +47,52 @@ namespace Manifold.IO.GFZX01
 
         public void Import()
         {
-            // Temp: should make parameter
-            //gmaSobjs = ImportUtility.GetAllOfTypeFromAssetDatabase<GMASobj>();
+            // Get Sobjs based on import option
+            switch (importOption)
+            {
+                case ImportOption.selectedFiles:
+                    // Do nothing and use files set up in inspector
+                    break;
 
+                case ImportOption.allOfTypeInImportSource:
+                    gmaSobjs = ImportUtility.GetAllOfTypeFromAssetDatabase<GMASobj>(importSource);
+                    break;
+
+                case ImportOption.allOfType:
+                    gmaSobjs = ImportUtility.GetAllOfTypeFromAssetDatabase<GMASobj>();
+                    break;
+
+                default:
+                    throw new NotImplementedException();
+            }
+
+            int submeshes = 0;
+            int totalModels = CountModels(gmaSobjs, out submeshes);
+
+            int count = 1;
             foreach (GMASobj sobj in gmaSobjs)
             {
-                var path = AssetDatabase.GetAssetPath(sobj);
-                path = Path.GetDirectoryName(path);
-                path = UnityPathUtility.EnforceUnitySeparators(path);
-                path += $"/{Path.GetFileNameWithoutExtension(sobj.FileName)}/";
+                var folderName = Path.GetFileNameWithoutExtension(sobj.FileName);
+                folderName = folderName.Replace(',', '_');
+
+                var unityPath = AssetDatabase.GetAssetPath(sobj);
+                unityPath = Path.GetDirectoryName(unityPath);
+                unityPath = UnityPathUtility.EnforceUnitySeparators(unityPath);
+
+                AssetDatabase.CreateFolder(unityPath, folderName);
+
+                unityPath += $"/{folderName}/";
 
                 foreach (var gcmf in sobj.value.GCMF)
                 {
                     if (string.IsNullOrEmpty(gcmf.ModelName))
                         continue;
 
-                    var mesh = CreateSingleMeshFromGcmf(gcmf, path);
-                    var prefab = CreatePrefabFromModel(mesh, path);
+                    var importTitle = $"Importing Model ({count}/{totalModels}) Submesh Total ({submeshes})";
+                    var mesh = CreateSingleMeshFromGcmf(gcmf, unityPath, importTitle);
+                    var prefab = CreatePrefabFromModel(mesh, unityPath);
                     DestroyImmediate(prefab);
+                    count++;
                 }
             }
             AssetDatabase.SaveAssets();
@@ -79,7 +121,7 @@ namespace Manifold.IO.GFZX01
             return triangles;
         }
 
-        public Mesh CreateSingleMeshFromGcmf(GCMF gcmf, string path)
+        public Mesh CreateSingleMeshFromGcmf(GCMF gcmf, string path, string title)
         {
             // Count how many submeshes we will need to iterate through
             var numSubmeshes = 0;
@@ -98,7 +140,8 @@ namespace Manifold.IO.GFZX01
             {
                 // Temp progress bar
                 var progress = (float)subIndex / numSubmeshes;
-                EditorUtility.DisplayProgressBar("Importing Mesh Data", gcmf.ModelName, progress);
+                var info = $"{path}{gcmf.ModelName}";
+                EditorUtility.DisplayProgressBar(title, info, progress);
 
                 // Go over each list0
                 foreach (var list in gcmfMesh.DisplayList0.GxDisplayLists)
@@ -122,8 +165,16 @@ namespace Manifold.IO.GFZX01
             }
             mesh.RecalculateBounds();
 
+            // TEMP: Suppress COM# named model errors on Windows
             string name = $"{gcmf.ModelName}.asset";
-            AssetDatabase.CreateAsset(mesh, $"{path}/{name}");
+            try
+            {
+                AssetDatabase.CreateAsset(mesh, $"{path}/{name}");
+            }
+            catch
+            {
+                AssetDatabase.CreateAsset(mesh, $"{path}/_{name}");
+            }
             return mesh;
         }
 
@@ -186,6 +237,38 @@ namespace Manifold.IO.GFZX01
             return prefab;
         }
 
+        public int CountModels(GMASobj[] gmaSobjs, out int submeshes)
+        {
+            submeshes = 0;
+            int count = 0;
 
+            foreach (GMASobj sobj in gmaSobjs)
+            {
+                foreach (GCMF gcmf in sobj.value.GCMF)
+                {
+                    count++;
+
+                    foreach (GcmfSubmesh gcmfMesh in gcmf.Submeshes)
+                    {
+                        // Go over each list0
+                        foreach (var list in gcmfMesh.DisplayList0.GxDisplayLists)
+                        {
+                            submeshes++;
+                        }
+                        // Go over each list0
+                        foreach (var list in gcmfMesh.DisplayList1.GxDisplayLists)
+                        {
+                            submeshes++;
+                        }
+                    }
+                }
+            }
+            return count;
+        }
+
+        //public string CalcCRC()
+        //{
+
+        //}
     }
 }

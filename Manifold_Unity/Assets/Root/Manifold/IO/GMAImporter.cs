@@ -12,7 +12,7 @@ namespace Manifold.IO.GFZX01
         protected SearchOption fileSearchOption = SearchOption.AllDirectories;
 
         [SerializeField]
-        protected string searchPattern = "*.GMA OR *.GMA.LZ";
+        protected string searchPattern = "*.GMA*";
 
         [SerializeField, BrowseFolderField("Assets/")]
         protected string importPath;

@@ -115,10 +115,14 @@ namespace Manifold.IO
         }
 
 
-        public static T[] GetAllOfTypeFromAssetDatabase<T>(string[] searchInFolders = null)
+        public static T[] GetAllOfTypeFromAssetDatabase<T>(string[] searchInFolders)
             where T : ScriptableObject
         {
-            var guids = AssetDatabase.FindAssets($"t:{typeof(T).Name}", searchInFolders);
+            var guids = searchInFolders == null || searchInFolders.Length > 0
+                ? AssetDatabase.FindAssets($"t:{typeof(T).Name}", searchInFolders)
+                : AssetDatabase.FindAssets($"t:{typeof(T).Name}");
+
+
             var assets = new T[guids.Length];
             for (int i = 0; i < assets.Length; i++)
             {
@@ -126,6 +130,18 @@ namespace Manifold.IO
                 assets[i] = AssetDatabase.LoadAssetAtPath<T>(assetPath);
             }
             return assets;
+        }
+
+        public static T[] GetAllOfTypeFromAssetDatabase<T>(string searchInFolder)
+            where T : ScriptableObject
+        {
+            return GetAllOfTypeFromAssetDatabase<T>(new string[] { searchInFolder });
+        }
+
+        public static T[] GetAllOfTypeFromAssetDatabase<T>()
+            where T : ScriptableObject
+        {
+            return GetAllOfTypeFromAssetDatabase<T>(new string[0]);
         }
     }
 }
