@@ -114,5 +114,18 @@ namespace Manifold.IO
             return sobj;
         }
 
+
+        public static T[] GetAllOfTypeFromAssetDatabase<T>(string[] searchInFolders = null)
+            where T : ScriptableObject
+        {
+            var guids = AssetDatabase.FindAssets($"t:{typeof(T).Name}", searchInFolders);
+            var assets = new T[guids.Length];
+            for (int i = 0; i < assets.Length; i++)
+            {
+                var assetPath = AssetDatabase.GUIDToAssetPath(guids[i]);
+                assets[i] = AssetDatabase.LoadAssetAtPath<T>(assetPath);
+            }
+            return assets;
+        }
     }
 }
