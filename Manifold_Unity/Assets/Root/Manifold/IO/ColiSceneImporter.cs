@@ -47,19 +47,19 @@ namespace Manifold.IO.GFZX01
                     throw new NotImplementedException();
             }
 
-            foreach (var coli in colis)
+            foreach (var coliCourse in colis)
             {
                 var count = 0;
-                var total = coli.scene.gameObjects.Length;
+                var total = coliCourse.scene.gameObjects.Length;
 
-                var sceneName = coli.name;
+                var sceneName = coliCourse.name;
                 var scenePath = $"Assets/_Scene/{sceneName}.unity";
                 var scene = EditorSceneManager.NewScene(NewSceneSetup.DefaultGameObjects, NewSceneMode.Single);
                 EditorSceneManager.SaveScene(scene, scenePath);
                 // Keep reference of new scene
                 scene = EditorSceneManager.OpenScene(scenePath);
 
-                foreach (var gobj in coli.scene.gameObjects)
+                foreach (var gobj in coliCourse.scene.gameObjects)
                 {
                     var pfName = $"pf_{gobj.name}";
                     var assets = AssetDatabase.FindAssets(pfName);
@@ -97,7 +97,7 @@ namespace Manifold.IO.GFZX01
                     UnityEngine.GameObject asset = AssetDatabase.LoadAssetAtPath<UnityEngine.GameObject>(path);
 
                     //// Progress bar update
-                    var title = $"Generating Scene {coli.name})";
+                    var title = $"Generating Scene {coliCourse.name})";
                     var info = $"{pfPrintName}";
                     var progress = count / (float)total;
                     EditorUtility.DisplayProgressBar(title, info, progress);
@@ -109,11 +109,11 @@ namespace Manifold.IO.GFZX01
                     gobj.transform.SetUnityTransform(instance.transform);
 
                     count++;
-                }
+                } // foreach GameObject
                 EditorSceneManager.SaveScene(scene, scenePath, false);
-                EditorUtility.ClearProgressBar();
-                AssetDatabase.Refresh();
-            }
+            } // foreach COLI_COURSE
+            EditorUtility.ClearProgressBar();
+            AssetDatabase.Refresh();
         }
     }
 }
