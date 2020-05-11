@@ -37,13 +37,14 @@ namespace Manifold.IO
             return sobj;
         }
 
-        public static void ImportFilesAs<TSobj>(string[] importFiles, string importPath, string importDest, FileMode mode = FileMode.Open, FileAccess access = FileAccess.Read, FileShare share = FileShare.Read)
+        public static TSobj[] ImportFilesAs<TSobj>(string[] importFiles, string importPath, string importDest, FileMode mode = FileMode.Open, FileAccess access = FileAccess.Read, FileShare share = FileShare.Read)
             where TSobj : ScriptableObject, IBinarySerializable, IFile
         {
-            var typeName = typeof(TSobj).Name;
-
             var count = 0;
             var total = importFiles.Length;
+
+            var typeName = typeof(TSobj).Name;
+            var sobjs = new TSobj[total];
 
             foreach (var file in importFiles)
             {
@@ -51,42 +52,17 @@ namespace Manifold.IO
                 {
                     using (var reader = new BinaryReader(fileStream))
                     {
-                        // Get path to root import folder
-                        var path = UnityPathUtility.GetUnityDirectory(UnityPathUtility.UnityFolder.Assets);
-                        var dest = UnityPathUtility.CombineSystemPath(path, importDest);
-
-                        // get path to file import folder
-                        // TODO: Regex instead of this hack
-                        var length = importPath.Length;
-                        var folder = file.Remove(0, length + 1);
-                        folder = Path.GetDirectoryName(folder);
-
-                        // (A) prevent null/empty && (B) prevent "/" or "\\"
-                        if (!string.IsNullOrEmpty(folder) && folder.Length > 1)
-                            dest = dest + folder;
-
-                        if (!Directory.Exists(dest))
-                        {
-                            Directory.CreateDirectory(dest);
-                            Debug.Log($"Created path <i>{dest}</i>");
-                        }
-
-                        var unityPath = UnityPathUtility.ToUnityFolderPath(dest, UnityPathUtility.UnityFolder.Assets);
-                        unityPath = UnityPathUtility.EnforceUnitySeparators(unityPath);
-                        var fileName = Path.GetFileName(file);
-
-                        // GENERIC
-                        var sobj = ImportUtility.CreateFromBinaryFile<TSobj>(unityPath, fileName, reader);
-                        sobj.FileName = fileName;
+                        var filepath = string.Empty;
+                        var sobj = ImportFileAs<TSobj>(reader, file, importPath, importDest, out filepath);
+                        sobjs[count] = sobj;
 
                         // Progress bar update
-                        //var filePath = AssetDatabase.GetAssetPath(sobj);
-                        var currentIndexStr = (count + 1).ToString().PadLeft(total.ToString().Length);
+                        var digitCount = total.ToString().Length;
+                        var currentIndexStr = (count + 1).ToString().PadLeft(digitCount);
                         var title = $"Importing {typeName} ({currentIndexStr}/{total})";
-                        var info = $"{unityPath}/{fileName}";
+                        var info = filepath;
                         var progress = count / (float)total;
                         EditorUtility.DisplayProgressBar(title, info, progress);
-                        EditorUtility.SetDirty(sobj);
                     }
                 }
                 count++;
@@ -94,8 +70,78 @@ namespace Manifold.IO
             AssetDatabase.SaveAssets();
             EditorUtility.ClearProgressBar();
             AssetDatabase.Refresh();
+
+            return sobjs;
         }
 
+        public static TSobj ImportFileAs<TSobj>(BinaryReader reader, string file, string importFrom, string importTo, out string filePath)
+            where TSobj : ScriptableObject, IBinarySerializable, IFile
+        {
+            // Get path to root import folder
+            var path = UnityPathUtility.GetUnityDirectory(UnityPathUtility.UnityFolder.Assets);
+            var dest = UnityPathUtility.CombineSystemPath(path, importTo);
+
+            // get path to file import folder
+            // TODO: Regex instead of this hack
+            var length = importFrom.Length;
+            var folder = file.Remove(0, length + 1);
+            folder = Path.GetDirectoryName(folder);
+
+            // (A) prevent null/empty && (B) prevent "/" or "\\"
+            if (!string.IsNullOrEmpty(folder) && folder.Length > 1)
+                dest = dest + folder;
+
+            if (!Directory.Exists(dest))
+            {
+                Directory.CreateDirectory(dest);
+                Debug.Log($"Created path <i>{dest}</i>");
+            }
+
+            var unityPath = UnityPathUtility.ToUnityFolderPath(dest, UnityPathUtility.UnityFolder.Assets);
+            unityPath = UnityPathUtility.EnforceUnitySeparators(unityPath);
+            var fileName = Path.GetFileName(file);
+
+            // GENERIC
+            var sobj = CreateFromBinaryFile<TSobj>(unityPath, fileName, reader);
+            sobj.FileName = fileName;
+
+            EditorUtility.SetDirty(sobj);
+
+            // Out params
+            filePath = $"{unityPath}/{fileName}";
+
+            //
+            return sobj;
+        }
+
+        public static void DecompressAv(string importFile, LibGxFormat.AvGame game, bool saveDecompressed, out string filePath)
+        {
+            using (var fileStream = File.Open(importFile, FileMode.Open, FileAccess.Read, FileShare.Read))
+            {
+                var file = new MemoryStream();
+                LibGxFormat.Lz.Lz.UnpackAvLz(fileStream, file, game);
+
+                if (saveDecompressed)
+                {
+                    // See if files has been decompressed before
+                    var dir = Path.GetDirectoryName(importFile);
+                    var filename = Path.GetFileNameWithoutExtension(importFile);
+                    // out param
+                    filePath = UnityPathUtility.CombineSystemPath(dir, filename);
+
+                    using (var writer = File.Create(filePath, (int)file.Length))
+                    {
+                        file.Seek(0, SeekOrigin.Begin);
+                        file.CopyTo(writer);
+                        file.Flush();
+                    }
+                }
+                else
+                {
+                    filePath = string.Empty;
+                }
+            }
+        }//
 
     }
 }
