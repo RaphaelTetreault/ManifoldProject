@@ -37,7 +37,7 @@ namespace Manifold.IO
             return sobj;
         }
 
-        public static TSobj[] ImportFilesAs<TSobj>(string[] importFiles, string importPath, string importDest, FileMode mode = FileMode.Open, FileAccess access = FileAccess.Read, FileShare share = FileShare.Read)
+        public static TSobj[] ImportManyAs<TSobj>(string[] importFiles, string importPath, string importDest, FileMode mode = FileMode.Open, FileAccess access = FileAccess.Read, FileShare share = FileShare.Read)
             where TSobj : ScriptableObject, IBinarySerializable, IFile
         {
             var count = 0;
@@ -53,7 +53,7 @@ namespace Manifold.IO
                     using (var reader = new BinaryReader(fileStream))
                     {
                         var filepath = string.Empty;
-                        var sobj = ImportFileAs<TSobj>(reader, file, importPath, importDest, out filepath);
+                        var sobj = ImportAs<TSobj>(reader, file, importPath, importDest, out filepath);
                         sobjs[count] = sobj;
 
                         // Progress bar update
@@ -74,7 +74,7 @@ namespace Manifold.IO
             return sobjs;
         }
 
-        public static TSobj ImportFileAs<TSobj>(BinaryReader reader, string file, string importFrom, string importTo, out string filePath)
+        public static TSobj ImportAs<TSobj>(BinaryReader reader, string file, string importFrom, string importTo, out string filePath)
             where TSobj : ScriptableObject, IBinarySerializable, IFile
         {
             // Get path to root import folder
@@ -83,8 +83,9 @@ namespace Manifold.IO
 
             // get path to file import folder
             // TODO: Regex instead of this hack
-            var length = importFrom.Length;
-            var folder = file.Remove(0, length + 1);
+            // NOTE: The +1 is for the final / fwd slash assuming the "BrowseButtonField"
+            // is used and does not return the final / on the path.
+            var folder = file.Remove(0, importFrom.Length +1);
             folder = Path.GetDirectoryName(folder);
 
             // (A) prevent null/empty && (B) prevent "/" or "\\"
@@ -142,6 +143,15 @@ namespace Manifold.IO
             where T : ScriptableObject
         {
             return GetAllOfTypeFromAssetDatabase<T>(new string[0]);
+        }
+
+        public static string[] EnforceUnityPath(string[] strings)
+        {
+            for (int i = 0; i < strings.Length; i++)
+            {
+                strings[i] = UnityPathUtility.EnforceUnitySeparators(strings[i]);
+            }
+            return strings;
         }
     }
 }

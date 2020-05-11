@@ -1,10 +1,14 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using UnityEngine;
+using UnityEditor;
+using UnityEditor.SceneManagement;
+using GameCube.FZeroGX.COLI_COURSE;
 
 namespace Manifold.IO.GFZX01
 {
-    [CreateAssetMenu(menuName = "Manifold/Import/" + "NEW GMA Importer")]
-    public class GMAImporter : ExecutableScriptableObject,
+    [CreateAssetMenu(menuName = "Manifold/Import/" + "NEW COLI Importer")]
+    public class ColiImporter : ExecutableScriptableObject,
         IImportable
     {
         [Header("Import Settings")]
@@ -12,7 +16,7 @@ namespace Manifold.IO.GFZX01
         protected SearchOption fileSearchOption = SearchOption.AllDirectories;
 
         [SerializeField]
-        protected string searchPattern = "*.GMA*";
+        protected string searchPattern = "COLI_COURSE*";
 
         [SerializeField, BrowseFolderField("Assets/")]
         protected string importPath;
@@ -24,19 +28,16 @@ namespace Manifold.IO.GFZX01
         [SerializeField]
         protected string[] importFiles;
 
-
-        public override string ExecuteText => "Import GMA";
+        public override string ExecuteText => "Import COLI";
 
         public override void Execute() => Import();
 
         public void Import()
         {
-            var importFiles = Directory.GetFiles(importPath, searchPattern, fileSearchOption);
+            importFiles = Directory.GetFiles(importPath, searchPattern, fileSearchOption);
             importFiles = ImportUtility.EnforceUnityPath(importFiles);
             var importFilesUncompressed = GFZX01Utility.DecompressAnyLZ(importFiles);
-            ImportUtility.ImportManyAs<GMASobj>(importFilesUncompressed, importPath, importDestination);
+            ImportUtility.ImportManyAs<ColiSceneSobj>(importFilesUncompressed, importPath, importDestination);
         }
-
-
     }
 }
