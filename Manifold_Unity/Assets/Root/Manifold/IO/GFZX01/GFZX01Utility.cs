@@ -4,7 +4,7 @@ using UnityEngine;
 using LibGxFormat;
 using LibGxFormat.Lz;
 
-namespace Manifold.IO
+namespace Manifold.IO.GFZX01
 {
     public class GFZX01Utility
     {

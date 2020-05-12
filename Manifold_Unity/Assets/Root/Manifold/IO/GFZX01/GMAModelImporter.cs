@@ -267,10 +267,5 @@ namespace Manifold.IO.GFZX01
             }
             return count;
         }
-
-        //public string CalcCRC()
-        //{
-
-        //}
     }
 }
