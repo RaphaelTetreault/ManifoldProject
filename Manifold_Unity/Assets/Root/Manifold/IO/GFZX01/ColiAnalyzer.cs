@@ -385,7 +385,7 @@ namespace Manifold.IO.GFZX01
                 writer.PushCol("unk_0x00 enum");
                 writer.WriteFlagNames<EnumLayers32>();
                 writer.PushCol("unk_0x04");
-                //writer.WriteFlagNames<EnumLayers32>();
+                writer.WriteFlagNames<EnumLayers32>();
                 writer.PushCol("collisionBindingAbsPtr");
                 writer.PushCol("collisionPosition");
                 writer.PushCol("unk_0x18 enum");
@@ -416,7 +416,7 @@ namespace Manifold.IO.GFZX01
                         writer.PushCol((int)gameObject.unk_0x00);
                         writer.WriteFlags(gameObject.unk_0x00);
                         writer.PushCol((int)gameObject.unk_0x04);
-                        //writer.WriteFlags(gameObject.unk_0x04);
+                        writer.WriteFlags(gameObject.unk_0x04);
                         writer.PushCol("0x" + gameObject.collisionBindingAbsPtr.ToString("X"));
                         writer.PushCol(gameObject.collisionPosition);
                         writer.PushCol((int)gameObject.unk_0x18);
