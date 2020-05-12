@@ -77,29 +77,5 @@ namespace Manifold.IO
                 Debug.Log($"{sobj.name} exported <color=blue>{sysPath}</color>");
             }
         }
-
-        /// <summary>
-        /// Opens the <paramref name="filePath"/> folder in OS. Will not create duplicate windows.
-        /// </summary>
-        /// <param name="filePath">Open folder window at this path.</param>
-        public static void OpenFileFolder(string filePath)
-        {
-            var sysPath = UnityPathUtility.EnforceSystemSeparators(filePath);
-            var dirPath = Path.GetDirectoryName(sysPath);
-            var uriPath = UnityPathUtility.EnforceUnitySeparators(dirPath);
-            Application.OpenURL(@"file:///" + uriPath);
-        }
-
-        /// <summary>
-        /// Opens the <paramref name="filePaths"/> folders in OS. Will not create duplicate windows.
-        /// </summary>
-        /// <param name="filePath">Open folder window at this path.</param>
-        public static void OpenFileFolder(string[] filePaths)
-        {
-            foreach (string filePath in filePaths)
-            {
-                OpenFileFolder(filePath);
-            }
-        }
     }
 }

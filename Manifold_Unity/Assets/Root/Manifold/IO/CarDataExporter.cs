@@ -1,6 +1,5 @@
 ﻿using GameCube.FZeroGX.CarData;
 using Manifold.IO;
-using System;
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "Manifold/Export/" + "NEW CarData Exporter")]
@@ -42,27 +41,13 @@ public class CarDataExporter : ExecutableScriptableObject,
 
     public void Export()
     {
-        switch (exportOptions)
-        {
-            case IOOption.selectedFiles:
-                break;
+        exportSobjs = IOUtility.GetSobjByOption(exportSobjs, exportOptions, exportFrom);
 
-            case IOOption.allFromSourceFolder:
-                exportSobjs = AssetDatabaseUtility.GetAllOfType<CarDataSobj>(exportFrom);
-                break;
-
-            case IOOption.allFromAssetDatabase:
-                exportSobjs = AssetDatabaseUtility.GetAllOfType<CarDataSobj>();
-                break;
-
-            default:
-                throw new NotImplementedException();
-        }
         var exportedFiles = ExportUtility.ExportFiles(exportSobjs, exportTo, "", allowOverwritingFiles, preserveFolderStructure);
         ExportUtility.PrintExportsToConsole(this, exportedFiles);
         if (openFolderAfterExport)
         {
-            ExportUtility.OpenFileFolder(exportedFiles);
+            IOUtility.OpenFileFolder(exportedFiles);
         }
 
         if (exportCompressed)

@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using UnityEditor;
 using UnityEngine;
 
@@ -16,6 +15,7 @@ namespace Manifold.IO
         protected string outputPath;
         [SerializeField, BrowseFolderField("Assets/"), Tooltip("Used with IOOption.allFromSourceFolder")]
         protected string[] searchFolders;
+
         [Header("Output File Names")]
         [SerializeField]
         protected string gcmfFile = "GCMF";
@@ -48,22 +48,7 @@ namespace Manifold.IO
 
         public void Analyze()
         {
-            switch (analysisOption)
-            {
-                case IOOption.selectedFiles:
-                    break;
-
-                case IOOption.allFromSourceFolder:
-                    analysisSobjs = AssetDatabaseUtility.GetAllOfType<GMASobj>(searchFolders);
-                    break;
-
-                case IOOption.allFromAssetDatabase:
-                    analysisSobjs = AssetDatabaseUtility.GetAllOfType<GMASobj>();
-                    break;
-
-                default:
-                    throw new NotImplementedException();
-            }
+            analysisSobjs = IOUtility.GetSobjByOption(analysisSobjs, analysisOption, searchFolders);
 
             var numProcesses = 4f;
             var processIndex = 0;
@@ -94,7 +79,7 @@ namespace Manifold.IO
 
             if (openFolderAfterAnalysis)
             {
-                ExportUtility.OpenFileFolder(gcfmAnalysisFile);
+                IOUtility.OpenFileFolder(gcfmAnalysisFile);
             }
         }
 
