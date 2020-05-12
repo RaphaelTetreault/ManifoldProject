@@ -1,11 +1,10 @@
-﻿using Manifold.IO;
-using System;
+﻿using System;
 using UnityEngine;
 
-namespace Manifold.IO
+namespace Manifold.IO.GFZX01
 {
     [CreateAssetMenu(menuName = "Manifold/Export/" + "NEW GMA Exporter")]
-    public class GMAExporter : ExecutableScriptableObject,
+    public class GmaExporter : ExecutableScriptableObject,
           IExportable
     {
         [Header("Export Settings")]

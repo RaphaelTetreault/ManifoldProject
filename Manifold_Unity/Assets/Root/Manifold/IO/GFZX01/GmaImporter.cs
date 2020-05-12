@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Manifold.IO.GFZX01
 {
     [CreateAssetMenu(menuName = "Manifold/Import/" + "NEW GMA Importer")]
-    public class GMAImporter : ExecutableScriptableObject,
+    public class GmaImporter : ExecutableScriptableObject,
         IImportable
     {
         [Header("Import Settings")]
