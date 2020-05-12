@@ -82,29 +82,7 @@ namespace Manifold.IO
         public static TSobj ImportAs<TSobj>(BinaryReader reader, string file, string importFrom, string importTo, out string filePath)
             where TSobj : ScriptableObject, IBinarySerializable, IFile
         {
-            // Get path to root import folder
-            var path = UnityPathUtility.GetUnityDirectory(UnityPathUtility.UnityFolder.Assets);
-            var dest = UnityPathUtility.CombineSystemPath(path, importTo);
-
-            // get path to file import folder
-            // TODO: Regex instead of this hack
-            // NOTE: The +1 is for the final / fwd slash assuming the "BrowseButtonField"
-            // is used and does not return the final / on the path.
-            var folder = file.Remove(0, importFrom.Length +1);
-            folder = Path.GetDirectoryName(folder);
-
-            // (A) prevent null/empty && (B) prevent "/" or "\\"
-            if (!string.IsNullOrEmpty(folder) && folder.Length > 1)
-                dest = dest + folder;
-
-            if (!Directory.Exists(dest))
-            {
-                Directory.CreateDirectory(dest);
-                Debug.Log($"Created path <i>{dest}</i>");
-            }
-
-            var unityPath = UnityPathUtility.ToUnityFolderPath(dest, UnityPathUtility.UnityFolder.Assets);
-            unityPath = UnityPathUtility.EnforceUnitySeparators(unityPath);
+            var unityPath = GetUnityOutputPath(file, importFrom, importTo);
             var fileName = Path.GetFileName(file);
 
             // GENERIC
@@ -118,7 +96,6 @@ namespace Manifold.IO
             // Out params
             filePath = $"{unityPath}/{fileName}";
 
-            //
             return sobj;
         }
 
@@ -164,5 +141,35 @@ namespace Manifold.IO
             }
             return strings;
         }
+
+        public static string GetUnityOutputPath(string importFile, string importFrom, string importTo)
+        {
+            // Get path to root import folder
+            var path = UnityPathUtility.GetUnityDirectory(UnityPathUtility.UnityFolder.Assets);
+            var dest = UnityPathUtility.CombineSystemPath(path, importTo);
+
+            // get path to file import folder
+            // TODO: Regex instead of this hack
+            // NOTE: The +1 is for the final / fwd slash assuming the "BrowseButtonField"
+            // is used and does not return the final / on the path.
+            var folder = importFile.Remove(0, importFrom.Length + 1);
+            folder = Path.GetDirectoryName(folder);
+
+            // (A) prevent null/empty && (B) prevent "/" or "\\"
+            if (!string.IsNullOrEmpty(folder) && folder.Length > 1)
+                dest = dest + folder;
+
+            if (!Directory.Exists(dest))
+            {
+                Directory.CreateDirectory(dest);
+                Debug.Log($"Created path <i>{dest}</i>");
+            }
+
+            var unityPath = UnityPathUtility.ToUnityFolderPath(dest, UnityPathUtility.UnityFolder.Assets);
+            unityPath = UnityPathUtility.EnforceUnitySeparators(unityPath);
+            
+            return unityPath;
+        }
+
     }
 }
