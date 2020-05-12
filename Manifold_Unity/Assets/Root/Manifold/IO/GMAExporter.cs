@@ -15,14 +15,12 @@ namespace Manifold.IO
         [SerializeField]
         protected ExportUtility.ExportOptions exportOptions
             = ExportUtility.ExportOptions.ExportFiles;
-        [SerializeField]
-        [BrowseFolderField]
-        [Tooltip("Used for ExportOptions.ExportAllOfTypeInFolder")]
-        protected string exportSource = string.Empty;
 
-        [SerializeField]
-        [BrowseFolderField]
-        protected string exportDestination;
+        [SerializeField, BrowseFolderField, Tooltip("Used for ExportOptions.ExportAllOfTypeInFolder")]
+        protected string exportFrom = string.Empty;
+
+        [SerializeField, BrowseFolderField]
+        protected string exportTo;
         [SerializeField]
         protected string extension = ".gma";
         [SerializeField]
@@ -47,20 +45,20 @@ namespace Manifold.IO
                     break;
 
                 case ExportUtility.ExportOptions.ExportAllOfType:
-                    exportSobjs = ExportUtility.LoadAllOfTypeFromAssetDatabase<GMASobj>();
+                    exportSobjs = AssetDatabaseUtility.GetAllOfType<GMASobj>();
                     break;
                 case ExportUtility.ExportOptions.ExportAllOfTypeInFolder:
-                    exportSobjs = ExportUtility.LoadAllOfTypeFromAssetDatabase<GMASobj>();
+                    exportSobjs = AssetDatabaseUtility.GetAllOfType<GMASobj>(exportFrom);
                     break;
 
                 default:
                     throw new NotImplementedException();
             }
-            ExportUtility.ExportFilesFrom<GMASobj>(exportSobjs, exportDestination, extension, preserveFolderStructure);
+            var exportedFiles = ExportUtility.ExportFiles(exportSobjs, exportTo, extension, preserveFolderStructure);
         
-            if (!exportCompressed)
+            if (exportCompressed)
             {
-                throw new NotImplementedException();
+                var compressedFiles = GFZX01Utility.CompressEachAsLZ(exportedFiles);
             }
         }
     }

@@ -1,14 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEditor;
-
+﻿using GameCube.FZeroGX;
+using GameCube.FZeroGX.CarData;
 using Manifold.IO;
 using System.IO;
-using GameCube.FZeroGX;
-using GameCube.FZeroGX.CarData;
-using System.Runtime.CompilerServices;
-
+using UnityEditor;
+using UnityEngine;
 [CreateAssetMenu(menuName = "Manifold/Import/" + "NEW CarData Importer")]
 public class CarDataImporter : ExecutableScriptableObject,
     IImportable
@@ -39,8 +34,8 @@ public class CarDataImporter : ExecutableScriptableObject,
     public void Import()
     {
         importFiles = Directory.GetFiles(importFrom, searchPattern, fileSearchOption);
-        importFiles = ImportUtility.EnforceUnityPath(importFiles);
-        importFiles = GFZX01Utility.DecompressAnyLZ(importFiles);
+        importFiles = UnityPathUtility.EnforceUnitySeparators(importFiles);
+        importFiles = GFZX01Utility.DecompressEachLZ(importFiles);
 
         var count = 0;
         foreach (var importFile in importFiles)

@@ -1,20 +1,21 @@
-﻿using StarkTools.IO;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
-using UnityEditor;
+using LibGxFormat;
+using LibGxFormat.Lz;
 
 namespace Manifold.IO
 {
     public class GFZX01Utility
     {
-        public static void DecompressAv(string importFile, LibGxFormat.AvGame game, bool saveDecompressed, out string filePath)
+        public const string compressedExt = ".lz";
+
+        public static MemoryStream DecompressAv(string importFile, LibGxFormat.AvGame game, bool saveDecompressed, out string filePath)
         {
             using (var fileStream = File.Open(importFile, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
-                var file = new MemoryStream();
-                LibGxFormat.Lz.Lz.UnpackAvLz(fileStream, file, game);
+                var decompressedFile = new MemoryStream();
+                Lz.UnpackAvLz(fileStream, decompressedFile, game);
 
                 if (saveDecompressed)
                 {
@@ -24,27 +25,27 @@ namespace Manifold.IO
                     // out param
                     filePath = UnityPathUtility.CombineSystemPath(dir, filename);
 
-                    using (var writer = File.Create(filePath, (int)file.Length))
+                    using (var writer = File.Create(filePath, (int)decompressedFile.Length))
                     {
-                        file.Seek(0, SeekOrigin.Begin);
-                        file.CopyTo(writer);
-                        file.Flush();
+                        decompressedFile.Seek(0, SeekOrigin.Begin);
+                        decompressedFile.CopyTo(writer);
+                        decompressedFile.Flush();
                     }
                 }
                 else
                 {
                     filePath = string.Empty;
                 }
+
+                return decompressedFile;
             }
         }//
 
-        public static string[] DecompressAnyLZ(string[] importFiles)
+        public static string[] DecompressEachLZ(string[] importFiles)
         {
-            const string compressedExt = ".lz";
             var importFilesList = new List<string>(importFiles);
 
             for (int i = 0; i < importFilesList.Count; i++)
-            //foreach (var importFile in importFiles)
             {
                 var importFile = importFilesList[i];
 
@@ -57,7 +58,7 @@ namespace Manifold.IO
                     string outputFilePath = string.Empty;
                     // Need to fix AvGame params to make sense...
                     // Save the decompressed file so next time we run this there is no decompression going on
-                    DecompressAv(importFile, LibGxFormat.AvGame.FZeroGX, true, out outputFilePath);
+                    DecompressAv(importFile, AvGame.FZeroGX, true, out outputFilePath);
                     // save reference to newly output file
                     importFilesList[i] = outputFilePath;
                 }
@@ -69,5 +70,68 @@ namespace Manifold.IO
             return importFilesList.ToArray();
         }
 
+
+        public static MemoryStream CompressAv(string exportFile, AvGame game, bool saveCompressed, out string filePath)
+        {
+            using (var fileStream = File.Open(exportFile, FileMode.Open, FileAccess.Read, FileShare.Read))
+            {
+                var compressedFile = new MemoryStream();
+                Lz.PackAvLz(fileStream, compressedFile, game);
+
+                if (saveCompressed)
+                {
+                    // See if files has been compressed before
+                    var dir = Path.GetDirectoryName(exportFile);
+                    var filename = $"{exportFile}.{compressedExt}";
+                    // out param
+                    filePath = UnityPathUtility.CombineSystemPath(dir, filename);
+
+                    using (var writer = File.Create(filePath, (int)compressedFile.Length))
+                    {
+                        compressedFile.Seek(0, SeekOrigin.Begin);
+                        compressedFile.CopyTo(writer);
+                        compressedFile.Flush();
+                    }
+                }
+                else
+                {
+                    filePath = string.Empty;
+                }
+
+                return compressedFile;
+            }
+        }
+
+        public static string[] CompressEachAsLZ(string[] exportFiles, bool overwriteFiles = false)
+        {
+            var exportFilesList = new List<string>(exportFiles);
+
+            for (int i = 0; i < exportFilesList.Count; i++)
+            {
+                var exportFile = exportFilesList[i];
+                var fileExists = File.Exists(exportFile);
+
+                // Fail if we DON'T want to overwrite files but file exists
+                if (!overwriteFiles && fileExists)
+                {
+                    Debug.LogError($"Permission not set to overwrite \"{exportFile}\"!");
+                    // set file as null so it can be removed from the list of exported files
+                    exportFile = null;
+                    continue;
+                }
+
+                string outputFilePath = string.Empty;
+                // Need to fix AvGame params to make sense...
+                // Save the decompressed file so next time we run this there is no decompression going on
+                DecompressAv(exportFile, AvGame.FZeroGX, true, out outputFilePath);
+                // save reference to newly output file
+                exportFilesList[i] = outputFilePath;
+            }
+
+            // Remove all failed file names/paths
+            exportFilesList.RemoveAll(i => i == null);
+
+            return exportFilesList.ToArray();
+        }
     }
 }

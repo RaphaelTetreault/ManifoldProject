@@ -49,11 +49,11 @@ namespace Manifold.IO.GFZX01
                     break;
 
                 case ImportOption.allFromImportSource:
-                    gmaSobjs = ImportUtility.GetAllOfTypeFromAssetDatabase<GMASobj>(importSource);
+                    gmaSobjs = AssetDatabaseUtility.GetAllOfType<GMASobj>(importSource);
                     break;
 
                 case ImportOption.allFromAssetDatabase:
-                    gmaSobjs = ImportUtility.GetAllOfTypeFromAssetDatabase<GMASobj>();
+                    gmaSobjs = AssetDatabaseUtility.GetAllOfType<GMASobj>();
                     break;
 
                 default:

@@ -36,11 +36,11 @@ namespace Manifold.IO.GFZX01
                     break;
 
                 case ImportOption.allFromImportSource:
-                    colis = ImportUtility.GetAllOfTypeFromAssetDatabase<ColiSceneSobj>(importSource);
+                    colis = AssetDatabaseUtility.GetAllOfType<ColiSceneSobj>(importSource);
                     break;
 
                 case ImportOption.allFromAssetDatabase:
-                    colis = ImportUtility.GetAllOfTypeFromAssetDatabase<ColiSceneSobj>();
+                    colis = AssetDatabaseUtility.GetAllOfType<ColiSceneSobj>();
                     break;
 
                 default:

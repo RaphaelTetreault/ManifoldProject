@@ -265,6 +265,20 @@ namespace UnityEngine
             return value.Replace(NonUnixDirectorySeparator, UnixDirectorySeparator);
         }
 
+        /// <summary>
+        /// Returns the path replacing incompatible directory separators with proper System directory separators
+        /// </summary>
+        /// <param name="value">The values to enforce directory separators</param>
+        /// <returns></returns>
+        public static string[] EnforceUnitySeparators(string[] strings)
+        {
+            for (int i = 0; i < strings.Length; i++)
+            {
+                strings[i] = UnityPathUtility.EnforceUnitySeparators(strings[i]);
+            }
+            return strings;
+        }
+
         // Get special folder
         /// <summary>
         /// Returns the <paramref name="folder"/> path starting after 'Assets/'

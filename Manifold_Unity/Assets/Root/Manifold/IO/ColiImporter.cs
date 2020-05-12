@@ -35,8 +35,8 @@ namespace Manifold.IO.GFZX01
         public void Import()
         {
             importFiles = Directory.GetFiles(importPath, searchPattern, fileSearchOption);
-            importFiles = ImportUtility.EnforceUnityPath(importFiles);
-            var importFilesUncompressed = GFZX01Utility.DecompressAnyLZ(importFiles);
+            importFiles = UnityPathUtility.EnforceUnitySeparators(importFiles);
+            var importFilesUncompressed = GFZX01Utility.DecompressEachLZ(importFiles);
             ImportUtility.ImportManyAs<ColiSceneSobj>(importFilesUncompressed, importPath, importDestination);
         }
     }

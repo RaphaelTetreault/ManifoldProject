@@ -100,47 +100,47 @@ namespace Manifold.IO
         }
 
 
-        public static T[] GetAllOfTypeFromAssetDatabase<T>(string[] searchInFolders)
-            where T : ScriptableObject
-        {
-            for (int i = 0; i < searchInFolders.Length; i++)
-            {
-                searchInFolders[i] = $"Assets/{searchInFolders[i]}";
-            }
+        //public static T[] GetAllOfTypeFromAssetDatabase<T>(string[] searchInFolders)
+        //    where T : ScriptableObject
+        //{
+        //    for (int i = 0; i < searchInFolders.Length; i++)
+        //    {
+        //        searchInFolders[i] = $"Assets/{searchInFolders[i]}";
+        //    }
 
-            var guids = searchInFolders != null || searchInFolders.Length > 0
-                ? AssetDatabase.FindAssets($"t:{typeof(T).Name}", searchInFolders)
-                : AssetDatabase.FindAssets($"t:{typeof(T).Name}");
+        //    var guids = searchInFolders != null || searchInFolders.Length > 0
+        //        ? AssetDatabase.FindAssets($"t:{typeof(T).Name}", searchInFolders)
+        //        : AssetDatabase.FindAssets($"t:{typeof(T).Name}");
 
-            var assets = new T[guids.Length];
-            for (int i = 0; i < assets.Length; i++)
-            {
-                var assetPath = AssetDatabase.GUIDToAssetPath(guids[i]);
-                assets[i] = AssetDatabase.LoadAssetAtPath<T>(assetPath);
-            }
-            return assets;
-        }
+        //    var assets = new T[guids.Length];
+        //    for (int i = 0; i < assets.Length; i++)
+        //    {
+        //        var assetPath = AssetDatabase.GUIDToAssetPath(guids[i]);
+        //        assets[i] = AssetDatabase.LoadAssetAtPath<T>(assetPath);
+        //    }
+        //    return assets;
+        //}
 
-        public static T[] GetAllOfTypeFromAssetDatabase<T>(string searchInFolder)
-            where T : ScriptableObject
-        {
-            return GetAllOfTypeFromAssetDatabase<T>(new string[] { searchInFolder });
-        }
+        //public static T[] GetAllOfTypeFromAssetDatabase<T>(string searchInFolder)
+        //    where T : ScriptableObject
+        //{
+        //    return GetAllOfTypeFromAssetDatabase<T>(new string[] { searchInFolder });
+        //}
 
-        public static T[] GetAllOfTypeFromAssetDatabase<T>()
-            where T : ScriptableObject
-        {
-            return GetAllOfTypeFromAssetDatabase<T>(new string[0]);
-        }
+        //public static T[] GetAllOfTypeFromAssetDatabase<T>()
+        //    where T : ScriptableObject
+        //{
+        //    return GetAllOfTypeFromAssetDatabase<T>(new string[0]);
+        //}
 
-        public static string[] EnforceUnityPath(string[] strings)
-        {
-            for (int i = 0; i < strings.Length; i++)
-            {
-                strings[i] = UnityPathUtility.EnforceUnitySeparators(strings[i]);
-            }
-            return strings;
-        }
+        //public static string[] EnforceUnityPath(string[] strings)
+        //{
+        //    for (int i = 0; i < strings.Length; i++)
+        //    {
+        //        strings[i] = UnityPathUtility.EnforceUnitySeparators(strings[i]);
+        //    }
+        //    return strings;
+        //}
 
         public static string GetUnityOutputPath(string importFile, string importFrom, string importTo)
         {
