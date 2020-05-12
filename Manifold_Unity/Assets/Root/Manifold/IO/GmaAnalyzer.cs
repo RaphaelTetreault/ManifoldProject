@@ -16,16 +16,6 @@ namespace Manifold.IO
         [SerializeField, BrowseFolderField("Assets/"), Tooltip("Used with IOOption.allFromSourceFolder")]
         protected string[] searchFolders;
 
-        [Header("Output File Names")]
-        [SerializeField]
-        protected string gcmfFile = "GCMF";
-        [SerializeField]
-        protected string textureFile = "TEXTURE";
-        [SerializeField]
-        protected string materialFile = "MATERIAL";
-        [SerializeField]
-        protected string texUnkFlagsFile = "Unknown Flags";
-
         [Header("Preferences")]
         [SerializeField]
         protected bool openFolderAfterAnalysis = true;
@@ -55,22 +45,22 @@ namespace Manifold.IO
             var time = AnalyzerUtility.FileTimestamp();
 
             // EX
-            var texFlagAnalysisFile = Path.Combine(outputPath, $"{time} {texUnkFlagsFile}.tsv");
+            var texFlagAnalysisFile = Path.Combine(outputPath, $"{time} GMA Unknown Flags.tsv");
             EditorUtility.DisplayProgressBar(ExecuteText, texFlagAnalysisFile, processIndex++ / numProcesses);
             WriteGcmfTexUnkFlagsAnalysis(texFlagAnalysisFile);
 
             // GCMF
-            var gcfmAnalysisFile = Path.Combine(outputPath, $"{time} {gcmfFile}.tsv");
+            var gcfmAnalysisFile = Path.Combine(outputPath, $"{time} GMA GCMF.tsv");
             EditorUtility.DisplayProgressBar(ExecuteText, gcfmAnalysisFile, processIndex++ / numProcesses);
             WriteGcmfAnalysis(gcfmAnalysisFile);
 
             // GCMF TEX
-            var texAnalysisFile = Path.Combine(outputPath, $"{time} {textureFile}.tsv");
+            var texAnalysisFile = Path.Combine(outputPath, $"{time} GMA Textures.tsv");
             EditorUtility.DisplayProgressBar(ExecuteText, texAnalysisFile, processIndex++ / numProcesses);
             WriteTexAnalysis(texAnalysisFile);
 
             // GCMF MAT
-            var matAnalysisFile = Path.Combine(outputPath, $"{time} {materialFile}.tsv");
+            var matAnalysisFile = Path.Combine(outputPath, $"{time} GMA Materials.tsv");
             EditorUtility.DisplayProgressBar(ExecuteText, matAnalysisFile, processIndex++ / numProcesses);
             WriteMatAnalysis(matAnalysisFile);
 

@@ -17,10 +17,6 @@ public class ColiAnalyzer : ExecutableScriptableObject,
     [SerializeField, BrowseFolderField("Assets/"), Tooltip("Used with IOOption.allFromSourceFolder")]
     protected string[] searchFolders;
 
-    //[Header("Output File Names")]
-    //[SerializeField]
-    //protected string fileName = "Topology Parameters";
-
     [Header("Preferences")]
     [SerializeField]
     protected bool openFolderAfterAnalysis = true;
@@ -49,7 +45,7 @@ public class ColiAnalyzer : ExecutableScriptableObject,
             var count = TopologyParameters.kFieldCount;
             for (int i = 0; i < count; i++)
             {
-                var filePath = $"{time} TopologyParameters {i + 1}.tsv";
+                var filePath = $"{time} COLI TopologyParameters {i + 1}.tsv";
                 filePath = Path.Combine(outputPath, filePath);
                 EditorUtility.DisplayProgressBar(ExecuteText, filePath, (float)(i + 1) / TopologyParameters.kFieldCount);
                 AnalyzeTrackData(filePath, i);
@@ -58,7 +54,7 @@ public class ColiAnalyzer : ExecutableScriptableObject,
 
         // TRACK TRANSFORMS
         {
-            var filePath = $"{time} TrackTransforms.tsv";
+            var filePath = $"{time} COLI TrackTransforms.tsv";
             filePath = Path.Combine(outputPath, filePath);
             EditorUtility.DisplayProgressBar(ExecuteText, filePath, .5f);
             AnalyzeTransforms(filePath);
@@ -66,7 +62,7 @@ public class ColiAnalyzer : ExecutableScriptableObject,
 
         // ANIMATIONS
         {
-            var filePath = $"{time} Animations.tsv";
+            var filePath = $"{time} COLI Animations.tsv";
             filePath = Path.Combine(outputPath, filePath);
             EditorUtility.DisplayProgressBar(ExecuteText, filePath, .5f);
             AnalyzeGameObjectAnimations(filePath);
@@ -77,7 +73,7 @@ public class ColiAnalyzer : ExecutableScriptableObject,
             var count = GameCube.FZeroGX.COLI_COURSE.Animation.kSizeCurvesPtrs;
             for (int i = 0; i < count; i++)
             {
-                var filePath = $"{time} Animations {i}.tsv";
+                var filePath = $"{time} COLI Animations {i}.tsv";
                 filePath = Path.Combine(outputPath, filePath);
                 EditorUtility.DisplayProgressBar(ExecuteText, filePath, (float)(i + 1) / count);
                 AnalyzeGameObjectAnimationsIndex(filePath, i);
