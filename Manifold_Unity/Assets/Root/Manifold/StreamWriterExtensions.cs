@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom;
 using System.IO;
 using System.Text;
 
@@ -49,5 +50,31 @@ public static class StreamWriterExtensions
     {
         writer.Write(value);
         PushRow(writer);
+    }
+
+
+    public static void WriteFlagNames<TEnum>(this StreamWriter writer)
+        where TEnum : struct, Enum
+    {
+        var type = Enum.GetUnderlyingType(typeof(TEnum));
+
+        if (type == typeof(uint) || type == typeof(int))
+            WriteFlags(writer, (TEnum)(object)uint.MaxValue);
+        else if (type == typeof(ushort) || type == typeof(short))
+            WriteFlags(writer, (TEnum)(object)ushort.MaxValue);
+        else if (type == typeof(byte) || type == typeof(sbyte))
+            WriteFlags(writer, (TEnum)(object)byte.MaxValue);
+    }
+
+    public static void WriteFlags<TEnum>(this StreamWriter writer, TEnum values)
+        where TEnum : struct, Enum
+    {
+        foreach (var flag in Manifold.IO.AnalyzerUtility.GetFlags(values))
+        {
+            if (flag != null)
+                writer.PushCol(flag);
+            else
+                writer.PushCol(string.Empty);
+        }
     }
 }

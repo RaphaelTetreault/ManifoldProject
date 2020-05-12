@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using GameCube.FZeroGX;
@@ -17,6 +19,13 @@ namespace Manifold.IO.GFZX01
         protected string outputPath;
         [SerializeField, BrowseFolderField("Assets/"), Tooltip("Used with IOOption.allFromSourceFolder")]
         protected string[] searchFolders;
+
+        [SerializeField]
+        protected bool
+            topologyParameters = true,
+            trackTransform = true,
+            gameObjects = true,
+            animations = true;
 
         [Header("Preferences")]
         [SerializeField]
@@ -42,6 +51,7 @@ namespace Manifold.IO.GFZX01
             var time = AnalyzerUtility.FileTimestamp();
 
             // TOPOLOGY PARAMETERS
+            if (topologyParameters)
             {
                 var count = TopologyParameters.kFieldCount;
                 for (int i = 0; i < count; i++)
@@ -54,6 +64,7 @@ namespace Manifold.IO.GFZX01
             }
 
             // TRACK TRANSFORMS
+            if (trackTransform)
             {
                 var filePath = $"{time} COLI TrackTransforms.tsv";
                 filePath = Path.Combine(outputPath, filePath);
@@ -61,23 +72,35 @@ namespace Manifold.IO.GFZX01
                 AnalyzeTransforms(filePath);
             }
 
-            // ANIMATIONS
+            //GAME OBJECTS
+            if (gameObjects)
             {
-                var filePath = $"{time} COLI Animations.tsv";
+                var filePath = $"{time} COLI GameObjects.tsv";
                 filePath = Path.Combine(outputPath, filePath);
                 EditorUtility.DisplayProgressBar(ExecuteText, filePath, .5f);
-                AnalyzeGameObjectAnimations(filePath);
+                AnalyzeGameObjects(filePath);
             }
 
-            // ANIMATIONS INDIVIDUALIZED
+            if (animations)
             {
-                var count = GameCube.FZeroGX.COLI_COURSE.Animation.kSizeCurvesPtrs;
-                for (int i = 0; i < count; i++)
+                // ANIMATIONS
                 {
-                    var filePath = $"{time} COLI Animations {i}.tsv";
+                    var filePath = $"{time} COLI Animations.tsv";
                     filePath = Path.Combine(outputPath, filePath);
-                    EditorUtility.DisplayProgressBar(ExecuteText, filePath, (float)(i + 1) / count);
-                    AnalyzeGameObjectAnimationsIndex(filePath, i);
+                    EditorUtility.DisplayProgressBar(ExecuteText, filePath, .5f);
+                    AnalyzeGameObjectAnimations(filePath);
+                }
+
+                // ANIMATIONS INDIVIDUALIZED
+                {
+                    var count = GameCube.FZeroGX.COLI_COURSE.Animation.kSizeCurvesPtrs;
+                    for (int i = 0; i < count; i++)
+                    {
+                        var filePath = $"{time} COLI Animations {i}.tsv";
+                        filePath = Path.Combine(outputPath, filePath);
+                        EditorUtility.DisplayProgressBar(ExecuteText, filePath, (float)(i + 1) / count);
+                        AnalyzeGameObjectAnimationsIndex(filePath, i);
+                    }
                 }
             }
 
@@ -348,5 +371,78 @@ namespace Manifold.IO.GFZX01
         }
 
         #endregion
+
+        #region GameObjects
+
+        public void AnalyzeGameObjects(string fileName)
+        {
+            using (var writer = AnalyzerUtility.OpenWriter(fileName))
+            {
+                // Write header
+                writer.PushCol("File");
+                writer.PushCol("Game Object #");
+                writer.PushCol("Game Object");
+                writer.PushCol("unk_0x00 enum");
+                writer.WriteFlagNames<EnumLayers32>();
+                writer.PushCol("unk_0x04");
+                //writer.WriteFlagNames<EnumLayers32>();
+                writer.PushCol("collisionBindingAbsPtr");
+                writer.PushCol("collisionPosition");
+                writer.PushCol("unk_0x18 enum");
+                writer.WriteFlagNames<EnumLayers16>();
+                writer.PushCol("unk_0x1A enum");
+                writer.WriteFlagNames<EnumLayers16>();
+                writer.PushCol("unk_0x1C enum");
+                writer.WriteFlagNames<EnumLayers16>();
+                writer.PushCol("unk_0x1E enum");
+                writer.WriteFlagNames<EnumLayers16>();
+                writer.PushCol("unk_0x1C");
+                writer.PushCol("collisionScale");
+                writer.PushCol("zero_0x2C");
+                writer.PushCol("animationAbsPtr");
+                writer.PushCol("unkPtr_0x34");
+                writer.PushCol("unkPtr_0x38");
+                writer.PushCol("transformPtr");
+                writer.PushRow();
+
+                foreach (var file in analysisSobjs)
+                {
+                    int gameObjectIndex = 0;
+                    foreach (var gameObject in file.scene.gameObjects)
+                    {
+                        writer.PushCol(file.fileName);
+                        writer.PushCol(gameObjectIndex);
+                        writer.PushCol(gameObject.name);
+                        writer.PushCol((int)gameObject.unk_0x00);
+                        writer.WriteFlags(gameObject.unk_0x00);
+                        writer.PushCol((int)gameObject.unk_0x04);
+                        //writer.WriteFlags(gameObject.unk_0x04);
+                        writer.PushCol("0x" + gameObject.collisionBindingAbsPtr.ToString("X"));
+                        writer.PushCol(gameObject.collisionPosition);
+                        writer.PushCol((int)gameObject.unk_0x18);
+                        writer.WriteFlags(gameObject.unk_0x18);
+                        writer.PushCol((int)gameObject.unk_0x1A);
+                        writer.WriteFlags(gameObject.unk_0x1A);
+                        writer.PushCol((int)gameObject.unk_0x1C);
+                        writer.WriteFlags(gameObject.unk_0x1C);
+                        writer.PushCol((int)gameObject.unk_0x1E);
+                        writer.WriteFlags(gameObject.unk_0x1E);
+                        writer.PushCol(gameObject.collisionScale);
+                        writer.PushCol(gameObject.zero_0x2C);
+                        writer.PushCol("0x" + gameObject.animationAbsPtr.ToString("X"));
+                        writer.PushCol("0x" + gameObject.unkPtr_0x34.ToString("X"));
+                        writer.PushCol("0x" + gameObject.unkPtr_0x38.ToString("X"));
+                        writer.PushCol("0x" + gameObject.transformPtr.ToString("X"));
+                        writer.PushRow();
+
+                        gameObjectIndex++;
+                    }
+                }
+                writer.Flush();
+            }
+        }
+
+        #endregion
+
     }
 }

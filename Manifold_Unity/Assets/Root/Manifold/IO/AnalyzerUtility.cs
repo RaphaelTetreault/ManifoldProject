@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace Manifold.IO
@@ -20,6 +21,15 @@ namespace Manifold.IO
             var fileStream = File.Open(filePath, mode, access, share);
             var writer = new StreamWriter(fileStream);
             return writer;
+        }
+
+        public static IEnumerable<Enum> GetFlags(Enum input)
+        {
+            foreach (Enum value in Enum.GetValues(input.GetType()))
+                if (input.HasFlag(value))
+                    yield return value;
+                else
+                    yield return null;
         }
     }
 }
