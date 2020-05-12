@@ -82,7 +82,7 @@ namespace Manifold.IO
                 {
                     // See if files has been compressed before
                     var dir = Path.GetDirectoryName(exportFile);
-                    var filename = $"{exportFile}.{compressedExt}";
+                    var filename = $"{exportFile}{compressedExt}";
                     // out param
                     filePath = UnityPathUtility.CombineSystemPath(dir, filename);
 
@@ -109,21 +109,24 @@ namespace Manifold.IO
             for (int i = 0; i < exportFilesList.Count; i++)
             {
                 var exportFile = exportFilesList[i];
-                var fileExists = File.Exists(exportFile);
+                var exportFileCompressed = $"{exportFile}{compressedExt}";
 
                 // Fail if we DON'T want to overwrite files but file exists
-                if (!overwriteFiles && fileExists)
+                if (!overwriteFiles)
                 {
-                    Debug.LogError($"Permission not set to overwrite \"{exportFile}\"!");
-                    // set file as null so it can be removed from the list of exported files
-                    exportFile = null;
-                    continue;
+                    if (File.Exists(exportFileCompressed))
+                    {
+                        Debug.LogError($"Permission not set to overwrite \"{exportFile}\"!");
+                        // set file as null so it can be removed from the list of exported files
+                        exportFile = null;
+                        continue;
+                    }
                 }
 
                 string outputFilePath = string.Empty;
                 // Need to fix AvGame params to make sense...
                 // Save the decompressed file so next time we run this there is no decompression going on
-                DecompressAv(exportFile, AvGame.FZeroGX, true, out outputFilePath);
+                CompressAv(exportFile, AvGame.FZeroGX, true, out outputFilePath);
                 // save reference to newly output file
                 exportFilesList[i] = outputFilePath;
             }

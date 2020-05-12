@@ -7,8 +7,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using System.Data;
+using System.Globalization;
 
-[CreateAssetMenu(menuName = "Manifold/Export/" + "CarData Exporter")]
+[CreateAssetMenu(menuName = "Manifold/Export/" + "NEW CarData Exporter")]
 public class CarDataExporter : ExecutableScriptableObject,
     IExportable
 {
@@ -24,13 +25,22 @@ public class CarDataExporter : ExecutableScriptableObject,
     protected string exportTo;
 
     [SerializeField]
+    protected bool allowOverwritingFiles = true;
+
+    [SerializeField]
     protected bool preserveFolderStructure = true;
-    
+
     [SerializeField]
     protected bool exportCompressed = false;
 
+    [Header("Preferences")]
+    [SerializeField]
+    protected bool openFolderAfterExport = true;
+
+    [Header("Exports")]
     [SerializeField]
     protected CarDataSobj[] exportSobjs;
+
 
 
     public override string ExecuteText => "Export CarData";
@@ -39,7 +49,6 @@ public class CarDataExporter : ExecutableScriptableObject,
 
     public void Export()
     {
-        var exportSobjs = this.exportSobjs;
         switch (exportOptions)
         {
             case ExportUtility.ExportOptions.ExportFiles:
@@ -55,11 +64,19 @@ public class CarDataExporter : ExecutableScriptableObject,
             default:
                 throw new NotImplementedException();
         }
-        var exportedFiles = ExportUtility.ExportFiles(exportSobjs, exportTo, "", preserveFolderStructure);
+        var exportedFiles = ExportUtility.ExportFiles(exportSobjs, exportTo, "", allowOverwritingFiles, preserveFolderStructure);
+        ExportUtility.PrintExportsToConsole(this, exportedFiles);
+        if (openFolderAfterExport)
+        {
+            ExportUtility.OpenFileFolder(exportedFiles);
+        }
 
         if (exportCompressed)
         {
-            var compressedFiles = GFZX01Utility.CompressEachAsLZ(exportedFiles);
+            var compressedFiles = GFZX01Utility.CompressEachAsLZ(exportedFiles, allowOverwritingFiles);
+            ExportUtility.PrintExportsToConsole(this, compressedFiles);
         }
     }
+
+
 }

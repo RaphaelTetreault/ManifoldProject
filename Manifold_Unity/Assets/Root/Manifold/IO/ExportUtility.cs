@@ -75,20 +75,41 @@ namespace Manifold.IO
             return exportedFiles.ToArray();
         }
 
-        //public static TSobj[] LoadAllOfTypeFromAssetDatabase<TSobj>(string[] searchInFolders = null)
-        //    where TSobj : ScriptableObject
-        //{
-        //    var searchQuery = $"t:{typeof(GMASobj).Name}";
-        //    string[] allAssetsOfType = AssetDatabase.FindAssets(searchQuery, searchInFolders);
-        //    var list = new List<TSobj>();
-        //    foreach (var assetGuid in allAssetsOfType)
-        //    {
-        //        var assetPath = AssetDatabase.GUIDToAssetPath(assetGuid);
-        //        var asset = AssetDatabase.LoadAssetAtPath<TSobj>(assetPath);
-        //        list.Add(asset);
-        //    }
-        //    list.ToArray();
-        //    return list.ToArray();
-        //}
+        public static void PrintExportsToConsole<T>(T sobj, string[] filePaths)
+            where T : ExecutableScriptableObject, IExportable
+        {
+            foreach (var filePath in filePaths)
+            {
+                var sysPath = UnityPathUtility.EnforceSystemSeparators(filePath);
+                var path = Path.GetDirectoryName(sysPath);
+                var uriPath = UnityPathUtility.EnforceUnitySeparators(path);
+                Debug.Log($"{sobj.name} exported <a href=\"url\">{sysPath}</a>");
+                Application.OpenURL(@"file:///" + uriPath);
+            }
+        }
+
+        /// <summary>
+        /// Opens the <paramref name="filePath"/> folder in OS. Will not create duplicate windows.
+        /// </summary>
+        /// <param name="filePath">Open folder window at this path.</param>
+        public static void OpenFileFolder(string filePath)
+        {
+            var sysPath = UnityPathUtility.EnforceSystemSeparators(filePath);
+            var dirPath = Path.GetDirectoryName(sysPath);
+            var uriPath = UnityPathUtility.EnforceUnitySeparators(dirPath);
+            Application.OpenURL(@"file:///" + uriPath);
+        }
+
+        /// <summary>
+        /// Opens the <paramref name="filePaths"/> folders in OS. Will not create duplicate windows.
+        /// </summary>
+        /// <param name="filePath">Open folder window at this path.</param>
+        public static void OpenFileFolder(string[] filePaths)
+        {
+            foreach (string filePath in filePaths)
+            {
+                OpenFileFolder(filePath);
+            }
+        }
     }
 }
