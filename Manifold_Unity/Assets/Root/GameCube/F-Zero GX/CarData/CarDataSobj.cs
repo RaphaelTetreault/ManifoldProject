@@ -31,6 +31,7 @@ namespace GameCube.FZeroGX.CarData
         public string[] machineNames;
         public string[] unknownNames;
 
+        #region VEHICLES
 
         [Header("Vehicles")]
         [LabelPrefix("00")]
@@ -116,6 +117,10 @@ namespace GameCube.FZeroGX.CarData
         [LabelPrefix("40")]
         public VehicleParametersSobj RainbowPhoenix;
 
+        #endregion
+
+        #region BODY
+
         [Header("Body")]
         [LabelPrefix("01")]
         public VehicleParametersSobj BraveEagle;
@@ -167,6 +172,10 @@ namespace GameCube.FZeroGX.CarData
         public VehicleParametersSobj SpeedyDragon;
         [LabelPrefix("25")]
         public VehicleParametersSobj LibertyManta;
+
+        #endregion
+
+        #region COCKPIT
 
         [Header("Cockpit")]
         [LabelPrefix("01")]
@@ -220,6 +229,10 @@ namespace GameCube.FZeroGX.CarData
         [LabelPrefix("25")]
         public VehicleParametersSobj EnergyCrest;
 
+        #endregion
+
+        #region BOOSTER
+
         [Header("Booster")]
         [LabelPrefix("01")]
         public VehicleParametersSobj Euros_01;
@@ -271,6 +284,8 @@ namespace GameCube.FZeroGX.CarData
         public VehicleParametersSobj Crown_77;
         [LabelPrefix("25")]
         public VehicleParametersSobj Triple_Z;
+
+        #endregion
 
         #endregion
 
