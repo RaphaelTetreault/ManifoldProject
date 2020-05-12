@@ -81,10 +81,7 @@ namespace Manifold.IO
             foreach (var filePath in filePaths)
             {
                 var sysPath = UnityPathUtility.EnforceSystemSeparators(filePath);
-                var path = Path.GetDirectoryName(sysPath);
-                var uriPath = UnityPathUtility.EnforceUnitySeparators(path);
-                Debug.Log($"{sobj.name} exported <a href=\"url\">{sysPath}</a>");
-                Application.OpenURL(@"file:///" + uriPath);
+                Debug.Log($"{sobj.name} exported <color=blue>{sysPath}</color>");
             }
         }
 
