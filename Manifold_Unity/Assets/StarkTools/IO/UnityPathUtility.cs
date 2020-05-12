@@ -246,13 +246,28 @@ namespace UnityEngine
 
         // Enforce directory separator character
         /// <summary>
-        /// Returns the path replacing incompatible directory separators with proper Unity directory separators
+        /// Returns the path replacing incompatible directory separators with proper system directory separators
         /// </summary>
         /// <param name="value">The value to enforce directory separators</param>
         /// <returns></returns>
         public static string EnforceSystemSeparators(string value)
         {
             return value.Replace(UnixDirectorySeparator, DirectorySeparator);
+        }
+
+        // Enforce directory separator character
+        /// <summary>
+        /// Returns the paths replacing incompatible directory separators with proper system directory separators
+        /// </summary>
+        /// <param name="values">The values to enforce directory separators</param>
+        /// <returns></returns>
+        public static string[] EnforceSystemSeparators(string[] values)
+        {
+            for (int i = 0; i < values.Length; i++)
+            {
+                values[i] = EnforceSystemSeparators(values[i]);
+            }
+            return values;
         }
 
         /// <summary>
@@ -268,15 +283,15 @@ namespace UnityEngine
         /// <summary>
         /// Returns the path replacing incompatible directory separators with proper System directory separators
         /// </summary>
-        /// <param name="value">The values to enforce directory separators</param>
+        /// <param name="values">The values to enforce directory separators</param>
         /// <returns></returns>
-        public static string[] EnforceUnitySeparators(string[] strings)
+        public static string[] EnforceUnitySeparators(string[] values)
         {
-            for (int i = 0; i < strings.Length; i++)
+            for (int i = 0; i < values.Length; i++)
             {
-                strings[i] = UnityPathUtility.EnforceUnitySeparators(strings[i]);
+                values[i] = EnforceUnitySeparators(values[i]);
             }
-            return strings;
+            return values;
         }
 
         // Get special folder
