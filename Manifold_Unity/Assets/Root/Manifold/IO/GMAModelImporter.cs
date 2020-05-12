@@ -1,16 +1,10 @@
-﻿using System.IO;
-using UnityEngine;
-
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEditor;
-
-using GameCube.FZeroGX.GMA;
-using UnityEngine.Rendering;
-using System.Linq;
-using System.Linq.Expressions;
+﻿using GameCube.FZeroGX.GMA;
 using System;
+using System.IO;
+using System.Linq;
+using UnityEditor;
+using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace Manifold.IO.GFZX01
 {
@@ -181,6 +175,22 @@ namespace Manifold.IO.GFZX01
         public SubMeshDescriptor CreateSubMesh(GameCube.GX.GxDisplayList list, ref Mesh mesh)
         {
             var submesh = new SubMeshDescriptor();
+
+            // This made colors disappear/white in a lot of places...?
+            //// HACK
+            //// This code should be making separate meshes (as Unity import type)
+            //// where the meshes are under 1 structure in the editor. This current
+            //// code is done in a loop where all meshes are submeshes, which require
+            //// the same number of colors as verts, hence this hack.
+            //var listClr0 = list.clr0;
+            //if (listClr0.Length == 0)
+            //{
+            //    listClr0 = new Color32[list.pos.Length];
+            //    for (int i = 0; i < listClr0.Length; i++)
+            //    {
+            //        listClr0[i] = new Color32(255, 255, 255, 255);
+            //    }
+            //}
 
             // New from this list/submesh
             var vertices = list.pos;

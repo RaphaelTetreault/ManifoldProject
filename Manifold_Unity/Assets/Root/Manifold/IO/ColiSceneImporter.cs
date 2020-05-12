@@ -53,7 +53,7 @@ namespace Manifold.IO.GFZX01
                 var total = coliCourse.scene.gameObjects.Length;
 
                 var sceneName = coliCourse.name;
-                var scenePath = $"Assets/{sceneName}.unity";
+                var scenePath = $"Assets/{importDestination}/{sceneName}.unity";
                 var scene = EditorSceneManager.NewScene(NewSceneSetup.DefaultGameObjects, NewSceneMode.Single);
                 EditorSceneManager.SaveScene(scene, scenePath);
                 // Keep reference of new scene
@@ -84,7 +84,7 @@ namespace Manifold.IO.GFZX01
                         // Ex: MUT_TUNNEL_B and MUT_TUNNEL_BAR both get flagged if input is "MUT_TUNNEL_B"
                         foreach (var assetStr in assets)
                         {
-                            if (assetStr.Equals(pfName))
+                            if (assetStr.Equals(pfName))// && assetStr.Contains(coliCourse.name))
                             {
                                 assets = AssetDatabase.FindAssets(assetStr);
                                 break;

@@ -135,7 +135,6 @@ namespace Manifold.IO
                 ? AssetDatabase.FindAssets($"t:{typeof(T).Name}", searchInFolders)
                 : AssetDatabase.FindAssets($"t:{typeof(T).Name}");
 
-
             var assets = new T[guids.Length];
             for (int i = 0; i < assets.Length; i++)
             {
