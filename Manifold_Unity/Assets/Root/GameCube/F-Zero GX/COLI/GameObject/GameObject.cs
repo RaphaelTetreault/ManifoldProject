@@ -113,6 +113,13 @@ namespace GameCube.FZeroGX.COLI_COURSE
                     // 1356 objects without transform
                     // They appear to use "Collision Position" but
                     // they don't have collision, they have animations.'
+                    var matrix = new Matrix4x4();
+                    matrix.SetTRS(collisionPosition, Quaternion.identity, collisionScale);
+
+                    transform = new Transform()
+                    {
+                        matrix = matrix,
+                    };
                 }
             }
             reader.BaseStream.Seek(endAddress, SeekOrigin.Begin);

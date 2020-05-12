@@ -42,8 +42,7 @@ namespace GameCube.FZeroGX.COLI_COURSE
             // 0x48 - Game Objects
             Assert.IsTrue(header.gameObjectAbsPtr > 0);
             reader.BaseStream.Seek(header.gameObjectAbsPtr, SeekOrigin.Begin);
-            var max = header.gameObjectCount > header.unk_0x4C ? header.gameObjectCount : header.unk_0x4C;
-            reader.ReadX(ref gameObjects, max, true);
+            reader.ReadX(ref gameObjects, header.gameObjectCount, true);
 
             // 0x90 - Track Transforms
             reader.BaseStream.Seek(header.trackInfoAbsPtr, SeekOrigin.Begin);

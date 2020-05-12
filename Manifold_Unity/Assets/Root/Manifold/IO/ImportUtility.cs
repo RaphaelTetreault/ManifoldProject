@@ -3,6 +3,7 @@ using System.IO;
 using UnityEngine;
 using UnityEditor;
 using System.Runtime.Remoting.Metadata;
+using System.Security.Cryptography;
 
 namespace Manifold.IO
 {
@@ -11,18 +12,24 @@ namespace Manifold.IO
         public static TSobj Create<TSobj>(string destinationDir, string fileName)
             where TSobj : ScriptableObject
         {
-            var sobj = ScriptableObject.CreateInstance<TSobj>();
-            var filePath = $"{destinationDir}/{fileName}.asset";
-            AssetDatabase.CreateAsset(sobj, filePath);
-            return sobj;
+            var filePath = $"Assets/{destinationDir}/{fileName}.asset";
+            var asset = AssetDatabase.LoadAssetAtPath<TSobj>(filePath);
+            if (asset != null)
+            {
+                return asset;
+            }
+            else
+            {
+                var sobj = ScriptableObject.CreateInstance<TSobj>();
+                AssetDatabase.CreateAsset(sobj, filePath);
+                return sobj;
+            }
         }
 
         public static TSobj CreateFromBinary<TSobj>(string destinationDir, string fileName, BinaryReader reader)
             where TSobj : ScriptableObject, IBinarySerializable
         {
-            var sobj = ScriptableObject.CreateInstance<TSobj>();
-            var filePath = $"Assets/{destinationDir}/{fileName}.asset";
-            AssetDatabase.CreateAsset(sobj, filePath);
+            var sobj = Create<TSobj>(destinationDir, fileName);
             sobj.Deserialize(reader);
             return sobj;
         }
@@ -30,11 +37,8 @@ namespace Manifold.IO
         public static TSobj CreateFromBinaryFile<TSobj>(string destinationDir, string fileName, BinaryReader reader)
         where TSobj : ScriptableObject, IBinarySerializable, IFile
         {
-            var sobj = ScriptableObject.CreateInstance<TSobj>();
-            var filePath = $"Assets/{destinationDir}/{fileName}.asset";
-            AssetDatabase.CreateAsset(sobj, filePath);
+            var sobj = CreateFromBinary<TSobj>(destinationDir, fileName, reader);
             sobj.FileName = fileName;
-            sobj.Deserialize(reader);
             return sobj;
         }
 
@@ -78,29 +82,7 @@ namespace Manifold.IO
         public static TSobj ImportAs<TSobj>(BinaryReader reader, string file, string importFrom, string importTo, out string filePath)
             where TSobj : ScriptableObject, IBinarySerializable, IFile
         {
-            // Get path to root import folder
-            var path = UnityPathUtility.GetUnityDirectory(UnityPathUtility.UnityFolder.Assets);
-            var dest = UnityPathUtility.CombineSystemPath(path, importTo);
-
-            // get path to file import folder
-            // TODO: Regex instead of this hack
-            // NOTE: The +1 is for the final / fwd slash assuming the "BrowseButtonField"
-            // is used and does not return the final / on the path.
-            var folder = file.Remove(0, importFrom.Length +1);
-            folder = Path.GetDirectoryName(folder);
-
-            // (A) prevent null/empty && (B) prevent "/" or "\\"
-            if (!string.IsNullOrEmpty(folder) && folder.Length > 1)
-                dest = dest + folder;
-
-            if (!Directory.Exists(dest))
-            {
-                Directory.CreateDirectory(dest);
-                Debug.Log($"Created path <i>{dest}</i>");
-            }
-
-            var unityPath = UnityPathUtility.ToUnityFolderPath(dest, UnityPathUtility.UnityFolder.Assets);
-            unityPath = UnityPathUtility.EnforceUnitySeparators(unityPath);
+            var unityPath = GetUnityOutputPath(file, importFrom, importTo);
             var fileName = Path.GetFileName(file);
 
             // GENERIC
@@ -108,11 +90,12 @@ namespace Manifold.IO
             sobj.FileName = fileName;
 
             EditorUtility.SetDirty(sobj);
+            // Thus fixes overwriting assets losing their contents.
+            AssetDatabase.SaveAssets();
 
             // Out params
             filePath = $"{unityPath}/{fileName}";
 
-            //
             return sobj;
         }
 
@@ -128,7 +111,6 @@ namespace Manifold.IO
             var guids = searchInFolders != null || searchInFolders.Length > 0
                 ? AssetDatabase.FindAssets($"t:{typeof(T).Name}", searchInFolders)
                 : AssetDatabase.FindAssets($"t:{typeof(T).Name}");
-
 
             var assets = new T[guids.Length];
             for (int i = 0; i < assets.Length; i++)
@@ -159,5 +141,35 @@ namespace Manifold.IO
             }
             return strings;
         }
+
+        public static string GetUnityOutputPath(string importFile, string importFrom, string importTo)
+        {
+            // Get path to root import folder
+            var path = UnityPathUtility.GetUnityDirectory(UnityPathUtility.UnityFolder.Assets);
+            var dest = UnityPathUtility.CombineSystemPath(path, importTo);
+
+            // get path to file import folder
+            // TODO: Regex instead of this hack
+            // NOTE: The +1 is for the final / fwd slash assuming the "BrowseButtonField"
+            // is used and does not return the final / on the path.
+            var folder = importFile.Remove(0, importFrom.Length + 1);
+            folder = Path.GetDirectoryName(folder);
+
+            // (A) prevent null/empty && (B) prevent "/" or "\\"
+            if (!string.IsNullOrEmpty(folder) && folder.Length > 1)
+                dest = dest + folder;
+
+            if (!Directory.Exists(dest))
+            {
+                Directory.CreateDirectory(dest);
+                Debug.Log($"Created path <i>{dest}</i>");
+            }
+
+            var unityPath = UnityPathUtility.ToUnityFolderPath(dest, UnityPathUtility.UnityFolder.Assets);
+            unityPath = UnityPathUtility.EnforceUnitySeparators(unityPath);
+            
+            return unityPath;
+        }
+
     }
 }
