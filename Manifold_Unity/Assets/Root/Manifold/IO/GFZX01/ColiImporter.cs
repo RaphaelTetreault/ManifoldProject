@@ -1,8 +1,5 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using UnityEngine;
-using UnityEditor;
-using UnityEditor.SceneManagement;
 using GameCube.FZeroGX.COLI_COURSE;
 
 namespace Manifold.IO.GFZX01

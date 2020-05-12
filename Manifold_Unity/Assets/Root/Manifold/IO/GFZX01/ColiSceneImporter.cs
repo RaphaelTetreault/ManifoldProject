@@ -1,7 +1,5 @@
 ﻿using GameCube.FZeroGX.COLI_COURSE;
-using Manifold.IO;
 using System;
-using System.IO;
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.SceneManagement;
