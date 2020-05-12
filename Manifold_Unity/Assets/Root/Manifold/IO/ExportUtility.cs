@@ -9,13 +9,6 @@ namespace Manifold.IO
 {
     public static class ExportUtility
     {
-        public enum ExportOptions
-        {
-            ExportFiles,
-            ExportAllOfType,
-            ExportAllOfTypeInFolder,
-        }
-
         public static string[] ExportFiles<TSobj>(TSobj[] exportSobjs, string exportDest, string extension, bool overwriteFiles, bool preserveFolderStructure = true, FileMode mode = FileMode.OpenOrCreate, FileAccess access = FileAccess.ReadWrite, FileShare share = FileShare.Read)
             where TSobj : ScriptableObject, IBinarySerializable, IFile
         {

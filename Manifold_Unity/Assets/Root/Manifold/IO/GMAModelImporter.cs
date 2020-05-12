@@ -1,4 +1,5 @@
 ﻿using GameCube.FZeroGX.GMA;
+using Manifold.IO;
 using System;
 using System.IO;
 using System.Linq;
@@ -8,14 +9,6 @@ using UnityEngine.Rendering;
 
 namespace Manifold.IO.GFZX01
 {
-    public enum ImportOption
-    {
-        selectedFiles,
-        allFromImportSource,
-        allFromAssetDatabase,
-    }
-
-
     [CreateAssetMenu(menuName = "Manifold/Import/" + "NEW GMA Model Importer")]
     public class GMAModelImporter : ExecutableScriptableObject,
         IImportable
@@ -26,7 +19,7 @@ namespace Manifold.IO.GFZX01
         [SerializeField, BrowseFolderField("Assets/")]
         protected string importDestination;
         [SerializeField]
-        protected ImportOption importOption = ImportOption.selectedFiles;
+        protected IOOption importOption = IOOption.selectedFiles;
 
 
         [Header("TEMP: Apply basic material")]
@@ -44,15 +37,15 @@ namespace Manifold.IO.GFZX01
             // Get Sobjs based on import option
             switch (importOption)
             {
-                case ImportOption.selectedFiles:
+                case IOOption.selectedFiles:
                     // Do nothing and use files set up in inspector
                     break;
 
-                case ImportOption.allFromImportSource:
+                case IOOption.allFromSourceFolder:
                     gmaSobjs = AssetDatabaseUtility.GetAllOfType<GMASobj>(importSource);
                     break;
 
-                case ImportOption.allFromAssetDatabase:
+                case IOOption.allFromAssetDatabase:
                     gmaSobjs = AssetDatabaseUtility.GetAllOfType<GMASobj>();
                     break;
 

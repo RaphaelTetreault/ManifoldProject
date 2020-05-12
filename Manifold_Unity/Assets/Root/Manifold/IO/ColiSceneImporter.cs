@@ -1,9 +1,10 @@
-﻿using System;
+﻿using GameCube.FZeroGX.COLI_COURSE;
+using Manifold.IO;
+using System;
 using System.IO;
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.SceneManagement;
-using GameCube.FZeroGX.COLI_COURSE;
 
 namespace Manifold.IO.GFZX01
 {
@@ -17,7 +18,7 @@ namespace Manifold.IO.GFZX01
         [SerializeField, BrowseFolderField("Assets/")]
         protected string importDestination;
         [SerializeField]
-        protected ImportOption importOption = ImportOption.selectedFiles;
+        protected IOOption importOption = IOOption.selectedFiles;
 
         [Header("Import Files")]
         [SerializeField] protected ColiSceneSobj[] colis;
@@ -31,15 +32,15 @@ namespace Manifold.IO.GFZX01
             // Get Sobjs based on import option
             switch (importOption)
             {
-                case ImportOption.selectedFiles:
+                case IOOption.selectedFiles:
                     // Do nothing and use files set up in inspector
                     break;
 
-                case ImportOption.allFromImportSource:
+                case IOOption.allFromSourceFolder:
                     colis = AssetDatabaseUtility.GetAllOfType<ColiSceneSobj>(importSource);
                     break;
 
-                case ImportOption.allFromAssetDatabase:
+                case IOOption.allFromAssetDatabase:
                     colis = AssetDatabaseUtility.GetAllOfType<ColiSceneSobj>();
                     break;
 

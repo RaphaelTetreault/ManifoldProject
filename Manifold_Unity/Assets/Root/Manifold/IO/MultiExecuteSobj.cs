@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Manifold.io
+namespace Manifold.IO
 {
     [CreateAssetMenu(menuName = "Manifold/Execute/" + "Multi-Execute Sobj")]
     public class MultiExecuteSobj : ExecutableScriptableObject

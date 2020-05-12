@@ -9,8 +9,7 @@ public class CarDataExporter : ExecutableScriptableObject,
 {
     [Header("Export Settings")]
     [SerializeField]
-    protected ExportUtility.ExportOptions exportOptions
-        = ExportUtility.ExportOptions.ExportFiles;
+    protected IOOption exportOptions = IOOption.selectedFiles;
 
     [SerializeField, BrowseFolderField, Tooltip("Used for ExportOptions.ExportAllOfTypeInFolder")]
     protected string exportFrom = string.Empty;
@@ -45,14 +44,15 @@ public class CarDataExporter : ExecutableScriptableObject,
     {
         switch (exportOptions)
         {
-            case ExportUtility.ExportOptions.ExportFiles:
+            case IOOption.selectedFiles:
                 break;
 
-            case ExportUtility.ExportOptions.ExportAllOfType:
-                exportSobjs = AssetDatabaseUtility.GetAllOfType<CarDataSobj>();
-                break;
-            case ExportUtility.ExportOptions.ExportAllOfTypeInFolder:
+            case IOOption.allFromSourceFolder:
                 exportSobjs = AssetDatabaseUtility.GetAllOfType<CarDataSobj>(exportFrom);
+                break;
+
+            case IOOption.allFromAssetDatabase:
+                exportSobjs = AssetDatabaseUtility.GetAllOfType<CarDataSobj>();
                 break;
 
             default:
