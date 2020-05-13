@@ -21,7 +21,7 @@ namespace GameCube.FZeroGX.COLI_COURSE
         public float unk_0x00;
         public float unk_0x04;
         public byte[] zero_0x08;
-        public EnumLayers32 unk_layer_0x18;
+        public EnumFlags32 unk_layer_0x18;
         public AnimationCurve[] animCurves;
 
         #endregion

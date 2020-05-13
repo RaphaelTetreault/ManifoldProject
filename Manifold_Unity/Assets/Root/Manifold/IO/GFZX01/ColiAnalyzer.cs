@@ -46,7 +46,7 @@ namespace Manifold.IO.GFZX01
         public void Analyze()
         {
             analysisSobjs = IOUtility.GetSobjByOption(analysisSobjs, analysisOption, searchFolders);
-            var time = AnalyzerUtility.FileTimestamp();
+            var time = AnalyzerUtility.GetFileTimestamp();
 
             // TOPOLOGY PARAMETERS
             if (topologyParameters)
@@ -381,19 +381,19 @@ namespace Manifold.IO.GFZX01
                 writer.PushCol("Game Object #");
                 writer.PushCol("Game Object");
                 writer.PushCol("unk_0x00 enum");
-                writer.WriteFlagNames<EnumLayers32>();
+                writer.WriteFlagNames<EnumFlags32>();
                 writer.PushCol("unk_0x04");
-                writer.WriteFlagNames<EnumLayers32>();
+                writer.WriteFlagNames<EnumFlags32>();
                 writer.PushCol("collisionBindingAbsPtr");
                 writer.PushCol("collisionPosition");
                 writer.PushCol("unk_0x18 enum");
-                writer.WriteFlagNames<EnumLayers16>();
+                writer.WriteFlagNames<EnumFlags16>();
                 writer.PushCol("unk_0x1A enum");
-                writer.WriteFlagNames<EnumLayers16>();
+                writer.WriteFlagNames<EnumFlags16>();
                 writer.PushCol("unk_0x1C enum");
-                writer.WriteFlagNames<EnumLayers16>();
+                writer.WriteFlagNames<EnumFlags16>();
                 writer.PushCol("unk_0x1E enum");
-                writer.WriteFlagNames<EnumLayers16>();
+                writer.WriteFlagNames<EnumFlags16>();
                 writer.PushCol("unk_0x1C");
                 writer.PushCol("collisionScale");
                 writer.PushCol("zero_0x2C");

@@ -15,14 +15,14 @@ namespace GameCube.FZeroGX.COLI_COURSE
         [SerializeField, Hex] long startAddress;
         [SerializeField, Hex] long endAddress;
 
-        public EnumLayers32 unk_0x00;
-        public EnumLayers32 unk_0x04;
+        public EnumFlags32 unk_0x00;
+        public EnumFlags32 unk_0x04;
         public int collisionBindingAbsPtr;
         public Vector3 position;
-        public EnumLayers16 unk_0x18;
-        public EnumLayers16 unk_0x1A;
-        public EnumLayers16 unk_0x1C;
-        public EnumLayers16 unk_0x1E;
+        public EnumFlags16 unk_0x18;
+        public EnumFlags16 unk_0x1A;
+        public EnumFlags16 unk_0x1C;
+        public EnumFlags16 unk_0x1E;
         public Vector3 scale;
         /// <summary>
         /// 2020/05/12 Raph: Confirmed 0

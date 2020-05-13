@@ -1,7 +1,7 @@
 ﻿using System;
 
 [Flags]
-public enum EnumLayers32 : uint
+public enum EnumFlags32 : uint
 {
     _1 = 1 << 0,
     _2 = 1 << 1,
@@ -38,7 +38,7 @@ public enum EnumLayers32 : uint
 }
 
 [Flags]
-public enum EnumLayers16 : ushort
+public enum EnumFlags16 : ushort
 {
     _1 = 1 << 0,
     _2 = 1 << 1,
@@ -59,7 +59,7 @@ public enum EnumLayers16 : ushort
 }
 
 [Flags]
-public enum EnumLayers8 : byte
+public enum EnumFlags8 : byte
 {
     _1 = 1 << 0,
     _2 = 1 << 1,
