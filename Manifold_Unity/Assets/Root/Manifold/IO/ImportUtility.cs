@@ -2,8 +2,6 @@
 using System.IO;
 using UnityEngine;
 using UnityEditor;
-using System.Runtime.Remoting.Metadata;
-using System.Security.Cryptography;
 
 namespace Manifold.IO
 {
@@ -72,9 +70,9 @@ namespace Manifold.IO
                 }
                 count++;
             }
+            AssetDatabase.Refresh();
             AssetDatabase.SaveAssets();
             EditorUtility.ClearProgressBar();
-            AssetDatabase.Refresh();
 
             return sobjs;
         }
@@ -89,8 +87,9 @@ namespace Manifold.IO
             var sobj = CreateFromBinaryFile<TSobj>(unityPath, fileName, reader);
             sobj.FileName = fileName;
 
+            AssetDatabase.Refresh();
             EditorUtility.SetDirty(sobj);
-            // Thus fixes overwriting assets losing their contents.
+            // This fixes overwriting assets losing their contents.
             AssetDatabase.SaveAssets();
 
             // Out params
@@ -98,49 +97,6 @@ namespace Manifold.IO
 
             return sobj;
         }
-
-
-        //public static T[] GetAllOfTypeFromAssetDatabase<T>(string[] searchInFolders)
-        //    where T : ScriptableObject
-        //{
-        //    for (int i = 0; i < searchInFolders.Length; i++)
-        //    {
-        //        searchInFolders[i] = $"Assets/{searchInFolders[i]}";
-        //    }
-
-        //    var guids = searchInFolders != null || searchInFolders.Length > 0
-        //        ? AssetDatabase.FindAssets($"t:{typeof(T).Name}", searchInFolders)
-        //        : AssetDatabase.FindAssets($"t:{typeof(T).Name}");
-
-        //    var assets = new T[guids.Length];
-        //    for (int i = 0; i < assets.Length; i++)
-        //    {
-        //        var assetPath = AssetDatabase.GUIDToAssetPath(guids[i]);
-        //        assets[i] = AssetDatabase.LoadAssetAtPath<T>(assetPath);
-        //    }
-        //    return assets;
-        //}
-
-        //public static T[] GetAllOfTypeFromAssetDatabase<T>(string searchInFolder)
-        //    where T : ScriptableObject
-        //{
-        //    return GetAllOfTypeFromAssetDatabase<T>(new string[] { searchInFolder });
-        //}
-
-        //public static T[] GetAllOfTypeFromAssetDatabase<T>()
-        //    where T : ScriptableObject
-        //{
-        //    return GetAllOfTypeFromAssetDatabase<T>(new string[0]);
-        //}
-
-        //public static string[] EnforceUnityPath(string[] strings)
-        //{
-        //    for (int i = 0; i < strings.Length; i++)
-        //    {
-        //        strings[i] = UnityPathUtility.EnforceUnitySeparators(strings[i]);
-        //    }
-        //    return strings;
-        //}
 
         public static string GetUnityOutputPath(string importFile, string importFrom, string importTo)
         {

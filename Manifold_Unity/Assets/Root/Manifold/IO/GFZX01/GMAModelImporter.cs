@@ -33,24 +33,26 @@ namespace Manifold.IO.GFZX01
 
         public void Import()
         {
-            // Get Sobjs based on import option
-            switch (importOption)
-            {
-                case IOOption.selectedFiles:
-                    // Do nothing and use files set up in inspector
-                    break;
+            gmaSobjs = IOUtility.GetSobjByOption(gmaSobjs, importOption, importSource);
 
-                case IOOption.allFromSourceFolder:
-                    gmaSobjs = AssetDatabaseUtility.GetAllOfType<GMASobj>(importSource);
-                    break;
+            //// Get Sobjs based on import option
+            //switch (importOption)
+            //{
+            //    case IOOption.selectedFiles:
+            //        // Do nothing and use files set up in inspector
+            //        break;
 
-                case IOOption.allFromAssetDatabase:
-                    gmaSobjs = AssetDatabaseUtility.GetAllOfType<GMASobj>();
-                    break;
+            //    case IOOption.allFromSourceFolder:
+            //        gmaSobjs = AssetDatabaseUtility.GetAllOfType<GMASobj>(importSource);
+            //        break;
 
-                default:
-                    throw new NotImplementedException();
-            }
+            //    case IOOption.allFromAssetDatabase:
+            //        gmaSobjs = AssetDatabaseUtility.GetAllOfType<GMASobj>();
+            //        break;
+
+            //    default:
+            //        throw new NotImplementedException();
+            //}
 
             int submeshes = 0;
             int totalModels = CountModels(gmaSobjs, out submeshes);
@@ -184,6 +186,10 @@ namespace Manifold.IO.GFZX01
             //    }
             //}
 
+            // TODO:
+            // Generate submeshes correctly (ie: stop concatonating them all) so that
+            // there are nmo issues with varied UV, UV2, UV3, and COLOR counts.
+
             // New from this list/submesh
             var vertices = list.pos;
             var normals = list.nrm;
@@ -250,6 +256,11 @@ namespace Manifold.IO.GFZX01
                 {
                     count++;
 
+                    if (string.IsNullOrEmpty(gcmf.ModelName))
+                    {
+                        continue;
+                    }
+
                     foreach (GcmfSubmesh gcmfMesh in gcmf.Submeshes)
                     {
                         // Go over each list0
@@ -265,7 +276,7 @@ namespace Manifold.IO.GFZX01
                     }
                 }
             }
-            return count;
+            return count; 
         }
     }
 }

@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Collections.Generic;
+﻿using System.IO;
 using UnityEditor;
 using UnityEngine;
 using GameCube.FZeroGX;
@@ -418,7 +416,7 @@ namespace Manifold.IO.GFZX01
                         writer.PushCol((int)gameObject.unk_0x04);
                         writer.WriteFlags(gameObject.unk_0x04);
                         writer.PushCol("0x" + gameObject.collisionBindingAbsPtr.ToString("X"));
-                        writer.PushCol(gameObject.collisionPosition);
+                        writer.PushCol(gameObject.position);
                         writer.PushCol((int)gameObject.unk_0x18);
                         writer.WriteFlags(gameObject.unk_0x18);
                         writer.PushCol((int)gameObject.unk_0x1A);
@@ -427,12 +425,12 @@ namespace Manifold.IO.GFZX01
                         writer.WriteFlags(gameObject.unk_0x1C);
                         writer.PushCol((int)gameObject.unk_0x1E);
                         writer.WriteFlags(gameObject.unk_0x1E);
-                        writer.PushCol(gameObject.collisionScale);
+                        writer.PushCol(gameObject.scale);
                         writer.PushCol(gameObject.zero_0x2C);
                         writer.PushCol("0x" + gameObject.animationAbsPtr.ToString("X"));
                         writer.PushCol("0x" + gameObject.unkPtr_0x34.ToString("X"));
                         writer.PushCol("0x" + gameObject.unkPtr_0x38.ToString("X"));
-                        writer.PushCol("0x" + gameObject.transformPtr.ToString("X"));
+                        writer.PushCol("0x" + gameObject.transformAbsPtr.ToString("X"));
                         writer.PushRow();
 
                         gameObjectIndex++;
