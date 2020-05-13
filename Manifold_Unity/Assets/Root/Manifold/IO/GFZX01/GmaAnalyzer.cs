@@ -42,7 +42,7 @@ namespace Manifold.IO
 
             var numProcesses = 4f;
             var processIndex = 0;
-            var time = AnalyzerUtility.FileTimestamp();
+            var time = AnalyzerUtility.GetFileTimestamp();
 
             // EX
             var texFlagAnalysisFile = Path.Combine(outputPath, $"{time} GMA Unknown Flags.tsv");

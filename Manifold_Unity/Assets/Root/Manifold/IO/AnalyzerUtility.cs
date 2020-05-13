@@ -6,10 +6,18 @@ namespace Manifold.IO
 {
     public static class AnalyzerUtility
     {
-        public static string FileTimestamp()
+        public static string GetFileTimestamp()
         {
             return DateTime.Now.ToString("(yyyy-MM-dd) (HH-mm-ss)");
         }
+
+        public static string GetAnalysisFilePathTSV(string outputPath, string fileName)
+        {
+            var time = GetFileTimestamp();
+            var analysisFilePath = Path.Combine(outputPath, $"{time} {fileName}.tsv");
+            return analysisFilePath;
+        }
+
 
         public static StreamWriter OpenWriter(
             string filePath,
