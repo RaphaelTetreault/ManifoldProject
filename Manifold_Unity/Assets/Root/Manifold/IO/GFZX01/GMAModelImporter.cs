@@ -35,25 +35,6 @@ namespace Manifold.IO.GFZX01
         {
             gmaSobjs = IOUtility.GetSobjByOption(gmaSobjs, importOption, importSource);
 
-            //// Get Sobjs based on import option
-            //switch (importOption)
-            //{
-            //    case IOOption.selectedFiles:
-            //        // Do nothing and use files set up in inspector
-            //        break;
-
-            //    case IOOption.allFromSourceFolder:
-            //        gmaSobjs = AssetDatabaseUtility.GetAllOfType<GMASobj>(importSource);
-            //        break;
-
-            //    case IOOption.allFromAssetDatabase:
-            //        gmaSobjs = AssetDatabaseUtility.GetAllOfType<GMASobj>();
-            //        break;
-
-            //    default:
-            //        throw new NotImplementedException();
-            //}
-
             int submeshes = 0;
             int totalModels = CountModels(gmaSobjs, out submeshes);
 
@@ -91,6 +72,9 @@ namespace Manifold.IO.GFZX01
         public int[] GetTriangleFromTriangleStrip(int numVerts)
         {
             // Construct triangles from GameCube GX TRIANLE_STRIP
+            // Apparently the issue is even/odd numbered tri strips
+            // You can flip/flop between those if you know the count,
+            // which you definitely do somewhere.
 
             var nTriangles = numVerts - 2;
             int[] triangles = new int[nTriangles * 3 * 2];
@@ -115,8 +99,10 @@ namespace Manifold.IO.GFZX01
             var numSubmeshes = 0;
             foreach (var gcmfMesh in gcmf.Submeshes)
             {
-                numSubmeshes += gcmfMesh.DisplayList0.GxDisplayLists.Length;
-                numSubmeshes += gcmfMesh.DisplayList1.GxDisplayLists.Length;
+                if (gcmfMesh.DisplayList0.GxDisplayLists != null)
+                    numSubmeshes += gcmfMesh.DisplayList0.GxDisplayLists.Length;
+                if (gcmfMesh.DisplayList1.GxDisplayLists != null)
+                    numSubmeshes += gcmfMesh.DisplayList1.GxDisplayLists.Length;
             }
 
             var mesh = new Mesh();
@@ -132,19 +118,21 @@ namespace Manifold.IO.GFZX01
                 EditorUtility.DisplayProgressBar(title, info, progress);
 
                 // Go over each list0
-                foreach (var list in gcmfMesh.DisplayList0.GxDisplayLists)
-                {
-                    var submesh = CreateSubMesh(list, ref mesh);
-                    submeshes[subIndex] = submesh;
-                    subIndex++;
-                }
-                // Go over each list0
-                foreach (var list in gcmfMesh.DisplayList1.GxDisplayLists)
-                {
-                    var submesh = CreateSubMesh(list, ref mesh);
-                    submeshes[subIndex] = submesh;
-                    subIndex++;
-                }
+                if (gcmfMesh.DisplayList1.GxDisplayLists != null)
+                    foreach (var list in gcmfMesh.DisplayList0.GxDisplayLists)
+                    {
+                        var submesh = CreateSubMesh(list, ref mesh);
+                        submeshes[subIndex] = submesh;
+                        subIndex++;
+                    }
+                // Go over each list1
+                if (gcmfMesh.DisplayList1.GxDisplayLists != null)
+                    foreach (var list in gcmfMesh.DisplayList1.GxDisplayLists)
+                    {
+                        var submesh = CreateSubMesh(list, ref mesh);
+                        submeshes[subIndex] = submesh;
+                        subIndex++;
+                    }
             }
             mesh.subMeshCount = submeshes.Length;
             for (int i = 0; i < submeshes.Length; i++)
@@ -254,29 +242,29 @@ namespace Manifold.IO.GFZX01
             {
                 foreach (GCMF gcmf in sobj.value.GCMF)
                 {
-                    count++;
-
+                    // Some GCMFs can be null, check via model name
                     if (string.IsNullOrEmpty(gcmf.ModelName))
                     {
                         continue;
                     }
 
+                    count++;
+
                     foreach (GcmfSubmesh gcmfMesh in gcmf.Submeshes)
                     {
                         // Go over each list0
-                        foreach (var list in gcmfMesh.DisplayList0.GxDisplayLists)
-                        {
-                            submeshes++;
-                        }
-                        // Go over each list0
-                        foreach (var list in gcmfMesh.DisplayList1.GxDisplayLists)
-                        {
-                            submeshes++;
-                        }
+                        if (gcmfMesh.DisplayList0.GxDisplayLists != null)
+                            foreach (var list in gcmfMesh.DisplayList0.GxDisplayLists)
+                                submeshes++;
+
+                        // Go over each list1
+                        if (gcmfMesh.DisplayList1.GxDisplayLists != null)
+                            foreach (var list in gcmfMesh.DisplayList1.GxDisplayLists)
+                                submeshes++;
                     }
                 }
             }
-            return count; 
+            return count;
         }
     }
 }
