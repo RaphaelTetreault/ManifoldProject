@@ -78,7 +78,7 @@ namespace GameCube.GX
             reader.ReadX(ref count);
 
             var vatIdx = (byte)gxCmd.VertexFormat;
-            var vat = FzgxGxVat.FzgxVAT;
+            var vat = VAT.GFZX01_VAT;
             var vaf = vat.GxVtxAttrFmts[vatIdx];
 
             //mtx
