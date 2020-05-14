@@ -1,14 +1,7 @@
 ﻿namespace Manifold.IO
 {
-    public static class MenuConst
+    public static partial class MenuConst
     {
-        public const string Manifold = "Manifold/";
-        public const string ManifoldAnalize = Manifold + "Analyze/";
-        public const string ManifoldAsset = Manifold + "Asset/";
-        public const string ManifoldImport = Manifold + "Import/";
-        public const string ManifoldExport = Manifold + "Export/";
-
-
         public const string GFZX01 = Manifold + "GFZX01/";
         public const string GFZX01_Camera = GFZX01 + "Camera/";
         public const string GFZX01_CarData = GFZX01 + "CarData/";
