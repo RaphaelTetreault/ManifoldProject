@@ -4,9 +4,8 @@ using System;
 using System.IO;
 using UnityEngine;
 using UnityEngine.Assertions;
-using UnityEngine.Serialization;
 
-namespace GameCube.FZeroGX.GMA
+namespace GameCube.GFZX01.GMA
 {
     #region MATERIAL ENUMS
     [Flags]
@@ -304,7 +303,6 @@ namespace GameCube.FZeroGX.GMA
         short tex2Index = -1;
 
         [SerializeField, HexFlags("1C", 8)]
-        [FormerlySerializedAs("vertexDescriptorFlags")]
         GXAttrFlag_U32 vertexAttributeFlags;
 
         // TODO: label prefix on top node, not members

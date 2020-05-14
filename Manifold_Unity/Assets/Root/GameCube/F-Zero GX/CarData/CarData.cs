@@ -1,12 +1,10 @@
 ﻿using StarkTools.IO;
 using System;
-using System.Collections;
-using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using UnityEngine;
-using UnityEngine.Assertions;
 
-namespace GameCube.FZeroGX.CarData
+namespace GameCube.GFZX01.CarData
 {
     [Serializable]
     public class CarData : IBinarySerializable, IBinaryAddressable, IFile
@@ -499,7 +497,7 @@ namespace GameCube.FZeroGX.CarData
             // Read some padding
             reader.ReadX(ref padding, kPaddingSize);
             foreach (var pad in padding)
-                Assert.IsTrue(pad == 0);
+                System.Diagnostics.Debug.Assert(pad == 0);
 
             BinaryIoUtility.PushEndianess(kLittleEndian);
             machineNames = new string[kMachineNameTable];

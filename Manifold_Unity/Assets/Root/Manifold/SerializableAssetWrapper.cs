@@ -10,9 +10,6 @@ public class SerializableAssetWrapper<T> : ScriptableObject, IBinarySerializable
     [SerializeField]
     public T value;
 
-    //public T Value
-    //    => value;
-
     public void Deserialize(BinaryReader reader)
     {
         value.Deserialize(reader);

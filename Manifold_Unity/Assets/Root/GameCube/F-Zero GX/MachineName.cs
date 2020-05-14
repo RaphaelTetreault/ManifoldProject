@@ -1,4 +1,4 @@
-﻿namespace GameCube.FZeroGX
+﻿namespace GameCube.GFZX01
 {
     public enum MachineName
     {

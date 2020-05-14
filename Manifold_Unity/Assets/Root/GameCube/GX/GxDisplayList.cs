@@ -6,8 +6,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.Serialization;
-using GameCube.FZeroGX;
-using GameCube.FZeroGX.GMA;
+using GameCube.GFZX01;
+using GameCube.GFZX01.GMA;
 
 namespace GameCube.GX
 {

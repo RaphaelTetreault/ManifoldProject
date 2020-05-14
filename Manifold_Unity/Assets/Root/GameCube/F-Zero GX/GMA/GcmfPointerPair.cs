@@ -1,16 +1,9 @@
-﻿using GameCube.GX;
-using StarkTools.IO;
+﻿using StarkTools.IO;
 using System;
 using System.IO;
-using System.Collections;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using System.Text;
 using UnityEngine;
-using UnityEngine.Assertions;
-using UnityEngine.Serialization;
 
-namespace GameCube.FZeroGX.GMA
+namespace GameCube.GFZX01.GMA
 {
     [Serializable]
     public struct GcmfPointerPair : IBinarySerializable, IBinaryAddressable

@@ -1,14 +1,9 @@
 ﻿using StarkTools.IO;
-using GameCube.GX;
 using System;
 using System.IO;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Assertions;
-using UnityEngine.Serialization;
 
-namespace GameCube.FZeroGX.GMA
+namespace GameCube.GFZX01.GMA
 {
     [Serializable]
     public class GcmfSubmesh : IBinarySerializable, IBinaryAddressable

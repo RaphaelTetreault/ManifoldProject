@@ -3,7 +3,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 
-namespace GameCube.FZeroGX.CarData
+namespace GameCube.GFZX01.CarData
 {
     [Serializable]
     public struct CarDataPadding : IBinarySerializable

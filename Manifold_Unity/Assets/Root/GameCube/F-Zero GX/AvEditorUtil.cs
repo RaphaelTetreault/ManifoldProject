@@ -1,7 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using UnityEngine;
 
-namespace GameCube.FZeroGX
+namespace GameCube.GFZX01
 {
     public static class AvEditorUtil
     {

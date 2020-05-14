@@ -2,13 +2,8 @@
 using StarkTools.IO;
 using System;
 using System.IO;
-using System.Collections;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using System.Text;
 using UnityEngine;
-using UnityEngine.Assertions;
-using UnityEngine.Serialization;
 
 // BobJrSr
 // https://github.com/bobjrsenior/GxUtils/blob/master/GxUtils/LibGxFormat/Gma/GMAFormat.xml
@@ -29,11 +24,10 @@ using UnityEngine.Serialization;
 // https://forums.dolphin-emu.org/Thread-how-to-decompile-patch-a-gamecube-game
 
 
-
-namespace GameCube.FZeroGX.GMA
+namespace GameCube.GFZX01.GMA
 {
     [Serializable]
-    public class GMA : IBinarySerializable, IFile
+    public class Gma : IBinarySerializable, IFile
     {
         private const int kGmaHeaderSize = 8;
 
@@ -57,7 +51,7 @@ namespace GameCube.FZeroGX.GMA
         GcmfPointerPair[] gcmfPointerPairs;
 
         [SerializeField]
-        GCMF[] gcmf;
+        Gcmf[] gcmf;
 
         #endregion
 
@@ -69,7 +63,7 @@ namespace GameCube.FZeroGX.GMA
             set => name = value;
         }
 
-        public GCMF[] GCMF
+        public Gcmf[] GCMF
             => gcmf;
 
         public int GcmfCount
@@ -93,7 +87,7 @@ namespace GameCube.FZeroGX.GMA
             reader.ReadX(ref gcmfCount);
             reader.ReadX(ref headerSize);
 
-            gcmf = new GCMF[gcmfCount];
+            gcmf = new Gcmf[gcmfCount];
             gcmfPointerPairs = new GcmfPointerPair[gcmfCount];
             for (int i = 0; i < gcmfPointerPairs.Length; i++)
             {
@@ -113,7 +107,7 @@ namespace GameCube.FZeroGX.GMA
                 reader.ReadXCString(ref modelName, Encoding.ASCII);
 
                 // Init GCMF with model name
-                gcmf[i] = new GCMF
+                gcmf[i] = new Gcmf
                 {
                     ModelName = modelName,
                 };

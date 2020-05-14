@@ -1,12 +1,9 @@
-﻿using GameCube.GX;
-using StarkTools.IO;
+﻿using StarkTools.IO;
 using System;
 using System.IO;
 using UnityEngine;
-using UnityEngine.Assertions;
-using UnityEngine.Serialization;
 
-namespace GameCube.FZeroGX.GMA
+namespace GameCube.GFZX01.GMA
 {
     [Serializable]
     public struct TransformMatrix3x4 : IBinarySerializable

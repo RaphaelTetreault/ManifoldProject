@@ -1,6 +1,6 @@
 ﻿using GameCube.GX;
 
-namespace GameCube.FZeroGX
+namespace GameCube.GFZX01
 {
     public static class FzgxGxVat
     {

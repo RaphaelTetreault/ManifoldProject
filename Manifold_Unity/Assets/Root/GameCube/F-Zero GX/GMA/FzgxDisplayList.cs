@@ -1,16 +1,12 @@
-﻿using StarkTools.IO;
+﻿using GameCube.GX;
+using StarkTools.IO;
 using System;
 using System.IO;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
-using UnityEngine.Serialization;
 
-using GameCube.GX;
-using System.Net;
-
-namespace GameCube.FZeroGX.GMA
+namespace GameCube.GFZX01.GMA
 {
     [Serializable]
     public class FzgxDisplayList : IBinarySerializable, IBinaryAddressable

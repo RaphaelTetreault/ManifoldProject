@@ -1,25 +1,22 @@
 ﻿using StarkTools.IO;
 using System;
 using System.IO;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
-using UnityEngine.Serialization;
 
-namespace GameCube.FZeroGX.GMA
+namespace GameCube.GFZX01.GMA
 {
     [Serializable]
-    public class GCMF : IBinarySerializable, IBinaryAddressable
+    public class Gcmf : IBinarySerializable, IBinaryAddressable
     {
+        /// <summary>
+        /// Name of this GCMF model
+        /// </summary>
         [Header("GCMF")]
         [SerializeField] string name;
         [SerializeField, Hex] long startAddress;
         [SerializeField, Hex] long endAddress;
-        /// <summary>
-        /// Name of this GCMF model
-        /// </summary>
-        [FormerlySerializedAs("t1Size")]
+        //
         [SerializeField, Hex] int t1Count;
 
         #region MEMBERS

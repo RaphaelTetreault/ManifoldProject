@@ -1,11 +1,9 @@
 ﻿using StarkTools.IO;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
-namespace GameCube.FZeroGX.CarData
+namespace GameCube.GFZX01.CarData
 {
     // Structure
     // https://github.com/yoshifan/fzerogx-docs/blob/master/addresses/base_machine_stat_blocks.md

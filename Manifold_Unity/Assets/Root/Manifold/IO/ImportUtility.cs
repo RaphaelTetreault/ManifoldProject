@@ -65,8 +65,6 @@ namespace Manifold.IO
         {
             var count = 0;
             var total = importFiles.Length;
-
-            //var typeName = typeof(TSobj).Name;
             var sobjs = new TSobj[total];
 
             foreach (var file in importFiles)
@@ -78,15 +76,7 @@ namespace Manifold.IO
                         var filepath = string.Empty;
                         var sobj = ImportAs<TSobj>(reader, file, importPath, importDest, out filepath);
                         sobjs[count] = sobj;
-
                         ImportProgBar<TSobj>(count, total, filepath);
-                        //// Progress bar update
-                        //var digitCount = total.ToString().Length;
-                        //var currentIndexStr = (count + 1).ToString().PadLeft(digitCount);
-                        //var title = $"Importing {typeName} ({currentIndexStr}/{total})";
-                        //var info = filepath;
-                        //var progress = count / (float)total;
-                        //EditorUtility.DisplayProgressBar(title, info, progress);
                     }
                 }
                 count++;
