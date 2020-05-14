@@ -136,7 +136,7 @@ namespace Manifold.IO.GFZX01.CourseCollision
                 foreach (var sobj in analysisSobjs)
                 {
                     // foreach Transform
-                    foreach (var trackTransform in sobj.scene.trackTransforms)
+                    foreach (var trackTransform in sobj.Value.trackTransforms)
                     {
                         WriteTrackDataRecursive(writer, sobj, 0, paramIndex, trackTransform);
                     }
@@ -210,8 +210,8 @@ namespace Manifold.IO.GFZX01.CourseCollision
                 foreach (var sobj in analysisSobjs)
                 {
                     var index = 0;
-                    var total = sobj.scene.trackTransforms.Count;
-                    foreach (var trackTransform in sobj.scene.trackTransforms)
+                    var total = sobj.Value.trackTransforms.Count;
+                    foreach (var trackTransform in sobj.Value.trackTransforms)
                     {
                         WriteTrackTransformRecursive(writer, sobj, 0, index++, total, trackTransform);
                     }
@@ -282,7 +282,7 @@ namespace Manifold.IO.GFZX01.CourseCollision
                 foreach (var file in analysisSobjs)
                 {
                     int gameObjectIndex = 0;
-                    foreach (var gameObject in file.scene.gameObjects)
+                    foreach (var gameObject in file.Value.gameObjects)
                     {
                         if (gameObject.animation == null)
                             continue;
@@ -292,7 +292,7 @@ namespace Manifold.IO.GFZX01.CourseCollision
                         {
                             foreach (var keyable in animationCurve.keyableAttributes)
                             {
-                                writer.PushCol(file.fileName);
+                                writer.PushCol(file.FileName);
                                 writer.PushCol(gameObjectIndex);
                                 writer.PushCol(gameObject.name);
                                 writer.PushCol($"0x{animationCurve.StartAddress:X8}");
@@ -335,7 +335,7 @@ namespace Manifold.IO.GFZX01.CourseCollision
                 foreach (var file in analysisSobjs)
                 {
                     int gameObjectIndex = 0;
-                    foreach (var gameObject in file.scene.gameObjects)
+                    foreach (var gameObject in file.Value.gameObjects)
                     {
                         int animIndex = 0;
                         foreach (var animationCurve in gameObject.animation.animCurves)
@@ -346,7 +346,7 @@ namespace Manifold.IO.GFZX01.CourseCollision
                                 if (animIndex != index)
                                     continue;
 
-                                writer.PushCol(file.fileName);
+                                writer.PushCol(file.FileName);
                                 writer.PushCol(gameObjectIndex);
                                 writer.PushCol(gameObject.name);
                                 writer.PushCol($"0x{animationCurve.StartAddress:X8}");
@@ -406,9 +406,9 @@ namespace Manifold.IO.GFZX01.CourseCollision
                 foreach (var file in analysisSobjs)
                 {
                     int gameObjectIndex = 0;
-                    foreach (var gameObject in file.scene.gameObjects)
+                    foreach (var gameObject in file.Value.gameObjects)
                     {
-                        writer.PushCol(file.fileName);
+                        writer.PushCol(file.FileName);
                         writer.PushCol(gameObjectIndex);
                         writer.PushCol(gameObject.name);
                         writer.PushCol((int)gameObject.unk_0x00);

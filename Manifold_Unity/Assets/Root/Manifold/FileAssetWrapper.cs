@@ -8,7 +8,7 @@ public class FileAssetWrapper<T> : ScriptableObject, IBinarySerializable, IFile
     where T : IBinarySerializable, IFile
 {
     [SerializeField]
-    public T value;
+    private T value;
 
     public T Value
         => value;
@@ -19,6 +19,11 @@ public class FileAssetWrapper<T> : ScriptableObject, IBinarySerializable, IFile
         set => this.value.FileName = value;
     }
 
+    public static implicit operator T(FileAssetWrapper<T> sobj)
+    {
+        return sobj.value;
+    }
+
     public void Deserialize(BinaryReader reader)
     {
         value.Deserialize(reader);
@@ -27,5 +32,10 @@ public class FileAssetWrapper<T> : ScriptableObject, IBinarySerializable, IFile
     public void Serialize(BinaryWriter writer)
     {
         value.Serialize(writer);
+    }
+
+    public void SetValue(T value)
+    {
+        this.value = value;
     }
 }

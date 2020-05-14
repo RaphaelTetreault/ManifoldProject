@@ -49,7 +49,7 @@ namespace Manifold.IO.GFZX01.CourseCollision
             foreach (var coliCourse in colis)
             {
                 var count = 0;
-                var total = coliCourse.scene.gameObjects.Length;
+                var total = coliCourse.Value.gameObjects.Length;
 
                 var sceneName = coliCourse.name;
                 var scenePath = $"Assets/{importDestination}/{sceneName}.unity";
@@ -58,7 +58,7 @@ namespace Manifold.IO.GFZX01.CourseCollision
                 // Keep reference of new scene
                 scene = EditorSceneManager.OpenScene(scenePath);
 
-                foreach (var gobj in coliCourse.scene.gameObjects)
+                foreach (var gobj in coliCourse.Value.gameObjects)
                 {
                     var pfName = $"pf_{gobj.name}";
                     var assets = AssetDatabase.FindAssets(pfName);

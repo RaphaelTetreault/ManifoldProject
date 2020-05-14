@@ -101,10 +101,12 @@ namespace Manifold.IO.GFZX01.GMA
 
             foreach (var sobj in analysisSobjs)
             {
+                var gma = sobj.Value;
+
                 // Write contents
                 var index = 0;
-                var maxIndex = sobj.value.GcmfCount;
-                foreach (var gcmf in sobj.Value.GCMF)
+                var maxIndex = gma.GcmfCount;
+                foreach (var gcmf in gma.GCMF)
                 {
                     if (string.IsNullOrEmpty(gcmf.ModelName))
                         continue;
@@ -247,10 +249,12 @@ namespace Manifold.IO.GFZX01.GMA
 
             foreach (var sobj in analysisSobjs)
             {
+                var gma = sobj.Value;
+
                 // Write contents
                 var gcmfIndex = 0; // 0 indexed in debugger
-                var gcmfIndexMax = sobj.value.GcmfCount;
-                foreach (var gcmf in sobj.Value.GCMF)
+                var gcmfIndexMax = gma.GcmfCount;
+                foreach (var gcmf in gma.GCMF)
                 {
                     // skip null models
                     if (string.IsNullOrEmpty(gcmf.ModelName))
@@ -332,10 +336,11 @@ namespace Manifold.IO.GFZX01.GMA
 
             foreach (var sobj in analysisSobjs)
             {
+                var gma = sobj.Value;
                 // Write contents
                 var modelIndex = 0;
-                var modelIndexMax = sobj.value.GcmfCount;
-                foreach (var gcmf in sobj.Value.GCMF)
+                var modelIndexMax = gma.GcmfCount;
+                foreach (var gcmf in gma.GCMF)
                 {
                     var texIndex = 1; // debugger is not zero-indexed
                     var texIndexMax = gcmf.Textures.Length;

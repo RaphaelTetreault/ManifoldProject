@@ -71,8 +71,10 @@ namespace Manifold.IO.GFZX01.Camera
 
                 foreach (var sobj in analysisSobjs)
                 {
+                    var liveCamStage = sobj.Value;
+
                     var panIndex = 0;
-                    foreach (var pan in sobj.value.Pans)
+                    foreach (var pan in liveCamStage.Pans)
                     {
 
                         var stageIndexText = System.Text.RegularExpressions.Regex.Match(sobj.FileName, @"\d+").Value;
@@ -145,8 +147,10 @@ namespace Manifold.IO.GFZX01.Camera
 
                 foreach (var sobj in analysisSobjs)
                 {
+                    var liveCamStage = sobj.Value;
+
                     var panIndex = 0;
-                    foreach (var pan in sobj.value.Pans)
+                    foreach (var pan in liveCamStage.Pans)
                     {
                         var stageIndexText = System.Text.RegularExpressions.Regex.Match(sobj.FileName, @"\d+").Value;
                         var stageIndex = int.Parse(stageIndexText);

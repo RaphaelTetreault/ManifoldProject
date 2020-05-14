@@ -14,7 +14,7 @@ namespace Manifold.IO.GFZX01.Camera
 
         private void Start()
         {
-            StartCoroutine(CoPlayLiveCameraStage(lcsSobj.value));
+            StartCoroutine(CoPlayLiveCameraStage(lcsSobj));
         }
 
         public IEnumerator CoPlayLiveCameraStage(LiveCameraStage liveCameraStage)
@@ -45,7 +45,7 @@ namespace Manifold.IO.GFZX01.Camera
         private void OnDrawGizmos()
         {
             Gizmos.color = gizmosColor;
-            var liveCameraStage = lcsSobj.value;
+            var liveCameraStage = lcsSobj.Value;
             var startPos = transform.position;
 
             foreach (var pan in liveCameraStage.Pans)

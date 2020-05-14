@@ -40,6 +40,8 @@ namespace Manifold.IO.GFZX01.GMA
             int count = 1;
             foreach (GmaSobj sobj in gmaSobjs)
             {
+                Gma gma = sobj.Value;
+
                 var folderName = Path.GetFileNameWithoutExtension(sobj.FileName);
                 folderName = folderName.Replace(',', '_');
 
@@ -54,7 +56,7 @@ namespace Manifold.IO.GFZX01.GMA
 
                 unityPath += $"/{folderName}/";
 
-                foreach (var gcmf in sobj.value.GCMF)
+                foreach (var gcmf in gma.GCMF)
                 {
                     if (string.IsNullOrEmpty(gcmf.ModelName))
                         continue;
@@ -277,7 +279,8 @@ namespace Manifold.IO.GFZX01.GMA
 
             foreach (GmaSobj sobj in gmaSobjs)
             {
-                foreach (Gcmf gcmf in sobj.value.GCMF)
+                var gma = sobj.Value;
+                foreach (Gcmf gcmf in gma.GCMF)
                 {
                     // Some GCMFs can be null, check via model name
                     if (string.IsNullOrEmpty(gcmf.ModelName))

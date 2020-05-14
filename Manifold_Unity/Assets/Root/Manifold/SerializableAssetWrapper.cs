@@ -10,6 +10,11 @@ public class SerializableAssetWrapper<T> : ScriptableObject, IBinarySerializable
     [SerializeField]
     public T value;
 
+    public static implicit operator T(SerializableAssetWrapper<T> sobj)
+    {
+        return sobj.value;
+    }
+
     public void Deserialize(BinaryReader reader)
     {
         value.Deserialize(reader);

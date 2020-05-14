@@ -21,7 +21,7 @@ namespace Manifold.IO.GFZX01.CourseCollision
                 return;
 
             Gizmos.color = debugColor;
-            foreach (var node in coli.scene.trackNodes)
+            foreach (var node in coli.Value.trackNodes)
             {
                 var from = node.point.positionStart;
                 var to = node.point.positionEnd;
@@ -31,7 +31,7 @@ namespace Manifold.IO.GFZX01.CourseCollision
             }
 
             Gizmos.color = transformColor;
-            foreach (var trackTransform in coli.scene.trackTransforms)
+            foreach (var trackTransform in coli.Value.trackTransforms)
             {
                 DrawRecursive(trackTransform, Quaternion.identity, Vector3.zero, Vector3.one);
             }
@@ -89,7 +89,7 @@ namespace Manifold.IO.GFZX01.CourseCollision
                 var root = new UnityEngine.GameObject();
                 root.name = editorTarget.Coli.name;
 
-                foreach (var transform in editorTarget.Coli.scene.trackTransforms)
+                foreach (var transform in editorTarget.Coli.Value.trackTransforms)
                 {
                     CreateTransform(transform, root.transform);
                 }
