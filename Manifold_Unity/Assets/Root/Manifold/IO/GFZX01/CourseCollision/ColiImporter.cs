@@ -22,6 +22,9 @@ namespace Manifold.IO.GFZX01.CourseCollision
         [SerializeField, BrowseFolderField("Assets/")]
         protected string importDestination;
 
+        [SerializeField]
+        protected bool isAX;
+
         [Header("Import Files")]
         [SerializeField]
         protected string[] importFiles;
@@ -34,7 +37,9 @@ namespace Manifold.IO.GFZX01.CourseCollision
         {
             importFiles = Directory.GetFiles(importPath, searchPattern, fileSearchOption);
             importFiles = UnityPathUtility.EnforceUnitySeparators(importFiles);
-            var importFilesUncompressed = GFZX01Utility.DecompressEachLZ(importFiles);
+            var importFilesUncompressed = isAX
+                ? GFZX01Utility.DecompressEachLZ(importFiles, LibGxFormat.AvGame.FZeroAX)
+                : GFZX01Utility.DecompressEachLZ(importFiles);
             ImportUtility.ImportManyAs<ColiSceneSobj>(importFilesUncompressed, importPath, importDestination);
         }
     }

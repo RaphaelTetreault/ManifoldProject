@@ -42,7 +42,7 @@ namespace Manifold.IO.GFZX01
             }
         }//
 
-        public static string[] DecompressEachLZ(string[] importFiles)
+        public static string[] DecompressEachLZ(string[] importFiles, AvGame avGame = AvGame.FZeroGX)
         {
             var importFilesList = new List<string>(importFiles);
 
@@ -59,7 +59,7 @@ namespace Manifold.IO.GFZX01
                     string outputFilePath = string.Empty;
                     // Need to fix AvGame params to make sense...
                     // Save the decompressed file so next time we run this there is no decompression going on
-                    DecompressAv(importFile, AvGame.FZeroGX, true, out outputFilePath);
+                    DecompressAv(importFile, avGame, true, out outputFilePath);
                     // save reference to newly output file
                     importFilesList[i] = outputFilePath;
                 }

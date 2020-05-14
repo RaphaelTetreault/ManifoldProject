@@ -40,7 +40,7 @@ namespace GameCube.GFZX01.CourseCollision
             reader.ReadX(ref trackNodes, header.trackNodeCount, true);
 
             // 0x48 - Game Objects
-            Assert.IsTrue(header.gameObjectAbsPtr > 0);
+            Assert.IsTrue(header.gameObjectAbsPtr > 0); // NOT TRUE FOR AX
             reader.BaseStream.Seek(header.gameObjectAbsPtr, SeekOrigin.Begin);
             reader.ReadX(ref gameObjects, header.gameObjectCount, true);
 
