@@ -39,13 +39,9 @@ namespace Manifold.IO.GFZX01.Camera
         public void Export()
         {
             exportSobjs = IOUtility.GetSobjByOption(exportSobjs, exportOptions, exportFrom);
-
             var exportedFiles = ExportUtility.ExportFiles(exportSobjs, exportTo, "bin", allowOverwritingFiles, preserveFolderStructure);
             ExportUtility.PrintExportsToConsole(this, exportedFiles);
-            if (openFolderAfterExport)
-            {
-                IOUtility.OpenFileFolder(exportedFiles);
-            }
+            IOUtility.OpenDirectoryIf(openFolderAfterExport, exportedFiles);
         }
 
     }

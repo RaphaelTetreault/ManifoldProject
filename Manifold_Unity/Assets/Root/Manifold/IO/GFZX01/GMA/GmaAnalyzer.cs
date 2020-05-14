@@ -69,7 +69,7 @@ namespace Manifold.IO.GFZX01.GMA
 
             if (openFolderAfterAnalysis)
             {
-                IOUtility.OpenFileFolder(gcfmAnalysisFile);
+                IOUtility.OpenDirectory(gcfmAnalysisFile);
             }
         }
 

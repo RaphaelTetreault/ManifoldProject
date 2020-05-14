@@ -41,7 +41,7 @@ namespace Manifold.IO.GFZX01.Camera
 
             if (openFolderAfterAnalysis)
             {
-                IOUtility.OpenFileFolder(filePath);
+                IOUtility.OpenDirectory(filePath);
             }
         }
 

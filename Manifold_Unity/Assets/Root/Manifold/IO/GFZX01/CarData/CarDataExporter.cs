@@ -34,7 +34,6 @@ namespace Manifold.IO.GFZX01.CarData
         protected CarDataSobj[] exportSobjs;
 
 
-
         public override string ExecuteText => "Export CarData";
 
         public override void Execute() => Export();
@@ -42,19 +41,16 @@ namespace Manifold.IO.GFZX01.CarData
         public void Export()
         {
             exportSobjs = IOUtility.GetSobjByOption(exportSobjs, exportOptions, exportFrom);
-
             var exportedFiles = ExportUtility.ExportFiles(exportSobjs, exportTo, "", allowOverwritingFiles, preserveFolderStructure);
             ExportUtility.PrintExportsToConsole(this, exportedFiles);
-            if (openFolderAfterExport)
-            {
-                IOUtility.OpenFileFolder(exportedFiles);
-            }
 
             if (exportCompressed)
             {
                 var compressedFiles = GFZX01Utility.CompressEachAsLZ(exportedFiles, allowOverwritingFiles);
                 ExportUtility.PrintExportsToConsole(this, compressedFiles);
             }
+
+            IOUtility.OpenDirectoryIf(openFolderAfterExport, exportedFiles);
         }
 
     }

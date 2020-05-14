@@ -11,18 +11,23 @@ namespace Manifold.IO.GFZX01.GMA
         [SerializeField]
         protected IOOption exportOptions = IOOption.selectedFiles;
 
-        [SerializeField, BrowseFolderField, Tooltip("Used for ExportOptions.ExportAllOfTypeInFolder")]
+        [SerializeField, BrowseFolderField, Tooltip("Used for exportOptions")]
         protected string exportFrom = string.Empty;
 
         [SerializeField, BrowseFolderField]
         protected string exportTo;
-        [SerializeField]
-        protected string extension = ".gma";
+        
         [SerializeField]
         protected bool preserveFolderStructure = true;
+        
         [SerializeField]
         protected bool exportCompressed = false;
+        
+        [Header("Preferences")]
+        [SerializeField]
+        protected bool openFolderAfterExport = true;
 
+        [Header("Exports")]
         [SerializeField]
         protected GmaSobj[] exportSobjs;
 
@@ -33,29 +38,17 @@ namespace Manifold.IO.GFZX01.GMA
 
         public void Export()
         {
-            var exportSobjs = this.exportSobjs;
-            switch (exportOptions)
-            {
-                case IOOption.selectedFiles:
-                    break;
-
-                case IOOption.allFromSourceFolder:
-                    exportSobjs = AssetDatabaseUtility.GetAllOfType<GmaSobj>(exportFrom);
-                    break;
-
-                case IOOption.allFromAssetDatabase:
-                    exportSobjs = AssetDatabaseUtility.GetAllOfType<GmaSobj>();
-                    break;
-
-                default:
-                    throw new NotImplementedException();
-            }
-            var exportedFiles = ExportUtility.ExportFiles(exportSobjs, exportTo, extension, preserveFolderStructure);
+            exportSobjs = IOUtility.GetSobjByOption(exportSobjs, exportOptions, exportFrom);
+            var exportedFiles = ExportUtility.ExportFiles(exportSobjs, exportTo, "gma", preserveFolderStructure);
+            ExportUtility.PrintExportsToConsole(this, exportedFiles);
 
             if (exportCompressed)
             {
                 var compressedFiles = GFZX01Utility.CompressEachAsLZ(exportedFiles);
+                ExportUtility.PrintExportsToConsole(this, compressedFiles);
             }
+
+            IOUtility.OpenDirectoryIf(openFolderAfterExport, exportedFiles);
         }
     }
 
