@@ -1,6 +1,1 @@
-﻿using UnityEngine;
-
-public class LiveCameraStageSobj : ManifoldAsset<LiveCameraStage>
-{
-
-}
+﻿public class LiveCameraStageSobj : FileAssetWrapper<LiveCameraStage> { }

@@ -6,7 +6,7 @@ using UnityEngine;
 using GameCube.FZeroGX.GMA;
 
 [System.Serializable]
-public class GMASobj : ManifoldAsset<GMA>
+public class GMASobj : FileAssetWrapper<GMA>
 {
     public static implicit operator GMA(GMASobj sobj)
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 
 [Flags]
-public enum EnumFlags32 : uint
+public enum EnumFlags32 : int
 {
     _1 = 1 << 0,
     _2 = 1 << 1,
@@ -34,7 +34,7 @@ public enum EnumFlags32 : uint
     _29 = 1 << 28,
     _30 = 1 << 29,
     _31 = 1 << 30,
-    _32 = 1u << 31,
+    _32 = 1 << 31,
 }
 
 [Flags]

@@ -1,9 +1,10 @@
 ﻿using StarkTools.IO;
+using System;
 using System.IO;
 using UnityEngine;
 
-[System.Serializable]
-public class ManifoldAsset<T> : ScriptableObject, IBinarySerializable, IFile
+[Serializable]
+public class FileAssetWrapper<T> : ScriptableObject, IBinarySerializable, IFile
     where T : IBinarySerializable, IFile
 {
     [SerializeField]

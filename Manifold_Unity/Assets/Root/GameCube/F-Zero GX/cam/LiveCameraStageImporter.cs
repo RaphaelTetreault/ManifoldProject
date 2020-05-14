@@ -33,7 +33,6 @@ public class LiveCameraStageImporter : ExecutableScriptableObject,
     {
         importFiles = Directory.GetFiles(importPath, searchPattern, fileSearchOption);
         importFiles = UnityPathUtility.EnforceUnitySeparators(importFiles);
-        var importFilesUncompressed = GFZX01Utility.DecompressEachLZ(importFiles);
-        ImportUtility.ImportManyAs<LiveCameraStageSobj>(importFilesUncompressed, importPath, importDestination);
+        ImportUtility.ImportManyAs<LiveCameraStageSobj>(importFiles, importPath, importDestination);
     }
 }

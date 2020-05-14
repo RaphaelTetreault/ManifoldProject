@@ -20,6 +20,7 @@ namespace Manifold.IO
             {
                 var sobj = ScriptableObject.CreateInstance<TSobj>();
                 AssetDatabase.CreateAsset(sobj, filePath);
+                EditorUtility.SetDirty(sobj);
                 return sobj;
             }
         }
@@ -40,13 +41,32 @@ namespace Manifold.IO
             return sobj;
         }
 
+        public static TSobj ImportAs<TSobj>(BinaryReader reader, string file, string importFrom, string importTo, out string filePath)
+            where TSobj : ScriptableObject, IBinarySerializable, IFile
+        {
+            var unityPath = GetUnityOutputPath(file, importFrom, importTo);
+            var fileName = Path.GetFileName(file);
+
+            // GENERIC
+            var sobj = CreateFromBinaryFile<TSobj>(unityPath, fileName, reader);
+            sobj.FileName = fileName;
+
+            AssetDatabase.Refresh();
+            AssetDatabase.SaveAssets();
+
+            // Out params
+            filePath = $"{unityPath}/{fileName}";
+
+            return sobj;
+        }
+
         public static TSobj[] ImportManyAs<TSobj>(string[] importFiles, string importPath, string importDest, FileMode mode = FileMode.Open, FileAccess access = FileAccess.Read, FileShare share = FileShare.Read)
             where TSobj : ScriptableObject, IBinarySerializable, IFile
         {
             var count = 0;
             var total = importFiles.Length;
 
-            var typeName = typeof(TSobj).Name;
+            //var typeName = typeof(TSobj).Name;
             var sobjs = new TSobj[total];
 
             foreach (var file in importFiles)
@@ -59,13 +79,14 @@ namespace Manifold.IO
                         var sobj = ImportAs<TSobj>(reader, file, importPath, importDest, out filepath);
                         sobjs[count] = sobj;
 
-                        // Progress bar update
-                        var digitCount = total.ToString().Length;
-                        var currentIndexStr = (count + 1).ToString().PadLeft(digitCount);
-                        var title = $"Importing {typeName} ({currentIndexStr}/{total})";
-                        var info = filepath;
-                        var progress = count / (float)total;
-                        EditorUtility.DisplayProgressBar(title, info, progress);
+                        ImportProgBar<TSobj>(count, total, filepath);
+                        //// Progress bar update
+                        //var digitCount = total.ToString().Length;
+                        //var currentIndexStr = (count + 1).ToString().PadLeft(digitCount);
+                        //var title = $"Importing {typeName} ({currentIndexStr}/{total})";
+                        //var info = filepath;
+                        //var progress = count / (float)total;
+                        //EditorUtility.DisplayProgressBar(title, info, progress);
                     }
                 }
                 count++;
@@ -75,27 +96,6 @@ namespace Manifold.IO
             EditorUtility.ClearProgressBar();
 
             return sobjs;
-        }
-
-        public static TSobj ImportAs<TSobj>(BinaryReader reader, string file, string importFrom, string importTo, out string filePath)
-            where TSobj : ScriptableObject, IBinarySerializable, IFile
-        {
-            var unityPath = GetUnityOutputPath(file, importFrom, importTo);
-            var fileName = Path.GetFileName(file);
-
-            // GENERIC
-            var sobj = CreateFromBinaryFile<TSobj>(unityPath, fileName, reader);
-            sobj.FileName = fileName;
-
-            AssetDatabase.Refresh();
-            EditorUtility.SetDirty(sobj);
-            // This fixes overwriting assets losing their contents.
-            AssetDatabase.SaveAssets();
-
-            // Out params
-            filePath = $"{unityPath}/{fileName}";
-
-            return sobj;
         }
 
         public static string GetUnityOutputPath(string importFile, string importFrom, string importTo)
@@ -123,9 +123,32 @@ namespace Manifold.IO
 
             var unityPath = UnityPathUtility.ToUnityFolderPath(dest, UnityPathUtility.UnityFolder.Assets);
             unityPath = UnityPathUtility.EnforceUnitySeparators(unityPath);
-            
+
             return unityPath;
         }
 
+        public static void ImportProgBar<T>(int count, int total, string info)
+        {
+            // Progress bar update
+            var digitCount = total.ToString().Length;
+            var currentIndexStr = (count + 1).ToString().PadLeft(digitCount);
+            var title = $"Importing {typeof(T).Name} ({currentIndexStr}/{total})";
+            var progress = count / (float)total;
+            EditorUtility.DisplayProgressBar(title, info, progress);
+        }
+
+        // path w/o Assets
+        public static bool EnsureAssetFolderExists(string parentPath, string folder)
+        {
+            var assetsPath = $"Assets/{parentPath}/{folder}";
+            var doCreateFolder = !AssetDatabase.IsValidFolder(assetsPath);
+
+            if (doCreateFolder)
+            {
+                AssetDatabase.CreateFolder($"Assets/{parentPath}", folder);
+            }
+
+            return doCreateFolder;
+        }
     }
 }

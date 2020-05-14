@@ -44,6 +44,10 @@ public struct CameraPan : IBinarySerializable, IBinaryAddressable
 
     public void Serialize(BinaryWriter writer)
     {
-        throw new NotImplementedException();
+        writer.WriteX(frameCount);
+        writer.WriteX(lerpSpeed);
+        writer.WriteX(unk_0x08);
+        writer.WriteX(from);
+        writer.WriteX(to);
     }
 }

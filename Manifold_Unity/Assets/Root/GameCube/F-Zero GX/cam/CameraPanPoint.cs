@@ -43,6 +43,10 @@ public struct CameraPanPoint : IBinarySerializable, IBinaryAddressable
 
     public void Serialize(BinaryWriter writer)
     {
-        throw new NotImplementedException();
+        writer.WriteX(cameraPosition);
+        writer.WriteX(lookatPosition);
+        writer.WriteX(fov);
+        writer.WriteX(unk_flags_0x1C);
+        writer.WriteX(unk_flags_0x20);
     }
 }
