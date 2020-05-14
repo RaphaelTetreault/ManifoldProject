@@ -37,6 +37,5 @@ namespace Manifold.IO.GFZX01.GMA
             ImportUtility.ImportManyAs<GmaSobj>(importFilesUncompressed, importPath, importDestination);
         }
 
-
     }
 }

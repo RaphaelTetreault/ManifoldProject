@@ -19,7 +19,6 @@ namespace Manifold.IO.GFZX01.GMA
         [SerializeField]
         protected IOOption importOption = IOOption.selectedFiles;
 
-
         [Header("TEMP: Apply basic material")]
         [SerializeField] protected UnityEngine.Material defaultMat;
 

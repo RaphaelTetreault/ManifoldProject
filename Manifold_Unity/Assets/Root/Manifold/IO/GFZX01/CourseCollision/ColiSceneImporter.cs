@@ -1,5 +1,4 @@
 ﻿using GameCube.GFZX01.CourseCollision;
-using System;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -12,39 +11,22 @@ namespace Manifold.IO.GFZX01.CourseCollision
     {
         [Header("Import Settings")]
         [SerializeField, BrowseFolderField()]
-        protected string importSource;
+        protected string importFrom;
         [SerializeField, BrowseFolderField("Assets/")]
-        protected string importDestination;
+        protected string importTo;
         [SerializeField]
         protected IOOption importOption = IOOption.selectedFiles;
 
         [Header("Import Files")]
         [SerializeField] protected ColiSceneSobj[] colis;
 
-        public override string ExecuteText => "Import COLI as Scene";
+        public override string ExecuteText => "Import COLI as Unity Scene";
 
         public override void Execute() => Import();
 
         public void Import()
         {
-            // Get Sobjs based on import option
-            switch (importOption)
-            {
-                case IOOption.selectedFiles:
-                    // Do nothing and use files set up in inspector
-                    break;
-
-                case IOOption.allFromSourceFolder:
-                    colis = AssetDatabaseUtility.GetAllOfType<ColiSceneSobj>(importSource);
-                    break;
-
-                case IOOption.allFromAssetDatabase:
-                    colis = AssetDatabaseUtility.GetAllOfType<ColiSceneSobj>();
-                    break;
-
-                default:
-                    throw new NotImplementedException();
-            }
+            colis = IOUtility.GetSobjByOption(colis, importOption, importFrom);
 
             foreach (var coliCourse in colis)
             {
@@ -52,7 +34,7 @@ namespace Manifold.IO.GFZX01.CourseCollision
                 var total = coliCourse.Value.gameObjects.Length;
 
                 var sceneName = coliCourse.name;
-                var scenePath = $"Assets/{importDestination}/{sceneName}.unity";
+                var scenePath = $"Assets/{importTo}/{sceneName}.unity";
                 var scene = EditorSceneManager.NewScene(NewSceneSetup.DefaultGameObjects, NewSceneMode.Single);
                 EditorSceneManager.SaveScene(scene, scenePath);
                 // Keep reference of new scene
