@@ -140,7 +140,7 @@ namespace GameCube.GFZX01.CourseCollision
             writer.WriteX(childrenAbsPtr);
             writer.WriteX(localScale);
             writer.WriteX(localRotation);
-            writer.WriteX(AvEditorUtil.InvertX(localPosition));
+            writer.WriteX(localPosition);
             writer.WriteX(unk_0x38);
             writer.WriteX(unk_0x3C);
             writer.WriteX(unk_0x40);

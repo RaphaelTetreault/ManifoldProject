@@ -1,10 +1,7 @@
 ﻿using StarkTools.IO;
 using System;
 using System.IO;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using System.Diagnostics;
 
 namespace GameCube.GFZX01.CourseCollision
 {
@@ -62,11 +59,11 @@ namespace GameCube.GFZX01.CourseCollision
             reader.ReadX(ref unk_0x00);
             reader.ReadX(ref unk_0x04);
             reader.ReadX(ref trackDistanceStart);
-            reader.ReadX(ref tangentStart); //AvEditorUtil.InvertX(ref tangentStart);
-            reader.ReadX(ref positionStart); //AvEditorUtil.InvertX(ref positionStart);
+            reader.ReadX(ref tangentStart);
+            reader.ReadX(ref positionStart);
             reader.ReadX(ref trackDistanceEnd);
-            reader.ReadX(ref tangentEnd); //AvEditorUtil.InvertX(ref tangentEnd);
-            reader.ReadX(ref positionEnd); //AvEditorUtil.InvertX(ref positionEnd);
+            reader.ReadX(ref tangentEnd);
+            reader.ReadX(ref positionEnd);
             reader.ReadX(ref transformDistanceEnd);
             reader.ReadX(ref transformDistanceStart);
             reader.ReadX(ref trackWidth);
@@ -82,11 +79,11 @@ namespace GameCube.GFZX01.CourseCollision
             writer.WriteX(unk_0x00);
             writer.WriteX(unk_0x04);
             writer.WriteX(trackDistanceStart);
-            writer.WriteX(AvEditorUtil.InvertX(tangentStart));
-            writer.WriteX(AvEditorUtil.InvertX(positionStart));
+            writer.WriteX(tangentStart);
+            writer.WriteX(positionStart);
             writer.WriteX(trackDistanceEnd);
-            writer.WriteX(AvEditorUtil.InvertX(tangentEnd));
-            writer.WriteX(AvEditorUtil.InvertX(positionEnd));
+            writer.WriteX(tangentEnd);
+            writer.WriteX(positionEnd);
             writer.WriteX(transformDistanceEnd);
             writer.WriteX(transformDistanceStart);
             writer.WriteX(isTrackContinuousStart);
