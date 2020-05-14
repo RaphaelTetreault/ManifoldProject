@@ -14,8 +14,8 @@ namespace GameCube.GFZX01.Camera
         public Vector3 cameraPosition;
         public Vector3 lookatPosition;
         public float fov;
-        public EnumFlags32 unk_flags_0x1C;
-        public EnumFlags32 unk_flags_0x20;
+        public CameraPanModifier modifier;
+        public CameraPanMode mode;
 
         public long StartAddress
         {
@@ -36,8 +36,8 @@ namespace GameCube.GFZX01.Camera
             reader.ReadX(ref cameraPosition);
             reader.ReadX(ref lookatPosition);
             reader.ReadX(ref fov);
-            reader.ReadX(ref unk_flags_0x1C);
-            reader.ReadX(ref unk_flags_0x20);
+            reader.ReadX(ref modifier);
+            reader.ReadX(ref mode);
 
             endAddress = reader.BaseStream.Position;
         }
@@ -47,8 +47,8 @@ namespace GameCube.GFZX01.Camera
             writer.WriteX(cameraPosition);
             writer.WriteX(lookatPosition);
             writer.WriteX(fov);
-            writer.WriteX(unk_flags_0x1C);
-            writer.WriteX(unk_flags_0x20);
+            writer.WriteX(modifier);
+            writer.WriteX(mode);
         }
     }
 }

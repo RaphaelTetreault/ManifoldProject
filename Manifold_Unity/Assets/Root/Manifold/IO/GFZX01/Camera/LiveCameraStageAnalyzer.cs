@@ -106,10 +106,10 @@ namespace Manifold.IO.GFZX01.Camera
                             writer.PushCol(panArray[i].cameraPosition);
                             writer.PushCol(panArray[i].lookatPosition);
                             writer.PushCol(panArray[i].fov);
-                            writer.PushCol((int)panArray[i].unk_flags_0x1C);
-                            writer.WriteFlags(panArray[i].unk_flags_0x1C);
-                            writer.PushCol((int)panArray[i].unk_flags_0x20);
-                            writer.WriteFlags(panArray[i].unk_flags_0x20);
+                            writer.PushCol((int)panArray[i].modifier);
+                            writer.WriteFlags(panArray[i].modifier);
+                            writer.PushCol((int)panArray[i].mode);
+                            writer.WriteFlags(panArray[i].mode);
                             writer.PushRow();
                         }
                         panIndex++;
@@ -169,18 +169,18 @@ namespace Manifold.IO.GFZX01.Camera
                         writer.PushCol(pan.from.cameraPosition);
                         writer.PushCol(pan.from.lookatPosition);
                         writer.PushCol(pan.from.fov);
-                        writer.PushCol((int)pan.from.unk_flags_0x1C);
-                        writer.WriteFlags(pan.from.unk_flags_0x1C);
-                        writer.PushCol((int)pan.from.unk_flags_0x20);
-                        writer.WriteFlags(pan.from.unk_flags_0x20);
+                        writer.PushCol((int)pan.from.modifier);
+                        writer.WriteFlags(pan.from.modifier);
+                        writer.PushCol((int)pan.from.mode);
+                        writer.WriteFlags(pan.from.mode);
                         // TO
                         writer.PushCol(pan.to.cameraPosition);
                         writer.PushCol(pan.to.lookatPosition);
                         writer.PushCol(pan.to.fov);
-                        writer.PushCol((int)pan.to.unk_flags_0x1C);
-                        writer.WriteFlags(pan.to.unk_flags_0x1C);
-                        writer.PushCol((int)pan.to.unk_flags_0x20);
-                        writer.WriteFlags(pan.to.unk_flags_0x20);
+                        writer.PushCol((int)pan.to.modifier);
+                        writer.WriteFlags(pan.to.modifier);
+                        writer.PushCol((int)pan.to.mode);
+                        writer.WriteFlags(pan.to.mode);
                         writer.PushRow();
                         panIndex++;
                     }
