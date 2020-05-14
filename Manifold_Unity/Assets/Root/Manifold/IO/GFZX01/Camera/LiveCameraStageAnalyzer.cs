@@ -92,7 +92,7 @@ namespace Manifold.IO.GFZX01.Camera
                             writer.PushCol(panIndex);
                             writer.PushCol(pan.frameCount);
                             writer.PushCol(pan.lerpSpeed);
-                            writer.PushCol(pan.unk_0x08);
+                            writer.PushCol(pan.zero_0x08);
 
                             if (i == 0)
                             {
@@ -164,7 +164,7 @@ namespace Manifold.IO.GFZX01.Camera
                         writer.PushCol(panIndex);
                         writer.PushCol(pan.frameCount);
                         writer.PushCol(pan.lerpSpeed);
-                        writer.PushCol(pan.unk_0x08);
+                        writer.PushCol(pan.zero_0x08);
                         // FROM
                         writer.PushCol(pan.from.cameraPosition);
                         writer.PushCol(pan.from.lookatPosition);

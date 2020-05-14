@@ -15,7 +15,7 @@ namespace GameCube.GFZX01.Camera
 
         public int frameCount;
         public float lerpSpeed;
-        public int unk_0x08;
+        public int zero_0x08;
         public CameraPanPoint from;
         public CameraPanPoint to;
 
@@ -37,7 +37,7 @@ namespace GameCube.GFZX01.Camera
 
             reader.ReadX(ref frameCount);
             reader.ReadX(ref lerpSpeed);
-            reader.ReadX(ref unk_0x08);
+            reader.ReadX(ref zero_0x08);
             reader.ReadX(ref from, true);
             reader.ReadX(ref to, true);
 
@@ -48,7 +48,7 @@ namespace GameCube.GFZX01.Camera
         {
             writer.WriteX(frameCount);
             writer.WriteX(lerpSpeed);
-            writer.WriteX(unk_0x08);
+            writer.WriteX(zero_0x08);
             writer.WriteX(from);
             writer.WriteX(to);
         }
