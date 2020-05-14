@@ -5,20 +5,23 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 
-public static class EnumExtensionMethods
+namespace Manifold.IO
 {
-    public static string GetDescription(this Enum GenericEnum)
+    public static class EnumExtensionMethods
     {
-        Type genericEnumType = GenericEnum.GetType();
-        MemberInfo[] memberInfo = genericEnumType.GetMember(GenericEnum.ToString());
-        if ((memberInfo != null && memberInfo.Length > 0))
+        public static string GetDescription(this Enum GenericEnum)
         {
-            var _Attribs = memberInfo[0].GetCustomAttributes(typeof(DescriptionAttribute), false);
-            if ((_Attribs != null && _Attribs.Count() > 0))
+            Type genericEnumType = GenericEnum.GetType();
+            MemberInfo[] memberInfo = genericEnumType.GetMember(GenericEnum.ToString());
+            if ((memberInfo != null && memberInfo.Length > 0))
             {
-                return ((DescriptionAttribute)_Attribs.ElementAt(0)).Description;
+                var _Attribs = memberInfo[0].GetCustomAttributes(typeof(DescriptionAttribute), false);
+                if ((_Attribs != null && _Attribs.Count() > 0))
+                {
+                    return ((DescriptionAttribute)_Attribs.ElementAt(0)).Description;
+                }
             }
+            return GenericEnum.ToString();
         }
-        return GenericEnum.ToString();
     }
 }

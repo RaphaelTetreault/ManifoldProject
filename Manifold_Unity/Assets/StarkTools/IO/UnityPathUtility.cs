@@ -1,7 +1,8 @@
 ﻿using System;
 using System.IO;
+using UnityEngine;
 
-namespace UnityEngine
+namespace StarkTools.IO
 {
     /// <summary>
     /// Utility to manage Unity-level directories and System-level directories within Unity

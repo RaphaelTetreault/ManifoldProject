@@ -3,25 +3,28 @@ using System;
 using System.IO;
 using UnityEngine;
 
-[Serializable]
-public class SerializableAssetWrapper<T> : ScriptableObject, IBinarySerializable
-    where T : IBinarySerializable
+namespace Manifold.IO
 {
-    [SerializeField]
-    public T value;
-
-    public static implicit operator T(SerializableAssetWrapper<T> sobj)
+    [Serializable]
+    public class SerializableAssetWrapper<T> : ScriptableObject, IBinarySerializable
+        where T : IBinarySerializable
     {
-        return sobj.value;
-    }
+        [SerializeField]
+        public T value;
 
-    public void Deserialize(BinaryReader reader)
-    {
-        value.Deserialize(reader);
-    }
+        public static implicit operator T(SerializableAssetWrapper<T> sobj)
+        {
+            return sobj.value;
+        }
 
-    public void Serialize(BinaryWriter writer)
-    {
-        value.Serialize(writer);
+        public void Deserialize(BinaryReader reader)
+        {
+            value.Deserialize(reader);
+        }
+
+        public void Serialize(BinaryWriter writer)
+        {
+            value.Serialize(writer);
+        }
     }
 }
