@@ -1,10 +1,11 @@
-﻿using GameCube.GFZX01.Camera;
+﻿using GameCube.GFZX01;
+using GameCube.GFZX01.Camera;
 using UnityEngine;
 
 namespace Manifold.IO.GFZX01.Camera
 {
     [CreateAssetMenu(menuName = MenuConst.GFZX01_Camera + "livecam_stage Analyzer")]
-    public class AnalyzeLiveCameraStage : ExecutableScriptableObject,
+    public class LiveCameraStageAnalyzer : ExecutableScriptableObject,
         IAnalyzable
     {
         #region MEMBERS
@@ -79,7 +80,7 @@ namespace Manifold.IO.GFZX01.Camera
 
                         var stageIndexText = System.Text.RegularExpressions.Regex.Match(sobj.FileName, @"\d+").Value;
                         var stageIndex = int.Parse(stageIndexText);
-                        var stageInfo = StageUtility.GetStageInfo(stageIndex);
+                        var stageInfo = CourseUtility.GetCourseInfo(stageIndex);
 
                         var panArray = new CameraPanPoint[] { pan.from, pan.to };
                         for (int i = 0; i < panArray.Length; i++)
@@ -154,12 +155,12 @@ namespace Manifold.IO.GFZX01.Camera
                     {
                         var stageIndexText = System.Text.RegularExpressions.Regex.Match(sobj.FileName, @"\d+").Value;
                         var stageIndex = int.Parse(stageIndexText);
-                        var stageInfo = StageUtility.GetStageInfo(stageIndex);
+                        var courseInfo = CourseUtility.GetCourseInfo(stageIndex);
 
                         writer.PushCol(sobj.FileName);
                         writer.PushCol(stageIndex);
-                        writer.PushCol(stageInfo.Item1.GetDescription());
-                        writer.PushCol(stageInfo.Item3.GetDescription());
+                        writer.PushCol(courseInfo.venue.GetDescription());
+                        writer.PushCol(courseInfo.name.GetDescription());
                         writer.PushCol(panIndex);
                         writer.PushCol(pan.frameCount);
                         writer.PushCol(pan.lerpSpeed);
