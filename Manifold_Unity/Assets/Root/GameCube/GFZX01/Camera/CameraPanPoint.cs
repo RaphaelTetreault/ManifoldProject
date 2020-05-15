@@ -2,6 +2,7 @@
 using System;
 using System.IO;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 namespace GameCube.GFZX01.Camera
 {
@@ -15,7 +16,9 @@ namespace GameCube.GFZX01.Camera
         public Vector3 lookatPosition;
         public float fov;
         public CameraPanModifier modifier;
-        public CameraPanMode mode;
+        private ushort zero_0x1C;
+        public CameraPanInterpolation interpolation;
+        private ushort zero_0x20;
 
         public long StartAddress
         {
@@ -36,8 +39,12 @@ namespace GameCube.GFZX01.Camera
             reader.ReadX(ref cameraPosition);
             reader.ReadX(ref lookatPosition);
             reader.ReadX(ref fov);
-            reader.ReadX(ref modifier);
-            reader.ReadX(ref mode);
+            reader.ReadX(ref modifier); 
+            reader.ReadX(ref zero_0x1C);
+            Assert.IsTrue(zero_0x1C == 0);
+            reader.ReadX(ref interpolation);
+            reader.ReadX(ref zero_0x20);
+            Assert.IsTrue(zero_0x20 == 0);
 
             endAddress = reader.BaseStream.Position;
         }
@@ -48,7 +55,9 @@ namespace GameCube.GFZX01.Camera
             writer.WriteX(lookatPosition);
             writer.WriteX(fov);
             writer.WriteX(modifier);
-            writer.WriteX(mode);
+            writer.WriteX(zero_0x1C);
+            writer.WriteX(interpolation);
+            writer.WriteX(zero_0x20);
         }
     }
 }

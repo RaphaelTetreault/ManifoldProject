@@ -1,22 +1,18 @@
 ﻿namespace GameCube.GFZX01.Camera
 {
-    public enum CameraPanMode : short
+    public enum CameraPanInterpolation : short
     {
         /// <summary>
-        /// Default, no mode modification is applied
+        /// Used for shots where there is no lerping of any kind.
         /// </summary>
-        Default = 0,
-        /// <summary>
-        /// Invalid value (only values 0, 2, 3 are valid) so it halts
-        /// </summary>
-        Halt = 1,
+        Linear = 0,
         /// <summary>
         /// 
         /// </summary>
-        SlowA = 2,
+        EaseOut = 2,
         /// <summary>
         /// 
         /// </summary>
-        SlowB = 3,
+        EaseInOut = 3,
     }
 }

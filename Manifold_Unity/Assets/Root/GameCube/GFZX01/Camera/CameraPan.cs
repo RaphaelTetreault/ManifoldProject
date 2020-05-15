@@ -2,6 +2,7 @@
 using System;
 using System.IO;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 namespace GameCube.GFZX01.Camera
 {
@@ -38,6 +39,7 @@ namespace GameCube.GFZX01.Camera
             reader.ReadX(ref frameCount);
             reader.ReadX(ref lerpSpeed);
             reader.ReadX(ref zero_0x08);
+            Assert.IsTrue(zero_0x08 == 0);
             reader.ReadX(ref from, true);
             reader.ReadX(ref to, true);
 

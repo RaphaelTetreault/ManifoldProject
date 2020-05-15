@@ -108,8 +108,8 @@ namespace Manifold.IO.GFZX01.Camera
                             writer.PushCol(panArray[i].fov);
                             writer.PushCol((int)panArray[i].modifier);
                             writer.WriteFlags(panArray[i].modifier);
-                            writer.PushCol((int)panArray[i].mode);
-                            writer.WriteFlags(panArray[i].mode);
+                            writer.PushCol((int)panArray[i].interpolation);
+                            writer.WriteFlags(panArray[i].interpolation);
                             writer.PushRow();
                         }
                         panIndex++;
@@ -171,16 +171,16 @@ namespace Manifold.IO.GFZX01.Camera
                         writer.PushCol(pan.from.fov);
                         writer.PushCol((int)pan.from.modifier);
                         writer.WriteFlags(pan.from.modifier);
-                        writer.PushCol((int)pan.from.mode);
-                        writer.WriteFlags(pan.from.mode);
+                        writer.PushCol((int)pan.from.interpolation);
+                        writer.WriteFlags(pan.from.interpolation);
                         // TO
                         writer.PushCol(pan.to.cameraPosition);
                         writer.PushCol(pan.to.lookatPosition);
                         writer.PushCol(pan.to.fov);
                         writer.PushCol((int)pan.to.modifier);
                         writer.WriteFlags(pan.to.modifier);
-                        writer.PushCol((int)pan.to.mode);
-                        writer.WriteFlags(pan.to.mode);
+                        writer.PushCol((int)pan.to.interpolation);
+                        writer.WriteFlags(pan.to.interpolation);
                         writer.PushRow();
                         panIndex++;
                     }
