@@ -16,9 +16,11 @@ namespace GameCube.GFZX01.Camera
         public Vector3 lookatPosition;
         public float fov;
         public CameraPanModifier modifier;
-        private ushort zero_0x1C;
+        [HideInInspector]
+        public  ushort zero_0x1C;
         public CameraPanInterpolation interpolation;
-        private ushort zero_0x20;
+        [HideInInspector]
+        public ushort zero_0x20;
 
         public long StartAddress
         {

@@ -1,5 +1,6 @@
 ﻿using GameCube.GFZX01;
 using GameCube.GFZX01.Camera;
+using UnityEditor;
 using UnityEngine;
 
 namespace Manifold.IO.GFZX01.Camera
@@ -57,17 +58,20 @@ namespace Manifold.IO.GFZX01.Camera
                 writer.PushCol("Venue");
                 writer.PushCol("Stage");
                 writer.PushCol("Pan Index");
-                writer.PushCol("Frame Count");
-                writer.PushCol("Lerp Speed");
-                writer.PushCol("unk_0x08");
+                writer.WriteColNicify(nameof(CameraPan.frameCount));
+                writer.WriteColNicify(nameof(CameraPan.lerpSpeed));
+                writer.WriteColNicify(nameof(CameraPan.zero_0x08));
                 writer.PushCol("Section");
-                writer.PushCol("camera pos");
-                writer.PushCol("lookat pos");
-                writer.PushCol("fov");
-                writer.PushCol("unk_flags_0x1C");
-                writer.WriteFlagNames<EnumFlags32>();
-                writer.PushCol("unk_flags_0x20");
-                writer.WriteFlagNames<EnumFlags32>();
+                writer.WriteColNicify(nameof(CameraPan.from.cameraPosition));
+                writer.WriteColNicify(nameof(CameraPan.from.lookatPosition));
+                writer.WriteColNicify(nameof(CameraPan.from.fov));
+                writer.WriteColNicify(nameof(CameraPan.from.modifier));
+                writer.WriteFlagNames<CameraPanModifier>();
+                writer.WriteColNicify(nameof(CameraPan.from.zero_0x1C));
+                writer.WriteColNicify(nameof(CameraPan.from.interpolation));
+                writer.WriteColNicify(nameof(CameraPan.from.interpolation));
+                writer.WriteColNicify(nameof(CameraPan.from.zero_0x20));
+                //writer.WriteFlagNames<CameraPanInterpolation>();
                 writer.PushRow();
 
                 foreach (var sobj in analysisSobjs)
@@ -106,10 +110,14 @@ namespace Manifold.IO.GFZX01.Camera
                             writer.PushCol(panArray[i].cameraPosition);
                             writer.PushCol(panArray[i].lookatPosition);
                             writer.PushCol(panArray[i].fov);
+
                             writer.PushCol((int)panArray[i].modifier);
                             writer.WriteFlags(panArray[i].modifier);
+                            writer.PushCol(panArray[i].zero_0x1C);
+
                             writer.PushCol((int)panArray[i].interpolation);
-                            writer.WriteFlags(panArray[i].interpolation);
+                            writer.PushCol(panArray[i].interpolation);
+                            writer.PushCol(panArray[i].zero_0x20);
                             writer.PushRow();
                         }
                         panIndex++;

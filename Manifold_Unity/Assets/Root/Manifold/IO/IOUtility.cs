@@ -7,7 +7,8 @@ namespace Manifold.IO
 {
     public static class IOUtility
     {
-        public static T[] GetSobjByOption<T>(T[] sobjs, IOOption option, string[] searchFolders)
+        // TODO: move to AssetDatabaseUtility
+        public static T[] GetSobjByOption<T>(T[] sobjs, IOOption option, params string[] searchFolders)
             where T : ScriptableObject
         {
             switch (option)
@@ -26,11 +27,11 @@ namespace Manifold.IO
             }
         }
 
-        public static T[] GetSobjByOption<T>(T[] sobjs, IOOption option, string searchFolders)
-            where T : ScriptableObject
-        {
-            return GetSobjByOption(sobjs, option, new string[] { searchFolders });
-        }
+        //public static T[] GetSobjByOption<T>(T[] sobjs, IOOption option, string searchFolders)
+        //    where T : ScriptableObject
+        //{
+        //    return GetSobjByOption(sobjs, option, new string[] { searchFolders });
+        //}
 
         public static T[] GetSobjByOption<T>(T[] sobjs, IOOption option)
             where T : ScriptableObject

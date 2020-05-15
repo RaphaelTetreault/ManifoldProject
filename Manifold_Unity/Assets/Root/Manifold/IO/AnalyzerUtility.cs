@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq.Expressions;
 
 namespace Manifold.IO
 {
@@ -39,5 +40,23 @@ namespace Manifold.IO
                 else
                     yield return null;
         }
+
+        #region
+
+        /// <summary>
+        /// Usage: GetVariableName(() => someVar)
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="expr"></param>
+        /// <returns></returns>
+        public static string GetVariableName<T>(Expression<Func<T>> expr)
+        {
+            var body = (MemberExpression)expr.Body;
+
+            return body.Member.Name;
+        }
+
+
+        #endregion
     }
 }

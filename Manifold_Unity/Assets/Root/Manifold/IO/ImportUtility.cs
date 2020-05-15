@@ -103,7 +103,10 @@ namespace Manifold.IO
 
             // (A) prevent null/empty && (B) prevent "/" or "\\"
             if (!string.IsNullOrEmpty(folder) && folder.Length > 1)
-                dest = dest + folder;
+            {
+               // dest = dest + folder;
+                dest = $"{dest}/{folder}";
+            }
 
             if (!Directory.Exists(dest))
             {

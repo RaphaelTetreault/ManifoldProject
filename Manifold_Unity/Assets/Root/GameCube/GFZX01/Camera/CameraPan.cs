@@ -16,6 +16,7 @@ namespace GameCube.GFZX01.Camera
 
         public int frameCount;
         public float lerpSpeed;
+        [HideInInspector]
         public int zero_0x08;
         public CameraPanPoint from;
         public CameraPanPoint to;

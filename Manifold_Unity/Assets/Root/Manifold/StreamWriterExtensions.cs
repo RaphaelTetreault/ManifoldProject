@@ -58,12 +58,18 @@ namespace Manifold.IO
         {
             var type = Enum.GetUnderlyingType(typeof(TEnum));
 
-            if (type == typeof(uint) || type == typeof(int))
+            if (type == typeof(uint))
                 WriteFlags(writer, (TEnum)(object)uint.MaxValue);
-            else if (type == typeof(ushort) || type == typeof(short))
+            else if (type == typeof(int))
+                WriteFlags(writer, (TEnum)(object)int.MaxValue);
+            else if (type == typeof(ushort))
                 WriteFlags(writer, (TEnum)(object)ushort.MaxValue);
-            else if (type == typeof(byte) || type == typeof(sbyte))
+            else if (type == typeof(short))
+                WriteFlags(writer, (TEnum)(object)short.MaxValue);
+            else if (type == typeof(byte))
                 WriteFlags(writer, (TEnum)(object)byte.MaxValue);
+            else if (type == typeof(sbyte))
+                WriteFlags(writer, (TEnum)(object)sbyte.MaxValue);
         }
 
         public static void WriteFlags<TEnum>(this StreamWriter writer, TEnum values)
@@ -76,6 +82,13 @@ namespace Manifold.IO
                 else
                     writer.PushCol(string.Empty);
             }
+        }
+
+        public static void WriteColNicify(this StreamWriter writer, string value)
+        {
+            var name = value.Replace("_", " ");
+            var prettyName = UnityEditor.ObjectNames.NicifyVariableName(name);
+            writer.PushCol(prettyName);
         }
     }
 }
