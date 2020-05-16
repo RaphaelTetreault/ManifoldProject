@@ -11,8 +11,8 @@ namespace GameCube.GFZX01.Camera
     {
         public const int kSizeBytes = 0x54;
 
-        [SerializeField, Hex] long startAddress;
-        [SerializeField, Hex] long endAddress;
+        [HideInInspector, SerializeField, Hex] long startAddress;
+        [HideInInspector, SerializeField, Hex] long endAddress;
 
         public int frameCount;
         public float lerpSpeed;

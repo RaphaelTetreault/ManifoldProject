@@ -12,8 +12,8 @@ namespace GameCube.GFZX01.Camera
     {
         private const float reciprocal = 180f / (ushort.MaxValue + 1);
 
-        [SerializeField, Hex] long startAddress;
-        [SerializeField, Hex] long endAddress;
+        [HideInInspector, SerializeField, Hex] long startAddress;
+        [HideInInspector, SerializeField, Hex] long endAddress;
 
         public Vector3 cameraPosition;
         public Vector3 lookatPosition;
@@ -48,7 +48,6 @@ namespace GameCube.GFZX01.Camera
             reader.ReadX(ref lookatPosition);
             reader.ReadX(ref fov);
             reader.ReadX(ref rotation);
-            reader.ReadX(ref zero_0x1E);
             Assert.IsTrue(zero_0x1E == 0);
             reader.ReadX(ref interpolation);
             reader.ReadX(ref zero_0x22);
@@ -65,7 +64,7 @@ namespace GameCube.GFZX01.Camera
             writer.WriteX(cameraPosition);
             writer.WriteX(lookatPosition);
             writer.WriteX(fov);
-            var rotation = (sbyte)(Rotation / reciprocal);
+            var rotation = (short)(Rotation / reciprocal);
             writer.WriteX(rotation);
             writer.WriteX(zero_0x1E);
             writer.WriteX(interpolation);
