@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 
 namespace Manifold.IO
 {
@@ -75,7 +76,9 @@ namespace Manifold.IO
         public static void WriteFlags<TEnum>(this StreamWriter writer, TEnum values)
             where TEnum : struct, Enum
         {
-            foreach (var flag in Manifold.IO.AnalyzerUtility.GetFlags(values))
+            var flags = AnalyzerUtility.GetFlags(values).Reverse();
+
+            foreach (var flag in flags)
             {
                 if (flag != null)
                     writer.PushCol(flag);

@@ -2,6 +2,7 @@
 using System.IO;
 using UnityEngine;
 using UnityEditor;
+using System.Runtime.InteropServices;
 
 namespace Manifold.IO
 {
@@ -10,6 +11,7 @@ namespace Manifold.IO
         public static TSobj Create<TSobj>(string destinationDir, string fileName)
             where TSobj : ScriptableObject
         {
+
             var filePath = $"Assets/{destinationDir}/{fileName}.asset";
             var asset = AssetDatabase.LoadAssetAtPath<TSobj>(filePath);
             if (asset != null)
@@ -104,7 +106,7 @@ namespace Manifold.IO
             // (A) prevent null/empty && (B) prevent "/" or "\\"
             if (!string.IsNullOrEmpty(folder) && folder.Length > 1)
             {
-               // dest = dest + folder;
+                // dest = dest + folder;
                 dest = $"{dest}/{folder}";
             }
 
@@ -131,17 +133,30 @@ namespace Manifold.IO
         }
 
         // path w/o Assets
-        public static bool EnsureAssetFolderExists(string parentPath, string folder)
+        public static void EnsureAssetFolderExists(string folderPath)
         {
-            var assetsPath = $"Assets/{parentPath}/{folder}";
-            var doCreateFolder = !AssetDatabase.IsValidFolder(assetsPath);
+            var assetFolders = $"Assets/{folderPath}";
+            var folders = assetFolders.Split('/');
+            var numDirs = folders.Length;
 
-            if (doCreateFolder)
+            // Init parent folder
+            var parentFolder = folders[0];
+
+            // Append all directories to parent directory
+            for (int i = 0; i < numDirs - 1; i++)
             {
-                AssetDatabase.CreateFolder($"Assets/{parentPath}", folder);
-            }
+                var nextFolder = folders[i+1];
+                var fullPath = $"{parentFolder}/{nextFolder}";
 
-            return doCreateFolder;
+                var doCreateFolder = !AssetDatabase.IsValidFolder(fullPath);
+                if (doCreateFolder)
+                {
+                    AssetDatabase.CreateFolder(parentFolder, nextFolder);
+                }
+
+                parentFolder = fullPath;
+            }
         }
+
     }
 }

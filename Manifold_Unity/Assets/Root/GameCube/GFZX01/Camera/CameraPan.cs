@@ -7,7 +7,7 @@ using UnityEngine.Assertions;
 namespace GameCube.GFZX01.Camera
 {
     [Serializable]
-    public struct CameraPan : IBinarySerializable, IBinaryAddressable
+    public class CameraPan : IBinarySerializable, IBinaryAddressable
     {
         public const int kSizeBytes = 0x54;
 

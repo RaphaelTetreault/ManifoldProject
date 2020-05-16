@@ -1,6 +1,5 @@
 ﻿using GameCube.GFZX01;
 using GameCube.GFZX01.Camera;
-using UnityEditor;
 using UnityEngine;
 
 namespace Manifold.IO.GFZX01.Camera
@@ -38,9 +37,6 @@ namespace Manifold.IO.GFZX01.Camera
             var filePath = AnalyzerUtility.GetAnalysisFilePathTSV(outputPath, "livecam_stage stacked");
             WriteLivecamStageStacked(filePath);
 
-            var filePath2 = AnalyzerUtility.GetAnalysisFilePathTSV(outputPath, "livecam_stage single line");
-            WriteLivecamStageSingleLine(filePath2);
-
             if (openFolderAfterAnalysis)
             {
                 IOUtility.OpenDirectory(filePath);
@@ -65,13 +61,11 @@ namespace Manifold.IO.GFZX01.Camera
                 writer.WriteColNicify(nameof(CameraPan.from.cameraPosition));
                 writer.WriteColNicify(nameof(CameraPan.from.lookatPosition));
                 writer.WriteColNicify(nameof(CameraPan.from.fov));
-                writer.WriteColNicify(nameof(CameraPan.from.modifier));
-                writer.WriteFlagNames<CameraPanModifier>();
-                writer.WriteColNicify(nameof(CameraPan.from.zero_0x1C));
+                writer.WriteColNicify(nameof(CameraPan.from.rotation) + " Raw");
+                writer.WriteColNicify(nameof(CameraPan.from.Rotation));
+                writer.WriteColNicify(nameof(CameraPan.from.zero_0x1E));
                 writer.WriteColNicify(nameof(CameraPan.from.interpolation));
-                writer.WriteColNicify(nameof(CameraPan.from.interpolation));
-                writer.WriteColNicify(nameof(CameraPan.from.zero_0x20));
-                //writer.WriteFlagNames<CameraPanInterpolation>();
+                writer.WriteColNicify(nameof(CameraPan.from.zero_0x22));
                 writer.PushRow();
 
                 foreach (var sobj in analysisSobjs)
@@ -110,14 +104,11 @@ namespace Manifold.IO.GFZX01.Camera
                             writer.PushCol(panArray[i].cameraPosition);
                             writer.PushCol(panArray[i].lookatPosition);
                             writer.PushCol(panArray[i].fov);
-
-                            writer.PushCol((int)panArray[i].modifier);
-                            writer.WriteFlags(panArray[i].modifier);
-                            writer.PushCol(panArray[i].zero_0x1C);
-
-                            writer.PushCol((int)panArray[i].interpolation);
+                            writer.PushCol(panArray[i].rotation);
+                            writer.PushCol(panArray[i].Rotation);
+                            writer.PushCol(panArray[i].zero_0x1E);
                             writer.PushCol(panArray[i].interpolation);
-                            writer.PushCol(panArray[i].zero_0x20);
+                            writer.PushCol(panArray[i].zero_0x22);
                             writer.PushRow();
                         }
                         panIndex++;
@@ -126,74 +117,65 @@ namespace Manifold.IO.GFZX01.Camera
             }
         }
 
-        public void WriteLivecamStageSingleLine(string filePath)
-        {
-            using (var writer = AnalyzerUtility.OpenWriter(filePath))
-            {
-                writer.PushCol("File Name");
-                writer.PushCol("Stage Index");
-                writer.PushCol("Venue");
-                writer.PushCol("Stage");
-                writer.PushCol("Pan Index");
-                writer.PushCol("Frame Count");
-                writer.PushCol("Lerp Speed");
-                writer.PushCol("unk_0x08");
-                writer.PushCol("From: camera pos");
-                writer.PushCol("From: lookat pos");
-                writer.PushCol("From: fov");
-                writer.PushCol("From: unk_flags_0x1C");
-                writer.WriteFlagNames<EnumFlags32>();
-                writer.PushCol("From: unk_flags_0x20");
-                writer.WriteFlagNames<EnumFlags32>();
-                writer.PushCol("To: camera pos");
-                writer.PushCol("To: lookat pos");
-                writer.PushCol("To: fov");
-                writer.PushCol("To: unk_flags_0x1C");
-                writer.WriteFlagNames<EnumFlags32>();
-                writer.PushCol("To: unk_flags_0x20");
-                writer.WriteFlagNames<EnumFlags32>();
-                writer.PushRow();
+        //public void WriteLivecamStageSingleLine(string filePath)
+        //{
+        //    using (var writer = AnalyzerUtility.OpenWriter(filePath))
+        //    {
+        //        writer.PushCol("File Name");
+        //        writer.PushCol("Stage Index");
+        //        writer.PushCol("Venue");
+        //        writer.PushCol("Stage");
+        //        writer.PushCol("Pan Index");
+        //        writer.WriteColNicify(nameof(CameraPan.frameCount));
+        //        writer.WriteColNicify(nameof(CameraPan.lerpSpeed));
+        //        writer.WriteColNicify(nameof(CameraPan.zero_0x08));
+        //        writer.PushCol("Section");
+        //        writer.WriteColNicify(nameof(CameraPan.from.cameraPosition));
+        //        writer.WriteColNicify(nameof(CameraPan.from.lookatPosition));
+        //        writer.WriteColNicify(nameof(CameraPan.from.fov));
+        //        writer.WriteColNicify(nameof(CameraPan.from.rotation));
+        //        writer.WriteColNicify(nameof(CameraPan.from.unk_0x1D));
+        //        writer.WriteColNicify(nameof(CameraPan.from.zero_0x1E));
+        //        writer.WriteColNicify(nameof(CameraPan.from.interpolation));
+        //        writer.WriteColNicify(nameof(CameraPan.from.zero_0x22));
+        //        writer.PushRow();
 
-                foreach (var sobj in analysisSobjs)
-                {
-                    var liveCamStage = sobj.Value;
+        //        foreach (var sobj in analysisSobjs)
+        //        {
+        //            var liveCamStage = sobj.Value;
 
-                    var panIndex = 0;
-                    foreach (var pan in liveCamStage.Pans)
-                    {
-                        var stageIndexText = System.Text.RegularExpressions.Regex.Match(sobj.FileName, @"\d+").Value;
-                        var stageIndex = int.Parse(stageIndexText);
-                        var courseInfo = CourseUtility.GetCourseInfo(stageIndex);
+        //            var panIndex = 0;
+        //            foreach (var pan in liveCamStage.Pans)
+        //            {
+        //                var stageIndexText = System.Text.RegularExpressions.Regex.Match(sobj.FileName, @"\d+").Value;
+        //                var stageIndex = int.Parse(stageIndexText);
+        //                var courseInfo = CourseUtility.GetCourseInfo(stageIndex);
 
-                        writer.PushCol(sobj.FileName);
-                        writer.PushCol(stageIndex);
-                        writer.PushCol(courseInfo.venue.GetDescription());
-                        writer.PushCol(courseInfo.name.GetDescription());
-                        writer.PushCol(panIndex);
-                        writer.PushCol(pan.frameCount);
-                        writer.PushCol(pan.lerpSpeed);
-                        writer.PushCol(pan.zero_0x08);
-                        // FROM
-                        writer.PushCol(pan.from.cameraPosition);
-                        writer.PushCol(pan.from.lookatPosition);
-                        writer.PushCol(pan.from.fov);
-                        writer.PushCol((int)pan.from.modifier);
-                        writer.WriteFlags(pan.from.modifier);
-                        writer.PushCol((int)pan.from.interpolation);
-                        writer.WriteFlags(pan.from.interpolation);
-                        // TO
-                        writer.PushCol(pan.to.cameraPosition);
-                        writer.PushCol(pan.to.lookatPosition);
-                        writer.PushCol(pan.to.fov);
-                        writer.PushCol((int)pan.to.modifier);
-                        writer.WriteFlags(pan.to.modifier);
-                        writer.PushCol((int)pan.to.interpolation);
-                        writer.WriteFlags(pan.to.interpolation);
-                        writer.PushRow();
-                        panIndex++;
-                    }
-                }
-            }
-        }
+        //                writer.PushCol(sobj.FileName);
+        //                writer.PushCol(stageIndex);
+        //                writer.PushCol(courseInfo.venue.GetDescription());
+        //                writer.PushCol(courseInfo.name.GetDescription());
+        //                writer.PushCol(panIndex);
+        //                writer.PushCol(pan.frameCount);
+        //                writer.PushCol(pan.lerpSpeed);
+        //                writer.PushCol(pan.zero_0x08);
+        //                // FROM
+        //                writer.PushCol(pan.from.cameraPosition);
+        //                writer.PushCol(pan.from.lookatPosition);
+        //                writer.PushCol(pan.from.fov);
+        //                writer.PushCol(pan.from.unk_0x1D);
+        //                writer.WriteFlags(pan.from.interpolation);
+        //                // TO
+        //                writer.PushCol(pan.to.cameraPosition);
+        //                writer.PushCol(pan.to.lookatPosition);
+        //                writer.PushCol(pan.to.fov);
+        //                writer.PushCol(pan.to.unk_0x1D);
+        //                writer.WriteFlags(pan.to.interpolation);
+        //                writer.PushRow();
+        //                panIndex++;
+        //            }
+        //        }
+        //    }
+        //}
     }
 }

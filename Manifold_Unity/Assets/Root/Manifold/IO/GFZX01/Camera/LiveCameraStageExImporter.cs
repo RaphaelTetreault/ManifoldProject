@@ -41,8 +41,8 @@ namespace Manifold.IO.GFZX01.Camera
                 var fileName = Path.GetFileNameWithoutExtension(importFile);
                 var folderName = fileName;
 
-                ImportUtility.EnsureAssetFolderExists(importTo, folderName);
                 var importDest = $"{importTo}/{folderName}";
+                ImportUtility.EnsureAssetFolderExists(importDest);
 
                 var container = ImportUtility.Create<LiveCameraStageExSobj>(importDest, fileName);
                 container.FileName = Path.GetFileName(importFile);
