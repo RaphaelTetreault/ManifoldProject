@@ -3,7 +3,6 @@ using System;
 using System.IO;
 using UnityEngine;
 using UnityEngine.Assertions;
-using UnityEngine.Serialization;
 
 namespace GameCube.GFZX01.Camera
 {
@@ -48,6 +47,7 @@ namespace GameCube.GFZX01.Camera
             reader.ReadX(ref lookatPosition);
             reader.ReadX(ref fov);
             reader.ReadX(ref rotation);
+            reader.ReadX(ref zero_0x1E);
             Assert.IsTrue(zero_0x1E == 0);
             reader.ReadX(ref interpolation);
             reader.ReadX(ref zero_0x22);
