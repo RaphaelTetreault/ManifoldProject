@@ -15,6 +15,8 @@ namespace GameCube.GFZX01.FMI
         public int unk_0x0C;
         public int animType;
 
+        public string name;
+
         #region PROPERTIES
 
         public long StartAddress

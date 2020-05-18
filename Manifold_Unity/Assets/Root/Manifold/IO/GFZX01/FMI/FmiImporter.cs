@@ -1,11 +1,13 @@
-﻿using StarkTools.IO;
+﻿using GameCube.GFZX01.FMI;
+using StarkTools.IO;
+using System;
 using System.IO;
 using UnityEngine;
 
-namespace Manifold.IO.GFZX01.GMA
+namespace Manifold.IO.GFZX01.FMI
 {
-    [CreateAssetMenu(menuName = MenuConst.GFZX01_GMA + "GMA Importer")]
-    public class GmaImporter : ExecutableScriptableObject,
+    [UnityEngine.CreateAssetMenu(menuName = MenuConst.GFZX01_FMI + "FMI Importer")]
+    public class FmiImporter : ExecutableScriptableObject,
         IImportable
     {
         [Header("Import Settings")]
@@ -13,7 +15,7 @@ namespace Manifold.IO.GFZX01.GMA
         protected SearchOption fileSearchOption = SearchOption.AllDirectories;
 
         [SerializeField]
-        protected string searchPattern = "*.GMA*";
+        protected string searchPattern = "*.FMI";
 
         [SerializeField, BrowseFolderField("Assets/")]
         protected string importFrom;
@@ -34,8 +36,8 @@ namespace Manifold.IO.GFZX01.GMA
         {
             importFiles = Directory.GetFiles(importFrom, searchPattern, fileSearchOption);
             importFiles = UnityPathUtility.EnforceUnitySeparators(importFiles);
-            var importFilesUncompressed = GFZX01Utility.DecompressEachLZ(importFiles);
-            ImportUtility.ImportManyAs<GmaSobj>(importFilesUncompressed, importFrom, importTo);
+            //var importFilesUncompressed = GFZX01Utility.DecompressEachLZ(importFiles);
+            ImportUtility.ImportManyAs<FmiSobj>(importFiles, importFrom, importTo);
         }
 
     }

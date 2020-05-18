@@ -16,9 +16,9 @@ namespace GameCube.GFZX01.FMI
         public uint unk_0x10;
         public float scaleMin;
         public float scaleMax;
-        [Header("Engine Color of Normal Acceleration")]
+        [Tooltip("Engine Color of Normal Acceleration")]
         public Color32 colorMin;
-        [Header("Engine Color of Strong Acceleration")]
+        [Tooltip("Engine Color of Strong Acceleration")]
         public Color32 colorMax;
 
         #region PROPERTIES
