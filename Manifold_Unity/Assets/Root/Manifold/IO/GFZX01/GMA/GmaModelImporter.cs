@@ -73,30 +73,27 @@ namespace Manifold.IO.GFZX01.GMA
             AssetDatabase.Refresh();
         }
 
-        public int[] GetTriangleFromTriangleStrip(int numVerts)
+        public int[] GetTriangleFromTriangleStrip(int numVerts, bool baseCCW)
         {
             // Construct triangles from GameCube GX TRIANLE_STRIP
-            // Apparently the issue is even/odd numbered tri strips
-            // You can flip/flop between those if you know the count,
-            // which you definitely do somewhere.
-
-            /*/
-            // This code mostly works, but still has some errors in it.
+            // For one, note that we need to unwind the tristrip.
+            // We can use the index to know if the indice is odd or even.
+            // However, in GFZX, the winding for different display lists
+            // inverts based on it's "index," so to speak.
+            // To compensate, we need to XOR the odd/even value with whether
+            // the base index of the strip is meant to be CCW or CW.
             
             const int vertStride = 3;
 
-            var stripIsOdd = (numVerts % 2) > 0;
             var nTriangles = numVerts - 2;
             int[] triangles = new int[nTriangles * vertStride];
             for (int i = 0; i < nTriangles; i++)
             {
                 var triIdx = i * vertStride;
-                var indexIsOdd = (i % 2) > 0;
-                var isOdd = !(stripIsOdd ^ indexIsOdd);
-                //var isOdd = indexIsOdd;
-                //var isOdd = stripIsOdd;
+                var indexIsCW = (i % 2) > 0;
+                var isCCW = (baseCCW ^ indexIsCW);
 
-                if (isOdd)
+                if (isCCW)
                 {
                     triangles[triIdx + 0] = i + 0;
                     triangles[triIdx + 1] = i + 1;
@@ -104,31 +101,12 @@ namespace Manifold.IO.GFZX01.GMA
                 }
                 else
                 {
-                    //triangles[triIdx + 0] = i + 1;
-                    //triangles[triIdx + 1] = i + 0;
-                    //triangles[triIdx + 2] = i + 2;
-
                     triangles[triIdx + 0] = i + 0;
                     triangles[triIdx + 1] = i + 2;
                     triangles[triIdx + 2] = i + 1;
                 }
             }
-             /*/
 
-            var nTriangles = numVerts - 2;
-            int[] triangles = new int[nTriangles * 3 * 2];
-            for (int i = 0; i < nTriangles; i++)
-            {
-                var triIdx = i * 6;
-                triangles[triIdx + 0] = i + 0;
-                triangles[triIdx + 1] = i + 1;
-                triangles[triIdx + 2] = i + 2;
-
-                triIdx += 3;
-                triangles[triIdx + 0] = i + 1;
-                triangles[triIdx + 1] = i + 0;
-                triangles[triIdx + 2] = i + 2;
-            }
             return triangles;
         }
 
@@ -160,7 +138,7 @@ namespace Manifold.IO.GFZX01.GMA
                 if (gcmfMesh.DisplayList1.GxDisplayLists != null)
                     foreach (var list in gcmfMesh.DisplayList0.GxDisplayLists)
                     {
-                        var submesh = CreateSubMesh(list, ref mesh);
+                        var submesh = CreateSubMesh(list, ref mesh, true);
                         submeshes[subIndex] = submesh;
                         subIndex++;
                     }
@@ -168,7 +146,7 @@ namespace Manifold.IO.GFZX01.GMA
                 if (gcmfMesh.DisplayList1.GxDisplayLists != null)
                     foreach (var list in gcmfMesh.DisplayList1.GxDisplayLists)
                     {
-                        var submesh = CreateSubMesh(list, ref mesh);
+                        var submesh = CreateSubMesh(list, ref mesh, false);
                         submeshes[subIndex] = submesh;
                         subIndex++;
                     }
@@ -193,7 +171,7 @@ namespace Manifold.IO.GFZX01.GMA
             return mesh;
         }
 
-        public SubMeshDescriptor CreateSubMesh(GameCube.GX.GxDisplayList list, ref Mesh mesh)
+        public SubMeshDescriptor CreateSubMesh(GameCube.GX.GxDisplayList list, ref Mesh mesh, bool isCCW)
         {
             var submesh = new SubMeshDescriptor();
 
@@ -224,7 +202,7 @@ namespace Manifold.IO.GFZX01.GMA
             var uv2 = list.tex1;
             var uv3 = list.tex2;
             var colors = list.clr0;
-            var triangles = GetTriangleFromTriangleStrip(vertices.Length);
+            var triangles = GetTriangleFromTriangleStrip(vertices.Length, isCCW);
 
             // Build submesh
             submesh.baseVertex = mesh.vertexCount;
