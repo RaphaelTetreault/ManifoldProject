@@ -24,7 +24,7 @@ namespace Manifold.IO.GFZX01.GMA
         [SerializeField]
         protected IOOption analysisOption = IOOption.allFromAssetDatabase;
         [SerializeField]
-        protected GmaSobj[] analysisSobjs;
+        protected GMASobj[] analysisSobjs;
 
         #endregion
 

@@ -29,7 +29,7 @@ namespace Manifold.IO.GFZX01.GMA
 
         [Header("Exports")]
         [SerializeField]
-        protected GmaSobj[] exportSobjs;
+        protected GMASobj[] exportSobjs;
 
 
         public override string ExecuteText => "Export GMA";

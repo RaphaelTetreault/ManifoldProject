@@ -35,7 +35,7 @@ namespace Manifold.IO.GFZX01.GMA
             importFiles = Directory.GetFiles(importPath, searchPattern, fileSearchOption);
             importFiles = UnityPathUtility.EnforceUnitySeparators(importFiles);
             var importFilesUncompressed = GFZX01Utility.DecompressEachLZ(importFiles);
-            ImportUtility.ImportManyAs<GmaSobj>(importFilesUncompressed, importPath, importDestination);
+            ImportUtility.ImportManyAs<GMASobj>(importFilesUncompressed, importPath, importDestination);
         }
 
     }

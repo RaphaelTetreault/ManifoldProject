@@ -24,7 +24,7 @@ namespace Manifold.IO.GFZX01.GMA
         [SerializeField] protected UnityEngine.Material defaultMat;
 
         [Header("Import Files")]
-        [SerializeField] protected GmaSobj[] gmaSobjs;
+        [SerializeField] protected GMASobj[] gmaSobjs;
 
         public override string ExecuteText => "Import GMA Models";
 
@@ -38,7 +38,7 @@ namespace Manifold.IO.GFZX01.GMA
             int totalModels = CountModels(gmaSobjs, out submeshes);
 
             int count = 1;
-            foreach (GmaSobj sobj in gmaSobjs)
+            foreach (GMASobj sobj in gmaSobjs)
             {
                 Gma gma = sobj.Value;
 
@@ -250,12 +250,12 @@ namespace Manifold.IO.GFZX01.GMA
             return prefab;
         }
 
-        public int CountModels(GmaSobj[] gmaSobjs, out int submeshes)
+        public int CountModels(GMASobj[] gmaSobjs, out int submeshes)
         {
             submeshes = 0;
             int count = 0;
 
-            foreach (GmaSobj sobj in gmaSobjs)
+            foreach (GMASobj sobj in gmaSobjs)
             {
                 var gma = sobj.Value;
                 foreach (Gcmf gcmf in gma.GCMF)
