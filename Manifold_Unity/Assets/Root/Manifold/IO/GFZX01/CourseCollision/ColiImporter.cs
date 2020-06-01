@@ -2,6 +2,7 @@
 using StarkTools.IO;
 using System.IO;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Manifold.IO.GFZX01.CourseCollision
 {
@@ -9,18 +10,22 @@ namespace Manifold.IO.GFZX01.CourseCollision
     public class ColiImporter : ExecutableScriptableObject,
         IImportable
     {
+        #region MEMBERS
+
         [Header("Import Settings")]
+        [SerializeField, BrowseFolderField("Assets/")]
+        [FormerlySerializedAs("importPath")]
+        protected string importFrom;
+
+        [SerializeField, BrowseFolderField("Assets/")]
+        [FormerlySerializedAs("importDestination")]
+        protected string importTo;
+
         [SerializeField]
         protected SearchOption fileSearchOption = SearchOption.AllDirectories;
 
         [SerializeField]
         protected string searchPattern = "COLI_COURSE*";
-
-        [SerializeField, BrowseFolderField("Assets/")]
-        protected string importPath;
-
-        [SerializeField, BrowseFolderField("Assets/")]
-        protected string importDestination;
 
         [SerializeField]
         protected bool isAX;
@@ -29,18 +34,20 @@ namespace Manifold.IO.GFZX01.CourseCollision
         [SerializeField]
         protected string[] importFiles;
 
+        #endregion
+
         public override string ExecuteText => "Import COLI";
 
         public override void Execute() => Import();
 
         public void Import()
         {
-            importFiles = Directory.GetFiles(importPath, searchPattern, fileSearchOption);
+            importFiles = Directory.GetFiles(importFrom, searchPattern, fileSearchOption);
             importFiles = UnityPathUtility.EnforceUnitySeparators(importFiles);
             var importFilesUncompressed = isAX
                 ? GFZX01Utility.DecompressEachLZ(importFiles, LibGxFormat.AvGame.FZeroAX)
                 : GFZX01Utility.DecompressEachLZ(importFiles);
-            ImportUtility.ImportManyAs<ColiSceneSobj>(importFilesUncompressed, importPath, importDestination);
+            ImportUtility.ImportManyAs<ColiSceneSobj>(importFilesUncompressed, importFrom, importTo);
         }
     }
 }

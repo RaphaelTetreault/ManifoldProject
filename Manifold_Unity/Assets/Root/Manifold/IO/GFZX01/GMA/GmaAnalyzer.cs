@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Manifold.IO.GFZX01.GMA
 {
@@ -11,8 +12,9 @@ namespace Manifold.IO.GFZX01.GMA
         #region MEMBERS
 
         [Header("Output")]
+        [FormerlySerializedAs("outputPath")]
         [SerializeField, BrowseFolderField]
-        protected string outputPath;
+        protected string outputTo;
         [SerializeField, BrowseFolderField("Assets/"), Tooltip("Used with IOOption.allFromSourceFolder")]
         protected string[] searchFolders;
 
@@ -45,22 +47,22 @@ namespace Manifold.IO.GFZX01.GMA
             var time = AnalyzerUtility.GetFileTimestamp();
 
             // EX
-            var texFlagAnalysisFile = Path.Combine(outputPath, $"{time} GMA Unknown Flags.tsv");
+            var texFlagAnalysisFile = Path.Combine(outputTo, $"{time} GMA Unknown Flags.tsv");
             EditorUtility.DisplayProgressBar(ExecuteText, texFlagAnalysisFile, processIndex++ / numProcesses);
             WriteGcmfTexUnkFlagsAnalysis(texFlagAnalysisFile);
 
             // GCMF
-            var gcfmAnalysisFile = Path.Combine(outputPath, $"{time} GMA GCMF.tsv");
+            var gcfmAnalysisFile = Path.Combine(outputTo, $"{time} GMA GCMF.tsv");
             EditorUtility.DisplayProgressBar(ExecuteText, gcfmAnalysisFile, processIndex++ / numProcesses);
             WriteGcmfAnalysis(gcfmAnalysisFile);
 
             // GCMF TEX
-            var texAnalysisFile = Path.Combine(outputPath, $"{time} GMA Textures.tsv");
+            var texAnalysisFile = Path.Combine(outputTo, $"{time} GMA Textures.tsv");
             EditorUtility.DisplayProgressBar(ExecuteText, texAnalysisFile, processIndex++ / numProcesses);
             WriteTexAnalysis(texAnalysisFile);
 
             // GCMF MAT
-            var matAnalysisFile = Path.Combine(outputPath, $"{time} GMA Materials.tsv");
+            var matAnalysisFile = Path.Combine(outputTo, $"{time} GMA Materials.tsv");
             EditorUtility.DisplayProgressBar(ExecuteText, matAnalysisFile, processIndex++ / numProcesses);
             WriteMatAnalysis(matAnalysisFile);
 

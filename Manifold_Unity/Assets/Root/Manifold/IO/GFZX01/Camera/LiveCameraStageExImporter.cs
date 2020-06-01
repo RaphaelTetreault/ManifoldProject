@@ -10,22 +10,26 @@ namespace Manifold.IO.GFZX01.Camera
     public class LiveCameraStageExImporter : ExecutableScriptableObject,
     IImportable
     {
+        #region MEMBERS
+
         [Header("Import Settings")]
-        [SerializeField]
-        protected SearchOption fileSearchOption = SearchOption.AllDirectories;
-
-        [SerializeField]
-        protected string searchPattern = "livecam_stage*.bin";
-
         [SerializeField, BrowseFolderField("Assets/")]
         protected string importFrom;
 
         [SerializeField, BrowseFolderField("Assets/")]
         protected string importTo;
 
+        [SerializeField]
+        protected SearchOption fileSearchOption = SearchOption.AllDirectories;
+
+        [SerializeField]
+        protected string searchPattern = "livecam_stage*.bin";
+
         [Header("Import Files")]
         [SerializeField]
         protected string[] importFiles;
+
+        #endregion
 
         public override string ExecuteText => "Import livecam_stage";
 

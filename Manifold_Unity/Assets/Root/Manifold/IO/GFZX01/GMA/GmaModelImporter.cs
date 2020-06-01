@@ -5,6 +5,7 @@ using StarkTools.IO;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.Serialization;
 
 namespace Manifold.IO.GFZX01.GMA
 {
@@ -12,11 +13,17 @@ namespace Manifold.IO.GFZX01.GMA
     public class GmaModelImporter : ExecutableScriptableObject,
         IImportable
     {
+        #region MEMBERS
+
         [Header("Import Settings")]
+        [FormerlySerializedAs("importSource")]
         [SerializeField, BrowseFolderField("Assets/")]
-        protected string importSource;
+        protected string importFrom;
+        
+        [FormerlySerializedAs("importDestination")]
         [SerializeField, BrowseFolderField("Assets/")]
-        protected string importDestination;
+        protected string importTo;
+
         [SerializeField]
         protected IOOption importOption = IOOption.selectedFiles;
 
@@ -26,13 +33,15 @@ namespace Manifold.IO.GFZX01.GMA
         [Header("Import Files")]
         [SerializeField] protected GMASobj[] gmaSobjs;
 
+        #endregion
+
         public override string ExecuteText => "Import GMA Models";
 
         public override void Execute() => Import();
 
         public void Import()
         {
-            gmaSobjs = IOUtility.GetSobjByOption(gmaSobjs, importOption, importSource);
+            gmaSobjs = IOUtility.GetSobjByOption(gmaSobjs, importOption, importFrom);
 
             int submeshes = 0;
             int totalModels = CountModels(gmaSobjs, out submeshes);

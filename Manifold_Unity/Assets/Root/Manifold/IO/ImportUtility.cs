@@ -62,7 +62,7 @@ namespace Manifold.IO
             return sobj;
         }
 
-        public static TSobj[] ImportManyAs<TSobj>(string[] importFiles, string importPath, string importDest, FileMode mode = FileMode.Open, FileAccess access = FileAccess.Read, FileShare share = FileShare.Read)
+        public static TSobj[] ImportManyAs<TSobj>(string[] importFiles, string importFrom, string importTo, FileMode mode = FileMode.Open, FileAccess access = FileAccess.Read, FileShare share = FileShare.Read)
             where TSobj : ScriptableObject, IBinarySerializable, IFile
         {
             var count = 0;
@@ -76,7 +76,7 @@ namespace Manifold.IO
                     using (var reader = new BinaryReader(fileStream))
                     {
                         var filepath = string.Empty;
-                        var sobj = ImportAs<TSobj>(reader, file, importPath, importDest, out filepath);
+                        var sobj = ImportAs<TSobj>(reader, file, importFrom, importTo, out filepath);
                         sobjs[count] = sobj;
                         ImportProgBar<TSobj>(count, total, filepath);
                     }

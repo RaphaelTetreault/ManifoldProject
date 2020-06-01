@@ -9,16 +9,22 @@ namespace Manifold.IO.GFZX01.CourseCollision
     public class ColiSceneImporter : ExecutableScriptableObject,
         IImportable
     {
+        #region MEMBERS
+
         [Header("Import Settings")]
         [SerializeField, BrowseFolderField()]
         protected string importFrom;
+
         [SerializeField, BrowseFolderField("Assets/")]
         protected string importTo;
+
         [SerializeField]
         protected IOOption importOption = IOOption.selectedFiles;
 
         [Header("Import Files")]
         [SerializeField] protected ColiSceneSobj[] colis;
+
+        #endregion
 
         public override string ExecuteText => "Import COLI as Unity Scene";
 
