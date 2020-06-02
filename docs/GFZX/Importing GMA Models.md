@@ -32,11 +32,11 @@ The first step to getting GFZ models in Manifold is to load the files as `Script
 
 To import the assets, we need to create an instance of the importer. Right-click in the Project panel in Unity to bring up the context menu. At the top, select `Create > Manifold > GFZX01 > GMA Model > GMA Importer`.
 
-![](C:\git\Manifold\docs\GFZX\res\gma\gma-importer-1.jpg)
+![](res\gma\gma-importer-1.jpg)
 
 A new asset called `New GMA Importer` will be created. Place it inside the `Untracked` folder.
 
-![](C:\git\Manifold\docs\GFZX\res\gma\gma-importer-2.jpg)
+![](res\gma\gma-importer-2.jpg)
 
 
 
@@ -46,7 +46,7 @@ A new asset called `New GMA Importer` will be created. Place it inside the `Untr
 
 We need to tell the importer where we will import the data from. The **Import From** parameter tells the program where to look for files. Press the `Browse` button to bring up the folder menu and select the corresponding folder to use. Here, we are selecting the root folder of the extracted GFZJ01 ISO. This will fill the field with the folder's path. In this screenshot, that path is `C:/GFZJ01`.
 
-![](C:\git\Manifold\docs\GFZX\res\gma\gma-importer-3.jpg)
+![](res\gma\gma-importer-3.jpg)
 
 
 
@@ -56,7 +56,7 @@ We also need to tell the importer where we will save our Unity assets to. The **
 
 **NOTE**: the folders `GFZE01`, `GFZJ01`, `GFZP01`, and `GFZJ8P` are specially marked folders ignored by git in the Manifold project. If you wish to use a different name, it is recommended you place the output folder inside `Untracked`, such as `Untracked/F-Zero GX (JP)`.
 
-![](C:\git\Manifold\docs\GFZX\res\gma\gma-importer-4.jpg)
+![](res\gma\gma-importer-4.jpg)
 
 
 
@@ -69,7 +69,7 @@ The **File Search Option** parameter tells the program how to search for files i
 
 Here, we are using **All Directories** to find all GMA model archives inside the root folder.
 
-![](C:\git\Manifold\docs\GFZX\res\gma\gma-importer-5.jpg)
+![](res\gma\gma-importer-5.jpg)
 
 
 
@@ -85,11 +85,11 @@ Push. The. Button.
 
 Pressing `Import GMA` will begin the import process. For a clean extract of `GFZJ01` <u>*F-Zero GX*</u> (Japan), there should be 897 GMA archives to import. Note that there are about 1600 GMA archives total. However, Manifold does not currently automate unpacking .ARC archive files.
 
-![](C:\git\Manifold\docs\GFZX\res\gma\gma-importer-6.jpg)
+![](res\gma\gma-importer-6.jpg)
 
 Once complete, you should see a variety of messages in Unity's console window. These simply state any created folders for debugging purposes.
 
-![](C:\git\Manifold\docs\GFZX\res\gma\gma-importer-7.jpg)
+![](res\gma\gma-importer-7.jpg)
 
 
 
@@ -105,11 +105,11 @@ This process will create both Unity `Mesh` assets and prefabs with the model dat
 
 To reconstruct the meshes, we need to create an instance of the model importer. Right-click in the Project panel in Unity to bring up the context menu. At the top, select `Create > Manifold > GFZX01 > GMA Model > GMA Model Importer`.
 
-![](C:\git\Manifold\docs\GFZX\res\gma\gma-model-importer-1.jpg)
+![](res\gma\gma-model-importer-1.jpg)
 
 A new asset called `New GMA Model Importer` will be created. Place it inside the `Untracked` folder.
 
-![](C:\git\Manifold\docs\GFZX\res\gma\gma-model-importer-2.jpg)
+![](res\gma\gma-model-importer-2.jpg)
 
 
 
@@ -119,7 +119,7 @@ A new asset called `New GMA Model Importer` will be created. Place it inside the
 
 We need to tell the importer where we will import the data from. The **Import From** parameter tells the program where to look for files. Unlike the previous importer, this will search for files within Unity. Here, we are selecting the newly created folder `GFZJ01` that is inside the Unity project at `Assets/GFZJ01`. Of course, your folder name may be different from this.
 
-![](C:\git\Manifold\docs\GFZX\res\gma\gma-model-importer-4.jpg)
+![](res\gma\gma-model-importer-3.jpg)
 
 
 
@@ -127,7 +127,7 @@ We need to tell the importer where we will import the data from. The **Import Fr
 
 Again, we need to tell the importer where we will save our Unity assets to. The **Import to** parameter tells the program where to place the imported files. Here, we are telling the program to place our imported files into a folder called `GFZJ01`, adjacent to our previously imported files.
 
-![](C:\git\Manifold\docs\GFZX\res\gma\gma-model-importer-5.jpg)
+![](res\gma\gma-model-importer-4.jpg)
 
 
 
@@ -140,9 +140,9 @@ The **Import Option** parameter tells the program how to search for files inside
 * **All from Source Folder**: search for files inside **Import From** including all sub-directories.
 * **All from Asset Database**: search for files inside the entirety of the Unity Asset database. Effectively this gets all `GmaSobj` in the project.
 
-Here, we are using **All from Source Folder** to find all `GmaSobjs` inside the newly imported folder.
+Here, we are using **All from Source Folder** to find all `GmaSobj`s inside the newly imported folder.
 
-![](C:\git\Manifold\docs\GFZX\res\gma\gma-model-importer-6.jpg)
+![](res\gma\gma-model-importer-5.jpg)
 
 
 
@@ -150,7 +150,7 @@ Here, we are using **All from Source Folder** to find all `GmaSobjs` inside the 
 
 The current import method does not include materials and texture mapping. As a placeholder, the importer uses a parameter to replace all materials with a default vertex color shader. In the **Default Mat** field, search for the provided `mat_gma_model` material. This allows you to view the vertex color data of the model data.
 
-![](C:\git\Manifold\docs\GFZX\res\gma\gma-model-importer-3.jpg)
+![](res\gma\gma-model-importer-6.jpg)
 
 
 
@@ -162,15 +162,15 @@ Pressing `Import GMA Models` will begin the import process. For a clean extract 
 
 If you know what you need models for, you can select which models specifically to import to reduce import time. Consult [2.2.3 Set Import Option](#2.2.3 Set Import Option) for details.
 
-![](C:\git\Manifold\docs\GFZX\res\gma\gma-model-importer-7.jpg)
+![](res\gma\gma-model-importer-7.jpg)
 
 Once complete, there will likely be many errors in the console. Do not worry, these are due to current issues with reconstructing mesh data from GFZ games' mesh data. This will be fixed as we better understand how to reinterpret the data in Unity terms.
 
-![](C:\git\Manifold\docs\GFZX\res\gma\gma-model-importer-8.jpg)
+![](res\gma\gma-model-importer-8.jpg)
 
-You can now view the model data in Unity. You can now view the model data in-engine.
+You can now view the model data in Unity.
 
-![](C:\git\Manifold\docs\GFZX\res\gma\gma-model-importer-9.jpg)
+![](res\gma\gma-model-importer-9.jpg)
 
 
 
