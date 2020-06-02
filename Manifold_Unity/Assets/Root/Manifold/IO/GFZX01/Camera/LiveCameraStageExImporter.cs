@@ -63,7 +63,12 @@ namespace Manifold.IO.GFZX01.Camera
                         for (int i = 0; i < pans.Length; i++)
                         {
                             var incFileName = $"{fileName}.{i + 1}";
-                            ImportUtility.ImportProgBar<CameraPanSobj>(i, pans.Length, incFileName);
+                            var userCancelled = ImportUtility.ImportProgBar<CameraPanSobj>(i, pans.Length, incFileName);
+
+                            if (userCancelled)
+                            {
+                                break;
+                            }
 
                             pans[i] = ImportUtility.Create<CameraPanSobj>(importDest, incFileName);
                             AssetDatabase.Refresh();

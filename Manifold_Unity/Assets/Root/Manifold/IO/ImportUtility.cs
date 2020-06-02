@@ -78,7 +78,12 @@ namespace Manifold.IO
                         var filepath = string.Empty;
                         var sobj = ImportAs<TSobj>(reader, file, importFrom, importTo, out filepath);
                         sobjs[count] = sobj;
-                        ImportProgBar<TSobj>(count, total, filepath);
+                        var userCancelled = ImportProgBar<TSobj>(count, total, filepath);
+
+                        if (userCancelled)
+                        {
+                            break;
+                        }
                     }
                 }
                 count++;
@@ -122,14 +127,15 @@ namespace Manifold.IO
             return unityPath;
         }
 
-        public static void ImportProgBar<T>(int count, int total, string info)
+        public static bool ImportProgBar<T>(int count, int total, string info)
         {
             // Progress bar update
             var digitCount = total.ToString().Length;
             var currentIndexStr = (count + 1).ToString().PadLeft(digitCount);
             var title = $"Importing {typeof(T).Name} ({currentIndexStr}/{total})";
             var progress = count / (float)total;
-            EditorUtility.DisplayProgressBar(title, info, progress);
+            var userCancelled = EditorUtility.DisplayCancelableProgressBar(title, info, progress);
+            return userCancelled;
         }
 
         // path w/o Assets
