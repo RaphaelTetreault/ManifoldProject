@@ -5,6 +5,7 @@ using StarkTools.IO;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.Serialization;
 
 namespace Manifold.IO.GFZX01.GMA
 {
@@ -12,11 +13,17 @@ namespace Manifold.IO.GFZX01.GMA
     public class GmaModelImporter : ExecutableScriptableObject,
         IImportable
     {
+        #region MEMBERS
+
         [Header("Import Settings")]
+        [FormerlySerializedAs("importSource")]
         [SerializeField, BrowseFolderField("Assets/")]
-        protected string importSource;
+        protected string importFrom;
+        
+        [FormerlySerializedAs("importDestination")]
         [SerializeField, BrowseFolderField("Assets/")]
-        protected string importDestination;
+        protected string importTo;
+
         [SerializeField]
         protected IOOption importOption = IOOption.selectedFiles;
 
@@ -24,7 +31,9 @@ namespace Manifold.IO.GFZX01.GMA
         [SerializeField] protected UnityEngine.Material defaultMat;
 
         [Header("Import Files")]
-        [SerializeField] protected GmaSobj[] gmaSobjs;
+        [SerializeField] protected GMASobj[] gmaSobjs;
+
+        #endregion
 
         public override string ExecuteText => "Import GMA Models";
 
@@ -32,13 +41,13 @@ namespace Manifold.IO.GFZX01.GMA
 
         public void Import()
         {
-            gmaSobjs = IOUtility.GetSobjByOption(gmaSobjs, importOption, importSource);
+            gmaSobjs = IOUtility.GetSobjByOption(gmaSobjs, importOption, importFrom);
 
             int submeshes = 0;
             int totalModels = CountModels(gmaSobjs, out submeshes);
 
             int count = 1;
-            foreach (GmaSobj sobj in gmaSobjs)
+            foreach (GMASobj sobj in gmaSobjs)
             {
                 Gma gma = sobj.Value;
 
@@ -73,30 +82,27 @@ namespace Manifold.IO.GFZX01.GMA
             AssetDatabase.Refresh();
         }
 
-        public int[] GetTriangleFromTriangleStrip(int numVerts)
+        public int[] GetTrianglesFromTriangleStrip(int numVerts, bool baseCCW)
         {
             // Construct triangles from GameCube GX TRIANLE_STRIP
-            // Apparently the issue is even/odd numbered tri strips
-            // You can flip/flop between those if you know the count,
-            // which you definitely do somewhere.
-
-            /*/
-            // This code mostly works, but still has some errors in it.
+            // For one, note that we need to unwind the tristrip.
+            // We can use the index to know if the indice is odd or even.
+            // However, in GFZX, the winding for different display lists
+            // inverts based on it's "index," so to speak.
+            // To compensate, we need to XOR the odd/even value with whether
+            // the base index of the strip is meant to be CCW or CW.
             
             const int vertStride = 3;
 
-            var stripIsOdd = (numVerts % 2) > 0;
             var nTriangles = numVerts - 2;
             int[] triangles = new int[nTriangles * vertStride];
             for (int i = 0; i < nTriangles; i++)
             {
                 var triIdx = i * vertStride;
-                var indexIsOdd = (i % 2) > 0;
-                var isOdd = !(stripIsOdd ^ indexIsOdd);
-                //var isOdd = indexIsOdd;
-                //var isOdd = stripIsOdd;
+                var indexIsCW = (i % 2) > 0;
+                var isCCW = (baseCCW ^ indexIsCW);
 
-                if (isOdd)
+                if (isCCW)
                 {
                     triangles[triIdx + 0] = i + 0;
                     triangles[triIdx + 1] = i + 1;
@@ -104,31 +110,12 @@ namespace Manifold.IO.GFZX01.GMA
                 }
                 else
                 {
-                    //triangles[triIdx + 0] = i + 1;
-                    //triangles[triIdx + 1] = i + 0;
-                    //triangles[triIdx + 2] = i + 2;
-
                     triangles[triIdx + 0] = i + 0;
                     triangles[triIdx + 1] = i + 2;
                     triangles[triIdx + 2] = i + 1;
                 }
             }
-             /*/
 
-            var nTriangles = numVerts - 2;
-            int[] triangles = new int[nTriangles * 3 * 2];
-            for (int i = 0; i < nTriangles; i++)
-            {
-                var triIdx = i * 6;
-                triangles[triIdx + 0] = i + 0;
-                triangles[triIdx + 1] = i + 1;
-                triangles[triIdx + 2] = i + 2;
-
-                triIdx += 3;
-                triangles[triIdx + 0] = i + 1;
-                triangles[triIdx + 1] = i + 0;
-                triangles[triIdx + 2] = i + 2;
-            }
             return triangles;
         }
 
@@ -160,7 +147,7 @@ namespace Manifold.IO.GFZX01.GMA
                 if (gcmfMesh.DisplayList1.GxDisplayLists != null)
                     foreach (var list in gcmfMesh.DisplayList0.GxDisplayLists)
                     {
-                        var submesh = CreateSubMesh(list, ref mesh);
+                        var submesh = CreateSubMesh(list, ref mesh, true);
                         submeshes[subIndex] = submesh;
                         subIndex++;
                     }
@@ -168,7 +155,7 @@ namespace Manifold.IO.GFZX01.GMA
                 if (gcmfMesh.DisplayList1.GxDisplayLists != null)
                     foreach (var list in gcmfMesh.DisplayList1.GxDisplayLists)
                     {
-                        var submesh = CreateSubMesh(list, ref mesh);
+                        var submesh = CreateSubMesh(list, ref mesh, false);
                         submeshes[subIndex] = submesh;
                         subIndex++;
                     }
@@ -193,38 +180,59 @@ namespace Manifold.IO.GFZX01.GMA
             return mesh;
         }
 
-        public SubMeshDescriptor CreateSubMesh(GameCube.GX.GxDisplayList list, ref Mesh mesh)
+        public Vector2[] HackUVs(Vector2[] uvs, int vertCount)
+        {
+            return uvs.Length == 0
+                ? new Vector2[vertCount]
+                : uvs;
+        }
+
+        public Vector3[] HackNormals(Vector3[] normals, int vertCount)
+        {
+            return normals.Length == 0
+                ? new Vector3[vertCount]
+                : normals;
+        }
+
+        public Color32[] HackColors(Color32[] colors, int vertCount)
+        {
+            if (colors.Length == 0)
+            {
+                colors = new Color32[vertCount];
+                for (int i = 0; i < colors.Length; i++)
+                {
+                    colors[i] = new Color32(255, 255, 255, 255);
+                }
+            }
+            return colors;
+        }
+
+        public SubMeshDescriptor CreateSubMesh(GameCube.GX.GxDisplayList list, ref Mesh mesh, bool isCCW)
         {
             var submesh = new SubMeshDescriptor();
-
-            // This made colors disappear/white in a lot of places...?
-            //// HACK
-            //// This code should be making separate meshes (as Unity import type)
-            //// where the meshes are under 1 structure in the editor. This current
-            //// code is done in a loop where all meshes are submeshes, which require
-            //// the same number of colors as verts, hence this hack.
-            //var listClr0 = list.clr0;
-            //if (listClr0.Length == 0)
-            //{
-            //    listClr0 = new Color32[list.pos.Length];
-            //    for (int i = 0; i < listClr0.Length; i++)
-            //    {
-            //        listClr0[i] = new Color32(255, 255, 255, 255);
-            //    }
-            //}
 
             // TODO:
             // Generate submeshes correctly (ie: stop concatonating them all) so that
             // there are no issues with varied UV, UV2, UV3, and COLOR counts.
 
+            // HACKS
+            // This code should be making separate meshes (as Unity import type)
+            // where the meshes are under 1 structure in the editor. This current
+            // code is done in a loop where all meshes are submeshes, which require
+            // the same number of colors as verts, hence this hack.
+            var nVerts = list.pos.Length;
+            // This logic is applied to UVs and colors
+            // 2020/06/02 Raph: for the following code, I disabled UV to speed import
+            //                  times as UV information is not yet used
+            
             // New from this list/submesh
             var vertices = list.pos;
-            var normals = list.nrm;
-            var uv1 = list.tex0;
-            var uv2 = list.tex1;
-            var uv3 = list.tex2;
-            var colors = list.clr0;
-            var triangles = GetTriangleFromTriangleStrip(vertices.Length);
+            var normals = HackNormals(list.nrm, nVerts);
+            //var uv1 = HackUVs(list.tex0, nVerts);
+            //var uv2 = HackUVs(list.tex1, nVerts);
+            //var uv3 = HackUVs(list.tex2, nVerts);
+            var colors = HackColors(list.clr0, nVerts);
+            var triangles = GetTrianglesFromTriangleStrip(vertices.Length, isCCW);
 
             // Build submesh
             submesh.baseVertex = mesh.vertexCount;
@@ -237,9 +245,9 @@ namespace Manifold.IO.GFZX01.GMA
             // Append to mesh
             var verticesConcat = mesh.vertices.Concat(vertices).ToArray();
             var normalsConcat = mesh.normals.Concat(normals).ToArray();
-            var uv1Concat = mesh.uv.Concat(uv1).ToArray();
-            var uv2Concat = mesh.uv2.Concat(uv2).ToArray();
-            var uv3Concat = mesh.uv3.Concat(uv3).ToArray();
+            //var uv1Concat = mesh.uv.Concat(uv1).ToArray();
+            //var uv2Concat = mesh.uv2.Concat(uv2).ToArray();
+            //var uv3Concat = mesh.uv3.Concat(uv3).ToArray();
             var colorsConcat = mesh.colors32.Concat(colors).ToArray();
             //if (list.nbt != null)
             //    mesh.tangents = list.nbt;
@@ -248,9 +256,9 @@ namespace Manifold.IO.GFZX01.GMA
             // Assign values to mesh
             mesh.vertices = verticesConcat;
             mesh.normals = normalsConcat;
-            mesh.uv = uv1Concat;
-            mesh.uv2 = uv2Concat;
-            mesh.uv3 = uv3Concat;
+            //mesh.uv = uv1Concat;
+            //mesh.uv2 = uv2Concat;
+            //mesh.uv3 = uv3Concat;
             mesh.colors32 = colorsConcat;
             mesh.triangles = trianglesConcat;
 
@@ -272,12 +280,12 @@ namespace Manifold.IO.GFZX01.GMA
             return prefab;
         }
 
-        public int CountModels(GmaSobj[] gmaSobjs, out int submeshes)
+        public int CountModels(GMASobj[] gmaSobjs, out int submeshes)
         {
             submeshes = 0;
             int count = 0;
 
-            foreach (GmaSobj sobj in gmaSobjs)
+            foreach (GMASobj sobj in gmaSobjs)
             {
                 var gma = sobj.Value;
                 foreach (Gcmf gcmf in gma.GCMF)

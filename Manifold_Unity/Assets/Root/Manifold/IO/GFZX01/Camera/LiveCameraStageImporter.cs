@@ -1,6 +1,7 @@
 ﻿using StarkTools.IO;
 using System.IO;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Manifold.IO.GFZX01.Camera
 {
@@ -8,22 +9,28 @@ namespace Manifold.IO.GFZX01.Camera
     public class LiveCameraStageImporter : ExecutableScriptableObject,
     IImportable
     {
-        [Header("Import Settings")]
-        [SerializeField]
-        protected SearchOption fileSearchOption = SearchOption.AllDirectories;
+        #region MEMBERS
 
+        [Header("Import Settings")]
         [SerializeField]
         protected string searchPattern = "livecam_stage*.bin";
 
         [SerializeField, BrowseFolderField("Assets/")]
-        protected string importPath;
+        [FormerlySerializedAs("importPath")]
+        protected string importFrom;
 
         [SerializeField, BrowseFolderField("Assets/")]
-        protected string importDestination;
+        [FormerlySerializedAs("importPath")]
+        protected string importTo;
+
+        [SerializeField]
+        protected SearchOption fileSearchOption = SearchOption.AllDirectories;
 
         [Header("Import Files")]
         [SerializeField]
         protected string[] importFiles;
+
+        #endregion
 
         public override string ExecuteText => "Import livecam_stage";
 
@@ -31,9 +38,9 @@ namespace Manifold.IO.GFZX01.Camera
 
         public void Import()
         {
-            importFiles = Directory.GetFiles(importPath, searchPattern, fileSearchOption);
+            importFiles = Directory.GetFiles(importFrom, searchPattern, fileSearchOption);
             importFiles = UnityPathUtility.EnforceUnitySeparators(importFiles);
-            ImportUtility.ImportManyAs<LiveCameraStageSobj>(importFiles, importPath, importDestination);
+            ImportUtility.ImportManyAs<LiveCameraStageSobj>(importFiles, importFrom, importTo);
         }
     }
 }

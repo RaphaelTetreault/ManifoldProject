@@ -10,23 +10,26 @@ namespace Manifold.IO.GFZX01.CarData
     public class CarDataImporter : ExecutableScriptableObject,
         IImportable
     {
+        #region MEMBERS
+
         [Header("Import Settings")]
-        [SerializeField]
-        protected SearchOption fileSearchOption = SearchOption.AllDirectories;
-
-        [SerializeField]
-        protected string searchPattern = "cardata*";
-
         [SerializeField, BrowseFolderField("Assets/")]
         protected string importFrom;
 
         [SerializeField, BrowseFolderField("Assets/")]
         protected string importTo;
 
+        [SerializeField]
+        protected SearchOption fileSearchOption = SearchOption.AllDirectories;
+
+        [SerializeField]
+        protected string searchPattern = "cardata*";
+
         [Header("Import Files")]
         [SerializeField]
         protected string[] importFiles;
 
+        #endregion
 
         public override string ExecuteText => "Import CarData";
 

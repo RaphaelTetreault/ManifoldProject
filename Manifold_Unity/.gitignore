@@ -3,7 +3,8 @@
 /[Oo]bj/
 /[Bb]uild/
 /[Bb]uilds/
-/Assets/[Rr]oot/[Uu]ntracked/
+/Assets/[Rr]oot/[Uu]ntracked*
+/Assets/[Uu]ntracked*
 
 # IGNORE GAME FOLDERS
 ## GAMECUBE

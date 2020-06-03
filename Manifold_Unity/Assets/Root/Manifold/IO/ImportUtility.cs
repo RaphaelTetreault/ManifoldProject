@@ -62,7 +62,7 @@ namespace Manifold.IO
             return sobj;
         }
 
-        public static TSobj[] ImportManyAs<TSobj>(string[] importFiles, string importPath, string importDest, FileMode mode = FileMode.Open, FileAccess access = FileAccess.Read, FileShare share = FileShare.Read)
+        public static TSobj[] ImportManyAs<TSobj>(string[] importFiles, string importFrom, string importTo, FileMode mode = FileMode.Open, FileAccess access = FileAccess.Read, FileShare share = FileShare.Read)
             where TSobj : ScriptableObject, IBinarySerializable, IFile
         {
             var count = 0;
@@ -76,9 +76,14 @@ namespace Manifold.IO
                     using (var reader = new BinaryReader(fileStream))
                     {
                         var filepath = string.Empty;
-                        var sobj = ImportAs<TSobj>(reader, file, importPath, importDest, out filepath);
+                        var sobj = ImportAs<TSobj>(reader, file, importFrom, importTo, out filepath);
                         sobjs[count] = sobj;
-                        ImportProgBar<TSobj>(count, total, filepath);
+                        var userCancelled = ImportProgBar<TSobj>(count, total, filepath);
+
+                        if (userCancelled)
+                        {
+                            break;
+                        }
                     }
                 }
                 count++;
@@ -122,14 +127,15 @@ namespace Manifold.IO
             return unityPath;
         }
 
-        public static void ImportProgBar<T>(int count, int total, string info)
+        public static bool ImportProgBar<T>(int count, int total, string info)
         {
             // Progress bar update
             var digitCount = total.ToString().Length;
             var currentIndexStr = (count + 1).ToString().PadLeft(digitCount);
             var title = $"Importing {typeof(T).Name} ({currentIndexStr}/{total})";
             var progress = count / (float)total;
-            EditorUtility.DisplayProgressBar(title, info, progress);
+            var userCancelled = EditorUtility.DisplayCancelableProgressBar(title, info, progress);
+            return userCancelled;
         }
 
         // path w/o Assets
