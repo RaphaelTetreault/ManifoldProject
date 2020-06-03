@@ -18,7 +18,7 @@ This guides demonstrates how to import model assets from <u>*F-Zero GX*</u> and 
 
 # Part 0: General Setup
 
-Make sure you have consulted the **Managing Untracked Files** heading under **Preparing Your Files in Unity** in [README.md](README.md).
+Make sure you have consulted the **Managing Untracked Files** heading under **Preparing Your Files in Unity** in [Importing README.md](Importing README.md).
 
 
 
