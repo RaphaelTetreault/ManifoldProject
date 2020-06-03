@@ -15,7 +15,6 @@ namespace GameCube.GX
     {
         public const int GX_FIFO_ALIGN = 32;
 
-        // Split into POS ans NRM?
         public static Vector3 ReadPos(BinaryReader reader, GXCompCnt_Rev2 nElements, GXCompType componentType, int nFracs)
         {
             if (nElements == GXCompCnt_Rev2.GX_POS_XY)

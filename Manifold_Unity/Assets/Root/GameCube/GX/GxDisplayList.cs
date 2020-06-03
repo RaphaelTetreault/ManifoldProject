@@ -14,7 +14,7 @@ namespace GameCube.GX
     [Serializable]
     public class GxDisplayList : IBinarySerializable, IBinaryAddressable
     {
-        [Header("GX Vertex Page")]
+        [Header("GX Display List")]
         [SerializeField, Hex(8)] long startAddress;
         [SerializeField, Hex(8)] long endAddress;
 
