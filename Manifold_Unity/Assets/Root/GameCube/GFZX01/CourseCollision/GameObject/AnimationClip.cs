@@ -1,4 +1,5 @@
-﻿using StarkTools.IO;
+﻿using GameCube.GFZX01.CourseCollision.Animation;
+using StarkTools.IO;
 using System;
 using System.IO;
 using UnityEngine;
@@ -7,7 +8,7 @@ using UnityEngine.Assertions;
 namespace GameCube.GFZX01.CourseCollision
 {
     [Serializable]
-    public class Animation : IBinarySerializable, IBinaryAddressable
+    public class AnimationClip : IBinarySerializable, IBinaryAddressable
     {
         // From
         public const int kSizeCurvesPtrs = 6 + 5;

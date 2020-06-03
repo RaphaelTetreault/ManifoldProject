@@ -34,7 +34,7 @@ namespace GameCube.GFZX01.CourseCollision
         public uint transformAbsPtr;
 
         public CollisionBinding collisionBinding;
-        public Animation animation;
+        public AnimationClip animation;
         public ObjectTable_Unk1 unk1;
         public ObjectTable_Unk2 unk2;
         public Transform transform;

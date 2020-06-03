@@ -91,7 +91,7 @@ namespace Manifold.IO.GFZX01.CourseCollision
 
                 // ANIMATIONS INDIVIDUALIZED
                 {
-                    var count = GameCube.GFZX01.CourseCollision.Animation.kSizeCurvesPtrs;
+                    var count = GameCube.GFZX01.CourseCollision.AnimationClip.kSizeCurvesPtrs;
                     for (int i = 0; i < count; i++)
                     {
                         var filePath = $"{time} COLI Animations {i}.tsv";
@@ -298,11 +298,11 @@ namespace Manifold.IO.GFZX01.CourseCollision
                                 writer.PushCol($"0x{animationCurve.StartAddress:X8}");
                                 writer.PushCol($"0x{keyable.StartAddress:X8}");
                                 writer.PushCol(animIndex);
-                                writer.PushCol(keyable.unk_0x00);
+                                writer.PushCol(keyable.easeMode);
                                 writer.PushCol(keyable.time);
                                 writer.PushCol(keyable.value);
-                                writer.PushCol(keyable.unk_0x0C);
-                                writer.PushCol(keyable.unk_0x10);
+                                writer.PushCol(keyable.zTangentIn);
+                                writer.PushCol(keyable.zTangentOut);
                                 writer.PushRow();
                             }
                             animIndex++;
@@ -352,11 +352,11 @@ namespace Manifold.IO.GFZX01.CourseCollision
                                 writer.PushCol($"0x{animationCurve.StartAddress:X8}");
                                 writer.PushCol($"0x{keyable.StartAddress:X8}");
                                 writer.PushCol(animIndex);
-                                writer.PushCol(keyable.unk_0x00);
+                                writer.PushCol(keyable.easeMode);
                                 writer.PushCol(keyable.time);
                                 writer.PushCol(keyable.value);
-                                writer.PushCol(keyable.unk_0x0C);
-                                writer.PushCol(keyable.unk_0x10);
+                                writer.PushCol(keyable.zTangentIn);
+                                writer.PushCol(keyable.zTangentOut);
                                 writer.PushRow();
                             }
                             animIndex++;
