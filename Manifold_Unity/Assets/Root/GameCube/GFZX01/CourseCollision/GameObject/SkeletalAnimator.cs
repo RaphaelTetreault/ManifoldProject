@@ -6,7 +6,7 @@ using UnityEngine;
 namespace GameCube.GFZX01.CourseCollision
 {
     [Serializable]
-    public class ObjectTable_Unk2 : IBinarySerializable, IBinaryAddressable
+    public class SkeletalAnimator : IBinarySerializable, IBinaryAddressable
     {
 
         #region MEMBERS
@@ -14,10 +14,12 @@ namespace GameCube.GFZX01.CourseCollision
         [SerializeField, Hex] long startAddress;
         [SerializeField, Hex] long endAddress;
 
-        public uint unk_0x00;
-        public uint unk_0x04;
-        public uint unk_0x08; // Always 1?
+        public uint zero_0x00;
+        public uint zero_0x04;
+        public uint one_0x08; // Always 1. Bool?
         public uint unkRelPtr;
+
+        public SkeletalProperties properties;
 
         #endregion
 
@@ -42,21 +44,31 @@ namespace GameCube.GFZX01.CourseCollision
         public void Deserialize(BinaryReader reader)
         {
             startAddress = reader.BaseStream.Position;
-
-            reader.ReadX(ref unk_0x00);
-            reader.ReadX(ref unk_0x04);
-            reader.ReadX(ref unk_0x08);
-            reader.ReadX(ref unkRelPtr);
-
+            {
+                reader.ReadX(ref zero_0x00);
+                reader.ReadX(ref zero_0x04);
+                reader.ReadX(ref one_0x08);
+                reader.ReadX(ref unkRelPtr);
+            }
             endAddress = reader.BaseStream.Position;
+            {
+                if (unkRelPtr != 0)
+                {
+                    reader.BaseStream.Seek(unkRelPtr, SeekOrigin.Begin);
+                    reader.ReadX(ref properties, true);
+                }
+            }
+            reader.BaseStream.Seek(endAddress, SeekOrigin.Begin);
         }
 
         public void Serialize(BinaryWriter writer)
         {
-            writer.WriteX(unk_0x00);
-            writer.WriteX(unk_0x04);
-            writer.WriteX(unk_0x08);
+            writer.WriteX(zero_0x00);
+            writer.WriteX(zero_0x04);
+            writer.WriteX(one_0x08);
             writer.WriteX(unkRelPtr);
+
+            throw new NotImplementedException();
         }
 
         #endregion

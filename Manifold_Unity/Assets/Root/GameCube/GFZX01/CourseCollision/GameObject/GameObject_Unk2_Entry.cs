@@ -6,7 +6,7 @@ using UnityEngine;
 namespace GameCube.GFZX01.CourseCollision
 {
     [Serializable]
-    public class ObjectTable_Unk2_Entry : IBinarySerializable, IBinaryAddressable
+    public class SkeletalProperties : IBinarySerializable, IBinaryAddressable
     {
 
         #region MEMBERS
@@ -14,13 +14,16 @@ namespace GameCube.GFZX01.CourseCollision
         [SerializeField, Hex] long startAddress;
         [SerializeField, Hex] long endAddress;
 
+        /// <summary>
+        /// Values: 0, 3, 7, 10, 15, 20, 50, 60
+        /// </summary>
         public uint unk_0x00;
-        public uint unk_0x04;
-        public uint unk_0x08;
-        public uint unk_0x0C;
-        public uint unk_0x10;
-        public uint unk_0x14;
-        public uint unk_0x18;
+        public EnumFlags32 unk_0x04;
+        public EnumFlags32 unk_0x08;
+        public uint zero_0x0C;
+        public uint zero_0x10;
+        public uint zero_0x14;
+        public uint zero_0x18;
 
         #endregion
 
@@ -49,10 +52,10 @@ namespace GameCube.GFZX01.CourseCollision
             reader.ReadX(ref unk_0x00);
             reader.ReadX(ref unk_0x04);
             reader.ReadX(ref unk_0x08);
-            reader.ReadX(ref unk_0x0C);
-            reader.ReadX(ref unk_0x10);
-            reader.ReadX(ref unk_0x14);
-            reader.ReadX(ref unk_0x18);
+            reader.ReadX(ref zero_0x0C);
+            reader.ReadX(ref zero_0x10);
+            reader.ReadX(ref zero_0x14);
+            reader.ReadX(ref zero_0x18);
 
             endAddress = reader.BaseStream.Position;
         }
@@ -62,10 +65,10 @@ namespace GameCube.GFZX01.CourseCollision
             writer.WriteX(unk_0x00);
             writer.WriteX(unk_0x04);
             writer.WriteX(unk_0x08);
-            writer.WriteX(unk_0x0C);
-            writer.WriteX(unk_0x10);
-            writer.WriteX(unk_0x14);
-            writer.WriteX(unk_0x18);
+            writer.WriteX(zero_0x0C);
+            writer.WriteX(zero_0x10);
+            writer.WriteX(zero_0x14);
+            writer.WriteX(zero_0x18);
         }
 
         #endregion

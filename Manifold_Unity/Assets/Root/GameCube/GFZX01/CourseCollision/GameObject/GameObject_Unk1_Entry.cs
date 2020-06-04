@@ -14,8 +14,8 @@ namespace GameCube.GFZX01.CourseCollision
         [SerializeField, Hex] long startAddress;
         [SerializeField, Hex] long endAddress;
 
-        public uint unk_0x00;
-        public uint unk_0x04;
+        public float unk_0x00;
+        public float unk_0x04;
 
         #endregion
 

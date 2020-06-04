@@ -73,10 +73,22 @@ namespace Manifold.IO.GFZX01.CourseCollision
             //GAME OBJECTS
             if (gameObjects)
             {
-                var filePath = $"{time} COLI GameObjects.tsv";
+                string filePath = string.Empty;
+
+                filePath = $"{time} COLI GameObjects.tsv";
                 filePath = Path.Combine(outputPath, filePath);
                 EditorUtility.DisplayProgressBar(ExecuteText, filePath, .5f);
                 AnalyzeGameObjects(filePath);
+
+                filePath = $"{time} COLI GameObjects Unk1.tsv";
+                filePath = Path.Combine(outputPath, filePath);
+                EditorUtility.DisplayProgressBar(ExecuteText, filePath, .5f);
+                AnalyzeGameObjectsUnk1(filePath);
+
+                filePath = $"{time} COLI GameObjects Unk2.tsv";
+                filePath = Path.Combine(outputPath, filePath);
+                EditorUtility.DisplayProgressBar(ExecuteText, filePath, .5f);
+                AnalyzeGameObjectsUnk2(filePath);
             }
 
             if (animations)
@@ -101,6 +113,7 @@ namespace Manifold.IO.GFZX01.CourseCollision
                     }
                 }
             }
+
 
             // OPEN FOLDER after analysis
             if (openFolderAfterAnalysis)
@@ -441,6 +454,107 @@ namespace Manifold.IO.GFZX01.CourseCollision
         }
 
         #endregion
+
+        public void AnalyzeGameObjectsUnk1(string fileName)
+        {
+            using (var writer = AnalyzerUtility.OpenWriter(fileName))
+            {
+                // Write header
+                writer.PushCol("File");
+                writer.PushCol("Game Object #");
+                writer.PushCol("Game Object");
+                writer.PushCol("Unknown 1 Index");
+                writer.WriteColNicify(nameof(ObjectTable_Unk1_Entry.unk_0x00));
+                writer.WriteColNicify(nameof(ObjectTable_Unk1_Entry.unk_0x04));
+                writer.PushRow();
+
+                foreach (var file in analysisSobjs)
+                {
+                    int gameObjectIndex = 0;
+                    foreach (var gameObject in file.Value.gameObjects)
+                    {
+                        int unkIndex = 0;
+                        foreach (var unk1 in gameObject.unk1.unk)
+                        {
+                            writer.PushCol(file.FileName);
+                            writer.PushCol(gameObjectIndex);
+                            writer.PushCol(gameObject.name);
+                            writer.PushCol(unkIndex);
+                            writer.PushCol(unk1.unk_0x00);
+                            writer.PushCol(unk1.unk_0x04);
+                            writer.PushRow();
+                            unkIndex++;
+                        }
+                        gameObjectIndex++;
+                    }
+                }
+                writer.Flush();
+            }
+        }
+
+        public void AnalyzeGameObjectsUnk2(string fileName)
+        {
+            using (var writer = AnalyzerUtility.OpenWriter(fileName))
+            {
+                // Write header
+                writer.PushCol("File");
+                writer.PushCol("Game Object #");
+                writer.PushCol("Game Object");
+
+                writer.WriteColNicify(nameof(SkeletalAnimator.zero_0x00));
+                writer.WriteColNicify(nameof(SkeletalAnimator.zero_0x04));
+                writer.WriteColNicify(nameof(SkeletalAnimator.one_0x08));
+                writer.WriteColNicify(nameof(SkeletalAnimator.unkRelPtr));
+
+                writer.WriteColNicify(nameof(SkeletalProperties.unk_0x00));
+                writer.WriteColNicify(nameof(SkeletalProperties.unk_0x04));
+                writer.WriteFlagNames<EnumFlags32>();
+                writer.WriteColNicify(nameof(SkeletalProperties.unk_0x08));
+                writer.WriteFlagNames<EnumFlags32>();
+                writer.WriteColNicify(nameof(SkeletalProperties.zero_0x0C));
+                writer.WriteColNicify(nameof(SkeletalProperties.zero_0x10));
+                writer.WriteColNicify(nameof(SkeletalProperties.zero_0x14));
+                writer.WriteColNicify(nameof(SkeletalProperties.zero_0x18));
+                writer.PushRow();
+
+                foreach (var file in analysisSobjs)
+                {
+                    int gameObjectIndex = 0;
+                    foreach (var gameObject in file.Value.gameObjects)
+                    {
+                        if (gameObject.unk2.unkRelPtr == 0)
+                        {
+                            continue;
+                        }
+
+                        writer.PushCol(file.FileName);
+                        writer.PushCol(gameObjectIndex);
+                        writer.PushCol(gameObject.name);
+
+                        writer.PushCol(gameObject.unk2.zero_0x00);
+                        writer.PushCol(gameObject.unk2.zero_0x04);
+                        writer.PushCol(gameObject.unk2.one_0x08);
+                        writer.PushCol(gameObject.unk2.unkRelPtr);
+
+                        writer.PushCol(gameObject.unk2.properties.unk_0x00);
+                        writer.PushCol(gameObject.unk2.properties.unk_0x04);
+                        writer.WriteFlags(gameObject.unk2.properties.unk_0x04);
+                        writer.PushCol(gameObject.unk2.properties.unk_0x08);
+                        writer.WriteFlags(gameObject.unk2.properties.unk_0x08);
+                        writer.PushCol(gameObject.unk2.properties.zero_0x0C);
+                        writer.PushCol(gameObject.unk2.properties.zero_0x10);
+                        writer.PushCol(gameObject.unk2.properties.zero_0x14);
+                        writer.PushCol(gameObject.unk2.properties.zero_0x18);
+                        writer.PushRow();
+
+                        gameObjectIndex++;
+                    }
+                }
+                writer.Flush();
+            }
+        }
+
+
 
     }
 }
