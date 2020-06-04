@@ -442,7 +442,7 @@ namespace Manifold.IO.GFZX01.CourseCollision
                         writer.PushCol(gameObject.zero_0x2C);
                         writer.PushCol("0x" + gameObject.animationAbsPtr.ToString("X"));
                         writer.PushCol("0x" + gameObject.unkPtr_0x34.ToString("X"));
-                        writer.PushCol("0x" + gameObject.unkPtr_0x38.ToString("X"));
+                        writer.PushCol("0x" + gameObject.skeletalAnimatorAbsPtr.ToString("X"));
                         writer.PushCol("0x" + gameObject.transformAbsPtr.ToString("X"));
                         writer.PushRow();
 
@@ -522,7 +522,7 @@ namespace Manifold.IO.GFZX01.CourseCollision
                     int gameObjectIndex = 0;
                     foreach (var gameObject in file.Value.gameObjects)
                     {
-                        if (gameObject.unk2.unkRelPtr == 0)
+                        if (gameObject.skeletalAnimator.unkRelPtr == 0)
                         {
                             continue;
                         }
@@ -531,20 +531,20 @@ namespace Manifold.IO.GFZX01.CourseCollision
                         writer.PushCol(gameObjectIndex);
                         writer.PushCol(gameObject.name);
 
-                        writer.PushCol(gameObject.unk2.zero_0x00);
-                        writer.PushCol(gameObject.unk2.zero_0x04);
-                        writer.PushCol(gameObject.unk2.one_0x08);
-                        writer.PushCol(gameObject.unk2.unkRelPtr);
+                        writer.PushCol(gameObject.skeletalAnimator.zero_0x00);
+                        writer.PushCol(gameObject.skeletalAnimator.zero_0x04);
+                        writer.PushCol(gameObject.skeletalAnimator.one_0x08);
+                        writer.PushCol(gameObject.skeletalAnimator.unkRelPtr);
 
-                        writer.PushCol(gameObject.unk2.properties.unk_0x00);
-                        writer.PushCol(gameObject.unk2.properties.unk_0x04);
-                        writer.WriteFlags(gameObject.unk2.properties.unk_0x04);
-                        writer.PushCol(gameObject.unk2.properties.unk_0x08);
-                        writer.WriteFlags(gameObject.unk2.properties.unk_0x08);
-                        writer.PushCol(gameObject.unk2.properties.zero_0x0C);
-                        writer.PushCol(gameObject.unk2.properties.zero_0x10);
-                        writer.PushCol(gameObject.unk2.properties.zero_0x14);
-                        writer.PushCol(gameObject.unk2.properties.zero_0x18);
+                        writer.PushCol(gameObject.skeletalAnimator.properties.unk_0x00);
+                        writer.PushCol(gameObject.skeletalAnimator.properties.unk_0x04);
+                        writer.WriteFlags(gameObject.skeletalAnimator.properties.unk_0x04);
+                        writer.PushCol(gameObject.skeletalAnimator.properties.unk_0x08);
+                        writer.WriteFlags(gameObject.skeletalAnimator.properties.unk_0x08);
+                        writer.PushCol(gameObject.skeletalAnimator.properties.zero_0x0C);
+                        writer.PushCol(gameObject.skeletalAnimator.properties.zero_0x10);
+                        writer.PushCol(gameObject.skeletalAnimator.properties.zero_0x14);
+                        writer.PushCol(gameObject.skeletalAnimator.properties.zero_0x18);
                         writer.PushRow();
 
                         gameObjectIndex++;
