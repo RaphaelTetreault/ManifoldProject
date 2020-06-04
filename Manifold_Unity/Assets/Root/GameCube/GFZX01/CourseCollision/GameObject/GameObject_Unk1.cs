@@ -1,7 +1,6 @@
 ﻿using StarkTools.IO;
 using System;
 using System.IO;
-using System.Runtime.ExceptionServices;
 using UnityEngine;
 
 namespace GameCube.GFZX01.CourseCollision

@@ -88,9 +88,8 @@ namespace Manifold.IO
                 }
                 count++;
             }
-            AssetDatabase.Refresh();
-            AssetDatabase.SaveAssets();
-            EditorUtility.ClearProgressBar();
+
+            WrapUpAssetImport();
 
             return sobjs;
         }
@@ -164,5 +163,11 @@ namespace Manifold.IO
             }
         }
 
+        public static void WrapUpAssetImport()
+        {
+            AssetDatabase.SaveAssets();
+            EditorUtility.ClearProgressBar();
+            AssetDatabase.Refresh();
+        }
     }
 }

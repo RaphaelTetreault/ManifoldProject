@@ -50,23 +50,32 @@ namespace GameCube.GFZX01.CourseCollision
         public void Deserialize(BinaryReader reader)
         {
             startAddress = reader.BaseStream.Position;
-
-            reader.ReadX(ref unk_0x00);
-            reader.ReadX(ref unk_0x04);
-            reader.ReadX(ref unk_0x08);
-            reader.ReadX(ref unk_0x0C);
-            reader.ReadX(ref unk_0x10);
-            reader.ReadX(ref triCount);
-            reader.ReadX(ref quadCount);
-            reader.ReadX(ref triRelPtr);
-            reader.ReadX(ref quadRelPtr);
-
+            {
+                reader.ReadX(ref unk_0x00);
+                reader.ReadX(ref unk_0x04);
+                reader.ReadX(ref unk_0x08);
+                reader.ReadX(ref unk_0x0C);
+                reader.ReadX(ref unk_0x10);
+                reader.ReadX(ref triCount);
+                reader.ReadX(ref quadCount);
+                reader.ReadX(ref triRelPtr);
+                reader.ReadX(ref quadRelPtr);
+            }
             endAddress = reader.BaseStream.Position;
+            {
+                if (triCount > 0)
+                {
+                    reader.BaseStream.Seek(triRelPtr, SeekOrigin.Begin);
+                    reader.ReadX(ref tris, triCount, true);
+                }
 
-            // Get/set offsets!
-            throw new NotImplementedException();
-            reader.ReadX(ref tris, triCount, true);
-            reader.ReadX(ref quads, quadCount, true);
+                if (quadCount > 0)
+                {
+                    reader.BaseStream.Seek(quadRelPtr, SeekOrigin.Begin);
+                    reader.ReadX(ref quads, quadCount, true);
+                }
+            }
+            reader.BaseStream.Seek(endAddress, SeekOrigin.Begin);
         }
 
         public void Serialize(BinaryWriter writer)

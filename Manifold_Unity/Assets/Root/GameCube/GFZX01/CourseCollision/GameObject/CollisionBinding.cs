@@ -48,28 +48,25 @@ namespace GameCube.GFZX01.CourseCollision
         public void Deserialize(BinaryReader reader)
         {
             startAddress = reader.BaseStream.Position;
-
-            reader.ReadX(ref unk_0x00);
-            reader.ReadX(ref unk_0x04);
-            reader.ReadX(ref referenceBindingRelPtr);
-            reader.ReadX(ref collisionRelPtr);
-
+            {
+                reader.ReadX(ref unk_0x00);
+                reader.ReadX(ref unk_0x04);
+                reader.ReadX(ref referenceBindingRelPtr);
+                reader.ReadX(ref collisionRelPtr);
+            }
             endAddress = reader.BaseStream.Position;
-
             {
                 Assert.IsTrue(referenceBindingRelPtr != 0);
                 reader.BaseStream.Seek(referenceBindingRelPtr, SeekOrigin.Begin);
                 reader.ReadX(ref referenceBinding, true);
+
+                if (collisionRelPtr > 0)
+                {
+                    var absPtr = collisionRelPtr;
+                    reader.BaseStream.Seek(absPtr, SeekOrigin.Begin);
+                    reader.ReadX(ref collision, true);
+                }
             }
-
-            //if (collisionRelPtr > 0)
-            //{
-            //    Debug.Log(referenceBinding.name);
-            //    var absPtr = collisionRelPtr;
-            //    reader.BaseStream.Seek(absPtr, SeekOrigin.Begin);
-            //    reader.ReadX(ref collision, true);
-            //}
-
             reader.BaseStream.Seek(endAddress, SeekOrigin.Begin);
         }
 
