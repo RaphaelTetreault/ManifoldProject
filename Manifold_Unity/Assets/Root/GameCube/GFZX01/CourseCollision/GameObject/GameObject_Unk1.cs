@@ -56,8 +56,8 @@ namespace GameCube.GFZX01.CourseCollision
 
                     if (unkAbsPtr[i] != 0)
                     {
-                        var absPtr = unkAbsPtr[i];
-                        reader.BaseStream.Seek(absPtr, SeekOrigin.Begin);
+                        var ptr = unkAbsPtr[i];
+                        reader.BaseStream.Seek(ptr, SeekOrigin.Begin);
                         reader.ReadX(ref unk[i], false);
                     }
                 }

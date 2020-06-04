@@ -29,8 +29,8 @@ namespace GameCube.GFZX01.CourseCollision
         /// </summary>
         public int zero_0x2C;
         public uint animationAbsPtr;
-        public uint unkPtr_0x34; // Abs or Rel?
-        public uint skeletalAnimatorAbsPtr; // Abs or Rel?
+        public uint unkAbsPtr_0x34;
+        public uint skeletalAnimatorAbsPtr;
         public uint transformAbsPtr;
 
         public CollisionBinding collisionBinding;
@@ -76,7 +76,7 @@ namespace GameCube.GFZX01.CourseCollision
                 reader.ReadX(ref scale);
                 reader.ReadX(ref zero_0x2C);
                 reader.ReadX(ref animationAbsPtr);
-                reader.ReadX(ref unkPtr_0x34);
+                reader.ReadX(ref unkAbsPtr_0x34);
                 reader.ReadX(ref skeletalAnimatorAbsPtr);
                 reader.ReadX(ref transformAbsPtr);
             }
@@ -95,9 +95,9 @@ namespace GameCube.GFZX01.CourseCollision
                     reader.ReadX(ref animation, true);
                 }
 
-                if (unkPtr_0x34 > 0)
+                if (unkAbsPtr_0x34 > 0)
                 {
-                    reader.BaseStream.Seek(unkPtr_0x34, SeekOrigin.Begin);
+                    reader.BaseStream.Seek(unkAbsPtr_0x34, SeekOrigin.Begin);
                     reader.ReadX(ref unk1, true);
                 }
 
@@ -142,7 +142,7 @@ namespace GameCube.GFZX01.CourseCollision
             writer.WriteX(scale);
             writer.WriteX(zero_0x2C);
             writer.WriteX(animationAbsPtr);
-            writer.WriteX(unkPtr_0x34);
+            writer.WriteX(unkAbsPtr_0x34);
             writer.WriteX(skeletalAnimatorAbsPtr);
             writer.WriteX(transformAbsPtr);
 

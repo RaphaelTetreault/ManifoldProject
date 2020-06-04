@@ -441,7 +441,7 @@ namespace Manifold.IO.GFZX01.CourseCollision
                         writer.PushCol(gameObject.scale);
                         writer.PushCol(gameObject.zero_0x2C);
                         writer.PushCol("0x" + gameObject.animationAbsPtr.ToString("X"));
-                        writer.PushCol("0x" + gameObject.unkPtr_0x34.ToString("X"));
+                        writer.PushCol("0x" + gameObject.unkAbsPtr_0x34.ToString("X"));
                         writer.PushCol("0x" + gameObject.skeletalAnimatorAbsPtr.ToString("X"));
                         writer.PushCol("0x" + gameObject.transformAbsPtr.ToString("X"));
                         writer.PushRow();
