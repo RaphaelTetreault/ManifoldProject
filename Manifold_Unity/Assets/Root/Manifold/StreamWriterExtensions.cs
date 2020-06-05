@@ -1,4 +1,5 @@
-﻿using System;
+﻿using StarkTools.IO;
+using System;
 using System.IO;
 using System.Linq;
 
@@ -92,6 +93,11 @@ namespace Manifold.IO
             var name = value.Replace("_", " ");
             var prettyName = UnityEditor.ObjectNames.NicifyVariableName(name);
             writer.PushCol(prettyName);
+        }
+
+        public static void WriteStartAddress(this StreamWriter writer, IBinaryAddressable binaryAddressable)
+        {
+            writer.PushCol("0x" + binaryAddressable.StartAddress.ToString("X8"));
         }
     }
 }

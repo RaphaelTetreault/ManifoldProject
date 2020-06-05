@@ -19,9 +19,9 @@ namespace GameCube.GFZX01.CourseCollision
         public Vector3 vertex0;
         public Vector3 vertex1;
         public Vector3 vertex2;
-        public Vector3 unk_0x38;
-        public Vector3 unk_0x44;
-        public Vector3 unk_0x50;
+        public Vector3 precomputed0;
+        public Vector3 precomputed1;
+        public Vector3 precomputed2;
 
         #endregion
 
@@ -52,9 +52,9 @@ namespace GameCube.GFZX01.CourseCollision
             reader.ReadX(ref vertex0);
             reader.ReadX(ref vertex1);
             reader.ReadX(ref vertex2);
-            reader.ReadX(ref unk_0x38);
-            reader.ReadX(ref unk_0x44);
-            reader.ReadX(ref unk_0x50);
+            reader.ReadX(ref precomputed0);
+            reader.ReadX(ref precomputed1);
+            reader.ReadX(ref precomputed2);
 
             endAddress = reader.BaseStream.Position;
         }
@@ -66,9 +66,9 @@ namespace GameCube.GFZX01.CourseCollision
             writer.WriteX(vertex0);
             writer.WriteX(vertex1);
             writer.WriteX(vertex2);
-            writer.WriteX(unk_0x38);
-            writer.WriteX(unk_0x44);
-            writer.WriteX(unk_0x50);
+            writer.WriteX(precomputed0);
+            writer.WriteX(precomputed1);
+            writer.WriteX(precomputed2);
         }
 
         #endregion

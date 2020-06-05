@@ -14,16 +14,17 @@ namespace GameCube.GFZX01.CourseCollision
         [SerializeField, Hex] long startAddress;
         [SerializeField, Hex] long endAddress;
 
+        // Normal's quaternion rotation theta? https://en.wikipedia.org/wiki/Quaternions_and_spatial_rotation#Using_quaternion_as_rotations
         public float unk_0x00;
         public Vector3 normal;
         public Vector3 vertex0;
         public Vector3 vertex1;
         public Vector3 vertex2;
         public Vector3 vertex3;
-        public Vector3 unk_0x44;
-        public Vector3 unk_0x50;
-        public Vector3 unk_0x5C;
-        public Vector3 unk_0x68;
+        public Vector3 precomputed0;
+        public Vector3 precomputed1;
+        public Vector3 precomputed2;
+        public Vector3 precomputed3;
 
         #endregion
 
@@ -55,10 +56,10 @@ namespace GameCube.GFZX01.CourseCollision
             reader.ReadX(ref vertex1);
             reader.ReadX(ref vertex2);
             reader.ReadX(ref vertex3);
-            reader.ReadX(ref unk_0x44);
-            reader.ReadX(ref unk_0x50);
-            reader.ReadX(ref unk_0x5C);
-            reader.ReadX(ref unk_0x68);
+            reader.ReadX(ref precomputed0);
+            reader.ReadX(ref precomputed1);
+            reader.ReadX(ref precomputed2);
+            reader.ReadX(ref precomputed3);
 
             endAddress = reader.BaseStream.Position;
         }
@@ -71,10 +72,10 @@ namespace GameCube.GFZX01.CourseCollision
             writer.WriteX(vertex1);
             writer.WriteX(vertex2);
             writer.WriteX(vertex3);
-            writer.WriteX(unk_0x44);
-            writer.WriteX(unk_0x50);
-            writer.WriteX(unk_0x5C);
-            writer.WriteX(unk_0x68);
+            writer.WriteX(precomputed0);
+            writer.WriteX(precomputed1);
+            writer.WriteX(precomputed2);
+            writer.WriteX(precomputed3);
         }
 
         #endregion

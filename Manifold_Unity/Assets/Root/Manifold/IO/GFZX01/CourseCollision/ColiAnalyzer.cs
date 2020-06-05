@@ -85,10 +85,20 @@ namespace Manifold.IO.GFZX01.CourseCollision
                 EditorUtility.DisplayProgressBar(ExecuteText, filePath, .5f);
                 AnalyzeGameObjectsUnk1(filePath);
 
-                filePath = $"{time} COLI GameObjects Unk2.tsv";
+                filePath = $"{time} COLI GameObjects Skeletal.tsv";
                 filePath = Path.Combine(outputPath, filePath);
                 EditorUtility.DisplayProgressBar(ExecuteText, filePath, .5f);
                 AnalyzeGameObjectsUnk2(filePath);
+
+                filePath = $"{time} COLI GameObjects Collision Tris.tsv";
+                filePath = Path.Combine(outputPath, filePath);
+                EditorUtility.DisplayProgressBar(ExecuteText, filePath, .5f);
+                AnalyzeGameObjectsCollisionTri(filePath);
+
+                filePath = $"{time} COLI GameObjects Collision Quads.tsv";
+                filePath = Path.Combine(outputPath, filePath);
+                EditorUtility.DisplayProgressBar(ExecuteText, filePath, .5f);
+                AnalyzeGameObjectsCollisionQuad(filePath);
             }
 
             if (animations)
@@ -554,6 +564,131 @@ namespace Manifold.IO.GFZX01.CourseCollision
             }
         }
 
+        public void AnalyzeGameObjectsCollisionTri(string fileName)
+        {
+            using (var writer = AnalyzerUtility.OpenWriter(fileName))
+            {
+                // Write header
+                writer.PushCol("File");
+                writer.PushCol("Game Object #");
+                writer.PushCol("Game Object");
+
+                writer.PushCol("Tri Index");
+                writer.PushCol("Addr");
+
+                writer.WriteColNicify(nameof(CollisionTri.unk_0x00));
+                writer.WriteColNicify(nameof(CollisionTri.normal));
+                writer.WriteColNicify(nameof(CollisionTri.vertex0));
+                writer.WriteColNicify(nameof(CollisionTri.vertex1));
+                writer.WriteColNicify(nameof(CollisionTri.vertex2));
+                writer.WriteColNicify(nameof(CollisionTri.precomputed0));
+                writer.WriteColNicify(nameof(CollisionTri.precomputed1));
+                writer.WriteColNicify(nameof(CollisionTri.precomputed2));
+
+                writer.PushRow();
+
+                foreach (var file in analysisSobjs)
+                {
+                    int gameObjectIndex = 0;
+                    foreach (var gameObject in file.Value.gameObjects)
+                    {
+                        if (gameObject.collisionBinding.collision.triCount == 0)
+                        {
+                            continue;
+                        }
+
+                        int triIndex = 0;
+                        foreach (var tri in gameObject.collisionBinding.collision.tris)
+                        {
+                            writer.PushCol(file.FileName);
+                            writer.PushCol(gameObjectIndex);
+                            writer.PushCol(gameObject.name);
+
+                            writer.PushCol(triIndex++);
+                            writer.WriteStartAddress(tri);
+
+                            writer.PushCol(tri.unk_0x00);
+                            writer.PushCol(tri.normal);
+                            writer.PushCol(tri.vertex0);
+                            writer.PushCol(tri.vertex1);
+                            writer.PushCol(tri.vertex2);
+                            writer.PushCol(tri.precomputed0);
+                            writer.PushCol(tri.precomputed1);
+                            writer.PushCol(tri.precomputed2);
+
+                            writer.PushRow();
+                        }
+                        gameObjectIndex++;
+                    }
+                }
+                writer.Flush();
+            }
+        }
+
+        public void AnalyzeGameObjectsCollisionQuad(string fileName)
+        {
+            using (var writer = AnalyzerUtility.OpenWriter(fileName))
+            {
+                // Write header
+                writer.PushCol("File");
+                writer.PushCol("Game Object #");
+                writer.PushCol("Game Object");
+
+                writer.PushCol("Quad Index");
+                writer.PushCol("Addr");
+
+                writer.WriteColNicify(nameof(CollisionQuad.unk_0x00));
+                writer.WriteColNicify(nameof(CollisionQuad.normal));
+                writer.WriteColNicify(nameof(CollisionQuad.vertex0));
+                writer.WriteColNicify(nameof(CollisionQuad.vertex1));
+                writer.WriteColNicify(nameof(CollisionQuad.vertex2));
+                writer.WriteColNicify(nameof(CollisionQuad.vertex3));
+                writer.WriteColNicify(nameof(CollisionQuad.precomputed0));
+                writer.WriteColNicify(nameof(CollisionQuad.precomputed1));
+                writer.WriteColNicify(nameof(CollisionQuad.precomputed2));
+                writer.WriteColNicify(nameof(CollisionQuad.precomputed3));
+
+                writer.PushRow();
+
+                foreach (var file in analysisSobjs)
+                {
+                    int gameObjectIndex = 0;
+                    foreach (var gameObject in file.Value.gameObjects)
+                    {
+                        if (gameObject.collisionBinding.collision.quadCount == 0)
+                        {
+                            continue;
+                        }
+
+                        int quadIndex = 0;
+                        foreach (var quad in gameObject.collisionBinding.collision.quads)
+                        {
+                            writer.PushCol(file.FileName);
+                            writer.PushCol(gameObjectIndex);
+                            writer.PushCol(gameObject.name);
+
+                            writer.PushCol(quadIndex++);
+                            writer.WriteStartAddress(quad);
+
+                            writer.PushCol(quad.unk_0x00);
+                            writer.PushCol(quad.normal);
+                            writer.PushCol(quad.vertex0);
+                            writer.PushCol(quad.vertex1);
+                            writer.PushCol(quad.vertex2);
+                            writer.PushCol(quad.vertex3);
+                            writer.PushCol(quad.precomputed0);
+                            writer.PushCol(quad.precomputed1);
+                            writer.PushCol(quad.precomputed2);
+                            writer.PushCol(quad.precomputed3);
+
+                            writer.PushRow();
+                        }
+                        gameObjectIndex++;
+                    }
+                }
+                writer.Flush();
+            }
+        }
 
 
     }
