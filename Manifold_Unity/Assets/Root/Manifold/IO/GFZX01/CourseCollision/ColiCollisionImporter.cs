@@ -39,7 +39,7 @@ namespace Manifold.IO.GFZX01.CourseCollision
             {
                 foreach (var gobj in coli.Value.gameObjects)
                 {
-                    if (gobj.collisionBinding.collisionRelPtr != 0)
+                    if (gobj.collisionBinding.collisionAbsPtr != 0)
                     {
                         var mesh = CreateMesh(gobj);
                         AssetDatabase.CreateAsset(mesh, $"Assets/{coli.name}_{mesh.name}.asset");

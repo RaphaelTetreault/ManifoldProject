@@ -19,8 +19,8 @@ namespace GameCube.GFZX01.CourseCollision
         public uint unk_0x00;
         [Hex(numDigits: 4)]
         public uint unk_0x04;
-        public uint referenceBindingRelPtr;
-        public uint collisionRelPtr;
+        public uint referenceBindingAbsPtr;
+        public uint collisionAbsPtr;
 
         public ReferenceBinding referenceBinding;
         public Collision collision;
@@ -51,18 +51,19 @@ namespace GameCube.GFZX01.CourseCollision
             {
                 reader.ReadX(ref unk_0x00);
                 reader.ReadX(ref unk_0x04);
-                reader.ReadX(ref referenceBindingRelPtr);
-                reader.ReadX(ref collisionRelPtr);
+                reader.ReadX(ref referenceBindingAbsPtr);
+                reader.ReadX(ref collisionAbsPtr);
             }
             endAddress = reader.BaseStream.Position;
             {
-                Assert.IsTrue(referenceBindingRelPtr != 0);
-                reader.BaseStream.Seek(referenceBindingRelPtr, SeekOrigin.Begin);
+                Assert.IsTrue(referenceBindingAbsPtr != 0);
+                reader.BaseStream.Seek(referenceBindingAbsPtr, SeekOrigin.Begin);
                 reader.ReadX(ref referenceBinding, true);
 
-                if (collisionRelPtr > 0)
+                // Collision is not required, load only if pointer is not null
+                if (collisionAbsPtr > 0)
                 {
-                    var absPtr = collisionRelPtr;
+                    var absPtr = collisionAbsPtr;
                     reader.BaseStream.Seek(absPtr, SeekOrigin.Begin);
                     reader.ReadX(ref collision, true);
                 }
@@ -74,8 +75,8 @@ namespace GameCube.GFZX01.CourseCollision
         {
             writer.WriteX(unk_0x00);
             writer.WriteX(unk_0x04);
-            writer.WriteX(referenceBindingRelPtr);
-            writer.WriteX(collisionRelPtr);
+            writer.WriteX(referenceBindingAbsPtr);
+            writer.WriteX(collisionAbsPtr);
 
             //
             throw new NotImplementedException();

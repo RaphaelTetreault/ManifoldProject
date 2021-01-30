@@ -21,8 +21,8 @@ namespace GameCube.GFZX01.CourseCollision
         public uint unk_0x10;
         public int triCount;
         public int quadCount;
-        public uint triRelPtr;
-        public uint quadRelPtr;
+        public uint triAbsPtr;
+        public uint quadAbsPtr;
 
         public CollisionTri[] tris;
         public CollisionQuad[] quads;
@@ -58,20 +58,20 @@ namespace GameCube.GFZX01.CourseCollision
                 reader.ReadX(ref unk_0x10);
                 reader.ReadX(ref triCount);
                 reader.ReadX(ref quadCount);
-                reader.ReadX(ref triRelPtr);
-                reader.ReadX(ref quadRelPtr);
+                reader.ReadX(ref triAbsPtr);
+                reader.ReadX(ref quadAbsPtr);
             }
             endAddress = reader.BaseStream.Position;
             {
                 if (triCount > 0)
                 {
-                    reader.BaseStream.Seek(triRelPtr, SeekOrigin.Begin);
+                    reader.BaseStream.Seek(triAbsPtr, SeekOrigin.Begin);
                     reader.ReadX(ref tris, triCount, true);
                 }
 
                 if (quadCount > 0)
                 {
-                    reader.BaseStream.Seek(quadRelPtr, SeekOrigin.Begin);
+                    reader.BaseStream.Seek(quadAbsPtr, SeekOrigin.Begin);
                     reader.ReadX(ref quads, quadCount, true);
                 }
             }
@@ -87,8 +87,8 @@ namespace GameCube.GFZX01.CourseCollision
             writer.WriteX(unk_0x10);
             writer.WriteX(triCount);
             writer.WriteX(quadCount);
-            writer.WriteX(triRelPtr);
-            writer.WriteX(quadRelPtr);
+            writer.WriteX(triAbsPtr);
+            writer.WriteX(quadAbsPtr);
 
             // You need to implement saving the tris/quads
             throw new NotImplementedException();

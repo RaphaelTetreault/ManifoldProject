@@ -39,6 +39,7 @@ namespace Manifold.IO.GFZX01.CourseCollision
                 var count = 0;
                 var total = coliCourse.Value.gameObjects.Length;
 
+                // Create new, empty scene
                 var sceneName = coliCourse.name;
                 var scenePath = $"Assets/{importTo}/{sceneName}.unity";
                 var scene = EditorSceneManager.NewScene(NewSceneSetup.DefaultGameObjects, NewSceneMode.Single);
@@ -81,7 +82,7 @@ namespace Manifold.IO.GFZX01.CourseCollision
                     }
                     path = AssetDatabase.GUIDToAssetPath(assets[0]);
                     //string path = AssetDatabase.GUIDToAssetPath(assets[0]);
-                    UnityEngine.GameObject asset = AssetDatabase.LoadAssetAtPath<UnityEngine.GameObject>(path);
+                    var asset = AssetDatabase.LoadAssetAtPath<UnityEngine.GameObject>(path);
 
                     //// Progress bar update
                     var title = $"Generating Scene ({coliCourse.name})";
@@ -91,6 +92,10 @@ namespace Manifold.IO.GFZX01.CourseCollision
 
                     var instance = Instantiate(asset);
                     instance.name = pfPrintName;
+                    // TODO: attach components...
+                    var haAnimation = gobj.animation != null;
+
+
 
                     // Set Unity Transform values
                     gobj.transform.SetUnityTransform(instance.transform);
@@ -102,5 +107,6 @@ namespace Manifold.IO.GFZX01.CourseCollision
             EditorUtility.ClearProgressBar();
             AssetDatabase.Refresh();
         }
+
     }
 }

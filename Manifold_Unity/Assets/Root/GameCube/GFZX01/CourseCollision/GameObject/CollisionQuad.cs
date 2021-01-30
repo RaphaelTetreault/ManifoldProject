@@ -15,6 +15,8 @@ namespace GameCube.GFZX01.CourseCollision
         [SerializeField, Hex] long endAddress;
 
         // Normal's quaternion rotation theta? https://en.wikipedia.org/wiki/Quaternions_and_spatial_rotation#Using_quaternion_as_rotations
+        // Value range: -3613.961 through 3595.046, avg: -11 (basically 0)
+        // Could possibly be "bounding sphere" radius/diameter from avg of all positions?
         public float unk_0x00;
         public Vector3 normal;
         public Vector3 vertex0;

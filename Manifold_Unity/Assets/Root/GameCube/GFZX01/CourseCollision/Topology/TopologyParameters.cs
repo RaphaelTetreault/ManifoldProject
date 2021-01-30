@@ -1,10 +1,7 @@
 ﻿using StarkTools.IO;
 using System;
 using System.IO;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using System.Diagnostics;
 
 namespace GameCube.GFZX01
 {
@@ -218,6 +215,8 @@ namespace GameCube.GFZX01
             //writer.WriteX(absPtr7);
             //writer.WriteX(absPtr8);
             //writer.WriteX(absPtr9);
+
+            throw new NotImplementedException();
         }
 
         #endregion
