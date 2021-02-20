@@ -37,8 +37,6 @@ namespace Manifold.IO.GFZX01.GMA
         [Header("Import Files")]
         [SerializeField] protected GMASobj[] gmaSobjs;
 
-
-
         #endregion
 
         public override string ExecuteText => "Import GMA Models";
@@ -91,10 +89,10 @@ namespace Manifold.IO.GFZX01.GMA
 
         public int[] GetTrianglesFromTriangleStrip(int numVerts, bool baseCCW)
         {
-            // Construct triangles from GameCube GX TRIANLE_STRIP
+            // Construct triangles from GameCube GX TRIANGLE_STRIP
             // For one, note that we need to unwind the tristrip.
             // We can use the index to know if the indice is odd or even.
-            // However, in GFZX, the winding for different display lists
+            // However, in GFZ, the winding for different display lists
             // inverts based on it's "index," so to speak.
             // To compensate, we need to XOR the odd/even value with whether
             // the base index of the strip is meant to be CCW or CW.
@@ -208,6 +206,7 @@ namespace Manifold.IO.GFZX01.GMA
 
         public Vector3[] HackNormals(Vector3[] normals, int vertCount)
         {
+            // Normals will get recalculated based on polygon
             return normals.Length == 0
                 ? new Vector3[vertCount]
                 : normals;
@@ -287,24 +286,24 @@ namespace Manifold.IO.GFZX01.GMA
             return submesh;
         }
 
-
-
         public GameObject CreatePrefabFromModel(Mesh mesh, string path)
         {
-            var meshNameNoMDL = mesh.name.Substring(4, mesh.name.Length-4);
-            var pfPath = $"{path}/pf_{meshNameNoMDL}.prefab";
+            // Remove "mdl_" prefix to build prefab name
+            var modelName = mesh.name.Remove(0, 4);
+            var prefabPath = $"{path}/pf_{modelName}.prefab";
+            // Construct the prefab to store the model data
             var prefab = new GameObject();
             var meshFilter = prefab.AddComponent<MeshFilter>();
             meshFilter.mesh = mesh;
             var meshRenderer = prefab.AddComponent<MeshRenderer>();
+            // HACK: Add a generic material to each model
+            // In the future, generate materials for models
             var mats = new UnityEngine.Material[mesh.subMeshCount];
             for (int i = 0; i < mats.Length; i++)
                 mats[i] = defaultMat;
             meshRenderer.sharedMaterials = mats;
-            PrefabUtility.SaveAsPrefabAsset(prefab, pfPath);
-
-            //Debug.Log($"gen prefab: {meshNameNoMDL}");
-
+            // Save model to asset database, return
+            PrefabUtility.SaveAsPrefabAsset(prefab, prefabPath);
             return prefab;
         }
 

@@ -76,7 +76,8 @@ namespace Manifold.IO.GFZX01.CourseCollision
                         $"Assets/{"GFZJ01"}/init" };
 
                     var assetGuids = AssetDatabase.FindAssets(pfName, searchFolders);
-                    var pfPrintName = pfName;
+                    // Remove "pf_" prefix
+                    var pfPrintName = pfName.Remove(0, 3);
 
                     string assetPath = string.Empty;
                     if (assetGuids.Length == 1)
@@ -89,7 +90,7 @@ namespace Manifold.IO.GFZX01.CourseCollision
                         // Load empty
                         assetGuids = AssetDatabase.FindAssets("pf_NotFound");
                         assetPath = AssetDatabase.GUIDToAssetPath(assetGuids[0]);
-                        pfPrintName = $"MISSING_MODEL_{gobj.name}";
+                        pfPrintName = $"NoModel:{gobj.name}";
                     }
                     else
                     {
@@ -115,82 +116,9 @@ namespace Manifold.IO.GFZX01.CourseCollision
                         }
                     }
 
-                    //Debug.Log($"{pfName} - {assetPath}");
                     var asset = AssetDatabase.LoadAssetAtPath<UnityEngine.GameObject>(assetPath);
-                    UnityEngine.Assertions.Assert.IsFalse(asset == null, $"{gobj.name} - {assetPath}");
+                    //UnityEngine.Assertions.Assert.IsFalse(asset == null, $"{gobj.name} - {assetPath}");
                         
-                    #region dep
-                    //// Temp. triage
-                    //string assetPath = string.Empty;
-                    //if (assetGuids.Length == 1)
-                    //{
-                    //    // We're good
-                    //    assetPath = AssetDatabase.GUIDToAssetPath(assetGuids[0]);
-                    //}
-                    //else if (assetGuids.Length == 0)
-                    //{
-                    //    // Load empty
-                    //    assetGuids = AssetDatabase.FindAssets("pf_NotFound");
-                    //    assetPath = AssetDatabase.GUIDToAssetPath(assetGuids[0]);
-                    //    pfPrintName = $"MISSING_MODEL_{pfName}";
-                    //}
-                    //else
-                    //{
-                    //    // Implement folder search
-                    //    // Exception: Can return 2+ objects even if only 1 of each name.
-                    //    // Ex: MUT_TUNNEL_B and MUT_TUNNEL_BAR both get flagged if input is "MUT_TUNNEL_B"
-
-                    //    //var courseID = coliCourse.Value.courseID.ToString();
-                    //    var id = coliCourse.Value.id.ToString("00");
-                    //    var venueID = coliCourse.Value.courseVenueID.ToString().ToLower();
-                    //    var possibles = new System.Collections.Generic.List<string>();
-
-                    //    foreach (var assetGuid in assetGuids)
-                    //    {
-                    //        var assetName = AssetDatabase.GUIDToAssetPath(assetGuid);
-                    //        var assetNameOnly = System.IO.Path.GetFileNameWithoutExtension(assetName);
-                    //        if (assetNameOnly.Equals(pfName))
-                    //        {
-                    //            possibles.Add(assetName);
-                    //        }
-                    //    }
-
-                    //    if (possibles.Count == 0)
-                    //    {
-                    //        // we just hit a pf_ object
-                    //        assetGuids = AssetDatabase.FindAssets("pf_NotFound");
-                    //        assetPath = AssetDatabase.GUIDToAssetPath(assetGuids[0]);
-                    //        pfPrintName = $"MISSING_MODEL_{pfName}";
-                    //    }
-                    //    else if (possibles.Count == 1)
-                    //    {
-                    //        assetPath = possibles[0];
-                    //    }
-                    //    else
-                    //    {
-                    //        foreach (var a in possibles)
-                    //        {
-                    //            var directory = System.IO.Path.GetDirectoryName(a);
-                    //            var isCorrectVenue = directory.Contains($"bg_{venueID}");
-                    //            var isCorrectStage = directory.Contains($"st{id}");
-                    //            if (isCorrectVenue || isCorrectStage)
-                    //            {
-                    //                assetPath = a;
-                    //                break;
-                    //            }
-                    //        }
-                    //    }
-
-                    //    if (assetPath == string.Empty)
-                    //    {
-                    //        throw new System.Exception($"result \"{assetPath}\"");
-                    //    }
-
-                    //    UnityEngine.Assertions.Assert.IsTrue(assetPath != string.Empty);
-                    //}
-                    //var asset = AssetDatabase.LoadAssetAtPath<UnityEngine.GameObject>(assetPath);
-                    #endregion
-
                     //// Progress bar update
                     var title = $"Generating Scene ({coliCourse.name})";
                     var info = $"{pfPrintName}";
