@@ -47,6 +47,13 @@ namespace Manifold.IO.GFZX01.CourseCollision
                 // Keep reference of new scene
                 scene = EditorSceneManager.OpenScene(scenePath);
 
+                // Create track vis, set parameter
+                var empty = new UnityEngine.GameObject();
+                empty.name = nameof(TempTrackVis);
+                var trackVis = empty.AddComponent<TempTrackVis>();
+                trackVis.Coli = coliCourse;
+                //
+
                 foreach (var gobj in coliCourse.Value.gameObjects)
                 {
                     // HACK: skip empties. Should really just do "model not found"

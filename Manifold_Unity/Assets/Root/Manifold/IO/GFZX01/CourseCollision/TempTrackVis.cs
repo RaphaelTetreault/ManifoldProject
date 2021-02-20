@@ -9,11 +9,15 @@ namespace Manifold.IO.GFZX01.CourseCollision
         public float kRadius = 10f;
 
         [SerializeField] protected ColiSceneSobj coli;
-        [SerializeField] protected Color debugColor = Color.white;
-        [SerializeField] protected Color transformColor = Color.white;
+        [SerializeField] protected Color debugColor = Color.red;
+        //[SerializeField] protected Color transformColor = Color.white;
         [SerializeField] protected Mesh mesh;
 
-        public ColiSceneSobj Coli => coli;
+        public ColiSceneSobj Coli
+        {
+            get => coli;
+            set => coli = value;
+        }
 
         private void OnDrawGizmos()
         {
@@ -30,11 +34,11 @@ namespace Manifold.IO.GFZX01.CourseCollision
                 Gizmos.DrawSphere(from, kRadius);
             }
 
-            Gizmos.color = transformColor;
-            foreach (var trackTransform in coli.Value.trackTransforms)
-            {
-                DrawRecursive(trackTransform, Quaternion.identity, Vector3.zero, Vector3.one);
-            }
+            //Gizmos.color = transformColor;
+            //foreach (var trackTransform in coli.Value.trackTransforms)
+            //{
+            //    DrawRecursive(trackTransform, Quaternion.identity, Vector3.zero, Vector3.one);
+            //}
 
         }
 
