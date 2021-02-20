@@ -1,4 +1,5 @@
-﻿using UnityEditor;
+﻿using System;
+using UnityEditor;
 using UnityEngine;
 
 namespace Manifold.IO
@@ -44,5 +45,29 @@ namespace Manifold.IO
             return GetAllOfType<T>(new string[0]);
         }
 
+        public static T[] GetSobjByOption<T>(T[] sobjs, IOOption option, params string[] searchFolders)
+          where T : ScriptableObject
+        {
+            switch (option)
+            {
+                case IOOption.selectedFiles:
+                    return sobjs;
+
+                case IOOption.allFromSourceFolder:
+                    return GetAllOfType<T>(searchFolders);
+
+                case IOOption.allFromAssetDatabase:
+                    return GetAllOfType<T>();
+
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+
+        public static T[] GetSobjByOption<T>(T[] sobjs, IOOption option)
+            where T : ScriptableObject
+        {
+            return GetSobjByOption(sobjs, option, new string[0]);
+        }
     }
 }

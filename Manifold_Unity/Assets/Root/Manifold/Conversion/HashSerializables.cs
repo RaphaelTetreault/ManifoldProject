@@ -1,7 +1,7 @@
 using System.IO;
 using System.Text;
 using System.Security.Cryptography;
-using StarkTools.IO;
+using Manifold.IO;
 
 namespace Manifold.Conversion
 {

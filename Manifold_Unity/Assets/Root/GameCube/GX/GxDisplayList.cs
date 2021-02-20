@@ -1,9 +1,9 @@
-﻿using StarkTools.IO;
+﻿using Manifold.IO;
 using System;
 using System.IO;
 using UnityEngine;
-using GameCube.GFZX01;
-using GameCube.GFZX01.GMA;
+using GameCube.GFZ;
+using GameCube.GFZ.GMA;
 
 namespace GameCube.GX
 {

@@ -1,4 +1,4 @@
-﻿using StarkTools.IO;
+﻿using Manifold.IO;
 using System;
 using System.IO;
 using System.Collections;
@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.Serialization;
-using GameCube.GFZX01.GMA;
+using GameCube.GFZ.GMA;
 
 namespace GameCube.GX
 {

@@ -2,13 +2,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using GameCube.GFZX01.CourseCollision;
+using GameCube.GFZ.CourseCollision;
 
 namespace Manifold.Conversion.GFZ.CourseCollision
 {
     public static class AnimationConverter
     {
-        public static UnityEngine.AnimationClip GfzToUnity(GameCube.GFZX01.CourseCollision.AnimationClip animationClip)
+        public static UnityEngine.AnimationClip GfzToUnity(GameCube.GFZ.CourseCollision.AnimationClip animationClip)
         {
             var unityAnimClip = new UnityEngine.AnimationClip();
 
@@ -56,7 +56,7 @@ namespace Manifold.Conversion.GFZ.CourseCollision
             return unityAnimClip;
         }
 
-        public static void SetCurve(UnityEngine.AnimationClip unityClip, GameCube.GFZX01.CourseCollision.AnimationCurve gfzCurve, Type type, string propertyName)
+        public static void SetCurve(UnityEngine.AnimationClip unityClip, GameCube.GFZ.CourseCollision.AnimationCurve gfzCurve, Type type, string propertyName)
         {
             // ignore empty anims
             if (gfzCurve.keyableAttributes.Length == 0)

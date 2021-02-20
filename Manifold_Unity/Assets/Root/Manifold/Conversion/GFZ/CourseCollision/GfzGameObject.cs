@@ -8,6 +8,6 @@ namespace Manifold
 {
     public class GfzGameObject : MonoBehaviour
     {
-        public GameCube.GFZX01.CourseCollision.GameObject self;
+        public GameCube.GFZ.CourseCollision.GameObject self;
     }
 }

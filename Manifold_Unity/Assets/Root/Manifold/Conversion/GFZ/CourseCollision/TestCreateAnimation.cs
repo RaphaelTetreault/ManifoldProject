@@ -5,7 +5,7 @@ using UnityEditor;
 
 using Manifold.IO;
 using Manifold.Conversion.GFZ.CourseCollision;
-using Manifold.IO.GFZX01.CourseCollision;
+using Manifold.IO.GFZ.CourseCollision;
 
 namespace Manifold.Conversion
 {
