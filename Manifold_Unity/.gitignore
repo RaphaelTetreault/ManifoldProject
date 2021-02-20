@@ -1,8 +1,14 @@
-/[Ll]ibrary/
-/[Tt]emp/
-/[Oo]bj/
+# Unity Folder ignores
+/Library/
+/Logs/
+/obj/
+/Temp/
+/UserSettings/
+
+# Ignore build folders in case someone generates them
 /[Bb]uild/
 /[Bb]uilds/
+
 /Assets/[Rr]oot/[Uu]ntracked*
 /Assets/[Uu]ntracked*
 
