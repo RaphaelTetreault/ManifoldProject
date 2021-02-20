@@ -103,7 +103,7 @@ Now that the COLI_COURSE files have been turned into data assets, we can use ano
 
 
 
-## 2.1 Create a GMA Model Importer
+## 2.1 Create a COLI Scene Importer
 
 To reconstruct the meshes, we need to create an instance of the model importer. Right-click in the Project panel in Unity to bring up the context menu. At the top, select `Create > Manifold > GFZX01 > GMA Model > GMA Model Importer`.
 
