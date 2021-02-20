@@ -1,11 +1,7 @@
 ﻿using StarkTools.IO;
 using System;
 using System.IO;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Assertions;
-using UnityEngine.Serialization;
 using GameCube.GFZX01;
 using GameCube.GFZX01.GMA;
 
@@ -72,13 +68,13 @@ namespace GameCube.GX
 
         public void Deserialize(BinaryReader reader)
         {
-            startAddress = reader.BaseStream.Position;
+            this.RecordStartAddress(reader);
 
             reader.ReadX(ref gxCmd, true);
             reader.ReadX(ref count);
 
             var vatIdx = (byte)gxCmd.VertexFormat;
-            var vat = VAT.GFZX01_VAT;
+            var vat = VertexAttributeTable.GfzVat;
             var vaf = vat.GxVtxAttrFmts[vatIdx];
 
             //mtx
@@ -148,7 +144,6 @@ namespace GameCube.GX
                 if (pn_mtx_idx.Length > 0)
                     reader.ReadX(ref pn_mtx_idx[i]);
 
-
                 if (pos.Length > 0)
                 {
                     var fmt = vaf.pos;
@@ -177,7 +172,6 @@ namespace GameCube.GX
                 {
                     var fmt = vaf.clr1;
                     clr1[i] = GxUtility.ReadColorComponent(reader, fmt.componentFormat);
-
                 }
 
                 if (tex0.Length > 0)
@@ -189,7 +183,6 @@ namespace GameCube.GX
                 {
                     var fmt = vaf.tex1;
                     tex1[i] = GxUtility.ReadGxTextureST(reader, fmt.nElements, fmt.componentFormat, fmt.nFracBits);
-
                 }
                 if (tex2.Length > 0)
                 {
@@ -200,13 +193,11 @@ namespace GameCube.GX
                 {
                     var fmt = vaf.tex3;
                     tex3[i] = GxUtility.ReadGxTextureST(reader, fmt.nElements, fmt.componentFormat, fmt.nFracBits);
-
                 }
                 if (tex4.Length > 0)
                 {
                     var fmt = vaf.tex4;
                     tex4[i] = GxUtility.ReadGxTextureST(reader, fmt.nElements, fmt.componentFormat, fmt.nFracBits);
-
                 }
                 if (tex5.Length > 0)
                 {
@@ -225,7 +216,7 @@ namespace GameCube.GX
                 }
             }
 
-            endAddress = reader.BaseStream.Position;
+            this.RecordEndAddress(reader);
         }
 
         public void Serialize(BinaryWriter writer)

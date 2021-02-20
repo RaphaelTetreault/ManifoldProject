@@ -2,9 +2,9 @@
 
 namespace GameCube.GFZX01
 {
-    public static class VAT
+    public static class VertexAttributeTable
     {
-        public static readonly GxVtxAttrTable GFZX01_VAT = new GxVtxAttrTable(
+        public static readonly GxVtxAttrTable GfzVat = new GxVtxAttrTable(
             new GxVtxAttrFmt[2]
             {
                 // VAT 0

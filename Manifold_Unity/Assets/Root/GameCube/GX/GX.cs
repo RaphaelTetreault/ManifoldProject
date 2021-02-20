@@ -137,12 +137,7 @@
     /// 
     /// Notes:
     /// Tells GX what to expect from oncoming vertex information.
-    /// The data provided should be 32-byte aligned. Refer to GX FIFO.
-    /// 
-    /// There appears to be conflict between this and some information in the 
-    /// "Vertex and primitive data" Nintendo SDK manual. The manual says
-    /// GX_VA_NRM and GX_VA_NBT both share a value of 10, but that's not what
-    /// the enum here had, and I recall copying from the SDK enum script.
+    /// That data provided should be 32-byte aligned. Refer to GX FIFO.
     /// </summary>
     public enum GXAttr
     {

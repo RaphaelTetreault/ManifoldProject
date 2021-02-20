@@ -1,11 +1,6 @@
-﻿using StarkTools.IO;
-using System;
-using System.IO;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System;
 using UnityEngine;
 using UnityEngine.Assertions;
-using UnityEngine.Serialization;
 
 namespace GameCube.GX
 {

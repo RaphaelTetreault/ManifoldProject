@@ -10,7 +10,6 @@ using GameCube.GFZX01.GMA;
 
 namespace GameCube.GX
 {
-
     public static class GxUtility
     {
         public const int GX_FIFO_ALIGN = 32;
@@ -278,9 +277,6 @@ namespace GameCube.GX
                     throw new NotImplementedException();
             }
         }
-
-
-
 
     }
 }
