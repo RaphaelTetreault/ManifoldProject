@@ -10,7 +10,7 @@ namespace GameCube.GFZX01.CourseCollision
     [Serializable]
     public class AnimationClip : IBinarySerializable, IBinaryAddressable
     {
-        // From
+        // 6
         public const int kSizeCurvesPtrs = 6 + 5;
         const int kSizeZero_0x08 = 0x10;
 
@@ -23,6 +23,13 @@ namespace GameCube.GFZX01.CourseCollision
         public float unk_0x04;
         public byte[] zero_0x08;
         public EnumFlags32 unk_layer_0x18;
+        /// <summary>
+        /// idx: 0,1,2: scale
+        /// idx: 3,4,5: rotation
+        /// idx: 6,7,8: position
+        /// idx: 9: unused?
+        /// idx: 10: light
+        /// </summary>
         public AnimationCurve[] animCurves;
 
         #endregion
@@ -71,8 +78,8 @@ namespace GameCube.GFZX01.CourseCollision
             writer.WriteX(unk_layer_0x18);
             writer.WriteX(animCurves, false);
 
-            // Ensure the ptr addresses are correct
-            throw new NotImplementedException();
+            // TODO: Ensure the ptr addresses are correct
+            //throw new NotImplementedException();
         }
 
         #endregion

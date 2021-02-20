@@ -69,7 +69,12 @@ namespace GameCube.GFZX01.CourseCollision
 
         public void Serialize(BinaryWriter writer)
         {
-            throw new NotImplementedException();
+            writer.WriteX(unk_0x00);
+            writer.WriteX(unk_0x04);
+            writer.WriteX(unk_0x08);
+            writer.WriteX(unk_0x0C);
+            writer.WriteX(keyableCount);
+            writer.WriteX(keyableAbsPtr);
         }
 
         #endregion

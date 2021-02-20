@@ -8,5 +8,6 @@
         public const string GFZX01_CourseCollision = GFZX01 + "Course Collision/";
         public const string GFZX01_GMA = GFZX01 + "GMA Model/";
         public const string GFZX01_FMI = GFZX01 + "FMI/";
+        public const string GFZX01_StaffGhost = GFZX01 + "Staff Ghost/";
     }
 }
