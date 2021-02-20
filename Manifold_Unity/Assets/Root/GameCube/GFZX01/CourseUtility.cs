@@ -153,5 +153,117 @@ namespace GameCube.GFZX01
                     return (CourseVenue.None, CourseVenueID.None, CourseName.None);
             }
         }
+
+        public static CourseVenueID GetVenueID(int index)
+        {
+            switch (index)
+            {
+                // MUT == Mute City
+                case 1:
+                case 2:
+                case 3:
+                case 4:
+                    return CourseVenueID.MUT;
+
+                // SAN == Sand Ocean
+                case 0:
+                case 25:
+                case 26:
+                case 30:
+                    return CourseVenueID.SAN;
+
+                // TOW = Aeropolis
+                case 5:
+                case 21:
+                case 31:
+                    return CourseVenueID.TOW;
+
+                // POR == Port Town
+                case 6:
+                case 7:
+                case 13:
+                case 33:
+                    return CourseVenueID.POR;
+
+                // LIG == Lightning
+                case 8:
+                case 9:
+                case 12:
+                case 23:
+                case 34:
+                    return CourseVenueID.LIG;
+
+                // FOR == Green Plant
+                case 10:
+                case 11:
+                case 35:
+                    return CourseVenueID.FOR;
+
+                // BIG == Big Blue
+                case 14:
+                case 27:
+                    return CourseVenueID.BIG;
+
+                // FIR == Fire Field
+                case 15:
+                case 17:
+                case 18:
+                    return CourseVenueID.FIR;
+
+                // CAS == Casino Palace
+                case 16:
+                case 29:
+                    return CourseVenueID.CAS;
+
+                // MET == Outer Space
+                case 19:
+                case 20:
+                case 32:
+                    return CourseVenueID.MET;
+
+                // ELE == Cosmo Terminal
+                case 22:
+                case 24:
+                    return CourseVenueID.ELE;
+
+                // RAI == Phantom Road
+                case 28:
+                    return CourseVenueID.RAI;
+
+                // COM == Mute City / Casino Palace hybrid
+                case 36:
+                    return CourseVenueID.COM;
+
+                // Story venues
+                case 37: return CourseVenueID.COM_S;
+                case 38: return CourseVenueID.SAN_S;
+                case 39: return CourseVenueID.CAS;
+                case 40: return CourseVenueID.BIG_S;
+                case 41: return CourseVenueID.LIG;
+                case 42: return CourseVenueID.POR_S;
+                case 43: return CourseVenueID.MUT;
+                case 44: return CourseVenueID.FIR_S;
+                case 45: return CourseVenueID.RAI;
+
+                // Victory screens
+                case 49: return CourseVenueID.WIN;
+                case 50: return CourseVenueID.WIN_GX;
+
+                default:
+                    return CourseVenueID.None;
+            }
+        }
+
+        public static CourseID GetCourseID(int index)
+        {
+            var courseID = (CourseID)index;
+            var notDefined = !System.Enum.IsDefined(typeof(CourseID), courseID);
+            if (notDefined)
+            {
+                courseID = CourseID.None;
+            }
+            return courseID;
+        }
+
     }
 }

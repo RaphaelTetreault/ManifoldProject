@@ -1,4 +1,5 @@
-﻿using GameCube.GFZX01.GMA;
+﻿using GameCube.GX;
+using GameCube.GFZX01.GMA;
 using System.IO;
 using System.Linq;
 using StarkTools.IO;
@@ -27,11 +28,16 @@ namespace Manifold.IO.GFZX01.GMA
         [SerializeField]
         protected IOOption importOption = IOOption.selectedFiles;
 
-        [Header("TEMP: Apply basic material")]
-        [SerializeField] protected UnityEngine.Material defaultMat;
+        [Header("Hacks")]
+        [SerializeField]
+        protected Color32 defaultVertexColor = Color.white;
+        [SerializeField]
+        protected UnityEngine.Material defaultMat;
 
         [Header("Import Files")]
         [SerializeField] protected GMASobj[] gmaSobjs;
+
+
 
         #endregion
 
@@ -43,8 +49,7 @@ namespace Manifold.IO.GFZX01.GMA
         {
             gmaSobjs = IOUtility.GetSobjByOption(gmaSobjs, importOption, importFrom);
 
-            int submeshes = 0;
-            int totalModels = CountModels(gmaSobjs, out submeshes);
+            int totalModels = CountModels(gmaSobjs, out int submeshes);
 
             int count = 1;
             foreach (GMASobj sobj in gmaSobjs)
@@ -54,10 +59,12 @@ namespace Manifold.IO.GFZX01.GMA
                 var folderName = Path.GetFileNameWithoutExtension(sobj.FileName);
                 folderName = folderName.Replace(',', '_');
 
+                // TODO: is there not a helper function for this?
                 var unityPath = AssetDatabase.GetAssetPath(sobj);
                 unityPath = Path.GetDirectoryName(unityPath);
                 unityPath = UnityPathUtility.EnforceUnitySeparators(unityPath);
 
+                // TODO: make this a generic helper function
                 // Create folder if it doesn't already exist
                 var folder = UnityPathUtility.CombineUnityPath(unityPath, folderName);
                 if (!AssetDatabase.IsValidFolder(folder))
@@ -143,23 +150,31 @@ namespace Manifold.IO.GFZX01.GMA
                 var info = $"{path}{gcmf.ModelName}";
                 EditorUtility.DisplayProgressBar(title, info, progress);
 
-                // Go over each list0
-                if (gcmfMesh.DisplayList1.GxDisplayLists != null)
-                    foreach (var list in gcmfMesh.DisplayList0.GxDisplayLists)
+                //
+                var displayList0 = gcmfMesh.DisplayList0.GxDisplayLists;
+                if (displayList0 != null)
+                {
+                    foreach (var list in displayList0)
                     {
                         var submesh = CreateSubMesh(list, ref mesh, true);
                         submeshes[subIndex] = submesh;
                         subIndex++;
                     }
-                // Go over each list1
-                if (gcmfMesh.DisplayList1.GxDisplayLists != null)
-                    foreach (var list in gcmfMesh.DisplayList1.GxDisplayLists)
+                }
+
+                //
+                var displayList1 = gcmfMesh.DisplayList1.GxDisplayLists;
+                if (displayList1 != null)
+                {
+                    foreach (var list in displayList1)
                     {
                         var submesh = CreateSubMesh(list, ref mesh, false);
                         submeshes[subIndex] = submesh;
                         subIndex++;
                     }
+                }
             }
+
             mesh.subMeshCount = submeshes.Length;
             for (int i = 0; i < submeshes.Length; i++)
             {
@@ -168,15 +183,19 @@ namespace Manifold.IO.GFZX01.GMA
             mesh.RecalculateBounds();
 
             // TEMP: Suppress COM# named model errors on Windows
-            string name = $"{gcmf.ModelName}.asset";
-            try
-            {
-                AssetDatabase.CreateAsset(mesh, $"{path}/{name}");
-            }
-            catch
-            {
-                AssetDatabase.CreateAsset(mesh, $"{path}/_{name}");
-            }
+            //string name = $"{gcmf.ModelName}.asset";
+            //try
+            //{
+            //    AssetDatabase.CreateAsset(mesh, $"{path}/{name}");
+            //}
+            //catch
+            //{
+            //    AssetDatabase.CreateAsset(mesh, $"{path}/_{name}");
+            //}
+
+            // Also gets by COM# models
+            string name = $"mdl_{gcmf.ModelName}.asset";
+            AssetDatabase.CreateAsset(mesh, $"{path}/{name}");
             return mesh;
         }
 
@@ -196,18 +215,21 @@ namespace Manifold.IO.GFZX01.GMA
 
         public Color32[] HackColors(Color32[] colors, int vertCount)
         {
+            // make local
+            var defaultColor = defaultVertexColor;
+
             if (colors.Length == 0)
             {
                 colors = new Color32[vertCount];
                 for (int i = 0; i < colors.Length; i++)
                 {
-                    colors[i] = new Color32(255, 255, 255, 255);
+                    colors[i] = defaultColor;
                 }
             }
             return colors;
         }
 
-        public SubMeshDescriptor CreateSubMesh(GameCube.GX.GxDisplayList list, ref Mesh mesh, bool isCCW)
+        public SubMeshDescriptor CreateSubMesh(GxDisplayList displayList, ref Mesh mesh, bool isCCW)
         {
             var submesh = new SubMeshDescriptor();
 
@@ -220,18 +242,18 @@ namespace Manifold.IO.GFZX01.GMA
             // where the meshes are under 1 structure in the editor. This current
             // code is done in a loop where all meshes are submeshes, which require
             // the same number of colors as verts, hence this hack.
-            var nVerts = list.pos.Length;
+            var nVerts = displayList.pos.Length;
             // This logic is applied to UVs and colors
             // 2020/06/02 Raph: for the following code, I disabled UV to speed import
             //                  times as UV information is not yet used
             
             // New from this list/submesh
-            var vertices = list.pos;
-            var normals = HackNormals(list.nrm, nVerts);
+            var vertices = displayList.pos;
+            var normals = HackNormals(displayList.nrm, nVerts);
             //var uv1 = HackUVs(list.tex0, nVerts);
             //var uv2 = HackUVs(list.tex1, nVerts);
             //var uv3 = HackUVs(list.tex2, nVerts);
-            var colors = HackColors(list.clr0, nVerts);
+            var colors = HackColors(displayList.clr0, nVerts);
             var triangles = GetTrianglesFromTriangleStrip(vertices.Length, isCCW);
 
             // Build submesh
@@ -265,9 +287,12 @@ namespace Manifold.IO.GFZX01.GMA
             return submesh;
         }
 
+
+
         public GameObject CreatePrefabFromModel(Mesh mesh, string path)
         {
-            var pfPath = $"{path}/pf_{mesh.name}.prefab";
+            var meshNameNoMDL = mesh.name.Substring(4, mesh.name.Length-4);
+            var pfPath = $"{path}/pf_{meshNameNoMDL}.prefab";
             var prefab = new GameObject();
             var meshFilter = prefab.AddComponent<MeshFilter>();
             meshFilter.mesh = mesh;
@@ -277,6 +302,9 @@ namespace Manifold.IO.GFZX01.GMA
                 mats[i] = defaultMat;
             meshRenderer.sharedMaterials = mats;
             PrefabUtility.SaveAsPrefabAsset(prefab, pfPath);
+
+            //Debug.Log($"gen prefab: {meshNameNoMDL}");
+
             return prefab;
         }
 
@@ -291,23 +319,26 @@ namespace Manifold.IO.GFZX01.GMA
                 foreach (Gcmf gcmf in gma.GCMF)
                 {
                     // Some GCMFs can be null, check via model name
-                    if (string.IsNullOrEmpty(gcmf.ModelName))
+                    //var skipEmptyGCMF = string.IsNullOrEmpty(gcmf.ModelName);
+                    if (gcmf == null || string.IsNullOrEmpty(gcmf.ModelName))
                     {
                         continue;
                     }
 
+                    // Increment model count as model data exists
                     count++;
 
                     foreach (GcmfSubmesh gcmfMesh in gcmf.Submeshes)
                     {
-                        // Go over each list0
-                        if (gcmfMesh.DisplayList0.GxDisplayLists != null)
-                            foreach (var list in gcmfMesh.DisplayList0.GxDisplayLists)
+                        var displayList0 = gcmfMesh.DisplayList0.GxDisplayLists;
+                        var displayList1 = gcmfMesh.DisplayList1.GxDisplayLists;
+
+                        if (displayList0 != null)
+                            foreach (var list in displayList0)
                                 submeshes++;
 
-                        // Go over each list1
-                        if (gcmfMesh.DisplayList1.GxDisplayLists != null)
-                            foreach (var list in gcmfMesh.DisplayList1.GxDisplayLists)
+                        if (displayList1 != null)
+                            foreach (var list in displayList1)
                                 submeshes++;
                     }
                 }

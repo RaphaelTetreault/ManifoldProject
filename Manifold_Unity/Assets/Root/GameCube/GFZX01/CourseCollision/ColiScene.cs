@@ -13,6 +13,15 @@ namespace GameCube.GFZX01.CourseCollision
     {
         [SerializeField] string name;
 
+        // Generate some metadata to be used by some processes
+        [SerializeField]
+        public CourseID courseID;
+        [SerializeField]
+        public CourseVenueID courseVenueID;
+        [SerializeField]
+        public int id;
+
+
         public Header header;
         public TrackNode[] trackNodes;
         public TrackLength trackInformation;
@@ -32,6 +41,12 @@ namespace GameCube.GFZX01.CourseCollision
             BinaryIoUtility.PushEndianess(false);
 
             Debug.Log(FileName);
+
+            // Generate some metadata
+            id = int.Parse(System.Text.RegularExpressions.Regex.Match(FileName, @"\d+").Value);
+            courseID = CourseUtility.GetCourseID(id);
+            courseVenueID = CourseUtility.GetVenueID(id);
+
 
             reader.ReadX(ref header, true);
 

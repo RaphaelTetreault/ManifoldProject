@@ -38,8 +38,9 @@ namespace Manifold.IO
         public static TSobj CreateFromBinaryFile<TSobj>(string destinationDir, string fileName, BinaryReader reader)
         where TSobj : ScriptableObject, IBinarySerializable, IFile
         {
-            var sobj = CreateFromBinary<TSobj>(destinationDir, fileName, reader);
+            var sobj = Create<TSobj>(destinationDir, fileName);
             sobj.FileName = fileName;
+            sobj.Deserialize(reader);
             return sobj;
         }
 
