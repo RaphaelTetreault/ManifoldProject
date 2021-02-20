@@ -1,4 +1,7 @@
-﻿public interface IAnalyzable : IExecutable
+﻿namespace Manifold.IO
 {
-    void Analyze();
+    public interface IAnalyzable : IExecutable
+    {
+        void Analyze();
+    }
 }

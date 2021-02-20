@@ -42,7 +42,7 @@ namespace Manifold.IO.GFZ.Camera
             var filePath2 = AnalyzerUtility.GetAnalysisFilePathTSV(outputPath, "FMI Particle");
             WriteFmiParticle(filePath2);
 
-            IOUtility.OpenOSDirectory(openFolderAfterAnalysis, filePath);
+            OSUtility.OpenDirectory(openFolderAfterAnalysis, filePath);
         }
 
         public override void Execute() => Analyze();

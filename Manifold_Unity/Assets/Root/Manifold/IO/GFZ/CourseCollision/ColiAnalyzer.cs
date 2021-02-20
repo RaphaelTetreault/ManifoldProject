@@ -128,7 +128,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             // OPEN FOLDER after analysis
             if (openFolderAfterAnalysis)
             {
-                IOUtility.OpenDirectoryOS(outputPath + "/");
+                OSUtility.OpenDirectory(outputPath + "/");
             }
 
             EditorUtility.ClearProgressBar();

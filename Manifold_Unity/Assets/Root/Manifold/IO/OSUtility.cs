@@ -3,13 +3,13 @@ using UnityEngine;
 
 namespace Manifold.IO
 {
-    public static class IOUtility
+    public static class OSUtility
     {
         /// <summary>
         /// Opens the <paramref name="filePath"/> folder in OS. Will not create duplicate windows.
         /// </summary>
         /// <param name="filePath">Open folder window at this path.</param>
-        public static void OpenDirectoryOS(params string[] filePaths)
+        public static void OpenDirectory(params string[] filePaths)
         {
             foreach (string filePath in filePaths)
             {
@@ -20,11 +20,11 @@ namespace Manifold.IO
             }
         }
 
-        public static void OpenOSDirectory(bool doOpen, params string[] filePaths)
+        public static void OpenDirectory(bool doOpen, params string[] filePaths)
         {
             if (doOpen)
             {
-                OpenDirectoryOS(filePaths);
+                OpenDirectory(filePaths);
             }
         }
 

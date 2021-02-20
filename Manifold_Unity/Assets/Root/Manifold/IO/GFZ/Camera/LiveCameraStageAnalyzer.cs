@@ -37,7 +37,7 @@ namespace Manifold.IO.GFZ.Camera
             var filePath = AnalyzerUtility.GetAnalysisFilePathTSV(outputPath, "livecam_stage stacked");
             WriteLivecamStageStacked(filePath);
 
-            IOUtility.OpenOSDirectory(openFolderAfterAnalysis, filePath);
+            OSUtility.OpenDirectory(openFolderAfterAnalysis, filePath);
         }
 
         public override void Execute() => Analyze();

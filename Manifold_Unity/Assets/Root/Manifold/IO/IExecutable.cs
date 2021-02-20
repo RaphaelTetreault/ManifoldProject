@@ -1,4 +1,7 @@
-﻿public interface IExecutable
+﻿namespace Manifold.IO
 {
-    void Execute();
+    public interface IExecutable
+    {
+        void Execute();
+    }
 }

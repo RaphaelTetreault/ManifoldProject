@@ -71,7 +71,7 @@ namespace Manifold.IO.GFZ.GMA
 
             if (openFolderAfterAnalysis)
             {
-                IOUtility.OpenDirectoryOS(gcfmAnalysisFile);
+                OSUtility.OpenDirectory(gcfmAnalysisFile);
             }
         }
 

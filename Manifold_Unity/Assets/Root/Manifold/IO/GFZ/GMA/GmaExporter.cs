@@ -48,7 +48,7 @@ namespace Manifold.IO.GFZ.GMA
                 ExportUtility.PrintExportsToConsole(this, compressedFiles);
             }
 
-            IOUtility.OpenOSDirectory(openFolderAfterExport, exportedFiles);
+            OSUtility.OpenDirectory(openFolderAfterExport, exportedFiles);
         }
     }
 

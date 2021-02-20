@@ -1,6 +1,5 @@
 ﻿namespace Manifold.IO
 {
-#if NET_4_7_3
     public enum EnumCompression
     {
         none,
@@ -9,5 +8,4 @@
         _32bit,
         _64bit,
     }
-#endif
 }

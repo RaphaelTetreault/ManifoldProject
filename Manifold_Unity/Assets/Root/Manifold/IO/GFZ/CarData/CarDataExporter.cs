@@ -50,7 +50,7 @@ namespace Manifold.IO.GFZ.CarData
                 ExportUtility.PrintExportsToConsole(this, compressedFiles);
             }
 
-            IOUtility.OpenOSDirectory(openFolderAfterExport, exportedFiles);
+            OSUtility.OpenDirectory(openFolderAfterExport, exportedFiles);
         }
 
     }
