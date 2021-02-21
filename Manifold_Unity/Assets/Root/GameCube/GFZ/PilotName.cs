@@ -2,7 +2,7 @@
 
 namespace GameCube.GFZ
 {
-    public enum VehiclePilot
+    public enum PilotName
     {
         [Description("Deathborn")]
         Deathborn = 0,

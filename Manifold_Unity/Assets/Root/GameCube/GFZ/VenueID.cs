@@ -3,7 +3,7 @@
 namespace GameCube.GFZ
 {
     [System.Flags]
-    public enum CourseVenueID
+    public enum VenueID
     {
         /// <summary>
         /// Unused venue ID

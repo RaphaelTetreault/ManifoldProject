@@ -79,7 +79,7 @@ namespace GameCube.GFZ
         [Description("Victory Lap")]
         VictoryLap = 50,
 
-        // ??
+        [Description("---")]
         None = 0,
     }
 }

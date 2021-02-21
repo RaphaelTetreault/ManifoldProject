@@ -2,7 +2,7 @@
 
 namespace GameCube.GFZ
 {
-    public enum CourseVenue
+    public enum VenueName
     {
         [Description("Aeropolis")]
         Aeropolis,

@@ -1,4 +1,5 @@
-﻿using GameCube.GFZ.CourseCollision;
+﻿using GameCube.GFZ;
+using GameCube.GFZ.CourseCollision;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -66,7 +67,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                     var pfName = $"pf_{gobj.name}";
 
                     var stageNumber = coliCourse.Value.id.ToString("00"); // triple digits do overflow, that's okay.
-                    var venueID = coliCourse.Value.courseVenueID.ToString().ToLower();
+                    var venueID = CourseUtility.GetVenueID(coliCourse.Value.id).ToString().ToLower();
 
                     // Models are loaded from 3 folders.
                     // Stage, Venue, and/or Init

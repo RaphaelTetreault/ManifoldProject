@@ -15,10 +15,6 @@ namespace GameCube.GFZ.CourseCollision
 
         // Generate some metadata to be used by some processes
         [SerializeField]
-        public CourseID courseID;
-        [SerializeField]
-        public CourseVenueID courseVenueID;
-        [SerializeField]
         public int id;
 
 
@@ -42,11 +38,8 @@ namespace GameCube.GFZ.CourseCollision
 
             Debug.Log(FileName);
 
-            // Generate some metadata
+            // Store the stage index, can solve venue and course name from this
             id = int.Parse(System.Text.RegularExpressions.Regex.Match(FileName, @"\d+").Value);
-            courseID = CourseUtility.GetCourseID(id);
-            courseVenueID = CourseUtility.GetVenueID(id);
-
 
             reader.ReadX(ref header, true);
 
