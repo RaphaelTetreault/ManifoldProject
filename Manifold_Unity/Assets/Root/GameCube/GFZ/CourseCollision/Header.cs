@@ -1,9 +1,6 @@
 ﻿using Manifold.IO;
 using System;
 using System.IO;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using System.Diagnostics;
 
 namespace GameCube.GFZ.CourseCollision
@@ -30,12 +27,13 @@ namespace GameCube.GFZ.CourseCollision
         public int unk_0x1C;
         [Hex(8)]
         public int unk_0x20;
+        // TODO: rename, is pointer AFAIK
         [Hex(8)]
         public int headerSize;
         public byte[] zero_0x28;
         public int gameObjectCount;
-        public int unk_0x4C; // One of these not in AX
-        public int unk_0x50; // One of these not in AX
+        public int unk_gameObjectCount1; // Not in AX
+        public int unk_gameObjectCount2;
         public int gameObjectAbsPtr;
         public int unk_0x58;
         public int zero_0x5C;
@@ -64,12 +62,12 @@ namespace GameCube.GFZ.CourseCollision
         public int unk_0xB4;
         public int unk_0xB8;
         public int unk_0xBC;
-        public int unk_0xC0;
-        public int unk_0xC4;
-        public int unk_0xC8;
-        public int unk_0xCC;
-        public int unk_0xD0;
-        public int unk_0xD4;
+        public int unk_0xC0; // float - from C0 to D4 could be structure?
+        public int unk_0xC4; // float
+        public int unk_0xC8; // float
+        public int unk_0xCC; // float
+        public int unk_0xD0; // 8
+        public int unk_0xD4; // 8
         public byte[] zero_0xD8;
 
         #endregion
@@ -98,8 +96,8 @@ namespace GameCube.GFZ.CourseCollision
             reader.ReadX(ref zero_0x28, kSizeOfZero0x28);
             reader.ReadX(ref gameObjectCount);
             if (IsGX)
-                reader.ReadX(ref unk_0x4C); ////////////
-            reader.ReadX(ref unk_0x50);//////////
+                reader.ReadX(ref unk_gameObjectCount1); ////////////
+            reader.ReadX(ref unk_gameObjectCount2);//////////
             reader.ReadX(ref gameObjectAbsPtr);
             reader.ReadX(ref unk_0x58);
             reader.ReadX(ref zero_0x5C);
@@ -136,16 +134,16 @@ namespace GameCube.GFZ.CourseCollision
             reader.ReadX(ref zero_0xD8, kSizeOfZero0xD8);
 
             // Assert assumptions
-            System.Diagnostics.Debug.Assert(zero_0x5C == 0);
-            System.Diagnostics.Debug.Assert(zero_0x74 == 0);
-            System.Diagnostics.Debug.Assert(zero_0x78 == 0);
-            System.Diagnostics.Debug.Assert(zero_0x88 == 0);
-            System.Diagnostics.Debug.Assert(zero_0x8C == 0);
+            Debug.Assert(zero_0x5C == 0);
+            Debug.Assert(zero_0x74 == 0);
+            Debug.Assert(zero_0x78 == 0);
+            Debug.Assert(zero_0x88 == 0);
+            Debug.Assert(zero_0x8C == 0);
 
             foreach (var zero in zero_0x28)
-                System.Diagnostics.Debug.Assert(zero == 0);
+                Debug.Assert(zero == 0);
             foreach (var zero in zero_0xD8)
-                System.Diagnostics.Debug.Assert(zero == 0);
+                Debug.Assert(zero == 0);
         }
 
         public void Serialize(BinaryWriter writer)

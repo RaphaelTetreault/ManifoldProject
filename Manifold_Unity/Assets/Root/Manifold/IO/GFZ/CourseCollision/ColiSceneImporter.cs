@@ -23,7 +23,7 @@ namespace Manifold.IO.GFZ.CourseCollision
         protected IOOption importOption = IOOption.selectedFiles;
 
         [Header("Import Files")]
-        [SerializeField] protected ColiSceneSobj[] colis;
+        [SerializeField] protected ColiSceneSobj[] courseScenes;
 
         #endregion
 
@@ -33,29 +33,47 @@ namespace Manifold.IO.GFZ.CourseCollision
 
         public void Import()
         {
-            colis = AssetDatabaseUtility.GetSobjByOption(colis, importOption, importFrom);
+            courseScenes = AssetDatabaseUtility.GetSobjByOption(courseScenes, importOption, importFrom);
 
-            foreach (var coliCourse in colis)
+            foreach (var course in courseScenes)
             {
+                // Progress bar values
                 var count = 0;
-                var total = coliCourse.Value.gameObjects.Length;
+                var total = course.Value.gameObjects.Length;
 
                 // Create new, empty scene
-                var sceneName = coliCourse.name;
+                var sceneName = course.name;
                 var scenePath = $"Assets/{importTo}/{sceneName}.unity";
                 var scene = EditorSceneManager.NewScene(NewSceneSetup.DefaultGameObjects, NewSceneMode.Single);
                 EditorSceneManager.SaveScene(scene, scenePath);
                 // Keep reference of new scene
                 scene = EditorSceneManager.OpenScene(scenePath);
 
+                // TEMP DATA
                 // Create track vis, set parameter
                 var empty = new UnityEngine.GameObject();
                 empty.name = nameof(TempTrackVis);
                 var trackVis = empty.AddComponent<TempTrackVis>();
-                trackVis.Coli = coliCourse;
-                //
+                trackVis.Coli = course;
 
-                foreach (var gobj in coliCourse.Value.gameObjects)
+                // Course-related values, used to find models
+                // triple digits do "overflow", that's okay.
+                var stageID = course.Value.id;
+                var stageNumber = stageID.ToString("00"); 
+                var venueID = CourseUtility.GetVenueID(stageID).ToString().ToLower();
+
+                // TEMP: Get folder at root of import path.
+                // TODO: use parameter in sobj for base folder?
+                var importFromRoot = importFrom.Split('/')[0];
+
+                // Models are loaded from 3 folders.
+                var initFolder = $"Assets/{importFromRoot}/init";
+                var stageFolder = $"Assets/{importFromRoot}/stage/st{stageNumber}";
+                var venueFolder = $"Assets/{importFromRoot}/bg/bg_{venueID}";
+                var searchFolders = new string[] { initFolder, stageFolder, venueFolder };
+
+                // Find all gameobjects, add them to scene
+                foreach (var gobj in course.Value.gameObjects)
                 {
                     // HACK: skip empties. Should really just do "model not found"
                     if (string.IsNullOrEmpty(gobj.name))
@@ -63,44 +81,36 @@ namespace Manifold.IO.GFZ.CourseCollision
                         continue;
                     }
 
-
-                    var pfName = $"pf_{gobj.name}";
-
-                    var stageNumber = coliCourse.Value.id.ToString("00"); // triple digits do overflow, that's okay.
-                    var venueID = CourseUtility.GetVenueID(coliCourse.Value.id).ToString().ToLower();
-
-                    // Models are loaded from 3 folders.
-                    // Stage, Venue, and/or Init
-                    var searchFolders = new string[] {
-                        $"Assets/{"GFZJ01"}/bg/bg_{venueID}",
-                        $"Assets/{"GFZJ01"}/stage/st{stageNumber}",
-                        $"Assets/{"GFZJ01"}/init" };
-
-                    var assetGuids = AssetDatabase.FindAssets(pfName, searchFolders);
-                    // Remove "pf_" prefix
-                    var pfPrintName = pfName.Remove(0, 3);
+                    var objectName = gobj.name;
+                    var prefabName = $"pf_{objectName}";
+                    var assetGuids = AssetDatabase.FindAssets(prefabName, searchFolders);
 
                     string assetPath = string.Empty;
                     if (assetGuids.Length == 1)
                     {
-                        // We're good
+                        // We only found 1 model. Great!
                         assetPath = AssetDatabase.GUIDToAssetPath(assetGuids[0]);
                     }
                     else if (assetGuids.Length == 0)
                     {
-                        // Load empty
-                        assetGuids = AssetDatabase.FindAssets("pf_NotFound");
-                        assetPath = AssetDatabase.GUIDToAssetPath(assetGuids[0]);
-                        pfPrintName = $"NoModel:{gobj.name}";
+                        // No models for this object. Make empty object.
+                        var emptyGameObject = new UnityEngine.GameObject();
+                        emptyGameObject.name = $"NoModel:{objectName}";
+                        // Stop here, go to next object in iteration
+                        continue;
                     }
                     else
                     {
+                        // We have multiple object matches
                         foreach (var assetGuid in assetGuids)
                         {
+                            // Get data about a specific object
                             var tempAssetPath = AssetDatabase.GUIDToAssetPath(assetGuid);
                             var tempAssetName = System.IO.Path.GetFileNameWithoutExtension(tempAssetPath);
-                            if (tempAssetName.Equals(pfName))
+                            // See if it has the exact name
+                            if (tempAssetName.Equals(prefabName))
                             {
+                                // If it does, load that one, break iteration
                                 assetPath = AssetDatabase.GUIDToAssetPath(assetGuid);
                                 break;
                             }
@@ -109,26 +119,27 @@ namespace Manifold.IO.GFZ.CourseCollision
                         // Case where name is simple (ei: TEST) and flags a bunch of models, but no models exists for it.
                         if (string.IsNullOrEmpty(assetPath))
                         {
-                            Debug.Log($"ITERATION FAILED. STAGE:\"{coliCourse.FileName}\" NAME:\"{gobj.name}\" - PATH:\"{assetPath}\"");
-                            // Load empty
-                            assetGuids = AssetDatabase.FindAssets("pf_NotFound");
-                            assetPath = AssetDatabase.GUIDToAssetPath(assetGuids[0]);
-                            pfPrintName = $"MISSING_MODEL_{gobj.name}";
+                            // No models for this object. Make empty object.
+                            var emptyGameObject = new UnityEngine.GameObject();
+                            emptyGameObject.name = $"NoModel:{objectName}";
+                            // Stop here, go to next object in iteration
+                            continue;
                         }
                     }
 
+                    // Load asset based on previous triage
                     var asset = AssetDatabase.LoadAssetAtPath<UnityEngine.GameObject>(assetPath);
-                    //UnityEngine.Assertions.Assert.IsFalse(asset == null, $"{gobj.name} - {assetPath}");
-                        
-                    //// Progress bar update
-                    var title = $"Generating Scene ({coliCourse.name})";
-                    var info = $"{pfPrintName}";
+
+                    // Progress bar update
+                    var title = $"Generating Scene ({course.name})";
+                    var info = $"{objectName}";
                     var progress = (float)count / total;
                     EditorUtility.DisplayProgressBar(title, info, progress);
+                    count++;
 
-
+                    // Create instance of the prefab
                     var instance = Instantiate(asset);
-                    instance.name = pfPrintName;
+                    instance.name = objectName;
 
                     // TODO: attach components...
                     //var hasAnimation = gobj.animation != null;
@@ -139,9 +150,23 @@ namespace Manifold.IO.GFZ.CourseCollision
 
                     // Apply GFZ Transform values onto Unity Transform
                     gobj.transform.SetUnityTransform(instance.transform);
+                }
 
-                    count++;
-                } // foreach GameObject
+                // HACK: force-add models for AX test stages
+                if (stageID > 50)
+                {
+                    var hackSearchFolders = new string[] { stageFolder };
+                    var hackGuids = AssetDatabase.FindAssets("t:prefab", hackSearchFolders);
+
+                    foreach (var assetGuid in hackGuids)
+                    {
+                        var hackPath = AssetDatabase.GUIDToAssetPath(assetGuid);
+                        var hackObject = AssetDatabase.LoadAssetAtPath<UnityEngine.GameObject>(hackPath);
+                        var instance = Instantiate(hackObject);
+                        instance.name = hackObject.name;
+                    }
+                }
+
                 EditorSceneManager.SaveScene(scene, scenePath, false);
             } // foreach COLI_COURSE
             EditorUtility.ClearProgressBar();

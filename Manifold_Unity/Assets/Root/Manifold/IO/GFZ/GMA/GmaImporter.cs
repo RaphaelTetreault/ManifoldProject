@@ -29,6 +29,7 @@ namespace Manifold.IO.GFZ.GMA
         [SerializeField]
         protected string[] importFiles;
 
+
         #endregion
 
         public override string ExecuteText => "Import GMA";
@@ -39,7 +40,7 @@ namespace Manifold.IO.GFZ.GMA
         {
             importFiles = Directory.GetFiles(importFrom, searchPattern, fileSearchOption);
             importFiles = UnityPathUtility.EnforceUnitySeparators(importFiles);
-            var importFilesUncompressed = GFZX01Utility.DecompressEachLZ(importFiles);
+            var importFilesUncompressed = GFZX01Utility.DecompressEachLZ(importFiles, LibGxFormat.AvGame.FZeroGX);
             ImportUtility.ImportManyAs<GmaSobj>(importFilesUncompressed, importFrom, importTo);
         }
 

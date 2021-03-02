@@ -302,8 +302,9 @@ namespace LibGxFormat.Lz
             int headerSizeField = inputBinaryStream.ReadInt32();
             int uncompressedSize = inputBinaryStream.ReadInt32();
 
+			// HACK?????
             int compressedSize = headerSizeField;
-            if (game != AvGame.FZeroGX)
+            if (game != AvGame.FZeroGX || game != AvGame.FZeroAX)
                 compressedSize -= 8; // SMB counts the 8 bytes of header in the compressed size field
 
             // Check that the size of the input matches the expected value

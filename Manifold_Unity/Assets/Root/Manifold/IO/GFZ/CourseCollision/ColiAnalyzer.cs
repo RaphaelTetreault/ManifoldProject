@@ -23,7 +23,8 @@ namespace Manifold.IO.GFZ.CourseCollision
             topologyParameters = true,
             trackTransform = true,
             gameObjects = true,
-            animations = true;
+            animations = true,
+            headers = true;
 
         [Header("Preferences")]
         [SerializeField]
@@ -33,7 +34,7 @@ namespace Manifold.IO.GFZ.CourseCollision
         [SerializeField]
         protected IOOption analysisOption = IOOption.allFromAssetDatabase;
         [SerializeField]
-        protected ColiSceneSobj[] analysisSobjs;
+        protected ColiSceneSobj[] coliSobjs;
 
         #endregion
 
@@ -45,7 +46,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
         public void Analyze()
         {
-            analysisSobjs = AssetDatabaseUtility.GetSobjByOption(analysisSobjs, analysisOption, searchFolders);
+            coliSobjs = AssetDatabaseUtility.GetSobjByOption(coliSobjs, analysisOption, searchFolders);
             var time = AnalyzerUtility.GetFileTimestamp();
 
             // TOPOLOGY PARAMETERS
@@ -101,6 +102,18 @@ namespace Manifold.IO.GFZ.CourseCollision
                 AnalyzeGameObjectsCollisionQuad(filePath);
             }
 
+            //
+            if (headers)
+            {
+                string filePath = string.Empty;
+
+                filePath = $"{time} COLI Headers.tsv";
+                filePath = Path.Combine(outputPath, filePath);
+                EditorUtility.DisplayProgressBar(ExecuteText, filePath, .5f);
+                AnalyzeHeaders(filePath);
+            }
+
+            //
             if (animations)
             {
                 // ANIMATIONS
@@ -156,7 +169,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.PushRow();
 
                 // foreach File
-                foreach (var sobj in analysisSobjs)
+                foreach (var sobj in coliSobjs)
                 {
                     // foreach Transform
                     foreach (var trackTransform in sobj.Value.trackTransforms)
@@ -230,7 +243,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.PushCol("unk_0x4C");
                 writer.PushRow();
 
-                foreach (var sobj in analysisSobjs)
+                foreach (var sobj in coliSobjs)
                 {
                     var index = 0;
                     var total = sobj.Value.trackTransforms.Count;
@@ -302,7 +315,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.PushCol("Unk_0x10");
                 writer.PushRow();
 
-                foreach (var file in analysisSobjs)
+                foreach (var file in coliSobjs)
                 {
                     int gameObjectIndex = 0;
                     foreach (var gameObject in file.Value.gameObjects)
@@ -355,7 +368,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.PushCol("Unk_0x10");
                 writer.PushRow();
 
-                foreach (var file in analysisSobjs)
+                foreach (var file in coliSobjs)
                 {
                     int gameObjectIndex = 0;
                     foreach (var gameObject in file.Value.gameObjects)
@@ -426,7 +439,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.PushCol("transformPtr");
                 writer.PushRow();
 
-                foreach (var file in analysisSobjs)
+                foreach (var file in coliSobjs)
                 {
                     int gameObjectIndex = 0;
                     foreach (var gameObject in file.Value.gameObjects)
@@ -463,8 +476,6 @@ namespace Manifold.IO.GFZ.CourseCollision
             }
         }
 
-        #endregion
-
         public void AnalyzeGameObjectsUnk1(string fileName)
         {
             using (var writer = AnalyzerUtility.OpenWriter(fileName))
@@ -478,7 +489,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteColNicify(nameof(ObjectTable_Unk1_Entry.unk_0x04));
                 writer.PushRow();
 
-                foreach (var file in analysisSobjs)
+                foreach (var file in coliSobjs)
                 {
                     int gameObjectIndex = 0;
                     foreach (var gameObject in file.Value.gameObjects)
@@ -527,7 +538,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteColNicify(nameof(SkeletalProperties.zero_0x18));
                 writer.PushRow();
 
-                foreach (var file in analysisSobjs)
+                foreach (var file in coliSobjs)
                 {
                     int gameObjectIndex = 0;
                     foreach (var gameObject in file.Value.gameObjects)
@@ -587,7 +598,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
                 writer.PushRow();
 
-                foreach (var file in analysisSobjs)
+                foreach (var file in coliSobjs)
                 {
                     int gameObjectIndex = 0;
                     foreach (var gameObject in file.Value.gameObjects)
@@ -650,7 +661,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
                 writer.PushRow();
 
-                foreach (var file in analysisSobjs)
+                foreach (var file in coliSobjs)
                 {
                     int gameObjectIndex = 0;
                     foreach (var gameObject in file.Value.gameObjects)
@@ -690,6 +701,143 @@ namespace Manifold.IO.GFZ.CourseCollision
             }
         }
 
+        #endregion
 
+
+        public void AnalyzeHeaders(string fileName)
+        {
+            using (var writer = AnalyzerUtility.OpenWriter(fileName))
+            {
+                // Write header
+                writer.PushCol("File");
+                writer.PushCol("Index");
+                writer.PushCol("Stage");
+                writer.PushCol("Venue");
+                writer.PushCol("AX/GX");
+                //
+                writer.PushCol(nameof(Header.unk_0x00));
+                writer.PushCol(nameof(Header.unk_0x04));
+                writer.PushCol(nameof(Header.trackNodeCount));
+                writer.PushCol(nameof(Header.trackNodeAbsPtr));
+                writer.PushCol(nameof(Header.unk_0x10));
+                writer.PushCol(nameof(Header.unk_0x14));
+                writer.PushCol(nameof(Header.unk_0x18));
+                writer.PushCol(nameof(Header.unk_0x1C));
+                writer.PushCol(nameof(Header.unk_0x20));
+                writer.PushCol(nameof(Header.headerSize));
+                writer.PushCol(nameof(Header.zero_0x28));
+                writer.PushCol(nameof(Header.gameObjectCount));
+                writer.PushCol(nameof(Header.unk_gameObjectCount1));
+                writer.PushCol(nameof(Header.unk_gameObjectCount2));
+                writer.PushCol(nameof(Header.gameObjectAbsPtr));
+                writer.PushCol(nameof(Header.unk_0x58));
+                writer.PushCol(nameof(Header.zero_0x5C));
+                writer.PushCol(nameof(Header.unk_0x60));
+                writer.PushCol(nameof(Header.unk_0x64));
+                writer.PushCol(nameof(Header.unk_0x68));
+                writer.PushCol(nameof(Header.unk_0x6C));
+                writer.PushCol(nameof(Header.unk_0x70));
+                writer.PushCol(nameof(Header.zero_0x74));
+                writer.PushCol(nameof(Header.zero_0x78));
+                writer.PushCol(nameof(Header.unk_0x7C));
+                writer.PushCol(nameof(Header.unk_0x80));
+                writer.PushCol(nameof(Header.unk_0x84));
+                writer.PushCol(nameof(Header.zero_0x88));
+                writer.PushCol(nameof(Header.zero_0x8C));
+                writer.PushCol(nameof(Header.trackInfoAbsPtr));
+                writer.PushCol(nameof(Header.unk_0x94));
+                writer.PushCol(nameof(Header.unk_0x98));
+                writer.PushCol(nameof(Header.unk_0x9C));
+                writer.PushCol(nameof(Header.unk_0xA0));
+                writer.PushCol(nameof(Header.unk_0xA4));
+                writer.PushCol(nameof(Header.unk_0xA8));
+                writer.PushCol(nameof(Header.unk_0xAC));
+                writer.PushCol(nameof(Header.unk_0xB0));
+                writer.PushCol(nameof(Header.unk_0xB4));
+                writer.PushCol(nameof(Header.unk_0xB8));
+                writer.PushCol(nameof(Header.unk_0xBC));
+                writer.PushCol(nameof(Header.unk_0xC0));
+                writer.PushCol(nameof(Header.unk_0xC4));
+                writer.PushCol(nameof(Header.unk_0xC8));
+                writer.PushCol(nameof(Header.unk_0xCC));
+                writer.PushCol(nameof(Header.unk_0xD0));
+                writer.PushCol(nameof(Header.unk_0xD4));
+                writer.PushCol(nameof(Header.zero_0xD8));
+
+                writer.WriteColNicify(nameof(ObjectTable_Unk1_Entry.unk_0x00));
+                writer.WriteColNicify(nameof(ObjectTable_Unk1_Entry.unk_0x04));
+                writer.PushRow();
+
+                foreach (var file in coliSobjs)
+                {
+                    var coli = file.Value;
+                    var coliHeader = file.Value.header;
+
+                    writer.PushCol(coli.FileName);
+                    writer.PushCol(coli.id);
+                    writer.PushCol(CourseUtility.GetVenueID(coli.id).GetDescription());
+                    writer.PushCol(((CourseIDEx)coli.id).GetDescription());
+                    writer.PushCol(coliHeader.IsGX ? "GX" : "AX");
+
+                    writer.PushCol(coliHeader.unk_0x00);
+                    writer.PushCol(coliHeader.unk_0x04);
+                    writer.PushCol(coliHeader.trackNodeCount);
+                    writer.PushCol(coliHeader.trackNodeAbsPtr);
+                    writer.PushCol(coliHeader.unk_0x10);
+                    writer.PushCol(coliHeader.unk_0x14);
+                    writer.PushCol(coliHeader.unk_0x18);
+                    writer.PushCol(coliHeader.unk_0x1C);
+                    writer.PushCol(coliHeader.unk_0x20);
+                    writer.PushCol(coliHeader.headerSize);
+                    writer.PushCol(coliHeader.zero_0x28);
+                    writer.PushCol(coliHeader.gameObjectCount);
+                    if (coliHeader.IsGX)
+                    {
+                        writer.PushCol(coliHeader.unk_gameObjectCount1);
+                    }
+                    else // is AX
+                    {
+                        writer.PushCol();
+                    }
+                    writer.PushCol(coliHeader.unk_gameObjectCount2);
+                    writer.PushCol(coliHeader.gameObjectAbsPtr);
+                    writer.PushCol(coliHeader.unk_0x58);
+                    writer.PushCol(coliHeader.zero_0x5C);
+                    writer.PushCol(coliHeader.unk_0x60);
+                    writer.PushCol(coliHeader.unk_0x64);
+                    writer.PushCol(coliHeader.unk_0x68);
+                    writer.PushCol(coliHeader.unk_0x6C);
+                    writer.PushCol(coliHeader.unk_0x70);
+                    writer.PushCol(coliHeader.zero_0x74);
+                    writer.PushCol(coliHeader.zero_0x78);
+                    writer.PushCol(coliHeader.unk_0x7C);
+                    writer.PushCol(coliHeader.unk_0x80);
+                    writer.PushCol(coliHeader.unk_0x84);
+                    writer.PushCol(coliHeader.zero_0x88);
+                    writer.PushCol(coliHeader.zero_0x8C);
+                    writer.PushCol(coliHeader.trackInfoAbsPtr);
+                    writer.PushCol(coliHeader.unk_0x94);
+                    writer.PushCol(coliHeader.unk_0x98);
+                    writer.PushCol(coliHeader.unk_0x9C);
+                    writer.PushCol(coliHeader.unk_0xA0);
+                    writer.PushCol(coliHeader.unk_0xA4);
+                    writer.PushCol(coliHeader.unk_0xA8);
+                    writer.PushCol(coliHeader.unk_0xAC);
+                    writer.PushCol(coliHeader.unk_0xB0);
+                    writer.PushCol(coliHeader.unk_0xB4);
+                    writer.PushCol(coliHeader.unk_0xB8);
+                    writer.PushCol(coliHeader.unk_0xBC);
+                    writer.PushCol(coliHeader.unk_0xC0);
+                    writer.PushCol(coliHeader.unk_0xC4);
+                    writer.PushCol(coliHeader.unk_0xC8);
+                    writer.PushCol(coliHeader.unk_0xCC);
+                    writer.PushCol(coliHeader.unk_0xD0);
+                    writer.PushCol(coliHeader.unk_0xD4);
+                    writer.PushCol(coliHeader.zero_0xD8);
+                    writer.PushRow();
+                }
+                writer.Flush();
+            }
+        }
     }
 }
