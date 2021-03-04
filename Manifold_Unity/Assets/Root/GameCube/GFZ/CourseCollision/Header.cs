@@ -10,7 +10,7 @@ namespace GameCube.GFZ.CourseCollision
     {
         // consts
         public const int kSizeOfZero0x28 = 0x20;
-        public const int kSizeOfZero0xD8 = 0x24;
+        public const int kSizeOfZero0xD8 = 0x10;
 
         // metadata
         private bool isFileAX;
@@ -19,15 +19,15 @@ namespace GameCube.GFZ.CourseCollision
         // structure
         public float unk_0x00;
         public float unk_0x04;
-        public ArrayPointer trackNodes;
-        public ArrayPointer collisionEffectsAreas;
+        public ArrayPointer trackNodesPtr;
+        public ArrayPointer collisionEffectsAreasPtr;
         public Bool32 boostPadEnable;
-        public Pointer unkPtr_0x1C; // Old notes: collision mesh stuff, but sus.
+        public Pointer collisionMeshTablePtr;
         public Pointer unkPtr_0x20; // GX: 0xE8, AX: 0xE4
         public Pointer unkPtr_0x24; // GX: 0xFC, AX: 0xF8
         public byte[] zero_0x28; // 0x20 count
         public int gameObjectCount;
-        public int unk_gameObjectCount1; // Not in AX
+        public int unk_gameObjectCount1; // GX exclusive
         public int unk_gameObjectCount2;
         public Pointer gameObjectPtr;
         public Bool32 unkBool32_0x58;
@@ -47,7 +47,8 @@ namespace GameCube.GFZ.CourseCollision
         public ArrayPointer storyModeSpecialObjects;
         public Pointer trackNodeTable;
         public UnknownStruct1 unknownStructure1_0xC0;
-        public byte[] zero_0xD8;
+        public byte[] zero_0xD8; // 0x10 count
+
 
         public bool IsFileAX => isFileAX;
         public bool IsFileGX => isFileGX;
@@ -62,10 +63,10 @@ namespace GameCube.GFZ.CourseCollision
             // Deserialize main structure
             reader.ReadX(ref unk_0x00);
             reader.ReadX(ref unk_0x04);
-            reader.ReadX(ref trackNodes);
-            reader.ReadX(ref collisionEffectsAreas);
+            reader.ReadX(ref trackNodesPtr);
+            reader.ReadX(ref collisionEffectsAreasPtr);
             reader.ReadX(ref boostPadEnable);
-            reader.ReadX(ref unkPtr_0x1C);
+            reader.ReadX(ref collisionMeshTablePtr);
             reader.ReadX(ref unkPtr_0x20);
             reader.ReadX(ref unkPtr_0x24);
             reader.ReadX(ref zero_0x28, kSizeOfZero0x28);
@@ -95,10 +96,21 @@ namespace GameCube.GFZ.CourseCollision
             // Assert assumptions
             Debug.Assert(unused_0x74_0x78.length == 0 && unused_0x74_0x78.address == 0);
             Debug.Assert(unused_0x88_0x8C.length == 0 && unused_0x88_0x8C.address == 0);
-            foreach (var zero in zero_0x28)
-                Debug.Assert(zero == 0);
-            foreach (var zero in zero_0xD8)
-                Debug.Assert(zero == 0);
+
+            for (int i = 0; i < zero_0x28.Length; i++)
+            {
+                if (zero_0x28[i] != 0)
+                {
+                    UnityEngine.Debug.Log($"{nameof(zero_0x28)}:{i} not always 0!");
+                }
+            }
+            for (int i = 0; i < zero_0xD8.Length; i++)
+            {
+                if (zero_0xD8[i] != 0)
+                {
+                    UnityEngine.Debug.Log($"{nameof(zero_0xD8)}:{i} not always 0!");
+                }
+            }
         }
 
         public void Serialize(BinaryWriter writer)

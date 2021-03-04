@@ -717,12 +717,12 @@ namespace Manifold.IO.GFZ.CourseCollision
                 //
                 writer.PushCol(nameof(Header.unk_0x00));
                 writer.PushCol(nameof(Header.unk_0x04));
-                writer.PushCol(nameof(Header.trackNodes));
-                writer.PushCol(nameof(Header.trackNodes.address));
-                writer.PushCol(nameof(Header.collisionEffectsAreas));
-                writer.PushCol(nameof(Header.collisionEffectsAreas.address));
+                writer.PushCol(nameof(Header.trackNodesPtr));
+                writer.PushCol(nameof(Header.trackNodesPtr.address));
+                writer.PushCol(nameof(Header.collisionEffectsAreasPtr));
+                writer.PushCol(nameof(Header.collisionEffectsAreasPtr.address));
                 writer.PushCol(nameof(Header.boostPadEnable));
-                writer.PushCol(nameof(Header.unkPtr_0x1C));
+                writer.PushCol(nameof(Header.collisionMeshTablePtr));
                 writer.PushCol(nameof(Header.unkPtr_0x20));
                 writer.PushCol(nameof(Header.unkPtr_0x24));
                 writer.PushCol(nameof(Header.zero_0x28));
@@ -780,12 +780,12 @@ namespace Manifold.IO.GFZ.CourseCollision
 
                     writer.PushCol(coliHeader.unk_0x00);
                     writer.PushCol(coliHeader.unk_0x04);
-                    writer.PushCol(coliHeader.trackNodes.length);
-                    writer.PushCol(coliHeader.trackNodes.HexAddress);
-                    writer.PushCol(coliHeader.collisionEffectsAreas.length);
-                    writer.PushCol(coliHeader.collisionEffectsAreas.HexAddress);
+                    writer.PushCol(coliHeader.trackNodesPtr.length);
+                    writer.PushCol(coliHeader.trackNodesPtr.HexAddress);
+                    writer.PushCol(coliHeader.collisionEffectsAreasPtr.length);
+                    writer.PushCol(coliHeader.collisionEffectsAreasPtr.HexAddress);
                     writer.PushCol(coliHeader.boostPadEnable);
-                    writer.PushCol(coliHeader.unkPtr_0x1C.HexAddress);
+                    writer.PushCol(coliHeader.collisionMeshTablePtr.HexAddress);
                     writer.PushCol(coliHeader.unkPtr_0x20.HexAddress);
                     writer.PushCol(coliHeader.unkPtr_0x24.HexAddress);
                     writer.PushCol(0);// coliHeader.zero_0x28);

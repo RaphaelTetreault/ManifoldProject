@@ -46,7 +46,7 @@ namespace GameCube.GFZ.CourseCollision
                 var pointer = indexArraysPtrs[pointerIndex];
                 if (pointer.address > 0)
                 {
-                    Debug.Log($"ptr{pointerIndex:000}:{pointer.HexAddress}");
+                    //Debug.Log($"ptr{pointerIndex:000}:{pointer.HexAddress}");
                     reader.JumpToAddress(pointer);
                     indices[pointerIndex] = ColiCourseUtility.ReadUShortArray(reader);
                 }

@@ -89,14 +89,14 @@ namespace GameCube.GFZ.CourseCollision
                 // Triangles
                 var triPointer = collisionTriIndices[i];
                 triMeshIndices[i] = new CollisionMeshIndices();
-                Debug.Log($"tri{i+1}:{triPointer.HexAddress}");
+                //Debug.Log($"tri{i+1}:{triPointer.HexAddress}");
                 reader.JumpToAddress(triPointer);
                 reader.ReadX(ref triMeshIndices[i], false);
 
                 // Quads
                 var quadPointer = collisionQuadIndices[i];
                 quadMeshIndices[i] = new CollisionMeshIndices();
-                Debug.Log($"quad{i+1}:{quadPointer.HexAddress}");
+                //Debug.Log($"quad{i+1}:{quadPointer.HexAddress}");
                 reader.JumpToAddress(quadPointer);
                 reader.ReadX(ref quadMeshIndices[i], false);
             }
