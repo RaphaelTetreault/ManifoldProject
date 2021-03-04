@@ -1,5 +1,4 @@
 ﻿using GameCube.GFZ.CourseCollision;
-using Manifold.IO;
 using System.IO;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -27,9 +26,6 @@ namespace Manifold.IO.GFZ.CourseCollision
         [SerializeField]
         protected string searchPattern = "COLI_COURSE*";
 
-        [SerializeField]
-        protected bool isAX;
-
         [Header("Import Files")]
         [SerializeField]
         protected string[] importFiles;
@@ -44,9 +40,9 @@ namespace Manifold.IO.GFZ.CourseCollision
         {
             importFiles = Directory.GetFiles(importFrom, searchPattern, fileSearchOption);
             importFiles = UnityPathUtility.EnforceUnitySeparators(importFiles);
-            var importFilesUncompressed = isAX
-                ? GFZX01Utility.DecompressEachLZ(importFiles, LibGxFormat.AvGame.FZeroAX)
-                : GFZX01Utility.DecompressEachLZ(importFiles);
+            //var importFilesUncompressed = isAX
+            //? GFZX01Utility.DecompressEachLZ(importFiles, LibGxFormat.AvGame.FZeroAX)
+            var importFilesUncompressed = GFZX01Utility.DecompressEachLZ(importFiles);
             ImportUtility.ImportManyAs<ColiSceneSobj>(importFilesUncompressed, importFrom, importTo);
         }
     }

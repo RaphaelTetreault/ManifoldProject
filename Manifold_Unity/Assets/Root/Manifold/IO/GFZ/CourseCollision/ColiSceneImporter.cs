@@ -155,11 +155,25 @@ namespace Manifold.IO.GFZ.CourseCollision
                 // HACK: force-add models for AX test stages
                 if (stageID > 50)
                 {
+                    // Get models for AX scene
+                    // One of each is used in scene, all relative to origin.
                     var hackSearchFolders = new string[] { stageFolder };
                     var hackGuids = AssetDatabase.FindAssets("t:prefab", hackSearchFolders);
 
+                    // Progress bar variables
+                    var hackCount = 0;
+                    var hackTotal = hackGuids.Length;
+
                     foreach (var assetGuid in hackGuids)
                     {
+                        // Progress bar
+                        var title = $"Generating Scene ({course.name})";
+                        var info = $"HACK: adding AX models...";
+                        var progress = (float)hackCount / hackTotal;
+                        EditorUtility.DisplayProgressBar(title, info, progress);
+                        hackCount++;
+
+                        // Load models
                         var hackPath = AssetDatabase.GUIDToAssetPath(assetGuid);
                         var hackObject = AssetDatabase.LoadAssetAtPath<UnityEngine.GameObject>(hackPath);
                         var instance = Instantiate(hackObject);

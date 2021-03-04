@@ -1,11 +1,7 @@
 ﻿using Manifold.IO;
 using System;
 using System.IO;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Assertions;
-using System.Diagnostics;
 
 namespace GameCube.GFZ.CourseCollision
 {

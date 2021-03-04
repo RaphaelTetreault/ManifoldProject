@@ -10,62 +10,56 @@ namespace GameCube.GFZ.CourseCollision
     {
         public const int kSizeOfZero0x28 = 0x20;
         public const int kSizeOfZero0xD8 = 0x24;
-        public const int kGxHeaderSize = 0xFC;
-        public const int kAxHeaderSize = 0xF8;
+        public const int kGxHeaderSize = 0xFC; // rename: not header
+        public const int kAxHeaderSize = 0xF8; // rename: not header
 
         #region MEMBERS
 
         public float unk_0x00;
         public float unk_0x04;
-        [Hex(8)]
         public int trackNodeCount;
-        [Hex(8)]
         public int trackNodeAbsPtr;
-        public int unk_0x10;
-        public int unk_0x14;
-        public int unk_0x18;
-        public int unk_0x1C;
-        [Hex(8)]
-        public int unk_0x20;
-        // TODO: rename, is pointer AFAIK
-        [Hex(8)]
-        public int headerSize;
-        public byte[] zero_0x28;
+        public int collisionEffectsPlacementCount;
+        public int collisionEffectsPlacementAbsPtr;
+        public Bool32 boostPadEnable;
+        public int unk_0x1C_AbsPtr; // Old notes: collision mesh stuff, but sus.
+        public int unk_0x20_AbsPtr; // GX: 0xE8, AX: 0xE4
+        public int unk_0x24_AbsPtr; // GX: 0xFC, AX: 0xF8
+        public byte[] zero_0x28; // 0x20 count
         public int gameObjectCount;
         public int unk_gameObjectCount1; // Not in AX
         public int unk_gameObjectCount2;
         public int gameObjectAbsPtr;
-        public int unk_0x58;
-        public int zero_0x5C;
-        public int unk_0x60;
-        public int unk_0x64;
-        public int unk_0x68;
-        public int unk_0x6C;
-        public int unk_0x70;
-        public int zero_0x74;
-        public int zero_0x78;
-        public int unk_0x7C;
-        public int unk_0x80;
-        public int unk_0x84;
-        public int zero_0x88;
-        public int zero_0x8C;
-        [Hex("90", 8)]
+        public Bool32 unk_0x58;
+        public int unk_0x5C_Count; // SOLS only. Occurrences = GX:6, AX:9.
+        public int unk_0x60_AbsPtr; // SOLS only
+        public int collisionObjectsMeshCount;
+        public int collisionObjectsMeshAbsPtr;
+        public int unk_0x6C_Count; // old notes: 0x64 ref back (to name table?). Goes to offset/ptr
+        public int unk_0x70_AbsPtr;
+        public int zero_0x74; // unused count
+        public int zero_0x78; // unused pointer
+        public CircuitType circuitType;
+        public int unk_0x80_AbsPtr; // Old notes: always 6 count, possibly spline stuff
+        public int unk_0x84_AbsPtr; // Old notes: LOD Objects... (new note: 0x84, 0x94, 0x9C all use same struct?)
+        public int zero_0x88; // unused count
+        public int zero_0x8C; // unused pointer
         public int trackInfoAbsPtr;
-        public int unk_0x94;
-        public int unk_0x98;
-        public int unk_0x9C;
-        public int unk_0xA0;
-        public int unk_0xA4;
-        public int unk_0xA8;
-        public int unk_0xAC;
-        public int unk_0xB0;
-        public int unk_0xB4;
-        public int unk_0xB8;
-        public int unk_0xBC;
-        public int unk_0xC0; // float - from C0 to D4 could be structure?
-        public int unk_0xC4; // float
-        public int unk_0xC8; // float
-        public int unk_0xCC; // float
+        public int unk_0x94_Count; // Old notes: anim type 1
+        public int unk_0x98_AbsPtr;
+        public int unk_0x9C_Count; // Old notes: anim type 2
+        public int unk_0xA0_AbsPtr;
+        public int pathObjectsCount;
+        public int pathObjectsAbsPtr;
+        public int arcadeCheckpointCount;
+        public int arcadeCheckpointAbsPtr;
+        public int storyModeSpecialObjectsCount;
+        public int storyModeSpecialObjectsAbsPtr;
+        public int trackNodeTableAbsPtr;
+        public float unk_0xC0; // from C0 to D4 could be structure?
+        public float unk_0xC4; // 
+        public float unk_0xC8; // 
+        public float unk_0xCC; // 
         public int unk_0xD0; // 8
         public int unk_0xD4; // 8
         public byte[] zero_0xD8;
@@ -74,8 +68,8 @@ namespace GameCube.GFZ.CourseCollision
 
         #region PROPERTIES
 
-        public bool IsGX => headerSize == kGxHeaderSize;
-        public bool IsAX => headerSize == kAxHeaderSize;
+        public bool IsGX => unk_0x24_AbsPtr == kGxHeaderSize;
+        public bool IsAX => unk_0x24_AbsPtr == kAxHeaderSize;
 
         #endregion
 
@@ -87,44 +81,43 @@ namespace GameCube.GFZ.CourseCollision
             reader.ReadX(ref unk_0x04);
             reader.ReadX(ref trackNodeCount);
             reader.ReadX(ref trackNodeAbsPtr);
-            reader.ReadX(ref unk_0x10);
-            reader.ReadX(ref unk_0x14);
-            reader.ReadX(ref unk_0x18);
-            reader.ReadX(ref unk_0x1C);
-            reader.ReadX(ref unk_0x20);
-            reader.ReadX(ref headerSize);
+            reader.ReadX(ref collisionEffectsPlacementCount);
+            reader.ReadX(ref collisionEffectsPlacementAbsPtr);
+            reader.ReadX(ref boostPadEnable);
+            reader.ReadX(ref unk_0x1C_AbsPtr);
+            reader.ReadX(ref unk_0x20_AbsPtr);
+            reader.ReadX(ref unk_0x24_AbsPtr);
             reader.ReadX(ref zero_0x28, kSizeOfZero0x28);
             reader.ReadX(ref gameObjectCount);
-            if (IsGX)
-                reader.ReadX(ref unk_gameObjectCount1); ////////////
-            reader.ReadX(ref unk_gameObjectCount2);//////////
+            if (IsGX) reader.ReadX(ref unk_gameObjectCount1);
+            reader.ReadX(ref unk_gameObjectCount2);
             reader.ReadX(ref gameObjectAbsPtr);
             reader.ReadX(ref unk_0x58);
-            reader.ReadX(ref zero_0x5C);
-            reader.ReadX(ref unk_0x60);
-            reader.ReadX(ref unk_0x64);
-            reader.ReadX(ref unk_0x68);
-            reader.ReadX(ref unk_0x6C);
-            reader.ReadX(ref unk_0x70);
+            reader.ReadX(ref unk_0x5C_Count);
+            reader.ReadX(ref unk_0x60_AbsPtr);
+            reader.ReadX(ref collisionObjectsMeshCount);
+            reader.ReadX(ref collisionObjectsMeshAbsPtr);
+            reader.ReadX(ref unk_0x6C_Count);
+            reader.ReadX(ref unk_0x70_AbsPtr);
             reader.ReadX(ref zero_0x74);
             reader.ReadX(ref zero_0x78);
-            reader.ReadX(ref unk_0x7C);
-            reader.ReadX(ref unk_0x80);
-            reader.ReadX(ref unk_0x84);
+            reader.ReadX(ref circuitType);
+            reader.ReadX(ref unk_0x80_AbsPtr);
+            reader.ReadX(ref unk_0x84_AbsPtr);
             reader.ReadX(ref zero_0x88);
             reader.ReadX(ref zero_0x8C);
             reader.ReadX(ref trackInfoAbsPtr);
-            reader.ReadX(ref unk_0x94);
-            reader.ReadX(ref unk_0x98);
-            reader.ReadX(ref unk_0x9C);
-            reader.ReadX(ref unk_0xA0);
-            reader.ReadX(ref unk_0xA4);
-            reader.ReadX(ref unk_0xA8);
-            reader.ReadX(ref unk_0xAC);
-            reader.ReadX(ref unk_0xB0);
-            reader.ReadX(ref unk_0xB4);
-            reader.ReadX(ref unk_0xB8);
-            reader.ReadX(ref unk_0xBC);
+            reader.ReadX(ref unk_0x94_Count);
+            reader.ReadX(ref unk_0x98_AbsPtr);
+            reader.ReadX(ref unk_0x9C_Count);
+            reader.ReadX(ref unk_0xA0_AbsPtr);
+            reader.ReadX(ref pathObjectsCount);
+            reader.ReadX(ref pathObjectsAbsPtr);
+            reader.ReadX(ref arcadeCheckpointCount);
+            reader.ReadX(ref arcadeCheckpointAbsPtr);
+            reader.ReadX(ref storyModeSpecialObjectsCount);
+            reader.ReadX(ref storyModeSpecialObjectsAbsPtr);
+            reader.ReadX(ref trackNodeTableAbsPtr);
             reader.ReadX(ref unk_0xC0);
             reader.ReadX(ref unk_0xC4);
             reader.ReadX(ref unk_0xC8);
@@ -134,7 +127,7 @@ namespace GameCube.GFZ.CourseCollision
             reader.ReadX(ref zero_0xD8, kSizeOfZero0xD8);
 
             // Assert assumptions
-            Debug.Assert(zero_0x5C == 0);
+            Debug.Assert(unk_0x5C_Count == 0);
             Debug.Assert(zero_0x74 == 0);
             Debug.Assert(zero_0x78 == 0);
             Debug.Assert(zero_0x88 == 0);
@@ -148,7 +141,7 @@ namespace GameCube.GFZ.CourseCollision
 
         public void Serialize(BinaryWriter writer)
         {
-
+            throw new NotImplementedException();
         }
 
         #endregion

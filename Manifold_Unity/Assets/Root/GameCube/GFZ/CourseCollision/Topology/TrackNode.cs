@@ -1,33 +1,23 @@
 ﻿using Manifold.IO;
 using System;
 using System.IO;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using System.Diagnostics;
 
 namespace GameCube.GFZ.CourseCollision
 {
     [Serializable]
     public class TrackNode : IBinarySerializable, IBinaryAddressable
     {
-
-        #region MEMBERS
-
         [SerializeField, Hex] long startAddress;
         [SerializeField, Hex] long endAddress;
 
-        [Hex(8), Space]
         public int trackBranchCount;
-        [Hex(8)]
         public int trackPointAbsPtr;
-        [Hex(8)]
         public int trackTransformAbsPtr;
 
         public TrackPoint point;
         public TrackTransform transform;
 
-        #endregion
 
         #region PROPERTIES
 

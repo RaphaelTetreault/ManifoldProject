@@ -168,14 +168,12 @@ namespace Manifold.IO
             return BinaryIoUtility.ReadNewIBinarySerializable<T>(reader);
         }
 
-#if NET_4_7_3
 
         public static TEnum ReadX_Enum<TEnum>(this BinaryReader reader)
     where TEnum : System.Enum
         {
             return BinaryIoUtility.ReadEnum<TEnum>(reader);
         }
-#endif
 
         #endregion
 
@@ -272,14 +270,12 @@ namespace Manifold.IO
             return BinaryIoUtility.ReadNewIBinarySerializableArray<T>(reader);
         }
 
-#if NET_4_7_3
 
         public static TEnum[] ReadX_EnumArray<TEnum>(this BinaryReader reader)
     where TEnum : System.Enum
         {
             return BinaryIoUtility.ReadEnumArray<TEnum>(reader);
         }
-#endif
 
         #endregion
 
@@ -371,19 +367,17 @@ namespace Manifold.IO
 
 
         public static T[] ReadX_NewIBinarySerializable<T>(this BinaryReader reader, int length)
-    where T : IBinarySerializable, new()
+            where T : IBinarySerializable, new()
         {
             return BinaryIoUtility.ReadNewIBinarySerializableArray<T>(reader, length);
         }
 
-#if NET_4_7_3
 
         public static TEnum[] ReadX_EnumArray<TEnum>(this BinaryReader reader, int length)
-    where TEnum : System.Enum
+            where TEnum : System.Enum
         {
             return BinaryIoUtility.ReadEnumArray<TEnum>(reader, length);
         }
-#endif
 
         #endregion
 
@@ -506,19 +500,17 @@ namespace Manifold.IO
 
 
         public static T ReadX<T>(this BinaryReader reader, ref T value, bool createNewInstance)
-    where T : IBinarySerializable, new()
+            where T : IBinarySerializable, new()
         {
             return value = BinaryIoUtility.Read(reader, ref value, createNewInstance);
         }
 
-#if NET_4_7_3
 
         public static TEnum ReadX<TEnum>(this BinaryReader reader, ref TEnum value)
-    where TEnum : struct, System.Enum
+            where TEnum : struct, System.Enum
         {
             return value = BinaryIoUtility.Read(reader, ref value);
         }
-#endif
 
         #endregion
 
@@ -608,21 +600,17 @@ namespace Manifold.IO
             return BinaryIoUtility.Read(reader, ref value, encoding);
         }
 
-
         public static T[] ReadX<T>(this BinaryReader reader, ref T[] value, bool createNewInstances)
-    where T : IBinarySerializable, new()
+            where T : IBinarySerializable, new()
         {
             return BinaryIoUtility.Read(reader, ref value, createNewInstances);
         }
 
-#if NET_4_7_3
-
         public static TEnum[] ReadX<TEnum>(this BinaryReader reader, ref TEnum[] value)
-    where TEnum : struct, System.Enum
+            where TEnum : struct, System.Enum
         {
             return value = BinaryIoUtility.ReadEnum(reader, ref value);
         }
-#endif
 
         #endregion
 
@@ -714,19 +702,17 @@ namespace Manifold.IO
 
 
         public static T[] ReadX<T>(this BinaryReader reader, ref T[] value, int length, bool createNewInstances)
-    where T : IBinarySerializable, new()
+            where T : IBinarySerializable, new()
         {
             return BinaryIoUtility.Read(reader, length, ref value, createNewInstances);
         }
 
-#if NET_4_7_3
 
         public static TEnum[] ReadX<TEnum>(this BinaryReader reader, int length, ref TEnum[] value)
-    where TEnum : struct, System.Enum
+            where TEnum : struct, System.Enum
         {
             return value = BinaryIoUtility.Read(reader, length, ref value);
         }
-#endif
 
         #endregion
 
@@ -827,14 +813,12 @@ namespace Manifold.IO
             BinaryIoUtility.Write(writer, value);
         }
 
-#if NET_4_7_3
 
         public static void WriteX<TEnum>(this BinaryWriter writer, TEnum value, EnumCompression enumCompression = EnumCompression.none)
     where TEnum : struct, System.Enum
         {
             BinaryIoUtility.WriteEnum(writer, value);
         }
-#endif
 
         #endregion
 
@@ -955,14 +939,12 @@ namespace Manifold.IO
             BinaryIoUtility.WriteCString(writer, value);
         }
 
-#if NET_4_7_3
 
         public static void WriteE<TEnum>(this BinaryWriter writer, TEnum[] value, bool writeLengthHeader)
-    where TEnum : System.Enum
+            where TEnum : System.Enum
         {
             BinaryIoUtility.WriteEnum(writer, value, writeLengthHeader);
         }
-#endif
 
         #endregion
 

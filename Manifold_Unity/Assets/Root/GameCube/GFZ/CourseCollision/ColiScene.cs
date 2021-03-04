@@ -1,29 +1,28 @@
 ﻿using Manifold.IO;
 using System;
 using System.IO;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Assertions;
 
 namespace GameCube.GFZ.CourseCollision
 {
     [Serializable]
     public class ColiScene : IBinarySerializable, IFile
     {
-        [SerializeField] string name;
+        [SerializeField]
+        string name;
 
         // Generate some metadata to be used by some processes
         [SerializeField]
         public int id;
 
-
+        //
         public Header header;
         public TrackNode[] trackNodes;
+        public AICollisionPropertyTarget[] collisionPropertyAreas;
+        public CollisionMeshTable collisionMeshTable;
         public TrackLength trackInformation;
-        // some other stuff goes here...
         public GameObject[] gameObjects;
-
         public List<TrackTransform> trackTransforms = new List<TrackTransform>();
 
         public string FileName
@@ -41,14 +40,22 @@ namespace GameCube.GFZ.CourseCollision
             // Store the stage index, can solve venue and course name from this
             id = int.Parse(System.Text.RegularExpressions.Regex.Match(FileName, @"\d+").Value);
 
+            // Read COLI_COURSE## file header
             reader.ReadX(ref header, true);
 
-            // 0x08 - Track Nodes
+            // 0x08 and 0x0C: Track Nodes
             reader.BaseStream.Seek(header.trackNodeAbsPtr, SeekOrigin.Begin);
             reader.ReadX(ref trackNodes, header.trackNodeCount, true);
 
-            // 0x48 - Game Objects
-            //Assert.IsTrue(header.gameObjectAbsPtr > 0); // NOT TRUE FOR AX - test stages
+            // 0x10 and 0x14: Collision Effect Area
+            reader.BaseStream.Seek(header.collisionEffectsPlacementAbsPtr, SeekOrigin.Begin);
+            reader.ReadX(ref collisionPropertyAreas, header.collisionEffectsPlacementCount, true);
+
+            // 0x1C 
+            reader.BaseStream.Seek(header.unk_0x1C_AbsPtr, SeekOrigin.Begin);
+            reader.ReadX(ref collisionMeshTable, true);
+
+            // 0x48 and 0x??: Game Objects
             reader.BaseStream.Seek(header.gameObjectAbsPtr, SeekOrigin.Begin);
             reader.ReadX(ref gameObjects, header.gameObjectCount, true);
 
