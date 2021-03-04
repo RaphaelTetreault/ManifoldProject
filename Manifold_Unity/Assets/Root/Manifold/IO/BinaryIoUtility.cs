@@ -362,7 +362,6 @@ namespace Manifold.IO
             return value;
         }
 
-#if NET_4_7_3
         /// <summary>
         /// TODO: Errors: InvalidCastError when enum doesn't use proper type (enum : ushort) uses EC.int
         /// </summary>
@@ -419,7 +418,6 @@ namespace Manifold.IO
                 throw new NotImplementedException();
             }
         }
-#endif
 
         #endregion
 
@@ -549,14 +547,12 @@ namespace Manifold.IO
                 return value = ReadIBinarySerializable<T>(binaryReader, value);
         }
 
-#if NET_4_7_3
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static TEnum Read<TEnum>(BinaryReader binaryReader, ref TEnum value)
     where TEnum : Enum
         {
             return value = ReadEnum<TEnum>(binaryReader);
         }
-#endif
 
         #endregion
 

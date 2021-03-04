@@ -11,9 +11,9 @@ namespace GameCube.GFZ.CourseCollision
         [SerializeField, Hex] long startAddress;
         [SerializeField, Hex] long endAddress;
 
-        public const int kIdxPtrArraySize = 0x100; // 256
+        public const int kIdxPtrArraySize = 256; // 0x100
 
-        public int[] indicesAbsPtrs = new int[kIdxPtrArraySize];
+        public Pointer[] indexArraysPtrs = new Pointer[kIdxPtrArraySize];
         public ushort[][] indices = new ushort[kIdxPtrArraySize][];
 
 
@@ -33,19 +33,20 @@ namespace GameCube.GFZ.CourseCollision
         public void Deserialize(BinaryReader reader)
         {
             this.RecordStartAddress(reader);
-            reader.ReadX(ref indicesAbsPtrs, kIdxPtrArraySize);
+            reader.ReadX(ref indexArraysPtrs, kIdxPtrArraySize, false);
             this.RecordEndAddress(reader);
 
             // Should always be init to const size
-            System.Diagnostics.Debug.Assert(indicesAbsPtrs.Length == kIdxPtrArraySize);
+            System.Diagnostics.Debug.Assert(indexArraysPtrs.Length == kIdxPtrArraySize);
 
-            // not recording length of other data due to [][]
-            for (int pointerIndex = 0; pointerIndex < indicesAbsPtrs.Length; pointerIndex++)
+            // TODO:  not recording length of other data due to [][]
+            for (int pointerIndex = 0; pointerIndex < indexArraysPtrs.Length; pointerIndex++)
             {
-                var absPtr = indicesAbsPtrs[pointerIndex];
-                if (absPtr > 0)
+                var pointer = indexArraysPtrs[pointerIndex];
+                if (pointer.address > 0)
                 {
-                    reader.BaseStream.Seek(absPtr, SeekOrigin.Begin);
+                    //Debug.Log($"ptr{pointerIndex:000}:{pointer.HexAddress}");
+                    reader.JumpToAddress(pointer);
                     indices[pointerIndex] = ColiCourseUtil.ReadShortArray(reader);
                 }
                 else

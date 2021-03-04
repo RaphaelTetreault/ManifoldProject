@@ -44,23 +44,23 @@ namespace GameCube.GFZ.CourseCollision
             reader.ReadX(ref header, true);
 
             // 0x08 and 0x0C: Track Nodes
-            reader.BaseStream.Seek(header.trackNodeAbsPtr, SeekOrigin.Begin);
-            reader.ReadX(ref trackNodes, header.trackNodeCount, true);
+            reader.JumpToAddress(header.trackNodes);
+            reader.ReadX(ref trackNodes, header.trackNodes.length, true);
 
             // 0x10 and 0x14: Collision Effect Area
-            reader.BaseStream.Seek(header.collisionEffectsPlacementAbsPtr, SeekOrigin.Begin);
-            reader.ReadX(ref collisionPropertyAreas, header.collisionEffectsPlacementCount, true);
+            reader.JumpToAddress(header.collisionEffectsAreas);
+            reader.ReadX(ref collisionPropertyAreas, header.collisionEffectsAreas.length, true);
 
             // 0x1C 
-            reader.BaseStream.Seek(header.unk_0x1C_AbsPtr, SeekOrigin.Begin);
+            reader.JumpToAddress(header.unkPtr_0x1C);
             reader.ReadX(ref collisionMeshTable, true);
 
             // 0x48 and 0x??: Game Objects
-            reader.BaseStream.Seek(header.gameObjectAbsPtr, SeekOrigin.Begin);
+            reader.JumpToAddress(header.gameObjectPtr);
             reader.ReadX(ref gameObjects, header.gameObjectCount, true);
 
             // 0x90 - Track Transforms
-            reader.BaseStream.Seek(header.trackInfoAbsPtr, SeekOrigin.Begin);
+            reader.JumpToAddress(header.trackInfo);
             reader.ReadX(ref trackInformation, true);
 
             // Let's build the transform after-the-fact
