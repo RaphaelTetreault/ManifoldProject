@@ -11,7 +11,7 @@ namespace Manifold.IO.GFZ.Camera
 
         [Header("Livecam Stage")]
         [SerializeField]
-        string name;
+        new private string name;
 
         [SerializeField]
         public CameraPanSobj[] pans;

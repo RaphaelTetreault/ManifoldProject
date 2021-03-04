@@ -318,7 +318,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 foreach (var file in coliSobjs)
                 {
                     int gameObjectIndex = 0;
-                    foreach (var gameObject in file.Value.gameObjects)
+                    foreach (var gameObject in file.Value.sceneObjects)
                     {
                         if (gameObject.animation == null)
                             continue;
@@ -371,7 +371,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 foreach (var file in coliSobjs)
                 {
                     int gameObjectIndex = 0;
-                    foreach (var gameObject in file.Value.gameObjects)
+                    foreach (var gameObject in file.Value.sceneObjects)
                     {
                         int animIndex = 0;
                         foreach (var animationCurve in gameObject.animation.animCurves)
@@ -442,7 +442,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 foreach (var file in coliSobjs)
                 {
                     int gameObjectIndex = 0;
-                    foreach (var gameObject in file.Value.gameObjects)
+                    foreach (var gameObject in file.Value.sceneObjects)
                     {
                         writer.PushCol(file.FileName);
                         writer.PushCol(gameObjectIndex);
@@ -451,7 +451,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                         writer.WriteFlags(gameObject.unk_0x00);
                         writer.PushCol((int)gameObject.unk_0x04);
                         writer.WriteFlags(gameObject.unk_0x04);
-                        writer.PushCol("0x" + gameObject.collisionBindingAbsPtr.ToString("X"));
+                        writer.PushCol(gameObject.collisionBindingPtr.HexAddress);
                         writer.PushCol(gameObject.position);
                         writer.PushCol((int)gameObject.unk_0x18);
                         writer.WriteFlags(gameObject.unk_0x18);
@@ -463,10 +463,10 @@ namespace Manifold.IO.GFZ.CourseCollision
                         writer.WriteFlags(gameObject.unk_0x1E);
                         writer.PushCol(gameObject.scale);
                         writer.PushCol(gameObject.zero_0x2C);
-                        writer.PushCol("0x" + gameObject.animationAbsPtr.ToString("X"));
-                        writer.PushCol("0x" + gameObject.unkAbsPtr_0x34.ToString("X"));
-                        writer.PushCol("0x" + gameObject.skeletalAnimatorAbsPtr.ToString("X"));
-                        writer.PushCol("0x" + gameObject.transformAbsPtr.ToString("X"));
+                        writer.PushCol(gameObject.animationPtr.HexAddress);
+                        writer.PushCol(gameObject.unkPtr_0x34.HexAddress);
+                        writer.PushCol(gameObject.skeletalAnimatorPtr.HexAddress);
+                        writer.PushCol(gameObject.transformPtr.HexAddress);
                         writer.PushRow();
 
                         gameObjectIndex++;
@@ -492,7 +492,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 foreach (var file in coliSobjs)
                 {
                     int gameObjectIndex = 0;
-                    foreach (var gameObject in file.Value.gameObjects)
+                    foreach (var gameObject in file.Value.sceneObjects)
                     {
                         int unkIndex = 0;
                         foreach (var unk1 in gameObject.unk1.unk)
@@ -541,7 +541,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 foreach (var file in coliSobjs)
                 {
                     int gameObjectIndex = 0;
-                    foreach (var gameObject in file.Value.gameObjects)
+                    foreach (var gameObject in file.Value.sceneObjects)
                     {
                         if (gameObject.skeletalAnimator.unkRelPtr == 0)
                         {
@@ -601,7 +601,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 foreach (var file in coliSobjs)
                 {
                     int gameObjectIndex = 0;
-                    foreach (var gameObject in file.Value.gameObjects)
+                    foreach (var gameObject in file.Value.sceneObjects)
                     {
                         if (gameObject.collisionBinding.collision.triCount == 0)
                         {
@@ -664,7 +664,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 foreach (var file in coliSobjs)
                 {
                     int gameObjectIndex = 0;
-                    foreach (var gameObject in file.Value.gameObjects)
+                    foreach (var gameObject in file.Value.sceneObjects)
                     {
                         if (gameObject.collisionBinding.collision.quadCount == 0)
                         {
@@ -773,9 +773,9 @@ namespace Manifold.IO.GFZ.CourseCollision
                     var coliHeader = file.Value.header;
 
                     writer.PushCol(coli.FileName);
-                    writer.PushCol(coli.id);
-                    writer.PushCol(CourseUtility.GetVenueID(coli.id).GetDescription());
-                    writer.PushCol(((CourseIDEx)coli.id).GetDescription());
+                    writer.PushCol(coli.ID);
+                    writer.PushCol(CourseUtility.GetVenueID(coli.ID).GetDescription());
+                    writer.PushCol(((CourseIDEx)coli.ID).GetDescription());
                     writer.PushCol(coliHeader.IsFileGX ? "GX" : "AX");
 
                     writer.PushCol(coliHeader.unk_0x00);

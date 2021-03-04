@@ -21,12 +21,12 @@ namespace GameCube.GFZ.CourseCollision
         public Pointer collisionTris;
         [Hex(8)]
         public Pointer[] collisionTriIndices;
-        public UnknownStruct1 unknownStruct_0x60;
+        public ColiUnknownStruct1 unknownStruct_0x60;
         [Hex(8)]
         public Pointer collisionQuads;
         [Hex(8)]
         public Pointer[] collisionQuadIndices;
-        public UnknownStruct1 unknownStruct_0xB4;
+        public ColiUnknownStruct1 unknownStruct_0xB4;
 
         // This data holds the geometry data and indices
         public float[] tris;

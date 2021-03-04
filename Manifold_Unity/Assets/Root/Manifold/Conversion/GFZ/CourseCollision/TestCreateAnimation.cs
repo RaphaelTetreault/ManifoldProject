@@ -19,7 +19,7 @@ namespace Manifold.Conversion
 
         public override void Execute()
         {
-            foreach (var gobj in scene.Value.gameObjects)
+            foreach (var gobj in scene.Value.sceneObjects)
             {
                 if (gobj.animation.animCurves.Length == 0)
                 {

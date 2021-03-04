@@ -5,7 +5,7 @@ using System.IO;
 namespace GameCube.GFZ.CourseCollision
 {
     [Serializable]
-    public struct UnknownStruct1 : IBinarySerializable
+    public struct ColiUnknownStruct1 : IBinarySerializable
     {
         public float unk_0x00;
         public float unk_0x04;

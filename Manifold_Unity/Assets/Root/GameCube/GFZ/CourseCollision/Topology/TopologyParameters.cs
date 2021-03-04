@@ -3,6 +3,8 @@ using System;
 using System.IO;
 using UnityEngine;
 
+// TODO: replace counts/absptr with ArrayPointers? Make new [][]Pointer struct?
+
 namespace GameCube.GFZ
 {
     [Serializable]

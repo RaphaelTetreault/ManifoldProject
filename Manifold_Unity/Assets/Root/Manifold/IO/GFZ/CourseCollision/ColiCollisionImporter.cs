@@ -37,7 +37,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
             foreach (var coli in colis)
             {
-                foreach (var gobj in coli.Value.gameObjects)
+                foreach (var gobj in coli.Value.sceneObjects)
                 {
                     if (gobj.collisionBinding.collisionAbsPtr != 0)
                     {
@@ -52,7 +52,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             ImportUtility.WrapUpAssetImport();
         }
 
-        public Mesh CreateMesh(GameCube.GFZ.CourseCollision.GameObject gameObject)
+        public Mesh CreateMesh(GameCube.GFZ.CourseCollision.SceneObject gameObject)
         {
             var collision = gameObject.collisionBinding.collision;
 

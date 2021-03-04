@@ -6,8 +6,8 @@ using UnityEngine;
 
 namespace Manifold
 {
-    public class GfzGameObject : MonoBehaviour
+    public class GfzSceneObject : MonoBehaviour
     {
-        public GameCube.GFZ.CourseCollision.GameObject self;
+        public GameCube.GFZ.CourseCollision.SceneObject self;
     }
 }

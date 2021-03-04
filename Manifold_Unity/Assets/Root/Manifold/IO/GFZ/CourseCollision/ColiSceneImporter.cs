@@ -39,26 +39,26 @@ namespace Manifold.IO.GFZ.CourseCollision
             {
                 // Progress bar values
                 var count = 0;
-                var total = course.Value.gameObjects.Length;
+                var total = course.Value.sceneObjects.Length;
 
                 // Create new, empty scene
                 var sceneName = course.name;
                 var scenePath = $"Assets/{importTo}/{sceneName}.unity";
-                var scene = EditorSceneManager.NewScene(NewSceneSetup.DefaultGameObjects, NewSceneMode.Single);
+                var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
                 EditorSceneManager.SaveScene(scene, scenePath);
                 // Keep reference of new scene
                 scene = EditorSceneManager.OpenScene(scenePath);
 
                 // TEMP DATA
                 // Create track vis, set parameter
-                var empty = new UnityEngine.GameObject();
+                var empty = new GameObject();
                 empty.name = nameof(TempTrackVis);
                 var trackVis = empty.AddComponent<TempTrackVis>();
                 trackVis.Coli = course;
 
                 // Course-related values, used to find models
                 // triple digits do "overflow", that's okay.
-                var stageID = course.Value.id;
+                var stageID = course.Value.ID;
                 var stageNumber = stageID.ToString("00"); 
                 var venueID = CourseUtility.GetVenueID(stageID).ToString().ToLower();
 
@@ -73,15 +73,15 @@ namespace Manifold.IO.GFZ.CourseCollision
                 var searchFolders = new string[] { initFolder, stageFolder, venueFolder };
 
                 // Find all gameobjects, add them to scene
-                foreach (var gobj in course.Value.gameObjects)
+                foreach (var sceneObject in course.Value.sceneObjects)
                 {
                     // HACK: skip empties. Should really just do "model not found"
-                    if (string.IsNullOrEmpty(gobj.name))
+                    if (string.IsNullOrEmpty(sceneObject.name))
                     {
                         continue;
                     }
 
-                    var objectName = gobj.name;
+                    var objectName = sceneObject.name;
                     var prefabName = $"pf_{objectName}";
                     var assetGuids = AssetDatabase.FindAssets(prefabName, searchFolders);
 
@@ -94,7 +94,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                     else if (assetGuids.Length == 0)
                     {
                         // No models for this object. Make empty object.
-                        var emptyGameObject = new UnityEngine.GameObject();
+                        var emptyGameObject = new GameObject();
                         emptyGameObject.name = $"NoModel:{objectName}";
                         // Stop here, go to next object in iteration
                         continue;
@@ -120,7 +120,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                         if (string.IsNullOrEmpty(assetPath))
                         {
                             // No models for this object. Make empty object.
-                            var emptyGameObject = new UnityEngine.GameObject();
+                            var emptyGameObject = new GameObject();
                             emptyGameObject.name = $"NoModel:{objectName}";
                             // Stop here, go to next object in iteration
                             continue;
@@ -145,11 +145,11 @@ namespace Manifold.IO.GFZ.CourseCollision
                     //var hasAnimation = gobj.animation != null;
 
                     // Tack data of object onto Unity GameObject for inspection
-                    var gameObjectDef = instance.AddComponent<GfzGameObject>();
-                    gameObjectDef.self = gobj;
+                    var sceneObjectData = instance.AddComponent<GfzSceneObject>();
+                    sceneObjectData.self = sceneObject;
 
                     // Apply GFZ Transform values onto Unity Transform
-                    gobj.transform.SetUnityTransform(instance.transform);
+                    sceneObject.transform.SetUnityTransform(instance.transform);
                 }
 
                 // HACK: force-add models for AX test stages
@@ -175,7 +175,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
                         // Load models
                         var hackPath = AssetDatabase.GUIDToAssetPath(assetGuid);
-                        var hackObject = AssetDatabase.LoadAssetAtPath<UnityEngine.GameObject>(hackPath);
+                        var hackObject = AssetDatabase.LoadAssetAtPath<GameObject>(hackPath);
                         var instance = Instantiate(hackObject);
                         instance.name = hackObject.name;
                     }

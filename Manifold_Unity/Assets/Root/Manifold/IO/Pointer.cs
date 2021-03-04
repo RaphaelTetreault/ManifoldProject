@@ -4,11 +4,16 @@ using System.IO;
 namespace Manifold.IO
 {
     [Serializable]
-    public struct Pointer : IBinarySerializable
+    public struct Pointer : IBinarySerializable, IPointer
     {
         public int address;
 
+
+        public int Address => address;
+
         public string HexAddress => $"0x{address:X8}";
+
+        public bool IsNotNullPointer => address != 0;
 
 
         public void Deserialize(BinaryReader reader)

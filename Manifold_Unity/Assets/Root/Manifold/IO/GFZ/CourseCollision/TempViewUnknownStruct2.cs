@@ -1,11 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using Manifold.IO;
-using Manifold.IO.GFZ;
-using Manifold.IO.GFZ.CourseCollision;
 
-namespace Manifold
+namespace Manifold.IO.GFZ.CourseCollision
 {
     public class TempViewUnknownStruct2 : MonoBehaviour
     {
@@ -19,9 +14,9 @@ namespace Manifold
                 return;
 
             Gizmos.color = color;
-            foreach (var unk2 in sceneSobj.Value.unknownStruct2s)
+            foreach (var unknownStruct2 in sceneSobj.Value.unknownStruct2s)
             {
-                Gizmos.DrawWireSphere(unk2.unk_0x04, size);
+                Gizmos.DrawWireSphere(unknownStruct2.position, size);
             }
         }
     }

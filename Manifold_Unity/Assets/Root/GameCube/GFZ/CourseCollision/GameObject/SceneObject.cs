@@ -7,17 +7,20 @@ using UnityEngine.Assertions;
 namespace GameCube.GFZ.CourseCollision
 {
     [Serializable]
-    public class GameObject : IBinarySerializable, IBinaryAddressable
+    public class SceneObject : IBinarySerializable, IBinaryAddressable
     {
-
-        #region MEMBERS
-
+        // metadata
         [SerializeField, Hex] long startAddress;
         [SerializeField, Hex] long endAddress;
+        /// <summary>
+        /// Object's name from table sub-structure
+        /// </summary>
+        public string name;
 
+        // structure
         public EnumFlags32 unk_0x00;
         public EnumFlags32 unk_0x04;
-        public int collisionBindingAbsPtr;
+        public Pointer collisionBindingPtr;
         public Vector3 position;
         public EnumFlags16 unk_0x18;
         public EnumFlags16 unk_0x1A;
@@ -28,22 +31,17 @@ namespace GameCube.GFZ.CourseCollision
         /// 2020/05/12 Raph: Confirmed 0
         /// </summary>
         public int zero_0x2C;
-        public uint animationAbsPtr;
-        public uint unkAbsPtr_0x34;
-        public uint skeletalAnimatorAbsPtr;
-        public uint transformAbsPtr;
-
+        public Pointer animationPtr;
+        public Pointer unkPtr_0x34;
+        public Pointer skeletalAnimatorPtr;
+        public Pointer transformPtr;
+        // sub-structures
         public CollisionBinding collisionBinding;
         public AnimationClip animation;
         public ObjectTable_Unk1 unk1;
         public SkeletalAnimator skeletalAnimator;
         public Transform transform;
 
-        public string name;
-
-        #endregion
-
-        #region PROPERTIES
 
         public long StartAddress
         {
@@ -57,17 +55,15 @@ namespace GameCube.GFZ.CourseCollision
             set => endAddress = value;
         }
 
-        #endregion
-
-        #region METHODS
 
         public void Deserialize(BinaryReader reader)
         {
+            this.RecordStartAddress(reader);
             startAddress = reader.BaseStream.Position;
             {
                 reader.ReadX(ref unk_0x00);
                 reader.ReadX(ref unk_0x04);
-                reader.ReadX(ref collisionBindingAbsPtr);
+                reader.ReadX(ref collisionBindingPtr);
                 reader.ReadX(ref position);
                 reader.ReadX(ref unk_0x18);
                 reader.ReadX(ref unk_0x1A);
@@ -75,41 +71,41 @@ namespace GameCube.GFZ.CourseCollision
                 reader.ReadX(ref unk_0x1E);
                 reader.ReadX(ref scale);
                 reader.ReadX(ref zero_0x2C);
-                reader.ReadX(ref animationAbsPtr);
-                reader.ReadX(ref unkAbsPtr_0x34);
-                reader.ReadX(ref skeletalAnimatorAbsPtr);
-                reader.ReadX(ref transformAbsPtr);
+                reader.ReadX(ref animationPtr);
+                reader.ReadX(ref unkPtr_0x34);
+                reader.ReadX(ref skeletalAnimatorPtr);
+                reader.ReadX(ref transformPtr);
             }
-            endAddress = reader.BaseStream.Position;
+            this.RecordEndAddress(reader);
             {
                 Assert.IsTrue(zero_0x2C == 0);
 
-                Assert.IsTrue(collisionBindingAbsPtr > 0);
-                reader.BaseStream.Seek(collisionBindingAbsPtr, SeekOrigin.Begin);
+                Assert.IsTrue(collisionBindingPtr.IsNotNullPointer);
+                reader.JumpToAddress(collisionBindingPtr);
                 reader.ReadX(ref collisionBinding, true);
                 name = collisionBinding.referenceBinding.name;
 
-                if (animationAbsPtr > 0)
+                if (animationPtr.IsNotNullPointer)
                 {
-                    reader.BaseStream.Seek(animationAbsPtr, SeekOrigin.Begin);
+                    reader.JumpToAddress(animationPtr);
                     reader.ReadX(ref animation, true);
                 }
 
-                if (unkAbsPtr_0x34 > 0)
+                if (unkPtr_0x34.IsNotNullPointer)
                 {
-                    reader.BaseStream.Seek(unkAbsPtr_0x34, SeekOrigin.Begin);
+                    reader.JumpToAddress(unkPtr_0x34);
                     reader.ReadX(ref unk1, true);
                 }
 
-                if (skeletalAnimatorAbsPtr > 0)
+                if (skeletalAnimatorPtr.IsNotNullPointer)
                 {
-                    reader.BaseStream.Seek(skeletalAnimatorAbsPtr, SeekOrigin.Begin);
+                    reader.JumpToAddress(skeletalAnimatorPtr);
                     reader.ReadX(ref skeletalAnimator, true);
                 }
 
-                if (transformAbsPtr > 0)
+                if (transformPtr.IsNotNullPointer)
                 {
-                    reader.BaseStream.Seek(transformAbsPtr, SeekOrigin.Begin);
+                    reader.JumpToAddress(transformPtr);
                     reader.ReadX(ref transform, true);
                 }
                 else
@@ -126,6 +122,7 @@ namespace GameCube.GFZ.CourseCollision
                     };
                 }
             }
+            // After deserializing sub-structures, return to end position
             reader.BaseStream.Seek(endAddress, SeekOrigin.Begin);
         }
 
@@ -133,7 +130,7 @@ namespace GameCube.GFZ.CourseCollision
         {
             writer.WriteX(unk_0x00);
             writer.WriteX(unk_0x04);
-            writer.WriteX(collisionBindingAbsPtr);
+            writer.WriteX(collisionBindingPtr);
             writer.WriteX(position);
             writer.WriteX(unk_0x18);
             writer.WriteX(unk_0x1A);
@@ -141,16 +138,14 @@ namespace GameCube.GFZ.CourseCollision
             writer.WriteX(unk_0x1E);
             writer.WriteX(scale);
             writer.WriteX(zero_0x2C);
-            writer.WriteX(animationAbsPtr);
-            writer.WriteX(unkAbsPtr_0x34);
-            writer.WriteX(skeletalAnimatorAbsPtr);
-            writer.WriteX(transformAbsPtr);
+            writer.WriteX(animationPtr);
+            writer.WriteX(unkPtr_0x34);
+            writer.WriteX(skeletalAnimatorPtr);
+            writer.WriteX(transformPtr);
 
             // Write values pointed at by, update ptrs above
             throw new NotImplementedException();
         }
-
-        #endregion
 
     }
 }

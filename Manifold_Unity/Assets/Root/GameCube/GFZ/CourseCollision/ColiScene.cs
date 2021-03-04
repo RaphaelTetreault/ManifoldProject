@@ -9,32 +9,34 @@ namespace GameCube.GFZ.CourseCollision
     [Serializable]
     public class ColiScene : IBinarySerializable, IFile
     {
+        // metadata
         [SerializeField]
-        string name;
-
-        // Generate some metadata to be used by some processes
+        private int id;
         [SerializeField]
-        public int id;
+        private string name;
 
         //
         public Header header;
-        public TrackNode[] trackNodes;
+        //
         public AICollisionPropertyTarget[] collisionPropertyAreas;
         public CollisionMeshTable collisionMeshTable;
+        public SceneObject[] sceneObjects;
+        public TrackLength trackInformation;
+        public TrackNode[] trackNodes;
+        public List<TrackTransform> trackTransforms = new List<TrackTransform>();
         public int[] unknownData_0x20;
         public float unknownFloat_0x24;
-        // zeroes x0x20
-        // game object stuff
-        public GameObject[] gameObjects;
-        public UnknownStruct2[] unknownStruct2s;
-        public TrackLength trackInformation;
-        public List<TrackTransform> trackTransforms = new List<TrackTransform>();
+        public ColiUnknownStruct2[] unknownStruct2s;
+
 
         public string FileName
         {
             get => name;
             set => name = value;
         }
+
+        public int ID => id;
+
 
         public void Deserialize(BinaryReader reader)
         {
@@ -72,7 +74,7 @@ namespace GameCube.GFZ.CourseCollision
 
             // 0x48 and 0x??: Game Objects
             reader.JumpToAddress(header.gameObjectPtr);
-            reader.ReadX(ref gameObjects, header.gameObjectCount, true);
+            reader.ReadX(ref sceneObjects, header.gameObjectCount, true);
 
             // 0x5c SOLS values
             reader.JumpToAddress(header.unkArrayPtr_0x5C);

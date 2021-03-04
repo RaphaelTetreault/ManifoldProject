@@ -46,7 +46,7 @@ namespace GameCube.GFZ.CourseCollision
         public ArrayPointer arcadeCheckpoint;
         public ArrayPointer storyModeSpecialObjects;
         public Pointer trackNodeTable;
-        public UnknownStruct1 unknownStructure1_0xC0;
+        public ColiUnknownStruct1 unknownStructure1_0xC0;
         public byte[] zero_0xD8; // 0x10 count
 
 
