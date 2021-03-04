@@ -730,9 +730,9 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.PushCol(nameof(Header.unk_gameObjectCount1));
                 writer.PushCol(nameof(Header.unk_gameObjectCount2));
                 writer.PushCol(nameof(Header.gameObjectPtr));
-                writer.PushCol(nameof(Header.unk_0x58));
-                writer.PushCol(nameof(Header.unk_0x5C));
-                writer.PushCol(nameof(Header.unk_0x5C.address));
+                writer.PushCol(nameof(Header.unkBool32_0x58));
+                writer.PushCol(nameof(Header.unkArrayPtr_0x5C));
+                writer.PushCol(nameof(Header.unkArrayPtr_0x5C.address));
                 writer.PushCol(nameof(Header.collisionObjectsMesh));
                 writer.PushCol(nameof(Header.collisionObjectsMesh.address));
                 writer.PushCol(nameof(Header.unkArrayPtr_0x6C));
@@ -745,10 +745,10 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.PushCol(nameof(Header.unused_0x88_0x8C));
                 writer.PushCol(nameof(Header.unused_0x88_0x8C.address));
                 writer.PushCol(nameof(Header.trackInfo));
-                writer.PushCol(nameof(Header.unk_0x94));
-                writer.PushCol(nameof(Header.unk_0x94.address));
-                writer.PushCol(nameof(Header.unk_0x9C));
-                writer.PushCol(nameof(Header.unk_0x9C.address));
+                writer.PushCol(nameof(Header.unkArrayPtr_0x94));
+                writer.PushCol(nameof(Header.unkArrayPtr_0x94.address));
+                writer.PushCol(nameof(Header.unkArrayPtr_0x9C));
+                writer.PushCol(nameof(Header.unkArrayPtr_0x9C.address));
                 writer.PushCol(nameof(Header.pathObjects));
                 writer.PushCol(nameof(Header.pathObjects.address));
                 writer.PushCol(nameof(Header.arcadeCheckpoint));
@@ -757,12 +757,12 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.PushCol(nameof(Header.storyModeSpecialObjects.address));
                 writer.PushCol(nameof(Header.trackNodeTable));
                 // Structure
-                writer.PushCol(nameof(Header.unk_0xC0) + "." + nameof(Header.unk_0xC0.unk_0x00));
-                writer.PushCol(nameof(Header.unk_0xC0) + "." + nameof(Header.unk_0xC0.unk_0x04));
-                writer.PushCol(nameof(Header.unk_0xC0) + "." + nameof(Header.unk_0xC0.unk_0x08));
-                writer.PushCol(nameof(Header.unk_0xC0) + "." + nameof(Header.unk_0xC0.unk_0x0C));
-                writer.PushCol(nameof(Header.unk_0xC0) + "." + nameof(Header.unk_0xC0.unk_0x10));
-                writer.PushCol(nameof(Header.unk_0xC0) + "." + nameof(Header.unk_0xC0.unk_0x14));
+                writer.PushCol(nameof(Header.unknownStructure1_0xC0) + "." + nameof(Header.unknownStructure1_0xC0.unk_0x00));
+                writer.PushCol(nameof(Header.unknownStructure1_0xC0) + "." + nameof(Header.unknownStructure1_0xC0.unk_0x04));
+                writer.PushCol(nameof(Header.unknownStructure1_0xC0) + "." + nameof(Header.unknownStructure1_0xC0.unk_0x08));
+                writer.PushCol(nameof(Header.unknownStructure1_0xC0) + "." + nameof(Header.unknownStructure1_0xC0.unk_0x0C));
+                writer.PushCol(nameof(Header.unknownStructure1_0xC0) + "." + nameof(Header.unknownStructure1_0xC0.unk_0x10));
+                writer.PushCol(nameof(Header.unknownStructure1_0xC0) + "." + nameof(Header.unknownStructure1_0xC0.unk_0x14));
                 // 
                 writer.PushCol(nameof(Header.zero_0xD8));
                 writer.PushRow();
@@ -776,7 +776,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                     writer.PushCol(coli.id);
                     writer.PushCol(CourseUtility.GetVenueID(coli.id).GetDescription());
                     writer.PushCol(((CourseIDEx)coli.id).GetDescription());
-                    writer.PushCol(coliHeader.IsGX ? "GX" : "AX");
+                    writer.PushCol(coliHeader.IsFileGX ? "GX" : "AX");
 
                     writer.PushCol(coliHeader.unk_0x00);
                     writer.PushCol(coliHeader.unk_0x04);
@@ -790,7 +790,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                     writer.PushCol(coliHeader.unkPtr_0x24.HexAddress);
                     writer.PushCol(0);// coliHeader.zero_0x28);
                     writer.PushCol(coliHeader.gameObjectCount);
-                    if (coliHeader.IsGX)
+                    if (coliHeader.IsFileGX)
                     {
                         writer.PushCol(coliHeader.unk_gameObjectCount1);
                     }
@@ -800,9 +800,9 @@ namespace Manifold.IO.GFZ.CourseCollision
                     }
                     writer.PushCol(coliHeader.unk_gameObjectCount2);
                     writer.PushCol(coliHeader.gameObjectPtr.HexAddress);
-                    writer.PushCol(coliHeader.unk_0x58);
-                    writer.PushCol(coliHeader.unk_0x5C.length);
-                    writer.PushCol(coliHeader.unk_0x5C.HexAddress);
+                    writer.PushCol(coliHeader.unkBool32_0x58);
+                    writer.PushCol(coliHeader.unkArrayPtr_0x5C.length);
+                    writer.PushCol(coliHeader.unkArrayPtr_0x5C.HexAddress);
                     writer.PushCol(coliHeader.collisionObjectsMesh.length);
                     writer.PushCol(coliHeader.collisionObjectsMesh.HexAddress);
                     writer.PushCol(coliHeader.unkArrayPtr_0x6C.length);
@@ -815,10 +815,10 @@ namespace Manifold.IO.GFZ.CourseCollision
                     writer.PushCol(coliHeader.unused_0x88_0x8C.length);
                     writer.PushCol(coliHeader.unused_0x88_0x8C.HexAddress);
                     writer.PushCol(coliHeader.trackInfo.HexAddress);
-                    writer.PushCol(coliHeader.unk_0x94.length);
-                    writer.PushCol(coliHeader.unk_0x94.HexAddress);
-                    writer.PushCol(coliHeader.unk_0x9C.length);
-                    writer.PushCol(coliHeader.unk_0x9C.HexAddress);
+                    writer.PushCol(coliHeader.unkArrayPtr_0x94.length);
+                    writer.PushCol(coliHeader.unkArrayPtr_0x94.HexAddress);
+                    writer.PushCol(coliHeader.unkArrayPtr_0x9C.length);
+                    writer.PushCol(coliHeader.unkArrayPtr_0x9C.HexAddress);
                     writer.PushCol(coliHeader.pathObjects.length);
                     writer.PushCol(coliHeader.pathObjects.HexAddress);
                     writer.PushCol(coliHeader.arcadeCheckpoint.length);
@@ -827,12 +827,12 @@ namespace Manifold.IO.GFZ.CourseCollision
                     writer.PushCol(coliHeader.storyModeSpecialObjects.HexAddress);
                     writer.PushCol(coliHeader.trackNodeTable.HexAddress);
                     // Structure
-                    writer.PushCol(coliHeader.unk_0xC0.unk_0x00);
-                    writer.PushCol(coliHeader.unk_0xC0.unk_0x04);
-                    writer.PushCol(coliHeader.unk_0xC0.unk_0x08);
-                    writer.PushCol(coliHeader.unk_0xC0.unk_0x0C);
-                    writer.PushCol(coliHeader.unk_0xC0.unk_0x10);
-                    writer.PushCol(coliHeader.unk_0xC0.unk_0x14);
+                    writer.PushCol(coliHeader.unknownStructure1_0xC0.unk_0x00);
+                    writer.PushCol(coliHeader.unknownStructure1_0xC0.unk_0x04);
+                    writer.PushCol(coliHeader.unknownStructure1_0xC0.unk_0x08);
+                    writer.PushCol(coliHeader.unknownStructure1_0xC0.unk_0x0C);
+                    writer.PushCol(coliHeader.unknownStructure1_0xC0.unk_0x10);
+                    writer.PushCol(coliHeader.unknownStructure1_0xC0.unk_0x14);
                     //
                     writer.PushCol(0);// coliHeader.zero_0xD8);
                     writer.PushRow();

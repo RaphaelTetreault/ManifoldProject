@@ -51,13 +51,13 @@ namespace GameCube.GFZ.CourseCollision
         public void Deserialize(BinaryReader reader)
         {
             // AX/GX have different amounts of pointers to collision mesh data
-            var isFileGX = ColiCourseUtil.IsFileGX(reader);
+            var isFileGX = ColiCourseUtility.IsFileGX(reader);
             var countCollisionTypes = isFileGX
                 ? kCountGxCollisionTypes
                 : kCountAxCollisionTypes;
 
+            // Deserialize values
             this.RecordStartAddress(reader);
-
             reader.ReadX(ref unk_0x00_0x20, kCountUnknown);
             reader.ReadX(ref collisionTris);
             reader.ReadX(ref collisionTriIndices, countCollisionTypes, true);
@@ -65,7 +65,6 @@ namespace GameCube.GFZ.CourseCollision
             reader.ReadX(ref collisionQuads);
             reader.ReadX(ref collisionQuadIndices, countCollisionTypes, true);
             reader.ReadX(ref unknownStruct_0xB4, true);
-
             this.RecordEndAddress(reader);
 
             // Asserts
@@ -90,14 +89,14 @@ namespace GameCube.GFZ.CourseCollision
                 // Triangles
                 var triPointer = collisionTriIndices[i];
                 triMeshIndices[i] = new CollisionMeshIndices();
-                //Debug.Log($"tri{i+1}:{triPointer.HexAddress}");
+                Debug.Log($"tri{i+1}:{triPointer.HexAddress}");
                 reader.JumpToAddress(triPointer);
                 reader.ReadX(ref triMeshIndices[i], false);
 
                 // Quads
                 var quadPointer = collisionQuadIndices[i];
                 quadMeshIndices[i] = new CollisionMeshIndices();
-                //Debug.Log($"quad{i+1}:{quadPointer.HexAddress}");
+                Debug.Log($"quad{i+1}:{quadPointer.HexAddress}");
                 reader.JumpToAddress(quadPointer);
                 reader.ReadX(ref quadMeshIndices[i], false);
             }

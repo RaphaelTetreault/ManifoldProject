@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace GameCube.GFZ.CourseCollision
 {
-    public static class ColiCourseUtil
+    public static class ColiCourseUtility
     {
         private const int kAxConst0x20 = 0xE4;
         private const int kAxConst0x24 = 0xF8;
@@ -17,9 +17,9 @@ namespace GameCube.GFZ.CourseCollision
             var address = reader.BaseStream.Position;
 
             reader.BaseStream.Seek(0x20, SeekOrigin.Begin);
-            var value0x20 = reader.ReadByte();
+            var value0x20 = reader.ReadX_Int32();
             reader.BaseStream.Seek(0x24, SeekOrigin.Begin);
-            var value0x24 = reader.ReadByte();
+            var value0x24 = reader.ReadX_Int32();
 
             reader.BaseStream.Position = address;
 
@@ -34,9 +34,9 @@ namespace GameCube.GFZ.CourseCollision
             var address = reader.BaseStream.Position;
 
             reader.BaseStream.Seek(0x20, SeekOrigin.Begin);
-            var value0x20 = reader.ReadByte();
+            var value0x20 = reader.ReadX_Int32();
             reader.BaseStream.Seek(0x24, SeekOrigin.Begin);
-            var value0x24 = reader.ReadByte();
+            var value0x24 = reader.ReadX_Int32();
 
             reader.BaseStream.Position = address;
 
@@ -51,7 +51,7 @@ namespace GameCube.GFZ.CourseCollision
         /// </summary>
         /// <param name="reader"></param>
         /// <returns></returns>
-        public static ushort[] ReadShortArray(BinaryReader reader)
+        public static ushort[] ReadUShortArray(BinaryReader reader)
         {
             var list = new List<ushort>();
             while (true)

@@ -40,7 +40,7 @@ namespace GameCube.GFZ.CourseCollision
         public void Deserialize(BinaryReader reader)
         {
             this.RecordStartAddress(reader);
-            references = ColiCourseUtil.ReadShortArray(reader);
+            references = ColiCourseUtility.ReadUShortArray(reader);
             this.RecordEndAddress(reader);
         }
 
