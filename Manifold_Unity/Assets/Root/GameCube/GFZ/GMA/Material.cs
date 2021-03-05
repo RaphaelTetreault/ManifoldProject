@@ -7,240 +7,6 @@ using UnityEngine.Assertions;
 
 namespace GameCube.GFZ.GMA
 {
-    #region MATERIAL ENUMS
-    [Flags]
-    public enum MatFlags0x03_U8 : byte
-    {
-        UNK_FLAG_0 = 1 << 0,
-        UNK_FLAG_1 = 1 << 1,
-        UNK_FLAG_2 = 1 << 2,
-        UNK_FLAG_3 = 1 << 3,
-        UNK_FLAG_4 = 1 << 4,
-        UNK_FLAG_5 = 1 << 5,
-        UNK_FLAG_6 = 1 << 6,
-        UNK_FLAG_7 = 1 << 7,
-    }
-
-    /// <summary>
-    /// Onlys uses Flag 1 for 
-    /// </summary>
-    [Flags]
-    public enum MatFlags0x02_U8 : byte
-    {
-        UNK_FLAG_0 = 1 << 0,
-        UNK_FLAG_1 = 1 << 1,
-        UNK_FLAG_2 = 1 << 2,
-        UNK_FLAG_3 = 1 << 3,
-        UNK_FLAG_4 = 1 << 4,
-        UNK_FLAG_5 = 1 << 5,
-        UNK_FLAG_6 = 1 << 6,
-        UNK_FLAG_7 = 1 << 7,
-    }
-
-    /// <summary>
-    /// 2019/04/23 - looks like flags - 14 combinations
-    /// </summary>
-    [Flags]
-    public enum MatFlags0x10_U8 : byte
-    {
-        UNK_FLAG_0 = 1 << 0,
-        UNK_FLAG_1 = 1 << 1,
-        UNK_FLAG_2 = 1 << 2,
-        UNK_FLAG_3 = 1 << 3,
-        UNK_FLAG_4 = 1 << 4,
-        UNK_FLAG_5 = 1 << 5,
-        UNK_FLAG_6 = 1 << 6,
-        UNK_FLAG_7 = 1 << 7,
-    }
-
-    /// <summary>
-    /// 2019/04/23 - Could be flags, but lots of 0xFF suggest it isn't
-    /// </summary>
-    [Flags]
-    public enum MatFlags0x11_U8 : byte
-    {
-        UNK_FLAG_0 = 1 << 0,
-        UNK_FLAG_1 = 1 << 1,
-        UNK_FLAG_2 = 1 << 2,
-        UNK_FLAG_3 = 1 << 3,
-        UNK_FLAG_4 = 1 << 4,
-        UNK_FLAG_5 = 1 << 5,
-        UNK_FLAG_6 = 1 << 6,
-        UNK_FLAG_7 = 1 << 7,
-    }
-
-    /// <summary>
-    /// 0x13
-    /// </summary>
-    [Flags]
-    public enum MatVertexRenderFlag_U8 : byte
-    {
-        RENDER_DISPLAY_LIST_0 = 1 << 0,
-        RENDER_DISPLAY_LIST_1 = 1 << 1,
-        RENDER_EX_DISPLAY_LIST_0 = 1 << 2,
-        RENDER_EX_DISPLAY_LIST_1 = 1 << 3,
-        UNUSED_FLAG_4 = 1 << 4,
-        UNUSED_FLAG_5 = 1 << 5,
-        UNUSED_FLAG_6 = 1 << 6,
-        UNUSED_FLAG_7 = 1 << 7,
-    }
-
-    /// <summary>
-    /// 2019/04/23 - Definitely flags
-    /// </summary>
-    [Flags]
-    public enum MatFlags0x15_U8 : byte
-    {
-        UNK_FLAG_0 = 1 << 0,
-        UNK_FLAG_1 = 1 << 1,
-        UNK_FLAG_2 = 1 << 2,
-        UNK_FLAG_3 = 1 << 3,
-        UNUSED_FLAG_4 = 1 << 4,
-        UNK_FLAG_5 = 1 << 5,
-        UNK_FLAG_6 = 1 << 6,
-        UNUSED_FLAG_7 = 1 << 7,
-    }
-
-    /// <summary>
-    /// 2019/04/23 - All values 0, 17, 18, 20, 36, 48
-    /// </summary>
-    [Flags]
-    public enum MatFlags0x40_U32 : UInt32
-    {
-        UNK_FLAG_0 = 1 << 0,
-        UNK_FLAG_1 = 1 << 1,
-        UNK_FLAG_2 = 1 << 2,
-        UNK_FLAG_4 = 1 << 4,
-        UNK_FLAG_5 = 1 << 5,
-    }
-
-    #endregion
-
-    /// <summary>
-    /// Flag form of Gx.GXAttr
-    /// </summary>
-    [Flags]
-    public enum GXAttrFlag_U32 : UInt32
-    {
-        /// <summary>
-        /// position/normal matrix index
-        /// Note: used for character skinning
-        /// </summary>
-        GX_VA_PNMTXIDX = 1 << GXAttr.GX_VA_PNMTXIDX,
-        /// <summary>
-        /// texture 0 matrix index
-        /// Note: used for character skinning
-        /// </summary>
-        GX_VA_TEX0MTXIDX = 1 << GXAttr.GX_VA_TEX0MTXIDX,
-        /// <summary>
-        /// texture 1 matrix index
-        /// Note: used for character skinning
-        /// </summary>
-        GX_VA_TEX1MTXIDX = 1 << GXAttr.GX_VA_TEX1MTXIDX,
-        /// <summary>
-        /// texture 2 matrix index
-        /// Note: used for character skinning
-        /// </summary>
-        GX_VA_TEX2MTXIDX = 1 << GXAttr.GX_VA_TEX2MTXIDX,
-        /// <summary>
-        /// texture 3 matrix index
-        /// Note: used for character skinning
-        /// </summary>
-        GX_VA_TEX3MTXIDX = 1 << GXAttr.GX_VA_TEX3MTXIDX,
-        /// <summary>
-        /// texture 4 matrix index
-        /// Note: used for character skinning
-        /// </summary>
-        GX_VA_TEX4MTXIDX = 1 << GXAttr.GX_VA_TEX4MTXIDX,
-        /// <summary>
-        /// texture 5 matrix index
-        /// Note: used for character skinning
-        /// </summary>
-        GX_VA_TEX5MTXIDX = 1 << GXAttr.GX_VA_TEX5MTXIDX,
-        /// <summary>
-        /// texture 6 matrix index
-        /// Note: used for character skinning
-        /// </summary>
-        GX_VA_TEX6MTXIDX = 1 << GXAttr.GX_VA_TEX6MTXIDX,
-        /// <summary>
-        /// texture 7 matrix index
-        /// Note: used for character skinning
-        /// </summary>
-        GX_VA_TEX7MTXIDX = 1 << GXAttr.GX_VA_TEX7MTXIDX,
-
-        /// <summary>
-        /// position
-        /// </summary>
-        GX_VA_POS = 1 << GXAttr.GX_VA_POS,
-        /// <summary>
-        /// normal
-        /// </summary>
-        GX_VA_NRM = 1 << GXAttr.GX_VA_NRM,
-
-        /// <summary>
-        /// color 0
-        /// </summary>
-        GX_VA_CLR0 = 1 << GXAttr.GX_VA_CLR0,
-        /// <summary>
-        /// color 1
-        /// </summary>
-        GX_VA_CLR1 = 1 << GXAttr.GX_VA_CLR1,
-
-        /// <summary>
-        /// input texture coordinate 0
-        /// </summary>
-        GX_VA_TEX0 = 1 << GXAttr.GX_VA_TEX0,
-        /// <summary>
-        /// input texture coordinate 1
-        /// </summary>
-        GX_VA_TEX1 = 1 << GXAttr.GX_VA_TEX1,
-        /// <summary>
-        /// input texture coordinate 2
-        /// </summary>
-        GX_VA_TEX2 = 1 << GXAttr.GX_VA_TEX2,
-        /// <summary>
-        /// input texture coordinate 3
-        /// </summary>
-        GX_VA_TEX3 = 1 << GXAttr.GX_VA_TEX3,
-        /// <summary>
-        /// input texture coordinate 4
-        /// </summary>
-        GX_VA_TEX4 = 1 << GXAttr.GX_VA_TEX4,
-        /// <summary>
-        /// input texture coordinate 5
-        /// </summary>
-        GX_VA_TEX5 = 1 << GXAttr.GX_VA_TEX5,
-        /// <summary>
-        /// input texture coordinate 6
-        /// </summary>
-        GX_VA_TEX6 = 1 << GXAttr.GX_VA_TEX6,
-        /// <summary>
-        /// input texture coordinate 7
-        /// </summary>
-        GX_VA_TEX7 = 1 << GXAttr.GX_VA_TEX7,
-
-        /// <summary>
-        /// position matrix array pointer
-        /// </summary>
-        GX_VA_POS_MTX_ARRAY = 1 << GXAttr.GX_VA_POS_MTX_ARRAY,
-        /// <summary>
-        /// normal matrix array pointer
-        /// </summary>
-        GX_VA_NRM_MTX_ARRAY = 1 << GXAttr.GX_VA_NRM_MTX_ARRAY,
-        /// <summary>
-        /// texture matrix array pointer
-        /// </summary>
-        GX_VA_TEX_MTX_ARRAY = 1 << GXAttr.GX_VA_TEX_MTX_ARRAY,
-        /// <summary>
-        /// light matrix array pointer
-        /// </summary>
-        GX_VA_LIGHT_ARRAY = 1 << GXAttr.GX_VA_LIGHT_ARRAY,
-        /// <summary>
-        /// normal, bi-normal, tangent 
-        /// </summary>
-        GX_VA_NBT = 1 << GXAttr.GX_VA_NBT,
-    }
-
     [Serializable]
     public class Material : IBinarySerializable, IBinaryAddressableRange
     {
@@ -287,7 +53,7 @@ namespace GameCube.GFZ.GMA
         sbyte texturesUsedCount;
 
         [SerializeField, HexFlags("13", 2)]
-        MatVertexRenderFlag_U8 vertexRenderFlags;
+        RenderDisplayListSetting vertexRenderFlags;
 
         [SerializeField, Hex("14", 2)]
         sbyte unk_0x14;
@@ -305,7 +71,7 @@ namespace GameCube.GFZ.GMA
         short tex2Index = -1;
 
         [SerializeField, HexFlags("1C", 8)]
-        GXAttrFlag_U32 vertexAttributeFlags;
+        GXAttributes vertexAttributeFlags;
 
         // TODO: label prefix on top node, not members
         [SerializeField, Hex("20")]
@@ -346,8 +112,8 @@ namespace GameCube.GFZ.GMA
         {
             get
             {
-                var renderExtraDisplayList0 = (vertexRenderFlags & MatVertexRenderFlag_U8.RENDER_EX_DISPLAY_LIST_0) != 0;
-                var renderExtraDisplayList1 = (vertexRenderFlags & MatVertexRenderFlag_U8.RENDER_EX_DISPLAY_LIST_1) != 0;
+                var renderExtraDisplayList0 = (vertexRenderFlags & RenderDisplayListSetting.RENDER_EX_DISPLAY_LIST_0) != 0;
+                var renderExtraDisplayList1 = (vertexRenderFlags & RenderDisplayListSetting.RENDER_EX_DISPLAY_LIST_1) != 0;
                 var renderExtraDisplayList01 = renderExtraDisplayList0 && renderExtraDisplayList1;
                 return renderExtraDisplayList01;
             }
@@ -364,13 +130,13 @@ namespace GameCube.GFZ.GMA
         public MatFlags0x10_U8 Unk_0x10 => unk_0x10;
         public MatFlags0x11_U8 Unk_0x11 => unk_0x11;
         public sbyte TexturesUsedCount => texturesUsedCount;
-        public MatVertexRenderFlag_U8 VertexRenderFlags => vertexRenderFlags;
+        public RenderDisplayListSetting VertexRenderFlags => vertexRenderFlags;
         public sbyte Unk_0x14 => unk_0x14;
         public MatFlags0x15_U8 Unk_0x15 => unk_0x15;
         public short Tex0Index => tex0Index;
         public short Tex1Index => tex1Index;
         public short Tex2Index => tex2Index;
-        public GXAttrFlag_U32 VertexDescriptorFlags => vertexAttributeFlags;
+        public GXAttributes VertexDescriptorFlags => vertexAttributeFlags;
         // 0x20
         public TransformMatrixIndexes8 MatrixIndexes => matrixIndexes;
         public int MatDisplayListSize => matDisplayListSize;

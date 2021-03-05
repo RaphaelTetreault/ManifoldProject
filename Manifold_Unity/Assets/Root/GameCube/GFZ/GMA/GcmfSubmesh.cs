@@ -52,8 +52,8 @@ namespace GameCube.GFZ.GMA
                 if (material is null)
                     return false;
 
-                var renderExtraDisplayList0 = (material.VertexRenderFlags & MatVertexRenderFlag_U8.RENDER_EX_DISPLAY_LIST_0) != 0;
-                var renderExtraDisplayList1 = (material.VertexRenderFlags & MatVertexRenderFlag_U8.RENDER_EX_DISPLAY_LIST_1) != 0;
+                var renderExtraDisplayList0 = (material.VertexRenderFlags & RenderDisplayListSetting.RENDER_EX_DISPLAY_LIST_0) != 0;
+                var renderExtraDisplayList1 = (material.VertexRenderFlags & RenderDisplayListSetting.RENDER_EX_DISPLAY_LIST_1) != 0;
                 var renderExtraDisplayList01 = renderExtraDisplayList0 && renderExtraDisplayList1;
                 return renderExtraDisplayList01;
             }

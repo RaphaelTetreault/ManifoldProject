@@ -6,35 +6,6 @@ using UnityEngine.Assertions;
 
 namespace GameCube.GFZ.GMA
 {
-
-    /// <summary>
-    /// Code from https://github.com/bobjrsenior/GxUtils/blob/master/GxUtils/LibGxFormat/Gma/Gcmf.cs
-    /// </summary>
-    [Flags]
-    public enum GcmfAttributes_U32 : UInt32
-    {
-        /// <summary>
-        /// Vertices are stored in 16-bit compressed floating point number format using GameCube GX conventions.
-        /// </summary>
-        IS_16_BIT = 1 << 0, //0x01,
-        UNUSED_1 = 1 << 1,
-        /// <summary>
-        /// Called "Stitching Model" in the debug menu. Has associated transform matrices.
-        /// </summary>
-        IS_STITCHING_MODEL = 1 << 2, //0x04,
-        /// <summary>
-        /// Called "Skin Model" in the debug menu. Has associated transform matrices and indexed vertices.
-        /// </summary>
-        IS_SKIN_MODEL = 1 << 3, //0x08,
-        /// <summary>
-        /// Called "Effective Model" in the debug menu. Has physics-driven indexed vertices.
-        /// </summary>
-        IS_EFFECTIVE_MODEL = 1 << 4, // 0x10,
-        UNUSED_5 = 1 << 5,
-        UNUSED_6 = 1 << 6,
-        UNUSED_7 = 1 << 7,
-    }
-
     [Serializable]
     public class GcmfProperties : IBinarySerializable, IBinaryAddressableRange
     {
@@ -59,7 +30,7 @@ namespace GameCube.GFZ.GMA
         /// 2019/03/31 VERIFIED VALUES: 0, 1, 4, 5, 8, 16
         /// </summary>
         [SerializeField, HexFlags("04", 2)]
-        GcmfAttributes_U32 attributes;
+        GcmfAttributes attributes;
 
         /// <summary>
         /// 2019/03/31 : origin point
@@ -138,7 +109,7 @@ namespace GameCube.GFZ.GMA
             set => addressRange = value;
         }
 
-        public GcmfAttributes_U32 Attributes
+        public GcmfAttributes Attributes
             => attributes;
 
         public Vector3 Origin
@@ -178,8 +149,8 @@ namespace GameCube.GFZ.GMA
         {
             get
             {
-                var isSkinModel = (attributes & GcmfAttributes_U32.IS_SKIN_MODEL) != 0;
-                var isEffectiveModel = (attributes & GcmfAttributes_U32.IS_EFFECTIVE_MODEL) != 0;
+                var isSkinModel = (attributes & GcmfAttributes.IS_SKIN_MODEL) != 0;
+                var isEffectiveModel = (attributes & GcmfAttributes.IS_EFFECTIVE_MODEL) != 0;
                 var isSkinOrEffective = isSkinModel || isEffectiveModel;
 
                 return isSkinOrEffective;

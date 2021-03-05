@@ -19,7 +19,7 @@ namespace GameCube.GX
         private AddressRange addressRange;
 
         [SerializeField, HideInInspector]
-        private GXAttrFlag_U32 attr;
+        private GXAttributes attr;
         public GxDisplayCommand gxCmd;
         public ushort count;
 
@@ -72,7 +72,7 @@ namespace GameCube.GX
         #region METHODS
 
 
-        public GxDisplayList(GXAttrFlag_U32 attr)
+        public GxDisplayList(GXAttributes attr)
         {
             this.attr = attr;
         }
@@ -89,64 +89,64 @@ namespace GameCube.GX
             var vaf = vat.GxVtxAttrFmts[vatIdx];
 
             //mtx
-            pn_mtx_idx = (attr & GXAttrFlag_U32.GX_VA_PNMTXIDX) != 0
+            pn_mtx_idx = (attr & GXAttributes.GX_VA_PNMTXIDX) != 0
                 ? new byte[count] : new byte[0];
 
-            if ((attr & GXAttrFlag_U32.GX_VA_TEX0MTXIDX) != 0)
+            if ((attr & GXAttributes.GX_VA_TEX0MTXIDX) != 0)
                 throw new NotImplementedException();
-            if ((attr & GXAttrFlag_U32.GX_VA_TEX1MTXIDX) != 0)
+            if ((attr & GXAttributes.GX_VA_TEX1MTXIDX) != 0)
                 throw new NotImplementedException();
-            if ((attr & GXAttrFlag_U32.GX_VA_TEX2MTXIDX) != 0)
+            if ((attr & GXAttributes.GX_VA_TEX2MTXIDX) != 0)
                 throw new NotImplementedException();
-            if ((attr & GXAttrFlag_U32.GX_VA_TEX3MTXIDX) != 0)
+            if ((attr & GXAttributes.GX_VA_TEX3MTXIDX) != 0)
                 throw new NotImplementedException();
-            if ((attr & GXAttrFlag_U32.GX_VA_TEX4MTXIDX) != 0)
+            if ((attr & GXAttributes.GX_VA_TEX4MTXIDX) != 0)
                 throw new NotImplementedException();
-            if ((attr & GXAttrFlag_U32.GX_VA_TEX5MTXIDX) != 0)
+            if ((attr & GXAttributes.GX_VA_TEX5MTXIDX) != 0)
                 throw new NotImplementedException();
-            if ((attr & GXAttrFlag_U32.GX_VA_TEX6MTXIDX) != 0)
+            if ((attr & GXAttributes.GX_VA_TEX6MTXIDX) != 0)
                 throw new NotImplementedException();
-            if ((attr & GXAttrFlag_U32.GX_VA_TEX7MTXIDX) != 0)
+            if ((attr & GXAttributes.GX_VA_TEX7MTXIDX) != 0)
                 throw new NotImplementedException();
 
-            if ((attr & GXAttrFlag_U32.GX_VA_POS_MTX_ARRAY) != 0)
+            if ((attr & GXAttributes.GX_VA_POS_MTX_ARRAY) != 0)
                 throw new NotImplementedException();
-            if ((attr & GXAttrFlag_U32.GX_VA_NRM_MTX_ARRAY) != 0)
+            if ((attr & GXAttributes.GX_VA_NRM_MTX_ARRAY) != 0)
                 throw new NotImplementedException();
-            if ((attr & GXAttrFlag_U32.GX_VA_TEX_MTX_ARRAY) != 0)
+            if ((attr & GXAttributes.GX_VA_TEX_MTX_ARRAY) != 0)
                 throw new NotImplementedException();
-            if ((attr & GXAttrFlag_U32.GX_VA_LIGHT_ARRAY) != 0)
+            if ((attr & GXAttributes.GX_VA_LIGHT_ARRAY) != 0)
                 throw new NotImplementedException();
 
             // Pos
-            pos = vat.HasAttr(gxCmd, attr & GXAttrFlag_U32.GX_VA_POS)
+            pos = vat.HasAttr(gxCmd, attr & GXAttributes.GX_VA_POS)
                 ? new Vector3[count] : new Vector3[0];
             // Normal
-            nrm = vat.HasAttr(gxCmd, attr & GXAttrFlag_U32.GX_VA_NRM)
+            nrm = vat.HasAttr(gxCmd, attr & GXAttributes.GX_VA_NRM)
                 ? new Vector3[count] : new Vector3[0];
-            nbt = vat.HasAttr(gxCmd, attr & GXAttrFlag_U32.GX_VA_NBT)
+            nbt = vat.HasAttr(gxCmd, attr & GXAttributes.GX_VA_NBT)
                 ? new NormalBinormalTangent[count] : new NormalBinormalTangent[0];
             // Color
-            clr0 = vat.HasAttr(gxCmd, attr & GXAttrFlag_U32.GX_VA_CLR0)
+            clr0 = vat.HasAttr(gxCmd, attr & GXAttributes.GX_VA_CLR0)
                 ? new Color32[count] : new Color32[0];
-            clr1 = vat.HasAttr(gxCmd, attr & GXAttrFlag_U32.GX_VA_CLR1)
+            clr1 = vat.HasAttr(gxCmd, attr & GXAttributes.GX_VA_CLR1)
                 ? new Color32[count] : new Color32[0];
             // Tex
-            tex0 = vat.HasAttr(gxCmd, attr & GXAttrFlag_U32.GX_VA_TEX0)
+            tex0 = vat.HasAttr(gxCmd, attr & GXAttributes.GX_VA_TEX0)
                 ? new Vector2[count] : new Vector2[0];
-            tex1 = vat.HasAttr(gxCmd, attr & GXAttrFlag_U32.GX_VA_TEX1)
+            tex1 = vat.HasAttr(gxCmd, attr & GXAttributes.GX_VA_TEX1)
                 ? new Vector2[count] : new Vector2[0];
-            tex2 = vat.HasAttr(gxCmd, attr & GXAttrFlag_U32.GX_VA_TEX2)
+            tex2 = vat.HasAttr(gxCmd, attr & GXAttributes.GX_VA_TEX2)
                 ? new Vector2[count] : new Vector2[0];
-            tex3 = vat.HasAttr(gxCmd, attr & GXAttrFlag_U32.GX_VA_TEX3)
+            tex3 = vat.HasAttr(gxCmd, attr & GXAttributes.GX_VA_TEX3)
                 ? new Vector2[count] : new Vector2[0];
-            tex4 = vat.HasAttr(gxCmd, attr & GXAttrFlag_U32.GX_VA_TEX4)
+            tex4 = vat.HasAttr(gxCmd, attr & GXAttributes.GX_VA_TEX4)
                 ? new Vector2[count] : new Vector2[0];
-            tex5 = vat.HasAttr(gxCmd, attr & GXAttrFlag_U32.GX_VA_TEX5)
+            tex5 = vat.HasAttr(gxCmd, attr & GXAttributes.GX_VA_TEX5)
                 ? new Vector2[count] : new Vector2[0];
-            tex6 = vat.HasAttr(gxCmd, attr & GXAttrFlag_U32.GX_VA_TEX6)
+            tex6 = vat.HasAttr(gxCmd, attr & GXAttributes.GX_VA_TEX6)
                 ? new Vector2[count] : new Vector2[0];
-            tex7 = vat.HasAttr(gxCmd, attr & GXAttrFlag_U32.GX_VA_TEX7)
+            tex7 = vat.HasAttr(gxCmd, attr & GXAttributes.GX_VA_TEX7)
                 ? new Vector2[count] : new Vector2[0];
 
 

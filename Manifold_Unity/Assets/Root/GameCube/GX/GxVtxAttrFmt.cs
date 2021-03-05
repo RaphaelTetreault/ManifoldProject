@@ -58,23 +58,23 @@ namespace GameCube.GX
             }
         }
 
-        public GxVtxAttr GetAttr(GXAttrFlag_U32 attribute)
+        public GxVtxAttr GetAttr(GXAttributes attribute)
         {
             switch (attribute)
             {
-                case GXAttrFlag_U32.GX_VA_POS: return pos;
-                case GXAttrFlag_U32.GX_VA_NRM: return nrm;
-                case GXAttrFlag_U32.GX_VA_NBT: return nbt;
-                case GXAttrFlag_U32.GX_VA_CLR0: return clr0;
-                case GXAttrFlag_U32.GX_VA_CLR1: return clr1;
-                case GXAttrFlag_U32.GX_VA_TEX0: return tex0;
-                case GXAttrFlag_U32.GX_VA_TEX1: return tex1;
-                case GXAttrFlag_U32.GX_VA_TEX2: return tex2;
-                case GXAttrFlag_U32.GX_VA_TEX3: return tex3;
-                case GXAttrFlag_U32.GX_VA_TEX4: return tex4;
-                case GXAttrFlag_U32.GX_VA_TEX5: return tex5;
-                case GXAttrFlag_U32.GX_VA_TEX6: return tex6;
-                case GXAttrFlag_U32.GX_VA_TEX7: return tex7;
+                case GXAttributes.GX_VA_POS: return pos;
+                case GXAttributes.GX_VA_NRM: return nrm;
+                case GXAttributes.GX_VA_NBT: return nbt;
+                case GXAttributes.GX_VA_CLR0: return clr0;
+                case GXAttributes.GX_VA_CLR1: return clr1;
+                case GXAttributes.GX_VA_TEX0: return tex0;
+                case GXAttributes.GX_VA_TEX1: return tex1;
+                case GXAttributes.GX_VA_TEX2: return tex2;
+                case GXAttributes.GX_VA_TEX3: return tex3;
+                case GXAttributes.GX_VA_TEX4: return tex4;
+                case GXAttributes.GX_VA_TEX5: return tex5;
+                case GXAttributes.GX_VA_TEX6: return tex6;
+                case GXAttributes.GX_VA_TEX7: return tex7;
 
                 default:
                     throw new NotImplementedException();

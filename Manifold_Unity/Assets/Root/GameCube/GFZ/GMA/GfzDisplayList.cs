@@ -20,7 +20,7 @@ namespace GameCube.GFZ.GMA
         private AddressRange addressRange;
 
         [SerializeField]
-        private GXAttrFlag_U32 attrFlags;
+        private GXAttributes attrFlags;
 
         [SerializeField]
         private int size;
@@ -38,7 +38,7 @@ namespace GameCube.GFZ.GMA
 
         public GfzDisplayList() { }
 
-        public GfzDisplayList(GXAttrFlag_U32 attrFlags, int size)
+        public GfzDisplayList(GXAttributes attrFlags, int size)
         {
             this.attrFlags = attrFlags;
             this.size = size;

@@ -31,7 +31,7 @@ namespace GameCube.GFZ.GMA
     {
         private const int kGmaHeaderSize = 8;
 
-        #region MEMBERS
+        #region FIELDS
 
         /// <summary>
         /// Filename. This variable is called name to enable Unity to

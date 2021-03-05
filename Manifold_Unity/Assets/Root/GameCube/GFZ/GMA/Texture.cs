@@ -6,157 +6,6 @@ using UnityEngine.Assertions;
 
 namespace GameCube.GFZ.GMA
 {
-    #region TEXTURE ENUMS
-
-    /// <summary>
-    /// Notes:
-    /// Combinations: 4&5 (x1986), 1&3 (x7), 1&4 (x1)
-    /// Flags used: 1, 3, 4, 5, 6
-    /// </summary>
-
-    [Flags]
-    public enum TexFlags0x00_U16 : ushort
-    {
-        /// <summary>
-        /// Unused
-        /// </summary>
-        UNUSED_FLAG_0 = 1 << 0,
-        /// <summary>
-        /// Based on st24 models, uv scroll. Perhaps x/y depends on another flag?
-        /// </summary>
-        ENABLE_UV_SCROLL = 1 << 1,
-        /// <summary>
-        /// Unused
-        /// </summary>
-        UNUSED_FLAG_2 = 1 << 2,
-        /// <summary>
-        /// 7 occurences total. (st21,lz.gma, [75,76,77/130] guide_light*, [1/6])
-        /// </summary>
-        UNK_FLAG_3 = 1 << 3,
-        /// <summary>
-        /// Appears to be used whenever tex is for bg reflections
-        /// </summary>
-        UNK_FLAG_4 = 1 << 4,
-        /// <summary>
-        /// ..?
-        /// </summary>
-        UNK_FLAG_5 = 1 << 5,
-        /// <summary>
-        /// Appears to be used whenever tex is for bg reflections
-        /// </summary>
-        UNK_FLAG_6 = 1 << 6,
-        /// <summary>
-        /// Unused
-        /// </summary>
-        UNUSED_FLAG_7 = 1 << 7,
-    }
-
-    [Flags]
-    public enum TexWrapFlags_U8 : byte
-    {
-        UNK_FLAG_0 = 1 << 0,
-        UNK_FLAG_1 = 1 << 1,
-        REPEAT_X = 1 << 2,
-        MIRROR_X = 1 << 3,
-        REPEAT_Y = 1 << 4,
-        MIRROR_Y = 1 << 5,
-        UNK_FLAG_6 = 1 << 6,
-        UNK_FLAG_7 = 1 << 7,
-    }
-
-    // if 0&1, enable 2
-    /// <summary>
-    /// MIPMAP Settings
-    /// Look at: GXTexFilter
-    /// </summary>
-    [Flags]
-    public enum TexMipmapSettings_U8 : byte
-    {
-        /// <summary>
-        /// 2019/04/03 VERIFIED: Enable (large preview) mipmaps
-        /// </summary>
-        ENABLE_MIPMAP = 1 << 0,
-        /// <summary>
-        /// 2019/04/03 THEORY: when only flag, "use custom mip-map"
-        /// See: bg_san_s [39/41] tex [3/8] - RIVER01
-        /// See: bg_big [118/120] tex [1/1] - OCE_OCEAN_C14_B_ltmp2
-        /// See: any recovery pad
-        /// </summary>
-        UNK_FLAG_1 = 1 << 1, // Working together?
-        UNK_FLAG_2 = 1 << 2, // Working together?
-        /// <summary>
-        /// 2019/04/03 VERIFIED: Enable Mipmap NEAR
-        /// </summary>
-        ENABLE_NEAR = 1 << 3,
-        /// <summary>
-        /// Height map? Blend? (they are greyscale)
-        /// Low occurences: 188 for tracks and st2 boulders
-        /// </summary>
-        UNK_FLAG_4 = 1 << 4,
-        /// <summary>
-        /// Used as alpha mask? (likely?) Perhaps some mip preservation stuff.
-        /// </summary>
-        UNK_FLAG_5 = 1 << 5,
-        /// <summary>
-        /// Total occurences = 3. Only MCSO, on a single geometry set. Perhaps error from devs?
-        /// </summary>
-        UNK_FLAG_6 = 1 << 6, // only on 3?
-        /// <summary>
-        /// On many vehicles
-        /// </summary>
-        UNK_FLAG_7 = 1 << 7,
-    }
-
-    [Flags]
-    public enum TexFlags0x06_U8 : byte
-    {
-        UNK_FLAG_0 = 1 << 0,
-        UNK_FLAG_1 = 1 << 1,
-        UNK_FLAG_2 = 1 << 2,
-        UNK_FLAG_3 = 1 << 3,
-        UNK_FLAG_4 = 1 << 4,
-        UNK_FLAG_5 = 1 << 5,
-        UNK_FLAG_6 = 1 << 6,
-        UNK_FLAG_7 = 1 << 7,
-    }
-
-    [Flags]
-    public enum TexFlags0x0C_U8 : byte
-    {
-        UNK_FLAG_0 = 1 << 0,
-        UNK_FLAG_1 = 1 << 1,
-        UNK_FLAG_2 = 1 << 2,
-        UNK_FLAG_3 = 1 << 3,
-        UNK_FLAG_4 = 1 << 4,
-        UNK_FLAG_5 = 1 << 5,
-        UNK_FLAG_6 = 1 << 6,
-        UNK_FLAG_7 = 1 << 7,
-    }
-
-    [Flags]
-    public enum TexFlags0x10_U32 : uint
-    {
-        UNK_FLAG_0 = 1 << 0,
-        UNK_FLAG_1 = 1 << 1,
-        UNK_FLAG_2 = 1 << 2,
-        UNK_FLAG_3 = 1 << 3,
-        UNK_FLAG_4 = 1 << 4,
-        UNK_FLAG_5 = 1 << 5,
-        UNK_FLAG_6 = 1 << 6,
-        UNK_FLAG_7 = 1 << 7,
-    }
-
-    #endregion
-
-
-    public enum GXAnisotropy_U8 : byte
-    {
-        GX_ANISO_1,
-        GX_ANISO_2,
-        GX_ANISO_4,
-    }
-
-
     [Serializable]
     public struct TextureDescriptor : IBinarySerializable, IBinaryAddressableRange
     {
@@ -183,13 +32,13 @@ namespace GameCube.GFZ.GMA
         /// Flags for mipmap generation(?)
         /// </summary>
         [SerializeField, HexFlags("02 -", 2)]
-        TexMipmapSettings_U8 mipmapSettings;
+        TextureMipmapSetting mipmapSettings;
 
         /// <summary>
         /// 
         /// </summary>
         [SerializeField, HexFlags("03 -", 2)]
-        TexWrapFlags_U8 wrapFlags;
+        TextureWrapSetting wrapFlags;
 
         /// <summary>
         /// 
@@ -207,7 +56,7 @@ namespace GameCube.GFZ.GMA
         /// 
         /// </summary>
         [SerializeField, Hex("07 -", 2)]
-        GXAnisotropy_U8 anisotropicLevel;
+        GXAnisotropy anisotropicLevel;
 
         /// <summary>
         /// 2019/04/01 VERIFIED: only 0
@@ -259,10 +108,10 @@ namespace GameCube.GFZ.GMA
         public TexFlags0x00_U16 Unk_0x00
             => unk_0x00;
 
-        public TexMipmapSettings_U8 MipmapSettings
+        public TextureMipmapSetting MipmapSettings
             => mipmapSettings;
 
-        public TexWrapFlags_U8 Wrapflags
+        public TextureWrapSetting Wrapflags
             => wrapFlags;
 
         public ushort Tpltextureid
@@ -271,7 +120,7 @@ namespace GameCube.GFZ.GMA
         public TexFlags0x06_U8 Unk_0x06
             => unk_0x06;
 
-        public GXAnisotropy_U8 Anisotropiclevel
+        public GXAnisotropy Anisotropiclevel
             => anisotropicLevel;
 
         public uint Zero_0x08
