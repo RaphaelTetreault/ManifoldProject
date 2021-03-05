@@ -1,11 +1,6 @@
-﻿using Manifold.IO;
-using System;
-using System.IO;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System;
 using UnityEngine;
 using UnityEngine.Assertions;
-using UnityEngine.Serialization;
 using GameCube.GFZ.GMA;
 
 namespace GameCube.GX
@@ -33,7 +28,7 @@ namespace GameCube.GX
                 GxVtxAttrFmts[i] = null;
         }
 
-        public bool VatHasAttr(DisplayCommand gxCmd, GXAttr attribute)
+        public bool VatHasAttr(DisplayCommand gxCmd, Attribute attribute)
         {
             Assert.IsTrue((byte)gxCmd.VertexFormat < 8);
 

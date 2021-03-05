@@ -8,16 +8,16 @@ namespace GameCube.GX
     public class VertexAttribute
     {
         [SerializeField] public bool enabled;
-        [SerializeField] public GXCompCnt_Rev2 nElements;
-        [SerializeField] public GXCompType componentFormat;
+        [SerializeField] public ComponentCount nElements;
+        [SerializeField] public ComponentType componentFormat;
         [SerializeField] public int nFracBits;
 
-        public VertexAttribute(GXCompCnt_Rev2 nElements, GXCompType format, int nFracBits = 0)
+        public VertexAttribute(ComponentCount nElements, ComponentType format, int nFracBits = 0)
         {
             // Assert that we aren't shifting more bits than we have
-            if (format == GXCompType.GX_S8 | format == GXCompType.GX_U8)
+            if (format == ComponentType.GX_S8 | format == ComponentType.GX_U8)
                 Assert.IsTrue(nFracBits < 8);
-            if (format == GXCompType.GX_S16 | format == GXCompType.GX_U16)
+            if (format == ComponentType.GX_S16 | format == ComponentType.GX_U16)
                 Assert.IsTrue(nFracBits < 16);
 
             this.enabled = true;

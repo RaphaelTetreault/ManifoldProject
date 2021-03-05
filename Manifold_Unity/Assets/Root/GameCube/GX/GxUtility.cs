@@ -1,11 +1,7 @@
 ﻿using Manifold.IO;
 using System;
 using System.IO;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Assertions;
-using UnityEngine.Serialization;
 using GameCube.GFZ.GMA;
 
 namespace GameCube.GX
@@ -14,15 +10,15 @@ namespace GameCube.GX
     {
         public const int GX_FIFO_ALIGN = 32;
 
-        public static Vector3 ReadPos(BinaryReader reader, GXCompCnt_Rev2 nElements, GXCompType componentType, int nFracs)
+        public static Vector3 ReadPos(BinaryReader reader, ComponentCount nElements, ComponentType componentType, int nFracs)
         {
-            if (nElements == GXCompCnt_Rev2.GX_POS_XY)
+            if (nElements == ComponentCount.GX_POS_XY)
             {
                 return new Vector2(
                     ReadNumericComponent(reader, componentType, nFracs),
                     ReadNumericComponent(reader, componentType, nFracs));
             }
-            else if (nElements == GXCompCnt_Rev2.GX_POS_XYZ)
+            else if (nElements == ComponentCount.GX_POS_XYZ)
             {
                 return new Vector3(
                     ReadNumericComponent(reader, componentType, nFracs),
@@ -35,9 +31,9 @@ namespace GameCube.GX
             }
         }
 
-        public static Vector3 ReadNormal(BinaryReader reader, GXCompCnt_Rev2 nElements, GXCompType componentType, int nFracs)
+        public static Vector3 ReadNormal(BinaryReader reader, ComponentCount nElements, ComponentType componentType, int nFracs)
         {
-            if (nElements == GXCompCnt_Rev2.GX_NRM_XYZ || nElements == GXCompCnt_Rev2.GX_NRM_NBT)
+            if (nElements == ComponentCount.GX_NRM_XYZ || nElements == ComponentCount.GX_NRM_NBT)
             {
                 return new Vector3(
                     ReadNumericComponent(reader, componentType, nFracs),
@@ -50,15 +46,15 @@ namespace GameCube.GX
             }
         }
 
-        public static Vector2 ReadGxTextureST(BinaryReader reader, GXCompCnt_Rev2 nElements, GXCompType componentType, int nFracs)
+        public static Vector2 ReadGxTextureST(BinaryReader reader, ComponentCount nElements, ComponentType componentType, int nFracs)
         {
-            if (nElements == GXCompCnt_Rev2.GX_TEX_S)
+            if (nElements == ComponentCount.GX_TEX_S)
             {
                 return new Vector2(
                     ReadNumericComponent(reader, componentType, nFracs),
                     0f);
             }
-            else if (nElements == GXCompCnt_Rev2.GX_TEX_ST)
+            else if (nElements == ComponentCount.GX_TEX_ST)
             {
                 return new Vector2(
                     ReadNumericComponent(reader, componentType, nFracs),
@@ -70,11 +66,11 @@ namespace GameCube.GX
             }
         }
 
-        public static Color32 ReadColorComponent(BinaryReader reader, GXCompType type)
+        public static Color32 ReadColorComponent(BinaryReader reader, ComponentType type)
         {
             switch (type)
             {
-                case GXCompType.GX_RGB565:
+                case ComponentType.GX_RGB565:
                     {
                         var rgb565 = BinaryIoUtility.ReadUInt16(reader);
                         var r = (byte)(((rgb565 >> 11) & (0b_0001_1111)) * (1 << 3));
@@ -83,7 +79,7 @@ namespace GameCube.GX
                         return new Color32(r, g, b, byte.MaxValue);
                     }
 
-                case GXCompType.GX_RGB8:
+                case ComponentType.GX_RGB8:
                     {
                         var r = BinaryIoUtility.ReadUInt8(reader);
                         var g = BinaryIoUtility.ReadUInt8(reader);
@@ -91,7 +87,7 @@ namespace GameCube.GX
                         return new Color32(r, g, b, byte.MaxValue);
                     }
 
-                case GXCompType.GX_RGBA4:
+                case ComponentType.GX_RGBA4:
                     {
                         var rgba4 = BinaryIoUtility.ReadUInt16(reader);
                         var r = (byte)(((rgba4 >> 12) & (0b_0000_1111)) * (1 << 4));
@@ -101,7 +97,7 @@ namespace GameCube.GX
                         return new Color32(r, g, b, a);
                     }
 
-                case GXCompType.GX_RGBA6:
+                case ComponentType.GX_RGBA6:
                     {
                         var upper16 = BinaryIoUtility.ReadUInt16(reader);
                         var lower8 = BinaryIoUtility.ReadUInt8(reader);
@@ -114,7 +110,7 @@ namespace GameCube.GX
                         return new Color32(r, g, b, a);
                     }
 
-                case GXCompType.GX_RGBA8:
+                case ComponentType.GX_RGBA8:
                     {
                         var r = BinaryIoUtility.ReadUInt8(reader);
                         var g = BinaryIoUtility.ReadUInt8(reader);
@@ -123,7 +119,7 @@ namespace GameCube.GX
                         return new Color32(r, g, b, a);
                     }
 
-                case GXCompType.GX_RGBX8:
+                case ComponentType.GX_RGBX8:
                     {
                         var r = BinaryIoUtility.ReadUInt8(reader);
                         var g = BinaryIoUtility.ReadUInt8(reader);
@@ -137,23 +133,23 @@ namespace GameCube.GX
             }
         }
 
-        public static float ReadNumericComponent(BinaryReader reader, GXCompType type, int nFracBits)
+        public static float ReadNumericComponent(BinaryReader reader, ComponentType type, int nFracBits)
         {
             switch (type)
             {
-                case GXCompType.GX_F32:
+                case ComponentType.GX_F32:
                     return BinaryIoUtility.ReadFloat(reader);
 
-                case GXCompType.GX_S8:
+                case ComponentType.GX_S8:
                     return FixedS8ToFloat(BinaryIoUtility.ReadInt8(reader), nFracBits);
 
-                case GXCompType.GX_U8:
+                case ComponentType.GX_U8:
                     return FixedU8ToFloat(BinaryIoUtility.ReadUInt8(reader), nFracBits);
 
-                case GXCompType.GX_S16:
+                case ComponentType.GX_S16:
                     return FixedS16ToFloat(BinaryIoUtility.ReadInt16(reader), nFracBits);
 
-                case GXCompType.GX_U16:
+                case ComponentType.GX_U16:
                     return FixedU16ToFloat(BinaryIoUtility.ReadUInt16(reader), nFracBits);
 
                 default:
@@ -247,31 +243,31 @@ namespace GameCube.GX
             return size;
         }
 
-        private static int CompSizeNumber(GXCompType compType)
+        private static int CompSizeNumber(ComponentType compType)
         {
             switch (compType)
             {
-                case GXCompType.GX_U8: return 1;
-                case GXCompType.GX_S8: return 1;
-                case GXCompType.GX_U16: return 2;
-                case GXCompType.GX_S16: return 2;
-                case GXCompType.GX_F32: return 4;
+                case ComponentType.GX_U8: return 1;
+                case ComponentType.GX_S8: return 1;
+                case ComponentType.GX_U16: return 2;
+                case ComponentType.GX_S16: return 2;
+                case ComponentType.GX_F32: return 4;
 
                 default:
                     throw new NotImplementedException();
             }
         }
 
-        private static int CompSizeColor(GXCompType compType)
+        private static int CompSizeColor(ComponentType compType)
         {
             switch (compType)
             {
-                case GXCompType.GX_RGB565: return 2;
-                case GXCompType.GX_RGB8: return 1;
-                case GXCompType.GX_RGBX8: return 4;
-                case GXCompType.GX_RGBA4: return 2;
-                case GXCompType.GX_RGBA6: return 3;
-                case GXCompType.GX_RGBA8: return 4;
+                case ComponentType.GX_RGB565: return 2;
+                case ComponentType.GX_RGB8: return 1;
+                case ComponentType.GX_RGBX8: return 4;
+                case ComponentType.GX_RGBA4: return 2;
+                case ComponentType.GX_RGBA6: return 3;
+                case ComponentType.GX_RGBA8: return 4;
 
                 default:
                     throw new NotImplementedException();
