@@ -21,6 +21,7 @@ namespace GameCube.GFZ.CourseCollision
         public AICollisionPropertyTarget[] collisionPropertyAreas;
         public CollisionMeshTable collisionMeshTable;
         public CollisionObjectReference[] collisionObjectReferences;
+        public CollisionObjectReferenceUnknown[] unk_collisionObjectReferences;
         public SceneObject[] sceneObjects;
         public TrackLength trackInformation;
         public TrackNode[] trackNodes;
@@ -84,6 +85,12 @@ namespace GameCube.GFZ.CourseCollision
             // 0x64 and 0x68
             reader.JumpToAddress(header.collisionObjectReferences);
             reader.ReadX(ref collisionObjectReferences, header.collisionObjectReferences.length, true);
+
+            // 0x6C and 0x70
+            // This one is weird. Pointers which lead to an array which reference collisionObjectReferences.
+            // The count is different, so perhaps leads to certain properties on those objects.
+            reader.JumpToAddress(header.unk_collisionObjectReferences);
+            reader.ReadX(ref unk_collisionObjectReferences, header.unk_collisionObjectReferences.length, true);
 
             // 0x90 - Track Transforms
             reader.JumpToAddress(header.trackInfo);
