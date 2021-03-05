@@ -6,7 +6,7 @@ using UnityEngine;
 namespace GameCube.GX
 {
     [Serializable]
-    public struct GxDisplayCommand : IBinarySerializable
+    public struct DisplayCommand : IBinarySerializable
     {
         [SerializeField] GXPrimitive primitive;
         [SerializeField] GXVtxFmt vertexFormat;

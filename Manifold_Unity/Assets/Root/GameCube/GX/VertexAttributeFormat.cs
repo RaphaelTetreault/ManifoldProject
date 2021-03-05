@@ -17,25 +17,25 @@ namespace GameCube.GX
     /// GX Vertex Attribute Format
     /// </summary>
     [Serializable]
-    public class GxVtxAttrFmt
+    public class VertexAttributeFormat
     {
         // 2020-05-04 Raph: I worry this can have errors when if someone
         // accidentally modifies a value
-        [SerializeField] public GxVtxAttr pos;
-        [SerializeField] public GxVtxAttr nrm;
-        [SerializeField] public GxVtxAttr nbt;
-        [SerializeField] public GxVtxAttr clr0;
-        [SerializeField] public GxVtxAttr clr1;
-        [SerializeField] public GxVtxAttr tex0;
-        [SerializeField] public GxVtxAttr tex1;
-        [SerializeField] public GxVtxAttr tex2;
-        [SerializeField] public GxVtxAttr tex3;
-        [SerializeField] public GxVtxAttr tex4;
-        [SerializeField] public GxVtxAttr tex5;
-        [SerializeField] public GxVtxAttr tex6;
-        [SerializeField] public GxVtxAttr tex7;
+        [SerializeField] public VertexAttribute pos;
+        [SerializeField] public VertexAttribute nrm;
+        [SerializeField] public VertexAttribute nbt;
+        [SerializeField] public VertexAttribute clr0;
+        [SerializeField] public VertexAttribute clr1;
+        [SerializeField] public VertexAttribute tex0;
+        [SerializeField] public VertexAttribute tex1;
+        [SerializeField] public VertexAttribute tex2;
+        [SerializeField] public VertexAttribute tex3;
+        [SerializeField] public VertexAttribute tex4;
+        [SerializeField] public VertexAttribute tex5;
+        [SerializeField] public VertexAttribute tex6;
+        [SerializeField] public VertexAttribute tex7;
 
-        public GxVtxAttr GetAttr(GXAttr attribute)
+        public VertexAttribute GetAttr(GXAttr attribute)
         {
             switch (attribute)
             {
@@ -58,7 +58,7 @@ namespace GameCube.GX
             }
         }
 
-        public GxVtxAttr GetAttr(GXAttributes attribute)
+        public VertexAttribute GetAttr(GXAttributes attribute)
         {
             switch (attribute)
             {
@@ -81,7 +81,7 @@ namespace GameCube.GX
             }
         }
 
-        public void SetAttr(GXAttr attribute, GxVtxAttr vertexAttribute)
+        public void SetAttr(GXAttr attribute, VertexAttribute vertexAttribute)
         {
             switch (attribute)
             {

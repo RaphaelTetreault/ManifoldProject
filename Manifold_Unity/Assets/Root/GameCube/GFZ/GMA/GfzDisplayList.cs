@@ -29,7 +29,7 @@ namespace GameCube.GFZ.GMA
         private byte gxBegin;
 
         [SerializeField]
-        private GxDisplayList[] gxDisplayLists;
+        private DisplayList[] gxDisplayLists;
 
 
         #endregion
@@ -49,7 +49,7 @@ namespace GameCube.GFZ.GMA
         #region PROPERTIES
 
 
-        public GxDisplayList[] GxDisplayLists => gxDisplayLists;
+        public DisplayList[] GxDisplayLists => gxDisplayLists;
 
         public AddressRange AddressRange
         {
@@ -68,7 +68,7 @@ namespace GameCube.GFZ.GMA
             if (size <= 0)
             {
                 // Init as empty
-                gxDisplayLists = new GxDisplayList[0];
+                gxDisplayLists = new DisplayList[0];
                 return;
             }
 
@@ -78,7 +78,7 @@ namespace GameCube.GFZ.GMA
                 reader.ReadX(ref gxBegin);
                 Assert.IsTrue(gxBegin == 0x00, $"{addressRange.startAddress:X8} {attrFlags}");
 
-                var gxDisplayList = new List<GxDisplayList>();
+                var gxDisplayList = new List<DisplayList>();
 
                 // I'm sure this is going to break.
                 // Perhaps use size in this equation? 
@@ -86,7 +86,7 @@ namespace GameCube.GFZ.GMA
                     && reader.BaseStream.Position < (addressRange.startAddress + size)
                     && reader.PeekByte() != 0x00)
                 {
-                    GxDisplayList vtx = new GxDisplayList(attrFlags);
+                    DisplayList vtx = new DisplayList(attrFlags);
                     vtx.Deserialize(reader);
                     gxDisplayList.Add(vtx);
                 }

@@ -106,7 +106,7 @@ namespace GameCube.GFZ.GMA
             writer.WriteX(vertexControlT2RelPtr);
             writer.WriteX(vertexControlT3RelPtr);
             writer.WriteX(vertexControlT4RelPtr);
-            var align = writer.Align(GameCube.GX.GxUtility.GX_FIFO_ALIGN);
+            var align = writer.Align(GameCube.GX.GXUtility.GX_FIFO_ALIGN);
             Assert.IsTrue(align == kFifoPaddingSize);
         }
 

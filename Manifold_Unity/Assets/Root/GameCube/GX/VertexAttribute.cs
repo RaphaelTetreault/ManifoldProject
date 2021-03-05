@@ -5,14 +5,14 @@ using UnityEngine.Assertions;
 namespace GameCube.GX
 {
     [Serializable]
-    public class GxVtxAttr
+    public class VertexAttribute
     {
         [SerializeField] public bool enabled;
         [SerializeField] public GXCompCnt_Rev2 nElements;
         [SerializeField] public GXCompType componentFormat;
         [SerializeField] public int nFracBits;
 
-        public GxVtxAttr(GXCompCnt_Rev2 nElements, GXCompType format, int nFracBits = 0)
+        public VertexAttribute(GXCompCnt_Rev2 nElements, GXCompType format, int nFracBits = 0)
         {
             // Assert that we aren't shifting more bits than we have
             if (format == GXCompType.GX_S8 | format == GXCompType.GX_U8)

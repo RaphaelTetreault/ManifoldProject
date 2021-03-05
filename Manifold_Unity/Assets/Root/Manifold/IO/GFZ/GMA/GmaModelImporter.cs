@@ -217,7 +217,7 @@ namespace Manifold.IO.GFZ.GMA
             return colors;
         }
 
-        public SubMeshDescriptor CreateSubMesh(GxDisplayList displayList, ref Mesh mesh, bool isCCW)
+        public SubMeshDescriptor CreateSubMesh(DisplayList displayList, ref Mesh mesh, bool isCCW)
         {
             var submesh = new SubMeshDescriptor();
 

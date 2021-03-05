@@ -8,7 +8,7 @@ using GameCube.GFZ.GMA;
 namespace GameCube.GX
 {
     [Serializable]
-    public class GxDisplayList : IBinarySerializable, IBinaryAddressableRange
+    public class DisplayList : IBinarySerializable, IBinaryAddressableRange
     {
 
         #region FIELDS
@@ -20,7 +20,7 @@ namespace GameCube.GX
 
         [SerializeField, HideInInspector]
         private GXAttributes attr;
-        public GxDisplayCommand gxCmd;
+        public DisplayCommand gxCmd;
         public ushort count;
 
         // Matrix index
@@ -72,7 +72,7 @@ namespace GameCube.GX
         #region METHODS
 
 
-        public GxDisplayList(GXAttributes attr)
+        public DisplayList(GXAttributes attr)
         {
             this.attr = attr;
         }
@@ -85,7 +85,7 @@ namespace GameCube.GX
             reader.ReadX(ref count);
 
             var vatIdx = (byte)gxCmd.VertexFormat;
-            var vat = VertexAttributeTable.GfzVat;
+            var vat = GFZ.VertexAttributeTable.GfzVat;
             var vaf = vat.GxVtxAttrFmts[vatIdx];
 
             //mtx
@@ -158,72 +158,72 @@ namespace GameCube.GX
                 if (pos.Length > 0)
                 {
                     var fmt = vaf.pos;
-                    pos[i] = GxUtility.ReadPos(reader, fmt.nElements, fmt.componentFormat, fmt.nFracBits);
+                    pos[i] = GXUtility.ReadPos(reader, fmt.nElements, fmt.componentFormat, fmt.nFracBits);
                 }
 
                 if (nrm.Length > 0)
                 {
                     var fmt = vaf.nrm;
-                    nrm[i] = GxUtility.ReadNormal(reader, fmt.nElements, fmt.componentFormat, fmt.nFracBits);
+                    nrm[i] = GXUtility.ReadNormal(reader, fmt.nElements, fmt.componentFormat, fmt.nFracBits);
                 }
                 if (nbt.Length > 0)
                 {
                     var fmt = vaf.nbt;
-                    nbt[i].normal = GxUtility.ReadNormal(reader, fmt.nElements, fmt.componentFormat, fmt.nFracBits);
-                    nbt[i].binormal = GxUtility.ReadNormal(reader, fmt.nElements, fmt.componentFormat, fmt.nFracBits);
-                    nbt[i].tangent = GxUtility.ReadNormal(reader, fmt.nElements, fmt.componentFormat, fmt.nFracBits);
+                    nbt[i].normal = GXUtility.ReadNormal(reader, fmt.nElements, fmt.componentFormat, fmt.nFracBits);
+                    nbt[i].binormal = GXUtility.ReadNormal(reader, fmt.nElements, fmt.componentFormat, fmt.nFracBits);
+                    nbt[i].tangent = GXUtility.ReadNormal(reader, fmt.nElements, fmt.componentFormat, fmt.nFracBits);
                 }
 
                 if (clr0.Length > 0)
                 {
                     var fmt = vaf.clr0;
-                    clr0[i] = GxUtility.ReadColorComponent(reader, fmt.componentFormat);
+                    clr0[i] = GXUtility.ReadColorComponent(reader, fmt.componentFormat);
                 }
                 if (clr1.Length > 0)
                 {
                     var fmt = vaf.clr1;
-                    clr1[i] = GxUtility.ReadColorComponent(reader, fmt.componentFormat);
+                    clr1[i] = GXUtility.ReadColorComponent(reader, fmt.componentFormat);
                 }
 
                 if (tex0.Length > 0)
                 {
                     var fmt = vaf.tex0;
-                    tex0[i] = GxUtility.ReadGxTextureST(reader, fmt.nElements, fmt.componentFormat, fmt.nFracBits);
+                    tex0[i] = GXUtility.ReadGxTextureST(reader, fmt.nElements, fmt.componentFormat, fmt.nFracBits);
                 }
                 if (tex1.Length > 0)
                 {
                     var fmt = vaf.tex1;
-                    tex1[i] = GxUtility.ReadGxTextureST(reader, fmt.nElements, fmt.componentFormat, fmt.nFracBits);
+                    tex1[i] = GXUtility.ReadGxTextureST(reader, fmt.nElements, fmt.componentFormat, fmt.nFracBits);
                 }
                 if (tex2.Length > 0)
                 {
                     var fmt = vaf.tex2;
-                    tex2[i] = GxUtility.ReadGxTextureST(reader, fmt.nElements, fmt.componentFormat, fmt.nFracBits);
+                    tex2[i] = GXUtility.ReadGxTextureST(reader, fmt.nElements, fmt.componentFormat, fmt.nFracBits);
                 }
                 if (tex3.Length > 0)
                 {
                     var fmt = vaf.tex3;
-                    tex3[i] = GxUtility.ReadGxTextureST(reader, fmt.nElements, fmt.componentFormat, fmt.nFracBits);
+                    tex3[i] = GXUtility.ReadGxTextureST(reader, fmt.nElements, fmt.componentFormat, fmt.nFracBits);
                 }
                 if (tex4.Length > 0)
                 {
                     var fmt = vaf.tex4;
-                    tex4[i] = GxUtility.ReadGxTextureST(reader, fmt.nElements, fmt.componentFormat, fmt.nFracBits);
+                    tex4[i] = GXUtility.ReadGxTextureST(reader, fmt.nElements, fmt.componentFormat, fmt.nFracBits);
                 }
                 if (tex5.Length > 0)
                 {
                     var fmt = vaf.tex5;
-                    tex5[i] = GxUtility.ReadGxTextureST(reader, fmt.nElements, fmt.componentFormat, fmt.nFracBits);
+                    tex5[i] = GXUtility.ReadGxTextureST(reader, fmt.nElements, fmt.componentFormat, fmt.nFracBits);
                 }
                 if (tex6.Length > 0)
                 {
                     var fmt = vaf.tex6;
-                    tex6[i] = GxUtility.ReadGxTextureST(reader, fmt.nElements, fmt.componentFormat, fmt.nFracBits);
+                    tex6[i] = GXUtility.ReadGxTextureST(reader, fmt.nElements, fmt.componentFormat, fmt.nFracBits);
                 }
                 if (tex7.Length > 0)
                 {
                     var fmt = vaf.tex7;
-                    tex7[i] = GxUtility.ReadGxTextureST(reader, fmt.nElements, fmt.componentFormat, fmt.nFracBits);
+                    tex7[i] = GXUtility.ReadGxTextureST(reader, fmt.nElements, fmt.componentFormat, fmt.nFracBits);
                 }
             }
 

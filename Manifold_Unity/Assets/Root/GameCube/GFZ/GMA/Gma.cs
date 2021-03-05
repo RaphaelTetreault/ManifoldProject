@@ -151,7 +151,7 @@ namespace GameCube.GFZ.GMA
             BinaryIoUtility.PopEncoding();
 
             // Get FIFO header size, write it in correct position
-            writer.Align(GxUtility.GX_FIFO_ALIGN);
+            writer.Align(GXUtility.GX_FIFO_ALIGN);
             headerSize = (int)writer.BaseStream.Position;
             writer.BaseStream.Seek(0x04, SeekOrigin.Begin);
             writer.WriteX(headerSize);

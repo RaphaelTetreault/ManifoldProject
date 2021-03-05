@@ -10,7 +10,7 @@ using GameCube.GFZ.GMA;
 
 namespace GameCube.GX
 {
-    public static class GxUtility
+    public static class GXUtility
     {
         public const int GX_FIFO_ALIGN = 32;
 
@@ -178,7 +178,7 @@ namespace GameCube.GX
             return (float)value / (1 << nFracBits);
         }
 
-        public static int CalcGxVtxStride(GXAttributes attrFlag, GxVtxAttrFmt fmt)
+        public static int CalcGxVtxStride(GXAttributes attrFlag, VertexAttributeFormat fmt)
         {
             int size = 0;
             const int mtxIdxSize = 1;

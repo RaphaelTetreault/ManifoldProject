@@ -12,14 +12,14 @@ namespace GameCube.GX
 {
     // GameCube VAT
     [Serializable]
-    public class GxVtxAttrTable
+    public class VertexAttributeTable
     {
-        [SerializeField] GxVtxAttrFmt[] gxVertexAttributeFormats = new GxVtxAttrFmt[8];
+        [SerializeField] VertexAttributeFormat[] gxVertexAttributeFormats = new VertexAttributeFormat[8];
 
-        public GxVtxAttrFmt[] GxVtxAttrFmts
+        public VertexAttributeFormat[] GxVtxAttrFmts
             => gxVertexAttributeFormats;
 
-        public GxVtxAttrTable(params GxVtxAttrFmt[] formats)
+        public VertexAttributeTable(params VertexAttributeFormat[] formats)
         {
             if (formats.Length > 8)
                 throw new ArgumentOutOfRangeException();
@@ -33,7 +33,7 @@ namespace GameCube.GX
                 GxVtxAttrFmts[i] = null;
         }
 
-        public bool VatHasAttr(GxDisplayCommand gxCmd, GXAttr attribute)
+        public bool VatHasAttr(DisplayCommand gxCmd, GXAttr attribute)
         {
             Assert.IsTrue((byte)gxCmd.VertexFormat < 8);
 
@@ -49,7 +49,7 @@ namespace GameCube.GX
             }
         }
 
-        public bool HasAttr(GxDisplayCommand gxCmd, GXAttributes attribute)
+        public bool HasAttr(DisplayCommand gxCmd, GXAttributes attribute)
         {
             Assert.IsTrue((byte)gxCmd.VertexFormat < 8);
 
