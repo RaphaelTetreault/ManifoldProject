@@ -33,7 +33,7 @@ namespace GameCube.GFZ.CourseCollision
         public Bool32 unkBool32_0x58;
         public ArrayPointer unkArrayPtr_0x5C; // SOLS only. Occurrences = GX:6, AX:9.
         public ArrayPointer collisionObjectReferences;
-        public ArrayPointer unk_collisionObjectReferences; // old notes: 0x64 ref back (to name table?). Goes to offset/ptr
+        public ArrayPointer unk_collisionObjectReferences; // refers back to above objects, but through another array-pointer
         public ArrayPointer unused_0x74_0x78;
         public CircuitType circuitType;
         public Pointer unkPtr_0x80; // Old notes: always 6 count, possibly spline stuff

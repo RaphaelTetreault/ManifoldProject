@@ -29,6 +29,8 @@ namespace GameCube.GFZ.CourseCollision
         public int[] unknownData_0x20;
         public float unknownFloat_0x24;
         public ColiUnknownStruct2[] unknownStruct2s;
+        public ColiUnknownStruct3 unknownStruct3;
+        public ColiUnknownStruct5 unknownStruct5_0x84;
 
 
         public string FileName
@@ -91,6 +93,17 @@ namespace GameCube.GFZ.CourseCollision
             // The count is different, so perhaps leads to certain properties on those objects.
             reader.JumpToAddress(header.unk_collisionObjectReferences);
             reader.ReadX(ref unk_collisionObjectReferences, header.unk_collisionObjectReferences.length, true);
+
+            // 0x80
+            if (header.unkPtr_0x80.IsNotNullPointer)
+            {
+                reader.JumpToAddress(header.unkPtr_0x80);
+                reader.ReadX(ref unknownStruct3, true);
+            }
+
+            // 0x84
+            reader.JumpToAddress(header.unkPtr_0x84);
+            reader.ReadX(ref unknownStruct5_0x84, true);
 
             // 0x90 - Track Transforms
             reader.JumpToAddress(header.trackInfo);
