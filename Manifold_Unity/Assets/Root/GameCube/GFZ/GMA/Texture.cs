@@ -158,16 +158,19 @@ namespace GameCube.GFZ.GMA
 
 
     [Serializable]
-    public struct TextureDescriptor : IBinarySerializable, IBinaryAddressable
+    public struct TextureDescriptor : IBinarySerializable, IBinaryAddressableRange
     {
+
+        #region FIELDS
+
+
         public const int kFifoPaddingSize = 12;
 
         [Header("Texture")]
-        [SerializeField, Hex] long startAddress;
-        [SerializeField, Hex] long endAddress;
-        [Space]
+        [SerializeField]
+        private AddressRange addressRange;
 
-        #region MEMBERS
+        [Space]
 
         /// <summary>
         /// 2019/04/03: Appears to be shader scrolling flags
@@ -244,7 +247,14 @@ namespace GameCube.GFZ.GMA
 
         #endregion
 
-        #region PROEPRTIES
+        #region PROPERTIES
+
+
+        public AddressRange AddressRange
+        {
+            get => addressRange;
+            set => addressRange = value;
+        }
 
         public TexFlags0x00_U16 Unk_0x00
             => unk_0x00;
@@ -282,39 +292,30 @@ namespace GameCube.GFZ.GMA
         public byte[] Fifopadding
             => fifoPadding;
 
-        #endregion
 
-        public long StartAddress
-        {
-            get => startAddress;
-            set => startAddress = value;
-        }
-        public long EndAddress
-        {
-            get => endAddress;
-            set => endAddress = value;
-        }
+        #endregion
 
         public void Deserialize(BinaryReader reader)
         {
-            StartAddress = reader.BaseStream.Position;
+            this.RecordStartAddress(reader);
+            {
+                reader.ReadX(ref unk_0x00);
+                reader.ReadX(ref mipmapSettings);
+                reader.ReadX(ref wrapFlags);
+                reader.ReadX(ref tplTextureIndex);
+                reader.ReadX(ref unk_0x06);
+                reader.ReadX(ref anisotropicLevel);
+                reader.ReadX(ref zero_0x08);
+                reader.ReadX(ref unk_0x0C);
+                reader.ReadX(ref isSwappableTexture);
+                reader.ReadX(ref index);
+                reader.ReadX(ref unk_0x10);
+                reader.ReadX(ref fifoPadding, kFifoPaddingSize);
+            }
+            this.RecordEndAddress(reader);
 
-            reader.ReadX(ref unk_0x00);
-            reader.ReadX(ref mipmapSettings);
-            reader.ReadX(ref wrapFlags);
-            reader.ReadX(ref tplTextureIndex);
-            reader.ReadX(ref unk_0x06);
-            reader.ReadX(ref anisotropicLevel);
-            reader.ReadX(ref zero_0x08);
-            reader.ReadX(ref unk_0x0C);
-            reader.ReadX(ref isSwappableTexture);
-            reader.ReadX(ref index);
-            reader.ReadX(ref unk_0x10);
-            reader.ReadX(ref fifoPadding, kFifoPaddingSize);
             foreach (var @byte in fifoPadding)
                 Assert.IsTrue(@byte == 0x00);
-
-            EndAddress = reader.BaseStream.Position;
         }
 
         public void Serialize(BinaryWriter writer)

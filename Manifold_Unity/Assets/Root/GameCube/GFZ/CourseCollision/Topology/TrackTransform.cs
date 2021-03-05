@@ -5,32 +5,21 @@ using UnityEngine;
 
 namespace GameCube.GFZ.CourseCollision
 {
-    public enum TrackTransformHierarchyDepth : byte
-    {
-        UNK_0 = 1 << 0,
-        UNK_1 = 1 << 1,
-        UNK_2 = 1 << 2,
-        UNK_3 = 1 << 3,
-        UNK_4 = 1 << 4,
-        UNK_5 = 1 << 5,
-        UNK_6 = 1 << 6,
-        UNK_7 = 1 << 7,
-    }
-
     [Serializable]
-    public class TrackTransform : IBinarySerializable, IBinaryAddressable
+    public class TrackTransform : IBinarySerializable, IBinaryAddressableRange
     {
 
-        #region MEMBERS
+        #region FIELDS
+
 
         public const byte kStructureSize = 0x50;
         public const byte kHasChildren = 0x0C;
         public const byte kSizeOfZero0x44 = 12;
 
-        [SerializeField, Hex] long startAddress;
-        [SerializeField, Hex] long endAddress;
+        [SerializeField]
+        private AddressRange addressRange;
 
-        public TrackTransformHierarchyDepth hierarchyDepth;
+        public HierarchyDepth hierarchyDepth;
         public byte zero_0x01;
         public byte hasChildren;
         public byte zero_0x03;
@@ -54,71 +43,69 @@ namespace GameCube.GFZ.CourseCollision
         public TopologyParameters topologyParameters;
         public TrackTransform[] children = new TrackTransform[0];
 
+
         #endregion
 
         #region PROPERTIES
 
-        public long StartAddress
+
+        public AddressRange AddressRange
         {
-            get => startAddress;
-            set => startAddress = value;
+            get => addressRange;
+            set => addressRange = value;
         }
 
-        public long EndAddress
-        {
-            get => endAddress;
-            set => endAddress = value;
-        }
 
         #endregion
 
         #region METHODS
 
+
         public void Deserialize(BinaryReader reader)
         {
-            startAddress = reader.BaseStream.Position;
-
-            reader.ReadX(ref hierarchyDepth);
-            reader.ReadX(ref zero_0x01);
-            reader.ReadX(ref hasChildren);
-            reader.ReadX(ref zero_0x03);
-            reader.ReadX(ref topologyParamsAbsPtr);
-            reader.ReadX(ref unk_0x08_absPtr);
-            reader.ReadX(ref childCount);
-            reader.ReadX(ref childrenAbsPtr);
-            reader.ReadX(ref localScale);
-            reader.ReadX(ref localRotation);
-            reader.ReadX(ref localPosition); //AvEditorUtil.InvertX(ref localPosition);
-            reader.ReadX(ref unk_0x38);
-            reader.ReadX(ref unk_0x3C);
-            reader.ReadX(ref unk_0x40);
-            reader.ReadX(ref zero_0x44);
-            reader.ReadX(ref zero_0x48);
-            reader.ReadX(ref unk_0x4C);
-
-            endAddress = reader.BaseStream.Position;
-
-            // Read Topology
-            reader.BaseStream.Seek(topologyParamsAbsPtr, SeekOrigin.Begin);
-            reader.ReadX(ref topologyParameters, true);
-
-            // Read Extra Transform
-            if (unk_0x08_absPtr != 0)
+            this.RecordStartAddress(reader);
             {
-                reader.BaseStream.Seek(unk_0x08_absPtr, SeekOrigin.Begin);
-                reader.ReadX(ref extraTransform, true);
+                reader.ReadX(ref hierarchyDepth);
+                reader.ReadX(ref zero_0x01);
+                reader.ReadX(ref hasChildren);
+                reader.ReadX(ref zero_0x03);
+                reader.ReadX(ref topologyParamsAbsPtr);
+                reader.ReadX(ref unk_0x08_absPtr);
+                reader.ReadX(ref childCount);
+                reader.ReadX(ref childrenAbsPtr);
+                reader.ReadX(ref localScale);
+                reader.ReadX(ref localRotation);
+                reader.ReadX(ref localPosition); //AvEditorUtil.InvertX(ref localPosition);
+                reader.ReadX(ref unk_0x38);
+                reader.ReadX(ref unk_0x3C);
+                reader.ReadX(ref unk_0x40);
+                reader.ReadX(ref zero_0x44);
+                reader.ReadX(ref zero_0x48);
+                reader.ReadX(ref unk_0x4C);
             }
-
-            // Read Children (recursive)
-            children = new TrackTransform[childCount];
-            for (int i = 0; i < children.Length; i++)
+            this.RecordEndAddress(reader);
             {
-                var offset = kStructureSize * i;
-                reader.BaseStream.Seek(childrenAbsPtr + offset, SeekOrigin.Begin);
-                reader.ReadX(ref children[i], true);
-            }
+                // Read Topology
+                reader.BaseStream.Seek(topologyParamsAbsPtr, SeekOrigin.Begin);
+                reader.ReadX(ref topologyParameters, true);
 
-            reader.BaseStream.Seek(endAddress, SeekOrigin.Begin);
+                // Read Extra Transform
+                if (unk_0x08_absPtr != 0)
+                {
+                    reader.BaseStream.Seek(unk_0x08_absPtr, SeekOrigin.Begin);
+                    reader.ReadX(ref extraTransform, true);
+                }
+
+                // Read Children (recursive)
+                children = new TrackTransform[childCount];
+                for (int i = 0; i < children.Length; i++)
+                {
+                    var offset = kStructureSize * i;
+                    reader.BaseStream.Seek(childrenAbsPtr + offset, SeekOrigin.Begin);
+                    reader.ReadX(ref children[i], true);
+                }
+            }
+            this.SetReaderToEndAddress(reader);
         }
 
         public void Serialize(BinaryWriter writer)
@@ -146,6 +133,7 @@ namespace GameCube.GFZ.CourseCollision
             //for (int i = 0; i < kSizeOfZero0x44; i++)
             //    writer.WriteX((byte)0);
         }
+
 
         #endregion
 

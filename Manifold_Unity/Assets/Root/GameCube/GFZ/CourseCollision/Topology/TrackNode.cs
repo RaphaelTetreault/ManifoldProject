@@ -6,10 +6,14 @@ using UnityEngine;
 namespace GameCube.GFZ.CourseCollision
 {
     [Serializable]
-    public class TrackNode : IBinarySerializable, IBinaryAddressable
+    public class TrackNode : IBinarySerializable, IBinaryAddressableRange
     {
-        [SerializeField, Hex] long startAddress;
-        [SerializeField, Hex] long endAddress;
+
+        #region FIELDS
+
+
+        [SerializeField]
+        private AddressRange addressRange;
 
         public int trackBranchCount;
         public int trackPointAbsPtr;
@@ -19,43 +23,42 @@ namespace GameCube.GFZ.CourseCollision
         public TrackTransform transform;
 
 
+        #endregion
+
         #region PROPERTIES
 
-        public long StartAddress
+
+        public AddressRange AddressRange
         {
-            get => startAddress;
-            set => startAddress = value;
+            get => addressRange;
+            set => addressRange = value;
         }
 
-        public long EndAddress
-        {
-            get => endAddress;
-            set => endAddress = value;
-        }
 
         #endregion
 
         #region METHODS
 
+
         public void Deserialize(BinaryReader reader)
         {
-            startAddress = reader.BaseStream.Position;
+            this.RecordStartAddress(reader);
+            {
+                reader.ReadX(ref trackBranchCount);
+                reader.ReadX(ref trackPointAbsPtr);
+                reader.ReadX(ref trackTransformAbsPtr);
+            }
+            this.RecordEndAddress(reader);
+            {
+                // Get point
+                reader.BaseStream.Seek(trackPointAbsPtr, SeekOrigin.Begin);
+                reader.ReadX(ref point, true);
 
-            reader.ReadX(ref trackBranchCount);
-            reader.ReadX(ref trackPointAbsPtr);
-            reader.ReadX(ref trackTransformAbsPtr);
-
-            endAddress = reader.BaseStream.Position;
-
-            // Get point
-            reader.BaseStream.Seek(trackPointAbsPtr, SeekOrigin.Begin);
-            reader.ReadX(ref point, true);
-
-            // Get transform
-            //reader.BaseStream.Seek(trackTransformAbsPtr, SeekOrigin.Begin);
-            //reader.ReadX(ref transform, true);
-
-            reader.BaseStream.Seek(endAddress, SeekOrigin.Begin);
+                // Get transform
+                //reader.BaseStream.Seek(trackTransformAbsPtr, SeekOrigin.Begin);
+                //reader.ReadX(ref transform, true);
+            }
+            this.SetReaderToEndAddress(reader);
         }
 
         public void Serialize(BinaryWriter writer)
@@ -64,6 +67,7 @@ namespace GameCube.GFZ.CourseCollision
             writer.WriteX(trackPointAbsPtr);
             writer.WriteX(trackTransformAbsPtr);
         }
+
 
         #endregion
 

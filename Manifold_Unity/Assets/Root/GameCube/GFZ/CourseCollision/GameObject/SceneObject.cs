@@ -7,11 +7,15 @@ using UnityEngine.Assertions;
 namespace GameCube.GFZ.CourseCollision
 {
     [Serializable]
-    public class SceneObject : IBinarySerializable, IBinaryAddressable
+    public class SceneObject : IBinarySerializable, IBinaryAddressableRange
     {
+
+        #region MEMBERS
+
+
         // metadata
-        [SerializeField, Hex] long startAddress;
-        [SerializeField, Hex] long endAddress;
+        [SerializeField]
+        private AddressRange addressRange;
         /// <summary>
         /// Object's name from table sub-structure
         /// </summary>
@@ -35,6 +39,7 @@ namespace GameCube.GFZ.CourseCollision
         public Pointer unkPtr_0x34;
         public Pointer skeletalAnimatorPtr;
         public Pointer transformPtr;
+
         // sub-structures
         public CollisionBinding collisionBinding;
         public AnimationClip animation;
@@ -43,23 +48,26 @@ namespace GameCube.GFZ.CourseCollision
         public Transform transform;
 
 
-        public long StartAddress
+        #endregion
+
+        #region PROPERTIES
+
+
+        public AddressRange AddressRange
         {
-            get => startAddress;
-            set => startAddress = value;
+            get => addressRange;
+            set => addressRange = value;
         }
 
-        public long EndAddress
-        {
-            get => endAddress;
-            set => endAddress = value;
-        }
+
+        #endregion
+
+        #region METHODS
 
 
         public void Deserialize(BinaryReader reader)
         {
             this.RecordStartAddress(reader);
-            startAddress = reader.BaseStream.Position;
             {
                 reader.ReadX(ref unk_0x00);
                 reader.ReadX(ref unk_0x04);
@@ -123,7 +131,7 @@ namespace GameCube.GFZ.CourseCollision
                 }
             }
             // After deserializing sub-structures, return to end position
-            reader.BaseStream.Seek(endAddress, SeekOrigin.Begin);
+            reader.BaseStream.Seek(addressRange.endAddress, SeekOrigin.Begin);
         }
 
         public void Serialize(BinaryWriter writer)
@@ -146,6 +154,9 @@ namespace GameCube.GFZ.CourseCollision
             // Write values pointed at by, update ptrs above
             throw new NotImplementedException();
         }
+
+
+        #endregion
 
     }
 }

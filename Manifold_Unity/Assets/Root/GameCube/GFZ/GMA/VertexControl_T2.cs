@@ -6,11 +6,11 @@ using UnityEngine;
 namespace GameCube.GFZ.GMA
 {
     [Serializable]
-    public class VertexControl_T2 : IBinarySerializable, IBinaryAddressable
+    public class VertexControl_T2 : IBinarySerializable, IBinaryAddressableRange
     {
         [Header("Vtx Ctrl T2")]
-        [SerializeField, Hex(8)] long startAddress;
-        [SerializeField, Hex(8)] long endAddress;
+        [SerializeField]
+        private AddressRange addressRange;
 
         //
         [SerializeField, LabelPrefix("00")]
@@ -44,33 +44,28 @@ namespace GameCube.GFZ.GMA
         uint unk_0x3C;
 
 
-        // Metadata
-        public long StartAddress
+        public AddressRange AddressRange
         {
-            get => startAddress;
-            set => startAddress = value;
+            get => addressRange;
+            set => addressRange = value;
         }
-        public long EndAddress
-        {
-            get => endAddress;
-            set => endAddress = value;
-        }
+
 
         public void Deserialize(BinaryReader reader)
         {
-            StartAddress = reader.BaseStream.Position;
-
-            reader.ReadX(ref position);
-            reader.ReadX(ref normal);
-            reader.ReadX(ref tex0uv);
-            reader.ReadX(ref tex1uv);
-            reader.ReadX(ref tex2uv);
-            reader.ReadX(ref color);
-            reader.ReadX(ref unk_0x34);
-            reader.ReadX(ref unk_0x38);
-            reader.ReadX(ref unk_0x3C);
-
-            EndAddress = reader.BaseStream.Position;
+            this.RecordStartAddress(reader);
+            {
+                reader.ReadX(ref position);
+                reader.ReadX(ref normal);
+                reader.ReadX(ref tex0uv);
+                reader.ReadX(ref tex1uv);
+                reader.ReadX(ref tex2uv);
+                reader.ReadX(ref color);
+                reader.ReadX(ref unk_0x34);
+                reader.ReadX(ref unk_0x38);
+                reader.ReadX(ref unk_0x3C);
+            }
+            this.RecordEndAddress(reader);
         }
 
         public void Serialize(BinaryWriter writer)
@@ -85,5 +80,6 @@ namespace GameCube.GFZ.GMA
             writer.WriteX(unk_0x38);
             writer.WriteX(unk_0x3C);
         }
+
     }
 }

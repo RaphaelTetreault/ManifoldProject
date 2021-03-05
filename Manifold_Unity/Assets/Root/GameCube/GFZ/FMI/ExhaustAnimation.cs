@@ -6,47 +6,56 @@ using UnityEngine;
 namespace GameCube.GFZ.FMI
 {
     [Serializable]
-    public class ExhaustAnimation : IBinarySerializable, IBinaryAddressable
+    public class ExhaustAnimation : IBinarySerializable, IBinaryAddressableRange
     {
-        [SerializeField, Hex] long startAddress;
-        [SerializeField, Hex] long endAddress;
 
+        #region FIELDS
+
+        [SerializeField, HideInInspector]
+        private AddressRange addressRange;
+        public string name;
+
+        // structure
         public Vector3 position;
         public int unk_0x0C;
         public int animType;
 
-        public string name;
-
-        #region PROPERTIES
-
-        public long StartAddress
-        {
-            get => startAddress;
-            set => startAddress = value;
-        }
-
-        public long EndAddress
-        {
-            get => endAddress;
-            set => endAddress = value;
-        }
 
         #endregion
 
+        #region PROPERTIES
+
+
+        public AddressRange AddressRange
+        {
+            get => addressRange;
+            set => addressRange = value;
+        }
+
+
+        #endregion
+
+        #region METHODS
+
+        
         public void Deserialize(BinaryReader reader)
         {
-            startAddress = reader.BaseStream.Position;
+            this.RecordStartAddress(reader);
             {
                 reader.ReadX(ref position);
                 reader.ReadX(ref unk_0x0C);
                 reader.ReadX(ref animType);
             }
-            endAddress = reader.BaseStream.Position;
+            this.RecordEndAddress(reader);
         }
 
         public void Serialize(BinaryWriter writer)
         {
             throw new NotImplementedException();
         }
+
+
+        #endregion
+
     }
 }

@@ -6,35 +6,34 @@ using UnityEngine;
 namespace GameCube.GFZ.CourseCollision
 {
     [Serializable]
-    public class Transform : IBinarySerializable, IBinaryAddressable
+    public class Transform : IBinarySerializable, IBinaryAddressableRange
     {
 
-        #region MEMBERS
+        #region FIELDS
 
-        [SerializeField, Hex] long startAddress;
-        [SerializeField, Hex] long endAddress;
+
+        [SerializeField]
+        private AddressRange addressRange;
 
         public Matrix4x4 matrix;
+
 
         #endregion
 
         #region PROPERTIES
 
-        public long StartAddress
+
+        public AddressRange AddressRange
         {
-            get => startAddress;
-            set => startAddress = value;
+            get => addressRange;
+            set => addressRange = value;
         }
 
-        public long EndAddress
-        {
-            get => endAddress;
-            set => endAddress = value;
-        }
 
         #endregion
 
         #region METHODS
+
 
         public void Deserialize(BinaryReader reader)
         {
@@ -42,13 +41,13 @@ namespace GameCube.GFZ.CourseCollision
             Vector4 mtx1 = new Vector4();
             Vector4 mtx2 = new Vector4();
 
-            startAddress = reader.BaseStream.Position;
-
-            reader.ReadX(ref mtx0);
-            reader.ReadX(ref mtx1);
-            reader.ReadX(ref mtx2);
-
-            endAddress = reader.BaseStream.Position;
+            this.RecordStartAddress(reader);
+            {
+                reader.ReadX(ref mtx0);
+                reader.ReadX(ref mtx1);
+                reader.ReadX(ref mtx2);
+            }
+            this.RecordEndAddress(reader);
 
             matrix = new Matrix4x4(
                 new Vector4(mtx0.x, mtx1.x, mtx2.x, 0),
@@ -69,6 +68,7 @@ namespace GameCube.GFZ.CourseCollision
             transform.localScale = matrix.lossyScale;
             transform.rotation = matrix.rotation;
         }
+
 
         #endregion
 

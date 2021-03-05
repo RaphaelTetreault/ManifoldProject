@@ -8,16 +8,17 @@ using UnityEngine.Assertions;
 namespace GameCube.GFZ.CourseCollision
 {
     [Serializable]
-    public class AnimationClip : IBinarySerializable, IBinaryAddressable
+    public class AnimationClip : IBinarySerializable, IBinaryAddressableRange
     {
+
+        #region FIELDS
+
         // 6
         public const int kSizeCurvesPtrs = 6 + 5;
         const int kSizeZero_0x08 = 0x10;
 
-        #region MEMBERS
-
-        [SerializeField, Hex] long startAddress;
-        [SerializeField, Hex] long endAddress;
+        [SerializeField]
+        private AddressRange addressRange;
 
         public float unk_0x00;
         public float unk_0x04;
@@ -32,29 +33,27 @@ namespace GameCube.GFZ.CourseCollision
         /// </summary>
         public AnimationCurve[] animCurves;
 
+
         #endregion
 
         #region PROPERTIES
 
-        public long StartAddress
+
+        public AddressRange AddressRange
         {
-            get => startAddress;
-            set => startAddress = value;
+            get => addressRange;
+            set => addressRange = value;
         }
 
-        public long EndAddress
-        {
-            get => endAddress;
-            set => endAddress = value;
-        }
 
         #endregion
 
         #region METHODS
 
+
         public void Deserialize(BinaryReader reader)
         {
-            startAddress = reader.BaseStream.Position;
+            this.RecordStartAddress(reader);
             {
                 reader.ReadX(ref unk_0x00);
                 reader.ReadX(ref unk_0x04);
@@ -62,7 +61,7 @@ namespace GameCube.GFZ.CourseCollision
                 reader.ReadX(ref unk_layer_0x18);
                 reader.ReadX(ref animCurves, kSizeCurvesPtrs, true);
             }
-            endAddress = reader.BaseStream.Position;
+            this.RecordEndAddress(reader);
             {
                 foreach (var zero in zero_0x08)
                     Assert.IsTrue(zero == 0);
@@ -81,6 +80,7 @@ namespace GameCube.GFZ.CourseCollision
             // TODO: Ensure the ptr addresses are correct
             //throw new NotImplementedException();
         }
+
 
         #endregion
 

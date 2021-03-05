@@ -6,47 +6,46 @@ using UnityEngine;
 namespace GameCube.GFZ.CourseCollision
 {
     [Serializable]
-    public class ObjectTable_Unk1 : IBinarySerializable, IBinaryAddressable
+    public class ObjectTable_Unk1 : IBinarySerializable, IBinaryAddressableRange
     {
+
+        #region FIELDS
+
+
         const int kCount = 12;
 
-
-        #region MEMBERS
-
-        [SerializeField, Hex] long startAddress;
-        [SerializeField, Hex] long endAddress;
+        [SerializeField]
+        private AddressRange addressRange;
 
         public uint[] unkAbsPtr;
 
         public ObjectTable_Unk1_Entry[] unk;
 
+
         #endregion
 
         #region PROPERTIES
 
-        public long StartAddress
+
+        public AddressRange AddressRange
         {
-            get => startAddress;
-            set => startAddress = value;
+            get => addressRange;
+            set => addressRange = value;
         }
 
-        public long EndAddress
-        {
-            get => endAddress;
-            set => endAddress = value;
-        }
 
         #endregion
 
         #region METHODS
 
+
         public void Deserialize(BinaryReader reader)
         {
-            startAddress = reader.BaseStream.Position;
+            this.RecordStartAddress(reader);
             {
                 reader.ReadX(ref unkAbsPtr, kCount);
             }
-            endAddress = reader.BaseStream.Position;
+            this.RecordEndAddress(reader); ;
             {
                 unk = new ObjectTable_Unk1_Entry[kCount];
                 for (int i = 0; i < kCount; i++)
@@ -61,13 +60,14 @@ namespace GameCube.GFZ.CourseCollision
                     }
                 }
             }
-            reader.BaseStream.Seek(endAddress, SeekOrigin.Begin);
+            this.SetReaderToEndAddress(reader);
         }
 
         public void Serialize(BinaryWriter writer)
         {
             writer.WriteX(unkAbsPtr, false);
         }
+
 
         #endregion
 

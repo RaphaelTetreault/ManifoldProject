@@ -6,11 +6,17 @@ using UnityEngine;
 namespace GameCube.GFZ.FMI
 {
     [Serializable]
-    public class ExhaustParticle : IBinarySerializable, IBinaryAddressable
+    public class ExhaustParticle : IBinarySerializable, IBinaryAddressableRange
     {
-        [SerializeField, Hex] long startAddress;
-        [SerializeField, Hex] long endAddress;
 
+        #region MEMBERS
+
+
+        // metadata
+        [SerializeField]
+        private AddressRange addressRange;
+
+        //structure
         public Vector3 position;
         public uint unk_0x0C;
         public uint unk_0x10;
@@ -21,25 +27,27 @@ namespace GameCube.GFZ.FMI
         [Tooltip("Engine Color of Strong Acceleration")]
         public Color32 colorMax;
 
-        #region PROPERTIES
-
-        public long StartAddress
-        {
-            get => startAddress;
-            set => startAddress = value;
-        }
-
-        public long EndAddress
-        {
-            get => endAddress;
-            set => endAddress = value;
-        }
 
         #endregion
 
+        #region PROPERTIES
+
+
+        public AddressRange AddressRange
+        {
+            get => addressRange;
+            set => addressRange = value;
+        }
+
+
+        #endregion
+
+        #region METHODS
+
+
         public void Deserialize(BinaryReader reader)
         {
-            startAddress = reader.BaseStream.Position;
+            this.RecordStartAddress(reader);
             {
                 reader.ReadX(ref position);
                 reader.ReadX(ref unk_0x0C);
@@ -49,12 +57,16 @@ namespace GameCube.GFZ.FMI
                 reader.ReadX(ref colorMin);
                 reader.ReadX(ref colorMax);
             }
-            endAddress = reader.BaseStream.Position;
+            this.RecordEndAddress(reader);
         }
 
         public void Serialize(BinaryWriter writer)
         {
             throw new System.NotImplementedException();
         }
+
+
+        #endregion
+
     }
 }

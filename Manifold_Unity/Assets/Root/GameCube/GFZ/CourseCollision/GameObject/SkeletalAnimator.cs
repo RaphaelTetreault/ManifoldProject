@@ -6,13 +6,14 @@ using UnityEngine;
 namespace GameCube.GFZ.CourseCollision
 {
     [Serializable]
-    public class SkeletalAnimator : IBinarySerializable, IBinaryAddressable
+    public class SkeletalAnimator : IBinarySerializable, IBinaryAddressableRange
     {
 
-        #region MEMBERS
+        #region FIELDS
 
-        [SerializeField, Hex] long startAddress;
-        [SerializeField, Hex] long endAddress;
+
+        [SerializeField]
+        private AddressRange addressRange;
 
         public uint zero_0x00;
         public uint zero_0x04;
@@ -21,36 +22,34 @@ namespace GameCube.GFZ.CourseCollision
 
         public SkeletalProperties properties;
 
+
         #endregion
 
         #region PROPERTIES
 
-        public long StartAddress
+
+        public AddressRange AddressRange
         {
-            get => startAddress;
-            set => startAddress = value;
+            get => addressRange;
+            set => addressRange = value;
         }
 
-        public long EndAddress
-        {
-            get => endAddress;
-            set => endAddress = value;
-        }
 
         #endregion
 
         #region METHODS
 
+
         public void Deserialize(BinaryReader reader)
         {
-            startAddress = reader.BaseStream.Position;
+            this.RecordStartAddress(reader);
             {
                 reader.ReadX(ref zero_0x00);
                 reader.ReadX(ref zero_0x04);
                 reader.ReadX(ref one_0x08);
                 reader.ReadX(ref unkRelPtr);
             }
-            endAddress = reader.BaseStream.Position;
+            this.RecordEndAddress(reader);
             {
                 if (unkRelPtr != 0)
                 {
@@ -58,7 +57,7 @@ namespace GameCube.GFZ.CourseCollision
                     reader.ReadX(ref properties, true);
                 }
             }
-            reader.BaseStream.Seek(endAddress, SeekOrigin.Begin);
+            this.SetReaderToEndAddress(reader);
         }
 
         public void Serialize(BinaryWriter writer)
@@ -70,6 +69,7 @@ namespace GameCube.GFZ.CourseCollision
 
             throw new NotImplementedException();
         }
+
 
         #endregion
 

@@ -7,22 +7,27 @@ using UnityEngine.Assertions;
 namespace GameCube.GFZ.GMA
 {
     [Serializable]
-    public class GcmfTransformMatrices : IBinarySerializable, IBinaryAddressable
+    public class GcmfTransformMatrices : IBinarySerializable, IBinaryAddressableRange
     {
-        [Header("Gcmf Transform Matrices")]
-        [SerializeField, Hex] long startAddress;
-        [SerializeField, Hex] long endAddress;
-        [SerializeField, Hex] int matrixCount;
-        byte[] fifoPadding;
 
-        #region MEMBERS
+        #region FIELDS
+
+
+        [Header("Gcmf Transform Matrices")]
+        [SerializeField]
+        private AddressRange addressRange;
+        [SerializeField, Hex]
+        private int matrixCount;
+        private byte[] fifoPadding;
 
         [SerializeField, Space]
         TransformMatrix3x4[] matrices;
 
+
         #endregion
 
         #region CONSTRUCTORS
+
 
         public GcmfTransformMatrices() { }
 
@@ -31,25 +36,20 @@ namespace GameCube.GFZ.GMA
             SetMatrixCount(matrixCount);
         }
 
+
         #endregion
 
         #region PROPERTIES
 
+
+        public AddressRange AddressRange
+        {
+            get => addressRange;
+            set => addressRange = value;
+        }
+
         public TransformMatrix3x4[] Matrices
             => matrices;
-
-        // Metadata
-        public long StartAddress
-        {
-            get => startAddress;
-            set => startAddress = value;
-        }
-
-        public long EndAddress
-        {
-            get => endAddress;
-            set => endAddress = value;
-        }
 
         public int MatrixCount
         {
@@ -68,12 +68,15 @@ namespace GameCube.GFZ.GMA
             }
         }
 
+
         #endregion
+
+        #region METHODS
 
 
         public void Deserialize(BinaryReader reader)
         {
-            startAddress = reader.BaseStream.Position;
+            this.RecordStartAddress(reader);
 
             if (matrices != null && matrices.Length > 0)
             {
@@ -82,7 +85,8 @@ namespace GameCube.GFZ.GMA
                 foreach (var padByte in fifoPadding)
                     Assert.IsTrue(padByte == 0);
             }
-            endAddress = reader.BaseStream.Position;
+
+            this.RecordEndAddress(reader);
         }
 
         public void Serialize(BinaryWriter writer)
@@ -101,5 +105,9 @@ namespace GameCube.GFZ.GMA
             matrices = new TransformMatrix3x4[matrixCount];
             this.matrixCount = matrixCount;
         }
+
+
+        #endregion
+
     }
 }

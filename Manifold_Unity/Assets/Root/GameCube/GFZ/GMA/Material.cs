@@ -242,18 +242,20 @@ namespace GameCube.GFZ.GMA
     }
 
     [Serializable]
-    public class Material : IBinarySerializable, IBinaryAddressable
+    public class Material : IBinarySerializable, IBinaryAddressableRange
     {
+
+        #region FIELDS
+
+
         public const int kTransformArrayLength = 8;
         public const int kFifoPaddingSize = 28;
 
         [Header("Material")]
-        [SerializeField, Hex] long startAddress;
-        [SerializeField, Hex] long endAddress;
+        [SerializeField]
+        private AddressRange addressRange;
+
         [Space]
-
-        #region MEMBERS
-
         [SerializeField, Hex("00", 8)]
         ushort zero_0x00;
 
@@ -329,9 +331,27 @@ namespace GameCube.GFZ.GMA
 
         byte[] fifoPadding;
 
+
         #endregion
 
         #region PROPERTIES
+
+        public AddressRange AddressRange
+        {
+            get => addressRange;
+            set => addressRange = value;
+        }
+
+        public bool IsRenderExtraDisplayLists
+        {
+            get
+            {
+                var renderExtraDisplayList0 = (vertexRenderFlags & MatVertexRenderFlag_U8.RENDER_EX_DISPLAY_LIST_0) != 0;
+                var renderExtraDisplayList1 = (vertexRenderFlags & MatVertexRenderFlag_U8.RENDER_EX_DISPLAY_LIST_1) != 0;
+                var renderExtraDisplayList01 = renderExtraDisplayList0 && renderExtraDisplayList1;
+                return renderExtraDisplayList01;
+            }
+        }
 
         // 0x00
         public ushort Zero_0x00 => zero_0x00;
@@ -362,66 +382,47 @@ namespace GameCube.GFZ.GMA
         public byte[] Fifopadding => fifoPadding;
         // 0x60
 
+
         #endregion
 
-        // Metadata
-        public long StartAddress
-        {
-            get => startAddress;
-            set => startAddress = value;
-        }
-        public long EndAddress
-        {
-            get => endAddress;
-            set => endAddress = value;
-        }
+        #region METHODS
 
-        public bool IsRenderExtraDisplayLists
-        {
-            get
-            {
-                var renderExtraDisplayList0 = (vertexRenderFlags & MatVertexRenderFlag_U8.RENDER_EX_DISPLAY_LIST_0) != 0;
-                var renderExtraDisplayList1 = (vertexRenderFlags & MatVertexRenderFlag_U8.RENDER_EX_DISPLAY_LIST_1) != 0;
-                var renderExtraDisplayList01 = renderExtraDisplayList0 && renderExtraDisplayList1;
-                return renderExtraDisplayList01;
-            }
-        }
 
         public void Deserialize(BinaryReader reader)
         {
-            StartAddress = reader.BaseStream.Position;
+            this.RecordStartAddress(reader);
+            {
+                // 0x00
+                reader.ReadX(ref zero_0x00);
+                Assert.IsTrue(zero_0x00 == 0, $"{typeof(Material).Name}. Addr:{addressRange.startAddress:X8}");
 
-            // 0x00
-            reader.ReadX(ref zero_0x00);
-            Assert.IsTrue(zero_0x00 == 0, $"{typeof(Material).Name}. Addr:{startAddress:X8}");
-
-            reader.ReadX(ref unk_0x02);
-            reader.ReadX(ref unk_0x03);
-            reader.ReadX(ref color0);
-            reader.ReadX(ref color1);
-            reader.ReadX(ref color2);
-            // 0x10
-            reader.ReadX(ref unk_0x10);
-            reader.ReadX(ref unk_0x11);
-            reader.ReadX(ref texturesUsedCount);
-            reader.ReadX(ref vertexRenderFlags);
-            reader.ReadX(ref unk_0x14);
-            reader.ReadX(ref unk_0x15);
-            reader.ReadX(ref tex0Index);
-            reader.ReadX(ref tex1Index);
-            reader.ReadX(ref tex2Index);
-            reader.ReadX(ref vertexAttributeFlags);
-            // 0x20
-            reader.ReadX(ref matrixIndexes, false);
-            reader.ReadX(ref matDisplayListSize);
-            reader.ReadX(ref tlMatDisplayListSize);
-            // 0x30
-            reader.ReadX(ref boundingSphereOrigin);
-            reader.ReadX(ref unk_0x3C);
-            reader.ReadX(ref unk_0x40);
-            reader.ReadX(ref fifoPadding, kFifoPaddingSize);
-
-            EndAddress = reader.BaseStream.Position;
+                reader.ReadX(ref unk_0x02);
+                reader.ReadX(ref unk_0x03);
+                reader.ReadX(ref color0);
+                reader.ReadX(ref color1);
+                reader.ReadX(ref color2);
+                // 0x10
+                reader.ReadX(ref unk_0x10);
+                reader.ReadX(ref unk_0x11);
+                reader.ReadX(ref texturesUsedCount);
+                reader.ReadX(ref vertexRenderFlags);
+                reader.ReadX(ref unk_0x14);
+                reader.ReadX(ref unk_0x15);
+                reader.ReadX(ref tex0Index);
+                reader.ReadX(ref tex1Index);
+                reader.ReadX(ref tex2Index);
+                reader.ReadX(ref vertexAttributeFlags);
+                // 0x20
+                reader.ReadX(ref matrixIndexes, false);
+                reader.ReadX(ref matDisplayListSize);
+                reader.ReadX(ref tlMatDisplayListSize);
+                // 0x30
+                reader.ReadX(ref boundingSphereOrigin);
+                reader.ReadX(ref unk_0x3C);
+                reader.ReadX(ref unk_0x40);
+                reader.ReadX(ref fifoPadding, kFifoPaddingSize);
+            }
+            this.RecordEndAddress(reader);
 
             for (int i = 0; i < fifoPadding.Length; i++)
                 Assert.IsTrue(fifoPadding[i] == 0x00);
@@ -459,6 +460,9 @@ namespace GameCube.GFZ.GMA
             for (int i = 0; i < kFifoPaddingSize; i++)
                 writer.WriteX((byte)0x00);
         }
+
+
+        #endregion
 
     }
 }

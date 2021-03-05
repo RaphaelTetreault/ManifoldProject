@@ -7,56 +7,54 @@ using UnityEngine;
 namespace GameCube.GFZ.CourseCollision
 {
     [Serializable]
-    public class ReferenceBinding : IBinarySerializable, IBinaryAddressable
+    public class ReferenceBinding : IBinarySerializable, IBinaryAddressableRange
     {
 
-        #region MEMBERS
+        #region FIELDS
 
-        [SerializeField, Hex] long startAddress;
-        [SerializeField, Hex] long endAddress;
+
+        [SerializeField]
+        private AddressRange addressRange;
+        public string name;
 
         public uint unk_0x00;
         public uint nameAbsPtr;
         public uint unk_0x08;
         public float unk_0x0C;
 
-        public string name;
 
         #endregion
 
         #region PROPERTIES
 
-        public long StartAddress
+
+        public AddressRange AddressRange
         {
-            get => startAddress;
-            set => startAddress = value;
+            get => addressRange;
+            set => addressRange = value;
         }
 
-        public long EndAddress
-        {
-            get => endAddress;
-            set => endAddress = value;
-        }
 
         #endregion
 
         #region METHODS
 
+
         public void Deserialize(BinaryReader reader)
         {
-            startAddress = reader.BaseStream.Position;
+            this.RecordStartAddress(reader);
             {
                 reader.ReadX(ref unk_0x00);
                 reader.ReadX(ref nameAbsPtr);
                 reader.ReadX(ref unk_0x08);
                 reader.ReadX(ref unk_0x0C);
             }
-            endAddress = reader.BaseStream.Position;
+            this.RecordEndAddress(reader);
             {
                 reader.BaseStream.Seek(nameAbsPtr, SeekOrigin.Begin);
                 reader.ReadXCString(ref name, Encoding.ASCII);
             }
-            reader.BaseStream.Seek(endAddress, SeekOrigin.Begin);
+            this.SetReaderToEndAddress(reader);
         }
 
         public void Serialize(BinaryWriter writer)
@@ -69,6 +67,7 @@ namespace GameCube.GFZ.CourseCollision
             // write ptr into name table
             throw new NotImplementedException();
         }
+
 
         #endregion
 

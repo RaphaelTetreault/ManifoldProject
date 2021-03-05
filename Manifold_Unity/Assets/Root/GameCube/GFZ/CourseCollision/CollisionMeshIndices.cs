@@ -6,10 +6,14 @@ using UnityEngine;
 namespace GameCube.GFZ.CourseCollision
 {
     [Serializable]
-    public class CollisionMeshIndices : IBinarySerializable, IBinaryAddressable
+    public class CollisionMeshIndices : IBinarySerializable, IBinaryAddressableRange
     {
-        [SerializeField, Hex] long startAddress;
-        [SerializeField, Hex] long endAddress;
+
+        #region FIELDS
+
+
+        [SerializeField]
+        private AddressRange addressRange;
 
         public const int kIndexArrayPtrsSize = 256; // 0x100
 
@@ -17,18 +21,21 @@ namespace GameCube.GFZ.CourseCollision
         public ushort[][] indices = new ushort[kIndexArrayPtrsSize][];
 
 
-        public long StartAddress
+        #endregion
+
+        #region PROPERTIES
+
+
+        public AddressRange AddressRange
         {
-            get => startAddress;
-            set => startAddress = value;
+            get => addressRange;
+            set => addressRange = value;
         }
 
-        public long EndAddress
-        {
-            get => endAddress;
-            set => endAddress = value;
-        }
 
+        #endregion
+
+        #region METHODS
 
         public void Deserialize(BinaryReader reader)
         {
@@ -61,5 +68,9 @@ namespace GameCube.GFZ.CourseCollision
         {
             throw new System.NotImplementedException();
         }
+
+
+        #endregion
+
     }
 }

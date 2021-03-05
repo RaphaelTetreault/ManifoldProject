@@ -6,11 +6,15 @@ using UnityEngine;
 namespace GameCube.GFZ.GMA
 {
     [Serializable]
-    public class VertexControl_T1 : IBinarySerializable, IBinaryAddressable
+    public class VertexControl_T1 : IBinarySerializable, IBinaryAddressableRange
     {
+
+        #region FIELDS
+
+
         [Header("Vtx Ctrl T1")]
-        [SerializeField, Hex(8)] long startAddress;
-        [SerializeField, Hex(8)] long endAddress;
+        [SerializeField]
+        private AddressRange addressRange;
 
         // This is a guess
         [SerializeField, LabelPrefix("00")]
@@ -25,28 +29,34 @@ namespace GameCube.GFZ.GMA
         [SerializeField, LabelPrefix("1C")]
         float unk_0x1C;
 
-        // Metadata
-        public long StartAddress
+
+        #endregion
+
+        #region PROPERTIES
+
+
+        public AddressRange AddressRange
         {
-            get => startAddress;
-            set => startAddress = value;
+            get => addressRange;
+            set => addressRange = value;
         }
-        public long EndAddress
-        {
-            get => endAddress;
-            set => endAddress = value;
-        }
+
+
+        #endregion
+
+        #region METHODS
+
 
         public void Deserialize(BinaryReader reader)
         {
-            StartAddress = reader.BaseStream.Position;
-
-            reader.ReadX(ref position);
-            reader.ReadX(ref normal);
-            reader.ReadX(ref unk_0x18);
-            reader.ReadX(ref unk_0x1C);
-
-            EndAddress = reader.BaseStream.Position;
+            this.RecordStartAddress(reader);
+            {
+                reader.ReadX(ref position);
+                reader.ReadX(ref normal);
+                reader.ReadX(ref unk_0x18);
+                reader.ReadX(ref unk_0x1C);
+            }
+            this.RecordEndAddress(reader);
         }
 
         public void Serialize(BinaryWriter writer)
@@ -56,5 +66,9 @@ namespace GameCube.GFZ.GMA
             writer.WriteX(unk_0x18);
             writer.WriteX(unk_0x1C);
         }
+
+
+        #endregion
+
     }
 }

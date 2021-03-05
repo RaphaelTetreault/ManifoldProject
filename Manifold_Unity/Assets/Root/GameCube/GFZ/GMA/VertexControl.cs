@@ -7,17 +7,19 @@ using UnityEngine.Assertions;
 namespace GameCube.GFZ.GMA
 {
     [Serializable]
-    public class VertexControlHeader : IBinarySerializable, IBinaryAddressable
+    public class VertexControlHeader : IBinarySerializable, IBinaryAddressableRange
     {
+
+        #region FIELDS
+
+
         public const int kFifoPaddingSize = 12;
 
         [Header("Vertex Control Header")]
-        [SerializeField, Hex] long startAddress;
-        [SerializeField, Hex] long endAddress;
+        [SerializeField]
+        private AddressRange addressRange;
+
         [Space]
-
-        #region MEMBERS
-
         [SerializeField, Hex("00", 8)]
         int vertexCount;
 
@@ -35,9 +37,17 @@ namespace GameCube.GFZ.GMA
 
         byte[] fifoPadding;
 
+
         #endregion
 
         #region PROPERTIES
+
+
+        public AddressRange AddressRange
+        {
+            get => addressRange;
+            set => addressRange = value;
+        }
 
         public int VertexCount
         {
@@ -69,38 +79,24 @@ namespace GameCube.GFZ.GMA
             set => vertexControlT4RelPtr = value;
         }
 
-        #endregion
-
-        #region IBinaryAddressable
-
-        public long StartAddress
-        {
-            get => startAddress;
-            set => startAddress = value;
-        }
-
-        public long EndAddress
-        {
-            get => endAddress;
-            set => endAddress = value;
-        }
 
         #endregion
 
-        #region IBinarySerializable
+        #region METHODS
+
 
         public void Deserialize(BinaryReader reader)
         {
-            StartAddress = reader.BaseStream.Position;
-
-            reader.ReadX(ref vertexCount);
-            reader.ReadX(ref vertexControlT1RelPtr);
-            reader.ReadX(ref vertexControlT2RelPtr);
-            reader.ReadX(ref vertexControlT3RelPtr);
-            reader.ReadX(ref vertexControlT4RelPtr);
-            reader.ReadX(ref fifoPadding, kFifoPaddingSize);
-
-            EndAddress = reader.BaseStream.Position;
+            this.RecordStartAddress(reader);
+            {
+                reader.ReadX(ref vertexCount);
+                reader.ReadX(ref vertexControlT1RelPtr);
+                reader.ReadX(ref vertexControlT2RelPtr);
+                reader.ReadX(ref vertexControlT3RelPtr);
+                reader.ReadX(ref vertexControlT4RelPtr);
+                reader.ReadX(ref fifoPadding, kFifoPaddingSize);
+            }
+            this.RecordEndAddress(reader);
         }
 
         public void Serialize(BinaryWriter writer)
@@ -113,6 +109,7 @@ namespace GameCube.GFZ.GMA
             var align = writer.Align(GameCube.GX.GxUtility.GX_FIFO_ALIGN);
             Assert.IsTrue(align == kFifoPaddingSize);
         }
+
 
         #endregion
 

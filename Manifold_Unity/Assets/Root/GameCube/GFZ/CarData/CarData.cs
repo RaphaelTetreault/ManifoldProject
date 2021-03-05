@@ -7,8 +7,12 @@ using UnityEngine;
 namespace GameCube.GFZ.CarData
 {
     [Serializable]
-    public class CarData : IBinarySerializable, IBinaryAddressable, IFile
+    public class CarData : IBinarySerializable, IBinaryAddressableRange, IFile
     {
+
+        #region FIELDS
+
+
         public const int MachineCount = 41;
         public const int BodyCount = 25;
         public const int CockpitCount = 25;
@@ -106,10 +110,7 @@ namespace GameCube.GFZ.CarData
         }
 
         [SerializeField] string fileName;
-        [SerializeField, Hex] long startAddress;
-        [SerializeField, Hex] long endAddress;
-
-        #region MEMBERS
+        [SerializeField] AddressRange addressRange;
 
         [Header("String Table")]
         public byte[] padding; // 12 bytes
@@ -240,20 +241,22 @@ namespace GameCube.GFZ.CarData
         public VehicleParameters Crown_77;
         public VehicleParameters Triple_Z;
 
+
         #endregion
 
         #region PROPERTIES
 
-        public long StartAddress
+
+        public AddressRange AddressRange
         {
-            get => startAddress;
-            set => startAddress = value;
+            get => addressRange;
+            set => addressRange = value;
         }
 
-        public long EndAddress
+        public string FileName
         {
-            get => endAddress;
-            set => endAddress = value;
+            get => fileName;
+            set => fileName = value;
         }
 
         public VehicleParameters[] Machines
@@ -438,15 +441,10 @@ namespace GameCube.GFZ.CarData
         };
 
 
-        public string FileName
-        {
-            get => fileName;
-            set => fileName = value;
-        }
-
         #endregion
 
         #region METHODS
+
 
         public void Deserialize(BinaryReader reader)
         {
@@ -745,6 +743,8 @@ namespace GameCube.GFZ.CarData
             BinaryIoUtility.PopEndianess();
         }
 
+
         #endregion
+
     }
 }

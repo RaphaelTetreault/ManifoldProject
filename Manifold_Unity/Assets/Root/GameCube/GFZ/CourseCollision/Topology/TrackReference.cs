@@ -1,46 +1,46 @@
 using Manifold.IO;
-using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
 namespace GameCube.GFZ.CourseCollision
 {
-    public class TrackReference : IBinarySerializable, IBinaryAddressable
+    public class TrackReference : IBinarySerializable, IBinaryAddressableRange
     {
 
-        #region MEMBERS
+        #region FIELDS
+
 
         public const int kNumEntries = 64;
 
-        [SerializeField, Hex] long startAddress;
-        [SerializeField, Hex] long endAddress;
+        [SerializeField]
+        private AddressRange addressRange;
 
         public ushort[] references = new ushort[0];
+
 
         #endregion
 
         #region PROPERTIES
 
-        public long StartAddress
+
+        public AddressRange AddressRange
         {
-            get => startAddress;
-            set => startAddress = value;
+            get => addressRange;
+            set => addressRange = value;
         }
 
-        public long EndAddress
-        {
-            get => endAddress;
-            set => endAddress = value;
-        }
 
         #endregion
 
         #region METHODS
 
+
         public void Deserialize(BinaryReader reader)
         {
             this.RecordStartAddress(reader);
-            references = ColiCourseUtility.ReadUShortArray(reader);
+            {
+                references = ColiCourseUtility.ReadUShortArray(reader);
+            }
             this.RecordEndAddress(reader);
         }
 
@@ -48,6 +48,7 @@ namespace GameCube.GFZ.CourseCollision
         {
             throw new System.NotImplementedException();
         }
+
 
         #endregion
 

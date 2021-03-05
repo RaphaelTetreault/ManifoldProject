@@ -7,11 +7,12 @@ using UnityEngine;
 namespace GameCube.GFZ.GMA
 {
     [Serializable]
-    public class VertexControl_T4 : IBinarySerializable, IBinaryAddressable
+    public class VertexControl_T4 : IBinarySerializable, IBinaryAddressableRange
     {
         [Header("Vtx Ctrl T4")]
-        [SerializeField, Hex(8)] long startAddress;
-        [SerializeField, Hex(8)] long endAddress;
+        [SerializeField]
+        private AddressRange addressRange;
+
         [SerializeField, Hex(8)] int matrixCount;
 
         [SerializeField]
@@ -28,26 +29,20 @@ namespace GameCube.GFZ.GMA
         }
 
 
-        // Metadata
-        public long StartAddress
+        public AddressRange AddressRange
         {
-            get => startAddress;
-            set => startAddress = value;
-        }
-        public long EndAddress
-        {
-            get => endAddress;
-            set => endAddress = value;
+            get => addressRange;
+            set => addressRange = value;
         }
 
         public void Deserialize(BinaryReader reader)
         {
-            StartAddress = reader.BaseStream.Position;
-
-            reader.ReadX(ref matrixIndexes, matrixCount);
-            reader.Align(GxUtility.GX_FIFO_ALIGN);
-
-            EndAddress = reader.BaseStream.Position;
+            this.RecordStartAddress(reader);
+            {
+                reader.ReadX(ref matrixIndexes, matrixCount);
+                reader.Align(GxUtility.GX_FIFO_ALIGN);
+            }
+            this.RecordEndAddress(reader);
         }
 
         public void Serialize(BinaryWriter writer)

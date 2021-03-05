@@ -119,7 +119,7 @@ namespace Manifold.IO.GFZ.GMA
                     writer.PushCol(sobj.FileName);
                     writer.PushCol(gcmf.ModelName);
                     writer.PushCol($"GCMF[{index}/{maxIndex}]");
-                    writer.PushCol("0x" + gcmf.StartAddress.ToString("X8"));
+                    writer.PushCol(gcmf.StartAddressHex());
                     writer.PushCol(gcmfProp.Attributes);
                     writer.PushCol(gcmfProp.Origin);
                     writer.PushCol(gcmfProp.Radius);
@@ -275,7 +275,7 @@ namespace Manifold.IO.GFZ.GMA
 
                         writer.PushCol(sobj.FileName);
                         writer.PushCol(gcmf.ModelName);
-                        writer.PushCol("0x" + material.StartAddress.ToString("X8"));
+                        writer.PushCol(material.StartAddressHex());
                         writer.PushCol($"GCMF[{gcmfIndex}/{gcmfIndexMax}]");
                         writer.PushCol($"MAT[{matIndex}/{matIndexMax}]");
                         writer.PushCol($"TEX[{texIndex}/{texIndexMax}]");
@@ -352,7 +352,7 @@ namespace Manifold.IO.GFZ.GMA
                         writer.PushCol($"GCMF[{modelIndex}/{modelIndexMax}]");
                         writer.PushCol(gcmf.ModelName);
                         writer.PushCol($"Tex[{texIndex}/{texIndexMax}]");
-                        writer.PushCol("0x" + tex.StartAddress.ToString("X8"));
+                        writer.PushCol(tex.StartAddressHex());
                         writer.PushCol(tex.Unk_0x00);
                         writer.PushCol(tex.MipmapSettings);
                         writer.PushCol(tex.Wrapflags);

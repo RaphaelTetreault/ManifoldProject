@@ -95,9 +95,9 @@ namespace Manifold.IO
             writer.PushCol(prettyName);
         }
 
-        public static void WriteStartAddress(this StreamWriter writer, IBinaryAddressable binaryAddressable)
+        public static void WriteStartAddress(this StreamWriter writer, IBinaryAddressableRange binaryAddressable)
         {
-            writer.PushCol("0x" + binaryAddressable.StartAddress.ToString("X8"));
+            writer.PushCol(binaryAddressable.StartAddressHex());
         }
     }
 }

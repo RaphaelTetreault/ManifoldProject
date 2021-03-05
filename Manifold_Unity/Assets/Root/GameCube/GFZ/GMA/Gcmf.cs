@@ -7,19 +7,21 @@ using UnityEngine.Assertions;
 namespace GameCube.GFZ.GMA
 {
     [Serializable]
-    public class Gcmf : IBinarySerializable, IBinaryAddressable
+    public class Gcmf : IBinarySerializable, IBinaryAddressableRange
     {
+
+        #region FIELDS
+
+
         /// <summary>
         /// Name of this GCMF model
         /// </summary>
         [Header("GCMF")]
-        [SerializeField] string name;
-        [SerializeField, Hex] long startAddress;
-        [SerializeField, Hex] long endAddress;
-        //
-        [SerializeField, Hex] int t1Count;
 
-        #region MEMBERS
+        // metadata
+        [SerializeField] string name;
+        [SerializeField] AddressRange addressRange;
+        [SerializeField, Hex] int t1Count;
 
         [Space]
         [SerializeField] GcmfProperties properties;
@@ -36,17 +38,11 @@ namespace GameCube.GFZ.GMA
 
         #region PROPERTIES
 
-        // Metadata
-        public long StartAddress
-        {
-            get => startAddress;
-            set => startAddress = value;
-        }
 
-        public long EndAddress
+        public AddressRange AddressRange
         {
-            get => endAddress;
-            set => endAddress = value;
+            get => addressRange;
+            set => addressRange = value;
         }
 
         public string ModelName
@@ -82,66 +78,69 @@ namespace GameCube.GFZ.GMA
         public VertexControl_T4 VertexControl_T4
             => vertexControl_T4;
 
+
         #endregion
+
+        #region METHODS
 
 
         public void Deserialize(BinaryReader reader)
         {
-            startAddress = reader.BaseStream.Position;
-
-            // Load properties
-            reader.ReadX(ref properties, true);
-            var textureCount = properties.TextureCount;
-            var matrixCount = properties.TransformMatrixCount;
-            var materialCount = properties.TotalMaterialCount;
-
-            // Read textures array
-            reader.ReadX(ref textures, textureCount, true);
-
-            // Init matrix collection. If size is 0, this init/read doesn't move the stream forward.
-            transformMatrices = new GcmfTransformMatrices(matrixCount);
-            reader.ReadX(ref transformMatrices, false);
-
-            // Read VertexControlData on appropriate GCMFs
-            if (properties.IsSkinOrEffective)
+            this.RecordStartAddress(reader);
             {
-                reader.ReadX(ref vertexControlHeader, true);
-            }
+                // Load properties
+                reader.ReadX(ref properties, true);
+                var textureCount = properties.TextureCount;
+                var matrixCount = properties.TransformMatrixCount;
+                var materialCount = properties.TotalMaterialCount;
 
-            // Get submeshes and materials
-            submeshes = new GcmfSubmesh[materialCount];
-            for (int i = 0; i < submeshes.Length; i++)
-            {
-                // Properly paramatize render data based on GCMF properties
-                submeshes[i] = new GcmfSubmesh()
+                // Read textures array
+                reader.ReadX(ref textures, textureCount, true);
+
+                // Init matrix collection. If size is 0, this init/read doesn't move the stream forward.
+                transformMatrices = new GcmfTransformMatrices(matrixCount);
+                reader.ReadX(ref transformMatrices, false);
+
+                // Read VertexControlData on appropriate GCMFs
+                if (properties.IsSkinOrEffective)
                 {
-                    IsSkinOrEffective = properties.IsSkinOrEffective
-                };
-                reader.ReadX(ref submeshes[i], false);
+                    reader.ReadX(ref vertexControlHeader, true);
+                }
+
+                // Get submeshes and materials
+                submeshes = new GcmfSubmesh[materialCount];
+                for (int i = 0; i < submeshes.Length; i++)
+                {
+                    // Properly paramatize render data based on GCMF properties
+                    submeshes[i] = new GcmfSubmesh()
+                    {
+                        IsSkinOrEffective = properties.IsSkinOrEffective
+                    };
+                    reader.ReadX(ref submeshes[i], false);
+                }
+
+                // Read vertex control data if appropriate
+                if (properties.IsSkinOrEffective)
+                {
+                    var t2Count = vertexControlHeader.VertexCount;
+                    var rootAddress = vertexControlHeader.AddressRange.startAddress;
+
+                    t1Count = vertexControlHeader.VertexControlT4RelPtr - vertexControlHeader.VertexControlT1RelPtr;
+                    t1Count /= 0x20; // format to structure size
+
+                    reader.BaseStream.Seek(rootAddress + vertexControlHeader.VertexControlT1RelPtr, SeekOrigin.Begin);
+                    reader.ReadX(ref vertexControl_T1, t1Count, true);
+                    reader.BaseStream.Seek(rootAddress + vertexControlHeader.VertexControlT2RelPtr, SeekOrigin.Begin);
+                    reader.ReadX(ref vertexControl_T2, t2Count, true);
+                    reader.BaseStream.Seek(rootAddress + vertexControlHeader.VertexControlT3RelPtr, SeekOrigin.Begin);
+                    reader.ReadX(ref vertexControl_T3, true);
+                    reader.BaseStream.Seek(rootAddress + vertexControlHeader.VertexControlT4RelPtr, SeekOrigin.Begin);
+                    vertexControl_T4 = new VertexControl_T4(matrixCount);
+                    reader.ReadX(ref vertexControl_T4, false);
+
+                }
             }
-
-            // Read vertex control data if appropriate
-            if (properties.IsSkinOrEffective)
-            {
-                var t2Count = vertexControlHeader.VertexCount;
-                var rootAddress = vertexControlHeader.StartAddress;
-
-                t1Count = vertexControlHeader.VertexControlT4RelPtr - vertexControlHeader.VertexControlT1RelPtr;
-                t1Count /= 0x20; // format to structure size
-
-                reader.BaseStream.Seek(rootAddress + vertexControlHeader.VertexControlT1RelPtr, SeekOrigin.Begin);
-                reader.ReadX(ref vertexControl_T1, t1Count, true);
-                reader.BaseStream.Seek(rootAddress + vertexControlHeader.VertexControlT2RelPtr, SeekOrigin.Begin);
-                reader.ReadX(ref vertexControl_T2, t2Count, true);
-                reader.BaseStream.Seek(rootAddress + vertexControlHeader.VertexControlT3RelPtr, SeekOrigin.Begin);
-                reader.ReadX(ref vertexControl_T3, true);
-                reader.BaseStream.Seek(rootAddress + vertexControlHeader.VertexControlT4RelPtr, SeekOrigin.Begin);
-                vertexControl_T4 = new VertexControl_T4(matrixCount);
-                reader.ReadX(ref vertexControl_T4, false);
-
-            }
-
-            endAddress = reader.BaseStream.Position;
+            this.RecordEndAddress(reader);
         }
 
         public void Serialize(BinaryWriter writer)
@@ -201,6 +200,9 @@ namespace GameCube.GFZ.GMA
                 writer.BaseStream.Seek(position, SeekOrigin.Begin);
             }
         }
+
+
+        #endregion
 
     }
 }

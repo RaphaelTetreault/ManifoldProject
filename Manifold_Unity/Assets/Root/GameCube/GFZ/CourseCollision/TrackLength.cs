@@ -1,55 +1,53 @@
 ﻿using Manifold.IO;
 using System;
 using System.IO;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace GameCube.GFZ.CourseCollision
 {
     [Serializable]
-    public struct TrackLength : IBinarySerializable, IBinaryAddressable
+    public struct TrackLength : IBinarySerializable, IBinaryAddressableRange
     {
         #region MEMBERS
 
-        [SerializeField, Hex] long startAddress;
-        [SerializeField, Hex] long endAddress;
+
+        [SerializeField]
+        private AddressRange addressRange;
 
         public float trackLength;
 
-        #endregion 
+
+        #endregion
 
         #region PROPERTIES
 
-        public long StartAddress
+
+        public AddressRange AddressRange
         {
-            get => startAddress;
-            set => startAddress = value;
+            get => addressRange;
+            set => addressRange = value;
         }
 
-        public long EndAddress
-        {
-            get => endAddress;
-            set => endAddress = value;
-        }
 
         #endregion
 
         #region METHODS
 
+
         public void Deserialize(BinaryReader reader)
         {
-            startAddress = reader.BaseStream.Position;
-
-            reader.ReadX(ref trackLength);
-
-            endAddress = reader.BaseStream.Position;
+            this.RecordStartAddress(reader);
+            {
+                reader.ReadX(ref trackLength);
+            }
+            this.RecordEndAddress(reader);
         }
 
         public void Serialize(BinaryWriter writer)
         {
             writer.WriteX(trackLength);
         }
+
 
         #endregion
 

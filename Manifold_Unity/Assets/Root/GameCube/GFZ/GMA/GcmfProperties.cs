@@ -36,14 +36,18 @@ namespace GameCube.GFZ.GMA
     }
 
     [Serializable]
-    public class GcmfProperties : IBinarySerializable, IBinaryAddressable
+    public class GcmfProperties : IBinarySerializable, IBinaryAddressableRange
     {
+
+        #region FIELDS
+
+
         public const uint kGCMF = 0x47434D46; // 47 43 4D 46 - GCMF in ASCII
         public const int kFifoPaddingSize = 16;
 
         [Header("GCMF Properties")]
-        [SerializeField, Hex(8)] long startAddress;
-        [SerializeField, Hex(8)] long endAddress;
+        [SerializeField]
+        private AddressRange addressRange;
 
         /// <summary>
         /// 2019/03/31 VERIFIED: constant GCMF in ASCII
@@ -123,7 +127,16 @@ namespace GameCube.GFZ.GMA
         byte[] fifoPadding;
 
 
+        #endregion
+
         #region PROPERTIES
+
+
+        public AddressRange AddressRange
+        {
+            get => addressRange;
+            set => addressRange = value;
+        }
 
         public GcmfAttributes_U32 Attributes
             => attributes;
@@ -173,43 +186,33 @@ namespace GameCube.GFZ.GMA
             }
         }
 
+
         #endregion
 
-
-
-        // Metadata
-        public long StartAddress
-        {
-            get => startAddress;
-            set => startAddress = value;
-        }
-        public long EndAddress
-        {
-            get => endAddress;
-            set => endAddress = value;
-        }
+        #region METHODS
 
         public void Deserialize(BinaryReader reader)
         {
-            StartAddress = reader.BaseStream.Position;
+            this.RecordStartAddress(reader);
+            {
+                reader.ReadX(ref gcmfMagic); Assert.IsTrue(gcmfMagic == kGCMF);
+                reader.ReadX(ref attributes);
+                reader.ReadX(ref origin);
+                reader.ReadX(ref radius);
+                reader.ReadX(ref textureCount);
+                reader.ReadX(ref materialCount);
+                reader.ReadX(ref translucidMaterialCount);
+                reader.ReadX(ref transformMatrixCount);
+                reader.ReadX(ref zero_0x1F); Assert.IsTrue(zero_0x1F == 0);
+                reader.ReadX(ref gcmfTexMtxSize);
+                reader.ReadX(ref zero_0x24); Assert.IsTrue(zero_0x24 == 0);
+                reader.ReadX(ref defaultIndexes, false);
+                reader.ReadX(ref fifoPadding, kFifoPaddingSize);
+            }
+            this.RecordEndAddress(reader);
 
-            reader.ReadX(ref gcmfMagic); Assert.IsTrue(gcmfMagic == kGCMF);
-            reader.ReadX(ref attributes);
-            reader.ReadX(ref origin);
-            reader.ReadX(ref radius);
-            reader.ReadX(ref textureCount);
-            reader.ReadX(ref materialCount);
-            reader.ReadX(ref translucidMaterialCount);
-            reader.ReadX(ref transformMatrixCount);
-            reader.ReadX(ref zero_0x1F); Assert.IsTrue(zero_0x1F == 0);
-            reader.ReadX(ref gcmfTexMtxSize);
-            reader.ReadX(ref zero_0x24); Assert.IsTrue(zero_0x24 == 0);
-            reader.ReadX(ref defaultIndexes, false);
-            reader.ReadX(ref fifoPadding, kFifoPaddingSize);
             foreach (var fifoPad in fifoPadding)
                 Assert.IsTrue(fifoPad == 0);
-
-            EndAddress = reader.BaseStream.Position;
         }
 
         public void Serialize(BinaryWriter writer)
@@ -230,5 +233,9 @@ namespace GameCube.GFZ.GMA
             for (int i = 0; i < kFifoPaddingSize; i++)
                 writer.WriteX((byte)0x00);
         }
+
+
+        #endregion
+
     }
 }

@@ -6,13 +6,14 @@ using UnityEngine;
 namespace GameCube.GFZ.CourseCollision
 {
     [Serializable]
-    public class CollisionTri : IBinarySerializable, IBinaryAddressable
+    public class CollisionTri : IBinarySerializable, IBinaryAddressableRange
     {
 
         #region MEMBERS
 
-        [SerializeField, Hex] long startAddress;
-        [SerializeField, Hex] long endAddress;
+
+        [SerializeField]
+        private AddressRange addressRange;
 
         public float unk_0x00;
         public Vector3 normal;
@@ -23,21 +24,18 @@ namespace GameCube.GFZ.CourseCollision
         public Vector3 precomputed1;
         public Vector3 precomputed2;
 
+
         #endregion
 
         #region PROPERTIES
 
-        public long StartAddress
+
+        public AddressRange AddressRange
         {
-            get => startAddress;
-            set => startAddress = value;
+            get => addressRange;
+            set => addressRange = value;
         }
 
-        public long EndAddress
-        {
-            get => endAddress;
-            set => endAddress = value;
-        }
 
         #endregion
 
@@ -45,18 +43,18 @@ namespace GameCube.GFZ.CourseCollision
 
         public void Deserialize(BinaryReader reader)
         {
-            startAddress = reader.BaseStream.Position;
-
-            reader.ReadX(ref unk_0x00);
-            reader.ReadX(ref normal);
-            reader.ReadX(ref vertex0);
-            reader.ReadX(ref vertex1);
-            reader.ReadX(ref vertex2);
-            reader.ReadX(ref precomputed0);
-            reader.ReadX(ref precomputed1);
-            reader.ReadX(ref precomputed2);
-
-            endAddress = reader.BaseStream.Position;
+            this.RecordStartAddress(reader);
+            {
+                reader.ReadX(ref unk_0x00);
+                reader.ReadX(ref normal);
+                reader.ReadX(ref vertex0);
+                reader.ReadX(ref vertex1);
+                reader.ReadX(ref vertex2);
+                reader.ReadX(ref precomputed0);
+                reader.ReadX(ref precomputed1);
+                reader.ReadX(ref precomputed2);
+            }
+            this.RecordEndAddress(reader);
         }
 
         public void Serialize(BinaryWriter writer)

@@ -6,14 +6,17 @@ using UnityEngine;
 namespace GameCube.GFZ.GMA
 {
     [Serializable]
-    public class GcmfSubmesh : IBinarySerializable, IBinaryAddressable
+    public class GcmfSubmesh : IBinarySerializable, IBinaryAddressableRange
     {
-        [Header("GCMF Submesh")]
-        [SerializeField, Hex] long startAddress;
-        [SerializeField, Hex] long endAddress;
-        [SerializeField] bool isSkinOrEffective;
 
-        #region MEMBERS
+        #region FIELDS
+
+
+        [Header("GCMF Submesh")]
+        [SerializeField]
+        private AddressRange addressRange;
+        [SerializeField]
+        private bool isSkinOrEffective;
 
         // Perhaps find way to distinguish translucid mats from mats?
         [SerializeField] Material material;
@@ -24,27 +27,16 @@ namespace GameCube.GFZ.GMA
         [SerializeField] GfzDisplayList extraDisplayList0;
         [SerializeField] GfzDisplayList extraDisplayList1;
 
+
         #endregion
-
-        public GcmfSubmesh() { }
-
-        public GcmfSubmesh(bool isSkinOrEffective)
-        {
-            this.isSkinOrEffective = isSkinOrEffective;
-        }
 
         #region PROPERTIES
 
-        public long StartAddress
-        {
-            get => startAddress;
-            set => startAddress = value;
-        }
 
-        public long EndAddress
+        public AddressRange AddressRange
         {
-            get => endAddress;
-            set => endAddress = value;
+            get => addressRange;
+            set => addressRange = value;
         }
 
         public bool IsSkinOrEffective
@@ -68,41 +60,55 @@ namespace GameCube.GFZ.GMA
         }
 
         public Material Material => material;
+
         public GfzDisplayList DisplayList0 => displayList0;
+
         public GfzDisplayList DisplayList1 => displayList1;
+
         public ExtraDisplayListHeader ExtraDisplayListHeader => extraDisplayListHeader;
+
         public GfzDisplayList ExtraDisplayList0 => extraDisplayList0;
+
         public GfzDisplayList ExtraDisplayList1 => extraDisplayList1;
+
 
         #endregion
 
+        #region METHODS
+
+
+        public GcmfSubmesh() { }
+
+        public GcmfSubmesh(bool isSkinOrEffective)
+        {
+            this.isSkinOrEffective = isSkinOrEffective;
+        }
 
         public void Deserialize(BinaryReader reader)
         {
-            startAddress = reader.BaseStream.Position;
-
-            reader.ReadX(ref material, true);
-
-            var attrFlags = material.VertexDescriptorFlags;
-
-            if (!isSkinOrEffective)
+            this.RecordStartAddress(reader);
             {
-                displayList0 = new GfzDisplayList(attrFlags, material.MatDisplayListSize);
-                displayList1 = new GfzDisplayList(attrFlags, material.TlMatDisplayListSize);
-                reader.ReadX(ref displayList0, false);
-                reader.ReadX(ref displayList1, false);
+                reader.ReadX(ref material, true);
+                var attrFlags = material.VertexDescriptorFlags;
 
-                if (IsRenderExtraDisplayLists)
+                if (!isSkinOrEffective)
                 {
-                    reader.ReadX(ref extraDisplayListHeader, true);
-                    extraDisplayList0 = new GfzDisplayList(attrFlags, extraDisplayListHeader.VertexSize0);
-                    extraDisplayList1 = new GfzDisplayList(attrFlags, extraDisplayListHeader.VertexSize1);
-                    reader.ReadX(ref extraDisplayList0, false);
-                    reader.ReadX(ref extraDisplayList1, false);
+                    displayList0 = new GfzDisplayList(attrFlags, material.MatDisplayListSize);
+                    displayList1 = new GfzDisplayList(attrFlags, material.TlMatDisplayListSize);
+                    reader.ReadX(ref displayList0, false);
+                    reader.ReadX(ref displayList1, false);
+
+                    if (IsRenderExtraDisplayLists)
+                    {
+                        reader.ReadX(ref extraDisplayListHeader, true);
+                        extraDisplayList0 = new GfzDisplayList(attrFlags, extraDisplayListHeader.VertexSize0);
+                        extraDisplayList1 = new GfzDisplayList(attrFlags, extraDisplayListHeader.VertexSize1);
+                        reader.ReadX(ref extraDisplayList0, false);
+                        reader.ReadX(ref extraDisplayList1, false);
+                    }
                 }
             }
-
-            endAddress = reader.BaseStream.Position;
+            this.RecordEndAddress(reader);
         }
 
         public void Serialize(BinaryWriter writer)
@@ -122,6 +128,9 @@ namespace GameCube.GFZ.GMA
                 }
             }
         }
+
+
+        #endregion
 
     }
 }

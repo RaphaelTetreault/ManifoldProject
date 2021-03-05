@@ -6,13 +6,14 @@ using System;
 namespace GameCube.GFZ.CourseCollision
 {
     [Serializable]
-    public class Collision : IBinarySerializable, IBinaryAddressable
+    public class Collision : IBinarySerializable, IBinaryAddressableRange
     {
 
-        #region MEMBERS
+        #region FIELDS
 
-        [SerializeField, Hex] long startAddress;
-        [SerializeField, Hex] long endAddress;
+
+        [SerializeField]
+        private AddressRange addressRange;
 
         public uint unk_0x00;
         public uint unk_0x04;
@@ -27,29 +28,27 @@ namespace GameCube.GFZ.CourseCollision
         public CollisionTri[] tris;
         public CollisionQuad[] quads;
 
+
         #endregion
 
         #region PROPERTIES
 
-        public long StartAddress
+
+        public AddressRange AddressRange
         {
-            get => startAddress;
-            set => startAddress = value;
+            get => addressRange;
+            set => addressRange = value;
         }
 
-        public long EndAddress
-        {
-            get => endAddress;
-            set => endAddress = value;
-        }
 
         #endregion
 
         #region METHODS
 
+
         public void Deserialize(BinaryReader reader)
         {
-            startAddress = reader.BaseStream.Position;
+            this.RecordStartAddress(reader);
             {
                 reader.ReadX(ref unk_0x00);
                 reader.ReadX(ref unk_0x04);
@@ -61,7 +60,7 @@ namespace GameCube.GFZ.CourseCollision
                 reader.ReadX(ref triAbsPtr);
                 reader.ReadX(ref quadAbsPtr);
             }
-            endAddress = reader.BaseStream.Position;
+            this.RecordEndAddress(reader);
             {
                 if (triCount > 0)
                 {
@@ -75,7 +74,7 @@ namespace GameCube.GFZ.CourseCollision
                     reader.ReadX(ref quads, quadCount, true);
                 }
             }
-            reader.BaseStream.Seek(endAddress, SeekOrigin.Begin);
+            this.SetReaderToEndAddress(reader);
         }
 
         public void Serialize(BinaryWriter writer)
@@ -93,6 +92,7 @@ namespace GameCube.GFZ.CourseCollision
             // You need to implement saving the tris/quads
             throw new NotImplementedException();
         }
+
 
         #endregion
 

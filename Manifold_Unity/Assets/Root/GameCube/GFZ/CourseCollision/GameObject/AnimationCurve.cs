@@ -7,13 +7,14 @@ using UnityEngine;
 namespace GameCube.GFZ.CourseCollision
 {
     [Serializable]
-    public class AnimationCurve : IBinarySerializable, IBinaryAddressable
+    public class AnimationCurve : IBinarySerializable, IBinaryAddressableRange
     {
 
-        #region MEMBERS
+        #region FIELDS
 
-        [SerializeField, Hex] long startAddress;
-        [SerializeField, Hex] long endAddress;
+
+        [SerializeField]
+        private AddressRange addressRange;
 
         public uint unk_0x00;
         public uint unk_0x04;
@@ -24,29 +25,27 @@ namespace GameCube.GFZ.CourseCollision
 
         public KeyableAttribute[] keyableAttributes;
 
+
         #endregion
 
         #region PROPERTIES
 
-        public long StartAddress
+
+        public AddressRange AddressRange
         {
-            get => startAddress;
-            set => startAddress = value;
+            get => addressRange;
+            set => addressRange = value;
         }
 
-        public long EndAddress
-        {
-            get => endAddress;
-            set => endAddress = value;
-        }
 
         #endregion
 
         #region METHODS
 
+
         public void Deserialize(BinaryReader reader)
         {
-            startAddress = reader.BaseStream.Position;
+            this.RecordStartAddress(reader);
             {
                 reader.ReadX(ref unk_0x00);
                 reader.ReadX(ref unk_0x04);
@@ -55,7 +54,7 @@ namespace GameCube.GFZ.CourseCollision
                 reader.ReadX(ref keyableCount);
                 reader.ReadX(ref keyableAbsPtr);
             }
-            endAddress = reader.BaseStream.Position;
+            this.RecordEndAddress(reader);
             {
                 keyableAttributes = new KeyableAttribute[keyableCount];
                 if (keyableCount > 0)
@@ -64,7 +63,7 @@ namespace GameCube.GFZ.CourseCollision
                     reader.ReadX(ref keyableAttributes, keyableCount, true);
                 }
             }
-            reader.BaseStream.Seek(endAddress, SeekOrigin.Begin);
+            this.SetReaderToEndAddress(reader);
         }
 
         public void Serialize(BinaryWriter writer)
@@ -76,6 +75,7 @@ namespace GameCube.GFZ.CourseCollision
             writer.WriteX(keyableCount);
             writer.WriteX(keyableAbsPtr);
         }
+
 
         #endregion
 

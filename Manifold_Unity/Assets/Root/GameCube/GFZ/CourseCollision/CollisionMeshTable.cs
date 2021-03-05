@@ -6,10 +6,14 @@ using UnityEngine;
 namespace GameCube.GFZ.CourseCollision
 {
     [Serializable]
-    public class CollisionMeshTable : IBinarySerializable, IBinaryAddressable
+    public class CollisionMeshTable : IBinarySerializable, IBinaryAddressableRange
     {
-        [SerializeField, Hex] long startAddress;
-        [SerializeField, Hex] long endAddress;
+
+        #region FIELDS
+
+
+        [SerializeField]
+        private AddressRange addressRange;
 
         public const int kCountUnknown = 9;
         public const int kCountAxCollisionTypes = 11;
@@ -35,17 +39,21 @@ namespace GameCube.GFZ.CourseCollision
         public CollisionMeshIndices[] quadMeshIndices;
 
 
-        public long StartAddress
+        #endregion
+
+        #region PROPERTIES
+
+
+        public AddressRange AddressRange
         {
-            get => startAddress;
-            set => startAddress = value;
+            get => addressRange;
+            set => addressRange = value;
         }
 
-        public long EndAddress
-        {
-            get => endAddress;
-            set => endAddress = value;
-        }
+
+        #endregion
+
+        #region METHODS
 
 
         public void Deserialize(BinaryReader reader)
@@ -106,6 +114,9 @@ namespace GameCube.GFZ.CourseCollision
         {
             throw new System.NotImplementedException();
         }
+
+
+        #endregion
 
     }
 }

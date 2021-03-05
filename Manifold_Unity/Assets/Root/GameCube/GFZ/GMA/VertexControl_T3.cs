@@ -7,26 +7,7 @@ using UnityEngine;
 namespace GameCube.GFZ.GMA
 {
     [Serializable]
-    public struct IntArray : IBinarySerializable
-    {
-        public int count;
-        public int[] addresses;
-
-        public void Deserialize(BinaryReader reader)
-        {
-            reader.ReadX(ref count);
-            reader.ReadX(ref addresses, count);
-        }
-
-        public void Serialize(BinaryWriter writer)
-        {
-            writer.WriteX(count);
-            writer.WriteX(addresses, false);
-        }
-    }
-
-    [Serializable]
-    public class VertexControl_T3 : IBinarySerializable, IBinaryAddressable
+    public class VertexControl_T3 : IBinarySerializable, IBinaryAddressableRange
     {
         // NOTE
         // Total count appears to be something like
@@ -36,8 +17,7 @@ namespace GameCube.GFZ.GMA
         public const int kFifoPaddingSize = 12;
 
         [Header("Vtx Ctrl T3")]
-        [SerializeField, Hex(8)] long startAddress;
-        [SerializeField, Hex(8)] long endAddress;
+        [SerializeField] AddressRange addressRange;
         [SerializeField, Hex(8)] int arrayCount;
         [SerializeField, Hex(8)] int addressCount;
         [SerializeField, Hex(8)] long size;
@@ -49,46 +29,41 @@ namespace GameCube.GFZ.GMA
         byte[] fifoPadding;
 
 
-        // Metadata
-        public long StartAddress
+        public AddressRange AddressRange
         {
-            get => startAddress;
-            set => startAddress = value;
-        }
-        public long EndAddress
-        {
-            get => endAddress;
-            set => endAddress = value;
+            get => addressRange;
+            set => addressRange = value;
         }
 
         public void Deserialize(BinaryReader reader)
         {
-            StartAddress = reader.BaseStream.Position;
-
-            List<IntArray> temp = new List<IntArray>();
-
-            arrayCount = addressCount = 0;
-            while (!reader.EndOfStream())
+            this.RecordStartAddress(reader);
             {
-                var numEntries = 0;
-                reader.ReadX(ref numEntries);
-                reader.BaseStream.Position -= 4;
+                List<IntArray> temp = new List<IntArray>();
 
-                if (numEntries > 0x30 || numEntries < 0)
-                    break;
+                arrayCount = addressCount = 0;
+                while (!reader.EndOfStream())
+                {
+                    var numEntries = 0;
+                    reader.ReadX(ref numEntries);
+                    reader.BaseStream.Position -= 4;
 
-                var intArray = new IntArray();
-                reader.ReadX(ref intArray, false);
-                temp.Add(intArray);
+                    if (numEntries > 0x30 || numEntries < 0)
+                        break;
 
-                arrayCount++;
-                addressCount += numEntries;
+                    var intArray = new IntArray();
+                    reader.ReadX(ref intArray, false);
+                    temp.Add(intArray);
+
+                    arrayCount++;
+                    addressCount += numEntries;
+                }
+
+                intArrays = temp.ToArray();
             }
+            this.RecordEndAddress(reader);
 
-            intArrays = temp.ToArray();
-
-            EndAddress = reader.BaseStream.Position;
-            size = endAddress - startAddress;
+            size = this.GetBinarySize();
         }
 
         public void Serialize(BinaryWriter writer)

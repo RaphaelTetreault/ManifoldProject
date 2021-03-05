@@ -1,31 +1,40 @@
 ﻿using GameCube.GX;
 using Manifold.IO;
 using System;
-using System.IO;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using UnityEngine.Assertions;
 
 namespace GameCube.GFZ.GMA
 {
     [Serializable]
-    public class GfzDisplayList : IBinarySerializable, IBinaryAddressable
+    public class GfzDisplayList : IBinarySerializable, IBinaryAddressableRange
     {
-        [Header("Display List")]
-        [SerializeField, Hex] long startAddress;
-        [SerializeField, Hex] long endAddress;
 
-        [SerializeField] GXAttrFlag_U32 attrFlags;
-        [SerializeField, Hex] int size;
+        #region FIELDS
 
-        #region MEMBERS
 
-        [SerializeField] byte gxBegin;
-        [SerializeField] GxDisplayList[] gxDisplayLists;
+        [HideInInspector]
+        [SerializeField]
+        private AddressRange addressRange;
 
-        public GxDisplayList[] GxDisplayLists => gxDisplayLists;
+        [SerializeField]
+        private GXAttrFlag_U32 attrFlags;
+
+        [SerializeField]
+        private int size;
+
+        [SerializeField]
+        private byte gxBegin;
+
+        [SerializeField]
+        private GxDisplayList[] gxDisplayLists;
+
 
         #endregion
+
+        #region CONSTRUCTORS
 
         public GfzDisplayList() { }
 
@@ -35,22 +44,23 @@ namespace GameCube.GFZ.GMA
             this.size = size;
         }
 
+        #endregion
+
         #region PROPERTIES
 
-        // Metadata
-        public long StartAddress
+
+        public GxDisplayList[] GxDisplayLists => gxDisplayLists;
+
+        public AddressRange AddressRange
         {
-            get => startAddress;
-            set => startAddress = value;
+            get => addressRange;
+            set => addressRange = value;
         }
 
-        public long EndAddress
-        {
-            get => endAddress;
-            set => endAddress = value;
-        }
 
         #endregion
+
+        #region METHODS
 
 
         public void Deserialize(BinaryReader reader)
@@ -62,20 +72,18 @@ namespace GameCube.GFZ.GMA
                 return;
             }
 
-            //try
+            this.RecordStartAddress(reader);
             {
-                startAddress = reader.BaseStream.Position;
-
                 // Read real
                 reader.ReadX(ref gxBegin);
-                Assert.IsTrue(gxBegin == 0x00, $"{startAddress:X8} {attrFlags}");
+                Assert.IsTrue(gxBegin == 0x00, $"{addressRange.startAddress:X8} {attrFlags}");
 
                 var gxDisplayList = new List<GxDisplayList>();
 
                 // I'm sure this is going to break.
                 // Perhaps use size in this equation? 
                 while (!reader.EndOfStream()
-                    && reader.BaseStream.Position < (startAddress + size)
+                    && reader.BaseStream.Position < (addressRange.startAddress + size)
                     && reader.PeekByte() != 0x00)
                 {
                     GxDisplayList vtx = new GxDisplayList(attrFlags);
@@ -83,27 +91,21 @@ namespace GameCube.GFZ.GMA
                     gxDisplayList.Add(vtx);
                 }
                 gxDisplayLists = gxDisplayList.ToArray();
-
-                endAddress = reader.BaseStream.Position;
-
-                var fifoPadding = (32 - reader.BaseStream.Position % 32) % 32;
-                reader.BaseStream.Position += fifoPadding;
-                //Debug.Log($"Begin:{StartAddress:X8} End:{EndAddress:X8}");
-
             }
-            //catch (Exception e)
-            //{
-            //    Debug.LogError($"Error {e.GetType().Name} at: {reader.BaseStream.Position:X8} {attrFlags}");
-            //}
+            this.RecordEndAddress(reader);
+
+            // Apply padding if necessary
+            var fifoPadding = (32 - reader.BaseStream.Position % 32) % 32;
+            reader.BaseStream.Position += fifoPadding;
         }
-
-
 
         public void Serialize(BinaryWriter writer)
         {
             throw new NotImplementedException();
-            //writer.WriteX(data, false);
         }
+
+
+        #endregion
 
     }
 }

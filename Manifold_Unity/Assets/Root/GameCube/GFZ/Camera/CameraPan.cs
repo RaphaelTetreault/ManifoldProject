@@ -7,12 +7,12 @@ using UnityEngine.Assertions;
 namespace GameCube.GFZ.Camera
 {
     [Serializable]
-    public class CameraPan : IBinarySerializable, IBinaryAddressable
+    public class CameraPan : IBinarySerializable, IBinaryAddressableRange
     {
         public const int kSizeBytes = 0x54;
 
-        [HideInInspector, SerializeField, Hex] long startAddress;
-        [HideInInspector, SerializeField, Hex] long endAddress;
+        [SerializeField, HideInInspector]
+        private AddressRange addressRange;
 
         public int frameCount;
         public float lerpSpeed;
@@ -21,30 +21,26 @@ namespace GameCube.GFZ.Camera
         public CameraPanPoint from;
         public CameraPanPoint to;
 
-        public long StartAddress
+        public AddressRange AddressRange
         {
-            get => startAddress;
-            set => startAddress = value;
-        }
-
-        public long EndAddress
-        {
-            get => endAddress;
-            set => endAddress = value;
+            get => addressRange;
+            set => addressRange = value;
         }
 
         public void Deserialize(BinaryReader reader)
         {
-            startAddress = reader.BaseStream.Position;
+            this.RecordStartAddress(reader);
 
             reader.ReadX(ref frameCount);
             reader.ReadX(ref lerpSpeed);
             reader.ReadX(ref zero_0x08);
-            Assert.IsTrue(zero_0x08 == 0);
             reader.ReadX(ref from, true);
             reader.ReadX(ref to, true);
 
-            endAddress = reader.BaseStream.Position;
+            this.RecordEndAddress(reader);
+
+            // Assertions
+            Assert.IsTrue(zero_0x08 == 0);
         }
 
         public void Serialize(BinaryWriter writer)

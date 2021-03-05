@@ -8,12 +8,17 @@ using GameCube.GFZ.GMA;
 namespace GameCube.GX
 {
     [Serializable]
-    public class GxDisplayList : IBinarySerializable, IBinaryAddressable
+    public class GxDisplayList : IBinarySerializable, IBinaryAddressableRange
     {
-        [Header("GX Display List")]
-        [SerializeField, Hex(8)] long startAddress;
-        [SerializeField, Hex(8)] long endAddress;
 
+        #region FIELDS
+
+
+        [Header("GX Display List")]
+        [SerializeField]
+        private AddressRange addressRange;
+
+        [SerializeField, HideInInspector]
         private GXAttrFlag_U32 attr;
         public GxDisplayCommand gxCmd;
         public ushort count;
@@ -32,7 +37,7 @@ namespace GameCube.GX
         // Standard vertex data
         public Vector3[] pos;
         public Vector3[] nrm;
-        public VectorNBT[] nbt;
+        public NormalBinormalTangent[] nbt;
         public Color32[] clr0;
         public Color32[] clr1;
         public Vector2[] tex0;
@@ -50,16 +55,22 @@ namespace GameCube.GX
         // tex mtx array
         // light array
 
-        public long StartAddress
+
+        #endregion
+
+        #region PROPERTIES
+
+        public AddressRange AddressRange
         {
-            get => startAddress;
-            set => startAddress = value;
+            get => addressRange;
+            set => addressRange = value;
         }
-        public long EndAddress
-        {
-            get => endAddress;
-            set => endAddress = value;
-        }
+
+
+        #endregion
+
+        #region METHODS
+
 
         public GxDisplayList(GXAttrFlag_U32 attr)
         {
@@ -114,7 +125,7 @@ namespace GameCube.GX
             nrm = vat.HasAttr(gxCmd, attr & GXAttrFlag_U32.GX_VA_NRM)
                 ? new Vector3[count] : new Vector3[0];
             nbt = vat.HasAttr(gxCmd, attr & GXAttrFlag_U32.GX_VA_NBT)
-                ? new VectorNBT[count] : new VectorNBT[0];
+                ? new NormalBinormalTangent[count] : new NormalBinormalTangent[0];
             // Color
             clr0 = vat.HasAttr(gxCmd, attr & GXAttrFlag_U32.GX_VA_CLR0)
                 ? new Color32[count] : new Color32[0];
@@ -224,28 +235,10 @@ namespace GameCube.GX
             throw new NotImplementedException();
         }
 
+
+        #endregion
+
     }
 
-    [Serializable]
-    public struct VectorNBT //: IBinarySerializable
-    {
-        public Vector3 normal;
-        public Vector3 binormal;
-        public Vector3 tangent;
 
-        //public void Deserialize(BinaryReader reader)
-        //{
-        //    reader.ReadX(ref normal);
-        //    reader.ReadX(ref binormal);
-        //    reader.ReadX(ref tangent);
-        //    // this requires parameters!
-        //    throw new NotImplementedException();
-        //}
-
-        //public void Serialize(BinaryWriter writer)
-        //{
-        //    writer.WriteX(binormal);
-        //    writer.WriteX(tangent);
-        //}
-    }
 }

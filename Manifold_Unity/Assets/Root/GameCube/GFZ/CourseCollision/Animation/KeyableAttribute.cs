@@ -9,13 +9,14 @@ namespace GameCube.GFZ.CourseCollision.Animation
     /// This structure appears to be a Maya (4.?) KeyableAttribute
     /// </summary>
     [Serializable]
-    public class KeyableAttribute : IBinarySerializable, IBinaryAddressable
+    public class KeyableAttribute : IBinarySerializable, IBinaryAddressableRange
     {
 
-        #region MEMBERS
+        #region FIELDS
 
-        [SerializeField, Hex] long startAddress;
-        [SerializeField, Hex] long endAddress;
+
+        [SerializeField]
+        private AddressRange addressRange;
 
         /// <summary>
         /// All values: 1, 2, or 3.
@@ -26,21 +27,18 @@ namespace GameCube.GFZ.CourseCollision.Animation
         public float zTangentIn;
         public float zTangentOut;
 
+
         #endregion
 
         #region PROPERTIES
 
-        public long StartAddress
+
+        public AddressRange AddressRange
         {
-            get => startAddress;
-            set => startAddress = value;
+            get => addressRange;
+            set => addressRange = value;
         }
 
-        public long EndAddress
-        {
-            get => endAddress;
-            set => endAddress = value;
-        }
 
         #endregion
 
@@ -48,15 +46,15 @@ namespace GameCube.GFZ.CourseCollision.Animation
 
         public void Deserialize(BinaryReader reader)
         {
-            startAddress = reader.BaseStream.Position;
-
-            reader.ReadX(ref easeMode);
-            reader.ReadX(ref time);
-            reader.ReadX(ref value);
-            reader.ReadX(ref zTangentIn);
-            reader.ReadX(ref zTangentOut);
-
-            endAddress = reader.BaseStream.Position;
+            this.RecordStartAddress(reader);
+            {
+                reader.ReadX(ref easeMode);
+                reader.ReadX(ref time);
+                reader.ReadX(ref value);
+                reader.ReadX(ref zTangentIn);
+                reader.ReadX(ref zTangentOut);
+            }
+            this.RecordEndAddress(reader);
         }
 
         public void Serialize(BinaryWriter writer)

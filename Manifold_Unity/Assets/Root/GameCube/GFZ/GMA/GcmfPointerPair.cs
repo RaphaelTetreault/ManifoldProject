@@ -1,4 +1,6 @@
-﻿using Manifold.IO;
+﻿// TODO: use/make relptr struct?
+
+using Manifold.IO;
 using System;
 using System.IO;
 using UnityEngine;
@@ -6,22 +8,21 @@ using UnityEngine;
 namespace GameCube.GFZ.GMA
 {
     [Serializable]
-    public struct GcmfPointerPair : IBinarySerializable, IBinaryAddressable
+    public struct GcmfPointerPair : IBinarySerializable, IBinaryAddressableRange
     {
+
+        #region FIELDS
+
+
         /// <summary>
         /// Two's compliment, 0xFFFFFFFF
         /// </summary>
         public const int kNullPtr = -1;
         public const int BinarySize = 0x08;
 
-        #region MEMBERS
-
         // DEBUG
-        [SerializeField, Hex(8)]
-        long startAddress;
-
-        [SerializeField, Hex(8)]
-        long endAddress;
+        [SerializeField]
+        private AddressRange addressRange;
 
         // DATA
         [Space]
@@ -31,20 +32,16 @@ namespace GameCube.GFZ.GMA
         [SerializeField, Hex("04", 8)]
         public int gcmfNameRelPtr;
 
+
         #endregion
 
         #region PROPERTIES
 
-        public long StartAddress
-        {
-            get => startAddress;
-            set => startAddress = value;
-        }
 
-        public long EndAddress
+        public AddressRange AddressRange
         {
-            get => endAddress;
-            set => endAddress = value;
+            get => addressRange;
+            set => addressRange = value;
         }
 
         public int GcmfDataRelPtr
@@ -53,18 +50,20 @@ namespace GameCube.GFZ.GMA
         public int GcmfNameRelPtr
             => gcmfNameRelPtr;
 
+
         #endregion
 
         #region METHODS
 
+
         public void Deserialize(BinaryReader reader)
         {
-            startAddress = reader.BaseStream.Position;
-
-            reader.ReadX(ref gcmfDataRelPtr);
-            reader.ReadX(ref gcmfNameRelPtr);
-
-            endAddress = reader.BaseStream.Position;
+            this.RecordStartAddress(reader);
+            {
+                reader.ReadX(ref gcmfDataRelPtr);
+                reader.ReadX(ref gcmfNameRelPtr);
+            }
+            this.RecordEndAddress(reader);
         }
 
         public void Serialize(BinaryWriter writer)
@@ -72,6 +71,7 @@ namespace GameCube.GFZ.GMA
             writer.WriteX(gcmfDataRelPtr);
             writer.WriteX(gcmfNameRelPtr);
         }
+
 
         #endregion
 

@@ -6,16 +6,24 @@ using UnityEngine;
 namespace GameCube.GFZ.FMI
 {
     [Serializable]
-    public class Fmi : IBinarySerializable, IBinaryAddressable, IFile
+    public class Fmi : IBinarySerializable, IBinaryAddressableRange, IFile
     {
+
+        #region FIELDS
+
+
+        // consts
         private const long kParticlesAbsPtr = 0x0044;
         private const long kAnimationAbsPtr = 0x0208;
         private const long kNameAbsPtr = 0x02A0;
 
-        [SerializeField] string fileName;
-        [SerializeField, Hex] long startAddress;
-        [SerializeField, Hex] long endAddress;
+        // metadata
+        [SerializeField]
+        private string fileName;
+        [SerializeField]
+        private AddressRange addressRange;
 
+        // structure
         public byte unk_0x00;
         public byte unk_0x01;
         public byte animationCount;
@@ -26,10 +34,21 @@ namespace GameCube.GFZ.FMI
         public float unk_0x07;
         public ushort unk_0x08;
 
+        // sub-structures
         public ExhaustParticle[] particles;
         public ExhaustAnimation[] animations;
 
+
+        #endregion
+
         #region PROPERTIES
+
+
+        public AddressRange AddressRange
+        {
+            get => addressRange;
+            set => addressRange = value;
+        }
 
         public string FileName
         {
@@ -37,23 +56,15 @@ namespace GameCube.GFZ.FMI
             set => fileName = value;
         }
 
-        public long StartAddress
-        {
-            get => startAddress;
-            set => startAddress = value;
-        }
-
-        public long EndAddress
-        {
-            get => endAddress;
-            set => endAddress = value;
-        }
 
         #endregion
 
+        #region METHODS
+
+
         public void Deserialize(BinaryReader reader)
         {
-            startAddress = reader.BaseStream.Position;
+            this.RecordStartAddress(reader);
             {
                 reader.ReadX(ref unk_0x00);
                 reader.ReadX(ref unk_0x01);
@@ -65,7 +76,7 @@ namespace GameCube.GFZ.FMI
                 reader.ReadX(ref unk_0x07);
                 reader.ReadX(ref unk_0x08);
             }
-            endAddress = reader.BaseStream.Position;
+            this.RecordEndAddress(reader);
             {
                 reader.BaseStream.Seek(kParticlesAbsPtr, SeekOrigin.Begin);
                 reader.ReadX(ref particles, animationCount, true);
@@ -75,12 +86,16 @@ namespace GameCube.GFZ.FMI
 
                 // TODO: read names
             }
-            reader.BaseStream.Seek(endAddress, SeekOrigin.Begin);
+            this.SetReaderToEndAddress(reader);
         }
 
         public void Serialize(BinaryWriter writer)
         {
             throw new NotImplementedException();
         }
+
+
+        #endregion
+
     }
 }

@@ -206,7 +206,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             writer.PushCol(sobj.FilePath);
             writer.PushCol($"[{index}/{total}]");
             writer.PushCol($"{level}");
-            writer.PushCol("0x" + param.StartAddress.ToString("X8"));
+            writer.PushCol(param.StartAddressHex());
             writer.PushCol(param.unk_0x00);
             writer.PushCol(param.unk_0x04);
             writer.PushCol(param.unk_0x08);
@@ -272,7 +272,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             writer.PushCol(sobj.FilePath);
             writer.PushCol($"[{index}/{total}]");
             writer.PushCol($"{level}");
-            writer.PushCol("0x" + trackTransform.StartAddress.ToString("X8"));
+            writer.PushCol(trackTransform.StartAddressHex());
             writer.PushCol(trackTransform.hierarchyDepth);
             writer.PushCol(trackTransform.zero_0x01);
             writer.PushCol(trackTransform.hasChildren);
@@ -331,8 +331,8 @@ namespace Manifold.IO.GFZ.CourseCollision
                                 writer.PushCol(file.FileName);
                                 writer.PushCol(gameObjectIndex);
                                 writer.PushCol(gameObject.name);
-                                writer.PushCol($"0x{animationCurve.StartAddress:X8}");
-                                writer.PushCol($"0x{keyable.StartAddress:X8}");
+                                writer.PushCol(animationCurve.StartAddressHex());
+                                writer.PushCol(keyable.StartAddressHex());
                                 writer.PushCol(animIndex);
                                 writer.PushCol(keyable.easeMode);
                                 writer.PushCol(keyable.time);
@@ -385,8 +385,8 @@ namespace Manifold.IO.GFZ.CourseCollision
                                 writer.PushCol(file.FileName);
                                 writer.PushCol(gameObjectIndex);
                                 writer.PushCol(gameObject.name);
-                                writer.PushCol($"0x{animationCurve.StartAddress:X8}");
-                                writer.PushCol($"0x{keyable.StartAddress:X8}");
+                                writer.PushCol(animationCurve.StartAddressHex());
+                                writer.PushCol(keyable.StartAddressHex());
                                 writer.PushCol(animIndex);
                                 writer.PushCol(keyable.easeMode);
                                 writer.PushCol(keyable.time);

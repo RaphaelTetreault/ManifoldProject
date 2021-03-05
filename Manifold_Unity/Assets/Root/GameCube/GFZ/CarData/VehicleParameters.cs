@@ -33,12 +33,13 @@ namespace GameCube.GFZ.CarData
     }
 
     [Serializable]
-    public struct VehicleParameters : IBinarySerializable, IBinaryAddressable
+    public struct VehicleParameters : IBinarySerializable, IBinaryAddressableRange
     {
-        [SerializeField, Hex] long startAddress;
-        [SerializeField, Hex] long endAddress;
 
-        #region MEMBERS
+        #region FIELDS
+
+        [SerializeField]
+        private AddressRange addressRange;
 
         [Space]
         [Tooltip("Runtime variable")]
@@ -76,21 +77,18 @@ namespace GameCube.GFZ.CarData
         public Vector3 wallCollisionBackRight;
         public Vector3 wallCollisionBackLeft;
 
+
         #endregion
 
         #region PROPERTIES
 
-        public long StartAddress
+
+        public AddressRange AddressRange
         {
-            get => startAddress;
-            set => startAddress = value;
+            get => addressRange;
+            set => addressRange = value;
         }
 
-        public long EndAddress
-        {
-            get => endAddress;
-            set => endAddress = value;
-        }
 
         #endregion
 
@@ -98,41 +96,41 @@ namespace GameCube.GFZ.CarData
 
         public void Deserialize(BinaryReader reader)
         {
-            startAddress = reader.BaseStream.Position;
-
-            reader.ReadX(ref namePointer);
-            reader.ReadX(ref weight);
-            reader.ReadX(ref acceleration);
-            reader.ReadX(ref maxSpeed);
-            reader.ReadX(ref grip1);
-            reader.ReadX(ref grip3);
-            reader.ReadX(ref turnTension);
-            reader.ReadX(ref driftAcceleration);
-            reader.ReadX(ref turnMovement);
-            reader.ReadX(ref strafeTurn);
-            reader.ReadX(ref strafe);
-            reader.ReadX(ref turnReaction);
-            reader.ReadX(ref grip2);
-            reader.ReadX(ref boostStrength);
-            reader.ReadX(ref boostDuration);
-            reader.ReadX(ref turnDeceleration);
-            reader.ReadX(ref drag);
-            reader.ReadX(ref body);
-            reader.ReadX(ref unk_0x48);
-            reader.ReadX(ref unk_0x49);
-            reader.ReadX(ref zero_0x4A);
-            reader.ReadX(ref cameraReorientation);
-            reader.ReadX(ref cameraRepositioning);
-            reader.ReadX(ref tiltFrontRight);
-            reader.ReadX(ref tiltFrontLeft);
-            reader.ReadX(ref tiltBackRight);
-            reader.ReadX(ref tiltBackLeft);
-            reader.ReadX(ref wallCollisionFrontRight);
-            reader.ReadX(ref wallCollisionFrontLeft);
-            reader.ReadX(ref wallCollisionBackRight);
-            reader.ReadX(ref wallCollisionBackLeft);
-
-            endAddress = reader.BaseStream.Position;
+            this.RecordStartAddress(reader);
+            {
+                reader.ReadX(ref namePointer);
+                reader.ReadX(ref weight);
+                reader.ReadX(ref acceleration);
+                reader.ReadX(ref maxSpeed);
+                reader.ReadX(ref grip1);
+                reader.ReadX(ref grip3);
+                reader.ReadX(ref turnTension);
+                reader.ReadX(ref driftAcceleration);
+                reader.ReadX(ref turnMovement);
+                reader.ReadX(ref strafeTurn);
+                reader.ReadX(ref strafe);
+                reader.ReadX(ref turnReaction);
+                reader.ReadX(ref grip2);
+                reader.ReadX(ref boostStrength);
+                reader.ReadX(ref boostDuration);
+                reader.ReadX(ref turnDeceleration);
+                reader.ReadX(ref drag);
+                reader.ReadX(ref body);
+                reader.ReadX(ref unk_0x48);
+                reader.ReadX(ref unk_0x49);
+                reader.ReadX(ref zero_0x4A);
+                reader.ReadX(ref cameraReorientation);
+                reader.ReadX(ref cameraRepositioning);
+                reader.ReadX(ref tiltFrontRight);
+                reader.ReadX(ref tiltFrontLeft);
+                reader.ReadX(ref tiltBackRight);
+                reader.ReadX(ref tiltBackLeft);
+                reader.ReadX(ref wallCollisionFrontRight);
+                reader.ReadX(ref wallCollisionFrontLeft);
+                reader.ReadX(ref wallCollisionBackRight);
+                reader.ReadX(ref wallCollisionBackLeft);
+            }
+            this.RecordEndAddress(reader);
         }
 
         public void Serialize(BinaryWriter writer)

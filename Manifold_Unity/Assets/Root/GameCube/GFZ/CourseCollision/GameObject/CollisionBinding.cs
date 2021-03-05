@@ -7,13 +7,14 @@ using UnityEngine.Assertions;
 namespace GameCube.GFZ.CourseCollision
 {
     [Serializable]
-    public class CollisionBinding : IBinarySerializable, IBinaryAddressable
+    public class CollisionBinding : IBinarySerializable, IBinaryAddressableRange
     {
 
-        #region MEMBERS
+        #region FIELDS
 
-        [SerializeField, Hex] long startAddress;
-        [SerializeField, Hex] long endAddress;
+
+        [SerializeField]
+        private AddressRange addressRange;
 
         [Hex(numDigits: 4)]
         public uint unk_0x00;
@@ -25,36 +26,34 @@ namespace GameCube.GFZ.CourseCollision
         public ReferenceBinding referenceBinding;
         public Collision collision;
 
+
         #endregion
 
         #region PROPERTIES
 
-        public long StartAddress
+
+        public AddressRange AddressRange
         {
-            get => startAddress;
-            set => startAddress = value;
+            get => addressRange;
+            set => addressRange = value;
         }
 
-        public long EndAddress
-        {
-            get => endAddress;
-            set => endAddress = value;
-        }
 
         #endregion
 
         #region METHODS
 
+
         public void Deserialize(BinaryReader reader)
         {
-            startAddress = reader.BaseStream.Position;
+            this.RecordStartAddress(reader);
             {
                 reader.ReadX(ref unk_0x00);
                 reader.ReadX(ref unk_0x04);
                 reader.ReadX(ref referenceBindingAbsPtr);
                 reader.ReadX(ref collisionAbsPtr);
             }
-            endAddress = reader.BaseStream.Position;
+            this.RecordEndAddress(reader);
             {
                 Assert.IsTrue(referenceBindingAbsPtr != 0);
                 reader.BaseStream.Seek(referenceBindingAbsPtr, SeekOrigin.Begin);
@@ -68,8 +67,9 @@ namespace GameCube.GFZ.CourseCollision
                     reader.ReadX(ref collision, true);
                 }
             }
-            reader.BaseStream.Seek(endAddress, SeekOrigin.Begin);
+            this.SetReaderToEndAddress(reader);
         }
+
 
         public void Serialize(BinaryWriter writer)
         {

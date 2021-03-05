@@ -6,13 +6,13 @@ using UnityEngine;
 namespace GameCube.GFZ.CourseCollision
 {
     [Serializable]
-    public class CollisionQuad : IBinarySerializable, IBinaryAddressable
+    public class CollisionQuad : IBinarySerializable, IBinaryAddressableRange
     {
 
-        #region MEMBERS
+        #region FIELDS
 
-        [SerializeField, Hex] long startAddress;
-        [SerializeField, Hex] long endAddress;
+        [SerializeField]
+        private AddressRange addressRange;
 
         // Normal's quaternion rotation theta? https://en.wikipedia.org/wiki/Quaternions_and_spatial_rotation#Using_quaternion_as_rotations
         // Value range: -3613.961 through 3595.046, avg: -11 (basically 0)
@@ -28,42 +28,40 @@ namespace GameCube.GFZ.CourseCollision
         public Vector3 precomputed2;
         public Vector3 precomputed3;
 
+
         #endregion
 
         #region PROPERTIES
 
-        public long StartAddress
+
+        public AddressRange AddressRange
         {
-            get => startAddress;
-            set => startAddress = value;
+            get => addressRange;
+            set => addressRange = value;
         }
 
-        public long EndAddress
-        {
-            get => endAddress;
-            set => endAddress = value;
-        }
 
         #endregion
 
         #region METHODS
 
+
         public void Deserialize(BinaryReader reader)
         {
-            startAddress = reader.BaseStream.Position;
-
-            reader.ReadX(ref unk_0x00);
-            reader.ReadX(ref normal);
-            reader.ReadX(ref vertex0);
-            reader.ReadX(ref vertex1);
-            reader.ReadX(ref vertex2);
-            reader.ReadX(ref vertex3);
-            reader.ReadX(ref precomputed0);
-            reader.ReadX(ref precomputed1);
-            reader.ReadX(ref precomputed2);
-            reader.ReadX(ref precomputed3);
-
-            endAddress = reader.BaseStream.Position;
+            this.RecordStartAddress(reader);
+            {
+                reader.ReadX(ref unk_0x00);
+                reader.ReadX(ref normal);
+                reader.ReadX(ref vertex0);
+                reader.ReadX(ref vertex1);
+                reader.ReadX(ref vertex2);
+                reader.ReadX(ref vertex3);
+                reader.ReadX(ref precomputed0);
+                reader.ReadX(ref precomputed1);
+                reader.ReadX(ref precomputed2);
+                reader.ReadX(ref precomputed3);
+            }
+            this.RecordEndAddress(reader);
         }
 
         public void Serialize(BinaryWriter writer)
@@ -79,6 +77,7 @@ namespace GameCube.GFZ.CourseCollision
             writer.WriteX(precomputed2);
             writer.WriteX(precomputed3);
         }
+
 
         #endregion
 
