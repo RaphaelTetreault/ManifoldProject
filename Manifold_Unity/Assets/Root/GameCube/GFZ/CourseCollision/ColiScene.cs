@@ -20,6 +20,7 @@ namespace GameCube.GFZ.CourseCollision
         //
         public AICollisionPropertyTarget[] collisionPropertyAreas;
         public CollisionMeshTable collisionMeshTable;
+        public CollisionObjectReference[] collisionObjectReferences;
         public SceneObject[] sceneObjects;
         public TrackLength trackInformation;
         public TrackNode[] trackNodes;
@@ -76,9 +77,13 @@ namespace GameCube.GFZ.CourseCollision
             reader.JumpToAddress(header.gameObjectPtr);
             reader.ReadX(ref sceneObjects, header.gameObjectCount, true);
 
-            // 0x5c SOLS values
+            // 0x5C and 0x60 SOLS values
             reader.JumpToAddress(header.unkArrayPtr_0x5C);
             reader.ReadX(ref unknownStruct2s, header.unkArrayPtr_0x5C.length, true);
+
+            // 0x64 and 0x68
+            reader.JumpToAddress(header.collisionObjectReferences);
+            reader.ReadX(ref collisionObjectReferences, header.collisionObjectReferences.length, true);
 
             // 0x90 - Track Transforms
             reader.JumpToAddress(header.trackInfo);

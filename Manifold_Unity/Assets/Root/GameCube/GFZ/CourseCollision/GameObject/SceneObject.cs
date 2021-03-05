@@ -41,7 +41,7 @@ namespace GameCube.GFZ.CourseCollision
         public Pointer transformPtr;
 
         // sub-structures
-        public CollisionBinding collisionBinding;
+        public CollisionObject collisionBinding;
         public AnimationClip animation;
         public ObjectTable_Unk1 unk1;
         public SkeletalAnimator skeletalAnimator;

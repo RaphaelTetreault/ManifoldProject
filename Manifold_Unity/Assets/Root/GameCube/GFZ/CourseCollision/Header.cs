@@ -32,7 +32,7 @@ namespace GameCube.GFZ.CourseCollision
         public Pointer gameObjectPtr;
         public Bool32 unkBool32_0x58;
         public ArrayPointer unkArrayPtr_0x5C; // SOLS only. Occurrences = GX:6, AX:9.
-        public ArrayPointer collisionObjectsMesh;
+        public ArrayPointer collisionObjectReferences;
         public ArrayPointer unkArrayPtr_0x6C; // old notes: 0x64 ref back (to name table?). Goes to offset/ptr
         public ArrayPointer unused_0x74_0x78;
         public CircuitType circuitType;
@@ -76,7 +76,7 @@ namespace GameCube.GFZ.CourseCollision
             reader.ReadX(ref gameObjectPtr);
             reader.ReadX(ref unkBool32_0x58);
             reader.ReadX(ref unkArrayPtr_0x5C);
-            reader.ReadX(ref collisionObjectsMesh);
+            reader.ReadX(ref collisionObjectReferences);
             reader.ReadX(ref unkArrayPtr_0x6C);
             reader.ReadX(ref unused_0x74_0x78);
             reader.ReadX(ref circuitType);

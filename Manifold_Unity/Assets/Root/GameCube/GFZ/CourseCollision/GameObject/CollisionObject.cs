@@ -7,7 +7,7 @@ using UnityEngine.Assertions;
 namespace GameCube.GFZ.CourseCollision
 {
     [Serializable]
-    public class CollisionBinding : IBinarySerializable, IBinaryAddressableRange
+    public class CollisionObject : IBinarySerializable, IBinaryAddressableRange
     {
 
         #region FIELDS
@@ -23,7 +23,7 @@ namespace GameCube.GFZ.CourseCollision
         public uint referenceBindingAbsPtr;
         public uint collisionAbsPtr;
 
-        public ReferenceBinding referenceBinding;
+        public CollisionObjectReference referenceBinding;
         public Collision collision;
 
 
