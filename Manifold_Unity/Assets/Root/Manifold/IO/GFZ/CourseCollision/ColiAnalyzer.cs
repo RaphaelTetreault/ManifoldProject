@@ -753,9 +753,9 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.PushCol(nameof(Header.pathObjects.address));
                 writer.PushCol(nameof(Header.arcadeCheckpoint));
                 writer.PushCol(nameof(Header.arcadeCheckpoint.address));
-                writer.PushCol(nameof(Header.storyModeSpecialObjects));
-                writer.PushCol(nameof(Header.storyModeSpecialObjects.address));
-                writer.PushCol(nameof(Header.trackNodeTable));
+                writer.PushCol(nameof(Header.storyObjects));
+                writer.PushCol(nameof(Header.storyObjects.address));
+                writer.PushCol(nameof(Header.trackIndexTable));
                 // Structure
                 writer.PushCol(nameof(Header.unknownStructure1_0xC0) + "." + nameof(Header.unknownStructure1_0xC0.unk_0x00));
                 writer.PushCol(nameof(Header.unknownStructure1_0xC0) + "." + nameof(Header.unknownStructure1_0xC0.unk_0x04));
@@ -823,9 +823,9 @@ namespace Manifold.IO.GFZ.CourseCollision
                     writer.PushCol(coliHeader.pathObjects.HexAddress);
                     writer.PushCol(coliHeader.arcadeCheckpoint.length);
                     writer.PushCol(coliHeader.arcadeCheckpoint.HexAddress);
-                    writer.PushCol(coliHeader.storyModeSpecialObjects.length);
-                    writer.PushCol(coliHeader.storyModeSpecialObjects.HexAddress);
-                    writer.PushCol(coliHeader.trackNodeTable.HexAddress);
+                    writer.PushCol(coliHeader.storyObjects.length);
+                    writer.PushCol(coliHeader.storyObjects.HexAddress);
+                    writer.PushCol(coliHeader.trackIndexTable.HexAddress);
                     // Structure
                     writer.PushCol(coliHeader.unknownStructure1_0xC0.unk_0x00);
                     writer.PushCol(coliHeader.unknownStructure1_0xC0.unk_0x04);

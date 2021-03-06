@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace GameCube.GFZ.CourseCollision
 {
-    public class TrackReference : IBinarySerializable, IBinaryAddressableRange
+    public class TrackIndexes : IBinarySerializable, IBinaryAddressableRange
     {
 
         #region FIELDS
@@ -15,7 +15,7 @@ namespace GameCube.GFZ.CourseCollision
         [SerializeField]
         private AddressRange addressRange;
 
-        public ushort[] references = new ushort[0];
+        public ushort[] indexes = new ushort[0];
 
 
         #endregion
@@ -39,7 +39,7 @@ namespace GameCube.GFZ.CourseCollision
         {
             this.RecordStartAddress(reader);
             {
-                references = ColiCourseUtility.ReadUShortArray(reader);
+                indexes = ColiCourseUtility.ReadUShortArray(reader);
             }
             this.RecordEndAddress(reader);
         }

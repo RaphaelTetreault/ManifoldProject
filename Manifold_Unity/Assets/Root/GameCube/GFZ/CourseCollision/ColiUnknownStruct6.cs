@@ -11,11 +11,15 @@ namespace GameCube.GFZ.CourseCollision
         [SerializeField]
         private AddressRange addressRange;
 
-        public Vector3 unk_0x00;
+        public float unk_0x00;
+        public float unk_0x04;
+        public float unk_0x08;
         public int unk_0x0C;
         public int unk_0x10;
-        public Vector3 unk_0x14;
-        public int unk_0x20;
+        public float unk_0x14;
+        public float unk_0x18;
+        public float unk_0x1C;
+        public EnumFlags32 unk_0x20;
 
 
         public AddressRange AddressRange
@@ -30,9 +34,13 @@ namespace GameCube.GFZ.CourseCollision
             this.RecordStartAddress(reader);
             {
                 reader.ReadX(ref unk_0x00);
+                reader.ReadX(ref unk_0x04);
+                reader.ReadX(ref unk_0x08);
                 reader.ReadX(ref unk_0x0C);
                 reader.ReadX(ref unk_0x10);
                 reader.ReadX(ref unk_0x14);
+                reader.ReadX(ref unk_0x18);
+                reader.ReadX(ref unk_0x1C);
                 reader.ReadX(ref unk_0x20);
             }
             this.RecordEndAddress(reader);

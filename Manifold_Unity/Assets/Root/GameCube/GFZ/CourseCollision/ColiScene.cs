@@ -31,6 +31,13 @@ namespace GameCube.GFZ.CourseCollision
         public ColiUnknownStruct2[] unknownStruct2s;
         public ColiUnknownStruct3 unknownStruct3;
         public ColiUnknownStruct5 unknownStruct5_0x84;
+        public ColiUnknownStruct6[] unknownStruct6_0x94;
+        public ColiUnknownStruct6[] unknownStruct6_0x9C;
+        public ColiUnknownStruct6[] pathObjects;
+        public ColiUnknownStruct6[] arcadeCheckpoints;
+        public StoryObject[] storyObjects; // story triggers?
+        public TrackIndexesTable trackIndexTable;
+
 
 
         public string FileName
@@ -108,6 +115,30 @@ namespace GameCube.GFZ.CourseCollision
             // 0x90 - Track Transforms
             reader.JumpToAddress(header.trackInfo);
             reader.ReadX(ref trackInformation, true);
+
+            // 0x94
+            reader.JumpToAddress(header.unkArrayPtr_0x94);
+            reader.ReadX(ref unknownStruct6_0x94, header.unkArrayPtr_0x94.length, true);
+
+            // 0x9C
+            reader.JumpToAddress(header.unkArrayPtr_0x9C);
+            reader.ReadX(ref unknownStruct6_0x9C, header.unkArrayPtr_0x9C.length, true);
+
+            // 0xA4
+            reader.JumpToAddress(header.pathObjects);
+            reader.ReadX(ref pathObjects, header.pathObjects.length, true);
+
+            // 0xAC
+            reader.JumpToAddress(header.arcadeCheckpoint);
+            reader.ReadX(ref arcadeCheckpoints, header.arcadeCheckpoint.length, true);
+
+            // 0xB4
+            reader.JumpToAddress(header.storyObjects);
+            reader.ReadX(ref pathObjects, header.storyObjects.length, true);
+
+            // 0xBC
+            reader.JumpToAddress(header.trackIndexTable);
+            reader.ReadX(ref trackIndexTable, true);
 
             // Let's build the transform after-the-fact
             // We want to remove duplicate references to the same instance.

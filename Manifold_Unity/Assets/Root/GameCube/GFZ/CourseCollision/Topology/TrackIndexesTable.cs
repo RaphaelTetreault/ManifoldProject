@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace GameCube.GFZ.CourseCollision
 {
-    public class TrackReferencesTable : IBinarySerializable, IBinaryAddressableRange
+    public class TrackIndexesTable : IBinarySerializable, IBinaryAddressableRange
     {
 
         #region FIELDS
@@ -15,8 +15,8 @@ namespace GameCube.GFZ.CourseCollision
         [SerializeField]
         private AddressRange addressRange;
 
-        public int[] trackReferencesAbsPtrs = new int[0];
-        public TrackReference[] trackReferences = new TrackReference[0];
+        public Pointer[] trackIndexesAbsPtrs = new Pointer[0];
+        public TrackIndexes[] trackIndexArray = new TrackIndexes[0];
 
 
         #endregion
@@ -40,23 +40,22 @@ namespace GameCube.GFZ.CourseCollision
         {
             this.RecordStartAddress(reader);
             {
-                reader.ReadX(ref trackReferencesAbsPtrs, kNumEntries);
+                reader.ReadX(ref trackIndexesAbsPtrs, kNumEntries, true);
             }
             this.RecordEndAddress(reader);
             {
-                trackReferences = new TrackReference[64];
-                for (int i = 0; i < trackReferencesAbsPtrs.Length; i++)
+                trackIndexArray = new TrackIndexes[64];
+                for (int i = 0; i < trackIndexesAbsPtrs.Length; i++)
                 {
-                    var absPtr = trackReferencesAbsPtrs[i];
-                    var isValidPointer = absPtr > 0;
-                    if (isValidPointer)
+                    var pointer = trackIndexesAbsPtrs[i];
+                    if (pointer.IsNotNullPointer)
                     {
-                        reader.BaseStream.Seek(absPtr, SeekOrigin.Begin);
-                        reader.ReadX(ref trackReferences[i], true);
+                        reader.JumpToAddress(pointer);
+                        reader.ReadX(ref trackIndexArray[i], true);
                     }
                     else
                     {
-                        trackReferences[i] = new TrackReference();
+                        trackIndexArray[i] = new TrackIndexes();
                     }
                 }
             }

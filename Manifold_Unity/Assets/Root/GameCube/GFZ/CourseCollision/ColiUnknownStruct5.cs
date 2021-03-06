@@ -37,7 +37,8 @@ namespace GameCube.GFZ.CourseCollision
             }
             this.RecordEndAddress(reader);
             {
-                Debug.Log($"{unk_0x00:X8}, {unk_0x04}, {unk_0x08}, {unk_0x0C}, {unk_0x18}");
+                //Debug.Log($"{unk_0x00:X8}, {unk_0x04}, {unk_0x08}, {unk_0x0C}, {unk_0x18}");
+                UnityEngine.Assertions.Assert.IsTrue(unk_0x18 == Vector3.zero);
             }
         }
 

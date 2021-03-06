@@ -44,8 +44,8 @@ namespace GameCube.GFZ.CourseCollision
         public ArrayPointer unkArrayPtr_0x9C; // Old notes: anim type 2
         public ArrayPointer pathObjects;
         public ArrayPointer arcadeCheckpoint;
-        public ArrayPointer storyModeSpecialObjects;
-        public Pointer trackNodeTable;
+        public ArrayPointer storyObjects;
+        public Pointer trackIndexTable;
         public ColiUnknownStruct1 unknownStructure1_0xC0;
         public byte[] zero_0xD8; // 0x10 count
 
@@ -88,8 +88,8 @@ namespace GameCube.GFZ.CourseCollision
             reader.ReadX(ref unkArrayPtr_0x9C);
             reader.ReadX(ref pathObjects);
             reader.ReadX(ref arcadeCheckpoint);
-            reader.ReadX(ref storyModeSpecialObjects);
-            reader.ReadX(ref trackNodeTable);
+            reader.ReadX(ref storyObjects);
+            reader.ReadX(ref trackIndexTable);
             reader.ReadX(ref unknownStructure1_0xC0, true);
             reader.ReadX(ref zero_0xD8, kSizeOfZero0xD8);
 
