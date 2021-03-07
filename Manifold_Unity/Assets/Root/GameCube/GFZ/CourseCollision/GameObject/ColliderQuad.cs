@@ -6,7 +6,7 @@ using UnityEngine;
 namespace GameCube.GFZ.CourseCollision
 {
     [Serializable]
-    public class CollisionQuad : IBinarySerializable, IBinaryAddressableRange
+    public class ColliderQuad : IBinarySerializable, IBinaryAddressableRange
     {
 
         #region FIELDS

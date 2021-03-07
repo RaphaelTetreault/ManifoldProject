@@ -6,7 +6,7 @@ using UnityEngine;
 namespace GameCube.GFZ.CourseCollision
 {
     [Serializable]
-    public class CollisionMeshIndices : IBinarySerializable, IBinaryAddressableRange
+    public class MeshIndexes : IBinarySerializable, IBinaryAddressableRange
     {
 
         #region FIELDS
@@ -17,8 +17,8 @@ namespace GameCube.GFZ.CourseCollision
 
         public const int kIndexArrayPtrsSize = 256; // 0x100
 
-        public Pointer[] indexArraysPtrs = new Pointer[kIndexArrayPtrsSize];
-        public ushort[][] indices = new ushort[kIndexArrayPtrsSize][];
+        public Pointer[] indexArrayPtrs = new Pointer[kIndexArrayPtrsSize];
+        public ushort[][] indexes = new ushort[kIndexArrayPtrsSize][];
 
 
         #endregion
@@ -41,25 +41,25 @@ namespace GameCube.GFZ.CourseCollision
         {
             // Read index arrays
             this.RecordStartAddress(reader);
-            reader.ReadX(ref indexArraysPtrs, kIndexArrayPtrsSize, false);
+            reader.ReadX(ref indexArrayPtrs, kIndexArrayPtrsSize, false);
             this.RecordEndAddress(reader);
 
             // Should always be init to const size
-            System.Diagnostics.Debug.Assert(indexArraysPtrs.Length == kIndexArrayPtrsSize);
+            System.Diagnostics.Debug.Assert(indexArrayPtrs.Length == kIndexArrayPtrsSize);
 
             // TODO:  not recording length of other data due to [][]
-            for (int pointerIndex = 0; pointerIndex < indexArraysPtrs.Length; pointerIndex++)
+            for (int pointerIndex = 0; pointerIndex < indexArrayPtrs.Length; pointerIndex++)
             {
-                var pointer = indexArraysPtrs[pointerIndex];
-                if (pointer.address > 0)
+                var pointer = indexArrayPtrs[pointerIndex];
+                if (pointer.IsNotNullPointer)
                 {
                     //Debug.Log($"ptr{pointerIndex:000}:{pointer.HexAddress}");
                     reader.JumpToAddress(pointer);
-                    indices[pointerIndex] = ColiCourseUtility.ReadUShortArray(reader);
+                    indexes[pointerIndex] = ColiCourseUtility.ReadUShortArray(reader);
                 }
                 else
                 {
-                    indices[pointerIndex] = new ushort[0];
+                    indexes[pointerIndex] = new ushort[0];
                 }
             }
         }

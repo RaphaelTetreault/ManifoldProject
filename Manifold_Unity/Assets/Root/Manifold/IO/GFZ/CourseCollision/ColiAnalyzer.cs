@@ -525,7 +525,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteColNicify(nameof(SkeletalAnimator.zero_0x00));
                 writer.WriteColNicify(nameof(SkeletalAnimator.zero_0x04));
                 writer.WriteColNicify(nameof(SkeletalAnimator.one_0x08));
-                writer.WriteColNicify(nameof(SkeletalAnimator.unkRelPtr));
+                writer.WriteColNicify(nameof(SkeletalAnimator.propertiesPtr));
 
                 writer.WriteColNicify(nameof(SkeletalProperties.unk_0x00));
                 writer.WriteColNicify(nameof(SkeletalProperties.unk_0x04));
@@ -541,31 +541,31 @@ namespace Manifold.IO.GFZ.CourseCollision
                 foreach (var file in coliSobjs)
                 {
                     int gameObjectIndex = 0;
-                    foreach (var gameObject in file.Value.sceneObjects)
+                    foreach (var sceneObject in file.Value.sceneObjects)
                     {
-                        if (gameObject.skeletalAnimator.unkRelPtr == 0)
+                        if (!sceneObject.skeletalAnimator.propertiesPtr.IsNotNullPointer)
                         {
                             continue;
                         }
 
                         writer.PushCol(file.FileName);
                         writer.PushCol(gameObjectIndex);
-                        writer.PushCol(gameObject.name);
+                        writer.PushCol(sceneObject.name);
 
-                        writer.PushCol(gameObject.skeletalAnimator.zero_0x00);
-                        writer.PushCol(gameObject.skeletalAnimator.zero_0x04);
-                        writer.PushCol(gameObject.skeletalAnimator.one_0x08);
-                        writer.PushCol(gameObject.skeletalAnimator.unkRelPtr);
+                        writer.PushCol(sceneObject.skeletalAnimator.zero_0x00);
+                        writer.PushCol(sceneObject.skeletalAnimator.zero_0x04);
+                        writer.PushCol(sceneObject.skeletalAnimator.one_0x08);
+                        writer.PushCol(sceneObject.skeletalAnimator.propertiesPtr);
 
-                        writer.PushCol(gameObject.skeletalAnimator.properties.unk_0x00);
-                        writer.PushCol(gameObject.skeletalAnimator.properties.unk_0x04);
-                        writer.WriteFlags(gameObject.skeletalAnimator.properties.unk_0x04);
-                        writer.PushCol(gameObject.skeletalAnimator.properties.unk_0x08);
-                        writer.WriteFlags(gameObject.skeletalAnimator.properties.unk_0x08);
-                        writer.PushCol(gameObject.skeletalAnimator.properties.zero_0x0C);
-                        writer.PushCol(gameObject.skeletalAnimator.properties.zero_0x10);
-                        writer.PushCol(gameObject.skeletalAnimator.properties.zero_0x14);
-                        writer.PushCol(gameObject.skeletalAnimator.properties.zero_0x18);
+                        writer.PushCol(sceneObject.skeletalAnimator.properties.unk_0x00);
+                        writer.PushCol(sceneObject.skeletalAnimator.properties.unk_0x04);
+                        writer.WriteFlags(sceneObject.skeletalAnimator.properties.unk_0x04);
+                        writer.PushCol(sceneObject.skeletalAnimator.properties.unk_0x08);
+                        writer.WriteFlags(sceneObject.skeletalAnimator.properties.unk_0x08);
+                        writer.PushCol(sceneObject.skeletalAnimator.properties.zero_0x0C);
+                        writer.PushCol(sceneObject.skeletalAnimator.properties.zero_0x10);
+                        writer.PushCol(sceneObject.skeletalAnimator.properties.zero_0x14);
+                        writer.PushCol(sceneObject.skeletalAnimator.properties.zero_0x18);
                         writer.PushRow();
 
                         gameObjectIndex++;
@@ -587,14 +587,14 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.PushCol("Tri Index");
                 writer.PushCol("Addr");
 
-                writer.WriteColNicify(nameof(CollisionTri.unk_0x00));
-                writer.WriteColNicify(nameof(CollisionTri.normal));
-                writer.WriteColNicify(nameof(CollisionTri.vertex0));
-                writer.WriteColNicify(nameof(CollisionTri.vertex1));
-                writer.WriteColNicify(nameof(CollisionTri.vertex2));
-                writer.WriteColNicify(nameof(CollisionTri.precomputed0));
-                writer.WriteColNicify(nameof(CollisionTri.precomputed1));
-                writer.WriteColNicify(nameof(CollisionTri.precomputed2));
+                writer.WriteColNicify(nameof(ColliderTriangle.unk_0x00));
+                writer.WriteColNicify(nameof(ColliderTriangle.normal));
+                writer.WriteColNicify(nameof(ColliderTriangle.vertex0));
+                writer.WriteColNicify(nameof(ColliderTriangle.vertex1));
+                writer.WriteColNicify(nameof(ColliderTriangle.vertex2));
+                writer.WriteColNicify(nameof(ColliderTriangle.precomputed0));
+                writer.WriteColNicify(nameof(ColliderTriangle.precomputed1));
+                writer.WriteColNicify(nameof(ColliderTriangle.precomputed2));
 
                 writer.PushRow();
 
@@ -603,13 +603,13 @@ namespace Manifold.IO.GFZ.CourseCollision
                     int gameObjectIndex = 0;
                     foreach (var gameObject in file.Value.sceneObjects)
                     {
-                        if (gameObject.collisionBinding.collision.triCount == 0)
+                        if (gameObject.colliderBinding.colliderGeometry.triCount == 0)
                         {
                             continue;
                         }
 
                         int triIndex = 0;
-                        foreach (var tri in gameObject.collisionBinding.collision.tris)
+                        foreach (var tri in gameObject.colliderBinding.colliderGeometry.tris)
                         {
                             writer.PushCol(file.FileName);
                             writer.PushCol(gameObjectIndex);
@@ -648,16 +648,16 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.PushCol("Quad Index");
                 writer.PushCol("Addr");
 
-                writer.WriteColNicify(nameof(CollisionQuad.unk_0x00));
-                writer.WriteColNicify(nameof(CollisionQuad.normal));
-                writer.WriteColNicify(nameof(CollisionQuad.vertex0));
-                writer.WriteColNicify(nameof(CollisionQuad.vertex1));
-                writer.WriteColNicify(nameof(CollisionQuad.vertex2));
-                writer.WriteColNicify(nameof(CollisionQuad.vertex3));
-                writer.WriteColNicify(nameof(CollisionQuad.precomputed0));
-                writer.WriteColNicify(nameof(CollisionQuad.precomputed1));
-                writer.WriteColNicify(nameof(CollisionQuad.precomputed2));
-                writer.WriteColNicify(nameof(CollisionQuad.precomputed3));
+                writer.WriteColNicify(nameof(ColliderQuad.unk_0x00));
+                writer.WriteColNicify(nameof(ColliderQuad.normal));
+                writer.WriteColNicify(nameof(ColliderQuad.vertex0));
+                writer.WriteColNicify(nameof(ColliderQuad.vertex1));
+                writer.WriteColNicify(nameof(ColliderQuad.vertex2));
+                writer.WriteColNicify(nameof(ColliderQuad.vertex3));
+                writer.WriteColNicify(nameof(ColliderQuad.precomputed0));
+                writer.WriteColNicify(nameof(ColliderQuad.precomputed1));
+                writer.WriteColNicify(nameof(ColliderQuad.precomputed2));
+                writer.WriteColNicify(nameof(ColliderQuad.precomputed3));
 
                 writer.PushRow();
 
@@ -666,13 +666,13 @@ namespace Manifold.IO.GFZ.CourseCollision
                     int gameObjectIndex = 0;
                     foreach (var gameObject in file.Value.sceneObjects)
                     {
-                        if (gameObject.collisionBinding.collision.quadCount == 0)
+                        if (gameObject.colliderBinding.colliderGeometry.quadCount == 0)
                         {
                             continue;
                         }
 
                         int quadIndex = 0;
-                        foreach (var quad in gameObject.collisionBinding.collision.quads)
+                        foreach (var quad in gameObject.colliderBinding.colliderGeometry.quads)
                         {
                             writer.PushCol(file.FileName);
                             writer.PushCol(gameObjectIndex);
@@ -726,10 +726,10 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.PushCol(nameof(Header.unkPtr_0x20));
                 writer.PushCol(nameof(Header.unkPtr_0x24));
                 writer.PushCol(nameof(Header.zero_0x28));
-                writer.PushCol(nameof(Header.gameObjectCount));
-                writer.PushCol(nameof(Header.unk_gameObjectCount1));
-                writer.PushCol(nameof(Header.unk_gameObjectCount2));
-                writer.PushCol(nameof(Header.gameObjectPtr));
+                writer.PushCol(nameof(Header.sceneObjectCount));
+                writer.PushCol(nameof(Header.unk_sceneObjectCount1));
+                writer.PushCol(nameof(Header.unk_sceneObjectCount2));
+                writer.PushCol(nameof(Header.sceneObjectsPtr));
                 writer.PushCol(nameof(Header.unkBool32_0x58));
                 writer.PushCol(nameof(Header.unkArrayPtr_0x5C));
                 writer.PushCol(nameof(Header.unkArrayPtr_0x5C.address));
@@ -744,7 +744,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.PushCol(nameof(Header.unkPtr_0x84));
                 writer.PushCol(nameof(Header.unused_0x88_0x8C));
                 writer.PushCol(nameof(Header.unused_0x88_0x8C.address));
-                writer.PushCol(nameof(Header.trackInfo));
+                writer.PushCol(nameof(Header.trackLengthPtr));
                 writer.PushCol(nameof(Header.unkArrayPtr_0x94));
                 writer.PushCol(nameof(Header.unkArrayPtr_0x94.address));
                 writer.PushCol(nameof(Header.unkArrayPtr_0x9C));
@@ -789,17 +789,17 @@ namespace Manifold.IO.GFZ.CourseCollision
                     writer.PushCol(coliHeader.unkPtr_0x20.HexAddress);
                     writer.PushCol(coliHeader.unkPtr_0x24.HexAddress);
                     writer.PushCol(0);// coliHeader.zero_0x28);
-                    writer.PushCol(coliHeader.gameObjectCount);
+                    writer.PushCol(coliHeader.sceneObjectCount);
                     if (coliHeader.IsFileGX)
                     {
-                        writer.PushCol(coliHeader.unk_gameObjectCount1);
+                        writer.PushCol(coliHeader.unk_sceneObjectCount1);
                     }
                     else // is AX
                     {
                         writer.PushCol();
                     }
-                    writer.PushCol(coliHeader.unk_gameObjectCount2);
-                    writer.PushCol(coliHeader.gameObjectPtr.HexAddress);
+                    writer.PushCol(coliHeader.unk_sceneObjectCount2);
+                    writer.PushCol(coliHeader.sceneObjectsPtr.HexAddress);
                     writer.PushCol(coliHeader.unkBool32_0x58);
                     writer.PushCol(coliHeader.unkArrayPtr_0x5C.length);
                     writer.PushCol(coliHeader.unkArrayPtr_0x5C.HexAddress);
@@ -814,7 +814,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                     writer.PushCol(coliHeader.unkPtr_0x84.HexAddress);
                     writer.PushCol(coliHeader.unused_0x88_0x8C.length);
                     writer.PushCol(coliHeader.unused_0x88_0x8C.HexAddress);
-                    writer.PushCol(coliHeader.trackInfo.HexAddress);
+                    writer.PushCol(coliHeader.trackLengthPtr.HexAddress);
                     writer.PushCol(coliHeader.unkArrayPtr_0x94.length);
                     writer.PushCol(coliHeader.unkArrayPtr_0x94.HexAddress);
                     writer.PushCol(coliHeader.unkArrayPtr_0x9C.length);

@@ -7,14 +7,14 @@ using UnityEngine;
 namespace GameCube.GFZ.CourseCollision
 {
     [Serializable]
-    public class CollisionObjectReferenceUnknown : IBinarySerializable, IBinaryAddressableRange
+    public class UnknownObjectAttributes2 : IBinarySerializable, IBinaryAddressableRange
     {
         [SerializeField]
         private AddressRange addressRange;
 
         public Pointer collisionObjectReferencePtr;
 
-        public SurrfaceAttributeObject collisionObjectReference;
+        public UnknownObjectAttributes collisionObjectReference;
 
 
         public AddressRange AddressRange

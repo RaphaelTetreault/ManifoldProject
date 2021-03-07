@@ -6,7 +6,7 @@ using System;
 namespace GameCube.GFZ.CourseCollision
 {
     [Serializable]
-    public class Collision : IBinarySerializable, IBinaryAddressableRange
+    public class ColliderGeometry : IBinarySerializable, IBinaryAddressableRange
     {
 
         #region FIELDS
@@ -25,8 +25,8 @@ namespace GameCube.GFZ.CourseCollision
         public uint triAbsPtr;
         public uint quadAbsPtr;
 
-        public CollisionTri[] tris;
-        public CollisionQuad[] quads;
+        public ColliderTriangle[] tris;
+        public ColliderQuad[] quads;
 
 
         #endregion

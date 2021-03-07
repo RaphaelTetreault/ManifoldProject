@@ -19,8 +19,7 @@ namespace GameCube.GFZ.CourseCollision
         public uint unk_0x04;
         public uint unk_0x08;
         public uint unk_0x0C;
-        public int keyableCount;
-        public uint keyableAbsPtr;
+        public ArrayPointer keyableAttributesPtr;
 
         public KeyableAttribute[] keyableAttributes;
 
@@ -50,16 +49,14 @@ namespace GameCube.GFZ.CourseCollision
                 reader.ReadX(ref unk_0x04);
                 reader.ReadX(ref unk_0x08);
                 reader.ReadX(ref unk_0x0C);
-                reader.ReadX(ref keyableCount);
-                reader.ReadX(ref keyableAbsPtr);
+                reader.ReadX(ref keyableAttributesPtr);
             }
             this.RecordEndAddress(reader);
             {
-                keyableAttributes = new KeyableAttribute[keyableCount];
-                if (keyableCount > 0)
+                if (keyableAttributesPtr.IsNotNullPointer)
                 {
-                    reader.BaseStream.Seek(keyableAbsPtr, SeekOrigin.Begin);
-                    reader.ReadX(ref keyableAttributes, keyableCount, true);
+                    reader.JumpToAddress(keyableAttributesPtr);
+                    reader.ReadX(ref keyableAttributes, keyableAttributesPtr.length, true);
                 }
             }
             this.SetReaderToEndAddress(reader);
@@ -71,8 +68,10 @@ namespace GameCube.GFZ.CourseCollision
             writer.WriteX(unk_0x04);
             writer.WriteX(unk_0x08);
             writer.WriteX(unk_0x0C);
-            writer.WriteX(keyableCount);
-            writer.WriteX(keyableAbsPtr);
+            writer.WriteX(keyableAttributesPtr);
+
+            // Array pointer address and length needs to be set
+            throw new NotImplementedException();
         }
 
 

@@ -15,7 +15,7 @@ namespace GameCube.GFZ.CourseCollision
         [SerializeField]
         private AddressRange addressRange;
 
-        public Pointer[] trackIndexesAbsPtrs = new Pointer[0];
+        public Pointer[] trackIndexesPtrs = new Pointer[0];
         public TrackIndexes[] trackIndexArray = new TrackIndexes[0];
 
 
@@ -40,14 +40,14 @@ namespace GameCube.GFZ.CourseCollision
         {
             this.RecordStartAddress(reader);
             {
-                reader.ReadX(ref trackIndexesAbsPtrs, kNumEntries, true);
+                reader.ReadX(ref trackIndexesPtrs, kNumEntries, true);
             }
             this.RecordEndAddress(reader);
             {
                 trackIndexArray = new TrackIndexes[64];
-                for (int i = 0; i < trackIndexesAbsPtrs.Length; i++)
+                for (int i = 0; i < trackIndexesPtrs.Length; i++)
                 {
-                    var pointer = trackIndexesAbsPtrs[i];
+                    var pointer = trackIndexesPtrs[i];
                     if (pointer.IsNotNullPointer)
                     {
                         reader.JumpToAddress(pointer);

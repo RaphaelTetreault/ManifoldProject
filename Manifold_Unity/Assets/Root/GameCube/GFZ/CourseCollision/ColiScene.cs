@@ -20,10 +20,10 @@ namespace GameCube.GFZ.CourseCollision
         //
         public SurfaceAttributeArea[] surfaceAttributeAreas;
         public SurfaceAttributesMeshTable surfaceAttributesMeshTable;
-        public SurrfaceAttributeObject[] collisionObjectReferences;
-        public CollisionObjectReferenceUnknown[] unk_collisionObjectReferences;
+        public UnknownObjectAttributes[] collisionObjectReferences;
+        public UnknownObjectAttributes2[] unk_collisionObjectReferences;
         public SceneObject[] sceneObjects;
-        public TrackLength trackInformation;
+        public TrackLength trackLength;
         public TrackNode[] trackNodes;
         public List<TrackTransform> trackTransforms = new List<TrackTransform>();
         public int[] unknownData_0x20;
@@ -82,9 +82,9 @@ namespace GameCube.GFZ.CourseCollision
             reader.JumpToAddress(header.unkPtr_0x24);
             reader.ReadX(ref unknownFloat_0x24);
 
-            // 0x48 and 0x??: Game Objects
-            reader.JumpToAddress(header.gameObjectPtr);
-            reader.ReadX(ref sceneObjects, header.gameObjectCount, true);
+            // 0x48 (count total), 0x4C, 0x50, 0x54 (pointer address): Scene Objects
+            reader.JumpToAddress(header.sceneObjectsPtr);
+            reader.ReadX(ref sceneObjects, header.sceneObjectCount, true);
 
             // 0x5C and 0x60 SOLS values
             reader.JumpToAddress(header.unkArrayPtr_0x5C);
@@ -111,9 +111,9 @@ namespace GameCube.GFZ.CourseCollision
             reader.JumpToAddress(header.unkPtr_0x84);
             reader.ReadX(ref unknownStruct5_0x84, true);
 
-            // 0x90 - Track Transforms
-            reader.JumpToAddress(header.trackInfo);
-            reader.ReadX(ref trackInformation, true);
+            // 0x90 
+            reader.JumpToAddress(header.trackLengthPtr);
+            reader.ReadX(ref trackLength, true);
 
             // 0x94
             reader.JumpToAddress(header.unkArrayPtr_0x94);

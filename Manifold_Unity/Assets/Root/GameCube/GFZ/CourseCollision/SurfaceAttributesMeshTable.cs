@@ -16,27 +16,27 @@ namespace GameCube.GFZ.CourseCollision
         private AddressRange addressRange;
 
         public const int kCountUnknown = 9;
-        public const int kCountAxCollisionTypes = 11;
-        public const int kCountGxCollisionTypes = 14;
+        public const int kCountAxSurfaceTypes = 11;
+        public const int kCountGxSurfaceTypes = 14;
 
         // Basically a big pile of pointers
         public int[] unk_0x00_0x20;
         [Hex(8)]
-        public Pointer collisionTris;
+        public Pointer collisionTrisPtr;
         [Hex(8)]
-        public Pointer[] collisionTriIndices;
+        public Pointer[] collisionTriIndexesPtr;
         public ColiUnknownStruct1 unknownStruct_0x60;
         [Hex(8)]
-        public Pointer collisionQuads;
+        public Pointer collisionQuadsPtr;
         [Hex(8)]
-        public Pointer[] collisionQuadIndices;
+        public Pointer[] collisionQuadIndexesPtr;
         public ColiUnknownStruct1 unknownStruct_0xB4;
 
-        // This data holds the geometry data and indices
+        // This data holds the geometry data and indexes
         public float[] tris;
         public float[] quads;
-        public CollisionMeshIndices[] triMeshIndices;
-        public CollisionMeshIndices[] quadMeshIndices;
+        public MeshIndexes[] triMeshIndexes;
+        public MeshIndexes[] quadMeshIndexes;
 
 
         #endregion
@@ -60,18 +60,18 @@ namespace GameCube.GFZ.CourseCollision
         {
             // AX/GX have different amounts of pointers to collision mesh data
             var isFileGX = ColiCourseUtility.IsFileGX(reader);
-            var countCollisionTypes = isFileGX
-                ? kCountGxCollisionTypes
-                : kCountAxCollisionTypes;
+            var countSurfaceTypes = isFileGX
+                ? kCountGxSurfaceTypes
+                : kCountAxSurfaceTypes;
 
             // Deserialize values
             this.RecordStartAddress(reader);
             reader.ReadX(ref unk_0x00_0x20, kCountUnknown);
-            reader.ReadX(ref collisionTris);
-            reader.ReadX(ref collisionTriIndices, countCollisionTypes, true);
+            reader.ReadX(ref collisionTrisPtr);
+            reader.ReadX(ref collisionTriIndexesPtr, countSurfaceTypes, true);
             reader.ReadX(ref unknownStruct_0x60, true);
-            reader.ReadX(ref collisionQuads);
-            reader.ReadX(ref collisionQuadIndices, countCollisionTypes, true);
+            reader.ReadX(ref collisionQuadsPtr);
+            reader.ReadX(ref collisionQuadIndexesPtr, countSurfaceTypes, true);
             reader.ReadX(ref unknownStruct_0xB4, true);
             this.RecordEndAddress(reader);
 
@@ -85,28 +85,28 @@ namespace GameCube.GFZ.CourseCollision
             }
 
             /////////////////
-            // Initial arrays
+            // Initialize arrays
             tris = new float[0];
             quads = new float[0];
-            triMeshIndices = new CollisionMeshIndices[countCollisionTypes];
-            quadMeshIndices = new CollisionMeshIndices[countCollisionTypes];
+            triMeshIndexes = new MeshIndexes[countSurfaceTypes];
+            quadMeshIndexes = new MeshIndexes[countSurfaceTypes];
 
             // Read mesh data
-            for (int i = 0; i < countCollisionTypes; i++)
+            for (int i = 0; i < countSurfaceTypes; i++)
             {
                 // Triangles
-                var triPointer = collisionTriIndices[i];
-                triMeshIndices[i] = new CollisionMeshIndices();
+                var triPointer = collisionTriIndexesPtr[i];
+                triMeshIndexes[i] = new MeshIndexes();
                 //Debug.Log($"tri{i+1}:{triPointer.HexAddress}");
                 reader.JumpToAddress(triPointer);
-                reader.ReadX(ref triMeshIndices[i], false);
+                reader.ReadX(ref triMeshIndexes[i], false);
 
                 // Quads
-                var quadPointer = collisionQuadIndices[i];
-                quadMeshIndices[i] = new CollisionMeshIndices();
+                var quadPointer = collisionQuadIndexesPtr[i];
+                quadMeshIndexes[i] = new MeshIndexes();
                 //Debug.Log($"quad{i+1}:{quadPointer.HexAddress}");
                 reader.JumpToAddress(quadPointer);
-                reader.ReadX(ref quadMeshIndices[i], false);
+                reader.ReadX(ref quadMeshIndexes[i], false);
             }
         }
 

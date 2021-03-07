@@ -41,7 +41,7 @@ namespace GameCube.GFZ.CourseCollision
         public Pointer transformPtr;
 
         // sub-structures
-        public CollisionObject collisionBinding;
+        public ColliderObject colliderBinding;
         public AnimationClip animation;
         public ObjectTable_Unk1 unk1;
         public SkeletalAnimator skeletalAnimator;
@@ -90,8 +90,8 @@ namespace GameCube.GFZ.CourseCollision
 
                 Assert.IsTrue(collisionBindingPtr.IsNotNullPointer);
                 reader.JumpToAddress(collisionBindingPtr);
-                reader.ReadX(ref collisionBinding, true);
-                name = collisionBinding.referenceBinding.name;
+                reader.ReadX(ref colliderBinding, true);
+                name = colliderBinding.objectAttributes.name;
 
                 if (animationPtr.IsNotNullPointer)
                 {

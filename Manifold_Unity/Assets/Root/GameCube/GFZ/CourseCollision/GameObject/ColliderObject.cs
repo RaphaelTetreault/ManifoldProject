@@ -7,24 +7,25 @@ using UnityEngine.Assertions;
 namespace GameCube.GFZ.CourseCollision
 {
     [Serializable]
-    public class CollisionObject : IBinarySerializable, IBinaryAddressableRange
+    public class ColliderObject : IBinarySerializable, IBinaryAddressableRange
     {
 
         #region FIELDS
 
 
+        // metadata
         [SerializeField]
         private AddressRange addressRange;
 
-        [Hex(numDigits: 4)]
+        // structure
         public uint unk_0x00;
-        [Hex(numDigits: 4)]
         public uint unk_0x04;
-        public uint referenceBindingAbsPtr;
-        public uint collisionAbsPtr;
+        public Pointer objectAttributesPtr;
+        public Pointer colliderGeometryPtr;
 
-        public SurrfaceAttributeObject referenceBinding;
-        public Collision collision;
+        // sub-structures
+        public UnknownObjectAttributes objectAttributes;
+        public ColliderGeometry colliderGeometry;
 
 
         #endregion
@@ -50,21 +51,20 @@ namespace GameCube.GFZ.CourseCollision
             {
                 reader.ReadX(ref unk_0x00);
                 reader.ReadX(ref unk_0x04);
-                reader.ReadX(ref referenceBindingAbsPtr);
-                reader.ReadX(ref collisionAbsPtr);
+                reader.ReadX(ref objectAttributesPtr);
+                reader.ReadX(ref colliderGeometryPtr);
             }
             this.RecordEndAddress(reader);
             {
-                Assert.IsTrue(referenceBindingAbsPtr != 0);
-                reader.BaseStream.Seek(referenceBindingAbsPtr, SeekOrigin.Begin);
-                reader.ReadX(ref referenceBinding, true);
+                Assert.IsTrue(objectAttributesPtr.IsNotNullPointer);
+                reader.JumpToAddress(objectAttributesPtr);
+                reader.ReadX(ref objectAttributes, true);
 
                 // Collision is not required, load only if pointer is not null
-                if (collisionAbsPtr > 0)
+                if (colliderGeometryPtr.IsNotNullPointer)
                 {
-                    var absPtr = collisionAbsPtr;
-                    reader.BaseStream.Seek(absPtr, SeekOrigin.Begin);
-                    reader.ReadX(ref collision, true);
+                    reader.JumpToAddress(colliderGeometryPtr);
+                    reader.ReadX(ref colliderGeometry, true);
                 }
             }
             this.SetReaderToEndAddress(reader);
@@ -75,8 +75,8 @@ namespace GameCube.GFZ.CourseCollision
         {
             writer.WriteX(unk_0x00);
             writer.WriteX(unk_0x04);
-            writer.WriteX(referenceBindingAbsPtr);
-            writer.WriteX(collisionAbsPtr);
+            writer.WriteX(objectAttributesPtr);
+            writer.WriteX(colliderGeometryPtr);
 
             //
             throw new NotImplementedException();

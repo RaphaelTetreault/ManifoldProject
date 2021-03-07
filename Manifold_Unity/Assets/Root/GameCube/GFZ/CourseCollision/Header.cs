@@ -26,10 +26,10 @@ namespace GameCube.GFZ.CourseCollision
         public Pointer unkPtr_0x20; // GX: 0xE8, AX: 0xE4
         public Pointer unkPtr_0x24; // GX: 0xFC, AX: 0xF8
         public byte[] zero_0x28; // 0x20 count
-        public int gameObjectCount;
-        public int unk_gameObjectCount1; // GX exclusive
-        public int unk_gameObjectCount2;
-        public Pointer gameObjectPtr;
+        public int sceneObjectCount;
+        public int unk_sceneObjectCount1; // GX exclusive
+        public int unk_sceneObjectCount2;
+        public Pointer sceneObjectsPtr;
         public Bool32 unkBool32_0x58;
         public ArrayPointer unkArrayPtr_0x5C; // SOLS only. Occurrences = GX:6, AX:9.
         public ArrayPointer collisionObjectReferences;
@@ -39,7 +39,7 @@ namespace GameCube.GFZ.CourseCollision
         public Pointer unkPtr_0x80; // Old notes: always 6 count, possibly spline stuff
         public Pointer unkPtr_0x84; // Old notes: LOD Objects... (new note: 0x84, 0x94, 0x9C all use same struct?)
         public ArrayPointer unused_0x88_0x8C;
-        public Pointer trackInfo;
+        public Pointer trackLengthPtr;
         public ArrayPointer unkArrayPtr_0x94; // Old notes: anim type 1
         public ArrayPointer unkArrayPtr_0x9C; // Old notes: anim type 2
         public ArrayPointer pathObjects;
@@ -70,10 +70,10 @@ namespace GameCube.GFZ.CourseCollision
             reader.ReadX(ref unkPtr_0x20);
             reader.ReadX(ref unkPtr_0x24);
             reader.ReadX(ref zero_0x28, kSizeOfZero0x28);
-            reader.ReadX(ref gameObjectCount);
-            if (isFileGX) reader.ReadX(ref unk_gameObjectCount1);
-            reader.ReadX(ref unk_gameObjectCount2);
-            reader.ReadX(ref gameObjectPtr);
+            reader.ReadX(ref sceneObjectCount);
+            if (isFileGX) reader.ReadX(ref unk_sceneObjectCount1);
+            reader.ReadX(ref unk_sceneObjectCount2);
+            reader.ReadX(ref sceneObjectsPtr);
             reader.ReadX(ref unkBool32_0x58);
             reader.ReadX(ref unkArrayPtr_0x5C);
             reader.ReadX(ref collisionObjectReferences);
@@ -83,7 +83,7 @@ namespace GameCube.GFZ.CourseCollision
             reader.ReadX(ref unkPtr_0x80);
             reader.ReadX(ref unkPtr_0x84);
             reader.ReadX(ref unused_0x88_0x8C);
-            reader.ReadX(ref trackInfo);
+            reader.ReadX(ref trackLengthPtr);
             reader.ReadX(ref unkArrayPtr_0x94);
             reader.ReadX(ref unkArrayPtr_0x9C);
             reader.ReadX(ref pathObjects);

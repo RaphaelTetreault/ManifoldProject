@@ -23,7 +23,7 @@ namespace Manifold.IO.GFZ.CourseCollision
         protected IOOption importOption = IOOption.selectedFiles;
 
         [Header("Import Files")]
-        [SerializeField] protected ColiSceneSobj[] colis;
+        [SerializeField] protected ColiSceneSobj[] sceneSobjs;
 
         #endregion
 
@@ -33,16 +33,16 @@ namespace Manifold.IO.GFZ.CourseCollision
 
         public void Import()
         {
-            colis = AssetDatabaseUtility.GetSobjByOption(colis, importOption, importFrom);
+            sceneSobjs = AssetDatabaseUtility.GetSobjByOption(sceneSobjs, importOption, importFrom);
 
-            foreach (var coli in colis)
+            foreach (var scene in sceneSobjs)
             {
-                foreach (var gobj in coli.Value.sceneObjects)
+                foreach (var sceneObject in scene.Value.sceneObjects)
                 {
-                    if (gobj.collisionBinding.collisionAbsPtr != 0)
+                    if (sceneObject.colliderBinding.colliderGeometryPtr.IsNotNullPointer)
                     {
-                        var mesh = CreateMesh(gobj);
-                        AssetDatabase.CreateAsset(mesh, $"Assets/{coli.name}_{mesh.name}.asset");
+                        var mesh = CreateMesh(sceneObject);
+                        AssetDatabase.CreateAsset(mesh, $"Assets/{scene.name}_{mesh.name}.asset");
                         var prefab = CreatePrefabFromModel(mesh, "Assets/");
                         DestroyImmediate(prefab);
                     }
@@ -52,12 +52,12 @@ namespace Manifold.IO.GFZ.CourseCollision
             ImportUtility.WrapUpAssetImport();
         }
 
-        public Mesh CreateMesh(GameCube.GFZ.CourseCollision.SceneObject gameObject)
+        public Mesh CreateMesh(SceneObject sceneObject)
         {
-            var collision = gameObject.collisionBinding.collision;
+            var collision = sceneObject.colliderBinding.colliderGeometry;
 
             var mesh = new Mesh();
-            mesh.name = gameObject.name;
+            mesh.name = sceneObject.name;
             var submeshes = new SubMeshDescriptor[2];
 
             // TRIS
@@ -170,14 +170,14 @@ namespace Manifold.IO.GFZ.CourseCollision
         }
 
         // Copied from GmaModelImporter...
-        public UnityEngine.GameObject CreatePrefabFromModel(Mesh mesh, string path)
+        public GameObject CreatePrefabFromModel(Mesh mesh, string path)
         {
             var pfPath = $"{path}/pf_{mesh.name}.prefab";
-            var prefab = new UnityEngine.GameObject();
+            var prefab = new GameObject();
             var meshFilter = prefab.AddComponent<MeshFilter>();
             meshFilter.mesh = mesh;
             var meshRenderer = prefab.AddComponent<MeshRenderer>();
-            var mats = new UnityEngine.Material[mesh.subMeshCount];
+            var mats = new Material[mesh.subMeshCount];
             //for (int i = 0; i < mats.Length; i++)
             //    mats[i] = defaultMat;
             //meshRenderer.sharedMaterials = mats;

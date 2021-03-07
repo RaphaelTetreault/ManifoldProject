@@ -14,8 +14,8 @@ namespace GameCube.GFZ.CourseCollision
         private AddressRange addressRange;
 
         public int unk_0x00;
-        public float unk_0x04;
-        public float unk_0x08;
+        public float unk_0x04; // Unknown Struct 7?
+        public float unk_0x08; // Unknown Struct 7?
         public int unk_0x0C;
         public int unk_0x10;
 
