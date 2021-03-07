@@ -12,14 +12,18 @@ namespace GameCube.GFZ.CourseCollision
         #region FIELDS
 
 
+        // metadata
         [SerializeField]
         private AddressRange addressRange;
 
-        public int trackBranchCount;
-        public int trackPointAbsPtr;
-        public int trackTransformAbsPtr;
-
-        public TrackPoint point;
+        // structure
+        //public int branchCount; // is this array ptr length??
+        public ArrayPointer pointsPtr;
+        //public Pointer pointPtr;
+        public Pointer transformPtr;
+        //
+        //public TrackPoint point;
+        public TrackPoint[] points;
         public TrackTransform transform;
 
 
@@ -44,28 +48,35 @@ namespace GameCube.GFZ.CourseCollision
         {
             this.RecordStartAddress(reader);
             {
-                reader.ReadX(ref trackBranchCount);
-                reader.ReadX(ref trackPointAbsPtr);
-                reader.ReadX(ref trackTransformAbsPtr);
+                //reader.ReadX(ref branchCount);
+                //reader.ReadX(ref pointPtr);
+                reader.ReadX(ref pointsPtr);
+                reader.ReadX(ref transformPtr);
             }
             this.RecordEndAddress(reader);
             {
                 // Get point
-                reader.BaseStream.Seek(trackPointAbsPtr, SeekOrigin.Begin);
-                reader.ReadX(ref point, true);
+                //reader.JumpToAddress(pointPtr);
+                //reader.ReadX(ref point, true);
+                reader.JumpToAddress(pointsPtr);
+                reader.ReadX(ref points, pointsPtr.length, true);
 
                 // Get transform
-                //reader.BaseStream.Seek(trackTransformAbsPtr, SeekOrigin.Begin);
-                //reader.ReadX(ref transform, true);
+                // NOTE: since this data is referenced many times, I instead
+                // build a list in ColiScene.
+                // TODO: link the references? Does this work in Unity when
+                // serialized?
             }
             this.SetReaderToEndAddress(reader);
         }
 
         public void Serialize(BinaryWriter writer)
         {
-            writer.WriteX(trackBranchCount);
-            writer.WriteX(trackPointAbsPtr);
-            writer.WriteX(trackTransformAbsPtr);
+            //writer.WriteX(branchCount);
+            //writer.WriteX(pointPtr);
+            //writer.WriteX(transformPtr);
+
+            throw new NotImplementedException();
         }
 
 

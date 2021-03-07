@@ -721,7 +721,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.PushCol(nameof(Header.trackNodesPtr.address));
                 writer.PushCol(nameof(Header.surfaceAttributeAreasPtr));
                 writer.PushCol(nameof(Header.surfaceAttributeAreasPtr.address));
-                writer.PushCol(nameof(Header.boostPadEnable));
+                writer.PushCol(nameof(Header.boostPadsActive));
                 writer.PushCol(nameof(Header.surfaceAttributesMeshTablePtr));
                 writer.PushCol(nameof(Header.unkPtr_0x20));
                 writer.PushCol(nameof(Header.unkPtr_0x24));
@@ -784,7 +784,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                     writer.PushCol(coliHeader.trackNodesPtr.HexAddress);
                     writer.PushCol(coliHeader.surfaceAttributeAreasPtr.length);
                     writer.PushCol(coliHeader.surfaceAttributeAreasPtr.HexAddress);
-                    writer.PushCol(coliHeader.boostPadEnable);
+                    writer.PushCol(coliHeader.boostPadsActive);
                     writer.PushCol(coliHeader.surfaceAttributesMeshTablePtr.HexAddress);
                     writer.PushCol(coliHeader.unkPtr_0x20.HexAddress);
                     writer.PushCol(coliHeader.unkPtr_0x24.HexAddress);

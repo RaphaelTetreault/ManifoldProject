@@ -144,12 +144,12 @@ namespace GameCube.GFZ.CourseCollision
             var usedKeys = new List<int>();
             foreach (var node in trackNodes)
             {
-                var transformAbsPtr = node.trackTransformAbsPtr;
-                if (!usedKeys.Contains(transformAbsPtr))
+                var transformAddress = node.transformPtr.address;
+                if (!usedKeys.Contains(transformAddress))
                 {
-                    usedKeys.Add(transformAbsPtr);
+                    usedKeys.Add(transformAddress);
 
-                    reader.BaseStream.Seek(transformAbsPtr, SeekOrigin.Begin);
+                    reader.JumpToAddress(node.transformPtr);
                     var value = new TrackTransform();
                     value.Deserialize(reader);
                     trackTransforms.Add(value);

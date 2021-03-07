@@ -8,38 +8,36 @@ namespace Manifold.IO.GFZ.CourseCollision
     {
         public float kRadius = 10f;
 
-        [SerializeField] protected ColiSceneSobj coli;
-        [SerializeField] protected Color debugColor = Color.red;
+        [SerializeField] protected ColiSceneSobj sceneSobj;
+        [SerializeField] protected Color[] debugColor = new Color[] { Color.black, Color.red, Color.blue, Color.green };
         //[SerializeField] protected Color transformColor = Color.white;
         [SerializeField] protected Mesh mesh;
 
-        public ColiSceneSobj Coli
+        public ColiSceneSobj SceneSobj
         {
-            get => coli;
-            set => coli = value;
+            get => sceneSobj;
+            set => sceneSobj = value;
         }
 
         private void OnDrawGizmos()
         {
-            if (coli == null)
+            if (sceneSobj == null)
                 return;
 
-            Gizmos.color = debugColor;
-            foreach (var node in coli.Value.trackNodes)
+            foreach (var node in sceneSobj.Value.trackNodes)
             {
-                var from = node.point.positionStart;
-                var to = node.point.positionEnd;
-                Gizmos.DrawLine(from, to);
-                Gizmos.DrawWireSphere(to, kRadius);
-                Gizmos.DrawSphere(from, kRadius);
+                for (int i = 0; i < node.points.Length; i++)
+                {
+                    var point = node.points[i];
+                    Gizmos.color = debugColor[i];
+
+                    var from = point.positionStart;
+                    var to = point.positionEnd;
+                    Gizmos.DrawLine(from, to);
+                    Gizmos.DrawWireSphere(to, kRadius);
+                    Gizmos.DrawSphere(from, kRadius);
+                }
             }
-
-            //Gizmos.color = transformColor;
-            //foreach (var trackTransform in coli.Value.trackTransforms)
-            //{
-            //    DrawRecursive(trackTransform, Quaternion.identity, Vector3.zero, Vector3.one);
-            //}
-
         }
 
         public void DrawRecursive(TrackTransform trackTransform, Quaternion parentRotation, Vector3 parentPosition, Vector3 parentScale)
@@ -90,10 +88,10 @@ namespace Manifold.IO.GFZ.CourseCollision
             {
                 var editorTarget = target as TempTrackVis;
 
-                var root = new UnityEngine.GameObject();
-                root.name = editorTarget.Coli.name;
+                var root = new GameObject();
+                root.name = editorTarget.SceneSobj.name;
 
-                foreach (var transform in editorTarget.Coli.Value.trackTransforms)
+                foreach (var transform in editorTarget.SceneSobj.Value.trackTransforms)
                 {
                     CreateTransform(transform, root.transform);
                 }
@@ -107,7 +105,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             var pos = track.localPosition;
             var rot = Quaternion.Euler(track.localRotation);
             var sca = track.localScale;
-            var obj = new UnityEngine.GameObject();
+            var obj = new GameObject();
             var comp = obj.AddComponent<TempDebugEmpty>();
             //comp.track = track;
 

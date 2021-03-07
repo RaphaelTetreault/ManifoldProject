@@ -21,7 +21,7 @@ namespace GameCube.GFZ.CourseCollision
         public float unk_0x04;
         public ArrayPointer trackNodesPtr;
         public ArrayPointer surfaceAttributeAreasPtr;
-        public Bool32 boostPadEnable;
+        public BoostPadsActive boostPadsActive;
         public Pointer surfaceAttributesMeshTablePtr;
         public Pointer unkPtr_0x20; // GX: 0xE8, AX: 0xE4
         public Pointer unkPtr_0x24; // GX: 0xFC, AX: 0xF8
@@ -65,7 +65,7 @@ namespace GameCube.GFZ.CourseCollision
             reader.ReadX(ref unk_0x04);
             reader.ReadX(ref trackNodesPtr);
             reader.ReadX(ref surfaceAttributeAreasPtr);
-            reader.ReadX(ref boostPadEnable);
+            reader.ReadX(ref boostPadsActive);
             reader.ReadX(ref surfaceAttributesMeshTablePtr);
             reader.ReadX(ref unkPtr_0x20);
             reader.ReadX(ref unkPtr_0x24);
