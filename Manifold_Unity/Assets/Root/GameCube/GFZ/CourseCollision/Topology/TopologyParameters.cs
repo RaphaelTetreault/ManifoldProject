@@ -5,7 +5,7 @@ using UnityEngine;
 
 // TODO: replace counts/absptr with ArrayPointers? Make new [][]Pointer struct?
 
-namespace GameCube.GFZ
+namespace GameCube.GFZ.CourseCollision
 {
     [Serializable]
     public class TopologyParameters : IBinarySerializable, IBinaryAddressableRange
@@ -57,19 +57,20 @@ namespace GameCube.GFZ
         public int absPtr9;
 
         //
-        public TopologyParam[] params1 = new TopologyParam[0];
-        public TopologyParam[] params2 = new TopologyParam[0];
-        public TopologyParam[] params3 = new TopologyParam[0];
-        public TopologyParam[] params4 = new TopologyParam[0];
-        public TopologyParam[] params5 = new TopologyParam[0];
-        public TopologyParam[] params6 = new TopologyParam[0];
-        public TopologyParam[] params7 = new TopologyParam[0];
-        public TopologyParam[] params8 = new TopologyParam[0];
-        public TopologyParam[] params9 = new TopologyParam[0];
+        public KeyableAttribute[] params1 = new KeyableAttribute[0];
+        public KeyableAttribute[] params2 = new KeyableAttribute[0];
+        public KeyableAttribute[] params3 = new KeyableAttribute[0];
+        public KeyableAttribute[] params4 = new KeyableAttribute[0];
+        public KeyableAttribute[] params5 = new KeyableAttribute[0];
+        public KeyableAttribute[] params6 = new KeyableAttribute[0];
+        public KeyableAttribute[] params7 = new KeyableAttribute[0];
+        public KeyableAttribute[] params8 = new KeyableAttribute[0];
+        public KeyableAttribute[] params9 = new KeyableAttribute[0];
 
-        public TopologyParam[][] Params()
+
+        public KeyableAttribute[][] Params()
         {
-            var topology = new TopologyParam[][]
+            var topology = new KeyableAttribute[][]
             {
                 params1, params2, params3,
                 params4, params5, params6,

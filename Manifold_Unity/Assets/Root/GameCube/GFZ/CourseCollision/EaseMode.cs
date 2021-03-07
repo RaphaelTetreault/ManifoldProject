@@ -1,4 +1,4 @@
-﻿namespace GameCube.GFZ.CourseCollision.Animation
+﻿namespace GameCube.GFZ.CourseCollision
 {
     public enum EaseMode : int
     {

@@ -3,7 +3,7 @@ using System.IO;
 using System;
 using UnityEngine;
 
-namespace GameCube.GFZ.CourseCollision.Animation
+namespace GameCube.GFZ.CourseCollision
 {
     /// <summary>
     /// This structure appears to be a Maya (4.?) KeyableAttribute

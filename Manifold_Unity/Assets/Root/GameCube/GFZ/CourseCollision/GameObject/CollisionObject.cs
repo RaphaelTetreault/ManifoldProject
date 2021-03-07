@@ -23,7 +23,7 @@ namespace GameCube.GFZ.CourseCollision
         public uint referenceBindingAbsPtr;
         public uint collisionAbsPtr;
 
-        public CollisionObjectReference referenceBinding;
+        public SurrfaceAttributeObject referenceBinding;
         public Collision collision;
 
 

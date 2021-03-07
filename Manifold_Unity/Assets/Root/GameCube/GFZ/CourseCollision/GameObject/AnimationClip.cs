@@ -1,5 +1,4 @@
-﻿using GameCube.GFZ.CourseCollision.Animation;
-using Manifold.IO;
+﻿using Manifold.IO;
 using System;
 using System.IO;
 using UnityEngine;

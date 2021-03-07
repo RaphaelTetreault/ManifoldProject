@@ -1,6 +1,6 @@
 namespace GameCube.GFZ.CourseCollision
 {
-    public enum AICollisionProperty : byte
+    public enum SurfaceAttribute : byte
     {
         /// <summary>
         /// 

@@ -6,7 +6,7 @@ using UnityEngine;
 namespace GameCube.GFZ.CourseCollision
 {
     [Serializable]
-    public class AICollisionPropertyTarget : IBinarySerializable, IBinaryAddressableRange
+    public class SurfaceAttributeArea : IBinarySerializable, IBinaryAddressableRange
     {
 
         #region FIELDS
@@ -19,7 +19,7 @@ namespace GameCube.GFZ.CourseCollision
         public float lengthTo;
         public float widthLeft;
         public float widthRight;
-        public AICollisionProperty aiCollisionProperty;
+        public SurfaceAttribute surfaceAttribute;
         public byte trackBranchID;
         [HideInInspector]
         public byte zero_0x12;
@@ -51,7 +51,7 @@ namespace GameCube.GFZ.CourseCollision
             reader.ReadX(ref lengthTo);
             reader.ReadX(ref widthLeft);
             reader.ReadX(ref widthRight);
-            reader.ReadX(ref aiCollisionProperty);
+            reader.ReadX(ref surfaceAttribute);
             reader.ReadX(ref trackBranchID);
             reader.ReadX(ref zero_0x12);
             reader.ReadX(ref zero_0x13);

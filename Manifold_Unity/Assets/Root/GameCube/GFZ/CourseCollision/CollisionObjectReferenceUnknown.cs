@@ -14,7 +14,7 @@ namespace GameCube.GFZ.CourseCollision
 
         public Pointer collisionObjectReferencePtr;
 
-        public CollisionObjectReference collisionObjectReference;
+        public SurrfaceAttributeObject collisionObjectReference;
 
 
         public AddressRange AddressRange

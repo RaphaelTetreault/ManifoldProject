@@ -201,17 +201,17 @@ namespace Manifold.IO.GFZ.CourseCollision
             }
         }
 
-        public void WriteTrackData(StreamWriter writer, ColiSceneSobj sobj, int level, int index, int total, TopologyParam param)
+        public void WriteTrackData(StreamWriter writer, ColiSceneSobj sobj, int level, int index, int total, KeyableAttribute param)
         {
             writer.PushCol(sobj.FilePath);
             writer.PushCol($"[{index}/{total}]");
             writer.PushCol($"{level}");
             writer.PushCol(param.StartAddressHex());
-            writer.PushCol(param.unk_0x00);
-            writer.PushCol(param.unk_0x04);
-            writer.PushCol(param.unk_0x08);
-            writer.PushCol(param.unk_0x0C);
-            writer.PushCol(param.unk_0x10);
+            writer.PushCol(param.easeMode);
+            writer.PushCol(param.time);
+            writer.PushCol(param.value);
+            writer.PushCol(param.zTangentIn);
+            writer.PushCol(param.zTangentOut);
             writer.PushRow();
         }
 
@@ -719,10 +719,10 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.PushCol(nameof(Header.unk_0x04));
                 writer.PushCol(nameof(Header.trackNodesPtr));
                 writer.PushCol(nameof(Header.trackNodesPtr.address));
-                writer.PushCol(nameof(Header.collisionEffectsAreasPtr));
-                writer.PushCol(nameof(Header.collisionEffectsAreasPtr.address));
+                writer.PushCol(nameof(Header.surfaceAttributeAreasPtr));
+                writer.PushCol(nameof(Header.surfaceAttributeAreasPtr.address));
                 writer.PushCol(nameof(Header.boostPadEnable));
-                writer.PushCol(nameof(Header.collisionMeshTablePtr));
+                writer.PushCol(nameof(Header.surfaceAttributesMeshTablePtr));
                 writer.PushCol(nameof(Header.unkPtr_0x20));
                 writer.PushCol(nameof(Header.unkPtr_0x24));
                 writer.PushCol(nameof(Header.zero_0x28));
@@ -782,10 +782,10 @@ namespace Manifold.IO.GFZ.CourseCollision
                     writer.PushCol(coliHeader.unk_0x04);
                     writer.PushCol(coliHeader.trackNodesPtr.length);
                     writer.PushCol(coliHeader.trackNodesPtr.HexAddress);
-                    writer.PushCol(coliHeader.collisionEffectsAreasPtr.length);
-                    writer.PushCol(coliHeader.collisionEffectsAreasPtr.HexAddress);
+                    writer.PushCol(coliHeader.surfaceAttributeAreasPtr.length);
+                    writer.PushCol(coliHeader.surfaceAttributeAreasPtr.HexAddress);
                     writer.PushCol(coliHeader.boostPadEnable);
-                    writer.PushCol(coliHeader.collisionMeshTablePtr.HexAddress);
+                    writer.PushCol(coliHeader.surfaceAttributesMeshTablePtr.HexAddress);
                     writer.PushCol(coliHeader.unkPtr_0x20.HexAddress);
                     writer.PushCol(coliHeader.unkPtr_0x24.HexAddress);
                     writer.PushCol(0);// coliHeader.zero_0x28);

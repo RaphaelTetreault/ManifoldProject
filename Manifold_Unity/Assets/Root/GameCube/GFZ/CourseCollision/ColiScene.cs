@@ -18,9 +18,9 @@ namespace GameCube.GFZ.CourseCollision
         //
         public Header header;
         //
-        public AICollisionPropertyTarget[] collisionPropertyAreas;
-        public CollisionMeshTable collisionMeshTable;
-        public CollisionObjectReference[] collisionObjectReferences;
+        public SurfaceAttributeArea[] surfaceAttributeAreas;
+        public SurfaceAttributesMeshTable surfaceAttributesMeshTable;
+        public SurrfaceAttributeObject[] collisionObjectReferences;
         public CollisionObjectReferenceUnknown[] unk_collisionObjectReferences;
         public SceneObject[] sceneObjects;
         public TrackLength trackInformation;
@@ -35,7 +35,7 @@ namespace GameCube.GFZ.CourseCollision
         public ColiUnknownStruct6[] unknownStruct6_0x9C;
         public ColiUnknownStruct6[] pathObjects;
         public ColiUnknownStruct6[] arcadeCheckpoints;
-        public StoryObject[] storyObjects; // story triggers?
+        public StoryObjectTrigger[] storyObjects; // story triggers?
         public TrackIndexesTable trackIndexTable;
 
 
@@ -66,13 +66,13 @@ namespace GameCube.GFZ.CourseCollision
             reader.JumpToAddress(header.trackNodesPtr);
             reader.ReadX(ref trackNodes, header.trackNodesPtr.length, true);
 
-            // 0x10 and 0x14: Collision Effect Area
-            reader.JumpToAddress(header.collisionEffectsAreasPtr);
-            reader.ReadX(ref collisionPropertyAreas, header.collisionEffectsAreasPtr.length, true);
+            // 0x10 and 0x14: Track Effect Attribute Areas
+            reader.JumpToAddress(header.surfaceAttributeAreasPtr);
+            reader.ReadX(ref surfaceAttributeAreas, header.surfaceAttributeAreasPtr.length, true);
 
             // 0x1C 
-            reader.JumpToAddress(header.collisionMeshTablePtr);
-            reader.ReadX(ref collisionMeshTable, true);
+            reader.JumpToAddress(header.surfaceAttributesMeshTablePtr);
+            reader.ReadX(ref surfaceAttributesMeshTable, true);
 
             // 0x20
             reader.JumpToAddress(header.unkPtr_0x20);
@@ -81,7 +81,6 @@ namespace GameCube.GFZ.CourseCollision
             // 0x24
             reader.JumpToAddress(header.unkPtr_0x24);
             reader.ReadX(ref unknownFloat_0x24);
-            //Debug.Log($"{FileName}:{unknownFloat_0x24}");
 
             // 0x48 and 0x??: Game Objects
             reader.JumpToAddress(header.gameObjectPtr);
