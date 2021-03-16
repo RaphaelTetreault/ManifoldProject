@@ -25,5 +25,10 @@ namespace Manifold.IO
         {
             writer.WriteX(address);
         }
+
+        public override string ToString()
+        {
+            return HexAddress;
+        }
     }
 }

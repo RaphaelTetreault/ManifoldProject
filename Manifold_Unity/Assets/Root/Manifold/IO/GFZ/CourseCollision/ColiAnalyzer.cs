@@ -24,7 +24,8 @@ namespace Manifold.IO.GFZ.CourseCollision
             trackTransform = true,
             gameObjects = true,
             animations = true,
-            headers = true;
+            headers = true,
+            unknownStruct6 = true;
 
         [Header("Preferences")]
         [SerializeField]
@@ -112,6 +113,31 @@ namespace Manifold.IO.GFZ.CourseCollision
                 EditorUtility.DisplayProgressBar(ExecuteText, filePath, .5f);
                 AnalyzeHeaders(filePath);
             }
+
+            if (unknownStruct6)
+            {
+                string fileName = $"{time} COLI {nameof(ColiUnknownStruct6)}.tsv";
+                string filePath = Path.Combine(outputPath, fileName);
+                EditorUtility.DisplayProgressBar(ExecuteText, filePath, .5f);
+                AnalyzeUnknownStruct6(filePath);
+            }
+
+            if (true)
+            {
+                string fileName = $"{time} COLI {nameof(VenueMetadataObject)}.tsv";
+                string filePath = Path.Combine(outputPath, fileName);
+                EditorUtility.DisplayProgressBar(ExecuteText, filePath, .5f);
+                AnalyzeVenueMetadataObjects(filePath);
+            }
+            if (true)
+            {
+                string fileName = $"{time} COLI {nameof(StoryObject)}.tsv";
+                string filePath = Path.Combine(outputPath, fileName);
+                EditorUtility.DisplayProgressBar(ExecuteText, filePath, .5f);
+                AnalyzeStoryObjectTrigger(filePath);
+            }
+
+
 
             //
             if (animations)
@@ -838,6 +864,173 @@ namespace Manifold.IO.GFZ.CourseCollision
                     writer.PushRow();
                 }
                 writer.Flush();
+            }
+        }
+
+        public void AnalyzeUnknownStruct6(string fileName)
+        {
+            using (var writer = AnalyzerUtility.OpenWriter(fileName))
+            {
+                // Write header
+                writer.PushCol("File");
+                writer.PushCol("Index");
+                writer.PushCol("Stage");
+                writer.PushCol("Venue");
+                writer.PushCol("AX/GX");
+                //
+                writer.PushCol(nameof(VenueMetadataObject.position));
+                writer.PushCol(nameof(VenueMetadataObject.unk_0x0C));
+                writer.PushCol(nameof(VenueMetadataObject.unk_0x10));
+                writer.PushCol(nameof(VenueMetadataObject.positionOrScale));
+                writer.PushCol(nameof(VenueMetadataObject.venue));
+                //
+                writer.PushRow();
+
+                foreach (var file in coliSobjs)
+                {
+                    var coli = file.Value;
+                    WriteUnknownStruct6Row(writer, coli, "Arcade Checkpoints", coli.arcadeCheckpoints);
+                    //WriteUnknownStruct6Row(writer, coli, "Path Objects", coli.pathObjects);
+                    WriteUnknownStruct6Row(writer, coli, "0x94", coli.unknownStruct6_0x94);
+                    WriteUnknownStruct6Row(writer, coli, "0x9C", coli.unknownStruct6_0x9C);
+                }
+                writer.Flush();
+            }
+        }
+
+        private void WriteUnknownStruct6Row(StreamWriter writer, ColiScene scene, string tag, ColiUnknownStruct6[] struct6Array)
+        {
+            var venueID = CourseUtility.GetVenueID(scene.ID).GetDescription();
+            var courseID = ((CourseIDEx)scene.ID).GetDescription();
+            var isAxGx = scene.header.IsFileGX ? "GX" : "AX";
+
+            foreach (var item in struct6Array)
+            {
+                writer.PushCol(scene.FileName);
+                writer.PushCol(scene.ID);
+                writer.PushCol(venueID);
+                writer.PushCol(courseID);
+                writer.PushCol(isAxGx);
+
+                writer.PushCol(tag);
+                writer.PushCol(item.unk_0x00);
+                writer.PushCol(item.unk_0x04);
+                writer.PushCol(item.unk_0x08);
+                writer.PushCol(item.unk_0x0C);
+                writer.PushCol(item.unk_0x0E);
+                writer.PushCol(item.unk_0x10);
+                writer.PushCol(item.unk_0x12);
+                writer.PushCol(item.unk_0x14);
+                writer.PushCol(item.unk_0x18);
+                writer.PushCol(item.unk_0x1C);
+                writer.PushCol(item.unk_0x20);
+                writer.PushRow();
+            }
+        }
+
+        public void AnalyzeVenueMetadataObjects(string fileName)
+        {
+            using (var writer = AnalyzerUtility.OpenWriter(fileName))
+            {
+                // Write header
+                writer.PushCol("File");
+                writer.PushCol("Index");
+                writer.PushCol("Stage");
+                writer.PushCol("Venue");
+                writer.PushCol("AX/GX");
+                //
+                writer.PushCol(nameof(VenueMetadataObject.position));
+                writer.PushCol(nameof(VenueMetadataObject.unk_0x0C));
+                writer.PushCol(nameof(VenueMetadataObject.unk_0x0E));
+                writer.PushCol(nameof(VenueMetadataObject.unk_0x10));
+                writer.PushCol(nameof(VenueMetadataObject.unk_0x12));
+                writer.PushCol(nameof(VenueMetadataObject.positionOrScale));
+                writer.PushCol(nameof(VenueMetadataObject.venue));
+                //
+                writer.PushRow();
+
+                foreach (var file in coliSobjs)
+                {
+                    var scene = file.Value;
+                    var venueID = CourseUtility.GetVenueID(scene.ID).GetDescription();
+                    var courseID = ((CourseIDEx)scene.ID).GetDescription();
+                    var isAxGx = scene.header.IsFileGX ? "GX" : "AX";
+
+                    foreach (var item in scene.venueMetadataObjects)
+                    {
+                        writer.PushCol(scene.FileName);
+                        writer.PushCol(scene.ID);
+                        writer.PushCol(venueID);
+                        writer.PushCol(courseID);
+                        writer.PushCol(isAxGx);
+                        //
+                        writer.PushCol(item.position);
+                        writer.PushCol(item.unk_0x0C);
+                        writer.PushCol(item.unk_0x0E);
+                        writer.PushCol(item.unk_0x10);
+                        writer.PushCol(item.unk_0x12);
+                        writer.PushCol(item.positionOrScale);
+                        writer.PushCol(item.venue);
+                        //
+                        writer.PushRow();
+                    }
+                    writer.Flush();
+                }
+            }
+        }
+
+        public void AnalyzeStoryObjectTrigger(string fileName)
+        {
+            using (var writer = AnalyzerUtility.OpenWriter(fileName))
+            {
+                // Write header
+                writer.PushCol("File");
+                writer.PushCol("Index");
+                writer.PushCol("Stage");
+                writer.PushCol("Venue");
+                writer.PushCol("AX/GX");
+                //
+                writer.PushCol(nameof(StoryObject.zero_0x00));
+                writer.PushCol(nameof(StoryObject.rockGroupOrderIndex));
+                writer.PushCol(nameof(StoryObject.RockGroup));
+                writer.PushCol(nameof(StoryObject.Difficulty));
+                writer.PushCol(nameof(StoryObject.story2RockScale));
+                writer.PushCol(nameof(StoryObject.animationPathPtr));
+                writer.PushCol(nameof(StoryObject.scale));
+                writer.PushCol(nameof(StoryObject.rotation));
+                writer.PushCol(nameof(StoryObject.position));
+                //
+                writer.PushRow();
+
+                foreach (var file in coliSobjs)
+                {
+                    var scene = file.Value;
+                    var venueID = CourseUtility.GetVenueID(scene.ID).GetDescription();
+                    var courseID = ((CourseIDEx)scene.ID).GetDescription();
+                    var isAxGx = scene.header.IsFileGX ? "GX" : "AX";
+
+                    foreach (var item in scene.storyObjects)
+                    {
+                        writer.PushCol(scene.FileName);
+                        writer.PushCol(scene.ID);
+                        writer.PushCol(venueID);
+                        writer.PushCol(courseID);
+                        writer.PushCol(isAxGx);
+                        //
+                        writer.PushCol(item.zero_0x00);
+                        writer.PushCol(item.rockGroupOrderIndex);
+                        writer.PushCol(item.RockGroup);
+                        writer.PushCol(item.Difficulty);
+                        writer.PushCol(item.story2RockScale);
+                        writer.PushCol(item.animationPathPtr);
+                        writer.PushCol(item.scale);
+                        writer.PushCol(item.rotation);
+                        writer.PushCol(item.position);
+                        //
+                        writer.PushRow();
+                    }
+                    writer.Flush();
+                }
             }
         }
     }

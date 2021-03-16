@@ -52,6 +52,7 @@ namespace Manifold.IO
             var sobj = CreateFromBinaryFile<TSobj>(unityPath, fileName, reader);
             sobj.FileName = fileName;
 
+            EditorUtility.SetDirty(sobj);
             AssetDatabase.Refresh();
             AssetDatabase.SaveAssets();
 

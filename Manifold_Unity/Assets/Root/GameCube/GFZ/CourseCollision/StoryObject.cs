@@ -6,16 +6,15 @@ using UnityEngine;
 namespace GameCube.GFZ.CourseCollision
 {
     [Serializable]
-    public class StoryObjectTrigger : IBinarySerializable, IBinaryAddressableRange
+    public class StoryObject : IBinarySerializable, IBinaryAddressableRange
     {
         [SerializeField]
         private AddressRange addressRange;
 
-        public byte unk_0x00;
-        public byte unk_0x01;
-        public byte unk_0x02;
-        public byte unk_0x03;
-        public Vector3 unk_0x04; //...?
+        public ushort zero_0x00;
+        public byte rockGroupOrderIndex;
+        public byte rockGroupAndDifficulty; // split lower/upper 4 bits
+        public Vector3 story2RockScale;
         public Pointer animationPathPtr;
         public Vector3 scale;
         public Vector3 rotation;
@@ -32,16 +31,32 @@ namespace GameCube.GFZ.CourseCollision
             set => addressRange = value;
         }
 
+        public byte Difficulty
+        {
+            get
+            {
+                // Lower 4 bits are for difficulty
+                return (byte)(rockGroupAndDifficulty & 0b00001111);
+            }
+        }
+
+        public byte RockGroup
+        {
+            get
+            {
+                // Upper 4 bits are for group of rocks which fall
+                return (byte)(rockGroupAndDifficulty >> 4);
+            }
+        }
 
         public void Deserialize(BinaryReader reader)
         {
             this.RecordStartAddress(reader);
             {
-                reader.ReadX(ref unk_0x00);
-                reader.ReadX(ref unk_0x01);
-                reader.ReadX(ref unk_0x02);
-                reader.ReadX(ref unk_0x03);
-                reader.ReadX(ref unk_0x04);
+                reader.ReadX(ref zero_0x00);
+                reader.ReadX(ref rockGroupOrderIndex);
+                reader.ReadX(ref rockGroupAndDifficulty);
+                reader.ReadX(ref story2RockScale);
                 reader.ReadX(ref animationPathPtr);
                 reader.ReadX(ref scale);
                 reader.ReadX(ref rotation);

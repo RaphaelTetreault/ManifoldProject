@@ -40,7 +40,7 @@ namespace GameCube.GFZ
         /// Mute City Sonic Oval (Story)
         /// </summary>
         /// <remarks>COM for Commercial? COM for Combined MUT+CAS?</remarks>
-        [Description("Mute City (Story COM")]
+        [Description("Mute City (Story COM)")]
         COM_S = COM + isStory,
 
         /// <summary>

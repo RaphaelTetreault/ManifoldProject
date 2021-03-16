@@ -96,14 +96,14 @@ namespace GameCube.GFZ.CourseCollision
                     reader.ReadX(ref extraTransform, true);
                 }
 
-                // Read Children (recursive)
-                children = new TrackTransform[childCount];
-                for (int i = 0; i < children.Length; i++)
-                {
-                    var offset = kStructureSize * i;
-                    reader.BaseStream.Seek(childrenAbsPtr + offset, SeekOrigin.Begin);
-                    reader.ReadX(ref children[i], true);
-                }
+                //// Read Children (recursive)
+                //children = new TrackTransform[childCount];
+                //for (int i = 0; i < children.Length; i++)
+                //{
+                //    var offset = kStructureSize * i;
+                //    reader.BaseStream.Seek(childrenAbsPtr + offset, SeekOrigin.Begin);
+                //    reader.ReadX(ref children[i], true);
+                //}
             }
             this.SetReaderToEndAddress(reader);
         }

@@ -55,6 +55,12 @@ namespace Manifold.IO.GFZ.CourseCollision
                 empty.name = nameof(TempTrackVis);
                 var trackVis = empty.AddComponent<TempTrackVis>();
                 trackVis.SceneSobj = course;
+                var pathVis = empty.AddComponent<DisplayVenueMetadataObjects>();
+                pathVis.sceneSobj = course;
+                var storyVis = empty.AddComponent<DisplayStoryObjects>();
+                storyVis.SceneSobj = course;
+
+
 
                 // Course-related values, used to find models
                 // triple digits do "overflow", that's okay.

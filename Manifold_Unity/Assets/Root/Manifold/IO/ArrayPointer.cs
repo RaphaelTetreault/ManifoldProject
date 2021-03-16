@@ -28,5 +28,10 @@ namespace Manifold.IO
             writer.WriteX(length);
             writer.WriteX(address);
         }
+
+        public override string ToString()
+        {
+            return $"Length: {length}, Address: {HexAddress}";
+        }
     }
 }

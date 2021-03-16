@@ -33,9 +33,9 @@ namespace GameCube.GFZ.CourseCollision
         public ColiUnknownStruct5 unknownStruct5_0x84;
         public ColiUnknownStruct6[] unknownStruct6_0x94;
         public ColiUnknownStruct6[] unknownStruct6_0x9C;
-        public ColiUnknownStruct6[] pathObjects;
+        public VenueMetadataObject[] venueMetadataObjects;
         public ColiUnknownStruct6[] arcadeCheckpoints;
-        public StoryObjectTrigger[] storyObjects; // story triggers?
+        public StoryObject[] storyObjects; // story triggers?
         public TrackIndexesTable trackIndexTable;
 
 
@@ -125,7 +125,7 @@ namespace GameCube.GFZ.CourseCollision
 
             // 0xA4
             reader.JumpToAddress(header.pathObjects);
-            reader.ReadX(ref pathObjects, header.pathObjects.length, true);
+            reader.ReadX(ref venueMetadataObjects, header.pathObjects.length, true);
 
             // 0xAC
             reader.JumpToAddress(header.arcadeCheckpoint);
@@ -133,7 +133,7 @@ namespace GameCube.GFZ.CourseCollision
 
             // 0xB4
             reader.JumpToAddress(header.storyObjects);
-            reader.ReadX(ref pathObjects, header.storyObjects.length, true);
+            reader.ReadX(ref storyObjects, header.storyObjects.length, true);
 
             // 0xBC
             reader.JumpToAddress(header.trackIndexTable);
