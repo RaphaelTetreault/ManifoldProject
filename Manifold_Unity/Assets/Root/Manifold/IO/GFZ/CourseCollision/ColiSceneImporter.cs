@@ -1,5 +1,6 @@
 ﻿using GameCube.GFZ;
 using GameCube.GFZ.CourseCollision;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -57,9 +58,14 @@ namespace Manifold.IO.GFZ.CourseCollision
                 trackVis.SceneSobj = course;
                 var pathVis = empty.AddComponent<DisplayVenueMetadataObjects>();
                 pathVis.sceneSobj = course;
-                var storyVis = empty.AddComponent<DisplayStoryObjects>();
-                storyVis.SceneSobj = course;
 
+                var displayables = new List<IColiCourseDisplayable>();
+                displayables.Add(empty.AddComponent<DisplayStoryObjects>());
+                displayables.Add(empty.AddComponent<DisplayColiUnknownStruct6>());
+                foreach (var displayable in displayables)
+                {
+                    displayable.SceneSobj = course;
+                }
 
 
                 // Course-related values, used to find models
