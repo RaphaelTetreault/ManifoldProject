@@ -889,10 +889,11 @@ namespace Manifold.IO.GFZ.CourseCollision
                 //writer.PushCol(nameof(ColiUnknownStruct6.unk_0x04));
                 //writer.PushCol(nameof(ColiUnknownStruct6.unk_0x08));
                 writer.PushCol(nameof(ColiUnknownStruct6.position));
-                writer.PushCol(nameof(ColiUnknownStruct6.unk_0x0C));
-                writer.PushCol(nameof(ColiUnknownStruct6.unk_0x0E));
-                writer.PushCol(nameof(ColiUnknownStruct6.unk_0x10));
-                writer.PushCol(nameof(ColiUnknownStruct6.unk_0x12));
+                writer.PushCol(nameof(ColiUnknownStruct6.rotation));
+                //writer.PushCol(nameof(ColiUnknownStruct6.unk_0x0C));
+                //writer.PushCol(nameof(ColiUnknownStruct6.unk_0x0E));
+                //writer.PushCol(nameof(ColiUnknownStruct6.unk_0x10));
+                writer.PushCol(nameof(ColiUnknownStruct6.zero_0x12));
                 //writer.PushCol(nameof(ColiUnknownStruct6.unk_0x14));
                 //writer.PushCol(nameof(ColiUnknownStruct6.unk_0x18));
                 //writer.PushCol(nameof(ColiUnknownStruct6.unk_0x1C));
@@ -933,13 +934,14 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.PushCol(item.EndAddressHex());
 
                 writer.PushCol(item.position);
+                writer.PushCol(item.rotation);
                 //writer.PushCol(item.unk_0x00);
                 //writer.PushCol(item.unk_0x04);
                 //writer.PushCol(item.unk_0x08);
-                writer.PushCol($"0x{item.unk_0x0C:X4}");
-                writer.PushCol($"0x{item.unk_0x0E:X4}");
-                writer.PushCol($"0x{item.unk_0x10:X4}");
-                writer.PushCol($"0x{item.unk_0x12:X4}");
+                //writer.PushCol($"0x{item.unk_0x0C:X4}");
+                //writer.PushCol($"0x{item.unk_0x0E:X4}");
+                //writer.PushCol($"0x{item.unk_0x10:X4}");
+                //writer.PushCol($"0x{item.zero_0x12:X4}");
                 writer.PushCol(item.scaleOrRotation);
                 //writer.PushCol(item.unk_0x14);
                 //writer.PushCol(item.unk_0x18);

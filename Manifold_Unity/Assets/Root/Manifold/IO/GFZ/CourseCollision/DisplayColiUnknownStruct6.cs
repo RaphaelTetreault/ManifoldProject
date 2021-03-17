@@ -7,6 +7,10 @@ namespace Manifold.IO.GFZ.CourseCollision
         [SerializeField]
         private ColiSceneSobj sceneSobj;
 
+        public bool
+            displayEffectVolume = true,
+            displayObjectGroup = true;
+
         public ColiSceneSobj SceneSobj
         {
             get => sceneSobj;
@@ -17,6 +21,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
         private void OnDrawGizmos()
         {
+            var mesh = Resources.GetBuiltinResource<Mesh>("Cube.fbx");
             var red = new Color32(255, 0, 0, 127);
             var green = new Color32(0, 255, 0, 127);
             var blue = new Color32(0, 0, 255, 127);
@@ -24,19 +29,28 @@ namespace Manifold.IO.GFZ.CourseCollision
             Gizmos.color = blue;
             foreach (var item in sceneSobj.Value.arcadeCheckpoints)
             {
-                Gizmos.DrawCube(item.position, item.scaleOrRotation * 10f);
+                var rotation = Quaternion.Euler(item.rotation.z, item.rotation.y, item.rotation.x);
+                Gizmos.DrawMesh(mesh, 0, item.position, rotation, item.scaleOrRotation * 10f);
             }
 
-            Gizmos.color = green;
-            foreach (var item in sceneSobj.Value.unknownStruct6_0x94)
+            if (displayObjectGroup)
             {
-                Gizmos.DrawCube(item.position, item.scaleOrRotation * 10f);
+                Gizmos.color = green;
+                foreach (var item in sceneSobj.Value.unknownStruct6_0x94)
+                {
+                    var rotation = Quaternion.Euler(item.rotation.x, item.rotation.y, item.rotation.z);
+                    Gizmos.DrawMesh(mesh, 0, item.position, rotation, item.scaleOrRotation * 10f);
+                }
             }
 
-            Gizmos.color = red;
-            foreach (var item in sceneSobj.Value.unknownStruct6_0x9C)
+            if (displayEffectVolume)
             {
-                Gizmos.DrawCube(item.position, item.scaleOrRotation * 10f);
+                Gizmos.color = red;
+                foreach (var item in sceneSobj.Value.unknownStruct6_0x9C)
+                {
+                var rotation = Quaternion.Euler(item.rotation.x, item.rotation.y, item.rotation.z);
+                    Gizmos.DrawMesh(mesh, 0, item.position, rotation, item.scaleOrRotation * 10f);
+                }
             }
         }
     }

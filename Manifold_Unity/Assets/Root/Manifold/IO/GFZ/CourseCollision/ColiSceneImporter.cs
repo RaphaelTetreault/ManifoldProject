@@ -84,7 +84,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 var venueFolder = $"Assets/{importFromRoot}/bg/bg_{venueID}";
                 var searchFolders = new string[] { initFolder, stageFolder, venueFolder };
 
-                // Find all gameobjects, add them to scene
+                // Find all scene objects, add them to scene
                 foreach (var sceneObject in course.Value.sceneObjects)
                 {
                     // HACK: skip empties. Should really just do "model not found"
