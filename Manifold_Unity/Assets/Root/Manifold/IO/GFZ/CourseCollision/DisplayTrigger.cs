@@ -33,13 +33,13 @@ namespace Manifold.IO.GFZ.CourseCollision
             var green = new Color32(0, 255, 0, 127);
             var blue = new Color32(0, 0, 255, 127);
 
-            DisplayTriggerArray(sceneSobj.Value.arcadeCheckpoints, blue);
+            DisplayTriggerArray(sceneSobj.Value.arcadeCheckpointTriggers, blue);
 
             if (displayObjectGroup)
-                DisplayTriggerArray(sceneSobj.Value.unknownStruct6_0x94, green);
+                DisplayTriggerArray(sceneSobj.Value.unknownTriggers_0x94, green);
 
             if (displayEffectVolume)
-                DisplayTriggerArray(sceneSobj.Value.unknownStruct6_0x9C, red, true);
+                DisplayTriggerArray(sceneSobj.Value.effectTriggers, red, true);
 
         }
 

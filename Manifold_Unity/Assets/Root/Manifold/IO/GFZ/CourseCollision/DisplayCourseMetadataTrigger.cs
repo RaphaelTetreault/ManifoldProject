@@ -14,7 +14,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             var mesh = Resources.GetBuiltinResource<Mesh>("Cube.fbx");
 
             Gizmos.color = new Color32(255, 255, 0, 127);
-            foreach (var item in sceneSobj.Value.venueMetadataObjects)
+            foreach (var item in sceneSobj.Value.courseMetadataTriggers)
             {
                 var defaultScale = Vector3.one * size;
                 var isPath =

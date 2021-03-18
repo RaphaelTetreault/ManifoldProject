@@ -31,10 +31,10 @@ namespace GameCube.GFZ.CourseCollision
         public ColiUnknownStruct2[] unknownStruct2s;
         public ColiUnknownStruct3 unknownStruct3;
         public ColiUnknownStruct5 unknownStruct5_0x84;
-        public Trigger[] unknownStruct6_0x94;
-        public Trigger[] unknownStruct6_0x9C;
-        public CourseMetadataTrigger[] venueMetadataObjects;
-        public Trigger[] arcadeCheckpoints;
+        public Trigger[] unknownTriggers_0x94; // Unknown triggers
+        public Trigger[] effectTriggers; // Effect Triggers
+        public CourseMetadataTrigger[] courseMetadataTriggers;
+        public Trigger[] arcadeCheckpointTriggers;
         public StoryObject[] storyObjects; // story triggers?
         public TrackIndexesTable trackIndexTable;
 
@@ -117,19 +117,19 @@ namespace GameCube.GFZ.CourseCollision
 
             // 0x94
             reader.JumpToAddress(header.unkArrayPtr_0x94);
-            reader.ReadX(ref unknownStruct6_0x94, header.unkArrayPtr_0x94.length, true);
+            reader.ReadX(ref unknownTriggers_0x94, header.unkArrayPtr_0x94.length, true);
 
             // 0x9C
             reader.JumpToAddress(header.unkArrayPtr_0x9C);
-            reader.ReadX(ref unknownStruct6_0x9C, header.unkArrayPtr_0x9C.length, true);
+            reader.ReadX(ref effectTriggers, header.unkArrayPtr_0x9C.length, true);
 
             // 0xA4
             reader.JumpToAddress(header.pathObjects);
-            reader.ReadX(ref venueMetadataObjects, header.pathObjects.length, true);
+            reader.ReadX(ref courseMetadataTriggers, header.pathObjects.length, true);
 
             // 0xAC
             reader.JumpToAddress(header.arcadeCheckpoint);
-            reader.ReadX(ref arcadeCheckpoints, header.arcadeCheckpoint.length, true);
+            reader.ReadX(ref arcadeCheckpointTriggers, header.arcadeCheckpoint.length, true);
 
             // 0xB4
             reader.JumpToAddress(header.storyObjects);

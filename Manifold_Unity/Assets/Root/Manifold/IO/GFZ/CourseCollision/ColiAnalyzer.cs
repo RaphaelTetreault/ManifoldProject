@@ -897,10 +897,10 @@ namespace Manifold.IO.GFZ.CourseCollision
                 foreach (var file in coliSobjs)
                 {
                     var coli = file.Value;
-                    WriteUnknownStruct6Row(writer, coli, "Arcade Checkpoints", coli.arcadeCheckpoints);
+                    WriteUnknownStruct6Row(writer, coli, "Arcade Checkpoints", coli.arcadeCheckpointTriggers);
                     //WriteUnknownStruct6Row(writer, coli, "Metadata", coli.venueMetadataObjects);
-                    WriteUnknownStruct6Row(writer, coli, "0x94", coli.unknownStruct6_0x94);
-                    WriteUnknownStruct6Row(writer, coli, "0x9C", coli.unknownStruct6_0x9C);
+                    WriteUnknownStruct6Row(writer, coli, "0x94", coli.unknownTriggers_0x94);
+                    WriteUnknownStruct6Row(writer, coli, "0x9C", coli.effectTriggers);
                 }
                 writer.Flush();
             }
