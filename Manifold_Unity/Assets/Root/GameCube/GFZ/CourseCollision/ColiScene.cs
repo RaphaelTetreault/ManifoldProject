@@ -31,10 +31,10 @@ namespace GameCube.GFZ.CourseCollision
         public ColiUnknownStruct2[] unknownStruct2s;
         public ColiUnknownStruct3 unknownStruct3;
         public ColiUnknownStruct5 unknownStruct5_0x84;
-        public ColiUnknownStruct6[] unknownStruct6_0x94;
-        public ColiUnknownStruct6[] unknownStruct6_0x9C;
-        public VenueMetadataObject[] venueMetadataObjects;
-        public ColiUnknownStruct6[] arcadeCheckpoints;
+        public Trigger[] unknownStruct6_0x94;
+        public Trigger[] unknownStruct6_0x9C;
+        public CourseMetadataTrigger[] venueMetadataObjects;
+        public Trigger[] arcadeCheckpoints;
         public StoryObject[] storyObjects; // story triggers?
         public TrackIndexesTable trackIndexTable;
 

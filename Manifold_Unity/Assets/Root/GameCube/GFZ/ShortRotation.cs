@@ -7,7 +7,7 @@ namespace GameCube.GFZ
     [System.Serializable]
     public struct ShortRotation : IBinarySerializable
     {
-        private const float shortToFloat = 360f / (ushort.MaxValue + 1);
+        private const float shortToFloat = 360f / (ushort.MaxValue);
         private const float floatToshort = 1f / shortToFloat;
 
         [SerializeField]

@@ -56,12 +56,12 @@ namespace Manifold.IO.GFZ.CourseCollision
                 empty.name = nameof(TempTrackVis);
                 var trackVis = empty.AddComponent<TempTrackVis>();
                 trackVis.SceneSobj = course;
-                var pathVis = empty.AddComponent<DisplayVenueMetadataObjects>();
+                var pathVis = empty.AddComponent<DisplayCourseMetadataTrigger>();
                 pathVis.sceneSobj = course;
 
                 var displayables = new List<IColiCourseDisplayable>();
                 displayables.Add(empty.AddComponent<DisplayStoryObjects>());
-                displayables.Add(empty.AddComponent<DisplayColiUnknownStruct6>());
+                displayables.Add(empty.AddComponent<DisplayTrigger>());
                 foreach (var displayable in displayables)
                 {
                     displayable.SceneSobj = course;

@@ -118,19 +118,19 @@ namespace Manifold.IO.GFZ.CourseCollision
 
             if (unknownStruct6)
             {
-                string fileName = $"{time} COLI {nameof(ColiUnknownStruct6)}.tsv";
+                string fileName = $"{time} COLI {nameof(Trigger)}.tsv";
                 string filePath = Path.Combine(outputPath, fileName);
                 EditorUtility.DisplayProgressBar(ExecuteText, filePath, .5f);
                 AnalyzeUnknownStruct6(filePath);
             }
 
-            if (storyObject)
-            {
-                string fileName = $"{time} COLI {nameof(VenueMetadataObject)}.tsv";
-                string filePath = Path.Combine(outputPath, fileName);
-                EditorUtility.DisplayProgressBar(ExecuteText, filePath, .5f);
-                AnalyzeVenueMetadataObjects(filePath);
-            }
+            //if (storyObject)
+            //{
+            //    string fileName = $"{time} COLI {nameof(VenueMetadataObject)}.tsv";
+            //    string filePath = Path.Combine(outputPath, fileName);
+            //    EditorUtility.DisplayProgressBar(ExecuteText, filePath, .5f);
+            //    AnalyzeVenueMetadataObjects(filePath);
+            //}
 
             if (venueMetadataObject)
             {
@@ -885,20 +885,12 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.PushCol("Start");
                 writer.PushCol("End");
                 //
-                //writer.PushCol(nameof(ColiUnknownStruct6.unk_0x00));
-                //writer.PushCol(nameof(ColiUnknownStruct6.unk_0x04));
-                //writer.PushCol(nameof(ColiUnknownStruct6.unk_0x08));
-                writer.PushCol(nameof(ColiUnknownStruct6.position));
-                writer.PushCol(nameof(ColiUnknownStruct6.rotation));
-                //writer.PushCol(nameof(ColiUnknownStruct6.unk_0x0C));
-                //writer.PushCol(nameof(ColiUnknownStruct6.unk_0x0E));
-                //writer.PushCol(nameof(ColiUnknownStruct6.unk_0x10));
-                writer.PushCol(nameof(ColiUnknownStruct6.zero_0x12));
-                //writer.PushCol(nameof(ColiUnknownStruct6.unk_0x14));
-                //writer.PushCol(nameof(ColiUnknownStruct6.unk_0x18));
-                //writer.PushCol(nameof(ColiUnknownStruct6.unk_0x1C));
-                writer.PushCol(nameof(ColiUnknownStruct6.scaleOrRotation));
-                writer.PushCol(nameof(ColiUnknownStruct6.unk_0x20));
+                writer.PushCol(nameof(Trigger.position));
+                writer.PushCol(nameof(Trigger.rotation));
+                writer.PushCol(nameof(Trigger.zero_0x12));
+                writer.PushCol(nameof(Trigger.scale));
+                writer.PushCol(nameof(Trigger.unk_0x20));
+                writer.PushCol(nameof(Trigger.unk_0x22));
                 //
                 writer.PushRow();
 
@@ -906,7 +898,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 {
                     var coli = file.Value;
                     WriteUnknownStruct6Row(writer, coli, "Arcade Checkpoints", coli.arcadeCheckpoints);
-                    //WriteUnknownStruct6Row(writer, coli, "Path Objects", coli.pathObjects);
+                    //WriteUnknownStruct6Row(writer, coli, "Metadata", coli.venueMetadataObjects);
                     WriteUnknownStruct6Row(writer, coli, "0x94", coli.unknownStruct6_0x94);
                     WriteUnknownStruct6Row(writer, coli, "0x9C", coli.unknownStruct6_0x9C);
                 }
@@ -914,7 +906,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             }
         }
 
-        private void WriteUnknownStruct6Row(StreamWriter writer, ColiScene scene, string tag, ColiUnknownStruct6[] struct6Array)
+        private void WriteUnknownStruct6Row(StreamWriter writer, ColiScene scene, string tag, Trigger[] struct6Array)
         {
             var venueID = CourseUtility.GetVenueID(scene.ID).GetDescription();
             var courseID = ((CourseIDEx)scene.ID).GetDescription();
@@ -934,73 +926,65 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.PushCol(item.EndAddressHex());
 
                 writer.PushCol(item.position);
-                writer.PushCol(item.rotation);
-                //writer.PushCol(item.unk_0x00);
-                //writer.PushCol(item.unk_0x04);
-                //writer.PushCol(item.unk_0x08);
-                //writer.PushCol($"0x{item.unk_0x0C:X4}");
-                //writer.PushCol($"0x{item.unk_0x0E:X4}");
-                //writer.PushCol($"0x{item.unk_0x10:X4}");
-                //writer.PushCol($"0x{item.zero_0x12:X4}");
-                writer.PushCol(item.scaleOrRotation);
-                //writer.PushCol(item.unk_0x14);
-                //writer.PushCol(item.unk_0x18);
-                //writer.PushCol(item.unk_0x1C);
+                writer.PushCol(item.rotationEuler);
+                writer.PushCol(item.zero_0x12);
+                writer.PushCol(item.scale);
                 writer.PushCol(item.unk_0x20);
+                writer.PushCol(item.unk_0x22);
                 writer.PushRow();
             }
         }
 
-        public void AnalyzeVenueMetadataObjects(string fileName)
-        {
-            using (var writer = AnalyzerUtility.OpenWriter(fileName))
-            {
-                // Write header
-                writer.PushCol("File");
-                writer.PushCol("Index");
-                writer.PushCol("Stage");
-                writer.PushCol("Venue");
-                writer.PushCol("AX/GX");
-                //
-                writer.PushCol(nameof(VenueMetadataObject.position));
-                writer.PushCol(nameof(VenueMetadataObject.unk_0x0C));
-                writer.PushCol(nameof(VenueMetadataObject.unk_0x0E));
-                writer.PushCol(nameof(VenueMetadataObject.unk_0x10));
-                writer.PushCol(nameof(VenueMetadataObject.unk_0x12));
-                writer.PushCol(nameof(VenueMetadataObject.positionOrScale));
-                writer.PushCol(nameof(VenueMetadataObject.venue));
-                //
-                writer.PushRow();
+        //public void AnalyzeVenueMetadataObjects(string fileName)
+        //{
+        //    using (var writer = AnalyzerUtility.OpenWriter(fileName))
+        //    {
+        //        // Write header
+        //        writer.PushCol("File");
+        //        writer.PushCol("Index");
+        //        writer.PushCol("Stage");
+        //        writer.PushCol("Venue");
+        //        writer.PushCol("AX/GX");
+        //        //
+        //        writer.PushCol(nameof(VenueMetadataObject.position));
+        //        writer.PushCol(nameof(VenueMetadataObject.unk_0x0C));
+        //        writer.PushCol(nameof(VenueMetadataObject.unk_0x0E));
+        //        writer.PushCol(nameof(VenueMetadataObject.unk_0x10));
+        //        writer.PushCol(nameof(VenueMetadataObject.unk_0x12));
+        //        writer.PushCol(nameof(VenueMetadataObject.positionOrScale));
+        //        writer.PushCol(nameof(VenueMetadataObject.venue));
+        //        //
+        //        writer.PushRow();
 
-                foreach (var file in coliSobjs)
-                {
-                    var scene = file.Value;
-                    var venueID = CourseUtility.GetVenueID(scene.ID).GetDescription();
-                    var courseID = ((CourseIDEx)scene.ID).GetDescription();
-                    var isAxGx = scene.header.IsFileGX ? "GX" : "AX";
+        //        foreach (var file in coliSobjs)
+        //        {
+        //            var scene = file.Value;
+        //            var venueID = CourseUtility.GetVenueID(scene.ID).GetDescription();
+        //            var courseID = ((CourseIDEx)scene.ID).GetDescription();
+        //            var isAxGx = scene.header.IsFileGX ? "GX" : "AX";
 
-                    foreach (var item in scene.venueMetadataObjects)
-                    {
-                        writer.PushCol(scene.FileName);
-                        writer.PushCol(scene.ID);
-                        writer.PushCol(venueID);
-                        writer.PushCol(courseID);
-                        writer.PushCol(isAxGx);
-                        //
-                        writer.PushCol(item.position);
-                        writer.PushCol(item.unk_0x0C);
-                        writer.PushCol(item.unk_0x0E);
-                        writer.PushCol(item.unk_0x10);
-                        writer.PushCol(item.unk_0x12);
-                        writer.PushCol(item.positionOrScale);
-                        writer.PushCol(item.venue);
-                        //
-                        writer.PushRow();
-                    }
-                    writer.Flush();
-                }
-            }
-        }
+        //            foreach (var item in scene.venueMetadataObjects)
+        //            {
+        //                writer.PushCol(scene.FileName);
+        //                writer.PushCol(scene.ID);
+        //                writer.PushCol(venueID);
+        //                writer.PushCol(courseID);
+        //                writer.PushCol(isAxGx);
+        //                //
+        //                writer.PushCol(item.position);
+        //                writer.PushCol(item.unk_0x0C);
+        //                writer.PushCol(item.unk_0x0E);
+        //                writer.PushCol(item.unk_0x10);
+        //                writer.PushCol(item.unk_0x12);
+        //                writer.PushCol(item.positionOrScale);
+        //                writer.PushCol(item.venue);
+        //                //
+        //                writer.PushRow();
+        //            }
+        //            writer.Flush();
+        //        }
+        //    }
+        //}
 
         public void AnalyzeStoryObject(string fileName)
         {
