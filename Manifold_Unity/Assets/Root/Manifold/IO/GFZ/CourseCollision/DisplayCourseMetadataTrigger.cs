@@ -7,31 +7,31 @@ namespace Manifold.IO.GFZ.CourseCollision
     {
         public ColiSceneSobj sceneSobj;
         public float size = 15f;
-        public Color color = Color.green;
+        public Color color = new Color32(255, 255, 0, 127);
 
         private void OnDrawGizmos()
         {
             var mesh = Resources.GetBuiltinResource<Mesh>("Cube.fbx");
 
-            Gizmos.color = new Color32(255, 255, 0, 127);
+            Gizmos.color = color;
             foreach (var item in sceneSobj.Value.courseMetadataTriggers)
             {
                 var defaultScale = Vector3.one * size;
                 var isPath =
-                    item.metadata == CourseMetadataFlag.Lightning ||
-                    item.metadata == CourseMetadataFlag.OuterSpace;
+                    item.course == CourseMetadataType.Lightning_Lightning ||
+                    item.course == CourseMetadataType.OuterSpace_Meteor;
 
                 if (isPath)
                 {
-                    Gizmos.DrawMesh(mesh, 0, item.PositionFrom, item.rotation, defaultScale);
-                    Gizmos.DrawWireMesh(mesh, 0, item.PositionTo, item.rotation, defaultScale);
+                    Gizmos.DrawMesh(mesh, 0, item.PositionFrom, item.Rotation, defaultScale);
+                    Gizmos.DrawWireMesh(mesh, 0, item.PositionTo, item.Rotation, defaultScale);
                     Gizmos.DrawLine(item.PositionFrom, item.PositionTo);
                 }
                 else
                 {
                     // size = 10 like other triggers?
                     // BBO seems to work well with 27.5f
-                    Gizmos.DrawMesh(mesh, 0, item.position, item.rotation, item.Scale * size);
+                    Gizmos.DrawMesh(mesh, 0, item.position, item.Rotation, item.Scale * size);
                 }
             }
         }

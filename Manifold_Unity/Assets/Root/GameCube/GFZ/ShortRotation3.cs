@@ -11,6 +11,14 @@ namespace GameCube.GFZ
         public ShortRotation y;
         public ShortRotation z;
 
+        public Vector3 AsVector3
+            => new Vector3(x, y, z);
+
+        public Quaternion AsQuaternion
+            => Quaternion.Euler(AsVector3);
+
+
+
         public static implicit operator Vector3(ShortRotation3 value)
         {
             var vector3 = new Vector3(value.x, value.y, value.z);
@@ -33,6 +41,10 @@ namespace GameCube.GFZ
             reader.ReadX(ref x, true);
             reader.ReadX(ref y, true);
             reader.ReadX(ref z, true);
+
+            ushort zero = 0;
+            reader.ReadX(ref zero);
+            Assert.IsTrue(zero == 0);
         }
 
         public void Serialize(BinaryWriter writer)
@@ -40,11 +52,12 @@ namespace GameCube.GFZ
             writer.WriteX(x);
             writer.WriteX(y);
             writer.WriteX(z);
+            writer.WriteX((ushort)0);
         }
 
         public override string ToString()
         {
-            return $"({x.ToString("0.00")},{y.ToString("0.00")},{z.ToString("0.00")})";
+            return $"({x.ToString("0.0")},{y.ToString("0.0")},{z.ToString("0.0")})";
         }
     }
 }

@@ -8,26 +8,15 @@ namespace GameCube.GFZ.CourseCollision
     [Serializable]
     public class CourseMetadataTrigger : IBinarySerializable, IBinaryAddressableRange
     {
-        // 
-        private const float shortToFloat = 360f / (ushort.MaxValue);
-        private const float floatToshort = 1f / shortToFloat;
-
         [SerializeField]
         private AddressRange addressRange;
 
         public Vector3 position;
         public ShortRotation3 shortRotation3;
-        //public ushort rotationX;
-        //public ushort rotationY;
-        //public ushort rotationZ;
-        public ushort zero_0x12;
         public Vector3 positionOrScale;
-        public CourseMetadataFlag metadata;
+        public CourseMetadataType course;
 
         //
-        public Quaternion rotation;
-        public Vector3 rotationEuler;
-
         public AddressRange AddressRange
         {
             get => addressRange;
@@ -59,25 +48,19 @@ namespace GameCube.GFZ.CourseCollision
             get => new Vector3(-positionOrScale.x, positionOrScale.y, positionOrScale.z);
         }
 
+        public Quaternion Rotation => shortRotation3.AsQuaternion;
+        public Vector3 RotationEuler => shortRotation3.AsVector3;
+
         public void Deserialize(BinaryReader reader)
         {
             this.RecordStartAddress(reader);
             {
                 reader.ReadX(ref position);
                 reader.ReadX(ref shortRotation3, true);
-                //reader.ReadX(ref rotationX);
-                //reader.ReadX(ref rotationY);
-                //reader.ReadX(ref rotationZ);
-                reader.ReadX(ref zero_0x12);
                 reader.ReadX(ref positionOrScale);
-                reader.ReadX(ref metadata);
+                reader.ReadX(ref course);
             }
             this.RecordEndAddress(reader);
-            {
-                // Copy data over to better structures
-                rotationEuler = shortRotation3;
-                rotation = Quaternion.Euler(rotationEuler);
-            }
         }
 
         public void Serialize(BinaryWriter writer)

@@ -6,7 +6,7 @@ using UnityEngine;
 namespace GameCube.GFZ.CourseCollision
 {
     [Serializable]
-    public class Trigger : IBinarySerializable, IBinaryAddressableRange
+    public class VisualEffectTrigger : IBinarySerializable, IBinaryAddressableRange
     {
         [SerializeField]
         private AddressRange addressRange;
@@ -14,10 +14,9 @@ namespace GameCube.GFZ.CourseCollision
         public Vector3 position;
         public ShortRotation3 shortRotation3;
         public Vector3 scale;
-        public EnumFlags16 unk_0x20;
-        public EnumFlags16 unk_0x22;
+        public TriggerableAnimation animation;
+        public TriggerableVisualEffect visualEffect;
 
-        //
         public Quaternion Rotation => shortRotation3.AsQuaternion;
         public Vector3 RotationEuler => shortRotation3.AsVector3;
 
@@ -35,21 +34,14 @@ namespace GameCube.GFZ.CourseCollision
                 reader.ReadX(ref position);
                 reader.ReadX(ref shortRotation3, true);
                 reader.ReadX(ref scale);
-                reader.ReadX(ref unk_0x20);
-                reader.ReadX(ref unk_0x22);
+                reader.ReadX(ref animation);
+                reader.ReadX(ref visualEffect);
             }
             this.RecordEndAddress(reader);
-            {
-                // Volumes used are 10x10x10
-                // Since we use a 1x1x1 cube, multiply x10
-                scale *= 10f;
-            }
         }
 
         public void Serialize(BinaryWriter writer)
         {
-            // scale /= 10f;
-
             throw new NotImplementedException();
         }
 

@@ -886,21 +886,21 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.PushCol("End");
                 //
                 writer.PushCol(nameof(Trigger.position));
-                writer.PushCol(nameof(Trigger.rotation));
-                writer.PushCol(nameof(Trigger.zero_0x12));
+                writer.PushCol(nameof(Trigger.shortRotation3));
                 writer.PushCol(nameof(Trigger.scale));
                 writer.PushCol(nameof(Trigger.unk_0x20));
                 writer.PushCol(nameof(Trigger.unk_0x22));
                 //
+                writer.PushCol("Index");
                 writer.PushRow();
 
                 foreach (var file in coliSobjs)
                 {
                     var coli = file.Value;
-                    WriteUnknownStruct6Row(writer, coli, "Arcade Checkpoints", coli.arcadeCheckpointTriggers);
+                    //WriteUnknownStruct6Row(writer, coli, "Arcade Checkpoints", coli.arcadeCheckpointTriggers);
                     //WriteUnknownStruct6Row(writer, coli, "Metadata", coli.venueMetadataObjects);
                     WriteUnknownStruct6Row(writer, coli, "0x94", coli.unknownTriggers_0x94);
-                    WriteUnknownStruct6Row(writer, coli, "0x9C", coli.effectTriggers);
+                    //WriteUnknownStruct6Row(writer, coli, "0x9C", coli.effectTriggers);
                 }
                 writer.Flush();
             }
@@ -912,8 +912,12 @@ namespace Manifold.IO.GFZ.CourseCollision
             var courseID = ((CourseIDEx)scene.ID).GetDescription();
             var isAxGx = scene.header.IsFileGX ? "GX" : "AX";
 
+            int count = 0;
+            int total = struct6Array.Length;
             foreach (var item in struct6Array)
             {
+                count++;
+
                 writer.PushCol(scene.FileName);
                 writer.PushCol(scene.ID);
                 writer.PushCol(venueID);
@@ -926,11 +930,13 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.PushCol(item.EndAddressHex());
 
                 writer.PushCol(item.position);
-                writer.PushCol(item.rotationEuler);
-                writer.PushCol(item.zero_0x12);
+                writer.PushCol(item.RotationEuler);
                 writer.PushCol(item.scale);
                 writer.PushCol(item.unk_0x20);
                 writer.PushCol(item.unk_0x22);
+                
+                writer.PushCol($"[{count}/{total}]");
+
                 writer.PushRow();
             }
         }

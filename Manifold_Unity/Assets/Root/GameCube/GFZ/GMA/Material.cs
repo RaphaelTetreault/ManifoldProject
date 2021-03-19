@@ -3,7 +3,6 @@ using Manifold.IO;
 using System;
 using System.IO;
 using UnityEngine;
-using UnityEngine.Assertions;
 
 namespace GameCube.GFZ.GMA
 {

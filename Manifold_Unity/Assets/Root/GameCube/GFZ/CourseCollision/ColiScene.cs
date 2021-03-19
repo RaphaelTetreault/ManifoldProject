@@ -32,9 +32,9 @@ namespace GameCube.GFZ.CourseCollision
         public ColiUnknownStruct3 unknownStruct3;
         public ColiUnknownStruct5 unknownStruct5_0x84;
         public Trigger[] unknownTriggers_0x94; // Unknown triggers
-        public Trigger[] effectTriggers; // Effect Triggers
+        public VisualEffectTrigger[] effectTriggers;
         public CourseMetadataTrigger[] courseMetadataTriggers;
-        public Trigger[] arcadeCheckpointTriggers;
+        public ArcadeCheckpointTrigger[] arcadeCheckpointTriggers;
         public StoryObject[] storyObjects; // story triggers?
         public TrackIndexesTable trackIndexTable;
 

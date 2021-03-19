@@ -33,13 +33,13 @@ namespace Manifold.IO.GFZ.CourseCollision
             var green = new Color32(0, 255, 0, 127);
             var blue = new Color32(0, 0, 255, 127);
 
-            DisplayTriggerArray(sceneSobj.Value.arcadeCheckpointTriggers, blue);
+            //DisplayTriggerArray(sceneSobj.Value.arcadeCheckpointTriggers, blue);
 
             if (displayObjectGroup)
                 DisplayTriggerArray(sceneSobj.Value.unknownTriggers_0x94, green);
 
-            if (displayEffectVolume)
-                DisplayTriggerArray(sceneSobj.Value.effectTriggers, red, true);
+            //if (displayEffectVolume)
+            //    DisplayTriggerArray(sceneSobj.Value.effectTriggers, red, true);
 
         }
 
@@ -59,15 +59,15 @@ namespace Manifold.IO.GFZ.CourseCollision
             {
                 count++;
 
-                //var position = new Vector3(doInvertX ? -item.position.x : item.position.x, item.position.y, item.position.z);
+                var position = new Vector3(item.position.x, item.position.y, item.position.z);
                 //var rotation = Quaternion.Euler(item.rotation.x, item.rotation.y, item.rotation.z);
                 //var rotation = RemixQuaternion(item.rotation, compX, compY, compZ);
 
-                Gizmos.DrawMesh(mesh, 0, item.position, item.rotation, item.scale);
-                Gizmos.DrawWireMesh(mesh, 0, item.position, item.rotation, item.scale);
+                Gizmos.DrawMesh(mesh, 0, item.position, item.Rotation, item.scale);
+                Gizmos.DrawWireMesh(mesh, 0, item.position, item.Rotation, item.scale);
 
                 //if (drawNumber)
-                //UnityEditor.Handles.Label(position, count.ToString(), style);
+                UnityEditor.Handles.Label(position, count.ToString(), style);
             }
         }
 

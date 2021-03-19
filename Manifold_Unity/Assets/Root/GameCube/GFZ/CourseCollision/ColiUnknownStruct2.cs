@@ -14,8 +14,8 @@ namespace GameCube.GFZ.CourseCollision
     {
         public int unk_0x00;
         public Vector3 position; // position?
-        public int unk_0x10;
-        public int zero_0x14;
+        public int unk_0x10; // ShortRotation3!? 
+        public int zero_0x14; // This would mean Z rotation isn't used...?
         public Vector3 scale; // scale? always 1,1,1
 
         public void Deserialize(BinaryReader reader)
