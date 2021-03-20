@@ -1,5 +1,6 @@
 namespace GameCube.GFZ.CourseCollision
 {
+    [System.Flags]
     public enum TriggerableAnimation : ushort
     {
         AnimationID_00 = 1 << 00,

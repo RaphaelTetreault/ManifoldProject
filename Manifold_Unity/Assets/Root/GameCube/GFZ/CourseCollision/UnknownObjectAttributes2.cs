@@ -1,7 +1,6 @@
 using Manifold.IO;
 using System;
 using System.IO;
-using System.Text;
 using UnityEngine;
 
 namespace GameCube.GFZ.CourseCollision

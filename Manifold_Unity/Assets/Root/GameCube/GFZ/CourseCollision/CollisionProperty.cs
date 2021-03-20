@@ -1,4 +1,3 @@
-
 namespace GameCube.GFZ.CourseCollision
 {
     public enum CollisionProperty : byte
