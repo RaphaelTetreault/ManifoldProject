@@ -24,15 +24,7 @@ namespace GameCube.GFZ.CourseCollision
         public EnumFlags32 unk_0x00;
         public EnumFlags32 unk_0x04;
         public Pointer collisionBindingPtr;
-        public Vector3 position;
-        public EnumFlags16 unk_0x18;
-        public EnumFlags16 unk_0x1A;
-        public EnumFlags16 unk_0x1C;
-        public EnumFlags16 unk_0x1E;
-        public Vector3 scale;
-        /// <summary>
-        /// 2020/05/12 Raph: Confirmed 0
-        /// </summary>
+        public SceneTransform sceneTransform;
         public int zero_0x2C;
         public Pointer animationPtr;
         public Pointer unkPtr_0x34;
@@ -44,6 +36,8 @@ namespace GameCube.GFZ.CourseCollision
         public AnimationClip animation;
         public UnknownSceneObjectData unk1;
         public SkeletalAnimator skeletalAnimator;
+
+        // rename to Matrix4x4
         public Transform transform;
 
 
@@ -71,12 +65,7 @@ namespace GameCube.GFZ.CourseCollision
                 reader.ReadX(ref unk_0x00);
                 reader.ReadX(ref unk_0x04);
                 reader.ReadX(ref collisionBindingPtr);
-                reader.ReadX(ref position);
-                reader.ReadX(ref unk_0x18);
-                reader.ReadX(ref unk_0x1A);
-                reader.ReadX(ref unk_0x1C);
-                reader.ReadX(ref unk_0x1E);
-                reader.ReadX(ref scale);
+                reader.ReadX(ref sceneTransform, true);
                 reader.ReadX(ref zero_0x2C);
                 reader.ReadX(ref animationPtr);
                 reader.ReadX(ref unkPtr_0x34);
@@ -121,7 +110,7 @@ namespace GameCube.GFZ.CourseCollision
                     // They appear to use "Collision Position" but
                     // they don't have collision, they have animations.'
                     var matrix = new Matrix4x4();
-                    matrix.SetTRS(position, Quaternion.identity, scale);
+                    matrix.SetTRS(sceneTransform.Position, sceneTransform.Rotation, sceneTransform.Scale);
 
                     transform = new Transform()
                     {
@@ -138,12 +127,7 @@ namespace GameCube.GFZ.CourseCollision
             writer.WriteX(unk_0x00);
             writer.WriteX(unk_0x04);
             writer.WriteX(collisionBindingPtr);
-            writer.WriteX(position);
-            writer.WriteX(unk_0x18);
-            writer.WriteX(unk_0x1A);
-            writer.WriteX(unk_0x1C);
-            writer.WriteX(unk_0x1E);
-            writer.WriteX(scale);
+            writer.WriteX(sceneTransform);
             writer.WriteX(zero_0x2C);
             writer.WriteX(animationPtr);
             writer.WriteX(unkPtr_0x34);

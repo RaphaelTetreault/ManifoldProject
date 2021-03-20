@@ -13,27 +13,18 @@ namespace GameCube.GFZ.CourseCollision
     public struct UnknownTrigger2 : IBinarySerializable
     {
         public int unk_0x00;
-        public Vector3 position;
-        public ShortRotation3 shortRotation3;
-        public Vector3 scale;
-
-        public Quaternion Rotation => shortRotation3.AsQuaternion;
-        public Vector3 RotationEuler => shortRotation3.AsVector3;
+        public SceneTransform transform;
 
         public void Deserialize(BinaryReader reader)
         {
             reader.ReadX(ref unk_0x00);
-            reader.ReadX(ref position);
-            reader.ReadX(ref shortRotation3, true);
-            reader.ReadX(ref scale);
+            reader.ReadX(ref transform, true);
         }
 
         public void Serialize(BinaryWriter writer)
         {
             writer.WriteX(unk_0x00);
-            writer.WriteX(position);
-            writer.WriteX(shortRotation3);
-            writer.WriteX(scale);
+            writer.WriteX(transform);
         }
     }
 }

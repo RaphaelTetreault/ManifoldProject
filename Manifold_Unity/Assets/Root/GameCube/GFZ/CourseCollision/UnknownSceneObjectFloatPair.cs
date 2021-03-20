@@ -6,11 +6,8 @@ using UnityEngine;
 namespace GameCube.GFZ.CourseCollision
 {
     [Serializable]
-    public class UnknownSceneObjectFloatPair : IBinarySerializable, IBinaryAddressableRange
+    public struct UnknownSceneObjectFloatPair : IBinarySerializable, IBinaryAddressableRange
     {
-
-        #region FIELDS
-
 
         [SerializeField]
         private AddressRange addressRange;
@@ -18,22 +15,11 @@ namespace GameCube.GFZ.CourseCollision
         public float unk_0x00;
         public float unk_0x04;
 
-
-        #endregion
-
-        #region PROPERTIES
-
-
         public AddressRange AddressRange
         {
             get => addressRange;
             set => addressRange = value;
         }
-
-
-        #endregion
-
-        #region METHODS
 
 
         public void Deserialize(BinaryReader reader)
@@ -51,9 +37,6 @@ namespace GameCube.GFZ.CourseCollision
             writer.WriteX(unk_0x00);
             writer.WriteX(unk_0x04);
         }
-
-
-        #endregion
 
     }
 }

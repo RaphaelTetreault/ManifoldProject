@@ -10,6 +10,7 @@ namespace GameCube.GFZ
         public ShortRotation x;
         public ShortRotation y;
         public ShortRotation z;
+        public EnumFlags16 unkFlags;
 
         public Vector3 AsVector3
             => new Vector3(x, y, z);
@@ -41,10 +42,7 @@ namespace GameCube.GFZ
             reader.ReadX(ref x, true);
             reader.ReadX(ref y, true);
             reader.ReadX(ref z, true);
-
-            ushort zero = 0;
-            reader.ReadX(ref zero);
-            Assert.IsTrue(zero == 0);
+            reader.ReadX(ref unkFlags);
         }
 
         public void Serialize(BinaryWriter writer)

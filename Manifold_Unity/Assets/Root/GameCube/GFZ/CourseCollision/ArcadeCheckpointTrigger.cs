@@ -11,13 +11,8 @@ namespace GameCube.GFZ.CourseCollision
         [SerializeField]
         private AddressRange addressRange;
 
-        public Vector3 position;
-        public ShortRotation3 shortRotation3;
-        public Vector3 scale;
+        public SceneTransform transform;
         public ArcadeCheckpointType type;
-
-        public Quaternion Rotation => shortRotation3.AsQuaternion;
-        public Vector3 RotationEuler => shortRotation3.AsVector3;
 
         public AddressRange AddressRange
         {
@@ -30,9 +25,7 @@ namespace GameCube.GFZ.CourseCollision
         {
             this.RecordStartAddress(reader);
             {
-                reader.ReadX(ref position);
-                reader.ReadX(ref shortRotation3, true);
-                reader.ReadX(ref scale);
+                reader.ReadX(ref transform, true);
                 reader.ReadX(ref type);
             }
             this.RecordEndAddress(reader);

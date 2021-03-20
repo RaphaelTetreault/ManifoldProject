@@ -21,10 +21,9 @@ namespace Manifold.IO.GFZ.CourseCollision
             Gizmos.color = color;
             foreach (var item in sceneSobj.Value.unknownTrigger2s)
             {
-                var defaultScale = Vector3.one * size;
-
-                Gizmos.DrawMesh(mesh, 0, item.position, item.Rotation, defaultScale);
-                Gizmos.DrawWireMesh(mesh, 0, item.position, item.Rotation, defaultScale);
+                var transform = item.transform;
+                Gizmos.DrawMesh(mesh, 0, transform.Position, transform.Rotation, transform.Scale * size);
+                Gizmos.DrawWireMesh(mesh, 0, transform.Position, transform.Rotation, transform.Scale * size);
             }
         }
 

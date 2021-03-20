@@ -458,60 +458,45 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.PushCol("File");
                 writer.PushCol("Game Object #");
                 writer.PushCol("Game Object");
-                writer.PushCol("unk_0x00 enum");
+                writer.PushCol(nameof(SceneObject.unk_0x00));
                 writer.WriteFlagNames<EnumFlags32>();
-                writer.PushCol("unk_0x04");
+                writer.PushCol(nameof(SceneObject.unk_0x04));
                 writer.WriteFlagNames<EnumFlags32>();
-                writer.PushCol("collisionBindingAbsPtr");
-                writer.PushCol("collisionPosition");
-                writer.PushCol("unk_0x18 enum");
-                writer.WriteFlagNames<EnumFlags16>();
-                writer.PushCol("unk_0x1A enum");
-                writer.WriteFlagNames<EnumFlags16>();
-                writer.PushCol("unk_0x1C enum");
-                writer.WriteFlagNames<EnumFlags16>();
-                writer.PushCol("unk_0x1E enum");
-                writer.WriteFlagNames<EnumFlags16>();
-                writer.PushCol("unk_0x1C");
-                writer.PushCol("collisionScale");
-                writer.PushCol("zero_0x2C");
-                writer.PushCol("animationAbsPtr");
-                writer.PushCol("unkPtr_0x34");
-                writer.PushCol("unkPtr_0x38");
-                writer.PushCol("transformPtr");
+                writer.PushCol(nameof(SceneObject.collisionBindingPtr));
+                writer.PushCol(nameof(SceneObject.sceneTransform.Position));
+                writer.PushCol(nameof(SceneObject.sceneTransform.RotationEuler));
+                writer.PushCol(nameof(SceneObject.sceneTransform.Scale));
+                writer.PushCol(nameof(SceneObject.zero_0x2C));
+                writer.PushCol(nameof(SceneObject.animationPtr));
+                writer.PushCol(nameof(SceneObject.unkPtr_0x34));
+                writer.PushCol(nameof(SceneObject.skeletalAnimatorPtr));
+                writer.PushCol(nameof(SceneObject.transformPtr));
                 writer.PushRow();
 
                 foreach (var file in coliSobjs)
                 {
-                    int gameObjectIndex = 0;
-                    foreach (var gameObject in file.Value.sceneObjects)
+                    int sceneObjectIndex = 0;
+                    foreach (var sceneObject in file.Value.sceneObjects)
                     {
                         writer.PushCol(file.FileName);
-                        writer.PushCol(gameObjectIndex);
-                        writer.PushCol(gameObject.name);
-                        writer.PushCol((int)gameObject.unk_0x00);
-                        writer.WriteFlags(gameObject.unk_0x00);
-                        writer.PushCol((int)gameObject.unk_0x04);
-                        writer.WriteFlags(gameObject.unk_0x04);
-                        writer.PushCol(gameObject.collisionBindingPtr.HexAddress);
-                        writer.PushCol(gameObject.position);
-                        writer.PushCol((int)gameObject.unk_0x18);
-                        writer.WriteFlags(gameObject.unk_0x18);
-                        writer.PushCol((int)gameObject.unk_0x1A);
-                        writer.WriteFlags(gameObject.unk_0x1A);
-                        writer.PushCol((int)gameObject.unk_0x1C);
-                        writer.WriteFlags(gameObject.unk_0x1C);
-                        writer.PushCol((int)gameObject.unk_0x1E);
-                        writer.WriteFlags(gameObject.unk_0x1E);
-                        writer.PushCol(gameObject.scale);
-                        writer.PushCol(gameObject.zero_0x2C);
-                        writer.PushCol(gameObject.animationPtr.HexAddress);
-                        writer.PushCol(gameObject.unkPtr_0x34.HexAddress);
-                        writer.PushCol(gameObject.skeletalAnimatorPtr.HexAddress);
-                        writer.PushCol(gameObject.transformPtr.HexAddress);
+                        writer.PushCol(sceneObjectIndex);
+                        writer.PushCol(sceneObject.name);
+                        writer.PushCol((int)sceneObject.unk_0x00);
+                        writer.WriteFlags(sceneObject.unk_0x00);
+                        writer.PushCol((int)sceneObject.unk_0x04);
+                        writer.WriteFlags(sceneObject.unk_0x04);
+                        writer.PushCol(sceneObject.collisionBindingPtr.HexAddress);
+                        writer.PushCol(sceneObject.sceneTransform.Position);
+                        writer.PushCol(sceneObject.sceneTransform.RotationEuler);
+                        writer.PushCol(sceneObject.sceneTransform.Scale);
+                        writer.PushCol(sceneObject.zero_0x2C);
+                        writer.PushCol(sceneObject.animationPtr.HexAddress);
+                        writer.PushCol(sceneObject.unkPtr_0x34.HexAddress);
+                        writer.PushCol(sceneObject.skeletalAnimatorPtr.HexAddress);
+                        writer.PushCol(sceneObject.transformPtr.HexAddress);
                         writer.PushRow();
 
-                        gameObjectIndex++;
+                        sceneObjectIndex++;
                     }
                 }
                 writer.Flush();
@@ -534,14 +519,17 @@ namespace Manifold.IO.GFZ.CourseCollision
                 foreach (var file in coliSobjs)
                 {
                     int gameObjectIndex = 0;
-                    foreach (var gameObject in file.Value.sceneObjects)
+                    foreach (var sceneObject in file.Value.sceneObjects)
                     {
+                        if (sceneObject.unk1 == null)
+                            continue;
+
                         int unkIndex = 0;
-                        foreach (var unk1 in gameObject.unk1.unk)
+                        foreach (var unk1 in sceneObject.unk1.unk)
                         {
                             writer.PushCol(file.FileName);
                             writer.PushCol(gameObjectIndex);
-                            writer.PushCol(gameObject.name);
+                            writer.PushCol(sceneObject.name);
                             writer.PushCol(unkIndex);
                             writer.PushCol(unk1.unk_0x00);
                             writer.PushCol(unk1.unk_0x04);
@@ -896,9 +884,9 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.PushCol("Start");
                 writer.PushCol("End");
                 //
-                writer.PushCol(nameof(UnknownTrigger1.position));
-                writer.PushCol(nameof(UnknownTrigger1.shortRotation3));
-                writer.PushCol(nameof(UnknownTrigger1.scale));
+                writer.PushCol(nameof(UnknownTrigger1.transform.Position));
+                writer.PushCol(nameof(UnknownTrigger1.transform.RotationEuler));
+                writer.PushCol(nameof(UnknownTrigger1.transform.Scale));
                 writer.PushCol(nameof(UnknownTrigger1.unk_0x20));
                 //
                 writer.PushCol("Index");
@@ -926,9 +914,9 @@ namespace Manifold.IO.GFZ.CourseCollision
                         writer.PushCol(item.StartAddressHex());
                         writer.PushCol(item.EndAddressHex());
 
-                        writer.PushCol(item.position);
-                        writer.PushCol(item.RotationEuler);
-                        writer.PushCol(item.scale);
+                        writer.PushCol(item.transform.Position);
+                        writer.PushCol(item.transform.RotationEuler);
+                        writer.PushCol(item.transform.Scale);
                         writer.PushCol(item.unk_0x20);
 
                         writer.PushCol($"[{count}/{total}]");

@@ -15,6 +15,11 @@ namespace GameCube.GFZ
 
         public float Value => value;
 
+        public ShortRotation(ushort value)
+        {
+           this.value = value * shortToFloat;
+        }
+
         public ShortRotation(float value)
         {
             this.value = value;

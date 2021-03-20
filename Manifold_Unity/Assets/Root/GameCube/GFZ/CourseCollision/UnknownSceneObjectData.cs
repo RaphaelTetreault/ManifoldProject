@@ -19,7 +19,7 @@ namespace GameCube.GFZ.CourseCollision
 
         public uint[] unkAbsPtr;
 
-        public UnknownSceneObjectFloatPair[] unk;
+        public UnknownSceneObjectFloatPair[] unk = new UnknownSceneObjectFloatPair[0];
 
 
         #endregion

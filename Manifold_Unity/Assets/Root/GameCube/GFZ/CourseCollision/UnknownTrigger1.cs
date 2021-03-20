@@ -11,14 +11,9 @@ namespace GameCube.GFZ.CourseCollision
         [SerializeField]
         private AddressRange addressRange;
 
-        public Vector3 position;
-        public ShortRotation3 shortRotation3;
-        public Vector3 scale;
+        public SceneTransform transform;
         public EnumFlags32 unk_0x20;
 
-        //
-        public Quaternion Rotation => shortRotation3.AsQuaternion;
-        public Vector3 RotationEuler => shortRotation3.AsVector3;
 
         public AddressRange AddressRange
         {
@@ -31,16 +26,14 @@ namespace GameCube.GFZ.CourseCollision
         {
             this.RecordStartAddress(reader);
             {
-                reader.ReadX(ref position);
-                reader.ReadX(ref shortRotation3, true);
-                reader.ReadX(ref scale);
+                reader.ReadX(ref transform, true);
                 reader.ReadX(ref unk_0x20);
             }
             this.RecordEndAddress(reader);
             {
                 // Volumes used are 10x10x10
                 // Since we use a 1x1x1 cube, multiply x10
-                scale *= 10f;
+                transform.Scale *= 10f;
             }
         }
 
