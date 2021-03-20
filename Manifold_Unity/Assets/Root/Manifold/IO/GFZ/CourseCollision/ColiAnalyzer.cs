@@ -20,13 +20,14 @@ namespace Manifold.IO.GFZ.CourseCollision
 
         [SerializeField]
         protected bool
+            animations = true,
+            coliUnknownStruct4 = true,
+            headers = true,
+            sceneObjects = true,
+            storyObjectTriggers = true,
             topologyParameters = true,
             trackTransform = true,
-            gameObjects = true,
-            animations = true,
-            headers = true,
-            unknownStruct6 = true,
-            storyObject = true,
+            unknownTrigger1 = true,
             venueMetadataObject = true;
 
         [Header("Preferences")]
@@ -52,30 +53,58 @@ namespace Manifold.IO.GFZ.CourseCollision
             coliSobjs = AssetDatabaseUtility.GetSobjByOption(coliSobjs, analysisOption, searchFolders);
             var time = AnalyzerUtility.GetFileTimestamp();
 
-            // TOPOLOGY PARAMETERS
-            if (topologyParameters)
+            if (animations)
             {
-                var count = TopologyParameters.kFieldCount;
-                for (int i = 0; i < count; i++)
+                // ANIMATIONS
                 {
-                    var filePath = $"{time} COLI TopologyParameters {i + 1}.tsv";
+                    var filePath = $"{time} COLI Animations.tsv";
                     filePath = Path.Combine(outputPath, filePath);
-                    EditorUtility.DisplayProgressBar(ExecuteText, filePath, (float)(i + 1) / TopologyParameters.kFieldCount);
-                    AnalyzeTrackData(filePath, i);
+                    EditorUtility.DisplayProgressBar(ExecuteText, filePath, .5f);
+                    AnalyzeGameObjectAnimations(filePath);
+                }
+
+                // ANIMATIONS INDIVIDUALIZED
+                {
+                    var count = GameCube.GFZ.CourseCollision.AnimationClip.kSizeCurvesPtrs;
+                    for (int i = 0; i < count; i++)
+                    {
+                        var filePath = $"{time} COLI Animations {i}.tsv";
+                        filePath = Path.Combine(outputPath, filePath);
+                        EditorUtility.DisplayProgressBar(ExecuteText, filePath, (float)(i + 1) / count);
+                        AnalyzeGameObjectAnimationsIndex(filePath, i);
+                    }
                 }
             }
 
-            // TRACK TRANSFORMS
-            if (trackTransform)
+            if (coliUnknownStruct4)
             {
-                var filePath = $"{time} COLI TrackTransforms.tsv";
+                string fileName = $"{time} COLI {nameof(UnknownAnimationData)}.tsv";
+                string filePath = Path.Combine(outputPath, fileName);
+                EditorUtility.DisplayProgressBar(ExecuteText, filePath, .5f);
+                AnalyzeColiUnknownStruct4(filePath);
+            }
+
+            //
+            if (headers)
+            {
+                string filePath = string.Empty;
+
+                filePath = $"{time} COLI Headers.tsv";
                 filePath = Path.Combine(outputPath, filePath);
                 EditorUtility.DisplayProgressBar(ExecuteText, filePath, .5f);
-                AnalyzeTransforms(filePath);
+                AnalyzeHeaders(filePath);
+            }
+
+            if (storyObjectTriggers)
+            {
+                string fileName = $"{time} COLI {nameof(StoryObjectTrigger)}.tsv";
+                string filePath = Path.Combine(outputPath, fileName);
+                EditorUtility.DisplayProgressBar(ExecuteText, filePath, .5f);
+                AnalyzeStoryObject(filePath);
             }
 
             //GAME OBJECTS
-            if (gameObjects)
+            if (sceneObjects)
             {
                 string filePath = string.Empty;
 
@@ -105,32 +134,35 @@ namespace Manifold.IO.GFZ.CourseCollision
                 AnalyzeGameObjectsCollisionQuad(filePath);
             }
 
-            //
-            if (headers)
+            // TOPOLOGY PARAMETERS
+            if (topologyParameters)
             {
-                string filePath = string.Empty;
-
-                filePath = $"{time} COLI Headers.tsv";
-                filePath = Path.Combine(outputPath, filePath);
-                EditorUtility.DisplayProgressBar(ExecuteText, filePath, .5f);
-                AnalyzeHeaders(filePath);
+                var count = TopologyParameters.kFieldCount;
+                for (int i = 0; i < count; i++)
+                {
+                    var filePath = $"{time} COLI TopologyParameters {i + 1}.tsv";
+                    filePath = Path.Combine(outputPath, filePath);
+                    EditorUtility.DisplayProgressBar(ExecuteText, filePath, (float)(i + 1) / TopologyParameters.kFieldCount);
+                    AnalyzeTrackData(filePath, i);
+                }
             }
 
-            if (unknownStruct6)
+            // TRACK TRANSFORMS
+            if (trackTransform)
+            {
+                var filePath = $"{time} COLI TrackTransforms.tsv";
+                filePath = Path.Combine(outputPath, filePath);
+                EditorUtility.DisplayProgressBar(ExecuteText, filePath, .5f);
+                AnalyzeTransforms(filePath);
+            }
+
+            if (unknownTrigger1)
             {
                 string fileName = $"{time} COLI {nameof(UnknownTrigger1)}.tsv";
                 string filePath = Path.Combine(outputPath, fileName);
                 EditorUtility.DisplayProgressBar(ExecuteText, filePath, .5f);
-                AnalyzeUnknownStruct6(filePath);
+                AnalyzeUnknownTrigger1(filePath);
             }
-
-            //if (storyObject)
-            //{
-            //    string fileName = $"{time} COLI {nameof(VenueMetadataObject)}.tsv";
-            //    string filePath = Path.Combine(outputPath, fileName);
-            //    EditorUtility.DisplayProgressBar(ExecuteText, filePath, .5f);
-            //    AnalyzeVenueMetadataObjects(filePath);
-            //}
 
             if (venueMetadataObject)
             {
@@ -140,39 +172,11 @@ namespace Manifold.IO.GFZ.CourseCollision
                 AnalyzeStoryObject(filePath);
             }
 
-
-
-            //
-            if (animations)
-            {
-                // ANIMATIONS
-                {
-                    var filePath = $"{time} COLI Animations.tsv";
-                    filePath = Path.Combine(outputPath, filePath);
-                    EditorUtility.DisplayProgressBar(ExecuteText, filePath, .5f);
-                    AnalyzeGameObjectAnimations(filePath);
-                }
-
-                // ANIMATIONS INDIVIDUALIZED
-                {
-                    var count = GameCube.GFZ.CourseCollision.AnimationClip.kSizeCurvesPtrs;
-                    for (int i = 0; i < count; i++)
-                    {
-                        var filePath = $"{time} COLI Animations {i}.tsv";
-                        filePath = Path.Combine(outputPath, filePath);
-                        EditorUtility.DisplayProgressBar(ExecuteText, filePath, (float)(i + 1) / count);
-                        AnalyzeGameObjectAnimationsIndex(filePath, i);
-                    }
-                }
-            }
-
-
             // OPEN FOLDER after analysis
             if (openFolderAfterAnalysis)
             {
                 OSUtility.OpenDirectory(outputPath + "/");
             }
-
             EditorUtility.ClearProgressBar();
         }
 
@@ -870,7 +874,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             }
         }
 
-        public void AnalyzeUnknownStruct6(string fileName)
+        public void AnalyzeUnknownTrigger1(string fileName)
         {
             using (var writer = AnalyzerUtility.OpenWriter(fileName))
             {
@@ -881,7 +885,6 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.PushCol("Venue");
                 writer.PushCol("AX/GX");
                 //
-                writer.PushCol("Tag");
                 writer.PushCol("Start");
                 writer.PushCol("End");
                 //
@@ -896,48 +899,38 @@ namespace Manifold.IO.GFZ.CourseCollision
 
                 foreach (var file in coliSobjs)
                 {
-                    var coli = file.Value;
-                    //WriteUnknownStruct6Row(writer, coli, "Arcade Checkpoints", coli.arcadeCheckpointTriggers);
-                    //WriteUnknownStruct6Row(writer, coli, "Metadata", coli.venueMetadataObjects);
-                    WriteUnknownStruct6Row(writer, coli, "0x94", coli.unknownTriggers_0x94);
-                    //WriteUnknownStruct6Row(writer, coli, "0x9C", coli.effectTriggers);
+                    var scene = file.Value;
+                    var venueID = CourseUtility.GetVenueID(scene.ID).GetDescription();
+                    var courseID = ((CourseIDEx)scene.ID).GetDescription();
+                    var isAxGx = scene.header.IsFileGX ? "GX" : "AX";
+
+                    int count = 0;
+                    int total = scene.unknownTriggers_0x94.Length;
+                    foreach (var item in scene.unknownTriggers_0x94)
+                    {
+                        count++;
+
+                        writer.PushCol(scene.FileName);
+                        writer.PushCol(scene.ID);
+                        writer.PushCol(venueID);
+                        writer.PushCol(courseID);
+                        writer.PushCol(isAxGx);
+
+                        writer.PushCol(item.StartAddressHex());
+                        writer.PushCol(item.EndAddressHex());
+
+                        writer.PushCol(item.position);
+                        writer.PushCol(item.RotationEuler);
+                        writer.PushCol(item.scale);
+                        writer.PushCol(item.unk_0x20);
+                        writer.PushCol(item.unk_0x22);
+
+                        writer.PushCol($"[{count}/{total}]");
+
+                        writer.PushRow();
+                    }
                 }
                 writer.Flush();
-            }
-        }
-
-        private void WriteUnknownStruct6Row(StreamWriter writer, ColiScene scene, string tag, UnknownTrigger1[] struct6Array)
-        {
-            var venueID = CourseUtility.GetVenueID(scene.ID).GetDescription();
-            var courseID = ((CourseIDEx)scene.ID).GetDescription();
-            var isAxGx = scene.header.IsFileGX ? "GX" : "AX";
-
-            int count = 0;
-            int total = struct6Array.Length;
-            foreach (var item in struct6Array)
-            {
-                count++;
-
-                writer.PushCol(scene.FileName);
-                writer.PushCol(scene.ID);
-                writer.PushCol(venueID);
-                writer.PushCol(courseID);
-                writer.PushCol(isAxGx);
-
-                writer.PushCol(tag);
-
-                writer.PushCol(item.StartAddressHex());
-                writer.PushCol(item.EndAddressHex());
-
-                writer.PushCol(item.position);
-                writer.PushCol(item.RotationEuler);
-                writer.PushCol(item.scale);
-                writer.PushCol(item.unk_0x20);
-                writer.PushCol(item.unk_0x22);
-                
-                writer.PushCol($"[{count}/{total}]");
-
-                writer.PushRow();
             }
         }
 
@@ -1046,5 +1039,64 @@ namespace Manifold.IO.GFZ.CourseCollision
                 }
             }
         }
+
+        public void AnalyzeColiUnknownStruct4(string fileName)
+        {
+            using (var writer = AnalyzerUtility.OpenWriter(fileName))
+            {
+                // Write header
+                writer.PushCol("File");
+                writer.PushCol("Index");
+                writer.PushCol("Stage");
+                writer.PushCol("Venue");
+                writer.PushCol("AX/GX");
+                //
+                writer.PushCol("Index");
+                //
+                writer.PushCol(nameof(KeyableAttribute.easeMode));
+                writer.PushCol(nameof(KeyableAttribute.time));
+                writer.PushCol(nameof(KeyableAttribute.value));
+                writer.PushCol(nameof(KeyableAttribute.zTangentIn));
+                writer.PushCol(nameof(KeyableAttribute.zTangentOut));
+                //
+                writer.PushRow();
+
+                foreach (var file in coliSobjs)
+                {
+                    var scene = file.Value;
+                    var venueID = CourseUtility.GetVenueID(scene.ID).GetDescription();
+                    var courseID = ((CourseIDEx)scene.ID).GetDescription();
+                    var isAxGx = scene.header.IsFileGX ? "GX" : "AX";
+
+                    var totalD1 = scene.unknownAnimationData.unkAnimData.Length;
+                    var countD1 = 0;
+                    foreach (var animDataCollection in scene.unknownAnimationData.unkAnimData)
+                    {
+                        countD1++;
+                        foreach (var keyableAttribute in animDataCollection)
+                        {
+                            writer.PushCol(scene.FileName);
+                            writer.PushCol(scene.ID);
+                            writer.PushCol(venueID);
+                            writer.PushCol(courseID);
+                            writer.PushCol(isAxGx);
+                            //
+                            writer.PushCol($"[{countD1}/{totalD1}]");
+                            //
+                            writer.PushCol(keyableAttribute.easeMode);
+                            writer.PushCol(keyableAttribute.time);
+                            writer.PushCol(keyableAttribute.value);
+                            writer.PushCol(keyableAttribute.zTangentIn);
+                            writer.PushCol(keyableAttribute.zTangentOut);
+                            //
+                            writer.PushRow();
+                        }
+                    }
+                    writer.Flush();
+                }
+            }
+        }
+
+
     }
 }

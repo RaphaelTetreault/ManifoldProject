@@ -11,8 +11,8 @@ namespace GameCube.GFZ.CourseCollision
         public float unk_0x04;
         public float unk_0x08;
         public float unk_0x0C;
-        public int unk_0x10; // ShortRotation3? 
-        public int unk_0x14; // 
+        public int unk_0x10;
+        public int unk_0x14;
 
         public void Deserialize(BinaryReader reader)
         {

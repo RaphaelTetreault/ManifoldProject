@@ -29,7 +29,7 @@ namespace GameCube.GFZ.CourseCollision
         public int[] unknownData_0x20;
         public float unknownFloat_0x24;
         public UnknownTrigger2[] unknownTrigger2s;
-        public ColiUnknownStruct3 unknownStruct3;
+        public UnknownAnimationData unknownAnimationData = new UnknownAnimationData();
         public ColiUnknownStruct5 unknownStruct5_0x84;
         public UnknownTrigger1[] unknownTriggers_0x94;
         public VisualEffectTrigger[] effectTriggers;
@@ -105,7 +105,7 @@ namespace GameCube.GFZ.CourseCollision
             if (header.unkPtr_0x80.IsNotNullPointer)
             {
                 reader.JumpToAddress(header.unkPtr_0x80);
-                reader.ReadX(ref unknownStruct3, true);
+                reader.ReadX(ref unknownAnimationData, true);
             }
 
             // 0x84
