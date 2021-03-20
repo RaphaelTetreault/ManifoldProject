@@ -6,7 +6,7 @@ using UnityEngine;
 namespace GameCube.GFZ.CourseCollision
 {
     [Serializable]
-    public class SurfaceAttributesMeshTable : IBinarySerializable, IBinaryAddressableRange
+    public class SurfaceAttributeMeshTable : IBinarySerializable, IBinaryAddressableRange
     {
 
         #region FIELDS
@@ -21,14 +21,10 @@ namespace GameCube.GFZ.CourseCollision
 
         // Basically a big pile of pointers
         public int[] unk_0x00_0x20;
-        [Hex(8)]
         public Pointer collisionTrisPtr;
-        [Hex(8)]
         public Pointer[] collisionTriIndexesPtr;
         public ColiUnknownStruct1 unknownStruct_0x60;
-        [Hex(8)]
         public Pointer collisionQuadsPtr;
-        [Hex(8)]
         public Pointer[] collisionQuadIndexesPtr;
         public ColiUnknownStruct1 unknownStruct_0xB4;
 
@@ -66,22 +62,21 @@ namespace GameCube.GFZ.CourseCollision
 
             // Deserialize values
             this.RecordStartAddress(reader);
-            reader.ReadX(ref unk_0x00_0x20, kCountUnknown);
-            reader.ReadX(ref collisionTrisPtr);
-            reader.ReadX(ref collisionTriIndexesPtr, countSurfaceTypes, true);
-            reader.ReadX(ref unknownStruct_0x60, true);
-            reader.ReadX(ref collisionQuadsPtr);
-            reader.ReadX(ref collisionQuadIndexesPtr, countSurfaceTypes, true);
-            reader.ReadX(ref unknownStruct_0xB4, true);
+            {
+                reader.ReadX(ref unk_0x00_0x20, kCountUnknown);
+                reader.ReadX(ref collisionTrisPtr);
+                reader.ReadX(ref collisionTriIndexesPtr, countSurfaceTypes, true);
+                reader.ReadX(ref unknownStruct_0x60, true);
+                reader.ReadX(ref collisionQuadsPtr);
+                reader.ReadX(ref collisionQuadIndexesPtr, countSurfaceTypes, true);
+                reader.ReadX(ref unknownStruct_0xB4, true);
+            }
             this.RecordEndAddress(reader);
 
             // Asserts
-            foreach (var ptr in unk_0x00_0x20)
+            foreach (var pointer in unk_0x00_0x20)
             {
-                if (ptr > 0)
-                {
-                    Debug.LogError($"Assertion false. {ptr:x8}");
-                }
+                Assert.IsTrue(pointer > 0);
             }
 
             /////////////////

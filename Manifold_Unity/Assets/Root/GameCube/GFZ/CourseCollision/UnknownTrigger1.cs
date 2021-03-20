@@ -14,8 +14,7 @@ namespace GameCube.GFZ.CourseCollision
         public Vector3 position;
         public ShortRotation3 shortRotation3;
         public Vector3 scale;
-        public EnumFlags16 unk_0x20;
-        public EnumFlags16 unk_0x22;
+        public EnumFlags32 unk_0x20;
 
         //
         public Quaternion Rotation => shortRotation3.AsQuaternion;
@@ -36,7 +35,6 @@ namespace GameCube.GFZ.CourseCollision
                 reader.ReadX(ref shortRotation3, true);
                 reader.ReadX(ref scale);
                 reader.ReadX(ref unk_0x20);
-                reader.ReadX(ref unk_0x22);
             }
             this.RecordEndAddress(reader);
             {

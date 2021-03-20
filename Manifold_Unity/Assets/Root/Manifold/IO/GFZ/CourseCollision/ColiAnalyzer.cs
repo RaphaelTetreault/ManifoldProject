@@ -763,17 +763,17 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.PushCol(nameof(Header.surfaceAttributeAreasPtr));
                 writer.PushCol(nameof(Header.surfaceAttributeAreasPtr.address));
                 writer.PushCol(nameof(Header.boostPadsActive));
-                writer.PushCol(nameof(Header.surfaceAttributesMeshTablePtr));
-                writer.PushCol(nameof(Header.unkPtr_0x20));
-                writer.PushCol(nameof(Header.unkPtr_0x24));
+                writer.PushCol(nameof(Header.surfaceAttributeMeshTablePtr));
+                writer.PushCol(nameof(Header.unknownData_0x20_Ptr));
+                writer.PushCol(nameof(Header.unknownFloat_0x24_Ptr));
                 writer.PushCol(nameof(Header.zero_0x28));
                 writer.PushCol(nameof(Header.sceneObjectCount));
                 writer.PushCol(nameof(Header.unk_sceneObjectCount1));
                 writer.PushCol(nameof(Header.unk_sceneObjectCount2));
                 writer.PushCol(nameof(Header.sceneObjectsPtr));
                 writer.PushCol(nameof(Header.unkBool32_0x58));
-                writer.PushCol(nameof(Header.unkArrayPtr_0x5C));
-                writer.PushCol(nameof(Header.unkArrayPtr_0x5C.address));
+                writer.PushCol(nameof(Header.unknownTrigger2sPtr));
+                writer.PushCol(nameof(Header.unknownTrigger2sPtr.address));
                 writer.PushCol(nameof(Header.collisionObjectReferences));
                 writer.PushCol(nameof(Header.collisionObjectReferences.address));
                 writer.PushCol(nameof(Header.unk_collisionObjectReferences));
@@ -781,21 +781,21 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.PushCol(nameof(Header.unused_0x74_0x78));
                 writer.PushCol(nameof(Header.unused_0x74_0x78.address));
                 writer.PushCol(nameof(Header.circuitType));
-                writer.PushCol(nameof(Header.unkPtr_0x80));
+                writer.PushCol(nameof(Header.unknownStageData2Ptr));
                 writer.PushCol(nameof(Header.unkPtr_0x84));
                 writer.PushCol(nameof(Header.unused_0x88_0x8C));
                 writer.PushCol(nameof(Header.unused_0x88_0x8C.address));
                 writer.PushCol(nameof(Header.trackLengthPtr));
-                writer.PushCol(nameof(Header.unkArrayPtr_0x94));
-                writer.PushCol(nameof(Header.unkArrayPtr_0x94.address));
-                writer.PushCol(nameof(Header.unkArrayPtr_0x9C));
-                writer.PushCol(nameof(Header.unkArrayPtr_0x9C.address));
-                writer.PushCol(nameof(Header.pathObjects));
-                writer.PushCol(nameof(Header.pathObjects.address));
-                writer.PushCol(nameof(Header.arcadeCheckpoint));
-                writer.PushCol(nameof(Header.arcadeCheckpoint.address));
-                writer.PushCol(nameof(Header.storyObjects));
-                writer.PushCol(nameof(Header.storyObjects.address));
+                writer.PushCol(nameof(Header.unknownTrigger1sPtr));
+                writer.PushCol(nameof(Header.unknownTrigger1sPtr.address));
+                writer.PushCol(nameof(Header.visualEffectTriggersPtr));
+                writer.PushCol(nameof(Header.visualEffectTriggersPtr.address));
+                writer.PushCol(nameof(Header.courseMetadataTriggersPtr));
+                writer.PushCol(nameof(Header.courseMetadataTriggersPtr.address));
+                writer.PushCol(nameof(Header.arcadeCheckpointTriggersPtr));
+                writer.PushCol(nameof(Header.arcadeCheckpointTriggersPtr.address));
+                writer.PushCol(nameof(Header.storyObjectTriggersPtr));
+                writer.PushCol(nameof(Header.storyObjectTriggersPtr.address));
                 writer.PushCol(nameof(Header.trackIndexTable));
                 // Structure
                 writer.PushCol(nameof(Header.unknownStructure1_0xC0) + "." + nameof(Header.unknownStructure1_0xC0.unk_0x00));
@@ -826,9 +826,9 @@ namespace Manifold.IO.GFZ.CourseCollision
                     writer.PushCol(coliHeader.surfaceAttributeAreasPtr.length);
                     writer.PushCol(coliHeader.surfaceAttributeAreasPtr.HexAddress);
                     writer.PushCol(coliHeader.boostPadsActive);
-                    writer.PushCol(coliHeader.surfaceAttributesMeshTablePtr.HexAddress);
-                    writer.PushCol(coliHeader.unkPtr_0x20.HexAddress);
-                    writer.PushCol(coliHeader.unkPtr_0x24.HexAddress);
+                    writer.PushCol(coliHeader.surfaceAttributeMeshTablePtr.HexAddress);
+                    writer.PushCol(coliHeader.unknownData_0x20_Ptr.HexAddress);
+                    writer.PushCol(coliHeader.unknownFloat_0x24_Ptr.HexAddress);
                     writer.PushCol(0);// coliHeader.zero_0x28);
                     writer.PushCol(coliHeader.sceneObjectCount);
                     if (coliHeader.IsFileGX)
@@ -842,8 +842,8 @@ namespace Manifold.IO.GFZ.CourseCollision
                     writer.PushCol(coliHeader.unk_sceneObjectCount2);
                     writer.PushCol(coliHeader.sceneObjectsPtr.HexAddress);
                     writer.PushCol(coliHeader.unkBool32_0x58);
-                    writer.PushCol(coliHeader.unkArrayPtr_0x5C.length);
-                    writer.PushCol(coliHeader.unkArrayPtr_0x5C.HexAddress);
+                    writer.PushCol(coliHeader.unknownTrigger2sPtr.length);
+                    writer.PushCol(coliHeader.unknownTrigger2sPtr.HexAddress);
                     writer.PushCol(coliHeader.collisionObjectReferences.length);
                     writer.PushCol(coliHeader.collisionObjectReferences.HexAddress);
                     writer.PushCol(coliHeader.unk_collisionObjectReferences.length);
@@ -851,21 +851,21 @@ namespace Manifold.IO.GFZ.CourseCollision
                     writer.PushCol(coliHeader.unused_0x74_0x78.length);
                     writer.PushCol(coliHeader.unused_0x74_0x78.HexAddress);
                     writer.PushCol(coliHeader.circuitType);
-                    writer.PushCol(coliHeader.unkPtr_0x80.HexAddress);
+                    writer.PushCol(coliHeader.unknownStageData2Ptr.HexAddress);
                     writer.PushCol(coliHeader.unkPtr_0x84.HexAddress);
                     writer.PushCol(coliHeader.unused_0x88_0x8C.length);
                     writer.PushCol(coliHeader.unused_0x88_0x8C.HexAddress);
                     writer.PushCol(coliHeader.trackLengthPtr.HexAddress);
-                    writer.PushCol(coliHeader.unkArrayPtr_0x94.length);
-                    writer.PushCol(coliHeader.unkArrayPtr_0x94.HexAddress);
-                    writer.PushCol(coliHeader.unkArrayPtr_0x9C.length);
-                    writer.PushCol(coliHeader.unkArrayPtr_0x9C.HexAddress);
-                    writer.PushCol(coliHeader.pathObjects.length);
-                    writer.PushCol(coliHeader.pathObjects.HexAddress);
-                    writer.PushCol(coliHeader.arcadeCheckpoint.length);
-                    writer.PushCol(coliHeader.arcadeCheckpoint.HexAddress);
-                    writer.PushCol(coliHeader.storyObjects.length);
-                    writer.PushCol(coliHeader.storyObjects.HexAddress);
+                    writer.PushCol(coliHeader.unknownTrigger1sPtr.length);
+                    writer.PushCol(coliHeader.unknownTrigger1sPtr.HexAddress);
+                    writer.PushCol(coliHeader.visualEffectTriggersPtr.length);
+                    writer.PushCol(coliHeader.visualEffectTriggersPtr.HexAddress);
+                    writer.PushCol(coliHeader.courseMetadataTriggersPtr.length);
+                    writer.PushCol(coliHeader.courseMetadataTriggersPtr.HexAddress);
+                    writer.PushCol(coliHeader.arcadeCheckpointTriggersPtr.length);
+                    writer.PushCol(coliHeader.arcadeCheckpointTriggersPtr.HexAddress);
+                    writer.PushCol(coliHeader.storyObjectTriggersPtr.length);
+                    writer.PushCol(coliHeader.storyObjectTriggersPtr.HexAddress);
                     writer.PushCol(coliHeader.trackIndexTable.HexAddress);
                     // Structure
                     writer.PushCol(coliHeader.unknownStructure1_0xC0.unk_0x00);
@@ -900,7 +900,6 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.PushCol(nameof(UnknownTrigger1.shortRotation3));
                 writer.PushCol(nameof(UnknownTrigger1.scale));
                 writer.PushCol(nameof(UnknownTrigger1.unk_0x20));
-                writer.PushCol(nameof(UnknownTrigger1.unk_0x22));
                 //
                 writer.PushCol("Index");
                 writer.PushRow();
@@ -913,8 +912,8 @@ namespace Manifold.IO.GFZ.CourseCollision
                     var isAxGx = scene.header.IsFileGX ? "GX" : "AX";
 
                     int count = 0;
-                    int total = scene.unknownTriggers_0x94.Length;
-                    foreach (var item in scene.unknownTriggers_0x94)
+                    int total = scene.unknownTrigger1s.Length;
+                    foreach (var item in scene.unknownTrigger1s)
                     {
                         count++;
 
@@ -931,7 +930,6 @@ namespace Manifold.IO.GFZ.CourseCollision
                         writer.PushCol(item.RotationEuler);
                         writer.PushCol(item.scale);
                         writer.PushCol(item.unk_0x20);
-                        writer.PushCol(item.unk_0x22);
 
                         writer.PushCol($"[{count}/{total}]");
 

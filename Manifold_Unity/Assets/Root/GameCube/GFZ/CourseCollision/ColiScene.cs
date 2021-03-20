@@ -19,7 +19,7 @@ namespace GameCube.GFZ.CourseCollision
         public Header header;
         //
         public SurfaceAttributeArea[] surfaceAttributeAreas;
-        public SurfaceAttributesMeshTable surfaceAttributesMeshTable;
+        public SurfaceAttributeMeshTable surfaceAttributeMeshTable;
         public UnknownObjectAttributes[] collisionObjectReferences;
         public UnknownObjectAttributes2[] unk_collisionObjectReferences;
         public SceneObject[] sceneObjects;
@@ -31,8 +31,8 @@ namespace GameCube.GFZ.CourseCollision
         public UnknownTrigger2[] unknownTrigger2s;
         public UnknownStageData2 unknownStageData2 = new UnknownStageData2();
         public UnknownStageData1 unknownStageData1 = new UnknownStageData1();
-        public UnknownTrigger1[] unknownTriggers_0x94; // "green"
-        public VisualEffectTrigger[] effectTriggers;
+        public UnknownTrigger1[] unknownTrigger1s; // "green"
+        public VisualEffectTrigger[] visualEffectTriggers;
         public CourseMetadataTrigger[] courseMetadataTriggers;
         public ArcadeCheckpointTrigger[] arcadeCheckpointTriggers;
         public StoryObjectTrigger[] storyObjectTriggers;
@@ -72,15 +72,15 @@ namespace GameCube.GFZ.CourseCollision
             reader.ReadX(ref surfaceAttributeAreas, header.surfaceAttributeAreasPtr.length, true);
 
             // 0x1C 
-            reader.JumpToAddress(header.surfaceAttributesMeshTablePtr);
-            reader.ReadX(ref surfaceAttributesMeshTable, true);
+            reader.JumpToAddress(header.surfaceAttributeMeshTablePtr);
+            reader.ReadX(ref surfaceAttributeMeshTable, true);
 
             // 0x20
-            reader.JumpToAddress(header.unkPtr_0x20);
+            reader.JumpToAddress(header.unknownData_0x20_Ptr);
             reader.ReadX(ref unknownData_0x20, 5);
 
             // 0x24
-            reader.JumpToAddress(header.unkPtr_0x24);
+            reader.JumpToAddress(header.unknownFloat_0x24_Ptr);
             reader.ReadX(ref unknownFloat_0x24);
 
             // 0x48 (count total), 0x4C, 0x50, 0x54 (pointer address): Scene Objects
@@ -88,8 +88,8 @@ namespace GameCube.GFZ.CourseCollision
             reader.ReadX(ref sceneObjects, header.sceneObjectCount, true);
 
             // 0x5C and 0x60 SOLS values
-            reader.JumpToAddress(header.unkArrayPtr_0x5C);
-            reader.ReadX(ref unknownTrigger2s, header.unkArrayPtr_0x5C.length, true);
+            reader.JumpToAddress(header.unknownTrigger2sPtr);
+            reader.ReadX(ref unknownTrigger2s, header.unknownTrigger2sPtr.length, true);
 
             // 0x64 and 0x68
             reader.JumpToAddress(header.collisionObjectReferences);
@@ -102,9 +102,9 @@ namespace GameCube.GFZ.CourseCollision
             reader.ReadX(ref unk_collisionObjectReferences, header.unk_collisionObjectReferences.length, true);
 
             // 0x80
-            if (header.unkPtr_0x80.IsNotNullPointer)
+            if (header.unknownStageData2Ptr.IsNotNullPointer)
             {
-                reader.JumpToAddress(header.unkPtr_0x80);
+                reader.JumpToAddress(header.unknownStageData2Ptr);
                 reader.ReadX(ref unknownStageData2, true);
             }
 
@@ -117,24 +117,24 @@ namespace GameCube.GFZ.CourseCollision
             reader.ReadX(ref trackLength, true);
 
             // 0x94
-            reader.JumpToAddress(header.unkArrayPtr_0x94);
-            reader.ReadX(ref unknownTriggers_0x94, header.unkArrayPtr_0x94.length, true);
+            reader.JumpToAddress(header.unknownTrigger1sPtr);
+            reader.ReadX(ref unknownTrigger1s, header.unknownTrigger1sPtr.length, true);
 
             // 0x9C
-            reader.JumpToAddress(header.unkArrayPtr_0x9C);
-            reader.ReadX(ref effectTriggers, header.unkArrayPtr_0x9C.length, true);
+            reader.JumpToAddress(header.visualEffectTriggersPtr);
+            reader.ReadX(ref visualEffectTriggers, header.visualEffectTriggersPtr.length, true);
 
             // 0xA4
-            reader.JumpToAddress(header.pathObjects);
-            reader.ReadX(ref courseMetadataTriggers, header.pathObjects.length, true);
+            reader.JumpToAddress(header.courseMetadataTriggersPtr);
+            reader.ReadX(ref courseMetadataTriggers, header.courseMetadataTriggersPtr.length, true);
 
             // 0xAC
-            reader.JumpToAddress(header.arcadeCheckpoint);
-            reader.ReadX(ref arcadeCheckpointTriggers, header.arcadeCheckpoint.length, true);
+            reader.JumpToAddress(header.arcadeCheckpointTriggersPtr);
+            reader.ReadX(ref arcadeCheckpointTriggers, header.arcadeCheckpointTriggersPtr.length, true);
 
             // 0xB4
-            reader.JumpToAddress(header.storyObjects);
-            reader.ReadX(ref storyObjectTriggers, header.storyObjects.length, true);
+            reader.JumpToAddress(header.storyObjectTriggersPtr);
+            reader.ReadX(ref storyObjectTriggers, header.storyObjectTriggersPtr.length, true);
 
             // 0xBC
             reader.JumpToAddress(header.trackIndexTable);

@@ -36,7 +36,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             //DisplayTriggerArray(sceneSobj.Value.arcadeCheckpointTriggers, blue);
 
             if (displayObjectGroup)
-                DisplayTriggerArray(sceneSobj.Value.unknownTriggers_0x94, green);
+                DisplayTriggerArray(sceneSobj.Value.unknownTrigger1s, green);
 
             //if (displayEffectVolume)
             //    DisplayTriggerArray(sceneSobj.Value.effectTriggers, red, true);
