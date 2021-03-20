@@ -1,6 +1,6 @@
 namespace GameCube.GFZ.CourseCollision
 {
-    public enum ColiUnknownStruct5Enum
+    public enum UnknownStageData1Enum
     {
         a = 0x02000000,
         b = 0x04000000,

@@ -14,7 +14,7 @@ namespace GameCube.GFZ.CourseCollision
         [SerializeField]
         private AddressRange addressRange;
 
-        public ColiUnknownStruct5Enum unk_0x00; // 0x##000000 - looks like highest byte flags? Big endian?
+        public UnknownStageData1Enum unk_0x00; // 0x##000000 - looks like highest byte flags? Big endian?
         public UnknownFloatPair unk_0x04;
         public Vector3 unk_0x0C; // Looks like scale? Maybe not a vector.
         public float unk_0x18;
