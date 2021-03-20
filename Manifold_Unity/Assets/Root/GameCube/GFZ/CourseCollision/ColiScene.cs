@@ -9,6 +9,8 @@ namespace GameCube.GFZ.CourseCollision
     [Serializable]
     public class ColiScene : IBinarySerializable, IFile
     {
+        private const int unknownData_0x20_count = 5;
+
         // metadata
         [SerializeField]
         private int id;
@@ -18,25 +20,25 @@ namespace GameCube.GFZ.CourseCollision
         //
         public Header header;
         //
-        public SurfaceAttributeArea[] surfaceAttributeAreas;
-        public SurfaceAttributeMeshTable surfaceAttributeMeshTable;
-        public UnknownObjectAttributes[] collisionObjectReferences;
-        public UnknownObjectAttributes2[] unk_collisionObjectReferences;
-        public SceneObject[] sceneObjects;
+        public SurfaceAttributeArea[] surfaceAttributeAreas = new SurfaceAttributeArea[0];
+        public SurfaceAttributeMeshTable surfaceAttributeMeshTable = new SurfaceAttributeMeshTable();
+        public UnknownObjectAttributes[] collisionObjectReferences = new UnknownObjectAttributes[0];
+        public UnknownObjectAttributes2[] unk_collisionObjectReferences = new UnknownObjectAttributes2[0];
+        public SceneObject[] sceneObjects = new SceneObject[0];
         public TrackLength trackLength;
-        public TrackNode[] trackNodes;
+        public TrackNode[] trackNodes = new TrackNode[0];
         public List<TrackTransform> trackTransforms = new List<TrackTransform>();
-        public int[] unknownData_0x20;
+        public int[] unknownData_0x20 = new int[unknownData_0x20_count];
         public float unknownFloat_0x24;
-        public UnknownTrigger2[] unknownTrigger2s;
-        public UnknownStageData2 unknownStageData2 = new UnknownStageData2();
-        public UnknownStageData1 unknownStageData1 = new UnknownStageData1();
-        public UnknownTrigger1[] unknownTrigger1s; // "green"
-        public VisualEffectTrigger[] visualEffectTriggers;
-        public CourseMetadataTrigger[] courseMetadataTriggers;
-        public ArcadeCheckpointTrigger[] arcadeCheckpointTriggers;
-        public StoryObjectTrigger[] storyObjectTriggers;
-        public TrackIndexesTable trackIndexTable;
+        public UnknownTrigger2[] unknownTrigger2s = new UnknownTrigger2[0];
+        public UnknownStageData2 unknownStageData2 = new UnknownStageData2(); // GUESS: something to do with minimap data?
+        public UnknownStageData1 unknownStageData1 = new UnknownStageData1(); // GUESS: minimap data?
+        public UnknownTrigger1[] unknownTrigger1s = new UnknownTrigger1[0]; // "green"
+        public VisualEffectTrigger[] visualEffectTriggers = new VisualEffectTrigger[0];
+        public CourseMetadataTrigger[] courseMetadataTriggers = new CourseMetadataTrigger[0];
+        public ArcadeCheckpointTrigger[] arcadeCheckpointTriggers = new ArcadeCheckpointTrigger[0];
+        public StoryObjectTrigger[] storyObjectTriggers = new StoryObjectTrigger[0];
+        public TrackIndexesTable trackIndexTable = new TrackIndexesTable();
 
         // to find
         // * minimap rotation.............
