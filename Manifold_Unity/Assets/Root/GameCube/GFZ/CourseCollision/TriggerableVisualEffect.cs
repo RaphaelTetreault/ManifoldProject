@@ -1,7 +1,7 @@
 namespace GameCube.GFZ.CourseCollision
 {
     [System.Flags]
-    public enum TriggerableVisualEffect
+    public enum TriggerableVisualEffect : ushort
     {
         Lightning_NoRain = 1 << 0,
         BigBlue_WaterSplash = 1 << 0,
