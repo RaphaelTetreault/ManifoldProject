@@ -96,7 +96,7 @@ namespace GameCube.GFZ.CourseCollision
             Assert.IsTrue(unused_0x88_0x8C.length == 0 && unused_0x88_0x8C.address == 0);
 
             for (int i = 0; i < zero_0x28.Length; i++)
-                Assert.IsTrue(zero_0x28[i] == 0, $"{nameof(Header)}.{nameof(zero_0x28)}[{i}] = {zero_0x28[i]:X2}");
+                Assert.IsTrue(zero_0x28[i] == 0);
 
             for (int i = 0; i < zero_0xD8.Length; i++)
                 Assert.IsTrue(zero_0xD8[i] == 0);
