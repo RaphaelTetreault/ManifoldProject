@@ -3,11 +3,17 @@ using GameCube.GFZ.CourseCollision;
 
 namespace Manifold.IO.GFZ.CourseCollision
 {
-    public class DisplayCourseMetadataTrigger : MonoBehaviour
+    public class DisplayCourseMetadataTrigger : MonoBehaviour , IColiCourseDisplayable
     {
         public ColiSceneSobj sceneSobj;
         public float size = 15f;
         public Color color = new Color32(255, 255, 0, 127);
+
+        public ColiSceneSobj SceneSobj
+        {
+            get => sceneSobj;
+            set => sceneSobj = value;
+        }
 
         private void OnDrawGizmos()
         {

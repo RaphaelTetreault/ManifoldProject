@@ -28,17 +28,18 @@ namespace GameCube.GFZ.CourseCollision
         public List<TrackTransform> trackTransforms = new List<TrackTransform>();
         public int[] unknownData_0x20;
         public float unknownFloat_0x24;
-        public ColiUnknownStruct2[] unknownStruct2s;
+        public UnknownTrigger2[] unknownTrigger2s;
         public ColiUnknownStruct3 unknownStruct3;
         public ColiUnknownStruct5 unknownStruct5_0x84;
-        public Trigger[] unknownTriggers_0x94; // Unknown triggers
+        public UnknownTrigger1[] unknownTriggers_0x94;
         public VisualEffectTrigger[] effectTriggers;
         public CourseMetadataTrigger[] courseMetadataTriggers;
         public ArcadeCheckpointTrigger[] arcadeCheckpointTriggers;
-        public StoryObject[] storyObjects; // story triggers?
+        public StoryObjectTrigger[] storyObjectTriggers;
         public TrackIndexesTable trackIndexTable;
 
-
+        // to find
+        // * minimap rotation.............
 
         public string FileName
         {
@@ -88,7 +89,7 @@ namespace GameCube.GFZ.CourseCollision
 
             // 0x5C and 0x60 SOLS values
             reader.JumpToAddress(header.unkArrayPtr_0x5C);
-            reader.ReadX(ref unknownStruct2s, header.unkArrayPtr_0x5C.length, true);
+            reader.ReadX(ref unknownTrigger2s, header.unkArrayPtr_0x5C.length, true);
 
             // 0x64 and 0x68
             reader.JumpToAddress(header.collisionObjectReferences);
@@ -133,7 +134,7 @@ namespace GameCube.GFZ.CourseCollision
 
             // 0xB4
             reader.JumpToAddress(header.storyObjects);
-            reader.ReadX(ref storyObjects, header.storyObjects.length, true);
+            reader.ReadX(ref storyObjectTriggers, header.storyObjects.length, true);
 
             // 0xBC
             reader.JumpToAddress(header.trackIndexTable);

@@ -118,7 +118,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
             if (unknownStruct6)
             {
-                string fileName = $"{time} COLI {nameof(Trigger)}.tsv";
+                string fileName = $"{time} COLI {nameof(UnknownTrigger1)}.tsv";
                 string filePath = Path.Combine(outputPath, fileName);
                 EditorUtility.DisplayProgressBar(ExecuteText, filePath, .5f);
                 AnalyzeUnknownStruct6(filePath);
@@ -134,7 +134,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
             if (venueMetadataObject)
             {
-                string fileName = $"{time} COLI {nameof(StoryObject)}.tsv";
+                string fileName = $"{time} COLI {nameof(StoryObjectTrigger)}.tsv";
                 string filePath = Path.Combine(outputPath, fileName);
                 EditorUtility.DisplayProgressBar(ExecuteText, filePath, .5f);
                 AnalyzeStoryObject(filePath);
@@ -885,11 +885,11 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.PushCol("Start");
                 writer.PushCol("End");
                 //
-                writer.PushCol(nameof(Trigger.position));
-                writer.PushCol(nameof(Trigger.shortRotation3));
-                writer.PushCol(nameof(Trigger.scale));
-                writer.PushCol(nameof(Trigger.unk_0x20));
-                writer.PushCol(nameof(Trigger.unk_0x22));
+                writer.PushCol(nameof(UnknownTrigger1.position));
+                writer.PushCol(nameof(UnknownTrigger1.shortRotation3));
+                writer.PushCol(nameof(UnknownTrigger1.scale));
+                writer.PushCol(nameof(UnknownTrigger1.unk_0x20));
+                writer.PushCol(nameof(UnknownTrigger1.unk_0x22));
                 //
                 writer.PushCol("Index");
                 writer.PushRow();
@@ -906,7 +906,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             }
         }
 
-        private void WriteUnknownStruct6Row(StreamWriter writer, ColiScene scene, string tag, Trigger[] struct6Array)
+        private void WriteUnknownStruct6Row(StreamWriter writer, ColiScene scene, string tag, UnknownTrigger1[] struct6Array)
         {
             var venueID = CourseUtility.GetVenueID(scene.ID).GetDescription();
             var courseID = ((CourseIDEx)scene.ID).GetDescription();
@@ -1003,15 +1003,15 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.PushCol("Venue");
                 writer.PushCol("AX/GX");
                 //
-                writer.PushCol(nameof(StoryObject.zero_0x00));
-                writer.PushCol(nameof(StoryObject.rockGroupOrderIndex));
-                writer.PushCol(nameof(StoryObject.RockGroup));
-                writer.PushCol(nameof(StoryObject.Difficulty));
-                writer.PushCol(nameof(StoryObject.story2RockScale));
-                writer.PushCol(nameof(StoryObject.animationPathPtr));
-                writer.PushCol(nameof(StoryObject.scale));
-                writer.PushCol(nameof(StoryObject.rotation));
-                writer.PushCol(nameof(StoryObject.position));
+                writer.PushCol(nameof(StoryObjectTrigger.zero_0x00));
+                writer.PushCol(nameof(StoryObjectTrigger.rockGroupOrderIndex));
+                writer.PushCol(nameof(StoryObjectTrigger.RockGroup));
+                writer.PushCol(nameof(StoryObjectTrigger.Difficulty));
+                writer.PushCol(nameof(StoryObjectTrigger.story2RockScale));
+                writer.PushCol(nameof(StoryObjectTrigger.animationPathPtr));
+                writer.PushCol(nameof(StoryObjectTrigger.scale));
+                writer.PushCol(nameof(StoryObjectTrigger.rotation));
+                writer.PushCol(nameof(StoryObjectTrigger.position));
                 //
                 writer.PushRow();
 
@@ -1022,7 +1022,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                     var courseID = ((CourseIDEx)scene.ID).GetDescription();
                     var isAxGx = scene.header.IsFileGX ? "GX" : "AX";
 
-                    foreach (var item in scene.storyObjects)
+                    foreach (var item in scene.storyObjectTriggers)
                     {
                         writer.PushCol(scene.FileName);
                         writer.PushCol(scene.ID);

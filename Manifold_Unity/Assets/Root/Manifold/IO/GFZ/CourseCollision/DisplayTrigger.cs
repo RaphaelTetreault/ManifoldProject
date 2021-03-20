@@ -43,7 +43,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
         }
 
-        public void DisplayTriggerArray(Trigger[] unknownStruct, Color32 color, bool drawNumber = false)
+        public void DisplayTriggerArray(UnknownTrigger1[] unknownStruct, Color32 color, bool drawNumber = false)
         {
             var mesh = Resources.GetBuiltinResource<Mesh>("Cube.fbx");
             Gizmos.color = color;

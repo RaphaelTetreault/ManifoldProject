@@ -6,7 +6,7 @@ using UnityEngine;
 namespace GameCube.GFZ.CourseCollision
 {
     [Serializable]
-    public class Trigger : IBinarySerializable, IBinaryAddressableRange
+    public class UnknownTrigger1 : IBinarySerializable, IBinaryAddressableRange
     {
         [SerializeField]
         private AddressRange addressRange;

@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Manifold.IO.GFZ.CourseCollision
 {
-    public class TempTrackVis : MonoBehaviour
+    public class DisplayTrackCheckpoint : MonoBehaviour, IColiCourseDisplayable
     {
         public float kRadius = 10f;
 
@@ -79,14 +79,14 @@ namespace Manifold.IO.GFZ.CourseCollision
 
     }
 
-    [CustomEditor(typeof(TempTrackVis))]
+    [CustomEditor(typeof(DisplayTrackCheckpoint))]
     public class TempTrackVisEditor : Editor
     {
         public override void OnInspectorGUI()
         {
             if (GUILayout.Button("Import As Objects"))
             {
-                var editorTarget = target as TempTrackVis;
+                var editorTarget = target as DisplayTrackCheckpoint;
 
                 var root = new GameObject();
                 root.name = editorTarget.SceneSobj.name;

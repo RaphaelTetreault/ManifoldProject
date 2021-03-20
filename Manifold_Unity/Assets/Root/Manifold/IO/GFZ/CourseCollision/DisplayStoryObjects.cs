@@ -20,7 +20,7 @@ namespace Manifold.IO.GFZ.CourseCollision
         {
             var mesh = Resources.GetBuiltinResource<Mesh>("Cube.fbx");
 
-            foreach (var item in sceneSobj.Value.storyObjects)
+            foreach (var item in sceneSobj.Value.storyObjectTriggers)
             {
                 var scale = item.scale * size;
                 if (item.Difficulty == 0)

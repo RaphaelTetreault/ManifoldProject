@@ -53,15 +53,14 @@ namespace Manifold.IO.GFZ.CourseCollision
                 // TEMP DATA
                 // Create track vis, set parameter
                 var empty = new GameObject();
-                empty.name = nameof(TempTrackVis);
-                var trackVis = empty.AddComponent<TempTrackVis>();
-                trackVis.SceneSobj = course;
-                var pathVis = empty.AddComponent<DisplayCourseMetadataTrigger>();
-                pathVis.sceneSobj = course;
-
+                empty.name = "DEBUG - Display Data";
+                // Add displayers and assign value to all
                 var displayables = new List<IColiCourseDisplayable>();
+                displayables.Add(empty.AddComponent<DisplayCourseMetadataTrigger>());
                 displayables.Add(empty.AddComponent<DisplayStoryObjects>());
+                displayables.Add(empty.AddComponent<DisplayTrackCheckpoint>());
                 displayables.Add(empty.AddComponent<DisplayTrigger>());
+                displayables.Add(empty.AddComponent<DisplayUnknownTrigger2>());
                 foreach (var displayable in displayables)
                 {
                     displayable.SceneSobj = course;

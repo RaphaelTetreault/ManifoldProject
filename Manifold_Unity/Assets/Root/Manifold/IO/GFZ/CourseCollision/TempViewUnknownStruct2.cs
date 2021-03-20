@@ -14,7 +14,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 return;
 
             Gizmos.color = color;
-            foreach (var unknownStruct2 in sceneSobj.Value.unknownStruct2s)
+            foreach (var unknownStruct2 in sceneSobj.Value.unknownTrigger2s)
             {
                 Gizmos.DrawWireSphere(unknownStruct2.position, size);
             }
