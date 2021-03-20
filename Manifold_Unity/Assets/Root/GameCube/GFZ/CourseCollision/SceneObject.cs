@@ -42,7 +42,7 @@ namespace GameCube.GFZ.CourseCollision
         // sub-structures
         public ColliderObject colliderBinding;
         public AnimationClip animation;
-        public ObjectTable_Unk1 unk1;
+        public UnknownSceneObjectData unk1;
         public SkeletalAnimator skeletalAnimator;
         public Transform transform;
 

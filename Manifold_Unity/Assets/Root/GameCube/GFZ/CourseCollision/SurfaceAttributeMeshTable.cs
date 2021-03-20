@@ -74,10 +74,8 @@ namespace GameCube.GFZ.CourseCollision
             this.RecordEndAddress(reader);
 
             // Asserts
-            foreach (var pointer in unk_0x00_0x20)
-            {
-                Assert.IsTrue(pointer > 0);
-            }
+            for (int i = 0; i < unk_0x00_0x20.Length; i++)
+                Assert.IsTrue(unk_0x00_0x20[i] == 0, $"{nameof(SurfaceAttributeMeshTable)}.{nameof(unk_0x00_0x20)}[{i}] == {unk_0x00_0x20[i]:X8}");
 
             /////////////////
             // Initialize arrays

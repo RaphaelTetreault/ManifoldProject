@@ -6,7 +6,7 @@ using UnityEngine;
 namespace GameCube.GFZ.CourseCollision
 {
     [Serializable]
-    public class ObjectTable_Unk1 : IBinarySerializable, IBinaryAddressableRange
+    public class UnknownSceneObjectData : IBinarySerializable, IBinaryAddressableRange
     {
 
         #region FIELDS
@@ -19,7 +19,7 @@ namespace GameCube.GFZ.CourseCollision
 
         public uint[] unkAbsPtr;
 
-        public ObjectTable_Unk1_Entry[] unk;
+        public UnknownSceneObjectFloatPair[] unk;
 
 
         #endregion
@@ -47,10 +47,10 @@ namespace GameCube.GFZ.CourseCollision
             }
             this.RecordEndAddress(reader); ;
             {
-                unk = new ObjectTable_Unk1_Entry[kCount];
+                unk = new UnknownSceneObjectFloatPair[kCount];
                 for (int i = 0; i < kCount; i++)
                 {
-                    unk[i] = new ObjectTable_Unk1_Entry();
+                    unk[i] = new UnknownSceneObjectFloatPair();
 
                     if (unkAbsPtr[i] != 0)
                     {

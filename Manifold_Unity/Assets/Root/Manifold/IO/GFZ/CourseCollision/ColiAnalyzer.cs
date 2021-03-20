@@ -101,7 +101,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 string fileName = $"{time} COLI {nameof(StoryObjectTrigger)}.tsv";
                 string filePath = Path.Combine(outputPath, fileName);
                 EditorUtility.DisplayProgressBar(ExecuteText, filePath, .5f);
-                AnalyzeStoryObject(filePath);
+                AnalyzeStoryObjectTrigger(filePath);
             }
 
             //GAME OBJECTS
@@ -114,22 +114,22 @@ namespace Manifold.IO.GFZ.CourseCollision
                 EditorUtility.DisplayProgressBar(ExecuteText, filePath, .5f);
                 AnalyzeGameObjects(filePath);
 
-                filePath = $"{time} COLI {nameof(SceneObject)} Unk1.tsv";
+                filePath = $"{time} COLI {nameof(SceneObject)} {nameof(UnknownSceneObjectData)}.tsv";
                 filePath = Path.Combine(outputPath, filePath);
                 EditorUtility.DisplayProgressBar(ExecuteText, filePath, .5f);
                 AnalyzeGameObjectsUnk1(filePath);
 
-                filePath = $"{time} COLI {nameof(SceneObject)} Skeletal.tsv";
+                filePath = $"{time} COLI {nameof(SceneObject)} {nameof(SkeletalAnimator)}.tsv";
                 filePath = Path.Combine(outputPath, filePath);
                 EditorUtility.DisplayProgressBar(ExecuteText, filePath, .5f);
-                AnalyzeGameObjectsUnk2(filePath);
+                AnalyzeGameObjectsSkeletalAnimator(filePath);
 
-                filePath = $"{time} COLI {nameof(SceneObject)} Collision Tris.tsv";
+                filePath = $"{time} COLI {nameof(SceneObject)}  {nameof(ColliderTriangle)}.tsv";
                 filePath = Path.Combine(outputPath, filePath);
                 EditorUtility.DisplayProgressBar(ExecuteText, filePath, .5f);
                 AnalyzeGameObjectsCollisionTri(filePath);
 
-                filePath = $"{time} COLI {nameof(SceneObject)} Collision Quads.tsv";
+                filePath = $"{time} COLI {nameof(SceneObject)} {nameof(ColliderQuad)}.tsv";
                 filePath = Path.Combine(outputPath, filePath);
                 EditorUtility.DisplayProgressBar(ExecuteText, filePath, .5f);
                 AnalyzeGameObjectsCollisionQuad(filePath);
@@ -141,7 +141,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 var count = TopologyParameters.kFieldCount;
                 for (int i = 0; i < count; i++)
                 {
-                    var filePath = $"{time} COLI TopologyParameters {i + 1}.tsv";
+                    var filePath = $"{time} COLI {nameof(TopologyParameters)} {i + 1}.tsv";
                     filePath = Path.Combine(outputPath, filePath);
                     EditorUtility.DisplayProgressBar(ExecuteText, filePath, (float)(i + 1) / TopologyParameters.kFieldCount);
                     AnalyzeTrackData(filePath, i);
@@ -151,7 +151,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             // TRACK TRANSFORMS
             if (trackTransform)
             {
-                var filePath = $"{time} COLI TrackTransforms.tsv";
+                var filePath = $"{time} COLI {nameof(TrackTransform)}.tsv";
                 filePath = Path.Combine(outputPath, filePath);
                 EditorUtility.DisplayProgressBar(ExecuteText, filePath, .5f);
                 AnalyzeTransforms(filePath);
@@ -178,7 +178,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 string fileName = $"{time} COLI {nameof(StoryObjectTrigger)}.tsv";
                 string filePath = Path.Combine(outputPath, fileName);
                 EditorUtility.DisplayProgressBar(ExecuteText, filePath, .5f);
-                AnalyzeStoryObject(filePath);
+                AnalyzeStoryObjectTrigger(filePath);
             }
 
             // OPEN FOLDER after analysis
@@ -527,8 +527,8 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.PushCol("Game Object #");
                 writer.PushCol("Game Object");
                 writer.PushCol("Unknown 1 Index");
-                writer.WriteColNicify(nameof(ObjectTable_Unk1_Entry.unk_0x00));
-                writer.WriteColNicify(nameof(ObjectTable_Unk1_Entry.unk_0x04));
+                writer.WriteColNicify(nameof(UnknownSceneObjectFloatPair.unk_0x00));
+                writer.WriteColNicify(nameof(UnknownSceneObjectFloatPair.unk_0x04));
                 writer.PushRow();
 
                 foreach (var file in coliSobjs)
@@ -555,7 +555,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             }
         }
 
-        public void AnalyzeGameObjectsUnk2(string fileName)
+        public void AnalyzeGameObjectsSkeletalAnimator(string fileName)
         {
             using (var writer = AnalyzerUtility.OpenWriter(fileName))
             {
@@ -991,7 +991,7 @@ namespace Manifold.IO.GFZ.CourseCollision
         //    }
         //}
 
-        public void AnalyzeStoryObject(string fileName)
+        public void AnalyzeStoryObjectTrigger(string fileName)
         {
             using (var writer = AnalyzerUtility.OpenWriter(fileName))
             {
@@ -1135,7 +1135,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                     writer.PushCol(courseID);
                     writer.PushCol(isAxGx);
                     //
-                    writer.PushCol(scene.unknownStageData1.unk_0x00.ToString("X8"));
+                    writer.PushCol(scene.unknownStageData1.unk_0x00);
                     writer.PushCol(scene.unknownStageData1.unk_0x04.a);
                     writer.PushCol(scene.unknownStageData1.unk_0x04.b);
                     writer.PushCol(scene.unknownStageData1.unk_0x0C);
