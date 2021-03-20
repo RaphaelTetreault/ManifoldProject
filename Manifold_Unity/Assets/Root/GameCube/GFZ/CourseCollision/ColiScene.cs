@@ -31,7 +31,7 @@ namespace GameCube.GFZ.CourseCollision
         public UnknownTrigger2[] unknownTrigger2s;
         public UnknownAnimationData unknownAnimationData = new UnknownAnimationData();
         public ColiUnknownStruct5 unknownStruct5_0x84;
-        public UnknownTrigger1[] unknownTriggers_0x94;
+        public UnknownTrigger1[] unknownTriggers_0x94; // "green"
         public VisualEffectTrigger[] effectTriggers;
         public CourseMetadataTrigger[] courseMetadataTriggers;
         public ArcadeCheckpointTrigger[] arcadeCheckpointTriggers;

@@ -17,8 +17,7 @@ namespace GameCube.GFZ.CourseCollision
         private bool isFileGX;
 
         // structure
-        public float unk_0x00;
-        public float unk_0x04;
+        public UnknownFloatPair unk_0x00;
         public ArrayPointer trackNodesPtr;
         public ArrayPointer surfaceAttributeAreasPtr;
         public BoostPadsActive boostPadsActive;
@@ -61,8 +60,7 @@ namespace GameCube.GFZ.CourseCollision
             isFileGX = ColiCourseUtility.IsFileGX(reader);
 
             // Deserialize main structure
-            reader.ReadX(ref unk_0x00);
-            reader.ReadX(ref unk_0x04);
+            reader.ReadX(ref unk_0x00, true);
             reader.ReadX(ref trackNodesPtr);
             reader.ReadX(ref surfaceAttributeAreasPtr);
             reader.ReadX(ref boostPadsActive);

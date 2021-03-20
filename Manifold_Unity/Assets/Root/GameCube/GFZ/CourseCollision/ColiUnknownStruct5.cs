@@ -11,9 +11,8 @@ namespace GameCube.GFZ.CourseCollision
         [SerializeField]
         private AddressRange addressRange;
 
-        public int unk_0x00; // 0x##000000 - looks like highest byte flags? Big endian?
-        public float unk_0x04; // Smaller numbers, kind of like first 2 values in header (could be 2-float struct?)
-        public float unk_0x08; // Large numbers, kind of like first 2 values in header (could be 2-float struct?)
+        public ColiUnknownStruct5Enum unk_0x00; // 0x##000000 - looks like highest byte flags? Big endian?
+        public UnknownFloatPair unk_0x04;
         public Vector3 unk_0x0C; // Looks like scale? Maybe not a vector.
         public Vector3 unk_0x18; // Always (0, 0, 0)? Maybe not a vector.
 
@@ -30,15 +29,13 @@ namespace GameCube.GFZ.CourseCollision
             this.RecordStartAddress(reader);
             {
                 reader.ReadX(ref unk_0x00);
-                reader.ReadX(ref unk_0x04);
-                reader.ReadX(ref unk_0x08);
+                reader.ReadX(ref unk_0x04, true);
                 reader.ReadX(ref unk_0x0C);
                 reader.ReadX(ref unk_0x18);
             }
             this.RecordEndAddress(reader);
             {
-                //Debug.Log($"{unk_0x00:X8}, {unk_0x04}, {unk_0x08}, {unk_0x0C}, {unk_0x18}");
-                UnityEngine.Assertions.Assert.IsTrue(unk_0x18 == Vector3.zero);
+                Assert.IsTrue(unk_0x18 == Vector3.zero);
             }
         }
 

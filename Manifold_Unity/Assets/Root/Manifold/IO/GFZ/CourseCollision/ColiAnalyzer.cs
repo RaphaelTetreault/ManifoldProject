@@ -21,12 +21,13 @@ namespace Manifold.IO.GFZ.CourseCollision
         [SerializeField]
         protected bool
             animations = true,
-            coliUnknownStruct4 = true,
+            coliUnk5 = true,
             headers = true,
             sceneObjects = true,
             storyObjectTriggers = true,
             topologyParameters = true,
             trackTransform = true,
+            unknownAnimationData = true,
             unknownTrigger1 = true,
             venueMetadataObject = true;
 
@@ -76,12 +77,12 @@ namespace Manifold.IO.GFZ.CourseCollision
                 }
             }
 
-            if (coliUnknownStruct4)
+            if (coliUnk5)
             {
-                string fileName = $"{time} COLI {nameof(UnknownAnimationData)}.tsv";
+                string fileName = $"{time} COLI {nameof(ColiUnknownStruct5)}.tsv";
                 string filePath = Path.Combine(outputPath, fileName);
                 EditorUtility.DisplayProgressBar(ExecuteText, filePath, .5f);
-                AnalyzeColiUnknownStruct4(filePath);
+                AnalyzeColiUnknown5(filePath);
             }
 
             //
@@ -154,6 +155,14 @@ namespace Manifold.IO.GFZ.CourseCollision
                 filePath = Path.Combine(outputPath, filePath);
                 EditorUtility.DisplayProgressBar(ExecuteText, filePath, .5f);
                 AnalyzeTransforms(filePath);
+            }
+
+            if (unknownAnimationData)
+            {
+                string fileName = $"{time} COLI {nameof(UnknownAnimationData)}.tsv";
+                string filePath = Path.Combine(outputPath, fileName);
+                EditorUtility.DisplayProgressBar(ExecuteText, filePath, .5f);
+                AnalyzeUnknownAnimationData(filePath);
             }
 
             if (unknownTrigger1)
@@ -748,8 +757,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.PushCol("Venue");
                 writer.PushCol("AX/GX");
                 //
-                writer.PushCol(nameof(Header.unk_0x00));
-                writer.PushCol(nameof(Header.unk_0x04));
+                writer.PushCol(nameof(Header.unk_0x00) + " " + nameof(Header));
                 writer.PushCol(nameof(Header.trackNodesPtr));
                 writer.PushCol(nameof(Header.trackNodesPtr.address));
                 writer.PushCol(nameof(Header.surfaceAttributeAreasPtr));
@@ -811,8 +819,8 @@ namespace Manifold.IO.GFZ.CourseCollision
                     writer.PushCol(((CourseIDEx)coli.ID).GetDescription());
                     writer.PushCol(coliHeader.IsFileGX ? "GX" : "AX");
 
-                    writer.PushCol(coliHeader.unk_0x00);
-                    writer.PushCol(coliHeader.unk_0x04);
+                    writer.PushCol(coliHeader.unk_0x00.a);
+                    writer.PushCol(coliHeader.unk_0x00.b);
                     writer.PushCol(coliHeader.trackNodesPtr.length);
                     writer.PushCol(coliHeader.trackNodesPtr.HexAddress);
                     writer.PushCol(coliHeader.surfaceAttributeAreasPtr.length);
@@ -1040,7 +1048,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             }
         }
 
-        public void AnalyzeColiUnknownStruct4(string fileName)
+        public void AnalyzeUnknownAnimationData(string fileName)
         {
             using (var writer = AnalyzerUtility.OpenWriter(fileName))
             {
@@ -1097,6 +1105,49 @@ namespace Manifold.IO.GFZ.CourseCollision
             }
         }
 
+        public void AnalyzeColiUnknown5(string fileName)
+        {
+            using (var writer = AnalyzerUtility.OpenWriter(fileName))
+            {
+                // Write header
+                writer.PushCol("File");
+                writer.PushCol("Index");
+                writer.PushCol("Stage");
+                writer.PushCol("Venue");
+                writer.PushCol("AX/GX");
+                //
+                writer.PushCol(nameof(ColiUnknownStruct5.unk_0x00));
+                writer.PushCol(nameof(ColiUnknownStruct5.unk_0x04) + " " + nameof(ColiUnknownStruct5.unk_0x04.a));
+                writer.PushCol(nameof(ColiUnknownStruct5.unk_0x04) + " " + nameof(ColiUnknownStruct5.unk_0x04.b));
+                writer.PushCol(nameof(ColiUnknownStruct5.unk_0x0C));
+                writer.PushCol(nameof(ColiUnknownStruct5.unk_0x18));
+                //
+                writer.PushRow();
+
+                foreach (var file in coliSobjs)
+                {
+                    var scene = file.Value;
+                    var venueID = CourseUtility.GetVenueID(scene.ID).GetDescription();
+                    var courseID = ((CourseIDEx)scene.ID).GetDescription();
+                    var isAxGx = scene.header.IsFileGX ? "GX" : "AX";
+
+                    writer.PushCol(scene.FileName);
+                    writer.PushCol(scene.ID);
+                    writer.PushCol(venueID);
+                    writer.PushCol(courseID);
+                    writer.PushCol(isAxGx);
+                    //
+                    writer.PushCol(scene.unknownStruct5_0x84.unk_0x00.ToString("X8"));
+                    writer.PushCol(scene.unknownStruct5_0x84.unk_0x04.a);
+                    writer.PushCol(scene.unknownStruct5_0x84.unk_0x04.b);
+                    writer.PushCol(scene.unknownStruct5_0x84.unk_0x0C);
+                    writer.PushCol(scene.unknownStruct5_0x84.unk_0x18);
+                    //
+                    writer.PushRow();
+                }
+                writer.Flush();
+            }
+        }
 
     }
 }
