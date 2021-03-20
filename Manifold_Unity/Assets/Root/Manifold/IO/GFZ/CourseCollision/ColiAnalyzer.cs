@@ -79,10 +79,10 @@ namespace Manifold.IO.GFZ.CourseCollision
 
             if (coliUnk5)
             {
-                string fileName = $"{time} COLI {nameof(ColiUnknownStruct5)}.tsv";
+                string fileName = $"{time} COLI {nameof(UnknownStageData1)}.tsv";
                 string filePath = Path.Combine(outputPath, fileName);
                 EditorUtility.DisplayProgressBar(ExecuteText, filePath, .5f);
-                AnalyzeColiUnknown5(filePath);
+                AnalyzeUnknownStageData1(filePath);
             }
 
             //
@@ -159,7 +159,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
             if (unknownAnimationData)
             {
-                string fileName = $"{time} COLI {nameof(UnknownAnimationData)}.tsv";
+                string fileName = $"{time} COLI {nameof(UnknownStageData2)}.tsv";
                 string filePath = Path.Combine(outputPath, fileName);
                 EditorUtility.DisplayProgressBar(ExecuteText, filePath, .5f);
                 AnalyzeUnknownAnimationData(filePath);
@@ -1076,9 +1076,9 @@ namespace Manifold.IO.GFZ.CourseCollision
                     var courseID = ((CourseIDEx)scene.ID).GetDescription();
                     var isAxGx = scene.header.IsFileGX ? "GX" : "AX";
 
-                    var totalD1 = scene.unknownAnimationData.unkAnimData.Length;
+                    var totalD1 = scene.unknownStageData2.unkAnimData.Length;
                     var countD1 = 0;
-                    foreach (var animDataCollection in scene.unknownAnimationData.unkAnimData)
+                    foreach (var animDataCollection in scene.unknownStageData2.unkAnimData)
                     {
                         countD1++;
                         foreach (var keyableAttribute in animDataCollection)
@@ -1105,7 +1105,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             }
         }
 
-        public void AnalyzeColiUnknown5(string fileName)
+        public void AnalyzeUnknownStageData1(string fileName)
         {
             using (var writer = AnalyzerUtility.OpenWriter(fileName))
             {
@@ -1116,11 +1116,11 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.PushCol("Venue");
                 writer.PushCol("AX/GX");
                 //
-                writer.PushCol(nameof(ColiUnknownStruct5.unk_0x00));
-                writer.PushCol(nameof(ColiUnknownStruct5.unk_0x04) + " " + nameof(ColiUnknownStruct5.unk_0x04.a));
-                writer.PushCol(nameof(ColiUnknownStruct5.unk_0x04) + " " + nameof(ColiUnknownStruct5.unk_0x04.b));
-                writer.PushCol(nameof(ColiUnknownStruct5.unk_0x0C));
-                writer.PushCol(nameof(ColiUnknownStruct5.unk_0x18));
+                writer.PushCol(nameof(UnknownStageData1.unk_0x00));
+                writer.PushCol(nameof(UnknownStageData1.unk_0x04) + " " + nameof(UnknownStageData1.unk_0x04.a));
+                writer.PushCol(nameof(UnknownStageData1.unk_0x04) + " " + nameof(UnknownStageData1.unk_0x04.b));
+                writer.PushCol(nameof(UnknownStageData1.unk_0x0C));
+                writer.PushCol(nameof(UnknownStageData1.unk_0x18));
                 //
                 writer.PushRow();
 
@@ -1137,11 +1137,11 @@ namespace Manifold.IO.GFZ.CourseCollision
                     writer.PushCol(courseID);
                     writer.PushCol(isAxGx);
                     //
-                    writer.PushCol(scene.unknownStruct5_0x84.unk_0x00.ToString("X8"));
-                    writer.PushCol(scene.unknownStruct5_0x84.unk_0x04.a);
-                    writer.PushCol(scene.unknownStruct5_0x84.unk_0x04.b);
-                    writer.PushCol(scene.unknownStruct5_0x84.unk_0x0C);
-                    writer.PushCol(scene.unknownStruct5_0x84.unk_0x18);
+                    writer.PushCol(scene.unknownStageData1.unk_0x00.ToString("X8"));
+                    writer.PushCol(scene.unknownStageData1.unk_0x04.a);
+                    writer.PushCol(scene.unknownStageData1.unk_0x04.b);
+                    writer.PushCol(scene.unknownStageData1.unk_0x0C);
+                    writer.PushCol(scene.unknownStageData1.unk_0x18);
                     //
                     writer.PushRow();
                 }

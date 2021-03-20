@@ -3,10 +3,12 @@ using System;
 using System.IO;
 using UnityEngine;
 
+// NOTE: dependant on UnknownStageData1, review notes in that class.
+
 namespace GameCube.GFZ.CourseCollision
 {
     [Serializable]
-    public class UnknownAnimationData : IBinarySerializable, IBinaryAddressableRange
+    public class UnknownStageData2 : IBinarySerializable, IBinaryAddressableRange
     {
         public const int elementCount = 6;
 
@@ -32,7 +34,7 @@ namespace GameCube.GFZ.CourseCollision
         public ArrayPointer[] unkAnimDataPtrs;
         public KeyableAttribute[][] unkAnimData = new KeyableAttribute[elementCount][];
 
-        public UnknownAnimationData()
+        public UnknownStageData2()
         {
             // Initialize values so no null errors
             unkAnimData = new KeyableAttribute[elementCount][];

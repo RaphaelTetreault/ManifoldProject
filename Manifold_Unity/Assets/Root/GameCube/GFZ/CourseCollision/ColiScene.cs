@@ -29,8 +29,8 @@ namespace GameCube.GFZ.CourseCollision
         public int[] unknownData_0x20;
         public float unknownFloat_0x24;
         public UnknownTrigger2[] unknownTrigger2s;
-        public UnknownAnimationData unknownAnimationData = new UnknownAnimationData();
-        public ColiUnknownStruct5 unknownStruct5_0x84;
+        public UnknownStageData2 unknownStageData2 = new UnknownStageData2();
+        public UnknownStageData1 unknownStageData1 = new UnknownStageData1();
         public UnknownTrigger1[] unknownTriggers_0x94; // "green"
         public VisualEffectTrigger[] effectTriggers;
         public CourseMetadataTrigger[] courseMetadataTriggers;
@@ -105,12 +105,12 @@ namespace GameCube.GFZ.CourseCollision
             if (header.unkPtr_0x80.IsNotNullPointer)
             {
                 reader.JumpToAddress(header.unkPtr_0x80);
-                reader.ReadX(ref unknownAnimationData, true);
+                reader.ReadX(ref unknownStageData2, true);
             }
 
             // 0x84
             reader.JumpToAddress(header.unkPtr_0x84);
-            reader.ReadX(ref unknownStruct5_0x84, true);
+            reader.ReadX(ref unknownStageData1, true);
 
             // 0x90 
             reader.JumpToAddress(header.trackLengthPtr);
