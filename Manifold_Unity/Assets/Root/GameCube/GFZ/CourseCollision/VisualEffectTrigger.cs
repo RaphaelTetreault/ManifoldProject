@@ -31,6 +31,11 @@ namespace GameCube.GFZ.CourseCollision
                 reader.ReadX(ref visualEffect);
             }
             this.RecordEndAddress(reader);
+            {
+                // Volumes used are 10x10x10
+                // Since we use a 1x1x1 cube, multiply x10
+                transform.Scale *= 10f;
+            }
         }
 
         public void Serialize(BinaryWriter writer)
