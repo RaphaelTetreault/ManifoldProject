@@ -42,7 +42,7 @@ namespace GameCube.GFZ.GMA
                 List<IntArray> temp = new List<IntArray>();
 
                 arrayCount = addressCount = 0;
-                while (!reader.EndOfStream())
+                while (!reader.IsAtEndOfStream())
                 {
                     var numEntries = 0;
                     reader.ReadX(ref numEntries);

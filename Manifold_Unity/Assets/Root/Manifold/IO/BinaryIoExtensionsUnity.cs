@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace Manifold.IO
 {
-    public static partial class BinaryIoExtensions
+    public static partial class StreamExtensions
     {
         public const string serializeTransformWarningFormat0 = "Cannot restore " +
             "world space scale, only local space. Be aware that only root objects " +
