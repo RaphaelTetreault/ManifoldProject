@@ -5,7 +5,7 @@ using UnityEngine.Serialization;
 
 namespace Manifold.IO.GFZ.GMA
 {
-    [CreateAssetMenu(menuName = MenuConst.GfzGMA + "GMA Importer")]
+    [CreateAssetMenu(menuName = Const.Menu.GfzGMA + "GMA Importer")]
     public class GmaImporter : ExecutableScriptableObject,
         IImportable
     {

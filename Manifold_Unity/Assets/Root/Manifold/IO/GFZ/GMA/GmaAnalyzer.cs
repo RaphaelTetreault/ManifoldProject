@@ -5,7 +5,7 @@ using UnityEngine.Serialization;
 
 namespace Manifold.IO.GFZ.GMA
 {
-    [CreateAssetMenu(menuName = MenuConst.GfzGMA + "GMA Analyzer")]
+    [CreateAssetMenu(menuName = Const.Menu.GfzGMA + "GMA Analyzer")]
     public class GmaAnalyzer : ExecutableScriptableObject,
         IAnalyzable
     {

@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Manifold.IO.GFZ.Camera
 {
-    [CreateAssetMenu(menuName = MenuConst.GfzCamera + "livecam_stage EX")]
+    [CreateAssetMenu(menuName = Const.Menu.GfzCamera + "livecam_stage EX")]
     public class LiveCameraStageExSobj : ScriptableObject, IBinarySerializable, IFile
     {
         #region

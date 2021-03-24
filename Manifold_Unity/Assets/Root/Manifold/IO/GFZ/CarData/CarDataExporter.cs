@@ -2,7 +2,7 @@
 
 namespace Manifold.IO.GFZ.CarData
 {
-    [CreateAssetMenu(menuName = MenuConst.GfzCarData + "CarData Exporter")]
+    [CreateAssetMenu(menuName = Const.Menu.GfzCarData + "CarData Exporter")]
     public class CarDataExporter : ExecutableScriptableObject,
     IExportable
     {

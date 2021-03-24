@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Manifold.IO.GFZ.Camera
 {
-    [CreateAssetMenu(menuName = MenuConst.GfzCamera + "livecam_stage Analyzer")]
+    [CreateAssetMenu(menuName = Const.Menu.GfzCamera + "livecam_stage Analyzer")]
     public class LiveCameraStageAnalyzer : ExecutableScriptableObject,
         IAnalyzable
     {

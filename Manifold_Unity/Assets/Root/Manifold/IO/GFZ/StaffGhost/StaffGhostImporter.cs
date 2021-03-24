@@ -1,10 +1,9 @@
-using Manifold.IO;
 using System.IO;
 using UnityEngine;
 
 namespace Manifold.IO.GFZ.StaffGhost
 {
-    [CreateAssetMenu(menuName = MenuConst.GfzStaffGhost + "StaffGhost Importer")]
+    [CreateAssetMenu(menuName = Const.Menu.GfzStaffGhost + "StaffGhost Importer")]
 
     public class StaffGhostImporter : ExecutableScriptableObject,
         IImportable

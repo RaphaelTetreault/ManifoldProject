@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Manifold.IO.GFZ.CourseCollision
 {
-    [CreateAssetMenu(menuName = MenuConst.GfzCourseCollision + "COLI Analyzer")]
+    [CreateAssetMenu(menuName = Const.Menu.GfzCourseCollision + "COLI Analyzer")]
     public class ColiAnalyzer : ExecutableScriptableObject,
         IAnalyzable
     {

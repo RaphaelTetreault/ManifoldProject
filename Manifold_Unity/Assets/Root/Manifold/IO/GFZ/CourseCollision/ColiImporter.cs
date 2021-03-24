@@ -5,7 +5,7 @@ using UnityEngine.Serialization;
 
 namespace Manifold.IO.GFZ.CourseCollision
 {
-    [CreateAssetMenu(menuName = MenuConst.GfzCourseCollision + "COLI Importer")]
+    [CreateAssetMenu(menuName = Const.Menu.GfzCourseCollision + "COLI Importer")]
     public class ColiImporter : ExecutableScriptableObject,
         IImportable
     {

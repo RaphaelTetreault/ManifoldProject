@@ -1,9 +1,8 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Manifold.IO.GFZ.GMA
 {
-    [CreateAssetMenu(menuName = MenuConst.GfzGMA + "GMA Exporter")]
+    [CreateAssetMenu(menuName = Const.Menu.GfzGMA + "GMA Exporter")]
     public class GmaExporter : ExecutableScriptableObject,
           IExportable
     {

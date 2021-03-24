@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Manifold.IO.GFZ.Camera
 {
-    [CreateAssetMenu(menuName = MenuConst.GfzFMI + "FMI Analyzer")]
+    [CreateAssetMenu(menuName = Const.Menu.GfzFMI + "FMI Analyzer")]
     public class FmiAnalyzer : ExecutableScriptableObject,
         IAnalyzable
     {

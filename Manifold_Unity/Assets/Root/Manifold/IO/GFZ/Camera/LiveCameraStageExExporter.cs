@@ -2,7 +2,7 @@
 
 namespace Manifold.IO.GFZ.Camera
 {
-    [CreateAssetMenu(menuName = MenuConst.GfzCamera + "livecam_stage EX Exporter")]
+    [CreateAssetMenu(menuName = Const.Menu.GfzCamera + "livecam_stage EX Exporter")]
     public class LiveCameraStageExExporter : ExecutableScriptableObject,
     IExportable
     {

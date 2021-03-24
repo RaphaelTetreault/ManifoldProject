@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Manifold.IO.GFZ.CourseCollision
 {
-    [CreateAssetMenu(menuName = MenuConst.GfzCourseCollision + "COLI Scene")]
+    [CreateAssetMenu(menuName = Const.Menu.GfzCourseCollision + "COLI Scene")]
     public sealed class ColiSceneSobj : FileAssetWrapper<ColiScene>
     {
         [SerializeField]

@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Manifold.IO.GFZ.CarData
 {
-    [CreateAssetMenu(menuName = MenuConst.GfzCarData + "CarData Importer")]
+    [CreateAssetMenu(menuName = Const.Menu.GfzCarData + "CarData Importer")]
     public class CarDataImporter : ExecutableScriptableObject,
         IImportable
     {
