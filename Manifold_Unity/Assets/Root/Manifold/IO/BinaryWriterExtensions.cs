@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Text;
 
@@ -5,14 +6,20 @@ namespace Manifold.IO
 {
     public static partial class BinaryWriterExtensions
     {
-        public static long Align(this BinaryWriter writer, long alignment, byte padding = 0x00)
+        public static long AlignTo(this BinaryWriter writer, long alignment, byte paddingValue = 0x00)
         {
             var bytesToAlign = StreamExtensions.GetLengthOffAlignment(writer.BaseStream, alignment);
             for (int i = 0; i < bytesToAlign; i++)
-                writer.Write(padding);
+                writer.Write(paddingValue);
 
             return bytesToAlign;
         }
+
+
+        // BinaryIOUtility function forwarding
+
+        #region WriteX(value)
+
 
         public static void WriteX(this BinaryWriter writer, bool value)
         => BinaryIoUtility.Write(writer, value);
@@ -62,13 +69,16 @@ namespace Manifold.IO
         }
 
         // HACK: discard lets us use the name WriteX without conflicting with the above method
-        public static void WriteX<TEnum>(this BinaryWriter writer, TEnum value, int _ = 0) where TEnum : struct, System.Enum
+        public static void WriteX<TEnum>(this BinaryWriter writer, TEnum value, int _ = 0) where TEnum : struct, Enum
         {
             BinaryIoUtility.WriteEnum(writer, value);
         }
 
 
-        // ARRAY
+        #endregion
+
+        #region WriteX(value[])
+
 
         public static void WriteX(this BinaryWriter writer, bool[] value, bool writeLengthHeader)
         => BinaryIoUtility.Write(writer, value, writeLengthHeader);
@@ -127,10 +137,13 @@ namespace Manifold.IO
         public static void WriteXCString(this BinaryWriter writer, string value)
         => BinaryIoUtility.WriteCString(writer, value);
 
-        public static void WriteE<TEnum>(this BinaryWriter writer, TEnum[] value, bool writeLengthHeader) where TEnum : System.Enum
+        public static void WriteE<TEnum>(this BinaryWriter writer, TEnum[] value, bool writeLengthHeader) where TEnum : Enum
         {
             BinaryIoUtility.WriteEnum(writer, value, writeLengthHeader);
         }
+
+
+        #endregion
 
     }
 }

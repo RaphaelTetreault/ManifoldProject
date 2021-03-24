@@ -72,7 +72,7 @@ namespace GameCube.GFZ.GMA
             {
                 writer.WriteX(value);
             }
-            writer.Align(GameCube.GX.GXUtility.GX_FIFO_ALIGN);
+            writer.AlignTo(GameCube.GX.GXUtility.GX_FIFO_ALIGN);
         }
     }
 }

@@ -12,36 +12,24 @@ namespace Manifold.IO
         /// <param name="reader"></param>
         /// <returns>True when at the end of the stream</returns>
         public static bool IsAtEndOfStream(this BinaryReader reader)
-        => StreamExtensions.IsAtEndOfStream(reader.BaseStream);
+            => StreamExtensions.IsAtEndOfStream(reader.BaseStream);
 
-        public static long Align(this BinaryReader reader, long alignment)
+        public static long AlignTo(this BinaryReader reader, long alignment)
         {
             var bytesToAlign = StreamExtensions.GetLengthOffAlignment(reader.BaseStream, alignment);
             reader.BaseStream.Seek(bytesToAlign, SeekOrigin.Current);
             return bytesToAlign;
         }
 
-        public static byte PeekByte(this BinaryReader reader)
-        {
-            byte b = reader.ReadX_UInt8();
-            reader.BaseStream.Position--;
-            return b;
-        }
+        #region PeekValue
 
-        public static byte PeekUint8(this BinaryReader reader) => reader.PeekValue(BinaryIoUtility.ReadUInt8);
-        public static ushort PeekUint16(this BinaryReader reader) => reader.PeekValue(BinaryIoUtility.ReadUInt16);
-        public static uint PeekUint32(this BinaryReader reader) => reader.PeekValue(BinaryIoUtility.ReadUInt32);
-        public static ulong PeekUint64(this BinaryReader reader) => reader.PeekValue(BinaryIoUtility.ReadUInt64);
-        public static sbyte PeekInt8(this BinaryReader reader) => reader.PeekValue(BinaryIoUtility.ReadInt8);
-        public static short PeekInt16(this BinaryReader reader) => reader.PeekValue(BinaryIoUtility.ReadInt16);
-        public static int PeekInt32(this BinaryReader reader) => reader.PeekValue(BinaryIoUtility.ReadInt32);
-        public static long PeekInt64(this BinaryReader reader) => reader.PeekValue(BinaryIoUtility.ReadInt64);
-        public static float PeekFloat(this BinaryReader reader) => reader.PeekValue(BinaryIoUtility.ReadFloat);
-        public static double PeekDouble(this BinaryReader reader) => reader.PeekValue(BinaryIoUtility.ReadDouble);
-        public static decimal PeekDecimal(this BinaryReader reader) => reader.PeekValue(BinaryIoUtility.ReadDecimal);
-
-
-        // Really cool: "PeekValue(ReadX_Float);" works to peek a value from stream.
+        /// <summary>
+        /// Peeks the specified type from the <paramref name="reader"/>'s base stream.
+        /// </summary>
+        /// <typeparam name="T">The type to peek</typeparam>
+        /// <param name="reader">The reader to peek from</param>
+        /// <param name="deserializationMethod">The method used to deserialize the value from stream</param>
+        /// <returns></returns>
         public static T PeekValue<T>(this BinaryReader reader, Func<BinaryReader, T> deserializationMethod)
         {
             long streamPosition = reader.BaseStream.Position;
@@ -50,6 +38,36 @@ namespace Manifold.IO
             return value;
         }
 
+        // System type names
+        public static byte PeekUint8(this BinaryReader reader) => reader.PeekValue(BinaryIoUtility.ReadUInt8);
+        public static ushort PeekUint16(this BinaryReader reader) => reader.PeekValue(BinaryIoUtility.ReadUInt16);
+        public static uint PeekUint32(this BinaryReader reader) => reader.PeekValue(BinaryIoUtility.ReadUInt32);
+        public static ulong PeekUint64(this BinaryReader reader) => reader.PeekValue(BinaryIoUtility.ReadUInt64);
+        public static sbyte PeekInt8(this BinaryReader reader) => reader.PeekValue(BinaryIoUtility.ReadInt8);
+        public static short PeekInt16(this BinaryReader reader) => reader.PeekValue(BinaryIoUtility.ReadInt16);
+        public static int PeekInt32(this BinaryReader reader) => reader.PeekValue(BinaryIoUtility.ReadInt32);
+        public static long PeekInt64(this BinaryReader reader) => reader.PeekValue(BinaryIoUtility.ReadInt64);
+
+        // Basic type names
+        public static byte PeekByte(this BinaryReader reader) => reader.PeekValue(BinaryIoUtility.ReadUInt8);
+        public static ushort PeekUshort(this BinaryReader reader) => reader.PeekValue(BinaryIoUtility.ReadUInt16);
+        public static uint PeekUint(this BinaryReader reader) => reader.PeekValue(BinaryIoUtility.ReadUInt32);
+        public static ulong PeekUlong(this BinaryReader reader) => reader.PeekValue(BinaryIoUtility.ReadUInt64);
+        public static sbyte PeekSbyte(this BinaryReader reader) => reader.PeekValue(BinaryIoUtility.ReadInt8);
+        public static short PeekShort(this BinaryReader reader) => reader.PeekValue(BinaryIoUtility.ReadInt16);
+        public static int PeekInt(this BinaryReader reader) => reader.PeekValue(BinaryIoUtility.ReadInt32);
+        public static long PeekLong(this BinaryReader reader) => reader.PeekValue(BinaryIoUtility.ReadInt64);
+
+        // Floating point numbers
+        public static float PeekFloat(this BinaryReader reader) => reader.PeekValue(BinaryIoUtility.ReadFloat);
+        public static double PeekDouble(this BinaryReader reader) => reader.PeekValue(BinaryIoUtility.ReadDouble);
+        public static decimal PeekDecimal(this BinaryReader reader) => reader.PeekValue(BinaryIoUtility.ReadDecimal);
+
+
+        #endregion
+
+
+        // BinaryIOUtility function forwarding
 
         #region ReadX_Value
 
