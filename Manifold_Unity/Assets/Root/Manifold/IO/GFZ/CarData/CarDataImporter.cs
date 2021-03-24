@@ -40,7 +40,7 @@ namespace Manifold.IO.GFZ.CarData
         {
             importFiles = Directory.GetFiles(importFrom, searchPattern, fileSearchOption);
             importFiles = UnityPathUtility.EnforceUnitySeparators(importFiles);
-            importFiles = GFZX01Utility.DecompressEachLZ(importFiles);
+            importFiles = GfzUtility.DecompressEachLZ(importFiles);
 
             var count = 0;
             foreach (var importFile in importFiles)

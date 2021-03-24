@@ -42,7 +42,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             importFiles = UnityPathUtility.EnforceUnitySeparators(importFiles);
             //var importFilesUncompressed = isAX
             //? GFZX01Utility.DecompressEachLZ(importFiles, LibGxFormat.AvGame.FZeroAX)
-            var importFilesUncompressed = GFZX01Utility.DecompressEachLZ(importFiles);
+            var importFilesUncompressed = GfzUtility.DecompressEachLZ(importFiles);
             ImportUtility.ImportManyAs<ColiSceneSobj>(importFilesUncompressed, importFrom, importTo);
         }
     }

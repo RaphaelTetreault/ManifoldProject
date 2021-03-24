@@ -43,7 +43,7 @@ namespace Manifold.IO.GFZ.GMA
 
             if (exportCompressed)
             {
-                var compressedFiles = GFZX01Utility.CompressEachAsLZ(exportedFiles);
+                var compressedFiles = GfzUtility.CompressEachAsLZ(exportedFiles);
                 ExportUtility.PrintExportsToConsole(this, compressedFiles);
             }
 

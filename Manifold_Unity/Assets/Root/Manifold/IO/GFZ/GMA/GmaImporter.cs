@@ -40,7 +40,7 @@ namespace Manifold.IO.GFZ.GMA
         {
             importFiles = Directory.GetFiles(importFrom, searchPattern, fileSearchOption);
             importFiles = UnityPathUtility.EnforceUnitySeparators(importFiles);
-            var importFilesUncompressed = GFZX01Utility.DecompressEachLZ(importFiles, LibGxFormat.AvGame.FZeroGX);
+            var importFilesUncompressed = GfzUtility.DecompressEachLZ(importFiles, LibGxFormat.AvGame.FZeroGX);
             ImportUtility.ImportManyAs<GmaSobj>(importFilesUncompressed, importFrom, importTo);
         }
 
