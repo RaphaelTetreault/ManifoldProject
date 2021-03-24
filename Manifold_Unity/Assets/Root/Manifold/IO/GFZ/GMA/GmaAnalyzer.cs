@@ -84,21 +84,21 @@ namespace Manifold.IO.GFZ.GMA
             // Write header
             if (writer.BaseStream.Length <= 0)
             {
-                writer.PushCol("File Name");
-                writer.PushCol("GCMF File Name");
-                writer.PushCol("GCMF Index");
-                writer.PushCol("Address");
-                writer.PushCol("Attributes");
-                writer.PushCol("Origin");
-                writer.PushCol("Radius");
-                writer.PushCol("Texturecount");
-                writer.PushCol("Materialcount");
-                writer.PushCol("Translucidmaterialcount");
-                writer.PushCol("Transform Matrix Count");
-                writer.PushCol("Zero_0x1F");
-                writer.PushCol("Indices Rel Ptr");
-                writer.PushCol("Zero_0x24");
-                writer.PushRow();
+                writer.WriteNextCol("File Name");
+                writer.WriteNextCol("GCMF File Name");
+                writer.WriteNextCol("GCMF Index");
+                writer.WriteNextCol("Address");
+                writer.WriteNextCol("Attributes");
+                writer.WriteNextCol("Origin");
+                writer.WriteNextCol("Radius");
+                writer.WriteNextCol("Texturecount");
+                writer.WriteNextCol("Materialcount");
+                writer.WriteNextCol("Translucidmaterialcount");
+                writer.WriteNextCol("Transform Matrix Count");
+                writer.WriteNextCol("Zero_0x1F");
+                writer.WriteNextCol("Indices Rel Ptr");
+                writer.WriteNextCol("Zero_0x24");
+                writer.WriteNextRow();
             }
 
             foreach (var sobj in analysisSobjs)
@@ -116,21 +116,21 @@ namespace Manifold.IO.GFZ.GMA
                     // Get reference to type less
                     var gcmfProp = gcmf.GcmfProperties;
 
-                    writer.PushCol(sobj.FileName);
-                    writer.PushCol(gcmf.ModelName);
-                    writer.PushCol($"GCMF[{index}/{maxIndex}]");
-                    writer.PushCol(gcmf.StartAddressHex());
-                    writer.PushCol(gcmfProp.Attributes);
-                    writer.PushCol(gcmfProp.Origin);
-                    writer.PushCol(gcmfProp.Radius);
-                    writer.PushCol(gcmfProp.TextureCount);
-                    writer.PushCol(gcmfProp.MaterialCount);
-                    writer.PushCol(gcmfProp.TranslucidMaterialCount);
-                    writer.PushCol(gcmfProp.TransformMatrixCount);
-                    writer.PushCol(gcmfProp.Zero_0x1F);
-                    writer.PushCol(gcmfProp.GcmfSize);
-                    writer.PushCol(gcmfProp.Zero_0x24);
-                    writer.PushRow();
+                    writer.WriteNextCol(sobj.FileName);
+                    writer.WriteNextCol(gcmf.ModelName);
+                    writer.WriteNextCol($"GCMF[{index}/{maxIndex}]");
+                    writer.WriteNextCol(gcmf.StartAddressHex());
+                    writer.WriteNextCol(gcmfProp.Attributes);
+                    writer.WriteNextCol(gcmfProp.Origin);
+                    writer.WriteNextCol(gcmfProp.Radius);
+                    writer.WriteNextCol(gcmfProp.TextureCount);
+                    writer.WriteNextCol(gcmfProp.MaterialCount);
+                    writer.WriteNextCol(gcmfProp.TranslucidMaterialCount);
+                    writer.WriteNextCol(gcmfProp.TransformMatrixCount);
+                    writer.WriteNextCol(gcmfProp.Zero_0x1F);
+                    writer.WriteNextCol(gcmfProp.GcmfSize);
+                    writer.WriteNextCol(gcmfProp.Zero_0x24);
+                    writer.WriteNextRow();
 
                     index++;
                 }
@@ -179,35 +179,35 @@ namespace Manifold.IO.GFZ.GMA
 
             var writer = AnalyzerUtility.OpenWriter(fileName);
 
-            writer.PushCol();
+            writer.WriteNextCol();
             for (int i = 0; i < size; i++)
-                writer.PushCol($"Flag Bit {i}");
-            writer.PushRow();
+                writer.WriteNextCol($"Flag Bit {i}");
+            writer.WriteNextRow();
 
-            writer.PushCol("UnkFlags0x00");
+            writer.WriteNextCol("UnkFlags0x00");
             for (int i = 0; i < unkFlags0x00.Length; i++)
-                writer.PushCol(unkFlags0x00[i]);
-            writer.PushRow();
+                writer.WriteNextCol(unkFlags0x00[i]);
+            writer.WriteNextRow();
 
-            writer.PushCol("UnkFlags0x02");
+            writer.WriteNextCol("UnkFlags0x02");
             for (int i = 0; i < unkFlags0x02.Length; i++)
-                writer.PushCol(unkFlags0x02[i]);
-            writer.PushRow();
+                writer.WriteNextCol(unkFlags0x02[i]);
+            writer.WriteNextRow();
 
-            writer.PushCol("UnkFlags0x03");
+            writer.WriteNextCol("UnkFlags0x03");
             for (int i = 0; i < unkFlags0x03.Length; i++)
-                writer.PushCol(unkFlags0x03[i]);
-            writer.PushRow();
+                writer.WriteNextCol(unkFlags0x03[i]);
+            writer.WriteNextRow();
 
-            writer.PushCol("UnkFlags0x0C");
+            writer.WriteNextCol("UnkFlags0x0C");
             for (int i = 0; i < unkFlags0x0C.Length; i++)
-                writer.PushCol(unkFlags0x0C[i]);
-            writer.PushRow();
+                writer.WriteNextCol(unkFlags0x0C[i]);
+            writer.WriteNextRow();
 
-            writer.PushCol("UnkFlags0x10");
+            writer.WriteNextCol("UnkFlags0x10");
             for (int i = 0; i < unkFlags0x10.Length; i++)
-                writer.PushCol(unkFlags0x10[i]);
-            writer.PushRow();
+                writer.WriteNextCol(unkFlags0x10[i]);
+            writer.WriteNextRow();
 
             writer.Close();
         }
@@ -218,35 +218,35 @@ namespace Manifold.IO.GFZ.GMA
 
             if (writer.BaseStream.Length <= 0)
             {
-                writer.PushCol("File Name");
-                writer.PushCol("Model Name");
-                writer.PushCol("Address");
-                writer.PushCol("Model Index");
-                writer.PushCol("Mat Index");
-                writer.PushCol("Tex Index");
-                writer.PushCol("Zero 0x00");
-                writer.PushCol("Unk_0x02");
-                writer.PushCol("Unk_0x03");
-                writer.PushCol("Color0");
-                writer.PushCol("Color1");
-                writer.PushCol("Color2");
-                writer.PushCol("Unk_0x10");
-                writer.PushCol("Unk_0x11");
-                writer.PushCol("Unk_0x12");
-                writer.PushCol("Vertex Render Flags");
-                writer.PushCol("Unk_0x14");
-                writer.PushCol("Unk_0x15");
-                writer.PushCol("Tex 0 Index");
-                writer.PushCol("Tex 1 Index");
-                writer.PushCol("Tex 2 Index");
-                writer.PushCol("Vertex Descriptor Flags");
-                writer.PushCol("Transform Matrix Indexes");
-                writer.PushCol("Mat display list size");
-                writer.PushCol("Tl mat display list size");
-                writer.PushCol("Bounding Sphere Origin");
-                writer.PushCol("Zero 0x3C");
-                writer.PushCol("Unk_0x40");
-                writer.PushRow();
+                writer.WriteNextCol("File Name");
+                writer.WriteNextCol("Model Name");
+                writer.WriteNextCol("Address");
+                writer.WriteNextCol("Model Index");
+                writer.WriteNextCol("Mat Index");
+                writer.WriteNextCol("Tex Index");
+                writer.WriteNextCol("Zero 0x00");
+                writer.WriteNextCol("Unk_0x02");
+                writer.WriteNextCol("Unk_0x03");
+                writer.WriteNextCol("Color0");
+                writer.WriteNextCol("Color1");
+                writer.WriteNextCol("Color2");
+                writer.WriteNextCol("Unk_0x10");
+                writer.WriteNextCol("Unk_0x11");
+                writer.WriteNextCol("Unk_0x12");
+                writer.WriteNextCol("Vertex Render Flags");
+                writer.WriteNextCol("Unk_0x14");
+                writer.WriteNextCol("Unk_0x15");
+                writer.WriteNextCol("Tex 0 Index");
+                writer.WriteNextCol("Tex 1 Index");
+                writer.WriteNextCol("Tex 2 Index");
+                writer.WriteNextCol("Vertex Descriptor Flags");
+                writer.WriteNextCol("Transform Matrix Indexes");
+                writer.WriteNextCol("Mat display list size");
+                writer.WriteNextCol("Tl mat display list size");
+                writer.WriteNextCol("Bounding Sphere Origin");
+                writer.WriteNextCol("Zero 0x3C");
+                writer.WriteNextCol("Unk_0x40");
+                writer.WriteNextRow();
             }
 
             foreach (var sobj in analysisSobjs)
@@ -273,35 +273,35 @@ namespace Manifold.IO.GFZ.GMA
                     {
                         var material = gcmfRenderData.Material;
 
-                        writer.PushCol(sobj.FileName);
-                        writer.PushCol(gcmf.ModelName);
-                        writer.PushCol(material.StartAddressHex());
-                        writer.PushCol($"GCMF[{gcmfIndex}/{gcmfIndexMax}]");
-                        writer.PushCol($"MAT[{matIndex}/{matIndexMax}]");
-                        writer.PushCol($"TEX[{texIndex}/{texIndexMax}]");
-                        writer.PushCol(material.Zero_0x00);
-                        writer.PushCol(material.Unk_0x02);
-                        writer.PushCol(material.Unk_0x03);
-                        writer.PushCol(material.Color0);
-                        writer.PushCol(material.Color1);
-                        writer.PushCol(material.Color2);
-                        writer.PushCol(material.Unk_0x10);
-                        writer.PushCol(material.Unk_0x11);
-                        writer.PushCol(material.TexturesUsedCount);
-                        writer.PushCol(material.VertexRenderFlags);
-                        writer.PushCol(material.Unk_0x14);
-                        writer.PushCol(material.Unk_0x15);
-                        writer.PushCol(material.Tex0Index);
-                        writer.PushCol(material.Tex1Index);
-                        writer.PushCol(material.Tex2Index);
-                        writer.PushCol(material.VertexDescriptorFlags);
-                        writer.PushCol(material.MatrixIndexes);
-                        writer.PushCol(material.MatDisplayListSize);
-                        writer.PushCol(material.TlMatDisplayListSize);
-                        writer.PushCol(material.BoudingSphereOrigin);
-                        writer.PushCol(material.Unk_0x3C);
-                        writer.PushCol(material.Unk_0x40);
-                        writer.PushRow();
+                        writer.WriteNextCol(sobj.FileName);
+                        writer.WriteNextCol(gcmf.ModelName);
+                        writer.WriteNextCol(material.StartAddressHex());
+                        writer.WriteNextCol($"GCMF[{gcmfIndex}/{gcmfIndexMax}]");
+                        writer.WriteNextCol($"MAT[{matIndex}/{matIndexMax}]");
+                        writer.WriteNextCol($"TEX[{texIndex}/{texIndexMax}]");
+                        writer.WriteNextCol(material.Zero_0x00);
+                        writer.WriteNextCol(material.Unk_0x02);
+                        writer.WriteNextCol(material.Unk_0x03);
+                        writer.WriteNextCol(material.Color0);
+                        writer.WriteNextCol(material.Color1);
+                        writer.WriteNextCol(material.Color2);
+                        writer.WriteNextCol(material.Unk_0x10);
+                        writer.WriteNextCol(material.Unk_0x11);
+                        writer.WriteNextCol(material.TexturesUsedCount);
+                        writer.WriteNextCol(material.VertexRenderFlags);
+                        writer.WriteNextCol(material.Unk_0x14);
+                        writer.WriteNextCol(material.Unk_0x15);
+                        writer.WriteNextCol(material.Tex0Index);
+                        writer.WriteNextCol(material.Tex1Index);
+                        writer.WriteNextCol(material.Tex2Index);
+                        writer.WriteNextCol(material.VertexDescriptorFlags);
+                        writer.WriteNextCol(material.MatrixIndexes);
+                        writer.WriteNextCol(material.MatDisplayListSize);
+                        writer.WriteNextCol(material.TlMatDisplayListSize);
+                        writer.WriteNextCol(material.BoudingSphereOrigin);
+                        writer.WriteNextCol(material.Unk_0x3C);
+                        writer.WriteNextCol(material.Unk_0x40);
+                        writer.WriteNextRow();
 
                         matIndex++;
                         texIndex += material.TexturesUsedCount;
@@ -318,22 +318,22 @@ namespace Manifold.IO.GFZ.GMA
 
             if (writer.BaseStream.Length <= 0)
             {
-                writer.PushCol("File Name");
-                writer.PushCol("Model Index");
-                writer.PushCol("Model Name");
-                writer.PushCol("Texture Index");
-                writer.PushCol("Address");
-                writer.PushCol("Unk_0x00");
-                writer.PushCol("Mipmap Settings");
-                writer.PushCol("Wrap Flags");
-                writer.PushCol("Tpl Texture Index");
-                writer.PushCol("Unk_0x06");
-                writer.PushCol("Anisotropic Level");
-                writer.PushCol("Unk_0x0C");
-                writer.PushCol("Is Swappable Texture?");
-                writer.PushCol("Index");
-                writer.PushCol("Unk_0x10");
-                writer.PushRow();
+                writer.WriteNextCol("File Name");
+                writer.WriteNextCol("Model Index");
+                writer.WriteNextCol("Model Name");
+                writer.WriteNextCol("Texture Index");
+                writer.WriteNextCol("Address");
+                writer.WriteNextCol("Unk_0x00");
+                writer.WriteNextCol("Mipmap Settings");
+                writer.WriteNextCol("Wrap Flags");
+                writer.WriteNextCol("Tpl Texture Index");
+                writer.WriteNextCol("Unk_0x06");
+                writer.WriteNextCol("Anisotropic Level");
+                writer.WriteNextCol("Unk_0x0C");
+                writer.WriteNextCol("Is Swappable Texture?");
+                writer.WriteNextCol("Index");
+                writer.WriteNextCol("Unk_0x10");
+                writer.WriteNextRow();
             }
 
             foreach (var sobj in analysisSobjs)
@@ -348,22 +348,22 @@ namespace Manifold.IO.GFZ.GMA
                     var texIndexMax = gcmf.Textures.Length;
                     foreach (var tex in gcmf.Textures)
                     {
-                        writer.PushCol(sobj.FileName);
-                        writer.PushCol($"GCMF[{modelIndex}/{modelIndexMax}]");
-                        writer.PushCol(gcmf.ModelName);
-                        writer.PushCol($"Tex[{texIndex}/{texIndexMax}]");
-                        writer.PushCol(tex.StartAddressHex());
-                        writer.PushCol(tex.Unk_0x00);
-                        writer.PushCol(tex.MipmapSettings);
-                        writer.PushCol(tex.Wrapflags);
-                        writer.PushCol(tex.Tpltextureid);
-                        writer.PushCol(tex.Unk_0x06);
-                        writer.PushCol(tex.Anisotropiclevel);
-                        writer.PushCol(tex.Unk_0x0C);
-                        writer.PushCol(tex.IsSwappableTexture);
-                        writer.PushCol(tex.Index);
-                        writer.PushCol(tex.Unk_0x10);
-                        writer.PushRow();
+                        writer.WriteNextCol(sobj.FileName);
+                        writer.WriteNextCol($"GCMF[{modelIndex}/{modelIndexMax}]");
+                        writer.WriteNextCol(gcmf.ModelName);
+                        writer.WriteNextCol($"Tex[{texIndex}/{texIndexMax}]");
+                        writer.WriteNextCol(tex.StartAddressHex());
+                        writer.WriteNextCol(tex.Unk_0x00);
+                        writer.WriteNextCol(tex.MipmapSettings);
+                        writer.WriteNextCol(tex.Wrapflags);
+                        writer.WriteNextCol(tex.Tpltextureid);
+                        writer.WriteNextCol(tex.Unk_0x06);
+                        writer.WriteNextCol(tex.Anisotropiclevel);
+                        writer.WriteNextCol(tex.Unk_0x0C);
+                        writer.WriteNextCol(tex.IsSwappableTexture);
+                        writer.WriteNextCol(tex.Index);
+                        writer.WriteNextCol(tex.Unk_0x10);
+                        writer.WriteNextRow();
 
                         texIndex++;
                     }
