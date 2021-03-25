@@ -83,25 +83,25 @@ namespace Manifold.IO
 
         // Function forwarding
         public static Vector2 ReadX(this BinaryReader reader, ref Vector2 value)
-            => reader.ReadVector2();
+            => value = reader.ReadVector2();
 
         public static Vector3 ReadX(this BinaryReader reader, ref Vector3 value)
-            => reader.ReadVector3();
+            => value = reader.ReadVector3();
 
         public static Vector4 ReadX(this BinaryReader reader, ref Vector4 value)
-            => reader.ReadVector4();
+            => value = reader.ReadVector4();
 
         public static Quaternion ReadX(this BinaryReader reader, ref Quaternion value)
-            => reader.ReadQuaternion();
+            => value = reader.ReadQuaternion();
 
         public static Color32 ReadX(this BinaryReader reader, ref Color32 value)
-            => reader.ReadColor32();
+            => value = reader.ReadColor32();
 
         public static Color ReadX(this BinaryReader reader, ref Color value)
-            => reader.ReadColor();
+            => value = reader.ReadColor();
 
         public static Transform ReadX(this BinaryReader reader, ref Transform value, Space space = Space.Self)
-            => reader.ReadTransform(ref value, space);
+            => value = reader.ReadTransform(ref value, space);
 
     }
 }
