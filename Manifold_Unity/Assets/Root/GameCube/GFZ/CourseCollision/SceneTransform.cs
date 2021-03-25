@@ -36,7 +36,7 @@ namespace GameCube.GFZ.CourseCollision
         public Vector3 RotationEuler
         {
             get => shortRotation3.AsVector3;
-            set => shortRotation3 = value;
+            //set => shortRotation3 = value;
         }
 
         public Quaternion Rotation
@@ -49,6 +49,11 @@ namespace GameCube.GFZ.CourseCollision
             get => scale;
             set => scale = value;
         }
+
+        public short RotX => shortRotation3.x.Backing;
+        public short RotY => shortRotation3.y.Backing;
+        public short RotZ => shortRotation3.z.Backing;
+        public EnumFlags16 UnkFlags => shortRotation3.unkFlags;
 
 
         public void Deserialize(BinaryReader reader)

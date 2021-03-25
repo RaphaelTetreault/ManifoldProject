@@ -12,16 +12,21 @@ namespace GameCube.GFZ
 
         [SerializeField]
         private float value;
+        [SerializeField]
+        private short backing;
 
         public float Value => value;
+        public short Backing => backing;
 
-        public ShortRotation(ushort value)
+        public ShortRotation(short value)
         {
+           backing = value;
            this.value = value * shortToFloat;
         }
 
         public ShortRotation(float value)
         {
+            backing = 0;
             this.value = value;
         }
 
@@ -30,23 +35,23 @@ namespace GameCube.GFZ
             return shortRotation.value;
         }
 
-        public static implicit operator ShortRotation(float value)
-        {
-            return new ShortRotation(value);
-        }
+        //public static implicit operator ShortRotation(float value)
+        //{
+        //    return new ShortRotation(value);
+        //}
 
         public void Deserialize(BinaryReader reader)
         {
-            short serializedValue = 0;
-            reader.ReadX(ref serializedValue);
+            //short serializedValue = 0;
+            reader.ReadX(ref backing);
             // Convert -128 through 127 to -180.0f through 180.0f
-            value = serializedValue * shortToFloat;
+            value = backing * shortToFloat;
         }
 
         public void Serialize(BinaryWriter writer)
         {
-            var rotation = (short)(value * floatToshort);
-            writer.WriteX(rotation);
+            //var rotation = (short)(value * floatToshort);
+            //writer.WriteX(rotation);
 
             // THIS SERIALIZATION IS NOT TESTED
             throw new System.NotImplementedException();

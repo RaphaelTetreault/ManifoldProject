@@ -26,16 +26,16 @@ namespace GameCube.GFZ
             return vector3;
         }
 
-        public static implicit operator ShortRotation3(Vector3 value)
-        {
-            var rotation3 = new ShortRotation3()
-            {
-                x = value.x,
-                y = value.y,
-                z = value.z,
-            };
-            return rotation3;
-        }
+        //public static implicit operator ShortRotation3(Vector3 value)
+        //{
+        //    var rotation3 = new ShortRotation3()
+        //    {
+        //        x = value.x,
+        //        y = value.y,
+        //        z = value.z,
+        //    };
+        //    return rotation3;
+        //}
 
         public void Deserialize(BinaryReader reader)
         {

@@ -303,6 +303,23 @@ namespace Manifold.IO
         {
             var type = Enum.GetUnderlyingType(typeof(TEnum));
 
+            // Uncomment for when C# 9.0 can be used in Unity
+            //switch (type)
+            //{
+            //    // Signed backing type
+            //    case sbyte:     return (TEnum)(object)ReadInt8(binaryReader);
+            //    case short:     return (TEnum)(object)ReadInt16(binaryReader);
+            //    case int:       return (TEnum)(object)ReadInt32(binaryReader);
+            //    case long:      return (TEnum)(object)ReadInt64(binaryReader);
+            //    // Unsigned backing type
+            //    case byte:      return (TEnum)(object)ReadUInt8(binaryReader);
+            //    case ushort:    return (TEnum)(object)ReadUInt16(binaryReader);
+            //    case uint:      return (TEnum)(object)ReadUInt32(binaryReader);
+            //    case ulong:     return (TEnum)(object)ReadUInt64(binaryReader);
+            //    
+            //    default: throw new NotImplementedException();
+            //}
+
             if (type == typeof(int))
             {
                 int value = ReadInt32(binaryReader);

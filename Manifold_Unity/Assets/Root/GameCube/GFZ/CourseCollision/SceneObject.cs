@@ -38,7 +38,7 @@ namespace GameCube.GFZ.CourseCollision
         public SkeletalAnimator skeletalAnimator;
 
         // rename to Matrix4x4
-        public Transform transform;
+        public Transform transform = new Transform();
 
 
         #endregion
@@ -107,8 +107,7 @@ namespace GameCube.GFZ.CourseCollision
                 else
                 {
                     // 1518 objects without a transform
-                    // They appear to use "Collision Position" but
-                    // they don't have collision, they have animations.'
+                    // They appear to use animation, so the matrix is null
                     var matrix = new Matrix4x4();
                     matrix.SetTRS(sceneTransform.Position, sceneTransform.Rotation, sceneTransform.Scale);
 
