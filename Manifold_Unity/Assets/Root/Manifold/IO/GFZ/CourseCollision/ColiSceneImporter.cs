@@ -55,12 +55,15 @@ namespace Manifold.IO.GFZ.CourseCollision
                 var empty = new GameObject();
                 empty.name = "DEBUG - Display Data";
                 // Add displayers and assign value to all
-                var displayables = new List<IColiCourseDisplayable>();
-                displayables.Add(empty.AddComponent<DisplayCourseMetadataTrigger>());
-                displayables.Add(empty.AddComponent<DisplayStoryObjects>());
-                displayables.Add(empty.AddComponent<DisplayTrackCheckpoint>());
-                displayables.Add(empty.AddComponent<DisplayTrigger>());
-                displayables.Add(empty.AddComponent<DisplayUnknownTrigger2>());
+                var displayables = new List<IColiCourseDisplayable>
+                {
+                    empty.AddComponent<DisplayCourseMetadataTrigger>(),
+                    empty.AddComponent<DisplayStoryObjects>(),
+                    empty.AddComponent<DisplayTrackCheckpoint>(),
+                    empty.AddComponent<DisplayTrigger>(),
+                    empty.AddComponent<DisplayUnknownTrigger2>(),
+                    empty.AddComponent<DisplayVisualEffectTrigger>()
+                };
                 foreach (var displayable in displayables)
                 {
                     displayable.SceneSobj = course;
@@ -160,7 +163,11 @@ namespace Manifold.IO.GFZ.CourseCollision
                     sceneObjectData.self = sceneObject;
 
                     // Apply GFZ Transform values onto Unity Transform
-                    sceneObject.transform.SetUnityTransform(instance.transform);
+                    instance.transform.position = sceneObject.transform.Position;
+                    instance.transform.rotation = sceneObject.transform.Rotation;
+                    instance.transform.localScale = sceneObject.transform.Scale;
+                    // Perhaps best way when matrix exists? No compression rotation
+                    //sceneObject.transformMatrix3x4.SetUnityTransform(instance.transform);
                 }
 
                 // HACK: force-add models for AX test stages

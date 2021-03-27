@@ -7,6 +7,7 @@ namespace Manifold.IO.GFZ.CourseCollision
     {
         [SerializeField]
         private ColiSceneSobj sceneSobj;
+        private float size = 10f;
 
         public ColiSceneSobj SceneSobj
         {
@@ -37,8 +38,8 @@ namespace Manifold.IO.GFZ.CourseCollision
                 count++;
 
                 var transform = item.transform;
-                Gizmos.DrawMesh(mesh, 0, transform.Position, transform.Rotation, transform.Scale);
-                Gizmos.DrawWireMesh(mesh, 0, transform.Position, transform.Rotation, transform.Scale);
+                Gizmos.DrawMesh(mesh, 0, transform.Position, transform.Rotation, transform.Scale * size);
+                Gizmos.DrawWireMesh(mesh, 0, transform.Position, transform.Rotation, transform.Scale * size);
                 //if (drawNumber)
                 UnityEditor.Handles.Label(transform.Position, count.ToString(), style);
             }

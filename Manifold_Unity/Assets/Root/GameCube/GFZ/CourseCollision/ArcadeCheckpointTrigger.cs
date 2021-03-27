@@ -11,7 +11,7 @@ namespace GameCube.GFZ.CourseCollision
         [SerializeField]
         private AddressRange addressRange;
 
-        public SceneTransform transform;
+        public Transform transform;
         public ArcadeCheckpointType type;
 
         public AddressRange AddressRange

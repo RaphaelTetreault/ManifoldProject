@@ -24,7 +24,7 @@ namespace GameCube.GFZ.CourseCollision
         public EnumFlags32 unk_0x00;
         public EnumFlags32 unk_0x04;
         public Pointer collisionBindingPtr;
-        public SceneTransform sceneTransform;
+        public Transform transform;
         public int zero_0x2C;
         public Pointer animationPtr;
         public Pointer unkPtr_0x34;
@@ -37,8 +37,8 @@ namespace GameCube.GFZ.CourseCollision
         public UnknownSceneObjectData unk1;
         public SkeletalAnimator skeletalAnimator;
 
-        // rename to Matrix4x4
-        public Transform transform = new Transform();
+        // rename to Matrix3x4
+        public TransformMatrix3x4 transformMatrix3x4 = new TransformMatrix3x4();
 
 
         #endregion
@@ -65,7 +65,7 @@ namespace GameCube.GFZ.CourseCollision
                 reader.ReadX(ref unk_0x00);
                 reader.ReadX(ref unk_0x04);
                 reader.ReadX(ref collisionBindingPtr);
-                reader.ReadX(ref sceneTransform, true);
+                reader.ReadX(ref transform, true);
                 reader.ReadX(ref zero_0x2C);
                 reader.ReadX(ref animationPtr);
                 reader.ReadX(ref unkPtr_0x34);
@@ -99,22 +99,12 @@ namespace GameCube.GFZ.CourseCollision
                     reader.ReadX(ref skeletalAnimator, true);
                 }
 
+                // 1518 objects without a transform
+                // They appear to use animation, so the matrix is null
                 if (transformPtr.IsNotNullPointer)
                 {
                     reader.JumpToAddress(transformPtr);
-                    reader.ReadX(ref transform, true);
-                }
-                else
-                {
-                    // 1518 objects without a transform
-                    // They appear to use animation, so the matrix is null
-                    var matrix = new Matrix4x4();
-                    matrix.SetTRS(sceneTransform.Position, sceneTransform.Rotation, sceneTransform.Scale);
-
-                    transform = new Transform()
-                    {
-                        matrix = matrix,
-                    };
+                    reader.ReadX(ref transformMatrix3x4, true);
                 }
             }
             // After deserializing sub-structures, return to end position
@@ -126,7 +116,7 @@ namespace GameCube.GFZ.CourseCollision
             writer.WriteX(unk_0x00);
             writer.WriteX(unk_0x04);
             writer.WriteX(collisionBindingPtr);
-            writer.WriteX(sceneTransform);
+            writer.WriteX(transform);
             writer.WriteX(zero_0x2C);
             writer.WriteX(animationPtr);
             writer.WriteX(unkPtr_0x34);

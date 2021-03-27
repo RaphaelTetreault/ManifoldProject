@@ -7,8 +7,8 @@ namespace GameCube.GFZ
     [System.Serializable]
     public struct ShortRotation : IBinarySerializable
     {
-        private const float shortToFloat = 360f / (ushort.MaxValue);
-        private const float floatToshort = 1f / shortToFloat;
+        private const float shortToFloat = (short.MaxValue + 1) * 180f;
+        private const float floatToShort = 1f / shortToFloat;
 
         [SerializeField]
         private float value;
@@ -18,11 +18,11 @@ namespace GameCube.GFZ
         public float Value => value;
         public short Backing => backing;
 
-        public ShortRotation(short value)
-        {
-           backing = value;
-           this.value = value * shortToFloat;
-        }
+        //public ShortRotation(short value)
+        //{
+        //   backing = value;
+        //   this.value = value * shortToFloat;
+        //}
 
         public ShortRotation(float value)
         {
@@ -44,16 +44,12 @@ namespace GameCube.GFZ
         {
             //short serializedValue = 0;
             reader.ReadX(ref backing);
-            // Convert -128 through 127 to -180.0f through 180.0f
-            value = backing * shortToFloat;
+            // Convert -32768 through 32767 to -180.0f incl. through 180.0f excl.
+            value = backing / shortToFloat;
         }
 
         public void Serialize(BinaryWriter writer)
         {
-            //var rotation = (short)(value * floatToshort);
-            //writer.WriteX(rotation);
-
-            // THIS SERIALIZATION IS NOT TESTED
             throw new System.NotImplementedException();
         }
 
