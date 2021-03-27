@@ -16,7 +16,7 @@ namespace GameCube.GFZ.CourseCollision
         [SerializeField]
         private Vector3 position;
         [SerializeField]
-        private ShortRotation3 shortRotation3;
+        private UshortQuaternion ushortQuaternion;
         [SerializeField]
         private Vector3 scale;
 
@@ -35,13 +35,13 @@ namespace GameCube.GFZ.CourseCollision
 
         public Vector3 RotationEuler
         {
-            get => shortRotation3.AsVector3;
+            get => ushortQuaternion.AsVector3;
             //set => shortRotation3 = value;
         }
 
         public Quaternion Rotation
         {
-            get => shortRotation3.AsQuaternion;
+            get => ushortQuaternion.AsQuaternion;
         }
 
         public Vector3 Scale
@@ -50,18 +50,14 @@ namespace GameCube.GFZ.CourseCollision
             set => scale = value;
         }
 
-        public short RotX => shortRotation3.x.Backing;
-        public short RotY => shortRotation3.y.Backing;
-        public short RotZ => shortRotation3.z.Backing;
-        public EnumFlags16 UnkFlags => shortRotation3.unkFlags;
-
+        public UshortQuaternion UshortQuaternion => ushortQuaternion;
 
         public void Deserialize(BinaryReader reader)
         {
             this.RecordStartAddress(reader);
             {
                 reader.ReadX(ref position);
-                reader.ReadX(ref shortRotation3, true);
+                reader.ReadX(ref ushortQuaternion, true);
                 reader.ReadX(ref scale);
             }
             this.RecordEndAddress(reader);
@@ -70,7 +66,7 @@ namespace GameCube.GFZ.CourseCollision
         public void Serialize(BinaryWriter writer)
         {
             writer.WriteX(position);
-            writer.WriteX(shortRotation3);
+            writer.WriteX(ushortQuaternion);
             writer.WriteX(scale);
 
             // Write values pointed at by, update ptrs above

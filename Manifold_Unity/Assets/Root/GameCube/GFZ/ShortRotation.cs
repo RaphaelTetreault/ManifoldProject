@@ -11,7 +11,7 @@ namespace GameCube.GFZ
         private const float floatToShort = 1f / shortToFloat;
 
         [SerializeField]
-        private float value;
+        public float value;
         [SerializeField]
         private short backing;
 
@@ -45,7 +45,7 @@ namespace GameCube.GFZ
             //short serializedValue = 0;
             reader.ReadX(ref backing);
             // Convert -32768 through 32767 to -180.0f incl. through 180.0f excl.
-            value = backing / shortToFloat;
+            value = backing / (float)(short.MaxValue + 1) * 180f;
         }
 
         public void Serialize(BinaryWriter writer)

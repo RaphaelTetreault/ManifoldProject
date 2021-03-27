@@ -1154,28 +1154,30 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol("File");
                 writer.WriteNextCol("Game Object #");
                 writer.WriteNextCol("Game Object");
-                writer.WriteNextCol(nameof(SceneObject.transform.Position) + ".x");
-                writer.WriteNextCol(nameof(SceneObject.transformMatrix3x4.Position) + ".x");
-                writer.WriteNextCol(nameof(SceneObject.transform.Position) + ".y");
-                writer.WriteNextCol(nameof(SceneObject.transformMatrix3x4.Position) + ".z");
-                writer.WriteNextCol(nameof(SceneObject.transform.Position) + ".z");
-                writer.WriteNextCol(nameof(SceneObject.transformMatrix3x4.Position) + ".z");
-                writer.WriteNextCol($"matrix: {nameof(SceneObject.transformMatrix3x4.RotationEuler)}.x");
-                writer.WriteNextCol($"matrix: {nameof(SceneObject.transformMatrix3x4.RotationEuler)}.y");
-                writer.WriteNextCol($"matrix: {nameof(SceneObject.transformMatrix3x4.RotationEuler)}.z");
-                writer.WriteNextCol($"scene : {nameof(SceneObject.transform.RotationEuler)}.x");
-                writer.WriteNextCol($"scene : {nameof(SceneObject.transform.RotationEuler)}.y");
-                writer.WriteNextCol($"scene : {nameof(SceneObject.transform.RotationEuler)}.z");
-                writer.WriteNextCol(nameof(SceneObject.transform.UnkFlags));
+                //writer.WriteNextCol(nameof(SceneObject.transform.Position) + ".x");
+                //writer.WriteNextCol(nameof(SceneObject.transformMatrix3x4.Position) + ".x");
+                //writer.WriteNextCol(nameof(SceneObject.transform.Position) + ".y");
+                //writer.WriteNextCol(nameof(SceneObject.transformMatrix3x4.Position) + ".z");
+                //writer.WriteNextCol(nameof(SceneObject.transform.Position) + ".z");
+                //writer.WriteNextCol(nameof(SceneObject.transformMatrix3x4.Position) + ".z");
+                writer.WriteNextCol($"matrix: {nameof(SceneObject.transformMatrix3x4.Rotation.x)}.x");
+                writer.WriteNextCol($"matrix: {nameof(SceneObject.transformMatrix3x4.Rotation.y)}.y");
+                writer.WriteNextCol($"matrix: {nameof(SceneObject.transformMatrix3x4.Rotation.z)}.z");
+                writer.WriteNextCol($"matrix: {nameof(SceneObject.transformMatrix3x4.Rotation.w)}.w");
+                writer.WriteNextCol($"scene : {nameof(SceneObject.transform.Rotation.x)}.x");
+                writer.WriteNextCol($"scene : {nameof(SceneObject.transform.Rotation.y)}.y");
+                writer.WriteNextCol($"scene : {nameof(SceneObject.transform.Rotation.z)}.z");
+                writer.WriteNextCol($"scene : {nameof(SceneObject.transform.Rotation.w)}.w");
                 writer.WriteNextCol("Backing x");
                 writer.WriteNextCol("Backing y");
                 writer.WriteNextCol("Backing z");
-                writer.WriteNextCol(nameof(SceneObject.transform.Scale) + ".x");
-                writer.WriteNextCol(nameof(SceneObject.transformMatrix3x4.Scale) + ".x");
-                writer.WriteNextCol(nameof(SceneObject.transform.Scale) + ".y");
-                writer.WriteNextCol(nameof(SceneObject.transformMatrix3x4.Scale) + ".y");
-                writer.WriteNextCol(nameof(SceneObject.transform.Scale) + ".z");
-                writer.WriteNextCol(nameof(SceneObject.transformMatrix3x4.Scale) + ".z");
+                writer.WriteNextCol("Backing w");
+                //writer.WriteNextCol(nameof(SceneObject.transform.Scale) + ".x");
+                //writer.WriteNextCol(nameof(SceneObject.transformMatrix3x4.Scale) + ".x");
+                //writer.WriteNextCol(nameof(SceneObject.transform.Scale) + ".y");
+                //writer.WriteNextCol(nameof(SceneObject.transformMatrix3x4.Scale) + ".y");
+                //writer.WriteNextCol(nameof(SceneObject.transform.Scale) + ".z");
+                //writer.WriteNextCol(nameof(SceneObject.transformMatrix3x4.Scale) + ".z");
 
                 writer.WriteNextRow();
 
@@ -1184,38 +1186,59 @@ namespace Manifold.IO.GFZ.CourseCollision
                     int sceneObjectIndex = 0;
                     foreach (var sceneObject in file.Value.sceneObjects)
                     {
+                        if (!sceneObject.transformPtr.IsNotNullPointer)
+                            continue;
+
                         writer.WriteNextCol(file.FileName);
                         writer.WriteNextCol(sceneObjectIndex);
                         writer.WriteNextCol(sceneObject.name);
                         // position
-                        writer.WriteNextCol(sceneObject.transform.Position.x);
-                        writer.WriteNextCol(sceneObject.transformMatrix3x4.Position.x);
-                        writer.WriteNextCol(sceneObject.transform.Position.y);
-                        writer.WriteNextCol(sceneObject.transformMatrix3x4.Position.y);
-                        writer.WriteNextCol(sceneObject.transform.Position.z);
-                        writer.WriteNextCol(sceneObject.transformMatrix3x4.Position.z);
+                        //writer.WriteNextCol(sceneObject.transform.Position.x);
+                        //writer.WriteNextCol(sceneObject.transformMatrix3x4.Position.x);
+                        //writer.WriteNextCol(sceneObject.transform.Position.y);
+                        //writer.WriteNextCol(sceneObject.transformMatrix3x4.Position.y);
+                        //writer.WriteNextCol(sceneObject.transform.Position.z);
+                        //writer.WriteNextCol(sceneObject.transformMatrix3x4.Position.z);
                         // rotation
-                        writer.WriteNextCol(sceneObject.transformMatrix3x4.RotationEuler.x);
-                        writer.WriteNextCol(sceneObject.transformMatrix3x4.RotationEuler.y);
-                        writer.WriteNextCol(sceneObject.transformMatrix3x4.RotationEuler.z);
+                        if (sceneObject.transformPtr.IsNotNullPointer)
+                        {
+                            writer.WriteNextCol(sceneObject.transformMatrix3x4.Rotation.x);
+                            writer.WriteNextCol(sceneObject.transformMatrix3x4.Rotation.y);
+                            writer.WriteNextCol(sceneObject.transformMatrix3x4.Rotation.z);
+                            writer.WriteNextCol(sceneObject.transformMatrix3x4.Rotation.w);
+                            //var rot = Quaternion.Euler(sceneObject.transformMatrix3x4.RotationEuler);
+                            //rot.x *= -1f;
+                            //rot.w *= -1f;
+                            //writer.WriteNextCol(rot.eulerAngles.x);
+                            //writer.WriteNextCol(rot.eulerAngles.y);
+                            //writer.WriteNextCol(rot.eulerAngles.z);
+                        }
+                        else
+                        {
+                            writer.WriteNextCol("X");
+                            writer.WriteNextCol("Y");
+                            writer.WriteNextCol("Z");
+                            writer.WriteNextCol("W");
+                        }
+
+                        writer.WriteNextCol(sceneObject.transform.Rotation.x);
+                        writer.WriteNextCol(sceneObject.transform.Rotation.y);
+                        writer.WriteNextCol(sceneObject.transform.Rotation.z);
+                        writer.WriteNextCol(sceneObject.transform.Rotation.w);
                         //
-                        writer.WriteNextCol(sceneObject.transform.RotationEuler.x);
-                        writer.WriteNextCol(sceneObject.transform.RotationEuler.y);
-                        writer.WriteNextCol(sceneObject.transform.RotationEuler.z);
-                        writer.WriteNextCol($"0x{(int)sceneObject.transform.UnkFlags:X4}");
-                        //
-                        writer.WriteNextCol($"0x{(int)sceneObject.transform.RotX:X8}");
-                        writer.WriteNextCol($"0x{(int)sceneObject.transform.RotY:X8}");
-                        writer.WriteNextCol($"0x{(int)sceneObject.transform.RotZ:X8}");
+                        writer.WriteNextCol($"0x{sceneObject.transform.UshortQuaternion.x:X4}");
+                        writer.WriteNextCol($"0x{sceneObject.transform.UshortQuaternion.y:X4}");
+                        writer.WriteNextCol($"0x{sceneObject.transform.UshortQuaternion.z:X4}");
+                        writer.WriteNextCol($"0x{sceneObject.transform.UshortQuaternion.w:X4}");
 
 
                         // scale
-                        writer.WriteNextCol(sceneObject.transform.Scale.x);
-                        writer.WriteNextCol(sceneObject.transformMatrix3x4.Scale.x);
-                        writer.WriteNextCol(sceneObject.transform.Scale.y);
-                        writer.WriteNextCol(sceneObject.transformMatrix3x4.Scale.y);
-                        writer.WriteNextCol(sceneObject.transform.Scale.z);
-                        writer.WriteNextCol(sceneObject.transformMatrix3x4.Scale.z);
+                        //writer.WriteNextCol(sceneObject.transform.Scale.x);
+                        //writer.WriteNextCol(sceneObject.transformMatrix3x4.Scale.x);
+                        //writer.WriteNextCol(sceneObject.transform.Scale.y);
+                        //writer.WriteNextCol(sceneObject.transformMatrix3x4.Scale.y);
+                        //writer.WriteNextCol(sceneObject.transform.Scale.z);
+                        //writer.WriteNextCol(sceneObject.transformMatrix3x4.Scale.z);
 
                         writer.WriteNextRow();
 

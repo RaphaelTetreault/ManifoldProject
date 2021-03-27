@@ -164,7 +164,13 @@ namespace Manifold.IO.GFZ.CourseCollision
 
                     // Apply GFZ Transform values onto Unity Transform
                     instance.transform.position = sceneObject.transform.Position;
-                    instance.transform.rotation = sceneObject.transform.Rotation;
+
+                    // Temp, mirror rotation across X
+                    var rotation = sceneObject.transform.Rotation;
+                    rotation.x *= -1f;
+                    rotation.w *= -1f;
+                    instance.transform.rotation = rotation;
+
                     instance.transform.localScale = sceneObject.transform.Scale;
                     // Perhaps best way when matrix exists? No compression rotation
                     //sceneObject.transformMatrix3x4.SetUnityTransform(instance.transform);

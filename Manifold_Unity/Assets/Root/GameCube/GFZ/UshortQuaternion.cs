@@ -5,22 +5,32 @@ using UnityEngine;
 namespace GameCube.GFZ
 {
     [System.Serializable]
-    public struct ShortRotation3 : IBinarySerializable
+    public struct UshortQuaternion : IBinarySerializable
     {
-        public ShortRotation x;
-        public ShortRotation y;
-        public ShortRotation z;
-        public EnumFlags16 unkFlags;
+        //public ShortRotation x;
+        //public ShortRotation y;
+        //public ShortRotation z;
+        //public EnumFlags16 unkFlags;
+
+        [SerializeField] public ushort x;
+        [SerializeField] public ushort y;
+        [SerializeField] public ushort z;
+        [SerializeField] public ushort w;
+
+        public float fx;
+        public float fy;
+        public float fz;
+        public float fw;
 
         public Vector3 AsVector3
-            => new Vector3(x, y, z);
+            => AsQuaternion.eulerAngles;
 
         public Quaternion AsQuaternion
-            => Quaternion.Euler(AsVector3);
+            => new Quaternion(fx, fy, fz, fw);
 
 
 
-        public static implicit operator Vector3(ShortRotation3 value)
+        public static implicit operator Vector3(UshortQuaternion value)
         {
             var vector3 = new Vector3(value.x, value.y, value.z);
             return vector3;
@@ -39,10 +49,16 @@ namespace GameCube.GFZ
 
         public void Deserialize(BinaryReader reader)
         {
-            reader.ReadX(ref x, true);
-            reader.ReadX(ref y, true);
-            reader.ReadX(ref z, true);
-            reader.ReadX(ref unkFlags);
+            reader.ReadX(ref x);
+            reader.ReadX(ref y);
+            reader.ReadX(ref z);
+            reader.ReadX(ref w);
+
+            float max = ushort.MaxValue;
+            fx = x / max;
+            fy = y / max;
+            fz = z / max;
+            fw = w / max;
         }
 
         public void Serialize(BinaryWriter writer)
@@ -50,7 +66,9 @@ namespace GameCube.GFZ
             writer.WriteX(x);
             writer.WriteX(y);
             writer.WriteX(z);
-            writer.WriteX((ushort)0);
+            writer.WriteX(w);
+
+            throw new System.NotImplementedException();
         }
 
         public override string ToString()

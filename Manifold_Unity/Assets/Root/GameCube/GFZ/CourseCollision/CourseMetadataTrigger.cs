@@ -12,7 +12,7 @@ namespace GameCube.GFZ.CourseCollision
         private AddressRange addressRange;
 
         public Vector3 position;
-        public ShortRotation3 shortRotation3;
+        public UshortQuaternion shortRotation3;
         public Vector3 positionOrScale;
         public CourseMetadataType course;
 

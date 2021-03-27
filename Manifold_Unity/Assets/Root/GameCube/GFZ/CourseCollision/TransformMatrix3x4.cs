@@ -71,6 +71,7 @@ namespace GameCube.GFZ.CourseCollision
         }
 
         public Vector3 Position => matrix.GetColumn(3);
+        public Quaternion Rotation => matrix.rotation;
         public Vector3 RotationEuler => matrix.rotation.eulerAngles;
         public Vector3 Scale => matrix.lossyScale;
 
