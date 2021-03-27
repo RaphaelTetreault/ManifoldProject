@@ -15,7 +15,7 @@ namespace GameCube.GFZ
         [SerializeField] public ushort x;
         [SerializeField] public ushort y;
         [SerializeField] public ushort z;
-        [SerializeField] public ushort w;
+        [SerializeField] public ushort flags;
 
         public float fx;
         public float fy;
@@ -52,13 +52,18 @@ namespace GameCube.GFZ
             reader.ReadX(ref x);
             reader.ReadX(ref y);
             reader.ReadX(ref z);
-            reader.ReadX(ref w);
+            reader.ReadX(ref flags);
 
             float max = ushort.MaxValue;
             fx = x / max;
             fy = y / max;
             fz = z / max;
-            fw = w / max;
+
+            // Rededrive W component of quaternion
+            float powX = Mathf.Pow(fx, 2);
+            float powY = Mathf.Pow(fy, 2);
+            float powZ = Mathf.Pow(fz, 2);
+            fw = 1f - (powX + powY + powZ);
         }
 
         public void Serialize(BinaryWriter writer)
@@ -66,7 +71,7 @@ namespace GameCube.GFZ
             writer.WriteX(x);
             writer.WriteX(y);
             writer.WriteX(z);
-            writer.WriteX(w);
+            writer.WriteX(flags);
 
             throw new System.NotImplementedException();
         }
