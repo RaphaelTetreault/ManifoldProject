@@ -51,7 +51,7 @@ namespace GameCube.GFZ
             reader.ReadX(ref z);
             reader.ReadX(ref unkFlags);
 
-            // Normalize ushort to 1.0f (use float cast!)
+            // Normalize ushort from 0-65535 to 0.0f-1.0f
             // Multiply by max rotation value 360f
             float ushortMax = ushort.MaxValue;
             fx = x / ushortMax * 360f;
@@ -71,7 +71,7 @@ namespace GameCube.GFZ
             writer.WriteX(x);
             writer.WriteX(y);
             writer.WriteX(z);
-            writer.WriteX(flags);
+            writer.WriteX(unkFlags);
 
             throw new System.NotImplementedException();
         }

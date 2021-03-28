@@ -54,14 +54,5 @@ namespace GameCube.GFZ.CourseCollision
             throw new NotImplementedException();
         }
 
-        public void SetUnityTransform(UnityEngine.Transform transform)
-        {
-            transform.position = matrix.GetColumn(3);
-            transform.localScale = matrix.lossyScale;
-            transform.rotation = matrix.rotation;
-        }
-
-
-
     }
 }
