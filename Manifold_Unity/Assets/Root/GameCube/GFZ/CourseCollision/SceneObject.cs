@@ -38,7 +38,7 @@ namespace GameCube.GFZ.CourseCollision
         public SkeletalAnimator skeletalAnimator;
 
         // rename to Matrix3x4
-        public TransformMatrix3x4 transformMatrix3x4 = new TransformMatrix3x4();
+        public TransformMatrix4x3 transformMatrix3x4 = new TransformMatrix4x3();
 
 
         #endregion

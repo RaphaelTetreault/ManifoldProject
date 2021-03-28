@@ -1158,10 +1158,6 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol($"matrix.y");
                 writer.WriteNextCol($"matrix.z");
                 writer.WriteNextCol($"matrix.w");
-                writer.WriteNextCol($"mirror.x");
-                writer.WriteNextCol($"mirror.y");
-                writer.WriteNextCol($"mirror.z");
-                writer.WriteNextCol($"mirror.w");
                 writer.WriteNextCol($"scene.x");
                 writer.WriteNextCol($"scene.y");
                 writer.WriteNextCol($"scene.z");
@@ -1169,6 +1165,12 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol("Backing x");
                 writer.WriteNextCol("Backing y");
                 writer.WriteNextCol("Backing z");
+                writer.WriteNextCol($"matrix.x");
+                writer.WriteNextCol($"matrix.y");
+                writer.WriteNextCol($"matrix.z");
+                writer.WriteNextCol($"scene.x");
+                writer.WriteNextCol($"scene.y");
+                writer.WriteNextCol($"scene.z");
 
                 writer.WriteNextRow();
 
@@ -1190,34 +1192,26 @@ namespace Manifold.IO.GFZ.CourseCollision
                         writer.WriteNextCol(sceneObject.transformMatrix3x4.Rotation.z);
                         writer.WriteNextCol(sceneObject.transformMatrix3x4.Rotation.w);
 
-                        // Mirror
-                        Quaternion q = sceneObject.transform.Rotation;
-                        Quaternion m = new Quaternion(1, 0, 0, 0); // mirror x
-                        Quaternion r = m * q * m; // result
-                        // then...?
-                        Quaternion final = new Quaternion(-r.x, r.y, r.z, -r.w);
-                        writer.WriteNextCol(final.x);
-                        writer.WriteNextCol(final.y);
-                        writer.WriteNextCol(final.z);
-                        writer.WriteNextCol(final.w);
+                        // scene
+                        writer.WriteNextCol(sceneObject.transform.UshortQuaternion.rotation.x);
+                        writer.WriteNextCol(sceneObject.transform.UshortQuaternion.rotation.y);
+                        writer.WriteNextCol(sceneObject.transform.UshortQuaternion.rotation.z);
+                        writer.WriteNextCol(sceneObject.transform.UshortQuaternion.rotation.w);
 
-                        writer.WriteNextCol(sceneObject.transform.Rotation.x);
-                        writer.WriteNextCol(sceneObject.transform.Rotation.y);
-                        writer.WriteNextCol(sceneObject.transform.Rotation.z);
-                        writer.WriteNextCol(sceneObject.transform.Rotation.w);
-                        //
                         writer.WriteNextCol($"0x{sceneObject.transform.UshortQuaternion.x:X4}");
                         writer.WriteNextCol($"0x{sceneObject.transform.UshortQuaternion.y:X4}");
                         writer.WriteNextCol($"0x{sceneObject.transform.UshortQuaternion.z:X4}");
+                        writer.WriteNextCol($"0x{(int)sceneObject.transform.UshortQuaternion.flags:X4}");
 
+                        // Matrix
+                        writer.WriteNextCol(sceneObject.transformMatrix3x4.Rotation.eulerAngles.x);
+                        writer.WriteNextCol(sceneObject.transformMatrix3x4.Rotation.eulerAngles.y);
+                        writer.WriteNextCol(sceneObject.transformMatrix3x4.Rotation.eulerAngles.z);
 
-                        // scale
-                        //writer.WriteNextCol(sceneObject.transform.Scale.x);
-                        //writer.WriteNextCol(sceneObject.transformMatrix3x4.Scale.x);
-                        //writer.WriteNextCol(sceneObject.transform.Scale.y);
-                        //writer.WriteNextCol(sceneObject.transformMatrix3x4.Scale.y);
-                        //writer.WriteNextCol(sceneObject.transform.Scale.z);
-                        //writer.WriteNextCol(sceneObject.transformMatrix3x4.Scale.z);
+                        // scene
+                        writer.WriteNextCol(sceneObject.transform.UshortQuaternion.rotation.eulerAngles.x);
+                        writer.WriteNextCol(sceneObject.transform.UshortQuaternion.rotation.eulerAngles.y);
+                        writer.WriteNextCol(sceneObject.transform.UshortQuaternion.rotation.eulerAngles.z);
 
                         writer.WriteNextRow();
 

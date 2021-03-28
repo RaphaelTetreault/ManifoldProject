@@ -7,20 +7,17 @@ namespace GameCube.GFZ
     [System.Serializable]
     public struct UshortQuaternion : IBinarySerializable
     {
-        //public ShortRotation x;
-        //public ShortRotation y;
-        //public ShortRotation z;
-        //public EnumFlags16 unkFlags;
-
-        [SerializeField] public ushort x;
-        [SerializeField] public ushort y;
-        [SerializeField] public ushort z;
-        [SerializeField] public ushort flags;
+        public ushort x;
+        public ushort y;
+        public ushort z;
+        public EnumFlags16 unkFlags;
 
         public float fx;
         public float fy;
         public float fz;
         public float fw;
+
+        public Quaternion rotation;
 
         public Vector3 AsVector3
             => AsQuaternion.eulerAngles;
@@ -52,18 +49,21 @@ namespace GameCube.GFZ
             reader.ReadX(ref x);
             reader.ReadX(ref y);
             reader.ReadX(ref z);
-            reader.ReadX(ref flags);
+            reader.ReadX(ref unkFlags);
 
-            float max = ushort.MaxValue;
-            fx = x / max;
-            fy = y / max;
-            fz = z / max;
+            // Normalize ushort to 1.0f (use float cast!)
+            // Multiply by max rotation value 360f
+            float ushortMax = ushort.MaxValue;
+            fx = x / ushortMax * 360f;
+            fy = y / ushortMax * 360f;
+            fz = z / ushortMax * 360f;
 
-            // Rededrive W component of quaternion
-            float powX = Mathf.Pow(fx, 2);
-            float powY = Mathf.Pow(fy, 2);
-            float powZ = Mathf.Pow(fz, 2);
-            fw = 1f - (powX + powY + powZ);
+            // Reset
+            rotation = Quaternion.identity;
+            // Apply rotation in discrete sequence. Yes, really.
+            rotation = Quaternion.Euler(fx, 0, 0) * rotation;
+            rotation = Quaternion.Euler(0, fy, 0) * rotation;
+            rotation = Quaternion.Euler(0, 0, fz) * rotation;
         }
 
         public void Serialize(BinaryWriter writer)

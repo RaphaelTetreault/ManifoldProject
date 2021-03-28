@@ -41,7 +41,7 @@ namespace GameCube.GFZ.CourseCollision
 
         public Quaternion Rotation
         {
-            get => ushortQuaternion.AsQuaternion;
+            get => ushortQuaternion.rotation;
         }
 
         public Vector3 Scale

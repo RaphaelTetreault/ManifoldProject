@@ -6,21 +6,13 @@ using UnityEngine;
 namespace GameCube.GFZ.CourseCollision
 {
     [Serializable]
-    public class TransformMatrix3x4 : IBinarySerializable, IBinaryAddressableRange
+    public class TransformMatrix4x3 : IBinarySerializable, IBinaryAddressableRange
     {
-
-        #region FIELDS
-
-
         [SerializeField]
         private AddressRange addressRange;
 
-        public Matrix4x4 matrix;
-
-
-        #endregion
-
-        #region PROPERTIES
+        [SerializeField]
+        private Matrix4x4 matrix;
 
 
         public AddressRange AddressRange
@@ -29,11 +21,10 @@ namespace GameCube.GFZ.CourseCollision
             set => addressRange = value;
         }
 
-
-        #endregion
-
-        #region METHODS
-
+        public Vector3 Position => matrix.GetColumn(3);
+        public Quaternion Rotation => matrix.rotation;
+        public Vector3 RotationEuler => matrix.rotation.eulerAngles;
+        public Vector3 Scale => matrix.lossyScale;
 
         public void Deserialize(BinaryReader reader)
         {
@@ -70,13 +61,7 @@ namespace GameCube.GFZ.CourseCollision
             transform.rotation = matrix.rotation;
         }
 
-        public Vector3 Position => matrix.GetColumn(3);
-        public Quaternion Rotation => matrix.rotation;
-        public Vector3 RotationEuler => matrix.rotation.eulerAngles;
-        public Vector3 Scale => matrix.lossyScale;
 
-
-        #endregion
 
     }
 }
