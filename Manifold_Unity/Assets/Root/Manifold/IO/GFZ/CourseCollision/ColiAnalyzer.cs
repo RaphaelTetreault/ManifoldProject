@@ -1209,6 +1209,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                         writer.WriteNextCol(sceneObject.transformMatrix3x4.Rotation.eulerAngles.z);
 
                         // scene
+                        //var scene = sceneObject.transform.UshortQuaternion.eulerAngles;
                         writer.WriteNextCol(sceneObject.transform.UshortQuaternion.rotation.eulerAngles.x);
                         writer.WriteNextCol(sceneObject.transform.UshortQuaternion.rotation.eulerAngles.y);
                         writer.WriteNextCol(sceneObject.transform.UshortQuaternion.rotation.eulerAngles.z);

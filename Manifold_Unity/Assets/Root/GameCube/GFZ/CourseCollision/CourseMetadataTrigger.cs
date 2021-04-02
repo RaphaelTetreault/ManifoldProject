@@ -12,7 +12,7 @@ namespace GameCube.GFZ.CourseCollision
         private AddressRange addressRange;
 
         public Vector3 position;
-        public UshortQuaternion shortRotation3;
+        public Uint16Rotation3 shortRotation3;
         public Vector3 positionOrScale;
         public CourseMetadataType course;
 
@@ -48,8 +48,8 @@ namespace GameCube.GFZ.CourseCollision
             get => new Vector3(-positionOrScale.x, positionOrScale.y, positionOrScale.z);
         }
 
-        public Quaternion Rotation => shortRotation3.AsQuaternion;
-        public Vector3 RotationEuler => shortRotation3.AsVector3;
+        public Quaternion Rotation => shortRotation3.Rotation;
+        public Vector3 RotationEuler => shortRotation3.EulerAngles;
 
         public void Deserialize(BinaryReader reader)
         {
