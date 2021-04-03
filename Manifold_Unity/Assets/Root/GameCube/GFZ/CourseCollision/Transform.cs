@@ -16,7 +16,7 @@ namespace GameCube.GFZ.CourseCollision
         [SerializeField]
         private Vector3 position;
         [SerializeField]
-        private Uint16Rotation3 ushortQuaternion;
+        private Int16Rotation3 ushortQuaternion;
         [SerializeField]
         private Vector3 scale;
 
@@ -50,7 +50,7 @@ namespace GameCube.GFZ.CourseCollision
             set => scale = value;
         }
 
-        public Uint16Rotation3 Uint16Rotation3 => ushortQuaternion;
+        public Int16Rotation3 Uint16Rotation3 => ushortQuaternion;
 
         public void Deserialize(BinaryReader reader)
         {

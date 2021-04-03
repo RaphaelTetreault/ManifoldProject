@@ -26,6 +26,8 @@ namespace GameCube.GFZ.CourseCollision
         public Vector3 RotationEuler => matrix.rotation.eulerAngles;
         public Vector3 Scale => matrix.lossyScale;
 
+        public Matrix4x4 Matrix => matrix;
+
         public void Deserialize(BinaryReader reader)
         {
             Vector4 mtx0 = new Vector4();

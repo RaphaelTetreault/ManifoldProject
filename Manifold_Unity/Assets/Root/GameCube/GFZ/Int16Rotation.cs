@@ -5,33 +5,33 @@ using UnityEngine;
 namespace GameCube.GFZ
 {
     [System.Serializable]
-    public struct Uint16Rotation : IBinarySerializable
+    public struct Int16Rotation : IBinarySerializable
     {
-        public const float ushortMax = ushort.MaxValue;
-        public const float angleMax = 360f;
+        public const float shortMax = short.MaxValue;
+        public const float angleMax = 180f;
 
         [SerializeField]
         private float value;
         [SerializeField]
-        private ushort binary;
+        private short binary;
 
         public float Value => value;
-        public ushort Binary => binary;
+        public short Binary => binary;
 
-        public Uint16Rotation(float value)
+        public Int16Rotation(float value)
         {
             binary = 0;
             this.value = value;
         }
 
-        public static implicit operator float(Uint16Rotation shortRotation)
+        public static implicit operator float(Int16Rotation shortRotation)
         {
             return shortRotation.value;
         }
 
-        public static implicit operator Uint16Rotation(float value)
+        public static implicit operator Int16Rotation(float value)
         {
-            return new Uint16Rotation(value);
+            return new Int16Rotation(value);
         }
 
         public static ushort FloatToUshort(float value)
@@ -55,24 +55,26 @@ namespace GameCube.GFZ
             // Normalize float from 360f to 0-1
             float normalized = positiveRange360 / 360f;
             // Multiply by ushort max to set range 0-65535
-            ushort result = (ushort)(normalized * ushortMax);
+            ushort result = (ushort)(normalized * shortMax);
 
             return result;
         }
 
-        public static float UshortToFloat(ushort value)
+        public static float UshortToFloat(short value)
         {
-            // Normalize ushort from 0-65535 to 0.0f-1.0f
-            float normalized = value / ushortMax;
-            // Multiply by max rotation value 360f
-            float rotation = normalized * angleMax;
-            // Constrain to -180 through 180 degree range (-pi to +pi)
-            // This range has rotations working as expected
-            // Anything above pi is in the -pi range
-            float result = (rotation >= 180f)
-                ? (rotation - 360f)
-                : rotation;
+            //// Normalize ushort from 0-65535 to 0.0f-1.0f
+            //float normalized = value / ushortMax;
+            //// Multiply by max rotation value 360f
+            //float result = normalized * angleMax;
+            //// Constrain to -180 through 180 degree range (-pi to +pi)
+            //// This range has rotations working as expected
+            //// Anything above pi is in the -pi range
+            //float result = (rotation >= 180f)
+            //    ? (rotation - 360f)
+            //    : rotation;
 
+            // Normalize ushort from 0-65535 to 0.0f-1.0f
+            float result = value / shortMax * angleMax;
             return result;
         }
 
