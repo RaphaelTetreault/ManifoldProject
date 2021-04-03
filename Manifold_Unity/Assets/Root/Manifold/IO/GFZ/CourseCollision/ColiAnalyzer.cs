@@ -1163,7 +1163,8 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol("Decomposed phi");
                 writer.WriteNextCol("Decomposed theta");
                 writer.WriteNextCol("Decomposed psi");
-                writer.WriteNextCol("Unknown flags");
+                writer.WriteNextCol(nameof(UnknownTransformOption));
+                writer.WriteNextCol(nameof(ObjectActiveOverride));
                 writer.WriteNextRow();
 
                 foreach (var file in coliSobjs)
@@ -1195,7 +1196,8 @@ namespace Manifold.IO.GFZ.CourseCollision
                         writer.WriteNextCol(decomposed.theta);
                         writer.WriteNextCol(decomposed.psi);
 
-                        writer.WriteNextCol(sceneObject.transform.unkFlags);
+                        writer.WriteNextCol(sceneObject.transform.UnknownOption);
+                        writer.WriteNextCol(sceneObject.transform.ObjectActiveOverride);
 
                         writer.WriteNextRow();
                         sceneObjectIndex++;

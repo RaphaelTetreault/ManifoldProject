@@ -53,7 +53,23 @@ namespace GameCube.GFZ.CourseCollision
             set => scale = value;
         }
 
-        public Int16Rotation3 DecomposedRotation => decomposedRotation;
+        public Int16Rotation3 DecomposedRotation
+        {
+            get => decomposedRotation;
+            set => decomposedRotation = value;
+        }
+
+        public UnknownTransformOption UnknownOption
+        {
+            get => unknownOption;
+            set => unknownOption = value;
+        }
+
+        public ObjectActiveOverride ObjectActiveOverride
+        {
+            get => objectActiveOverride;
+            set => objectActiveOverride = value;
+        }
 
         public void Deserialize(BinaryReader reader)
         {
