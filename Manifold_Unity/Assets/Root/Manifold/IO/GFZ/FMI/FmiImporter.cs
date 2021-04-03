@@ -1,12 +1,9 @@
-﻿using GameCube.GFZ.FMI;
-using Manifold.IO;
-using System;
-using System.IO;
+﻿using System.IO;
 using UnityEngine;
 
 namespace Manifold.IO.GFZ.FMI
 {
-    [UnityEngine.CreateAssetMenu(menuName = MenuConst.GfzFMI + "FMI Importer")]
+    [UnityEngine.CreateAssetMenu(menuName = Const.Menu.GfzFMI + "FMI Importer")]
     public class FmiImporter : ExecutableScriptableObject,
         IImportable
     {

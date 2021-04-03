@@ -2,7 +2,6 @@
 using GameCube.GFZ.GMA;
 using System.IO;
 using System.Linq;
-using Manifold.IO;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -10,7 +9,7 @@ using UnityEngine.Serialization;
 
 namespace Manifold.IO.GFZ.GMA
 {
-    [CreateAssetMenu(menuName = MenuConst.GfzGMA + "GMA Model Importer")]
+    [CreateAssetMenu(menuName = Const.Menu.GfzGMA + "GMA Model Importer")]
     public class GmaModelImporter : ExecutableScriptableObject,
         IImportable
     {

@@ -2,6 +2,6 @@
 
 namespace Manifold.IO.GFZ.Camera
 {
-    [UnityEngine.CreateAssetMenu(menuName = MenuConst.GfzCamera + "livecam_stage")]
+    [UnityEngine.CreateAssetMenu(menuName = Const.Menu.GfzCamera + "livecam_stage")]
     public class LiveCameraStageSobj : FileAssetWrapper<LiveCameraStage> { }
 }

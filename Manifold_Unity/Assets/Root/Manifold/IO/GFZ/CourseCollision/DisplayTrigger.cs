@@ -7,7 +7,7 @@ namespace Manifold.IO.GFZ.CourseCollision
     {
         [SerializeField]
         private ColiSceneSobj sceneSobj;
-        public float size = 1f;
+        private float size = 10f;
 
         public ColiSceneSobj SceneSobj
         {

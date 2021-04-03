@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Manifold.IO.GFZ.CarData
 {
-    [CreateAssetMenu(menuName = MenuConst.GfzCarData + "CarData Importer")]
+    [CreateAssetMenu(menuName = Const.Menu.GfzCarData + "CarData Importer")]
     public class CarDataImporter : ExecutableScriptableObject,
         IImportable
     {
@@ -40,7 +40,7 @@ namespace Manifold.IO.GFZ.CarData
         {
             importFiles = Directory.GetFiles(importFrom, searchPattern, fileSearchOption);
             importFiles = UnityPathUtility.EnforceUnitySeparators(importFiles);
-            importFiles = GFZX01Utility.DecompressEachLZ(importFiles);
+            importFiles = GfzUtility.DecompressEachLZ(importFiles);
 
             var count = 0;
             foreach (var importFile in importFiles)

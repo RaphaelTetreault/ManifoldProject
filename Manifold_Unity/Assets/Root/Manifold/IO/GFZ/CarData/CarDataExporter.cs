@@ -2,7 +2,7 @@
 
 namespace Manifold.IO.GFZ.CarData
 {
-    [CreateAssetMenu(menuName = MenuConst.GfzCarData + "CarData Exporter")]
+    [CreateAssetMenu(menuName = Const.Menu.GfzCarData + "CarData Exporter")]
     public class CarDataExporter : ExecutableScriptableObject,
     IExportable
     {
@@ -46,7 +46,7 @@ namespace Manifold.IO.GFZ.CarData
 
             if (exportCompressed)
             {
-                var compressedFiles = GFZX01Utility.CompressEachAsLZ(exportedFiles, allowOverwritingFiles);
+                var compressedFiles = GfzUtility.CompressEachAsLZ(exportedFiles, allowOverwritingFiles);
                 ExportUtility.PrintExportsToConsole(this, compressedFiles);
             }
 

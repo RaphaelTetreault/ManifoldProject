@@ -20,19 +20,19 @@ namespace GameCube.GFZ.CourseCollision
         //
         public Header header;
         //
-        public SurfaceAttributeArea[] surfaceAttributeAreas = new SurfaceAttributeArea[0];
-        public SurfaceAttributeMeshTable surfaceAttributeMeshTable = new SurfaceAttributeMeshTable();
-        public UnknownObjectAttributes[] collisionObjectReferences = new UnknownObjectAttributes[0];
-        public UnknownObjectAttributes2[] unk_collisionObjectReferences = new UnknownObjectAttributes2[0];
-        public SceneObject[] sceneObjects = new SceneObject[0];
-        public TrackLength trackLength;
         public TrackNode[] trackNodes = new TrackNode[0];
         public List<TrackTransform> trackTransforms = new List<TrackTransform>();
+        public SurfaceAttributeArea[] surfaceAttributeAreas = new SurfaceAttributeArea[0];
+        public SurfaceAttributeMeshTable surfaceAttributeMeshTable = new SurfaceAttributeMeshTable();
         public int[] unknownData_0x20 = new int[unknownData_0x20_count];
         public float unknownFloat_0x24;
+        public SceneObject[] sceneObjects = new SceneObject[0];
+        public UnknownObjectAttributes[] collisionObjectReferences = new UnknownObjectAttributes[0];
+        public UnknownObjectAttributes2[] unk_collisionObjectReferences = new UnknownObjectAttributes2[0];
         public UnknownTrigger2[] unknownTrigger2s = new UnknownTrigger2[0];
-        public UnknownStageData2 unknownStageData2 = new UnknownStageData2(); // GUESS: something to do with minimap data?
-        public UnknownStageData1 unknownStageData1 = new UnknownStageData1(); // GUESS: minimap data?
+        public UnknownStageData2 unknownStageData2 = new UnknownStageData2();
+        public UnknownStageData1 unknownStageData1 = new UnknownStageData1();
+        public TrackLength trackLength;
         public UnknownTrigger1[] unknownTrigger1s = new UnknownTrigger1[0]; // "green"
         public VisualEffectTrigger[] visualEffectTriggers = new VisualEffectTrigger[0];
         public CourseMetadataTrigger[] courseMetadataTriggers = new CourseMetadataTrigger[0];
@@ -111,7 +111,7 @@ namespace GameCube.GFZ.CourseCollision
             }
 
             // 0x84
-            reader.JumpToAddress(header.unkPtr_0x84);
+            reader.JumpToAddress(header.unknownStageData1Ptr);
             reader.ReadX(ref unknownStageData1, true);
 
             // 0x90 

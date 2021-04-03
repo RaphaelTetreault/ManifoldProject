@@ -7,7 +7,7 @@ using UnityEngine.Assertions;
 namespace Manifold.IO.GFZ.CarData
 {
     [Serializable]
-    [CreateAssetMenu(menuName = MenuConst.GfzCarData + "Car Data")]
+    [CreateAssetMenu(menuName = Const.Menu.GfzCarData + "Car Data")]
     public class CarDataSobj : ScriptableObject, IBinarySerializable, IFile
     {
         public const int MachineCount = GameCube.GFZ.CarData.CarData.MachineCount;

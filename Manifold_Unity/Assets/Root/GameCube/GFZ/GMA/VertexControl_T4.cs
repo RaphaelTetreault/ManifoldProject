@@ -40,7 +40,7 @@ namespace GameCube.GFZ.GMA
             this.RecordStartAddress(reader);
             {
                 reader.ReadX(ref matrixIndexes, matrixCount);
-                reader.Align(GXUtility.GX_FIFO_ALIGN);
+                reader.AlignTo(GXUtility.GX_FIFO_ALIGN);
             }
             this.RecordEndAddress(reader);
         }
@@ -48,7 +48,7 @@ namespace GameCube.GFZ.GMA
         public void Serialize(BinaryWriter writer)
         {
             writer.WriteX(matrixIndexes, false);
-            writer.Align(GXUtility.GX_FIFO_ALIGN);
+            writer.AlignTo(GXUtility.GX_FIFO_ALIGN);
         }
     }
 }

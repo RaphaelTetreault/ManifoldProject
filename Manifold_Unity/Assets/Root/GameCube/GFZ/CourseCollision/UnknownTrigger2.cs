@@ -13,7 +13,7 @@ namespace GameCube.GFZ.CourseCollision
     public struct UnknownTrigger2 : IBinarySerializable
     {
         public int unk_0x00;
-        public SceneTransform transform;
+        public Transform transform;
 
         public void Deserialize(BinaryReader reader)
         {

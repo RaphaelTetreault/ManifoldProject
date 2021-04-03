@@ -2,6 +2,6 @@ using GameCube.GFZ.StaffGhost;
 
 namespace Manifold.IO.GFZ.StaffGhost
 {
-    [UnityEngine.CreateAssetMenu(menuName = MenuConst.GfzStaffGhost + "Staff Ghost")]
+    [UnityEngine.CreateAssetMenu(menuName = Const.Menu.GfzStaffGhost + "Staff Ghost")]
     public class StaffGhostSobj : FileAssetWrapper<StaffGhostData> { }
 }

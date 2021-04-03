@@ -5,7 +5,7 @@ using UnityEngine.Serialization;
 
 namespace Manifold.IO.GFZ.Camera
 {
-    [CreateAssetMenu(menuName = MenuConst.GfzCamera + "livecam_stage Importer")]
+    [CreateAssetMenu(menuName = Const.Menu.GfzCamera + "livecam_stage Importer")]
     public class LiveCameraStageImporter : ExecutableScriptableObject,
     IImportable
     {

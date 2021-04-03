@@ -1,13 +1,13 @@
-﻿using Manifold.IO;
+﻿using LibGxFormat;
+using LibGxFormat.Lz;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
-using LibGxFormat;
-using LibGxFormat.Lz;
+
 
 namespace Manifold.IO.GFZ
 {
-    public class GFZX01Utility
+    public class GfzUtility
     {
         public const string compressedExt = ".lz";
 

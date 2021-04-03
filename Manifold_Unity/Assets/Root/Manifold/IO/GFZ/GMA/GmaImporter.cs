@@ -5,7 +5,7 @@ using UnityEngine.Serialization;
 
 namespace Manifold.IO.GFZ.GMA
 {
-    [CreateAssetMenu(menuName = MenuConst.GfzGMA + "GMA Importer")]
+    [CreateAssetMenu(menuName = Const.Menu.GfzGMA + "GMA Importer")]
     public class GmaImporter : ExecutableScriptableObject,
         IImportable
     {
@@ -40,7 +40,7 @@ namespace Manifold.IO.GFZ.GMA
         {
             importFiles = Directory.GetFiles(importFrom, searchPattern, fileSearchOption);
             importFiles = UnityPathUtility.EnforceUnitySeparators(importFiles);
-            var importFilesUncompressed = GFZX01Utility.DecompressEachLZ(importFiles, LibGxFormat.AvGame.FZeroGX);
+            var importFilesUncompressed = GfzUtility.DecompressEachLZ(importFiles, LibGxFormat.AvGame.FZeroGX);
             ImportUtility.ImportManyAs<GmaSobj>(importFilesUncompressed, importFrom, importTo);
         }
 

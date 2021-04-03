@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Manifold.IO.GFZ.Camera
 {
-    [CreateAssetMenu(menuName = MenuConst.GfzCamera + "livecam_stage EX Importer")]
+    [CreateAssetMenu(menuName = Const.Menu.GfzCamera + "livecam_stage EX Importer")]
     public class LiveCameraStageExImporter : ExecutableScriptableObject,
     IImportable
     {

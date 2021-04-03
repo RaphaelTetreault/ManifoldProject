@@ -1,4 +1,4 @@
-﻿using Manifold.IO;
+using Manifold.IO;
 using System;
 using System.IO;
 using UnityEngine;
@@ -8,69 +8,69 @@ namespace GameCube.GFZ.CourseCollision
     [Serializable]
     public class Transform : IBinarySerializable, IBinaryAddressableRange
     {
-
-        #region FIELDS
-
-
+        // metadata
         [SerializeField]
         private AddressRange addressRange;
 
-        public Matrix4x4 matrix;
+        // structure
+        [SerializeField]
+        private Vector3 position;
+        [SerializeField]
+        private Int16Rotation3 ushortQuaternion;
+        [SerializeField]
+        private Vector3 scale;
 
-
-        #endregion
-
-        #region PROPERTIES
-
-
+        //
         public AddressRange AddressRange
         {
             get => addressRange;
             set => addressRange = value;
         }
 
+        public Vector3 Position
+        {
+            get => position;
+            set => position = value;
+        }
 
-        #endregion
+        public Vector3 RotationEuler
+        {
+            get => ushortQuaternion.EulerAngles;
+            //set => shortRotation3 = value;
+        }
 
-        #region METHODS
+        public Quaternion Rotation
+        {
+            get => ushortQuaternion.Rotation;
+        }
 
+        public Vector3 Scale
+        {
+            get => scale;
+            set => scale = value;
+        }
+
+        public Int16Rotation3 Uint16Rotation3 => ushortQuaternion;
 
         public void Deserialize(BinaryReader reader)
         {
-            Vector4 mtx0 = new Vector4();
-            Vector4 mtx1 = new Vector4();
-            Vector4 mtx2 = new Vector4();
-
             this.RecordStartAddress(reader);
             {
-                reader.ReadX(ref mtx0);
-                reader.ReadX(ref mtx1);
-                reader.ReadX(ref mtx2);
+                reader.ReadX(ref position);
+                reader.ReadX(ref ushortQuaternion, true);
+                reader.ReadX(ref scale);
             }
             this.RecordEndAddress(reader);
-
-            matrix = new Matrix4x4(
-                new Vector4(mtx0.x, mtx1.x, mtx2.x, 0),
-                new Vector4(mtx0.y, mtx1.y, mtx2.y, 0),
-                new Vector4(mtx0.z, mtx1.z, mtx2.z, 0),
-                new Vector4(mtx0.w, mtx1.w, mtx2.w, 1)
-                );
         }
 
         public void Serialize(BinaryWriter writer)
         {
+            writer.WriteX(position);
+            writer.WriteX(ushortQuaternion);
+            writer.WriteX(scale);
+
+            // Write values pointed at by, update ptrs above
             throw new NotImplementedException();
         }
-
-        public void SetUnityTransform(UnityEngine.Transform transform)
-        {
-            transform.position = matrix.GetColumn(3);
-            transform.localScale = matrix.lossyScale;
-            transform.rotation = matrix.rotation;
-        }
-
-
-        #endregion
-
     }
 }

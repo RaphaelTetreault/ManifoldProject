@@ -7,7 +7,7 @@ using System.Reflection;
 
 namespace Manifold.IO
 {
-    public static class EnumExtensionMethods
+    public static class EnumExtensions
     {
         public static string GetDescription(this Enum GenericEnum)
         {

@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Manifold.IO.GFZ.Camera
 {
-    [CreateAssetMenu(menuName = MenuConst.GfzFMI + "FMI Analyzer")]
+    [CreateAssetMenu(menuName = Const.Menu.GfzFMI + "FMI Analyzer")]
     public class FmiAnalyzer : ExecutableScriptableObject,
         IAnalyzable
     {
@@ -52,11 +52,11 @@ namespace Manifold.IO.GFZ.Camera
             using (var writer = AnalyzerUtility.OpenWriter(filePath))
             {
                 WriteFmiHeader(writer);
-                writer.PushCol("Index");
+                writer.WriteNextCol("Index");
                 writer.WriteColNicify(nameof(ExhaustAnimation.position));
                 writer.WriteColNicify(nameof(ExhaustAnimation.unk_0x0C));
                 writer.WriteColNicify(nameof(ExhaustAnimation.animType));
-                writer.PushRow();
+                writer.WriteNextRow();
 
                 foreach (var sobj in analysisSobjs)
                 {
@@ -65,11 +65,11 @@ namespace Manifold.IO.GFZ.Camera
                     foreach (var anim in fmi.animations)
                     {
                         WriteFmiHeader(writer, fmi);
-                        writer.PushCol(idx++);
-                        writer.PushCol(anim.position);
-                        writer.PushCol(anim.unk_0x0C);
-                        writer.PushCol(anim.animType);
-                        writer.PushRow();
+                        writer.WriteNextCol(idx++);
+                        writer.WriteNextCol(anim.position);
+                        writer.WriteNextCol(anim.unk_0x0C);
+                        writer.WriteNextCol(anim.animType);
+                        writer.WriteNextRow();
                     }
                 }
             }
@@ -80,7 +80,7 @@ namespace Manifold.IO.GFZ.Camera
             using (var writer = AnalyzerUtility.OpenWriter(filePath))
             {
                 WriteFmiHeader(writer);
-                writer.PushCol("Index");
+                writer.WriteNextCol("Index");
                 writer.WriteColNicify(nameof(ExhaustParticle.position));
                 writer.WriteColNicify(nameof(ExhaustParticle.unk_0x0C));
                 writer.WriteColNicify(nameof(ExhaustParticle.unk_0x10));
@@ -94,7 +94,7 @@ namespace Manifold.IO.GFZ.Camera
                 writer.WriteColNicify(nameof(ExhaustParticle.colorMax) + " g");
                 writer.WriteColNicify(nameof(ExhaustParticle.colorMax) + " b");
                 writer.WriteColNicify(nameof(ExhaustParticle.colorMax) + " a");
-                writer.PushRow();
+                writer.WriteNextRow();
 
                 foreach (var sobj in analysisSobjs)
                 {
@@ -103,21 +103,21 @@ namespace Manifold.IO.GFZ.Camera
                     foreach (var particle in fmi.particles)
                     {
                         WriteFmiHeader(writer, fmi);
-                        writer.PushCol(idx++);
-                        writer.PushCol(particle.position);
-                        writer.PushCol(particle.unk_0x0C);
-                        writer.PushCol(particle.unk_0x10);
-                        writer.PushCol(particle.scaleMin);
-                        writer.PushCol(particle.scaleMax);
-                        writer.PushCol(particle.colorMin.r);
-                        writer.PushCol(particle.colorMin.g);
-                        writer.PushCol(particle.colorMin.b);
-                        writer.PushCol(particle.colorMin.a);
-                        writer.PushCol(particle.colorMax.r);
-                        writer.PushCol(particle.colorMax.g);
-                        writer.PushCol(particle.colorMax.b);
-                        writer.PushCol(particle.colorMax.a);
-                        writer.PushRow();
+                        writer.WriteNextCol(idx++);
+                        writer.WriteNextCol(particle.position);
+                        writer.WriteNextCol(particle.unk_0x0C);
+                        writer.WriteNextCol(particle.unk_0x10);
+                        writer.WriteNextCol(particle.scaleMin);
+                        writer.WriteNextCol(particle.scaleMax);
+                        writer.WriteNextCol(particle.colorMin.r);
+                        writer.WriteNextCol(particle.colorMin.g);
+                        writer.WriteNextCol(particle.colorMin.b);
+                        writer.WriteNextCol(particle.colorMin.a);
+                        writer.WriteNextCol(particle.colorMax.r);
+                        writer.WriteNextCol(particle.colorMax.g);
+                        writer.WriteNextCol(particle.colorMax.b);
+                        writer.WriteNextCol(particle.colorMax.a);
+                        writer.WriteNextRow();
                     }
                 }
             }
@@ -125,7 +125,7 @@ namespace Manifold.IO.GFZ.Camera
 
         public void WriteFmiHeader(StreamWriter writer)
         {
-            writer.PushCol("File Name");
+            writer.WriteNextCol("File Name");
             writer.WriteColNicify(nameof(Fmi.unk_0x00));
             writer.WriteColNicify(nameof(Fmi.unk_0x01));
             writer.WriteColNicify(nameof(Fmi.animationCount));
@@ -139,16 +139,16 @@ namespace Manifold.IO.GFZ.Camera
 
         public void WriteFmiHeader(StreamWriter writer, Fmi fmi)
         {
-            writer.PushCol(fmi.FileName);
-            writer.PushCol(fmi.unk_0x00);
-            writer.PushCol(fmi.unk_0x01);
-            writer.PushCol(fmi.animationCount);
-            writer.PushCol(fmi.exhaustCount);
-            writer.PushCol(fmi.unk_0x04);
-            writer.PushCol(fmi.unk_0x05);
-            writer.PushCol(fmi.unk_0x06);
-            writer.PushCol(fmi.unk_0x07);
-            writer.PushCol(fmi.unk_0x08);
+            writer.WriteNextCol(fmi.FileName);
+            writer.WriteNextCol(fmi.unk_0x00);
+            writer.WriteNextCol(fmi.unk_0x01);
+            writer.WriteNextCol(fmi.animationCount);
+            writer.WriteNextCol(fmi.exhaustCount);
+            writer.WriteNextCol(fmi.unk_0x04);
+            writer.WriteNextCol(fmi.unk_0x05);
+            writer.WriteNextCol(fmi.unk_0x06);
+            writer.WriteNextCol(fmi.unk_0x07);
+            writer.WriteNextCol(fmi.unk_0x08);
         }
 
     }

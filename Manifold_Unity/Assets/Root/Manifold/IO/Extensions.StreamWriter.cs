@@ -1,5 +1,4 @@
-﻿using Manifold.IO;
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 
@@ -11,47 +10,39 @@ namespace Manifold.IO
         const char CharLineFeed = '\n';
         const char CharCarriageReturn = '\r';
 
-        public static void GoToEnd(this StreamWriter writer)
-        {
-            var offset = writer.BaseStream.Length == 0
-                ? 0 : writer.BaseStream.Length - 1;
-
-            writer.BaseStream.Seek(offset, SeekOrigin.Begin);
-        }
-
-        public static void PushCol(this StreamWriter writer)
+        public static void WriteNextCol(this StreamWriter writer)
         {
             writer.Write(CharTabulator);
         }
 
-        public static void PushRow(this StreamWriter writer)
+        public static void WriteNextRow(this StreamWriter writer)
         {
             writer.Write(CharCarriageReturn);
             writer.Write(CharLineFeed);
         }
 
-        public static void PushCol(this StreamWriter writer, object value)
+        public static void WriteNextCol(this StreamWriter writer, object value)
         {
             writer.Write(value);
-            PushCol(writer);
+            WriteNextCol(writer);
         }
 
-        public static void PushRow(this StreamWriter writer, object value)
+        public static void WriteNextRow(this StreamWriter writer, object value)
         {
             writer.Write(value);
-            PushRow(writer);
+            WriteNextRow(writer);
         }
 
-        public static void PushCol(this StreamWriter writer, string value)
+        public static void WriteNextCol(this StreamWriter writer, string value)
         {
             writer.Write(value);
-            PushCol(writer);
+            WriteNextCol(writer);
         }
 
-        public static void PushRow(this StreamWriter writer, string value)
+        public static void WriteNextRow(this StreamWriter writer, string value)
         {
             writer.Write(value);
-            PushRow(writer);
+            WriteNextRow(writer);
         }
 
 
@@ -82,9 +73,9 @@ namespace Manifold.IO
             foreach (var flag in flags)
             {
                 if (flag != null)
-                    writer.PushCol(flag);
+                    writer.WriteNextCol(flag);
                 else
-                    writer.PushCol(string.Empty);
+                    writer.WriteNextCol(string.Empty);
             }
         }
 
@@ -92,12 +83,12 @@ namespace Manifold.IO
         {
             var name = value.Replace("_", " ");
             var prettyName = UnityEditor.ObjectNames.NicifyVariableName(name);
-            writer.PushCol(prettyName);
+            writer.WriteNextCol(prettyName);
         }
 
         public static void WriteStartAddress(this StreamWriter writer, IBinaryAddressableRange binaryAddressable)
         {
-            writer.PushCol(binaryAddressable.StartAddressHex());
+            writer.WriteNextCol(binaryAddressable.StartAddressHex());
         }
     }
 }

@@ -81,7 +81,7 @@ namespace GameCube.GFZ.GMA
 
                 // I'm sure this is going to break.
                 // Perhaps use size in this equation? 
-                while (!reader.EndOfStream()
+                while (!reader.IsAtEndOfStream()
                     && reader.BaseStream.Position < (addressRange.startAddress + size)
                     && reader.PeekByte() != 0x00)
                 {

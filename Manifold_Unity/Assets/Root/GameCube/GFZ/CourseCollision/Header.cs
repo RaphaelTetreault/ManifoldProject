@@ -35,7 +35,7 @@ namespace GameCube.GFZ.CourseCollision
         public ArrayPointer unused_0x74_0x78;
         public CircuitType circuitType;
         public Pointer unknownStageData2Ptr;
-        public Pointer unkPtr_0x84;
+        public Pointer unknownStageData1Ptr;
         public ArrayPointer unused_0x88_0x8C;
         public Pointer trackLengthPtr;
         public ArrayPointer unknownTrigger1sPtr;
@@ -44,7 +44,7 @@ namespace GameCube.GFZ.CourseCollision
         public ArrayPointer arcadeCheckpointTriggersPtr;
         public ArrayPointer storyObjectTriggersPtr;
         public Pointer trackIndexTable;
-        public ColiUnknownStruct1 unknownStructure1_0xC0;
+        public ColiUnknownStruct1 unknownStructure1_0xC0; // minimap data?
         public byte[] zero_0xD8; // 0x10 count
 
 
@@ -78,7 +78,7 @@ namespace GameCube.GFZ.CourseCollision
             reader.ReadX(ref unused_0x74_0x78);
             reader.ReadX(ref circuitType);
             reader.ReadX(ref unknownStageData2Ptr);
-            reader.ReadX(ref unkPtr_0x84);
+            reader.ReadX(ref unknownStageData1Ptr);
             reader.ReadX(ref unused_0x88_0x8C);
             reader.ReadX(ref trackLengthPtr);
             reader.ReadX(ref unknownTrigger1sPtr);

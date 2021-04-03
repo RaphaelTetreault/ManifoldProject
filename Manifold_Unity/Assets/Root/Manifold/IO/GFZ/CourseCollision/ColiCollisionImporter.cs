@@ -6,7 +6,7 @@ using UnityEngine.Rendering;
 
 namespace Manifold.IO.GFZ.CourseCollision
 {
-    [CreateAssetMenu(menuName = MenuConst.GfzCourseCollision + "COLI Collision Importer")]
+    [CreateAssetMenu(menuName = Const.Menu.GfzCourseCollision + "COLI Collision Importer")]
     public class ColiCollisionImporter : ExecutableScriptableObject,
         IImportable
     {
