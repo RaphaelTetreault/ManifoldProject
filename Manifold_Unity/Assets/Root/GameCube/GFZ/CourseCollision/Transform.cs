@@ -16,7 +16,11 @@ namespace GameCube.GFZ.CourseCollision
         [SerializeField]
         private Vector3 position;
         [SerializeField]
-        private Int16Rotation3 ushortQuaternion;
+        private Int16Rotation3 decomposedRotation;
+        [SerializeField]
+        private UnknownTransformOption unknownOption;
+        [SerializeField]
+        private ObjectActiveOverride objectActiveOverride;
         [SerializeField]
         private Vector3 scale;
 
@@ -35,13 +39,12 @@ namespace GameCube.GFZ.CourseCollision
 
         public Vector3 RotationEuler
         {
-            get => ushortQuaternion.EulerAngles;
-            //set => shortRotation3 = value;
+            get => decomposedRotation.EulerAngles;
         }
 
         public Quaternion Rotation
         {
-            get => ushortQuaternion.Rotation;
+            get => decomposedRotation.Rotation;
         }
 
         public Vector3 Scale
@@ -50,14 +53,16 @@ namespace GameCube.GFZ.CourseCollision
             set => scale = value;
         }
 
-        public Int16Rotation3 Uint16Rotation3 => ushortQuaternion;
+        public Int16Rotation3 DecomposedRotation => decomposedRotation;
 
         public void Deserialize(BinaryReader reader)
         {
             this.RecordStartAddress(reader);
             {
                 reader.ReadX(ref position);
-                reader.ReadX(ref ushortQuaternion, true);
+                reader.ReadX(ref decomposedRotation, true);
+                reader.ReadX(ref unknownOption);
+                reader.ReadX(ref objectActiveOverride);
                 reader.ReadX(ref scale);
             }
             this.RecordEndAddress(reader);
@@ -66,11 +71,10 @@ namespace GameCube.GFZ.CourseCollision
         public void Serialize(BinaryWriter writer)
         {
             writer.WriteX(position);
-            writer.WriteX(ushortQuaternion);
+            writer.WriteX(decomposedRotation);
+            writer.WriteX(objectActiveOverride);
+            writer.WriteX(unknownOption);
             writer.WriteX(scale);
-
-            // Write values pointed at by, update ptrs above
-            throw new NotImplementedException();
         }
     }
 }

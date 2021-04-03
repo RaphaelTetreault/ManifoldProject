@@ -9,31 +9,16 @@ namespace GameCube.GFZ.Camera
     public class CameraPanPoint : IBinarySerializable, IBinaryAddressableRange
     {
 
-        #region FIELDS
-
-
-        private const float reciprocal = 180f / (ushort.MaxValue + 1);
-
         [SerializeField]
         private AddressRange addressRange;
 
         public Vector3 cameraPosition;
         public Vector3 lookatPosition;
         public float fov;
-        [Range(180f, -180f)]
-        public float Rotation;
-        [HideInInspector]
-        public short rotation;
-        [HideInInspector]
+        public Int16Rotation rotationRoll;
         public ushort zero_0x1E;
         public CameraPanInterpolation interpolation; //20
-        [HideInInspector]
         public ushort zero_0x22;
-
-
-        #endregion
-
-        #region PROPERTIES
 
 
         public AddressRange AddressRange
@@ -43,11 +28,6 @@ namespace GameCube.GFZ.Camera
         }
 
 
-        #endregion
-
-        #region METHODS
-
-
         public void Deserialize(BinaryReader reader)
         {
             this.RecordStartAddress(reader);
@@ -55,19 +35,17 @@ namespace GameCube.GFZ.Camera
                 reader.ReadX(ref cameraPosition);
                 reader.ReadX(ref lookatPosition);
                 reader.ReadX(ref fov);
-                reader.ReadX(ref rotation);
+                reader.ReadX(ref rotationRoll, false);
                 reader.ReadX(ref zero_0x1E);
                 reader.ReadX(ref interpolation);
                 reader.ReadX(ref zero_0x22);
             }
             this.RecordEndAddress(reader);
-
-            // Convert -128 through 127 to -180.0f through 180.0f
-            Rotation = rotation * reciprocal;
-
-            // Assertions
-            Assert.IsTrue(zero_0x1E == 0);
-            Assert.IsTrue(zero_0x22 == 0);
+            {
+                // Assertions
+                Assert.IsTrue(zero_0x1E == 0);
+                Assert.IsTrue(zero_0x22 == 0);
+            }
         }
 
         public void Serialize(BinaryWriter writer)
@@ -75,15 +53,11 @@ namespace GameCube.GFZ.Camera
             writer.WriteX(cameraPosition);
             writer.WriteX(lookatPosition);
             writer.WriteX(fov);
-            var rotation = (short)(Rotation / reciprocal);
-            writer.WriteX(rotation);
+            writer.WriteX(rotationRoll);
             writer.WriteX(zero_0x1E);
             writer.WriteX(interpolation);
             writer.WriteX(zero_0x22);
         }
-
-
-        #endregion
 
     }
 }

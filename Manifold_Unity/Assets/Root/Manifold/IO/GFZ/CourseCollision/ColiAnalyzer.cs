@@ -1157,21 +1157,13 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol($"matrix.x");
                 writer.WriteNextCol($"matrix.y");
                 writer.WriteNextCol($"matrix.z");
-                writer.WriteNextCol($"matrix.w");
-                writer.WriteNextCol($"scene.x");
-                writer.WriteNextCol($"scene.y");
-                writer.WriteNextCol($"scene.z");
-                writer.WriteNextCol($"scene.w");
-                writer.WriteNextCol("Backing x");
-                writer.WriteNextCol("Backing y");
-                writer.WriteNextCol("Backing z");
-                writer.WriteNextCol($"matrix.x");
-                writer.WriteNextCol($"matrix.y");
-                writer.WriteNextCol($"matrix.z");
-                writer.WriteNextCol($"scene.x");
-                writer.WriteNextCol($"scene.y");
-                writer.WriteNextCol($"scene.z");
-
+                writer.WriteNextCol($"euler.x");
+                writer.WriteNextCol($"euler.y");
+                writer.WriteNextCol($"euler.z");
+                writer.WriteNextCol("Decomposed phi");
+                writer.WriteNextCol("Decomposed theta");
+                writer.WriteNextCol("Decomposed psi");
+                writer.WriteNextCol("Unknown flags");
                 writer.WriteNextRow();
 
                 foreach (var file in coliSobjs)
@@ -1187,93 +1179,25 @@ namespace Manifold.IO.GFZ.CourseCollision
                         writer.WriteNextCol(sceneObject.name);
 
                         // Matrix
-                        writer.WriteNextCol(sceneObject.transformMatrix3x4.Rotation.x);
-                        writer.WriteNextCol(sceneObject.transformMatrix3x4.Rotation.y);
-                        writer.WriteNextCol(sceneObject.transformMatrix3x4.Rotation.z);
-                        writer.WriteNextCol(sceneObject.transformMatrix3x4.Rotation.w);
+                        var matrix = sceneObject.transformMatrix3x4.Rotation.eulerAngles;
+                        writer.WriteNextCol(matrix.x);
+                        writer.WriteNextCol(matrix.y);
+                        writer.WriteNextCol(matrix.z);
 
-                        // scene
-                        writer.WriteNextCol(sceneObject.transform.Uint16Rotation3.Rotation.x);
-                        writer.WriteNextCol(sceneObject.transform.Uint16Rotation3.Rotation.y);
-                        writer.WriteNextCol(sceneObject.transform.Uint16Rotation3.Rotation.z);
-                        writer.WriteNextCol(sceneObject.transform.Uint16Rotation3.Rotation.w);
+                        // euler
+                        var euler = sceneObject.transform.DecomposedRotation.EulerAngles;
+                        writer.WriteNextCol(euler.x);
+                        writer.WriteNextCol(euler.y);
+                        writer.WriteNextCol(euler.z);
 
-                        writer.WriteNextCol($"0x{sceneObject.transform.Uint16Rotation3.phi.Binary:X4}");
-                        writer.WriteNextCol($"0x{sceneObject.transform.Uint16Rotation3.theta.Binary:X4}");
-                        writer.WriteNextCol($"0x{sceneObject.transform.Uint16Rotation3.psi.Binary:X4}");
-                        writer.WriteNextCol($"0x{(int)sceneObject.transform.Uint16Rotation3.unkFlags:X4}");
+                        var decomposed = sceneObject.transform.DecomposedRotation;
+                        writer.WriteNextCol(decomposed.phi);
+                        writer.WriteNextCol(decomposed.theta);
+                        writer.WriteNextCol(decomposed.psi);
 
-                        // Matrix
-                        writer.WriteNextCol(sceneObject.transformMatrix3x4.Rotation.eulerAngles.x);
-                        writer.WriteNextCol(sceneObject.transformMatrix3x4.Rotation.eulerAngles.y);
-                        writer.WriteNextCol(sceneObject.transformMatrix3x4.Rotation.eulerAngles.z);
-
-                        // scene
-                        writer.WriteNextCol(sceneObject.transform.Uint16Rotation3.EulerAngles.x);
-                        writer.WriteNextCol(sceneObject.transform.Uint16Rotation3.EulerAngles.y);
-                        writer.WriteNextCol(sceneObject.transform.Uint16Rotation3.EulerAngles.z);
-
-                        var scene = sceneObject.transform.Uint16Rotation3;
-                        writer.WriteNextCol(scene.phi.Value);
-                        writer.WriteNextCol(scene.theta.Value);
-                        writer.WriteNextCol(scene.psi.Value);
-
-                        {
-                            // guh
-                            // https://nghiaho.com/?page_id=846
-                            // https://phas.ubc.ca/~berciu/TEACHING/PHYS206/LECTURES/FILES/euler.pdf
-                            var matrix = sceneObject.transformMatrix3x4.Matrix;
-                            var r11 = matrix.m00;
-                            var r12 = matrix.m01;
-                            var r13 = matrix.m02;
-                            var r21 = matrix.m10;
-                            var r22 = matrix.m11;
-                            var r23 = matrix.m12;
-                            var r31 = matrix.m20;
-                            var r32 = matrix.m21;
-                            var r33 = matrix.m22;
-
-                            var thetaX = Mathf.Atan2(r32, r33);
-                            var thetaY = Mathf.Atan2(-r31, Mathf.Sqrt(Mathf.Pow(r32, 2) + Mathf.Pow(r33, 2)));
-                            var thetaZ = Mathf.Atan2(r21, r11);
-
-                            writer.WriteNextCol(thetaX);
-                            writer.WriteNextCol(thetaY);
-                            writer.WriteNextCol(thetaZ);
-                        }
-
-                        {
-                            // guh
-                            // https://nghiaho.com/?page_id=846
-                            // https://phas.ubc.ca/~berciu/TEACHING/PHYS206/LECTURES/FILES/euler.pdf
-                            var matrix = sceneObject.transformMatrix3x4.Matrix;
-
-                            Quaternion mirror = new Quaternion(1, 0, 0, 0);
-                            var matrixRot = mirror * matrix.rotation * mirror;
-                            matrix.SetTRS(Vector3.zero, matrixRot, Vector3.one);
-
-                            var r11 = matrix.m00;
-                            var r12 = matrix.m01;
-                            var r13 = matrix.m02;
-                            var r21 = matrix.m10;
-                            var r22 = matrix.m11;
-                            var r23 = matrix.m12;
-                            var r31 = matrix.m20;
-                            var r32 = matrix.m21;
-                            var r33 = matrix.m22;
-
-                            var thetaX = Mathf.Atan2(r32, r33);
-                            var thetaY = Mathf.Atan2(-r31, Mathf.Sqrt(Mathf.Pow(r32, 2) + Mathf.Pow(r33, 2)));
-                            var thetaZ = Mathf.Atan2(r21, r11);
-
-                            writer.WriteNextCol(thetaX);
-                            writer.WriteNextCol(thetaY);
-                            writer.WriteNextCol(thetaZ);
-                        }
-
+                        writer.WriteNextCol(sceneObject.transform.unkFlags);
 
                         writer.WriteNextRow();
-
                         sceneObjectIndex++;
                     }
                 }

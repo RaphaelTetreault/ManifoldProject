@@ -58,8 +58,7 @@ namespace Manifold.IO.GFZ.Camera
                 writer.WriteColNicify(nameof(CameraPan.from.cameraPosition));
                 writer.WriteColNicify(nameof(CameraPan.from.lookatPosition));
                 writer.WriteColNicify(nameof(CameraPan.from.fov));
-                writer.WriteColNicify(nameof(CameraPan.from.rotation) + " Raw");
-                writer.WriteColNicify(nameof(CameraPan.from.Rotation));
+                writer.WriteColNicify(nameof(CameraPan.from.rotationRoll.Value));
                 writer.WriteColNicify(nameof(CameraPan.from.zero_0x1E));
                 writer.WriteColNicify(nameof(CameraPan.from.interpolation));
                 writer.WriteColNicify(nameof(CameraPan.from.zero_0x22));
@@ -101,8 +100,7 @@ namespace Manifold.IO.GFZ.Camera
                             writer.WriteNextCol(panArray[i].cameraPosition);
                             writer.WriteNextCol(panArray[i].lookatPosition);
                             writer.WriteNextCol(panArray[i].fov);
-                            writer.WriteNextCol(panArray[i].rotation);
-                            writer.WriteNextCol(panArray[i].Rotation);
+                            writer.WriteNextCol(panArray[i].rotationRoll);
                             writer.WriteNextCol(panArray[i].zero_0x1E);
                             writer.WriteNextCol(panArray[i].interpolation);
                             writer.WriteNextCol(panArray[i].zero_0x22);

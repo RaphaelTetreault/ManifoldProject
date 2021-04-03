@@ -12,7 +12,6 @@ namespace GameCube.GFZ
         public Int16Rotation phi;
         public Int16Rotation theta;
         public Int16Rotation psi;
-        public EnumFlags16 unkFlags;
 
         [SerializeField]
         private Quaternion rotation;
@@ -48,7 +47,6 @@ namespace GameCube.GFZ
                 phi = phi,
                 theta = theta,
                 psi = psi,
-                unkFlags = 0,
 
                 eulerAngles = eulerAngles,
                 rotation = Quaternion.Euler(eulerAngles),
@@ -71,7 +69,6 @@ namespace GameCube.GFZ
                 phi = phi,
                 theta = theta,
                 psi = psi,
-                unkFlags = 0,
 
                 eulerAngles = rotation.eulerAngles,
                 rotation = rotation,
@@ -120,7 +117,6 @@ namespace GameCube.GFZ
                 reader.ReadX(ref phi, false);
                 reader.ReadX(ref theta, false);
                 reader.ReadX(ref psi, false);
-                reader.ReadX(ref unkFlags);
             }
             //
             {
@@ -135,10 +131,6 @@ namespace GameCube.GFZ
             writer.WriteX(phi);
             writer.WriteX(theta);
             writer.WriteX(psi);
-            writer.WriteX(unkFlags);
-
-            // DOUBLE CHECK THIS
-            throw new System.NotImplementedException();
         }
 
         public override string ToString()
