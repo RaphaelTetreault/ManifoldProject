@@ -7,20 +7,38 @@ namespace GameCube.GFZ
     [System.Serializable]
     public struct Uint16Rotation3 : IBinarySerializable
     {
-        public const float ushortMax = ushort.MaxValue;
-        public const float angleMax = 360f;
-
-        public ushort x;
-        public ushort y;
-        public ushort z;
+        public Uint16Rotation x;
+        public Uint16Rotation y;
+        public Uint16Rotation z;
         public EnumFlags16 unkFlags;
 
-        public Quaternion rotation;
-        public Vector3 eulerAngles;
+        [SerializeField]
+        private Quaternion rotation;
+        [SerializeField]
+        private Vector3 eulerAngles;
 
         public Vector3 EulerAngles => eulerAngles;
         public Quaternion Rotation => rotation;
 
+        //public Uint16Rotation3()
+        //{
+        //    x = y = z = 0f;
+        //    unkFlags = 0;
+
+        //    eulerAngles = Vector3.zero;
+        //    rotation = Quaternion.identity;
+        //}
+
+        public Uint16Rotation3(Uint16Rotation x, Uint16Rotation y, Uint16Rotation z, EnumFlags16 flags = 0)
+        {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+            this.unkFlags = flags;
+
+            eulerAngles = new Vector3(x, y, z);
+            rotation = Quaternion.Euler(eulerAngles);
+        }
 
         public static implicit operator Quaternion(Uint16Rotation3 value)
         {
@@ -50,73 +68,18 @@ namespace GameCube.GFZ
             return ushortRotation;
         }
 
-        public static ushort FloatToUshort(float value)
-        {
-            // Normalize float from 0.0f-360.0f to 0.0f-1.0f
-            // Multiply by ushort max to set range 0-65535
-            ushort result = (ushort)(value / angleMax * ushortMax);
-            return result;
-        }
-
-        public static float UshortToFloat(ushort value)
-        {
-            // Normalize ushort from 0-65535 to 0.0f-1.0f
-            // Multiply by max rotation value 360f
-            float result = value / ushortMax * angleMax;
-            result = result >= 180f
-                ? result - 360f
-                : result;
-
-            return result;
-        }
-
-        public static Quaternion UshortXyzToQuaternion(ushort x, ushort y, ushort z)
-        {
-            // Unpacked ushort to float
-            float fx = UshortToFloat(x);
-            float fy = UshortToFloat(y);
-            float fz = UshortToFloat(z);
-
-            // Reconstruct rotation from partial data
-            var rotation = Quaternion.identity;
-            // Apply rotation in discrete sequence. Yes, really.
-            rotation = Quaternion.Euler(fx, 0, 0) * rotation;
-            rotation = Quaternion.Euler(0, fy, 0) * rotation;
-            rotation = Quaternion.Euler(0, 0, fz) * rotation;
-
-            return rotation;
-        }
-
-        public static (ushort ux, ushort uy, ushort uz) QuaternionToUshortXyz(Quaternion value)
-        {
-
-
-            float rotationZ = 0f;
-            float rotationY = 0f;
-            float rotationX = 0f;
-
-            ushort ux = FloatToUshort(rotationX);
-            ushort uy = FloatToUshort(rotationY);
-            ushort uz = FloatToUshort(rotationZ);
-
-            return (ux, uy, uz);
-        }
-
         public void Deserialize(BinaryReader reader)
         {
-            // DESERIALIZE COMPRESSED DATA
             {
-                reader.ReadX(ref x);
-                reader.ReadX(ref y);
-                reader.ReadX(ref z);
+                reader.ReadX(ref x, false);
+                reader.ReadX(ref y, false);
+                reader.ReadX(ref z, false);
                 reader.ReadX(ref unkFlags);
             }
-            // CONVERT COMPRESSED DATA
+            //
             {
-                // Reconstruct rotation from partial data
-                rotation = UshortXyzToQuaternion(x, y, z);
-                // Store eulerAngles rather than reconstructing upon request
-                eulerAngles = rotation.eulerAngles;
+                eulerAngles = new Vector3(x, y, z);
+                rotation = Quaternion.Euler(eulerAngles);
             }
         }
 

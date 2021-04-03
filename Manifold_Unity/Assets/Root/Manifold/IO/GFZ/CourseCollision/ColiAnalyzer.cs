@@ -1193,10 +1193,10 @@ namespace Manifold.IO.GFZ.CourseCollision
                         writer.WriteNextCol(sceneObject.transformMatrix3x4.Rotation.w);
 
                         // scene
-                        writer.WriteNextCol(sceneObject.transform.UshortQuaternion.rotation.x);
-                        writer.WriteNextCol(sceneObject.transform.UshortQuaternion.rotation.y);
-                        writer.WriteNextCol(sceneObject.transform.UshortQuaternion.rotation.z);
-                        writer.WriteNextCol(sceneObject.transform.UshortQuaternion.rotation.w);
+                        writer.WriteNextCol(sceneObject.transform.UshortQuaternion.Rotation.x);
+                        writer.WriteNextCol(sceneObject.transform.UshortQuaternion.Rotation.y);
+                        writer.WriteNextCol(sceneObject.transform.UshortQuaternion.Rotation.z);
+                        writer.WriteNextCol(sceneObject.transform.UshortQuaternion.Rotation.w);
 
                         writer.WriteNextCol($"0x{sceneObject.transform.UshortQuaternion.x:X4}");
                         writer.WriteNextCol($"0x{sceneObject.transform.UshortQuaternion.y:X4}");
@@ -1209,10 +1209,10 @@ namespace Manifold.IO.GFZ.CourseCollision
                         writer.WriteNextCol(sceneObject.transformMatrix3x4.Rotation.eulerAngles.z);
 
                         // scene
-                        //var scene = sceneObject.transform.UshortQuaternion.eulerAngles;
-                        writer.WriteNextCol(sceneObject.transform.UshortQuaternion.rotation.eulerAngles.x);
-                        writer.WriteNextCol(sceneObject.transform.UshortQuaternion.rotation.eulerAngles.y);
-                        writer.WriteNextCol(sceneObject.transform.UshortQuaternion.rotation.eulerAngles.z);
+                        var scene = sceneObject.transform.UshortQuaternion;
+                        writer.WriteNextCol(scene.x.Value);
+                        writer.WriteNextCol(scene.y.Value);
+                        writer.WriteNextCol(scene.z.Value);
 
                         writer.WriteNextRow();
 

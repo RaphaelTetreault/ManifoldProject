@@ -164,7 +164,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
                     // Apply GFZ Transform values onto Unity Transform
                     instance.transform.position = sceneObject.transform.Position;
-                    instance.transform.rotation = sceneObject.transform.UshortQuaternion.rotation;
+                    instance.transform.rotation = sceneObject.transform.UshortQuaternion.Rotation;
                     instance.transform.localScale = sceneObject.transform.Scale;
                     // Perhaps best way when matrix exists? No compression rotation
                     //sceneObject.transformMatrix3x4.SetUnityTransform(instance.transform);
