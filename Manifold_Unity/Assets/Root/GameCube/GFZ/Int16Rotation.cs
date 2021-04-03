@@ -7,7 +7,8 @@ namespace GameCube.GFZ
     [System.Serializable]
     public struct Int16Rotation : IBinarySerializable
     {
-        public const float shortMax = short.MaxValue;
+        public const float shortMax = short.MaxValue + 1;
+        // TODO: should you use the constant or hard-code for ease of reading?
         public const float angleMax = 180f;
 
         [SerializeField]
@@ -20,8 +21,8 @@ namespace GameCube.GFZ
 
         public Int16Rotation(float value)
         {
-            binary = 0;
             this.value = value;
+            this.binary = FloatToShort(value);
         }
 
         public static implicit operator float(Int16Rotation shortRotation)
@@ -34,46 +35,38 @@ namespace GameCube.GFZ
             return new Int16Rotation(value);
         }
 
-        public static ushort FloatToUshort(float value)
+        public static short FloatToShort(float value)
         {
-            // Get sign, absolute value, and clamp to range 0-360
+            // Deconstruct rotation into various components
             float sign = Mathf.Sign(value);
             float abs = Mathf.Abs(value);
             float range360 = abs % 360;
+            float signedRange360 = sign * range360;
 
-            // Keep rotations positive for normalization process
-            bool isNegativeRotation = sign < 0;
-            float positiveRange360 = isNegativeRotation
-                ? 360f + range360
-                : range360;
-
-            // 
-            //float rangeTwoPi = (positiveRange360 > 180f)
-            //    ? range360Signed + 360f
-            //    : range360Signed;
+            // Constrain rotations to -180f to +180f range
+            // When abs value is greater than 180, get same rotation
+            // with opposite sign. Using the sign ensures +/- ranges
+            // are properly mirrored.
+            // Examples. Sample rotation value +/- 350
+            // ex: (+) 350 > 180: +350 - (+1 * 360) == +350 - 360 = -10
+            // ex: (-) 350 > 180: -350 - (-1 * 360) == -350 + 360 = +10
+            float range180 = (range360 > 180f)
+                ? signedRange360 - (sign * 360f)
+                : signedRange360;
 
             // Normalize float from 360f to 0-1
-            float normalized = positiveRange360 / 360f;
+            float normalized = range180 / 180f;
             // Multiply by ushort max to set range 0-65535
-            ushort result = (ushort)(normalized * shortMax);
+            short result = (short)(normalized * shortMax);
 
             return result;
         }
 
         public static float UshortToFloat(short value)
         {
-            //// Normalize ushort from 0-65535 to 0.0f-1.0f
-            //float normalized = value / ushortMax;
-            //// Multiply by max rotation value 360f
-            //float result = normalized * angleMax;
-            //// Constrain to -180 through 180 degree range (-pi to +pi)
-            //// This range has rotations working as expected
-            //// Anything above pi is in the -pi range
-            //float result = (rotation >= 180f)
-            //    ? (rotation - 360f)
-            //    : rotation;
-
-            // Normalize ushort from 0-65535 to 0.0f-1.0f
+            // Normalize short from (-32768 to +32767) to (-1f to +1f)
+            // Multiply by max rotation value to set range (-180f inclusive to +180f exclusive)
+            // I use 180f here, but this is conceptually -pi to +pi.
             float result = value / shortMax * angleMax;
             return result;
         }
@@ -86,7 +79,7 @@ namespace GameCube.GFZ
 
         public void Serialize(BinaryWriter writer)
         {
-            throw new System.NotImplementedException();
+            writer.WriteX(binary);
         }
 
         public override string ToString()
