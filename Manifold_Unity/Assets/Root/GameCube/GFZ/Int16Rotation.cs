@@ -86,10 +86,5 @@ namespace GameCube.GFZ
         {
             return value.ToString();
         }
-
-        public string ToString(string decimalFormat)
-        {
-            return value.ToString(decimalFormat);
-        }
     }
 }
