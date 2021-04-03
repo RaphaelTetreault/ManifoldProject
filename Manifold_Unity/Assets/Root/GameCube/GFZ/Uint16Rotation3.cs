@@ -20,25 +20,17 @@ namespace GameCube.GFZ
         public Vector3 EulerAngles => eulerAngles;
         public Quaternion Rotation => rotation;
 
-        //public Uint16Rotation3()
+
+        //public Uint16Rotation3(Uint16Rotation x, Uint16Rotation y, Uint16Rotation z, EnumFlags16 flags = 0)
         //{
-        //    x = y = z = 0f;
-        //    unkFlags = 0;
+        //    this.x = x;
+        //    this.y = y;
+        //    this.z = z;
+        //    this.unkFlags = flags;
 
-        //    eulerAngles = Vector3.zero;
-        //    rotation = Quaternion.identity;
+        //    eulerAngles = new Vector3(x, y, z);
+        //    rotation = Quaternion.Euler(eulerAngles);
         //}
-
-        public Uint16Rotation3(Uint16Rotation x, Uint16Rotation y, Uint16Rotation z, EnumFlags16 flags = 0)
-        {
-            this.x = x;
-            this.y = y;
-            this.z = z;
-            this.unkFlags = flags;
-
-            eulerAngles = new Vector3(x, y, z);
-            rotation = Quaternion.Euler(eulerAngles);
-        }
 
         public static implicit operator Quaternion(Uint16Rotation3 value)
         {
@@ -78,8 +70,14 @@ namespace GameCube.GFZ
             }
             //
             {
-                eulerAngles = new Vector3(x, y, z);
-                rotation = Quaternion.Euler(eulerAngles);
+                // Reconstruct rotation from partial data
+                rotation = Quaternion.identity;
+                // Apply rotation in discrete sequence. Yes, really.
+                rotation = Quaternion.Euler(x.Value, 0, 0) * rotation;
+                rotation = Quaternion.Euler(0, y.Value, 0) * rotation;
+                rotation = Quaternion.Euler(0, 0, z.Value) * rotation;
+                //
+                eulerAngles = rotation.eulerAngles;
             }
         }
 

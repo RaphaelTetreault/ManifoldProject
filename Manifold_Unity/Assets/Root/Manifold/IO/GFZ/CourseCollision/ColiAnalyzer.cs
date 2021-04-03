@@ -1193,15 +1193,15 @@ namespace Manifold.IO.GFZ.CourseCollision
                         writer.WriteNextCol(sceneObject.transformMatrix3x4.Rotation.w);
 
                         // scene
-                        writer.WriteNextCol(sceneObject.transform.UshortQuaternion.Rotation.x);
-                        writer.WriteNextCol(sceneObject.transform.UshortQuaternion.Rotation.y);
-                        writer.WriteNextCol(sceneObject.transform.UshortQuaternion.Rotation.z);
-                        writer.WriteNextCol(sceneObject.transform.UshortQuaternion.Rotation.w);
+                        writer.WriteNextCol(sceneObject.transform.Uint16Rotation3.Rotation.x);
+                        writer.WriteNextCol(sceneObject.transform.Uint16Rotation3.Rotation.y);
+                        writer.WriteNextCol(sceneObject.transform.Uint16Rotation3.Rotation.z);
+                        writer.WriteNextCol(sceneObject.transform.Uint16Rotation3.Rotation.w);
 
-                        writer.WriteNextCol($"0x{sceneObject.transform.UshortQuaternion.x:X4}");
-                        writer.WriteNextCol($"0x{sceneObject.transform.UshortQuaternion.y:X4}");
-                        writer.WriteNextCol($"0x{sceneObject.transform.UshortQuaternion.z:X4}");
-                        writer.WriteNextCol($"0x{(int)sceneObject.transform.UshortQuaternion.unkFlags:X4}");
+                        writer.WriteNextCol($"0x{sceneObject.transform.Uint16Rotation3.x:X4}");
+                        writer.WriteNextCol($"0x{sceneObject.transform.Uint16Rotation3.y:X4}");
+                        writer.WriteNextCol($"0x{sceneObject.transform.Uint16Rotation3.z:X4}");
+                        writer.WriteNextCol($"0x{(int)sceneObject.transform.Uint16Rotation3.unkFlags:X4}");
 
                         // Matrix
                         writer.WriteNextCol(sceneObject.transformMatrix3x4.Rotation.eulerAngles.x);
@@ -1209,7 +1209,11 @@ namespace Manifold.IO.GFZ.CourseCollision
                         writer.WriteNextCol(sceneObject.transformMatrix3x4.Rotation.eulerAngles.z);
 
                         // scene
-                        var scene = sceneObject.transform.UshortQuaternion;
+                        writer.WriteNextCol(sceneObject.transform.Uint16Rotation3.EulerAngles.x);
+                        writer.WriteNextCol(sceneObject.transform.Uint16Rotation3.EulerAngles.y);
+                        writer.WriteNextCol(sceneObject.transform.Uint16Rotation3.EulerAngles.z);
+
+                        var scene = sceneObject.transform.Uint16Rotation3;
                         writer.WriteNextCol(scene.x.Value);
                         writer.WriteNextCol(scene.y.Value);
                         writer.WriteNextCol(scene.z.Value);

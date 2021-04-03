@@ -50,7 +50,7 @@ namespace GameCube.GFZ.CourseCollision
             set => scale = value;
         }
 
-        public Uint16Rotation3 UshortQuaternion => ushortQuaternion;
+        public Uint16Rotation3 Uint16Rotation3 => ushortQuaternion;
 
         public void Deserialize(BinaryReader reader)
         {
