@@ -101,9 +101,15 @@ namespace GameCube.GFZ
             var r32 = matrix.m21;
             var r33 = matrix.m22;
 
+            // Compute discrete rotation steps
             var phi = Mathf.Atan2(r32, r33);
             var theta = Mathf.Atan2(-r31, Mathf.Sqrt(Mathf.Pow(r32, 2) + Mathf.Pow(r33, 2)));
             var psi = Mathf.Atan2(r21, r11);
+
+            // Convert to degrees
+            phi     *= Mathf.Rad2Deg;
+            theta   *= Mathf.Rad2Deg;
+            psi     *= Mathf.Rad2Deg;
 
             return (phi, theta, psi);
         }
