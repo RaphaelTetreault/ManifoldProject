@@ -35,6 +35,11 @@ namespace GameCube.GFZ
             return new Int16Rotation(value);
         }
 
+        /// <summary>
+        /// Returns a normalized short representing the rotation range -180f to +180f.
+        /// </summary>
+        /// <param name="value">Float within range of -180f inclusive and +180f exclusive.</param>
+        /// <returns></returns>
         public static short FloatToShortRange180(float value)
         {
             // WOULD BE PROPER, BUT OUR DECOMPOSER ONLY HAS VALUES IN RANGE
@@ -72,7 +77,7 @@ namespace GameCube.GFZ
             return result;
         }
 
-        public static float UshortToFloat(short value)
+        public static float ShortToFloat(short value)
         {
             // Normalize short from (-32768 to +32767) to (-1f to +1f)
             // Multiply by max rotation value to set range (-180f inclusive to +180f exclusive)
@@ -84,7 +89,7 @@ namespace GameCube.GFZ
         public void Deserialize(BinaryReader reader)
         {
             reader.ReadX(ref binary);
-            value = UshortToFloat(binary);
+            value = ShortToFloat(binary);
         }
 
         public void Serialize(BinaryWriter writer)
