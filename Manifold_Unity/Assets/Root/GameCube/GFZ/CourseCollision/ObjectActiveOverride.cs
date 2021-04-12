@@ -1,7 +1,14 @@
+// TODO: this is really flags, but consts are more usable.
+
 namespace GameCube.GFZ.CourseCollision
 {
     public enum ObjectActiveOverride : byte
     {
+        /// <summary>
+        /// No override.
+        /// </summary>
+        None = 0b_00000000,
+
         /// <summary>
         /// Select to activate object in Normal, Hard, and Very Hard missions
         /// </summary>
