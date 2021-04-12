@@ -53,9 +53,9 @@ namespace Manifold.IO.GFZ.Camera
             {
                 WriteFmiHeader(writer);
                 writer.WriteNextCol("Index");
-                writer.WriteColNicify(nameof(ExhaustAnimation.position));
-                writer.WriteColNicify(nameof(ExhaustAnimation.unk_0x0C));
-                writer.WriteColNicify(nameof(ExhaustAnimation.animType));
+                writer.WriteNextColNicify(nameof(ExhaustAnimation.position));
+                writer.WriteNextColNicify(nameof(ExhaustAnimation.unk_0x0C));
+                writer.WriteNextColNicify(nameof(ExhaustAnimation.animType));
                 writer.WriteNextRow();
 
                 foreach (var sobj in analysisSobjs)
@@ -81,19 +81,19 @@ namespace Manifold.IO.GFZ.Camera
             {
                 WriteFmiHeader(writer);
                 writer.WriteNextCol("Index");
-                writer.WriteColNicify(nameof(ExhaustParticle.position));
-                writer.WriteColNicify(nameof(ExhaustParticle.unk_0x0C));
-                writer.WriteColNicify(nameof(ExhaustParticle.unk_0x10));
-                writer.WriteColNicify(nameof(ExhaustParticle.scaleMin));
-                writer.WriteColNicify(nameof(ExhaustParticle.scaleMax));
-                writer.WriteColNicify(nameof(ExhaustParticle.colorMin) + " r");
-                writer.WriteColNicify(nameof(ExhaustParticle.colorMin) + " g");
-                writer.WriteColNicify(nameof(ExhaustParticle.colorMin) + " b");
-                writer.WriteColNicify(nameof(ExhaustParticle.colorMin) + " a");
-                writer.WriteColNicify(nameof(ExhaustParticle.colorMax) + " r");
-                writer.WriteColNicify(nameof(ExhaustParticle.colorMax) + " g");
-                writer.WriteColNicify(nameof(ExhaustParticle.colorMax) + " b");
-                writer.WriteColNicify(nameof(ExhaustParticle.colorMax) + " a");
+                writer.WriteNextColNicify(nameof(ExhaustParticle.position));
+                writer.WriteNextColNicify(nameof(ExhaustParticle.unk_0x0C));
+                writer.WriteNextColNicify(nameof(ExhaustParticle.unk_0x10));
+                writer.WriteNextColNicify(nameof(ExhaustParticle.scaleMin));
+                writer.WriteNextColNicify(nameof(ExhaustParticle.scaleMax));
+                writer.WriteNextColNicify(nameof(ExhaustParticle.colorMin) + " r");
+                writer.WriteNextColNicify(nameof(ExhaustParticle.colorMin) + " g");
+                writer.WriteNextColNicify(nameof(ExhaustParticle.colorMin) + " b");
+                writer.WriteNextColNicify(nameof(ExhaustParticle.colorMin) + " a");
+                writer.WriteNextColNicify(nameof(ExhaustParticle.colorMax) + " r");
+                writer.WriteNextColNicify(nameof(ExhaustParticle.colorMax) + " g");
+                writer.WriteNextColNicify(nameof(ExhaustParticle.colorMax) + " b");
+                writer.WriteNextColNicify(nameof(ExhaustParticle.colorMax) + " a");
                 writer.WriteNextRow();
 
                 foreach (var sobj in analysisSobjs)
@@ -126,15 +126,15 @@ namespace Manifold.IO.GFZ.Camera
         public void WriteFmiHeader(StreamWriter writer)
         {
             writer.WriteNextCol("File Name");
-            writer.WriteColNicify(nameof(Fmi.unk_0x00));
-            writer.WriteColNicify(nameof(Fmi.unk_0x01));
-            writer.WriteColNicify(nameof(Fmi.animationCount));
-            writer.WriteColNicify(nameof(Fmi.exhaustCount));
-            writer.WriteColNicify(nameof(Fmi.unk_0x04));
-            writer.WriteColNicify(nameof(Fmi.unk_0x05));
-            writer.WriteColNicify(nameof(Fmi.unk_0x06));
-            writer.WriteColNicify(nameof(Fmi.unk_0x07));
-            writer.WriteColNicify(nameof(Fmi.unk_0x08));
+            writer.WriteNextColNicify(nameof(Fmi.unk_0x00));
+            writer.WriteNextColNicify(nameof(Fmi.unk_0x01));
+            writer.WriteNextColNicify(nameof(Fmi.animationCount));
+            writer.WriteNextColNicify(nameof(Fmi.exhaustCount));
+            writer.WriteNextColNicify(nameof(Fmi.unk_0x04));
+            writer.WriteNextColNicify(nameof(Fmi.unk_0x05));
+            writer.WriteNextColNicify(nameof(Fmi.unk_0x06));
+            writer.WriteNextColNicify(nameof(Fmi.unk_0x07));
+            writer.WriteNextColNicify(nameof(Fmi.unk_0x08));
         }
 
         public void WriteFmiHeader(StreamWriter writer, Fmi fmi)

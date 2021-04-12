@@ -522,8 +522,8 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol("Game Object #");
                 writer.WriteNextCol("Game Object");
                 writer.WriteNextCol("Unknown 1 Index");
-                writer.WriteColNicify(nameof(UnknownSceneObjectFloatPair.unk_0x00));
-                writer.WriteColNicify(nameof(UnknownSceneObjectFloatPair.unk_0x04));
+                writer.WriteNextColNicify(nameof(UnknownSceneObjectFloatPair.unk_0x00));
+                writer.WriteNextColNicify(nameof(UnknownSceneObjectFloatPair.unk_0x04));
                 writer.WriteNextRow();
 
                 foreach (var file in coliSobjs)
@@ -562,20 +562,20 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol("Game Object #");
                 writer.WriteNextCol("Game Object");
 
-                writer.WriteColNicify(nameof(SkeletalAnimator.zero_0x00));
-                writer.WriteColNicify(nameof(SkeletalAnimator.zero_0x04));
-                writer.WriteColNicify(nameof(SkeletalAnimator.one_0x08));
-                writer.WriteColNicify(nameof(SkeletalAnimator.propertiesPtr));
+                writer.WriteNextColNicify(nameof(SkeletalAnimator.zero_0x00));
+                writer.WriteNextColNicify(nameof(SkeletalAnimator.zero_0x04));
+                writer.WriteNextColNicify(nameof(SkeletalAnimator.one_0x08));
+                writer.WriteNextColNicify(nameof(SkeletalAnimator.propertiesPtr));
 
-                writer.WriteColNicify(nameof(SkeletalProperties.unk_0x00));
-                writer.WriteColNicify(nameof(SkeletalProperties.unk_0x04));
+                writer.WriteNextColNicify(nameof(SkeletalProperties.unk_0x00));
+                writer.WriteNextColNicify(nameof(SkeletalProperties.unk_0x04));
                 writer.WriteFlagNames<EnumFlags32>();
-                writer.WriteColNicify(nameof(SkeletalProperties.unk_0x08));
+                writer.WriteNextColNicify(nameof(SkeletalProperties.unk_0x08));
                 writer.WriteFlagNames<EnumFlags32>();
-                writer.WriteColNicify(nameof(SkeletalProperties.zero_0x0C));
-                writer.WriteColNicify(nameof(SkeletalProperties.zero_0x10));
-                writer.WriteColNicify(nameof(SkeletalProperties.zero_0x14));
-                writer.WriteColNicify(nameof(SkeletalProperties.zero_0x18));
+                writer.WriteNextColNicify(nameof(SkeletalProperties.zero_0x0C));
+                writer.WriteNextColNicify(nameof(SkeletalProperties.zero_0x10));
+                writer.WriteNextColNicify(nameof(SkeletalProperties.zero_0x14));
+                writer.WriteNextColNicify(nameof(SkeletalProperties.zero_0x18));
                 writer.WriteNextRow();
 
                 foreach (var file in coliSobjs)
@@ -627,14 +627,14 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol("Tri Index");
                 writer.WriteNextCol("Addr");
 
-                writer.WriteColNicify(nameof(ColliderTriangle.unk_0x00));
-                writer.WriteColNicify(nameof(ColliderTriangle.normal));
-                writer.WriteColNicify(nameof(ColliderTriangle.vertex0));
-                writer.WriteColNicify(nameof(ColliderTriangle.vertex1));
-                writer.WriteColNicify(nameof(ColliderTriangle.vertex2));
-                writer.WriteColNicify(nameof(ColliderTriangle.precomputed0));
-                writer.WriteColNicify(nameof(ColliderTriangle.precomputed1));
-                writer.WriteColNicify(nameof(ColliderTriangle.precomputed2));
+                writer.WriteNextColNicify(nameof(ColliderTriangle.unk_0x00));
+                writer.WriteNextColNicify(nameof(ColliderTriangle.normal));
+                writer.WriteNextColNicify(nameof(ColliderTriangle.vertex0));
+                writer.WriteNextColNicify(nameof(ColliderTriangle.vertex1));
+                writer.WriteNextColNicify(nameof(ColliderTriangle.vertex2));
+                writer.WriteNextColNicify(nameof(ColliderTriangle.precomputed0));
+                writer.WriteNextColNicify(nameof(ColliderTriangle.precomputed1));
+                writer.WriteNextColNicify(nameof(ColliderTriangle.precomputed2));
 
                 writer.WriteNextRow();
 
@@ -688,16 +688,16 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol("Quad Index");
                 writer.WriteNextCol("Addr");
 
-                writer.WriteColNicify(nameof(ColliderQuad.unk_0x00));
-                writer.WriteColNicify(nameof(ColliderQuad.normal));
-                writer.WriteColNicify(nameof(ColliderQuad.vertex0));
-                writer.WriteColNicify(nameof(ColliderQuad.vertex1));
-                writer.WriteColNicify(nameof(ColliderQuad.vertex2));
-                writer.WriteColNicify(nameof(ColliderQuad.vertex3));
-                writer.WriteColNicify(nameof(ColliderQuad.precomputed0));
-                writer.WriteColNicify(nameof(ColliderQuad.precomputed1));
-                writer.WriteColNicify(nameof(ColliderQuad.precomputed2));
-                writer.WriteColNicify(nameof(ColliderQuad.precomputed3));
+                writer.WriteNextColNicify(nameof(ColliderQuad.unk_0x00));
+                writer.WriteNextColNicify(nameof(ColliderQuad.normal));
+                writer.WriteNextColNicify(nameof(ColliderQuad.vertex0));
+                writer.WriteNextColNicify(nameof(ColliderQuad.vertex1));
+                writer.WriteNextColNicify(nameof(ColliderQuad.vertex2));
+                writer.WriteNextColNicify(nameof(ColliderQuad.vertex3));
+                writer.WriteNextColNicify(nameof(ColliderQuad.precomputed0));
+                writer.WriteNextColNicify(nameof(ColliderQuad.precomputed1));
+                writer.WriteNextColNicify(nameof(ColliderQuad.precomputed2));
+                writer.WriteNextColNicify(nameof(ColliderQuad.precomputed3));
 
                 writer.WriteNextRow();
 
@@ -1201,6 +1201,69 @@ namespace Manifold.IO.GFZ.CourseCollision
 
                         writer.WriteNextRow();
                         sceneObjectIndex++;
+                    }
+                }
+                writer.Flush();
+            }
+        }
+
+        public void AnalyzeTrackNodes(string fileName)
+        {
+            using (var writer = AnalyzerUtility.OpenWriter(fileName))
+            {
+                // Write header
+                writer.WriteNextCol("File");
+                writer.WriteNextCol("Track Node");
+                writer.WriteNextCol("Track Point");
+                writer.WriteNextColNicify(nameof(TrackPoint.unk_0x00));
+                writer.WriteNextColNicify(nameof(TrackPoint.unk_0x04));
+                writer.WriteNextColNicify(nameof(TrackPoint.trackDistanceStart));
+                writer.WriteNextColNicify(nameof(TrackPoint.tangentStart));
+                writer.WriteNextColNicify(nameof(TrackPoint.positionStart));
+                writer.WriteNextColNicify(nameof(TrackPoint.trackDistanceEnd));
+                writer.WriteNextColNicify(nameof(TrackPoint.tangentEnd));
+                writer.WriteNextColNicify(nameof(TrackPoint.positionEnd));
+                writer.WriteNextColNicify(nameof(TrackPoint.transformDistanceEnd));
+                writer.WriteNextColNicify(nameof(TrackPoint.transformDistanceStart));
+                writer.WriteNextColNicify(nameof(TrackPoint.trackWidth));
+                writer.WriteNextColNicify(nameof(TrackPoint.isTrackContinuousStart));
+                writer.WriteNextColNicify(nameof(TrackPoint.isTrackContinuousEnd));
+                writer.WriteNextColNicify(nameof(TrackPoint.zero_0x4E));
+                writer.WriteNextRow();
+
+                foreach (var file in coliSobjs)
+                {
+                    int nodeLength = file.Value.trackNodes.Length;
+                    int nodeIndex = 0;
+                    foreach (var trackNode in file.Value.trackNodes)
+                    {
+                        int pointLength = trackNode.points.Length;
+                        int pointIndex = 0;
+                        foreach (var trackPoint in trackNode.points)
+                        {
+                            writer.WriteNextCol(file.name);
+                            writer.WriteNextCol($"[{nodeIndex}/{nodeLength}]");
+                            writer.WriteNextCol($"[{pointIndex}/{pointLength}]");
+                         
+                            writer.WriteNextCol(trackPoint.unk_0x00);
+                            writer.WriteNextCol(trackPoint.unk_0x04);
+                            writer.WriteNextCol(trackPoint.trackDistanceStart);
+                            writer.WriteNextCol(trackPoint.tangentStart);
+                            writer.WriteNextCol(trackPoint.positionStart);
+                            writer.WriteNextCol(trackPoint.trackDistanceEnd);
+                            writer.WriteNextCol(trackPoint.tangentEnd);
+                            writer.WriteNextCol(trackPoint.positionEnd);
+                            writer.WriteNextCol(trackPoint.transformDistanceEnd);
+                            writer.WriteNextCol(trackPoint.transformDistanceStart);
+                            writer.WriteNextCol(trackPoint.trackWidth);
+                            writer.WriteNextCol(trackPoint.isTrackContinuousStart);
+                            writer.WriteNextCol(trackPoint.isTrackContinuousEnd);
+                            writer.WriteNextCol(trackPoint.zero_0x4E);
+                            writer.WriteNextRow();
+
+                            pointIndex++;
+                        }
+                        nodeIndex++;
                     }
                 }
                 writer.Flush();

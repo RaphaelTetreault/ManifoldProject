@@ -51,17 +51,17 @@ namespace Manifold.IO.GFZ.Camera
                 writer.WriteNextCol("Venue");
                 writer.WriteNextCol("Stage");
                 writer.WriteNextCol("Pan Index");
-                writer.WriteColNicify(nameof(CameraPan.frameCount));
-                writer.WriteColNicify(nameof(CameraPan.lerpSpeed));
-                writer.WriteColNicify(nameof(CameraPan.zero_0x08));
+                writer.WriteNextColNicify(nameof(CameraPan.frameCount));
+                writer.WriteNextColNicify(nameof(CameraPan.lerpSpeed));
+                writer.WriteNextColNicify(nameof(CameraPan.zero_0x08));
                 writer.WriteNextCol("Section");
-                writer.WriteColNicify(nameof(CameraPan.from.cameraPosition));
-                writer.WriteColNicify(nameof(CameraPan.from.lookatPosition));
-                writer.WriteColNicify(nameof(CameraPan.from.fov));
-                writer.WriteColNicify(nameof(CameraPan.from.rotationRoll.Value));
-                writer.WriteColNicify(nameof(CameraPan.from.zero_0x1E));
-                writer.WriteColNicify(nameof(CameraPan.from.interpolation));
-                writer.WriteColNicify(nameof(CameraPan.from.zero_0x22));
+                writer.WriteNextColNicify(nameof(CameraPan.from.cameraPosition));
+                writer.WriteNextColNicify(nameof(CameraPan.from.lookatPosition));
+                writer.WriteNextColNicify(nameof(CameraPan.from.fov));
+                writer.WriteNextColNicify(nameof(CameraPan.from.rotationRoll.Value));
+                writer.WriteNextColNicify(nameof(CameraPan.from.zero_0x1E));
+                writer.WriteNextColNicify(nameof(CameraPan.from.interpolation));
+                writer.WriteNextColNicify(nameof(CameraPan.from.zero_0x22));
                 writer.WriteNextRow();
 
                 foreach (var sobj in analysisSobjs)

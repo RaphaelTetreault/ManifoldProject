@@ -79,7 +79,7 @@ namespace Manifold.IO
             }
         }
 
-        public static void WriteColNicify(this StreamWriter writer, string value)
+        public static void WriteNextColNicify(this StreamWriter writer, string value)
         {
             var name = value.Replace("_", " ");
             var prettyName = UnityEditor.ObjectNames.NicifyVariableName(name);
