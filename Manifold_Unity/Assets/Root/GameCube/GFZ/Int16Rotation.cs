@@ -22,7 +22,7 @@ namespace GameCube.GFZ
         public Int16Rotation(float value)
         {
             this.value = value;
-            this.binary = FloatToShort(value);
+            this.binary = FloatToShortRange180(value);
         }
 
         public static implicit operator float(Int16Rotation shortRotation)
@@ -35,28 +35,38 @@ namespace GameCube.GFZ
             return new Int16Rotation(value);
         }
 
-        public static short FloatToShort(float value)
+        public static short FloatToShortRange180(float value)
         {
-            // Deconstruct rotation into various components
-            float sign = Mathf.Sign(value);
-            float abs = Mathf.Abs(value);
-            float range360 = abs % 360;
-            float signedRange360 = sign * range360;
+            // WOULD BE PROPER, BUT OUR DECOMPOSER ONLY HAS VALUES IN RANGE
+            //// Deconstruct rotation into various components
+            //float sign = Mathf.Sign(value);
+            //float abs = Mathf.Abs(value);
+            //float range360 = abs % 360;
+            //float signedRange360 = sign * range360;
+            //
+            //// Constrain rotations to -180f to +180f range
+            //// When abs value is greater than 180, get same rotation
+            //// with opposite sign. Using the sign ensures +/- ranges
+            //// are properly mirrored.
+            //// Examples. Sample rotation value +/- 350
+            //// ex: (+) 350 > 180: +350 - (+1 * 360) == +350 - 360 = -10
+            //// ex: (-) 350 > 180: -350 - (-1 * 360) == -350 + 360 = +10
+            //float range180 = (range360 > 180f)
+            //    ? signedRange360 - (sign * 360f)
+            //    : signedRange360;
+            //
+            // Normalize float from -180 through +180 to -1 through +1
+            //float normalized = range180 / 180f;
+            // Multiply by "shortMax" to set range -32768 through +32767
+            //short result = (short)(normalized * shortMax);
 
-            // Constrain rotations to -180f to +180f range
-            // When abs value is greater than 180, get same rotation
-            // with opposite sign. Using the sign ensures +/- ranges
-            // are properly mirrored.
-            // Examples. Sample rotation value +/- 350
-            // ex: (+) 350 > 180: +350 - (+1 * 360) == +350 - 360 = -10
-            // ex: (-) 350 > 180: -350 - (-1 * 360) == -350 + 360 = +10
-            float range180 = (range360 > 180f)
-                ? signedRange360 - (sign * 360f)
-                : signedRange360;
-
-            // Normalize float from 360f to 0-1
-            float normalized = range180 / 180f;
-            // Multiply by ushort max to set range 0-65535
+            // ASSERT WE ARE DEALING WITH PROPER VALUES
+            // Check range, -180 inclusive, +180 exclusive
+            Assert.IsTrue(value <  +180f);
+            Assert.IsTrue(value >= -180f);
+            // Normalize float from -180 through +180 to -1 through +1
+            float normalized = value / 180f;
+            // Multiply by "shortMax" to set range -32768 through +32767
             short result = (short)(normalized * shortMax);
 
             return result;
