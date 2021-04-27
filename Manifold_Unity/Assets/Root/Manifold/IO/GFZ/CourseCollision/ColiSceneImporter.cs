@@ -62,7 +62,8 @@ namespace Manifold.IO.GFZ.CourseCollision
                     empty.AddComponent<DisplayTrackCheckpoint>(),
                     empty.AddComponent<DisplayTrigger>(),
                     empty.AddComponent<DisplayUnknownTrigger2>(),
-                    empty.AddComponent<DisplayVisualEffectTrigger>()
+                    empty.AddComponent<DisplayVisualEffectTrigger>(),
+                    empty.AddComponent<TempLodView>(),
                 };
                 foreach (var displayable in displayables)
                 {
@@ -73,7 +74,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 // Course-related values, used to find models
                 // triple digits do "overflow", that's okay.
                 var stageID = course.Value.ID;
-                var stageNumber = stageID.ToString("00"); 
+                var stageNumber = stageID.ToString("00");
                 var venueID = CourseUtility.GetVenueID(stageID).ToString().ToLower();
 
                 // TEMP: Get folder at root of import path.
@@ -92,12 +93,16 @@ namespace Manifold.IO.GFZ.CourseCollision
                     // HACK: skip empties. Should really just do "model not found"
                     if (string.IsNullOrEmpty(sceneObject.name))
                     {
+                        count++;
                         continue;
                     }
 
                     var objectName = sceneObject.name;
                     var prefabName = $"pf_{objectName}";
                     var assetGuids = AssetDatabase.FindAssets(prefabName, searchFolders);
+
+                    // TEMP HACK
+                    objectName = $"[{count:000}] {objectName}";
 
                     string assetPath = string.Empty;
                     if (assetGuids.Length == 1)
@@ -111,6 +116,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                         var emptyGameObject = new GameObject();
                         emptyGameObject.name = $"NoModel:{objectName}";
                         // Stop here, go to next object in iteration
+                        count++;
                         continue;
                     }
                     else
@@ -137,6 +143,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                             var emptyGameObject = new GameObject();
                             emptyGameObject.name = $"NoModel:{objectName}";
                             // Stop here, go to next object in iteration
+                            count++;
                             continue;
                         }
                     }
@@ -162,12 +169,23 @@ namespace Manifold.IO.GFZ.CourseCollision
                     var sceneObjectData = instance.AddComponent<GfzSceneObject>();
                     sceneObjectData.self = sceneObject;
 
-                    // Apply GFZ Transform values onto Unity Transform
-                    instance.transform.position = sceneObject.transform.Position;
-                    instance.transform.rotation = sceneObject.transform.DecomposedRotation.Rotation;
-                    instance.transform.localScale = sceneObject.transform.Scale;
-                    // Perhaps best way when matrix exists? No compression rotation
-                    //sceneObject.transformMatrix3x4.SetUnityTransform(instance.transform);
+
+                    if (sceneObject.transformPtr.IsNotNullPointer)
+                    {
+                        // Perhaps best way when matrix exists? No compression rotation
+                        instance.transform.position = sceneObject.transformMatrix3x4.Position;
+                        instance.transform.rotation = sceneObject.transformMatrix3x4.Rotation;
+                        instance.transform.localScale = sceneObject.transformMatrix3x4.Scale;
+                    }
+                    else
+                    {
+                        // Apply GFZ Transform values onto Unity Transform
+                        instance.transform.position = sceneObject.transform.Position;
+                        instance.transform.rotation = sceneObject.transform.DecomposedRotation.Rotation;
+                        instance.transform.localScale = sceneObject.transform.Scale;
+                    }
+
+
                 }
 
                 // HACK: force-add models for AX test stages
@@ -197,6 +215,28 @@ namespace Manifold.IO.GFZ.CourseCollision
                         var instance = Instantiate(hackObject);
                         instance.name = hackObject.name;
                     }
+                }
+
+                // TEMP: unknown trigger display
+                int triggerCount = 0;
+                int triggerTotal = course.Value.unknownTrigger1s.Length;
+                foreach (var trigger in course.Value.unknownTrigger1s)
+                {
+                    var triggerObject = new GameObject();
+                    //var meshFilter = triggerObject.AddComponent<MeshFilter>();
+                    //var meshRenderer = triggerObject.AddComponent<MeshRenderer>();
+
+                    // Assign transform values used for 
+                    triggerObject.transform.position = trigger.transform.Position;
+                    triggerObject.transform.rotation = trigger.transform.Rotation;
+                    triggerObject.transform.localScale = trigger.transform.Scale * 10f;
+
+                    var displayer = triggerObject.AddComponent<TempDisplayUnknownTrigger1>();
+                    displayer.unk1 = trigger.unk_0x20;
+                    displayer.unk2 = trigger.unk_0x22;
+
+                    triggerObject.name = $"Trigger[{triggerCount}/{triggerTotal}] a:{(ushort)trigger.unk_0x20:X4} b:{(ushort)trigger.unk_0x22:X4}";
+                    triggerCount++;
                 }
 
                 EditorSceneManager.SaveScene(scene, scenePath, false);

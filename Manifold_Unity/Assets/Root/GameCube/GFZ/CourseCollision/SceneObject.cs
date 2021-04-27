@@ -21,8 +21,8 @@ namespace GameCube.GFZ.CourseCollision
         public string name;
 
         // structure
-        public EnumFlags32 unk_0x00;
-        public EnumFlags32 unk_0x04;
+        public LevelOfDetailRadius lodFar;
+        public LevelOfDetailRadius lodNear;
         public Pointer collisionBindingPtr;
         public Transform transform;
         public int zero_0x2C;
@@ -62,8 +62,8 @@ namespace GameCube.GFZ.CourseCollision
         {
             this.RecordStartAddress(reader);
             {
-                reader.ReadX(ref unk_0x00);
-                reader.ReadX(ref unk_0x04);
+                reader.ReadX(ref lodFar, false);
+                reader.ReadX(ref lodNear, false);
                 reader.ReadX(ref collisionBindingPtr);
                 reader.ReadX(ref transform, true);
                 reader.ReadX(ref zero_0x2C);
@@ -113,8 +113,8 @@ namespace GameCube.GFZ.CourseCollision
 
         public void Serialize(BinaryWriter writer)
         {
-            writer.WriteX(unk_0x00);
-            writer.WriteX(unk_0x04);
+            writer.WriteX(lodFar);
+            writer.WriteX(lodNear);
             writer.WriteX(collisionBindingPtr);
             writer.WriteX(transform);
             writer.WriteX(zero_0x2C);

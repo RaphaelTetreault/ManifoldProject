@@ -30,7 +30,8 @@ namespace Manifold.IO.GFZ.CourseCollision
             transformsComparison = true,
             unknownAnimationData = true,
             unknownTrigger1 = true,
-            venueMetadataObject = true;
+            venueMetadataObject = true,
+            hack_drivable = true;
 
         [Header("Preferences")]
         [SerializeField]
@@ -54,6 +55,16 @@ namespace Manifold.IO.GFZ.CourseCollision
         {
             coliSobjs = AssetDatabaseUtility.GetSobjByOption(coliSobjs, analysisOption, searchFolders);
             var time = AnalyzerUtility.GetFileTimestamp();
+
+            /////////////////////
+
+            if (hack_drivable)
+            {
+                Hack();
+            }
+
+            //////////////////////
+            
 
             if (animations)
             {
@@ -190,6 +201,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 EditorUtility.DisplayProgressBar(ExecuteText, filePath, .5f);
                 AnalyzeStoryObjectTrigger(filePath);
             }
+
 
             // OPEN FOLDER after analysis
             if (openFolderAfterAnalysis)
@@ -468,10 +480,10 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol("File");
                 writer.WriteNextCol("Game Object #");
                 writer.WriteNextCol("Game Object");
-                writer.WriteNextCol(nameof(SceneObject.unk_0x00));
-                writer.WriteFlagNames<EnumFlags32>();
-                writer.WriteNextCol(nameof(SceneObject.unk_0x04));
-                writer.WriteFlagNames<EnumFlags32>();
+                writer.WriteNextCol(nameof(SceneObject.lodFar));
+                writer.WriteNextCol(nameof(SceneObject.lodFar));
+                writer.WriteNextCol(nameof(SceneObject.lodNear));
+                writer.WriteNextCol(nameof(SceneObject.lodNear));
                 writer.WriteNextCol(nameof(SceneObject.collisionBindingPtr));
                 writer.WriteNextCol(nameof(SceneObject.transform.Position));
                 writer.WriteNextCol(nameof(SceneObject.transform.RotationEuler));
@@ -491,10 +503,10 @@ namespace Manifold.IO.GFZ.CourseCollision
                         writer.WriteNextCol(file.FileName);
                         writer.WriteNextCol(sceneObjectIndex);
                         writer.WriteNextCol(sceneObject.name);
-                        writer.WriteNextCol((int)sceneObject.unk_0x00);
-                        writer.WriteFlags(sceneObject.unk_0x00);
-                        writer.WriteNextCol((int)sceneObject.unk_0x04);
-                        writer.WriteFlags(sceneObject.unk_0x04);
+                        writer.WriteNextCol(sceneObject.lodFar.radius);
+                        writer.WriteNextCol(sceneObject.lodFar.RadiusSquared);
+                        writer.WriteNextCol(sceneObject.lodNear.radius);
+                        writer.WriteNextCol(sceneObject.lodNear.RadiusSquared);
                         writer.WriteNextCol(sceneObject.collisionBindingPtr.HexAddress);
                         writer.WriteNextCol(sceneObject.transform.Position);
                         writer.WriteNextCol(sceneObject.transform.RotationEuler);
@@ -894,11 +906,10 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol("Start");
                 writer.WriteNextCol("End");
                 //
-                writer.WriteNextCol(nameof(UnknownTrigger1.transform.Position));
-                writer.WriteNextCol(nameof(UnknownTrigger1.transform.RotationEuler));
-                writer.WriteNextCol(nameof(UnknownTrigger1.transform.Scale));
+                writer.WriteNextCol(nameof(UnknownTrigger1.unk_0x20));
                 writer.WriteNextCol(nameof(UnknownTrigger1.unk_0x20));
                 //
+                writer.WriteNextCol("Order");
                 writer.WriteNextCol("Index");
                 writer.WriteNextRow();
 
@@ -924,11 +935,10 @@ namespace Manifold.IO.GFZ.CourseCollision
                         writer.WriteNextCol(item.StartAddressHex());
                         writer.WriteNextCol(item.EndAddressHex());
 
-                        writer.WriteNextCol(item.transform.Position);
-                        writer.WriteNextCol(item.transform.RotationEuler);
-                        writer.WriteNextCol(item.transform.Scale);
                         writer.WriteNextCol(item.unk_0x20);
+                        writer.WriteNextCol($"0x{(int)item.unk_0x20:X8}");
 
+                        writer.WriteNextCol(count);
                         writer.WriteNextCol($"[{count}/{total}]");
 
                         writer.WriteNextRow();
@@ -1244,7 +1254,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                             writer.WriteNextCol(file.name);
                             writer.WriteNextCol($"[{nodeIndex}/{nodeLength}]");
                             writer.WriteNextCol($"[{pointIndex}/{pointLength}]");
-                         
+
                             writer.WriteNextCol(trackPoint.unk_0x00);
                             writer.WriteNextCol(trackPoint.unk_0x04);
                             writer.WriteNextCol(trackPoint.trackDistanceStart);
@@ -1267,6 +1277,32 @@ namespace Manifold.IO.GFZ.CourseCollision
                     }
                 }
                 writer.Flush();
+            }
+        }
+
+        public void Hack()
+        {
+            foreach (var file in coliSobjs)
+            {
+                var index = 0;
+                // maybe name with 256?
+                foreach (var triMeshIndex in file.Value.surfaceAttributeMeshTable.triMeshIndexes)
+                {
+                    index++;
+
+                    //if (index != 1)
+                    //    return;
+
+                    foreach (var x in triMeshIndex.indexes)
+                    {
+                        if (x == null)
+                            return;
+
+                        var length = x.Length;
+                        if (length > 0)
+                            Debug.Log($"Course:{file.name} Index:{index} Length:{length}");
+                    }
+                }
             }
         }
 

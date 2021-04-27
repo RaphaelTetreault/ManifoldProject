@@ -41,7 +41,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 Gizmos.DrawMesh(mesh, 0, transform.Position, transform.Rotation, transform.Scale * size);
                 Gizmos.DrawWireMesh(mesh, 0, transform.Position, transform.Rotation, transform.Scale * size);
                 //if (drawNumber)
-                UnityEditor.Handles.Label(transform.Position, count.ToString(), style);
+                UnityEditor.Handles.Label(transform.Position, $"{count}:{(int)item.unk_0x20:X8}", style);
             }
         }
     }

@@ -12,7 +12,8 @@ namespace GameCube.GFZ.CourseCollision
         private AddressRange addressRange;
 
         public Transform transform;
-        public EnumFlags32 unk_0x20;
+        public EnumFlags16 unk_0x20;
+        public EnumFlags16 unk_0x22;
 
 
         public AddressRange AddressRange
@@ -28,6 +29,7 @@ namespace GameCube.GFZ.CourseCollision
             {
                 reader.ReadX(ref transform, true);
                 reader.ReadX(ref unk_0x20);
+                reader.ReadX(ref unk_0x22);
             }
             this.RecordEndAddress(reader);
         }
