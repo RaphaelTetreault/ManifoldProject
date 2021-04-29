@@ -30,8 +30,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             transformsComparison = true,
             unknownAnimationData = true,
             unknownTrigger1 = true,
-            venueMetadataObject = true,
-            hack_drivable = true;
+            venueMetadataObject = true;
 
         [Header("Preferences")]
         [SerializeField]
@@ -56,15 +55,6 @@ namespace Manifold.IO.GFZ.CourseCollision
             coliSobjs = AssetDatabaseUtility.GetSobjByOption(coliSobjs, analysisOption, searchFolders);
             var time = AnalyzerUtility.GetFileTimestamp();
 
-            /////////////////////
-
-            if (hack_drivable)
-            {
-                Hack();
-            }
-
-            //////////////////////
-            
 
             if (animations)
             {
@@ -167,6 +157,13 @@ namespace Manifold.IO.GFZ.CourseCollision
                     EditorUtility.DisplayProgressBar(ExecuteText, filePath, (float)(i + 1) / TopologyParameters.kFieldCount);
                     AnalyzeTrackData(filePath, i);
                 }
+
+                {
+                    var filePath = $"{time} COLI {nameof(TopologyParameters)} ALL.tsv";
+                    filePath = Path.Combine(outputPath, filePath);
+                    EditorUtility.DisplayProgressBar(ExecuteText, filePath, 0.95f);
+                    AnalyzeTrackDataAll(filePath);
+                }
             }
 
             // TRACK TRANSFORMS
@@ -175,7 +172,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 var filePath = $"{time} COLI {nameof(TrackTransform)}.tsv";
                 filePath = Path.Combine(outputPath, filePath);
                 EditorUtility.DisplayProgressBar(ExecuteText, filePath, .5f);
-                AnalyzeTransforms(filePath);
+                AnalyzeTrackTransforms(filePath);
             }
 
             if (unknownAnimationData)
@@ -216,20 +213,57 @@ namespace Manifold.IO.GFZ.CourseCollision
 
         #region Track Data / Transforms
 
+        public void AnalyzeTrackDataAll(string filename)
+        {
+            using (var writer = AnalyzerUtility.OpenWriter(filename))
+            {
+                // Write header
+                writer.WriteNextCol("FileName");
+                writer.WriteNextCol("Game");
+                writer.WriteNextCol("Index");
+                writer.WriteNextCol("Track Node Index");
+                writer.WriteNextCol($"Param Index");
+                writer.WriteNextCol("Address");
+                writer.WriteNextCol(nameof(KeyableAttribute.easeMode));
+                writer.WriteNextCol(nameof(KeyableAttribute.time));
+                writer.WriteNextCol(nameof(KeyableAttribute.value));
+                writer.WriteNextCol(nameof(KeyableAttribute.zTangentIn));
+                writer.WriteNextCol(nameof(KeyableAttribute.zTangentOut));
+                writer.WriteNextRow();
+
+                // foreach File
+                foreach (var sobj in coliSobjs)
+                {
+                    // foreach Transform
+                    foreach (var trackTransform in sobj.Value.trackTransforms)
+                    {
+                        for (int i = 0; i < 9; i++)
+                        {
+                            WriteTrackDataRecursive(writer, sobj, 0, i, trackTransform);
+                        }
+                    }
+                }
+
+                writer.Flush();
+            }
+        }
+
         public void AnalyzeTrackData(string filename, int paramIndex)
         {
             using (var writer = AnalyzerUtility.OpenWriter(filename))
             {
                 // Write header
-                writer.WriteNextCol("File Path");
+                writer.WriteNextCol("FileName");
+                writer.WriteNextCol("Game");
+                writer.WriteNextCol("Index");
                 writer.WriteNextCol("Track Node Index");
                 writer.WriteNextCol($"Param [{paramIndex + 1}] Index");
                 writer.WriteNextCol("Address");
-                writer.WriteNextCol("unk_0x00");
-                writer.WriteNextCol("unk_0x04");
-                writer.WriteNextCol("unk_0x08");
-                writer.WriteNextCol("unk_0x0C");
-                writer.WriteNextCol("unk_0x10");
+                writer.WriteNextCol(nameof(KeyableAttribute.easeMode));
+                writer.WriteNextCol(nameof(KeyableAttribute.time));
+                writer.WriteNextCol(nameof(KeyableAttribute.value));
+                writer.WriteNextCol(nameof(KeyableAttribute.zTangentIn));
+                writer.WriteNextCol(nameof(KeyableAttribute.zTangentOut));
                 writer.WriteNextRow();
 
                 // foreach File
@@ -246,30 +280,34 @@ namespace Manifold.IO.GFZ.CourseCollision
             }
         }
 
-        public void WriteTrackDataRecursive(StreamWriter writer, ColiSceneSobj sobj, int level, int i, TrackTransform trackTransform)
+        public void WriteTrackDataRecursive(StreamWriter writer, ColiSceneSobj sobj, int depth, int paramIndex, TrackTransform trackTransform)
         {
-            if (trackTransform.topologyParameters != null)
-            {
-                var @params = trackTransform.topologyParameters.Params();
+            //if (trackTransform.transformTopology != null)
+            //{
+                var @params = trackTransform.transformTopology.Params();
                 var printIndex = 1;
-                var printTotal = @params[i].Length;
+                var printTotal = @params[paramIndex].Length;
 
                 // foreach Topology
-                foreach (var param in @params[i])
-                    WriteTrackData(writer, sobj, level, printIndex++, printTotal, param);
-            }
+                foreach (var param in @params[paramIndex])
+                    WriteTrackData(writer, sobj, depth++, printIndex++, printTotal, param);
+            //}
 
             foreach (var child in trackTransform.children)
             {
-                WriteTrackDataRecursive(writer, sobj, level + 1, i, child);
+                WriteTrackDataRecursive(writer, sobj, depth + 1, paramIndex, child);
             }
         }
 
         public void WriteTrackData(StreamWriter writer, ColiSceneSobj sobj, int level, int index, int total, KeyableAttribute param)
         {
-            writer.WriteNextCol(sobj.FilePath);
+            string gameId = sobj.Value.header.IsFileGX ? "GX" : "AX";
+
+            writer.WriteNextCol(sobj.FileName);
+            writer.WriteNextCol(gameId);
+            writer.WriteNextCol(index);
             writer.WriteNextCol($"[{index}/{total}]");
-            writer.WriteNextCol($"{level}");
+            writer.WriteNextCol($"{level}"); // param index
             writer.WriteNextCol(param.StartAddressHex());
             writer.WriteNextCol(param.easeMode);
             writer.WriteNextCol(param.time);
@@ -280,38 +318,58 @@ namespace Manifold.IO.GFZ.CourseCollision
         }
 
 
-        public void AnalyzeTransforms(string filename)
+        public void AnalyzeTrackTransforms(string filename)
         {
             using (var writer = AnalyzerUtility.OpenWriter(filename))
             {
-                writer.WriteNextCol("File Path");
+                writer.WriteNextCol("Filename");
                 writer.WriteNextCol("Root Index");
                 writer.WriteNextCol("Transform Depth");
                 writer.WriteNextCol("Address");
-                writer.WriteNextCol("Hierarchy Depth");
-                writer.WriteNextCol("zero_0x01");
-                writer.WriteNextCol("hasChildren");
-                writer.WriteNextCol("zero_0x03");
-                writer.WriteNextCol("topologyParamsAbsPtr");
-                writer.WriteNextCol("zero_0x08");
-                writer.WriteNextCol("Child Count");
-                writer.WriteNextCol("Children Abs Ptr");
-                writer.WriteNextCol("localScale");
-                writer.WriteNextCol("localRotation");
-                writer.WriteNextCol("localPosition");
-                writer.WriteNextCol("unk_0x38");
-                writer.WriteNextCol("unk_0x3C");
-                writer.WriteNextCol("unk_0x40");
-                writer.WriteNextCol("unk_0x44");
-                writer.WriteNextCol("unk_0x48");
-                writer.WriteNextCol("unk_0x4C");
+                writer.WriteNextCol(nameof(TrackTransform.unk_0x00));
+                writer.WriteNextCol(nameof(TrackTransform.unk_0x01));
+                writer.WriteNextCol(nameof(TrackTransform.unk_0x02));
+                writer.WriteNextCol(nameof(TrackTransform.unk_0x03));
+                writer.WriteNextCol(nameof(TrackTransform.transformTopologyPtr));
+                writer.WriteNextCol(nameof(TrackTransform.sliceTopologyPtr));
+                writer.WriteNextCol(nameof(TrackTransform.childrenPtr));
+                writer.WriteNextCol(nameof(TrackTransform.localScale));
+                writer.WriteNextCol(nameof(TrackTransform.localRotation));
+                writer.WriteNextCol(nameof(TrackTransform.localPosition));
+                writer.WriteNextCol(nameof(TrackTransform.unk_0x38));
+                writer.WriteNextCol(nameof(TrackTransform.unk_0x3A));
+                writer.WriteNextCol(nameof(TrackTransform.railHeightRight));
+                writer.WriteNextCol(nameof(TrackTransform.railHeightLeft));
+                writer.WriteNextCol(nameof(TrackTransform.zero_0x44));
+                writer.WriteNextCol(nameof(TrackTransform.zero_0x48));
+                writer.WriteNextCol(nameof(TrackTransform.unk_0x4C));
+                //
+                writer.WriteNextColNicify(nameof(TopologyExtra.unk_0x00));
+                writer.WriteNextColNicify(nameof(TopologyExtra.unk_0x04));
+                writer.WriteNextColNicify(nameof(TopologyExtra.unk_0x08));
+                writer.WriteNextColNicify(nameof(TopologyExtra.unk_0x0C));
+                writer.WriteNextColNicify(nameof(TopologyExtra.unk_0x10));
+                writer.WriteNextColNicify(nameof(TopologyExtra.unk_0x14));
+                writer.WriteNextColNicify(nameof(TopologyExtra.unk_0x18));
+                writer.WriteNextColNicify(nameof(TopologyExtra.unk_0x1C));
+                writer.WriteNextColNicify(nameof(TopologyExtra.unk_0x20));
+                writer.WriteNextColNicify(nameof(TopologyExtra.unk_0x24));
+                writer.WriteNextColNicify(nameof(TopologyExtra.unk_0x28));
+                writer.WriteNextColNicify(nameof(TopologyExtra.unk_0x2C));
+                writer.WriteNextColNicify(nameof(TopologyExtra.unk_0x30));
+                writer.WriteNextColNicify(nameof(TopologyExtra.unk_0x34));
+                writer.WriteNextColNicify(nameof(TopologyExtra.zero_0x35));
+                writer.WriteNextColNicify(nameof(TopologyExtra.unk_0x36));
+                writer.WriteNextColNicify(nameof(TopologyExtra.zero_0x37));
+                //
                 writer.WriteNextRow();
 
                 foreach (var sobj in coliSobjs)
                 {
+                    var scene = sobj.Value;
                     var index = 0;
-                    var total = sobj.Value.trackTransforms.Count;
-                    foreach (var trackTransform in sobj.Value.trackTransforms)
+                    var total = scene.trackTransforms.Count;
+                    foreach (var trackTransform in scene.trackTransforms)
                     {
                         WriteTrackTransformRecursive(writer, sobj, 0, index++, total, trackTransform);
                     }
@@ -323,8 +381,10 @@ namespace Manifold.IO.GFZ.CourseCollision
 
         public void WriteTrackTransformRecursive(StreamWriter writer, ColiSceneSobj sobj, int level, int index, int total, TrackTransform trackTransform)
         {
+            // Write Parent
             WriteTrackTransform(writer, sobj, level, index, total, trackTransform);
 
+            // Write children
             foreach (var child in trackTransform.children)
             {
                 WriteTrackTransformRecursive(writer, sobj, level + 1, index, total, child);
@@ -333,29 +393,52 @@ namespace Manifold.IO.GFZ.CourseCollision
 
         public void WriteTrackTransform(StreamWriter writer, ColiSceneSobj sobj, int level, int index, int total, TrackTransform trackTransform)
         {
-            writer.WriteNextCol(sobj.FilePath);
+            writer.WriteNextCol(sobj.FileName);
             writer.WriteNextCol($"[{index}/{total}]");
             writer.WriteNextCol($"{level}");
             writer.WriteNextCol(trackTransform.StartAddressHex());
-            writer.WriteNextCol(trackTransform.hierarchyDepth);
-            writer.WriteNextCol(trackTransform.zero_0x01);
-            writer.WriteNextCol(trackTransform.hasChildren);
-            writer.WriteNextCol(trackTransform.zero_0x03);
-            writer.WriteNextCol("0x" + trackTransform.topologyParamsAbsPtr.ToString("X8"));
-            writer.WriteNextCol("0x" + trackTransform.unk_0x08_absPtr.ToString("X8"));
-            writer.WriteNextCol(trackTransform.childCount);
-            writer.WriteNextCol("0x" + trackTransform.childrenAbsPtr.ToString("X8"));
+            writer.WriteNextCol(trackTransform.unk_0x00);
+            writer.WriteNextCol(trackTransform.unk_0x01);
+            writer.WriteNextCol(trackTransform.unk_0x02);
+            writer.WriteNextCol(trackTransform.unk_0x03);
+            writer.WriteNextCol(trackTransform.transformTopologyPtr);
+            writer.WriteNextCol(trackTransform.sliceTopologyPtr);
+            writer.WriteNextCol(trackTransform.childrenPtr);
             writer.WriteNextCol(trackTransform.localScale);
             writer.WriteNextCol(trackTransform.localRotation);
             writer.WriteNextCol(trackTransform.localPosition);
             writer.WriteNextCol(trackTransform.unk_0x38);
-            writer.WriteNextCol(trackTransform.unk_0x3C);
-            writer.WriteNextCol(trackTransform.unk_0x40);
+            writer.WriteNextCol(trackTransform.unk_0x3A);
+            writer.WriteNextCol(trackTransform.railHeightRight);
+            writer.WriteNextCol(trackTransform.railHeightLeft);
             writer.WriteNextCol(trackTransform.zero_0x44);
             writer.WriteNextCol(trackTransform.zero_0x48);
             writer.WriteNextCol(trackTransform.unk_0x4C);
+            //
+            if (trackTransform.sliceTopologyPtr.IsNotNullPointer)
+            {
+                writer.WriteNextCol(trackTransform.sliceTopology.unk_0x00);
+                writer.WriteNextCol(trackTransform.sliceTopology.unk_0x04);
+                writer.WriteNextCol(trackTransform.sliceTopology.unk_0x08);
+                writer.WriteNextCol(trackTransform.sliceTopology.unk_0x0C);
+                writer.WriteNextCol(trackTransform.sliceTopology.unk_0x10);
+                writer.WriteNextCol(trackTransform.sliceTopology.unk_0x14);
+                writer.WriteNextCol(trackTransform.sliceTopology.unk_0x18);
+                writer.WriteNextCol(trackTransform.sliceTopology.unk_0x1C);
+                writer.WriteNextCol(trackTransform.sliceTopology.unk_0x20);
+                writer.WriteNextCol(trackTransform.sliceTopology.unk_0x24);
+                writer.WriteNextCol(trackTransform.sliceTopology.unk_0x28);
+                writer.WriteNextCol(trackTransform.sliceTopology.unk_0x2C);
+                writer.WriteNextCol(trackTransform.sliceTopology.unk_0x30);
+                writer.WriteNextCol(trackTransform.sliceTopology.unk_0x34);
+                writer.WriteNextCol(trackTransform.sliceTopology.zero_0x35);
+                writer.WriteNextCol(trackTransform.sliceTopology.unk_0x36);
+                writer.WriteNextCol(trackTransform.sliceTopology.zero_0x37);
+            }
+            //
             writer.WriteNextRow();
         }
+
 
         #endregion
 
@@ -1280,31 +1363,6 @@ namespace Manifold.IO.GFZ.CourseCollision
             }
         }
 
-        public void Hack()
-        {
-            foreach (var file in coliSobjs)
-            {
-                var index = 0;
-                // maybe name with 256?
-                foreach (var triMeshIndex in file.Value.surfaceAttributeMeshTable.triMeshIndexes)
-                {
-                    index++;
-
-                    //if (index != 1)
-                    //    return;
-
-                    foreach (var x in triMeshIndex.indexes)
-                    {
-                        if (x == null)
-                            return;
-
-                        var length = x.Length;
-                        if (length > 0)
-                            Debug.Log($"Course:{file.name} Index:{index} Length:{length}");
-                    }
-                }
-            }
-        }
 
     }
 }

@@ -11,49 +11,29 @@ namespace GameCube.GFZ.CourseCollision
     public class TopologyParameters : IBinarySerializable, IBinaryAddressableRange
     {
 
-        #region FIELDS
-
         public const int kFieldCount = 9;
 
         [SerializeField]
         private AddressRange addressRange;
 
 
-        [Hex(8), Space]
         public int count1;
-        [Hex(8)]
         public int count2;
-        [Hex(8)]
         public int count3;
-        [Hex(8)]
         public int count4;
-        [Hex(8)]
         public int count5;
-        [Hex(8)]
         public int count6;
-        [Hex(8)]
         public int count7;
-        [Hex(8)]
         public int count8;
-        [Hex(8)]
         public int count9;
-        [Hex(8)]
         public int absPtr1;
-        [Hex(8)]
         public int absPtr2;
-        [Hex(8)]
         public int absPtr3;
-        [Hex(8)]
         public int absPtr4;
-        [Hex(8)]
         public int absPtr5;
-        [Hex(8)]
         public int absPtr6;
-        [Hex(8)]
         public int absPtr7;
-        [Hex(8)]
         public int absPtr8;
-        [Hex(8)]
         public int absPtr9;
 
         //
@@ -67,6 +47,7 @@ namespace GameCube.GFZ.CourseCollision
         public KeyableAttribute[] params8 = new KeyableAttribute[0];
         public KeyableAttribute[] params9 = new KeyableAttribute[0];
 
+        public UnityEngine.AnimationCurve curve1;
 
         public KeyableAttribute[][] Params()
         {
@@ -80,42 +61,11 @@ namespace GameCube.GFZ.CourseCollision
             return topology;
         }
 
-        public int[] Counts()
-        {
-            return new int[]
-            {
-                count1, count2, count3,
-                count4, count5, count6,
-                count7, count8, count9,
-            };
-        }
-
-        public int[] AbsPtrs()
-        {
-            return new int[]
-            {
-                absPtr1, absPtr2, absPtr3,
-                absPtr4, absPtr5, absPtr6,
-                absPtr7, absPtr8, absPtr9,
-            };
-        }
-
-
-        #endregion
-
-        #region PROPERTIES
-
-
         public AddressRange AddressRange
         {
             get => addressRange;
             set => addressRange = value;
         }
-
-
-        #endregion
-
-        #region METHODS
 
 
         public void Deserialize(BinaryReader reader)
@@ -171,6 +121,49 @@ namespace GameCube.GFZ.CourseCollision
                 reader.BaseStream.Seek(absPtr9, SeekOrigin.Begin);
                 reader.ReadX(ref params9, count9, true);
             }
+            //
+            {
+                var keyframes = new Keyframe[params1.Length];
+                for (int i = 0; i < keyframes.Length; i++)
+                {
+                    var key = params1[i];
+                    var keyframe = new Keyframe(key.time, key.value, key.zTangentIn, key.zTangentOut);
+                    keyframes[i] = keyframe;
+                }
+                curve1 = new UnityEngine.AnimationCurve(keyframes);
+
+                // Transfer keyframe
+                for (int i = 0; i < params1.Length; i++)
+                {
+                    var key = params1[i];
+
+                    UnityEditor.AnimationUtility.TangentMode mode;
+                    switch (key.easeMode)
+                    {
+                        case InterpolationMode.Constant:
+                            mode = UnityEditor.AnimationUtility.TangentMode.Constant;
+                            break;
+
+                        case InterpolationMode.Linear:
+                            mode = UnityEditor.AnimationUtility.TangentMode.Linear;
+                            break;
+
+                        case InterpolationMode.unknown1:
+                            mode = UnityEditor.AnimationUtility.TangentMode.Free;
+                            break;
+
+                        case InterpolationMode.unknown2:
+                            mode = UnityEditor.AnimationUtility.TangentMode.;
+                            break;
+
+                        default:
+                            throw new NotImplementedException();
+                    }
+                    UnityEditor.AnimationUtility.SetKeyLeftTangentMode(curve1, i, mode);
+                    UnityEditor.AnimationUtility.SetKeyRightTangentMode(curve1, i, mode);
+                }
+                // end
+            }
             this.SetReaderToEndAddress(reader);
         }
 
@@ -197,9 +190,6 @@ namespace GameCube.GFZ.CourseCollision
 
             throw new NotImplementedException();
         }
-
-
-        #endregion
 
     }
 }

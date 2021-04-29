@@ -1,5 +1,6 @@
 namespace Manifold.IO
 {
+    [System.Serializable]
     public struct AddressRange
     {
         [Hex(8)]

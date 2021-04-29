@@ -142,6 +142,8 @@ namespace GameCube.GFZ.CourseCollision
             reader.JumpToAddress(header.trackIndexTable);
             reader.ReadX(ref trackIndexTable, true);
 
+            // Clear
+            trackTransforms = new List<TrackTransform>();
             // Let's build the transform after-the-fact
             // We want to remove duplicate references to the same instance.
             var usedKeys = new List<int>();

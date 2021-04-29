@@ -70,7 +70,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 }
             }
 
-            foreach (var param in trackTransform.topologyParameters.Params())
+            foreach (var param in trackTransform.transformTopology.Params())
             {
 
             }

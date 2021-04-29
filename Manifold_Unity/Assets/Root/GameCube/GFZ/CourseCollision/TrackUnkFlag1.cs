@@ -1,6 +1,7 @@
 namespace GameCube.GFZ.CourseCollision
 {
-    public enum HierarchyDepth : byte
+    [System.Flags]
+    public enum TrackUnkFlag1 : byte
     {
         UNK_0 = 1 << 0,
         UNK_1 = 1 << 1,

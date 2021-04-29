@@ -36,19 +36,19 @@ namespace Manifold.IO.GFZ.CourseCollision
         {
             courseScenes = AssetDatabaseUtility.GetSobjByOption(courseScenes, importOption, importFrom);
 
-            foreach (var course in courseScenes)
+            foreach (var scene in courseScenes)
             {
                 // Progress bar values
                 var count = 0;
-                var total = course.Value.sceneObjects.Length;
+                var total = scene.Value.sceneObjects.Length;
 
                 // Create new, empty scene
-                var sceneName = course.name;
+                var sceneName = scene.name;
                 var scenePath = $"Assets/{importTo}/{sceneName}.unity";
-                var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
-                EditorSceneManager.SaveScene(scene, scenePath);
+                var unityScene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+                EditorSceneManager.SaveScene(unityScene, scenePath);
                 // Keep reference of new scene
-                scene = EditorSceneManager.OpenScene(scenePath);
+                unityScene = EditorSceneManager.OpenScene(scenePath);
 
                 // TEMP DATA
                 // Create track vis, set parameter
@@ -67,13 +67,13 @@ namespace Manifold.IO.GFZ.CourseCollision
                 };
                 foreach (var displayable in displayables)
                 {
-                    displayable.SceneSobj = course;
+                    displayable.SceneSobj = scene;
                 }
 
 
                 // Course-related values, used to find models
                 // triple digits do "overflow", that's okay.
-                var stageID = course.Value.ID;
+                var stageID = scene.Value.ID;
                 var stageNumber = stageID.ToString("00");
                 var venueID = CourseUtility.GetVenueID(stageID).ToString().ToLower();
 
@@ -88,7 +88,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 var searchFolders = new string[] { initFolder, stageFolder, venueFolder };
 
                 // Find all scene objects, add them to scene
-                foreach (var sceneObject in course.Value.sceneObjects)
+                foreach (var sceneObject in scene.Value.sceneObjects)
                 {
                     // HACK: skip empties. Should really just do "model not found"
                     if (string.IsNullOrEmpty(sceneObject.name))
@@ -152,7 +152,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                     var asset = AssetDatabase.LoadAssetAtPath<UnityEngine.GameObject>(assetPath);
 
                     // Progress bar update
-                    var title = $"Generating Scene ({course.name})";
+                    var title = $"Generating Scene ({scene.name})";
                     var info = $"{objectName}";
                     var progress = (float)count / total;
                     EditorUtility.DisplayProgressBar(title, info, progress);
@@ -203,7 +203,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                     foreach (var assetGuid in hackGuids)
                     {
                         // Progress bar
-                        var title = $"Generating Scene ({course.name})";
+                        var title = $"Generating Scene ({scene.name})";
                         var info = $"HACK: adding AX models...";
                         var progress = (float)hackCount / hackTotal;
                         EditorUtility.DisplayProgressBar(title, info, progress);
@@ -219,8 +219,8 @@ namespace Manifold.IO.GFZ.CourseCollision
 
                 // TEMP: unknown trigger display
                 int triggerCount = 0;
-                int triggerTotal = course.Value.unknownTrigger1s.Length;
-                foreach (var trigger in course.Value.unknownTrigger1s)
+                int triggerTotal = scene.Value.unknownTrigger1s.Length;
+                foreach (var trigger in scene.Value.unknownTrigger1s)
                 {
                     var triggerObject = new GameObject();
                     //var meshFilter = triggerObject.AddComponent<MeshFilter>();
@@ -239,11 +239,119 @@ namespace Manifold.IO.GFZ.CourseCollision
                     triggerCount++;
                 }
 
-                EditorSceneManager.SaveScene(scene, scenePath, false);
+                //
+                CreateTrackTransformHierarchy(scene);
+                CreateTrackTransformSet(scene);
+
+                EditorSceneManager.SaveScene(unityScene, scenePath, false);
             } // foreach COLI_COURSE
             EditorUtility.ClearProgressBar();
             AssetDatabase.Refresh();
         }
 
+
+        public void CreateTrackTransformHierarchy(ColiScene scene)
+        {
+            // Get mesh for debugging
+            var mesh = Resources.GetBuiltinResource<Mesh>("Cube.fbx");
+
+            // Create object to house data
+            var controlPointsParent = new GameObject();
+            controlPointsParent.name = "Control Points Hierarchy";
+
+            // Loop over every top transform
+            int count = 0;
+            int total = scene.trackTransforms.Count;
+            foreach (var trackTransform in scene.trackTransforms)
+            {
+                // Recursively create transforms
+                count++;
+                var name = $"[{count}/{total}] Control Point | {count}";
+                CreateControlPointRecursive(trackTransform, controlPointsParent, mesh, name, 0);
+            }
+        }
+
+        public void CreateTrackTransformSet(ColiScene scene)
+        {
+            // Get mesh for debugging
+            var mesh = Resources.GetBuiltinResource<Mesh>("Cube.fbx");
+
+            // Create object to house data
+            var controlPointsRoot = new GameObject();
+            controlPointsRoot.name = "Control Points Set";
+
+            // Loop over every top transform
+            //int count = 0;
+            int index = 0;
+            int total = scene.trackTransforms.Count;
+            foreach (var trackTransform in scene.trackTransforms)
+            {
+                //
+                var name = $"[{++index}/{total}] Control Point";
+                var controlPointSet = new GameObject();
+                controlPointSet.name = name;
+                controlPointSet.transform.parent = controlPointsRoot.transform;
+                CreateControlPointSequential(trackTransform, controlPointSet, mesh, name, 0, 0);
+
+                // Recursively create transforms
+                //count++;
+                //var name = $"[{count}/{total}] Control Point | {count}";
+                //CreateControlPointRecursive(trackTransform, controlPointsParent, mesh, name, 0);
+            }
+        }
+
+        public void CreateControlPointRecursive(TrackTransform trackTransform, GameObject parent, Mesh mesh, string name, int depth)
+        {
+            //
+            var controlPoint = new GameObject();
+            //
+            controlPoint.name = name;
+            controlPoint.transform.parent = parent.transform;
+            // Set transform
+            controlPoint.transform.localPosition = trackTransform.localPosition;
+            controlPoint.transform.localRotation = Quaternion.Euler(trackTransform.localRotation);
+            controlPoint.transform.localScale = trackTransform.localScale;
+
+            //
+            //var meshRenderer = controlPoint.AddComponent<MeshRenderer>();
+            //var meshFilter = controlPoint.AddComponent<MeshFilter>();
+
+            // Assign values to
+            //meshFilter.sharedMesh = mesh;
+            //meshRenderer.material
+
+            //
+            var display = controlPoint.AddComponent<DisplayTrackTransformSingle>();
+            display.depth = depth;
+
+            //
+            int count = 1;
+            int total = trackTransform.children.Length;
+            foreach (var child in trackTransform.children)
+            {
+                name = $"{name}.{count++}";
+                CreateControlPointRecursive(child, controlPoint, mesh, name, depth + 1);
+            }
+        }
+    
+        public void CreateControlPointSequential(TrackTransform trackTransform, GameObject parent, Mesh mesh, string name, int depth, int index)
+        {
+            //Create new control point
+            var controlPoint = new GameObject();
+            //
+            controlPoint.name = $"{name} {depth}.{index}";
+            controlPoint.transform.parent = parent.transform;
+            // Set transform
+            controlPoint.transform.position = trackTransform.localPosition;
+            controlPoint.transform.rotation = Quaternion.Euler(trackTransform.localRotation);
+            controlPoint.transform.localScale = trackTransform.localScale;
+
+            //
+            index = 0;
+            foreach (var next in trackTransform.children)
+            {
+                CreateControlPointSequential(next, parent, mesh, name, depth+1, ++index);
+            }
+        }
     }
 }

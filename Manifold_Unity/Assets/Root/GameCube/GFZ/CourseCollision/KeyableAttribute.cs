@@ -21,7 +21,7 @@ namespace GameCube.GFZ.CourseCollision
         /// <summary>
         /// All values: 1, 2, or 3.
         /// </summary>
-        public EaseMode easeMode;
+        public InterpolationMode easeMode;
         public float time;
         public float value;
         public float zTangentIn;
