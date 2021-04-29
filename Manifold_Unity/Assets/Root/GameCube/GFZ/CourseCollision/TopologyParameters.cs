@@ -149,11 +149,11 @@ namespace GameCube.GFZ.CourseCollision
                             break;
 
                         case InterpolationMode.unknown1:
-                            mode = UnityEditor.AnimationUtility.TangentMode.Free;
+                            mode = UnityEditor.AnimationUtility.TangentMode.Auto;
                             break;
 
                         case InterpolationMode.unknown2:
-                            mode = UnityEditor.AnimationUtility.TangentMode.;
+                            mode = UnityEditor.AnimationUtility.TangentMode.ClampedAuto;
                             break;
 
                         default:
