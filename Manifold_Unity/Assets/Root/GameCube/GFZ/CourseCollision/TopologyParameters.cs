@@ -1,5 +1,6 @@
 ﻿using Manifold.IO;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
@@ -11,55 +12,22 @@ namespace GameCube.GFZ.CourseCollision
     public class TopologyParameters : IBinarySerializable, IBinaryAddressableRange
     {
 
-        public const int kFieldCount = 9;
+        public const int kCurveCount = 9;
 
         [SerializeField]
         private AddressRange addressRange;
 
+        public ArrayPointer2D curvePtrs2D = new ArrayPointer2D(kCurveCount);
 
-        public int count1;
-        public int count2;
-        public int count3;
-        public int count4;
-        public int count5;
-        public int count6;
-        public int count7;
-        public int count8;
-        public int count9;
-        public int absPtr1;
-        public int absPtr2;
-        public int absPtr3;
-        public int absPtr4;
-        public int absPtr5;
-        public int absPtr6;
-        public int absPtr7;
-        public int absPtr8;
-        public int absPtr9;
+        public KeyableAttribute[][] keyablesArray2D = new KeyableAttribute[kCurveCount][];
+        // uhg, Unity can't serealize 2d arrays, so will have to implement the following:
+        public KeyableAttribute[] keyablesArraySequential;
+        public int[] lengths;
 
-        //
-        public KeyableAttribute[] params1 = new KeyableAttribute[0];
-        public KeyableAttribute[] params2 = new KeyableAttribute[0];
-        public KeyableAttribute[] params3 = new KeyableAttribute[0];
-        public KeyableAttribute[] params4 = new KeyableAttribute[0];
-        public KeyableAttribute[] params5 = new KeyableAttribute[0];
-        public KeyableAttribute[] params6 = new KeyableAttribute[0];
-        public KeyableAttribute[] params7 = new KeyableAttribute[0];
-        public KeyableAttribute[] params8 = new KeyableAttribute[0];
-        public KeyableAttribute[] params9 = new KeyableAttribute[0];
 
-        public UnityEngine.AnimationCurve curve1;
+        // At some point, maybe move out of class? Keep it vanilla for portability.
+        public UnityEngine.AnimationCurve[] curves = new UnityEngine.AnimationCurve[kCurveCount];
 
-        public KeyableAttribute[][] Params()
-        {
-            var topology = new KeyableAttribute[][]
-            {
-                params1, params2, params3,
-                params4, params5, params6,
-                params7, params8, params9,
-            };
-
-            return topology;
-        }
 
         public AddressRange AddressRange
         {
@@ -72,124 +40,146 @@ namespace GameCube.GFZ.CourseCollision
         {
             this.RecordStartAddress(reader);
             {
-                reader.ReadX(ref count1);
-                reader.ReadX(ref count2);
-                reader.ReadX(ref count3);
-                reader.ReadX(ref count4);
-                reader.ReadX(ref count5);
-                reader.ReadX(ref count6);
-                reader.ReadX(ref count7);
-                reader.ReadX(ref count8);
-                reader.ReadX(ref count9);
-                reader.ReadX(ref absPtr1);
-                reader.ReadX(ref absPtr2);
-                reader.ReadX(ref absPtr3);
-                reader.ReadX(ref absPtr4);
-                reader.ReadX(ref absPtr5);
-                reader.ReadX(ref absPtr6);
-                reader.ReadX(ref absPtr7);
-                reader.ReadX(ref absPtr8);
-                reader.ReadX(ref absPtr9);
+                reader.ReadX(ref curvePtrs2D);
             }
             this.RecordEndAddress(reader);
             {
-                // 1
-                reader.BaseStream.Seek(absPtr1, SeekOrigin.Begin);
-                reader.ReadX(ref params1, count1, true);
-                // 2
-                reader.BaseStream.Seek(absPtr2, SeekOrigin.Begin);
-                reader.ReadX(ref params2, count2, true);
-                // 3
-                reader.BaseStream.Seek(absPtr3, SeekOrigin.Begin);
-                reader.ReadX(ref params3, count3, true);
-                // 4
-                reader.BaseStream.Seek(absPtr4, SeekOrigin.Begin);
-                reader.ReadX(ref params4, count4, true);
-                // 5
-                reader.BaseStream.Seek(absPtr5, SeekOrigin.Begin);
-                reader.ReadX(ref params5, count5, true);
-                // 6
-                reader.BaseStream.Seek(absPtr6, SeekOrigin.Begin);
-                reader.ReadX(ref params6, count6, true);
-                // 7
-                reader.BaseStream.Seek(absPtr7, SeekOrigin.Begin);
-                reader.ReadX(ref params7, count7, true);
-                // 8
-                reader.BaseStream.Seek(absPtr8, SeekOrigin.Begin);
-                reader.ReadX(ref params8, count8, true);
-                // 9
-                reader.BaseStream.Seek(absPtr9, SeekOrigin.Begin);
-                reader.ReadX(ref params9, count9, true);
-            }
-            //
-            {
-                var keyframes = new Keyframe[params1.Length];
-                for (int i = 0; i < keyframes.Length; i++)
+                int index = 0;
+                foreach (var arrayPointer in curvePtrs2D.ArrayPointers)
                 {
-                    var key = params1[i];
-                    var keyframe = new Keyframe(key.time, key.value, key.zTangentIn, key.zTangentOut);
-                    keyframes[i] = keyframe;
-                }
-                curve1 = new UnityEngine.AnimationCurve(keyframes);
-
-                // Transfer keyframe
-                for (int i = 0; i < params1.Length; i++)
-                {
-                    var key = params1[i];
-
-                    UnityEditor.AnimationUtility.TangentMode mode;
-                    switch (key.easeMode)
+                    if (arrayPointer.IsNotNullPointer)
                     {
-                        case InterpolationMode.Constant:
-                            mode = UnityEditor.AnimationUtility.TangentMode.Constant;
-                            break;
-
-                        case InterpolationMode.Linear:
-                            mode = UnityEditor.AnimationUtility.TangentMode.Linear;
-                            break;
-
-                        case InterpolationMode.unknown1:
-                            mode = UnityEditor.AnimationUtility.TangentMode.Auto;
-                            break;
-
-                        case InterpolationMode.unknown2:
-                            mode = UnityEditor.AnimationUtility.TangentMode.ClampedAuto;
-                            break;
-
-                        default:
-                            throw new NotImplementedException();
+                        reader.JumpToAddress(arrayPointer);
+                        reader.ReadX(ref keyablesArray2D[index], arrayPointer.length, true);
                     }
-                    UnityEditor.AnimationUtility.SetKeyLeftTangentMode(curve1, i, mode);
-                    UnityEditor.AnimationUtility.SetKeyRightTangentMode(curve1, i, mode);
+                    else
+                    {
+                        keyablesArray2D[index] = new KeyableAttribute[0];
+                    }
+                    index++;
                 }
-                // end
+            }
+            // Convert to Unity
+            {
+                // Convert from animation curves from Gfz to Unity formats
+                for (int i = 0; i < keyablesArray2D.Length; i++)
+                {
+                    var keyables = EnforceNoDuplicateTimes(keyablesArray2D[i]);
+                    var keyframes = KeyablesToKeyframes(keyables);
+                    curves[i] = new UnityEngine.AnimationCurve(keyframes);
+                    SetGfzTangentsToUnityTangets(keyables, curves[i]);
+
+                    // TEST - re-apply key values.
+                    // Not being respected by Unity... perhaps try AnimClip? (ew)
+                    for (int j = 0; j < curves[i].length; j++)
+                    {
+                        curves[i].keys[j].inTangent = keyframes[j].inTangent;
+                        curves[i].keys[j].outTangent = keyframes[j].outTangent;
+                    }
+                }
             }
             this.SetReaderToEndAddress(reader);
         }
 
         public void Serialize(BinaryWriter writer)
         {
-            //writer.WriteX(count1);
-            //writer.WriteX(count2);
-            //writer.WriteX(count3);
-            //writer.WriteX(count4);
-            //writer.WriteX(count5);
-            //writer.WriteX(count6);
-            //writer.WriteX(count7);
-            //writer.WriteX(count8);
-            //writer.WriteX(count9);
-            //writer.WriteX(absPtr1);
-            //writer.WriteX(absPtr2);
-            //writer.WriteX(absPtr3);
-            //writer.WriteX(absPtr4);
-            //writer.WriteX(absPtr5);
-            //writer.WriteX(absPtr6);
-            //writer.WriteX(absPtr7);
-            //writer.WriteX(absPtr8);
-            //writer.WriteX(absPtr9);
+            writer.WriteX(curvePtrs2D);
 
             throw new NotImplementedException();
         }
+
+
+        public KeyableAttribute[] EnforceNoDuplicateTimes(KeyableAttribute[] keyables)
+        {
+            var removeIndexes = new List<int>();
+            for (int i = 0; i < keyables.Length - 1; i++)
+            {
+                int currIndex = i;
+                int nextIndex = i + 1;
+                var currKeyframe = keyables[currIndex];
+                var nextKeyframe = keyables[nextIndex];
+
+                if (currKeyframe.time == nextKeyframe.time)
+                {
+                    // Remove first of 2 indexes
+                    removeIndexes.Add(currIndex);
+                }
+            }
+
+            // Remove duplicates
+            // TODO: make this a function?
+            bool hasKeyframeTimeDuplicates = removeIndexes.Count > 0;
+            if (hasKeyframeTimeDuplicates)
+            {
+                // Make a new list for unique keyframe times - no times are duplicates
+                var uniqueKeyframeTimes = new List<KeyableAttribute>(keyables);
+
+                // Invert order of list. As we remove items, the index/length changes unless
+                // we iterate through the list backwards.
+                removeIndexes.Reverse();
+
+                // Remove each duplicate time via index
+                for (int i = 0; i < removeIndexes.Count; i++)
+                {
+                    var index = removeIndexes[i];
+                    uniqueKeyframeTimes.RemoveAt(index);
+                }
+
+                // Re-assign new list to used parameters
+                Debug.Log($"Removed duplicate keyframe times! Total: {removeIndexes.Count}");
+                keyables = uniqueKeyframeTimes.ToArray();
+            }
+
+            return keyables;
+        }
+
+        public Keyframe[] KeyablesToKeyframes(KeyableAttribute[] keyables)
+        {
+            var keyframes = new Keyframe[keyables.Length];
+            for (int i = 0; i < keyframes.Length; i++)
+            {
+                var key = keyables[i];
+                var keyframe = new Keyframe(key.time, key.value, key.zTangentIn, key.zTangentOut);
+                keyframes[i] = keyframe;
+            }
+
+            return keyframes;
+        }
+
+        public void SetGfzTangentsToUnityTangets(KeyableAttribute[] keyables, UnityEngine.AnimationCurve curve)
+        {
+            for (int i = 0; i < keyables.Length; i++)
+            {
+                UnityEditor.AnimationUtility.TangentMode mode;
+
+                switch (keyables[i].easeMode)
+                {
+                    case InterpolationMode.Constant:
+                        mode = UnityEditor.AnimationUtility.TangentMode.Constant;
+                        break;
+
+                    case InterpolationMode.Linear:
+                        mode = UnityEditor.AnimationUtility.TangentMode.Linear;
+                        break;
+
+                    case InterpolationMode.unknown1:
+                        mode = UnityEditor.AnimationUtility.TangentMode.ClampedAuto;
+                        break;
+
+                    case InterpolationMode.unknown2:
+                        mode = UnityEditor.AnimationUtility.TangentMode.ClampedAuto;
+                        break;
+
+                    default:
+                        throw new NotImplementedException($"New value {(int)keyables[i].easeMode}");
+                }
+
+                // Set tangent type in Unity's format
+                UnityEditor.AnimationUtility.SetKeyLeftTangentMode(curve, i, mode);
+                UnityEditor.AnimationUtility.SetKeyRightTangentMode(curve, i, mode);
+            }
+        }
+
 
     }
 }

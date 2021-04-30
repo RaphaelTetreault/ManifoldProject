@@ -86,9 +86,12 @@ namespace GameCube.GFZ.CourseCollision
         public TopologyParameters transformTopology; // transform anim data 
         public TopologyExtra sliceTopology;
         public TrackTransform[] children = new TrackTransform[0];
+
+        // metadata
         public Matrix4x4 localMatrix;
         public Matrix4x4 worldMatrix;
         public int depth;
+        public TrackTransform parent;
 
         #endregion
 
@@ -155,11 +158,17 @@ namespace GameCube.GFZ.CourseCollision
                     foreach (var child in children)
                     {
                         child.worldMatrix = worldMatrix * child.localMatrix;
-                        SetChildIndex(child);
+                        child.parent = this;
+                    }
+
+                    // Calculate depth by recursively evaluating lineage
+                    var ancestor = parent;
+                    while (ancestor != null)
+                    {
+                        depth++;
+                        ancestor = ancestor.parent;
                     }
                 }
-
-
             }
             this.SetReaderToEndAddress(reader);
         }

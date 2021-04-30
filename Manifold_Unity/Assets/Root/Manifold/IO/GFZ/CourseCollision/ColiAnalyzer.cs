@@ -149,20 +149,20 @@ namespace Manifold.IO.GFZ.CourseCollision
             // TOPOLOGY PARAMETERS
             if (topologyParameters)
             {
-                var count = TopologyParameters.kFieldCount;
+                var count = TopologyParameters.kCurveCount;
                 for (int i = 0; i < count; i++)
                 {
                     var filePath = $"{time} COLI {nameof(TopologyParameters)} {i + 1}.tsv";
                     filePath = Path.Combine(outputPath, filePath);
-                    EditorUtility.DisplayProgressBar(ExecuteText, filePath, (float)(i + 1) / TopologyParameters.kFieldCount);
-                    AnalyzeTrackData(filePath, i);
+                    EditorUtility.DisplayProgressBar(ExecuteText, filePath, (float)(i + 1) / TopologyParameters.kCurveCount);
+                    AnalyzeTrackKeyables(filePath, i);
                 }
 
                 {
                     var filePath = $"{time} COLI {nameof(TopologyParameters)} ALL.tsv";
                     filePath = Path.Combine(outputPath, filePath);
                     EditorUtility.DisplayProgressBar(ExecuteText, filePath, 0.95f);
-                    AnalyzeTrackDataAll(filePath);
+                    AnalyzeTrackKeyablesAll(filePath);
                 }
             }
 
@@ -213,7 +213,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
         #region Track Data / Transforms
 
-        public void AnalyzeTrackDataAll(string filename)
+        public void AnalyzeTrackKeyablesAll(string filename)
         {
             using (var writer = AnalyzerUtility.OpenWriter(filename))
             {
@@ -225,40 +225,6 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol($"Param Index");
                 writer.WriteNextCol("Address");
                 writer.WriteNextCol(nameof(KeyableAttribute.easeMode));
-                writer.WriteNextCol(nameof(KeyableAttribute.time));
-                writer.WriteNextCol(nameof(KeyableAttribute.value));
-                writer.WriteNextCol(nameof(KeyableAttribute.zTangentIn));
-                writer.WriteNextCol(nameof(KeyableAttribute.zTangentOut));
-                writer.WriteNextRow();
-
-                // foreach File
-                foreach (var sobj in coliSobjs)
-                {
-                    // foreach Transform
-                    foreach (var trackTransform in sobj.Value.trackTransforms)
-                    {
-                        for (int i = 0; i < 9; i++)
-                        {
-                            WriteTrackDataRecursive(writer, sobj, 0, i, trackTransform);
-                        }
-                    }
-                }
-
-                writer.Flush();
-            }
-        }
-
-        public void AnalyzeTrackData(string filename, int paramIndex)
-        {
-            using (var writer = AnalyzerUtility.OpenWriter(filename))
-            {
-                // Write header
-                writer.WriteNextCol("FileName");
-                writer.WriteNextCol("Game");
-                writer.WriteNextCol("Index");
-                writer.WriteNextCol("Track Node Index");
-                writer.WriteNextCol($"Param [{paramIndex + 1}] Index");
-                writer.WriteNextCol("Address");
                 writer.WriteNextCol(nameof(KeyableAttribute.easeMode));
                 writer.WriteNextCol(nameof(KeyableAttribute.time));
                 writer.WriteNextCol(nameof(KeyableAttribute.value));
@@ -270,9 +236,13 @@ namespace Manifold.IO.GFZ.CourseCollision
                 foreach (var sobj in coliSobjs)
                 {
                     // foreach Transform
+                    int trackIndex = 0;
                     foreach (var trackTransform in sobj.Value.trackTransforms)
                     {
-                        WriteTrackDataRecursive(writer, sobj, 0, paramIndex, trackTransform);
+                        for (int keyablesIndex = 0; keyablesIndex < TopologyParameters.kCurveCount; keyablesIndex++)
+                        {
+                            WriteTrackKeyableAttributeRecursive(writer, sobj, 0, keyablesIndex, ++trackIndex, trackTransform);
+                        }
                     }
                 }
 
@@ -280,36 +250,67 @@ namespace Manifold.IO.GFZ.CourseCollision
             }
         }
 
-        public void WriteTrackDataRecursive(StreamWriter writer, ColiSceneSobj sobj, int depth, int paramIndex, TrackTransform trackTransform)
+        public void AnalyzeTrackKeyables(string filename, int keyablesIndex)
         {
-            //if (trackTransform.transformTopology != null)
-            //{
-                var @params = trackTransform.transformTopology.Params();
-                var printIndex = 1;
-                var printTotal = @params[paramIndex].Length;
-
-                // foreach Topology
-                foreach (var param in @params[paramIndex])
-                    WriteTrackData(writer, sobj, depth++, printIndex++, printTotal, param);
-            //}
-
-            foreach (var child in trackTransform.children)
+            using (var writer = AnalyzerUtility.OpenWriter(filename))
             {
-                WriteTrackDataRecursive(writer, sobj, depth + 1, paramIndex, child);
+                // Write header
+                writer.WriteNextCol("FileName");
+                writer.WriteNextCol("Game");
+                writer.WriteNextCol("Keyable Index");
+                writer.WriteNextCol("Keyable Order");
+                writer.WriteNextCol("Nested Depth");
+                writer.WriteNextCol("Element Index");
+                writer.WriteNextCol("Address");
+                writer.WriteNextCol(nameof(KeyableAttribute.easeMode));
+                writer.WriteNextCol(nameof(KeyableAttribute.easeMode));
+                writer.WriteNextCol(nameof(KeyableAttribute.time));
+                writer.WriteNextCol(nameof(KeyableAttribute.value));
+                writer.WriteNextCol(nameof(KeyableAttribute.zTangentIn));
+                writer.WriteNextCol(nameof(KeyableAttribute.zTangentOut));
+                writer.WriteNextRow();
+
+                // foreach File
+                foreach (var sobj in coliSobjs)
+                {
+                    // foreach Transform
+                    int index = 0;
+                    foreach (var trackTransform in sobj.Value.trackTransforms)
+                    {
+                        WriteTrackKeyableAttributeRecursive(writer, sobj, 0, keyablesIndex, index++, trackTransform);
+                    }
+                }
+
+                writer.Flush();
             }
         }
+        public void WriteTrackKeyableAttributeRecursive(StreamWriter writer, ColiSceneSobj sobj, int hierarchyDepth, int keyableIndex, int index, TrackTransform trackTransform)
+        {
+            var keyables2D = trackTransform.transformTopology.keyablesArray2D;
+            var printIndex = 1; // values 1-9
+            int printTotal = keyables2D[keyableIndex].Length;
 
-        public void WriteTrackData(StreamWriter writer, ColiSceneSobj sobj, int level, int index, int total, KeyableAttribute param)
+            // Animation data of this curve
+            foreach (var param in keyables2D[keyableIndex])
+                WriteKeyableAttribute(writer, sobj, hierarchyDepth + 1, printIndex++, printTotal, index, param);
+
+            // Go to track transform children, write their anim data (calls this function)
+            foreach (var child in trackTransform.children)
+                WriteTrackKeyableAttributeRecursive(writer, sobj, hierarchyDepth + 1, keyableIndex, index, child);
+        }
+        public void WriteKeyableAttribute(StreamWriter writer, ColiSceneSobj sobj, int hierarchyDepth, int keyableIndex, int total, int index, KeyableAttribute param)
         {
             string gameId = sobj.Value.header.IsFileGX ? "GX" : "AX";
 
             writer.WriteNextCol(sobj.FileName);
             writer.WriteNextCol(gameId);
-            writer.WriteNextCol(index);
-            writer.WriteNextCol($"[{index}/{total}]");
-            writer.WriteNextCol($"{level}"); // param index
+            writer.WriteNextCol(keyableIndex);
+            writer.WriteNextCol($"[{keyableIndex}/{total}]");
+            writer.WriteNextCol($"{hierarchyDepth}");
+            writer.WriteNextCol(index); // index, ei [1/50] track index
             writer.WriteNextCol(param.StartAddressHex());
             writer.WriteNextCol(param.easeMode);
+            writer.WriteNextCol((int)param.easeMode);
             writer.WriteNextCol(param.time);
             writer.WriteNextCol(param.value);
             writer.WriteNextCol(param.zTangentIn);
@@ -318,6 +319,7 @@ namespace Manifold.IO.GFZ.CourseCollision
         }
 
 
+        // Kicks off recursive write
         public void AnalyzeTrackTransforms(string filename)
         {
             using (var writer = AnalyzerUtility.OpenWriter(filename))
@@ -378,24 +380,24 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.Flush();
             }
         }
-
-        public void WriteTrackTransformRecursive(StreamWriter writer, ColiSceneSobj sobj, int level, int index, int total, TrackTransform trackTransform)
+        // Writes elf and children
+        public void WriteTrackTransformRecursive(StreamWriter writer, ColiSceneSobj sobj, int depth, int index, int total, TrackTransform trackTransform)
         {
             // Write Parent
-            WriteTrackTransform(writer, sobj, level, index, total, trackTransform);
+            WriteTrackTransform(writer, sobj, depth, index, total, trackTransform);
 
             // Write children
             foreach (var child in trackTransform.children)
             {
-                WriteTrackTransformRecursive(writer, sobj, level + 1, index, total, child);
+                WriteTrackTransformRecursive(writer, sobj, depth + 1, index, total, child);
             }
         }
-
-        public void WriteTrackTransform(StreamWriter writer, ColiSceneSobj sobj, int level, int index, int total, TrackTransform trackTransform)
+        // The actual writing to file
+        public void WriteTrackTransform(StreamWriter writer, ColiSceneSobj sobj, int depth, int index, int total, TrackTransform trackTransform)
         {
             writer.WriteNextCol(sobj.FileName);
             writer.WriteNextCol($"[{index}/{total}]");
-            writer.WriteNextCol($"{level}");
+            writer.WriteNextCol($"{depth}");
             writer.WriteNextCol(trackTransform.StartAddressHex());
             writer.WriteNextCol(trackTransform.unk_0x00);
             writer.WriteNextCol(trackTransform.unk_0x01);

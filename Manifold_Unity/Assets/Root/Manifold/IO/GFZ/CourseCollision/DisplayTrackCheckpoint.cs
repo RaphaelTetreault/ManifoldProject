@@ -69,14 +69,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                     DrawRecursive(child, rotation, position, scale);
                 }
             }
-
-            foreach (var param in trackTransform.transformTopology.Params())
-            {
-
-            }
         }
-
-
     }
 
     [CustomEditor(typeof(DisplayTrackCheckpoint))]

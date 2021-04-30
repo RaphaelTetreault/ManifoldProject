@@ -9,6 +9,8 @@ namespace Manifold.IO
         [UnityEngine.SerializeField]
         private ArrayPointer[] arrayPointers;
 
+        public ArrayPointer[] ArrayPointers => arrayPointers;
+
         public ArrayPointer2D(int length = 0)
         {
             arrayPointers = new ArrayPointer[length];
