@@ -56,7 +56,7 @@ namespace GameCube.GFZ.CourseCollision
                 if (keyableAttributesPtr.IsNotNullPointer)
                 {
                     reader.JumpToAddress(keyableAttributesPtr);
-                    reader.ReadX(ref keyableAttributes, keyableAttributesPtr.length, true);
+                    reader.ReadX(ref keyableAttributes, keyableAttributesPtr.Length, true);
                 }
             }
             this.SetReaderToEndAddress(reader);

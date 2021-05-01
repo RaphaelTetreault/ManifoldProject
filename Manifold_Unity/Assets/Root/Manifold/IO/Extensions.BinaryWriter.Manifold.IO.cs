@@ -12,7 +12,7 @@ namespace Manifold.IO
 
         public static void JumpToAddress(this BinaryReader reader, ArrayPointer arrayPointer, SeekOrigin seekOrigin = SeekOrigin.Begin)
         {
-            reader.BaseStream.Seek(arrayPointer.address, seekOrigin);
+            reader.BaseStream.Seek(arrayPointer.Address, seekOrigin);
         }
     }
 }

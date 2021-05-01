@@ -39,7 +39,7 @@ namespace GameCube.GFZ.CourseCollision
             {
                 // Get point
                 reader.JumpToAddress(pointsPtr);
-                reader.ReadX(ref points, pointsPtr.length, true);
+                reader.ReadX(ref points, pointsPtr.Length, true);
 
                 // Get transform
                 // NOTE: since this data is referenced many times, I instead

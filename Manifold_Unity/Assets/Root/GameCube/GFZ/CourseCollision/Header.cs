@@ -94,8 +94,8 @@ namespace GameCube.GFZ.CourseCollision
             reader.ReadX(ref zero_0xD8, kSizeOfZero0xD8);
 
             // Assert assumptions
-            Assert.IsTrue(unused_0x74_0x78.length == 0 && unused_0x74_0x78.address == 0);
-            Assert.IsTrue(unused_0x88_0x8C.length == 0 && unused_0x88_0x8C.address == 0);
+            Assert.IsTrue(unused_0x74_0x78.Length == 0 && unused_0x74_0x78.Address == 0);
+            Assert.IsTrue(unused_0x88_0x8C.Length == 0 && unused_0x88_0x8C.Address == 0);
 
             for (int i = 0; i < zero_0x28.Length; i++)
                 Assert.IsTrue(zero_0x28[i] == 0);

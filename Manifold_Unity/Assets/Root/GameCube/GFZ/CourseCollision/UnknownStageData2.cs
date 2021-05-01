@@ -63,7 +63,7 @@ namespace GameCube.GFZ.CourseCollision
                     // load datae for "array" (though all have length == 0)
                     var arrayPointer = unkAnimDataPtrs[i];
                     reader.JumpToAddress(arrayPointer);
-                    reader.ReadX(ref unkAnimData[i], arrayPointer.length, true);
+                    reader.ReadX(ref unkAnimData[i], arrayPointer.Length, true);
                 }
             }
             this.SetReaderToEndAddress(reader);

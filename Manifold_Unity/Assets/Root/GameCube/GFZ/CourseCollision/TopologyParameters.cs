@@ -19,11 +19,9 @@ namespace GameCube.GFZ.CourseCollision
 
         public ArrayPointer2D curvePtrs2D = new ArrayPointer2D(kCurveCount);
 
-        public KeyableAttribute[][] keyablesArray2D = new KeyableAttribute[kCurveCount][];
-        // uhg, Unity can't serealize 2d arrays, so will have to implement the following:
-        public KeyableAttribute[] keyablesArraySequential;
-        public int[] lengths;
-
+        // uhg, Unity can't serealize 2d arrays, so had to implement the following:
+        public Array2D<KeyableAttribute> keyablesArray2D = new Array2D<KeyableAttribute>();
+        //public KeyableAttribute[][] keyablesArray2D = new KeyableAttribute[kCurveCount][];
 
         // At some point, maybe move out of class? Keep it vanilla for portability.
         public UnityEngine.AnimationCurve[] curves = new UnityEngine.AnimationCurve[kCurveCount];
@@ -44,19 +42,16 @@ namespace GameCube.GFZ.CourseCollision
             }
             this.RecordEndAddress(reader);
             {
-                int index = 0;
                 foreach (var arrayPointer in curvePtrs2D.ArrayPointers)
                 {
+                    var array = new KeyableAttribute[0];
                     if (arrayPointer.IsNotNullPointer)
                     {
                         reader.JumpToAddress(arrayPointer);
-                        reader.ReadX(ref keyablesArray2D[index], arrayPointer.length, true);
+                        reader.ReadX(ref array, arrayPointer.Length, true);
+                        //reader.ReadX(ref keyablesArray2D[index], arrayPointer.length, true);
                     }
-                    else
-                    {
-                        keyablesArray2D[index] = new KeyableAttribute[0];
-                    }
-                    index++;
+                    keyablesArray2D.AppendArray(array);
                 }
             }
             // Convert to Unity
@@ -64,13 +59,14 @@ namespace GameCube.GFZ.CourseCollision
                 // Convert from animation curves from Gfz to Unity formats
                 for (int i = 0; i < keyablesArray2D.Length; i++)
                 {
-                    var keyables = EnforceNoDuplicateTimes(keyablesArray2D[i]);
+                    //var keyables = EnforceNoDuplicateTimes(keyablesArray2D[i]);
+                    var keyables = EnforceNoDuplicateTimes(keyablesArray2D.GetArray(i));
                     var keyframes = KeyablesToKeyframes(keyables);
                     curves[i] = new UnityEngine.AnimationCurve(keyframes);
                     SetGfzTangentsToUnityTangets(keyables, curves[i]);
 
                     // TEST - re-apply key values.
-                    // Not being respected by Unity... perhaps try AnimClip? (ew)
+                    // Not being respected by Unity?
                     for (int j = 0; j < curves[i].length; j++)
                     {
                         curves[i].keys[j].inTangent = keyframes[j].inTangent;

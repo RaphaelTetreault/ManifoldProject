@@ -6,11 +6,20 @@ namespace Manifold.IO
     [Serializable]
     public struct ArrayPointer : IBinarySerializable, IPointer
     {
-        public int length;
-        public int address;
+        [UnityEngine.SerializeField] private int length;
+        [UnityEngine.SerializeField] private int address;
 
+        public int Length
+        {
+            get => length;
+            set => length = value;
+        }
 
-        public int Address => address;
+        public int Address
+        {
+            get => address;
+            set => address = value;
+        }
 
         public string HexAddress => $"0x{address:X8}";
 
@@ -31,7 +40,7 @@ namespace Manifold.IO
 
         public override string ToString()
         {
-            return $"Length: {length}, Address: {HexAddress}";
+            return $"Length: {Length}, Address: {HexAddress}";
         }
     }
 }

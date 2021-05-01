@@ -67,11 +67,11 @@ namespace GameCube.GFZ.CourseCollision
 
             // 0x08 and 0x0C: Track Nodes
             reader.JumpToAddress(header.trackNodesPtr);
-            reader.ReadX(ref trackNodes, header.trackNodesPtr.length, true);
+            reader.ReadX(ref trackNodes, header.trackNodesPtr.Length, true);
 
             // 0x10 and 0x14: Track Effect Attribute Areas
             reader.JumpToAddress(header.surfaceAttributeAreasPtr);
-            reader.ReadX(ref surfaceAttributeAreas, header.surfaceAttributeAreasPtr.length, true);
+            reader.ReadX(ref surfaceAttributeAreas, header.surfaceAttributeAreasPtr.Length, true);
 
             // 0x1C 
             reader.JumpToAddress(header.surfaceAttributeMeshTablePtr);
@@ -91,17 +91,17 @@ namespace GameCube.GFZ.CourseCollision
 
             // 0x5C and 0x60 SOLS values
             reader.JumpToAddress(header.unknownTrigger2sPtr);
-            reader.ReadX(ref unknownTrigger2s, header.unknownTrigger2sPtr.length, true);
+            reader.ReadX(ref unknownTrigger2s, header.unknownTrigger2sPtr.Length, true);
 
             // 0x64 and 0x68
             reader.JumpToAddress(header.collisionObjectReferences);
-            reader.ReadX(ref collisionObjectReferences, header.collisionObjectReferences.length, true);
+            reader.ReadX(ref collisionObjectReferences, header.collisionObjectReferences.Length, true);
 
             // 0x6C and 0x70
             // This one is weird. Pointers which lead to an array which reference collisionObjectReferences.
             // The count is different, so perhaps leads to certain properties on those objects.
             reader.JumpToAddress(header.unk_collisionObjectReferences);
-            reader.ReadX(ref unk_collisionObjectReferences, header.unk_collisionObjectReferences.length, true);
+            reader.ReadX(ref unk_collisionObjectReferences, header.unk_collisionObjectReferences.Length, true);
 
             // 0x80
             if (header.unknownStageData2Ptr.IsNotNullPointer)
@@ -120,23 +120,23 @@ namespace GameCube.GFZ.CourseCollision
 
             // 0x94
             reader.JumpToAddress(header.unknownTrigger1sPtr);
-            reader.ReadX(ref unknownTrigger1s, header.unknownTrigger1sPtr.length, true);
+            reader.ReadX(ref unknownTrigger1s, header.unknownTrigger1sPtr.Length, true);
 
             // 0x9C
             reader.JumpToAddress(header.visualEffectTriggersPtr);
-            reader.ReadX(ref visualEffectTriggers, header.visualEffectTriggersPtr.length, true);
+            reader.ReadX(ref visualEffectTriggers, header.visualEffectTriggersPtr.Length, true);
 
             // 0xA4
             reader.JumpToAddress(header.courseMetadataTriggersPtr);
-            reader.ReadX(ref courseMetadataTriggers, header.courseMetadataTriggersPtr.length, true);
+            reader.ReadX(ref courseMetadataTriggers, header.courseMetadataTriggersPtr.Length, true);
 
             // 0xAC
             reader.JumpToAddress(header.arcadeCheckpointTriggersPtr);
-            reader.ReadX(ref arcadeCheckpointTriggers, header.arcadeCheckpointTriggersPtr.length, true);
+            reader.ReadX(ref arcadeCheckpointTriggers, header.arcadeCheckpointTriggersPtr.Length, true);
 
             // 0xB4
             reader.JumpToAddress(header.storyObjectTriggersPtr);
-            reader.ReadX(ref storyObjectTriggers, header.storyObjectTriggersPtr.length, true);
+            reader.ReadX(ref storyObjectTriggers, header.storyObjectTriggersPtr.Length, true);
 
             // 0xBC
             reader.JumpToAddress(header.trackIndexTable);

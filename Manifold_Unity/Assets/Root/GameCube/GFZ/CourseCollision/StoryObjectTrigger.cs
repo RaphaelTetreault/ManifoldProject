@@ -69,7 +69,7 @@ namespace GameCube.GFZ.CourseCollision
                 reader.ReadX(ref keyableArrayPtr);
                 // Read array
                 reader.JumpToAddress(keyableArrayPtr);
-                reader.ReadX(ref keyableAttributes, keyableArrayPtr.length, true);
+                reader.ReadX(ref keyableAttributes, keyableArrayPtr.Length, true);
             }
             this.SetReaderToEndAddress(reader);
         }

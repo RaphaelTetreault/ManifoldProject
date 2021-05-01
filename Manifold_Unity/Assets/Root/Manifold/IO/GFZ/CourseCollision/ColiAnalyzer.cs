@@ -220,9 +220,19 @@ namespace Manifold.IO.GFZ.CourseCollision
                 // Write header
                 writer.WriteNextCol("FileName");
                 writer.WriteNextCol("Game");
-                writer.WriteNextCol("Index");
-                writer.WriteNextCol("Track Node Index");
-                writer.WriteNextCol($"Param Index");
+
+                writer.WriteNextCol(nameof(TrackTransform.unk_0x00));
+                writer.WriteNextCol(nameof(TrackTransform.unk_0x01));
+                writer.WriteNextCol(nameof(TrackTransform.unk_0x02));
+                writer.WriteNextCol(nameof(TrackTransform.unk_0x03));
+                writer.WriteNextCol(nameof(TrackTransform.unk_0x38));
+                writer.WriteNextCol(nameof(TrackTransform.unk_0x3A));
+
+                writer.WriteNextCol("Keyable /9");
+                writer.WriteNextCol("Keyable Index");
+                writer.WriteNextCol("Keyable Order");
+                writer.WriteNextCol("Nested Depth");
+                writer.WriteNextCol("Element Index");
                 writer.WriteNextCol("Address");
                 writer.WriteNextCol(nameof(KeyableAttribute.easeMode));
                 writer.WriteNextCol(nameof(KeyableAttribute.easeMode));
@@ -257,6 +267,15 @@ namespace Manifold.IO.GFZ.CourseCollision
                 // Write header
                 writer.WriteNextCol("FileName");
                 writer.WriteNextCol("Game");
+
+                writer.WriteNextCol(nameof(TrackTransform.unk_0x00));
+                writer.WriteNextCol(nameof(TrackTransform.unk_0x01));
+                writer.WriteNextCol(nameof(TrackTransform.unk_0x02));
+                writer.WriteNextCol(nameof(TrackTransform.unk_0x03));
+                writer.WriteNextCol(nameof(TrackTransform.unk_0x38));
+                writer.WriteNextCol(nameof(TrackTransform.unk_0x3A));
+
+                writer.WriteNextCol("Keyable /9");
                 writer.WriteNextCol("Keyable Index");
                 writer.WriteNextCol("Keyable Order");
                 writer.WriteNextCol("Nested Depth");
@@ -286,24 +305,37 @@ namespace Manifold.IO.GFZ.CourseCollision
         }
         public void WriteTrackKeyableAttributeRecursive(StreamWriter writer, ColiSceneSobj sobj, int hierarchyDepth, int keyableIndex, int index, TrackTransform trackTransform)
         {
-            var keyables2D = trackTransform.transformTopology.keyablesArray2D;
+            var keyables2D = trackTransform.transformTopology.keyablesArray2D.GetArrays();
             var printIndex = 1; // values 1-9
             int printTotal = keyables2D[keyableIndex].Length;
 
             // Animation data of this curve
+            int topoIndex9 = 0;
             foreach (var param in keyables2D[keyableIndex])
-                WriteKeyableAttribute(writer, sobj, hierarchyDepth + 1, printIndex++, printTotal, index, param);
+            {
+                topoIndex9++;
+                WriteKeyableAttribute(writer, sobj, hierarchyDepth + 1, printIndex++, printTotal, index, topoIndex9, param, trackTransform);
+            }
 
             // Go to track transform children, write their anim data (calls this function)
             foreach (var child in trackTransform.children)
                 WriteTrackKeyableAttributeRecursive(writer, sobj, hierarchyDepth + 1, keyableIndex, index, child);
         }
-        public void WriteKeyableAttribute(StreamWriter writer, ColiSceneSobj sobj, int hierarchyDepth, int keyableIndex, int total, int index, KeyableAttribute param)
+        public void WriteKeyableAttribute(StreamWriter writer, ColiSceneSobj sobj, int hierarchyDepth, int keyableIndex, int total, int index, int topoIndex9, KeyableAttribute param, TrackTransform tt)
         {
             string gameId = sobj.Value.header.IsFileGX ? "GX" : "AX";
 
             writer.WriteNextCol(sobj.FileName);
             writer.WriteNextCol(gameId);
+
+            writer.WriteNextCol(tt.unk_0x00);
+            writer.WriteNextCol(tt.unk_0x01);
+            writer.WriteNextCol(tt.unk_0x02);
+            writer.WriteNextCol(tt.unk_0x03);
+            writer.WriteNextCol(tt.unk_0x38);
+            writer.WriteNextCol(tt.unk_0x3A);
+
+            writer.WriteNextCol(topoIndex9);
             writer.WriteNextCol(keyableIndex);
             writer.WriteNextCol($"[{keyableIndex}/{total}]");
             writer.WriteNextCol($"{hierarchyDepth}");
@@ -854,9 +886,9 @@ namespace Manifold.IO.GFZ.CourseCollision
                 //
                 writer.WriteNextCol(nameof(Header.unk_0x00) + " " + nameof(Header));
                 writer.WriteNextCol(nameof(Header.trackNodesPtr));
-                writer.WriteNextCol(nameof(Header.trackNodesPtr.address));
+                writer.WriteNextCol(nameof(Header.trackNodesPtr.Address));
                 writer.WriteNextCol(nameof(Header.surfaceAttributeAreasPtr));
-                writer.WriteNextCol(nameof(Header.surfaceAttributeAreasPtr.address));
+                writer.WriteNextCol(nameof(Header.surfaceAttributeAreasPtr.Address));
                 writer.WriteNextCol(nameof(Header.boostPadsActive));
                 writer.WriteNextCol(nameof(Header.surfaceAttributeMeshTablePtr));
                 writer.WriteNextCol(nameof(Header.unknownData_0x20_Ptr));
@@ -868,29 +900,29 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol(nameof(Header.sceneObjectsPtr));
                 writer.WriteNextCol(nameof(Header.unkBool32_0x58));
                 writer.WriteNextCol(nameof(Header.unknownTrigger2sPtr));
-                writer.WriteNextCol(nameof(Header.unknownTrigger2sPtr.address));
+                writer.WriteNextCol(nameof(Header.unknownTrigger2sPtr.Address));
                 writer.WriteNextCol(nameof(Header.collisionObjectReferences));
-                writer.WriteNextCol(nameof(Header.collisionObjectReferences.address));
+                writer.WriteNextCol(nameof(Header.collisionObjectReferences.Address));
                 writer.WriteNextCol(nameof(Header.unk_collisionObjectReferences));
-                writer.WriteNextCol(nameof(Header.unk_collisionObjectReferences.address));
+                writer.WriteNextCol(nameof(Header.unk_collisionObjectReferences.Address));
                 writer.WriteNextCol(nameof(Header.unused_0x74_0x78));
-                writer.WriteNextCol(nameof(Header.unused_0x74_0x78.address));
+                writer.WriteNextCol(nameof(Header.unused_0x74_0x78.Address));
                 writer.WriteNextCol(nameof(Header.circuitType));
                 writer.WriteNextCol(nameof(Header.unknownStageData2Ptr));
                 writer.WriteNextCol(nameof(Header.unknownStageData1Ptr));
                 writer.WriteNextCol(nameof(Header.unused_0x88_0x8C));
-                writer.WriteNextCol(nameof(Header.unused_0x88_0x8C.address));
+                writer.WriteNextCol(nameof(Header.unused_0x88_0x8C.Address));
                 writer.WriteNextCol(nameof(Header.trackLengthPtr));
                 writer.WriteNextCol(nameof(Header.unknownTrigger1sPtr));
-                writer.WriteNextCol(nameof(Header.unknownTrigger1sPtr.address));
+                writer.WriteNextCol(nameof(Header.unknownTrigger1sPtr.Address));
                 writer.WriteNextCol(nameof(Header.visualEffectTriggersPtr));
-                writer.WriteNextCol(nameof(Header.visualEffectTriggersPtr.address));
+                writer.WriteNextCol(nameof(Header.visualEffectTriggersPtr.Address));
                 writer.WriteNextCol(nameof(Header.courseMetadataTriggersPtr));
-                writer.WriteNextCol(nameof(Header.courseMetadataTriggersPtr.address));
+                writer.WriteNextCol(nameof(Header.courseMetadataTriggersPtr.Address));
                 writer.WriteNextCol(nameof(Header.arcadeCheckpointTriggersPtr));
-                writer.WriteNextCol(nameof(Header.arcadeCheckpointTriggersPtr.address));
+                writer.WriteNextCol(nameof(Header.arcadeCheckpointTriggersPtr.Address));
                 writer.WriteNextCol(nameof(Header.storyObjectTriggersPtr));
-                writer.WriteNextCol(nameof(Header.storyObjectTriggersPtr.address));
+                writer.WriteNextCol(nameof(Header.storyObjectTriggersPtr.Address));
                 writer.WriteNextCol(nameof(Header.trackIndexTable));
                 // Structure
                 writer.WriteNextCol(nameof(Header.unknownStructure1_0xC0) + "." + nameof(Header.unknownStructure1_0xC0.unk_0x00));
@@ -916,9 +948,9 @@ namespace Manifold.IO.GFZ.CourseCollision
 
                     writer.WriteNextCol(coliHeader.unk_0x00.a);
                     writer.WriteNextCol(coliHeader.unk_0x00.b);
-                    writer.WriteNextCol(coliHeader.trackNodesPtr.length);
+                    writer.WriteNextCol(coliHeader.trackNodesPtr.Length);
                     writer.WriteNextCol(coliHeader.trackNodesPtr.HexAddress);
-                    writer.WriteNextCol(coliHeader.surfaceAttributeAreasPtr.length);
+                    writer.WriteNextCol(coliHeader.surfaceAttributeAreasPtr.Length);
                     writer.WriteNextCol(coliHeader.surfaceAttributeAreasPtr.HexAddress);
                     writer.WriteNextCol(coliHeader.boostPadsActive);
                     writer.WriteNextCol(coliHeader.surfaceAttributeMeshTablePtr.HexAddress);
@@ -937,29 +969,29 @@ namespace Manifold.IO.GFZ.CourseCollision
                     writer.WriteNextCol(coliHeader.unk_sceneObjectCount2);
                     writer.WriteNextCol(coliHeader.sceneObjectsPtr.HexAddress);
                     writer.WriteNextCol(coliHeader.unkBool32_0x58);
-                    writer.WriteNextCol(coliHeader.unknownTrigger2sPtr.length);
+                    writer.WriteNextCol(coliHeader.unknownTrigger2sPtr.Length);
                     writer.WriteNextCol(coliHeader.unknownTrigger2sPtr.HexAddress);
-                    writer.WriteNextCol(coliHeader.collisionObjectReferences.length);
+                    writer.WriteNextCol(coliHeader.collisionObjectReferences.Length);
                     writer.WriteNextCol(coliHeader.collisionObjectReferences.HexAddress);
-                    writer.WriteNextCol(coliHeader.unk_collisionObjectReferences.length);
+                    writer.WriteNextCol(coliHeader.unk_collisionObjectReferences.Length);
                     writer.WriteNextCol(coliHeader.unk_collisionObjectReferences.HexAddress);
-                    writer.WriteNextCol(coliHeader.unused_0x74_0x78.length);
+                    writer.WriteNextCol(coliHeader.unused_0x74_0x78.Length);
                     writer.WriteNextCol(coliHeader.unused_0x74_0x78.HexAddress);
                     writer.WriteNextCol(coliHeader.circuitType);
                     writer.WriteNextCol(coliHeader.unknownStageData2Ptr.HexAddress);
                     writer.WriteNextCol(coliHeader.unknownStageData1Ptr.HexAddress);
-                    writer.WriteNextCol(coliHeader.unused_0x88_0x8C.length);
+                    writer.WriteNextCol(coliHeader.unused_0x88_0x8C.Length);
                     writer.WriteNextCol(coliHeader.unused_0x88_0x8C.HexAddress);
                     writer.WriteNextCol(coliHeader.trackLengthPtr.HexAddress);
-                    writer.WriteNextCol(coliHeader.unknownTrigger1sPtr.length);
+                    writer.WriteNextCol(coliHeader.unknownTrigger1sPtr.Length);
                     writer.WriteNextCol(coliHeader.unknownTrigger1sPtr.HexAddress);
-                    writer.WriteNextCol(coliHeader.visualEffectTriggersPtr.length);
+                    writer.WriteNextCol(coliHeader.visualEffectTriggersPtr.Length);
                     writer.WriteNextCol(coliHeader.visualEffectTriggersPtr.HexAddress);
-                    writer.WriteNextCol(coliHeader.courseMetadataTriggersPtr.length);
+                    writer.WriteNextCol(coliHeader.courseMetadataTriggersPtr.Length);
                     writer.WriteNextCol(coliHeader.courseMetadataTriggersPtr.HexAddress);
-                    writer.WriteNextCol(coliHeader.arcadeCheckpointTriggersPtr.length);
+                    writer.WriteNextCol(coliHeader.arcadeCheckpointTriggersPtr.Length);
                     writer.WriteNextCol(coliHeader.arcadeCheckpointTriggersPtr.HexAddress);
-                    writer.WriteNextCol(coliHeader.storyObjectTriggersPtr.length);
+                    writer.WriteNextCol(coliHeader.storyObjectTriggersPtr.Length);
                     writer.WriteNextCol(coliHeader.storyObjectTriggersPtr.HexAddress);
                     writer.WriteNextCol(coliHeader.trackIndexTable.HexAddress);
                     // Structure

@@ -23,7 +23,7 @@ namespace Manifold.IO
             {
                 int length = 0;
                 reader.ReadX(ref length);
-                arrayPointers[i].length = length;
+                arrayPointers[i].Length = length;
             }
 
             // Read array addresses
@@ -31,7 +31,7 @@ namespace Manifold.IO
             {
                 int address = 0;
                 reader.ReadX(ref address);
-                arrayPointers[i].address = address;
+                arrayPointers[i].Address = address;
             }
         }
 
@@ -40,13 +40,13 @@ namespace Manifold.IO
             // Write array lengths
             for (int i = 0; i < arrayPointers.Length; i++)
             {
-                writer.WriteX(arrayPointers[i].length);
+                writer.WriteX(arrayPointers[i].Length);
             }
 
             // Write array addresses
             for (int i = 0; i < arrayPointers.Length; i++)
             {
-                writer.WriteX(arrayPointers[i].address);
+                writer.WriteX(arrayPointers[i].Address);
             }
         }
 

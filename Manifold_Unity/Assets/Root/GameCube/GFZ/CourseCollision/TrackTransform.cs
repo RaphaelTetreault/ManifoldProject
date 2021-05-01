@@ -153,7 +153,7 @@ namespace GameCube.GFZ.CourseCollision
                 if (childrenPtr.IsNotNullPointer)
                 {
                     reader.JumpToAddress(childrenPtr);
-                    reader.ReadX(ref children, childrenPtr.length, true);
+                    reader.ReadX(ref children, childrenPtr.Length, true);
 
                     foreach (var child in children)
                     {
