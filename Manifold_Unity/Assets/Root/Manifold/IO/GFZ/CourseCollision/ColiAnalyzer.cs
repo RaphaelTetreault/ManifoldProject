@@ -228,11 +228,11 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol(nameof(TrackTransform.unk_0x38));
                 writer.WriteNextCol(nameof(TrackTransform.unk_0x3A));
 
+                writer.WriteNextCol("TrackTransform Index");
                 writer.WriteNextCol("Keyable /9");
                 writer.WriteNextCol("Keyable Index");
                 writer.WriteNextCol("Keyable Order");
                 writer.WriteNextCol("Nested Depth");
-                writer.WriteNextCol("Element Index");
                 writer.WriteNextCol("Address");
                 writer.WriteNextCol(nameof(KeyableAttribute.easeMode));
                 writer.WriteNextCol(nameof(KeyableAttribute.easeMode));
@@ -260,7 +260,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             }
         }
 
-        public void AnalyzeTrackKeyables(string filename, int keyablesIndex)
+        public void AnalyzeTrackKeyables(string filename, int keyablesSet)
         {
             using (var writer = AnalyzerUtility.OpenWriter(filename))
             {
@@ -275,11 +275,11 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol(nameof(TrackTransform.unk_0x38));
                 writer.WriteNextCol(nameof(TrackTransform.unk_0x3A));
 
+                writer.WriteNextCol("TrackTransform Index");
                 writer.WriteNextCol("Keyable /9");
                 writer.WriteNextCol("Keyable Index");
                 writer.WriteNextCol("Keyable Order");
                 writer.WriteNextCol("Nested Depth");
-                writer.WriteNextCol("Element Index");
                 writer.WriteNextCol("Address");
                 writer.WriteNextCol(nameof(KeyableAttribute.easeMode));
                 writer.WriteNextCol(nameof(KeyableAttribute.easeMode));
@@ -293,35 +293,33 @@ namespace Manifold.IO.GFZ.CourseCollision
                 foreach (var sobj in coliSobjs)
                 {
                     // foreach Transform
-                    int index = 0;
+                    int trackTransformIndex = 0;
                     foreach (var trackTransform in sobj.Value.trackTransforms)
                     {
-                        WriteTrackKeyableAttributeRecursive(writer, sobj, 0, keyablesIndex, index++, trackTransform);
+                        WriteTrackKeyableAttributeRecursive(writer, sobj, nestedDepth:0, keyablesSet, trackTransformIndex++, trackTransform);
                     }
                 }
 
                 writer.Flush();
             }
         }
-        public void WriteTrackKeyableAttributeRecursive(StreamWriter writer, ColiSceneSobj sobj, int hierarchyDepth, int keyableIndex, int index, TrackTransform trackTransform)
+        public void WriteTrackKeyableAttributeRecursive(StreamWriter writer, ColiSceneSobj sobj, int nestedDepth, int keyableSet, int trackTransformIndex, TrackTransform trackTransform)
         {
             var keyables2D = trackTransform.transformTopology.keyablesArray2D.GetArrays();
-            var printIndex = 1; // values 1-9
-            int printTotal = keyables2D[keyableIndex].Length;
+            var keyableIndex = 1; // 0-n, depends on number of keyables in array
+            int keyableTotal = keyables2D[keyableSet].Length;
 
             // Animation data of this curve
-            int topoIndex9 = 0;
-            foreach (var param in keyables2D[keyableIndex])
+            foreach (var keyables in keyables2D[keyableSet])
             {
-                topoIndex9++;
-                WriteKeyableAttribute(writer, sobj, hierarchyDepth + 1, printIndex++, printTotal, index, topoIndex9, param, trackTransform);
+                WriteKeyableAttribute(writer, sobj, nestedDepth+1, keyableIndex++, keyableTotal, keyableSet, trackTransformIndex, keyables, trackTransform);
             }
 
             // Go to track transform children, write their anim data (calls this function)
             foreach (var child in trackTransform.children)
-                WriteTrackKeyableAttributeRecursive(writer, sobj, hierarchyDepth + 1, keyableIndex, index, child);
+                WriteTrackKeyableAttributeRecursive(writer, sobj, nestedDepth+1, keyableSet, trackTransformIndex, child);
         }
-        public void WriteKeyableAttribute(StreamWriter writer, ColiSceneSobj sobj, int hierarchyDepth, int keyableIndex, int total, int index, int topoIndex9, KeyableAttribute param, TrackTransform tt)
+        public void WriteKeyableAttribute(StreamWriter writer, ColiSceneSobj sobj, int nestedDepth, int keyableIndex, int keyableTotal, int keyablesSet, int trackTransformIndex, KeyableAttribute param, TrackTransform tt)
         {
             string gameId = sobj.Value.header.IsFileGX ? "GX" : "AX";
 
@@ -335,11 +333,11 @@ namespace Manifold.IO.GFZ.CourseCollision
             writer.WriteNextCol(tt.unk_0x38);
             writer.WriteNextCol(tt.unk_0x3A);
 
-            writer.WriteNextCol(topoIndex9);
+            writer.WriteNextCol(trackTransformIndex);
+            writer.WriteNextCol(keyablesSet);
             writer.WriteNextCol(keyableIndex);
-            writer.WriteNextCol($"[{keyableIndex}/{total}]");
-            writer.WriteNextCol($"{hierarchyDepth}");
-            writer.WriteNextCol(index); // index, ei [1/50] track index
+            writer.WriteNextCol($"[{keyableIndex}/{keyableTotal}]");
+            writer.WriteNextCol($"{nestedDepth}");
             writer.WriteNextCol(param.StartAddressHex());
             writer.WriteNextCol(param.easeMode);
             writer.WriteNextCol((int)param.easeMode);
@@ -378,23 +376,23 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol(nameof(TrackTransform.zero_0x48));
                 writer.WriteNextCol(nameof(TrackTransform.unk_0x4C));
                 //
-                writer.WriteNextColNicify(nameof(TopologyExtra.unk_0x00));
-                writer.WriteNextColNicify(nameof(TopologyExtra.unk_0x04));
-                writer.WriteNextColNicify(nameof(TopologyExtra.unk_0x08));
-                writer.WriteNextColNicify(nameof(TopologyExtra.unk_0x0C));
-                writer.WriteNextColNicify(nameof(TopologyExtra.unk_0x10));
-                writer.WriteNextColNicify(nameof(TopologyExtra.unk_0x14));
-                writer.WriteNextColNicify(nameof(TopologyExtra.unk_0x18));
-                writer.WriteNextColNicify(nameof(TopologyExtra.unk_0x1C));
-                writer.WriteNextColNicify(nameof(TopologyExtra.unk_0x20));
-                writer.WriteNextColNicify(nameof(TopologyExtra.unk_0x24));
-                writer.WriteNextColNicify(nameof(TopologyExtra.unk_0x28));
-                writer.WriteNextColNicify(nameof(TopologyExtra.unk_0x2C));
-                writer.WriteNextColNicify(nameof(TopologyExtra.unk_0x30));
-                writer.WriteNextColNicify(nameof(TopologyExtra.unk_0x34));
-                writer.WriteNextColNicify(nameof(TopologyExtra.zero_0x35));
-                writer.WriteNextColNicify(nameof(TopologyExtra.unk_0x36));
-                writer.WriteNextColNicify(nameof(TopologyExtra.zero_0x37));
+                //writer.WriteNextColNicify(nameof(Track90DegreeCorner.unk_0x00));
+                //writer.WriteNextColNicify(nameof(Track90DegreeCorner.unk_0x04));
+                //writer.WriteNextColNicify(nameof(Track90DegreeCorner.unk_0x08));
+                //writer.WriteNextColNicify(nameof(Track90DegreeCorner.unk_0x0C));
+                //writer.WriteNextColNicify(nameof(Track90DegreeCorner.unk_0x10));
+                //writer.WriteNextColNicify(nameof(Track90DegreeCorner.unk_0x14));
+                //writer.WriteNextColNicify(nameof(Track90DegreeCorner.unk_0x18));
+                //writer.WriteNextColNicify(nameof(Track90DegreeCorner.unk_0x1C));
+                //writer.WriteNextColNicify(nameof(Track90DegreeCorner.unk_0x20));
+                //writer.WriteNextColNicify(nameof(Track90DegreeCorner.unk_0x24));
+                //writer.WriteNextColNicify(nameof(Track90DegreeCorner.unk_0x28));
+                //writer.WriteNextColNicify(nameof(Track90DegreeCorner.unk_0x2C));
+                writer.WriteNextColNicify(nameof(Track90DegreeCorner.unkRotation));
+                //writer.WriteNextColNicify(nameof(Track90DegreeCorner.const_0x34));
+                //writer.WriteNextColNicify(nameof(Track90DegreeCorner.zero_0x35));
+                writer.WriteNextColNicify(nameof(Track90DegreeCorner.perimeterOptions));
+                //writer.WriteNextColNicify(nameof(Track90DegreeCorner.zero_0x37));
                 //
                 writer.WriteNextRow();
 
@@ -451,23 +449,23 @@ namespace Manifold.IO.GFZ.CourseCollision
             //
             if (trackTransform.sliceTopologyPtr.IsNotNullPointer)
             {
-                writer.WriteNextCol(trackTransform.sliceTopology.unk_0x00);
-                writer.WriteNextCol(trackTransform.sliceTopology.unk_0x04);
-                writer.WriteNextCol(trackTransform.sliceTopology.unk_0x08);
-                writer.WriteNextCol(trackTransform.sliceTopology.unk_0x0C);
-                writer.WriteNextCol(trackTransform.sliceTopology.unk_0x10);
-                writer.WriteNextCol(trackTransform.sliceTopology.unk_0x14);
-                writer.WriteNextCol(trackTransform.sliceTopology.unk_0x18);
-                writer.WriteNextCol(trackTransform.sliceTopology.unk_0x1C);
-                writer.WriteNextCol(trackTransform.sliceTopology.unk_0x20);
-                writer.WriteNextCol(trackTransform.sliceTopology.unk_0x24);
-                writer.WriteNextCol(trackTransform.sliceTopology.unk_0x28);
-                writer.WriteNextCol(trackTransform.sliceTopology.unk_0x2C);
-                writer.WriteNextCol(trackTransform.sliceTopology.unk_0x30);
-                writer.WriteNextCol(trackTransform.sliceTopology.unk_0x34);
-                writer.WriteNextCol(trackTransform.sliceTopology.zero_0x35);
-                writer.WriteNextCol(trackTransform.sliceTopology.unk_0x36);
-                writer.WriteNextCol(trackTransform.sliceTopology.zero_0x37);
+                //writer.WriteNextCol(trackTransform.track90DegreeCorner.unk_0x00);
+                //writer.WriteNextCol(trackTransform.track90DegreeCorner.unk_0x04);
+                //writer.WriteNextCol(trackTransform.track90DegreeCorner.unk_0x08);
+                //writer.WriteNextCol(trackTransform.track90DegreeCorner.unk_0x0C);
+                //writer.WriteNextCol(trackTransform.track90DegreeCorner.unk_0x10);
+                //writer.WriteNextCol(trackTransform.track90DegreeCorner.unk_0x14);
+                //writer.WriteNextCol(trackTransform.track90DegreeCorner.unk_0x18);
+                //writer.WriteNextCol(trackTransform.track90DegreeCorner.unk_0x1C);
+                //writer.WriteNextCol(trackTransform.track90DegreeCorner.unk_0x20);
+                //writer.WriteNextCol(trackTransform.track90DegreeCorner.unk_0x24);
+                //writer.WriteNextCol(trackTransform.track90DegreeCorner.unk_0x28);
+                //writer.WriteNextCol(trackTransform.track90DegreeCorner.unk_0x2C);
+                writer.WriteNextCol(trackTransform.track90DegreeCorner.unkRotation);
+                //writer.WriteNextCol(trackTransform.track90DegreeCorner.const_0x34);
+                //writer.WriteNextCol(trackTransform.track90DegreeCorner.zero_0x35);
+                writer.WriteNextCol(trackTransform.track90DegreeCorner.perimeterOptions);
+                //writer.WriteNextCol(trackTransform.track90DegreeCorner.zero_0x37);
             }
             //
             writer.WriteNextRow();

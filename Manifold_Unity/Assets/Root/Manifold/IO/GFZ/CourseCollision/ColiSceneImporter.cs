@@ -169,7 +169,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                     var sceneObjectData = instance.AddComponent<GfzSceneObject>();
                     sceneObjectData.self = sceneObject;
 
-
+                    //
                     if (sceneObject.transformPtr.IsNotNullPointer)
                     {
                         // Perhaps best way when matrix exists? No compression rotation
@@ -184,8 +184,6 @@ namespace Manifold.IO.GFZ.CourseCollision
                         instance.transform.rotation = sceneObject.transform.DecomposedRotation.Rotation;
                         instance.transform.localScale = sceneObject.transform.Scale;
                     }
-
-
                 }
 
                 // HACK: force-add models for AX test stages
@@ -250,6 +248,7 @@ namespace Manifold.IO.GFZ.CourseCollision
         }
 
 
+        private int elementIndex = 0;
         public void CreateTrackTransformHierarchy(ColiScene scene)
         {
             // Get mesh for debugging
@@ -258,6 +257,9 @@ namespace Manifold.IO.GFZ.CourseCollision
             // Create object to house data
             var controlPointsParent = new GameObject();
             controlPointsParent.name = "Control Points Hierarchy";
+
+            //
+            elementIndex = 0;
 
             // Loop over every top transform
             int count = 0;
@@ -305,7 +307,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             //
             var controlPoint = new GameObject();
             //
-            controlPoint.name = name;
+            controlPoint.name = $"{elementIndex++} {name}";
             controlPoint.transform.parent = parent.transform;
             // Set transform
             controlPoint.transform.localPosition = trackTransform.localPosition;

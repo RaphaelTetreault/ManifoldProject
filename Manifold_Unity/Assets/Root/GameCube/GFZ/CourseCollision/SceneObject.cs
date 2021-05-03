@@ -36,9 +36,7 @@ namespace GameCube.GFZ.CourseCollision
         public AnimationClip animation;
         public UnknownSceneObjectData unk1;
         public SkeletalAnimator skeletalAnimator;
-
-        // rename to Matrix3x4
-        public TransformMatrix4x3 transformMatrix3x4 = new TransformMatrix4x3();
+        public TransformMatrix3x4 transformMatrix3x4 = new TransformMatrix3x4();
 
 
         #endregion
@@ -74,9 +72,11 @@ namespace GameCube.GFZ.CourseCollision
             }
             this.RecordEndAddress(reader);
             {
+                // Assert constants
                 Assert.IsTrue(zero_0x2C == 0);
-
                 Assert.IsTrue(collisionBindingPtr.IsNotNullPointer);
+
+                //
                 reader.JumpToAddress(collisionBindingPtr);
                 reader.ReadX(ref colliderBinding, true);
                 name = colliderBinding.objectAttributes.name;
@@ -101,6 +101,7 @@ namespace GameCube.GFZ.CourseCollision
 
                 // 1518 objects without a transform
                 // They appear to use animation, so the matrix is null
+                // They do have a "normal" transform, though
                 if (transformPtr.IsNotNullPointer)
                 {
                     reader.JumpToAddress(transformPtr);
@@ -123,7 +124,7 @@ namespace GameCube.GFZ.CourseCollision
             writer.WriteX(skeletalAnimatorPtr);
             writer.WriteX(transformPtr);
 
-            // Write values pointed at by, update ptrs above
+            // Write values pointed at, update ptrs above
             throw new NotImplementedException();
         }
 

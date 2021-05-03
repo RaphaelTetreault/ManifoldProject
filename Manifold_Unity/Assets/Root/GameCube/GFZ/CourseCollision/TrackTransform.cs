@@ -24,19 +24,7 @@ namespace GameCube.GFZ.CourseCollision
             UNK_7 = 1 << 7,
         }
 
-        [Flags]
-        public enum TrackUnkFlag3 : byte
-        {
-            None = 0,
-            Unused0 = 1 << 0,
-            Unused1 = 1 << 1,
-            hasRailHeightRight = 1 << 2,
-            hasRailHeightLeft  = 1 << 3,
-            UNK_4 = 1 << 4,
-            UNK_5 = 1 << 5,
-            Unused6 = 1 << 6,
-            Unused7 = 1 << 7,
-        }
+
 
         public enum TrackUnkOption1 : byte
         {
@@ -67,7 +55,7 @@ namespace GameCube.GFZ.CourseCollision
         
         public TrackUnkFlag1 unk_0x00; // 0, 1, 2, 4, 8
         public TrackUnkFlag2 unk_0x01; // 0, 2, 4, 8, 16, 32, 64, 128
-        public TrackUnkFlag3 unk_0x02; // 0, 4, 8, 12, 20, 28, 44
+        public TrackPerimeterOptions unk_0x02; // 0, 4, 8, 12, 20-x14-b00010100, 28-x1A-b00011000, 44-x2A-b00101100
         public TrackUnkOption1 unk_0x03; // 0, 1, 2 (interpolation?)
         public Pointer transformTopologyPtr; // SEGMENT TRANSFORM?
         public Pointer sliceTopologyPtr; // ???
@@ -84,7 +72,7 @@ namespace GameCube.GFZ.CourseCollision
         public TrackUnkOption2 unk_0x4C; // 0, 1, 2, 3 (interpolation?)
 
         public TopologyParameters transformTopology; // transform anim data 
-        public TopologyExtra sliceTopology;
+        public Track90DegreeCorner track90DegreeCorner;
         public TrackTransform[] children = new TrackTransform[0];
 
         // metadata
@@ -142,7 +130,7 @@ namespace GameCube.GFZ.CourseCollision
                 if (sliceTopologyPtr.IsNotNullPointer)
                 {
                     reader.JumpToAddress(sliceTopologyPtr);
-                    reader.ReadX(ref sliceTopology, true);
+                    reader.ReadX(ref track90DegreeCorner, true);
                 }
 
                 // Create a matrix for convinience
@@ -192,7 +180,7 @@ namespace GameCube.GFZ.CourseCollision
             writer.WriteX(unk_0x02);
             writer.WriteX(unk_0x03);
             writer.WriteX(transformTopologyPtr);
-            writer.WriteX(sliceTopology);
+            writer.WriteX(track90DegreeCorner);
             writer.WriteX(childrenPtr);
             writer.WriteX(localScale);
             writer.WriteX(localRotation);
