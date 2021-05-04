@@ -63,8 +63,14 @@ namespace GameCube.GFZ.CourseCollision
         public Vector3 localScale;
         public Vector3 localRotation;
         public Vector3 localPosition;
-        public ushort unk_0x38; // lots of values
-        public ushort unk_0x3A; // lots of values
+        [NumFormat(format0: "{0}", numDigits: 8, numBase: 2)]
+        public byte unk_0x38; // looks like an id to bunch multiple sets!
+        [NumFormat(format0: "{0}", numDigits: 8, numBase: 2)]
+        public byte unk_0x39; // 
+        [NumFormat(format0: "{0}", numDigits: 8, numBase: 2)]
+        public byte unk_0x3A; // 
+        [NumFormat(format0: "{0}", numDigits: 8, numBase: 2)]
+        public byte unk_0x3B; // 
         public float railHeightRight;
         public float railHeightLeft;
         public uint zero_0x44; // zero confirmed
@@ -113,7 +119,9 @@ namespace GameCube.GFZ.CourseCollision
                 reader.ReadX(ref localRotation);
                 reader.ReadX(ref localPosition); //AvEditorUtil.InvertX(ref localPosition);
                 reader.ReadX(ref unk_0x38);
+                reader.ReadX(ref unk_0x39);
                 reader.ReadX(ref unk_0x3A);
+                reader.ReadX(ref unk_0x3B);
                 reader.ReadX(ref railHeightRight);
                 reader.ReadX(ref railHeightLeft);
                 reader.ReadX(ref zero_0x44);

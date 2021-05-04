@@ -57,7 +57,7 @@ namespace GameCube.GFZ.CourseCollision
         {
             this.RecordStartAddress(reader);
             {
-                reader.ReadX(ref matrix3x4, false);
+                reader.ReadX(ref matrix3x4, true);
                 reader.ReadX(ref unkRotation);
                 reader.ReadX(ref const_0x34);
                 reader.ReadX(ref zero_0x35);

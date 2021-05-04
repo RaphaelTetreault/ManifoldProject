@@ -369,7 +369,9 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol(nameof(TrackTransform.localRotation));
                 writer.WriteNextCol(nameof(TrackTransform.localPosition));
                 writer.WriteNextCol(nameof(TrackTransform.unk_0x38));
+                writer.WriteNextCol(nameof(TrackTransform.unk_0x39));
                 writer.WriteNextCol(nameof(TrackTransform.unk_0x3A));
+                writer.WriteNextCol(nameof(TrackTransform.unk_0x3B));
                 writer.WriteNextCol(nameof(TrackTransform.railHeightRight));
                 writer.WriteNextCol(nameof(TrackTransform.railHeightLeft));
                 writer.WriteNextCol(nameof(TrackTransform.zero_0x44));
@@ -440,7 +442,9 @@ namespace Manifold.IO.GFZ.CourseCollision
             writer.WriteNextCol(trackTransform.localRotation);
             writer.WriteNextCol(trackTransform.localPosition);
             writer.WriteNextCol(trackTransform.unk_0x38);
+            writer.WriteNextCol(trackTransform.unk_0x39);
             writer.WriteNextCol(trackTransform.unk_0x3A);
+            writer.WriteNextCol(trackTransform.unk_0x3B);
             writer.WriteNextCol(trackTransform.railHeightRight);
             writer.WriteNextCol(trackTransform.railHeightLeft);
             writer.WriteNextCol(trackTransform.zero_0x44);
