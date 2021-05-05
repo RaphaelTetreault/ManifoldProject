@@ -365,14 +365,6 @@ namespace Manifold.IO.GFZ.CourseCollision
             controlPoint.transform.localScale = trackTransform.localScale;
 
             //
-            //var meshRenderer = controlPoint.AddComponent<MeshRenderer>();
-            //var meshFilter = controlPoint.AddComponent<MeshFilter>();
-
-            // Assign values to
-            //meshFilter.sharedMesh = mesh;
-            //meshRenderer.material
-
-            //
             var display = controlPoint.AddComponent<DisplayTrackTransformSingle>();
             display.depth = depth;
 

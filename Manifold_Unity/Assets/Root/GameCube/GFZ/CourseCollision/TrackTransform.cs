@@ -2,37 +2,12 @@
 using System;
 using System.IO;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace GameCube.GFZ.CourseCollision
 {
     [Serializable]
     public class TrackTransform : IBinarySerializable, IBinaryAddressableRange
     {
-
-        [Flags]
-        public enum TrackUnkFlag2 : byte
-        {
-            None = 0,
-            Unused_0 = 1 << 0,
-            UNK_1 = 1 << 1,
-            UNK_2 = 1 << 2,
-            UNK_3 = 1 << 3,
-            UNK_4 = 1 << 4,
-            UNK_5 = 1 << 5,
-            UNK_6 = 1 << 6,
-            UNK_7 = 1 << 7,
-        }
-
-
-
-        public enum TrackUnkOption1 : byte
-        {
-            option_0,
-            option_1,
-            option_2,
-            option_3,
-        }
 
         public enum TrackUnkOption2 : uint
         {
@@ -53,13 +28,13 @@ namespace GameCube.GFZ.CourseCollision
         private AddressRange addressRange;
 
         
-        public TrackUnkFlag1 unk_0x00; // 0, 1, 2, 4, 8
-        public TrackUnkFlag2 unk_0x01; // 0, 2, 4, 8, 16, 32, 64, 128
-        public TrackPerimeterOptions unk_0x02; // 0, 4, 8, 12, 20-x14-b00010100, 28-x1A-b00011000, 44-x2A-b00101100
-        public TrackUnkOption1 unk_0x03; // 0, 1, 2 (interpolation?)
-        public Pointer transformTopologyPtr; // SEGMENT TRANSFORM?
-        public Pointer sliceTopologyPtr; // ???
-        public ArrayPointer childrenPtr;
+        public TrackTopologyMetadata topologyMetadata;
+        public TrackProperty trackProperty; 
+        public TrackPerimeterOptions perimeterOptions;
+        public TrackPipeCylinderOptions pipeCylinderOptions;
+        public Pointer generalTopologyPtr;
+        public Pointer hairpinCornerTopologyPtr;
+        public ArrayPointer childrenPtrs;
         public Vector3 localScale;
         public Vector3 localRotation;
         public Vector3 localPosition;
@@ -77,8 +52,8 @@ namespace GameCube.GFZ.CourseCollision
         public uint zero_0x48; // zero confirmed
         public TrackUnkOption2 unk_0x4C; // 0, 1, 2, 3 (interpolation?)
 
-        public TopologyParameters transformTopology; // transform anim data 
-        public Track90DegreeCorner track90DegreeCorner;
+        public TopologyParameters trackTopology;
+        public TrackCornerTopology hairpinCornerTopology;
         public TrackTransform[] children = new TrackTransform[0];
 
         // metadata
@@ -108,13 +83,13 @@ namespace GameCube.GFZ.CourseCollision
         {
             this.RecordStartAddress(reader);
             {
-                reader.ReadX(ref unk_0x00);
-                reader.ReadX(ref unk_0x01);
-                reader.ReadX(ref unk_0x02);
-                reader.ReadX(ref unk_0x03);
-                reader.ReadX(ref transformTopologyPtr);
-                reader.ReadX(ref sliceTopologyPtr);
-                reader.ReadX(ref childrenPtr);
+                reader.ReadX(ref topologyMetadata);
+                reader.ReadX(ref trackProperty);
+                reader.ReadX(ref perimeterOptions);
+                reader.ReadX(ref pipeCylinderOptions);
+                reader.ReadX(ref generalTopologyPtr);
+                reader.ReadX(ref hairpinCornerTopologyPtr);
+                reader.ReadX(ref childrenPtrs);
                 reader.ReadX(ref localScale);
                 reader.ReadX(ref localRotation);
                 reader.ReadX(ref localPosition); //AvEditorUtil.InvertX(ref localPosition);
@@ -131,14 +106,14 @@ namespace GameCube.GFZ.CourseCollision
             this.RecordEndAddress(reader);
             {
                 // Read Topology
-                reader.JumpToAddress(transformTopologyPtr);
-                reader.ReadX(ref transformTopology, true);
+                reader.JumpToAddress(generalTopologyPtr);
+                reader.ReadX(ref trackTopology, true);
 
                 // Read Extra Transform
-                if (sliceTopologyPtr.IsNotNullPointer)
+                if (hairpinCornerTopologyPtr.IsNotNullPointer)
                 {
-                    reader.JumpToAddress(sliceTopologyPtr);
-                    reader.ReadX(ref track90DegreeCorner, true);
+                    reader.JumpToAddress(hairpinCornerTopologyPtr);
+                    reader.ReadX(ref hairpinCornerTopology, true);
                 }
 
                 // Create a matrix for convinience
@@ -146,10 +121,10 @@ namespace GameCube.GFZ.CourseCollision
                 worldMatrix = localMatrix;
 
                 // Read children recusively
-                if (childrenPtr.IsNotNullPointer)
+                if (childrenPtrs.IsNotNullPointer)
                 {
-                    reader.JumpToAddress(childrenPtr);
-                    reader.ReadX(ref children, childrenPtr.Length, true);
+                    reader.JumpToAddress(childrenPtrs);
+                    reader.ReadX(ref children, childrenPtrs.Length, true);
 
                     foreach (var child in children)
                     {
@@ -183,13 +158,13 @@ namespace GameCube.GFZ.CourseCollision
             // TODO
             // Write casted 0s in place of zero_0x##
 
-            writer.WriteX(unk_0x00);
-            writer.WriteX(unk_0x01);
-            writer.WriteX(unk_0x02);
-            writer.WriteX(unk_0x03);
-            writer.WriteX(transformTopologyPtr);
-            writer.WriteX(track90DegreeCorner);
-            writer.WriteX(childrenPtr);
+            writer.WriteX(topologyMetadata);
+            writer.WriteX(trackProperty);
+            writer.WriteX(perimeterOptions);
+            writer.WriteX(pipeCylinderOptions);
+            writer.WriteX(generalTopologyPtr);
+            writer.WriteX(hairpinCornerTopology);
+            writer.WriteX(childrenPtrs);
             writer.WriteX(localScale);
             writer.WriteX(localRotation);
             writer.WriteX(localPosition);

@@ -221,10 +221,10 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol("FileName");
                 writer.WriteNextCol("Game");
 
-                writer.WriteNextCol(nameof(TrackTransform.unk_0x00));
-                writer.WriteNextCol(nameof(TrackTransform.unk_0x01));
-                writer.WriteNextCol(nameof(TrackTransform.unk_0x02));
-                writer.WriteNextCol(nameof(TrackTransform.unk_0x03));
+                writer.WriteNextCol(nameof(TrackTransform.topologyMetadata));
+                writer.WriteNextCol(nameof(TrackTransform.trackProperty));
+                writer.WriteNextCol(nameof(TrackTransform.perimeterOptions));
+                writer.WriteNextCol(nameof(TrackTransform.pipeCylinderOptions));
                 writer.WriteNextCol(nameof(TrackTransform.unk_0x38));
                 writer.WriteNextCol(nameof(TrackTransform.unk_0x3A));
 
@@ -268,10 +268,10 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol("FileName");
                 writer.WriteNextCol("Game");
 
-                writer.WriteNextCol(nameof(TrackTransform.unk_0x00));
-                writer.WriteNextCol(nameof(TrackTransform.unk_0x01));
-                writer.WriteNextCol(nameof(TrackTransform.unk_0x02));
-                writer.WriteNextCol(nameof(TrackTransform.unk_0x03));
+                writer.WriteNextCol(nameof(TrackTransform.topologyMetadata));
+                writer.WriteNextCol(nameof(TrackTransform.trackProperty));
+                writer.WriteNextCol(nameof(TrackTransform.perimeterOptions));
+                writer.WriteNextCol(nameof(TrackTransform.pipeCylinderOptions));
                 writer.WriteNextCol(nameof(TrackTransform.unk_0x38));
                 writer.WriteNextCol(nameof(TrackTransform.unk_0x3A));
 
@@ -305,7 +305,7 @@ namespace Manifold.IO.GFZ.CourseCollision
         }
         public void WriteTrackKeyableAttributeRecursive(StreamWriter writer, ColiSceneSobj sobj, int nestedDepth, int keyableSet, int trackTransformIndex, TrackTransform trackTransform)
         {
-            var keyables2D = trackTransform.transformTopology.keyablesArray2D.GetArrays();
+            var keyables2D = trackTransform.trackTopology.keyablesArray2D.GetArrays();
             var keyableIndex = 1; // 0-n, depends on number of keyables in array
             int keyableTotal = keyables2D[keyableSet].Length;
 
@@ -326,10 +326,10 @@ namespace Manifold.IO.GFZ.CourseCollision
             writer.WriteNextCol(sobj.FileName);
             writer.WriteNextCol(gameId);
 
-            writer.WriteNextCol(tt.unk_0x00);
-            writer.WriteNextCol(tt.unk_0x01);
-            writer.WriteNextCol(tt.unk_0x02);
-            writer.WriteNextCol(tt.unk_0x03);
+            writer.WriteNextCol(tt.topologyMetadata);
+            writer.WriteNextCol(tt.trackProperty);
+            writer.WriteNextCol(tt.perimeterOptions);
+            writer.WriteNextCol(tt.pipeCylinderOptions);
             writer.WriteNextCol(tt.unk_0x38);
             writer.WriteNextCol(tt.unk_0x3A);
 
@@ -358,13 +358,13 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol("Root Index");
                 writer.WriteNextCol("Transform Depth");
                 writer.WriteNextCol("Address");
-                writer.WriteNextCol(nameof(TrackTransform.unk_0x00));
-                writer.WriteNextCol(nameof(TrackTransform.unk_0x01));
-                writer.WriteNextCol(nameof(TrackTransform.unk_0x02));
-                writer.WriteNextCol(nameof(TrackTransform.unk_0x03));
-                writer.WriteNextCol(nameof(TrackTransform.transformTopologyPtr));
-                writer.WriteNextCol(nameof(TrackTransform.sliceTopologyPtr));
-                writer.WriteNextCol(nameof(TrackTransform.childrenPtr));
+                writer.WriteNextCol(nameof(TrackTransform.topologyMetadata));
+                writer.WriteNextCol(nameof(TrackTransform.trackProperty));
+                writer.WriteNextCol(nameof(TrackTransform.perimeterOptions));
+                writer.WriteNextCol(nameof(TrackTransform.pipeCylinderOptions));
+                writer.WriteNextCol(nameof(TrackTransform.generalTopologyPtr));
+                writer.WriteNextCol(nameof(TrackTransform.hairpinCornerTopologyPtr));
+                writer.WriteNextCol(nameof(TrackTransform.childrenPtrs));
                 writer.WriteNextCol(nameof(TrackTransform.localScale));
                 writer.WriteNextCol(nameof(TrackTransform.localRotation));
                 writer.WriteNextCol(nameof(TrackTransform.localPosition));
@@ -390,10 +390,10 @@ namespace Manifold.IO.GFZ.CourseCollision
                 //writer.WriteNextColNicify(nameof(Track90DegreeCorner.unk_0x24));
                 //writer.WriteNextColNicify(nameof(Track90DegreeCorner.unk_0x28));
                 //writer.WriteNextColNicify(nameof(Track90DegreeCorner.unk_0x2C));
-                writer.WriteNextColNicify(nameof(Track90DegreeCorner.unkRotation));
+                writer.WriteNextColNicify(nameof(TrackCornerTopology.unkRotation));
                 //writer.WriteNextColNicify(nameof(Track90DegreeCorner.const_0x34));
                 //writer.WriteNextColNicify(nameof(Track90DegreeCorner.zero_0x35));
-                writer.WriteNextColNicify(nameof(Track90DegreeCorner.perimeterOptions));
+                writer.WriteNextColNicify(nameof(TrackCornerTopology.perimeterOptions));
                 //writer.WriteNextColNicify(nameof(Track90DegreeCorner.zero_0x37));
                 //
                 writer.WriteNextRow();
@@ -405,7 +405,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                     var total = scene.trackTransforms.Count;
                     foreach (var trackTransform in scene.trackTransforms)
                     {
-                        WriteTrackTransformRecursive(writer, sobj, 0, index++, total, trackTransform);
+                        WriteTrackTransformRecursive(writer, sobj, 0, ++index, total, trackTransform);
                     }
                 }
 
@@ -431,13 +431,13 @@ namespace Manifold.IO.GFZ.CourseCollision
             writer.WriteNextCol($"[{index}/{total}]");
             writer.WriteNextCol($"{depth}");
             writer.WriteNextCol(trackTransform.StartAddressHex());
-            writer.WriteNextCol(trackTransform.unk_0x00);
-            writer.WriteNextCol(trackTransform.unk_0x01);
-            writer.WriteNextCol(trackTransform.unk_0x02);
-            writer.WriteNextCol(trackTransform.unk_0x03);
-            writer.WriteNextCol(trackTransform.transformTopologyPtr);
-            writer.WriteNextCol(trackTransform.sliceTopologyPtr);
-            writer.WriteNextCol(trackTransform.childrenPtr);
+            writer.WriteNextCol(trackTransform.topologyMetadata);
+            writer.WriteNextCol(trackTransform.trackProperty);
+            writer.WriteNextCol(trackTransform.perimeterOptions);
+            writer.WriteNextCol(trackTransform.pipeCylinderOptions);
+            writer.WriteNextCol(trackTransform.generalTopologyPtr);
+            writer.WriteNextCol(trackTransform.hairpinCornerTopologyPtr);
+            writer.WriteNextCol(trackTransform.childrenPtrs);
             writer.WriteNextCol(trackTransform.localScale);
             writer.WriteNextCol(trackTransform.localRotation);
             writer.WriteNextCol(trackTransform.localPosition);
@@ -451,7 +451,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             writer.WriteNextCol(trackTransform.zero_0x48);
             writer.WriteNextCol(trackTransform.unk_0x4C);
             //
-            if (trackTransform.sliceTopologyPtr.IsNotNullPointer)
+            if (trackTransform.hairpinCornerTopologyPtr.IsNotNullPointer)
             {
                 //writer.WriteNextCol(trackTransform.track90DegreeCorner.unk_0x00);
                 //writer.WriteNextCol(trackTransform.track90DegreeCorner.unk_0x04);
@@ -465,10 +465,10 @@ namespace Manifold.IO.GFZ.CourseCollision
                 //writer.WriteNextCol(trackTransform.track90DegreeCorner.unk_0x24);
                 //writer.WriteNextCol(trackTransform.track90DegreeCorner.unk_0x28);
                 //writer.WriteNextCol(trackTransform.track90DegreeCorner.unk_0x2C);
-                writer.WriteNextCol(trackTransform.track90DegreeCorner.unkRotation);
+                writer.WriteNextCol(trackTransform.hairpinCornerTopology.unkRotation);
                 //writer.WriteNextCol(trackTransform.track90DegreeCorner.const_0x34);
                 //writer.WriteNextCol(trackTransform.track90DegreeCorner.zero_0x35);
-                writer.WriteNextCol(trackTransform.track90DegreeCorner.perimeterOptions);
+                writer.WriteNextCol(trackTransform.hairpinCornerTopology.perimeterOptions);
                 //writer.WriteNextCol(trackTransform.track90DegreeCorner.zero_0x37);
             }
             //

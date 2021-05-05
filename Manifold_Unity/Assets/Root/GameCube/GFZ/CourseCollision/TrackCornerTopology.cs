@@ -6,7 +6,7 @@ using System.IO;
 namespace GameCube.GFZ.CourseCollision
 {
     [Serializable]
-    public class Track90DegreeCorner : IBinarySerializable, IBinaryAddressableRange
+    public class TrackCornerTopology : IBinarySerializable, IBinaryAddressableRange
     {
 
         [UnityEngine.SerializeField]
