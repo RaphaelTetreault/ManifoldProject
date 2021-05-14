@@ -350,11 +350,13 @@ namespace Manifold.IO.GFZ.CourseCollision
 
 
         // Kicks off recursive write
+        private static int s_order;
         public void AnalyzeTrackTransforms(string filename)
         {
             using (var writer = AnalyzerUtility.OpenWriter(filename))
             {
                 writer.WriteNextCol("Filename");
+                writer.WriteNextCol("Order");
                 writer.WriteNextCol("Root Index");
                 writer.WriteNextCol("Transform Depth");
                 writer.WriteNextCol("Address");
@@ -398,6 +400,9 @@ namespace Manifold.IO.GFZ.CourseCollision
                 //
                 writer.WriteNextRow();
 
+                // RESET static variable
+                s_order = 0;
+
                 foreach (var sobj in coliSobjs)
                 {
                     var scene = sobj.Value;
@@ -428,6 +433,7 @@ namespace Manifold.IO.GFZ.CourseCollision
         public void WriteTrackTransform(StreamWriter writer, ColiSceneSobj sobj, int depth, int index, int total, TrackTransform trackTransform)
         {
             writer.WriteNextCol(sobj.FileName);
+            writer.WriteNextCol($"{s_order++}");
             writer.WriteNextCol($"[{index}/{total}]");
             writer.WriteNextCol($"{depth}");
             writer.WriteNextCol(trackTransform.StartAddressHex());

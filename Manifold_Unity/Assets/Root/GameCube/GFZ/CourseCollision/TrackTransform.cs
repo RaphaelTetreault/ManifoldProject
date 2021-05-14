@@ -39,18 +39,18 @@ namespace GameCube.GFZ.CourseCollision
         public Vector3 localRotation;
         public Vector3 localPosition;
         [NumFormat(format0: "{0}", numDigits: 8, numBase: 2)]
-        public byte unk_0x38; // looks like an id to bunch multiple sets!
+        public byte unk_0x38; // mixed flags
         [NumFormat(format0: "{0}", numDigits: 8, numBase: 2)]
-        public byte unk_0x39; // 
+        public byte unk_0x39; // exclusive flags
         [NumFormat(format0: "{0}", numDigits: 8, numBase: 2)]
-        public byte unk_0x3A; // 
+        public byte unk_0x3A; // mixed flags
         [NumFormat(format0: "{0}", numDigits: 8, numBase: 2)]
-        public byte unk_0x3B; // 
+        public byte unk_0x3B; // mixed flags
         public float railHeightRight;
         public float railHeightLeft;
         public uint zero_0x44; // zero confirmed
         public uint zero_0x48; // zero confirmed
-        public TrackUnkOption2 unk_0x4C; // 0, 1, 2, 3 (interpolation?)
+        public TrackUnkOption2 unk_0x4C; // 0, 1, 2, 3
 
         public TopologyParameters trackTopology;
         public TrackCornerTopology hairpinCornerTopology;
@@ -163,18 +163,22 @@ namespace GameCube.GFZ.CourseCollision
             writer.WriteX(perimeterOptions);
             writer.WriteX(pipeCylinderOptions);
             writer.WriteX(generalTopologyPtr);
-            writer.WriteX(hairpinCornerTopology);
+            writer.WriteX(hairpinCornerTopologyPtr);
             writer.WriteX(childrenPtrs);
             writer.WriteX(localScale);
-            writer.WriteX(localRotation);
-            writer.WriteX(localPosition);
+            writer.WriteX(localRotation); // Mirror X
+            writer.WriteX(localPosition); // Mirror X
             writer.WriteX(unk_0x38);
+            writer.WriteX(unk_0x39);
+            writer.WriteX(unk_0x3A);
+            writer.WriteX(unk_0x3B);
             writer.WriteX(railHeightRight);
             writer.WriteX(railHeightLeft);
             writer.WriteX(zero_0x44);
             writer.WriteX(zero_0x48);
             writer.WriteX(unk_0x4C);
 
+            // HEY! Implement those pointers.
             throw new NotImplementedException();
         }
 

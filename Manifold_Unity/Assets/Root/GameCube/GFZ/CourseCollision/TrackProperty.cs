@@ -3,7 +3,9 @@
 
 namespace GameCube.GFZ.CourseCollision
 {
-    [System.Flags]
+    /// <summary>
+    /// 
+    /// </summary>
     public enum TrackProperty : byte
     {
         None = 0,
