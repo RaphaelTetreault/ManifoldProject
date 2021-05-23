@@ -32,8 +32,8 @@ namespace GameCube.GFZ.CourseCollision
         public ColiUnknownStruct1 unknownStruct_0xB4;
 
         // This data holds the geometry data and indexes
-        public ColliderTriangle[] triVerts;
-        public ColliderQuad[] quadVerts;
+        public ColliderTriangle[] colliderTriangles;
+        public ColliderQuad[] colliderQuads;
         public MeshIndexes[] triMeshIndexes;
         public MeshIndexes[] quadMeshIndexes;
 
@@ -112,14 +112,11 @@ namespace GameCube.GFZ.CourseCollision
                 numQuadVerts = Mathf.Max(quadMeshIndexes[i].largestIndex, numQuadVerts);
             }
 
-            if (collisionTrisPtr.IsNotNullPointer)
-            {
-                reader.JumpToAddress(collisionTrisPtr);
-                reader.ReadX(ref triVerts, numTriVerts);
-            }
+            reader.JumpToAddress(collisionTrisPtr);
+            reader.ReadX(ref colliderTriangles, numTriVerts, true);
 
             reader.JumpToAddress(collisionQuadsPtr);
-            reader.ReadX(ref quadVerts, numQuadVerts);
+            reader.ReadX(ref colliderQuads, numQuadVerts, true);
 
             // reset
             this.SetReaderToEndAddress(reader);

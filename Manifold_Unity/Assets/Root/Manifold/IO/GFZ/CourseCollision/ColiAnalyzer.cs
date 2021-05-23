@@ -1439,8 +1439,8 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextColNicify(nameof(ColiUnknownStruct1.unk_0x0C));
                 writer.WriteNextColNicify(nameof(ColiUnknownStruct1.unk_0x10));
                 writer.WriteNextColNicify(nameof(ColiUnknownStruct1.unk_0x14));
-                writer.WriteNextColNicify(nameof(StaticMeshTable.triVerts));
-                writer.WriteNextColNicify(nameof(StaticMeshTable.quadVerts));
+                writer.WriteNextColNicify(nameof(StaticMeshTable.colliderTriangles));
+                writer.WriteNextColNicify(nameof(StaticMeshTable.colliderQuads));
                 writer.WriteNextRow();
 
                 int index = 0;
@@ -1468,8 +1468,8 @@ namespace Manifold.IO.GFZ.CourseCollision
                     writer.WriteNextCol(table.unknownStruct_0xB4.unk_0x0C);
                     writer.WriteNextCol(table.unknownStruct_0xB4.unk_0x10);
                     writer.WriteNextCol(table.unknownStruct_0xB4.unk_0x14);
-                    writer.WriteNextCol(table.triVerts.Length);
-                    writer.WriteNextCol(table.quadVerts.Length);
+                    writer.WriteNextCol(table.colliderTriangles.Length);
+                    writer.WriteNextCol(table.colliderQuads.Length);
                     writer.WriteNextRow();
                 }
                 writer.Flush();

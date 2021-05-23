@@ -69,6 +69,11 @@ namespace GameCube.GFZ.CourseCollision
             writer.WriteX(precomputed2);
         }
 
+        public Vector3[] GetVerts()
+        {
+            return new Vector3[] { vertex0, vertex1, vertex2 };
+        }
+
         #endregion
 
     }
