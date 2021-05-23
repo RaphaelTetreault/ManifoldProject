@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: mat_coli_collision_tri
+  m_Name: mat_coli_collision_tri03
   m_Shader: {fileID: 46, guid: 0000000000000000f000000000000000, type: 0}
   m_ShaderKeywords: _ALPHABLEND_ON _EMISSION
   m_LightmapFlags: 2
@@ -75,6 +75,6 @@ Material:
     - _UVSec: 0
     - _ZWrite: 0
     m_Colors:
-    - _Color: {r: 1, g: 0.59385926, b: 0, a: 0.5176471}
-    - _EmissionColor: {r: 1, g: 0.30946895, b: 0, a: 1}
+    - _Color: {r: 1, g: 0.9263606, b: 0, a: 0.5176471}
+    - _EmissionColor: {r: 1, g: 0.83879924, b: 0, a: 1}
   m_BuildTextureStacks: []

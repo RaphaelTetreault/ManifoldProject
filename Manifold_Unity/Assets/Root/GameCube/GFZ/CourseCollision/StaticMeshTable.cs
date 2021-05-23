@@ -8,10 +8,6 @@ namespace GameCube.GFZ.CourseCollision
     [Serializable]
     public class StaticMeshTable : IBinarySerializable, IBinaryAddressableRange
     {
-
-        #region FIELDS
-
-
         [SerializeField]
         private AddressRange addressRange;
 
@@ -38,22 +34,17 @@ namespace GameCube.GFZ.CourseCollision
         public MeshIndexes[] quadMeshIndexes;
 
 
-        #endregion
-
-        #region PROPERTIES
-
-
         public AddressRange AddressRange
         {
             get => addressRange;
             set => addressRange = value;
         }
 
-
-        #endregion
-
-        #region METHODS
-
+        public static int SurfacesCount(ColiScene scene)
+        {
+            Assert.IsTrue(scene.header.IsValidFile);
+            return scene.header.IsFileAX ? kCountAxSurfaceTypes : kCountGxSurfaceTypes;
+        }
 
         public void Deserialize(BinaryReader reader)
         {
@@ -75,50 +66,49 @@ namespace GameCube.GFZ.CourseCollision
                 reader.ReadX(ref unknownStruct_0xB4, true);
             }
             this.RecordEndAddress(reader);
-
-            // Asserts
-            for (int i = 0; i < unk_0x00_0x20.Length; i++)
-                Assert.IsTrue(unk_0x00_0x20[i] == 0);
-
-            /////////////////
-            // Initialize arrays
-            triMeshIndexes = new MeshIndexes[countSurfaceTypes];
-            quadMeshIndexes = new MeshIndexes[countSurfaceTypes];
-
-            // Read mesh data
-            for (int i = 0; i < countSurfaceTypes; i++)
             {
-                // Triangles
-                var triIndexesPointer = collisionTriIndexesPtr[i];
-                triMeshIndexes[i] = new MeshIndexes();
-                //Debug.Log($"tri{i+1}:{triPointer.HexAddress}");
-                reader.JumpToAddress(triIndexesPointer);
-                reader.ReadX(ref triMeshIndexes[i], false);
+                // Asserts
+                for (int i = 0; i < unk_0x00_0x20.Length; i++)
+                    Assert.IsTrue(unk_0x00_0x20[i] == 0);
 
-                // Quads
-                var quadPointer = collisionQuadIndexesPtr[i];
-                quadMeshIndexes[i] = new MeshIndexes();
-                //Debug.Log($"quad{i+1}:{quadPointer.HexAddress}");
-                reader.JumpToAddress(quadPointer);
-                reader.ReadX(ref quadMeshIndexes[i], false);
+                /////////////////
+                // Initialize arrays
+                triMeshIndexes = new MeshIndexes[countSurfaceTypes];
+                quadMeshIndexes = new MeshIndexes[countSurfaceTypes];
+
+                // Read mesh data
+                for (int i = 0; i < countSurfaceTypes; i++)
+                {
+                    // Triangles
+                    var triIndexesPointer = collisionTriIndexesPtr[i];
+                    triMeshIndexes[i] = new MeshIndexes();
+                    //Debug.Log($"tri{i+1}:{triPointer.HexAddress}");
+                    reader.JumpToAddress(triIndexesPointer);
+                    reader.ReadX(ref triMeshIndexes[i], false);
+
+                    // Quads
+                    var quadPointer = collisionQuadIndexesPtr[i];
+                    quadMeshIndexes[i] = new MeshIndexes();
+                    //Debug.Log($"quad{i+1}:{quadPointer.HexAddress}");
+                    reader.JumpToAddress(quadPointer);
+                    reader.ReadX(ref quadMeshIndexes[i], false);
+                }
+
+                //
+                int numTriVerts = 0;
+                int numQuadVerts = 0;
+                for (int i = 0; i < countSurfaceTypes; i++)
+                {
+                    numTriVerts = Mathf.Max(triMeshIndexes[i].largestIndex, numTriVerts);
+                    numQuadVerts = Mathf.Max(quadMeshIndexes[i].largestIndex, numQuadVerts);
+                }
+
+                reader.JumpToAddress(collisionTrisPtr);
+                reader.ReadX(ref colliderTriangles, numTriVerts, true);
+
+                reader.JumpToAddress(collisionQuadsPtr);
+                reader.ReadX(ref colliderQuads, numQuadVerts, true);
             }
-
-            //
-            int numTriVerts = 0;
-            int numQuadVerts = 0;
-            for (int i = 0; i < countSurfaceTypes; i++)
-            {
-                numTriVerts = Mathf.Max(triMeshIndexes[i].largestIndex, numTriVerts);
-                numQuadVerts = Mathf.Max(quadMeshIndexes[i].largestIndex, numQuadVerts);
-            }
-
-            reader.JumpToAddress(collisionTrisPtr);
-            reader.ReadX(ref colliderTriangles, numTriVerts, true);
-
-            reader.JumpToAddress(collisionQuadsPtr);
-            reader.ReadX(ref colliderQuads, numQuadVerts, true);
-
-            // reset
             this.SetReaderToEndAddress(reader);
         }
 
@@ -126,9 +116,6 @@ namespace GameCube.GFZ.CourseCollision
         {
             throw new System.NotImplementedException();
         }
-
-
-        #endregion
 
     }
 }

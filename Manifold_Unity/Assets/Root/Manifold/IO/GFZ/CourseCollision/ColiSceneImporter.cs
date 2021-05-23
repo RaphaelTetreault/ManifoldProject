@@ -49,19 +49,6 @@ namespace Manifold.IO.GFZ.CourseCollision
                 EditorSceneManager.SaveScene(unityScene, scenePath);
                 // Keep reference of new scene
                 unityScene = EditorSceneManager.OpenScene(scenePath);
-                
-                // DEBUGGING DATA
-                {
-                    // Create debug object for visualization at top of scene hierarchy
-                    CreateDisplayerDebugObject(scene);
-
-                    // Unknown volumes
-                    CreateUnknownTrigger1Volumes(scene);
-
-                    // Track data transforms
-                    CreateTrackTransformHierarchy(scene);
-                    CreateTrackTransformSet(scene);
-                }
 
                 // Course-related values, used to find models
                 // Triple digits do overflow the "00" format, that's okay.
@@ -79,16 +66,37 @@ namespace Manifold.IO.GFZ.CourseCollision
                 var venueFolder = $"Assets/{importFromRoot}/bg/bg_{venueID}";
                 var searchFolders = new string[] { initFolder, stageFolder, venueFolder };
 
+                // DEBUGGING DATA
+                {
+                    // Create debug object for visualization at top of scene hierarchy
+                    CreateDisplayerDebugObject(scene);
+
+                    // Unknown volumes
+                    CreateUnknownTrigger1Volumes(scene);
+
+                    // Track data transforms
+                    CreateTrackTransformHierarchy(scene);
+                    CreateTrackTransformSet(scene);
+                }
+
+                // Include other misc data
+                IncludeStaticMeshColliders(scene, stageFolder);
+
                 // Get some metadata from the number of scene objects
                 var sceneObjects = scene.Value.sceneObjects;
                 // Create a string format from the highest index number used
                 int displayDigitsLength = sceneObjects.Length.ToString().Length;
                 var digitsFormat = new string('0', displayDigitsLength);
-                
+
+                // Create root for all scene objects
+                var sceneObjectsRoot = new GameObject();
+                sceneObjectsRoot.name = $"Scene Objects";
+
                 // Find all scene objects, add them to scene
                 foreach (var sceneObject in sceneObjects)
                 {
-                    // HACK: skip empties. Should really just do "model not found"
+                    // Skip empties.
+                    // TODO: should check if these are possible data?
                     if (string.IsNullOrEmpty(sceneObject.name))
                     {
                         count++;
@@ -114,7 +122,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                     else if (assetGuids.Length == 0)
                     {
                         // No models for this object. Make empty object.
-                        CreateNoMeshObject(displayName);
+                        CreateNoMeshObject(displayName, sceneObjectsRoot.transform);
                         // Stop here, go to next object in iteration
                         count++;
                         continue;
@@ -141,7 +149,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                         if (string.IsNullOrEmpty(assetPath))
                         {
                             // No models for this object. Make empty object.
-                            CreateNoMeshObject(displayName);
+                            CreateNoMeshObject(displayName, sceneObjectsRoot.transform);
                             // Stop here, go to next object in iteration
                             count++;
                             continue;
@@ -159,7 +167,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                     count++;
 
                     // Create instance of the prefab
-                    var instance = Instantiate(asset);
+                    var instance = Instantiate(asset, sceneObjectsRoot.transform);
                     instance.name = displayName;
 
                     // Tack data of object onto Unity GameObject for inspection
@@ -203,11 +211,12 @@ namespace Manifold.IO.GFZ.CourseCollision
         /// </summary>
         /// <param name="displayName">The name of the object created</param>
         /// <returns></returns>
-        private GameObject CreateNoMeshObject(string displayName)
+        private GameObject CreateNoMeshObject(string displayName, UnityEngine.Transform parent = null)
         {
             // No models for this object. Make empty object.
             var noMeshObject = new GameObject();
             noMeshObject.name = displayName;
+            noMeshObject.transform.parent = parent;
             // Tag object with metadata
             noMeshObject.AddComponent<NoMeshTag>();
             // TEMP? Disable for visual clarity
@@ -269,6 +278,10 @@ namespace Manifold.IO.GFZ.CourseCollision
 
         private void CreateLegacySceneFromAX(ColiSceneSobj scene, string stageFolder)
         {
+            // Create object to house other objects
+            var parent = new GameObject();
+            parent.name = $"Scene Objects (AX Legacy Format)";
+
             // Get models for AX scene
             // One of each is used in scene, all relative to origin.
             var searchFolders = new string[] { stageFolder };
@@ -290,11 +303,13 @@ namespace Manifold.IO.GFZ.CourseCollision
                 // Load models
                 var hackPath = AssetDatabase.GUIDToAssetPath(assetGuid);
                 var hackObject = AssetDatabase.LoadAssetAtPath<GameObject>(hackPath);
-                var instance = Instantiate(hackObject);
+                var instance = Instantiate(hackObject, parent.transform);
                 instance.name = hackObject.name;
             }
         }
 
+
+        #region Track Transform Hierarchies
 
         private int elementIndex = 0;
         public void CreateTrackTransformHierarchy(ColiScene scene)
@@ -396,6 +411,26 @@ namespace Manifold.IO.GFZ.CourseCollision
             {
                 CreateControlPointSequential(next, parent, mesh, name, depth + 1, ++index);
             }
+        }
+
+        #endregion
+
+        // COLLIDER OBJECTS
+        public void IncludeStaticMeshColliders(ColiSceneSobj sceneSobj, string stageFolder)
+        {
+            var scene = sceneSobj.Value;
+            var parent = new GameObject();
+            parent.name = $"Static Mesh Colliders";
+
+            for (int i = 0; i < StaticMeshTable.SurfacesCount(scene); i++)
+            {
+                var meshName = $"st{scene.ID:00}_{i:00}_{(StaticMeshColliderProperty)i}";
+                var assetPath = $"{stageFolder}/pf_{meshName}.prefab";
+                var asset = AssetDatabase.LoadAssetAtPath<GameObject>(assetPath);
+                var instance = Instantiate(asset, parent.transform);
+                instance.name = meshName;
+            }
+
         }
     }
 }

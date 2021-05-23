@@ -53,7 +53,10 @@ namespace GameCube.GFZ.CourseCollision
 
         public bool IsFileAX => isFileAX;
         public bool IsFileGX => isFileGX;
-
+        /// <summary>
+        /// Returns true if file is tagged either AX or GX, but not both
+        /// </summary>
+        public bool IsValidFile => isFileAX ^ isFileGX;
 
         public void Deserialize(BinaryReader reader)
         {

@@ -32,6 +32,12 @@ namespace Manifold.IO.GFZ.CourseCollision
         [SerializeField]
         protected Material quadMaterial;
 
+        [SerializeField]
+        protected Material[] triMaterials;
+
+        [SerializeField]
+        protected Material[] quadMaterials;
+
         [Header("Import Files")]
         [SerializeField] protected ColiSceneSobj[] sceneSobjs;
 
@@ -41,22 +47,6 @@ namespace Manifold.IO.GFZ.CourseCollision
 
         public override void Execute() => Import();
 
-        //// Missing: Mine?, Lava?
-        //new Color(1.0f, 1.0f, 1.0f), // 1  WHITE - Drive-able
-        //new Color(1.0f, 0.0f, 1.0f), // 2  MGNTA - Recover
-        //new Color(0.0f, 1.0f, 0.0f), // 3  GREEN - "Bonk" collision?
-        //new Color(1.0f, 1.0f, 0.0f), // 4  YLLOW - Boost Pads
-        //new Color(1.0f, 0.7f, 0.0f), // 5  ORNGE - Jump Pads
-        //new Color(0.0f, 1.0f, 1.0f), // 6  CYAN  - Ice/Slip
-        //new Color(0.8f, 0.5f, 0.2f), // 7  BROWN - Dirt
-        //new Color(0.7f, 0.5f, 1.0f), // 8  BLUE  - Lava/Laser/Damage
-        //new Color(0.5f, 0.5f, 0.5f), // 9  GREY  - OOB, Out of Bounds Plane
-        //new Color(1.0f, 0.5f, 0.5f), // 10 GREY-RED - Insta-Kill Collider. In AX, it would kill you but you'd skip/recochet off of it
-        //new Color(1.0f, 0.4f, 0.0f), // 11 RED-ORANGE - Instant Kill
-        //new Color(1.0f, 0.2f, 0.0f), // 12 RED-ORANGE - Kill Plane A
-        //new Color(0.0f, 0.0f, 0.0f), // 13 BLACK - Kill Plane B (duplicate)
-        //new Color(1.0f, 0.0f, 0.0f), // 14 RED   - Kill Plane B
-
         public void Import()
         {
             sceneSobjs = AssetDatabaseUtility.GetSobjByOption(sceneSobjs, importOption, importFrom);
@@ -65,181 +55,83 @@ namespace Manifold.IO.GFZ.CourseCollision
             {
                 var scene = sceneSobj.Value;
 
-                //// Create object-based collider meshes
-                //int total = scene.sceneObjects.Length;
-                //int count = 0;
-                //foreach (var sceneObject in scene.sceneObjects)
-                //{
-                //    count++;
+                // Create object-based collider meshes
+                {
+                    int total = scene.sceneObjects.Length;
+                    int count = 0;
+                    foreach (var sceneObject in scene.sceneObjects)
+                    {
+                        count++;
 
-                //    if (sceneObject.colliderBinding.colliderGeometryPtr.IsNotNullPointer)
-                //    {
-                //        var meshName = sceneObject.name;
-                //        ImportUtility.ProgressBar<ColliderObject>(count, total, $"st{sceneSobj.Value.ID:00} {meshName}");
+                        if (sceneObject.colliderBinding.colliderGeometryPtr.IsNotNullPointer)
+                        {
+                            var meshName = sceneObject.name;
+                            ImportUtility.ProgressBar<ColliderObject>(count, total, $"st{sceneSobj.Value.ID:00} {meshName}");
 
-                //        // Create mesh
-                //        var mesh = CreateObjectColliderMesh(sceneObject);
+                            // Create mesh
+                            var mesh = CreateObjectColliderMesh(sceneObject);
 
-                //        // Save mesh to Asset Database
-                //        var assetPath = $"Assets/{importTo}/st{sceneSobj.Value.ID:00}/coli_{meshName}.asset";
-                //        AssetDatabase.CreateAsset(mesh, assetPath);
+                            // Save mesh to Asset Database
+                            var assetPath = $"Assets/{importTo}/st{sceneSobj.Value.ID:00}/coli_{meshName}.asset";
+                            AssetDatabase.CreateAsset(mesh, assetPath);
 
-                //        // Refresh instance reference
-                //        mesh = AssetDatabase.LoadAssetAtPath<Mesh>(assetPath);
+                            // Refresh instance reference
+                            mesh = AssetDatabase.LoadAssetAtPath<Mesh>(assetPath);
 
-                //        // Create mesh prefab
-                //        var materials = new Material[] { triMaterial, quadMaterial };
-                //        var prefabPath = $"Assets/{importTo}/st{sceneSobj.Value.ID:00}/pf_{meshName}.prefab";
-                //        var prefab = ImportUtility.CreatePrefabFromModel(mesh, materials, prefabPath);
+                            // Create mesh prefab
+                            var materials = new Material[] { triMaterial, quadMaterial };
+                            var prefabPath = $"Assets/{importTo}/st{sceneSobj.Value.ID:00}/pf_{meshName}.prefab";
+                            var prefab = ImportUtility.CreatePrefabFromModel(mesh, materials, prefabPath);
 
-                //        // Edit then save again
-                //        prefab.AddComponent<ColliderObjectTag>();
-                //        PrefabUtility.SavePrefabAsset(prefab);
-                //    }
-                //}
-
+                            // Edit then save again
+                            prefab.AddComponent<ColliderObjectTag>();
+                            PrefabUtility.SavePrefabAsset(prefab);
+                        }
+                    }
+                }
 
                 // Create static scene colliders
-                var meshes = CreateStaticColliderMesh2(sceneSobj);
-                int total = meshes.Length;
-                int count = 0;
-
-                foreach (var mesh in meshes)
                 {
-                    var materials = new Material[mesh.subMeshCount];
-                    var half = mesh.subMeshCount / 2;
-                    for (int i = 0; i < materials.Length; i++)
+                    var meshes = CreateStaticColliderMeshes(sceneSobj);
+                    int total = meshes.Length;
+                    int count = 0;
+
+                    for (int meshIndex = 0; meshIndex < meshes.Length; meshIndex++)
                     {
-                        materials[i] = i < half ? triMaterial : quadMaterial;
+                        var mesh = meshes[meshIndex];
+
+                        var half = mesh.subMeshCount / 2;
+                        var materials = new Material[mesh.subMeshCount];
+                        for (int matIndex = 0; matIndex < materials.Length; matIndex++)
+                        {
+                            materials[matIndex] = matIndex < half
+                                ? triMaterials[meshIndex]
+                                : quadMaterials[meshIndex];
+                        }
+
+                        count++;
+                        var meshName = mesh.name;
+                        ImportUtility.ProgressBar<ColliderObject>(count, total, $"st{sceneSobj.Value.ID:00} {meshName}");
+
+                        // Save mesh to Asset Database
+                        var assetPath = $"Assets/{importTo}/st{sceneSobj.Value.ID:00}/coli_{meshName}.asset";
+                        AssetDatabase.CreateAsset(mesh, assetPath);
+
+                        // Create mesh prefab
+                        var prefabPath = $"Assets/{importTo}/st{sceneSobj.Value.ID:00}/pf_{meshName}.prefab";
+                        var prefab = ImportUtility.CreatePrefabFromModel(mesh, materials, prefabPath);
+
+                        // Edit then save again
+                        //prefab.AddComponent<ColliderObjectTag>();
+                        //PrefabUtility.SavePrefabAsset(prefab);
                     }
-
-                    count++;
-                    var meshName = mesh.name;
-                    ImportUtility.ProgressBar<ColliderObject>(count, total, $"st{sceneSobj.Value.ID:00} {meshName}");
-
-                    // Save mesh to Asset Database
-                    var assetPath = $"Assets/{importTo}/st{sceneSobj.Value.ID:00}/coli_{meshName}.asset";
-                    AssetDatabase.CreateAsset(mesh, assetPath);
-
-                    // Create mesh prefab
-                    var prefabPath = $"Assets/{importTo}/st{sceneSobj.Value.ID:00}/pf_{meshName}.prefab";
-                    var prefab = ImportUtility.CreatePrefabFromModel(mesh, materials, prefabPath);
-
-                    // Edit then save again
-                    //prefab.AddComponent<ColliderObjectTag>();
-                    //PrefabUtility.SavePrefabAsset(prefab);
                 }
             }
 
             ImportUtility.FinalizeAssetImport();
         }
 
-        //public Mesh[] CreateStaticColliderMesh(ColiSceneSobj sceneSobj)
-        //{
-        //    var scene = sceneSobj.Value;
-
-        //    // Create static scene colliders
-        //    // Ensure either or (XOR), but not both
-        //    // TODO: do this in header directly
-        //    Assert.IsTrue(scene.header.IsFileAX ^ scene.header.IsFileGX);
-
-        //    // Turn into function within StaticMeshTable (take param header)
-        //    var surfaceTypeCount = scene.header.IsFileAX
-        //        ? StaticMeshTable.kCountAxSurfaceTypes
-        //        : StaticMeshTable.kCountGxSurfaceTypes;
-
-        //    var meshes = new Mesh[surfaceTypeCount];
-
-        //    // Simplify access to tris/quads
-        //    var triVerts = scene.surfaceAttributeMeshTable.colliderTriangles;
-        //    var quadVerts = scene.surfaceAttributeMeshTable.colliderQuads;
-
-
-        //    for (int surfaceTypeIndex = 0; surfaceTypeIndex < surfaceTypeCount; surfaceTypeIndex++)
-        //    {
-        //        var colliderProperty = (CollisionProperty)surfaceTypeIndex;
-
-        //        // Create base data for mesh for EACH mesh type (boost, heal, etc)
-        //        var mesh = new Mesh();
-        //        mesh.name = $"{sceneSobj.name}_{surfaceTypeIndex:00}_{colliderProperty}";
-        //        // Each tri/quad set has fixed size 256 each, so 512 total
-        //        var submeshes = new SubMeshDescriptor[512];
-
-        //        var triMeshIndexes = scene.surfaceAttributeMeshTable.triMeshIndexes[surfaceTypeIndex];
-        //        var triIndexes = triMeshIndexes.indexes.GetArrays();
-        //        Assert.IsTrue(triIndexes.Length == 0 || triIndexes.Length == MeshIndexes.kIndexArrayPtrsSize);
-
-
-        //        // Add all verts to mesh
-        //        var allVertices = triVerts.Concat(quadVerts).ToArray();
-        //        mesh.SetVertices(allVertices);
-
-        //        // meshIndex = 0-255
-        //        // triIndex = the indexes for the mesh 
-        //        for (int meshIndex = 0; meshIndex < triIndexes.Length; meshIndex++)
-        //        {
-        //            // Extract sequence length
-        //            int numTriangleIndexes = triIndexes[meshIndex].Length;
-
-        //            //if (numTriangleIndexes > 0)
-        //            //    Debug.Log($"{sceneSobj.name} type:{colliderProperty} index:{meshIndex} indexes:{numTriangleIndexes}");
-
-        //            // Convert ushort[][] indexes into int[]
-        //            var indexes = new int[numTriangleIndexes];
-        //            for (int triIndex = 0; triIndex < indexes.Length; triIndex++)
-        //            {
-        //                indexes[triIndex] = triIndexes[meshIndex][triIndex];
-        //            }
-        //            //
-        //            indexes = MeshUtility.GetTrianglesFromTriangleStrip(indexes);
-
-        //            var vertices = triVerts;
-
-        //            //
-        //            var hasZeroIndexes = indexes.Length == 0;
-        //            //var firstIndex = indexes[0];
-        //            //var lastIndex = indexes[indexes.Length - 1];
-        //            var vertexCount = hasZeroIndexes ? 0 : indexes[indexes.Length - 1] - indexes[0];
-        //            var firstVertex = hasZeroIndexes ? 0 : indexes[0];
-
-        //            // Build submesh
-        //            var triSubmesh = new SubMeshDescriptor();
-        //            triSubmesh.baseVertex = 0; // ???
-        //            triSubmesh.firstVertex = firstVertex; // first vert is first of array
-        //            triSubmesh.vertexCount = vertexCount; //
-        //            triSubmesh.indexStart = mesh.triangles.Length; // first index
-        //            triSubmesh.indexCount = indexes.Length; // total number of indexes
-        //            triSubmesh.topology = MeshTopology.Triangles;
-
-        //            // Append to mesh
-        //            var trianglesConcat = mesh.triangles.Concat(indexes).ToArray();
-        //            // Assign values to mesh
-        //            mesh.triangles = trianglesConcat;
-        //            // Set mesh to use submesh 0-255
-        //            submeshes[meshIndex] = triSubmesh;
-        //        }
-
-        //        var quadIndexes = scene.surfaceAttributeMeshTable.quadMeshIndexes[surfaceTypeIndex].indexes;
-        //        Assert.IsTrue(quadIndexes.Length == 0 || quadIndexes.Length == MeshIndexes.kIndexArrayPtrsSize);
-
-        //        // Set each submesh in the mesh
-        //        mesh.subMeshCount = submeshes.Length;
-        //        for (int submeshIndex = 0; submeshIndex < submeshes.Length; submeshIndex++)
-        //        {
-        //            mesh.SetSubMesh(submeshIndex, submeshes[submeshIndex], MeshUpdateFlags.Default);
-        //        }
-
-        //        // Compute other Mesh data
-        //        mesh.RecalculateBounds();
-        //        mesh.RecalculateNormals();
-
-        //        meshes[surfaceTypeIndex] = mesh;
-        //    }
-
-        //    return meshes;
-        //}
-
-        public Mesh[] CreateStaticColliderMesh2(ColiSceneSobj sceneSobj)
+        public Mesh[] CreateStaticColliderMeshes(ColiSceneSobj sceneSobj)
         {
             var scene = sceneSobj.Value;
 
@@ -264,7 +156,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             {
                 // Create base data for mesh for EACH mesh type (boost, heal, etc)
                 var mesh = new Mesh();
-                mesh.name = $"{sceneSobj.name}_{surfaceTypeIndex:00}_{(CollisionProperty)surfaceTypeIndex}";
+                mesh.name = $"st{scene.ID:00}_{surfaceTypeIndex:00}_{(StaticMeshColliderProperty)surfaceTypeIndex}";
                 // Each tri/quad set has fixed size 256 each, so 512 total
                 var submeshes = new SubMeshDescriptor[512];
 
