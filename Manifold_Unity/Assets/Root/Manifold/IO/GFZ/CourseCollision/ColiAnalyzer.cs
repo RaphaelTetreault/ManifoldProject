@@ -30,7 +30,8 @@ namespace Manifold.IO.GFZ.CourseCollision
             transformsComparison = true,
             unknownAnimationData = true,
             unknownTrigger1 = true,
-            venueMetadataObject = true;
+            venueMetadataObject = true,
+            staticCollider = true;
 
         [Header("Preferences")]
         [SerializeField]
@@ -135,7 +136,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 EditorUtility.DisplayProgressBar(ExecuteText, filePath, .5f);
                 AnalyzeGameObjectsSkeletalAnimator(filePath);
 
-                filePath = $"{time} COLI {nameof(SceneObject)}  {nameof(ColliderTriangle)}.tsv";
+                filePath = $"{time} COLI {nameof(SceneObject)} {nameof(ColliderTriangle)}.tsv";
                 filePath = Path.Combine(outputPath, filePath);
                 EditorUtility.DisplayProgressBar(ExecuteText, filePath, .5f);
                 AnalyzeGameObjectsCollisionTri(filePath);
@@ -197,6 +198,16 @@ namespace Manifold.IO.GFZ.CourseCollision
                 string filePath = Path.Combine(outputPath, fileName);
                 EditorUtility.DisplayProgressBar(ExecuteText, filePath, .5f);
                 AnalyzeStoryObjectTrigger(filePath);
+            }
+
+
+            //
+            if (staticCollider)
+            {
+                string fileName = $"{time} COLI {nameof(StaticMeshTable)}.tsv";
+                string filePath = Path.Combine(outputPath, fileName);
+                EditorUtility.DisplayProgressBar(ExecuteText, filePath, .5f);
+                AnalyzeSceneStaticCollider(filePath);
             }
 
 
@@ -296,7 +307,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                     int trackTransformIndex = 0;
                     foreach (var trackTransform in sobj.Value.trackTransforms)
                     {
-                        WriteTrackKeyableAttributeRecursive(writer, sobj, nestedDepth:0, keyablesSet, trackTransformIndex++, trackTransform);
+                        WriteTrackKeyableAttributeRecursive(writer, sobj, nestedDepth: 0, keyablesSet, trackTransformIndex++, trackTransform);
                     }
                 }
 
@@ -312,12 +323,12 @@ namespace Manifold.IO.GFZ.CourseCollision
             // Animation data of this curve
             foreach (var keyables in keyables2D[keyableSet])
             {
-                WriteKeyableAttribute(writer, sobj, nestedDepth+1, keyableIndex++, keyableTotal, keyableSet, trackTransformIndex, keyables, trackTransform);
+                WriteKeyableAttribute(writer, sobj, nestedDepth + 1, keyableIndex++, keyableTotal, keyableSet, trackTransformIndex, keyables, trackTransform);
             }
 
             // Go to track transform children, write their anim data (calls this function)
             foreach (var child in trackTransform.children)
-                WriteTrackKeyableAttributeRecursive(writer, sobj, nestedDepth+1, keyableSet, trackTransformIndex, child);
+                WriteTrackKeyableAttributeRecursive(writer, sobj, nestedDepth + 1, keyableSet, trackTransformIndex, child);
         }
         public void WriteKeyableAttribute(StreamWriter writer, ColiSceneSobj sobj, int nestedDepth, int keyableIndex, int keyableTotal, int keyablesSet, int trackTransformIndex, KeyableAttribute param, TrackTransform tt)
         {
@@ -417,7 +428,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.Flush();
             }
         }
-        // Writes elf and children
+        // Writes self and children
         public void WriteTrackTransformRecursive(StreamWriter writer, ColiSceneSobj sobj, int depth, int index, int total, TrackTransform trackTransform)
         {
             // Write Parent
@@ -1405,6 +1416,64 @@ namespace Manifold.IO.GFZ.CourseCollision
             }
         }
 
+        public void AnalyzeSceneStaticCollider(string fileName)
+        {
+            using (var writer = AnalyzerUtility.OpenWriter(fileName))
+            {
+                // Write header
+                writer.WriteNextCol("File");
+                writer.WriteNextCol("Index");
+                writer.WriteNextColNicify(nameof(StaticMeshTable.collisionTrisPtr));
+                writer.WriteNextColNicify(nameof(StaticMeshTable.collisionTriIndexesPtr));
+                writer.WriteNextColNicify(nameof(ColiUnknownStruct1.unk_0x00));
+                writer.WriteNextColNicify(nameof(ColiUnknownStruct1.unk_0x04));
+                writer.WriteNextColNicify(nameof(ColiUnknownStruct1.unk_0x08));
+                writer.WriteNextColNicify(nameof(ColiUnknownStruct1.unk_0x0C));
+                writer.WriteNextColNicify(nameof(ColiUnknownStruct1.unk_0x10));
+                writer.WriteNextColNicify(nameof(ColiUnknownStruct1.unk_0x14));
+                writer.WriteNextColNicify(nameof(StaticMeshTable.collisionQuadsPtr));
+                writer.WriteNextColNicify(nameof(StaticMeshTable.collisionQuadIndexesPtr));
+                writer.WriteNextColNicify(nameof(ColiUnknownStruct1.unk_0x00));
+                writer.WriteNextColNicify(nameof(ColiUnknownStruct1.unk_0x04));
+                writer.WriteNextColNicify(nameof(ColiUnknownStruct1.unk_0x08));
+                writer.WriteNextColNicify(nameof(ColiUnknownStruct1.unk_0x0C));
+                writer.WriteNextColNicify(nameof(ColiUnknownStruct1.unk_0x10));
+                writer.WriteNextColNicify(nameof(ColiUnknownStruct1.unk_0x14));
+                writer.WriteNextColNicify(nameof(StaticMeshTable.triVerts));
+                writer.WriteNextColNicify(nameof(StaticMeshTable.quadVerts));
+                writer.WriteNextRow();
 
+                int index = 0;
+
+                foreach (var file in coliSobjs)
+                {
+                    var scene = file.Value;
+                    var table = scene.surfaceAttributeMeshTable;
+
+                    writer.WriteNextCol(file.name);
+                    writer.WriteNextCol(index++);
+                    writer.WriteNextCol(table.collisionTrisPtr.HexAddress);
+                    writer.WriteNextCol(table.collisionTriIndexesPtr.Length);
+                    writer.WriteNextCol(table.unknownStruct_0x60.unk_0x00);
+                    writer.WriteNextCol(table.unknownStruct_0x60.unk_0x04);
+                    writer.WriteNextCol(table.unknownStruct_0x60.unk_0x08);
+                    writer.WriteNextCol(table.unknownStruct_0x60.unk_0x0C);
+                    writer.WriteNextCol(table.unknownStruct_0x60.unk_0x10);
+                    writer.WriteNextCol(table.unknownStruct_0x60.unk_0x14);
+                    writer.WriteNextCol(table.collisionQuadsPtr.HexAddress);
+                    writer.WriteNextCol(table.collisionQuadIndexesPtr.Length);
+                    writer.WriteNextCol(table.unknownStruct_0xB4.unk_0x00);
+                    writer.WriteNextCol(table.unknownStruct_0xB4.unk_0x04);
+                    writer.WriteNextCol(table.unknownStruct_0xB4.unk_0x08);
+                    writer.WriteNextCol(table.unknownStruct_0xB4.unk_0x0C);
+                    writer.WriteNextCol(table.unknownStruct_0xB4.unk_0x10);
+                    writer.WriteNextCol(table.unknownStruct_0xB4.unk_0x14);
+                    writer.WriteNextCol(table.triVerts.Length);
+                    writer.WriteNextCol(table.quadVerts.Length);
+                    writer.WriteNextRow();
+                }
+                writer.Flush();
+            }
+        }
     }
 }

@@ -49,41 +49,45 @@ namespace Manifold.IO.GFZ.GMA
             int totalModels = CountModels(gmaSobjs, out int submeshes);
 
             int count = 1;
-            foreach (GmaSobj sobj in gmaSobjs)
+            foreach (GmaSobj gmaSobj in gmaSobjs)
             {
-                Gma gma = sobj.Value;
-
-                var folderName = Path.GetFileNameWithoutExtension(sobj.FileName);
-                folderName = folderName.Replace(',', '_');
-
-                // TODO: is there not a helper function for this?
-                var unityPath = AssetDatabase.GetAssetPath(sobj);
-                unityPath = Path.GetDirectoryName(unityPath);
-                unityPath = UnityPathUtility.EnforceUnitySeparators(unityPath);
-
-                // TODO: make this a generic helper function
+                // Set destination folder name for models
+                var destinationFolder = Path.GetFileNameWithoutExtension(gmaSobj.FileName);
+                //destinationFolder = destinationFolder.Replace(',', '_');
+                // Get the Unity path to the asset
+                var assetPath = ImportUtility.GetUnityAssetDirectory(gmaSobj);
                 // Create folder if it doesn't already exist
-                var folder = UnityPathUtility.CombineUnityPath(unityPath, folderName);
-                if (!AssetDatabase.IsValidFolder(folder))
-                    AssetDatabase.CreateFolder(unityPath, folderName);
+                var modelDestination = $"{assetPath}/{destinationFolder}/";
+                ImportUtility.EnsureAssetFolderExists(modelDestination);
 
-                unityPath += $"/{folderName}/";
-
+                // Break out value
+                Gma gma = gmaSobj.Value;
+                // Iterate over every GCMF to create model
                 foreach (var gcmf in gma.GCMF)
                 {
+                    // Skip null entires which have no name (string length 0)
                     if (string.IsNullOrEmpty(gcmf.ModelName))
                         continue;
 
                     var importTitle = $"Importing Model ({count}/{totalModels}) Submesh Total ({submeshes})";
-                    var mesh = CreateSingleMeshFromGcmf(gcmf, unityPath, importTitle);
-                    var prefab = CreatePrefabFromModel(mesh, unityPath);
-                    DestroyImmediate(prefab);
+                    var mesh = CreateSingleMeshFromGcmf(gcmf, assetPath, importTitle);
+
+                    // HACK: Add a generic material to each model
+                    // In the future, generate materials for models
+                    var hackMaterials = new UnityEngine.Material[mesh.subMeshCount];
+                    for (int i = 0; i < hackMaterials.Length; i++)
+                        hackMaterials[i] = defaultMat;
+
+                    // Construct path and name for prefab
+                    var prefabPath = $"{modelDestination}/pf_{gcmf.ModelName}.prefab";
+                    // Create and store asset to Asset Database
+                    ImportUtility.CreatePrefabFromModel(mesh, hackMaterials, prefabPath);
+                    
+                    // 
                     count++;
                 }
             }
-            AssetDatabase.SaveAssets();
-            EditorUtility.ClearProgressBar();
-            AssetDatabase.Refresh();
+            ImportUtility.FinalizeAssetImport();
         }
 
         public int[] GetTrianglesFromTriangleStrip(int numVerts, bool baseCCW)
@@ -96,34 +100,34 @@ namespace Manifold.IO.GFZ.GMA
             // To compensate, we need to XOR the odd/even value with whether
             // the base index of the strip is meant to be CCW or CW.
             
-            const int vertStride = 3;
+            const int vertexStride = 3;
 
             var nTriangles = numVerts - 2;
-            int[] triangles = new int[nTriangles * vertStride];
+            int[] triangles = new int[nTriangles * vertexStride];
             for (int i = 0; i < nTriangles; i++)
             {
-                var triIdx = i * vertStride;
+                var triIndex = i * vertexStride;
                 var indexIsCW = (i % 2) > 0;
                 var isCCW = (baseCCW ^ indexIsCW);
 
                 if (isCCW)
                 {
-                    triangles[triIdx + 0] = i + 0;
-                    triangles[triIdx + 1] = i + 1;
-                    triangles[triIdx + 2] = i + 2;
+                    triangles[triIndex + 0] = i + 0;
+                    triangles[triIndex + 1] = i + 1;
+                    triangles[triIndex + 2] = i + 2;
                 }
                 else
                 {
-                    triangles[triIdx + 0] = i + 0;
-                    triangles[triIdx + 1] = i + 2;
-                    triangles[triIdx + 2] = i + 1;
+                    triangles[triIndex + 0] = i + 0;
+                    triangles[triIndex + 1] = i + 2;
+                    triangles[triIndex + 2] = i + 1;
                 }
             }
 
             return triangles;
         }
 
-        public Mesh CreateSingleMeshFromGcmf(Gcmf gcmf, string path, string title)
+        public Mesh CreateSingleMeshFromGcmf(Gcmf gcmf, string path, string title = "Importing GCMF...")
         {
             // Count how many submeshes we will need to iterate through
             var numSubmeshes = 0;
@@ -135,43 +139,42 @@ namespace Manifold.IO.GFZ.GMA
                     numSubmeshes += gcmfMesh.DisplayList1.GxDisplayLists.Length;
             }
 
+            // Create base data for mesh
             var mesh = new Mesh();
-            int subIndex = 0;
+            int submeshIndex = 0;
             var submeshes = new SubMeshDescriptor[numSubmeshes];
 
             // Go over each mesh in submeshes
-            foreach (var gcmfMesh in gcmf.Submeshes)
+            foreach (var gcmfSubmesh in gcmf.Submeshes)
             {
-                // Temp progress bar
-                var progress = (float)subIndex / numSubmeshes;
-                var info = $"{path}{gcmf.ModelName}";
-                EditorUtility.DisplayProgressBar(title, info, progress);
+                ImportUtility.ProgressBar<Gcmf>(submeshIndex, numSubmeshes, $"{path}{gcmf.ModelName}");
 
                 //
-                var displayList0 = gcmfMesh.DisplayList0.GxDisplayLists;
+                var displayList0 = gcmfSubmesh.DisplayList0.GxDisplayLists;
                 if (displayList0 != null)
                 {
                     foreach (var list in displayList0)
                     {
                         var submesh = CreateSubMesh(list, ref mesh, true);
-                        submeshes[subIndex] = submesh;
-                        subIndex++;
+                        submeshes[submeshIndex] = submesh;
+                        submeshIndex++;
                     }
                 }
 
                 //
-                var displayList1 = gcmfMesh.DisplayList1.GxDisplayLists;
+                var displayList1 = gcmfSubmesh.DisplayList1.GxDisplayLists;
                 if (displayList1 != null)
                 {
                     foreach (var list in displayList1)
                     {
                         var submesh = CreateSubMesh(list, ref mesh, false);
-                        submeshes[subIndex] = submesh;
-                        subIndex++;
+                        submeshes[submeshIndex] = submesh;
+                        submeshIndex++;
                     }
                 }
             }
 
+            // Set each submesh in the mesh
             mesh.subMeshCount = submeshes.Length;
             for (int i = 0; i < submeshes.Length; i++)
             {
@@ -179,9 +182,11 @@ namespace Manifold.IO.GFZ.GMA
             }
             mesh.RecalculateBounds();
 
+            // Name the model as it appears in the Asset Database
             // Also gets by COM# models
             string name = $"mdl_{gcmf.ModelName}.asset";
             AssetDatabase.CreateAsset(mesh, $"{path}/{name}");
+
             return mesh;
         }
 
@@ -274,26 +279,26 @@ namespace Manifold.IO.GFZ.GMA
             return submesh;
         }
 
-        public GameObject CreatePrefabFromModel(Mesh mesh, string path)
-        {
-            // Remove "mdl_" prefix to build prefab name
-            var modelName = mesh.name.Remove(0, 4);
-            var prefabPath = $"{path}/pf_{modelName}.prefab";
-            // Construct the prefab to store the model data
-            var prefab = new GameObject();
-            var meshFilter = prefab.AddComponent<MeshFilter>();
-            meshFilter.mesh = mesh;
-            var meshRenderer = prefab.AddComponent<MeshRenderer>();
-            // HACK: Add a generic material to each model
-            // In the future, generate materials for models
-            var mats = new UnityEngine.Material[mesh.subMeshCount];
-            for (int i = 0; i < mats.Length; i++)
-                mats[i] = defaultMat;
-            meshRenderer.sharedMaterials = mats;
-            // Save model to asset database, return
-            PrefabUtility.SaveAsPrefabAsset(prefab, prefabPath);
-            return prefab;
-        }
+        //public GameObject CreatePrefabFromModel(Mesh mesh, string path)
+        //{
+        //    // Remove "mdl_" prefix to build prefab name
+        //    var modelName = mesh.name.Remove(0, 4);
+        //    var prefabPath = $"{path}/pf_{modelName}.prefab";
+        //    // Construct the prefab to store the model data
+        //    var prefab = new GameObject();
+        //    var meshFilter = prefab.AddComponent<MeshFilter>();
+        //    meshFilter.mesh = mesh;
+        //    var meshRenderer = prefab.AddComponent<MeshRenderer>();
+        //    // HACK: Add a generic material to each model
+        //    // In the future, generate materials for models
+        //    var mats = new UnityEngine.Material[mesh.subMeshCount];
+        //    for (int i = 0; i < mats.Length; i++)
+        //        mats[i] = defaultMat;
+        //    meshRenderer.sharedMaterials = mats;
+        //    // Save model to asset database, return
+        //    PrefabUtility.SaveAsPrefabAsset(prefab, prefabPath);
+        //    return prefab;
+        //}
 
         public int CountModels(GmaSobj[] gmaSobjs, out int submeshes)
         {

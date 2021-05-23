@@ -491,7 +491,7 @@ namespace Manifold.IO
             return array;
         }
 
-        public static T[] ReadArray<T>(BinaryReader binaryReader, int _, Func<BinaryReader, T, T> method, T[] array)
+        public static T[] ReadArray<T>(BinaryReader binaryReader, Func<BinaryReader, T, T> method, T[] array)
         {
             for (int i = 0; i < array.Length; ++i)
                 array[i] = method(binaryReader, array[i]);
@@ -584,9 +584,9 @@ namespace Manifold.IO
         }
 
         // TODO
-        public static T[] ReadIBinarySerializableArray<T>(BinaryReader binaryReader, int length, T[] array) where T : IBinarySerializable, new()
+        public static T[] ReadIBinarySerializableArray<T>(BinaryReader binaryReader, T[] array) where T : IBinarySerializable, new()
         {
-            return ReadArray(binaryReader, length, ReadIBinarySerializable, array);
+            return ReadArray(binaryReader, ReadIBinarySerializable, array);
         }
 
         public static TEnum[] ReadEnumArray<TEnum>(BinaryReader binaryReader, int length) where TEnum : Enum
@@ -781,7 +781,7 @@ namespace Manifold.IO
             if (createNew)
                 return value = ReadNewArray(binaryReader, length, ReadNewIBinarySerializable<T>);
             else
-                return ReadArray(binaryReader, length, ReadIBinarySerializable<T>, value);
+                return ReadArray(binaryReader, ReadIBinarySerializable<T>, value);
         }
 
         public static TEnum[] Read<TEnum>(BinaryReader binaryReader, int length, ref TEnum[] value) where TEnum : Enum
@@ -891,7 +891,7 @@ namespace Manifold.IO
             if (createNewInstances)
                 return value = ReadNewArray(binaryReader, length, ReadNewIBinarySerializable<T>);
             else
-                return ReadArray(binaryReader, length, ReadIBinarySerializable<T>, value);
+                return ReadArray(binaryReader, ReadIBinarySerializable<T>, value);
         }
 
         public static TEnum[] ReadEnum<TEnum>(BinaryReader binaryReader, ref TEnum[] value) where TEnum : Enum

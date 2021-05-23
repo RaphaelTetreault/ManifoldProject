@@ -8,22 +8,14 @@ namespace GameCube.GFZ.CourseCollision
     [Serializable]
     public class MeshIndexes : IBinarySerializable, IBinaryAddressableRange
     {
-
-        #region FIELDS
-
-
         [SerializeField]
         private AddressRange addressRange;
 
         public const int kIndexArrayPtrsSize = 256; // 0x100
 
         public Pointer[] indexArrayPtrs = new Pointer[kIndexArrayPtrsSize];
-        public ushort[][] indexes = new ushort[kIndexArrayPtrsSize][];
-
-
-        #endregion
-
-        #region PROPERTIES
+        public Array2D<ushort> indexes = new Array2D<ushort>();
+        public ushort largestIndex;
 
 
         public AddressRange AddressRange
@@ -33,35 +25,35 @@ namespace GameCube.GFZ.CourseCollision
         }
 
 
-        #endregion
-
-        #region METHODS
-
         public void Deserialize(BinaryReader reader)
         {
             // Read index arrays
             this.RecordStartAddress(reader);
-            reader.ReadX(ref indexArrayPtrs, kIndexArrayPtrsSize, false);
+            {
+                reader.ReadX(ref indexArrayPtrs, kIndexArrayPtrsSize, false);
+            }
             this.RecordEndAddress(reader);
 
             // Should always be init to const size
-            System.Diagnostics.Debug.Assert(indexArrayPtrs.Length == kIndexArrayPtrsSize);
+            Assert.IsTrue(indexArrayPtrs.Length == kIndexArrayPtrsSize);
 
-            // TODO:  not recording length of other data due to [][]
+            // TODO: make this thing pretty
             for (int pointerIndex = 0; pointerIndex < indexArrayPtrs.Length; pointerIndex++)
             {
+                ushort[] indexesSet = new ushort[0];
+
                 var pointer = indexArrayPtrs[pointerIndex];
                 if (pointer.IsNotNullPointer)
                 {
-                    //Debug.Log($"ptr{pointerIndex:000}:{pointer.HexAddress}");
                     reader.JumpToAddress(pointer);
-                    indexes[pointerIndex] = ColiCourseUtility.ReadUShortArray(reader);
+                    indexesSet = ColiCourseUtility.ReadUShortArray(reader);
                 }
-                else
-                {
-                    indexes[pointerIndex] = new ushort[0];
-                }
+
+                indexes.AppendArray(indexesSet);
             }
+
+            // Calculate largest index. Needed to construct vertices.
+            largestIndex = GetLargestIndex(indexes.GetArrays());
         }
 
         public void Serialize(BinaryWriter writer)
@@ -69,8 +61,29 @@ namespace GameCube.GFZ.CourseCollision
             throw new System.NotImplementedException();
         }
 
+        private ushort GetLargestIndex(ushort[][] indexesArray)
+        {
+            // Find the largest known index to use as tri/quad array size
+            // The game probably just reads indices dynamically using address + index * tri/quad size
 
-        #endregion
+            // Record largest idnex
+            ushort largestIndex = 0;
+
+            // Iterate through all indices to find largest
+            foreach (var indexes in indexesArray)
+            {
+                foreach (var index in indexes)
+                {
+                    if (index > largestIndex)
+                    {
+                        largestIndex = index;
+                    }
+                }
+            }
+
+            // Indices are n-1, so to compentsate ++n
+            return ++largestIndex;
+        }
 
     }
 }

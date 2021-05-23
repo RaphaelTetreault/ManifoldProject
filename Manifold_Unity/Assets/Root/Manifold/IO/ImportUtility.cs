@@ -1,4 +1,7 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using UnityEditor;
 
@@ -78,7 +81,7 @@ namespace Manifold.IO
                         var filepath = string.Empty;
                         var sobj = ImportAs<TSobj>(reader, file, importFrom, importTo, out filepath);
                         sobjs[count] = sobj;
-                        var userCancelled = ImportProgBar<TSobj>(count, total, filepath);
+                        var userCancelled = ProgressBar<TSobj>(count, total, filepath);
 
                         if (userCancelled)
                         {
@@ -89,7 +92,7 @@ namespace Manifold.IO
                 count++;
             }
 
-            WrapUpAssetImport();
+            FinalizeAssetImport();
 
             return sobjs;
         }
@@ -101,16 +104,15 @@ namespace Manifold.IO
             var dest = UnityPathUtility.CombineSystemPath(path, importTo);
 
             // get path to file import folder
-            // TODO: Regex instead of this hack
+            // TODO: use Regex instead of this hack
             // NOTE: The +1 is for the final / fwd slash assuming the "BrowseButtonField"
-            // is used and does not return the final / on the path.
+            //       is used and does not return the final / on the path.
             var folder = importFile.Remove(0, importFrom.Length + 1);
             folder = Path.GetDirectoryName(folder);
 
             // (A) prevent null/empty && (B) prevent "/" or "\\"
             if (!string.IsNullOrEmpty(folder) && folder.Length > 1)
             {
-                // dest = dest + folder;
                 dest = $"{dest}/{folder}";
             }
 
@@ -126,7 +128,7 @@ namespace Manifold.IO
             return unityPath;
         }
 
-        public static bool ImportProgBar<T>(int count, int total, string info)
+        public static bool ProgressBar<T>(int count, int total, string info)
         {
             // Progress bar update
             var digitCount = total.ToString().Length;
@@ -140,17 +142,22 @@ namespace Manifold.IO
         // path w/o Assets
         public static void EnsureAssetFolderExists(string folderPath)
         {
+            // Ensure folder path is indeed a path
+            if (string.IsNullOrEmpty(folderPath))
+                throw new ArgumentException($"Folder path \"{folderPath}\" is null or empty.");
+
+            //
             var assetFolders = $"Assets/{folderPath}";
-            var folders = assetFolders.Split('/');
-            var numDirs = folders.Length;
+            var folderNames = assetFolders.Split('/');
+            var directoriesCount = folderNames.Length;
 
-            // Init parent folder
-            var parentFolder = folders[0];
+            // Start with root folder which should always be "Assets"
+            var parentFolder = folderNames[0];
 
-            // Append all directories to parent directory
-            for (int i = 0; i < numDirs - 1; i++)
+            // Append each directory to parent directory in succession
+            for (int i = 0; i < directoriesCount - 1; i++)
             {
-                var nextFolder = folders[i+1];
+                var nextFolder = folderNames[i+1];
                 var fullPath = $"{parentFolder}/{nextFolder}";
 
                 var doCreateFolder = !AssetDatabase.IsValidFolder(fullPath);
@@ -163,11 +170,73 @@ namespace Manifold.IO
             }
         }
 
-        public static void WrapUpAssetImport()
+        public static string GetUnityAssetDirectory(UnityEngine.Object asset)
+        {
+            // Finds asset in database.
+            var assetDirectory = AssetDatabase.GetAssetPath(asset);
+
+            // Ensure we aren't doing anything with nothing
+            if (string.IsNullOrEmpty(assetDirectory))
+                throw new ArgumentException($"Asset \"{asset.name}\" is not in asset database.");
+
+            // Make sure path is valid Unity asset path
+            assetDirectory = Path.GetDirectoryName(assetDirectory);
+            assetDirectory = UnityPathUtility.EnforceUnitySeparators(assetDirectory);
+
+            return assetDirectory;
+        }
+
+        public static void FinalizeAssetImport()
         {
             AssetDatabase.SaveAssets();
             EditorUtility.ClearProgressBar();
             AssetDatabase.Refresh();
         }
+
+
+
+
+
+
+
+        //public static void CreatePrefabFromModel(Mesh mesh, string assetPath)
+        //{
+        //    // Create new GameObject (ends up in current scene)
+        //    var prefab = new GameObject();
+
+        //    // Add mesh components, assign mesh
+        //    var meshFilter = prefab.AddComponent<MeshFilter>();
+        //    meshFilter.mesh = mesh;
+
+        //    // Save to Asset Database
+        //    PrefabUtility.SaveAsPrefabAsset(prefab, assetPath);
+        //    // Remove asset from scene
+        //    UnityEngine.Object.DestroyImmediate(prefab);
+        //}
+
+
+
+        public static GameObject CreatePrefabFromModel(Mesh mesh, Material[] sharedMaterials, string assetPath)
+        {
+            // Create new GameObject (ends up in current scene)
+            var tempObject = new GameObject();
+
+            // Add mesh components, assign mesh
+            var meshRenderer = tempObject.AddComponent<MeshRenderer>();
+            var meshFilter = tempObject.AddComponent<MeshFilter>();
+            meshFilter.mesh = mesh;
+            meshRenderer.sharedMaterials = sharedMaterials;
+
+            // Save to Asset Database
+            var prefab = PrefabUtility.SaveAsPrefabAsset(tempObject, assetPath);
+            // Remove asset from scene
+            UnityEngine.Object.DestroyImmediate(tempObject);
+
+            return prefab;
+        }
+
+
+
+
     }
 }

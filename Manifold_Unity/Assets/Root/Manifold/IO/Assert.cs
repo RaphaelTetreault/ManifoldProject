@@ -28,6 +28,6 @@ namespace Manifold.IO
         }
 
         public static void IsFalse(bool value, string message = null)
-            => IsFalse(!value, message);
+            => IsTrue(!value, message);
     }
 }

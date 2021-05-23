@@ -63,7 +63,7 @@ namespace Manifold.IO.GFZ.Camera
                         for (int i = 0; i < pans.Length; i++)
                         {
                             var incFileName = $"{fileName}.{i + 1}";
-                            var userCancelled = ImportUtility.ImportProgBar<CameraPanSobj>(i, pans.Length, incFileName);
+                            var userCancelled = ImportUtility.ProgressBar<CameraPanSobj>(i, pans.Length, incFileName);
 
                             if (userCancelled)
                             {

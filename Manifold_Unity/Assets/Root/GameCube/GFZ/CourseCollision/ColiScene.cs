@@ -23,7 +23,7 @@ namespace GameCube.GFZ.CourseCollision
         public TrackNode[] trackNodes = new TrackNode[0];
         public List<TrackTransform> trackTransforms = new List<TrackTransform>();
         public SurfaceAttributeArea[] surfaceAttributeAreas = new SurfaceAttributeArea[0];
-        public SurfaceAttributeMeshTable surfaceAttributeMeshTable = new SurfaceAttributeMeshTable();
+        public StaticMeshTable surfaceAttributeMeshTable = new StaticMeshTable();
         public int[] unknownData_0x20 = new int[unknownData_0x20_count];
         public float unknownFloat_0x24;
         public SceneObject[] sceneObjects = new SceneObject[0];

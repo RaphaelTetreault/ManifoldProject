@@ -56,13 +56,15 @@ namespace GameCube.GFZ.CourseCollision
             var list = new List<ushort>();
             while (true)
             {
-                var value = reader.ReadUInt16();
-                list.Add(value);
+                // Use CUSTOM read function
+                var value = reader.ReadX_UInt16();
 
                 if (value == 0xFFFF)
                 {
                     break;
                 }
+
+                list.Add(value);
             }
             return list.ToArray();
         }
