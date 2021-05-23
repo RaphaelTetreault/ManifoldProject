@@ -100,7 +100,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
 
                 // Create static scene colliders
-                var meshes = CreateStaticColliderMesh(sceneSobj);
+                var meshes = CreateStaticColliderMesh2(sceneSobj);
                 int total = meshes.Length;
                 int count = 0;
 
@@ -110,8 +110,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                     var half = mesh.subMeshCount / 2;
                     for (int i = 0; i < materials.Length; i++)
                     {
-                        materials[i] = triMaterial;
-                        //materials[i + half] = quadMaterial;
+                        materials[i] = i < half ? triMaterial : quadMaterial;
                     }
 
                     count++;
@@ -135,110 +134,110 @@ namespace Manifold.IO.GFZ.CourseCollision
             ImportUtility.FinalizeAssetImport();
         }
 
-        public Mesh[] CreateStaticColliderMesh(ColiSceneSobj sceneSobj)
-        {
-            var scene = sceneSobj.Value;
+        //public Mesh[] CreateStaticColliderMesh(ColiSceneSobj sceneSobj)
+        //{
+        //    var scene = sceneSobj.Value;
 
-            // Create static scene colliders
-            // Ensure either or (XOR), but not both
-            // TODO: do this in header directly
-            Assert.IsTrue(scene.header.IsFileAX ^ scene.header.IsFileGX);
+        //    // Create static scene colliders
+        //    // Ensure either or (XOR), but not both
+        //    // TODO: do this in header directly
+        //    Assert.IsTrue(scene.header.IsFileAX ^ scene.header.IsFileGX);
 
-            // Turn into function within StaticMeshTable (take param header)
-            var surfaceTypeCount = scene.header.IsFileAX
-                ? StaticMeshTable.kCountAxSurfaceTypes
-                : StaticMeshTable.kCountGxSurfaceTypes;
+        //    // Turn into function within StaticMeshTable (take param header)
+        //    var surfaceTypeCount = scene.header.IsFileAX
+        //        ? StaticMeshTable.kCountAxSurfaceTypes
+        //        : StaticMeshTable.kCountGxSurfaceTypes;
 
-            var meshes = new Mesh[surfaceTypeCount];
+        //    var meshes = new Mesh[surfaceTypeCount];
 
-            // Simplify access to tris/quads
-            var triVerts = scene.surfaceAttributeMeshTable.colliderTriangles;
-            var quadVerts = scene.surfaceAttributeMeshTable.colliderQuads;
-
-
-            for (int surfaceTypeIndex = 0; surfaceTypeIndex < surfaceTypeCount; surfaceTypeIndex++)
-            {
-                var colliderProperty = (CollisionProperty)surfaceTypeIndex;
-
-                // Create base data for mesh for EACH mesh type (boost, heal, etc)
-                var mesh = new Mesh();
-                mesh.name = $"{sceneSobj.name}_{surfaceTypeIndex:00}_{colliderProperty}";
-                // Each tri/quad set has fixed size 256 each, so 512 total
-                var submeshes = new SubMeshDescriptor[512];
-
-                var triMeshIndexes = scene.surfaceAttributeMeshTable.triMeshIndexes[surfaceTypeIndex];
-                var triIndexes = triMeshIndexes.indexes.GetArrays();
-                Assert.IsTrue(triIndexes.Length == 0 || triIndexes.Length == MeshIndexes.kIndexArrayPtrsSize);
+        //    // Simplify access to tris/quads
+        //    var triVerts = scene.surfaceAttributeMeshTable.colliderTriangles;
+        //    var quadVerts = scene.surfaceAttributeMeshTable.colliderQuads;
 
 
-                // Add all verts to mesh
-                var allVertices = triVerts.Concat(quadVerts).ToArray();
-                mesh.SetVertices(allVertices);
+        //    for (int surfaceTypeIndex = 0; surfaceTypeIndex < surfaceTypeCount; surfaceTypeIndex++)
+        //    {
+        //        var colliderProperty = (CollisionProperty)surfaceTypeIndex;
 
-                // meshIndex = 0-255
-                // triIndex = the indexes for the mesh 
-                for (int meshIndex = 0; meshIndex < triIndexes.Length; meshIndex++)
-                {
-                    // Extract sequence length
-                    int numTriangleIndexes = triIndexes[meshIndex].Length;
+        //        // Create base data for mesh for EACH mesh type (boost, heal, etc)
+        //        var mesh = new Mesh();
+        //        mesh.name = $"{sceneSobj.name}_{surfaceTypeIndex:00}_{colliderProperty}";
+        //        // Each tri/quad set has fixed size 256 each, so 512 total
+        //        var submeshes = new SubMeshDescriptor[512];
 
-                    //if (numTriangleIndexes > 0)
-                    //    Debug.Log($"{sceneSobj.name} type:{colliderProperty} index:{meshIndex} indexes:{numTriangleIndexes}");
+        //        var triMeshIndexes = scene.surfaceAttributeMeshTable.triMeshIndexes[surfaceTypeIndex];
+        //        var triIndexes = triMeshIndexes.indexes.GetArrays();
+        //        Assert.IsTrue(triIndexes.Length == 0 || triIndexes.Length == MeshIndexes.kIndexArrayPtrsSize);
 
-                    // Convert ushort[][] indexes into int[]
-                    var indexes = new int[numTriangleIndexes];
-                    for (int triIndex = 0; triIndex < indexes.Length; triIndex++)
-                    {
-                        indexes[triIndex] = triIndexes[meshIndex][triIndex];
-                    }
-                    //
-                    indexes = MeshUtility.GetTrianglesFromTriangleStrip(indexes);
 
-                    var vertices = triVerts;
+        //        // Add all verts to mesh
+        //        var allVertices = triVerts.Concat(quadVerts).ToArray();
+        //        mesh.SetVertices(allVertices);
 
-                    //
-                    var hasZeroIndexes = indexes.Length == 0;
-                    //var firstIndex = indexes[0];
-                    //var lastIndex = indexes[indexes.Length - 1];
-                    var vertexCount = hasZeroIndexes ? 0 : indexes[indexes.Length - 1] - indexes[0];
-                    var firstVertex = hasZeroIndexes ? 0 : indexes[0];
+        //        // meshIndex = 0-255
+        //        // triIndex = the indexes for the mesh 
+        //        for (int meshIndex = 0; meshIndex < triIndexes.Length; meshIndex++)
+        //        {
+        //            // Extract sequence length
+        //            int numTriangleIndexes = triIndexes[meshIndex].Length;
 
-                    // Build submesh
-                    var triSubmesh = new SubMeshDescriptor();
-                    triSubmesh.baseVertex = 0; // ???
-                    triSubmesh.firstVertex = firstVertex; // first vert is first of array
-                    triSubmesh.vertexCount = vertexCount; //
-                    triSubmesh.indexStart = mesh.triangles.Length; // first index
-                    triSubmesh.indexCount = indexes.Length; // total number of indexes
-                    triSubmesh.topology = MeshTopology.Triangles;
+        //            //if (numTriangleIndexes > 0)
+        //            //    Debug.Log($"{sceneSobj.name} type:{colliderProperty} index:{meshIndex} indexes:{numTriangleIndexes}");
 
-                    // Append to mesh
-                    var trianglesConcat = mesh.triangles.Concat(indexes).ToArray();
-                    // Assign values to mesh
-                    mesh.triangles = trianglesConcat;
-                    // Set mesh to use submesh 0-255
-                    submeshes[meshIndex] = triSubmesh;
-                }
+        //            // Convert ushort[][] indexes into int[]
+        //            var indexes = new int[numTriangleIndexes];
+        //            for (int triIndex = 0; triIndex < indexes.Length; triIndex++)
+        //            {
+        //                indexes[triIndex] = triIndexes[meshIndex][triIndex];
+        //            }
+        //            //
+        //            indexes = MeshUtility.GetTrianglesFromTriangleStrip(indexes);
 
-                var quadIndexes = scene.surfaceAttributeMeshTable.quadMeshIndexes[surfaceTypeIndex].indexes;
-                Assert.IsTrue(quadIndexes.Length == 0 || quadIndexes.Length == MeshIndexes.kIndexArrayPtrsSize);
+        //            var vertices = triVerts;
 
-                // Set each submesh in the mesh
-                mesh.subMeshCount = submeshes.Length;
-                for (int submeshIndex = 0; submeshIndex < submeshes.Length; submeshIndex++)
-                {
-                    mesh.SetSubMesh(submeshIndex, submeshes[submeshIndex], MeshUpdateFlags.Default);
-                }
+        //            //
+        //            var hasZeroIndexes = indexes.Length == 0;
+        //            //var firstIndex = indexes[0];
+        //            //var lastIndex = indexes[indexes.Length - 1];
+        //            var vertexCount = hasZeroIndexes ? 0 : indexes[indexes.Length - 1] - indexes[0];
+        //            var firstVertex = hasZeroIndexes ? 0 : indexes[0];
 
-                // Compute other Mesh data
-                mesh.RecalculateBounds();
-                mesh.RecalculateNormals();
+        //            // Build submesh
+        //            var triSubmesh = new SubMeshDescriptor();
+        //            triSubmesh.baseVertex = 0; // ???
+        //            triSubmesh.firstVertex = firstVertex; // first vert is first of array
+        //            triSubmesh.vertexCount = vertexCount; //
+        //            triSubmesh.indexStart = mesh.triangles.Length; // first index
+        //            triSubmesh.indexCount = indexes.Length; // total number of indexes
+        //            triSubmesh.topology = MeshTopology.Triangles;
 
-                meshes[surfaceTypeIndex] = mesh;
-            }
+        //            // Append to mesh
+        //            var trianglesConcat = mesh.triangles.Concat(indexes).ToArray();
+        //            // Assign values to mesh
+        //            mesh.triangles = trianglesConcat;
+        //            // Set mesh to use submesh 0-255
+        //            submeshes[meshIndex] = triSubmesh;
+        //        }
 
-            return meshes;
-        }
+        //        var quadIndexes = scene.surfaceAttributeMeshTable.quadMeshIndexes[surfaceTypeIndex].indexes;
+        //        Assert.IsTrue(quadIndexes.Length == 0 || quadIndexes.Length == MeshIndexes.kIndexArrayPtrsSize);
+
+        //        // Set each submesh in the mesh
+        //        mesh.subMeshCount = submeshes.Length;
+        //        for (int submeshIndex = 0; submeshIndex < submeshes.Length; submeshIndex++)
+        //        {
+        //            mesh.SetSubMesh(submeshIndex, submeshes[submeshIndex], MeshUpdateFlags.Default);
+        //        }
+
+        //        // Compute other Mesh data
+        //        mesh.RecalculateBounds();
+        //        mesh.RecalculateNormals();
+
+        //        meshes[surfaceTypeIndex] = mesh;
+        //    }
+
+        //    return meshes;
+        //}
 
         public Mesh[] CreateStaticColliderMesh2(ColiSceneSobj sceneSobj)
         {
@@ -263,11 +262,9 @@ namespace Manifold.IO.GFZ.CourseCollision
 
             for (int surfaceTypeIndex = 0; surfaceTypeIndex < surfaceTypeCount; surfaceTypeIndex++)
             {
-                var colliderProperty = (CollisionProperty)surfaceTypeIndex;
-
                 // Create base data for mesh for EACH mesh type (boost, heal, etc)
                 var mesh = new Mesh();
-                mesh.name = $"{sceneSobj.name}_{surfaceTypeIndex:00}_{colliderProperty}";
+                mesh.name = $"{sceneSobj.name}_{surfaceTypeIndex:00}_{(CollisionProperty)surfaceTypeIndex}";
                 // Each tri/quad set has fixed size 256 each, so 512 total
                 var submeshes = new SubMeshDescriptor[512];
 
@@ -283,15 +280,6 @@ namespace Manifold.IO.GFZ.CourseCollision
                     // Get ushort[] for all triangles used
                     var indexes = triIndexes[meshIndex];
 
-                    // Build submesh
-                    var triSubmesh = new SubMeshDescriptor();
-                    triSubmesh.baseVertex = 0; // ???
-                    triSubmesh.firstVertex = mesh.vertexCount; // first vert is first of array
-                    triSubmesh.vertexCount = indexes.Length * 3; // hacky, just put all the verts in
-                    triSubmesh.indexStart = mesh.triangles.Length; // 
-                    triSubmesh.indexCount = indexes.Length * 3; // also hacky, see above
-                    triSubmesh.topology = MeshTopology.Triangles;
-
                     // iterate over each triangle
                     var allVertices = new List<Vector3>();
                     var allIndexes = new List<int>();
@@ -301,24 +289,91 @@ namespace Manifold.IO.GFZ.CourseCollision
                         var triangle = colliderTriangles[index];
 
                         // Get vertices
-                        var verts = triangle.GetVerts();
-                        allVertices.AddRange(verts);
+                        //allVertices.AddRange(triangle.GetVerts());
+                        allVertices.Add(triangle.vertex0);
+                        allVertices.Add(triangle.vertex1);
+                        allVertices.Add(triangle.vertex2);
 
                         // Get indices for those vertices
                         allIndexes.Add(i * 3 + 0);
                         allIndexes.Add(i * 3 + 1);
                         allIndexes.Add(i * 3 + 2);
                     }
+                    
+                    // Build submesh
+                    var triSubmesh = new SubMeshDescriptor();
+                    triSubmesh.baseVertex = mesh.vertexCount;
+                    triSubmesh.firstVertex = mesh.vertexCount;
+                    triSubmesh.indexCount = allIndexes.Count;
+                    triSubmesh.indexStart = mesh.triangles.Length;
+                    triSubmesh.topology = MeshTopology.Triangles;
+                    triSubmesh.vertexCount = allVertices.Count;
 
+                    // Append to mesh
+                    var verticesConcat = mesh.vertices.Concat(allVertices).ToArray();
+                    var trianglesConcat = mesh.triangles.Concat(allIndexes).ToArray();
                     // Assign values to mesh
-                    mesh.triangles = allIndexes.ToArray();
-                    mesh.vertices = allVertices.ToArray();
+                    mesh.vertices = verticesConcat;
+                    mesh.triangles = trianglesConcat;
                     // Set mesh to use submesh 0-255
                     submeshes[meshIndex] = triSubmesh;
                 }
 
-                var quadIndexes = scene.surfaceAttributeMeshTable.quadMeshIndexes[surfaceTypeIndex].indexes;
+                var quadMeshIndexes = scene.surfaceAttributeMeshTable.quadMeshIndexes[surfaceTypeIndex];
+                var quadIndexes = quadMeshIndexes.indexes.GetArrays();
                 Assert.IsTrue(quadIndexes.Length == 0 || quadIndexes.Length == MeshIndexes.kIndexArrayPtrsSize);
+
+                // meshIndex = 0-255
+                // triIndex = the indexes for the mesh 
+                for (int meshIndex = 0; meshIndex < quadIndexes.Length; meshIndex++)
+                {
+                    // Get ushort[] for all triangles used
+                    var indexes = quadIndexes[meshIndex];
+
+                    // iterate over each triangle
+                    var allVertices = new List<Vector3>();
+                    var allIndexes = new List<int>();
+                    for (int i = 0; i < indexes.Length; i++)
+                    {
+                        var index = indexes[i];
+                        var quad = colliderQuads[index];
+
+                        // Get vertices
+                        allVertices.Add(quad.vertex0);
+                        allVertices.Add(quad.vertex1);
+                        allVertices.Add(quad.vertex2);
+                        //
+                        allVertices.Add(quad.vertex2);
+                        allVertices.Add(quad.vertex3);
+                        allVertices.Add(quad.vertex0);
+
+                        // Get indices for those vertices
+                        allIndexes.Add(i * 6 + 0);
+                        allIndexes.Add(i * 6 + 1);
+                        allIndexes.Add(i * 6 + 2);
+                        allIndexes.Add(i * 6 + 3);
+                        allIndexes.Add(i * 6 + 4);
+                        allIndexes.Add(i * 6 + 5);
+                    }
+
+                    // Build submesh
+                    var quadSubmesh = new SubMeshDescriptor();
+                    quadSubmesh.baseVertex = mesh.vertexCount;
+                    quadSubmesh.firstVertex = mesh.vertexCount;
+                    quadSubmesh.indexCount = allIndexes.Count;
+                    quadSubmesh.indexStart = mesh.triangles.Length;
+                    quadSubmesh.topology = MeshTopology.Triangles;
+                    quadSubmesh.vertexCount = allVertices.Count;
+
+                    // Append to mesh
+                    var verticesConcat = mesh.vertices.Concat(allVertices).ToArray();
+                    var trianglesConcat = mesh.triangles.Concat(allIndexes).ToArray();
+                    // Assign values to mesh
+                    mesh.vertices = verticesConcat;
+                    mesh.triangles = trianglesConcat;
+                    // Set mesh to use submesh 0-255
+                    submeshes[meshIndex + 256] = quadSubmesh;
+                }
 
                 // Set each submesh in the mesh
                 mesh.subMeshCount = submeshes.Length;
