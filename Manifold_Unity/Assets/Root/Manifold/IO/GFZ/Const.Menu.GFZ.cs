@@ -1,10 +1,10 @@
-﻿namespace Manifold.IO
+﻿namespace Manifold.IO.GFZ
 {
     public static partial class Const
     {
         public static partial class Menu
         {
-            public const string Gfz = Manifold + "GFZX01/";
+            public const string Gfz = IO.Const.Menu.Manifold + "F-Zero GX/";
             public const string GfzCamera = Gfz + "Camera/";
             public const string GfzCarData = Gfz + "CarData/";
             public const string GfzCourseCollision = Gfz + "Course Collision/";

@@ -62,7 +62,9 @@ namespace GameCube.GFZ.CourseCollision
                     var keyables = EnforceNoDuplicateTimes(keyablesArray2D.GetArray(i));
                     var keyframes = KeyablesToKeyframes(keyables);
                     curves[i] = new UnityEngine.AnimationCurve(keyframes);
-                    SetGfzTangentsToUnityTangets(keyables, curves[i]);
+
+                    // Disabling this makes the tangents work better...?
+                    //SetGfzTangentsToUnityTangents(keyables, curves[i]);
 
                     // TEST - re-apply key values.
                     // Not being respected by Unity?
@@ -141,7 +143,7 @@ namespace GameCube.GFZ.CourseCollision
             return keyframes;
         }
 
-        public void SetGfzTangentsToUnityTangets(KeyableAttribute[] keyables, UnityEngine.AnimationCurve curve)
+        public void SetGfzTangentsToUnityTangents(KeyableAttribute[] keyables, UnityEngine.AnimationCurve curve)
         {
             for (int i = 0; i < keyables.Length; i++)
             {
@@ -158,7 +160,7 @@ namespace GameCube.GFZ.CourseCollision
                         break;
 
                     case InterpolationMode.unknown1:
-                        mode = UnityEditor.AnimationUtility.TangentMode.ClampedAuto;
+                        mode = UnityEditor.AnimationUtility.TangentMode.Auto;
                         break;
 
                     case InterpolationMode.unknown2:

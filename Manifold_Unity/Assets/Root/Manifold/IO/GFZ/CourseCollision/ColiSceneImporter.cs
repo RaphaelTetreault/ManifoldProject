@@ -76,11 +76,15 @@ namespace Manifold.IO.GFZ.CourseCollision
 
                     // Track data transforms
                     CreateTrackTransformHierarchy(scene);
-                    CreateTrackTransformSet(scene);
+                    //CreateTrackTransformSet(scene);
                 }
 
                 // Include other misc data
                 IncludeStaticMeshColliders(scene, stageFolder);
+
+                // TEST
+                TestTransformHeirarchy(scene);
+
 
                 // Get some metadata from the number of scene objects
                 var sceneObjects = scene.Value.sceneObjects;
@@ -432,5 +436,81 @@ namespace Manifold.IO.GFZ.CourseCollision
             }
 
         }
+
+
+        public void TestTransformHeirarchy(ColiSceneSobj sceneSobj)
+        {
+            var scene = sceneSobj.Value;
+
+            var parent = new GameObject();
+            parent.name = $"Test Sample Path";
+
+            //
+            var increment = 1f / 1000f * scene.trackTransforms.Count;
+            int count = 0;
+            foreach (var tt in scene.trackTransforms)
+            {
+                var subgroup = new GameObject();
+                subgroup.name = $"Subgroup {++count}";
+                subgroup.transform.parent = parent.transform;
+
+                var topology = tt.trackTopology;
+                Vector3 timeScale = new Vector3(
+                    GetCurveTime(topology.curves[0]),
+                    GetCurveTime(topology.curves[1]),
+                    GetCurveTime(topology.curves[2]));
+                Vector3 timeRotation = new Vector3(
+                    GetCurveTime(topology.curves[3]),
+                    GetCurveTime(topology.curves[4]),
+                    GetCurveTime(topology.curves[5]));
+                Vector3 timePosition = new Vector3(
+                    GetCurveTime(topology.curves[6]),
+                    GetCurveTime(topology.curves[7]),
+                    GetCurveTime(topology.curves[8]));
+
+                for (float t = 0f; t < 1f; t += increment)
+                {
+                    Vector3 scale = new Vector3(
+                        topology.curves[0].EvaluateDefault(t * timeScale.x, 1),
+                        topology.curves[1].EvaluateDefault(t * timeScale.y, 1),
+                        topology.curves[2].EvaluateDefault(t * timeScale.z, 1));
+                    Vector3 rotation = new Vector3(
+                        topology.curves[3].EvaluateDefault(t * timeRotation.x, 0),
+                        topology.curves[4].EvaluateDefault(t * timeRotation.y, 0),
+                        topology.curves[5].EvaluateDefault(t * timeRotation.z, 0));
+                    Vector3 position = new Vector3(
+                        topology.curves[6].EvaluateDefault(t * timePosition.x, 0),
+                        topology.curves[7].EvaluateDefault(t * timePosition.y, 0),
+                        topology.curves[8].EvaluateDefault(t * timePosition.z, 0));
+
+                    var cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                    cube.name = $"time {t:0.000}";
+                    cube.transform.parent = subgroup.transform;
+
+                    cube.transform.position = position;
+                    cube.transform.rotation = Quaternion.Euler(rotation);
+                    cube.transform.localScale = scale;
+                }
+            }
+        }
+
+        public float GetCurveTime(UnityEngine.AnimationCurve curve)
+        {
+            if (curve.length == 0)
+                return 0f;
+
+            return curve.keys[curve.length - 1].time;
+        }
+    }
+}
+
+public static class AnimationCurveExtensions
+{
+    public static float EvaluateDefault(this UnityEngine.AnimationCurve curve, float time, float @default)
+    {
+        if (time == 0f)
+            return @default;
+
+        return curve.Evaluate(time);
     }
 }
