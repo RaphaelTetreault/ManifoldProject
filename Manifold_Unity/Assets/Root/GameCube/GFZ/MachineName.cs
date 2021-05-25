@@ -2,6 +2,9 @@
 
 namespace GameCube.GFZ
 {
+    /// <summary>
+    /// The name of each machine. Enum order is machine number.
+    /// </summary>
     public enum MachineName
     {
         [Description("Dark Schneider")]

@@ -1,5 +1,4 @@
 ﻿using GameCube.GFZ;
-using Manifold.IO;
 using System.IO;
 using UnityEditor;
 using UnityEngine;
@@ -65,88 +64,86 @@ namespace Manifold.IO.GFZ.CarData
                         AssetDatabase.CreateAsset(carDataSobj, filePath);
                         carDataSobj.FileName = fileName;
 
-                        // For progress bar
-                        var baseIndex = 0;
-                        var totalIndices =
-                            GameCube.GFZ.CarData.CarData.MachineCount + GameCube.GFZ.CarData.CarData.BodyCount +
-                            GameCube.GFZ.CarData.CarData.CockpitCount + GameCube.GFZ.CarData.CarData.BoosterCount;
+                        // Get quantity of things to iterate over
+                        int machineCount = GameCube.GFZ.CarData.CarData.MachineCount;
+                        int bodyCount = GameCube.GFZ.CarData.CarData.BodyCount;
+                        int cockpitCount = GameCube.GFZ.CarData.CarData.CockpitCount;
+                        int boosterCount = GameCube.GFZ.CarData.CarData.BoosterCount;
+                        int indexBase = 0;
+                        int indexTotal = machineCount + bodyCount + cockpitCount + boosterCount;
 
                         // MACHINE
                         var machines = carData.Machines;
-                        for (int i = 0; i < GameCube.GFZ.CarData.CarData.MachineCount; i++)
+                        for (int machineIndex = 0; machineIndex < machineCount; machineIndex++)
                         {
-                            var index = carDataSobj.MachineIndex[i];
-                            var name = (MachineName)index;
-                            var indexPrint = index.ToString("D2");
-                            var assetName = $"cardata_machine_{indexPrint}_{name}";
+                            // Get machine name, display progress bar
+                            var name = (MachineName)machineIndex;
+                            var assetName = $"cardata_machine_{machineIndex:00}_{name}";
+                            ImportUtility.ProgressBar(indexBase + machineIndex, indexTotal, assetName, "Importing Vehicle Parameters");
 
-                            UpdateProgressBar(i + baseIndex, totalIndices, unityPath, assetName);
-
+                            // Save asset
                             var asset = CreateInstance<VehicleParametersSobj>();
-                            asset.value = machines[i];
+                            asset.value = machines[machineIndex];
                             var assetPath = $"Assets/{unityPath}/{assetName}.asset";
                             AssetDatabase.CreateAsset(asset, assetPath);
-                            carDataSobj.SetMachine(index, asset);
+                            carDataSobj.SetMachine(machineIndex, asset);
                         }
-                        baseIndex += GameCube.GFZ.CarData.CarData.MachineCount;
+                        indexBase += machineCount;
 
                         // BODY
                         var bodyParts = carData.BodyParts;
-                        for (int i = 0; i < GameCube.GFZ.CarData.CarData.BodyCount; i++)
+                        for (int bodyIndex = 0; bodyIndex < bodyCount; bodyIndex++)
                         {
-                            var index = i;
-                            var name = (CustomBodyPartName)index;
-                            var indexPrint = (index + 1).ToString("D2");
-                            var assetName = $"cardata_body_{indexPrint}_{name}";
+                            // Get machine name, display progress bar
+                            var name = (CustomBodyPartName)bodyIndex;
+                            var assetName = $"cardata_body_{bodyIndex:00}_{name}";
+                            ImportUtility.ProgressBar(indexBase + bodyIndex, indexTotal, assetName, "Importing Custom Body Parts");
 
-                            UpdateProgressBar(i + baseIndex, totalIndices, unityPath, assetName);
-
+                            // Save asset
                             var asset = CreateInstance<VehicleParametersSobj>();
-                            asset.value = bodyParts[i];
+                            asset.value = bodyParts[bodyIndex];
                             var assetPath = $"Assets/{unityPath}/{assetName}.asset";
                             AssetDatabase.CreateAsset(asset, assetPath);
-                            carDataSobj.SetBody(index, asset);
+                            carDataSobj.SetBody(bodyIndex, asset);
                         }
-                        baseIndex += CarDataSobj.BodyCount;
+                        indexBase += bodyCount;
 
                         // COCKPIT
                         var cockpitParts = carData.CockpitParts;
-                        for (int i = 0; i < GameCube.GFZ.CarData.CarData.CockpitCount; i++)
+                        for (int cockpitIndex = 0; cockpitIndex < cockpitCount; cockpitIndex++)
                         {
-                            var index = i;
-                            var name = (CustomCockpitPartName)index;
-                            var indexPrint = (index + 1).ToString("D2");
-                            var assetName = $"cardata_cockpit_{indexPrint}_{name}";
+                            // Get machine name, display progress bar
+                            var name = (CustomCockpitPartName)cockpitIndex;
+                            var assetName = $"cardata_cockpit_{cockpitIndex:00}_{name}";
+                            ImportUtility.ProgressBar(indexBase + cockpitIndex, indexTotal, assetName, "Importing Custom Cockpit Parts");
 
-                            UpdateProgressBar(i + baseIndex, totalIndices, unityPath, assetName);
-
+                            // Save asset
                             var asset = CreateInstance<VehicleParametersSobj>();
-                            asset.value = cockpitParts[i];
+                            asset.value = cockpitParts[cockpitIndex];
                             var assetPath = $"Assets/{unityPath}/{assetName}.asset";
                             AssetDatabase.CreateAsset(asset, assetPath);
-                            carDataSobj.SetCockpit(index, asset);
+                            carDataSobj.SetCockpit(cockpitIndex, asset);
                         }
-                        baseIndex += CarDataSobj.CockpitCount;
+                        indexBase += cockpitCount;
 
                         // BOOSTER
                         var boosterParts = carData.BoosterParts;
-                        for (int i = 0; i < GameCube.GFZ.CarData.CarData.BoosterCount; i++)
+                        for (int boosterIndex = 0; boosterIndex < boosterCount; boosterIndex++)
                         {
-                            var index = i;
-                            var name = (CustomBoosterPartName)index;
-                            var indexPrint = (index + 1).ToString("D2");
-                            var assetName = $"cardata_booster_{indexPrint}_{name}";
+                            // Get machine name, display progress bar
+                            var name = (CustomBoosterPartName)boosterIndex;
+                            var assetName = $"cardata_booster_{boosterIndex:00}_{name}";
+                            ImportUtility.ProgressBar(indexBase + boosterIndex, indexTotal, assetName, "Importing Custom Booster Parts");
 
-                            UpdateProgressBar(i + baseIndex, totalIndices, unityPath, assetName);
-
+                            // Save asset
                             var asset = CreateInstance<VehicleParametersSobj>();
-                            asset.value = boosterParts[i];
+                            asset.value = boosterParts[boosterIndex];
                             var assetPath = $"Assets/{unityPath}/{assetName}.asset";
                             AssetDatabase.CreateAsset(asset, assetPath);
-                            carDataSobj.SetBooster(index, asset);
+                            carDataSobj.SetBooster(boosterIndex, asset);
                         }
 
-                        // 
+                        // Apply other values
                         carDataSobj.padding = carData.padding;
                         carDataSobj.machineNames = carData.machineNames;
                         carDataSobj.unknownNames = carData.unknownNames;
@@ -159,15 +156,6 @@ namespace Manifold.IO.GFZ.CarData
             AssetDatabase.SaveAssets();
             EditorUtility.ClearProgressBar();
             AssetDatabase.Refresh();
-        }
-
-        public void UpdateProgressBar(int index, int total, string unityPath, string fileName)
-        {
-            var currentIndexStr = (index + 1).ToString().PadLeft(total.ToString().Length);
-            var title = $"Importing {typeof(CarDataSobj).Name} ({currentIndexStr}/{total})";
-            var info = $"{unityPath}/{fileName}";
-            var progress = index / (float)total;
-            EditorUtility.DisplayProgressBar(title, info, progress);
         }
     }
 }

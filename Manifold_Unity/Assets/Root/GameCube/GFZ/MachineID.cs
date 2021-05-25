@@ -2,6 +2,9 @@
 
 namespace GameCube.GFZ
 {
+    /// <summary>
+    /// The name of each machine. Enum order is internal order in AX/GX ROM.
+    /// </summary>
     public enum MachineID
     {
         [Description("Red Gazelle")]

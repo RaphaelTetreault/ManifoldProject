@@ -962,7 +962,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                     writer.WriteNextCol(coli.FileName);
                     writer.WriteNextCol(coli.ID);
                     writer.WriteNextCol(CourseUtility.GetVenueID(coli.ID).GetDescription());
-                    writer.WriteNextCol(((CourseIDEx)coli.ID).GetDescription());
+                    writer.WriteNextCol(((CourseIndexAX)coli.ID).GetDescription());
                     writer.WriteNextCol(coliHeader.IsFileGX ? "GX" : "AX");
 
                     writer.WriteNextCol(coliHeader.unk_0x00.a);
@@ -1053,7 +1053,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 {
                     var scene = file.Value;
                     var venueID = CourseUtility.GetVenueID(scene.ID).GetDescription();
-                    var courseID = ((CourseIDEx)scene.ID).GetDescription();
+                    var courseID = ((CourseIndexAX)scene.ID).GetDescription();
                     var isAxGx = scene.header.IsFileGX ? "GX" : "AX";
 
                     int count = 0;
@@ -1162,7 +1162,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 {
                     var scene = file.Value;
                     var venueID = CourseUtility.GetVenueID(scene.ID).GetDescription();
-                    var courseID = ((CourseIDEx)scene.ID).GetDescription();
+                    var courseID = ((CourseIndexAX)scene.ID).GetDescription();
                     var isAxGx = scene.header.IsFileGX ? "GX" : "AX";
 
                     foreach (var item in scene.storyObjectTriggers)
@@ -1215,7 +1215,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 {
                     var scene = file.Value;
                     var venueID = CourseUtility.GetVenueID(scene.ID).GetDescription();
-                    var courseID = ((CourseIDEx)scene.ID).GetDescription();
+                    var courseID = ((CourseIndexAX)scene.ID).GetDescription();
                     var isAxGx = scene.header.IsFileGX ? "GX" : "AX";
 
                     var totalD1 = scene.unknownStageData2.unkAnimData.Length;
@@ -1270,7 +1270,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 {
                     var scene = file.Value;
                     var venueID = CourseUtility.GetVenueID(scene.ID).GetDescription();
-                    var courseID = ((CourseIDEx)scene.ID).GetDescription();
+                    var courseID = ((CourseIndexAX)scene.ID).GetDescription();
                     var isAxGx = scene.header.IsFileGX ? "GX" : "AX";
 
                     writer.WriteNextCol(scene.FileName);

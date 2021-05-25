@@ -2,6 +2,10 @@
 
 namespace GameCube.GFZ
 {
+    /// <summary>
+    /// Flags for each venue. Order is arbitrary (alphabetical). Flags are used
+    /// since since some stages are both a regular venue but with story elements.
+    /// </summary>
     [System.Flags]
     public enum VenueID
     {

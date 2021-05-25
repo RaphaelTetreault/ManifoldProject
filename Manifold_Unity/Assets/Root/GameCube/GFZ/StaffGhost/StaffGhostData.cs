@@ -7,7 +7,7 @@ namespace GameCube.GFZ.StaffGhost
     public struct StaffGhostData : IBinarySerializable, IFile
     {
         public MachineID machineID; // 0x00
-        public CourseID courseID; // 0x01
+        public CourseIndexGX courseID; // 0x01
         public byte[] unk_1;
         public string username; // 0x08
         public byte timeMinutes; // 0x24
@@ -30,7 +30,7 @@ namespace GameCube.GFZ.StaffGhost
             machineID = (MachineID)temp;
 
             reader.ReadX(ref temp);
-            courseID = (CourseID)temp;
+            courseID = (CourseIndexGX)temp;
 
             reader.ReadX(ref unk_1, 6);
             reader.ReadXCString(ref username, System.Text.Encoding.ASCII);

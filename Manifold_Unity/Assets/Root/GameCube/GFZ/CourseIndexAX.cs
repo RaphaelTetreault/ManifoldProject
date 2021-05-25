@@ -2,9 +2,8 @@
 
 namespace GameCube.GFZ
 {
-    public enum CourseIDEx
+    public enum CourseIndexAX
     {
-        //???
         [Description("---")]
         None = -1,
 

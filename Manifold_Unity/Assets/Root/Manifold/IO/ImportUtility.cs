@@ -139,6 +139,16 @@ namespace Manifold.IO
             return userCancelled;
         }
 
+        public static bool ProgressBar(int count, int total, string info, string title)
+        {
+            // Progress bar update
+            var digitCount = total.ToString().Length;
+            var currentIndexStr = (count + 1).ToString().PadLeft(digitCount);
+            var progress = count / (float)total;
+            var userCancelled = EditorUtility.DisplayCancelableProgressBar(title, info, progress);
+            return userCancelled;
+        }
+
         // path w/o Assets
         public static void EnsureAssetFolderExists(string folderPath)
         {
