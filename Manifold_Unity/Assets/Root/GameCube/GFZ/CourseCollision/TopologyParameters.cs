@@ -64,7 +64,7 @@ namespace GameCube.GFZ.CourseCollision
                     curves[i] = new UnityEngine.AnimationCurve(keyframes);
 
                     // Disabling this makes the tangents work better...?
-                    //SetGfzTangentsToUnityTangents(keyables, curves[i]);
+                    SetGfzTangentsToUnityTangents(keyables, curves[i]);
 
                     // TEST - re-apply key values.
                     // Not being respected by Unity?
@@ -153,27 +153,37 @@ namespace GameCube.GFZ.CourseCollision
                 {
                     case InterpolationMode.Constant:
                         mode = UnityEditor.AnimationUtility.TangentMode.Constant;
+                        UnityEditor.AnimationUtility.SetKeyLeftTangentMode(curve, i, mode);
+                        UnityEditor.AnimationUtility.SetKeyRightTangentMode(curve, i, mode);
                         break;
 
                     case InterpolationMode.Linear:
                         mode = UnityEditor.AnimationUtility.TangentMode.Linear;
+                        UnityEditor.AnimationUtility.SetKeyLeftTangentMode(curve, i, mode);
+                        UnityEditor.AnimationUtility.SetKeyRightTangentMode(curve, i, mode);
                         break;
 
                     case InterpolationMode.unknown1:
-                        mode = UnityEditor.AnimationUtility.TangentMode.Auto;
+                    case InterpolationMode.unknown2:
+                        // don't do anything... seems to be a better option than not.
+                        // The tangents seem to work fine in default (until I find something off)
                         break;
 
-                    case InterpolationMode.unknown2:
-                        mode = UnityEditor.AnimationUtility.TangentMode.ClampedAuto;
-                        break;
+                    //case InterpolationMode.unknown1:
+                    //    mode = UnityEditor.AnimationUtility.TangentMode.Auto;
+                    //    break;
+
+                    //case InterpolationMode.unknown2:
+                    //    mode = UnityEditor.AnimationUtility.TangentMode.ClampedAuto;
+                    //    break;
 
                     default:
                         throw new NotImplementedException($"New value {(int)keyables[i].easeMode}");
                 }
 
-                // Set tangent type in Unity's format
-                UnityEditor.AnimationUtility.SetKeyLeftTangentMode(curve, i, mode);
-                UnityEditor.AnimationUtility.SetKeyRightTangentMode(curve, i, mode);
+                //// Set tangent type in Unity's format
+                //UnityEditor.AnimationUtility.SetKeyLeftTangentMode(curve, i, mode);
+                //UnityEditor.AnimationUtility.SetKeyRightTangentMode(curve, i, mode);
             }
         }
 

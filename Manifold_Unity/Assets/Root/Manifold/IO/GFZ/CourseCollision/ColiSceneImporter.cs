@@ -84,7 +84,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
                 // TEST
                 TestTransformHeirarchy(scene);
-
+                //NewTestTransformHierarchy(scene);
 
                 // Get some metadata from the number of scene objects
                 var sceneObjects = scene.Value.sceneObjects;
@@ -487,9 +487,12 @@ namespace Manifold.IO.GFZ.CourseCollision
                     cube.name = $"time {t:0.000}";
                     cube.transform.parent = subgroup.transform;
 
-                    cube.transform.position = position;
-                    cube.transform.rotation = Quaternion.Euler(rotation);
-                    cube.transform.localScale = scale;
+                    //cube.transform.position = position + tt.localPosition;
+                    //cube.transform.rotation = Quaternion.Euler(rotation);// + tt.localRotation);
+                    //cube.transform.localScale = scale.Multiply(tt.localScale);
+                    cube.transform.position = position + tt.localPosition;
+                    cube.transform.rotation = Quaternion.Euler(rotation + tt.localRotation);// + tt.localRotation);
+                    cube.transform.localScale = scale.Multiply(tt.localScale);
                 }
             }
         }
@@ -501,16 +504,113 @@ namespace Manifold.IO.GFZ.CourseCollision
 
             return curve.keys[curve.length - 1].time;
         }
+
+        public void NewTestTransformHierarchy(ColiSceneSobj sceneSobj)
+        {
+            var scene = sceneSobj.Value;
+
+            var parent = new GameObject();
+            parent.name = $"Test Sample Path";
+
+            //
+            var increment = 1f / 1000f * scene.trackTransforms.Count;
+            int count = 0;
+            foreach (var tt in scene.trackTransforms)
+            {
+                var subgroup = new GameObject();
+                subgroup.name = $"Subgroup {++count}";
+                subgroup.transform.parent = parent.transform;
+
+                var topology = tt.trackTopology;
+                var transformMatrix = GetTransformMatrix(tt, increment);
+
+                for (float t = 0f; t < 1f; t += increment)
+                {
+                    var animMatrix = GetAnimMatrix(tt, t);
+                    var finalMatrix = transformMatrix * animMatrix;
+
+                    var cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                    cube.name = $"time {t:0.000}";
+                    cube.transform.parent = subgroup.transform;
+
+                    cube.transform.position = finalMatrix.Position();
+                    cube.transform.rotation = finalMatrix.Rotation();
+                    cube.transform.localScale = finalMatrix.Scale();
+                }
+            }
+        }
+
+        public Matrix4x4 GetTransformMatrix(TrackTransform trackTransform, float increment)
+        {
+            var transformMatrix = new Matrix4x4();
+            transformMatrix.SetTRS(
+                trackTransform.localPosition,
+                Quaternion.Euler(trackTransform.localRotation),
+                trackTransform.localScale);
+
+            // get child matrix
+            if (trackTransform.topologyMetadata == TrackTopologyMetadata.IsNotFinalTopologyNode)
+            {
+                var childMatrix = GetTransformMatrix(trackTransform.children[0], increment);
+                return transformMatrix * childMatrix;
+            }
+
+            return transformMatrix;
+        }
+
+        public Matrix4x4 GetAnimMatrix(TrackTransform trackTransform, float time)
+        {
+            var topology = trackTransform.trackTopology;
+            Vector3 timeScale = new Vector3(
+                GetCurveTime(topology.curves[0]),
+                GetCurveTime(topology.curves[1]),
+                GetCurveTime(topology.curves[2]));
+            Vector3 timeRotation = new Vector3(
+                GetCurveTime(topology.curves[3]),
+                GetCurveTime(topology.curves[4]),
+                GetCurveTime(topology.curves[5]));
+            Vector3 timePosition = new Vector3(
+                GetCurveTime(topology.curves[6]),
+                GetCurveTime(topology.curves[7]),
+                GetCurveTime(topology.curves[8]));
+
+            Vector3 scale = new Vector3(
+                topology.curves[0].EvaluateDefault(time * timeScale.x, 1),
+                topology.curves[1].EvaluateDefault(time * timeScale.y, 1),
+                topology.curves[2].EvaluateDefault(time * timeScale.z, 1));
+            Vector3 rotation = new Vector3(
+                topology.curves[3].EvaluateDefault(time * timeRotation.x, 0),
+                topology.curves[4].EvaluateDefault(time * timeRotation.y, 0),
+                topology.curves[5].EvaluateDefault(time * timeRotation.z, 0));
+            Vector3 position = new Vector3(
+                topology.curves[6].EvaluateDefault(time * timePosition.x, 0),
+                topology.curves[7].EvaluateDefault(time * timePosition.y, 0),
+                topology.curves[8].EvaluateDefault(time * timePosition.z, 0));
+
+            var animationMatrix = new Matrix4x4();
+            animationMatrix.SetTRS(position, Quaternion.Euler(rotation), scale);
+
+            // get child matrix
+            if (trackTransform.topologyMetadata == TrackTopologyMetadata.IsNotFinalTopologyNode)
+            {
+                var childMatrix = GetAnimMatrix(trackTransform.children[0], time);
+
+                return animationMatrix * childMatrix;
+            }
+
+            return animationMatrix;
+        }
+
     }
-}
 
-public static class AnimationCurveExtensions
-{
-    public static float EvaluateDefault(this UnityEngine.AnimationCurve curve, float time, float @default)
+    public static class AnimationCurveExtensions
     {
-        if (time == 0f)
-            return @default;
+        public static float EvaluateDefault(this UnityEngine.AnimationCurve curve, float time, float @default)
+        {
+            if (time == 0f)
+                return @default;
 
-        return curve.Evaluate(time);
+            return curve.Evaluate(time);
+        }
     }
 }
