@@ -4,47 +4,50 @@ namespace Nintendo64.FZX
 {
     public enum DiskDriveMusic
     {
+        [Description("(No Music)")]
+        None = 0xFF,
+
         [Description("Mute City")]
-        MuteCity = 0,
+        MuteCity = 0x00,
 
         [Description("Silence")]
-        Silence,
+        Silence = 0x01,
 
         [Description("Sand Ocean")]
-        SandOcean,
+        SandOcean = 0x02,
 
         [Description("Port Town")]
-        PortTown,
+        PortTown = 0x03,
 
         [Description("Big Blue")]
-        BigBlue,
+        BigBlue = 0x04,
 
         [Description("Devil's Forest")]
-        DevilsForest,
+        DevilsForest = 0x05,
 
         [Description("Red Canyon")]
-        RedCanyon,
+        RedCanyon = 0x06,
 
         [Description("Sector")]
-        Sector,
+        Sector = 0x07,
 
         [Description("White Land")]
-        WhiteLand,
+        WhiteLand = 0x08,
 
         [Description("Rainbow Road")]
-        RainbowRoad,
+        RainbowRoad = 0x20,
 
         [Description("Big Foot")]
-        BigFoot,
+        BigFoot = 0x21,
 
         [Description("Japon")]
-        Japon,
+        Japon = 0x22,
 
         [Description("Regeneration")]
-        Regeneration,
+        Regeneration = 0x23,
 
         [Description("Roller Coaster")]
-        RollerCoaster,
+        RollerCoaster = 0x24,
     }
 
 }

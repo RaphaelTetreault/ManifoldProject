@@ -5,7 +5,7 @@ namespace Nintendo64.FZX
     /// <summary>
     /// Left in order of FZEP dropdown
     /// </summary>
-    public enum Image
+    public enum Image : ushort
     {
         [Description("Mute City A (Light)")]
         MuteCityLightA = 0,

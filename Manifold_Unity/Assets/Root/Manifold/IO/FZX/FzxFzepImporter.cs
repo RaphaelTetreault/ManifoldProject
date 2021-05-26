@@ -53,11 +53,17 @@ namespace Manifold.IO.FZX
                     // Keep reference of new scene
                     unityScene = EditorSceneManager.OpenScene(scenePath);
 
+                    var bezierHandler = new GameObject();
+                    bezierHandler.name = "Bezier Handler";
+                    var bezier = bezierHandler.AddComponent<FzxFzepBezier>();
+
                     foreach (var controlPoint in fzep.controlPoints)
                     {
                         var cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
                         cube.name = controlPoint.name;
                         cube.transform.position = controlPoint.Position;
+
+                        bezier.nodes.Add(cube.transform);
                     }
 
                     EditorSceneManager.SaveScene(unityScene, scenePath);
