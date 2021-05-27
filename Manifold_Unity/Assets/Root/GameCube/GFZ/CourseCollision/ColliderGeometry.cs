@@ -1,6 +1,6 @@
 ﻿using Manifold.IO;
 using System.IO;
-using UnityEngine;
+using Unity.Mathematics;
 using System;
 
 namespace GameCube.GFZ.CourseCollision
@@ -12,7 +12,7 @@ namespace GameCube.GFZ.CourseCollision
         #region FIELDS
 
 
-        [SerializeField]
+        [UnityEngine.SerializeField]
         private AddressRange addressRange;
 
         public uint unk_0x00;

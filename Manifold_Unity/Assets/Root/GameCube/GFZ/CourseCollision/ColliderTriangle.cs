@@ -1,7 +1,7 @@
 ﻿using Manifold.IO;
 using System;
 using System.IO;
-using UnityEngine;
+using Unity.Mathematics;
 
 namespace GameCube.GFZ.CourseCollision
 {
@@ -12,17 +12,17 @@ namespace GameCube.GFZ.CourseCollision
         #region MEMBERS
 
 
-        [SerializeField]
+        [UnityEngine.SerializeField]
         private AddressRange addressRange;
 
         public float unk_0x00;
-        public Vector3 normal;
-        public Vector3 vertex0;
-        public Vector3 vertex1;
-        public Vector3 vertex2;
-        public Vector3 precomputed0;
-        public Vector3 precomputed1;
-        public Vector3 precomputed2;
+        public float3 normal;
+        public float3 vertex0;
+        public float3 vertex1;
+        public float3 vertex2;
+        public float3 precomputed0;
+        public float3 precomputed1;
+        public float3 precomputed2;
 
 
         #endregion
@@ -69,9 +69,9 @@ namespace GameCube.GFZ.CourseCollision
             writer.WriteX(precomputed2);
         }
 
-        public Vector3[] GetVerts()
+        public float3[] GetVerts()
         {
-            return new Vector3[] { vertex0, vertex1, vertex2 };
+            return new float3[] { vertex0, vertex1, vertex2 };
         }
 
         #endregion

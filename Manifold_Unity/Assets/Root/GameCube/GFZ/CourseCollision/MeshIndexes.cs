@@ -1,14 +1,14 @@
 using Manifold.IO;
 using System;
 using System.IO;
-using UnityEngine;
+using Unity.Mathematics;
 
 namespace GameCube.GFZ.CourseCollision
 {
     [Serializable]
     public class MeshIndexes : IBinarySerializable, IBinaryAddressableRange
     {
-        [SerializeField]
+        [UnityEngine.SerializeField]
         private AddressRange addressRange;
 
         public const int kIndexArrayPtrsSize = 256; // 0x100

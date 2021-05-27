@@ -1,7 +1,7 @@
 using Manifold.IO;
 using System;
 using System.IO;
-using UnityEngine;
+using Unity.Mathematics;
 
 namespace GameCube.GFZ.CourseCollision
 {
@@ -9,20 +9,20 @@ namespace GameCube.GFZ.CourseCollision
     public class Transform : IBinarySerializable, IBinaryAddressableRange
     {
         // metadata
-        [SerializeField]
+        [UnityEngine.SerializeField]
         private AddressRange addressRange;
 
         // structure
-        [SerializeField]
-        private Vector3 position;
-        [SerializeField]
+        [UnityEngine.SerializeField]
+        private float3 position;
+        [UnityEngine.SerializeField]
         private Int16Rotation3 decomposedRotation;
-        [SerializeField]
+        [UnityEngine.SerializeField]
         private UnknownTransformOption unknownOption;
-        [SerializeField]
+        [UnityEngine.SerializeField]
         private ObjectActiveOverride objectActiveOverride;
-        [SerializeField]
-        private Vector3 scale;
+        [UnityEngine.SerializeField]
+        private float3 scale;
 
         //
         public AddressRange AddressRange
@@ -31,23 +31,23 @@ namespace GameCube.GFZ.CourseCollision
             set => addressRange = value;
         }
 
-        public Vector3 Position
+        public float3 Position
         {
             get => position;
             set => position = value;
         }
 
-        public Vector3 RotationEuler
+        public float3 RotationEuler
         {
             get => decomposedRotation.EulerAngles;
         }
 
-        public Quaternion Rotation
+        public quaternion Rotation
         {
             get => decomposedRotation.Rotation;
         }
 
-        public Vector3 Scale
+        public float3 Scale
         {
             get => scale;
             set => scale = value;

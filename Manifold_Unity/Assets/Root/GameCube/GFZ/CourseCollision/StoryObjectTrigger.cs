@@ -1,24 +1,24 @@
 using Manifold.IO;
 using System;
 using System.IO;
-using UnityEngine;
+using Unity.Mathematics;
 
 namespace GameCube.GFZ.CourseCollision
 {
     [Serializable]
     public class StoryObjectTrigger : IBinarySerializable, IBinaryAddressableRange
     {
-        [SerializeField]
+        [UnityEngine.SerializeField]
         private AddressRange addressRange;
 
         public ushort zero_0x00;
         public byte rockGroupOrderIndex;
         public byte rockGroupAndDifficulty; // split lower/upper 4 bits
-        public Vector3 story2RockScale;
+        public float3 story2RockScale;
         public Pointer animationPathPtr;
-        public Vector3 scale;
-        public Vector3 rotation;
-        public Vector3 position;
+        public float3 scale;
+        public float3 rotation;
+        public float3 position;
 
         // NOTE: used in story 2, object's animation path when triggered? (likely)
         public ArrayPointer keyableArrayPtr;

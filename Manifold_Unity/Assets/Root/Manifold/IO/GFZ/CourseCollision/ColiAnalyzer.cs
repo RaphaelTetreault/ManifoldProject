@@ -639,10 +639,10 @@ namespace Manifold.IO.GFZ.CourseCollision
                         writer.WriteNextCol(file.FileName);
                         writer.WriteNextCol(sceneObjectIndex);
                         writer.WriteNextCol(sceneObject.name);
-                        writer.WriteNextCol(sceneObject.lodFar.radius);
-                        writer.WriteNextCol(sceneObject.lodFar.RadiusSquared);
-                        writer.WriteNextCol(sceneObject.lodNear.radius);
-                        writer.WriteNextCol(sceneObject.lodNear.RadiusSquared);
+                        writer.WriteNextCol(sceneObject.lodFar.data32);
+                        writer.WriteNextCol($"0x{sceneObject.lodFar.data32:x8}");
+                        writer.WriteNextCol(sceneObject.lodNear.data32);
+                        writer.WriteNextCol($"0x{sceneObject.lodNear.data32:x8}");
                         writer.WriteNextCol(sceneObject.collisionBindingPtr.HexAddress);
                         writer.WriteNextCol(sceneObject.transform.Position);
                         writer.WriteNextCol(sceneObject.transform.RotationEuler);
@@ -1326,7 +1326,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                         writer.WriteNextCol(sceneObject.name);
 
                         // Matrix
-                        var matrix = sceneObject.transformMatrix3x4.Rotation.eulerAngles;
+                        var matrix = sceneObject.transformMatrix3x4.rotationEuler;
                         writer.WriteNextCol(matrix.x);
                         writer.WriteNextCol(matrix.y);
                         writer.WriteNextCol(matrix.z);

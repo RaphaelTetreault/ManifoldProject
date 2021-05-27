@@ -1,7 +1,7 @@
 using Manifold.IO;
 using System;
 using System.IO;
-using UnityEngine;
+using Unity.Mathematics;
 
 // NOTE: dependant on UnknownStageData1, review notes in that class.
 
@@ -12,7 +12,7 @@ namespace GameCube.GFZ.CourseCollision
     {
         public const int elementCount = 6;
 
-        [SerializeField]
+        [UnityEngine.SerializeField]
         private AddressRange addressRange;
 
         // TODO: since these arrays are fixed and not 2d, they should

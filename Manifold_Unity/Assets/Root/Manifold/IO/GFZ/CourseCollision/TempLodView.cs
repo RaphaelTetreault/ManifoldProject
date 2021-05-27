@@ -32,21 +32,21 @@ namespace Manifold.IO.GFZ.CourseCollision
 
         private void Draw()
         {
-            int index = 0;
-            var mesh = Resources.GetBuiltinResource<Mesh>("Sphere.fbx");
+            //int index = 0;
+            //var mesh = Resources.GetBuiltinResource<Mesh>("Sphere.fbx");
 
-            Gizmos.color = color;
-            Debug.Log($"Scene objects count: {sceneSobj.Value.sceneObjects.Length}");
-            foreach (var item in sceneSobj.Value.sceneObjects)
-            {
-                index++;
+            //Gizmos.color = color;
+            //Debug.Log($"Scene objects count: {sceneSobj.Value.sceneObjects.Length}");
+            //foreach (var item in sceneSobj.Value.sceneObjects)
+            //{
+            //    index++;
 
-                var gfzTransform = item.transform;
-                var lodNear = item.lodNear.radius;
-                var lodFar = item.lodFar.radius;
-                Gizmos.DrawMesh(mesh, 0, gfzTransform.Position, Quaternion.identity, Vector3.one * lodFar * scale);
-                Gizmos.DrawWireMesh(mesh, 0, gfzTransform.Position, Quaternion.identity, Vector3.one * lodNear * scale);
-            }
+            //    var gfzTransform = item.transform;
+            //    var lodNear = item.lodNear.radius;
+            //    var lodFar = item.lodFar.radius;
+            //    Gizmos.DrawMesh(mesh, 0, gfzTransform.Position, Quaternion.identity, Vector3.one * lodFar * scale);
+            //    Gizmos.DrawWireMesh(mesh, 0, gfzTransform.Position, Quaternion.identity, Vector3.one * lodNear * scale);
+            //}
         }
     }
 }

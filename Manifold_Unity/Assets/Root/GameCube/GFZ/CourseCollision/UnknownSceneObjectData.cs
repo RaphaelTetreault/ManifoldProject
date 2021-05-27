@@ -1,7 +1,7 @@
 ﻿using Manifold.IO;
 using System;
 using System.IO;
-using UnityEngine;
+using Unity.Mathematics;
 
 namespace GameCube.GFZ.CourseCollision
 {
@@ -14,7 +14,7 @@ namespace GameCube.GFZ.CourseCollision
 
         const int kCount = 12;
 
-        [SerializeField]
+        [UnityEngine.SerializeField]
         private AddressRange addressRange;
 
         public uint[] unkAbsPtr;

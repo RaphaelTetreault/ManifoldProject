@@ -46,8 +46,8 @@ namespace Manifold.IO.GFZ.CourseCollision
             // Draw self
             var worldMatrix = trackTransform.worldMatrix;
             var position = worldMatrix.Position();
-            var rotation = worldMatrix.rotation;
-            var scale = worldMatrix.lossyScale;
+            var rotation = worldMatrix.Rotation();
+            var scale = worldMatrix.Scale();
             //
             var colorIndex = trackTransform.depth;
             Gizmos.color = gizmosColor[colorIndex];

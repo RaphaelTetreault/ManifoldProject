@@ -1,6 +1,6 @@
 using Manifold.IO;
 using System.IO;
-using UnityEngine;
+using Unity.Mathematics;
 
 namespace GameCube.GFZ.CourseCollision
 {
@@ -8,7 +8,7 @@ namespace GameCube.GFZ.CourseCollision
     {
         //public const int kNumEntries = 64;
 
-        [SerializeField]
+        [UnityEngine.SerializeField]
         private AddressRange addressRange;
 
         public ushort[] indexes = new ushort[0];

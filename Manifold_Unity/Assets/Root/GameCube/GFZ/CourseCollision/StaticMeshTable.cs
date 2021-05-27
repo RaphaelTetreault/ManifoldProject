@@ -1,14 +1,14 @@
 using Manifold.IO;
 using System;
 using System.IO;
-using UnityEngine;
+using Unity.Mathematics;
 
 namespace GameCube.GFZ.CourseCollision
 {
     [Serializable]
     public class StaticMeshTable : IBinarySerializable, IBinaryAddressableRange
     {
-        [SerializeField]
+        [UnityEngine.SerializeField]
         private AddressRange addressRange;
 
         /// <summary>
@@ -86,14 +86,14 @@ namespace GameCube.GFZ.CourseCollision
                     // Triangles
                     var triIndexesPointer = collisionTriIndexesPtr[i];
                     triMeshIndexes[i] = new MeshIndexes();
-                    //Debug.Log($"tri{i+1}:{triPointer.HexAddress}");
+                    //DebugConsole.Log($"tri{i+1}:{triPointer.HexAddress}");
                     reader.JumpToAddress(triIndexesPointer);
                     reader.ReadX(ref triMeshIndexes[i], false);
 
                     // Quads
                     var quadPointer = collisionQuadIndexesPtr[i];
                     quadMeshIndexes[i] = new MeshIndexes();
-                    //Debug.Log($"quad{i+1}:{quadPointer.HexAddress}");
+                    //DebugConsole.Log($"quad{i+1}:{quadPointer.HexAddress}");
                     reader.JumpToAddress(quadPointer);
                     reader.ReadX(ref quadMeshIndexes[i], false);
                 }
@@ -103,8 +103,8 @@ namespace GameCube.GFZ.CourseCollision
                 int numQuadVerts = 0;
                 for (int i = 0; i < countSurfaceTypes; i++)
                 {
-                    numTriVerts = Mathf.Max(triMeshIndexes[i].largestIndex, numTriVerts);
-                    numQuadVerts = Mathf.Max(quadMeshIndexes[i].largestIndex, numQuadVerts);
+                    numTriVerts = math.max(triMeshIndexes[i].largestIndex, numTriVerts);
+                    numQuadVerts = math.max(quadMeshIndexes[i].largestIndex, numQuadVerts);
                 }
 
                 reader.JumpToAddress(collisionTrisPtr);

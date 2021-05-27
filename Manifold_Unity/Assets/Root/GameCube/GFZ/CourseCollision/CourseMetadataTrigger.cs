@@ -1,19 +1,19 @@
 using Manifold.IO;
 using System;
 using System.IO;
-using UnityEngine;
+using Unity.Mathematics;
 
 namespace GameCube.GFZ.CourseCollision
 {
     [Serializable]
     public class CourseMetadataTrigger : IBinarySerializable, IBinaryAddressableRange
     {
-        [SerializeField]
+        [UnityEngine.SerializeField]
         private AddressRange addressRange;
 
-        public Vector3 position;
+        public float3 position;
         public Int16Rotation3 shortRotation3;
-        public Vector3 positionOrScale;
+        public float3 positionOrScale;
         public CourseMetadataType course;
 
         //
@@ -23,33 +23,33 @@ namespace GameCube.GFZ.CourseCollision
             set => addressRange = value;
         }
 
-        public Vector3 PositionFrom
+        public float3 PositionFrom
         {
             get => position;
         }
 
-        public Vector3 PositionTo
+        public float3 PositionTo
         {
             get => positionOrScale;
         }
 
-        public Vector3 Scale
+        public float3 Scale
         {
             get => positionOrScale;
         }
 
-        public Vector3 PositionFromX
+        public float3 PositionFromX
         {
-            get => new Vector3(-position.x, position.y, position.z);
+            get => new float3(-position.x, position.y, position.z);
         }
 
-        public Vector3 PositionToX
+        public float3 PositionToX
         {
-            get => new Vector3(-positionOrScale.x, positionOrScale.y, positionOrScale.z);
+            get => new float3(-positionOrScale.x, positionOrScale.y, positionOrScale.z);
         }
 
-        public Quaternion Rotation => shortRotation3.Rotation;
-        public Vector3 RotationEuler => shortRotation3.EulerAngles;
+        public quaternion Rotation => shortRotation3.Rotation;
+        public float3 RotationEuler => shortRotation3.EulerAngles;
 
         public void Deserialize(BinaryReader reader)
         {

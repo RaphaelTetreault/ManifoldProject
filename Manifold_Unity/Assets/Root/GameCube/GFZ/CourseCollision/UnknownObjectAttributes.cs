@@ -2,7 +2,7 @@
 using System;
 using System.IO;
 using System.Text;
-using UnityEngine;
+using Unity.Mathematics;
 
 namespace GameCube.GFZ.CourseCollision
 {
@@ -13,7 +13,7 @@ namespace GameCube.GFZ.CourseCollision
         #region FIELDS
 
 
-        [SerializeField]
+        [UnityEngine.SerializeField]
         private AddressRange addressRange;
         public string name;
 

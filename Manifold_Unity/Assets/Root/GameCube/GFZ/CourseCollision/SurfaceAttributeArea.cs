@@ -1,7 +1,7 @@
 using Manifold.IO;
 using System;
 using System.IO;
-using UnityEngine;
+using Unity.Mathematics;
 
 namespace GameCube.GFZ.CourseCollision
 {
@@ -12,7 +12,7 @@ namespace GameCube.GFZ.CourseCollision
         #region FIELDS
 
 
-        [SerializeField]
+        [UnityEngine.SerializeField]
         private AddressRange addressRange;
 
         public float lengthFrom;
@@ -21,9 +21,7 @@ namespace GameCube.GFZ.CourseCollision
         public float widthRight;
         public SurfaceAttribute surfaceAttribute;
         public byte trackBranchID;
-        [HideInInspector]
         public byte zero_0x12;
-        [HideInInspector]
         public byte zero_0x13;
 
 
@@ -57,8 +55,8 @@ namespace GameCube.GFZ.CourseCollision
             reader.ReadX(ref zero_0x13);
             this.RecordEndAddress(reader);
 
-            System.Diagnostics.Debug.Assert(zero_0x12 == 0);
-            System.Diagnostics.Debug.Assert(zero_0x13 == 0);
+            Assert.IsTrue(zero_0x12 == 0);
+            Assert.IsTrue(zero_0x13 == 0);
         }
 
         public void Serialize(BinaryWriter writer)

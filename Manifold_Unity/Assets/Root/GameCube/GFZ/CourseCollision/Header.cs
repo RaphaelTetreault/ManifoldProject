@@ -1,7 +1,7 @@
 ﻿using Manifold.IO;
 using System;
 using System.IO;
-using UnityEngine;
+using Unity.Mathematics;
 
 namespace GameCube.GFZ.CourseCollision
 {
@@ -13,9 +13,9 @@ namespace GameCube.GFZ.CourseCollision
         public const int kSizeOfZero0xD8 = 0x10;
 
         // metadata
-        [SerializeField]
+        [UnityEngine.SerializeField]
         private bool isFileAX;
-        [SerializeField]
+        [UnityEngine.SerializeField]
         private bool isFileGX;
 
         // structure

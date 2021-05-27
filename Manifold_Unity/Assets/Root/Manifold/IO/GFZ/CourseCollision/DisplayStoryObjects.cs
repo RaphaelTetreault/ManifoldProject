@@ -1,4 +1,5 @@
 using UnityEngine;
+using Unity.Mathematics;
 
 namespace Manifold.IO.GFZ.CourseCollision
 {
@@ -14,8 +15,6 @@ namespace Manifold.IO.GFZ.CourseCollision
             set => sceneSobj = value;
         }
 
-
-
         private void OnDrawGizmos()
         {
             var mesh = Resources.GetBuiltinResource<Mesh>("Cube.fbx");
@@ -26,12 +25,12 @@ namespace Manifold.IO.GFZ.CourseCollision
                 if (item.Difficulty == 0)
                 {
                     Gizmos.color = Color.green;
-                    scale += Vector3.one * size;
+                    scale += new float3(size, size, size);
                 }
                 else if (item.Difficulty == 1)
                 {
                     Gizmos.color = Color.yellow;
-                    scale += Vector3.one * size / 2f;
+                    scale += new float3(size, size, size) / 2f;
                 }
                 else if (item.Difficulty == 2)
                 {

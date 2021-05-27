@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using Unity.Mathematics;
 
 namespace Manifold.IO.GFZ.CourseCollision
 {
@@ -455,30 +456,30 @@ namespace Manifold.IO.GFZ.CourseCollision
                 subgroup.transform.parent = parent.transform;
 
                 var topology = tt.trackTopology;
-                Vector3 timeScale = new Vector3(
+                float3 timeScale = new float3(
                     GetCurveTime(topology.curves[0]),
                     GetCurveTime(topology.curves[1]),
                     GetCurveTime(topology.curves[2]));
-                Vector3 timeRotation = new Vector3(
+                float3 timeRotation = new float3(
                     GetCurveTime(topology.curves[3]),
                     GetCurveTime(topology.curves[4]),
                     GetCurveTime(topology.curves[5]));
-                Vector3 timePosition = new Vector3(
+                float3 timePosition = new float3(
                     GetCurveTime(topology.curves[6]),
                     GetCurveTime(topology.curves[7]),
                     GetCurveTime(topology.curves[8]));
 
                 for (float t = 0f; t < 1f; t += increment)
                 {
-                    Vector3 scale = new Vector3(
+                    float3 scale = new float3(
                         topology.curves[0].EvaluateDefault(t * timeScale.x, 1),
                         topology.curves[1].EvaluateDefault(t * timeScale.y, 1),
                         topology.curves[2].EvaluateDefault(t * timeScale.z, 1));
-                    Vector3 rotation = new Vector3(
+                    float3 rotation = new float3(
                         topology.curves[3].EvaluateDefault(t * timeRotation.x, 0),
                         topology.curves[4].EvaluateDefault(t * timeRotation.y, 0),
                         topology.curves[5].EvaluateDefault(t * timeRotation.z, 0));
-                    Vector3 position = new Vector3(
+                    float3 position = new float3(
                         topology.curves[6].EvaluateDefault(t * timePosition.x, 0),
                         topology.curves[7].EvaluateDefault(t * timePosition.y, 0),
                         topology.curves[8].EvaluateDefault(t * timePosition.z, 0));
@@ -492,7 +493,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                     //cube.transform.localScale = scale.Multiply(tt.localScale);
                     cube.transform.position = position + tt.localPosition;
                     cube.transform.rotation = Quaternion.Euler(rotation + tt.localRotation);// + tt.localRotation);
-                    cube.transform.localScale = scale.Multiply(tt.localScale);
+                    cube.transform.localScale = scale * tt.localScale;
                 }
             }
         }
@@ -561,28 +562,28 @@ namespace Manifold.IO.GFZ.CourseCollision
         public Matrix4x4 GetAnimMatrix(TrackTransform trackTransform, float time)
         {
             var topology = trackTransform.trackTopology;
-            Vector3 timeScale = new Vector3(
+            float3 timeScale = new float3(
                 GetCurveTime(topology.curves[0]),
                 GetCurveTime(topology.curves[1]),
                 GetCurveTime(topology.curves[2]));
-            Vector3 timeRotation = new Vector3(
+            float3 timeRotation = new float3(
                 GetCurveTime(topology.curves[3]),
                 GetCurveTime(topology.curves[4]),
                 GetCurveTime(topology.curves[5]));
-            Vector3 timePosition = new Vector3(
+            float3 timePosition = new float3(
                 GetCurveTime(topology.curves[6]),
                 GetCurveTime(topology.curves[7]),
                 GetCurveTime(topology.curves[8]));
 
-            Vector3 scale = new Vector3(
+            float3 scale = new float3(
                 topology.curves[0].EvaluateDefault(time * timeScale.x, 1),
                 topology.curves[1].EvaluateDefault(time * timeScale.y, 1),
                 topology.curves[2].EvaluateDefault(time * timeScale.z, 1));
-            Vector3 rotation = new Vector3(
+            float3 rotation = new float3(
                 topology.curves[3].EvaluateDefault(time * timeRotation.x, 0),
                 topology.curves[4].EvaluateDefault(time * timeRotation.y, 0),
                 topology.curves[5].EvaluateDefault(time * timeRotation.z, 0));
-            Vector3 position = new Vector3(
+            float3 position = new float3(
                 topology.curves[6].EvaluateDefault(time * timePosition.x, 0),
                 topology.curves[7].EvaluateDefault(time * timePosition.y, 0),
                 topology.curves[8].EvaluateDefault(time * timePosition.z, 0));

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Unity.Mathematics;
 using UnityEngine;
 
 
@@ -13,7 +14,7 @@ namespace GameCube.GFZ.CourseCollision
 
         public const int kCurveCount = 9;
 
-        [SerializeField]
+        [UnityEngine.SerializeField]
         private AddressRange addressRange;
 
         public ArrayPointer2D curvePtrs2D = new ArrayPointer2D(kCurveCount);
@@ -123,7 +124,7 @@ namespace GameCube.GFZ.CourseCollision
                 }
 
                 // Re-assign new list to used parameters
-                Debug.Log($"Removed duplicate keyframe times! Total: {removeIndexes.Count}");
+                DebugConsole.Log($"Removed duplicate keyframe times! Total: {removeIndexes.Count}");
                 keyables = uniqueKeyframeTimes.ToArray();
             }
 

@@ -1,7 +1,7 @@
 ﻿using Manifold.IO;
 using System;
 using System.IO;
-using UnityEngine;
+using Unity.Mathematics;
 
 namespace GameCube.GFZ.CourseCollision
 {
@@ -9,7 +9,7 @@ namespace GameCube.GFZ.CourseCollision
     public struct UnknownSceneObjectFloatPair : IBinarySerializable, IBinaryAddressableRange
     {
 
-        [SerializeField]
+        [UnityEngine.SerializeField]
         private AddressRange addressRange;
 
         public float unk_0x00;

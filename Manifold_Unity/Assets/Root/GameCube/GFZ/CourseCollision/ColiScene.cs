@@ -2,7 +2,7 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
-using UnityEngine;
+using Unity.Mathematics;
 
 namespace GameCube.GFZ.CourseCollision
 {
@@ -12,9 +12,9 @@ namespace GameCube.GFZ.CourseCollision
         private const int unknownData_0x20_count = 5;
 
         // metadata
-        [SerializeField]
+        [UnityEngine.SerializeField]
         private int id;
-        [SerializeField]
+        [UnityEngine.SerializeField]
         private string name;
 
         //
@@ -56,7 +56,7 @@ namespace GameCube.GFZ.CourseCollision
         {
             BinaryIoUtility.PushEndianess(false);
 
-            Debug.Log(FileName);
+            DebugConsole.Log(FileName);
 
             // Store the stage index, can solve venue and course name from this
             var matchDigits = System.Text.RegularExpressions.Regex.Match(FileName, @"\d+");

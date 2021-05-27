@@ -28,11 +28,11 @@ namespace GameCube.GFZ.CourseCollision
         //public float unk_0x2C; // range: -1976. to +3068. // rotation...?
 
         // Is transform 3x4?
-        //public Vector3 xNormal;
+        //public float3 xNormal;
         //public float x;
-        //public Vector3 yNormal;
+        //public float3 yNormal;
         //public float y;
-        //public Vector3 zNormal;
+        //public float3 zNormal;
         //public float z;
         //public Matrix4x4 matrix;
 

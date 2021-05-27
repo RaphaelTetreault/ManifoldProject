@@ -1,7 +1,7 @@
 ﻿using Manifold.IO;
 using System;
 using System.IO;
-using UnityEngine;
+using Unity.Mathematics;
 
 namespace GameCube.GFZ.CourseCollision
 {
@@ -11,22 +11,22 @@ namespace GameCube.GFZ.CourseCollision
 
         #region FIELDS
 
-        [SerializeField]
+        [UnityEngine.SerializeField]
         private AddressRange addressRange;
 
         // Normal's quaternion rotation theta? https://en.wikipedia.org/wiki/Quaternions_and_spatial_rotation#Using_quaternion_as_rotations
         // Value range: -3613.961 through 3595.046, avg: -11 (basically 0)
         // Could possibly be "bounding sphere" radius/diameter from avg of all positions?
         public float unk_0x00;
-        public Vector3 normal;
-        public Vector3 vertex0;
-        public Vector3 vertex1;
-        public Vector3 vertex2;
-        public Vector3 vertex3;
-        public Vector3 precomputed0;
-        public Vector3 precomputed1;
-        public Vector3 precomputed2;
-        public Vector3 precomputed3;
+        public float3 normal;
+        public float3 vertex0;
+        public float3 vertex1;
+        public float3 vertex2;
+        public float3 vertex3;
+        public float3 precomputed0;
+        public float3 precomputed1;
+        public float3 precomputed2;
+        public float3 precomputed3;
 
 
         #endregion

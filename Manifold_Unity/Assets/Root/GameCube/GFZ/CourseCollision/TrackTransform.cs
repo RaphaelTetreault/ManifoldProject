@@ -1,30 +1,17 @@
 ﻿using Manifold.IO;
 using System;
 using System.IO;
-using UnityEngine;
+using Unity.Mathematics;
 
 namespace GameCube.GFZ.CourseCollision
 {
     [Serializable]
     public class TrackTransform : IBinarySerializable, IBinaryAddressableRange
     {
-
-        public enum TrackUnkOption2 : uint
-        {
-            option_0,
-            option_1,
-            option_2,
-            option_3,
-            option_4,
-        }
-
-        #region FIELDS
-
-
         public const byte kStructureSize = 0x50;
         public const byte kHasChildren = 0x0C;
 
-        [SerializeField]
+        [UnityEngine.SerializeField]
         private AddressRange addressRange;
 
         
@@ -35,9 +22,9 @@ namespace GameCube.GFZ.CourseCollision
         public Pointer generalTopologyPtr;
         public Pointer hairpinCornerTopologyPtr;
         public ArrayPointer childrenPtrs;
-        public Vector3 localScale;
-        public Vector3 localRotation;
-        public Vector3 localPosition;
+        public float3 localScale;
+        public float3 localRotation;
+        public float3 localPosition;
         [NumFormat(format0: "{0}", numDigits: 8, numBase: 2)]
         public byte unk_0x38; // mixed flags
         [NumFormat(format0: "{0}", numDigits: 8, numBase: 2)]
@@ -57,14 +44,10 @@ namespace GameCube.GFZ.CourseCollision
         public TrackTransform[] children = new TrackTransform[0];
 
         // metadata
-        public Matrix4x4 localMatrix;
-        public Matrix4x4 worldMatrix;
+        public float4x4 localMatrix;
+        public float4x4 worldMatrix;
         public int depth;
         public TrackTransform parent;
-
-        #endregion
-
-        #region PROPERTIES
 
 
         public AddressRange AddressRange
@@ -72,12 +55,6 @@ namespace GameCube.GFZ.CourseCollision
             get => addressRange;
             set => addressRange = value;
         }
-
-
-        #endregion
-
-        #region METHODS
-
 
         public void Deserialize(BinaryReader reader)
         {
@@ -117,7 +94,8 @@ namespace GameCube.GFZ.CourseCollision
                 }
 
                 // Create a matrix for convinience
-                localMatrix.SetTRS(localPosition, Quaternion.Euler(localRotation), localScale);
+                localMatrix = float4x4.TRS(localPosition, quaternion.EulerXYZ(localRotation), localScale);
+                // Update values based on children
                 worldMatrix = localMatrix;
 
                 // Read children recusively
@@ -181,9 +159,6 @@ namespace GameCube.GFZ.CourseCollision
             // HEY! Implement those pointers.
             throw new NotImplementedException();
         }
-
-
-        #endregion
 
     }
 }

@@ -1,7 +1,7 @@
 ﻿using Manifold.IO;
 using System;
 using System.IO;
-using UnityEngine;
+using Unity.Mathematics;
 
 namespace GameCube.GFZ.CourseCollision
 {
@@ -12,19 +12,19 @@ namespace GameCube.GFZ.CourseCollision
         #region FIELDS
 
 
-        [SerializeField]
+        [UnityEngine.SerializeField]
         private AddressRange addressRange;
 
         public float unk_0x00;
         public float unk_0x04;
         // Make Struct?
         public float trackDistanceStart;
-        public Vector3 tangentStart;
-        public Vector3 positionStart;
+        public float3 tangentStart;
+        public float3 positionStart;
         // Make Struct?
         public float trackDistanceEnd;
-        public Vector3 tangentEnd;
-        public Vector3 positionEnd;
+        public float3 tangentEnd;
+        public float3 positionEnd;
         //
         public float transformDistanceEnd;
         public float transformDistanceStart;
