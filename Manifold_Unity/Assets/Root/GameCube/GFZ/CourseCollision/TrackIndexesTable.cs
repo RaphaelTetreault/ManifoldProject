@@ -6,36 +6,25 @@ namespace GameCube.GFZ.CourseCollision
 {
     public class TrackIndexesTable : IBinarySerializable, IBinaryAddressableRange
     {
-
-        #region FIELDS
-
-
+        // Constants
         public const int kNumEntries = 64;
 
+        // Metadata
         [SerializeField]
         private AddressRange addressRange;
 
+        // Fields
         public Pointer[] trackIndexesPtrs = new Pointer[0];
         public TrackIndexes[] trackIndexArray = new TrackIndexes[0];
 
-
-        #endregion
-
-        #region PROPERTIES
-
-
+        // Properties
         public AddressRange AddressRange
         {
             get => addressRange;
             set => addressRange = value;
         }
 
-
-        #endregion
-
-        #region METHODS
-
-
+        // Methods
         public void Deserialize(BinaryReader reader)
         {
             this.RecordStartAddress(reader);
@@ -66,9 +55,6 @@ namespace GameCube.GFZ.CourseCollision
         {
             throw new System.NotImplementedException();
         }
-
-
-        #endregion
 
     }
 }

@@ -11,7 +11,12 @@ namespace GameCube.GFZ.CourseCollision
         dirt,
         damage,
         outOfBounds,
-        deathNoDestroy, //Insta-Kill Collider. In AX, it would kill you but you'd skip/recochet off of it
+        /// <summary>
+        /// Used to tag ground collider such as Sand Ocean sand.
+        /// GX behaviour: instant kill.
+        /// AX behaviour: Health set to 0, vehicle bounces of of it as if wall.
+        /// </summary>
+        deathGround,
         death1,
         death2,
         death3,

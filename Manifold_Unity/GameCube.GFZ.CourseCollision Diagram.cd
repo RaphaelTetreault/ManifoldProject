@@ -1,0 +1,467 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="GameCube.GFZ.CourseCollision.VisualEffectTrigger" BaseTypeListCollapsed="true">
+    <Position X="47.75" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAEABAABAAAAAAAAAIAAACBEAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\CourseCollision\VisualEffectTrigger.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="GameCube.GFZ.CourseCollision.AnimationClip" BaseTypeListCollapsed="true">
+    <Position X="0.5" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQgAAEAAAABAAAAAAAAAAAEACBAAEFAAAAIAAAAAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\CourseCollision\AnimationClip.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="GameCube.GFZ.CourseCollision.AnimationCurve" BaseTypeListCollapsed="true">
+    <Position X="2.25" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAEABAABAAAAAAAAAAAGACBAAAAAAAAAAAAQAAQ=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\CourseCollision\AnimationCurve.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="GameCube.GFZ.CourseCollision.ArcadeCheckpointTrigger" BaseTypeListCollapsed="true">
+    <Position X="4" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAEAAAABAAAAAAAAAAAAACBFAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\CourseCollision\ArcadeCheckpointTrigger.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="GameCube.GFZ.CourseCollision.ColiCourseUtility">
+    <Position X="46" Y="10.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACAAAAAAAAAAAAAAAAAAoIBQAAAAAAAAAAAAAAABAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\CourseCollision\ColiCourseUtility.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GameCube.GFZ.CourseCollision.ColiScene" BaseTypeListCollapsed="true">
+    <Position X="5.75" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQICAQBQgBAgAAACAAAQAAAACBEAEAAABAAjgFICoA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\CourseCollision\ColiScene.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="GameCube.GFZ.CourseCollision.ColliderGeometry" BaseTypeListCollapsed="true">
+    <Position X="7.5" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAwAAAEABAAhACAAAAQAgAAHACBAAAAAAAQAAAAAAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\CourseCollision\ColliderGeometry.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="GameCube.GFZ.CourseCollision.ColliderObject" BaseTypeListCollapsed="true">
+    <Position X="9.25" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAQAAAEAAAhBAAABAAAAAAAEACBAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\CourseCollision\ColliderObject.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="GameCube.GFZ.CourseCollision.ColliderQuad" BaseTypeListCollapsed="true">
+    <Position X="11" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAHgAQABAAAAAAAAAAgAACBAAAAAAAABAAAAAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\CourseCollision\ColliderQuad.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="GameCube.GFZ.CourseCollision.ColliderTriangle" BaseTypeListCollapsed="true">
+    <Position X="12.75" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAHAAQABAAAAAAAAAAgAACBAAAAAAEABAAAAAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\CourseCollision\ColliderTriangle.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="GameCube.GFZ.CourseCollision.CourseMetadataTrigger" BaseTypeListCollapsed="true">
+    <Position X="14.5" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAEAAAARgIAAAAIAIAAAQCBAEAAAAAAAEAAAIAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\CourseCollision\CourseMetadataTrigger.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="GameCube.GFZ.CourseCollision.Header" BaseTypeListCollapsed="true">
+    <Position X="16.25" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AgYCAAjQCEBQAwAgAACgQABQACBQAMAAAgQABkUAAoA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\CourseCollision\Header.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="GameCube.GFZ.CourseCollision.KeyableAttribute" BaseTypeListCollapsed="true">
+    <Position X="18" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAABAQEAAAABAAAAAAAAAAAAACBAACAAAAAAACgAAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\CourseCollision\KeyableAttribute.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="GameCube.GFZ.CourseCollision.MeshIndexes" BaseTypeListCollapsed="true">
+    <Position X="19.75" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAgAEAAAABAAAAAAAAAAAAACBgAAAAQAAAAAIAAAI=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\CourseCollision\MeshIndexes.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="GameCube.GFZ.CourseCollision.SceneObject" BaseTypeListCollapsed="true">
+    <Position X="21.5" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAMABEEAAAABAAAAAAFAGMAAACBEAAAAAQAAABAACAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\CourseCollision\SceneObject.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="GameCube.GFZ.CourseCollision.SkeletalAnimator" BaseTypeListCollapsed="true">
+    <Position X="23.25" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAIAAAEAAAABAAAAAAAAAIAAACBAAAAAABAIAAAAAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\CourseCollision\SkeletalAnimator.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="GameCube.GFZ.CourseCollision.SkeletalProperties" BaseTypeListCollapsed="true">
+    <Position X="25" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAEABAABAAAAAAAAAAAEBCBAAAAAAAAIAAAAAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\CourseCollision\SkeletalProperties.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="GameCube.GFZ.CourseCollision.StaticMeshTable" BaseTypeListCollapsed="true">
+    <Position X="26.75" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAUAEAAAiBAASAAACABAAAACDgBEECAAAAAABAAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\CourseCollision\StaticMeshTable.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="GameCube.GFZ.CourseCollision.StoryObjectTrigger" BaseTypeListCollapsed="true">
+    <Position X="28.5" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAEAAEAAAABEQAAAACAIAQCACBAACAAAAQIACAQAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\CourseCollision\StoryObjectTrigger.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="GameCube.GFZ.CourseCollision.SurfaceAttributeArea" BaseTypeListCollapsed="true">
+    <Position X="30.25" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CAAAAAEAAAABBAAAAAAAAAAABCDAAAAAACABAAAAAIA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\CourseCollision\SurfaceAttributeArea.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="GameCube.GFZ.CourseCollision.TopologyParameters" BaseTypeListCollapsed="true">
+    <Position X="32" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAkAIAABAAAIAAAAAAAAQCDAAAAAAAAAAUAAAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\CourseCollision\TopologyParameters.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="GameCube.GFZ.CourseCollision.TrackCornerTopology" BaseTypeListCollapsed="true">
+    <Position X="33.75" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BAAAAAEAAAABAAAAAAABAAAAACBQAAAAAEAAAAAAAgA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\CourseCollision\TrackCornerTopology.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="GameCube.GFZ.CourseCollision.TrackIndexes" BaseTypeListCollapsed="true">
+    <Position X="35.5" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAEAAAABAAAAAAAAAAAAACBAAAAAAAAAAAAAAAI=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\CourseCollision\TrackIndexes.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="GameCube.GFZ.CourseCollision.TrackIndexesTable" BaseTypeListCollapsed="true">
+    <Position X="37.25" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAEAAAABAAAAAAAAAABQACBAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\CourseCollision\TrackIndexesTable.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="GameCube.GFZ.CourseCollision.TrackNode" BaseTypeListCollapsed="true">
+    <Position X="39" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAGAAAABAAAAAABAAAAAACBMAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\CourseCollision\TrackNode.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="GameCube.GFZ.CourseCollision.TrackPoint" BaseTypeListCollapsed="true">
+    <Position X="40.75" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAGAAAEBAAAgIAEAAAAMACVIAABAAgAAAAAAAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\CourseCollision\TrackPoint.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="GameCube.GFZ.CourseCollision.TrackTransform" BaseTypeListCollapsed="true">
+    <Position X="42.5" Y="0.75" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Enum Name="GameCube.GFZ.CourseCollision.TrackTransform.TrackUnkOption2" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Assets\Root\GameCube\GFZ\CourseCollision\TrackTransform.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAIAEAEAIkABAARAwAgBABEgACDAAESAAgAAIgICgAQ=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\CourseCollision\TrackTransform.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="GameCube.GFZ.CourseCollision.Transform" BaseTypeListCollapsed="true">
+    <Position X="44.25" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAFAAAABAIAgAAIAIABCQCBAAAAAAAAQAAQAEEA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\CourseCollision\Transform.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="GameCube.GFZ.CourseCollision.TransformMatrix3x4" BaseTypeListCollapsed="true">
+    <Position X="46" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAEAAAABAIAgAAIAACAAQCBgAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\CourseCollision\TransformMatrix3x4.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="GameCube.GFZ.CourseCollision.UnknownObjectAttributes" BaseTypeListCollapsed="true">
+    <Position X="49.5" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAEABAABAAAAAAAAAAACACBFAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\CourseCollision\UnknownObjectAttributes.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="GameCube.GFZ.CourseCollision.UnknownObjectAttributes2" BaseTypeListCollapsed="true">
+    <Position X="51.25" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAEAAAABAAAAAAAAAAAgACBAAAAAAAAAAAAAAIA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\CourseCollision\UnknownObjectAttributes2.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="GameCube.GFZ.CourseCollision.UnknownSceneObjectData" BaseTypeListCollapsed="true">
+    <Position X="53" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAIgEAAAABAAAAAAAAAAAAACBAQAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\CourseCollision\UnknownSceneObjectData.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="GameCube.GFZ.CourseCollision.UnknownStageData1" BaseTypeListCollapsed="true">
+    <Position X="54.75" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAYAAAEACAABAAAAAAAAAAAGBCBAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\CourseCollision\UnknownStageData1.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="GameCube.GFZ.CourseCollision.UnknownStageData2" BaseTypeListCollapsed="true">
+    <Position X="56.5" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAEAQAABAAAAAAAAAAAAACBAAAABAAACAAAAAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\CourseCollision\UnknownStageData2.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="GameCube.GFZ.CourseCollision.UnknownTrigger1" BaseTypeListCollapsed="true">
+    <Position X="58.25" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABAAAAEAAAABAAAAAAAAAAAAACBEAAAAAABAAAAAAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\CourseCollision\UnknownTrigger1.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Struct Name="GameCube.GFZ.CourseCollision.ColiUnknownStruct1" BaseTypeListCollapsed="true">
+    <Position X="0.5" Y="10.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAwAAAAABAAAAAAAAAAAAAAGACBAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\CourseCollision\ColiUnknownStruct1.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Struct>
+  <Struct Name="GameCube.GFZ.CourseCollision.LevelOfDetailRadius" BaseTypeListCollapsed="true">
+    <Position X="2.25" Y="10.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAACAAAAABAAAAAAAAAACBAAABAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\CourseCollision\LevelOfDetailRadius.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Struct>
+  <Struct Name="GameCube.GFZ.CourseCollision.TrackLength" BaseTypeListCollapsed="true">
+    <Position X="4" Y="10.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAEAAAABAAAAAAAAAAAAACBAAAAAAAAACAAAAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\CourseCollision\TrackLength.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Struct>
+  <Struct Name="GameCube.GFZ.CourseCollision.UnknownFloatPair" BaseTypeListCollapsed="true">
+    <Position X="5.75" Y="10.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAACBAAAAgAQAAAAAAAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\CourseCollision\UnknownFloatPair.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Struct>
+  <Struct Name="GameCube.GFZ.CourseCollision.UnknownSceneObjectFloatPair" BaseTypeListCollapsed="true">
+    <Position X="7.5" Y="10.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAEAAAABAAAAAAAAAAAEACBAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\CourseCollision\UnknownSceneObjectFloatPair.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Struct>
+  <Struct Name="GameCube.GFZ.CourseCollision.UnknownTrigger2" BaseTypeListCollapsed="true">
+    <Position X="9.25" Y="10.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAAAAAAAAAAACBEAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\CourseCollision\UnknownTrigger2.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Struct>
+  <Enum Name="GameCube.GFZ.CourseCollision.ArcadeCheckpointType">
+    <Position X="12.75" Y="10.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAACAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\CourseCollision\ArcadeCheckpointType.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GameCube.GFZ.CourseCollision.Bool32">
+    <Position X="14.5" Y="10.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\CourseCollision\Bool32.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GameCube.GFZ.CourseCollision.BoostPadsActive">
+    <Position X="16.25" Y="10.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAIAAAACAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\CourseCollision\BoostPadsActive.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GameCube.GFZ.CourseCollision.CircuitType">
+    <Position X="18" Y="10.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAABAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\CourseCollision\CircuitType.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GameCube.GFZ.CourseCollision.CollisionProperty">
+    <Position X="19.75" Y="10.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAIAAAAAAgAAAAAAIAEAAAABAAAAAAQABAAAAgAgAgA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\CourseCollision\CollisionProperty.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GameCube.GFZ.CourseCollision.CourseMetadataType">
+    <Position X="21.5" Y="10.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAQEAAAAAAAAAAEAAAAAAAABAAAAAAAABAAAAAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\CourseCollision\CourseMetadataType.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GameCube.GFZ.CourseCollision.InterpolationMode">
+    <Position X="23.25" Y="10.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAgAAAAAAAAAAAAAAAAAAAAAAgCAAAAAAQAAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\CourseCollision\InterpolationMode.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GameCube.GFZ.CourseCollision.ObjectActiveOverride">
+    <Position X="25" Y="10.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAggAAABAAAAAAAAAAAAAAAAAAAAAEAABA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\CourseCollision\ObjectActiveOverride.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GameCube.GFZ.CourseCollision.StaticMeshColliderProperty">
+    <Position X="26.75" Y="10.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BABCAAAAIAAAgCAAAABAAAABAAAAAAAAAAAEIAAAAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\CourseCollision\StaticMeshColliderProperty.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GameCube.GFZ.CourseCollision.SurfaceAttribute">
+    <Position X="28.5" Y="10.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAACAAAAAAAAAAEAACAAAMYJAAAAAAAAAAAIAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\CourseCollision\SurfaceAttribute.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GameCube.GFZ.CourseCollision.TrackPerimeterOptions">
+    <Position X="30.25" Y="10.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAABAgAAAAAAAAAAAAAAAAAAAQQEAAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\CourseCollision\TrackPerimeterOptions.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GameCube.GFZ.CourseCollision.TrackPipeCylinderOptions">
+    <Position X="32" Y="10.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\CourseCollision\TrackPipeCylinderOptions.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GameCube.GFZ.CourseCollision.TrackProperty">
+    <Position X="33.75" Y="10.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAAEAAAAAAAAAAAIIAAAAAAACgAIAAAAAAAAAAEAAAI=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\CourseCollision\TrackProperty.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GameCube.GFZ.CourseCollision.TrackTopologyMetadata">
+    <Position X="35.5" Y="10.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAACIAAAIAAAAAAAAABAAAAAAAAAIAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\CourseCollision\TrackTopologyMetadata.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GameCube.GFZ.CourseCollision.TriggerableAnimation">
+    <Position X="37.25" Y="10.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAYDAAAYBAIAAAAMAgAAAAAAAwAAAAAAAAAQDAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\CourseCollision\TriggerableAnimation.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GameCube.GFZ.CourseCollision.TriggerableVisualEffect">
+    <Position X="39" Y="10.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAIIAACBAEAAAAAAAAQABAAAkCAAIAAAAAIAAAAQ=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\CourseCollision\TriggerableVisualEffect.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GameCube.GFZ.CourseCollision.UnknownStageData1Enum">
+    <Position X="40.75" Y="10.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAACgAQAAAAAAAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\CourseCollision\UnknownStageData1Enum.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GameCube.GFZ.CourseCollision.UnknownTransformOption">
+    <Position X="42.5" Y="10.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\CourseCollision\UnknownTransformOption.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

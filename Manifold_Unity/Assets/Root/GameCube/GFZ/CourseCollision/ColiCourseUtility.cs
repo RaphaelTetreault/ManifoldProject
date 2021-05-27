@@ -10,6 +10,7 @@ namespace GameCube.GFZ.CourseCollision
         private const int kAxConst0x24 = 0xF8;
         private const int kGxConst0x20 = 0xE8;
         private const int kGxConst0x24 = 0xFC;
+        private const int kUshortArrayTerminator = 0xFFFF;
 
 
         public static bool IsFileAX(BinaryReader reader)
@@ -56,17 +57,23 @@ namespace GameCube.GFZ.CourseCollision
             var list = new List<ushort>();
             while (true)
             {
-                // Use CUSTOM read function
+                // Read next value
                 var value = reader.ReadX_UInt16();
-
-                if (value == 0xFFFF)
+                if (value == kUshortArrayTerminator)
                 {
                     break;
                 }
-
                 list.Add(value);
             }
             return list.ToArray();
+        }
+        public static void WriteUshortArray(BinaryWriter writer, IEnumerable<ushort> collection)
+        {
+            foreach (var value in collection)
+            {
+                writer.WriteX(value);
+            }
+            writer.WriteX(kUshortArrayTerminator);
         }
     }
 }

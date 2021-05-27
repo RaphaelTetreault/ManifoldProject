@@ -50,6 +50,10 @@ namespace GameCube.GFZ.CourseCollision
         {
             // AX/GX have different amounts of pointers to collision mesh data
             var isFileGX = ColiCourseUtility.IsFileGX(reader);
+            var isFileAX = ColiCourseUtility.IsFileAX(reader);
+            // Ensure file is valid. XOR file flags.
+            Assert.IsTrue(isFileAX ^ isFileGX);
+
             var countSurfaceTypes = isFileGX
                 ? kCountGxSurfaceTypes
                 : kCountAxSurfaceTypes;
