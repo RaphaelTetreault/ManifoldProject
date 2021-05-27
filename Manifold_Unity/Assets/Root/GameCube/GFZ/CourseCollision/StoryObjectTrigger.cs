@@ -27,7 +27,8 @@ namespace GameCube.GFZ.CourseCollision
         // FIELDS (deserialized from pointers)
         // NOTE: used in story 2, object's animation path when triggered? (likely)
         public ArrayPointer keyableArrayPtr;
-        public KeyableAttribute[] keyableAttributes;
+        public AnimationCurve animationCurve;
+        //public KeyableAttribute[] keyableAttributes;
 
 
         // PROPERTIES
@@ -76,8 +77,9 @@ namespace GameCube.GFZ.CourseCollision
                 reader.JumpToAddress(animationPathPtr);
                 reader.ReadX(ref keyableArrayPtr);
                 // Read array
+                animationCurve = new AnimationCurve(keyableArrayPtr.Length);
                 reader.JumpToAddress(keyableArrayPtr);
-                reader.ReadX(ref keyableAttributes, keyableArrayPtr.Length, true);
+                reader.ReadX(ref animationCurve, false);
             }
             this.SetReaderToEndAddress(reader);
         }

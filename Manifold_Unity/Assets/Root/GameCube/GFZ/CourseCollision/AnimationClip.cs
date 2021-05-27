@@ -33,7 +33,7 @@ namespace GameCube.GFZ.CourseCollision
         /// idx: 9: unused?
         /// idx: 10: light
         /// </summary>
-        public AnimationCurve[] animCurves;
+        public AnimationCurvePlus[] animCurves;
 
 
         // PROPERTIES

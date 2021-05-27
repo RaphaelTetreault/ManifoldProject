@@ -13,7 +13,7 @@ namespace GameCube.GFZ.CourseCollision
     public class UnknownStageData2 : IBinarySerializable, IBinaryAddressableRange
     {
         // CONSTANTS
-        public const int elementCount = 6;
+        public const int kElementCount = 6;
 
         // FIELDS
         [UnityEngine.SerializeField]
@@ -34,16 +34,16 @@ namespace GameCube.GFZ.CourseCollision
         //public KeyableAttribute[] keyableAttributes4;
         //public KeyableAttribute[] keyableAttributes5;
         //public KeyableAttribute[] keyableAttributes6;
-        public ArrayPointer[] unkAnimDataPtrs;
+        public ArrayPointer[] animationCurvePtrs;
         // needs to be Array2D<> or encapsulated class
-        public KeyableAttribute[][] unkAnimData = new KeyableAttribute[elementCount][];
+        //public KeyableAttribute[][] unkAnimData = new KeyableAttribute[kElementCount][];
+        public AnimationCurve[] animationCurves = new AnimationCurve[kElementCount];
 
         public UnknownStageData2()
         {
             // Initialize values so no null errors
-            unkAnimData = new KeyableAttribute[elementCount][];
-            for (int i = 0; i < unkAnimData.Length; i++)
-                unkAnimData[i] = new KeyableAttribute[0];
+            for (int i = 0; i < animationCurves.Length; i++)
+                animationCurves[i] = new AnimationCurve(0);
         }
 
 
@@ -61,17 +61,20 @@ namespace GameCube.GFZ.CourseCollision
             this.RecordStartAddress(reader);
             {
                 // read 6 array pointers
-                reader.ReadX(ref unkAnimDataPtrs, elementCount, true);
+                reader.ReadX(ref animationCurvePtrs, kElementCount, true);
             }
             this.RecordEndAddress(reader);
             {
                 // Go through each array pointer
-                for (int i = 0; i < unkAnimDataPtrs.Length; i++)
+                for (int i = 0; i < animationCurvePtrs.Length; i++)
                 {
-                    // load datae for "array" (though all have length == 0)
-                    var arrayPointer = unkAnimDataPtrs[i];
+                    var arrayPointer = animationCurvePtrs[i];
+                    var animationCurve = new AnimationCurve(arrayPointer.Length);
+
                     reader.JumpToAddress(arrayPointer);
-                    reader.ReadX(ref unkAnimData[i], arrayPointer.Length, true);
+                    reader.ReadX(ref animationCurve, false);
+
+                    animationCurves[i] = animationCurve;
                 }
             }
             this.SetReaderToEndAddress(reader);

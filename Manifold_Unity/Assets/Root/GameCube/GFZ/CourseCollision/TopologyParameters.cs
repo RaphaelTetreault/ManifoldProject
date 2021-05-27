@@ -24,11 +24,13 @@ namespace GameCube.GFZ.CourseCollision
         public ArrayPointer2D curvePtrs2D = new ArrayPointer2D(kCurveCount);
 
         // uhg, Unity can't serealize 2d arrays, so had to implement the following:
-        public Array2D<KeyableAttribute> keyablesArray2D = new Array2D<KeyableAttribute>();
+        //public Array2D<KeyableAttribute> keyablesArray2D = new Array2D<KeyableAttribute>();
         //public KeyableAttribute[][] keyablesArray2D = new KeyableAttribute[kCurveCount][];
 
+        public AnimationCurve[] animationCurves = new AnimationCurve[0];
+
         // At some point, maybe move out of class? Keep it vanilla for portability.
-        public UnityEngine.AnimationCurve[] curves = new UnityEngine.AnimationCurve[kCurveCount];
+        public UnityEngine.AnimationCurve[] unityCurves = new UnityEngine.AnimationCurve[kCurveCount];
 
 
         public AddressRange AddressRange
@@ -46,37 +48,43 @@ namespace GameCube.GFZ.CourseCollision
             }
             this.RecordEndAddress(reader);
             {
+                int arrayIndex = 0;
                 foreach (var arrayPointer in curvePtrs2D.ArrayPointers)
                 {
-                    var array = new KeyableAttribute[0];
                     if (arrayPointer.IsNotNullPointer)
                     {
+                        // Deserialization is a bit different. Init array length here.
+                        var animationCurve = new AnimationCurve(arrayPointer.Length);
+                        
+                        // Read values
                         reader.JumpToAddress(arrayPointer);
-                        reader.ReadX(ref array, arrayPointer.Length, true);
-                        //reader.ReadX(ref keyablesArray2D[index], arrayPointer.length, true);
+                        reader.ReadX(ref animationCurve, false); // do not create new instance
+
+                        // Assign curve to array
+                        animationCurves[arrayIndex] = animationCurve;
                     }
-                    keyablesArray2D.AppendArray(array);
+                    arrayIndex++;
                 }
             }
             // Convert to Unity
             {
                 // Convert from animation curves from Gfz to Unity formats
-                for (int i = 0; i < keyablesArray2D.Length; i++)
+                for (int i = 0; i < animationCurves.Length; i++)
                 {
-                    //var keyables = EnforceNoDuplicateTimes(keyablesArray2D[i]);
-                    var keyables = EnforceNoDuplicateTimes(keyablesArray2D.GetArray(i));
+                    var animationCurve = animationCurves[i];
+                    var keyables = EnforceNoDuplicateTimes(animationCurve.keyableAttributes);
                     var keyframes = KeyablesToKeyframes(keyables);
-                    curves[i] = new UnityEngine.AnimationCurve(keyframes);
+                    unityCurves[i] = new UnityEngine.AnimationCurve(keyframes);
 
                     // Disabling this makes the tangents work better...?
-                    SetGfzTangentsToUnityTangents(keyables, curves[i]);
+                    SetGfzTangentsToUnityTangents(keyables, unityCurves[i]);
 
                     // TEST - re-apply key values.
                     // Not being respected by Unity?
-                    for (int j = 0; j < curves[i].length; j++)
+                    for (int j = 0; j < unityCurves[i].length; j++)
                     {
-                        curves[i].keys[j].inTangent = keyframes[j].inTangent;
-                        curves[i].keys[j].outTangent = keyframes[j].outTangent;
+                        unityCurves[i].keys[j].inTangent = keyframes[j].inTangent;
+                        unityCurves[i].keys[j].outTangent = keyframes[j].outTangent;
                     }
                 }
             }

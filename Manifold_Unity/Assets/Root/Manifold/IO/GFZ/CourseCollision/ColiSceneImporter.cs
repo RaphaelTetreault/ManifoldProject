@@ -457,32 +457,32 @@ namespace Manifold.IO.GFZ.CourseCollision
 
                 var topology = tt.trackTopology;
                 float3 timeScale = new float3(
-                    GetCurveTime(topology.curves[0]),
-                    GetCurveTime(topology.curves[1]),
-                    GetCurveTime(topology.curves[2]));
+                    GetCurveTime(topology.unityCurves[0]),
+                    GetCurveTime(topology.unityCurves[1]),
+                    GetCurveTime(topology.unityCurves[2]));
                 float3 timeRotation = new float3(
-                    GetCurveTime(topology.curves[3]),
-                    GetCurveTime(topology.curves[4]),
-                    GetCurveTime(topology.curves[5]));
+                    GetCurveTime(topology.unityCurves[3]),
+                    GetCurveTime(topology.unityCurves[4]),
+                    GetCurveTime(topology.unityCurves[5]));
                 float3 timePosition = new float3(
-                    GetCurveTime(topology.curves[6]),
-                    GetCurveTime(topology.curves[7]),
-                    GetCurveTime(topology.curves[8]));
+                    GetCurveTime(topology.unityCurves[6]),
+                    GetCurveTime(topology.unityCurves[7]),
+                    GetCurveTime(topology.unityCurves[8]));
 
                 for (float t = 0f; t < 1f; t += increment)
                 {
                     float3 scale = new float3(
-                        topology.curves[0].EvaluateDefault(t * timeScale.x, 1),
-                        topology.curves[1].EvaluateDefault(t * timeScale.y, 1),
-                        topology.curves[2].EvaluateDefault(t * timeScale.z, 1));
+                        topology.unityCurves[0].EvaluateDefault(t * timeScale.x, 1),
+                        topology.unityCurves[1].EvaluateDefault(t * timeScale.y, 1),
+                        topology.unityCurves[2].EvaluateDefault(t * timeScale.z, 1));
                     float3 rotation = new float3(
-                        topology.curves[3].EvaluateDefault(t * timeRotation.x, 0),
-                        topology.curves[4].EvaluateDefault(t * timeRotation.y, 0),
-                        topology.curves[5].EvaluateDefault(t * timeRotation.z, 0));
+                        topology.unityCurves[3].EvaluateDefault(t * timeRotation.x, 0),
+                        topology.unityCurves[4].EvaluateDefault(t * timeRotation.y, 0),
+                        topology.unityCurves[5].EvaluateDefault(t * timeRotation.z, 0));
                     float3 position = new float3(
-                        topology.curves[6].EvaluateDefault(t * timePosition.x, 0),
-                        topology.curves[7].EvaluateDefault(t * timePosition.y, 0),
-                        topology.curves[8].EvaluateDefault(t * timePosition.z, 0));
+                        topology.unityCurves[6].EvaluateDefault(t * timePosition.x, 0),
+                        topology.unityCurves[7].EvaluateDefault(t * timePosition.y, 0),
+                        topology.unityCurves[8].EvaluateDefault(t * timePosition.z, 0));
 
                     var cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
                     cube.name = $"time {t:0.000}";
@@ -563,30 +563,30 @@ namespace Manifold.IO.GFZ.CourseCollision
         {
             var topology = trackTransform.trackTopology;
             float3 timeScale = new float3(
-                GetCurveTime(topology.curves[0]),
-                GetCurveTime(topology.curves[1]),
-                GetCurveTime(topology.curves[2]));
+                GetCurveTime(topology.unityCurves[0]),
+                GetCurveTime(topology.unityCurves[1]),
+                GetCurveTime(topology.unityCurves[2]));
             float3 timeRotation = new float3(
-                GetCurveTime(topology.curves[3]),
-                GetCurveTime(topology.curves[4]),
-                GetCurveTime(topology.curves[5]));
+                GetCurveTime(topology.unityCurves[3]),
+                GetCurveTime(topology.unityCurves[4]),
+                GetCurveTime(topology.unityCurves[5]));
             float3 timePosition = new float3(
-                GetCurveTime(topology.curves[6]),
-                GetCurveTime(topology.curves[7]),
-                GetCurveTime(topology.curves[8]));
+                GetCurveTime(topology.unityCurves[6]),
+                GetCurveTime(topology.unityCurves[7]),
+                GetCurveTime(topology.unityCurves[8]));
 
             float3 scale = new float3(
-                topology.curves[0].EvaluateDefault(time * timeScale.x, 1),
-                topology.curves[1].EvaluateDefault(time * timeScale.y, 1),
-                topology.curves[2].EvaluateDefault(time * timeScale.z, 1));
+                topology.unityCurves[0].EvaluateDefault(time * timeScale.x, 1),
+                topology.unityCurves[1].EvaluateDefault(time * timeScale.y, 1),
+                topology.unityCurves[2].EvaluateDefault(time * timeScale.z, 1));
             float3 rotation = new float3(
-                topology.curves[3].EvaluateDefault(time * timeRotation.x, 0),
-                topology.curves[4].EvaluateDefault(time * timeRotation.y, 0),
-                topology.curves[5].EvaluateDefault(time * timeRotation.z, 0));
+                topology.unityCurves[3].EvaluateDefault(time * timeRotation.x, 0),
+                topology.unityCurves[4].EvaluateDefault(time * timeRotation.y, 0),
+                topology.unityCurves[5].EvaluateDefault(time * timeRotation.z, 0));
             float3 position = new float3(
-                topology.curves[6].EvaluateDefault(time * timePosition.x, 0),
-                topology.curves[7].EvaluateDefault(time * timePosition.y, 0),
-                topology.curves[8].EvaluateDefault(time * timePosition.z, 0));
+                topology.unityCurves[6].EvaluateDefault(time * timePosition.x, 0),
+                topology.unityCurves[7].EvaluateDefault(time * timePosition.y, 0),
+                topology.unityCurves[8].EvaluateDefault(time * timePosition.z, 0));
 
             var animationMatrix = new Matrix4x4();
             animationMatrix.SetTRS(position, Quaternion.Euler(rotation), scale);

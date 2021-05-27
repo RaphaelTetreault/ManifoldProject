@@ -56,16 +56,16 @@ namespace Manifold.Conversion.GFZ.CourseCollision
             return unityAnimClip;
         }
 
-        public static void SetCurve(UnityEngine.AnimationClip unityClip, GameCube.GFZ.CourseCollision.AnimationCurve gfzCurve, Type type, string propertyName)
+        public static void SetCurve(UnityEngine.AnimationClip unityClip, AnimationCurvePlus gfzCurve, Type type, string propertyName)
         {
             // ignore empty anims
-            if (gfzCurve.keyableAttributes.Length == 0)
+            if (gfzCurve.animationCurve.Length == 0)
             {
                 return;
             }
 
             var curve = new UnityEngine.AnimationCurve();
-            foreach (var keyableAttribute in gfzCurve.keyableAttributes)
+            foreach (var keyableAttribute in gfzCurve.animationCurve.keyableAttributes)
             {
                 var time = keyableAttribute.time;
                 var value = keyableAttribute.value;

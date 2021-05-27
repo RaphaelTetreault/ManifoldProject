@@ -314,21 +314,21 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.Flush();
             }
         }
-        public void WriteTrackKeyableAttributeRecursive(StreamWriter writer, ColiSceneSobj sobj, int nestedDepth, int keyableSet, int trackTransformIndex, TrackTransform trackTransform)
+        public void WriteTrackKeyableAttributeRecursive(StreamWriter writer, ColiSceneSobj sobj, int nestedDepth, int animationCurveIndex, int trackTransformIndex, TrackTransform trackTransform)
         {
-            var keyables2D = trackTransform.trackTopology.keyablesArray2D.GetArrays();
+            var animationCurves = trackTransform.trackTopology.animationCurves;
             var keyableIndex = 1; // 0-n, depends on number of keyables in array
-            int keyableTotal = keyables2D[keyableSet].Length;
+            int keyableTotal = animationCurves[animationCurveIndex].Length;
 
             // Animation data of this curve
-            foreach (var keyables in keyables2D[keyableSet])
+            foreach (var keyables in animationCurves[animationCurveIndex].keyableAttributes)
             {
-                WriteKeyableAttribute(writer, sobj, nestedDepth + 1, keyableIndex++, keyableTotal, keyableSet, trackTransformIndex, keyables, trackTransform);
+                WriteKeyableAttribute(writer, sobj, nestedDepth + 1, keyableIndex++, keyableTotal, animationCurveIndex, trackTransformIndex, keyables, trackTransform);
             }
 
             // Go to track transform children, write their anim data (calls this function)
             foreach (var child in trackTransform.children)
-                WriteTrackKeyableAttributeRecursive(writer, sobj, nestedDepth + 1, keyableSet, trackTransformIndex, child);
+                WriteTrackKeyableAttributeRecursive(writer, sobj, nestedDepth + 1, animationCurveIndex, trackTransformIndex, child);
         }
         public void WriteKeyableAttribute(StreamWriter writer, ColiSceneSobj sobj, int nestedDepth, int keyableIndex, int keyableTotal, int keyablesSet, int trackTransformIndex, KeyableAttribute param, TrackTransform tt)
         {
@@ -524,14 +524,14 @@ namespace Manifold.IO.GFZ.CourseCollision
                             continue;
 
                         int animIndex = 0;
-                        foreach (var animationCurve in gameObject.animation.animCurves)
+                        foreach (var animationCurvePlus in gameObject.animation.animCurves)
                         {
-                            foreach (var keyable in animationCurve.keyableAttributes)
+                            foreach (var keyable in animationCurvePlus.animationCurve.keyableAttributes)
                             {
                                 writer.WriteNextCol(file.FileName);
                                 writer.WriteNextCol(gameObjectIndex);
                                 writer.WriteNextCol(gameObject.name);
-                                writer.WriteNextCol(animationCurve.StartAddressHex());
+                                writer.WriteNextCol(animationCurvePlus.StartAddressHex());
                                 writer.WriteNextCol(keyable.StartAddressHex());
                                 writer.WriteNextCol(animIndex);
                                 writer.WriteNextCol(keyable.easeMode);
@@ -574,9 +574,9 @@ namespace Manifold.IO.GFZ.CourseCollision
                     foreach (var gameObject in file.Value.sceneObjects)
                     {
                         int animIndex = 0;
-                        foreach (var animationCurve in gameObject.animation.animCurves)
+                        foreach (var animationCurvePlus in gameObject.animation.animCurves)
                         {
-                            foreach (var keyable in animationCurve.keyableAttributes)
+                            foreach (var keyable in animationCurvePlus.animationCurve.keyableAttributes)
                             {
                                 /// HACK, write each anim index as separate file
                                 if (animIndex != index)
@@ -585,7 +585,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                                 writer.WriteNextCol(file.FileName);
                                 writer.WriteNextCol(gameObjectIndex);
                                 writer.WriteNextCol(gameObject.name);
-                                writer.WriteNextCol(animationCurve.StartAddressHex());
+                                writer.WriteNextCol(animationCurvePlus.StartAddressHex());
                                 writer.WriteNextCol(keyable.StartAddressHex());
                                 writer.WriteNextCol(animIndex);
                                 writer.WriteNextCol(keyable.easeMode);
