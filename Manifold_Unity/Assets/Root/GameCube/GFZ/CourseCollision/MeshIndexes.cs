@@ -1,23 +1,30 @@
 using Manifold.IO;
 using System;
 using System.IO;
-using Unity.Mathematics;
 
 namespace GameCube.GFZ.CourseCollision
 {
+    /// <summary>
+    /// 
+    /// </summary>
     [Serializable]
     public class MeshIndexes : IBinarySerializable, IBinaryAddressableRange
     {
+        // CONSTANTS
+        public const int kIndexArrayPtrsSize = 256; // 0x100
+
+        // METADATA
         [UnityEngine.SerializeField]
         private AddressRange addressRange;
 
-        public const int kIndexArrayPtrsSize = 256; // 0x100
-
+        // FIELDS
+        // TODO: consider wrapping [][] as class with internal [] = class[]{ [] }, circumvent Array2D
         public Pointer[] indexArrayPtrs = new Pointer[kIndexArrayPtrsSize];
         public Array2D<ushort> indexes = new Array2D<ushort>();
         public ushort largestIndex;
 
 
+        // PROPERTIES
         public AddressRange AddressRange
         {
             get => addressRange;
@@ -25,6 +32,7 @@ namespace GameCube.GFZ.CourseCollision
         }
 
 
+        // METHODS
         public void Deserialize(BinaryReader reader)
         {
             // Read index arrays
@@ -46,7 +54,7 @@ namespace GameCube.GFZ.CourseCollision
                 if (pointer.IsNotNullPointer)
                 {
                     reader.JumpToAddress(pointer);
-                    indexesSet = ColiCourseUtility.ReadUShortArray(reader);
+                    indexesSet = ColiCourseUtility.ReadUshortArray(reader);
                 }
 
                 indexes.AppendArray(indexesSet);

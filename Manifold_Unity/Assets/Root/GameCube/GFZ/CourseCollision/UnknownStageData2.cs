@@ -1,17 +1,21 @@
 using Manifold.IO;
 using System;
 using System.IO;
-using Unity.Mathematics;
 
 // NOTE: dependant on UnknownStageData1, review notes in that class.
 
 namespace GameCube.GFZ.CourseCollision
 {
+    /// <summary>
+    /// 
+    /// </summary>
     [Serializable]
     public class UnknownStageData2 : IBinarySerializable, IBinaryAddressableRange
     {
+        // CONSTANTS
         public const int elementCount = 6;
 
+        // FIELDS
         [UnityEngine.SerializeField]
         private AddressRange addressRange;
 
@@ -30,8 +34,8 @@ namespace GameCube.GFZ.CourseCollision
         //public KeyableAttribute[] keyableAttributes4;
         //public KeyableAttribute[] keyableAttributes5;
         //public KeyableAttribute[] keyableAttributes6;
-
         public ArrayPointer[] unkAnimDataPtrs;
+        // needs to be Array2D<> or encapsulated class
         public KeyableAttribute[][] unkAnimData = new KeyableAttribute[elementCount][];
 
         public UnknownStageData2()
@@ -42,12 +46,16 @@ namespace GameCube.GFZ.CourseCollision
                 unkAnimData[i] = new KeyableAttribute[0];
         }
 
+
+        // PROPERTIES
         public AddressRange AddressRange
         {
             get => addressRange;
             set => addressRange = value;
         }
 
+
+        // METHODS
         public void Deserialize(BinaryReader reader)
         {
             this.RecordStartAddress(reader);

@@ -5,16 +5,17 @@ using Unity.Mathematics;
 
 namespace GameCube.GFZ.CourseCollision
 {
+    /// <summary>
+    /// 
+    /// </summary>
     [Serializable]
     public class TrackPoint : IBinarySerializable, IBinaryAddressableRange
     {
-
-        #region FIELDS
-
-
+        // METADATA
         [UnityEngine.SerializeField]
         private AddressRange addressRange;
 
+        // FIELDS
         public float unk_0x00;
         public float unk_0x04;
         // Make Struct?
@@ -34,11 +35,7 @@ namespace GameCube.GFZ.CourseCollision
         public ushort zero_0x4E;
 
 
-        #endregion
-
-        #region PROPERTIES
-
-
+        // PROPERTIES
         public AddressRange AddressRange
         {
             get => addressRange;
@@ -46,11 +43,7 @@ namespace GameCube.GFZ.CourseCollision
         }
 
 
-        #endregion
-
-        #region METHODS
-
-
+        // METHODS
         public void Deserialize(BinaryReader reader)
         {
             this.RecordStartAddress(reader);
@@ -90,9 +83,6 @@ namespace GameCube.GFZ.CourseCollision
             writer.WriteX(trackWidth);
             writer.WriteX(zero_0x4E);
         }
-
-
-        #endregion
 
     }
 }

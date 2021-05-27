@@ -1,8 +1,8 @@
-// Legacy notes
-// 0, 4, 8, 12, 20-x14-b00010100, 28-x1A-b00011000, 44-x2A-b00101100
-
 namespace GameCube.GFZ.CourseCollision
 {
+    /// <summary>
+    /// Denotes data related to perimeter of the current graph node.
+    /// </summary>
     [System.Flags]
     public enum TrackPerimeterOptions : byte
     {

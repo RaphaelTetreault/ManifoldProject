@@ -492,7 +492,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                     //cube.transform.rotation = Quaternion.Euler(rotation);// + tt.localRotation);
                     //cube.transform.localScale = scale.Multiply(tt.localScale);
                     cube.transform.position = position + tt.localPosition;
-                    cube.transform.rotation = Quaternion.Euler(rotation + tt.localRotation);// + tt.localRotation);
+                    cube.transform.rotation = math.mul(quaternion.EulerXYZ(rotation), quaternion.EulerXYZ(tt.localRotation));
                     cube.transform.localScale = scale * tt.localScale;
                 }
             }
@@ -550,7 +550,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 trackTransform.localScale);
 
             // get child matrix
-            if (trackTransform.topologyMetadata == TrackTopologyMetadata.IsNotFinalTopologyNode)
+            if (trackTransform.topologyMetadata == TrackTopologyMetadata.IsTransformParent)
             {
                 var childMatrix = GetTransformMatrix(trackTransform.children[0], increment);
                 return transformMatrix * childMatrix;
@@ -592,7 +592,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             animationMatrix.SetTRS(position, Quaternion.Euler(rotation), scale);
 
             // get child matrix
-            if (trackTransform.topologyMetadata == TrackTopologyMetadata.IsNotFinalTopologyNode)
+            if (trackTransform.topologyMetadata == TrackTopologyMetadata.IsTransformParent)
             {
                 var childMatrix = GetAnimMatrix(trackTransform.children[0], time);
 

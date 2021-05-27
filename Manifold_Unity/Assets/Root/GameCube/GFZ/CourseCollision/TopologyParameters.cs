@@ -2,12 +2,16 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Unity.Mathematics;
+
+// TODO: move Unity-specific functions to Manifold script!
 using UnityEngine;
 
 
 namespace GameCube.GFZ.CourseCollision
 {
+    /// <summary>
+    /// 
+    /// </summary>
     [Serializable]
     public class TopologyParameters : IBinarySerializable, IBinaryAddressableRange
     {

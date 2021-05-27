@@ -1,7 +1,6 @@
 ﻿using Manifold.IO;
 using System.IO;
 using System;
-using Unity.Mathematics;
 
 namespace GameCube.GFZ.CourseCollision
 {
@@ -11,12 +10,11 @@ namespace GameCube.GFZ.CourseCollision
     [Serializable]
     public class KeyableAttribute : IBinarySerializable, IBinaryAddressableRange
     {
-
-        #region FIELDS
-
-
+        // METADATA
         [UnityEngine.SerializeField]
         private AddressRange addressRange;
+
+        // FEILDS
 
         /// <summary>
         /// All values: 1, 2, or 3.
@@ -28,11 +26,7 @@ namespace GameCube.GFZ.CourseCollision
         public float zTangentOut;
 
 
-        #endregion
-
-        #region PROPERTIES
-
-
+        // PROPERTIES
         public AddressRange AddressRange
         {
             get => addressRange;
@@ -40,10 +34,7 @@ namespace GameCube.GFZ.CourseCollision
         }
 
 
-        #endregion
-
-        #region METHODS
-
+        // METHODS
         public void Deserialize(BinaryReader reader)
         {
             this.RecordStartAddress(reader);
@@ -65,8 +56,6 @@ namespace GameCube.GFZ.CourseCollision
             writer.WriteX(zTangentIn);
             writer.WriteX(zTangentOut);
         }
-
-        #endregion
 
     }
 }

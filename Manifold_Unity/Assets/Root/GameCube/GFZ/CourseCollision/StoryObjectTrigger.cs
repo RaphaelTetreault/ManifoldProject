@@ -5,12 +5,17 @@ using Unity.Mathematics;
 
 namespace GameCube.GFZ.CourseCollision
 {
+    /// <summary>
+    /// 
+    /// </summary>
     [Serializable]
     public class StoryObjectTrigger : IBinarySerializable, IBinaryAddressableRange
     {
+        // METADATA
         [UnityEngine.SerializeField]
         private AddressRange addressRange;
 
+        // FIELDS
         public ushort zero_0x00;
         public byte rockGroupOrderIndex;
         public byte rockGroupAndDifficulty; // split lower/upper 4 bits
@@ -19,12 +24,13 @@ namespace GameCube.GFZ.CourseCollision
         public float3 scale;
         public float3 rotation;
         public float3 position;
-
+        // FIELDS (deserialized from pointers)
         // NOTE: used in story 2, object's animation path when triggered? (likely)
         public ArrayPointer keyableArrayPtr;
         public KeyableAttribute[] keyableAttributes;
 
 
+        // PROPERTIES
         public AddressRange AddressRange
         {
             get => addressRange;
@@ -49,6 +55,8 @@ namespace GameCube.GFZ.CourseCollision
             }
         }
 
+
+        // METHODS
         public void Deserialize(BinaryReader reader)
         {
             this.RecordStartAddress(reader);

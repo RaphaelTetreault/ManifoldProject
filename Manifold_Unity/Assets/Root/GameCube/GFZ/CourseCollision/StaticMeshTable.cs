@@ -19,7 +19,7 @@ namespace GameCube.GFZ.CourseCollision
         public const int kCountGxSurfaceTypes = 14;
 
         // Basically a big pile of pointers
-        public int[] unk_0x00_0x20;
+        public int[] zero_0x00_0x20;
         public Pointer collisionTrisPtr;
         public Pointer[] collisionTriIndexesPtr;
         public ColiUnknownStruct1 unknownStruct_0x60;
@@ -61,7 +61,7 @@ namespace GameCube.GFZ.CourseCollision
             // Deserialize values
             this.RecordStartAddress(reader);
             {
-                reader.ReadX(ref unk_0x00_0x20, kCountUnknown);
+                reader.ReadX(ref zero_0x00_0x20, kCountUnknown);
                 reader.ReadX(ref collisionTrisPtr);
                 reader.ReadX(ref collisionTriIndexesPtr, countSurfaceTypes, true);
                 reader.ReadX(ref unknownStruct_0x60, true);
@@ -72,8 +72,8 @@ namespace GameCube.GFZ.CourseCollision
             this.RecordEndAddress(reader);
             {
                 // Asserts
-                for (int i = 0; i < unk_0x00_0x20.Length; i++)
-                    Assert.IsTrue(unk_0x00_0x20[i] == 0);
+                for (int i = 0; i < zero_0x00_0x20.Length; i++)
+                    Assert.IsTrue(zero_0x00_0x20[i] == 0);
 
                 /////////////////
                 // Initialize arrays

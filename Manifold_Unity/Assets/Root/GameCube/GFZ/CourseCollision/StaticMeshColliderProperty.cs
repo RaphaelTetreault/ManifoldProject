@@ -1,5 +1,8 @@
 namespace GameCube.GFZ.CourseCollision
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public enum StaticMeshColliderProperty
     {
         driveable,

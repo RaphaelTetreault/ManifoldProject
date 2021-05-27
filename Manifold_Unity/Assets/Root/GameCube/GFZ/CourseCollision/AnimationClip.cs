@@ -1,27 +1,31 @@
 ﻿using Manifold.IO;
 using System;
 using System.IO;
-using Unity.Mathematics;
 
 namespace GameCube.GFZ.CourseCollision
 {
+    /// <summary>
+    /// 
+    /// </summary>
     [Serializable]
     public class AnimationClip : IBinarySerializable, IBinaryAddressableRange
     {
-
-        #region FIELDS
-
-        // 6
+        // CONSTANTS
         public const int kSizeCurvesPtrs = 6 + 5;
         const int kSizeZero_0x08 = 0x10;
 
+        // METADATA
         [UnityEngine.SerializeField]
         private AddressRange addressRange;
 
+        // FIELDS
         public float unk_0x00;
         public float unk_0x04;
         public byte[] zero_0x08;
         public EnumFlags32 unk_layer_0x18;
+        
+        // FIELDS (deserialized from pointers)
+
         /// <summary>
         /// idx: 0,1,2: scale
         /// idx: 3,4,5: rotation
@@ -32,11 +36,7 @@ namespace GameCube.GFZ.CourseCollision
         public AnimationCurve[] animCurves;
 
 
-        #endregion
-
-        #region PROPERTIES
-
-
+        // PROPERTIES
         public AddressRange AddressRange
         {
             get => addressRange;
@@ -44,11 +44,7 @@ namespace GameCube.GFZ.CourseCollision
         }
 
 
-        #endregion
-
-        #region METHODS
-
-
+        // METHODS
         public void Deserialize(BinaryReader reader)
         {
             this.RecordStartAddress(reader);
@@ -78,9 +74,6 @@ namespace GameCube.GFZ.CourseCollision
             // TODO: Ensure the ptr addresses are correct
             //throw new NotImplementedException();
         }
-
-
-        #endregion
 
     }
 }

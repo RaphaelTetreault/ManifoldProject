@@ -4,9 +4,13 @@ using System.IO;
 
 namespace GameCube.GFZ.CourseCollision
 {
+    /// <summary>
+    /// 
+    /// </summary>
     [Serializable]
     public struct ColiUnknownStruct1 : IBinarySerializable
     {
+        // FIELDS
         public float unk_0x00;
         public float unk_0x04;
         public float unk_0x08;
@@ -14,6 +18,8 @@ namespace GameCube.GFZ.CourseCollision
         public int unk_0x10;
         public int unk_0x14;
 
+
+        // METHODS
         public void Deserialize(BinaryReader reader)
         {
             reader.ReadX(ref unk_0x00);

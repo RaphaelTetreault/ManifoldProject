@@ -13,16 +13,11 @@ namespace GameCube.GFZ.CourseCollision
         private AddressRange addressRange;
 
         // structure
-        [UnityEngine.SerializeField]
-        private float3 position;
-        [UnityEngine.SerializeField]
-        private Int16Rotation3 decomposedRotation;
-        [UnityEngine.SerializeField]
-        private UnknownTransformOption unknownOption;
-        [UnityEngine.SerializeField]
-        private ObjectActiveOverride objectActiveOverride;
-        [UnityEngine.SerializeField]
-        private float3 scale;
+        [UnityEngine.SerializeField] private float3 position;
+        [UnityEngine.SerializeField] private Int16Rotation3 decomposedRotation;
+        [UnityEngine.SerializeField] private UnknownTransformOption unknownOption;
+        [UnityEngine.SerializeField] private ObjectActiveOverride objectActiveOverride;
+        [UnityEngine.SerializeField] private float3 scale;
 
         //
         public AddressRange AddressRange

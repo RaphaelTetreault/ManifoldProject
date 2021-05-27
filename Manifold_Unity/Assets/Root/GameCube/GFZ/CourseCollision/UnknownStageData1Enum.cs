@@ -1,5 +1,8 @@
 namespace GameCube.GFZ.CourseCollision
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public enum UnknownStageData1Enum
     {
         a = 0x02000000,

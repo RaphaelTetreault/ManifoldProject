@@ -1,19 +1,13 @@
 using Manifold.IO;
 using System;
 using System.IO;
-using Unity.Mathematics;
 
 namespace GameCube.GFZ.CourseCollision
 {
     [Serializable]
     public class SurfaceAttributeArea : IBinarySerializable, IBinaryAddressableRange
     {
-
-        #region FIELDS
-
-
-        [UnityEngine.SerializeField]
-        private AddressRange addressRange;
+        [UnityEngine.SerializeField] private AddressRange addressRange;
 
         public float lengthFrom;
         public float lengthTo;
@@ -25,21 +19,11 @@ namespace GameCube.GFZ.CourseCollision
         public byte zero_0x13;
 
 
-        #endregion
-
-        #region PROPERTIES
-
-
         public AddressRange AddressRange
         {
             get => addressRange;
             set => addressRange = value;
         }
-
-
-        #endregion
-
-        #region METHODS
 
 
         public void Deserialize(BinaryReader reader)
@@ -63,9 +47,6 @@ namespace GameCube.GFZ.CourseCollision
         {
             throw new NotImplementedException();
         }
-
-
-        #endregion
 
     }
 }

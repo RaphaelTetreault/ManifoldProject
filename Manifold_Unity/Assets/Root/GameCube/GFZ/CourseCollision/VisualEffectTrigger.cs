@@ -1,20 +1,26 @@
 using Manifold.IO;
 using System;
 using System.IO;
-using Unity.Mathematics;
 
 namespace GameCube.GFZ.CourseCollision
 {
+    /// <summary>
+    /// 
+    /// </summary>
     [Serializable]
     public class VisualEffectTrigger : IBinarySerializable, IBinaryAddressableRange
     {
+        // METADATA
         [UnityEngine.SerializeField]
         private AddressRange addressRange;
 
+        // FIELDS
         public Transform transform;
         public TriggerableAnimation animation;
         public TriggerableVisualEffect visualEffect;
 
+
+        // PROPERTIES
         public AddressRange AddressRange
         {
             get => addressRange;
@@ -22,6 +28,7 @@ namespace GameCube.GFZ.CourseCollision
         }
 
 
+        // METHODS
         public void Deserialize(BinaryReader reader)
         {
             this.RecordStartAddress(reader);

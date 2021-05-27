@@ -5,16 +5,17 @@ using Unity.Mathematics;
 
 namespace GameCube.GFZ.CourseCollision
 {
+    /// <summary>
+    /// An individual triangle as part of a collider mesh.
+    /// </summary>
     [Serializable]
     public class ColliderTriangle : IBinarySerializable, IBinaryAddressableRange
     {
-
-        #region MEMBERS
-
-
+        // METADATA
         [UnityEngine.SerializeField]
         private AddressRange addressRange;
 
+        // FEILDS
         public float unk_0x00;
         public float3 normal;
         public float3 vertex0;
@@ -25,11 +26,7 @@ namespace GameCube.GFZ.CourseCollision
         public float3 precomputed2;
 
 
-        #endregion
-
-        #region PROPERTIES
-
-
+        //
         public AddressRange AddressRange
         {
             get => addressRange;
@@ -37,10 +34,7 @@ namespace GameCube.GFZ.CourseCollision
         }
 
 
-        #endregion
-
-        #region METHODS
-
+        //
         public void Deserialize(BinaryReader reader)
         {
             this.RecordStartAddress(reader);
@@ -73,8 +67,6 @@ namespace GameCube.GFZ.CourseCollision
         {
             return new float3[] { vertex0, vertex1, vertex2 };
         }
-
-        #endregion
 
     }
 }

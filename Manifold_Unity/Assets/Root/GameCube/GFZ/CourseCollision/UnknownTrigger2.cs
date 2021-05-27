@@ -1,7 +1,6 @@
 using Manifold.IO;
 using System;
 using System.IO;
-using Unity.Mathematics;
 
 namespace GameCube.GFZ.CourseCollision
 {
@@ -12,9 +11,12 @@ namespace GameCube.GFZ.CourseCollision
     [Serializable]
     public struct UnknownTrigger2 : IBinarySerializable
     {
+        // FIELDS
         public int unk_0x00;
         public Transform transform;
 
+
+        // METHODS
         public void Deserialize(BinaryReader reader)
         {
             reader.ReadX(ref unk_0x00);

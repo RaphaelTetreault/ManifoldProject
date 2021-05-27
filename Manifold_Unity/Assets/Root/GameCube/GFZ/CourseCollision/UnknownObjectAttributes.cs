@@ -2,32 +2,25 @@
 using System;
 using System.IO;
 using System.Text;
-using Unity.Mathematics;
 
 namespace GameCube.GFZ.CourseCollision
 {
     [Serializable]
     public class UnknownObjectAttributes : IBinarySerializable, IBinaryAddressableRange
     {
-
-        #region FIELDS
-
-
+        // METADATA
         [UnityEngine.SerializeField]
         private AddressRange addressRange;
         public string name;
 
+        // FIELDS
         public uint unk_0x00;
         public Pointer namePtr;
         public uint unk_0x08;
         public float unk_0x0C;
 
 
-        #endregion
-
-        #region PROPERTIES
-
-
+        // PROPERTIES
         public AddressRange AddressRange
         {
             get => addressRange;
@@ -35,11 +28,7 @@ namespace GameCube.GFZ.CourseCollision
         }
 
 
-        #endregion
-
-        #region METHODS
-
-
+        // METHODS
         public void Deserialize(BinaryReader reader)
         {
             this.RecordStartAddress(reader);
@@ -67,9 +56,6 @@ namespace GameCube.GFZ.CourseCollision
             // write ptr into name table
             throw new NotImplementedException();
         }
-
-
-        #endregion
 
     }
 }

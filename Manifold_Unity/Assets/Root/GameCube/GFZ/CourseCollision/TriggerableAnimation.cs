@@ -1,5 +1,9 @@
 namespace GameCube.GFZ.CourseCollision
 {
+    /// <summary>
+    /// Animation trigger index for volume. How an animations knows to
+    /// play when based on index is not yet investigated.
+    /// </summary>
     [System.Flags]
     public enum TriggerableAnimation : ushort
     {

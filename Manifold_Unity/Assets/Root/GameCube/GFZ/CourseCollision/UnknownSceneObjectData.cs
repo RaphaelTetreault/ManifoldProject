@@ -1,18 +1,17 @@
 ﻿using Manifold.IO;
 using System;
 using System.IO;
-using Unity.Mathematics;
 
 namespace GameCube.GFZ.CourseCollision
 {
+    /// <summary>
+    /// 
+    /// </summary>
     [Serializable]
     public class UnknownSceneObjectData : IBinarySerializable, IBinaryAddressableRange
     {
-
-        #region FIELDS
-
-
-        const int kCount = 12;
+        // CONSTANTS
+        public const int kCount = 12;
 
         [UnityEngine.SerializeField]
         private AddressRange addressRange;
@@ -22,11 +21,7 @@ namespace GameCube.GFZ.CourseCollision
         public UnknownSceneObjectFloatPair[] unk = new UnknownSceneObjectFloatPair[0];
 
 
-        #endregion
-
-        #region PROPERTIES
-
-
+        // PROPERTIES
         public AddressRange AddressRange
         {
             get => addressRange;
@@ -34,11 +29,7 @@ namespace GameCube.GFZ.CourseCollision
         }
 
 
-        #endregion
-
-        #region METHODS
-
-
+        // METHODS
         public void Deserialize(BinaryReader reader)
         {
             this.RecordStartAddress(reader);
@@ -67,9 +58,6 @@ namespace GameCube.GFZ.CourseCollision
         {
             writer.WriteX(unkAbsPtr, false);
         }
-
-
-        #endregion
 
     }
 }

@@ -1,7 +1,11 @@
-// TODO: this is really flags, but consts are more usable.
+// NOTE: this is really flags, but constants are more meaningful.
 
 namespace GameCube.GFZ.CourseCollision
 {
+    /// <summary>
+    /// Parameter which appears to forceably enable/disable certain objects.
+    /// The primary use seems to be enabling mines in Story 8.
+    /// </summary>
     public enum ObjectActiveOverride : byte
     {
         /// <summary>

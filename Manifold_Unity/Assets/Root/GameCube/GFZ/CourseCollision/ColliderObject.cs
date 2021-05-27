@@ -1,37 +1,30 @@
 ﻿using Manifold.IO;
 using System;
 using System.IO;
-using Unity.Mathematics;
 
 namespace GameCube.GFZ.CourseCollision
 {
+    /// <summary>
+    /// 
+    /// </summary>
     [Serializable]
     public class ColliderObject : IBinarySerializable, IBinaryAddressableRange
     {
-
-        #region FIELDS
-
-
-        // metadata
+        // METADATA
         [UnityEngine.SerializeField]
         private AddressRange addressRange;
 
-        // structure
+        // STRUCTURE
         public uint unk_0x00;
         public uint unk_0x04;
         public Pointer objectAttributesPtr;
         public Pointer colliderGeometryPtr;
-
-        // sub-structures
+        // FIELDS (deserialized from pointers)
         public UnknownObjectAttributes objectAttributes;
         public ColliderGeometry colliderGeometry;
 
 
-        #endregion
-
-        #region PROPERTIES
-
-
+        // PROPERTIES
         public AddressRange AddressRange
         {
             get => addressRange;
@@ -39,11 +32,7 @@ namespace GameCube.GFZ.CourseCollision
         }
 
 
-        #endregion
-
-        #region METHODS
-
-
+        // METHODS
         public void Deserialize(BinaryReader reader)
         {
             this.RecordStartAddress(reader);
@@ -69,7 +58,6 @@ namespace GameCube.GFZ.CourseCollision
             this.SetReaderToEndAddress(reader);
         }
 
-
         public void Serialize(BinaryWriter writer)
         {
             writer.WriteX(unk_0x00);
@@ -80,8 +68,6 @@ namespace GameCube.GFZ.CourseCollision
             //
             throw new NotImplementedException();
         }
-
-        #endregion
 
     }
 }

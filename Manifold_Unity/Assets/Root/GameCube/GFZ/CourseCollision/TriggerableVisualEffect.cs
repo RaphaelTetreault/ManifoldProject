@@ -1,5 +1,9 @@
 namespace GameCube.GFZ.CourseCollision
 {
+    /// <summary>
+    /// Denotes which visual effect is triggered. Some values are
+    /// shared between venues and may or may not have same effect.
+    /// </summary>
     [System.Flags]
     public enum TriggerableVisualEffect : ushort
     {

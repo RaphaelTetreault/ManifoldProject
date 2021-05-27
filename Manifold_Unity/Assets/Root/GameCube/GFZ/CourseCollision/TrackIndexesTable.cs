@@ -1,30 +1,32 @@
 using Manifold.IO;
 using System.IO;
-using Unity.Mathematics;
 
 namespace GameCube.GFZ.CourseCollision
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class TrackIndexesTable : IBinarySerializable, IBinaryAddressableRange
     {
-        // Constants
+        // CONSTANTS
         public const int kNumEntries = 64;
 
-        // Metadata
+        // METADATA
         [UnityEngine.SerializeField]
         private AddressRange addressRange;
 
-        // Fields
+        // FIELDS
         public Pointer[] trackIndexesPtrs = new Pointer[0];
         public TrackIndexes[] trackIndexArray = new TrackIndexes[0];
 
-        // Properties
+        // PROPERTIES
         public AddressRange AddressRange
         {
             get => addressRange;
             set => addressRange = value;
         }
 
-        // Methods
+        // METHODS
         public void Deserialize(BinaryReader reader)
         {
             this.RecordStartAddress(reader);

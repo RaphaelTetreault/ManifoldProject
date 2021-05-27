@@ -5,16 +5,26 @@ using Unity.Mathematics;
 
 namespace GameCube.GFZ.CourseCollision
 {
+    /// <summary>
+    /// 
+    /// </summary>
     [Serializable]
     public class TrackTransform : IBinarySerializable, IBinaryAddressableRange
     {
+        // CONSTANTS
         public const byte kStructureSize = 0x50;
         public const byte kHasChildren = 0x0C;
 
+        // METADATA
         [UnityEngine.SerializeField]
         private AddressRange addressRange;
 
-        
+        public float4x4 localMatrix;
+        public float4x4 worldMatrix;
+        public int depth;
+        public TrackTransform parent; // TODO: remove direct reference. Maybe use struct for name, index, metadata
+
+        // FIELDS
         public TrackTopologyMetadata topologyMetadata;
         public TrackProperty trackProperty; 
         public TrackPerimeterOptions perimeterOptions;
@@ -39,23 +49,21 @@ namespace GameCube.GFZ.CourseCollision
         public uint zero_0x48; // zero confirmed
         public TrackUnkOption2 unk_0x4C; // 0, 1, 2, 3
 
+        // POINTER FIELDS
         public TopologyParameters trackTopology;
         public TrackCornerTopology hairpinCornerTopology;
         public TrackTransform[] children = new TrackTransform[0];
 
-        // metadata
-        public float4x4 localMatrix;
-        public float4x4 worldMatrix;
-        public int depth;
-        public TrackTransform parent;
 
-
+        // PROPERTIES
         public AddressRange AddressRange
         {
             get => addressRange;
             set => addressRange = value;
         }
 
+
+        // METHODS
         public void Deserialize(BinaryReader reader)
         {
             this.RecordStartAddress(reader);

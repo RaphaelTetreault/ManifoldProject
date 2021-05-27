@@ -1,20 +1,25 @@
 ﻿using Manifold.IO;
 using System;
 using System.IO;
-using Unity.Mathematics;
 
 namespace GameCube.GFZ.CourseCollision
 {
+    /// <summary>
+    /// 
+    /// </summary>
     [Serializable]
     public struct UnknownSceneObjectFloatPair : IBinarySerializable, IBinaryAddressableRange
     {
-
+        // METADATA
         [UnityEngine.SerializeField]
         private AddressRange addressRange;
 
+        // FIELDS
         public float unk_0x00;
         public float unk_0x04;
 
+
+        // PROPERTIES
         public AddressRange AddressRange
         {
             get => addressRange;
@@ -22,6 +27,7 @@ namespace GameCube.GFZ.CourseCollision
         }
 
 
+        // METHODS
         public void Deserialize(BinaryReader reader)
         {
             this.RecordStartAddress(reader);

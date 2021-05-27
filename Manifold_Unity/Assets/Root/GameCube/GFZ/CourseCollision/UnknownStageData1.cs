@@ -8,13 +8,18 @@ using Unity.Mathematics;
 
 namespace GameCube.GFZ.CourseCollision
 {
+    /// <summary>
+    /// 
+    /// </summary>
     [Serializable]
     public class UnknownStageData1 : IBinarySerializable, IBinaryAddressableRange
     {
+        // METADATA
         [UnityEngine.SerializeField]
         private AddressRange addressRange;
 
-        public UnknownStageData1Enum unk_0x00; // 0x##000000 - looks like highest byte flags? Big endian?
+        // FIELDS
+        public UnknownStageData1Enum unk_0x00; // 0x##000000 - looks like highest byte flags?
         public UnknownFloatPair unk_0x04;
         public float3 unk_0x0C; // Looks like scale? Maybe not a vector.
         public float unk_0x18;
@@ -22,6 +27,7 @@ namespace GameCube.GFZ.CourseCollision
         private int zero_0x20;
 
 
+        // PROPERTIES
         public AddressRange AddressRange
         {
             get => addressRange;
@@ -29,6 +35,7 @@ namespace GameCube.GFZ.CourseCollision
         }
 
 
+        // METHODS
         public void Deserialize(BinaryReader reader)
         {
             this.RecordStartAddress(reader);

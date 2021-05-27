@@ -1,27 +1,21 @@
 ﻿using Manifold.IO;
 using System;
 using System.IO;
-using Unity.Mathematics;
 
 namespace GameCube.GFZ.CourseCollision
 {
     [Serializable]
     public struct TrackLength : IBinarySerializable, IBinaryAddressableRange
     {
-        #region MEMBERS
-
-
+        // METADATA
         [UnityEngine.SerializeField]
         private AddressRange addressRange;
 
+        // FIELDS
         public float trackLength;
 
 
-        #endregion
-
-        #region PROPERTIES
-
-
+        // PROPERTIES
         public AddressRange AddressRange
         {
             get => addressRange;
@@ -29,11 +23,7 @@ namespace GameCube.GFZ.CourseCollision
         }
 
 
-        #endregion
-
-        #region METHODS
-
-
+        // METHODS
         public void Deserialize(BinaryReader reader)
         {
             this.RecordStartAddress(reader);
@@ -47,9 +37,6 @@ namespace GameCube.GFZ.CourseCollision
         {
             writer.WriteX(trackLength);
         }
-
-
-        #endregion
 
     }
 }

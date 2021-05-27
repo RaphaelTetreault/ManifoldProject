@@ -1,18 +1,16 @@
 ﻿using Manifold.IO;
 using System;
 using System.IO;
-using Unity.Mathematics;
 
 namespace GameCube.GFZ.CourseCollision
 {
+    /// <summary>
+    /// 
+    /// </summary>
     [Serializable]
     public class SceneObject : IBinarySerializable, IBinaryAddressableRange
     {
-
-        #region MEMBERS
-
-
-        // metadata
+        // METADATA
         [UnityEngine.SerializeField]
         private AddressRange addressRange;
         /// <summary>
@@ -20,7 +18,7 @@ namespace GameCube.GFZ.CourseCollision
         /// </summary>
         public string name;
 
-        // structure
+        // FIELDS
         public LevelOfDetailRadius lodFar;
         public LevelOfDetailRadius lodNear;
         public Pointer collisionBindingPtr;
@@ -31,7 +29,7 @@ namespace GameCube.GFZ.CourseCollision
         public Pointer skeletalAnimatorPtr;
         public Pointer transformPtr;
 
-        // sub-structures
+        // FIELDS (deserialized from pointers)
         public ColliderObject colliderBinding;
         public AnimationClip animation;
         public UnknownSceneObjectData unk1;
@@ -39,11 +37,7 @@ namespace GameCube.GFZ.CourseCollision
         public TransformMatrix3x4 transformMatrix3x4 = new TransformMatrix3x4();
 
 
-        #endregion
-
-        #region PROPERTIES
-
-
+        // PROPERTIES
         public AddressRange AddressRange
         {
             get => addressRange;
@@ -51,11 +45,7 @@ namespace GameCube.GFZ.CourseCollision
         }
 
 
-        #endregion
-
-        #region METHODS
-
-
+        // METHODS
         public void Deserialize(BinaryReader reader)
         {
             this.RecordStartAddress(reader);
@@ -127,9 +117,6 @@ namespace GameCube.GFZ.CourseCollision
             // Write values pointed at, update ptrs above
             throw new NotImplementedException();
         }
-
-
-        #endregion
 
     }
 }

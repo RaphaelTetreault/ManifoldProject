@@ -1,24 +1,25 @@
 ﻿using Manifold.IO;
 using System;
 using System.IO;
-using Unity.Mathematics;
 
 namespace GameCube.GFZ.CourseCollision
 {
+    /// <summary>
+    /// 
+    /// </summary>
     [Serializable]
     public class SkeletalProperties : IBinarySerializable, IBinaryAddressableRange
     {
-
-        #region FIELDS
-
-
+        // METADATA
         [UnityEngine.SerializeField]
         private AddressRange addressRange;
+
+        // FIELDS
 
         /// <summary>
         /// Values: 0, 3, 7, 10, 15, 20, 50, 60
         /// </summary>
-        public uint unk_0x00;
+        public uint unk_0x00; // TODO: make enum? Or is it some count?
         public EnumFlags32 unk_0x04;
         public EnumFlags32 unk_0x08;
         public uint zero_0x0C;
@@ -27,11 +28,7 @@ namespace GameCube.GFZ.CourseCollision
         public uint zero_0x18;
 
 
-        #endregion
-
-        #region PROPERTIES
-
-
+        // PROPERTIES
         public AddressRange AddressRange
         {
             get => addressRange;
@@ -39,11 +36,7 @@ namespace GameCube.GFZ.CourseCollision
         }
 
 
-        #endregion
-
-        #region METHODS
-
-
+        // METHODS
         public void Deserialize(BinaryReader reader)
         {
             this.RecordStartAddress(reader);
@@ -69,9 +62,6 @@ namespace GameCube.GFZ.CourseCollision
             writer.WriteX(zero_0x14);
             writer.WriteX(zero_0x18);
         }
-
-
-        #endregion
 
     }
 }

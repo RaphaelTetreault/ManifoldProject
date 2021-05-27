@@ -1,33 +1,29 @@
 ﻿using Manifold.IO;
 using System;
 using System.IO;
-using Unity.Mathematics;
 
 namespace GameCube.GFZ.CourseCollision
 {
+    /// <summary>
+    /// 
+    /// </summary>
     [Serializable]
     public class SkeletalAnimator : IBinarySerializable, IBinaryAddressableRange
     {
-
-        #region FIELDS
-
-
+        // METADATA
         [UnityEngine.SerializeField]
         private AddressRange addressRange;
 
+        // FIELDS
         public uint zero_0x00;
         public uint zero_0x04;
         public uint one_0x08; // Always 1. Bool?
         public Pointer propertiesPtr;
-
+        // FIELDS (deserialized pointers)
         public SkeletalProperties properties;
 
 
-        #endregion
-
-        #region PROPERTIES
-
-
+        // PROPERTIES
         public AddressRange AddressRange
         {
             get => addressRange;
@@ -35,11 +31,7 @@ namespace GameCube.GFZ.CourseCollision
         }
 
 
-        #endregion
-
-        #region METHODS
-
-
+        // METHODS
         public void Deserialize(BinaryReader reader)
         {
             this.RecordStartAddress(reader);
@@ -69,9 +61,6 @@ namespace GameCube.GFZ.CourseCollision
 
             throw new NotImplementedException();
         }
-
-
-        #endregion
 
     }
 }

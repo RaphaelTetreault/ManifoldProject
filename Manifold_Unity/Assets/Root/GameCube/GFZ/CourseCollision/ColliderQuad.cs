@@ -8,11 +8,11 @@ namespace GameCube.GFZ.CourseCollision
     [Serializable]
     public class ColliderQuad : IBinarySerializable, IBinaryAddressableRange
     {
-
-        #region FIELDS
-
+        // METADATA
         [UnityEngine.SerializeField]
         private AddressRange addressRange;
+
+        // FIELDS
 
         // Normal's quaternion rotation theta? https://en.wikipedia.org/wiki/Quaternions_and_spatial_rotation#Using_quaternion_as_rotations
         // Value range: -3613.961 through 3595.046, avg: -11 (basically 0)
@@ -29,11 +29,7 @@ namespace GameCube.GFZ.CourseCollision
         public float3 precomputed3;
 
 
-        #endregion
-
-        #region PROPERTIES
-
-
+        // PROPERTIES
         public AddressRange AddressRange
         {
             get => addressRange;
@@ -41,11 +37,7 @@ namespace GameCube.GFZ.CourseCollision
         }
 
 
-        #endregion
-
-        #region METHODS
-
-
+        // METHODS
         public void Deserialize(BinaryReader reader)
         {
             this.RecordStartAddress(reader);
@@ -77,9 +69,6 @@ namespace GameCube.GFZ.CourseCollision
             writer.WriteX(precomputed2);
             writer.WriteX(precomputed3);
         }
-
-
-        #endregion
 
     }
 }

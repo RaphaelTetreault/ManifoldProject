@@ -1,13 +1,13 @@
 using Manifold.IO;
 using System.IO;
-using Unity.Mathematics;
 
 namespace GameCube.GFZ.CourseCollision
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class TrackIndexes : IBinarySerializable, IBinaryAddressableRange
     {
-        //public const int kNumEntries = 64;
-
         [UnityEngine.SerializeField]
         private AddressRange addressRange;
 
@@ -24,7 +24,7 @@ namespace GameCube.GFZ.CourseCollision
         {
             this.RecordStartAddress(reader);
             {
-                indexes = ColiCourseUtility.ReadUShortArray(reader);
+                indexes = ColiCourseUtility.ReadUshortArray(reader);
             }
             this.RecordEndAddress(reader);
         }

@@ -4,6 +4,9 @@ using System.IO;
 
 namespace GameCube.GFZ.CourseCollision
 {
+    /// <summary>
+    /// 
+    /// </summary>
     [Serializable]
     public struct UnknownFloatPair : IBinarySerializable
     {

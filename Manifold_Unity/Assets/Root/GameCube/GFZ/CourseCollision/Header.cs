@@ -1,24 +1,23 @@
 ﻿using Manifold.IO;
 using System;
 using System.IO;
-using Unity.Mathematics;
 
 namespace GameCube.GFZ.CourseCollision
 {
     [Serializable]
     public class Header : IBinarySerializable
     {
-        // consts
+        // CONSTANTS
         public const int kSizeOfZero0x28 = 0x20;
         public const int kSizeOfZero0xD8 = 0x10;
 
-        // metadata
+        // METADATA
         [UnityEngine.SerializeField]
         private bool isFileAX;
         [UnityEngine.SerializeField]
         private bool isFileGX;
 
-        // structure
+        // FIELDS
         public UnknownFloatPair unk_0x00;
         public ArrayPointer trackNodesPtr;
         public ArrayPointer surfaceAttributeAreasPtr;
@@ -51,6 +50,7 @@ namespace GameCube.GFZ.CourseCollision
         public byte[] zero_0xD8; // 0x10 count
 
 
+        // PROPERTIES
         public bool IsFileAX => isFileAX;
         public bool IsFileGX => isFileGX;
         /// <summary>
@@ -58,6 +58,8 @@ namespace GameCube.GFZ.CourseCollision
         /// </summary>
         public bool IsValidFile => isFileAX ^ isFileGX;
 
+
+        // METHODS
         public void Deserialize(BinaryReader reader)
         {
             // Record some metadata

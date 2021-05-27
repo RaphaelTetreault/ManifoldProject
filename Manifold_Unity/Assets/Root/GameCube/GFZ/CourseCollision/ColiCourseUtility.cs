@@ -4,6 +4,9 @@ using System.Collections.Generic;
 
 namespace GameCube.GFZ.CourseCollision
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public static class ColiCourseUtility
     {
         private const int kAxConst0x20 = 0xE4;
@@ -52,7 +55,7 @@ namespace GameCube.GFZ.CourseCollision
         /// </summary>
         /// <param name="reader"></param>
         /// <returns></returns>
-        public static ushort[] ReadUShortArray(BinaryReader reader)
+        public static ushort[] ReadUshortArray(BinaryReader reader)
         {
             var list = new List<ushort>();
             while (true)

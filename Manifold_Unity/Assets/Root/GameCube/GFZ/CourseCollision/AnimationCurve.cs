@@ -1,34 +1,30 @@
 ﻿using Manifold.IO;
 using System;
 using System.IO;
-using Unity.Mathematics;
 
 namespace GameCube.GFZ.CourseCollision
 {
+    /// <summary>
+    /// 
+    /// </summary>
     [Serializable]
     public class AnimationCurve : IBinarySerializable, IBinaryAddressableRange
     {
-
-        #region FIELDS
-
-
+        // METADATA
         [UnityEngine.SerializeField]
         private AddressRange addressRange;
 
+        // FIELDS
         public uint unk_0x00;
         public uint unk_0x04;
         public uint unk_0x08;
         public uint unk_0x0C;
         public ArrayPointer keyableAttributesPtr;
-
+        // FIELDS (deserialized from pointers)
         public KeyableAttribute[] keyableAttributes;
 
 
-        #endregion
-
-        #region PROPERTIES
-
-
+        // PROPERTIES
         public AddressRange AddressRange
         {
             get => addressRange;
@@ -36,11 +32,7 @@ namespace GameCube.GFZ.CourseCollision
         }
 
 
-        #endregion
-
-        #region METHODS
-
-
+        // METHODS
         public void Deserialize(BinaryReader reader)
         {
             this.RecordStartAddress(reader);
@@ -73,9 +65,6 @@ namespace GameCube.GFZ.CourseCollision
             // Array pointer address and length needs to be set
             throw new NotImplementedException();
         }
-
-
-        #endregion
 
     }
 }

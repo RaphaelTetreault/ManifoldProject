@@ -2,10 +2,12 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
-using Unity.Mathematics;
 
 namespace GameCube.GFZ.CourseCollision
 {
+    /// <summary>
+    /// 
+    /// </summary>
     [Serializable]
     public class ColiScene : IBinarySerializable, IFile
     {

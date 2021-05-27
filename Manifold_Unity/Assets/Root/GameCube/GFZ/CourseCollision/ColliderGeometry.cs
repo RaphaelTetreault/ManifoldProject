@@ -1,20 +1,20 @@
 ﻿using Manifold.IO;
-using System.IO;
-using Unity.Mathematics;
 using System;
+using System.IO;
 
 namespace GameCube.GFZ.CourseCollision
 {
+    /// <summary>
+    /// 
+    /// </summary>
     [Serializable]
     public class ColliderGeometry : IBinarySerializable, IBinaryAddressableRange
     {
-
-        #region FIELDS
-
-
+        // METADATA
         [UnityEngine.SerializeField]
         private AddressRange addressRange;
 
+        // FIELDS
         public uint unk_0x00;
         public uint unk_0x04;
         public uint unk_0x08;
@@ -24,16 +24,12 @@ namespace GameCube.GFZ.CourseCollision
         public int quadCount;
         public uint triAbsPtr;
         public uint quadAbsPtr;
-
+        // FIELDS (deserialized from pointers)
         public ColliderTriangle[] tris;
         public ColliderQuad[] quads;
 
 
-        #endregion
-
-        #region PROPERTIES
-
-
+        // PROPERTIES
         public AddressRange AddressRange
         {
             get => addressRange;
@@ -41,11 +37,7 @@ namespace GameCube.GFZ.CourseCollision
         }
 
 
-        #endregion
-
-        #region METHODS
-
-
+        // METHODS
         public void Deserialize(BinaryReader reader)
         {
             this.RecordStartAddress(reader);
@@ -92,9 +84,6 @@ namespace GameCube.GFZ.CourseCollision
             // You need to implement saving the tris/quads
             throw new NotImplementedException();
         }
-
-
-        #endregion
 
     }
 }
