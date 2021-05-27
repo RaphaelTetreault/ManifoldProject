@@ -1,0 +1,38 @@
+namespace Nintendo64.FZX
+{
+    public enum TrackTypeTextureCode : uint
+    {
+        NoTrack = 0x1800_01BF,
+        Normal_VenueFinishStretch = 0x1800_0000,
+        Normal_VenueTexture1A = 0x1800_0002,
+        Normal_VenueTexture1B = 0x1800_0003,
+        Normal_VenueTexture1C = 0x1800_0004,
+        Normal_VenueTextureA = 0x1800_0005,
+        Normal_VenueTexture2B = 0x1800_0006,
+        Normal_Venue = 0x1800_0007,
+        Normal_UniversalBlue = 0x1800_0008,
+        Normal_UniversalGreen = 0x1800_0009,
+        HighWall_Venue = 0x0800_0040,
+        HighWall_UniversalBlue = 0x0800_0041,
+        HighWall_UniversalGreen = 0x0800_0042,
+        Pipe_Blue = 0x2000_0080,
+        Pipe_Red = 0x2000_0081,
+        Pipe_White = 0x2000_0082,
+        Pipe_Black = 0x2000_0083,
+        Cylinder_Faded = 0x0000_00C0,
+        Cylinder_Segmented = 0x0000_00C1,
+        Cylinder_Notched = 0x0000_00C2,
+        Cylinder_Blue = 0x0000_00C3,
+        HalfPipe_Grainy = 0x0000_0100,
+        HalfPipe_Striped = 0x0000_0101,
+        HalfPipe_Green = 0x0000_0102,
+        HalfPipe_Pinstriped = 0x0000_0103,
+        Tunnel_Brown = 0x2800_0140,
+        Tunnel_Blue = 0x2800_0141,
+        Tunnel_Green = 0x2800_0142,
+        Tunnel_Orange = 0x2800_0143,
+        NoWalls_Venue = 0x0800_01C0,
+        NoWalls_UniversalTeal = 0x0800_01C1,
+        NoWalls_UniversalGrey = 0x0800_01C2,
+    }
+}

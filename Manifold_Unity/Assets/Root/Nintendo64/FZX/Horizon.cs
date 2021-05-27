@@ -10,6 +10,7 @@ namespace Nintendo64.FZX
     {
         public string name;
         public Image image;
+        public ushort zero_0x02;
         public float angleY;
 
         public void Deserialize(StreamReader reader)

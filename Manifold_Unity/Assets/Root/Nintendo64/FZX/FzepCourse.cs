@@ -19,7 +19,7 @@ namespace Nintendo64.FZX
         public DiskDriveMusic ekMusic;
 
         public Horizon[] horizons;
-        public ControlPoint[] controlPoints;
+        public FzepControlPoint[] controlPoints;
 
         public void Deserialize(StreamReader reader)
         {
@@ -57,10 +57,10 @@ namespace Nintendo64.FZX
                 Assert.IsTrue(string.IsNullOrEmpty(reader.ReadLine()));
 
             // CONTROL POINTS
-            controlPoints = new ControlPoint[controlPointCount];
+            controlPoints = new FzepControlPoint[controlPointCount];
             for (int i = 0; i < controlPoints.Length; i++)
             {
-                controlPoints[i] = new ControlPoint();
+                controlPoints[i] = new FzepControlPoint();
                 controlPoints[i].Deserialize(reader);
             }
 
