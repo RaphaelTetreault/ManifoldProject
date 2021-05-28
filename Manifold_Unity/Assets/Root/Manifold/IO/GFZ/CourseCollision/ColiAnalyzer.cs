@@ -1218,12 +1218,12 @@ namespace Manifold.IO.GFZ.CourseCollision
                     var courseID = ((CourseIndexAX)scene.ID).GetDescription();
                     var isAxGx = scene.header.IsFileGX ? "GX" : "AX";
 
-                    var totalD1 = scene.unknownStageData2.unkAnimData.Length;
+                    var totalD1 = scene.unknownStageData2.animationCurves.Length;
                     var countD1 = 0;
-                    foreach (var animDataCollection in scene.unknownStageData2.unkAnimData)
+                    foreach (var animationCurve in scene.unknownStageData2.animationCurves)
                     {
                         countD1++;
-                        foreach (var keyableAttribute in animDataCollection)
+                        foreach (var keyableAttribute in animationCurve.keyableAttributes)
                         {
                             writer.WriteNextCol(scene.FileName);
                             writer.WriteNextCol(scene.ID);
