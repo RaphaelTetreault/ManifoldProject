@@ -16,6 +16,12 @@ namespace GameCube.GFZ.CourseCollision
         private const int kUshortArrayTerminator = 0xFFFF;
 
 
+        // STATIC FIELDS
+        /// <summary>
+        /// When true, serializes text inside COLI_COURSE structures
+        /// </summary>
+        public static bool SerializeVerbose { get; private set; } = true;
+
         public static bool IsFileAX(BinaryReader reader)
         {
             var address = reader.BaseStream.Position;

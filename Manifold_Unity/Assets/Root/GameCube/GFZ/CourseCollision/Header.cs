@@ -5,17 +5,25 @@ using System.IO;
 namespace GameCube.GFZ.CourseCollision
 {
     [Serializable]
-    public class Header : IBinarySerializable
+    public class Header :
+        IBinarySerializable,
+        IBinarySeralizableReference
     {
+        public enum SerializeFormat
+        {
+            InvalidFormat,
+            AsAX,
+            AsGX,
+        }
+
         // CONSTANTS
         public const int kSizeOfZero0x28 = 0x20;
         public const int kSizeOfZero0xD8 = 0x10;
 
         // METADATA
-        [UnityEngine.SerializeField]
-        private bool isFileAX;
-        [UnityEngine.SerializeField]
-        private bool isFileGX;
+        [UnityEngine.SerializeField] private bool isFileAX;
+        [UnityEngine.SerializeField] private bool isFileGX;
+        [UnityEngine.SerializeField] private AddressRange addressRange;
 
         // FIELDS
         public UnknownFloatPair unk_0x00;
@@ -57,6 +65,13 @@ namespace GameCube.GFZ.CourseCollision
         /// Returns true if file is tagged either AX or GX, but not both
         /// </summary>
         public bool IsValidFile => isFileAX ^ isFileGX;
+        public SerializeFormat Format { get; set; }
+
+        public AddressRange AddressRange
+        {
+            get => addressRange;
+            set => addressRange = value;
+        }
 
 
         // METHODS
@@ -65,53 +80,107 @@ namespace GameCube.GFZ.CourseCollision
             // Record some metadata
             isFileAX = ColiCourseUtility.IsFileAX(reader);
             isFileGX = ColiCourseUtility.IsFileGX(reader);
+            Assert.IsTrue(IsValidFile);
+            Format = IsFileAX ? SerializeFormat.AsAX : SerializeFormat.AsGX;
 
-            // Deserialize main structure
-            reader.ReadX(ref unk_0x00, true);
-            reader.ReadX(ref trackNodesPtr);
-            reader.ReadX(ref surfaceAttributeAreasPtr);
-            reader.ReadX(ref boostPadsActive);
-            reader.ReadX(ref surfaceAttributeMeshTablePtr);
-            reader.ReadX(ref unknownData_0x20_Ptr);
-            reader.ReadX(ref unknownFloat_0x24_Ptr);
-            reader.ReadX(ref zero_0x28, kSizeOfZero0x28);
-            reader.ReadX(ref sceneObjectCount);
-            if (isFileGX) reader.ReadX(ref unk_sceneObjectCount1);
-            reader.ReadX(ref unk_sceneObjectCount2);
-            reader.ReadX(ref sceneObjectsPtr);
-            reader.ReadX(ref unkBool32_0x58);
-            reader.ReadX(ref unknownTrigger2sPtr);
-            reader.ReadX(ref collisionObjectReferences);
-            reader.ReadX(ref unk_collisionObjectReferences);
-            reader.ReadX(ref unused_0x74_0x78);
-            reader.ReadX(ref circuitType);
-            reader.ReadX(ref unknownStageData2Ptr);
-            reader.ReadX(ref unknownStageData1Ptr);
-            reader.ReadX(ref unused_0x88_0x8C);
-            reader.ReadX(ref trackLengthPtr);
-            reader.ReadX(ref unknownTrigger1sPtr);
-            reader.ReadX(ref visualEffectTriggersPtr);
-            reader.ReadX(ref courseMetadataTriggersPtr);
-            reader.ReadX(ref arcadeCheckpointTriggersPtr);
-            reader.ReadX(ref storyObjectTriggersPtr);
-            reader.ReadX(ref trackIndexTable);
-            reader.ReadX(ref unknownStructure1_0xC0, true);
-            reader.ReadX(ref zero_0xD8, kSizeOfZero0xD8);
+            this.RecordStartAddress(reader);
+            {
+                // Deserialize main structure
+                reader.ReadX(ref unk_0x00, true);
+                reader.ReadX(ref trackNodesPtr);
+                reader.ReadX(ref surfaceAttributeAreasPtr);
+                reader.ReadX(ref boostPadsActive);
+                reader.ReadX(ref surfaceAttributeMeshTablePtr);
+                reader.ReadX(ref unknownData_0x20_Ptr);
+                reader.ReadX(ref unknownFloat_0x24_Ptr);
+                reader.ReadX(ref zero_0x28, kSizeOfZero0x28);
+                reader.ReadX(ref sceneObjectCount);
+                if (isFileGX) reader.ReadX(ref unk_sceneObjectCount1);
+                reader.ReadX(ref unk_sceneObjectCount2);
+                reader.ReadX(ref sceneObjectsPtr);
+                reader.ReadX(ref unkBool32_0x58);
+                reader.ReadX(ref unknownTrigger2sPtr);
+                reader.ReadX(ref collisionObjectReferences);
+                reader.ReadX(ref unk_collisionObjectReferences);
+                reader.ReadX(ref unused_0x74_0x78);
+                reader.ReadX(ref circuitType);
+                reader.ReadX(ref unknownStageData2Ptr);
+                reader.ReadX(ref unknownStageData1Ptr);
+                reader.ReadX(ref unused_0x88_0x8C);
+                reader.ReadX(ref trackLengthPtr);
+                reader.ReadX(ref unknownTrigger1sPtr);
+                reader.ReadX(ref visualEffectTriggersPtr);
+                reader.ReadX(ref courseMetadataTriggersPtr);
+                reader.ReadX(ref arcadeCheckpointTriggersPtr);
+                reader.ReadX(ref storyObjectTriggersPtr);
+                reader.ReadX(ref trackIndexTable);
+                reader.ReadX(ref unknownStructure1_0xC0, true);
+                reader.ReadX(ref zero_0xD8, kSizeOfZero0xD8);
+            }
+            this.RecordEndAddress(reader);
+            {
+                // Assert assumptions
+                Assert.IsTrue(unused_0x74_0x78.Length == 0 && unused_0x74_0x78.Address == 0);
+                Assert.IsTrue(unused_0x88_0x8C.Length == 0 && unused_0x88_0x8C.Address == 0);
 
-            // Assert assumptions
-            Assert.IsTrue(unused_0x74_0x78.Length == 0 && unused_0x74_0x78.Address == 0);
-            Assert.IsTrue(unused_0x88_0x8C.Length == 0 && unused_0x88_0x8C.Address == 0);
+                for (int i = 0; i < zero_0x28.Length; i++)
+                    Assert.IsTrue(zero_0x28[i] == 0);
 
-            for (int i = 0; i < zero_0x28.Length; i++)
-                Assert.IsTrue(zero_0x28[i] == 0);
-
-            for (int i = 0; i < zero_0xD8.Length; i++)
-                Assert.IsTrue(zero_0xD8[i] == 0);
+                for (int i = 0; i < zero_0xD8.Length; i++)
+                    Assert.IsTrue(zero_0xD8[i] == 0);
+            }
+            //
         }
 
         public void Serialize(BinaryWriter writer)
         {
-            throw new NotImplementedException();
+            //Assert.IsTrue(IsValidFile);
+
+            // Serialize header. This is done twice.
+            // 1st time: serialize structure as placeholder.
+            // 2nd time: serialize structure but now with pointers resolved.
+            writer.WriteX(unk_0x00);
+            writer.WriteX(trackNodesPtr);
+            writer.WriteX(surfaceAttributeAreasPtr);
+            writer.WriteX(boostPadsActive);
+            writer.WriteX(surfaceAttributeMeshTablePtr);
+            writer.WriteX(unknownData_0x20_Ptr);
+            writer.WriteX(unknownFloat_0x24_Ptr);
+            writer.WriteX(new byte[kSizeOfZero0x28], false); // write const zeros
+            writer.WriteX(sceneObjectCount);
+            if (Format == SerializeFormat.AsGX)
+                writer.WriteX(unk_sceneObjectCount1);
+            writer.WriteX(unk_sceneObjectCount2);
+            writer.WriteX(sceneObjectsPtr);
+            writer.WriteX(unkBool32_0x58);
+            writer.WriteX(unknownTrigger2sPtr);
+            writer.WriteX(collisionObjectReferences);
+            writer.WriteX(unk_collisionObjectReferences);
+            writer.WriteX(new ArrayPointer()); // const unused
+            writer.WriteX(circuitType);
+            writer.WriteX(unknownStageData2Ptr);
+            writer.WriteX(unknownStageData1Ptr);
+            writer.WriteX(new ArrayPointer()); // const unused
+            writer.WriteX(trackLengthPtr);
+            writer.WriteX(unknownTrigger1sPtr);
+            writer.WriteX(visualEffectTriggersPtr);
+            writer.WriteX(courseMetadataTriggersPtr);
+            writer.WriteX(arcadeCheckpointTriggersPtr);
+            writer.WriteX(storyObjectTriggersPtr);
+            writer.WriteX(trackIndexTable);
+            writer.WriteX(unknownStructure1_0xC0);
+            writer.WriteX(new byte[kSizeOfZero0xD8], false); // write const zeros
+        }
+
+        public AddressRange SerializeReference(BinaryWriter writer)
+        {
+            var addressRange = new AddressRange();
+            addressRange.RecordStartAddress(writer.BaseStream);
+            {
+                Serialize(writer);
+            }
+            addressRange.RecordEndAddress(writer.BaseStream);
+            return addressRange;
         }
 
     }

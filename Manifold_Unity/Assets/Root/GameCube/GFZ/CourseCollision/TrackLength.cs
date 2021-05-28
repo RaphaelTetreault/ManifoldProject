@@ -5,7 +5,10 @@ using System.IO;
 namespace GameCube.GFZ.CourseCollision
 {
     [Serializable]
-    public struct TrackLength : IBinarySerializable, IBinaryAddressableRange
+    public struct TrackLength :
+        IBinaryAddressableRange,
+        IBinarySerializable,
+        IBinarySeralizableReference
     {
         // METADATA
         [UnityEngine.SerializeField]
@@ -35,8 +38,24 @@ namespace GameCube.GFZ.CourseCollision
 
         public void Serialize(BinaryWriter writer)
         {
+            if (ColiCourseUtility.SerializeVerbose)
+            {
+                var message = $"{nameof(TrackLength)} is a long string for whatestarngereasonyouknow";
+                writer.WriteBinaryComment(message);
+            }
+
             writer.WriteX(trackLength);
         }
 
+        public AddressRange SerializeReference(BinaryWriter writer)
+        {
+            var addressRange = new AddressRange();
+            addressRange.RecordStartAddress(writer.BaseStream);
+            {
+                Serialize(writer);
+            }
+            addressRange.RecordEndAddress(writer.BaseStream);
+            return addressRange;
+        }
     }
 }

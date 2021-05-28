@@ -137,6 +137,7 @@ namespace Manifold.IO
         public static void WriteXCString(this BinaryWriter writer, string value)
         => BinaryIoUtility.WriteCString(writer, value);
 
+        //
         public static void WriteE<TEnum>(this BinaryWriter writer, TEnum[] value, bool writeLengthHeader) where TEnum : Enum
         {
             BinaryIoUtility.WriteEnum(writer, value, writeLengthHeader);
@@ -144,6 +145,15 @@ namespace Manifold.IO
 
 
         #endregion
+
+        public static void WriteBinaryComment(this BinaryWriter writer, string message, int alignment = 16)
+        {
+            var bytes = Encoding.ASCII.GetBytes(message);
+
+            writer.AlignTo(alignment);
+            writer.WriteX(bytes, false);
+            writer.AlignTo(alignment);
+        }
 
     }
 }

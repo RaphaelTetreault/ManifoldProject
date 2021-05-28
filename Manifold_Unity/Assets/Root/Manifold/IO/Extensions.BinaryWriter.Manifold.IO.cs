@@ -1,18 +1,26 @@
-using System;
 using System.IO;
 
 namespace Manifold.IO
 {
     public static partial class BinaryWriterExtensions
     {
-        public static void JumpToAddress(this BinaryReader reader, Pointer pointer, SeekOrigin seekOrigin = SeekOrigin.Begin)
+        /// <summary>
+        /// Positions underlying stream at end of stream.
+        /// </summary>
+        /// <param name="writer"></param>
+        public static void SeekEnd(this BinaryWriter writer)
         {
-            reader.BaseStream.Seek(pointer.address, seekOrigin);
+            long endOfStream = writer.BaseStream.Length;
+            writer.BaseStream.Seek(endOfStream, SeekOrigin.Begin);
         }
 
-        public static void JumpToAddress(this BinaryReader reader, ArrayPointer arrayPointer, SeekOrigin seekOrigin = SeekOrigin.Begin)
+        /// <summary>
+        /// Positions underlying stream at beginning of stream.
+        /// </summary>
+        /// <param name="writer"></param>
+        public static void SeekStart(this BinaryWriter writer)
         {
-            reader.BaseStream.Seek(arrayPointer.Address, seekOrigin);
+            writer.BaseStream.Seek(0, SeekOrigin.Begin);
         }
     }
 }
