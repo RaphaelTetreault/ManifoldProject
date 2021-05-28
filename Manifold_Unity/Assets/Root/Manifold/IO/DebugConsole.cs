@@ -4,7 +4,9 @@ namespace Manifold.IO
     {
         public static void Log(string message)
         {
-            throw new System.NotImplementedException();
+            // TODO: write pipeline around this and save to text
+            UnityEngine.Debug.Log(message);
+            //throw new System.NotImplementedException();
         }
     }
 }

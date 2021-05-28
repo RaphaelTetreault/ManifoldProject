@@ -46,7 +46,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             // Draw self
             var worldMatrix = trackTransform.worldMatrix;
             var position = worldMatrix.Position();
-            var rotation = worldMatrix.Rotation();
+            var rotation = worldMatrix.RotationBad();
             var scale = worldMatrix.Scale();
             //
             var colorIndex = trackTransform.depth;

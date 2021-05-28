@@ -48,24 +48,32 @@ namespace GameCube.GFZ.CourseCollision
             }
             this.RecordEndAddress(reader);
             {
-                int arrayIndex = 0;
-                foreach (var arrayPointer in curvePtrs2D.ArrayPointers)
+                // Init array
+                animationCurves = new AnimationCurve[kCurveCount];
+
+                for (int i  = 0; i  < animationCurves.Length; i++)
                 {
+                    var arrayPointer = curvePtrs2D.ArrayPointers[i];
                     if (arrayPointer.IsNotNullPointer)
                     {
                         // Deserialization is a bit different. Init array length here.
                         var animationCurve = new AnimationCurve(arrayPointer.Length);
-                        
+
                         // Read values
                         reader.JumpToAddress(arrayPointer);
                         reader.ReadX(ref animationCurve, false); // do not create new instance
 
                         // Assign curve to array
-                        animationCurves[arrayIndex] = animationCurve;
+                        animationCurves[i] = animationCurve;
                     }
-                    arrayIndex++;
+                    else
+                    {
+                        animationCurves[i] = new AnimationCurve(0);
+                    }
                 }
             }
+            this.SetReaderToEndAddress(reader);
+
             // Convert to Unity
             {
                 // Convert from animation curves from Gfz to Unity formats
@@ -88,7 +96,6 @@ namespace GameCube.GFZ.CourseCollision
                     }
                 }
             }
-            this.SetReaderToEndAddress(reader);
         }
 
         public void Serialize(BinaryWriter writer)

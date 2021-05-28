@@ -12,14 +12,15 @@ namespace Manifold.IO
             return matrix.c3.xyz;
         }
 
-        public static quaternion Rotation(this float4x4 matrix)
+        // Currently very lacking. Rotations do not come out right.
+        public static quaternion RotationBad(this float4x4 matrix)
         {
             return new quaternion(matrix);
         }
 
         public static float3 RotationEuler(this float4x4 matrix)
         {
-            return matrix.Rotation().ComputeAngles();
+            return matrix.RotationBad().ComputeAngles();
         }
 
         public static float3 Scale(this float4x4 matrix)

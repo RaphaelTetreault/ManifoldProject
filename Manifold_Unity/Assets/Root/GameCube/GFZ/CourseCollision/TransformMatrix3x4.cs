@@ -25,7 +25,7 @@ namespace GameCube.GFZ.CourseCollision
         }
 
         public float3 Position => matrix.Position();
-        public quaternion Rotation => matrix.Rotation();
+        public quaternion Rotation => matrix.RotationBad();
         public float3 rotationEuler => matrix.RotationEuler();
         public float3 Scale => matrix.Scale();
 

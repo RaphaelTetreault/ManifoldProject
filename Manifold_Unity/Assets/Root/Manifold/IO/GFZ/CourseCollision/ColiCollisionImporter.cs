@@ -115,19 +115,25 @@ namespace Manifold.IO.GFZ.CourseCollision
 
                         // Save mesh to Asset Database
                         var assetPath = $"Assets/{importTo}/st{sceneSobj.Value.ID:00}/coli_{meshName}.asset";
+                        if (AssetDatabase.LoadAssetAtPath<Mesh>(assetPath) != null)
+                            AssetDatabase.DeleteAsset(assetPath);
                         AssetDatabase.CreateAsset(mesh, assetPath);
 
                         // Create mesh prefab
                         var prefabPath = $"Assets/{importTo}/st{sceneSobj.Value.ID:00}/pf_{meshName}.prefab";
                         var prefab = ImportUtility.CreatePrefabFromModel(mesh, materials, prefabPath);
 
-                        // Edit then save again
-                        //prefab.AddComponent<ColliderObjectTag>();
+                        EditorUtility.SetDirty(mesh);
+                        EditorUtility.SetDirty(prefab);
+
+                        // if things don't work, see other function
+                        //mesh = AssetDatabase.LoadAssetAtPath<Mesh>(assetPath);
                         //PrefabUtility.SavePrefabAsset(prefab);
                     }
                 }
             }
 
+            ImportUtility.ProgressBar<ColliderObject>(1, 1, $"Saving assets...");
             ImportUtility.FinalizeAssetImport();
         }
 
@@ -174,6 +180,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
                     // iterate over each triangle
                     var allVertices = new List<Vector3>();
+                    var allNormals = new List<Vector3>();
                     var allIndexes = new List<int>();
                     for (int i = 0; i < indexes.Length; i++)
                     {
@@ -181,17 +188,27 @@ namespace Manifold.IO.GFZ.CourseCollision
                         var triangle = colliderTriangles[index];
 
                         // Get vertices
-                        //allVertices.AddRange(triangle.GetVerts());
-                        allVertices.Add(triangle.vertex0);
-                        allVertices.Add(triangle.vertex1);
-                        allVertices.Add(triangle.vertex2);
-
+                        var verts = triangle.GetVerts();
+                        var nVerts = verts.Length;
                         // Get indices for those vertices
-                        allIndexes.Add(i * 3 + 0);
-                        allIndexes.Add(i * 3 + 1);
-                        allIndexes.Add(i * 3 + 2);
+                        for (int v = 0; v < nVerts; v++)
+                        {
+                            allVertices.Add(verts[v]);
+                            allIndexes.Add(i * nVerts + v);
+                            allNormals.Add(triangle.normal);
+                        }
+
+                        // Do backfaces
+                        //// Add all vertices again
+
+                        //// Iterate backwards to get reverse winding
+                        //for (int nv = nVerts - 1; nv > -1; nv--)
+                        //{
+                        //    allIndexes.Add(i * nVerts + nv);
+                        //    allNormals.Add(-triangle.normal);
+                        //}
                     }
-                    
+
                     // Build submesh
                     var triSubmesh = new SubMeshDescriptor();
                     triSubmesh.baseVertex = mesh.vertexCount;
@@ -203,13 +220,16 @@ namespace Manifold.IO.GFZ.CourseCollision
 
                     // Append to mesh
                     var verticesConcat = mesh.vertices.Concat(allVertices).ToArray();
+                    var normalsConcat = mesh.normals.Concat(allNormals).ToArray();
                     var trianglesConcat = mesh.triangles.Concat(allIndexes).ToArray();
                     // Assign values to mesh
                     mesh.vertices = verticesConcat;
+                    mesh.normals = normalsConcat;
                     mesh.triangles = trianglesConcat;
                     // Set mesh to use submesh 0-255
                     submeshes[meshIndex] = triSubmesh;
                 }
+
 
                 var quadMeshIndexes = scene.surfaceAttributeMeshTable.quadMeshIndexes[surfaceTypeIndex];
                 var quadIndexes = quadMeshIndexes.indexes.GetArrays();
@@ -219,11 +239,14 @@ namespace Manifold.IO.GFZ.CourseCollision
                 // triIndex = the indexes for the mesh 
                 for (int meshIndex = 0; meshIndex < quadIndexes.Length; meshIndex++)
                 {
+                    const int nVerts = 6;
+
                     // Get ushort[] for all triangles used
                     var indexes = quadIndexes[meshIndex];
 
                     // iterate over each triangle
                     var allVertices = new List<Vector3>();
+                    var allNormals = new List<Vector3>();
                     var allIndexes = new List<int>();
                     for (int i = 0; i < indexes.Length; i++)
                     {
@@ -233,19 +256,32 @@ namespace Manifold.IO.GFZ.CourseCollision
                         // Get vertices
                         allVertices.Add(quad.vertex0);
                         allVertices.Add(quad.vertex1);
-                        allVertices.Add(quad.vertex2);
-                        //
+                        allVertices.Add(quad.vertex2); // tri 0
                         allVertices.Add(quad.vertex2);
                         allVertices.Add(quad.vertex3);
-                        allVertices.Add(quad.vertex0);
-
+                        allVertices.Add(quad.vertex0); // tri 1
                         // Get indices for those vertices
-                        allIndexes.Add(i * 6 + 0);
-                        allIndexes.Add(i * 6 + 1);
-                        allIndexes.Add(i * 6 + 2);
-                        allIndexes.Add(i * 6 + 3);
-                        allIndexes.Add(i * 6 + 4);
-                        allIndexes.Add(i * 6 + 5);
+                        // Add normal for each
+                        for (int nv = 0; nv < nVerts; nv++)
+                        {
+                            allIndexes.Add(i * nVerts + nv);
+                            allNormals.Add(quad.normal);
+                        }
+
+
+                        //allVertices.Add(quad.vertex0);
+                        //allVertices.Add(quad.vertex1);
+                        //allVertices.Add(quad.vertex2); // tri 0
+                        //allVertices.Add(quad.vertex2);
+                        //allVertices.Add(quad.vertex3);
+                        //allVertices.Add(quad.vertex0); // tri 1
+                        //// Do backfaces.
+                        //// Iterate backwards to get reverse winding
+                        //for (int nv = nVerts-1; nv > -1; nv--)
+                        //{
+                        //    allIndexes.Add(i * nVerts + nv);
+                        //    allNormals.Add(-quad.normal);
+                        //}
                     }
 
                     // Build submesh
@@ -257,11 +293,15 @@ namespace Manifold.IO.GFZ.CourseCollision
                     quadSubmesh.topology = MeshTopology.Triangles;
                     quadSubmesh.vertexCount = allVertices.Count;
 
+                    Assert.IsTrue(allVertices.Count == allNormals.Count, $"v:{allVertices.Count} != n:{allNormals.Count}");
+
                     // Append to mesh
                     var verticesConcat = mesh.vertices.Concat(allVertices).ToArray();
+                    var normalsConcat = mesh.normals.Concat(allNormals).ToArray();
                     var trianglesConcat = mesh.triangles.Concat(allIndexes).ToArray();
                     // Assign values to mesh
                     mesh.vertices = verticesConcat;
+                    mesh.normals = normalsConcat;
                     mesh.triangles = trianglesConcat;
                     // Set mesh to use submesh 0-255
                     submeshes[meshIndex + 256] = quadSubmesh;
@@ -276,7 +316,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
                 // Compute other Mesh data
                 mesh.RecalculateBounds();
-                mesh.RecalculateNormals();
+                //mesh.RecalculateNormals();
 
                 meshes[surfaceTypeIndex] = mesh;
             }

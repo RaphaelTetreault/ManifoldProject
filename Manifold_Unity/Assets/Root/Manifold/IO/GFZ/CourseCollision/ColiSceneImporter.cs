@@ -184,14 +184,14 @@ namespace Manifold.IO.GFZ.CourseCollision
                     {
                         // Perhaps best way when matrix exists? No compression rotation
                         instance.transform.position = sceneObject.transformMatrix3x4.Position;
-                        instance.transform.rotation = sceneObject.transformMatrix3x4.Rotation;
+                        instance.transform.rotation = sceneObject.transformMatrix3x4.Matrix.ToUnityMatrix4x4().rotation; // 'quaternion' is... lacking
                         instance.transform.localScale = sceneObject.transformMatrix3x4.Scale;
                     }
                     else
                     {
                         // Apply GFZ Transform values onto Unity Transform
                         instance.transform.position = sceneObject.transform.Position;
-                        instance.transform.rotation = sceneObject.transform.DecomposedRotation.Rotation;
+                        instance.transform.rotation = sceneObject.transform.DecomposedRotation.Rotation; // Still using UnityEngine, not Unity.Mathematics
                         instance.transform.localScale = sceneObject.transform.Scale;
                     }
                 }
@@ -492,7 +492,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                     //cube.transform.rotation = Quaternion.Euler(rotation);// + tt.localRotation);
                     //cube.transform.localScale = scale.Multiply(tt.localScale);
                     cube.transform.position = position + tt.localPosition;
-                    cube.transform.rotation = math.mul(quaternion.EulerXYZ(rotation), quaternion.EulerXYZ(tt.localRotation));
+                    cube.transform.rotation = Quaternion.Euler(rotation + tt.localRotation);// math.mul(quaternion.EulerXYZ(rotation), quaternion.EulerXYZ(tt.localRotation));
                     cube.transform.localScale = scale * tt.localScale;
                 }
             }
