@@ -166,7 +166,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
                     // Progress bar update
                     var title = $"Generating Scene ({scene.name})";
-                    var info = $"{displayName}";
+                    var info = $"[{count.ToString(digitsFormat)}/{total}] {objectName}";
                     var progress = (float)count / total;
                     EditorUtility.DisplayProgressBar(title, info, progress);
                     count++;

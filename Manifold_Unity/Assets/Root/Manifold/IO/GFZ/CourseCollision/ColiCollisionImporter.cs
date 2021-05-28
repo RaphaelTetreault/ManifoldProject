@@ -76,6 +76,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                             AssetDatabase.CreateAsset(mesh, assetPath);
 
                             // Refresh instance reference
+                            // IMPORTANT! Sometimes reference gets lost.
                             mesh = AssetDatabase.LoadAssetAtPath<Mesh>(assetPath);
 
                             // Create mesh prefab
@@ -114,17 +115,21 @@ namespace Manifold.IO.GFZ.CourseCollision
                         ImportUtility.ProgressBar<ColliderObject>(count, total, $"st{sceneSobj.Value.ID:00} {meshName}");
 
                         // Save mesh to Asset Database
-                        var assetPath = $"Assets/{importTo}/st{sceneSobj.Value.ID:00}/coli_{meshName}.asset";
-                        if (AssetDatabase.LoadAssetAtPath<Mesh>(assetPath) != null)
-                            AssetDatabase.DeleteAsset(assetPath);
-                        AssetDatabase.CreateAsset(mesh, assetPath);
+                        var meshPath = $"Assets/{importTo}/st{sceneSobj.Value.ID:00}/coli_{meshName}.asset";
+                        if (AssetDatabase.LoadAssetAtPath<Mesh>(meshPath) != null)
+                            AssetDatabase.DeleteAsset(meshPath);
+                        AssetDatabase.CreateAsset(mesh, meshPath);
+
+                        // Refresh instance reference
+                        // IMPORTANT! Sometimes reference gets lost.
+                        mesh = AssetDatabase.LoadAssetAtPath<Mesh>(meshPath);
 
                         // Create mesh prefab
                         var prefabPath = $"Assets/{importTo}/st{sceneSobj.Value.ID:00}/pf_{meshName}.prefab";
                         var prefab = ImportUtility.CreatePrefabFromModel(mesh, materials, prefabPath);
 
-                        EditorUtility.SetDirty(mesh);
-                        EditorUtility.SetDirty(prefab);
+                        //EditorUtility.SetDirty(mesh);
+                        //EditorUtility.SetDirty(prefab);
 
                         // if things don't work, see other function
                         //mesh = AssetDatabase.LoadAssetAtPath<Mesh>(assetPath);
@@ -197,17 +202,10 @@ namespace Manifold.IO.GFZ.CourseCollision
                             allIndexes.Add(i * nVerts + v);
                             allNormals.Add(triangle.normal);
                         }
-
-                        // Do backfaces
-                        //// Add all vertices again
-
-                        //// Iterate backwards to get reverse winding
-                        //for (int nv = nVerts - 1; nv > -1; nv--)
-                        //{
-                        //    allIndexes.Add(i * nVerts + nv);
-                        //    allNormals.Add(-triangle.normal);
-                        //}
                     }
+                    var backfaceIndexes = allIndexes.ToArray();
+                    Array.Reverse(backfaceIndexes);
+                    allIndexes.AddRange(backfaceIndexes);
 
                     // Build submesh
                     var triSubmesh = new SubMeshDescriptor();
@@ -267,22 +265,10 @@ namespace Manifold.IO.GFZ.CourseCollision
                             allIndexes.Add(i * nVerts + nv);
                             allNormals.Add(quad.normal);
                         }
-
-
-                        //allVertices.Add(quad.vertex0);
-                        //allVertices.Add(quad.vertex1);
-                        //allVertices.Add(quad.vertex2); // tri 0
-                        //allVertices.Add(quad.vertex2);
-                        //allVertices.Add(quad.vertex3);
-                        //allVertices.Add(quad.vertex0); // tri 1
-                        //// Do backfaces.
-                        //// Iterate backwards to get reverse winding
-                        //for (int nv = nVerts-1; nv > -1; nv--)
-                        //{
-                        //    allIndexes.Add(i * nVerts + nv);
-                        //    allNormals.Add(-quad.normal);
-                        //}
                     }
+                    var backfaceIndexes = allIndexes.ToArray();
+                    Array.Reverse(backfaceIndexes);
+                    allIndexes.AddRange(backfaceIndexes);
 
                     // Build submesh
                     var quadSubmesh = new SubMeshDescriptor();
