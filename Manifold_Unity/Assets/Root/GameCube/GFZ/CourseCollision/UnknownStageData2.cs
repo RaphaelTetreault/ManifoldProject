@@ -88,6 +88,8 @@ namespace GameCube.GFZ.CourseCollision
 
         public AddressRange SerializeWithReference(BinaryWriter writer)
         {
+            // can bu null?
+            // if so, return new pointer un-init
             throw new NotImplementedException();
         }
     }
