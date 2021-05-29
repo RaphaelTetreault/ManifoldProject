@@ -6,7 +6,8 @@ namespace GameCube.GFZ.CourseCollision
     /// <summary>
     /// 
     /// </summary>
-    public class TrackIndexesTable : IBinarySerializable, IBinaryAddressableRange
+    public class TrackIndexesTable :
+        IBinarySeralizableReference
     {
         // CONSTANTS
         public const int kNumEntries = 64;
@@ -58,5 +59,9 @@ namespace GameCube.GFZ.CourseCollision
             throw new System.NotImplementedException();
         }
 
+        public AddressRange SerializeReference(BinaryWriter writer)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

@@ -10,7 +10,8 @@ namespace GameCube.GFZ.CourseCollision
     /// 
     /// </summary>
     [Serializable]
-    public class UnknownStageData2 : IBinarySerializable, IBinaryAddressableRange
+    public class UnknownStageData2 :
+        IBinarySeralizableReference
     {
         // CONSTANTS
         public const int kElementCount = 6;
@@ -81,6 +82,11 @@ namespace GameCube.GFZ.CourseCollision
         }
 
         public void Serialize(BinaryWriter writer)
+        {
+            throw new NotImplementedException();
+        }
+
+        public AddressRange SerializeReference(BinaryWriter writer)
         {
             throw new NotImplementedException();
         }

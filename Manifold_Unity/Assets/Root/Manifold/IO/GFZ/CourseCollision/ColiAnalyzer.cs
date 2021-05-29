@@ -922,8 +922,8 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol(nameof(Header.unknownSolsTriggerPtrs.Address));
                 writer.WriteNextCol(nameof(Header.collisionObjectReferencePtrs));
                 writer.WriteNextCol(nameof(Header.collisionObjectReferencePtrs.Address));
-                writer.WriteNextCol(nameof(Header.unk_collisionObjectReferences));
-                writer.WriteNextCol(nameof(Header.unk_collisionObjectReferences.Address));
+                writer.WriteNextCol(nameof(Header.unk_collisionObjectReferencePtrs));
+                writer.WriteNextCol(nameof(Header.unk_collisionObjectReferencePtrs.Address));
                 writer.WriteNextCol(nameof(Header.unused_0x74_0x78));
                 writer.WriteNextCol(nameof(Header.unused_0x74_0x78.Address));
                 writer.WriteNextCol(nameof(Header.circuitType));
@@ -992,8 +992,8 @@ namespace Manifold.IO.GFZ.CourseCollision
                     writer.WriteNextCol(coliHeader.unknownSolsTriggerPtrs.HexAddress);
                     writer.WriteNextCol(coliHeader.collisionObjectReferencePtrs.Length);
                     writer.WriteNextCol(coliHeader.collisionObjectReferencePtrs.HexAddress);
-                    writer.WriteNextCol(coliHeader.unk_collisionObjectReferences.Length);
-                    writer.WriteNextCol(coliHeader.unk_collisionObjectReferences.HexAddress);
+                    writer.WriteNextCol(coliHeader.unk_collisionObjectReferencePtrs.Length);
+                    writer.WriteNextCol(coliHeader.unk_collisionObjectReferencePtrs.HexAddress);
                     writer.WriteNextCol(coliHeader.unused_0x74_0x78.Length);
                     writer.WriteNextCol(coliHeader.unused_0x74_0x78.HexAddress);
                     writer.WriteNextCol(coliHeader.circuitType);

@@ -22,7 +22,7 @@ namespace Manifold.IO
             var arrayPointer = new ArrayPointer()
             {
                 Length = addressRanges.Length,
-                Address = addressRanges.Length == 0 ? 0 : addressRanges[0].GetPointer.address,
+                Address = addressRanges.Length == 0 ? 0 : addressRanges[0].GetPointer().address,
             };
             return arrayPointer;
         }

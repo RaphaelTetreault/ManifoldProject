@@ -6,7 +6,8 @@ using Unity.Mathematics;
 namespace GameCube.GFZ.CourseCollision
 {
     [Serializable]
-    public class CourseMetadataTrigger : IBinarySerializable, IBinaryAddressableRange
+    public class CourseMetadataTrigger :
+        IBinarySeralizableReference
     {
         [UnityEngine.SerializeField]
         private AddressRange addressRange;
@@ -68,5 +69,9 @@ namespace GameCube.GFZ.CourseCollision
             throw new NotImplementedException();
         }
 
+        public AddressRange SerializeReference(BinaryWriter writer)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
