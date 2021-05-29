@@ -61,7 +61,7 @@ namespace GameCube.GFZ.CourseCollision
             writer.WriteX(kUshortArrayTerminator);
         }
 
-        public AddressRange SerializeReference(BinaryWriter writer)
+        public AddressRange SerializeWithReference(BinaryWriter writer)
         {
             this.RecordStartAddress(writer.BaseStream);
             Serialize(writer);

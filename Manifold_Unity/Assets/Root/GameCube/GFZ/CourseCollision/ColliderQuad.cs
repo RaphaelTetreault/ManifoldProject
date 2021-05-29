@@ -76,7 +76,7 @@ namespace GameCube.GFZ.CourseCollision
             writer.WriteX(precomputed3);
         }
 
-        public AddressRange SerializeReference(BinaryWriter writer)
+        public AddressRange SerializeWithReference(BinaryWriter writer)
         {
             this.RecordStartAddress(writer.BaseStream);
             Serialize(writer);

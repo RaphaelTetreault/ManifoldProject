@@ -9,6 +9,12 @@ namespace Manifold.IO
         [UnityEngine.SerializeField] private int length;
         [UnityEngine.SerializeField] private int address;
 
+        public ArrayPointer(int length = 0, int address = 0)
+        {
+            this.length = length;
+            this.address = address;
+        }
+
         public int Length
         {
             get => length;

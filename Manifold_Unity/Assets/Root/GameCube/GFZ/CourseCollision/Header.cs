@@ -172,7 +172,7 @@ namespace GameCube.GFZ.CourseCollision
             writer.WriteX(new byte[kSizeOfZero0xD8], false); // write const zeros
         }
 
-        public AddressRange SerializeReference(BinaryWriter writer)
+        public AddressRange SerializeWithReference(BinaryWriter writer)
         {
             var addressRange = new AddressRange();
             addressRange.RecordStartAddress(writer.BaseStream);

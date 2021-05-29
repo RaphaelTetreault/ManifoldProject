@@ -11,12 +11,6 @@ namespace GameCube.GFZ.CourseCollision
     public abstract class IndexTable :
         IBinarySeralizableReference
     {
-        public static int Index { get; set; } = 0;
-        public static void ResetDebugIndex()
-        {
-            Index = 0;
-        }
-
         // "CONSTANTS"
         public abstract int ListCount { get; }
 
@@ -102,7 +96,7 @@ namespace GameCube.GFZ.CourseCollision
         {
             // Since there is inheritance, get type dynamically.
             writer.Comment(GetType().Name, ColiCourseUtility.SerializeVerbose);
-            writer.Comment($"Index:{Index++:00}", ColiCourseUtility.SerializeVerbose);
+            writer.Comment($"Index:{ColiCourseUtility.Index++:00}", ColiCourseUtility.SerializeVerbose);
 
             this.RecordStartAddress(writer);
             {
@@ -115,7 +109,7 @@ namespace GameCube.GFZ.CourseCollision
                     var indexList = indexLists[i];
                     if (indexList.Length > 0)
                     {
-                        indexArrayPtrs[i] = indexList.SerializeReference(writer).GetPointer();
+                        indexArrayPtrs[i] = indexList.SerializeWithReference(writer).GetPointer();
                     }
                 }
             }
@@ -125,11 +119,11 @@ namespace GameCube.GFZ.CourseCollision
             writer.CommentNewLine(ColiCourseUtility.SerializeVerbose);
         }
 
-        public AddressRange SerializeReference(BinaryWriter writer)
+        public AddressRange SerializeWithReference(BinaryWriter writer)
         {
             if (IsEmpty)
             {
-                Index++;
+                ColiCourseUtility.Index++;
                 // table has no mesh, so save nothing
                 return new AddressRange();
             }

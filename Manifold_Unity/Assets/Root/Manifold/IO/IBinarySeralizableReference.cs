@@ -12,7 +12,7 @@ namespace Manifold.IO
         /// </summary>
         /// <param name="writer">The writer stream to serialize to.</param>
         /// <returns>Returns address range of serialized value.</returns>
-        AddressRange SerializeReference(BinaryWriter writer);
+        AddressRange SerializeWithReference(BinaryWriter writer);
 
         // TODO when Unity C# runtime support default interface implementation,
         //      use this instead.

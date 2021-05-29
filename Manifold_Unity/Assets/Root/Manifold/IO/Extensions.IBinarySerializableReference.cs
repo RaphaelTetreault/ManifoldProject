@@ -4,14 +4,14 @@ namespace Manifold.IO
 {
     public static class IBinarySerializableReferenceExtensions
     {
-        public static AddressRange[] SerializeReferences(this IBinarySeralizableReference[] binarySerializableReferences, BinaryWriter writer)
+        public static AddressRange[] SerializeWithReferences(this IBinarySeralizableReference[] binarySerializableReferences, BinaryWriter writer)
         {
             var count = binarySerializableReferences.Length;
             var addressRanges = new AddressRange[count];
             for (int i = 0; i < count; i++)
             {
                 var binarySerializableReference = binarySerializableReferences[i];
-                addressRanges[i] = binarySerializableReference.SerializeReference(writer);
+                addressRanges[i] = binarySerializableReference.SerializeWithReference(writer);
             }
             return addressRanges;
         }

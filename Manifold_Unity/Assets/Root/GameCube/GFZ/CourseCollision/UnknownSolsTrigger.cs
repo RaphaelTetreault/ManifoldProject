@@ -34,7 +34,7 @@ namespace GameCube.GFZ.CourseCollision
             writer.WriteX(transform);
         }
 
-        public AddressRange SerializeReference(BinaryWriter writer)
+        public AddressRange SerializeWithReference(BinaryWriter writer)
         {
             throw new NotImplementedException();
         }

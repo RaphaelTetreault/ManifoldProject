@@ -185,16 +185,11 @@ namespace GameCube.GFZ.CourseCollision
             //writer.CommentPointer(0x0C, ColiCourseUtility.SerializeVerbose);
             //header.trackNodesPtr = trackNodes.SerializeReferences(writer).GetArrayPointer();
 
+            writer.CommentTypeDesc(surfaceAttributeAreas, new Pointer(0x14), ColiCourseUtility.SerializeVerbose);
+            header.surfaceAttributeAreasPtr = surfaceAttributeAreas.SerializeWithReferences(writer).GetArrayPointer();
 
-            //writer.CommentNewLine(ColiCourseUtility.SerializeVerbose);
-            //writer.CommentPointer(0x10, ColiCourseUtility.SerializeVerbose);
-            //writer.CommentPointer(0x14, ColiCourseUtility.SerializeVerbose);
-            //header.surfaceAttributeAreasPtr = surfaceAttributeAreas.SerializeReferences(writer).GetArrayPointer();
-
-
-            writer.CommentNewLine(ColiCourseUtility.SerializeVerbose);
-            writer.CommentPointer(0x1C, ColiCourseUtility.SerializeVerbose);
-            header.surfaceAttributeMeshTablePtr = surfaceAttributeMeshTable.SerializeReference(writer).GetPointer();
+            writer.CommentTypeDesc(surfaceAttributeMeshTable, new Pointer(0x1C), ColiCourseUtility.SerializeVerbose);
+            header.surfaceAttributeMeshTablePtr = surfaceAttributeMeshTable.SerializeWithReference(writer).GetPointer();
 
 
             //writer.CommentNewLine(ColiCourseUtility.SerializeVerbose);

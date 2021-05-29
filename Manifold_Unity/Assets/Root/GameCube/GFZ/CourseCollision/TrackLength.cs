@@ -38,12 +38,12 @@ namespace GameCube.GFZ.CourseCollision
 
         public void Serialize(BinaryWriter writer)
         {
-            writer.Comment<TrackLength>(ColiCourseUtility.SerializeVerbose);
+            writer.CommentType<TrackLength>(ColiCourseUtility.SerializeVerbose);
 
             writer.WriteX(trackLength);
         }
 
-        public AddressRange SerializeReference(BinaryWriter writer)
+        public AddressRange SerializeWithReference(BinaryWriter writer)
         {
             var addressRange = new AddressRange();
             addressRange.RecordStartAddress(writer.BaseStream);

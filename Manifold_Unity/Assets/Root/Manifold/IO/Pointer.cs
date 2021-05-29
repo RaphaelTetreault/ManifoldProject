@@ -8,11 +8,17 @@ namespace Manifold.IO
     {
         public int address;
 
+        //public Pointer()
+        //{
+        //    address = 0;
+        //}
 
+        public Pointer(int address)
+        {
+            this.address = address;
+        }
         public int Address => address;
-
         public string HexAddress => $"0x{address:X8}";
-
         public bool IsNotNullPointer => address != 0;
 
 

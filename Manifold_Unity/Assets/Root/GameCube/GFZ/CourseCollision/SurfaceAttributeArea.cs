@@ -30,14 +30,16 @@ namespace GameCube.GFZ.CourseCollision
         public void Deserialize(BinaryReader reader)
         {
             this.RecordStartAddress(reader);
-            reader.ReadX(ref lengthFrom);
-            reader.ReadX(ref lengthTo);
-            reader.ReadX(ref widthLeft);
-            reader.ReadX(ref widthRight);
-            reader.ReadX(ref surfaceAttribute);
-            reader.ReadX(ref trackBranchID);
-            reader.ReadX(ref zero_0x12);
-            reader.ReadX(ref zero_0x13);
+            {
+                reader.ReadX(ref lengthFrom);
+                reader.ReadX(ref lengthTo);
+                reader.ReadX(ref widthLeft);
+                reader.ReadX(ref widthRight);
+                reader.ReadX(ref surfaceAttribute);
+                reader.ReadX(ref trackBranchID);
+                reader.ReadX(ref zero_0x12);
+                reader.ReadX(ref zero_0x13);
+            }
             this.RecordEndAddress(reader);
 
             Assert.IsTrue(zero_0x12 == 0);
@@ -46,12 +48,24 @@ namespace GameCube.GFZ.CourseCollision
 
         public void Serialize(BinaryWriter writer)
         {
-            throw new NotImplementedException();
+            this.RecordStartAddress(writer);
+            {
+                writer.WriteX(lengthFrom);
+                writer.WriteX(lengthTo);
+                writer.WriteX(widthLeft);
+                writer.WriteX(widthRight);
+                writer.WriteX(surfaceAttribute);
+                writer.WriteX(trackBranchID);
+                writer.WriteX((int)0);
+                writer.WriteX((int)0);
+            }
+            this.RecordEndAddress(writer);
         }
 
-        public AddressRange SerializeReference(BinaryWriter writer)
+        public AddressRange SerializeWithReference(BinaryWriter writer)
         {
-            throw new NotImplementedException();
+            Serialize(writer);
+            return addressRange;
         }
     }
 }

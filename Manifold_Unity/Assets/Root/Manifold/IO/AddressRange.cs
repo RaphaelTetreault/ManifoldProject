@@ -30,7 +30,6 @@ namespace Manifold.IO
             };
         }
 
-        public int GetSize => (int)(endAddress - startAddress);
-
+        public int Size => (int)(endAddress - startAddress);
     }
 }

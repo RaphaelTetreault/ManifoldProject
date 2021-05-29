@@ -61,13 +61,13 @@ namespace GameCube.GFZ.CourseCollision
 
         public void Serialize(BinaryWriter writer)
         {
-            writer.Comment<TrackNode>(ColiCourseUtility.SerializeVerbose);
+            writer.CommentType<TrackNode>(ColiCourseUtility.SerializeVerbose);
 
             writer.WriteX(pointsPtr);
             writer.WriteX(transformPtr);
         }
 
-        public AddressRange SerializeReference(BinaryWriter writer)
+        public AddressRange SerializeWithReference(BinaryWriter writer)
         {
             var addressRange = new AddressRange();
             addressRange.RecordStartAddress(writer.BaseStream);
