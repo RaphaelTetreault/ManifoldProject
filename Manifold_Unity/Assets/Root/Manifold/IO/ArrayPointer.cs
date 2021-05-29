@@ -21,6 +21,11 @@ namespace Manifold.IO
             set => address = value;
         }
 
+        public Pointer Pointer
+        {
+            get => new Pointer() { address = address };
+        }
+
         public string HexAddress => $"0x{address:X8}";
 
         public bool IsNotNullPointer => address != 0;
@@ -37,7 +42,6 @@ namespace Manifold.IO
             writer.WriteX(length);
             writer.WriteX(address);
         }
-
         public override string ToString()
         {
             return $"Length: {Length}, Address: {HexAddress}";

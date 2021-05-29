@@ -6,7 +6,8 @@ using Unity.Mathematics;
 namespace GameCube.GFZ.CourseCollision
 {
     [Serializable]
-    public class ColliderQuad : IBinarySerializable, IBinaryAddressableRange
+    public class ColliderQuad :
+        IBinarySeralizableReference
     {
         // METADATA
         [UnityEngine.SerializeField]
@@ -38,6 +39,11 @@ namespace GameCube.GFZ.CourseCollision
 
 
         // METHODS
+        public float3[] GetVerts()
+        {
+            return new float3[] { vertex0, vertex1, vertex2, vertex3 };
+        }
+
         public void Deserialize(BinaryReader reader)
         {
             this.RecordStartAddress(reader);
@@ -68,6 +74,14 @@ namespace GameCube.GFZ.CourseCollision
             writer.WriteX(precomputed1);
             writer.WriteX(precomputed2);
             writer.WriteX(precomputed3);
+        }
+
+        public AddressRange SerializeReference(BinaryWriter writer)
+        {
+            this.RecordStartAddress(writer.BaseStream);
+            Serialize(writer);
+            this.RecordEndAddress(writer.BaseStream);
+            return addressRange;
         }
 
     }

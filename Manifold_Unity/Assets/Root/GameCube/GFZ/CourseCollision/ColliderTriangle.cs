@@ -9,7 +9,8 @@ namespace GameCube.GFZ.CourseCollision
     /// An individual triangle as part of a collider mesh.
     /// </summary>
     [Serializable]
-    public class ColliderTriangle : IBinarySerializable, IBinaryAddressableRange
+    public class ColliderTriangle :
+        IBinarySeralizableReference
     {
         // METADATA
         [UnityEngine.SerializeField]
@@ -26,7 +27,7 @@ namespace GameCube.GFZ.CourseCollision
         public float3 precomputed2;
 
 
-        //
+        // PROPERTIES
         public AddressRange AddressRange
         {
             get => addressRange;
@@ -34,7 +35,12 @@ namespace GameCube.GFZ.CourseCollision
         }
 
 
-        //
+        // METHODS
+        public float3[] GetVerts()
+        {
+            return new float3[] { vertex0, vertex1, vertex2 };
+        }
+
         public void Deserialize(BinaryReader reader)
         {
             this.RecordStartAddress(reader);
@@ -63,9 +69,12 @@ namespace GameCube.GFZ.CourseCollision
             writer.WriteX(precomputed2);
         }
 
-        public float3[] GetVerts()
+        public AddressRange SerializeReference(BinaryWriter writer)
         {
-            return new float3[] { vertex0, vertex1, vertex2 };
+            this.RecordStartAddress(writer.BaseStream);
+            Serialize(writer);
+            this.RecordEndAddress(writer.BaseStream);
+            return addressRange;
         }
 
     }

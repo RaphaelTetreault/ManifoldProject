@@ -33,9 +33,13 @@ namespace Manifold.IO.GFZ.CourseCollision
         [SerializeField]
         protected bool openFolderAfterExport = true;
 
-        //[Header("Exports")]
-        //[SerializeField]
-        //protected CarDataSobj[] exportSobjs;
+        [Header("Exports")]
+        [SerializeField]
+        protected ColiSceneSobj[] exportSobjs;
+
+        [Header("Testing")]
+        [SerializeField]
+        protected bool exportHandMade;
 
 
         public override string ExecuteText => "Export COLI_COURSE";
@@ -44,30 +48,36 @@ namespace Manifold.IO.GFZ.CourseCollision
 
         public void Export()
         {
-            //exportSobjs = AssetDatabaseUtility.GetSobjByOption(exportSobjs, exportOptions, exportFrom);
-            //var exportedFiles = ExportUtility.ExportFiles(exportSobjs, exportTo, "", allowOverwritingFiles, preserveFolderStructure);
-            //ExportUtility.PrintExportsToConsole(this, exportedFiles);
-
-            var temp = new ColiScene[]
+            if (exportHandMade)
             {
-                new ColiScene() {
-                    FileName = "COLI_COURSE999",
-                    header = new Header()
-                    {
-                        Format = Header.SerializeFormat.GX,
-                    },
+                var temp = new ColiScene[]
+                   {
+                        new ColiScene() {
+                            FileName = "COLI_COURSE999",
+                            header = new Header()
+                            {
+                                Format = Header.SerializeFormat.GX,
+                            },
+                        }
+                   };
+                var exportedFiles = ExportUtility.ExportSerializable(temp, exportTo, "", allowOverwritingFiles);
+                if (exportCompressed)
+                {
+                    var compressedFiles = GfzUtility.CompressEachAsLZ(exportedFiles, allowOverwritingFiles);
+                    ExportUtility.PrintExportsToConsole(this, compressedFiles);
                 }
-            };
-
-            var exportedFiles = ExportUtility.ExportSerializable(temp, exportTo, "", allowOverwritingFiles);
-
-            if (exportCompressed)
+                OSUtility.OpenDirectory(openFolderAfterExport, exportedFiles);
+            }
+            else
             {
-                var compressedFiles = GfzUtility.CompressEachAsLZ(exportedFiles, allowOverwritingFiles);
-                ExportUtility.PrintExportsToConsole(this, compressedFiles);
+                exportSobjs = AssetDatabaseUtility.GetSobjByOption(exportSobjs, exportOptions, exportFrom);
+                var exportedFilesX = ExportUtility.ExportFiles(exportSobjs, exportTo, "", allowOverwritingFiles, preserveFolderStructure);
+                //ExportUtility.PrintExportsToConsole(this, exportedFilesX);
+                OSUtility.OpenDirectory(openFolderAfterExport, exportedFilesX);
             }
 
-            OSUtility.OpenDirectory(openFolderAfterExport, exportedFiles);
+
+
         }
     }
 }

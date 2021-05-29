@@ -27,5 +27,15 @@ namespace Manifold.IO
             return arrayPointer;
         }
 
+        public static Pointer[] GetPointers(this AddressRange[] addressRanges)
+        {
+            var pointers = new Pointer[addressRanges.Length];
+            for (int i = 0; i < pointers.Length; i++)
+            {
+                pointers[i] = addressRanges[i].GetPointer();
+            }
+
+            return pointers;
+        }
     }
 }

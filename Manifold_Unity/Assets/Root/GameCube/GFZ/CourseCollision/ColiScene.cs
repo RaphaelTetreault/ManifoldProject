@@ -41,7 +41,7 @@ namespace GameCube.GFZ.CourseCollision
         public CourseMetadataTrigger[] courseMetadataTriggers = new CourseMetadataTrigger[0];
         public ArcadeCheckpointTrigger[] arcadeCheckpointTriggers = new ArcadeCheckpointTrigger[0];
         public StoryObjectTrigger[] storyObjectTriggers = new StoryObjectTrigger[0];
-        public TrackIndexesTable trackIndexTable = new TrackIndexesTable();
+        public TrackIndexTable trackIndexTable = new TrackIndexTable();
 
         // to find
         // * minimap rotation.............
@@ -180,149 +180,125 @@ namespace GameCube.GFZ.CourseCollision
             // TODO order serialization by pointer size based on real files, 
             //      maintain isFileAX/GX compatibility
 
-            writer.SeekEnd();
-            writer.CommentNewLine(ColiCourseUtility.SerializeVerbose);
-            writer.CommentPointer(0x08, ColiCourseUtility.SerializeVerbose);
-            writer.CommentPointer(0x0C, ColiCourseUtility.SerializeVerbose);
-            header.trackNodesPtr = trackNodes.SerializeReferences(writer).GetArrayPointer();
+            //writer.CommentNewLine(ColiCourseUtility.SerializeVerbose);
+            //writer.CommentPointer(0x08, ColiCourseUtility.SerializeVerbose);
+            //writer.CommentPointer(0x0C, ColiCourseUtility.SerializeVerbose);
+            //header.trackNodesPtr = trackNodes.SerializeReferences(writer).GetArrayPointer();
 
 
-            writer.SeekEnd();
-            writer.CommentNewLine(ColiCourseUtility.SerializeVerbose);
-            writer.CommentPointer(0x10, ColiCourseUtility.SerializeVerbose);
-            writer.CommentPointer(0x14, ColiCourseUtility.SerializeVerbose);
-            header.surfaceAttributeAreasPtr = surfaceAttributeAreas.SerializeReferences(writer).GetArrayPointer();
+            //writer.CommentNewLine(ColiCourseUtility.SerializeVerbose);
+            //writer.CommentPointer(0x10, ColiCourseUtility.SerializeVerbose);
+            //writer.CommentPointer(0x14, ColiCourseUtility.SerializeVerbose);
+            //header.surfaceAttributeAreasPtr = surfaceAttributeAreas.SerializeReferences(writer).GetArrayPointer();
 
 
-            writer.SeekEnd();
             writer.CommentNewLine(ColiCourseUtility.SerializeVerbose);
             writer.CommentPointer(0x1C, ColiCourseUtility.SerializeVerbose);
             header.surfaceAttributeMeshTablePtr = surfaceAttributeMeshTable.SerializeReference(writer).GetPointer();
 
 
-            writer.SeekEnd();
-            writer.CommentNewLine(ColiCourseUtility.SerializeVerbose);
-            writer.CommentPointer(0x20, ColiCourseUtility.SerializeVerbose);
-            // SHOULD NOT BE HARD CODED
-            writer.Comment(nameof(unknownData_0x20), ColiCourseUtility.SerializeVerbose);
-            header.unknownData_0x20_Ptr = new Pointer() { address = (int)writer.BaseStream.Position };
-            writer.WriteX(new byte[5 * 4], false);
+            //writer.CommentNewLine(ColiCourseUtility.SerializeVerbose);
+            //writer.CommentPointer(0x20, ColiCourseUtility.SerializeVerbose);
+            //// SHOULD NOT BE HARD CODED
+            //writer.Comment(nameof(unknownData_0x20), ColiCourseUtility.SerializeVerbose);
+            //header.unknownData_0x20_Ptr = new Pointer() { address = (int)writer.BaseStream.Position };
+            //writer.WriteX(new byte[5 * 4], false);
 
 
-            writer.SeekEnd();
-            writer.CommentNewLine(ColiCourseUtility.SerializeVerbose);
-            writer.CommentPointer(0x24, ColiCourseUtility.SerializeVerbose);
-            // SHOULD NOT BE HARD CODED
-            writer.Comment(nameof(unknownFloat_0x24), ColiCourseUtility.SerializeVerbose);
-            header.unknownFloat_0x24_Ptr = new Pointer() { address = (int)writer.BaseStream.Position };
-            writer.WriteX(0f);
+            //writer.CommentNewLine(ColiCourseUtility.SerializeVerbose);
+            //writer.CommentPointer(0x24, ColiCourseUtility.SerializeVerbose);
+            //// SHOULD NOT BE HARD CODED
+            //writer.Comment(nameof(unknownFloat_0x24), ColiCourseUtility.SerializeVerbose);
+            //header.unknownFloat_0x24_Ptr = new Pointer() { address = (int)writer.BaseStream.Position };
+            //writer.WriteX(0f);
 
 
-            //// 0x48 (count total), 0x4C, 0x50, 0x54 (pointer address): Scene Objects
-            writer.SeekEnd();
-            writer.CommentNewLine(ColiCourseUtility.SerializeVerbose);
-            writer.CommentPointer(0x48, ColiCourseUtility.SerializeVerbose);
-            writer.CommentPointer(0x4C, ColiCourseUtility.SerializeVerbose);
-            writer.CommentPointer(0x50, ColiCourseUtility.SerializeVerbose);
-            writer.CommentPointer(0x54, ColiCourseUtility.SerializeVerbose);
-            var sceneObjectsPtrs = sceneObjects.SerializeReferences(writer).GetArrayPointer();
-            header.sceneObjectCount = sceneObjectsPtrs.Length;
-            header.unk_sceneObjectCount1 = 0; // still don't know what this is for
-            header.unk_sceneObjectCount2 = 0; // still don't know what this is for
-            header.sceneObjectsPtr = new Pointer() { address = sceneObjectsPtrs.Address };
+            ////// 0x48 (count total), 0x4C, 0x50, 0x54 (pointer address): Scene Objects
+            //writer.CommentNewLine(ColiCourseUtility.SerializeVerbose);
+            //writer.CommentPointer(0x48, ColiCourseUtility.SerializeVerbose);
+            //writer.CommentPointer(0x4C, ColiCourseUtility.SerializeVerbose);
+            //writer.CommentPointer(0x50, ColiCourseUtility.SerializeVerbose);
+            //writer.CommentPointer(0x54, ColiCourseUtility.SerializeVerbose);
+            //var sceneObjectsPtrs = sceneObjects.SerializeReferences(writer).GetArrayPointer();
+            //header.sceneObjectCount = sceneObjectsPtrs.Length;
+            //header.unk_sceneObjectCount1 = 0; // still don't know what this is for
+            //header.unk_sceneObjectCount2 = 0; // still don't know what this is for
+            //header.sceneObjectsPtr = new Pointer() { address = sceneObjectsPtrs.Address };
 
-            //// 0x5C and 0x60 SOLS values
-            writer.SeekEnd();
-            writer.CommentNewLine(ColiCourseUtility.SerializeVerbose);
-            writer.CommentPointer(0x5C, ColiCourseUtility.SerializeVerbose);
-            writer.CommentPointer(0x60, ColiCourseUtility.SerializeVerbose);
-            header.unknownSolsTriggerPtrs = unknownSolsTriggers.SerializeReferences(writer).GetArrayPointer();
+            ////// 0x5C and 0x60 SOLS values
+            //writer.CommentNewLine(ColiCourseUtility.SerializeVerbose);
+            //writer.CommentPointer(0x5C, ColiCourseUtility.SerializeVerbose);
+            //writer.CommentPointer(0x60, ColiCourseUtility.SerializeVerbose);
+            //header.unknownSolsTriggerPtrs = unknownSolsTriggers.SerializeReferences(writer).GetArrayPointer();
 
-            //// 0x64 and 0x68
-            //reader.JumpToAddress(header.collisionObjectReferences);
-            //reader.ReadX(ref collisionObjectReferences, header.collisionObjectReferences.Length, true);
-            writer.SeekEnd();
-            writer.CommentNewLine(ColiCourseUtility.SerializeVerbose);
-            writer.CommentPointer(0x64, ColiCourseUtility.SerializeVerbose);
-            writer.CommentPointer(0x68, ColiCourseUtility.SerializeVerbose);
-            header.collisionObjectReferencePtrs = collisionObjectReferences.SerializeReferences(writer).GetArrayPointer();
+            ////// 0x64 and 0x68
+            //writer.CommentNewLine(ColiCourseUtility.SerializeVerbose);
+            //writer.CommentPointer(0x64, ColiCourseUtility.SerializeVerbose);
+            //writer.CommentPointer(0x68, ColiCourseUtility.SerializeVerbose);
+            //header.collisionObjectReferencePtrs = collisionObjectReferences.SerializeReferences(writer).GetArrayPointer();
 
-            //// 0x6C and 0x70
-            //// This one is weird. Pointers which lead to an array which reference collisionObjectReferences.
-            //// The count is different, so perhaps leads to certain properties on those objects.
-            writer.SeekEnd();
-            writer.CommentNewLine(ColiCourseUtility.SerializeVerbose);
-            writer.CommentPointer(0x6C, ColiCourseUtility.SerializeVerbose);
-            writer.CommentPointer(0x70, ColiCourseUtility.SerializeVerbose);
-            header.unk_collisionObjectReferencePtrs = unk_collisionObjectReferences.SerializeReferences(writer).GetArrayPointer();
+            ////// 0x6C and 0x70
+            ////// This one is weird. Pointers which lead to an array which reference collisionObjectReferences.
+            ////// The count is different, so perhaps leads to certain properties on those objects.
+            //writer.CommentNewLine(ColiCourseUtility.SerializeVerbose);
+            //writer.CommentPointer(0x6C, ColiCourseUtility.SerializeVerbose);
+            //writer.CommentPointer(0x70, ColiCourseUtility.SerializeVerbose);
+            //header.unk_collisionObjectReferencePtrs = unk_collisionObjectReferences.SerializeReferences(writer).GetArrayPointer();
 
-            // 0x74, 0x78: unused in header
+            //// 0x74, 0x78: unused in header
 
-            //// 0x80
-            // can be null, write empty?
-            writer.SeekEnd();
-            writer.CommentNewLine(ColiCourseUtility.SerializeVerbose);
-            writer.CommentPointer(0x80, ColiCourseUtility.SerializeVerbose);
-            header.unknownStageData2Ptr = unknownStageData2.SerializeReference(writer).GetPointer();
+            ////// 0x80
+            //// can be null, write empty?
+            //writer.CommentNewLine(ColiCourseUtility.SerializeVerbose);
+            //writer.CommentPointer(0x80, ColiCourseUtility.SerializeVerbose);
+            //header.unknownStageData2Ptr = unknownStageData2.SerializeReference(writer).GetPointer();
 
-            //// 0x84
-            //reader.JumpToAddress(header.unknownStageData1Ptr);
-            //reader.ReadX(ref unknownStageData1, true);
-            writer.SeekEnd();
-            writer.CommentNewLine(ColiCourseUtility.SerializeVerbose);
-            writer.CommentPointer(0x84, ColiCourseUtility.SerializeVerbose);
-            header.unknownStageData1Ptr = unknownStageData1.SerializeReference(writer).GetPointer();
+            ////// 0x84
+            //writer.CommentNewLine(ColiCourseUtility.SerializeVerbose);
+            //writer.CommentPointer(0x84, ColiCourseUtility.SerializeVerbose);
+            //header.unknownStageData1Ptr = unknownStageData1.SerializeReference(writer).GetPointer();
 
-            // 0x88, 0x8C: unused in header
+            //// 0x88, 0x8C: unused in header
 
-            // 0x90 - Track Length
-            writer.SeekEnd();
-            writer.CommentNewLine(ColiCourseUtility.SerializeVerbose);
-            writer.CommentPointer(0x90, ColiCourseUtility.SerializeVerbose);
-            header.trackLengthPtr = trackLength.SerializeReference(writer).GetPointer();
+            //// 0x90 - Track Length
+            //writer.CommentNewLine(ColiCourseUtility.SerializeVerbose);
+            //writer.CommentPointer(0x90, ColiCourseUtility.SerializeVerbose);
+            //header.trackLengthPtr = trackLength.SerializeReference(writer).GetPointer();
 
-            //// 0x94
-            writer.SeekEnd();
-            writer.CommentNewLine(ColiCourseUtility.SerializeVerbose);
-            writer.CommentPointer(0x94, ColiCourseUtility.SerializeVerbose);
-            writer.CommentPointer(0x98, ColiCourseUtility.SerializeVerbose);
-            header.unknownTrigger1sPtr = unknownTrigger1s.SerializeReferences(writer).GetArrayPointer();
+            ////// 0x94
+            //writer.CommentNewLine(ColiCourseUtility.SerializeVerbose);
+            //writer.CommentPointer(0x94, ColiCourseUtility.SerializeVerbose);
+            //writer.CommentPointer(0x98, ColiCourseUtility.SerializeVerbose);
+            //header.unknownTrigger1sPtr = unknownTrigger1s.SerializeReferences(writer).GetArrayPointer();
 
-            //// 0x9C
-            writer.SeekEnd();
-            writer.CommentNewLine(ColiCourseUtility.SerializeVerbose);
-            writer.CommentPointer(0x9C, ColiCourseUtility.SerializeVerbose);
-            writer.CommentPointer(0xA0, ColiCourseUtility.SerializeVerbose);
-            header.visualEffectTriggersPtr = visualEffectTriggers.SerializeReferences(writer).GetArrayPointer();
+            ////// 0x9C
+            //writer.CommentNewLine(ColiCourseUtility.SerializeVerbose);
+            //writer.CommentPointer(0x9C, ColiCourseUtility.SerializeVerbose);
+            //writer.CommentPointer(0xA0, ColiCourseUtility.SerializeVerbose);
+            //header.visualEffectTriggersPtr = visualEffectTriggers.SerializeReferences(writer).GetArrayPointer();
 
-            //// 0xA4
-            writer.SeekEnd();
-            writer.CommentNewLine(ColiCourseUtility.SerializeVerbose);
-            writer.CommentPointer(0xA4, ColiCourseUtility.SerializeVerbose);
-            writer.CommentPointer(0xA8, ColiCourseUtility.SerializeVerbose);
-            header.courseMetadataTriggersPtr = courseMetadataTriggers.SerializeReferences(writer).GetArrayPointer();
+            ////// 0xA4
+            //writer.CommentNewLine(ColiCourseUtility.SerializeVerbose);
+            //writer.CommentPointer(0xA4, ColiCourseUtility.SerializeVerbose);
+            //writer.CommentPointer(0xA8, ColiCourseUtility.SerializeVerbose);
+            //header.courseMetadataTriggersPtr = courseMetadataTriggers.SerializeReferences(writer).GetArrayPointer();
 
-            //// 0xAC
-            writer.SeekEnd();
-            writer.CommentNewLine(ColiCourseUtility.SerializeVerbose);
-            writer.CommentPointer(0xAC, ColiCourseUtility.SerializeVerbose);
-            writer.CommentPointer(0xB0, ColiCourseUtility.SerializeVerbose);
-            header.arcadeCheckpointTriggersPtr = arcadeCheckpointTriggers.SerializeReferences(writer).GetArrayPointer();
+            ////// 0xAC
+            //writer.CommentNewLine(ColiCourseUtility.SerializeVerbose);
+            //writer.CommentPointer(0xAC, ColiCourseUtility.SerializeVerbose);
+            //writer.CommentPointer(0xB0, ColiCourseUtility.SerializeVerbose);
+            //header.arcadeCheckpointTriggersPtr = arcadeCheckpointTriggers.SerializeReferences(writer).GetArrayPointer();
 
-            //// 0xB4
-            writer.SeekEnd();
-            writer.CommentNewLine(ColiCourseUtility.SerializeVerbose);
-            writer.CommentPointer(0xB4, ColiCourseUtility.SerializeVerbose);
-            writer.CommentPointer(0xB8, ColiCourseUtility.SerializeVerbose);
-            header.storyObjectTriggersPtr = storyObjectTriggers.SerializeReferences(writer).GetArrayPointer();
+            ////// 0xB4
+            //writer.CommentNewLine(ColiCourseUtility.SerializeVerbose);
+            //writer.CommentPointer(0xB4, ColiCourseUtility.SerializeVerbose);
+            //writer.CommentPointer(0xB8, ColiCourseUtility.SerializeVerbose);
+            //header.storyObjectTriggersPtr = storyObjectTriggers.SerializeReferences(writer).GetArrayPointer();
 
-            //// 0xBC
-            //reader.JumpToAddress(header.trackIndexTable);
-            //reader.ReadX(ref trackIndexTable, true);
-            writer.SeekEnd();
-            writer.CommentNewLine(ColiCourseUtility.SerializeVerbose);
-            writer.CommentPointer(0xBC, ColiCourseUtility.SerializeVerbose);
-            header.trackIndexTable = trackIndexTable.SerializeReference(writer).GetPointer();
+            ////// 0xBC
+            //writer.CommentNewLine(ColiCourseUtility.SerializeVerbose);
+            //writer.CommentPointer(0xBC, ColiCourseUtility.SerializeVerbose);
+            //header.trackIndexTable = trackIndexTable.SerializeReference(writer).GetPointer();
 
             // Overwrite header with pointers resolved
             writer.SeekStart();

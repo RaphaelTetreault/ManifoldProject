@@ -172,24 +172,24 @@ namespace Manifold.IO.GFZ.CourseCollision
                 var submeshes = new SubMeshDescriptor[512];
 
                 //
-                var triMeshIndexes = scene.surfaceAttributeMeshTable.triMeshIndexes[surfaceTypeIndex];
-                var triIndexes = triMeshIndexes.indexes.GetArrays();
-                Assert.IsTrue(triIndexes.Length == 0 || triIndexes.Length == MeshIndexes.kIndexArrayPtrsSize);
+                var triMeshIndexTable = scene.surfaceAttributeMeshTable.triMeshIndexTable[surfaceTypeIndex];
+                var triIndexLists = triMeshIndexTable.indexLists;
+                Assert.IsTrue(triIndexLists.Length == 0 || triIndexLists.Length == MeshIndexTable.kListCount);
 
                 // meshIndex = 0-255
                 // triIndex = the indexes for the mesh 
-                for (int meshIndex = 0; meshIndex < triIndexes.Length; meshIndex++)
+                for (int meshIndex = 0; meshIndex < triIndexLists.Length; meshIndex++)
                 {
                     // Get ushort[] for all triangles used
-                    var indexes = triIndexes[meshIndex];
+                    var indexList = triIndexLists[meshIndex];
 
                     // iterate over each triangle
                     var allVertices = new List<Vector3>();
                     var allNormals = new List<Vector3>();
                     var allIndexes = new List<int>();
-                    for (int i = 0; i < indexes.Length; i++)
+                    for (int i = 0; i < indexList.Length; i++)
                     {
-                        var index = indexes[i];
+                        var index = indexList.Indexes[i];
                         var triangle = colliderTriangles[index];
 
                         // Get vertices
@@ -229,26 +229,26 @@ namespace Manifold.IO.GFZ.CourseCollision
                 }
 
 
-                var quadMeshIndexes = scene.surfaceAttributeMeshTable.quadMeshIndexes[surfaceTypeIndex];
-                var quadIndexes = quadMeshIndexes.indexes.GetArrays();
-                Assert.IsTrue(quadIndexes.Length == 0 || quadIndexes.Length == MeshIndexes.kIndexArrayPtrsSize);
+                var quadMeshIndexes = scene.surfaceAttributeMeshTable.quadMeshIndexTable[surfaceTypeIndex];
+                var quadIndexLists = quadMeshIndexes.indexLists;
+                Assert.IsTrue(quadIndexLists.Length == 0 || quadIndexLists.Length == MeshIndexTable.kListCount);
 
                 // meshIndex = 0-255
                 // triIndex = the indexes for the mesh 
-                for (int meshIndex = 0; meshIndex < quadIndexes.Length; meshIndex++)
+                for (int meshIndex = 0; meshIndex < quadIndexLists.Length; meshIndex++)
                 {
                     const int nVerts = 6;
 
                     // Get ushort[] for all triangles used
-                    var indexes = quadIndexes[meshIndex];
+                    var indexList = quadIndexLists[meshIndex];
 
                     // iterate over each triangle
                     var allVertices = new List<Vector3>();
                     var allNormals = new List<Vector3>();
                     var allIndexes = new List<int>();
-                    for (int i = 0; i < indexes.Length; i++)
+                    for (int i = 0; i < indexList.Length; i++)
                     {
-                        var index = indexes[i];
+                        var index = indexList.Indexes[i];
                         var quad = colliderQuads[index];
 
                         // Get vertices
