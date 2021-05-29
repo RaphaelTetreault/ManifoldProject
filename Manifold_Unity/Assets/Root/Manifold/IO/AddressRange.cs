@@ -22,12 +22,12 @@ namespace Manifold.IO
             endAddress = stream.Position;
         }
 
-        public Pointer GetPointer
+        public Pointer GetPointer()
         {
-            get
+            return new Pointer()
             {
-                return new Pointer() { address = (int)startAddress };
-            }
+                address = (int)startAddress
+            };
         }
 
         public int GetSize => (int)(endAddress - startAddress);

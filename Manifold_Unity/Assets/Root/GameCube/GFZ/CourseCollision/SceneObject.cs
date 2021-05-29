@@ -8,7 +8,8 @@ namespace GameCube.GFZ.CourseCollision
     /// 
     /// </summary>
     [Serializable]
-    public class SceneObject : IBinarySerializable, IBinaryAddressableRange
+    public class SceneObject :
+        IBinarySeralizableReference
     {
         // METADATA
         [UnityEngine.SerializeField]
@@ -118,5 +119,9 @@ namespace GameCube.GFZ.CourseCollision
             throw new NotImplementedException();
         }
 
+        public AddressRange SerializeReference(BinaryWriter writer)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

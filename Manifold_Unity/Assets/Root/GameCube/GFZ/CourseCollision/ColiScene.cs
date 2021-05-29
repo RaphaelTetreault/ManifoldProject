@@ -32,7 +32,7 @@ namespace GameCube.GFZ.CourseCollision
         public SceneObject[] sceneObjects = new SceneObject[0];
         public UnknownObjectAttributes[] collisionObjectReferences = new UnknownObjectAttributes[0];
         public UnknownObjectAttributes2[] unk_collisionObjectReferences = new UnknownObjectAttributes2[0];
-        public UnknownTrigger2[] unknownTrigger2s = new UnknownTrigger2[0];
+        public UnknownSolsTrigger[] unknownSolsTriggers = new UnknownSolsTrigger[0];
         public UnknownStageData2 unknownStageData2 = new UnknownStageData2();
         public UnknownStageData1 unknownStageData1 = new UnknownStageData1();
         public TrackLength trackLength;
@@ -92,12 +92,12 @@ namespace GameCube.GFZ.CourseCollision
             reader.ReadX(ref sceneObjects, header.sceneObjectCount, true);
 
             // 0x5C and 0x60 SOLS values
-            reader.JumpToAddress(header.unknownTrigger2sPtr);
-            reader.ReadX(ref unknownTrigger2s, header.unknownTrigger2sPtr.Length, true);
+            reader.JumpToAddress(header.unknownSolsTriggerPtrs);
+            reader.ReadX(ref unknownSolsTriggers, header.unknownSolsTriggerPtrs.Length, true);
 
             // 0x64 and 0x68
-            reader.JumpToAddress(header.collisionObjectReferences);
-            reader.ReadX(ref collisionObjectReferences, header.collisionObjectReferences.Length, true);
+            reader.JumpToAddress(header.collisionObjectReferencePtrs);
+            reader.ReadX(ref collisionObjectReferences, header.collisionObjectReferencePtrs.Length, true);
 
             // 0x6C and 0x70
             // This one is weird. Pointers which lead to an array which reference collisionObjectReferences.
@@ -177,43 +177,87 @@ namespace GameCube.GFZ.CourseCollision
             header = new Header();
             writer.WriteX(header);
 
-            //// 0x08 and 0x0C: Track Nodes
-            //reader.JumpToAddress(header.trackNodesPtr);
-            //reader.ReadX(ref trackNodes, header.trackNodesPtr.Length, true);
+            // TODO order serialization by pointer size based on real files, 
+            //      maintain isFileAX/GX compatibility
 
-            //// 0x10 and 0x14: Track Effect Attribute Areas
-            //reader.JumpToAddress(header.surfaceAttributeAreasPtr);
-            //reader.ReadX(ref surfaceAttributeAreas, header.surfaceAttributeAreasPtr.Length, true);
+            writer.SeekEnd();
+            writer.CommentNewLine(ColiCourseUtility.SerializeVerbose);
+            writer.CommentPointer(0x08, ColiCourseUtility.SerializeVerbose);
+            writer.CommentPointer(0x0C, ColiCourseUtility.SerializeVerbose);
+            header.trackNodesPtr = trackNodes.SerializeReferences(writer).GetArrayPointer();
 
-            //// 0x1C 
-            //reader.JumpToAddress(header.surfaceAttributeMeshTablePtr);
-            //reader.ReadX(ref surfaceAttributeMeshTable, true);
 
-            //// 0x20
-            //reader.JumpToAddress(header.unknownData_0x20_Ptr);
-            //reader.ReadX(ref unknownData_0x20, 5);
+            writer.SeekEnd();
+            writer.CommentNewLine(ColiCourseUtility.SerializeVerbose);
+            writer.CommentPointer(0x10, ColiCourseUtility.SerializeVerbose);
+            writer.CommentPointer(0x14, ColiCourseUtility.SerializeVerbose);
+            header.surfaceAttributeAreasPtr = surfaceAttributeAreas.SerializeReferences(writer).GetArrayPointer();
 
-            //// 0x24
-            //reader.JumpToAddress(header.unknownFloat_0x24_Ptr);
-            //reader.ReadX(ref unknownFloat_0x24);
+
+            writer.SeekEnd();
+            writer.CommentNewLine(ColiCourseUtility.SerializeVerbose);
+            writer.CommentPointer(0x1C, ColiCourseUtility.SerializeVerbose);
+            header.surfaceAttributeMeshTablePtr = surfaceAttributeMeshTable.SerializeReference(writer).GetPointer();
+
+
+            writer.SeekEnd();
+            writer.CommentNewLine(ColiCourseUtility.SerializeVerbose);
+            writer.CommentPointer(0x20, ColiCourseUtility.SerializeVerbose);
+            // SHOULD NOT BE HARD CODED
+            writer.Comment(nameof(unknownData_0x20), ColiCourseUtility.SerializeVerbose);
+            header.unknownData_0x20_Ptr = new Pointer() { address = (int)writer.BaseStream.Position };
+            writer.WriteX(new byte[5*4], false);
+
+
+            writer.SeekEnd();
+            writer.CommentNewLine(ColiCourseUtility.SerializeVerbose);
+            writer.CommentPointer(0x24, ColiCourseUtility.SerializeVerbose);
+            // SHOULD NOT BE HARD CODED
+            writer.Comment(nameof(unknownFloat_0x24), ColiCourseUtility.SerializeVerbose);
+            header.unknownFloat_0x24_Ptr = new Pointer() { address = (int)writer.BaseStream.Position };
+            writer.WriteX(0f);
+
 
             //// 0x48 (count total), 0x4C, 0x50, 0x54 (pointer address): Scene Objects
-            //reader.JumpToAddress(header.sceneObjectsPtr);
-            //reader.ReadX(ref sceneObjects, header.sceneObjectCount, true);
+            writer.SeekEnd();
+            writer.CommentNewLine(ColiCourseUtility.SerializeVerbose);
+            writer.CommentPointer(0x48, ColiCourseUtility.SerializeVerbose);
+            writer.CommentPointer(0x4C, ColiCourseUtility.SerializeVerbose);
+            writer.CommentPointer(0x50, ColiCourseUtility.SerializeVerbose);
+            writer.CommentPointer(0x54, ColiCourseUtility.SerializeVerbose);
+            var sceneObjectsPtrs = sceneObjects.SerializeReferences(writer).GetArrayPointer();
+            header.sceneObjectCount = sceneObjectsPtrs.Length;
+            header.unk_sceneObjectCount1 = 0; // still don't know what this is for
+            header.unk_sceneObjectCount2 = 0; // still don't know what this is for
+            header.sceneObjectsPtr = new Pointer() { address = sceneObjectsPtrs.Address };
 
             //// 0x5C and 0x60 SOLS values
-            //reader.JumpToAddress(header.unknownTrigger2sPtr);
-            //reader.ReadX(ref unknownTrigger2s, header.unknownTrigger2sPtr.Length, true);
+            writer.SeekEnd();
+            writer.CommentNewLine(ColiCourseUtility.SerializeVerbose);
+            writer.CommentPointer(0x5C, ColiCourseUtility.SerializeVerbose);
+            writer.CommentPointer(0x60, ColiCourseUtility.SerializeVerbose);
+            header.unknownSolsTriggerPtrs = unknownSolsTriggers.SerializeReferences(writer).GetArrayPointer();
 
             //// 0x64 and 0x68
             //reader.JumpToAddress(header.collisionObjectReferences);
             //reader.ReadX(ref collisionObjectReferences, header.collisionObjectReferences.Length, true);
+            writer.SeekEnd();
+            writer.CommentNewLine(ColiCourseUtility.SerializeVerbose);
+            writer.CommentPointer(0x64, ColiCourseUtility.SerializeVerbose);
+            writer.CommentPointer(0x68, ColiCourseUtility.SerializeVerbose);
+            header.collisionObjectReferencePtrs = collisionObjectReferences.SerializeReferences(writer).GetArrayPointer();
 
             //// 0x6C and 0x70
             //// This one is weird. Pointers which lead to an array which reference collisionObjectReferences.
             //// The count is different, so perhaps leads to certain properties on those objects.
             //reader.JumpToAddress(header.unk_collisionObjectReferences);
             //reader.ReadX(ref unk_collisionObjectReferences, header.unk_collisionObjectReferences.Length, true);
+            writer.SeekEnd();
+            writer.CommentNewLine(ColiCourseUtility.SerializeVerbose);
+            writer.CommentPointer(0x6C, ColiCourseUtility.SerializeVerbose);
+            writer.CommentPointer(0x70, ColiCourseUtility.SerializeVerbose);
+            //header.collisionObjectReferencePtrs = collisionObjectReferences.SerializeReferences(writer).GetArrayPointer();
+
 
             //// 0x80
             //if (header.unknownStageData2Ptr.IsNotNullPointer)
@@ -228,7 +272,9 @@ namespace GameCube.GFZ.CourseCollision
 
             // 0x90 - Track Length
             writer.SeekEnd();
-            header.trackLengthPtr = trackLength.SerializeReference(writer).GetPointer;
+            writer.CommentNewLine(ColiCourseUtility.SerializeVerbose);
+            writer.CommentPointer(0x90, ColiCourseUtility.SerializeVerbose);
+            header.trackLengthPtr = trackLength.SerializeReference(writer).GetPointer();
 
             //// 0x94
             //reader.JumpToAddress(header.unknownTrigger1sPtr);

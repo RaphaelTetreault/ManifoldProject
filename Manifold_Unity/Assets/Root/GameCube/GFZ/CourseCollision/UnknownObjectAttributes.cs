@@ -5,8 +5,12 @@ using System.Text;
 
 namespace GameCube.GFZ.CourseCollision
 {
+    /// <summary>
+    /// 
+    /// </summary>
     [Serializable]
-    public class UnknownObjectAttributes : IBinarySerializable, IBinaryAddressableRange
+    public class UnknownObjectAttributes :
+        IBinarySeralizableReference
     {
         // METADATA
         [UnityEngine.SerializeField]
@@ -57,5 +61,9 @@ namespace GameCube.GFZ.CourseCollision
             throw new NotImplementedException();
         }
 
+        public AddressRange SerializeReference(BinaryWriter writer)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -6,7 +6,8 @@ using Unity.Mathematics;
 namespace GameCube.GFZ.CourseCollision
 {
     [Serializable]
-    public class StaticMeshTable : IBinarySerializable, IBinaryAddressableRange
+    public class StaticMeshTable :
+        IBinarySeralizableReference
     {
         [UnityEngine.SerializeField]
         private AddressRange addressRange;
@@ -121,5 +122,9 @@ namespace GameCube.GFZ.CourseCollision
             throw new System.NotImplementedException();
         }
 
+        public AddressRange SerializeReference(BinaryWriter writer)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

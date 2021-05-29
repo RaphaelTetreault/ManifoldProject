@@ -13,7 +13,8 @@ namespace GameCube.GFZ.CourseCollision
     /// and an avergaed node acting sort of as the center (always index 0).
     /// </summary>
     [Serializable]
-    public class TrackNode : IBinarySerializable, IBinaryAddressableRange
+    public class TrackNode :
+        IBinarySeralizableReference
     {
         // METADATA
         [UnityEngine.SerializeField]
@@ -60,7 +61,21 @@ namespace GameCube.GFZ.CourseCollision
 
         public void Serialize(BinaryWriter writer)
         {
-            throw new NotImplementedException();
+            writer.Comment<TrackNode>(ColiCourseUtility.SerializeVerbose);
+
+            writer.WriteX(pointsPtr);
+            writer.WriteX(transformPtr);
+        }
+
+        public AddressRange SerializeReference(BinaryWriter writer)
+        {
+            var addressRange = new AddressRange();
+            addressRange.RecordStartAddress(writer.BaseStream);
+            {
+                Serialize(writer);
+            }
+            addressRange.RecordEndAddress(writer.BaseStream);
+            return addressRange;
         }
 
     }

@@ -12,8 +12,8 @@ namespace GameCube.GFZ.CourseCollision
         public enum SerializeFormat
         {
             InvalidFormat,
-            AsAX,
-            AsGX,
+            AX,
+            GX,
         }
 
         // CONSTANTS
@@ -39,8 +39,8 @@ namespace GameCube.GFZ.CourseCollision
         public int unk_sceneObjectCount2;
         public Pointer sceneObjectsPtr;
         public Bool32 unkBool32_0x58;
-        public ArrayPointer unknownTrigger2sPtr;
-        public ArrayPointer collisionObjectReferences;
+        public ArrayPointer unknownSolsTriggerPtrs;
+        public ArrayPointer collisionObjectReferencePtrs;
         public ArrayPointer unk_collisionObjectReferences; // refers back to above objects, but through another array-pointer
         public ArrayPointer unused_0x74_0x78;
         public CircuitType circuitType;
@@ -81,7 +81,7 @@ namespace GameCube.GFZ.CourseCollision
             isFileAX = ColiCourseUtility.IsFileAX(reader);
             isFileGX = ColiCourseUtility.IsFileGX(reader);
             Assert.IsTrue(IsValidFile);
-            Format = IsFileAX ? SerializeFormat.AsAX : SerializeFormat.AsGX;
+            Format = IsFileAX ? SerializeFormat.AX : SerializeFormat.GX;
 
             this.RecordStartAddress(reader);
             {
@@ -99,8 +99,8 @@ namespace GameCube.GFZ.CourseCollision
                 reader.ReadX(ref unk_sceneObjectCount2);
                 reader.ReadX(ref sceneObjectsPtr);
                 reader.ReadX(ref unkBool32_0x58);
-                reader.ReadX(ref unknownTrigger2sPtr);
-                reader.ReadX(ref collisionObjectReferences);
+                reader.ReadX(ref unknownSolsTriggerPtrs);
+                reader.ReadX(ref collisionObjectReferencePtrs);
                 reader.ReadX(ref unk_collisionObjectReferences);
                 reader.ReadX(ref unused_0x74_0x78);
                 reader.ReadX(ref circuitType);
@@ -148,13 +148,13 @@ namespace GameCube.GFZ.CourseCollision
             writer.WriteX(unknownFloat_0x24_Ptr);
             writer.WriteX(new byte[kSizeOfZero0x28], false); // write const zeros
             writer.WriteX(sceneObjectCount);
-            if (Format == SerializeFormat.AsGX)
+            if (Format == SerializeFormat.GX)
                 writer.WriteX(unk_sceneObjectCount1);
             writer.WriteX(unk_sceneObjectCount2);
             writer.WriteX(sceneObjectsPtr);
             writer.WriteX(unkBool32_0x58);
-            writer.WriteX(unknownTrigger2sPtr);
-            writer.WriteX(collisionObjectReferences);
+            writer.WriteX(unknownSolsTriggerPtrs);
+            writer.WriteX(collisionObjectReferencePtrs);
             writer.WriteX(unk_collisionObjectReferences);
             writer.WriteX(new ArrayPointer()); // const unused
             writer.WriteX(circuitType);

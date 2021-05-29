@@ -19,7 +19,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             var mesh = Resources.GetBuiltinResource<Mesh>("Cube.fbx");
 
             Gizmos.color = color;
-            foreach (var item in sceneSobj.Value.unknownTrigger2s)
+            foreach (var item in sceneSobj.Value.unknownSolsTriggers)
             {
                 var transform = item.transform;
                 Gizmos.DrawMesh(mesh, 0, transform.Position, transform.Rotation, transform.Scale * size);

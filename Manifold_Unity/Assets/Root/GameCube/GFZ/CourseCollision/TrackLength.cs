@@ -38,11 +38,7 @@ namespace GameCube.GFZ.CourseCollision
 
         public void Serialize(BinaryWriter writer)
         {
-            if (ColiCourseUtility.SerializeVerbose)
-            {
-                var message = $"{nameof(TrackLength)} is a long string for whatestarngereasonyouknow";
-                writer.WriteBinaryComment(message);
-            }
+            writer.Comment<TrackLength>(ColiCourseUtility.SerializeVerbose);
 
             writer.WriteX(trackLength);
         }

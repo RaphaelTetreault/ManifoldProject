@@ -38,7 +38,7 @@ namespace Manifold.IO.GFZ.CourseCollision
         //protected CarDataSobj[] exportSobjs;
 
 
-        public override string ExecuteText => "Export CarData";
+        public override string ExecuteText => "Export COLI_COURSE";
 
         public override void Execute() => Export();
 
@@ -54,7 +54,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                     FileName = "COLI_COURSE999",
                     header = new Header()
                     {
-                        Format = Header.SerializeFormat.AsGX,
+                        Format = Header.SerializeFormat.GX,
                     },
                 }
             };

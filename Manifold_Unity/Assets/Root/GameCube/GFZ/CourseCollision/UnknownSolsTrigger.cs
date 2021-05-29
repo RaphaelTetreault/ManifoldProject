@@ -2,6 +2,8 @@ using Manifold.IO;
 using System;
 using System.IO;
 
+// TODO: test by creating custom triggers, moving them onto the track.
+
 namespace GameCube.GFZ.CourseCollision
 {
     /// <summary>
@@ -9,11 +11,14 @@ namespace GameCube.GFZ.CourseCollision
     /// GX: 6 instances, AX: 9 instances
     /// </summary>
     [Serializable]
-    public struct UnknownTrigger2 : IBinarySerializable
+    public class UnknownSolsTrigger :
+        IBinarySeralizableReference
     {
         // FIELDS
         public int unk_0x00;
         public Transform transform;
+
+        public AddressRange AddressRange { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
 
         // METHODS
@@ -27,6 +32,11 @@ namespace GameCube.GFZ.CourseCollision
         {
             writer.WriteX(unk_0x00);
             writer.WriteX(transform);
+        }
+
+        public AddressRange SerializeReference(BinaryWriter writer)
+        {
+            throw new NotImplementedException();
         }
     }
 }
