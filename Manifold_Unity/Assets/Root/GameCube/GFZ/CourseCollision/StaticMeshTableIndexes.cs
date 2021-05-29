@@ -4,7 +4,7 @@ namespace GameCube.GFZ.CourseCollision
     /// 
     /// </summary>
     [System.Serializable]
-    public sealed class MeshIndexTable : IndexTable
+    public sealed class StaticMeshTableIndexes : IndexTable
     {
         public const int kListCount = 256;
         public override int ListCount => kListCount;

@@ -31,8 +31,8 @@ namespace GameCube.GFZ.CourseCollision
         // This data holds the geometry data and indexes
         public ColliderTriangle[] colliderTriangles;
         public ColliderQuad[] colliderQuads;
-        public MeshIndexTable[] triMeshIndexTable;
-        public MeshIndexTable[] quadMeshIndexTable;
+        public StaticMeshTableIndexes[] triMeshIndexTable;
+        public StaticMeshTableIndexes[] quadMeshIndexTable;
 
 
         public AddressRange AddressRange
@@ -78,22 +78,22 @@ namespace GameCube.GFZ.CourseCollision
 
                 /////////////////
                 // Initialize arrays
-                triMeshIndexTable = new MeshIndexTable[countSurfaceTypes];
-                quadMeshIndexTable = new MeshIndexTable[countSurfaceTypes];
+                triMeshIndexTable = new StaticMeshTableIndexes[countSurfaceTypes];
+                quadMeshIndexTable = new StaticMeshTableIndexes[countSurfaceTypes];
 
                 // Read mesh data
                 for (int i = 0; i < countSurfaceTypes; i++)
                 {
                     // Triangles
                     var triIndexesPointer = collisionTriIndexesPtr[i];
-                    triMeshIndexTable[i] = new MeshIndexTable();
+                    triMeshIndexTable[i] = new StaticMeshTableIndexes();
                     //DebugConsole.Log($"tri{i+1}:{triPointer.HexAddress}");
                     reader.JumpToAddress(triIndexesPointer);
                     reader.ReadX(ref triMeshIndexTable[i], false);
 
                     // Quads
                     var quadPointer = collisionQuadIndexesPtr[i];
-                    quadMeshIndexTable[i] = new MeshIndexTable();
+                    quadMeshIndexTable[i] = new StaticMeshTableIndexes();
                     //DebugConsole.Log($"quad{i+1}:{quadPointer.HexAddress}");
                     reader.JumpToAddress(quadPointer);
                     reader.ReadX(ref quadMeshIndexTable[i], false);
@@ -151,6 +151,7 @@ namespace GameCube.GFZ.CourseCollision
         private void SerializeReferences(BinaryWriter writer)
         {
             // Write sub classes to get pointers
+
             // TRIANGLES
             writer.CommentTypeDesc(colliderTriangles, ColiCourseUtility.Pointer, ColiCourseUtility.SerializeVerbose);
             // We don't need to store the length. The game kinda just figures it out.
@@ -159,7 +160,10 @@ namespace GameCube.GFZ.CourseCollision
             writer.CommentTypeDesc(triMeshIndexTable, ColiCourseUtility.Pointer, ColiCourseUtility.SerializeVerbose);
             writer.Comment($"var: {nameof(triMeshIndexTable)}", ColiCourseUtility.SerializeVerbose);
             collisionTriIndexesPtr = triMeshIndexTable.SerializeWithReferences(writer).GetPointers();
+
+            // Using a static value to embed metadata in the above type upon serialization
             ColiCourseUtility.ResetDebugIndex();
+
 
             // QUADS
             writer.CommentTypeDesc(colliderQuads, ColiCourseUtility.Pointer, ColiCourseUtility.SerializeVerbose);
@@ -168,10 +172,11 @@ namespace GameCube.GFZ.CourseCollision
             writer.CommentTypeDesc(quadMeshIndexTable, ColiCourseUtility.Pointer, ColiCourseUtility.SerializeVerbose);
             writer.Comment($"var: {nameof(quadMeshIndexTable)}", ColiCourseUtility.SerializeVerbose);
             collisionTriIndexesPtr = quadMeshIndexTable.SerializeWithReferences(writer).GetPointers();
+
+            // Using a static value to embed metadata in the above type upon serialization
             ColiCourseUtility.ResetDebugIndex();
         }
 
-        // Rename SerializeAsReference?
         public AddressRange SerializeWithReference(BinaryWriter writer)
         {
             Serialize(writer);

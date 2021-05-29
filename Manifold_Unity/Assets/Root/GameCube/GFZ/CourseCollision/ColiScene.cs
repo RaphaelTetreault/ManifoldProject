@@ -173,6 +173,14 @@ namespace GameCube.GFZ.CourseCollision
 
             // Write empty header
             header = new Header();
+            // Non pointer data (aside from SceneObject counts)
+            header.unk_0x00 = new UnknownFloatPair();
+            header.boostPadsActive = BoostPadsActive.Enabled;
+            header.unkBool32_0x58 = Bool32.True;
+            header.circuitType = CircuitType.ClosedCircuit;
+            header.unknownStructure1_0xC0 = new ColiUnknownStruct1();
+
+
             writer.WriteX(header);
 
             // Write info

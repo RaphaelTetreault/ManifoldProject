@@ -95,23 +95,22 @@ namespace GameCube.GFZ.CourseCollision
 
         public void Serialize(BinaryWriter writer)
         {
-            // Print out comments if required/
+            // Print out comments if required.
             // Do one big check since there are many useless calls otherwise.
             if (ColiCourseUtility.SerializeVerbose)
             {
                 // Gather some metadata
-                var index = ColiCourseUtility.Index;
+                var type = GetType(); // Since there is inheritance, get type dynamically.
+                var index = ColiCourseUtility.Index; // setting up data in static class to get print index
                 var listCount = 0;
                 foreach (var indexList in indexLists)
                     listCount += indexList.Length > 0 ? 1 : 0;
-                // Since there is inheritance, get type dynamically.
-                var type = GetType();
 
-                // Write comment
+                // Write this data type and associated metadata
                 writer.CommentAlign(true);
                 writer.CommentNewLine(true, padding: '-');
                 writer.Comment(type.Name, true);
-                if (type == typeof(MeshIndexTable))
+                if (type == typeof(StaticMeshTableIndexes))
                 {
                     writer.Comment($"T:{(StaticMeshColliderProperty)index,14}", true);
                     writer.Comment($"Index:{index,10}", true);

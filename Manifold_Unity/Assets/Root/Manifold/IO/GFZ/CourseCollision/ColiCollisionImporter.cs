@@ -174,7 +174,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 //
                 var triMeshIndexTable = scene.surfaceAttributeMeshTable.triMeshIndexTable[surfaceTypeIndex];
                 var triIndexLists = triMeshIndexTable.indexLists;
-                Assert.IsTrue(triIndexLists.Length == 0 || triIndexLists.Length == MeshIndexTable.kListCount);
+                Assert.IsTrue(triIndexLists.Length == 0 || triIndexLists.Length == StaticMeshTableIndexes.kListCount);
 
                 // meshIndex = 0-255
                 // triIndex = the indexes for the mesh 
@@ -231,7 +231,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
                 var quadMeshIndexes = scene.surfaceAttributeMeshTable.quadMeshIndexTable[surfaceTypeIndex];
                 var quadIndexLists = quadMeshIndexes.indexLists;
-                Assert.IsTrue(quadIndexLists.Length == 0 || quadIndexLists.Length == MeshIndexTable.kListCount);
+                Assert.IsTrue(quadIndexLists.Length == 0 || quadIndexLists.Length == StaticMeshTableIndexes.kListCount);
 
                 // meshIndex = 0-255
                 // triIndex = the indexes for the mesh 
