@@ -131,6 +131,8 @@ namespace GameCube.GFZ.CourseCollision
 
         private void SerializeStructure(BinaryWriter writer)
         {
+            ColiCourseUtility.Pointer = writer.GetPositionAsPointer();
+
             this.RecordStartAddress(writer);
             {
                 // Write empty int array for unknown
@@ -153,21 +155,18 @@ namespace GameCube.GFZ.CourseCollision
             // We don't need to store the length. The game kinda just figures it out.
             collisionTrisPtr = colliderTriangles.SerializeWithReferences(writer).GetArrayPointer().Pointer;
 
-            writer.CommentTypeDesc(triMeshIndexTable, new Pointer(-1), ColiCourseUtility.SerializeVerbose);
+            writer.CommentTypeDesc(triMeshIndexTable, new Pointer(-2), ColiCourseUtility.SerializeVerbose);
+            writer.Comment($"var: {nameof(triMeshIndexTable)}", ColiCourseUtility.SerializeVerbose);
             collisionTriIndexesPtr = triMeshIndexTable.SerializeWithReferences(writer).GetPointers();
             ColiCourseUtility.ResetDebugIndex();
 
             // QUADS
-            writer.CommentType<ColliderQuad>(ColiCourseUtility.SerializeVerbose);
-            writer.Comment($"Count: {colliderQuads.Length}", ColiCourseUtility.SerializeVerbose);
-            {
-                collisionQuadsPtr = colliderQuads.SerializeWithReferences(writer).GetArrayPointer().Pointer;
-            }
-            writer.CommentNewLine(ColiCourseUtility.SerializeVerbose);
-            writer.Comment("Quad Indexes", ColiCourseUtility.SerializeVerbose);
-            {
-                collisionTriIndexesPtr = quadMeshIndexTable.SerializeWithReferences(writer).GetPointers();
-            }
+            writer.CommentTypeDesc(colliderQuads, new Pointer(-1), ColiCourseUtility.SerializeVerbose);
+            collisionQuadsPtr = colliderQuads.SerializeWithReferences(writer).GetArrayPointer().Pointer;
+
+            writer.CommentTypeDesc(quadMeshIndexTable, new Pointer(-1), ColiCourseUtility.SerializeVerbose);
+            writer.Comment($"var: {nameof(quadMeshIndexTable)}", ColiCourseUtility.SerializeVerbose);
+            collisionTriIndexesPtr = quadMeshIndexTable.SerializeWithReferences(writer).GetPointers();
             ColiCourseUtility.ResetDebugIndex();
         }
 

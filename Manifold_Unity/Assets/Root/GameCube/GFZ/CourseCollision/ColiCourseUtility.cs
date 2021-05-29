@@ -15,22 +15,7 @@ namespace GameCube.GFZ.CourseCollision
         private const int kGxConst0x24 = 0xFC;
 
         public static int Index { get; set; } = 0;
-
-
-        public static Stack<IPointer> PointerStack = new Stack<IPointer>();
-        public static IPointer PopPointer()
-        {
-            return PointerStack.Pop();
-        }
-        public static void PushPointer(IPointer pointer)
-        {
-            PointerStack.Push(pointer);
-        }
-        public static void PushPointer(IPointer pointer, int count)
-        {
-            for (int i = 0; i < count; i++)
-                PointerStack.Push(pointer);
-        }
+        public static IPointer Pointer { get; set; } = new Pointer(-1);
 
         public static void ResetDebugIndex()
         {

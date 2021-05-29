@@ -29,7 +29,8 @@ namespace GameCube.GFZ.CourseCollision
             set => addressRange = value;
         }
 
-        public bool IsEmpty => largestIndex <= 1;
+        public bool IsEmpty => !HasIndexes;
+        public bool HasIndexes => largestIndex > 1;
 
         // METHODS
         private ushort GetLargestIndex(IndexList[] indexLists)
@@ -94,9 +95,32 @@ namespace GameCube.GFZ.CourseCollision
 
         public void Serialize(BinaryWriter writer)
         {
-            // Since there is inheritance, get type dynamically.
-            writer.Comment(GetType().Name, ColiCourseUtility.SerializeVerbose);
-            writer.Comment($"Index:{ColiCourseUtility.Index++:00}", ColiCourseUtility.SerializeVerbose);
+            // Print out comments if required/
+            // Do one big check since there are many useless calls otherwise.
+            if (ColiCourseUtility.SerializeVerbose)
+            {
+                // Gather some metadata
+                var index = ColiCourseUtility.Index;
+                var listCount = 0;
+                foreach (var indexList in indexLists)
+                    listCount += indexList.Length > 0 ? 1 : 0;
+                // Since there is inheritance, get type dynamically.
+                var type = GetType();
+
+                // Write comment
+                writer.CommentAlign(true);
+                writer.CommentNewLine(true, padding: '-');
+                writer.Comment(type.Name, true);
+                if (type == typeof(MeshIndexTable))
+                {
+                    writer.Comment($"T:{(StaticMeshColliderProperty)index,14}", true);
+                    writer.Comment($"Index:{index.ToString("00"),10}", true);
+                }
+                writer.CommentPtr(ColiCourseUtility.Pointer, true, padding: ' ');
+                writer.CommentCnt(listCount, true, padding: ' ', format:"x8");
+                writer.CommentCnt(listCount, true, padding: ' ');
+                writer.CommentNewLine(true, padding: '-');
+            }
 
             this.RecordStartAddress(writer);
             {
@@ -114,9 +138,6 @@ namespace GameCube.GFZ.CourseCollision
                 }
             }
             this.RecordEndAddress(writer);
-
-            //
-            writer.CommentNewLine(ColiCourseUtility.SerializeVerbose);
         }
 
         public AddressRange SerializeWithReference(BinaryWriter writer)
@@ -131,6 +152,7 @@ namespace GameCube.GFZ.CourseCollision
             {
                 // mesh has data, do the thing
                 Serialize(writer);
+                ColiCourseUtility.Index++;
                 return addressRange;
             }
         }

@@ -27,7 +27,7 @@ namespace Manifold.IO
 
 
         // Added the below extensions to help debug file outputs
-        public static void Comment(this BinaryWriter writer, string message, bool doWrite = true, int alignment = 16, char padding = ' ')
+        public static void Comment(this BinaryWriter writer, string message, bool doWrite, int alignment = 16, char padding = ' ')
         {
             // Allow option to write or not. Prevents a lot of if statements.
             if (!doWrite)
@@ -40,13 +40,13 @@ namespace Manifold.IO
             writer.WriteX(bytes, false);
             writer.AlignTo(alignment, padByte);
         }
-        public static void CommentType<T>(this BinaryWriter writer, bool doWrite = true, int alignment = 16, char padding = ' ')
+        public static void CommentType<T>(this BinaryWriter writer, bool doWrite, int alignment = 16, char padding = ' ')
             => Comment(writer, typeof(T).Name, doWrite, alignment, padding);
 
-        public static void CommentType<T>(this BinaryWriter writer, T _, bool doWrite = true, int alignment = 16, char padding = ' ')
+        public static void CommentType<T>(this BinaryWriter writer, T _, bool doWrite, int alignment = 16, char padding = ' ')
             => CommentType<T>(writer, doWrite, alignment, padding);
 
-        public static void CommentNewLine(this BinaryWriter writer, bool doWrite = true, int alignment = 16, char padding = ' ')
+        public static void CommentNewLine(this BinaryWriter writer, bool doWrite, int alignment = 16, char padding = ' ')
         {
             // Allow option to write or not. Prevents a lot of if statements.
             if (!doWrite)
@@ -58,6 +58,16 @@ namespace Manifold.IO
             for (int i = 0; i < alignment; i++)
                 writer.WriteX(padByte);
         }
+
+        public static void CommentAlign(this BinaryWriter writer, bool doWrite, int alignment = 16, char padding = ' ')
+        {
+            // Allow option to write or not. Prevents a lot of if statements.
+            if (!doWrite)
+                return;
+
+            writer.AlignTo(alignment, (byte)padding);
+        }
+
 
         public static void PointerComment(this BinaryWriter writer, int address, bool doWrite, int alignment = 16, char padding = ' ')
             => Comment(writer, $"Ptr:    {address:x8}", doWrite, alignment, padding);
