@@ -1,6 +1,4 @@
 using GameCube.GFZ.CourseCollision;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Manifold.IO.GFZ.CourseCollision

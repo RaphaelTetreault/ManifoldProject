@@ -114,11 +114,10 @@ namespace GameCube.GFZ.CourseCollision
                 if (type == typeof(MeshIndexTable))
                 {
                     writer.Comment($"T:{(StaticMeshColliderProperty)index,14}", true);
-                    writer.Comment($"Index:{index.ToString("00"),10}", true);
+                    writer.Comment($"Index:{index,10}", true);
                 }
                 writer.CommentPtr(ColiCourseUtility.Pointer, true, padding: ' ');
-                writer.CommentCnt(listCount, true, padding: ' ', format:"x8");
-                writer.CommentCnt(listCount, true, padding: ' ');
+                writer.Comment($"Lists:{listCount,10}", true);
                 writer.CommentNewLine(true, padding: '-');
             }
 

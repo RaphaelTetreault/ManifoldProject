@@ -9,7 +9,7 @@ namespace GameCube.GFZ.CourseCollision
     /// An individual triangle as part of a collider mesh.
     /// </summary>
     [Serializable]
-    public class ColliderTriangle :
+    public sealed class ColliderTriangle :
         IBinarySeralizableReference
     {
         // METADATA

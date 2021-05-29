@@ -15,7 +15,7 @@ namespace GameCube.GFZ.CourseCollision
         private const int kGxConst0x24 = 0xFC;
 
         public static int Index { get; set; } = 0;
-        public static IPointer Pointer { get; set; } = new Pointer(-1);
+        public static Pointer Pointer { get; set; } = -1;
 
         public static void ResetDebugIndex()
         {

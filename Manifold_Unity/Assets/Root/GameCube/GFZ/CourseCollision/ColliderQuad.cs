@@ -6,7 +6,7 @@ using Unity.Mathematics;
 namespace GameCube.GFZ.CourseCollision
 {
     [Serializable]
-    public class ColliderQuad :
+    public sealed class ColliderQuad :
         IBinarySeralizableReference
     {
         // METADATA

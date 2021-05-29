@@ -7,12 +7,6 @@ namespace Manifold.IO
     public struct Pointer : IBinarySerializable, IPointer
     {
         public int address;
-
-        //public Pointer()
-        //{
-        //    address = 0;
-        //}
-
         public Pointer(int address)
         {
             this.address = address;
@@ -21,6 +15,16 @@ namespace Manifold.IO
         public string HexAddress => $"0x{address:X8}";
         public bool IsNotNullPointer => address != 0;
 
+
+        public static implicit operator Pointer(int address)
+        {
+            return new Pointer(address);
+        }
+      
+        public static implicit operator Pointer(long address)
+        {
+            return new Pointer((int)address);
+        }
 
         public void Deserialize(BinaryReader reader)
         {

@@ -171,11 +171,12 @@ namespace GameCube.GFZ.CourseCollision
             BinaryIoUtility.PushEndianess(false);
             DebugConsole.Log(FileName);
 
-            // Read COLI_COURSE## file header
-
             // Write empty header
             header = new Header();
             writer.WriteX(header);
+
+            // Write info
+            writer.CommentDateAndCredits(ColiCourseUtility.SerializeVerbose);
 
             // TODO order serialization by pointer size based on real files, 
             //      maintain isFileAX/GX compatibility
@@ -185,10 +186,10 @@ namespace GameCube.GFZ.CourseCollision
             //writer.CommentPointer(0x0C, ColiCourseUtility.SerializeVerbose);
             //header.trackNodesPtr = trackNodes.SerializeReferences(writer).GetArrayPointer();
 
-            writer.CommentTypeDesc(surfaceAttributeAreas, new Pointer(0x14), ColiCourseUtility.SerializeVerbose);
+            writer.CommentTypeDesc(surfaceAttributeAreas, 0x14, ColiCourseUtility.SerializeVerbose);
             header.surfaceAttributeAreasPtr = surfaceAttributeAreas.SerializeWithReferences(writer).GetArrayPointer();
 
-            writer.CommentTypeDesc(surfaceAttributeMeshTable, new Pointer(0x1C), ColiCourseUtility.SerializeVerbose);
+            writer.CommentTypeDesc(surfaceAttributeMeshTable, 0x1C, ColiCourseUtility.SerializeVerbose);
             header.surfaceAttributeMeshTablePtr = surfaceAttributeMeshTable.SerializeWithReference(writer).GetPointer();
 
 
