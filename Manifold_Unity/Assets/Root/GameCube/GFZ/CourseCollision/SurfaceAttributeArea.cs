@@ -48,6 +48,9 @@ namespace GameCube.GFZ.CourseCollision
 
         public void Serialize(BinaryWriter writer)
         {
+            Assert.IsTrue(zero_0x12 == 0);
+            Assert.IsTrue(zero_0x13 == 0);
+
             this.RecordStartAddress(writer);
             {
                 writer.WriteX(lengthFrom);
@@ -56,8 +59,8 @@ namespace GameCube.GFZ.CourseCollision
                 writer.WriteX(widthRight);
                 writer.WriteX(surfaceAttribute);
                 writer.WriteX(trackBranchID);
-                writer.WriteX((int)0);
-                writer.WriteX((int)0);
+                writer.WriteX(zero_0x12);
+                writer.WriteX(zero_0x13);
             }
             this.RecordEndAddress(writer);
         }

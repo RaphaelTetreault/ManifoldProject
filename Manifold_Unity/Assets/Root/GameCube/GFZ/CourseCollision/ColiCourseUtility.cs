@@ -26,7 +26,7 @@ namespace GameCube.GFZ.CourseCollision
         /// <summary>
         /// When true, serializes text inside COLI_COURSE structures
         /// </summary>
-        public static bool SerializeVerbose { get; private set; } = true;
+        public static bool SerializeVerbose { get; set; } = true;
 
         public static bool IsFileAX(BinaryReader reader)
         {

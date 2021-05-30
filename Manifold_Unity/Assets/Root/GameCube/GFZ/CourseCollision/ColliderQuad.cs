@@ -64,23 +64,25 @@ namespace GameCube.GFZ.CourseCollision
 
         public void Serialize(BinaryWriter writer)
         {
-            writer.WriteX(unk_0x00);
-            writer.WriteX(normal);
-            writer.WriteX(vertex0);
-            writer.WriteX(vertex1);
-            writer.WriteX(vertex2);
-            writer.WriteX(vertex3);
-            writer.WriteX(precomputed0);
-            writer.WriteX(precomputed1);
-            writer.WriteX(precomputed2);
-            writer.WriteX(precomputed3);
+            this.RecordStartAddress(writer);
+            {
+                writer.WriteX(unk_0x00);
+                writer.WriteX(normal);
+                writer.WriteX(vertex0);
+                writer.WriteX(vertex1);
+                writer.WriteX(vertex2);
+                writer.WriteX(vertex3);
+                writer.WriteX(precomputed0);
+                writer.WriteX(precomputed1);
+                writer.WriteX(precomputed2);
+                writer.WriteX(precomputed3);
+            }
+            this.RecordEndAddress(writer);
         }
 
         public AddressRange SerializeWithReference(BinaryWriter writer)
         {
-            this.RecordStartAddress(writer.BaseStream);
             Serialize(writer);
-            this.RecordEndAddress(writer.BaseStream);
             return addressRange;
         }
 

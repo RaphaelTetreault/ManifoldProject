@@ -42,7 +42,6 @@ namespace Manifold.IO
         }
         public static void CommentType<T>(this BinaryWriter writer, bool doWrite, char padding = ' ', int alignment = 16)
             => Comment(writer, typeof(T).Name, doWrite, padding, alignment);
-
         public static void CommentType<T>(this BinaryWriter writer, T _, bool doWrite, char padding = ' ', int alignment = 16)
             => CommentType<T>(writer, doWrite, padding, alignment);
 
@@ -58,7 +57,6 @@ namespace Manifold.IO
             for (int i = 0; i < alignment; i++)
                 writer.WriteX(padByte);
         }
-
         public static void CommentAlign(this BinaryWriter writer, bool doWrite, char padding = ' ', int alignment = 16)
         {
             // Allow option to write or not. Prevents a lot of if statements.
@@ -68,39 +66,26 @@ namespace Manifold.IO
             writer.AlignTo(alignment, (byte)padding);
         }
 
+        public static void CommentLineWide(this BinaryWriter writer, string lMsg, string rMsg, bool doWrite, char padding = ' ', int alignment = 16)
+        {
+            int lengthLeft = lMsg.Length;
+            int lenghtRight = alignment - lengthLeft;
+            var message = $"{lMsg}{rMsg.PadLeft(lenghtRight)}";
+            Comment(writer, message, doWrite, padding, alignment);
+        }
 
-        public static void PointerComment(this BinaryWriter writer, int address, bool doWrite, char padding = ' ', int alignment = 16)
-            => Comment(writer, $"Ptr:    {address:x8}", doWrite, padding, alignment);
-        //{
-        //    // Allow option to write or not. Prevents a lot of if statements.
-        //    if (!doWrite)
-        //        return;
-
-        //    var message = $"Ptr:    {address:x8}";
-        //    Comment(writer, message, true, alignment, padding);
-        //}
-
-        public static void CommentPtr(this BinaryWriter writer, IPointer pointer, bool doWrite, char padding = ' ', int alignment = 16)
-            => PointerComment(writer, pointer.Address, doWrite, padding, alignment);
-
-        public static void PointerComment(this BinaryWriter writer, AddressRange addresRange, bool doWrite, char padding = ' ', int alignment = 16)
-            => PointerComment(writer, (int)addresRange.startAddress, doWrite, padding, alignment);
 
         public static void CommentCnt(this BinaryWriter writer, int count, bool doWrite, char padding = ' ', int alignment = 16, string format = "d")
-            => Comment(writer, $"Count:  {count.ToString(format),8}", doWrite, padding, alignment);
-        //{
-        //    // Allow option to write or not. Prevents a lot of if statements.
-        //    if (!doWrite)
-        //        return;
+            => CommentLineWide(writer, "Count:", count.ToString(format), doWrite, padding, alignment);
 
-        //    var message = $"Count:  {count.ToString(format),8}";
-        //    Comment(writer, message, true, alignment, padding);
+        public static void CommentPtr(this BinaryWriter writer, int address, bool doWrite, char padding = ' ', int alignment = 16, string format = "x8")
+            => CommentLineWide(writer, "PtrAdr:", address.ToString(format), doWrite, padding, alignment);
 
-        //    //var bytes = Encoding.ASCII.GetBytes(message);
+        public static void CommentPtr(this BinaryWriter writer, IPointer pointer, bool doWrite, char padding = ' ', int alignment = 16)
+            => CommentPtr(writer, pointer.Address, doWrite, padding, alignment);
 
-        //    //writer.WriteX(bytes, false);
-        //    //writer.AlignTo(alignment, padding);
-        //}
+        public static void CommentPtr(this BinaryWriter writer, AddressRange addresRange, bool doWrite, char padding = ' ', int alignment = 16)
+            => CommentPtr(writer, (int)addresRange.startAddress, doWrite, padding, alignment);
 
         public static void CommentPtr(this BinaryWriter writer, ArrayPointer pointer, bool doWrite, char padding = ' ', int alignment = 16)
         {
@@ -109,9 +94,10 @@ namespace Manifold.IO
                 return;
 
             CommentPtr(writer, pointer.Pointer, doWrite, padding, alignment);
-            CommentCnt(writer, pointer.Address, doWrite, padding, alignment, "x8");
-            CommentCnt(writer, pointer.Address, doWrite, padding, alignment);
+            CommentCnt(writer, pointer.Length, doWrite, padding, alignment, "x8");
+            CommentCnt(writer, pointer.Length, doWrite, padding, alignment);
         }
+
 
         public static void CommentTypeDesc<T>(this BinaryWriter writer, T type, Pointer pointer, bool doWrite, char padding = ' ', int alignment = 16)
         {
@@ -122,9 +108,14 @@ namespace Manifold.IO
             CommentNewLine(writer, true, '-', alignment);
             writer.CommentType(type, true, ' ', alignment);
             if (typeof(T).IsArray)
-                writer.CommentPtr(new ArrayPointer((type as System.Array).Length, pointer.address), true, padding, alignment);
+            {
+                var length = (type as Array).Length;
+                writer.CommentPtr(new ArrayPointer(length, pointer.address), true, padding, alignment);
+            }
             else
+            {
                 writer.CommentPtr(pointer, true, padding, alignment);
+            }
             CommentNewLine(writer, true, '-', alignment);
         }
 

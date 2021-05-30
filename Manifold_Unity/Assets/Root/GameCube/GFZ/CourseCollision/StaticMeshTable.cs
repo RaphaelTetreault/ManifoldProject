@@ -119,19 +119,24 @@ namespace GameCube.GFZ.CourseCollision
 
         public void Serialize(BinaryWriter writer)
         {
+            // Store address statically for future structures
             var addressRange = writer.GetPositionAsPointer();
-            // Serialize structure with null/grabage pointers 
+
+            // Serialize structure with null/garbage pointers 
             SerializeStructure(writer);
             // Serialize references
             SerializeReferences(writer);
             // Got back to structure, rewrite with real pointers
             writer.JumpToAddress(addressRange);
             SerializeStructure(writer);
+
+            // Go back to end of stream
+            writer.SeekEnd();
         }
 
         private void SerializeStructure(BinaryWriter writer)
         {
-            // Save pointer to this structure for substructures serialization
+            // Save pointer to this structure for debug comments in sub-structures
             ColiCourseUtility.Pointer = writer.GetPositionAsPointer();
 
             this.RecordStartAddress(writer);

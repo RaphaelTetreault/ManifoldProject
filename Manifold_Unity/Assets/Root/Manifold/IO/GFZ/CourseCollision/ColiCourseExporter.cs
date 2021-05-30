@@ -38,7 +38,8 @@ namespace Manifold.IO.GFZ.CourseCollision
         [Header("Testing")]
         [SerializeField]
         protected bool exportHandMade;
-
+        [SerializeField]
+        protected bool serializeVerbose = true;
 
         public override string ExecuteText => "Export COLI_COURSE";
 
@@ -46,6 +47,8 @@ namespace Manifold.IO.GFZ.CourseCollision
 
         public void Export()
         {
+            ColiCourseUtility.SerializeVerbose = serializeVerbose;
+
             if (exportHandMade)
             {
                 var temp = new ColiScene[]
