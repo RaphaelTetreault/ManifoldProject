@@ -194,21 +194,21 @@ namespace GameCube.GFZ.CourseCollision
             //writer.CommentPointer(0x0C, ColiCourseUtility.SerializeVerbose);
             //header.trackNodesPtr = trackNodes.SerializeReferences(writer).GetArrayPointer();
 
-            writer.CommentTypeDesc(surfaceAttributeAreas, 0x14, ColiCourseUtility.SerializeVerbose);
-            header.surfaceAttributeAreasPtr = surfaceAttributeAreas.SerializeWithReferences(writer).GetArrayPointer();
+            //writer.CommentTypeDesc(surfaceAttributeAreas, 0x14, ColiCourseUtility.SerializeVerbose);
+            //header.surfaceAttributeAreasPtr = surfaceAttributeAreas.SerializeWithReferences(writer).GetArrayPointer();
 
-            writer.CommentTypeDesc(surfaceAttributeMeshTable, 0x1C, ColiCourseUtility.SerializeVerbose);
-            header.surfaceAttributeMeshTablePtr = surfaceAttributeMeshTable.SerializeWithReference(writer).GetPointer();
+            //writer.CommentTypeDesc(surfaceAttributeMeshTable, 0x1C, ColiCourseUtility.SerializeVerbose);
+            //header.surfaceAttributeMeshTablePtr = surfaceAttributeMeshTable.SerializeWithReference(writer).GetPointer();
 
-            writer.CommentTypeDesc(unknownData_0x20, 0x20, ColiCourseUtility.SerializeVerbose);
-            // SHOULD NOT BE HARD-CODED?
-            header.unknownData_0x20_Ptr = writer.GetPositionAsPointer();
-            writer.WriteX(new byte[unknownData_0x20_count], false);
+            //writer.CommentTypeDesc(unknownData_0x20, 0x20, ColiCourseUtility.SerializeVerbose);
+            //// SHOULD NOT BE HARD-CODED?
+            //header.unknownData_0x20_Ptr = writer.GetPositionAsPointer();
+            //writer.WriteX(new byte[unknownData_0x20_count], false);
 
-            writer.CommentTypeDesc(unknownFloat_0x24, 0x24, ColiCourseUtility.SerializeVerbose);
-            // SHOULD NOT BE HARD CODED
-            header.unknownFloat_0x24_Ptr = writer.GetPositionAsPointer();
-            writer.WriteX(0f);
+            //writer.CommentTypeDesc(unknownFloat_0x24, 0x24, ColiCourseUtility.SerializeVerbose);
+            //// SHOULD NOT BE HARD CODED
+            //header.unknownFloat_0x24_Ptr = writer.GetPositionAsPointer();
+            //writer.WriteX(0f);
 
             //// scene objects
             //// 0x48 (count total), 0x4C, 0x50, 0x54 (pointer address): Scene Objects;
@@ -219,9 +219,9 @@ namespace GameCube.GFZ.CourseCollision
             //header.unk_sceneObjectCount2 = 0; // still don't know what this is for
             //header.sceneObjectsPtr = writer.GetPositionAsPointer();
 
-            //// 0x5C and 0x60 SOLS values
-            //writer.CommentTypeDesc(unknownSolsTriggers, 0x60, ColiCourseUtility.SerializeVerbose);
-            //header.unknownSolsTriggerPtrs = unknownSolsTriggers.SerializeWithReferences(writer).GetArrayPointer();
+            // 0x5C and 0x60 SOLS values
+            writer.CommentTypeDesc(unknownSolsTriggers, 0x60, ColiCourseUtility.SerializeVerbose);
+            header.unknownSolsTriggerPtrs = unknownSolsTriggers.SerializeWithReferences(writer).GetArrayPointer();
 
             //// 0x64 and 0x68
             //writer.CommentTypeDesc(collisionObjectReferences, 0x68, ColiCourseUtility.SerializeVerbose);

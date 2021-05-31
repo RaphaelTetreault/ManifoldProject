@@ -8,7 +8,8 @@ namespace GameCube.GFZ.CourseCollision
     /// 
     /// </summary>
     [Serializable]
-    public class AnimationCurve : IBinarySerializable, IBinaryAddressableRange
+    public class AnimationCurve :
+        IBinarySeralizableReference
     {
         // METADATA
         [UnityEngine.SerializeField] private AddressRange addressRange;
@@ -50,8 +51,25 @@ namespace GameCube.GFZ.CourseCollision
 
         public void Serialize(BinaryWriter writer)
         {
-            foreach (var keyable in keyableAttributes)
-                writer.WriteX(keyable);
+            this.RecordStartAddress(writer);
+            {
+                foreach (var keyable in keyableAttributes)
+                    writer.WriteX(keyable);
+            }
+            this.RecordEndAddress(writer);
+        }
+
+        public AddressRange SerializeWithReference(BinaryWriter writer)
+        {
+            if (keyableAttributes.Length == 0)
+            {
+                return new AddressRange();
+            }
+            else
+            {
+                Serialize(writer);
+                return addressRange;
+            }
         }
 
     }

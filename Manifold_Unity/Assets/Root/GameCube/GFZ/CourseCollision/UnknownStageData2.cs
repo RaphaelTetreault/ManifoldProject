@@ -20,24 +20,9 @@ namespace GameCube.GFZ.CourseCollision
         [UnityEngine.SerializeField]
         private AddressRange addressRange;
 
-        // TODO: since these arrays are fixed and not 2d, they should
-        // be split into 6 different KeyableAttribute[]. Will be easy
-        // to name when you know what they do.
-        //public ArrayPointer name1Ptr;
-        //public ArrayPointer name2Ptr;
-        //public ArrayPointer name3Ptr;
-        //public ArrayPointer name4Ptr;
-        //public ArrayPointer name5Ptr;
-        //public ArrayPointer name6Ptr;
-        //public KeyableAttribute[] keyableAttributes1;
-        //public KeyableAttribute[] keyableAttributes2;
-        //public KeyableAttribute[] keyableAttributes3;
-        //public KeyableAttribute[] keyableAttributes4;
-        //public KeyableAttribute[] keyableAttributes5;
-        //public KeyableAttribute[] keyableAttributes6;
+        // TODO: accessors which name the animation curves?
+
         public ArrayPointer[] animationCurvePtrs;
-        // needs to be Array2D<> or encapsulated class
-        //public KeyableAttribute[][] unkAnimData = new KeyableAttribute[kElementCount][];
         public AnimationCurve[] animationCurves = new AnimationCurve[kElementCount];
 
         public UnknownStageData2()
@@ -83,14 +68,89 @@ namespace GameCube.GFZ.CourseCollision
 
         public void Serialize(BinaryWriter writer)
         {
-            throw new NotImplementedException();
+            // Store current address since we will have to come back and overwrite it
+            var structureAddress = writer.GetPositionAsPointer();
+
+            // Serialize structure with null/garbage pointers 
+            SerializeStructure(writer);
+            // Serialize references
+            SerializeReferences(writer);
+            // Got back to structure, rewrite with real pointers
+            writer.JumpToAddress(structureAddress);
+            SerializeStructure(writer);
+
+            // Go back to end of stream
+            writer.SeekEnd();
+
+        }
+
+        private void SerializeStructure(BinaryWriter writer)
+        {
+            // There shoul ALWAYS be 6 animation curves, even if some are "null"
+            Assert.IsTrue(animationCurves.Length == kElementCount);
+
+            this.RecordStartAddress(writer);
+            {
+                // Write all array pointers in succession
+                foreach (var arrayPointer in animationCurvePtrs)
+                    writer.WriteX(arrayPointer);
+            }
+            this.RecordEndAddress(writer);
+        }
+
+        private void SerializeReferences(BinaryWriter writer)
+        {
+            // There shoul ALWAYS be 6 animation curve pointers, even if some are "null"
+            Assert.IsTrue(animationCurvePtrs.Length == kElementCount);
+
+            for (int i = 0; i < animationCurves.Length; i++)
+            {
+                // Make ref easy
+                var animationCurve = animationCurves[i];
+
+                // Write ASCII comment header
+                if (ColiCourseUtility.SerializeVerbose)
+                {
+                    writer.CommentNewLine(true, '-');
+                    writer.CommentType<AnimationCurve>(true);
+                    writer.CommentPtr(ColiCourseUtility.Pointer, true);
+                    writer.CommentCnt(animationCurve.Length, true, format:"x8");
+                    writer.CommentCnt(animationCurve.Length, true);
+                    writer.CommentNewLine(true, '-');
+                }
+
+                // Serialize structure
+                var pointer = animationCurve.SerializeWithReference(writer).GetPointer();
+                // Assign array pointer for this animation curve
+                animationCurvePtrs[i] = new ArrayPointer(animationCurve.Length, pointer.address);
+            }
         }
 
         public AddressRange SerializeWithReference(BinaryWriter writer)
         {
-            // can bu null?
-            // if so, return new pointer un-init
-            throw new NotImplementedException();
+            // According to notes, this structure can be null.
+            // If so, return new pointer un-init.
+            // This is a protection against an init but empty struct.
+            bool isNotNull = false;
+            foreach (var animationCurve in animationCurves)
+            {
+                if (animationCurve.Length != 0)
+                {
+                    isNotNull = true;
+                    break;
+                }
+            }
+
+            if (isNotNull)
+            {
+                Serialize(writer);
+                return addressRange;
+            }
+            else
+            {
+                return new AddressRange();
+            }
         }
+
     }
 }

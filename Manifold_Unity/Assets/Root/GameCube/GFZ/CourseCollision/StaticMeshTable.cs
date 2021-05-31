@@ -119,7 +119,7 @@ namespace GameCube.GFZ.CourseCollision
 
         public void Serialize(BinaryWriter writer)
         {
-            // Store address statically for future structures
+            // Store current address since we will have to come back and overwrite it
             var addressRange = writer.GetPositionAsPointer();
 
             // Serialize structure with null/garbage pointers 

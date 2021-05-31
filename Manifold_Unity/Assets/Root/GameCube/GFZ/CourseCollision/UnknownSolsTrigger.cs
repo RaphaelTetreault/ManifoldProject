@@ -14,29 +14,47 @@ namespace GameCube.GFZ.CourseCollision
     public class UnknownSolsTrigger :
         IBinarySeralizableReference
     {
+        // METADATA
+        [UnityEngine.SerializeField] private AddressRange addressRange;
+
         // FIELDS
         public int unk_0x00;
         public Transform transform;
 
-        public AddressRange AddressRange { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+        // PROPERTIES
+        public AddressRange AddressRange
+        {
+            get => addressRange;
+            set => addressRange = value;
+        }
 
 
         // METHODS
         public void Deserialize(BinaryReader reader)
         {
-            reader.ReadX(ref unk_0x00);
-            reader.ReadX(ref transform, true);
+            this.RecordStartAddress(reader);
+            {
+                reader.ReadX(ref unk_0x00);
+                reader.ReadX(ref transform, true);
+            }
+            this.RecordEndAddress(reader);
         }
 
         public void Serialize(BinaryWriter writer)
         {
-            writer.WriteX(unk_0x00);
-            writer.WriteX(transform);
+            this.RecordStartAddress(writer);
+            {
+                writer.WriteX(unk_0x00);
+                writer.WriteX(transform);
+            }
+            this.RecordEndAddress(writer);
         }
 
         public AddressRange SerializeWithReference(BinaryWriter writer)
         {
-            throw new NotImplementedException();
+            Serialize(writer);
+            return addressRange;
         }
     }
 }
