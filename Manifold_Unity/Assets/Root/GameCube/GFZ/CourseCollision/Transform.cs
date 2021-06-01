@@ -6,7 +6,10 @@ using Unity.Mathematics;
 namespace GameCube.GFZ.CourseCollision
 {
     [Serializable]
-    public class Transform : IBinarySerializable, IBinaryAddressableRange
+    public class Transform :
+        IBinarySerializable,
+        IBinaryAddressableRange,
+        IDeepCopyable<Transform>
     {
         // metadata
         [UnityEngine.SerializeField]
@@ -64,6 +67,19 @@ namespace GameCube.GFZ.CourseCollision
         {
             get => objectActiveOverride;
             set => objectActiveOverride = value;
+        }
+
+        public Transform CreateDeepCopy()
+        {
+            var newInstance = new Transform()
+            {
+                position = position,
+                decomposedRotation = decomposedRotation,
+                scale = scale,
+                unknownOption = unknownOption,
+                objectActiveOverride = objectActiveOverride,
+            };
+            return newInstance;
         }
 
         public void Deserialize(BinaryReader reader)

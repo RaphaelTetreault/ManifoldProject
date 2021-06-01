@@ -41,12 +41,18 @@ namespace GameCube.GFZ.CourseCollision
 
         public void Serialize(BinaryWriter writer)
         {
-            throw new NotImplementedException();
+            this.RecordStartAddress(writer);
+            {
+               writer.WriteX(transform);
+               writer.WriteX(type);
+            }
+            this.RecordEndAddress(writer);
         }
 
         public AddressRange SerializeWithReference(BinaryWriter writer)
         {
-            throw new NotImplementedException();
+            Serialize(writer);
+            return addressRange;
         }
     }
 }

@@ -40,17 +40,16 @@ namespace GameCube.GFZ.CourseCollision
         {
             writer.CommentType<TrackLength>(ColiCourseUtility.SerializeVerbose);
 
-            writer.WriteX(trackLength);
+            this.RecordStartAddress(writer);
+            {
+                writer.WriteX(trackLength);
+            }
+            this.RecordEndAddress(writer);
         }
 
         public AddressRange SerializeWithReference(BinaryWriter writer)
         {
-            var addressRange = new AddressRange();
-            addressRange.RecordStartAddress(writer.BaseStream);
-            {
-                Serialize(writer);
-            }
-            addressRange.RecordEndAddress(writer.BaseStream);
+            Serialize(writer);
             return addressRange;
         }
     }

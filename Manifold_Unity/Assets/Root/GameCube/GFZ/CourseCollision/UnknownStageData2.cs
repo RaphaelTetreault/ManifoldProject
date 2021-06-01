@@ -111,6 +111,7 @@ namespace GameCube.GFZ.CourseCollision
                 // Write ASCII comment header
                 if (ColiCourseUtility.SerializeVerbose)
                 {
+                    writer.CommentNewLine(true, ' ');
                     writer.CommentNewLine(true, '-');
                     writer.CommentType<AnimationCurve>(true);
                     writer.CommentPtr(ColiCourseUtility.Pointer, true);

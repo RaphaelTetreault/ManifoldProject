@@ -14,8 +14,30 @@ namespace GameCube.GFZ.CourseCollision
         private const int kGxConst0x20 = 0xE8;
         private const int kGxConst0x24 = 0xFC;
 
+        public struct StringTableEntry
+        {
+            public enum Type
+            {
+                objectName,
+                colliderName,
+                unknownObjectsAttributes,
+            }
+
+            public Pointer pointer;
+            public string value;
+            public Type type;
+        }
+
+        // Pretty gross... write pointer and values, serialize all strings at end as part of table
+        public static List<StringTableEntry> stringTable = new List<StringTableEntry>();
+
+
+
+
         public static int Index { get; set; } = 0;
         public static Pointer Pointer { get; set; } = -1;
+
+        
 
         public static void ResetDebugIndex()
         {

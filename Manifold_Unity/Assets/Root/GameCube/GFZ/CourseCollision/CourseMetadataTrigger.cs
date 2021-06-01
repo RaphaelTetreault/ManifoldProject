@@ -66,12 +66,20 @@ namespace GameCube.GFZ.CourseCollision
 
         public void Serialize(BinaryWriter writer)
         {
-            throw new NotImplementedException();
+            this.RecordStartAddress(writer);
+            {
+               writer.WriteX(position);
+               writer.WriteX(shortRotation3);
+               writer.WriteX(positionOrScale);
+               writer.WriteX(course);
+            }
+            this.RecordEndAddress(writer);
         }
 
         public AddressRange SerializeWithReference(BinaryWriter writer)
         {
-            throw new NotImplementedException();
+            Serialize(writer);
+            return addressRange;
         }
     }
 }

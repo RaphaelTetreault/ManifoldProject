@@ -21,6 +21,7 @@ namespace GameCube.GFZ.CourseCollision
 
         // FIELDS
         public UnknownStageData1Enum unk_0x00; // 0x##000000 - looks like highest byte flags?
+        // is the below not "unknown coli struct 1"? (plane?)
         public UnknownFloatPair unk_0x04;
         public float3 unk_0x0C; // Looks like scale? Maybe not a vector.
         public float unk_0x18;
@@ -57,12 +58,26 @@ namespace GameCube.GFZ.CourseCollision
 
         public void Serialize(BinaryWriter writer)
         {
-            throw new NotImplementedException();
+            {
+                Assert.IsTrue(zero_0x1C == 0);
+                Assert.IsTrue(zero_0x20 == 0);
+            }
+            this.RecordStartAddress(writer);
+            {
+               writer.WriteX(unk_0x00);
+               writer.WriteX(unk_0x04);
+               writer.WriteX(unk_0x0C);
+               writer.WriteX(unk_0x18);
+               writer.WriteX(zero_0x1C);
+               writer.WriteX(zero_0x20);
+            }
+            this.RecordEndAddress(writer);
         }
 
         public AddressRange SerializeWithReference(BinaryWriter writer)
         {
-            throw new NotImplementedException();
+            Serialize(writer);
+            return addressRange;
         }
     }
 }

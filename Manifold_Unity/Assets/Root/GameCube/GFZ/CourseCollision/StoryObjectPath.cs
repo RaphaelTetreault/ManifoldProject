@@ -1,25 +1,18 @@
 using Manifold.IO;
-using System;
 using System.IO;
 
 namespace GameCube.GFZ.CourseCollision
 {
-    /// <summary>
-    /// 
-    /// </summary>
-    [Serializable]
-    public class UnknownObjectAttributes2 :
+    public class StoryObjectPath :
         IBinarySeralizableReference
     {
         // METADATA
-        [UnityEngine.SerializeField]
-        private AddressRange addressRange;
+        [UnityEngine.SerializeField] private AddressRange addressRange;
 
         // FIELDS
-        public Pointer collisionObjectReferencePtr;
-        // FIELDS (deserialized from pointers)
-        public UnknownObjectAttributes collisionObjectReference;
-
+        public ArrayPointer animationCurvePtr;
+        // FIELDS (deserialized from pointer)
+        public AnimationCurve animationCurve;
 
         // PROPERTIES
         public AddressRange AddressRange
@@ -34,29 +27,32 @@ namespace GameCube.GFZ.CourseCollision
         {
             this.RecordStartAddress(reader);
             {
-                reader.ReadX(ref collisionObjectReferencePtr);
+                reader.ReadX(ref animationCurvePtr);
             }
             this.RecordEndAddress(reader);
             {
-                reader.JumpToAddress(collisionObjectReferencePtr);
-                reader.ReadX(ref collisionObjectReference, true);
+                if (animationCurvePtr.IsNotNullPointer)
+                {
+                    // Init anim curve, jump, read without creating new instance
+                    animationCurve = new AnimationCurve(animationCurvePtr.Length);
+                    reader.JumpToAddress(animationCurvePtr);
+                    reader.ReadX(ref animationCurve, false);
+                }
             }
             this.SetReaderToEndAddress(reader);
         }
 
         public void Serialize(BinaryWriter writer)
         {
-            // write
+            //
             {
-                // TODO: comments
-                collisionObjectReferencePtr = collisionObjectReference.SerializeWithReference(writer).GetPointer();
+                animationCurvePtr = animationCurve.SerializeAsArrayReference(writer);
             }
             this.RecordStartAddress(writer);
             {
-                writer.WriteX(collisionObjectReferencePtr);
+                writer.WriteX(animationCurvePtr);
             }
             this.RecordEndAddress(writer);
-
         }
 
         public AddressRange SerializeWithReference(BinaryWriter writer)

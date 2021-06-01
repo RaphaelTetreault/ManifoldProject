@@ -1152,7 +1152,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol(nameof(StoryObjectTrigger.RockGroup));
                 writer.WriteNextCol(nameof(StoryObjectTrigger.Difficulty));
                 writer.WriteNextCol(nameof(StoryObjectTrigger.story2RockScale));
-                writer.WriteNextCol(nameof(StoryObjectTrigger.animationPathPtr));
+                writer.WriteNextCol(nameof(StoryObjectTrigger.storyObjectPathPtr));
                 writer.WriteNextCol(nameof(StoryObjectTrigger.scale));
                 writer.WriteNextCol(nameof(StoryObjectTrigger.rotation));
                 writer.WriteNextCol(nameof(StoryObjectTrigger.position));
@@ -1179,7 +1179,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                         writer.WriteNextCol(item.RockGroup);
                         writer.WriteNextCol(item.Difficulty);
                         writer.WriteNextCol(item.story2RockScale);
-                        writer.WriteNextCol(item.animationPathPtr);
+                        writer.WriteNextCol(item.storyObjectPathPtr);
                         writer.WriteNextCol(item.scale);
                         writer.WriteNextCol(item.rotation);
                         writer.WriteNextCol(item.position);

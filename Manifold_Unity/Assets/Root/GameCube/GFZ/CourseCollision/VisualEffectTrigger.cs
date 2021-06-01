@@ -5,7 +5,7 @@ using System.IO;
 namespace GameCube.GFZ.CourseCollision
 {
     /// <summary>
-    /// 
+    /// NOTE: assumed mesh scale for trigger is 10xyz
     /// </summary>
     [Serializable]
     public class VisualEffectTrigger : 
@@ -19,7 +19,7 @@ namespace GameCube.GFZ.CourseCollision
         public Transform transform;
         public TriggerableAnimation animation;
         public TriggerableVisualEffect visualEffect;
-
+        
 
         // PROPERTIES
         public AddressRange AddressRange
@@ -39,21 +39,23 @@ namespace GameCube.GFZ.CourseCollision
                 reader.ReadX(ref visualEffect);
             }
             this.RecordEndAddress(reader);
-            {
-                // Volumes used are 10x10x10
-                // Since we use a 1x1x1 cube, multiply x10
-                transform.Scale *= 10f;
-            }
         }
 
         public void Serialize(BinaryWriter writer)
         {
-            throw new NotImplementedException();
+            this.RecordStartAddress(writer);
+            {
+               writer.WriteX(transform);
+               writer.WriteX(animation);
+               writer.WriteX(visualEffect);
+            }
+            this.RecordEndAddress(writer);
         }
 
         public AddressRange SerializeWithReference(BinaryWriter writer)
         {
-            throw new NotImplementedException();
+            Serialize(writer);
+            return addressRange;
         }
     }
 }

@@ -23,7 +23,7 @@ namespace GameCube.GFZ.CourseCollision
         {
             keyableAttributes = new KeyableAttribute[0];
         }
-        public AnimationCurve(int numKeyables = 0)
+        public AnimationCurve(int numKeyables)
         {
             keyableAttributes = new KeyableAttribute[numKeyables];
         }
@@ -69,6 +69,26 @@ namespace GameCube.GFZ.CourseCollision
             {
                 Serialize(writer);
                 return addressRange;
+            }
+        }
+
+        /// <summary>
+        /// Helper function. Get ArrayPointer for data as stored in data while using
+        /// the wrapper class.
+        /// </summary>
+        /// <param name="writer">The stream to write to.</param>
+        /// <returns>Array pointer with length = keyables, pointer = written address in stream.</returns>
+        public ArrayPointer SerializeAsArrayReference(BinaryWriter writer)
+        {
+            if (Length > 0)
+            {
+                var pointer = SerializeWithReference(writer).GetPointer();
+                var arrayPointer = new ArrayPointer(Length, pointer.address);
+                return arrayPointer;
+            }
+            else
+            {
+                return new ArrayPointer();
             }
         }
 

@@ -41,6 +41,9 @@ namespace Manifold.IO.GFZ.CourseCollision
         [SerializeField]
         protected bool serializeVerbose = true;
 
+        [Header("Export Overrides")]
+        [SerializeField] protected bool exclude;
+
         public override string ExecuteText => "Export COLI_COURSE";
 
         public override void Execute() => Export();

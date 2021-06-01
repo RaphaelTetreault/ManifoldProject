@@ -52,18 +52,35 @@ namespace GameCube.GFZ.CourseCollision
 
         public void Serialize(BinaryWriter writer)
         {
-            writer.WriteX(unk_0x00);
-            writer.WriteX(namePtr);
-            writer.WriteX(unk_0x08);
-            writer.WriteX(unk_0x0C);
+            this.RecordStartAddress(writer);
+            {
+                writer.WriteX(unk_0x00);
 
-            // write ptr into name table
-            throw new NotImplementedException();
+                // Add this string to a table to be serialized at the end of serializing
+                // a ColiScene file.
+                ColiCourseUtility.stringTable.Add(
+                    new ColiCourseUtility.StringTableEntry()
+                    {
+                        // This address to com back to and overwrite with the string pointer
+                        pointer = writer.GetPositionAsPointer(),
+                        // what we want to serialize: the name
+                        value = name,
+                        // add some metadata to help sort. Will be printed if SerializeVerbose
+                        type = ColiCourseUtility.StringTableEntry.Type.unknownObjectsAttributes,
+                    });
+                // write whatever for now
+                writer.WriteX(namePtr);
+
+                writer.WriteX(unk_0x08);
+                writer.WriteX(unk_0x0C);
+            }
+            this.RecordEndAddress(writer);
         }
 
         public AddressRange SerializeWithReference(BinaryWriter writer)
         {
-            throw new NotImplementedException();
+            Serialize(writer);
+            return addressRange;
         }
     }
 }

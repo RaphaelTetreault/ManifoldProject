@@ -112,11 +112,12 @@ namespace GameCube.GFZ.CourseCollision
                 writer.Comment(type.Name, true);
                 if (type == typeof(StaticMeshTableIndexes))
                 {
-                    writer.Comment($"T:{(StaticMeshColliderProperty)index,14}", true);
-                    writer.Comment($"Index:{index,10}", true);
+                    writer.CommentLineWide("T:", $"{(StaticMeshColliderProperty)index}", true);
+                    writer.CommentIdx(index, true);
                 }
                 writer.CommentPtr(ColiCourseUtility.Pointer, true, padding: ' ');
-                writer.Comment($"Lists:{listCount,10}", true);
+                writer.CommentLineWide("Lists:", $"{listCount}", true);
+                writer.CommentLineWide("LargestIdx:", $"{largestIndex}", true);
                 writer.CommentNewLine(true, padding: '-');
             }
 
