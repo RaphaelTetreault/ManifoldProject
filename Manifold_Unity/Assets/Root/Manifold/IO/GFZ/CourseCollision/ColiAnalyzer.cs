@@ -620,7 +620,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol(nameof(SceneObject.lodFar));
                 writer.WriteNextCol(nameof(SceneObject.lodNear));
                 writer.WriteNextCol(nameof(SceneObject.lodNear));
-                writer.WriteNextCol(nameof(SceneObject.collisionBindingPtr));
+                writer.WriteNextCol(nameof(SceneObject.colliderAttributePtr));
                 writer.WriteNextCol(nameof(SceneObject.transform.Position));
                 writer.WriteNextCol(nameof(SceneObject.transform.RotationEuler));
                 writer.WriteNextCol(nameof(SceneObject.transform.Scale));
@@ -643,7 +643,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                         writer.WriteNextCol($"0x{sceneObject.lodFar.data32:x8}");
                         writer.WriteNextCol(sceneObject.lodNear.data32);
                         writer.WriteNextCol($"0x{sceneObject.lodNear.data32:x8}");
-                        writer.WriteNextCol(sceneObject.collisionBindingPtr.HexAddress);
+                        writer.WriteNextCol(sceneObject.colliderAttributePtr.HexAddress);
                         writer.WriteNextCol(sceneObject.transform.Position);
                         writer.WriteNextCol(sceneObject.transform.RotationEuler);
                         writer.WriteNextCol(sceneObject.transform.Scale);
@@ -921,10 +921,10 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol(nameof(Header.unkBool32_0x58));
                 writer.WriteNextCol(nameof(Header.unknownSolsTriggerPtrs));
                 writer.WriteNextCol(nameof(Header.unknownSolsTriggerPtrs));
-                writer.WriteNextCol(nameof(Header.collisionObjectReferencePtrs));
-                writer.WriteNextCol(nameof(Header.collisionObjectReferencePtrs));
-                writer.WriteNextCol(nameof(Header.unk_collisionObjectReferencePtrs));
-                writer.WriteNextCol(nameof(Header.unk_collisionObjectReferencePtrs));
+                writer.WriteNextCol(nameof(Header.sceneInstancesListPtrs));
+                writer.WriteNextCol(nameof(Header.sceneInstancesListPtrs));
+                writer.WriteNextCol(nameof(Header.sceneOriginObjectsListPtrs));
+                writer.WriteNextCol(nameof(Header.sceneOriginObjectsListPtrs));
                 writer.WriteNextCol(nameof(Header.unused_0x74_0x78));
                 writer.WriteNextCol(nameof(Header.unused_0x74_0x78));
                 writer.WriteNextCol(nameof(Header.circuitType));
@@ -991,10 +991,10 @@ namespace Manifold.IO.GFZ.CourseCollision
                     writer.WriteNextCol(coliHeader.unkBool32_0x58);
                     writer.WriteNextCol(coliHeader.unknownSolsTriggerPtrs.Length);
                     writer.WriteNextCol(coliHeader.unknownSolsTriggerPtrs.HexAddress);
-                    writer.WriteNextCol(coliHeader.collisionObjectReferencePtrs.Length);
-                    writer.WriteNextCol(coliHeader.collisionObjectReferencePtrs.HexAddress);
-                    writer.WriteNextCol(coliHeader.unk_collisionObjectReferencePtrs.Length);
-                    writer.WriteNextCol(coliHeader.unk_collisionObjectReferencePtrs.HexAddress);
+                    writer.WriteNextCol(coliHeader.sceneInstancesListPtrs.Length);
+                    writer.WriteNextCol(coliHeader.sceneInstancesListPtrs.HexAddress);
+                    writer.WriteNextCol(coliHeader.sceneOriginObjectsListPtrs.Length);
+                    writer.WriteNextCol(coliHeader.sceneOriginObjectsListPtrs.HexAddress);
                     writer.WriteNextCol(coliHeader.unused_0x74_0x78.Length);
                     writer.WriteNextCol(coliHeader.unused_0x74_0x78.HexAddress);
                     writer.WriteNextCol(coliHeader.circuitType);

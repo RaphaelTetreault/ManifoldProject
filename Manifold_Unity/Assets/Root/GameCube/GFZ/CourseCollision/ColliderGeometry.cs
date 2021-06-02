@@ -20,6 +20,7 @@ namespace GameCube.GFZ.CourseCollision
         public uint unk_0x08;
         public uint unk_0x0C;
         public uint unk_0x10;
+        // this is a ArrayPointer2D, consider refactor
         public int triCount;
         public int quadCount;
         public uint triAbsPtr;

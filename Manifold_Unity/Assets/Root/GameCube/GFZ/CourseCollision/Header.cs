@@ -40,8 +40,8 @@ namespace GameCube.GFZ.CourseCollision
         public Pointer sceneObjectsPtr;
         public Bool32 unkBool32_0x58;
         public ArrayPointer unknownSolsTriggerPtrs;
-        public ArrayPointer collisionObjectReferencePtrs;
-        public ArrayPointer unk_collisionObjectReferencePtrs; // refers back to above objects, but through another array-pointer
+        public ArrayPointer sceneInstancesListPtrs;
+        public ArrayPointer sceneOriginObjectsListPtrs; // refers back to above objects, but through another array-pointer
         public ArrayPointer unused_0x74_0x78;
         public CircuitType circuitType;
         public Pointer unknownStageData2Ptr;
@@ -100,8 +100,8 @@ namespace GameCube.GFZ.CourseCollision
                 reader.ReadX(ref sceneObjectsPtr);
                 reader.ReadX(ref unkBool32_0x58);
                 reader.ReadX(ref unknownSolsTriggerPtrs);
-                reader.ReadX(ref collisionObjectReferencePtrs);
-                reader.ReadX(ref unk_collisionObjectReferencePtrs);
+                reader.ReadX(ref sceneInstancesListPtrs);
+                reader.ReadX(ref sceneOriginObjectsListPtrs);
                 reader.ReadX(ref unused_0x74_0x78);
                 reader.ReadX(ref circuitType);
                 reader.ReadX(ref unknownStageData2Ptr);
@@ -154,8 +154,8 @@ namespace GameCube.GFZ.CourseCollision
             writer.WriteX(sceneObjectsPtr);
             writer.WriteX(unkBool32_0x58);
             writer.WriteX(unknownSolsTriggerPtrs);
-            writer.WriteX(collisionObjectReferencePtrs);
-            writer.WriteX(unk_collisionObjectReferencePtrs);
+            writer.WriteX(sceneInstancesListPtrs);
+            writer.WriteX(sceneOriginObjectsListPtrs);
             writer.WriteX(new ArrayPointer()); // const unused
             writer.WriteX(circuitType);
             writer.WriteX(unknownStageData2Ptr);

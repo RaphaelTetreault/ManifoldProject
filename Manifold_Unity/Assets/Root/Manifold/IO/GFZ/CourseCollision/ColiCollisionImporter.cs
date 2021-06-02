@@ -66,7 +66,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                         if (sceneObject.colliderBinding.colliderGeometryPtr.IsNotNullPointer)
                         {
                             var meshName = sceneObject.name;
-                            ImportUtility.ProgressBar<ColliderObject>(count, total, $"st{sceneSobj.Value.ID:00} {meshName}");
+                            ImportUtility.ProgressBar<SceneInstanceReference>(count, total, $"st{sceneSobj.Value.ID:00} {meshName}");
 
                             // Create mesh
                             var mesh = CreateObjectColliderMesh(sceneObject);
@@ -112,7 +112,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
                         count++;
                         var meshName = mesh.name;
-                        ImportUtility.ProgressBar<ColliderObject>(count, total, $"st{sceneSobj.Value.ID:00} {meshName}");
+                        ImportUtility.ProgressBar<SceneInstanceReference>(count, total, $"st{sceneSobj.Value.ID:00} {meshName}");
 
                         // Save mesh to Asset Database
                         var meshPath = $"Assets/{importTo}/st{sceneSobj.Value.ID:00}/coli_{meshName}.asset";
@@ -138,7 +138,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 }
             }
 
-            ImportUtility.ProgressBar<ColliderObject>(1, 1, $"Saving assets...");
+            ImportUtility.ProgressBar<SceneInstanceReference>(1, 1, $"Saving assets...");
             ImportUtility.FinalizeAssetImport();
         }
 

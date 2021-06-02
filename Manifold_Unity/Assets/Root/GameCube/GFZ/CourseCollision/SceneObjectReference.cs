@@ -6,10 +6,10 @@ using System.Text;
 namespace GameCube.GFZ.CourseCollision
 {
     /// <summary>
-    /// 
+    /// SceneObject ptr1
     /// </summary>
     [Serializable]
-    public class UnknownObjectAttributes :
+    public class SceneObjectReference :
         IBinarySeralizableReference
     {
         // METADATA
@@ -38,8 +38,8 @@ namespace GameCube.GFZ.CourseCollision
             this.RecordStartAddress(reader);
             {
                 reader.ReadX(ref unk_0x00);
-                reader.ReadX(ref namePtr);
                 reader.ReadX(ref unk_0x08);
+                reader.ReadX(ref namePtr);
                 reader.ReadX(ref unk_0x0C);
             }
             this.RecordEndAddress(reader);

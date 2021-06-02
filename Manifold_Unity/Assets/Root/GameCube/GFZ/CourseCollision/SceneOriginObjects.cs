@@ -5,10 +5,10 @@ using System.IO;
 namespace GameCube.GFZ.CourseCollision
 {
     /// <summary>
-    /// 
+    /// This structure points to an object which does not use a transform for placement within the scene.
     /// </summary>
     [Serializable]
-    public class UnknownObjectAttributes2 :
+    public class SceneOriginObjects :
         IBinarySeralizableReference
     {
         // METADATA
@@ -16,9 +16,9 @@ namespace GameCube.GFZ.CourseCollision
         private AddressRange addressRange;
 
         // FIELDS
-        public Pointer collisionObjectReferencePtr;
+        public Pointer sceneObjectReferencePtr;
         // FIELDS (deserialized from pointers)
-        public UnknownObjectAttributes collisionObjectReference;
+        public SceneObjectReference collisionObjectReference;
 
 
         // PROPERTIES
@@ -34,11 +34,11 @@ namespace GameCube.GFZ.CourseCollision
         {
             this.RecordStartAddress(reader);
             {
-                reader.ReadX(ref collisionObjectReferencePtr);
+                reader.ReadX(ref sceneObjectReferencePtr);
             }
             this.RecordEndAddress(reader);
             {
-                reader.JumpToAddress(collisionObjectReferencePtr);
+                reader.JumpToAddress(sceneObjectReferencePtr);
                 reader.ReadX(ref collisionObjectReference, true);
             }
             this.SetReaderToEndAddress(reader);
@@ -48,12 +48,14 @@ namespace GameCube.GFZ.CourseCollision
         {
             // write
             {
-                // TODO: comments
-                collisionObjectReferencePtr = collisionObjectReference.SerializeWithReference(writer).GetPointer();
+                // COMMENT: perhaps leave for table? (will be in ColiScene if so)
+                //var ptr = writer.GetPositionAsPointer();
+                //writer.CommentTypeDesc(collisionObjectReference, ptr, ColiCourseUtility.SerializeVerbose);
+                sceneObjectReferencePtr = collisionObjectReference.SerializeWithReference(writer).GetPointer();
             }
             this.RecordStartAddress(writer);
             {
-                writer.WriteX(collisionObjectReferencePtr);
+                writer.WriteX(sceneObjectReferencePtr);
             }
             this.RecordEndAddress(writer);
 

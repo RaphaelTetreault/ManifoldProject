@@ -32,8 +32,8 @@ namespace GameCube.GFZ.CourseCollision
         public byte[] unknownData_0x20 = new byte[unknownData_0x20_count];
         public float unknownFloat_0x24;
         public SceneObject[] sceneObjects = new SceneObject[0];
-        public UnknownObjectAttributes[] collisionObjectReferences = new UnknownObjectAttributes[0];
-        public UnknownObjectAttributes2[] unk_collisionObjectReferences = new UnknownObjectAttributes2[0];
+        public SceneInstanceReference[] sceneInstancesList = new SceneInstanceReference[0];
+        public SceneOriginObjects[] sceneOriginObjectsList = new SceneOriginObjects[0];
         public UnknownSolsTrigger[] unknownSolsTriggers = new UnknownSolsTrigger[0];
         public UnknownStageData2 unknownStageData2 = new UnknownStageData2();
         public UnknownStageData1 unknownStageData1 = new UnknownStageData1();
@@ -98,14 +98,12 @@ namespace GameCube.GFZ.CourseCollision
             reader.ReadX(ref unknownSolsTriggers, header.unknownSolsTriggerPtrs.Length, true);
 
             // 0x64 and 0x68
-            reader.JumpToAddress(header.collisionObjectReferencePtrs);
-            reader.ReadX(ref collisionObjectReferences, header.collisionObjectReferencePtrs.Length, true);
+            reader.JumpToAddress(header.sceneInstancesListPtrs);
+            reader.ReadX(ref sceneInstancesList, header.sceneInstancesListPtrs.Length, true);
 
             // 0x6C and 0x70
-            // This one is weird. Pointers which lead to an array which reference collisionObjectReferences.
-            // The count is different, so perhaps leads to certain properties on those objects.
-            reader.JumpToAddress(header.unk_collisionObjectReferencePtrs);
-            reader.ReadX(ref unk_collisionObjectReferences, header.unk_collisionObjectReferencePtrs.Length, true);
+            reader.JumpToAddress(header.sceneOriginObjectsListPtrs);
+            reader.ReadX(ref sceneOriginObjectsList, header.sceneOriginObjectsListPtrs.Length, true);
 
             // 0x80
             if (header.unknownStageData2Ptr.IsNotNullPointer)
@@ -231,15 +229,15 @@ namespace GameCube.GFZ.CourseCollision
             header.unknownSolsTriggerPtrs = unknownSolsTriggers.SerializeWithReferences(writer).GetArrayPointer();
 
             // 0x64 and 0x68
-            writer.CommentTypeDesc(collisionObjectReferences, 0x68, ColiCourseUtility.SerializeVerbose);
-            header.collisionObjectReferencePtrs = collisionObjectReferences.SerializeWithReferences(writer).GetArrayPointer();
+            writer.CommentTypeDesc(sceneInstancesList, 0x68, ColiCourseUtility.SerializeVerbose);
+            header.sceneInstancesListPtrs = sceneInstancesList.SerializeWithReferences(writer).GetArrayPointer();
 
 
             // 0x6C and 0x70
             // This one is weird. Pointers which lead to an array which reference collisionObjectReferences.
             // The count is different, so perhaps leads to certain properties on those objects.
-            writer.CommentTypeDesc(unk_collisionObjectReferences, 0x70, ColiCourseUtility.SerializeVerbose);
-            header.unk_collisionObjectReferencePtrs = unk_collisionObjectReferences.SerializeWithReferences(writer).GetArrayPointer();
+            writer.CommentTypeDesc(sceneOriginObjectsList, 0x70, ColiCourseUtility.SerializeVerbose);
+            header.sceneOriginObjectsListPtrs = sceneOriginObjectsList.SerializeWithReferences(writer).GetArrayPointer();
 
             // 0x74, 0x78: unused in header
 
@@ -320,7 +318,7 @@ namespace GameCube.GFZ.CourseCollision
                 writer.SeekEnd(); // unnecesasry?
                 var ptr = writer.GetPositionAsPointer();
                 writer.WriteXCString(entry.value, Encoding.ASCII);
-                writer.JumpToAddress(ptr);
+                writer.JumpToAddress(entry.pointer);
                 writer.WriteX(ptr);
                 writer.SeekEnd();
             }

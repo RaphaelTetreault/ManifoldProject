@@ -8,11 +8,11 @@ namespace GameCube.GFZ.CourseCollision
     /// 
     /// </summary>
     [Serializable]
-    public class ColliderObject : IBinarySerializable, IBinaryAddressableRange
+    public class SceneInstanceReference :
+        IBinarySeralizableReference
     {
         // METADATA
-        [UnityEngine.SerializeField]
-        private AddressRange addressRange;
+        [UnityEngine.SerializeField] private AddressRange addressRange;
 
         // STRUCTURE
         public uint unk_0x00;
@@ -20,7 +20,7 @@ namespace GameCube.GFZ.CourseCollision
         public Pointer objectAttributesPtr;
         public Pointer colliderGeometryPtr;
         // FIELDS (deserialized from pointers)
-        public UnknownObjectAttributes objectAttributes;
+        public SceneObjectReference objectReference;
         public ColliderGeometry colliderGeometry;
 
 
@@ -46,7 +46,7 @@ namespace GameCube.GFZ.CourseCollision
             {
                 Assert.IsTrue(objectAttributesPtr.IsNotNullPointer);
                 reader.JumpToAddress(objectAttributesPtr);
-                reader.ReadX(ref objectAttributes, true);
+                reader.ReadX(ref objectReference, true);
 
                 // Collision is not required, load only if pointer is not null
                 if (colliderGeometryPtr.IsNotNullPointer)
@@ -60,14 +60,22 @@ namespace GameCube.GFZ.CourseCollision
 
         public void Serialize(BinaryWriter writer)
         {
-            writer.WriteX(unk_0x00);
-            writer.WriteX(unk_0x04);
-            writer.WriteX(objectAttributesPtr);
-            writer.WriteX(colliderGeometryPtr);
-
-            //
-            throw new NotImplementedException();
+            {
+                //objectAttributesPtr
+            }
+            this.RecordStartAddress(writer);
+            {
+                writer.WriteX(unk_0x00);
+                writer.WriteX(unk_0x04);
+                writer.WriteX(objectAttributesPtr);
+                writer.WriteX(colliderGeometryPtr);
+            }
+            this.RecordEndAddress(writer);
         }
 
+        public AddressRange SerializeWithReference(BinaryWriter writer)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

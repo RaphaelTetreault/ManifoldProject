@@ -22,7 +22,7 @@ namespace GameCube.GFZ.CourseCollision
         // FIELDS
         public LevelOfDetailRadius lodFar;
         public LevelOfDetailRadius lodNear;
-        public Pointer collisionBindingPtr;
+        public Pointer colliderAttributePtr;
         public Transform transform;
         public int zero_0x2C;
         public Pointer animationPtr;
@@ -31,7 +31,7 @@ namespace GameCube.GFZ.CourseCollision
         public Pointer transformPtr;
 
         // FIELDS (deserialized from pointers)
-        public ColliderObject colliderBinding;
+        public SceneInstanceReference colliderBinding;
         public AnimationClip animation;
         public UnknownSceneObjectData unk1;
         public SkeletalAnimator skeletalAnimator;
@@ -53,7 +53,7 @@ namespace GameCube.GFZ.CourseCollision
             {
                 reader.ReadX(ref lodFar, false);
                 reader.ReadX(ref lodNear, false);
-                reader.ReadX(ref collisionBindingPtr);
+                reader.ReadX(ref colliderAttributePtr);
                 reader.ReadX(ref transform, true);
                 reader.ReadX(ref zero_0x2C);
                 reader.ReadX(ref animationPtr);
@@ -65,12 +65,12 @@ namespace GameCube.GFZ.CourseCollision
             {
                 // Assert constants
                 Assert.IsTrue(zero_0x2C == 0);
-                Assert.IsTrue(collisionBindingPtr.IsNotNullPointer);
+                Assert.IsTrue(colliderAttributePtr.IsNotNullPointer);
 
                 //
-                reader.JumpToAddress(collisionBindingPtr);
+                reader.JumpToAddress(colliderAttributePtr);
                 reader.ReadX(ref colliderBinding, true);
-                name = colliderBinding.objectAttributes.name;
+                name = colliderBinding.objectReference.name;
 
                 if (animationPtr.IsNotNullPointer)
                 {
@@ -107,7 +107,7 @@ namespace GameCube.GFZ.CourseCollision
         {
             writer.WriteX(lodFar);
             writer.WriteX(lodNear);
-            writer.WriteX(collisionBindingPtr);
+            writer.WriteX(colliderAttributePtr);
             writer.WriteX(transform);
             writer.WriteX(zero_0x2C);
             writer.WriteX(animationPtr);
