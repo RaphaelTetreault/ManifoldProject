@@ -83,7 +83,7 @@ namespace GameCube.GFZ.CourseCollision
         public void Serialize(BinaryWriter writer)
         {
             {
-                writer.CommentTypeDesc(storyObjectPath, -1, ColiCourseUtility.SerializeVerbose);
+                writer.InlineDesc(ColiCourseUtility.SerializeVerbose, -1, storyObjectPath);
                 storyObjectPathPtr = storyObjectPath.SerializeWithReference(writer).GetPointer();
             }
             this.RecordStartAddress(writer);

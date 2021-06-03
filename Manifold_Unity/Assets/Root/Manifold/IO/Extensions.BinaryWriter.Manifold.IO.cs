@@ -101,7 +101,7 @@ namespace Manifold.IO
         }
 
 
-        public static void CommentTypeDesc<T>(this BinaryWriter writer, T type, Pointer pointer, bool doWrite, char padding = ' ', int alignment = 16)
+        public static void InlineDesc<T>(this BinaryWriter writer, bool doWrite, Pointer pointer, T type, char padding = ' ', int alignment = 16)
         {
             if (!doWrite)
                 return;

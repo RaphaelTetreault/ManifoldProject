@@ -17,7 +17,7 @@ namespace GameCube.GFZ.CourseCollision
         /// <summary>
         /// Object's name from table sub-structure
         /// </summary>
-        public string name;
+        public string nameCopy;
 
         // FIELDS
         public LevelOfDetailRadius lodFar;
@@ -69,7 +69,7 @@ namespace GameCube.GFZ.CourseCollision
                 //
                 reader.JumpToAddress(instanceReferencePtr);
                 reader.ReadX(ref instanceReference, true);
-                name = instanceReference.objectReference.name;
+                nameCopy = instanceReference.objectReference.name;
 
                 if (animationPtr.IsNotNullPointer)
                 {

@@ -28,7 +28,7 @@ namespace Manifold.Conversion
 
                 var clip = AnimationConverter.GfzToUnity(gobj.animation);
                 var hash = HashSerializables.Hash(gobj.animation);
-                var name = $"anim_{gobj.name}_{hash}.anim";
+                var name = $"anim_{gobj.nameCopy}_{hash}.anim";
                 var path = $"Assets/Untracked/Anim/{name}";
                 AssetDatabase.CreateAsset(clip, path);
                 Debug.Log(path);

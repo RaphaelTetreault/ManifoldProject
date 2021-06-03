@@ -17,18 +17,19 @@ namespace GameCube.GFZ.CourseCollision
         private const int kGxConst0x20 = 0xE8;
         private const int kGxConst0x24 = 0xFC;
 
-        public struct SerializePatchable<T>
-            where T : IBinarySerializable
-        {
-            public string hash;
-            public T value;
-            public List<Pointer> references;
-        }
+        //public struct SerializePatchable<T>
+        //    where T : IBinarySerializable
+        //{
+        //    public string hash;
+        //    public T value;
+        //    public List<Pointer> references;
+        //}
 
 
-        //public static List<SerializePatchable<string>> objectNames = new List<SerializePatchable<string>>();
-
-
+        //public static List<SerializePatchable<CString>> objectNames = new List<SerializePatchable<CString>>();
+        //public static List<SerializePatchable<SceneObjectReference>> objectReferences = new List<SerializePatchable<SceneObjectReference>>();
+        //public static List<SerializePatchable<SceneInstanceReference>> instanceReferences = new List<SerializePatchable<SceneInstanceReference>>();
+        //public static List<SerializePatchable<SceneObject>> sceneObjects = new List<SerializePatchable<SceneObject>>();
 
         public static int Index { get; set; } = 0;
         public static Pointer Pointer { get; set; } = -1;

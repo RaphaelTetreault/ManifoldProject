@@ -158,28 +158,30 @@ namespace GameCube.GFZ.CourseCollision
             // Write sub classes to get pointers
 
             // TRIANGLES
-            writer.CommentTypeDesc(colliderTriangles, ColiCourseUtility.Pointer, ColiCourseUtility.SerializeVerbose);
-            // We don't need to store the length. The game kinda just figures it out.
-            collisionTrisPtr = colliderTriangles.SerializeWithReferences(writer).GetArrayPointer().Pointer;
-
-            writer.CommentTypeDesc(triMeshIndexTable, ColiCourseUtility.Pointer, ColiCourseUtility.SerializeVerbose);
+            writer.InlineDesc(ColiCourseUtility.SerializeVerbose, ColiCourseUtility.Pointer, colliderTriangles);
+            writer.WriteX(colliderTriangles, false);
+            writer.InlineDesc(ColiCourseUtility.SerializeVerbose, ColiCourseUtility.Pointer, triMeshIndexTable);
             writer.Comment($"var: {nameof(triMeshIndexTable)}", ColiCourseUtility.SerializeVerbose);
-            collisionTriIndexesPtr = triMeshIndexTable.SerializeWithReferences(writer).GetPointers();
-
+            writer.WriteX(triMeshIndexTable, false);
             // Using a static value to embed metadata in the above type upon serialization
             ColiCourseUtility.ResetDebugIndex();
-
 
             // QUADS
-            writer.CommentTypeDesc(colliderQuads, ColiCourseUtility.Pointer, ColiCourseUtility.SerializeVerbose);
-            collisionQuadsPtr = colliderQuads.SerializeWithReferences(writer).GetArrayPointer().Pointer;
-
-            writer.CommentTypeDesc(quadMeshIndexTable, ColiCourseUtility.Pointer, ColiCourseUtility.SerializeVerbose);
+            writer.InlineDesc(ColiCourseUtility.SerializeVerbose, ColiCourseUtility.Pointer, colliderQuads);
+            writer.WriteX(colliderQuads, false);
+            writer.InlineDesc(ColiCourseUtility.SerializeVerbose, ColiCourseUtility.Pointer, quadMeshIndexTable);
             writer.Comment($"var: {nameof(quadMeshIndexTable)}", ColiCourseUtility.SerializeVerbose);
-            collisionTriIndexesPtr = quadMeshIndexTable.SerializeWithReferences(writer).GetPointers();
-
+            writer.WriteX(quadMeshIndexTable, false);
             // Using a static value to embed metadata in the above type upon serialization
             ColiCourseUtility.ResetDebugIndex();
+
+            // POINTERS
+            // We don't need to store the length (from ArrayPointers).
+            // The game kinda just figures it out on pointer alone.
+            collisionTrisPtr = colliderTriangles.GetArrayPointer().Pointer;
+            collisionTriIndexesPtr = triMeshIndexTable.GetPointers();
+            collisionQuadsPtr = colliderQuads.GetArrayPointer().Pointer;
+            collisionQuadIndexesPtr = quadMeshIndexTable.GetPointers();
         }
 
         public AddressRange SerializeWithReference(BinaryWriter writer)

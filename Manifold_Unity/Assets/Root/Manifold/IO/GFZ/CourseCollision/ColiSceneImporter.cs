@@ -102,14 +102,14 @@ namespace Manifold.IO.GFZ.CourseCollision
                 {
                     // Skip empties.
                     // TODO: should check if these are possible data?
-                    if (string.IsNullOrEmpty(sceneObject.name))
+                    if (string.IsNullOrEmpty(sceneObject.nameCopy))
                     {
                         count++;
                         continue;
                     }
 
                     // Generate the names of the objects we want
-                    var objectName = sceneObject.name;
+                    var objectName = sceneObject.nameCopy;
                     var prefabName = $"pf_{objectName}";
                     var displayName = $"[{count.ToString(digitsFormat)}] {objectName}";
 

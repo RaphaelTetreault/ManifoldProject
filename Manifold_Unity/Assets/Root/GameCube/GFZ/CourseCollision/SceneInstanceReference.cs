@@ -13,6 +13,7 @@ namespace GameCube.GFZ.CourseCollision
     {
         // METADATA
         [UnityEngine.SerializeField] private AddressRange addressRange;
+        public string nameCopy;
 
         // STRUCTURE
         public uint unk_0x00; // 0, 1, 3, 64, 65, 193, 194, 195, 256 (flags? 1, 2, 64, 128, 256)
@@ -55,6 +56,8 @@ namespace GameCube.GFZ.CourseCollision
                     reader.JumpToAddress(colliderGeometryPtr);
                     reader.ReadX(ref colliderGeometry, true);
                 }
+
+                nameCopy = objectReference.name;
             }
             this.SetReaderToEndAddress(reader);
         }

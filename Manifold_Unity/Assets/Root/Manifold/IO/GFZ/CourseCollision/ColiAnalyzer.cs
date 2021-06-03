@@ -554,7 +554,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                             {
                                 writer.WriteNextCol(file.FileName);
                                 writer.WriteNextCol(gameObjectIndex);
-                                writer.WriteNextCol(gameObject.name);
+                                writer.WriteNextCol(gameObject.nameCopy);
                                 writer.WriteNextCol(animationCurvePlus.StartAddressHex());
                                 writer.WriteNextCol(keyable.StartAddressHex());
                                 writer.WriteNextCol(animIndex);
@@ -608,7 +608,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
                                 writer.WriteNextCol(file.FileName);
                                 writer.WriteNextCol(gameObjectIndex);
-                                writer.WriteNextCol(gameObject.name);
+                                writer.WriteNextCol(gameObject.nameCopy);
                                 writer.WriteNextCol(animationCurvePlus.StartAddressHex());
                                 writer.WriteNextCol(keyable.StartAddressHex());
                                 writer.WriteNextCol(animIndex);
@@ -662,7 +662,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                     {
                         writer.WriteNextCol(file.FileName);
                         writer.WriteNextCol(sceneObjectIndex);
-                        writer.WriteNextCol(sceneObject.name);
+                        writer.WriteNextCol(sceneObject.nameCopy);
                         writer.WriteNextCol(sceneObject.lodFar.data32);
                         writer.WriteNextCol($"0x{sceneObject.lodFar.data32:x8}");
                         writer.WriteNextCol(sceneObject.lodNear.data32);
@@ -711,7 +711,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                         {
                             writer.WriteNextCol(file.FileName);
                             writer.WriteNextCol(gameObjectIndex);
-                            writer.WriteNextCol(sceneObject.name);
+                            writer.WriteNextCol(sceneObject.nameCopy);
                             writer.WriteNextCol(unkIndex);
                             writer.WriteNextCol(unk1.unk_0x00);
                             writer.WriteNextCol(unk1.unk_0x04);
@@ -762,7 +762,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
                         writer.WriteNextCol(file.FileName);
                         writer.WriteNextCol(gameObjectIndex);
-                        writer.WriteNextCol(sceneObject.name);
+                        writer.WriteNextCol(sceneObject.nameCopy);
 
                         writer.WriteNextCol(sceneObject.skeletalAnimator.zero_0x00);
                         writer.WriteNextCol(sceneObject.skeletalAnimator.zero_0x04);
@@ -825,7 +825,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                         {
                             writer.WriteNextCol(file.FileName);
                             writer.WriteNextCol(gameObjectIndex);
-                            writer.WriteNextCol(gameObject.name);
+                            writer.WriteNextCol(gameObject.nameCopy);
 
                             writer.WriteNextCol(triIndex++);
                             writer.WriteStartAddress(tri);
@@ -888,7 +888,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                         {
                             writer.WriteNextCol(file.FileName);
                             writer.WriteNextCol(gameObjectIndex);
-                            writer.WriteNextCol(gameObject.name);
+                            writer.WriteNextCol(gameObject.nameCopy);
 
                             writer.WriteNextCol(quadIndex++);
                             writer.WriteStartAddress(quad);
@@ -1348,7 +1348,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
                         writer.WriteNextCol(file.FileName);
                         writer.WriteNextCol(sceneObjectIndex);
-                        writer.WriteNextCol(sceneObject.name);
+                        writer.WriteNextCol(sceneObject.nameCopy);
 
                         // Matrix
                         var matrix = sceneObject.transformMatrix3x4.rotationEuler;

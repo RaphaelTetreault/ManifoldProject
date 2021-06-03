@@ -65,7 +65,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
                         if (sceneObject.instanceReference.colliderGeometryPtr.IsNotNullPointer)
                         {
-                            var meshName = sceneObject.name;
+                            var meshName = sceneObject.nameCopy;
                             ImportUtility.ProgressBar<SceneInstanceReference>(count, total, $"st{sceneSobj.Value.ID:00} {meshName}");
 
                             // Create mesh
@@ -317,7 +317,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
             // Create base data for mesh
             var mesh = new Mesh();
-            mesh.name = sceneObject.name;
+            mesh.name = sceneObject.nameCopy;
             var submeshes = new SubMeshDescriptor[2];
 
             // TRIS
