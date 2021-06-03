@@ -15,9 +15,10 @@ namespace GameCube.GFZ.CourseCollision
         [UnityEngine.SerializeField] private AddressRange addressRange;
 
         // STRUCTURE
-        public uint unk_0x00;
-        public uint unk_0x04;
-        public Pointer objectAttributesPtr;
+        public uint unk_0x00; // 0, 1, 3, 64, 65, 193, 194, 195, 256 (flags? 1, 2, 64, 128, 256)
+        // One case of 6. Almost all values > 1 have float in objRef, almost all with value 1 have 0f
+        public uint unk_0x04; // 1, 2, 3, 4, 6 (flags? 1, 2, 4)
+        public Pointer objectReferencePtr;
         public Pointer colliderGeometryPtr;
         // FIELDS (deserialized from pointers)
         public SceneObjectReference objectReference;
@@ -39,13 +40,13 @@ namespace GameCube.GFZ.CourseCollision
             {
                 reader.ReadX(ref unk_0x00);
                 reader.ReadX(ref unk_0x04);
-                reader.ReadX(ref objectAttributesPtr);
+                reader.ReadX(ref objectReferencePtr);
                 reader.ReadX(ref colliderGeometryPtr);
             }
             this.RecordEndAddress(reader);
             {
-                Assert.IsTrue(objectAttributesPtr.IsNotNullPointer);
-                reader.JumpToAddress(objectAttributesPtr);
+                Assert.IsTrue(objectReferencePtr.IsNotNullPointer);
+                reader.JumpToAddress(objectReferencePtr);
                 reader.ReadX(ref objectReference, true);
 
                 // Collision is not required, load only if pointer is not null
@@ -67,7 +68,7 @@ namespace GameCube.GFZ.CourseCollision
             {
                 writer.WriteX(unk_0x00);
                 writer.WriteX(unk_0x04);
-                writer.WriteX(objectAttributesPtr);
+                writer.WriteX(objectReferencePtr);
                 writer.WriteX(colliderGeometryPtr);
             }
             this.RecordEndAddress(writer);
@@ -75,7 +76,8 @@ namespace GameCube.GFZ.CourseCollision
 
         public AddressRange SerializeWithReference(BinaryWriter writer)
         {
-            throw new NotImplementedException();
+            Serialize(writer);
+            return addressRange;
         }
     }
 }

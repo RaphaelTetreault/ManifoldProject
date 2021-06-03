@@ -15,13 +15,13 @@ namespace GameCube.GFZ.CourseCollision
         // METADATA
         [UnityEngine.SerializeField]
         private AddressRange addressRange;
-        public string name;
+        public CString name;
 
         // FIELDS
-        public uint unk_0x00;
+        public uint zero_0x00;
         public Pointer namePtr;
-        public uint unk_0x08;
-        public float unk_0x0C;
+        public uint zero_0x08;
+        public float unk_0x0C; // LOD?
 
 
         // PROPERTIES
@@ -37,41 +37,33 @@ namespace GameCube.GFZ.CourseCollision
         {
             this.RecordStartAddress(reader);
             {
-                reader.ReadX(ref unk_0x00);
-                reader.ReadX(ref unk_0x08);
+                reader.ReadX(ref zero_0x00);
                 reader.ReadX(ref namePtr);
+                reader.ReadX(ref zero_0x08);
                 reader.ReadX(ref unk_0x0C);
             }
             this.RecordEndAddress(reader);
             {
+                Assert.IsTrue(zero_0x00 == 0);
+                Assert.IsTrue(zero_0x08 == 0);
+
                 reader.JumpToAddress(namePtr);
-                reader.ReadXCString(ref name, Encoding.ASCII);
+                reader.ReadX(ref name, true);
             }
             this.SetReaderToEndAddress(reader);
         }
 
         public void Serialize(BinaryWriter writer)
         {
+            {
+                Assert.IsTrue(zero_0x00 == 0);
+                Assert.IsTrue(zero_0x08 == 0);
+            }
             this.RecordStartAddress(writer);
             {
-                writer.WriteX(unk_0x00);
-
-                // Add this string to a table to be serialized at the end of serializing
-                // a ColiScene file.
-                ColiCourseUtility.stringTable.Add(
-                    new ColiCourseUtility.StringTableEntry()
-                    {
-                        // This address to com back to and overwrite with the string pointer
-                        pointer = writer.GetPositionAsPointer(),
-                        // what we want to serialize: the name
-                        value = name,
-                        // add some metadata to help sort. Will be printed if SerializeVerbose
-                        type = ColiCourseUtility.StringTableEntry.Type.unknownObjectsAttributes,
-                    });
-                // write whatever for now
-                writer.WriteX(namePtr);
-
-                writer.WriteX(unk_0x08);
+                writer.WriteX(zero_0x00);
+                writer.WriteX(namePtr); throw new NotImplementedException(); // name table...
+                writer.WriteX(zero_0x08);
                 writer.WriteX(unk_0x0C);
             }
             this.RecordEndAddress(writer);

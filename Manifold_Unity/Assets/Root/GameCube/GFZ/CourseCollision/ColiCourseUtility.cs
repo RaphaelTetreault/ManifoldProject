@@ -4,6 +4,9 @@ using System.IO;
 
 namespace GameCube.GFZ.CourseCollision
 {
+
+    
+
     /// <summary>
     /// 
     /// </summary>
@@ -14,23 +17,16 @@ namespace GameCube.GFZ.CourseCollision
         private const int kGxConst0x20 = 0xE8;
         private const int kGxConst0x24 = 0xFC;
 
-        public struct StringTableEntry
+        public struct SerializePatchable<T>
+            where T : IBinarySerializable
         {
-            public enum Type
-            {
-                objectName,
-                colliderName,
-                unknownObjectsAttributes,
-            }
-
-            public Pointer pointer;
-            public string value;
-            public Type type;
+            public string hash;
+            public T value;
+            public List<Pointer> references;
         }
 
-        // Pretty gross... write pointer and values, serialize all strings at end as part of table
-        public static List<StringTableEntry> stringTable = new List<StringTableEntry>();
 
+        //public static List<SerializePatchable<string>> objectNames = new List<SerializePatchable<string>>();
 
 
 

@@ -1,6 +1,5 @@
 ﻿using Manifold.IO;
 using System;
-using System.Diagnostics;
 using System.IO;
 using UnityEngine;
 
@@ -24,9 +23,9 @@ namespace GameCube.GFZ.CarData
         public const int kMachineNameTable = 43;
         public const int kUnknownTable = 32;
 
-        public static string[] GetUnknownNamesTable()
+        public static CString[] GetUnknownNamesTable()
         {
-            return new string[]
+            return new CString[]
             {
                 "GC-D3",
                 "GC-E2",
@@ -61,9 +60,9 @@ namespace GameCube.GFZ.CarData
             };
         }
 
-        public static string[] GetMachineNamesTable()
+        public static CString[] GetMachineNamesTable()
         {
-            return new string[]
+            return new CString[]
             {
             "Rainbow Phoenix",
             "Rolling Turtle",
@@ -114,8 +113,8 @@ namespace GameCube.GFZ.CarData
 
         [Header("String Table")]
         public byte[] padding; // 12 bytes
-        public string[] machineNames;
-        public string[] unknownNames;
+        public CString[] machineNames;
+        public CString[] unknownNames;
 
         [Header("Vehicles")]
         public VehicleParameters DarkSchneider;
@@ -498,10 +497,13 @@ namespace GameCube.GFZ.CarData
                 System.Diagnostics.Debug.Assert(pad == 0);
 
             BinaryIoUtility.PushEndianess(kLittleEndian);
-            machineNames = new string[kMachineNameTable];
+            machineNames = new CString[kMachineNameTable];
             for (int i = 0; i < machineNames.Length; i++)
             {
-                reader.ReadXCString(ref machineNames[i], System.Text.Encoding.ASCII);
+                //reader.ReadXCString(ref machineNames[i], System.Text.Encoding.ASCII);
+
+                // Does this serialize the new reference in the array?
+                reader.ReadX(ref machineNames[i], true);
             }
             BinaryIoUtility.PopEndianess();
 
@@ -584,10 +586,13 @@ namespace GameCube.GFZ.CarData
             reader.ReadX(ref Triple_Z, true);
 
             BinaryIoUtility.PushEndianess(kLittleEndian);
-            unknownNames = new string[kUnknownTable];
+            unknownNames = new CString[kUnknownTable];
             for (int i = 0; i < unknownNames.Length; i++)
             {
-                reader.ReadXCString(ref unknownNames[i], System.Text.Encoding.ASCII);
+                //reader.ReadXCString(ref unknownNames[i], System.Text.Encoding.ASCII);
+
+                // Does this serialize the new reference in the array?
+                reader.ReadX(ref unknownNames[i], true);
             }
             BinaryIoUtility.PopEndianess();
 
@@ -643,14 +648,14 @@ namespace GameCube.GFZ.CarData
             for (int i = 0; i < kPaddingSize; i++)
                 writer.WriteX((byte)0);
 
-            BinaryIoUtility.PushEncoding(System.Text.Encoding.ASCII);
+            //BinaryIoUtility.PushEncoding(System.Text.Encoding.ASCII);
             BinaryIoUtility.PushEndianess(kLittleEndian);
             foreach (var name in machineNames)
             {
-                writer.WriteXCString(name);
+                writer.WriteX(name);
             }
             BinaryIoUtility.PopEndianess();
-            BinaryIoUtility.PopEncoding();
+            //BinaryIoUtility.PopEncoding();
 
             writer.WriteX(BraveEagle);
             writer.WriteX(GalaxyFalcon);
@@ -731,14 +736,14 @@ namespace GameCube.GFZ.CarData
             writer.WriteX(Triple_Z);
 
 
-            BinaryIoUtility.PushEncoding(System.Text.Encoding.ASCII);
+            //BinaryIoUtility.PushEncoding(System.Text.Encoding.ASCII);
             BinaryIoUtility.PushEndianess(kLittleEndian);
             foreach (var name in unknownNames)
             {
-                writer.WriteXCString(name);
+                writer.WriteX(name);
             }
             BinaryIoUtility.PopEndianess();
-            BinaryIoUtility.PopEncoding();
+            //BinaryIoUtility.PopEncoding();
 
             BinaryIoUtility.PopEndianess();
         }

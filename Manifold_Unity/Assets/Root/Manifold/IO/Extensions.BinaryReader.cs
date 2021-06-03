@@ -126,8 +126,8 @@ namespace Manifold.IO
             => BinaryIoUtility.ReadString(reader, encoding);
 
         // TODO
-        public static string ReadCString(this BinaryReader reader, Encoding encoding)
-            => BinaryIoUtility.ReadCString(reader, encoding);
+        //public static string ReadCString(this BinaryReader reader, Encoding encoding)
+        //    => BinaryIoUtility.ReadCString(reader, encoding);
 
         public static T ReadX_NewIBinarySerializable<T>(this BinaryReader reader) where T : IBinarySerializable, new()
         {
@@ -310,10 +310,10 @@ namespace Manifold.IO
            => BinaryIoUtility.Read(reader, ref value, encoding);
 
         // todo
-        public static string ReadXCString(this BinaryReader reader, ref string value, Encoding encoding)
-        {
-            return value = BinaryIoUtility.ReadCString(reader, encoding);
-        }
+        //public static string ReadXCString(this BinaryReader reader, ref string value, Encoding encoding)
+        //{
+        //    return value = BinaryIoUtility.ReadCString(reader, encoding);
+        //}
 
         public static T ReadX<T>(this BinaryReader reader, ref T value, bool createNewInstance) where T : IBinarySerializable, new()
         {

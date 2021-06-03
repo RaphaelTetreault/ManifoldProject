@@ -267,16 +267,16 @@ namespace Manifold.IO
         }
 
         // TODO
-        public static string ReadCString(BinaryReader binaryReader, Encoding encoding)
-        {
-            var value = new StringBuilder();
-            char c;
-            while ((c = ReadChar(binaryReader, encoding)) != (char)0 && !binaryReader.IsAtEndOfStream())
-            {
-                value.Append(c);
-            }
-            return value.ToString();
-        }
+        //public static string ReadCString(BinaryReader binaryReader, Encoding encoding)
+        //{
+        //    var value = new StringBuilder();
+        //    char c;
+        //    while ((c = ReadChar(binaryReader, encoding)) != (char)0 && !binaryReader.IsAtEndOfStream())
+        //    {
+        //        value.Append(c);
+        //    }
+        //    return value.ToString();
+        //}
 
         public static T ReadNewIBinarySerializable<T>(BinaryReader binaryReader) where T : IBinarySerializable, new()
         {
@@ -1210,19 +1210,19 @@ namespace Manifold.IO
             //writer.Write(bytes);
         }
 
-        // TODO
-        public static void WriteCString(BinaryWriter writer, string value, Encoding encoding)
-        {
-            Write(writer, value, encoding, false);
-            Write(writer, (byte)0x00);
-        }
+        //// TODO
+        //public static void WriteCString(BinaryWriter writer, string value, Encoding encoding)
+        //{
+        //    Write(writer, value, encoding, false);
+        //    Write(writer, (byte)0x00);
+        //}
 
-        // TODO
-        public static void WriteCString(BinaryWriter writer, string value)
-        {
-            Write(writer, value, Encoding, false);
-            Write(writer, (byte)0x00);
-        }
+        //// TODO
+        //public static void WriteCString(BinaryWriter writer, string value)
+        //{
+        //    Write(writer, value, Encoding, false);
+        //    Write(writer, (byte)0x00);
+        //}
 
         public static void Write(BinaryWriter writer, string[] value, Encoding encoding, bool writeLengthHeader)
         {

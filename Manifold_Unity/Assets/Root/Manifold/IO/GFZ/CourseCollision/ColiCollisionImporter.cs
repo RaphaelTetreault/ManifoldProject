@@ -63,7 +63,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                     {
                         count++;
 
-                        if (sceneObject.colliderBinding.colliderGeometryPtr.IsNotNullPointer)
+                        if (sceneObject.instanceReference.colliderGeometryPtr.IsNotNullPointer)
                         {
                             var meshName = sceneObject.name;
                             ImportUtility.ProgressBar<SceneInstanceReference>(count, total, $"st{sceneSobj.Value.ID:00} {meshName}");
@@ -313,7 +313,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
         public Mesh CreateObjectColliderMesh(SceneObject sceneObject)
         {
-            var collision = sceneObject.colliderBinding.colliderGeometry;
+            var collision = sceneObject.instanceReference.colliderGeometry;
 
             // Create base data for mesh
             var mesh = new Mesh();

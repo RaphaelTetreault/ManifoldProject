@@ -39,7 +39,7 @@ namespace GameCube.GFZ.GMA
         /// </summary>
         [Header("GMA")]
         [SerializeField]
-        string name;
+        CString name;
 
         [SerializeField, Hex("00", 8)]
         int gcmfCount;
@@ -101,10 +101,11 @@ namespace GameCube.GFZ.GMA
                 var jumpAddress = reader.BaseStream.Position;
 
                 // Load name of model
-                var modelName = string.Empty;
+                var modelName = new CString();
                 var modelNamePtr = GcmfNameBasePtr + gcmfPointerPairs[i].GcmfNameRelPtr;
                 reader.BaseStream.Seek(modelNamePtr, SeekOrigin.Begin);
-                reader.ReadXCString(ref modelName, Encoding.ASCII);
+                reader.ReadX(ref modelName, true);
+                // HEY! IF THIS ^ BREAKS IT MIGHT BE BECAUSE OF NO TESTING HERE WITH CString
 
                 // Init GCMF with model name
                 gcmf[i] = new Gcmf
@@ -147,7 +148,9 @@ namespace GameCube.GFZ.GMA
             // Write GCMF model names in C String format
             BinaryIoUtility.PushEncoding(Encoding.ASCII);
             foreach (var gcmf in gcmf)
-                writer.WriteXCString(gcmf.ModelName);
+            {
+                writer.WriteX(gcmf.ModelName);
+            }
             BinaryIoUtility.PopEncoding();
 
             // Get FIFO header size, write it in correct position

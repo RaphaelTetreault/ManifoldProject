@@ -6,17 +6,21 @@ namespace GameCube.GFZ.StaffGhost
     [System.Serializable]
     public struct StaffGhostData : IBinarySerializable, IFile
     {
+        // METADATA
+        [UnityEngine.SerializeField] private string name;
+        public string timeDisplay;
+
+
+        // FIELDS
         public MachineID machineID; // 0x00
         public CourseIndexGX courseID; // 0x01
         public byte[] unk_1;
-        public string username; // 0x08
+        public CString username; // 0x08
         public byte timeMinutes; // 0x24
         public byte timeSeconds; // 0x25
         public short timeMilliseconds; // 0x26
-        public string timeDisplay; // 0x26
 
-        [UnityEngine.SerializeField]
-        private string name;
+
         public string FileName
         {
             get => name;
@@ -33,7 +37,7 @@ namespace GameCube.GFZ.StaffGhost
             courseID = (CourseIndexGX)temp;
 
             reader.ReadX(ref unk_1, 6);
-            reader.ReadXCString(ref username, System.Text.Encoding.ASCII);
+            reader.ReadX(ref username, true);
 
             reader.BaseStream.Seek(0x24, SeekOrigin.Begin);
             reader.ReadX(ref timeMinutes);

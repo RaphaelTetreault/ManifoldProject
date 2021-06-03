@@ -18,7 +18,7 @@ namespace GameCube.GFZ.CourseCollision
         // FIELDS
         public Pointer sceneObjectReferencePtr;
         // FIELDS (deserialized from pointers)
-        public SceneObjectReference collisionObjectReference;
+        public SceneInstanceReference instanceReference;
 
 
         // PROPERTIES
@@ -38,20 +38,19 @@ namespace GameCube.GFZ.CourseCollision
             }
             this.RecordEndAddress(reader);
             {
+                Assert.IsTrue(sceneObjectReferencePtr.IsNotNullPointer);
                 reader.JumpToAddress(sceneObjectReferencePtr);
-                reader.ReadX(ref collisionObjectReference, true);
+                reader.ReadX(ref instanceReference, true);
             }
             this.SetReaderToEndAddress(reader);
         }
 
         public void Serialize(BinaryWriter writer)
         {
-            // write
             {
-                // COMMENT: perhaps leave for table? (will be in ColiScene if so)
-                //var ptr = writer.GetPositionAsPointer();
-                //writer.CommentTypeDesc(collisionObjectReference, ptr, ColiCourseUtility.SerializeVerbose);
-                sceneObjectReferencePtr = collisionObjectReference.SerializeWithReference(writer).GetPointer();
+                // Can't have in-line comment since this variable is truly stored in a table
+                sceneObjectReferencePtr = instanceReference.SerializeWithReference(writer).GetPointer();
+                Assert.IsTrue(sceneObjectReferencePtr.IsNotNullPointer);
             }
             this.RecordStartAddress(writer);
             {

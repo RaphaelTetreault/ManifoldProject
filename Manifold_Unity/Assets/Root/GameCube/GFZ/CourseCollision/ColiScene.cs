@@ -174,7 +174,7 @@ namespace GameCube.GFZ.CourseCollision
             // KINDA A HACK
             // Store all names for things in this table with ref to pointer,
             // serialize everything at the end.
-            ColiCourseUtility.stringTable = new List<ColiCourseUtility.StringTableEntry>();
+            //ColiCourseUtility.stringTable = new List<ColiCourseUtility.StringTableEntry>();
 
             // Write empty header
             header = new Header();
@@ -279,24 +279,24 @@ namespace GameCube.GFZ.CourseCollision
             writer.CommentTypeDesc(trackIndexTable, 0xBC, ColiCourseUtility.SerializeVerbose);
             header.trackIndexTable = trackIndexTable.SerializeWithReference(writer).GetPointer();
 
-            // Write string table
-            var objectEntries =
-                from entry in ColiCourseUtility.stringTable
-                where entry.type == ColiCourseUtility.StringTableEntry.Type.objectName
-                select entry;
-            WriteEntries(writer, "Object Names", objectEntries);
+            //// Write string table
+            //var objectEntries =
+            //    from entry in ColiCourseUtility.stringTable
+            //    where entry.type == ColiCourseUtility.StringTableEntry.Type.objectName
+            //    select entry;
+            //WriteEntries(writer, "Object Names", objectEntries);
 
-            var colliderEntries =
-                from entry in ColiCourseUtility.stringTable
-                where entry.type == ColiCourseUtility.StringTableEntry.Type.objectName
-                select entry;
-            WriteEntries(writer, "Collider Names", colliderEntries);
+            //var colliderEntries =
+            //    from entry in ColiCourseUtility.stringTable
+            //    where entry.type == ColiCourseUtility.StringTableEntry.Type.objectName
+            //    select entry;
+            //WriteEntries(writer, "Collider Names", colliderEntries);
 
-            var unkObjAttrs =
-                from entry in ColiCourseUtility.stringTable
-                where entry.type == ColiCourseUtility.StringTableEntry.Type.unknownObjectsAttributes
-                select entry;
-            WriteEntries(writer, "Unk Obj Attrs", unkObjAttrs);
+            //var unkObjAttrs =
+            //    from entry in ColiCourseUtility.stringTable
+            //    where entry.type == ColiCourseUtility.StringTableEntry.Type.unknownObjectsAttributes
+            //    select entry;
+            //WriteEntries(writer, "Unk Obj Attrs", unkObjAttrs);
 
             // Overwrite header with pointers resolved
             writer.SeekStart();
@@ -306,23 +306,23 @@ namespace GameCube.GFZ.CourseCollision
         }
 
 
-        public void WriteEntries(BinaryWriter writer, string name, IEnumerable<ColiCourseUtility.StringTableEntry> stringTableEntries)
-        {
-            writer.CommentNewLine(ColiCourseUtility.SerializeVerbose, '-');
-            writer.Comment(name, ColiCourseUtility.SerializeVerbose);
-            writer.CommentCnt(stringTableEntries.Count(), ColiCourseUtility.SerializeVerbose);
-            writer.CommentNewLine(ColiCourseUtility.SerializeVerbose, '-');
+        //public void WriteEntries(BinaryWriter writer, string name, IEnumerable<ColiCourseUtility.StringTableEntry> stringTableEntries)
+        //{
+        //    writer.CommentNewLine(ColiCourseUtility.SerializeVerbose, '-');
+        //    writer.Comment(name, ColiCourseUtility.SerializeVerbose);
+        //    writer.CommentCnt(stringTableEntries.Count(), ColiCourseUtility.SerializeVerbose);
+        //    writer.CommentNewLine(ColiCourseUtility.SerializeVerbose, '-');
 
-            foreach (var entry in stringTableEntries)
-            {
-                writer.SeekEnd(); // unnecesasry?
-                var ptr = writer.GetPositionAsPointer();
-                writer.WriteXCString(entry.value, Encoding.ASCII);
-                writer.JumpToAddress(entry.pointer);
-                writer.WriteX(ptr);
-                writer.SeekEnd();
-            }
-        }
+        //    foreach (var entry in stringTableEntries)
+        //    {
+        //        writer.SeekEnd(); // unnecesasry?
+        //        var ptr = writer.GetPositionAsPointer();
+        //        //writer.WriteXCString(entry.value, Encoding.ASCII);
+        //        writer.JumpToAddress(entry.pointer);
+        //        writer.WriteX(ptr);
+        //        writer.SeekEnd();
+        //    }
+        //}
 
     }
 }

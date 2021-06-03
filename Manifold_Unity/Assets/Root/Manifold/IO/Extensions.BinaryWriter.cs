@@ -131,11 +131,11 @@ namespace Manifold.IO
         public static void WriteX<T>(this BinaryWriter writer, T[] value, bool writeLengthHeader) where T : IBinarySerializable, new()
         => BinaryIoUtility.Write(writer, value, writeLengthHeader);
 
-        public static void WriteXCString(this BinaryWriter writer, string value, Encoding encoding)
-        => BinaryIoUtility.WriteCString(writer, value, encoding);
+        //public static void WriteXCString(this BinaryWriter writer, string value, Encoding encoding)
+        //=> BinaryIoUtility.WriteCString(writer, value, encoding);
 
-        public static void WriteXCString(this BinaryWriter writer, string value)
-        => BinaryIoUtility.WriteCString(writer, value);
+        //public static void WriteXCString(this BinaryWriter writer, string value)
+        //=> BinaryIoUtility.WriteCString(writer, value);
 
         //
         public static void WriteE<TEnum>(this BinaryWriter writer, TEnum[] value, bool writeLengthHeader) where TEnum : Enum

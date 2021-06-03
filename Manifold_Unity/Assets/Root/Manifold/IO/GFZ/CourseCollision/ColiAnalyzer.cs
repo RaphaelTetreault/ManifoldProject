@@ -1,5 +1,6 @@
 ﻿using GameCube.GFZ;
 using GameCube.GFZ.CourseCollision;
+using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
 using UnityEngine;
@@ -31,7 +32,8 @@ namespace Manifold.IO.GFZ.CourseCollision
             unknownAnimationData = true,
             unknownTrigger1 = true,
             venueMetadataObject = true,
-            staticCollider = true;
+            staticCollider = true,
+            sceneObjectInstanceReferences = true;
 
         [Header("Preferences")]
         [SerializeField]
@@ -41,7 +43,7 @@ namespace Manifold.IO.GFZ.CourseCollision
         [SerializeField]
         protected IOOption analysisOption = IOOption.allFromAssetDatabase;
         [SerializeField]
-        protected ColiSceneSobj[] coliSobjs;
+        protected ColiSceneSobj[] sceneSobjs;
 
         #endregion
 
@@ -53,7 +55,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
         public void Analyze()
         {
-            coliSobjs = AssetDatabaseUtility.GetSobjByOption(coliSobjs, analysisOption, searchFolders);
+            sceneSobjs = AssetDatabaseUtility.GetSobjByOption(sceneSobjs, analysisOption, searchFolders);
             var time = AnalyzerUtility.GetFileTimestamp();
 
 
@@ -123,12 +125,12 @@ namespace Manifold.IO.GFZ.CourseCollision
 
                 filePath = $"{time} COLI {nameof(SceneObject)}.tsv";
                 filePath = Path.Combine(outputPath, filePath);
-                EditorUtility.DisplayProgressBar(ExecuteText, filePath, .5f);
+                EditorUtility.DisplayProgressBar(ExecuteText, filePath, .1f);
                 AnalyzeGameObjects(filePath);
 
                 filePath = $"{time} COLI {nameof(SceneObject)} {nameof(UnknownSceneObjectData)}.tsv";
                 filePath = Path.Combine(outputPath, filePath);
-                EditorUtility.DisplayProgressBar(ExecuteText, filePath, .5f);
+                EditorUtility.DisplayProgressBar(ExecuteText, filePath, .3f);
                 AnalyzeGameObjectsUnk1(filePath);
 
                 filePath = $"{time} COLI {nameof(SceneObject)} {nameof(SkeletalAnimator)}.tsv";
@@ -138,14 +140,36 @@ namespace Manifold.IO.GFZ.CourseCollision
 
                 filePath = $"{time} COLI {nameof(SceneObject)} {nameof(ColliderTriangle)}.tsv";
                 filePath = Path.Combine(outputPath, filePath);
-                EditorUtility.DisplayProgressBar(ExecuteText, filePath, .5f);
+                EditorUtility.DisplayProgressBar(ExecuteText, filePath, .7f);
                 AnalyzeGameObjectsCollisionTri(filePath);
 
                 filePath = $"{time} COLI {nameof(SceneObject)} {nameof(ColliderQuad)}.tsv";
                 filePath = Path.Combine(outputPath, filePath);
-                EditorUtility.DisplayProgressBar(ExecuteText, filePath, .5f);
+                EditorUtility.DisplayProgressBar(ExecuteText, filePath, .9f);
                 AnalyzeGameObjectsCollisionQuad(filePath);
             }
+
+
+            if (sceneObjectInstanceReferences)
+            {
+                string filePath = string.Empty;
+
+                filePath = $"{time} COLI {nameof(SceneObjectReference)}.tsv";
+                filePath = Path.Combine(outputPath, filePath);
+                EditorUtility.DisplayProgressBar(ExecuteText, filePath, .33f);
+                AnalyzeSceneObjectReferences(filePath);
+
+                filePath = $"{time} COLI {nameof(SceneInstanceReference)}.tsv";
+                filePath = Path.Combine(outputPath, filePath);
+                EditorUtility.DisplayProgressBar(ExecuteText, filePath, .66f);
+                AnalyzeSceneInstanceReferences(filePath);
+
+                filePath = $"{time} COLI {nameof(SceneInstanceReference)} and {nameof(SceneObjectReference)}.tsv";
+                filePath = Path.Combine(outputPath, filePath);
+                EditorUtility.DisplayProgressBar(ExecuteText, filePath, 1f);
+                AnalyzeSceneInstanceAndObjectReferences(filePath);
+            }
+
 
             // TOPOLOGY PARAMETERS
             if (topologyParameters)
@@ -254,7 +278,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextRow();
 
                 // foreach File
-                foreach (var sobj in coliSobjs)
+                foreach (var sobj in sceneSobjs)
                 {
                     // foreach Transform
                     int trackIndex = 0;
@@ -301,7 +325,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextRow();
 
                 // foreach File
-                foreach (var sobj in coliSobjs)
+                foreach (var sobj in sceneSobjs)
                 {
                     // foreach Transform
                     int trackTransformIndex = 0;
@@ -414,7 +438,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 // RESET static variable
                 s_order = 0;
 
-                foreach (var sobj in coliSobjs)
+                foreach (var sobj in sceneSobjs)
                 {
                     var scene = sobj.Value;
                     var index = 0;
@@ -515,7 +539,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol("Unk_0x10");
                 writer.WriteNextRow();
 
-                foreach (var file in coliSobjs)
+                foreach (var file in sceneSobjs)
                 {
                     int gameObjectIndex = 0;
                     foreach (var gameObject in file.Value.sceneObjects)
@@ -568,7 +592,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol("Unk_0x10");
                 writer.WriteNextRow();
 
-                foreach (var file in coliSobjs)
+                foreach (var file in sceneSobjs)
                 {
                     int gameObjectIndex = 0;
                     foreach (var gameObject in file.Value.sceneObjects)
@@ -620,7 +644,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol(nameof(SceneObject.lodFar));
                 writer.WriteNextCol(nameof(SceneObject.lodNear));
                 writer.WriteNextCol(nameof(SceneObject.lodNear));
-                writer.WriteNextCol(nameof(SceneObject.colliderAttributePtr));
+                writer.WriteNextCol(nameof(SceneObject.instanceReferencePtr));
                 writer.WriteNextCol(nameof(SceneObject.transform.Position));
                 writer.WriteNextCol(nameof(SceneObject.transform.RotationEuler));
                 writer.WriteNextCol(nameof(SceneObject.transform.Scale));
@@ -631,7 +655,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol(nameof(SceneObject.transformPtr));
                 writer.WriteNextRow();
 
-                foreach (var file in coliSobjs)
+                foreach (var file in sceneSobjs)
                 {
                     int sceneObjectIndex = 0;
                     foreach (var sceneObject in file.Value.sceneObjects)
@@ -643,7 +667,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                         writer.WriteNextCol($"0x{sceneObject.lodFar.data32:x8}");
                         writer.WriteNextCol(sceneObject.lodNear.data32);
                         writer.WriteNextCol($"0x{sceneObject.lodNear.data32:x8}");
-                        writer.WriteNextCol(sceneObject.colliderAttributePtr.HexAddress);
+                        writer.WriteNextCol(sceneObject.instanceReferencePtr.HexAddress);
                         writer.WriteNextCol(sceneObject.transform.Position);
                         writer.WriteNextCol(sceneObject.transform.RotationEuler);
                         writer.WriteNextCol(sceneObject.transform.Scale);
@@ -674,7 +698,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextColNicify(nameof(UnknownSceneObjectFloatPair.unk_0x04));
                 writer.WriteNextRow();
 
-                foreach (var file in coliSobjs)
+                foreach (var file in sceneSobjs)
                 {
                     int gameObjectIndex = 0;
                     foreach (var sceneObject in file.Value.sceneObjects)
@@ -726,7 +750,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextColNicify(nameof(SkeletalProperties.zero_0x18));
                 writer.WriteNextRow();
 
-                foreach (var file in coliSobjs)
+                foreach (var file in sceneSobjs)
                 {
                     int gameObjectIndex = 0;
                     foreach (var sceneObject in file.Value.sceneObjects)
@@ -786,18 +810,18 @@ namespace Manifold.IO.GFZ.CourseCollision
 
                 writer.WriteNextRow();
 
-                foreach (var file in coliSobjs)
+                foreach (var file in sceneSobjs)
                 {
                     int gameObjectIndex = 0;
                     foreach (var gameObject in file.Value.sceneObjects)
                     {
-                        if (gameObject.colliderBinding.colliderGeometry.triCount == 0)
+                        if (gameObject.instanceReference.colliderGeometry.triCount == 0)
                         {
                             continue;
                         }
 
                         int triIndex = 0;
-                        foreach (var tri in gameObject.colliderBinding.colliderGeometry.tris)
+                        foreach (var tri in gameObject.instanceReference.colliderGeometry.tris)
                         {
                             writer.WriteNextCol(file.FileName);
                             writer.WriteNextCol(gameObjectIndex);
@@ -849,18 +873,18 @@ namespace Manifold.IO.GFZ.CourseCollision
 
                 writer.WriteNextRow();
 
-                foreach (var file in coliSobjs)
+                foreach (var file in sceneSobjs)
                 {
                     int gameObjectIndex = 0;
                     foreach (var gameObject in file.Value.sceneObjects)
                     {
-                        if (gameObject.colliderBinding.colliderGeometry.quadCount == 0)
+                        if (gameObject.instanceReference.colliderGeometry.quadCount == 0)
                         {
                             continue;
                         }
 
                         int quadIndex = 0;
-                        foreach (var quad in gameObject.colliderBinding.colliderGeometry.quads)
+                        foreach (var quad in gameObject.instanceReference.colliderGeometry.quads)
                         {
                             writer.WriteNextCol(file.FileName);
                             writer.WriteNextCol(gameObjectIndex);
@@ -903,7 +927,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol("Venue");
                 writer.WriteNextCol("AX/GX");
                 //
-                writer.WriteNextCol(nameof(Header.unk_0x00) + " a" );
+                writer.WriteNextCol(nameof(Header.unk_0x00) + " a");
                 writer.WriteNextCol(nameof(Header.unk_0x00) + " b");
                 writer.WriteNextCol(nameof(Header.trackNodesPtr));
                 writer.WriteNextCol(nameof(Header.trackNodesPtr));
@@ -955,7 +979,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol(nameof(Header.zero_0xD8));
                 writer.WriteNextRow();
 
-                foreach (var file in coliSobjs)
+                foreach (var file in sceneSobjs)
                 {
                     var coli = file.Value;
                     var coliHeader = file.Value.header;
@@ -1050,7 +1074,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol("Index");
                 writer.WriteNextRow();
 
-                foreach (var file in coliSobjs)
+                foreach (var file in sceneSobjs)
                 {
                     var scene = file.Value;
                     var venueID = CourseUtility.GetVenueID(scene.ID).GetDescription();
@@ -1159,7 +1183,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 //
                 writer.WriteNextRow();
 
-                foreach (var file in coliSobjs)
+                foreach (var file in sceneSobjs)
                 {
                     var scene = file.Value;
                     var venueID = CourseUtility.GetVenueID(scene.ID).GetDescription();
@@ -1212,7 +1236,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 //
                 writer.WriteNextRow();
 
-                foreach (var file in coliSobjs)
+                foreach (var file in sceneSobjs)
                 {
                     var scene = file.Value;
                     var venueID = CourseUtility.GetVenueID(scene.ID).GetDescription();
@@ -1267,7 +1291,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 //
                 writer.WriteNextRow();
 
-                foreach (var file in coliSobjs)
+                foreach (var file in sceneSobjs)
                 {
                     var scene = file.Value;
                     var venueID = CourseUtility.GetVenueID(scene.ID).GetDescription();
@@ -1314,7 +1338,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol(nameof(ObjectActiveOverride));
                 writer.WriteNextRow();
 
-                foreach (var file in coliSobjs)
+                foreach (var file in sceneSobjs)
                 {
                     int sceneObjectIndex = 0;
                     foreach (var sceneObject in file.Value.sceneObjects)
@@ -1378,7 +1402,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextColNicify(nameof(TrackPoint.zero_0x4E));
                 writer.WriteNextRow();
 
-                foreach (var file in coliSobjs)
+                foreach (var file in sceneSobjs)
                 {
                     int nodeLength = file.Value.trackNodes.Length;
                     int nodeIndex = 0;
@@ -1446,7 +1470,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
                 int index = 0;
 
-                foreach (var file in coliSobjs)
+                foreach (var file in sceneSobjs)
                 {
                     var scene = file.Value;
                     var table = scene.surfaceAttributeMeshTable;
@@ -1476,5 +1500,186 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.Flush();
             }
         }
+
+        public void AnalyzeSceneObjectReferences(string fileName)
+        {
+            using (var writer = AnalyzerUtility.OpenWriter(fileName))
+            {
+                // Write header
+                writer.WriteNextCol("File");
+                writer.WriteNextCol("Index");
+                writer.WriteNextCol("Stage");
+                writer.WriteNextCol("Venue");
+                writer.WriteNextCol("AX/GX");
+                //
+                writer.WriteNextCol("name");
+                writer.WriteNextCol("Object Type");
+                writer.WriteNextCol(nameof(SceneObjectReference.zero_0x00));
+                writer.WriteNextCol(nameof(SceneObjectReference.namePtr));
+                writer.WriteNextCol(nameof(SceneObjectReference.zero_0x08));
+                writer.WriteNextCol(nameof(SceneObjectReference.unk_0x0C));
+                //
+                writer.WriteNextRow();
+
+                foreach (var sceneSobj in sceneSobjs)
+                {
+                    var scene = sceneSobj.Value;
+                    var venueID = CourseUtility.GetVenueID(scene.ID).GetDescription();
+                    var courseID = ((CourseIndexAX)scene.ID).GetDescription();
+                    var isAxGx = scene.header.IsFileGX ? "GX" : "AX";
+
+                    // Get all the scene object references
+                    var objectsList = new List<(SceneObjectReference sor, string category)>();
+                    foreach (var sceneObject in scene.sceneInstancesList)
+                    {
+                        var sceneObjectReference = sceneObject.objectReference;
+                        objectsList.Add((sceneObject.objectReference, "Instance"));
+                    }
+                    foreach (var sceneOriginObject in scene.sceneOriginObjectsList)
+                    {
+                        var sceneObjectReference = sceneOriginObject.instanceReference.objectReference;
+                        objectsList.Add((sceneObjectReference, "Origin"));
+                    }
+
+                    // iterate
+                    foreach (var sceneObjectReference in objectsList)
+                    {
+                        writer.WriteNextCol(scene.FileName);
+                        writer.WriteNextCol(scene.ID);
+                        writer.WriteNextCol(venueID);
+                        writer.WriteNextCol(courseID);
+                        writer.WriteNextCol(isAxGx);
+                        //
+                        writer.WriteNextCol(sceneObjectReference.sor.name);
+                        writer.WriteNextCol(sceneObjectReference.category);
+                        writer.WriteNextCol(sceneObjectReference.sor.zero_0x00);
+                        writer.WriteNextCol(sceneObjectReference.sor.namePtr);
+                        writer.WriteNextCol(sceneObjectReference.sor.zero_0x08);
+                        writer.WriteNextCol(sceneObjectReference.sor.unk_0x0C);
+                        //
+                        writer.WriteNextRow();
+                    }
+                }
+                writer.Flush();
+            }
+        }
+
+        public void AnalyzeSceneInstanceReferences(string fileName)
+        {
+            using (var writer = AnalyzerUtility.OpenWriter(fileName))
+            {
+                // Write header
+                writer.WriteNextCol("File");
+                writer.WriteNextCol("Index");
+                writer.WriteNextCol("Stage");
+                writer.WriteNextCol("Venue");
+                writer.WriteNextCol("AX/GX");
+                //
+                writer.WriteNextCol("name");
+                writer.WriteNextCol("Object Type");
+                writer.WriteNextCol(nameof(SceneInstanceReference.unk_0x00));
+                writer.WriteNextCol(nameof(SceneInstanceReference.unk_0x04));
+                writer.WriteNextCol(nameof(SceneInstanceReference.objectReferencePtr));
+                writer.WriteNextCol(nameof(SceneInstanceReference.colliderGeometryPtr));
+                //
+                writer.WriteNextRow();
+
+                foreach (var sceneSobj in sceneSobjs)
+                {
+                    var scene = sceneSobj.Value;
+                    var venueID = CourseUtility.GetVenueID(scene.ID).GetDescription();
+                    var courseID = ((CourseIndexAX)scene.ID).GetDescription();
+                    var isAxGx = scene.header.IsFileGX ? "GX" : "AX";
+
+                    // Get all the scene object references
+                    var objectsList = new List<(SceneInstanceReference sir, string category)>();
+                    foreach (var sceneInstance in scene.sceneInstancesList)
+                    {
+                        objectsList.Add((sceneInstance, "Instance"));
+                    }
+                    foreach (var sceneOriginObject in scene.sceneOriginObjectsList)
+                    {
+                        var sceneInstance = sceneOriginObject.instanceReference;
+                        objectsList.Add((sceneInstance, "Origin"));
+                    }
+
+                    // iterate
+                    foreach (var sceneObjectReference in objectsList)
+                    {
+                        writer.WriteNextCol(scene.FileName);
+                        writer.WriteNextCol(scene.ID);
+                        writer.WriteNextCol(venueID);
+                        writer.WriteNextCol(courseID);
+                        writer.WriteNextCol(isAxGx);
+                        //
+                        writer.WriteNextCol(sceneObjectReference.sir.objectReference.name);
+                        writer.WriteNextCol(sceneObjectReference.category);
+                        writer.WriteNextCol(sceneObjectReference.sir.unk_0x00);
+                        writer.WriteNextCol(sceneObjectReference.sir.unk_0x04);
+                        writer.WriteNextCol(sceneObjectReference.sir.objectReferencePtr);
+                        writer.WriteNextCol(sceneObjectReference.sir.colliderGeometryPtr);
+                        //
+                        writer.WriteNextRow();
+                    }
+                }
+                writer.Flush();
+            }
+        }
+
+        public void AnalyzeSceneInstanceAndObjectReferences(string fileName)
+        {
+            using (var writer = AnalyzerUtility.OpenWriter(fileName))
+            {
+                // Write header
+                writer.WriteNextCol("File");
+                writer.WriteNextCol("Index");
+                writer.WriteNextCol("Stage");
+                writer.WriteNextCol("Venue");
+                writer.WriteNextCol("AX/GX");
+                //
+                writer.WriteNextCol("name");
+                writer.WriteNextCol(nameof(SceneInstanceReference.unk_0x00));
+                writer.WriteNextCol(nameof(SceneInstanceReference.unk_0x04));
+                writer.WriteNextCol(nameof(SceneInstanceReference.objectReferencePtr));
+                writer.WriteNextCol(nameof(SceneInstanceReference.colliderGeometryPtr));
+                writer.WriteNextCol(nameof(SceneObjectReference.zero_0x00));
+                writer.WriteNextCol(nameof(SceneObjectReference.namePtr));
+                writer.WriteNextCol(nameof(SceneObjectReference.zero_0x08));
+                writer.WriteNextCol(nameof(SceneObjectReference.unk_0x0C));
+                //
+                writer.WriteNextRow();
+
+                foreach (var sceneSobj in sceneSobjs)
+                {
+                    var scene = sceneSobj.Value;
+                    var venueID = CourseUtility.GetVenueID(scene.ID).GetDescription();
+                    var courseID = ((CourseIndexAX)scene.ID).GetDescription();
+                    var isAxGx = scene.header.IsFileGX ? "GX" : "AX";
+
+                    foreach (var sceneInstance in scene.sceneInstancesList)
+                    {
+                        writer.WriteNextCol(scene.FileName);
+                        writer.WriteNextCol(scene.ID);
+                        writer.WriteNextCol(venueID);
+                        writer.WriteNextCol(courseID);
+                        writer.WriteNextCol(isAxGx);
+                        //
+                        var objectReference = sceneInstance.objectReference;
+                        writer.WriteNextCol(objectReference.name);
+                        writer.WriteNextCol(sceneInstance.unk_0x00);
+                        writer.WriteNextCol(sceneInstance.unk_0x04);
+                        writer.WriteNextCol(sceneInstance.objectReferencePtr);
+                        writer.WriteNextCol(sceneInstance.colliderGeometryPtr);
+                        writer.WriteNextCol(objectReference.zero_0x00);
+                        writer.WriteNextCol(objectReference.namePtr);
+                        writer.WriteNextCol(objectReference.zero_0x08);
+                        writer.WriteNextCol(objectReference.unk_0x0C);
+                        writer.WriteNextRow();
+                    }
+                }
+                writer.Flush();
+            }
+        }
+
     }
 }

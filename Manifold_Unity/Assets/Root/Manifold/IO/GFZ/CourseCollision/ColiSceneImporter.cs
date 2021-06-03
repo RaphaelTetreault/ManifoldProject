@@ -84,7 +84,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 IncludeStaticMeshColliders(scene, stageFolder);
 
                 // TEST
-                TestTransformHeirarchy(scene);
+                //TestTransformHeirarchy(scene);
                 //NewTestTransformHierarchy(scene);
 
                 // Get some metadata from the number of scene objects
@@ -432,6 +432,13 @@ namespace Manifold.IO.GFZ.CourseCollision
                 var meshName = $"st{scene.ID:00}_{i:00}_{(StaticMeshColliderProperty)i}";
                 var assetPath = $"{stageFolder}/pf_{meshName}.prefab";
                 var asset = AssetDatabase.LoadAssetAtPath<GameObject>(assetPath);
+
+                if (asset == null)
+                {
+                    Debug.Log($"Could not find asset named '{assetPath}'.");
+                    continue;
+                }
+
                 var instance = Instantiate(asset, parent.transform);
                 instance.name = meshName;
             }

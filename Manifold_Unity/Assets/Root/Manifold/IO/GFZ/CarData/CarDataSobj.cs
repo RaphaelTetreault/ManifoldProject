@@ -27,8 +27,8 @@ namespace Manifold.IO.GFZ.CarData
 
         [Header("String Table")]
         public byte[] padding; // 12 bytes
-        public string[] machineNames;
-        public string[] unknownNames;
+        public CString[] machineNames;
+        public CString[] unknownNames;
 
         #region VEHICLES
 
@@ -534,10 +534,10 @@ namespace Manifold.IO.GFZ.CarData
                 Assert.IsTrue(pad == 0);
 
             BinaryIoUtility.PushEndianess(kLittleEndian);
-            machineNames = new string[kMachineNameTable];
+            machineNames = new CString[kMachineNameTable];
             for (int i = 0; i < machineNames.Length; i++)
             {
-                reader.ReadXCString(ref machineNames[i], System.Text.Encoding.ASCII);
+                reader.ReadX(ref machineNames[i], true);
             }
             BinaryIoUtility.PopEndianess();
 
@@ -620,10 +620,10 @@ namespace Manifold.IO.GFZ.CarData
             reader.ReadX(ref Triple_Z, true);
 
             BinaryIoUtility.PushEndianess(kLittleEndian);
-            unknownNames = new string[kUnknownTable];
+            unknownNames = new CString[kUnknownTable];
             for (int i = 0; i < unknownNames.Length; i++)
             {
-                reader.ReadXCString(ref unknownNames[i], System.Text.Encoding.ASCII);
+                reader.ReadX(ref unknownNames[i], true);
             }
             BinaryIoUtility.PopEndianess();
 
@@ -683,7 +683,7 @@ namespace Manifold.IO.GFZ.CarData
             BinaryIoUtility.PushEndianess(kLittleEndian);
             foreach (var name in machineNames)
             {
-                writer.WriteXCString(name);
+                writer.WriteX(name);
             }
             BinaryIoUtility.PopEndianess();
             BinaryIoUtility.PopEncoding();
@@ -771,7 +771,7 @@ namespace Manifold.IO.GFZ.CarData
             BinaryIoUtility.PushEndianess(kLittleEndian);
             foreach (var name in unknownNames)
             {
-                writer.WriteXCString(name);
+                writer.WriteX(name);
             }
             BinaryIoUtility.PopEndianess();
             BinaryIoUtility.PopEncoding();
