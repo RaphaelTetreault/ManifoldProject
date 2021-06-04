@@ -36,8 +36,8 @@ namespace GameCube.GFZ.CourseCollision
         public ArrayPointer surfaceAttributeAreasPtr;
         public BoostPadsActive boostPadsActive;
         public Pointer surfaceAttributeMeshTablePtr;
-        public Pointer unknownData_0x20_Ptr; // GX: 0xE8, AX: 0xE4
-        public Pointer unknownFloat_0x24_Ptr; // GX: 0xFC, AX: 0xF8
+        public Pointer zeroes0x20_Ptr; // GX: 0xE8, AX: 0xE4
+        public Pointer trackMinHeightPtr; // GX: 0xFC, AX: 0xF8
         public byte[] zero_0x28; // 0x20 count
         public int sceneObjectCount;
         public int unk_sceneObjectCount1; // GX exclusive
@@ -46,7 +46,7 @@ namespace GameCube.GFZ.CourseCollision
         public Bool32 unkBool32_0x58;
         public ArrayPointer unknownSolsTriggerPtrs;
         public ArrayPointer sceneInstancesListPtrs;
-        public ArrayPointer sceneOriginObjectsListPtrs; // refers back to above objects, but through another array-pointer
+        public ArrayPointer sceneOriginObjectsListPtrs;
         public ArrayPointer unused_0x74_0x78;
         public CircuitType circuitType;
         public Pointer unknownStageData2Ptr;
@@ -59,7 +59,7 @@ namespace GameCube.GFZ.CourseCollision
         public ArrayPointer arcadeCheckpointTriggersPtr;
         public ArrayPointer storyObjectTriggersPtr;
         public Pointer trackIndexTable;
-        public ColiUnknownStruct1 unknownStructure1_0xC0; // minimap data?
+        public Bounds courseBounds;
         public byte[] zero_0xD8; // 0x10 count
 
 
@@ -98,8 +98,8 @@ namespace GameCube.GFZ.CourseCollision
 
         public void ValidateFileFormatPointers()
         {
-            isFileAX = IsAX(unknownData_0x20_Ptr, unknownFloat_0x24_Ptr);
-            isFileGX = IsGX(unknownData_0x20_Ptr, unknownFloat_0x24_Ptr);
+            isFileAX = IsAX(zeroes0x20_Ptr, trackMinHeightPtr);
+            isFileGX = IsGX(zeroes0x20_Ptr, trackMinHeightPtr);
             Assert.IsTrue(IsValidFile);
         }
 
@@ -114,8 +114,8 @@ namespace GameCube.GFZ.CourseCollision
                 reader.ReadX(ref surfaceAttributeAreasPtr);
                 reader.ReadX(ref boostPadsActive);
                 reader.ReadX(ref surfaceAttributeMeshTablePtr);
-                reader.ReadX(ref unknownData_0x20_Ptr);
-                reader.ReadX(ref unknownFloat_0x24_Ptr);
+                reader.ReadX(ref zeroes0x20_Ptr);
+                reader.ReadX(ref trackMinHeightPtr);
                 ValidateFileFormatPointers(); // VALIDATE
                 reader.ReadX(ref zero_0x28, kSizeOfZero0x28);
                 reader.ReadX(ref sceneObjectCount);
@@ -138,7 +138,7 @@ namespace GameCube.GFZ.CourseCollision
                 reader.ReadX(ref arcadeCheckpointTriggersPtr);
                 reader.ReadX(ref storyObjectTriggersPtr);
                 reader.ReadX(ref trackIndexTable);
-                reader.ReadX(ref unknownStructure1_0xC0, true);
+                reader.ReadX(ref courseBounds, true);
                 reader.ReadX(ref zero_0xD8, kSizeOfZero0xD8);
             }
             this.RecordEndAddress(reader);
@@ -174,8 +174,8 @@ namespace GameCube.GFZ.CourseCollision
                 writer.WriteX(surfaceAttributeAreasPtr);
                 writer.WriteX(boostPadsActive);
                 writer.WriteX(surfaceAttributeMeshTablePtr);
-                writer.WriteX(unknownData_0x20_Ptr);
-                writer.WriteX(unknownFloat_0x24_Ptr);
+                writer.WriteX(zeroes0x20_Ptr);
+                writer.WriteX(trackMinHeightPtr);
                 writer.WriteX(new byte[kSizeOfZero0x28], false); // write const zeros
                 writer.WriteX(sceneObjectCount);
                 if (Format == SerializeFormat.GX)
@@ -198,7 +198,7 @@ namespace GameCube.GFZ.CourseCollision
                 writer.WriteX(arcadeCheckpointTriggersPtr);
                 writer.WriteX(storyObjectTriggersPtr);
                 writer.WriteX(trackIndexTable);
-                writer.WriteX(unknownStructure1_0xC0);
+                writer.WriteX(courseBounds);
                 writer.WriteX(new byte[kSizeOfZero0xD8], false); // write const zeros
             }
             this.RecordEndAddress(writer);

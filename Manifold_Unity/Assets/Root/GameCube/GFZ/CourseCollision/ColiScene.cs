@@ -14,23 +14,23 @@ namespace GameCube.GFZ.CourseCollision
     [Serializable]
     public class ColiScene : IBinarySerializable, IFile
     {
-        private const int unknownData_0x20_count = 0x14; // 20
+        // CONSTANTS
+        private const int zeroes0x20_count = 0x14; // 20
 
-        // metadata
-        [UnityEngine.SerializeField]
-        private int id;
-        [UnityEngine.SerializeField]
-        private string name;
+        // METADATA
+        [UnityEngine.SerializeField] private int id;
+        [UnityEngine.SerializeField] private string name;
 
-        //
+
+        // FIELDS
         public Header header;
-        //
+        // FIELDS (deserialized from header pointers)
         public TrackNode[] trackNodes = new TrackNode[0];
         public List<TrackTransform> trackTransforms = new List<TrackTransform>();
         public SurfaceAttributeArea[] surfaceAttributeAreas = new SurfaceAttributeArea[0];
         public StaticMeshTable surfaceAttributeMeshTable = new StaticMeshTable();
-        public byte[] unknownData_0x20 = new byte[unknownData_0x20_count];
-        public TrackLowestHeight trackLowestHeight;
+        public byte[] zeroes0x20 = new byte[zeroes0x20_count];
+        public TrackMinHeight trackMinHeight;
         public SceneObject[] sceneObjects = new SceneObject[0];
         public SceneInstanceReference[] sceneInstancesList = new SceneInstanceReference[0];
         public SceneOriginObjects[] sceneOriginObjectsList = new SceneOriginObjects[0];
@@ -45,8 +45,10 @@ namespace GameCube.GFZ.CourseCollision
         public StoryObjectTrigger[] storyObjectTriggers = new StoryObjectTrigger[0];
         public TrackCheckpointTable8x8 trackIndexTable = new TrackCheckpointTable8x8();
 
-        // to find
-        // * minimap rotation.............
+        // To find
+        // * minimap rotation
+        // OF NOTE:
+        // some of this stuff might be in the REL file.
 
         public string FileName
         {
@@ -83,12 +85,12 @@ namespace GameCube.GFZ.CourseCollision
             reader.ReadX(ref surfaceAttributeMeshTable, true);
 
             // 0x20
-            reader.JumpToAddress(header.unknownData_0x20_Ptr);
-            reader.ReadX(ref unknownData_0x20, unknownData_0x20_count);
+            reader.JumpToAddress(header.zeroes0x20_Ptr);
+            reader.ReadX(ref zeroes0x20, zeroes0x20_count);
 
             // 0x24
-            reader.JumpToAddress(header.unknownFloat_0x24_Ptr);
-            reader.ReadX(ref trackLowestHeight, true);
+            reader.JumpToAddress(header.trackMinHeightPtr);
+            reader.ReadX(ref trackMinHeight, true);
 
             // 0x48 (count total), 0x4C, 0x50, 0x54 (pointer address): Scene Objects
             reader.JumpToAddress(header.sceneObjectsPtr);
@@ -181,13 +183,13 @@ namespace GameCube.GFZ.CourseCollision
             {
                 // 0x20
                 // Resulting pointer should be 0xE4 or 0xE8 for AX or GX, respectively.
-                header.unknownData_0x20_Ptr = writer.GetPositionAsPointer();
-                writer.WriteX(new byte[unknownData_0x20_count], false); // TODO: HARD-CODED
+                header.zeroes0x20_Ptr = writer.GetPositionAsPointer();
+                writer.WriteX(new byte[zeroes0x20_count], false); // TODO: HARD-CODED
 
                 // 0x24
                 // Resulting pointer should be 0xF8 or 0xFC for AX or GX, respectively.
-                writer.WriteX(trackLowestHeight);
-                header.unknownFloat_0x24_Ptr = trackLowestHeight.GetPointer();
+                writer.WriteX(trackMinHeight);
+                header.trackMinHeightPtr = trackMinHeight.GetPointer();
 
                 // The pointers written by the last 2 calls should create a valid AX or GX file header.
                 // If not, an assert will trigger.
@@ -309,7 +311,7 @@ namespace GameCube.GFZ.CourseCollision
             header.boostPadsActive = BoostPadsActive.Enabled;
             header.unkBool32_0x58 = Bool32.True;
             header.circuitType = CircuitType.ClosedCircuit;
-            header.unknownStructure1_0xC0 = new ColiUnknownStruct1();
+            header.courseBounds = new Bounds();
 
             // Overwrite header with pointers resolved
             writer.SeekStart();

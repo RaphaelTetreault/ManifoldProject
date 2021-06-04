@@ -24,10 +24,10 @@ namespace GameCube.GFZ.CourseCollision
         public int[] zero_0x00_0x20;
         public Pointer collisionTrisPtr;
         public Pointer[] collisionTriIndexesPtr;
-        public ColiUnknownStruct1 unknownStruct_0x60;
+        public Bounds meshBounds;
         public Pointer collisionQuadsPtr;
         public Pointer[] collisionQuadIndexesPtr;
-        public ColiUnknownStruct1 unknownStruct_0xB4;
+        public Bounds ununsedMeshBounds;
         // FIELDS (deserialized from pointers)
         // This data holds the geometry data and indexes
         public ColliderTriangle[] colliderTriangles;
@@ -66,10 +66,10 @@ namespace GameCube.GFZ.CourseCollision
                 reader.ReadX(ref zero_0x00_0x20, kCountZeros);
                 reader.ReadX(ref collisionTrisPtr);
                 reader.ReadX(ref collisionTriIndexesPtr, countSurfaceTypes, true);
-                reader.ReadX(ref unknownStruct_0x60, true);
+                reader.ReadX(ref meshBounds, true);
                 reader.ReadX(ref collisionQuadsPtr);
                 reader.ReadX(ref collisionQuadIndexesPtr, countSurfaceTypes, true);
-                reader.ReadX(ref unknownStruct_0xB4, true);
+                reader.ReadX(ref ununsedMeshBounds, true);
             }
             this.RecordEndAddress(reader);
             {
@@ -146,10 +146,10 @@ namespace GameCube.GFZ.CourseCollision
                 writer.WriteX(new int[kCountZeros], false);
                 writer.WriteX(collisionTrisPtr);
                 writer.WriteX(collisionTriIndexesPtr, false);
-                writer.WriteX(unknownStruct_0x60);
+                writer.WriteX(meshBounds);
                 writer.WriteX(collisionQuadsPtr);
                 writer.WriteX(collisionQuadIndexesPtr, false);
-                writer.WriteX(unknownStruct_0xB4);
+                writer.WriteX(ununsedMeshBounds);
             }
             this.RecordEndAddress(writer);
         }

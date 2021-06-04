@@ -12,9 +12,12 @@ namespace Manifold.IO
             serializedObject.Update();
 
             // DRAW LOCAL
-            transform.localPosition = EditorGUILayout.Vector3Field("Local Position", transform.localPosition);
-            transform.localRotation = Quaternion.Euler(EditorGUILayout.Vector3Field("Local Rotation", transform.localRotation.eulerAngles));
-            transform.localScale = EditorGUILayout.Vector3Field("Local Scale", transform.localScale);
+            transform.localPosition =
+                EditorGUILayout.Vector3Field("Local Position", transform.localPosition);
+            transform.localRotation =
+                Quaternion.Euler(EditorGUILayout.Vector3Field("Local Rotation", transform.localRotation.eulerAngles));
+            transform.localScale =
+                EditorGUILayout.Vector3Field("Local Scale", transform.localScale);
             
             // DRAW GLOBAL
             GUI.enabled = false;
