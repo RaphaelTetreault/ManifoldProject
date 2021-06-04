@@ -270,6 +270,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                     empty.AddComponent<DisplayCourseMetadataTrigger>(),
                     empty.AddComponent<DisplayStoryObjects>(),
                     empty.AddComponent<DisplayTrackCheckpoint>(),
+                    empty.AddComponent<DisplayTrackIndexes>(),
                     empty.AddComponent<DisplayTrigger>(),
                     empty.AddComponent<DisplayUnknownTrigger2>(),
                     empty.AddComponent<DisplayVisualEffectTrigger>(),

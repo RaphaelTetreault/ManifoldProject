@@ -5,7 +5,7 @@ using System.IO;
 namespace GameCube.GFZ.CourseCollision
 {
     [Serializable]
-    public struct TrackLength :
+    public class FloatRef :
         IBinaryAddressable,
         IBinarySerializable
     {
@@ -14,7 +14,7 @@ namespace GameCube.GFZ.CourseCollision
         private AddressRange addressRange;
 
         // FIELDS
-        public float trackLength;
+        public float value;
 
 
         // PROPERTIES
@@ -30,7 +30,7 @@ namespace GameCube.GFZ.CourseCollision
         {
             this.RecordStartAddress(reader);
             {
-                reader.ReadX(ref trackLength);
+                reader.ReadX(ref value);
             }
             this.RecordEndAddress(reader);
         }
@@ -39,15 +39,13 @@ namespace GameCube.GFZ.CourseCollision
         {
             this.RecordStartAddress(writer);
             {
-                writer.WriteX(trackLength);
+                writer.WriteX(value);
             }
             this.RecordEndAddress(writer);
         }
 
-        public AddressRange SerializeWithReference(BinaryWriter writer)
-        {
-            Serialize(writer);
-            return addressRange;
-        }
     }
+
+    // TODO: move to own class
+    public sealed class TrackLength : FloatRef { }
 }

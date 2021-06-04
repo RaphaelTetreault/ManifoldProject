@@ -34,7 +34,7 @@ namespace Manifold.IO
         }
         public static void SetReaderToEndAddress(this IBinaryAddressable binaryAddressable, BinaryReader reader)
         {
-            var address = binaryAddressable.AddressRange.startAddress;
+            var address = binaryAddressable.AddressRange.endAddress;
             reader.BaseStream.Seek(address, SeekOrigin.Begin);
         }
 

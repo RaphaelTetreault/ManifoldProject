@@ -30,7 +30,7 @@ namespace GameCube.GFZ.CourseCollision
         public SurfaceAttributeArea[] surfaceAttributeAreas = new SurfaceAttributeArea[0];
         public StaticMeshTable surfaceAttributeMeshTable = new StaticMeshTable();
         public byte[] unknownData_0x20 = new byte[unknownData_0x20_count];
-        public float unknownFloat_0x24;
+        public FloatRef unknownFloat_0x24;
         public SceneObject[] sceneObjects = new SceneObject[0];
         public SceneInstanceReference[] sceneInstancesList = new SceneInstanceReference[0];
         public SceneOriginObjects[] sceneOriginObjectsList = new SceneOriginObjects[0];
@@ -88,7 +88,7 @@ namespace GameCube.GFZ.CourseCollision
 
             // 0x24
             reader.JumpToAddress(header.unknownFloat_0x24_Ptr);
-            reader.ReadX(ref unknownFloat_0x24);
+            reader.ReadX(ref unknownFloat_0x24, true);
 
             // 0x48 (count total), 0x4C, 0x50, 0x54 (pointer address): Scene Objects
             reader.JumpToAddress(header.sceneObjectsPtr);
@@ -179,15 +179,15 @@ namespace GameCube.GFZ.CourseCollision
 
             // MAINTAIN FILE IDENTIFICATION COMPATIBILITY
             {
-                // 0x00
+                // 0x20
                 // Resulting pointer should be 0xE4 or 0xE8 for AX or GX, respectively.
                 header.unknownData_0x20_Ptr = writer.GetPositionAsPointer();
                 writer.WriteX(new byte[unknownData_0x20_count], false); // TODO: HARD-CODED
 
-                // 0x00
+                // 0x24
                 // Resulting pointer should be 0xF8 or 0xFC for AX or GX, respectively.
-                header.unknownFloat_0x24_Ptr = writer.GetPositionAsPointer();
-                writer.WriteX(0f); // TODO: HARD-CODED
+                writer.WriteX(unknownFloat_0x24);
+                header.unknownFloat_0x24_Ptr = unknownFloat_0x24.GetPointer();
 
                 // The pointers written by the last 2 calls should create a valid AX or GX file header.
                 // If not, an assert will trigger.
@@ -267,7 +267,7 @@ namespace GameCube.GFZ.CourseCollision
             header.unknownStageData1Ptr = unknownStageData1.SerializeWithReference(writer).GetPointer();
             // 0x88, 0x8C: unused in header
             writer.InlineDesc(ColiCourseUtility.SerializeVerbose, 0x90 + offset, trackLength);
-            writer.CommentLineWide("Length:", trackLength.trackLength.ToString("0.00"), true);
+            writer.CommentLineWide("Length:", trackLength.value.ToString("0.00"), true); // print length
             writer.CommentNewLine(true, '-');
             writer.WriteX(trackLength);
             writer.InlineDesc(ColiCourseUtility.SerializeVerbose, 0x94 + offset, unknownTrigger1s);

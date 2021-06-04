@@ -64,19 +64,14 @@ namespace GameCube.GFZ.CourseCollision
         {
             writer.CommentType<TrackNode>(ColiCourseUtility.SerializeVerbose);
 
-            writer.WriteX(pointsPtr);
-            writer.WriteX(transformPtr);
-        }
+            throw new NotImplementedException();
 
-        public AddressRange SerializeWithReference(BinaryWriter writer)
-        {
-            var addressRange = new AddressRange();
-            addressRange.RecordStartAddress(writer.BaseStream);
+            this.RecordStartAddress(writer);
             {
-                Serialize(writer);
+                writer.WriteX(pointsPtr);
+                writer.WriteX(transformPtr);
             }
-            addressRange.RecordEndAddress(writer.BaseStream);
-            return addressRange;
+            this.RecordEndAddress(writer);
         }
 
     }
