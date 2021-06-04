@@ -11,7 +11,8 @@ namespace GameCube.GFZ.CourseCollision
     /// </summary>
     [Serializable]
     public class UnknownStageData2 :
-        IBinarySeralizableReference
+        IBinaryAddressable,
+        IBinarySerializable
     {
         // CONSTANTS
         public const int kElementCount = 6;

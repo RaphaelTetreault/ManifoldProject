@@ -8,7 +8,7 @@ namespace GameCube.GFZ.CourseCollision
     [Serializable]
     public class Transform :
         IBinarySerializable,
-        IBinaryAddressableRange,
+        IBinaryAddressable,
         IDeepCopyable<Transform>
     {
         // metadata

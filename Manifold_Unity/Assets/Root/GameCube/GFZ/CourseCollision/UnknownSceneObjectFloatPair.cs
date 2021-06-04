@@ -8,7 +8,7 @@ namespace GameCube.GFZ.CourseCollision
     /// 
     /// </summary>
     [Serializable]
-    public struct UnknownSceneObjectFloatPair : IBinarySerializable, IBinaryAddressableRange
+    public struct UnknownSceneObjectFloatPair : IBinarySerializable, IBinaryAddressable
     {
         // METADATA
         [UnityEngine.SerializeField]

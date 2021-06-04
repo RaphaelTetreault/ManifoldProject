@@ -9,7 +9,8 @@ namespace GameCube.GFZ.CourseCollision
     /// </summary>
     [Serializable]
     public class SceneObject :
-        IBinarySeralizableReference
+        IBinaryAddressable,
+        IBinarySerializable
     {
         // METADATA
         [UnityEngine.SerializeField]
@@ -23,7 +24,7 @@ namespace GameCube.GFZ.CourseCollision
         public LevelOfDetailRadius lodFar;
         public LevelOfDetailRadius lodNear;
         public Pointer instanceReferencePtr;
-        public Transform transform;
+        public Transform transform = new Transform();
         public int zero_0x2C;
         public Pointer animationPtr;
         public Pointer unkPtr_0x34;
@@ -34,7 +35,7 @@ namespace GameCube.GFZ.CourseCollision
         public AnimationClip animation;
         public UnknownSceneObjectData unk1;
         public SkeletalAnimator skeletalAnimator;
-        public TransformMatrix3x4 transformMatrix3x4 = new TransformMatrix3x4();
+        public TransformMatrix3x4 transformMatrix3x4;
 
 
         // PROPERTIES
@@ -104,23 +105,37 @@ namespace GameCube.GFZ.CourseCollision
 
         public void Serialize(BinaryWriter writer)
         {
-            writer.WriteX(lodFar);
-            writer.WriteX(lodNear);
-            writer.WriteX(instanceReferencePtr);
-            writer.WriteX(transform);
-            writer.WriteX(zero_0x2C);
-            writer.WriteX(animationPtr);
-            writer.WriteX(unkPtr_0x34);
-            writer.WriteX(skeletalAnimatorPtr);
-            writer.WriteX(transformPtr);
+            {
+                instanceReferencePtr = instanceReference.GetPointer();
+                animationPtr = animation.GetPointer();
+                unkPtr_0x34 = unk1.GetPointer();
+                skeletalAnimatorPtr = skeletalAnimator.GetPointer();
+                transformPtr = transformMatrix3x4.GetPointer();
+
+                Assert.IsTrue(instanceReferencePtr.IsNotNullPointer);
+            }
+            this.RecordStartAddress(writer);
+            {
+                writer.WriteX(lodFar);
+                writer.WriteX(lodNear);
+                writer.WriteX(instanceReferencePtr);
+                writer.WriteX(transform);
+                writer.WriteX(zero_0x2C);
+                writer.WriteX(animationPtr);
+                writer.WriteX(unkPtr_0x34);
+                writer.WriteX(skeletalAnimatorPtr);
+                writer.WriteX(transformPtr);
+            }
+            this.RecordEndAddress(writer);
 
             // Write values pointed at, update ptrs above
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
         public AddressRange SerializeWithReference(BinaryWriter writer)
         {
-            throw new NotImplementedException();
+            Serialize(writer);
+            return addressRange;
         }
     }
 }

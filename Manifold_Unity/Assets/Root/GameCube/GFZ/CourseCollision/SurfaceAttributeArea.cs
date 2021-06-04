@@ -6,7 +6,8 @@ namespace GameCube.GFZ.CourseCollision
 {
     [Serializable]
     public class SurfaceAttributeArea :
-        IBinarySeralizableReference
+        IBinaryAddressable,
+        IBinarySerializable
     {
         [UnityEngine.SerializeField] private AddressRange addressRange;
 

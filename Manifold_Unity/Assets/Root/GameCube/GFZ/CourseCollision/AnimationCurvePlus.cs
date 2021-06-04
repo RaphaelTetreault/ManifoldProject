@@ -8,7 +8,7 @@ namespace GameCube.GFZ.CourseCollision
     /// 
     /// </summary>
     [Serializable]
-    public class AnimationCurvePlus : IBinarySerializable, IBinaryAddressableRange
+    public class AnimationCurvePlus : IBinarySerializable, IBinaryAddressable
     {
         // METADATA
         [UnityEngine.SerializeField]

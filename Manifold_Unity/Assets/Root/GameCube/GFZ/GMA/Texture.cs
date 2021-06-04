@@ -6,7 +6,7 @@ using UnityEngine;
 namespace GameCube.GFZ.GMA
 {
     [Serializable]
-    public struct TextureDescriptor : IBinarySerializable, IBinaryAddressableRange
+    public struct TextureDescriptor : IBinarySerializable, IBinaryAddressable
     {
 
         #region FIELDS

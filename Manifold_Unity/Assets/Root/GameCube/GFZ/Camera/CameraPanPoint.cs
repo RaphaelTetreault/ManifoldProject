@@ -6,7 +6,7 @@ using UnityEngine;
 namespace GameCube.GFZ.Camera
 {
     [Serializable]
-    public class CameraPanPoint : IBinarySerializable, IBinaryAddressableRange
+    public class CameraPanPoint : IBinarySerializable, IBinaryAddressable
     {
 
         [SerializeField]

@@ -6,7 +6,7 @@ using UnityEngine;
 namespace GameCube.GFZ.FMI
 {
     [Serializable]
-    public class ExhaustParticle : IBinarySerializable, IBinaryAddressableRange
+    public class ExhaustParticle : IBinarySerializable, IBinaryAddressable
     {
 
         #region MEMBERS

@@ -8,7 +8,7 @@ using UnityEngine;
 namespace GameCube.GFZ.GMA
 {
     [Serializable]
-    public class GfzDisplayList : IBinarySerializable, IBinaryAddressableRange
+    public class GfzDisplayList : IBinarySerializable, IBinaryAddressable
     {
 
         #region FIELDS

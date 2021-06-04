@@ -7,7 +7,8 @@ namespace GameCube.GFZ.CourseCollision
 {
     [Serializable]
     public sealed class ColliderQuad :
-        IBinarySeralizableReference
+        IBinaryAddressable,
+        IBinarySerializable
     {
         // METADATA
         [UnityEngine.SerializeField]

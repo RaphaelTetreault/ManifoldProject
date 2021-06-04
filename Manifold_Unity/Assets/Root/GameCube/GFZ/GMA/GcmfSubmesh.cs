@@ -6,7 +6,7 @@ using UnityEngine;
 namespace GameCube.GFZ.GMA
 {
     [Serializable]
-    public class GcmfSubmesh : IBinarySerializable, IBinaryAddressableRange
+    public class GcmfSubmesh : IBinarySerializable, IBinaryAddressable
     {
 
         #region FIELDS

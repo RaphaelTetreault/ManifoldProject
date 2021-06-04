@@ -6,7 +6,7 @@ using UnityEngine;
 namespace GameCube.GFZ.CarData
 {
     [Serializable]
-    public class CarData : IBinarySerializable, IBinaryAddressableRange, IFile
+    public class CarData : IBinarySerializable, IBinaryAddressable, IFile
     {
 
         #region FIELDS

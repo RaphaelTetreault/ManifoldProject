@@ -6,7 +6,8 @@ namespace GameCube.GFZ.CourseCollision
 {
     [System.Serializable]
     public class IndexList :
-        IBinarySeralizableReference
+        IBinaryAddressable,
+        IBinarySerializable
     {
         // CONSTANTS
         public const int kUshortArrayTerminator = 0xFFFF;

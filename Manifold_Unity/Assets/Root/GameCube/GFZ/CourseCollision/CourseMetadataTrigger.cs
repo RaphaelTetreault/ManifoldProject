@@ -7,7 +7,8 @@ namespace GameCube.GFZ.CourseCollision
 {
     [Serializable]
     public class CourseMetadataTrigger :
-        IBinarySeralizableReference
+        IBinaryAddressable,
+        IBinarySerializable
     {
         [UnityEngine.SerializeField]
         private AddressRange addressRange;

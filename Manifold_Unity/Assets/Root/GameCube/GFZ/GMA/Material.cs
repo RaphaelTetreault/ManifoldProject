@@ -7,7 +7,7 @@ using UnityEngine;
 namespace GameCube.GFZ.GMA
 {
     [Serializable]
-    public class Material : IBinarySerializable, IBinaryAddressableRange
+    public class Material : IBinarySerializable, IBinaryAddressable
     {
 
         #region FIELDS

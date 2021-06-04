@@ -6,7 +6,7 @@ using UnityEngine;
 namespace GameCube.GFZ.FMI
 {
     [Serializable]
-    public class ExhaustAnimation : IBinarySerializable, IBinaryAddressableRange
+    public class ExhaustAnimation : IBinarySerializable, IBinaryAddressable
     {
 
         #region FIELDS

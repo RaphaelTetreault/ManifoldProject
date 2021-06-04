@@ -6,7 +6,7 @@ using UnityEngine;
 namespace GameCube.GFZ.Camera
 {
     [Serializable]
-    public class CameraPan : IBinarySerializable, IBinaryAddressableRange
+    public class CameraPan : IBinarySerializable, IBinaryAddressable
     {
         public const int kSizeBytes = 0x54;
 

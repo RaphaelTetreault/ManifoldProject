@@ -33,7 +33,7 @@ namespace GameCube.GFZ.CarData
     }
 
     [Serializable]
-    public struct VehicleParameters : IBinarySerializable, IBinaryAddressableRange
+    public struct VehicleParameters : IBinarySerializable, IBinaryAddressable
     {
 
         #region FIELDS

@@ -7,7 +7,7 @@ using UnityEngine;
 namespace GameCube.GFZ.GMA
 {
     [Serializable]
-    public class VertexControl_T4 : IBinarySerializable, IBinaryAddressableRange
+    public class VertexControl_T4 : IBinarySerializable, IBinaryAddressable
     {
         [Header("Vtx Ctrl T4")]
         [SerializeField]

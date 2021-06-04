@@ -9,7 +9,7 @@ namespace GameCube.GFZ.CourseCollision
     /// 
     /// </summary>
     [Serializable]
-    public class TrackTransform : IBinarySerializable, IBinaryAddressableRange
+    public class TrackTransform : IBinarySerializable, IBinaryAddressable
     {
         // CONSTANTS
         public const byte kStructureSize = 0x50;

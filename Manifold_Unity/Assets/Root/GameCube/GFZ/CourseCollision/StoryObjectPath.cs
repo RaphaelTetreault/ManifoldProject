@@ -4,7 +4,8 @@ using System.IO;
 namespace GameCube.GFZ.CourseCollision
 {
     public class StoryObjectPath :
-        IBinarySeralizableReference
+        IBinaryAddressable,
+        IBinarySerializable
     {
         // METADATA
         [UnityEngine.SerializeField] private AddressRange addressRange;

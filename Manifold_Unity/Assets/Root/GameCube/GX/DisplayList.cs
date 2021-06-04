@@ -8,7 +8,7 @@ using GameCube.GFZ.GMA;
 namespace GameCube.GX
 {
     [Serializable]
-    public class DisplayList : IBinarySerializable, IBinaryAddressableRange
+    public class DisplayList : IBinarySerializable, IBinaryAddressable
     {
 
         #region FIELDS

@@ -8,7 +8,7 @@ namespace GameCube.GFZ.CourseCollision
     /// 
     /// </summary>
     [Serializable]
-    public class UnknownSceneObjectData : IBinarySerializable, IBinaryAddressableRange
+    public class UnknownSceneObjectData : IBinarySerializable, IBinaryAddressable
     {
         // CONSTANTS
         public const int kCount = 12;

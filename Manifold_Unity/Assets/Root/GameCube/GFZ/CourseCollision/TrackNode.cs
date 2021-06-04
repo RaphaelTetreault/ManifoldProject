@@ -14,7 +14,8 @@ namespace GameCube.GFZ.CourseCollision
     /// </summary>
     [Serializable]
     public class TrackNode :
-        IBinarySeralizableReference
+        IBinaryAddressable,
+        IBinarySerializable
     {
         // METADATA
         [UnityEngine.SerializeField]

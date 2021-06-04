@@ -12,7 +12,8 @@ namespace GameCube.GFZ.CourseCollision
     /// </summary>
     [Serializable]
     public class UnknownSolsTrigger :
-        IBinarySeralizableReference
+        IBinaryAddressable,
+        IBinarySerializable
     {
         // METADATA
         [UnityEngine.SerializeField] private AddressRange addressRange;

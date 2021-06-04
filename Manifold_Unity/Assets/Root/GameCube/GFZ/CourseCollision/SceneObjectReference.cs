@@ -1,7 +1,6 @@
 ﻿using Manifold.IO;
 using System;
 using System.IO;
-using System.Text;
 
 namespace GameCube.GFZ.CourseCollision
 {
@@ -10,18 +9,20 @@ namespace GameCube.GFZ.CourseCollision
     /// </summary>
     [Serializable]
     public class SceneObjectReference :
-        IBinarySeralizableReference
+        IBinaryAddressable,
+        IBinarySerializable
     {
         // METADATA
         [UnityEngine.SerializeField]
         private AddressRange addressRange;
-        public CString name;
 
         // FIELDS
         public uint zero_0x00;
         public Pointer namePtr;
         public uint zero_0x08;
         public float unk_0x0C; // LOD?
+        //  FIELDS (deserialized from pointer)
+        public CString name;
 
 
         // PROPERTIES
@@ -58,11 +59,15 @@ namespace GameCube.GFZ.CourseCollision
             {
                 Assert.IsTrue(zero_0x00 == 0);
                 Assert.IsTrue(zero_0x08 == 0);
+
+                // It is assummed that the pointer is set before serialization
+                namePtr = name.GetPointer();
+                Assert.IsTrue(namePtr.IsNotNullPointer);
             }
             this.RecordStartAddress(writer);
             {
                 writer.WriteX(zero_0x00);
-                writer.WriteX(namePtr); throw new NotImplementedException(); // name table...
+                writer.WriteX(namePtr);
                 writer.WriteX(zero_0x08);
                 writer.WriteX(unk_0x0C);
             }

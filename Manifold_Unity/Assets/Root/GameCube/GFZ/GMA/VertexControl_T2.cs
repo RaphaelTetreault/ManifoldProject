@@ -6,7 +6,7 @@ using UnityEngine;
 namespace GameCube.GFZ.GMA
 {
     [Serializable]
-    public class VertexControl_T2 : IBinarySerializable, IBinaryAddressableRange
+    public class VertexControl_T2 : IBinarySerializable, IBinaryAddressable
     {
         [Header("Vtx Ctrl T2")]
         [SerializeField]

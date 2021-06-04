@@ -8,8 +8,9 @@ namespace GameCube.GFZ.CourseCollision
     /// 
     /// </summary>
     [Serializable]
-    public class UnknownTrigger1 : 
-        IBinarySeralizableReference
+    public class UnknownTrigger1 :
+        IBinaryAddressable,
+        IBinarySerializable
     {
         // METADATA
         [UnityEngine.SerializeField]

@@ -6,7 +6,8 @@ using UnityEngine;
 namespace Manifold.IO
 {
     public class CString :
-            IBinarySeralizableReference
+        IBinaryAddressable,
+        IBinarySerializable
     {
         //
         [UnityEngine.SerializeField] private AddressRange addressRange;

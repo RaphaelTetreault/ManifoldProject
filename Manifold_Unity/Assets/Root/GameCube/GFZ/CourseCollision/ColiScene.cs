@@ -57,6 +57,7 @@ namespace GameCube.GFZ.CourseCollision
         public int ID => id;
 
 
+
         public void Deserialize(BinaryReader reader)
         {
             BinaryIoUtility.PushEndianess(false);
@@ -173,26 +174,34 @@ namespace GameCube.GFZ.CourseCollision
 
             // Write empty header
             header = new Header();
+            header.Format = Header.SerializeFormat.GX;
             writer.WriteX(header);
 
             // MAINTAIN FILE IDENTIFICATION COMPATIBILITY
             {
+                // 0x00
                 // Resulting pointer should be 0xE4 or 0xE8 for AX or GX, respectively.
                 header.unknownData_0x20_Ptr = writer.GetPositionAsPointer();
                 writer.WriteX(new byte[unknownData_0x20_count], false); // TODO: HARD-CODED
-                
+
+                // 0x00
                 // Resulting pointer should be 0xF8 or 0xFC for AX or GX, respectively.
                 header.unknownFloat_0x24_Ptr = writer.GetPositionAsPointer();
                 writer.WriteX(0f); // TODO: HARD-CODED
-                
+
                 // The pointers written by the last 2 calls should create a valid AX or GX file header.
-                Assert.IsTrue(header.IsValidFile);
+                // If not, an assert will trigger.
+                header.ValidateFileFormatPointers();
             }
             // Offset pointer address if AX file
             int offset = header.IsFileAX ? -4 : 0;
 
-            // Write info
-            writer.CommentDateAndCredits(ColiCourseUtility.SerializeVerbose);
+            // Write credit and useful debugging info
+            writer.CommentDateAndCredits(true);
+            writer.Comment("File Information", true);
+            writer.CommentLineWide("Format:", header.Format, true);
+            writer.CommentLineWide("Universal:", false, true);
+            writer.CommentNewLine(true, '-');
 
             //writer.CommentNewLine(ColiCourseUtility.SerializeVerbose);
             //writer.CommentPointer(0x08, ColiCourseUtility.SerializeVerbose);
@@ -204,21 +213,53 @@ namespace GameCube.GFZ.CourseCollision
             writer.InlineDesc(ColiCourseUtility.SerializeVerbose, 0x1C + offset, surfaceAttributeMeshTable);
             writer.WriteX(surfaceAttributeMeshTable);
 
-            //// scene objects
-            //// 0x48 (count total), 0x4C, 0x50, 0x54 (pointer address): Scene Objects;
-            //writer.CommentTypeDesc(sceneObjects, 0x54, ColiCourseUtility.SerializeVerbose);
-            //var sceneObjectsPtrs = sceneObjects.SerializeWithReferences(writer).GetArrayPointer();
-            //header.sceneObjectCount = sceneObjectsPtrs.Length;
-            //header.unk_sceneObjectCount1 = 0; // still don't know what this is for
-            //header.unk_sceneObjectCount2 = 0; // still don't know what this is for
-            //header.sceneObjectsPtr = writer.GetPositionAsPointer();
+            // SCENE OBJECTS
+            //var names = new CString[0];
+            //var objects = new SceneObjectReference[0];
+            //var instances = new SceneInstanceReference[0];
+            var names = new CString[]
+            {
+                new CString{ value = "TEST_STRING" },
+                new CString{ value = "ORIGIN_OBJECT" }
+            };
+            var objects = new SceneObjectReference[]
+            {
+                new SceneObjectReference() { name = names[0] },
+                new SceneObjectReference() { name = names[1] },
+            };
+            sceneInstancesList = new SceneInstanceReference[]
+            {
+                new SceneInstanceReference() { objectReference = objects[0] },
+                new SceneInstanceReference() { objectReference = objects[1] },
+            };
+            sceneOriginObjectsList = new SceneOriginObjects[]
+            {
+                new SceneOriginObjects() { instanceReference = sceneInstancesList[1] }
+            };
+            sceneObjects = new SceneObject[]
+            {
+                new SceneObject() {instanceReference = sceneInstancesList[0] }
+            };
+            // Write in reverse order. If references are correct, pointers will be correct when serializing.
+            writer.InlineDesc(ColiCourseUtility.SerializeVerbose, -1, names);
+            writer.WriteX(names, false);
+            writer.InlineDesc(ColiCourseUtility.SerializeVerbose, -1, objects);
+            writer.WriteX(objects, false);
+            writer.InlineDesc(ColiCourseUtility.SerializeVerbose, -1, sceneInstancesList);
+            writer.WriteX(sceneInstancesList, false);
+            // 0x48 (count total), 0x4C, 0x50, 0x54 (pointer address): Scene Objects;
+            writer.InlineDesc(ColiCourseUtility.SerializeVerbose, 0x54 + offset, sceneObjects);
+            writer.WriteX(sceneObjects, false);
+            // 
+            writer.InlineDesc(ColiCourseUtility.SerializeVerbose, 0x70 + offset, sceneOriginObjectsList);
+            writer.WriteX(sceneOriginObjectsList, false);
 
             writer.InlineDesc(ColiCourseUtility.SerializeVerbose, 0x60 + offset, unknownSolsTriggers);
             writer.WriteX(unknownSolsTriggers, false);
             writer.InlineDesc(ColiCourseUtility.SerializeVerbose, 0x68 + offset, sceneInstancesList);
             writer.WriteX(sceneInstancesList, false);
-            writer.InlineDesc(ColiCourseUtility.SerializeVerbose, 0x70 + offset, sceneOriginObjectsList);
-            writer.WriteX(sceneOriginObjectsList, false);
+            //writer.InlineDesc(ColiCourseUtility.SerializeVerbose, 0x70 + offset, sceneOriginObjectsList);
+            //writer.WriteX(sceneOriginObjectsList, false);
             // 0x74, 0x78: unused in header
             writer.InlineDesc(ColiCourseUtility.SerializeVerbose, 0x80 + offset, unknownStageData2);
             header.unknownStageData2Ptr = unknownStageData2.SerializeWithReference(writer).GetPointer();
@@ -226,6 +267,8 @@ namespace GameCube.GFZ.CourseCollision
             header.unknownStageData1Ptr = unknownStageData1.SerializeWithReference(writer).GetPointer();
             // 0x88, 0x8C: unused in header
             writer.InlineDesc(ColiCourseUtility.SerializeVerbose, 0x90 + offset, trackLength);
+            writer.CommentLineWide("Length:", trackLength.trackLength.ToString("0.00"), true);
+            writer.CommentNewLine(true, '-');
             writer.WriteX(trackLength);
             writer.InlineDesc(ColiCourseUtility.SerializeVerbose, 0x94 + offset, unknownTrigger1s);
             writer.WriteX(unknownTrigger1s, false);
@@ -240,6 +283,7 @@ namespace GameCube.GFZ.CourseCollision
             writer.InlineDesc(ColiCourseUtility.SerializeVerbose, 0xBC + offset, trackIndexTable);
             writer.WriteX(trackIndexTable);
 
+            // CONSTRUCT HEADER
             // Get pointers from serialized values
             header.surfaceAttributeAreasPtr = surfaceAttributeAreas.GetArrayPointer();
             header.surfaceAttributeMeshTablePtr = surfaceAttributeMeshTable.GetPointer();
@@ -253,6 +297,13 @@ namespace GameCube.GFZ.CourseCollision
             header.arcadeCheckpointTriggersPtr = arcadeCheckpointTriggers.GetArrayPointer();
             header.storyObjectTriggersPtr = storyObjectTriggers.GetArrayPointer();
             header.trackIndexTable = trackIndexTable.GetPointer();
+            //
+            header.trackNodesPtr = trackNodes.GetArrayPointer();
+            //
+            header.sceneObjectCount = sceneObjects.Length;
+            header.unk_sceneObjectCount1 = 0; // still don't know what this is for
+            header.unk_sceneObjectCount2 = 0; // still don't know what this is for
+            header.sceneObjectsPtr = sceneObjects.GetArrayPointer().Pointer;
             // Non pointer data (aside from SceneObject counts)
             header.unk_0x00 = new UnknownFloatPair();
             header.boostPadsActive = BoostPadsActive.Enabled;

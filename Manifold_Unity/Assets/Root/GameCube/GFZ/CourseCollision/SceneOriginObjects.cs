@@ -9,7 +9,8 @@ namespace GameCube.GFZ.CourseCollision
     /// </summary>
     [Serializable]
     public class SceneOriginObjects :
-        IBinarySeralizableReference
+        IBinaryAddressable,
+        IBinarySerializable
     {
         // METADATA
         [UnityEngine.SerializeField]
@@ -49,7 +50,7 @@ namespace GameCube.GFZ.CourseCollision
         {
             {
                 // Can't have in-line comment since this variable is truly stored in a table
-                sceneObjectReferencePtr = instanceReference.SerializeWithReference(writer).GetPointer();
+                sceneObjectReferencePtr = instanceReference.GetPointer();
                 Assert.IsTrue(sceneObjectReferencePtr.IsNotNullPointer);
             }
             this.RecordStartAddress(writer);

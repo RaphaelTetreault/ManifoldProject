@@ -13,7 +13,7 @@ namespace GameCube.GFZ.CourseCollision
     /// 
     /// </summary>
     [Serializable]
-    public class TopologyParameters : IBinarySerializable, IBinaryAddressableRange
+    public class TopologyParameters : IBinarySerializable, IBinaryAddressable
     {
 
         public const int kCurveCount = 9;

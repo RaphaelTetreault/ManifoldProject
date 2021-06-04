@@ -6,9 +6,8 @@ namespace GameCube.GFZ.CourseCollision
 {
     [Serializable]
     public struct TrackLength :
-        IBinaryAddressableRange,
-        IBinarySerializable,
-        IBinarySeralizableReference
+        IBinaryAddressable,
+        IBinarySerializable
     {
         // METADATA
         [UnityEngine.SerializeField]
@@ -38,8 +37,6 @@ namespace GameCube.GFZ.CourseCollision
 
         public void Serialize(BinaryWriter writer)
         {
-            writer.CommentType<TrackLength>(ColiCourseUtility.SerializeVerbose);
-
             this.RecordStartAddress(writer);
             {
                 writer.WriteX(trackLength);

@@ -1203,7 +1203,7 @@ namespace Manifold.IO
             var chars = value.ToCharArray();
             foreach (var character in chars)
             {
-                writer.WriteX(character);
+                writer.WriteX(character, encoding);
             }
 
             //byte[] bytes = encoding.GetBytes(value.ToCharArray());

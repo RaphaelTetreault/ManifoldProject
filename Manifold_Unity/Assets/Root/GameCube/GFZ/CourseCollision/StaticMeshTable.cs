@@ -7,7 +7,8 @@ namespace GameCube.GFZ.CourseCollision
 {
     [Serializable]
     public class StaticMeshTable :
-        IBinarySeralizableReference
+        IBinaryAddressable,
+        IBinarySerializable
     {
         [UnityEngine.SerializeField]
         private AddressRange addressRange;
@@ -19,7 +20,7 @@ namespace GameCube.GFZ.CourseCollision
         public const int kCountAxSurfaceTypes = 11;
         public const int kCountGxSurfaceTypes = 14;
 
-        // Basically a big pile of pointers
+        // FIELDS
         public int[] zero_0x00_0x20;
         public Pointer collisionTrisPtr;
         public Pointer[] collisionTriIndexesPtr;
@@ -27,7 +28,7 @@ namespace GameCube.GFZ.CourseCollision
         public Pointer collisionQuadsPtr;
         public Pointer[] collisionQuadIndexesPtr;
         public ColiUnknownStruct1 unknownStruct_0xB4;
-
+        // FIELDS (deserialized from pointers)
         // This data holds the geometry data and indexes
         public ColliderTriangle[] colliderTriangles;
         public ColliderQuad[] colliderQuads;
@@ -155,8 +156,6 @@ namespace GameCube.GFZ.CourseCollision
 
         private void SerializeReferences(BinaryWriter writer)
         {
-            // Write sub classes to get pointers
-
             // TRIANGLES
             writer.InlineDesc(ColiCourseUtility.SerializeVerbose, ColiCourseUtility.Pointer, colliderTriangles);
             writer.WriteX(colliderTriangles, false);

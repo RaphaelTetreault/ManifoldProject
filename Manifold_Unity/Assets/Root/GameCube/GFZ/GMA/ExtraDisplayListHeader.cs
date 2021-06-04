@@ -6,7 +6,7 @@ using UnityEngine;
 namespace GameCube.GFZ.GMA
 {
     [Serializable]
-    public class ExtraDisplayListHeader : IBinarySerializable, IBinaryAddressableRange
+    public class ExtraDisplayListHeader : IBinarySerializable, IBinaryAddressable
     {
 
         #region FIELDS

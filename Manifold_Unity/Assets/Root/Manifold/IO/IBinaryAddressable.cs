@@ -1,6 +1,6 @@
 ﻿namespace Manifold.IO
 {
-    public interface IBinaryAddressableRange
+    public interface IBinaryAddressable
     {
         AddressRange AddressRange { get; set; }
     }

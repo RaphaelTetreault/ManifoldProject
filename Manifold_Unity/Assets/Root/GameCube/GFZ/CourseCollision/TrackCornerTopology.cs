@@ -9,7 +9,7 @@ namespace GameCube.GFZ.CourseCollision
     /// 
     /// </summary>
     [Serializable]
-    public class TrackCornerTopology : IBinarySerializable, IBinaryAddressableRange
+    public class TrackCornerTopology : IBinarySerializable, IBinaryAddressable
     {
         // METADATA
         [UnityEngine.SerializeField]

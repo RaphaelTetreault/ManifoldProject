@@ -8,7 +8,7 @@ namespace GameCube.GFZ.CourseCollision
     /// 
     /// </summary>
     [Serializable]
-    public class AnimationClip : IBinarySerializable, IBinaryAddressableRange
+    public class AnimationClip : IBinarySerializable, IBinaryAddressable
     {
         // CONSTANTS
         public const int kSizeCurvesPtrs = 6 + 5;

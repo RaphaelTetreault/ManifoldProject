@@ -7,7 +7,7 @@ using UnityEngine;
 namespace GameCube.GFZ.GMA
 {
     [Serializable]
-    public class VertexControl_T3 : IBinarySerializable, IBinaryAddressableRange
+    public class VertexControl_T3 : IBinarySerializable, IBinaryAddressable
     {
         // NOTE
         // Total count appears to be something like

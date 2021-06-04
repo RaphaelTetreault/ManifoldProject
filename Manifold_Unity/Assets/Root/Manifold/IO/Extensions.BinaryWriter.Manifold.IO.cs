@@ -73,6 +73,8 @@ namespace Manifold.IO
             var message = $"{lMsg}{rMsg.PadLeft(lenghtRight)}";
             Comment(writer, message, doWrite, padding, alignment);
         }
+        public static void CommentLineWide(this BinaryWriter writer, string lMsg, object rMsg, bool doWrite, char padding = ' ', int alignment = 16)
+            => CommentLineWide(writer, lMsg, rMsg.ToString(), doWrite, padding, alignment);
 
         public static void CommentIdx(this BinaryWriter writer, int count, bool doWrite, char padding = ' ', int alignment = 16, string format = "d")
             => CommentLineWide(writer, "Index:", count.ToString(format), doWrite, padding, alignment);
@@ -127,7 +129,7 @@ namespace Manifold.IO
             if (!doWrite)
                 return;
 
-            writer.CommentNewLine(true);
+            //writer.CommentNewLine(true);
             writer.CommentNewLine(true, '-');
             writer.Comment("Auto Generated", true);
             writer.Comment("by Manifold", true);
@@ -139,7 +141,7 @@ namespace Manifold.IO
             writer.WriteX(new byte[] { 0x52, 0x61, 0x70, 0x68, 0x61, 0xeb, 0x6c, 0x54, 0xe9, 0x74, 0x72, 0x65, 0x61, 0x75, 0x6c, 0x74 }, false); // RaphaëlTétreault
             writer.Comment("aka StarkNebula", true);
             writer.CommentNewLine(true, '-');
-            writer.CommentNewLine(true);
+            //writer.CommentNewLine(true);
         }
 
         public static void JumpToAddress(this BinaryWriter writer, Pointer pointer, SeekOrigin seekOrigin = SeekOrigin.Begin)

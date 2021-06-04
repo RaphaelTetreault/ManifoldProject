@@ -10,7 +10,8 @@ namespace GameCube.GFZ.CourseCollision
     /// </summary>
     [Serializable]
     public sealed class ColliderTriangle :
-        IBinarySeralizableReference
+        IBinaryAddressable,
+        IBinarySerializable
     {
         // METADATA
         [UnityEngine.SerializeField]

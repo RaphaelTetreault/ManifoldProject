@@ -9,7 +9,8 @@ namespace GameCube.GFZ.CourseCollision
     /// </summary>
     [Serializable]
     public abstract class IndexTable :
-        IBinarySeralizableReference
+        IBinaryAddressable,
+        IBinarySerializable
     {
         // "CONSTANTS"
         public abstract int ListCount { get; }

@@ -8,7 +8,7 @@ using UnityEngine;
 namespace GameCube.GFZ.GMA
 {
     [Serializable]
-    public struct GcmfPointerPair : IBinarySerializable, IBinaryAddressableRange
+    public struct GcmfPointerPair : IBinarySerializable, IBinaryAddressable
     {
 
         #region FIELDS

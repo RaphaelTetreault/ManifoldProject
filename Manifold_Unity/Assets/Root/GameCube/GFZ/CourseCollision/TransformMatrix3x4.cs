@@ -9,7 +9,7 @@ namespace GameCube.GFZ.CourseCollision
     /// Column-major matrix with 3 rows and 4 columns.
     /// </summary>
     [Serializable]
-    public class TransformMatrix3x4 : IBinarySerializable, IBinaryAddressableRange
+    public class TransformMatrix3x4 : IBinarySerializable, IBinaryAddressable
     {
         [UnityEngine.SerializeField]
         private AddressRange addressRange;
