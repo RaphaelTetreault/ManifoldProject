@@ -45,7 +45,4 @@ namespace GameCube.GFZ.CourseCollision
         }
 
     }
-
-    // TODO: move to own class
-    public sealed class TrackLength : FloatRef { }
 }

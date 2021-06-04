@@ -4,7 +4,7 @@ namespace GameCube.GFZ.CourseCollision
     /// 
     /// </summary>
     [System.Serializable]
-    public class TrackIndexTable : IndexTable
+    public class TrackCheckpointTable8x8 : IndexTable
     {
         public static int kListCount = 64;
         public override int ListCount => kListCount;

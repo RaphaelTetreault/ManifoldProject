@@ -78,6 +78,9 @@ namespace Manifold.IO.GFZ.CourseCollision
                     // Track data transforms
                     CreateTrackTransformHierarchy(scene);
                     //CreateTrackTransformSet(scene);
+
+                    // Checkpoints?
+                    CreateTrackIndexChains(scene);
                 }
 
                 // Include other misc data
@@ -608,6 +611,39 @@ namespace Manifold.IO.GFZ.CourseCollision
             }
 
             return animationMatrix;
+        }
+
+        public void CreateTrackIndexChains(ColiSceneSobj sceneSobj)
+        {
+            var scene = sceneSobj.Value;
+
+            var root = new GameObject();
+            root.name = $"Track Index Chains";
+
+            int chainIndex = 0;
+            var trackNodes = sceneSobj.Value.trackNodes;
+            foreach (var indexList in sceneSobj.Value.trackIndexTable.indexLists)
+            {
+                var chain = new GameObject();
+                chain.name = $"Chain {chainIndex++}";
+                chain.transform.parent = root.transform;
+
+                for (int i = 0; i < indexList.Length; i++)
+                {
+                    int index = indexList.Indexes[i];
+                    var node = trackNodes[index];
+
+                    for (int j = 0; j < node.points.Length; j++)
+                    {
+                        var position = node.points[j].positionStart;
+                        var instance = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+                        instance.transform.position = position;
+                        instance.transform.localScale = Vector3.one * 5f;
+                        instance.name = $"{index}.{j}";
+                        instance.transform.parent = chain.transform;
+                    }
+                }
+            }
         }
 
     }

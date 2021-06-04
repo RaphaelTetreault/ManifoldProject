@@ -30,7 +30,7 @@ namespace GameCube.GFZ.CourseCollision
         public SurfaceAttributeArea[] surfaceAttributeAreas = new SurfaceAttributeArea[0];
         public StaticMeshTable surfaceAttributeMeshTable = new StaticMeshTable();
         public byte[] unknownData_0x20 = new byte[unknownData_0x20_count];
-        public FloatRef unknownFloat_0x24;
+        public TrackLowestHeight trackLowestHeight;
         public SceneObject[] sceneObjects = new SceneObject[0];
         public SceneInstanceReference[] sceneInstancesList = new SceneInstanceReference[0];
         public SceneOriginObjects[] sceneOriginObjectsList = new SceneOriginObjects[0];
@@ -43,7 +43,7 @@ namespace GameCube.GFZ.CourseCollision
         public CourseMetadataTrigger[] courseMetadataTriggers = new CourseMetadataTrigger[0];
         public ArcadeCheckpointTrigger[] arcadeCheckpointTriggers = new ArcadeCheckpointTrigger[0];
         public StoryObjectTrigger[] storyObjectTriggers = new StoryObjectTrigger[0];
-        public TrackIndexTable trackIndexTable = new TrackIndexTable();
+        public TrackCheckpointTable8x8 trackIndexTable = new TrackCheckpointTable8x8();
 
         // to find
         // * minimap rotation.............
@@ -88,7 +88,7 @@ namespace GameCube.GFZ.CourseCollision
 
             // 0x24
             reader.JumpToAddress(header.unknownFloat_0x24_Ptr);
-            reader.ReadX(ref unknownFloat_0x24, true);
+            reader.ReadX(ref trackLowestHeight, true);
 
             // 0x48 (count total), 0x4C, 0x50, 0x54 (pointer address): Scene Objects
             reader.JumpToAddress(header.sceneObjectsPtr);
@@ -186,8 +186,8 @@ namespace GameCube.GFZ.CourseCollision
 
                 // 0x24
                 // Resulting pointer should be 0xF8 or 0xFC for AX or GX, respectively.
-                writer.WriteX(unknownFloat_0x24);
-                header.unknownFloat_0x24_Ptr = unknownFloat_0x24.GetPointer();
+                writer.WriteX(trackLowestHeight);
+                header.unknownFloat_0x24_Ptr = trackLowestHeight.GetPointer();
 
                 // The pointers written by the last 2 calls should create a valid AX or GX file header.
                 // If not, an assert will trigger.
