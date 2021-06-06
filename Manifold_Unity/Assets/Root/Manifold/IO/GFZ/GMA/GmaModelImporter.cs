@@ -58,7 +58,8 @@ namespace Manifold.IO.GFZ.GMA
                 var assetPath = ImportUtility.GetUnityAssetDirectory(gmaSobj);
                 // Create folder if it doesn't already exist
                 var modelDestination = $"{assetPath}/{destinationFolder}/";
-                ImportUtility.EnsureAssetFolderExists(modelDestination);
+                // Ensure the folder path exists
+                AssetDatabaseUtility.CreatePath(modelDestination);
 
                 // Break out value
                 Gma gma = gmaSobj.Value;
