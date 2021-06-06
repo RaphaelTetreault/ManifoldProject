@@ -335,7 +335,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
             // Loop over every top transform
             int count = 0;
-            int total = scene.trackTransforms.Count;
+            int total = scene.trackTransforms.Length;
             foreach (var trackTransform in scene.trackTransforms)
             {
                 // Recursively create transforms
@@ -357,7 +357,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             // Loop over every top transform
             //int count = 0;
             int index = 0;
-            int total = scene.trackTransforms.Count;
+            int total = scene.trackTransforms.Length;
             foreach (var trackTransform in scene.trackTransforms)
             {
                 //
@@ -458,7 +458,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             parent.name = $"Test Sample Path";
 
             //
-            var increment = 1f / 1000f * scene.trackTransforms.Count;
+            var increment = 1f / 1000f * scene.trackTransforms.Length;
             int count = 0;
             foreach (var tt in scene.trackTransforms)
             {
@@ -525,7 +525,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             parent.name = $"Test Sample Path";
 
             //
-            var increment = 1f / 1000f * scene.trackTransforms.Count;
+            var increment = 1f / 1000f * scene.trackTransforms.Length;
             int count = 0;
             foreach (var tt in scene.trackTransforms)
             {

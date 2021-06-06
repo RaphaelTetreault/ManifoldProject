@@ -442,7 +442,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 {
                     var scene = sobj.Value;
                     var index = 0;
-                    var total = scene.trackTransforms.Count;
+                    var total = scene.trackTransforms.Length;
                     foreach (var trackTransform in scene.trackTransforms)
                     {
                         WriteTrackTransformRecursive(writer, sobj, 0, ++index, total, trackTransform);

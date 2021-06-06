@@ -69,5 +69,41 @@ namespace Manifold.IO
         {
             return GetSobjByOption(sobjs, option, new string[0]);
         }
+
+        public static void CreatePath(string assetPath)
+        {
+            // Ensure folder path is indeed a path
+            if (string.IsNullOrEmpty(assetPath))
+                throw new ArgumentException($"Folder path \"{assetPath}\" is null or empty.");
+
+            //
+            var allDirectories = assetPath.Split('/');
+            var directoriesCount = allDirectories.Length - 1;
+
+            // Start with root folder which should always be "Assets"
+            var parentFolder = allDirectories[0];
+
+            // Append each directory to parent directory in succession
+            var path = "Assets/";
+            for (int i = 0; i < directoriesCount; i++)
+            {
+                var directoryName = allDirectories[i];
+                var currPath = $"[{path}/{directoryName}";
+                var doCreateFolder = !AssetDatabase.IsValidFolder(currPath);
+                if (doCreateFolder)
+                {
+                    AssetDatabase.CreateFolder(path, directoryName);
+                }
+
+                path = currPath;
+            }
+        }
+
+        public static void CreateAssetAndPath(UnityEngine.Object @object, string path)
+        {
+            CreatePath(path);
+            AssetDatabase.CreateAsset(@object, path);
+        }
+
     }
 }

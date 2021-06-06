@@ -26,7 +26,6 @@ namespace GameCube.GFZ.CourseCollision
         public Header header;
         // FIELDS (deserialized from header pointers)
         public TrackNode[] trackNodes = new TrackNode[0];
-        public List<TrackTransform> trackTransforms = new List<TrackTransform>();
         public SurfaceAttributeArea[] surfaceAttributeAreas = new SurfaceAttributeArea[0];
         public StaticMeshTable surfaceAttributeMeshTable = new StaticMeshTable();
         public byte[] zeroes0x20 = new byte[zeroes0x20_count];
@@ -44,6 +43,10 @@ namespace GameCube.GFZ.CourseCollision
         public ArcadeCheckpointTrigger[] arcadeCheckpointTriggers = new ArcadeCheckpointTrigger[0];
         public StoryObjectTrigger[] storyObjectTriggers = new StoryObjectTrigger[0];
         public TrackCheckpointTable8x8 trackIndexTable = new TrackCheckpointTable8x8();
+        // FIELDS (that require extra processing)
+        public TrackTransform[] trackTransforms;
+        public CString[] nameTable;
+        public SceneObjectReference[] objectReferenceTable;
 
         // To find
         // * minimap rotation
@@ -147,24 +150,22 @@ namespace GameCube.GFZ.CourseCollision
             reader.JumpToAddress(header.trackIndexTable);
             reader.ReadX(ref trackIndexTable, true);
 
-            // Clear
-            trackTransforms = new List<TrackTransform>();
-            // Let's build the transform after-the-fact
-            // We want to remove duplicate references to the same instance.
-            var usedKeys = new List<int>();
+            // DESERIALIZE UNIQUE TRACK TRANSFORMS
+            var trackTransformPtrs = new List<Pointer>();
             foreach (var node in trackNodes)
             {
-                var transformAddress = node.transformPtr.address;
-                if (!usedKeys.Contains(transformAddress))
-                {
-                    usedKeys.Add(transformAddress);
-
-                    reader.JumpToAddress(node.transformPtr);
-                    var value = new TrackTransform();
-                    value.Deserialize(reader);
-                    trackTransforms.Add(value);
-                }
+                var pointer = node.AddressRange.GetPointer();
+                if (trackTransformPtrs.Contains(pointer))
+                    trackTransformPtrs.Add(pointer);
             }
+            trackTransforms = new TrackTransform[trackTransformPtrs.Count];
+            for (int i = 0; i < trackTransforms.Length; i++)
+            {
+                var pointer = trackTransformPtrs[i];
+                reader.JumpToAddress(pointer);
+                trackTransforms[i].Deserialize(reader);
+            }
+            // Track Transforms
 
             BinaryIoUtility.PopEndianess();
         }
@@ -219,34 +220,34 @@ namespace GameCube.GFZ.CourseCollision
             //var names = new CString[0];
             //var objects = new SceneObjectReference[0];
             //var instances = new SceneInstanceReference[0];
-            var names = new CString[]
-            {
-                new CString{ value = "TEST_STRING" },
-                new CString{ value = "ORIGIN_OBJECT" }
-            };
-            var objects = new SceneObjectReference[]
-            {
-                new SceneObjectReference() { name = names[0] },
-                new SceneObjectReference() { name = names[1] },
-            };
-            sceneInstancesList = new SceneInstanceReference[]
-            {
-                new SceneInstanceReference() { objectReference = objects[0] },
-                new SceneInstanceReference() { objectReference = objects[1] },
-            };
-            sceneOriginObjectsList = new SceneOriginObjects[]
-            {
-                new SceneOriginObjects() { instanceReference = sceneInstancesList[1] }
-            };
-            sceneObjects = new SceneObject[]
-            {
-                new SceneObject() {instanceReference = sceneInstancesList[0] }
-            };
+            //var names = new CString[]
+            //{
+            //    new CString{ value = "TEST_STRING" },
+            //    new CString{ value = "ORIGIN_OBJECT" }
+            //};
+            //var objects = new SceneObjectReference[]
+            //{
+            //    new SceneObjectReference() { name = names[0] },
+            //    new SceneObjectReference() { name = names[1] },
+            //};
+            //sceneInstancesList = new SceneInstanceReference[]
+            //{
+            //    new SceneInstanceReference() { objectReference = objects[0] },
+            //    new SceneInstanceReference() { objectReference = objects[1] },
+            //};
+            //sceneOriginObjectsList = new SceneOriginObjects[]
+            //{
+            //    new SceneOriginObjects() { instanceReference = sceneInstancesList[1] }
+            //};
+            //sceneObjects = new SceneObject[]
+            //{
+            //    new SceneObject() {instanceReference = sceneInstancesList[0] }
+            //};
             // Write in reverse order. If references are correct, pointers will be correct when serializing.
-            writer.InlineDesc(ColiCourseUtility.SerializeVerbose, -1, names);
-            writer.WriteX(names, false);
-            writer.InlineDesc(ColiCourseUtility.SerializeVerbose, -1, objects);
-            writer.WriteX(objects, false);
+            writer.InlineDesc(ColiCourseUtility.SerializeVerbose, -1, nameTable);
+            writer.WriteX(nameTable, false);
+            writer.InlineDesc(ColiCourseUtility.SerializeVerbose, -1, objectReferenceTable);
+            writer.WriteX(objectReferenceTable, false);
             writer.InlineDesc(ColiCourseUtility.SerializeVerbose, -1, sceneInstancesList);
             writer.WriteX(sceneInstancesList, false);
             // 0x48 (count total), 0x4C, 0x50, 0x54 (pointer address): Scene Objects;
@@ -318,6 +319,25 @@ namespace GameCube.GFZ.CourseCollision
             writer.WriteX(header);
 
             BinaryIoUtility.PopEndianess();
+        }
+
+
+        public T[] RemoveDuplicateInstances<T>(T[] array)
+            where T : IBinaryAddressable
+        {
+            var uniqueList = new List<T>();
+            var uniqueAddressses = new List<int>();
+            foreach (var item in array)
+            {
+                var address = item.AddressRange.GetPointer().address;
+                if (!uniqueAddressses.Contains(address))
+                {
+                    // Keep track of current address
+                    uniqueAddressses.Add(address);
+                    uniqueList.Add(item);
+                }
+            }
+            return uniqueList.ToArray();
         }
 
     }

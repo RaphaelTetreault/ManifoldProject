@@ -1,10 +1,10 @@
+using System;
 using System.IO;
 using System.Text;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace Manifold.IO
 {
+    [Serializable]
     public class CString :
         IBinaryAddressable,
         IBinarySerializable
@@ -85,5 +85,9 @@ namespace Manifold.IO
             return new CString() { value = str };
         }
 
+        public override string ToString()
+        {
+            return value;
+        }
     }
 }

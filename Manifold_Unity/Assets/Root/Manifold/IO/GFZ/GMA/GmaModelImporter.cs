@@ -22,7 +22,7 @@ namespace Manifold.IO.GFZ.GMA
         
         [FormerlySerializedAs("importDestination")]
         [SerializeField, BrowseFolderField("Assets/")]
-        protected string importTo;
+        protected string importTo; // HEY! NOT REFERENCED IN CODE!
 
         [SerializeField]
         protected IOOption importOption = IOOption.selectedFiles;
@@ -70,7 +70,7 @@ namespace Manifold.IO.GFZ.GMA
                         continue;
 
                     var importTitle = $"Importing Model ({count}/{totalModels}) Submesh Total ({submeshes})";
-                    var mesh = CreateSingleMeshFromGcmf(gcmf, assetPath, importTitle);
+                    var mesh = CreateSingleMeshFromGcmf(gcmf, modelDestination, importTitle);
 
                     // HACK: Add a generic material to each model
                     // In the future, generate materials for models
@@ -192,9 +192,19 @@ namespace Manifold.IO.GFZ.GMA
 
         public Vector2[] HackUVs(Vector2[] uvs, int vertCount)
         {
-            return uvs.Length == 0
-                ? new Vector2[vertCount]
-                : uvs;
+            if (uvs.Length > 0)
+            {
+                return uvs;
+            }
+            else
+            {
+                // Create list of UVs that are negative for removal...
+                // NOTE: did NOT check if the game has negative UVs..
+                var hackUVs = new Vector2[vertCount];
+                for (int i = 0; i < hackUVs.Length; i++)
+                    hackUVs[i] = Vector2.one * -123f;
+                return hackUVs;
+            }
         }
 
         public Vector3[] HackNormals(Vector3[] normals, int vertCount)
@@ -242,9 +252,11 @@ namespace Manifold.IO.GFZ.GMA
             // New from this list/submesh
             var vertices = displayList.pos;
             var normals = HackNormals(displayList.nrm, nVerts);
-            //var uv1 = HackUVs(list.tex0, nVerts);
-            //var uv2 = HackUVs(list.tex1, nVerts);
-            //var uv3 = HackUVs(list.tex2, nVerts);
+            // 2021/06/05: Doing some funky stuff
+            var uv1 = HackUVs(displayList.tex0, nVerts);
+            var uv2 = HackUVs(displayList.tex1, nVerts);
+            var uv3 = HackUVs(displayList.tex2, nVerts);
+            //
             var colors = HackColors(displayList.clr0, nVerts);
             var triangles = GetTrianglesFromTriangleStrip(vertices.Length, isCCW);
 
@@ -259,9 +271,11 @@ namespace Manifold.IO.GFZ.GMA
             // Append to mesh
             var verticesConcat = mesh.vertices.Concat(vertices).ToArray();
             var normalsConcat = mesh.normals.Concat(normals).ToArray();
-            //var uv1Concat = mesh.uv.Concat(uv1).ToArray();
-            //var uv2Concat = mesh.uv2.Concat(uv2).ToArray();
-            //var uv3Concat = mesh.uv3.Concat(uv3).ToArray();
+            // 2021/06/05: Doing some funky stuff
+            var uv1Concat = mesh.uv.Concat(uv1).ToArray();
+            var uv2Concat = mesh.uv2.Concat(uv2).ToArray();
+            var uv3Concat = mesh.uv3.Concat(uv3).ToArray();
+            //
             var colorsConcat = mesh.colors32.Concat(colors).ToArray();
             //if (list.nbt != null)
             //    mesh.tangents = list.nbt;
@@ -270,9 +284,9 @@ namespace Manifold.IO.GFZ.GMA
             // Assign values to mesh
             mesh.vertices = verticesConcat;
             mesh.normals = normalsConcat;
-            //mesh.uv = uv1Concat;
-            //mesh.uv2 = uv2Concat;
-            //mesh.uv3 = uv3Concat;
+            mesh.uv = uv1Concat;
+            mesh.uv2 = uv2Concat;
+            mesh.uv3 = uv3Concat;
             mesh.colors32 = colorsConcat;
             mesh.triangles = trianglesConcat;
 

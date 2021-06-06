@@ -4,7 +4,10 @@ using System.IO;
 namespace Manifold.IO
 {
     [Serializable]
-    public struct Pointer : IBinarySerializable, IPointer
+    public struct Pointer :
+        IBinarySerializable,
+        IEquatable<Pointer>,
+        IPointer
     {
         public int address;
         public Pointer(int address)
@@ -20,7 +23,7 @@ namespace Manifold.IO
         {
             return new Pointer(address);
         }
-      
+
         public static implicit operator Pointer(long address)
         {
             return new Pointer((int)address);
@@ -40,5 +43,21 @@ namespace Manifold.IO
         {
             return HexAddress;
         }
+
+        public override bool Equals(object obj)
+        {
+            return Equals((Pointer)obj);
+        }
+
+        public bool Equals(Pointer obj)
+        {
+            return obj.address == this.address;
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
     }
 }
