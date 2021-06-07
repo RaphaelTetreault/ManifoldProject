@@ -10,15 +10,17 @@ namespace GameCube.GFZ.CourseCollision
         IBinaryAddressable,
         IBinarySerializable
     {
-        [UnityEngine.SerializeField]
-        private AddressRange addressRange;
+        // METADATA
+        [UnityEngine.SerializeField] private AddressRange addressRange;
 
+        // FIELDS
         public float3 position;
         public Int16Rotation3 shortRotation3;
         public float3 positionOrScale;
         public CourseMetadataType course;
 
-        //
+
+        // PROPERTIES
         public AddressRange AddressRange
         {
             get => addressRange;
@@ -53,6 +55,8 @@ namespace GameCube.GFZ.CourseCollision
         public quaternion Rotation => shortRotation3.Rotation;
         public float3 RotationEuler => shortRotation3.EulerAngles;
 
+
+        // METHODS
         public void Deserialize(BinaryReader reader)
         {
             this.RecordStartAddress(reader);
@@ -69,18 +73,13 @@ namespace GameCube.GFZ.CourseCollision
         {
             this.RecordStartAddress(writer);
             {
-               writer.WriteX(position);
-               writer.WriteX(shortRotation3);
-               writer.WriteX(positionOrScale);
-               writer.WriteX(course);
+                writer.WriteX(position);
+                writer.WriteX(shortRotation3);
+                writer.WriteX(positionOrScale);
+                writer.WriteX(course);
             }
             this.RecordEndAddress(writer);
         }
 
-        public AddressRange SerializeWithReference(BinaryWriter writer)
-        {
-            Serialize(writer);
-            return addressRange;
-        }
     }
 }

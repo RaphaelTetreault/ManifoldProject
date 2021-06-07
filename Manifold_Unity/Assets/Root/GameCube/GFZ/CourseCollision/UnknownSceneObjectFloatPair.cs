@@ -8,7 +8,9 @@ namespace GameCube.GFZ.CourseCollision
     /// 
     /// </summary>
     [Serializable]
-    public struct UnknownSceneObjectFloatPair : IBinarySerializable, IBinaryAddressable
+    public class UnknownSceneObjectFloatPair :
+        IBinaryAddressable,
+        IBinarySerializable
     {
         // METADATA
         [UnityEngine.SerializeField]
@@ -40,8 +42,12 @@ namespace GameCube.GFZ.CourseCollision
 
         public void Serialize(BinaryWriter writer)
         {
-            writer.WriteX(unk_0x00);
-            writer.WriteX(unk_0x04);
+            this.RecordStartAddress(writer);
+            {
+                writer.WriteX(unk_0x00);
+                writer.WriteX(unk_0x04);
+            }
+            this.RecordEndAddress(writer);
         }
 
     }

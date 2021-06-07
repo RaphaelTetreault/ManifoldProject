@@ -10,17 +10,20 @@ namespace GameCube.GFZ.CourseCollision
     [Serializable]
     public abstract class IndexTable :
         IBinaryAddressable,
-        IBinarySerializable
+        IBinarySerializable,
+        ISerializedBinaryAddressableReferer
     {
         // "CONSTANTS"
         public abstract int ListCount { get; }
 
         // METADATA
         [UnityEngine.SerializeField] private AddressRange addressRange;
-        public ushort largestIndex;
+        [UnityEngine.SerializeField] private ushort largestIndex;
+        [UnityEngine.SerializeField] private bool hasIndexes;
 
         // FIELDS
         public Pointer[] indexArrayPtrs = new Pointer[0];
+        // REFERENCE FIELDS
         public IndexList[] indexLists = new IndexList[0];
 
         // PROPERTIES
@@ -30,10 +33,32 @@ namespace GameCube.GFZ.CourseCollision
             set => addressRange = value;
         }
 
-        public bool IsEmpty => !HasIndexes;
-        public bool HasIndexes => largestIndex > 1;
+        public bool HasIndexes => hasIndexes;
+        public ushort LargestIndex => largestIndex;
+        public ushort IndexesLength
+        {
+            get
+            {
+                // Returns index length based on metadata
+                return hasIndexes
+                    ? (ushort)(largestIndex + 1)
+                    : (ushort)(0);
+            }
+        }
+
 
         // METHODS
+        private bool HasAnyIndexes(IndexList[] indexLists)
+        {
+            foreach (var indexList in indexLists)
+            {
+                if (indexList.Length > 0)
+                    return true;
+            }
+
+            return false;
+        }
+
         private ushort GetLargestIndex(IndexList[] indexLists)
         {
             // Find the largest known index to use as tri/quad array size
@@ -54,8 +79,7 @@ namespace GameCube.GFZ.CourseCollision
                 }
             }
 
-            // Indices are n-1, so to compentsate ++n
-            return ++largestIndex;
+            return largestIndex;
         }
 
         public void Deserialize(BinaryReader reader)
@@ -87,75 +111,76 @@ namespace GameCube.GFZ.CourseCollision
                     }
                 }
 
-                // Calculate largest index.
-                // Needed to construct vertices. Not sure about other type...
+                // Calculate metadata
                 largestIndex = GetLargestIndex(indexLists);
+                hasIndexes = HasAnyIndexes(indexLists);
             }
             this.SetReaderToEndAddress(reader);
         }
 
         public void Serialize(BinaryWriter writer)
         {
-            // Print out comments if required.
-            // Do one big check since there are many useless calls otherwise.
-            if (ColiCourseUtility.SerializeVerbose)
+            //// Print out comments if required.
+            //// Do one big check since there are many useless calls otherwise.
+            //if (ColiCourseUtility.SerializeVerbose)
+            //{
+            //    // Gather some metadata
+            //    var type = GetType(); // Since there is inheritance, get type dynamically.
+            //    var index = ColiCourseUtility.Index; // setting up data in static class to get print index
+            //    var listCount = 0;
+            //    foreach (var indexList in indexLists)
+            //        listCount += indexList.Length > 0 ? 1 : 0;
+
+            //    // Write this data type and associated metadata
+            //    writer.CommentAlign(true);
+            //    writer.CommentNewLine(true, padding: '-');
+            //    writer.Comment(type.Name, true);
+            //    if (type == typeof(StaticMeshTableIndexes))
+            //    {
+            //        writer.CommentLineWide("T:", $"{(StaticMeshColliderProperty)index}", true);
+            //        writer.CommentIdx(index, true);
+            //    }
+            //    writer.CommentPtr(ColiCourseUtility.Pointer, true, padding: ' ');
+            //    writer.CommentLineWide("Lists:", $"{listCount}", true);
+            //    writer.CommentLineWide("LargestIdx:", $"{largestIndex}", true);
+            //    writer.CommentNewLine(true, padding: '-');
+            //}
+
+
             {
-                // Gather some metadata
-                var type = GetType(); // Since there is inheritance, get type dynamically.
-                var index = ColiCourseUtility.Index; // setting up data in static class to get print index
-                var listCount = 0;
-                foreach (var indexList in indexLists)
-                    listCount += indexList.Length > 0 ? 1 : 0;
+                // Ensure we have the correct amount of lists before indexing
+                Assert.IsTrue(indexLists.Length == ListCount);
 
-                // Write this data type and associated metadata
-                writer.CommentAlign(true);
-                writer.CommentNewLine(true, padding: '-');
-                writer.Comment(type.Name, true);
-                if (type == typeof(StaticMeshTableIndexes))
-                {
-                    writer.CommentLineWide("T:", $"{(StaticMeshColliderProperty)index}", true);
-                    writer.CommentIdx(index, true);
-                }
-                writer.CommentPtr(ColiCourseUtility.Pointer, true, padding: ' ');
-                writer.CommentLineWide("Lists:", $"{listCount}", true);
-                writer.CommentLineWide("LargestIdx:", $"{largestIndex}", true);
-                writer.CommentNewLine(true, padding: '-');
+                // Construct Pointer[]
+                var pointers = new Pointer[ListCount];
+                for (int i = 0; i < pointers.Length; i++)
+                    pointers[i] = indexLists[i].GetPointer();
+                indexArrayPtrs = pointers;
             }
-
             this.RecordStartAddress(writer);
             {
-                // Should always be init to const size
-                Assert.IsTrue(indexArrayPtrs.Length == ListCount);
-                Assert.IsTrue(indexLists.Length == ListCount);
+                ValidateReferences();
 
                 for (int i = 0; i < indexLists.Length; i++)
                 {
                     var indexList = indexLists[i];
                     if (indexList.Length > 0)
                     {
-                        indexArrayPtrs[i] = indexList.SerializeWithReference(writer).GetPointer();
+                        // TODO: resolve pointer
+                        // ALSO, StaticMeshTable PROBABLY maps collision into 16x16 table as does checkpoints!!!
+                        throw new NotImplementedException();
+                        //indexArrayPtrs[i] = indexList.SerializeWithReference(writer).GetPointer();
                     }
                 }
             }
             this.RecordEndAddress(writer);
         }
 
-        public AddressRange SerializeWithReference(BinaryWriter writer)
+        public void ValidateReferences()
         {
-            if (IsEmpty)
-            {
-                ColiCourseUtility.Index++;
-                // table has no mesh, so save nothing
-                return new AddressRange();
-            }
-            else
-            {
-                // mesh has data, do the thing
-                Serialize(writer);
-                ColiCourseUtility.Index++;
-                return addressRange;
-            }
+            // Should always be init to const size
+            Assert.IsTrue(indexArrayPtrs.Length == ListCount);
+            Assert.IsTrue(indexLists.Length == ListCount);
         }
-
     }
 }

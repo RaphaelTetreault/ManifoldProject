@@ -147,7 +147,7 @@ namespace GameCube.GFZ.CourseCollision
             reader.ReadX(ref storyObjectTriggers, header.storyObjectTriggersPtr.Length, true);
 
             // 0xBC and 0xC0
-            reader.JumpToAddress(header.trackIndexTable);
+            reader.JumpToAddress(header.trackCheckpointTable8x8Ptr);
             reader.ReadX(ref trackIndexTable, true);
 
             // DESERIALIZE UNIQUE TRACK TRANSFORMS
@@ -298,7 +298,7 @@ namespace GameCube.GFZ.CourseCollision
             header.courseMetadataTriggersPtr = courseMetadataTriggers.GetArrayPointer();
             header.arcadeCheckpointTriggersPtr = arcadeCheckpointTriggers.GetArrayPointer();
             header.storyObjectTriggersPtr = storyObjectTriggers.GetArrayPointer();
-            header.trackIndexTable = trackIndexTable.GetPointer();
+            header.trackCheckpointTable8x8Ptr = trackIndexTable.GetPointer();
             header.unknownStageData2Ptr = unknownStageData2.GetPointer();
             header.unknownStageData1Ptr = unknownStageData1.GetPointer();
             //

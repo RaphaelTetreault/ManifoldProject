@@ -11,7 +11,8 @@ namespace GameCube.GFZ.CourseCollision
     [Serializable]
     public class StoryObjectTrigger :
         IBinaryAddressable,
-        IBinarySerializable
+        IBinarySerializable,
+        ISerializedBinaryAddressableReferer
     {
         // METADATA
         [UnityEngine.SerializeField] private AddressRange addressRange;
@@ -26,7 +27,7 @@ namespace GameCube.GFZ.CourseCollision
         public float3 rotation;
         public float3 position;
         // FIELDS (deserialized from pointers)
-        public StoryObjectPath storyObjectPath; // NOTE: used in story 2, object's animation path when triggered? (likely)
+        public StoryObjectPath storyObjectPath;
 
 
         // PROPERTIES
@@ -84,8 +85,7 @@ namespace GameCube.GFZ.CourseCollision
         public void Serialize(BinaryWriter writer)
         {
             {
-                writer.InlineDesc(ColiCourseUtility.SerializeVerbose, -1, storyObjectPath);
-                storyObjectPathPtr = storyObjectPath.SerializeWithReference(writer).GetPointer();
+                storyObjectPathPtr = storyObjectPath.GetPointer();
             }
             this.RecordStartAddress(writer);
             {
@@ -101,10 +101,11 @@ namespace GameCube.GFZ.CourseCollision
             this.RecordEndAddress(writer);
         }
 
-        public AddressRange SerializeWithReference(BinaryWriter writer)
+        public void ValidateReferences()
         {
-            Serialize(writer);
-            return addressRange;
+            if (storyObjectPath != null)
+                Assert.IsTrue(storyObjectPathPtr.IsNotNullPointer);
         }
+
     }
 }

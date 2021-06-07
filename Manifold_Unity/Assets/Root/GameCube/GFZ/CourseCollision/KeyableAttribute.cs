@@ -17,10 +17,6 @@ namespace GameCube.GFZ.CourseCollision
         private AddressRange addressRange;
 
         // FEILDS
-
-        /// <summary>
-        /// All values: 1, 2, or 3.
-        /// </summary>
         public InterpolationMode easeMode;
         public float time;
         public float value;

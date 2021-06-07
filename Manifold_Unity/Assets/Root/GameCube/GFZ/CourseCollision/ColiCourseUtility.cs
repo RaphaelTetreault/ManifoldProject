@@ -4,14 +4,14 @@ using System.IO;
 
 namespace GameCube.GFZ.CourseCollision
 {
-
-    
-
     /// <summary>
     /// 
     /// </summary>
     public static class ColiCourseUtility
     {
+        // TODO:
+        // Phase out this script. All options with new serialization will not need this.
+
         private const int kAxConst0x20 = 0xE4;
         private const int kAxConst0x24 = 0xF8;
         private const int kGxConst0x20 = 0xE8;

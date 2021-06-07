@@ -967,7 +967,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol(nameof(Header.arcadeCheckpointTriggersPtr));
                 writer.WriteNextCol(nameof(Header.storyObjectTriggersPtr));
                 writer.WriteNextCol(nameof(Header.storyObjectTriggersPtr));
-                writer.WriteNextCol(nameof(Header.trackIndexTable));
+                writer.WriteNextCol(nameof(Header.trackCheckpointTable8x8Ptr));
                 // Structure
                 writer.WriteNextCol(nameof(Header.courseBounds) + "." + nameof(Header.courseBounds.x));
                 writer.WriteNextCol(nameof(Header.courseBounds) + "." + nameof(Header.courseBounds.z));
@@ -1037,7 +1037,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                     writer.WriteNextCol(header.arcadeCheckpointTriggersPtr.HexAddress);
                     writer.WriteNextCol(header.storyObjectTriggersPtr.Length);
                     writer.WriteNextCol(header.storyObjectTriggersPtr.HexAddress);
-                    writer.WriteNextCol(header.trackIndexTable.HexAddress);
+                    writer.WriteNextCol(header.trackCheckpointTable8x8Ptr.HexAddress);
                     // Structure
                     writer.WriteNextCol(header.courseBounds.x);
                     writer.WriteNextCol(header.courseBounds.z);

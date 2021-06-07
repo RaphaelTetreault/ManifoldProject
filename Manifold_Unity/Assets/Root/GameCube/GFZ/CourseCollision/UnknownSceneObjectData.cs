@@ -8,16 +8,20 @@ namespace GameCube.GFZ.CourseCollision
     /// 
     /// </summary>
     [Serializable]
-    public class UnknownSceneObjectData : IBinarySerializable, IBinaryAddressable
+    public class UnknownSceneObjectData :
+        IBinaryAddressable,
+        IBinarySerializable,
+        ISerializedBinaryAddressableReferer
     {
         // CONSTANTS
         public const int kCount = 12;
 
-        [UnityEngine.SerializeField]
-        private AddressRange addressRange;
+        // METADATA
+        [UnityEngine.SerializeField] private AddressRange addressRange;
 
-        public uint[] unkAbsPtr;
-
+        // FIELDS
+        public Pointer[] unkAbsPtr;
+        // REFERENCE FIELDS
         public UnknownSceneObjectFloatPair[] unk = new UnknownSceneObjectFloatPair[0];
 
 
@@ -34,20 +38,18 @@ namespace GameCube.GFZ.CourseCollision
         {
             this.RecordStartAddress(reader);
             {
-                reader.ReadX(ref unkAbsPtr, kCount);
+                reader.ReadX(ref unkAbsPtr, kCount, true);
             }
-            this.RecordEndAddress(reader); ;
+            this.RecordEndAddress(reader);
             {
                 unk = new UnknownSceneObjectFloatPair[kCount];
                 for (int i = 0; i < kCount; i++)
                 {
-                    unk[i] = new UnknownSceneObjectFloatPair();
-
-                    if (unkAbsPtr[i] != 0)
+                    var pointer = unkAbsPtr[i];
+                    if (pointer.IsNotNullPointer)
                     {
-                        var ptr = unkAbsPtr[i];
-                        reader.BaseStream.Seek(ptr, SeekOrigin.Begin);
-                        reader.ReadX(ref unk[i], false);
+                        reader.JumpToAddress(pointer);
+                        reader.ReadX(ref unk[i], true);
                     }
                 }
             }
@@ -56,8 +58,21 @@ namespace GameCube.GFZ.CourseCollision
 
         public void Serialize(BinaryWriter writer)
         {
-            writer.WriteX(unkAbsPtr, false);
+            {
+                unkAbsPtr = unk.GetPointers();
+            }
+            this.RecordStartAddress(writer);
+            {
+                writer.WriteX(unkAbsPtr, false);
+            }
+            this.RecordEndAddress(writer);
         }
 
+        public void ValidateReferences()
+        {
+            // TODO: null check in GetPointer(s) etc
+            // this way you can be confident in asserting object reference and pointer
+            throw new NotImplementedException();
+        }
     }
 }

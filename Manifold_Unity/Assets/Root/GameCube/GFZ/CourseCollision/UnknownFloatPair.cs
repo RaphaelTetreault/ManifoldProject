@@ -8,7 +8,8 @@ namespace GameCube.GFZ.CourseCollision
     /// 
     /// </summary>
     [Serializable]
-    public struct UnknownFloatPair : IBinarySerializable
+    public struct UnknownFloatPair :
+        IBinarySerializable
     {
         public float a;
         public float b;

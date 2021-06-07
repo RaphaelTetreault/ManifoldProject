@@ -21,8 +21,8 @@ namespace GameCube.GFZ.CourseCollision
         public string nameCopy;
 
         // FIELDS
-        public LevelOfDetailRadius lodFar;
-        public LevelOfDetailRadius lodNear;
+        public UnknownObjectBitfield lodFar;
+        public UnknownObjectBitfield lodNear;
         public Pointer instanceReferencePtr;
         public Transform transform = new Transform();
         public int zero_0x2C;

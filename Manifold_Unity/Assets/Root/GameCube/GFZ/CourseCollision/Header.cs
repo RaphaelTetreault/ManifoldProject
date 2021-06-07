@@ -7,7 +7,8 @@ namespace GameCube.GFZ.CourseCollision
     [Serializable]
     public class Header :
         IBinaryAddressable,
-        IBinarySerializable
+        IBinarySerializable,
+        ISerializedBinaryAddressableReferer
     {
         public enum SerializeFormat
         {
@@ -19,11 +20,10 @@ namespace GameCube.GFZ.CourseCollision
         // CONSTANTS
         public const int kSizeOfZero0x28 = 0x20;
         public const int kSizeOfZero0xD8 = 0x10;
-
-        private const int kAxConst0x20 = 0xE4;
-        private const int kAxConst0x24 = 0xF8;
-        private const int kGxConst0x20 = 0xE8;
-        private const int kGxConst0x24 = 0xFC;
+        public const int kAxConst0x20 = 0xE4;
+        public const int kAxConst0x24 = 0xF8;
+        public const int kGxConst0x20 = 0xE8;
+        public const int kGxConst0x24 = 0xFC;
 
         // METADATA
         [UnityEngine.SerializeField] private bool isFileAX;
@@ -40,8 +40,8 @@ namespace GameCube.GFZ.CourseCollision
         public Pointer trackMinHeightPtr; // GX: 0xFC, AX: 0xF8
         public byte[] zero_0x28; // 0x20 count
         public int sceneObjectCount;
-        public int unk_sceneObjectCount1; // GX exclusive
-        public int unk_sceneObjectCount2;
+        public int unk_sceneObjectCount1;
+        public int unk_sceneObjectCount2; // GX exclusive
         public Pointer sceneObjectsPtr;
         public Bool32 unkBool32_0x58;
         public ArrayPointer unknownSolsTriggerPtrs;
@@ -58,7 +58,7 @@ namespace GameCube.GFZ.CourseCollision
         public ArrayPointer courseMetadataTriggersPtr;
         public ArrayPointer arcadeCheckpointTriggersPtr;
         public ArrayPointer storyObjectTriggersPtr;
-        public Pointer trackIndexTable;
+        public Pointer trackCheckpointTable8x8Ptr;
         public Bounds courseBounds;
         public byte[] zero_0xD8; // 0x10 count
 
@@ -119,8 +119,8 @@ namespace GameCube.GFZ.CourseCollision
                 ValidateFileFormatPointers(); // VALIDATE
                 reader.ReadX(ref zero_0x28, kSizeOfZero0x28);
                 reader.ReadX(ref sceneObjectCount);
-                if (isFileGX) reader.ReadX(ref unk_sceneObjectCount1);
-                reader.ReadX(ref unk_sceneObjectCount2);
+                reader.ReadX(ref unk_sceneObjectCount1);
+                if (isFileGX) reader.ReadX(ref unk_sceneObjectCount2);
                 reader.ReadX(ref sceneObjectsPtr);
                 reader.ReadX(ref unkBool32_0x58);
                 reader.ReadX(ref unknownSolsTriggerPtrs);
@@ -137,7 +137,7 @@ namespace GameCube.GFZ.CourseCollision
                 reader.ReadX(ref courseMetadataTriggersPtr);
                 reader.ReadX(ref arcadeCheckpointTriggersPtr);
                 reader.ReadX(ref storyObjectTriggersPtr);
-                reader.ReadX(ref trackIndexTable);
+                reader.ReadX(ref trackCheckpointTable8x8Ptr);
                 reader.ReadX(ref courseBounds, true);
                 reader.ReadX(ref zero_0xD8, kSizeOfZero0xD8);
             }
@@ -178,9 +178,9 @@ namespace GameCube.GFZ.CourseCollision
                 writer.WriteX(trackMinHeightPtr);
                 writer.WriteX(new byte[kSizeOfZero0x28], false); // write const zeros
                 writer.WriteX(sceneObjectCount);
+                writer.WriteX(unk_sceneObjectCount1);
                 if (Format == SerializeFormat.GX)
-                    writer.WriteX(unk_sceneObjectCount1);
-                writer.WriteX(unk_sceneObjectCount2);
+                    writer.WriteX(unk_sceneObjectCount2);
                 writer.WriteX(sceneObjectsPtr);
                 writer.WriteX(unkBool32_0x58);
                 writer.WriteX(unknownSolsTriggerPtrs);
@@ -197,23 +197,44 @@ namespace GameCube.GFZ.CourseCollision
                 writer.WriteX(courseMetadataTriggersPtr);
                 writer.WriteX(arcadeCheckpointTriggersPtr);
                 writer.WriteX(storyObjectTriggersPtr);
-                writer.WriteX(trackIndexTable);
+                writer.WriteX(trackCheckpointTable8x8Ptr);
                 writer.WriteX(courseBounds);
                 writer.WriteX(new byte[kSizeOfZero0xD8], false); // write const zeros
             }
             this.RecordEndAddress(writer);
         }
 
-        public AddressRange SerializeWithReference(BinaryWriter writer)
+        public void ValidateReferences()
         {
-            var addressRange = new AddressRange();
-            addressRange.RecordStartAddress(writer.BaseStream);
-            {
-                Serialize(writer);
-            }
-            addressRange.RecordEndAddress(writer.BaseStream);
-            return addressRange;
-        }
+            // Assert assumptions
+            // perhaps genericize this to ints
+            Assert.IsTrue(unused_0x74_0x78.Length == 0 && unused_0x74_0x78.Address == 0);
+            Assert.IsTrue(unused_0x88_0x8C.Length == 0 && unused_0x88_0x8C.Address == 0);
 
+            for (int i = 0; i < zero_0x28.Length; i++)
+                Assert.IsTrue(zero_0x28[i] == 0);
+
+            for (int i = 0; i < zero_0xD8.Length; i++)
+                Assert.IsTrue(zero_0xD8[i] == 0);
+
+            // Assert all pointers which are never null in game files
+            Assert.IsTrue(trackNodesPtr.IsNotNullPointer);
+            Assert.IsTrue(surfaceAttributeAreasPtr.IsNotNullPointer);
+            Assert.IsTrue(surfaceAttributeMeshTablePtr.IsNotNullPointer);
+            Assert.IsTrue(zeroes0x20_Ptr.IsNotNullPointer);
+            Assert.IsTrue(trackMinHeightPtr.IsNotNullPointer);
+            Assert.IsTrue(sceneObjectsPtr.IsNotNullPointer);
+            //Assert.IsTrue(unknownSolsTriggerPtrs.IsNotNullPointer);
+            Assert.IsTrue(sceneInstancesListPtrs.IsNotNullPointer);
+            Assert.IsTrue(sceneOriginObjectsListPtrs.IsNotNullPointer);
+            //Assert.IsTrue(unknownStageData2Ptr.IsNotNullPointer);
+            Assert.IsTrue(unknownStageData1Ptr.IsNotNullPointer);
+            //Assert.IsTrue(unknownTrigger1sPtr.IsNotNullPointer);
+            //Assert.IsTrue(visualEffectTriggersPtr.IsNotNullPointer);
+            //Assert.IsTrue(courseMetadataTriggersPtr.IsNotNullPointer);
+            //Assert.IsTrue(arcadeCheckpointTriggersPtr.IsNotNullPointer);
+            //Assert.IsTrue(storyObjectTriggersPtr.IsNotNullPointer);
+            Assert.IsTrue(trackCheckpointTable8x8Ptr.IsNotNullPointer);
+        }
     }
 }

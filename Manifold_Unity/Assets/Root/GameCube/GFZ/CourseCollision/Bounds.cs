@@ -60,5 +60,6 @@ namespace GameCube.GFZ.CourseCollision
             }
             this.RecordEndAddress(writer);
         }
+
     }
 }

@@ -9,15 +9,18 @@ namespace GameCube.GFZ.CourseCollision
     /// Column-major matrix with 3 rows and 4 columns.
     /// </summary>
     [Serializable]
-    public class TransformMatrix3x4 : IBinarySerializable, IBinaryAddressable
+    public class TransformMatrix3x4 :
+        IBinaryAddressable,
+        IBinarySerializable
     {
-        [UnityEngine.SerializeField]
-        private AddressRange addressRange;
+        // METADATA
+        [UnityEngine.SerializeField] private AddressRange addressRange;
 
-        [UnityEngine.SerializeField]
-        private float4x4 matrix;
+        // "FIELDS" as reconstructed for ease of use
+        [UnityEngine.SerializeField] private float4x4 matrix;
 
 
+        // PROPERTIES
         public AddressRange AddressRange
         {
             get => addressRange;
@@ -35,6 +38,8 @@ namespace GameCube.GFZ.CourseCollision
             set => matrix = value;
         }
 
+
+        // METHODS
         public void Deserialize(BinaryReader reader)
         {
             // The data is stored as rows
@@ -62,7 +67,7 @@ namespace GameCube.GFZ.CourseCollision
 
         public void Serialize(BinaryWriter writer)
         {
-            // the matrix returns only colums but we need rows, so transpose to swap row/col
+            // the matrix only returns colunms but we need rows, so transpose to swap row/col
             var matrixTransposed = math.transpose(matrix);
             var row0 = matrixTransposed.c0;
             var row1 = matrixTransposed.c1;

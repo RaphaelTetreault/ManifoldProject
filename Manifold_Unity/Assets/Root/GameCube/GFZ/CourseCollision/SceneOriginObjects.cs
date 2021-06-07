@@ -10,15 +10,15 @@ namespace GameCube.GFZ.CourseCollision
     [Serializable]
     public class SceneOriginObjects :
         IBinaryAddressable,
-        IBinarySerializable
+        IBinarySerializable,
+        ISerializedBinaryAddressableReferer
     {
         // METADATA
-        [UnityEngine.SerializeField]
-        private AddressRange addressRange;
+        [UnityEngine.SerializeField] private AddressRange addressRange;
 
         // FIELDS
         public Pointer sceneObjectReferencePtr;
-        // FIELDS (deserialized from pointers)
+        // REFERENCE FIELDS
         public SceneInstanceReference instanceReference;
 
 
@@ -49,9 +49,7 @@ namespace GameCube.GFZ.CourseCollision
         public void Serialize(BinaryWriter writer)
         {
             {
-                // Can't have in-line comment since this variable is truly stored in a table
                 sceneObjectReferencePtr = instanceReference.GetPointer();
-                Assert.IsTrue(sceneObjectReferencePtr.IsNotNullPointer);
             }
             this.RecordStartAddress(writer);
             {
@@ -61,10 +59,10 @@ namespace GameCube.GFZ.CourseCollision
 
         }
 
-        public AddressRange SerializeWithReference(BinaryWriter writer)
+        public void ValidateReferences()
         {
-            Serialize(writer);
-            return addressRange;
+            Assert.IsTrue(sceneObjectReferencePtr.IsNotNullPointer);
         }
+
     }
 }

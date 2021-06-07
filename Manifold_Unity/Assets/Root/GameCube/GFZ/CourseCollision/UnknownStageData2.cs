@@ -12,20 +12,21 @@ namespace GameCube.GFZ.CourseCollision
     [Serializable]
     public class UnknownStageData2 :
         IBinaryAddressable,
-        IBinarySerializable
+        IBinarySerializable,
+        ISerializedBinaryAddressableReferer
     {
         // CONSTANTS
         public const int kCurveCount = 6;
 
         // FIELDS
-        [UnityEngine.SerializeField]
-        private AddressRange addressRange;
+        [UnityEngine.SerializeField] private AddressRange addressRange;
 
-        // TODO: accessors which name the animation curves?
-
+        // FIELDS
         public ArrayPointer[] animationCurvePtrs;
+        // REFERENCE FIELDS
         public AnimationCurve[] animationCurves = new AnimationCurve[kCurveCount];
 
+        // CONSTRUCTORS
         public UnknownStageData2()
         {
             // Initialize values so no null errors
@@ -40,6 +41,9 @@ namespace GameCube.GFZ.CourseCollision
             get => addressRange;
             set => addressRange = value;
         }
+
+        // TODO: accessors which name the animation curves?
+
 
 
         // METHODS
@@ -84,19 +88,9 @@ namespace GameCube.GFZ.CourseCollision
             this.RecordEndAddress(writer);
         }
 
-        private void SerializeStructure(BinaryWriter writer)
+        public void ValidateReferences()
         {
-            // There shoul ALWAYS be 6 animation curves, even if some are "null"
-            Assert.IsTrue(animationCurves.Length == kCurveCount);
-
-            this.RecordStartAddress(writer);
-            {
-                // Write all array pointers in succession
-                foreach (var arrayPointer in animationCurvePtrs)
-                    writer.WriteX(arrayPointer);
-            }
-            this.RecordEndAddress(writer);
+            throw new NotImplementedException();
         }
-
     }
 }

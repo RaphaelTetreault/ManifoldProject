@@ -14,15 +14,14 @@ namespace GameCube.GFZ.CourseCollision
         ISerializedBinaryAddressableReferer
     {
         // METADATA
-        [UnityEngine.SerializeField]
-        private AddressRange addressRange;
+        [UnityEngine.SerializeField] private AddressRange addressRange;
 
         // FIELDS
         public uint zero_0x00;
         public Pointer namePtr;
         public uint zero_0x08;
         public float unk_0x0C; // LOD?
-        //  FIELDS (deserialized from pointer)
+        // REFERENCE FIELDS
         public CString name;
 
 
@@ -35,14 +34,6 @@ namespace GameCube.GFZ.CourseCollision
 
 
         // METHODS
-        public void ValidateReferences()
-        {
-            // This pointer CANNOT be null and must refer to an object name.
-            Assert.IsTrue(namePtr.IsNotNullPointer);
-            Assert.IsTrue(name != null);
-            Assert.IsTrue(!string.IsNullOrEmpty(name.value));
-        }
-
         public void Deserialize(BinaryReader reader)
         {
             this.RecordStartAddress(reader);
@@ -69,9 +60,7 @@ namespace GameCube.GFZ.CourseCollision
                 Assert.IsTrue(zero_0x00 == 0);
                 Assert.IsTrue(zero_0x08 == 0);
 
-                // It is assummed that the pointer is set before serialization
                 namePtr = name.GetPointer();
-                Assert.IsTrue(namePtr.IsNotNullPointer);
             }
             this.RecordStartAddress(writer);
             {
@@ -83,10 +72,16 @@ namespace GameCube.GFZ.CourseCollision
             this.RecordEndAddress(writer);
         }
 
-        public AddressRange SerializeWithReference(BinaryWriter writer)
+        public void ValidateReferences()
         {
-            Serialize(writer);
-            return addressRange;
+            // This pointer CANNOT be null and must refer to an object name.
+            Assert.IsTrue(namePtr.IsNotNullPointer);
+            Assert.IsTrue(name != null);
+            Assert.IsTrue(!string.IsNullOrEmpty(name.value));
+
+            //
+            Assert.IsTrue(zero_0x00 == 0);
+            Assert.IsTrue(zero_0x08 == 0);
         }
     }
 }

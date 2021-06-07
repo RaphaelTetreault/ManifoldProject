@@ -19,7 +19,6 @@ namespace GameCube.GFZ.CourseCollision
         [UnityEngine.SerializeField] private ushort[] indexes = new ushort[0];
 
 
-
         // PROPERTIES
         public AddressRange AddressRange
         {
@@ -35,6 +34,7 @@ namespace GameCube.GFZ.CourseCollision
 
         public int Length => indexes.Length;
 
+
         // METHODS
         public void Deserialize(BinaryReader reader)
         {
@@ -43,31 +43,28 @@ namespace GameCube.GFZ.CourseCollision
             {
                 // Read next value
                 var value = reader.ReadX_UInt16();
+                // Break loop, don't add value if terminator
                 if (value == kUshortArrayTerminator)
                 {
                     break;
                 }
+                // Add value to collection
                 list.Add(value);
             }
 
+            // Return collection as array
             indexes = list.ToArray();
         }
 
         public void Serialize(BinaryWriter writer)
         {
+            // Write each index
             foreach (var index in indexes)
             {
                 writer.WriteX(index);
             }
+            // Write terminating character
             writer.WriteX(kUshortArrayTerminator);
-        }
-
-        public AddressRange SerializeWithReference(BinaryWriter writer)
-        {
-            this.RecordStartAddress(writer.BaseStream);
-            Serialize(writer);
-            this.RecordEndAddress(writer.BaseStream);
-            return addressRange;
         }
 
     }

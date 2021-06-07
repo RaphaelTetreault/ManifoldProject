@@ -8,7 +8,8 @@ namespace GameCube.GFZ.CourseCollision
     /// 
     /// </summary>
     [Serializable]
-    public struct LevelOfDetailRadius : IBinarySerializable
+    public struct UnknownObjectBitfield :
+        IBinarySerializable
     {
         public uint data32;
         public ushort data16a;
@@ -17,6 +18,7 @@ namespace GameCube.GFZ.CourseCollision
         public byte data8b;
         public byte data8c;
         public byte data8d;
+
         public void Deserialize(BinaryReader reader)
         {
             reader.ReadX(ref data32);

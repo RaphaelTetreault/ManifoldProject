@@ -37,13 +37,6 @@ namespace GameCube.GFZ.CourseCollision
 
 
         // METHODS
-        public void ValidateReferences()
-        {
-            // This pointer CANNOT be null and must refer to an object.
-            Assert.IsTrue(objectReferencePtr.IsNotNullPointer);
-            Assert.IsTrue(objectReference != null);
-        }
-
         public void Deserialize(BinaryReader reader)
         {
             this.RecordStartAddress(reader);
@@ -85,6 +78,13 @@ namespace GameCube.GFZ.CourseCollision
                 writer.WriteX(colliderGeometryPtr);
             }
             this.RecordEndAddress(writer);
+        }
+
+        public void ValidateReferences()
+        {
+            // This pointer CANNOT be null and must refer to an object.
+            Assert.IsTrue(objectReferencePtr.IsNotNullPointer);
+            Assert.IsTrue(objectReference != null);
         }
 
     }

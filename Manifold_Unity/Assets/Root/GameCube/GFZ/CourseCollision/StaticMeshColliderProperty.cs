@@ -1,5 +1,7 @@
 namespace GameCube.GFZ.CourseCollision
 {
+    // TODO: confirm indices for AX stages.
+
     /// <summary>
     /// 
     /// </summary>

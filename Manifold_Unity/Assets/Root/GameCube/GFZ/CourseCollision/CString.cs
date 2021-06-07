@@ -28,9 +28,8 @@ namespace Manifold.IO
 
 
         // METHODS
-        public static string ReadCString(BinaryReader reader)
+        public static string ReadCString(BinaryReader reader, Encoding encoding)
         {
-            var encoding = Encoding.ASCII;
             var stringBuilder = new StringBuilder();
 
             // Continue while not at end of stream
@@ -57,7 +56,7 @@ namespace Manifold.IO
         {
             this.RecordStartAddress(reader);
             {
-                value = ReadCString(reader);
+                value = ReadCString(reader, encoding);
             }
             this.RecordEndAddress(reader);
         }

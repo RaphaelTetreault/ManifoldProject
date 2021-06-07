@@ -8,24 +8,23 @@ namespace GameCube.GFZ.CourseCollision
     /// 
     /// </summary>
     [Serializable]
-    public class AnimationClip : IBinarySerializable, IBinaryAddressable
+    public class AnimationClip :
+        IBinaryAddressable,
+        IBinarySerializable,
+        ISerializedBinaryAddressableReferer
     {
         // CONSTANTS
         public const int kSizeCurvesPtrs = 6 + 5;
         const int kSizeZero_0x08 = 0x10;
 
         // METADATA
-        [UnityEngine.SerializeField]
-        private AddressRange addressRange;
+        [UnityEngine.SerializeField] private AddressRange addressRange;
 
         // FIELDS
         public float unk_0x00;
         public float unk_0x04;
-        public byte[] zero_0x08;
+        public byte[] zeroes_0x08;
         public EnumFlags32 unk_layer_0x18;
-        
-        // FIELDS (deserialized from pointers)
-
         /// <summary>
         /// idx: 0,1,2: scale
         /// idx: 3,4,5: rotation
@@ -33,7 +32,7 @@ namespace GameCube.GFZ.CourseCollision
         /// idx: 9: unused?
         /// idx: 10: light
         /// </summary>
-        public AnimationCurvePlus[] animCurves;
+        public AnimationCurvePlus[] animCurves; // Written inline, not pointer refs
 
 
         // PROPERTIES
@@ -51,13 +50,13 @@ namespace GameCube.GFZ.CourseCollision
             {
                 reader.ReadX(ref unk_0x00);
                 reader.ReadX(ref unk_0x04);
-                reader.ReadX(ref zero_0x08, kSizeZero_0x08);
+                reader.ReadX(ref zeroes_0x08, kSizeZero_0x08);
                 reader.ReadX(ref unk_layer_0x18);
                 reader.ReadX(ref animCurves, kSizeCurvesPtrs, true);
             }
             this.RecordEndAddress(reader);
             {
-                foreach (var zero in zero_0x08)
+                foreach (var zero in zeroes_0x08)
                     Assert.IsTrue(zero == 0);
             }
             // No jumping required
@@ -65,15 +64,25 @@ namespace GameCube.GFZ.CourseCollision
 
         public void Serialize(BinaryWriter writer)
         {
-            writer.WriteX(unk_0x00);
-            writer.WriteX(unk_0x04);
-            writer.WriteX(zero_0x08, false);
-            writer.WriteX(unk_layer_0x18);
-            writer.WriteX(animCurves, false);
-
-            // TODO: Ensure the ptr addresses are correct
-            //throw new NotImplementedException();
+            {
+                foreach (var zero in zeroes_0x08)
+                    Assert.IsTrue(zero == 0);
+            }
+            this.RecordStartAddress(writer);
+            {
+                writer.WriteX(unk_0x00);
+                writer.WriteX(unk_0x04);
+                writer.WriteX(zeroes_0x08, false);
+                writer.WriteX(unk_layer_0x18);
+                writer.WriteX(animCurves, false);
+            }
+            this.RecordEndAddress(writer);
         }
 
+        public void ValidateReferences()
+        {
+            foreach (var zero in zeroes_0x08)
+                Assert.IsTrue(zero == 0);
+        }
     }
 }

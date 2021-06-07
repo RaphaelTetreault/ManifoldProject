@@ -13,14 +13,13 @@ namespace GameCube.GFZ.CourseCollision
         IBinarySerializable
     {
         // METADATA
-        [UnityEngine.SerializeField]
-        private AddressRange addressRange;
+        [UnityEngine.SerializeField] private AddressRange addressRange;
 
         // FIELDS
         public Transform transform;
         public TriggerableAnimation animation;
         public TriggerableVisualEffect visualEffect;
-        
+
 
         // PROPERTIES
         public AddressRange AddressRange
@@ -46,17 +45,12 @@ namespace GameCube.GFZ.CourseCollision
         {
             this.RecordStartAddress(writer);
             {
-               writer.WriteX(transform);
-               writer.WriteX(animation);
-               writer.WriteX(visualEffect);
+                writer.WriteX(transform);
+                writer.WriteX(animation);
+                writer.WriteX(visualEffect);
             }
             this.RecordEndAddress(writer);
         }
 
-        public AddressRange SerializeWithReference(BinaryWriter writer)
-        {
-            Serialize(writer);
-            return addressRange;
-        }
     }
 }

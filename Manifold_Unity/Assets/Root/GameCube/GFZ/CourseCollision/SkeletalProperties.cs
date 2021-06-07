@@ -8,14 +8,15 @@ namespace GameCube.GFZ.CourseCollision
     /// 
     /// </summary>
     [Serializable]
-    public class SkeletalProperties : IBinarySerializable, IBinaryAddressable
+    public class SkeletalProperties :
+        IBinaryAddressable,
+        IBinarySerializable
     {
         // METADATA
         [UnityEngine.SerializeField]
         private AddressRange addressRange;
 
         // FIELDS
-
         /// <summary>
         /// Values: 0, 3, 7, 10, 15, 20, 50, 60
         /// </summary>
@@ -54,13 +55,17 @@ namespace GameCube.GFZ.CourseCollision
 
         public void Serialize(BinaryWriter writer)
         {
-            writer.WriteX(unk_0x00);
-            writer.WriteX(unk_0x04);
-            writer.WriteX(unk_0x08);
-            writer.WriteX(zero_0x0C);
-            writer.WriteX(zero_0x10);
-            writer.WriteX(zero_0x14);
-            writer.WriteX(zero_0x18);
+            this.RecordStartAddress(writer);
+            {
+                writer.WriteX(unk_0x00);
+                writer.WriteX(unk_0x04);
+                writer.WriteX(unk_0x08);
+                writer.WriteX(zero_0x0C);
+                writer.WriteX(zero_0x10);
+                writer.WriteX(zero_0x14);
+                writer.WriteX(zero_0x18);
+            }
+            this.RecordEndAddress(writer);
         }
 
     }

@@ -8,18 +8,20 @@ namespace GameCube.GFZ.CourseCollision
     /// 
     /// </summary>
     [Serializable]
-    public class SkeletalAnimator : IBinarySerializable, IBinaryAddressable
+    public class SkeletalAnimator :
+        IBinaryAddressable,
+        IBinarySerializable,
+        ISerializedBinaryAddressableReferer
     {
         // METADATA
-        [UnityEngine.SerializeField]
-        private AddressRange addressRange;
+        [UnityEngine.SerializeField] private AddressRange addressRange;
 
         // FIELDS
         public uint zero_0x00;
         public uint zero_0x04;
         public uint one_0x08; // Always 1. Bool?
         public Pointer propertiesPtr;
-        // FIELDS (deserialized pointers)
+        // REFERENCE FIELDS
         public SkeletalProperties properties;
 
 
@@ -54,13 +56,22 @@ namespace GameCube.GFZ.CourseCollision
 
         public void Serialize(BinaryWriter writer)
         {
-            writer.WriteX(zero_0x00);
-            writer.WriteX(zero_0x04);
-            writer.WriteX(one_0x08);
-            writer.WriteX(propertiesPtr);
-
-            throw new NotImplementedException();
+            {
+                propertiesPtr = properties.GetPointer();
+            }
+            this.RecordStartAddress(writer);
+            {
+                writer.WriteX(zero_0x00);
+                writer.WriteX(zero_0x04);
+                writer.WriteX(one_0x08);
+                writer.WriteX(propertiesPtr);
+            }
+            this.RecordEndAddress(writer);
         }
 
+        public void ValidateReferences()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

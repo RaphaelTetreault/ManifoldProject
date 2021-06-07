@@ -11,18 +11,18 @@ namespace GameCube.GFZ.CourseCollision
         IBinaryAddressable,
         IDeepCopyable<Transform>
     {
-        // metadata
-        [UnityEngine.SerializeField]
-        private AddressRange addressRange;
+        // METADATA
+        [UnityEngine.SerializeField] private AddressRange addressRange;
 
-        // structure
+        // FIELDS
         [UnityEngine.SerializeField] private float3 position;
         [UnityEngine.SerializeField] private Int16Rotation3 decomposedRotation;
         [UnityEngine.SerializeField] private UnknownTransformOption unknownOption;
         [UnityEngine.SerializeField] private ObjectActiveOverride objectActiveOverride;
         [UnityEngine.SerializeField] private float3 scale;
 
-        //
+
+        // PROPERTIES
         public AddressRange AddressRange
         {
             get => addressRange;
@@ -69,6 +69,8 @@ namespace GameCube.GFZ.CourseCollision
             set => objectActiveOverride = value;
         }
 
+
+        // METHODS
         public Transform CreateDeepCopy()
         {
             var newInstance = new Transform()
@@ -97,11 +99,16 @@ namespace GameCube.GFZ.CourseCollision
 
         public void Serialize(BinaryWriter writer)
         {
-            writer.WriteX(position);
-            writer.WriteX(decomposedRotation);
-            writer.WriteX(objectActiveOverride);
-            writer.WriteX(unknownOption);
-            writer.WriteX(scale);
+            this.RecordStartAddress(writer);
+            {
+                writer.WriteX(position);
+                writer.WriteX(decomposedRotation);
+                writer.WriteX(objectActiveOverride);
+                writer.WriteX(unknownOption);
+                writer.WriteX(scale);
+            }
+            this.RecordEndAddress(writer);
         }
+
     }
 }

@@ -14,8 +14,7 @@ namespace GameCube.GFZ.CourseCollision
         IBinarySerializable
     {
         // METADATA
-        [UnityEngine.SerializeField]
-        private AddressRange addressRange;
+        [UnityEngine.SerializeField] private AddressRange addressRange;
 
         // FIELDS
         public float unk_0x00;
@@ -70,20 +69,24 @@ namespace GameCube.GFZ.CourseCollision
 
         public void Serialize(BinaryWriter writer)
         {
-            writer.WriteX(unk_0x00);
-            writer.WriteX(unk_0x04);
-            writer.WriteX(trackDistanceStart);
-            writer.WriteX(tangentStart);
-            writer.WriteX(positionStart);
-            writer.WriteX(trackDistanceEnd);
-            writer.WriteX(tangentEnd);
-            writer.WriteX(positionEnd);
-            writer.WriteX(transformDistanceEnd);
-            writer.WriteX(transformDistanceStart);
-            writer.WriteX(isTrackContinuousStart);
-            writer.WriteX(isTrackContinuousEnd);
-            writer.WriteX(trackWidth);
-            writer.WriteX(zero_0x4E);
+            this.RecordStartAddress(writer);
+            {
+                writer.WriteX(unk_0x00);
+                writer.WriteX(unk_0x04);
+                writer.WriteX(trackDistanceStart);
+                writer.WriteX(tangentStart);
+                writer.WriteX(positionStart);
+                writer.WriteX(trackDistanceEnd);
+                writer.WriteX(tangentEnd);
+                writer.WriteX(positionEnd);
+                writer.WriteX(transformDistanceEnd);
+                writer.WriteX(transformDistanceStart);
+                writer.WriteX(isTrackContinuousStart);
+                writer.WriteX(isTrackContinuousEnd);
+                writer.WriteX(trackWidth);
+                writer.WriteX(zero_0x4E);
+            }
+            this.RecordEndAddress(writer);
         }
 
     }

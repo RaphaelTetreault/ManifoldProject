@@ -16,6 +16,7 @@ namespace GameCube.GFZ.CourseCollision
         // FIELDS (deserialized from pointer)
         public AnimationCurve animationCurve;
 
+
         // PROPERTIES
         public AddressRange AddressRange
         {
@@ -62,5 +63,6 @@ namespace GameCube.GFZ.CourseCollision
             if (animationCurve != null)
                 Assert.IsTrue(animationCurvePtrs.IsNotNullPointer);
         }
+
     }
 }
