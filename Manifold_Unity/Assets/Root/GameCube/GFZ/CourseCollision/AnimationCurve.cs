@@ -60,37 +60,13 @@ namespace GameCube.GFZ.CourseCollision
             this.RecordEndAddress(writer);
         }
 
-        public AddressRange SerializeWithReference(BinaryWriter writer)
-        {
-            if (keyableAttributes.Length == 0)
-            {
-                return new AddressRange();
-            }
-            else
-            {
-                Serialize(writer);
-                return addressRange;
-            }
-        }
-
         /// <summary>
-        /// Helper function. Get ArrayPointer for data as stored in data while using
-        /// the wrapper class.
+        /// Forwards the underlying KeyableAttributes[].GetArrayPointer();
         /// </summary>
-        /// <param name="writer">The stream to write to.</param>
-        /// <returns>Array pointer with length = keyables, pointer = written address in stream.</returns>
-        public ArrayPointer SerializeAsArrayReference(BinaryWriter writer)
+        /// <returns></returns>
+        public ArrayPointer GetArrayPointer()
         {
-            if (Length > 0)
-            {
-                var pointer = SerializeWithReference(writer).GetPointer();
-                var arrayPointer = new ArrayPointer(Length, pointer.address);
-                return arrayPointer;
-            }
-            else
-            {
-                return new ArrayPointer();
-            }
+            return keyableAttributes.GetArrayPointer();
         }
 
     }

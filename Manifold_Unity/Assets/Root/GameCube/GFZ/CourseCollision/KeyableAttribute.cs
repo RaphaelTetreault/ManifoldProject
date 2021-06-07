@@ -8,7 +8,9 @@ namespace GameCube.GFZ.CourseCollision
     /// This structure appears to be a Maya (4.?) KeyableAttribute
     /// </summary>
     [Serializable]
-    public class KeyableAttribute : IBinarySerializable, IBinaryAddressable
+    public class KeyableAttribute :
+        IBinaryAddressable,
+        IBinarySerializable
     {
         // METADATA
         [UnityEngine.SerializeField]
@@ -50,11 +52,15 @@ namespace GameCube.GFZ.CourseCollision
 
         public void Serialize(BinaryWriter writer)
         {
-            writer.WriteX(easeMode);
-            writer.WriteX(time);
-            writer.WriteX(value);
-            writer.WriteX(zTangentIn);
-            writer.WriteX(zTangentOut);
+            this.RecordStartAddress(writer);
+            {
+                writer.WriteX(easeMode);
+                writer.WriteX(time);
+                writer.WriteX(value);
+                writer.WriteX(zTangentIn);
+                writer.WriteX(zTangentOut);
+            }
+            this.RecordEndAddress(writer);
         }
 
     }

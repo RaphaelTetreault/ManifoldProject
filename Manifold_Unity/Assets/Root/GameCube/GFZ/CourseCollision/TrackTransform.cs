@@ -45,8 +45,7 @@ namespace GameCube.GFZ.CourseCollision
         public uint zero_0x44; // zero confirmed
         public uint zero_0x48; // zero confirmed
         public TrackUnkOption2 unk_0x4C; // 0, 1, 2, 3
-
-        // POINTER FIELDS
+        // REFERENCE FIELDS
         public TopologyParameters trackTopology;
         public TrackCornerTopology hairpinCornerTopology;
         public TrackTransform[] children = new TrackTransform[0];
@@ -91,14 +90,15 @@ namespace GameCube.GFZ.CourseCollision
                 reader.JumpToAddress(generalTopologyPtr);
                 reader.ReadX(ref trackTopology, true);
 
-                // Read Extra Transform
+                // Read hairpin turn
                 if (hairpinCornerTopologyPtr.IsNotNullPointer)
                 {
                     reader.JumpToAddress(hairpinCornerTopologyPtr);
                     reader.ReadX(ref hairpinCornerTopology, true);
                 }
 
-                // Create a matrix for convinience
+                // TODO: make this functional
+                // Create a matrix for convenience
                 localMatrix = float4x4.TRS(localPosition, quaternion.EulerXYZ(localRotation), localScale);
                 // Update values based on children
                 worldMatrix = localMatrix;

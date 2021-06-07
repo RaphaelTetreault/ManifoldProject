@@ -120,6 +120,28 @@ namespace Manifold.IO
         {
             // TODO: consider null checks.
 
+            int length = values.Length;
+            var arrayPointer = new ArrayPointer();
+
+            // We only need to assign values if length > 0
+            if (length > 0)
+            {
+                arrayPointer.Length = length;
+                arrayPointer.Address = values[0].GetPointer();
+            }
+
+            return arrayPointer;
+        }
+
+        /// <summary>
+        /// Get the length address of the value. Address is relative to last (de)serialization stream.
+        /// </summary>
+        /// <param name="values">The array to get the array pointer from.</param>
+        /// <returns></returns>
+        public static ArrayPointer2D GetArrayPointer2D(this IBinaryAddressable[] values)
+        {
+            // TODO: consider null checks.
+
             var arrayPointer = new ArrayPointer()
             {
                 Length = values.Length,

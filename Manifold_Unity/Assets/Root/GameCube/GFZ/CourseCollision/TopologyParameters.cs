@@ -13,26 +13,28 @@ namespace GameCube.GFZ.CourseCollision
     /// 
     /// </summary>
     [Serializable]
-    public class TopologyParameters : IBinarySerializable, IBinaryAddressable
+    public class TopologyParameters :
+        IBinaryAddressable,
+        IBinarySerializable,
+        ISerializedBinaryAddressableReferer
     {
-
+        // CONSTANTS
         public const int kCurveCount = 9;
 
-        [UnityEngine.SerializeField]
-        private AddressRange addressRange;
+        // METADATA
+        [UnityEngine.SerializeField] private AddressRange addressRange;
 
+        // FIELDS
         public ArrayPointer2D curvePtrs2D = new ArrayPointer2D(kCurveCount);
-
-        // uhg, Unity can't serealize 2d arrays, so had to implement the following:
-        //public Array2D<KeyableAttribute> keyablesArray2D = new Array2D<KeyableAttribute>();
-        //public KeyableAttribute[][] keyablesArray2D = new KeyableAttribute[kCurveCount][];
-
+        // REFERENCE FIELDS
         public AnimationCurve[] animationCurves = new AnimationCurve[0];
 
+        // TODO: remove when solved.
         // At some point, maybe move out of class? Keep it vanilla for portability.
         public UnityEngine.AnimationCurve[] unityCurves = new UnityEngine.AnimationCurve[kCurveCount];
 
 
+        // PROPERTIES
         public AddressRange AddressRange
         {
             get => addressRange;
@@ -40,6 +42,7 @@ namespace GameCube.GFZ.CourseCollision
         }
 
 
+        // METHODS
         public void Deserialize(BinaryReader reader)
         {
             this.RecordStartAddress(reader);
@@ -51,7 +54,7 @@ namespace GameCube.GFZ.CourseCollision
                 // Init array
                 animationCurves = new AnimationCurve[kCurveCount];
 
-                for (int i  = 0; i  < animationCurves.Length; i++)
+                for (int i = 0; i < animationCurves.Length; i++)
                 {
                     var arrayPointer = curvePtrs2D.ArrayPointers[i];
                     if (arrayPointer.IsNotNullPointer)
@@ -74,6 +77,7 @@ namespace GameCube.GFZ.CourseCollision
             }
             this.SetReaderToEndAddress(reader);
 
+            // TEMP
             // Convert to Unity
             {
                 // Convert from animation curves from Gfz to Unity formats
@@ -100,9 +104,25 @@ namespace GameCube.GFZ.CourseCollision
 
         public void Serialize(BinaryWriter writer)
         {
-            writer.WriteX(curvePtrs2D);
+            {
+                // Ensure we have the correct amount of animation curves before indexing
+                Assert.IsTrue(animationCurves.Length == kCurveCount);
 
-            throw new NotImplementedException();
+                // Construct ArrayPointer2D for animation curves
+                var ptrs2D = new ArrayPointer[kCurveCount];
+                for (int i = 0; i < ptrs2D.Length; i++)
+                {
+                    var length = animationCurves[i].Length;
+                    var address = animationCurves[i].GetPointer().address;
+                    ptrs2D[i] = new ArrayPointer(length, address);
+                }
+                curvePtrs2D = new ArrayPointer2D(ptrs2D);
+            }
+            this.RecordStartAddress(writer);
+            {
+                writer.WriteX(curvePtrs2D);
+            }
+            this.RecordEndAddress(writer);
         }
 
 
@@ -208,5 +228,39 @@ namespace GameCube.GFZ.CourseCollision
         }
 
 
+        public void ValidateReferences()
+        {
+            // Assert array information
+            Assert.IsTrue(animationCurves != null);
+            Assert.IsTrue(animationCurves.Length == kCurveCount);
+            Assert.IsTrue(curvePtrs2D.Length == kCurveCount);
+
+            // Assert array items
+            for (int i = 0; i < kCurveCount; i++)
+            {
+                // Simplify access
+                var animationCurve = animationCurves[i];
+                var animationCurvePtrs = curvePtrs2D.ArrayPointers[i];
+
+                // Ensure each item in 2D array is not true null
+                Assert.IsTrue(animationCurve != null);
+                // Ensure data matches up
+                Assert.IsTrue(animationCurve.Length == animationCurvePtrs.Length);
+                Assert.IsTrue(animationCurve.AddressRange.GetPointer() == animationCurvePtrs.Pointer);
+
+                if (animationCurve.Length > 0)
+                {
+                    // Assert IS TRUE
+                    Assert.IsTrue(animationCurvePtrs.IsNotNullPointer);
+                    Assert.IsTrue(animationCurvePtrs.Length == 0);
+                }
+                else
+                {
+                    // Assert IS FALSE
+                    Assert.IsFalse(animationCurvePtrs.IsNotNullPointer);
+                    Assert.IsFalse(animationCurvePtrs.Length == 0);
+                }
+            }
+        }
     }
 }

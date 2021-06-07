@@ -8,6 +8,9 @@ namespace Manifold.IO
     public interface ISerializedBinaryAddressableReferer :
         IBinarySerializable
     {
+        /// <summary>
+        /// Runs a sanity check on this type as it relates to object references.
+        /// </summary>
         void ValidateReferences();
     }
 }

@@ -9,14 +9,16 @@ namespace GameCube.GFZ.CourseCollision
     /// 
     /// </summary>
     [Serializable]
-    public class TrackCornerTopology : IBinarySerializable, IBinaryAddressable
+    public class TrackCornerTopology :
+        IBinaryAddressable,
+        IBinarySerializable
     {
         // METADATA
         [UnityEngine.SerializeField]
         private AddressRange addressRange;
 
         // FIELDS
-        public TransformMatrix3x4 matrix3x4;
+        public TransformMatrix3x4 matrix3x4; // never null
         public float unkRotation; // range: -90.00 to +180.0 // rotation
         private byte const_0x34; // Const: 0x02
         private byte zero_0x35; // Const: 0x00
@@ -54,9 +56,22 @@ namespace GameCube.GFZ.CourseCollision
 
         public void Serialize(BinaryWriter writer)
         {
-            //writer.WriteX();
-            throw new NotImplementedException();
+            {
+                Assert.IsTrue(matrix3x4 != null);
+                Assert.IsTrue(const_0x34 == 0x02);
+                Assert.IsTrue(zero_0x35 == 0x00);
+                Assert.IsTrue(zero_0x37 == 0x00);
+            }
+            this.RecordStartAddress(writer);
+            {
+                writer.WriteX(matrix3x4);
+                writer.WriteX(unkRotation);
+                writer.WriteX(const_0x34);
+                writer.WriteX(zero_0x35);
+                writer.WriteX(perimeterOptions);
+                writer.WriteX(zero_0x37);
+            }
+            this.RecordEndAddress(writer);
         }
-
     }
 }

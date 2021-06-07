@@ -9,15 +9,26 @@ namespace Manifold.IO
         IEquatable<Pointer>,
         IPointer
     {
+        // FIELDS
         public int address;
+
+        // CONSTRUCTORS
         public Pointer(int address)
         {
             this.address = address;
         }
+
+        // PROPERTIES
         public int Address => address;
         public string HexAddress => $"0x{address:X8}";
         public bool IsNotNullPointer => address != 0;
 
+
+        // OPERATORS
+        public static implicit operator int(Pointer pointer)
+        {
+            return pointer.address;
+        }
 
         public static implicit operator Pointer(int address)
         {
@@ -29,6 +40,7 @@ namespace Manifold.IO
             return new Pointer((int)address);
         }
 
+        // METHODS
         public void Deserialize(BinaryReader reader)
         {
             reader.ReadX(ref address);

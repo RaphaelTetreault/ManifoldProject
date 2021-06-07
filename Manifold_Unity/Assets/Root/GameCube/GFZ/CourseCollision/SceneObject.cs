@@ -47,13 +47,6 @@ namespace GameCube.GFZ.CourseCollision
 
 
         // METHODS
-        public void ValidateReferences()
-        {
-            // This pointer CANNOT be null and must refer to an object.
-            Assert.IsTrue(instanceReferencePtr.IsNotNullPointer);
-            Assert.IsTrue(instanceReference != null);
-        }
-
         public void Deserialize(BinaryReader reader)
         {
             this.RecordStartAddress(reader);
@@ -70,10 +63,6 @@ namespace GameCube.GFZ.CourseCollision
             }
             this.RecordEndAddress(reader);
             {
-                // Assert constants
-                Assert.IsTrue(zero_0x2C == 0);
-                Assert.IsTrue(instanceReferencePtr.IsNotNullPointer);
-
                 //
                 reader.JumpToAddress(instanceReferencePtr);
                 reader.ReadX(ref instanceReference, true);
@@ -105,9 +94,12 @@ namespace GameCube.GFZ.CourseCollision
                     reader.JumpToAddress(transformPtr);
                     reader.ReadX(ref transformMatrix3x4, true);
                 }
+
+                // Assert pointer and the like
+                ValidateReferences();
             }
             // After deserializing sub-structures, return to end position
-            reader.BaseStream.Seek(addressRange.endAddress, SeekOrigin.Begin);
+            this.SetReaderToEndAddress(reader);
         }
 
         public void Serialize(BinaryWriter writer)
@@ -134,5 +126,26 @@ namespace GameCube.GFZ.CourseCollision
             }
             this.RecordEndAddress(writer);
         }
+
+        public void ValidateReferences()
+        {
+            // This pointer CANNOT be null and must refer to an object.
+            Assert.IsTrue(instanceReferencePtr.IsNotNullPointer);
+            Assert.IsTrue(instanceReference != null);
+
+            // Assert pointers only if type is not null
+            if (animation != null)
+                Assert.IsTrue(animationPtr.IsNotNullPointer);
+            if (unk1 != null)
+                Assert.IsTrue(unkPtr_0x34.IsNotNullPointer);
+            if (skeletalAnimator != null)
+                Assert.IsTrue(skeletalAnimatorPtr.IsNotNullPointer);
+            if (transformMatrix3x4 != null)
+                Assert.IsTrue(transformPtr.IsNotNullPointer);
+
+            // Constants 
+            Assert.IsTrue(zero_0x2C == 0);
+        }
+
     }
 }
