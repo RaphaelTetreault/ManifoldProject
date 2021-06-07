@@ -217,32 +217,31 @@ namespace GameCube.GFZ.CourseCollision
             writer.WriteX(surfaceAttributeMeshTable);
 
             // SCENE OBJECTS
-            //var names = new CString[0];
-            //var objects = new SceneObjectReference[0];
-            //var instances = new SceneInstanceReference[0];
-            //var names = new CString[]
-            //{
-            //    new CString{ value = "TEST_STRING" },
-            //    new CString{ value = "ORIGIN_OBJECT" }
-            //};
-            //var objects = new SceneObjectReference[]
-            //{
-            //    new SceneObjectReference() { name = names[0] },
-            //    new SceneObjectReference() { name = names[1] },
-            //};
-            //sceneInstancesList = new SceneInstanceReference[]
-            //{
-            //    new SceneInstanceReference() { objectReference = objects[0] },
-            //    new SceneInstanceReference() { objectReference = objects[1] },
-            //};
-            //sceneOriginObjectsList = new SceneOriginObjects[]
-            //{
-            //    new SceneOriginObjects() { instanceReference = sceneInstancesList[1] }
-            //};
-            //sceneObjects = new SceneObject[]
-            //{
-            //    new SceneObject() {instanceReference = sceneInstancesList[0] }
-            //};
+            // TEST. Next: try reserializing references with ISerailizedBinaryAddressableReferer.
+            var names = new CString[]
+            {
+                new CString{ value = "TEST_STRING" },
+                new CString{ value = "ORIGIN_OBJECT" }
+            };
+            var objects = new SceneObjectReference[]
+            {
+                new SceneObjectReference() { name = names[0] },
+                new SceneObjectReference() { name = names[1] },
+            };
+            sceneInstancesList = new SceneInstanceReference[]
+            {
+                new SceneInstanceReference() { objectReference = objects[0] },
+                new SceneInstanceReference() { objectReference = objects[1] },
+            };
+            sceneOriginObjectsList = new SceneOriginObjects[]
+            {
+                new SceneOriginObjects() { instanceReference = sceneInstancesList[1] }
+            };
+            sceneObjects = new SceneObject[]
+            {
+                new SceneObject() {instanceReference = sceneInstancesList[0] }
+            };
+
             // Write in reverse order. If references are correct, pointers will be correct when serializing.
             writer.InlineDesc(ColiCourseUtility.SerializeVerbose, -1, nameTable);
             writer.WriteX(nameTable, false);

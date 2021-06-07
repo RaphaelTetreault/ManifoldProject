@@ -5,13 +5,14 @@ namespace GameCube.GFZ.CourseCollision
 {
     public class StoryObjectPath :
         IBinaryAddressable,
-        IBinarySerializable
+        IBinarySerializable,
+        ISerializedBinaryAddressableReferer
     {
         // METADATA
         [UnityEngine.SerializeField] private AddressRange addressRange;
 
         // FIELDS
-        public ArrayPointer animationCurvePtr;
+        public ArrayPointer animationCurvePtrs;
         // FIELDS (deserialized from pointer)
         public AnimationCurve animationCurve;
 
@@ -28,15 +29,15 @@ namespace GameCube.GFZ.CourseCollision
         {
             this.RecordStartAddress(reader);
             {
-                reader.ReadX(ref animationCurvePtr);
+                reader.ReadX(ref animationCurvePtrs);
             }
             this.RecordEndAddress(reader);
             {
-                if (animationCurvePtr.IsNotNullPointer)
+                if (animationCurvePtrs.IsNotNullPointer)
                 {
                     // Init anim curve, jump, read without creating new instance
-                    animationCurve = new AnimationCurve(animationCurvePtr.Length);
-                    reader.JumpToAddress(animationCurvePtr);
+                    animationCurve = new AnimationCurve(animationCurvePtrs.Length);
+                    reader.JumpToAddress(animationCurvePtrs);
                     reader.ReadX(ref animationCurve, false);
                 }
             }
@@ -47,19 +48,19 @@ namespace GameCube.GFZ.CourseCollision
         {
             //
             {
-                animationCurvePtr = animationCurve.GetArrayPointer();
+                animationCurvePtrs = animationCurve.GetArrayPointer();
             }
             this.RecordStartAddress(writer);
             {
-                writer.WriteX(animationCurvePtr);
+                writer.WriteX(animationCurvePtrs);
             }
             this.RecordEndAddress(writer);
         }
 
-        public AddressRange SerializeWithReference(BinaryWriter writer)
+        public void ValidateReferences()
         {
-            Serialize(writer);
-            return addressRange;
+            if (animationCurve != null)
+                Assert.IsTrue(animationCurvePtrs.IsNotNullPointer);
         }
     }
 }

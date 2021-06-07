@@ -15,6 +15,7 @@ namespace Manifold.IO
         public static void RecordStartAddress(this IBinaryAddressable binaryAddressable, BinaryWriter writer)
             => RecordStartAddress(binaryAddressable, writer.BaseStream);
 
+
         public static void RecordEndAddress(this IBinaryAddressable binaryAddressable, Stream stream)
         {
             var addressRange = binaryAddressable.AddressRange;
@@ -57,7 +58,6 @@ namespace Manifold.IO
             var endAddress = binaryAddressable.AddressRange.endAddress;
             return $"{prefix}{endAddress.ToString(format)}";
         }
-
 
 
         /// <summary>
@@ -107,9 +107,6 @@ namespace Manifold.IO
 
             return pointers;
         }
-
-
-
 
         /// <summary>
         /// Get the length address of the value. Address is relative to last (de)serialization stream.
