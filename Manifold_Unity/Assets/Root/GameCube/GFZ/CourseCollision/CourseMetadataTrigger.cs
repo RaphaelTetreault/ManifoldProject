@@ -14,10 +14,8 @@ namespace GameCube.GFZ.CourseCollision
         [UnityEngine.SerializeField] private AddressRange addressRange;
 
         // FIELDS
-        public float3 position;
-        public Int16Rotation3 shortRotation3;
-        public float3 positionOrScale;
-        public CourseMetadataType course;
+        public Transform transform;
+        public CourseMetadataType courseMetadata;
 
 
         // PROPERTIES
@@ -27,33 +25,13 @@ namespace GameCube.GFZ.CourseCollision
             set => addressRange = value;
         }
 
-        public float3 PositionFrom
-        {
-            get => position;
-        }
-
-        public float3 PositionTo
-        {
-            get => positionOrScale;
-        }
-
-        public float3 Scale
-        {
-            get => positionOrScale;
-        }
-
-        public float3 PositionFromX
-        {
-            get => new float3(-position.x, position.y, position.z);
-        }
-
-        public float3 PositionToX
-        {
-            get => new float3(-positionOrScale.x, positionOrScale.y, positionOrScale.z);
-        }
-
-        public quaternion Rotation => shortRotation3.Rotation;
-        public float3 RotationEuler => shortRotation3.EulerAngles;
+        // PROPERTIES USED TO MAKE SENSE OF THIS NONSENSE
+        public float3 Position => transform.Position;
+        public float3 PositionFrom => transform.Position;
+        public float3 PositionTo => transform.Scale;
+        public float3 Scale => transform.Scale;
+        public quaternion Rotation => transform.Rotation;
+        public float3 RotationEuler => transform.RotationEuler;
 
 
         // METHODS
@@ -61,10 +39,8 @@ namespace GameCube.GFZ.CourseCollision
         {
             this.RecordStartAddress(reader);
             {
-                reader.ReadX(ref position);
-                reader.ReadX(ref shortRotation3, true);
-                reader.ReadX(ref positionOrScale);
-                reader.ReadX(ref course);
+                reader.ReadX(ref transform, true);
+                reader.ReadX(ref courseMetadata);
             }
             this.RecordEndAddress(reader);
         }
@@ -73,10 +49,8 @@ namespace GameCube.GFZ.CourseCollision
         {
             this.RecordStartAddress(writer);
             {
-                writer.WriteX(position);
-                writer.WriteX(shortRotation3);
-                writer.WriteX(positionOrScale);
-                writer.WriteX(course);
+                writer.WriteX(transform);
+                writer.WriteX(courseMetadata);
             }
             this.RecordEndAddress(writer);
         }

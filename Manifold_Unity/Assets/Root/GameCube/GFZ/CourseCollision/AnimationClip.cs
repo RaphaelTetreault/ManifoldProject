@@ -32,7 +32,7 @@ namespace GameCube.GFZ.CourseCollision
         /// idx: 9: unused?
         /// idx: 10: light
         /// </summary>
-        public AnimationCurvePlus[] animCurves; // Written inline, not pointer refs
+        public AnimationCurvePlus[] animationCurvePluses; // Written inline, not pointer refs
 
 
         // PROPERTIES
@@ -52,7 +52,7 @@ namespace GameCube.GFZ.CourseCollision
                 reader.ReadX(ref unk_0x04);
                 reader.ReadX(ref zeroes_0x08, kSizeZero_0x08);
                 reader.ReadX(ref unk_layer_0x18);
-                reader.ReadX(ref animCurves, kSizeCurvesPtrs, true);
+                reader.ReadX(ref animationCurvePluses, kSizeCurvesPtrs, true);
             }
             this.RecordEndAddress(reader);
             {
@@ -74,7 +74,7 @@ namespace GameCube.GFZ.CourseCollision
                 writer.WriteX(unk_0x04);
                 writer.WriteX(zeroes_0x08, false);
                 writer.WriteX(unk_layer_0x18);
-                writer.WriteX(animCurves, false);
+                writer.WriteX(animationCurvePluses, false);
             }
             this.RecordEndAddress(writer);
         }

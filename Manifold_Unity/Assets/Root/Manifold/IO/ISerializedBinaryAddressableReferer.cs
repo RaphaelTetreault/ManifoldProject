@@ -6,6 +6,7 @@ namespace Manifold.IO
     /// re-serialized after the refered type to ensure it has a valid pointer.
     /// </summary>
     public interface ISerializedBinaryAddressableReferer :
+        IBinaryAddressable,
         IBinarySerializable
     {
         /// <summary>

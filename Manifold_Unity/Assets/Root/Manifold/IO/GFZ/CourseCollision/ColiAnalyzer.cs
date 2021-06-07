@@ -228,7 +228,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             //
             if (staticCollider)
             {
-                string fileName = $"{time} COLI {nameof(StaticMeshTable)}.tsv";
+                string fileName = $"{time} COLI {nameof(StaticColliderMeshes)}.tsv";
                 string filePath = Path.Combine(outputPath, fileName);
                 EditorUtility.DisplayProgressBar(ExecuteText, filePath, .5f);
                 AnalyzeSceneStaticCollider(filePath);
@@ -282,7 +282,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 {
                     // foreach Transform
                     int trackIndex = 0;
-                    foreach (var trackTransform in sobj.Value.trackTransforms)
+                    foreach (var trackTransform in sobj.Value.rootTrackTransforms)
                     {
                         for (int keyablesIndex = 0; keyablesIndex < TopologyParameters.kCurveCount; keyablesIndex++)
                         {
@@ -329,7 +329,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 {
                     // foreach Transform
                     int trackTransformIndex = 0;
-                    foreach (var trackTransform in sobj.Value.trackTransforms)
+                    foreach (var trackTransform in sobj.Value.rootTrackTransforms)
                     {
                         WriteTrackKeyableAttributeRecursive(writer, sobj, nestedDepth: 0, keyablesSet, trackTransformIndex++, trackTransform);
                     }
@@ -442,8 +442,8 @@ namespace Manifold.IO.GFZ.CourseCollision
                 {
                     var scene = sobj.Value;
                     var index = 0;
-                    var total = scene.trackTransforms.Length;
-                    foreach (var trackTransform in scene.trackTransforms)
+                    var total = scene.rootTrackTransforms.Length;
+                    foreach (var trackTransform in scene.rootTrackTransforms)
                     {
                         WriteTrackTransformRecursive(writer, sobj, 0, ++index, total, trackTransform);
                     }
@@ -548,7 +548,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                             continue;
 
                         int animIndex = 0;
-                        foreach (var animationCurvePlus in gameObject.animation.animCurves)
+                        foreach (var animationCurvePlus in gameObject.animation.animationCurvePluses)
                         {
                             foreach (var keyable in animationCurvePlus.animationCurve.keyableAttributes)
                             {
@@ -598,7 +598,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                     foreach (var gameObject in file.Value.sceneObjects)
                     {
                         int animIndex = 0;
-                        foreach (var animationCurvePlus in gameObject.animation.animCurves)
+                        foreach (var animationCurvePlus in gameObject.animation.animationCurvePluses)
                         {
                             foreach (var keyable in animationCurvePlus.animationCurve.keyableAttributes)
                             {
@@ -1449,24 +1449,24 @@ namespace Manifold.IO.GFZ.CourseCollision
                 // Write header
                 writer.WriteNextCol("File");
                 writer.WriteNextCol("Index");
-                writer.WriteNextColNicify(nameof(StaticMeshTable.collisionTrisPtr));
-                writer.WriteNextColNicify(nameof(StaticMeshTable.collisionTriIndexesPtr));
+                writer.WriteNextColNicify(nameof(StaticColliderMeshes.collisionTrisPtr));
+                writer.WriteNextColNicify(nameof(StaticColliderMeshes.collisionTriIndexesPtr));
                 writer.WriteNextColNicify(nameof(GameCube.GFZ.CourseCollision.Bounds.x));
                 writer.WriteNextColNicify(nameof(GameCube.GFZ.CourseCollision.Bounds.z));
                 writer.WriteNextColNicify(nameof(GameCube.GFZ.CourseCollision.Bounds.unk_0x08));
                 writer.WriteNextColNicify(nameof(GameCube.GFZ.CourseCollision.Bounds.unk_0x0C));
                 writer.WriteNextColNicify(nameof(GameCube.GFZ.CourseCollision.Bounds.unk_0x10));
                 writer.WriteNextColNicify(nameof(GameCube.GFZ.CourseCollision.Bounds.unk_0x14));
-                writer.WriteNextColNicify(nameof(StaticMeshTable.collisionQuadsPtr));
-                writer.WriteNextColNicify(nameof(StaticMeshTable.collisionQuadIndexesPtr));
+                writer.WriteNextColNicify(nameof(StaticColliderMeshes.collisionQuadsPtr));
+                writer.WriteNextColNicify(nameof(StaticColliderMeshes.collisionQuadIndexesPtr));
                 writer.WriteNextColNicify(nameof(GameCube.GFZ.CourseCollision.Bounds.x));
                 writer.WriteNextColNicify(nameof(GameCube.GFZ.CourseCollision.Bounds.z));
                 writer.WriteNextColNicify(nameof(GameCube.GFZ.CourseCollision.Bounds.unk_0x08));
                 writer.WriteNextColNicify(nameof(GameCube.GFZ.CourseCollision.Bounds.unk_0x0C));
                 writer.WriteNextColNicify(nameof(GameCube.GFZ.CourseCollision.Bounds.unk_0x10));
                 writer.WriteNextColNicify(nameof(GameCube.GFZ.CourseCollision.Bounds.unk_0x14));
-                writer.WriteNextColNicify(nameof(StaticMeshTable.colliderTriangles));
-                writer.WriteNextColNicify(nameof(StaticMeshTable.colliderQuads));
+                writer.WriteNextColNicify(nameof(StaticColliderMeshes.colliderTriangles));
+                writer.WriteNextColNicify(nameof(StaticColliderMeshes.colliderQuads));
                 writer.WriteNextRow();
 
                 int index = 0;
@@ -1474,7 +1474,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 foreach (var file in sceneSobjs)
                 {
                     var scene = file.Value;
-                    var table = scene.surfaceAttributeMeshTable;
+                    var table = scene.staticColliderMeshTable;
 
                     writer.WriteNextCol(file.name);
                     writer.WriteNextCol(index++);

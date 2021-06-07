@@ -21,7 +21,7 @@ namespace Manifold.Conversion
         {
             foreach (var gobj in scene.Value.sceneObjects)
             {
-                if (gobj.animation.animCurves.Length == 0)
+                if (gobj.animation.animationCurvePluses.Length == 0)
                 {
                     continue;
                 }

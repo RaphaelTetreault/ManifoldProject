@@ -153,14 +153,14 @@ namespace Manifold.IO.GFZ.CourseCollision
 
             // Turn into function within StaticMeshTable (take param header)
             var surfaceTypeCount = scene.header.IsFileAX
-                ? StaticMeshTable.kCountAxSurfaceTypes
-                : StaticMeshTable.kCountGxSurfaceTypes;
+                ? StaticColliderMeshes.kCountAxSurfaceTypes
+                : StaticColliderMeshes.kCountGxSurfaceTypes;
 
             var meshes = new Mesh[surfaceTypeCount];
 
             // Simplify access to tris/quads
-            var colliderTriangles = scene.surfaceAttributeMeshTable.colliderTriangles;
-            var colliderQuads = scene.surfaceAttributeMeshTable.colliderQuads;
+            var colliderTriangles = scene.staticColliderMeshTable.colliderTriangles;
+            var colliderQuads = scene.staticColliderMeshTable.colliderQuads;
 
 
             for (int surfaceTypeIndex = 0; surfaceTypeIndex < surfaceTypeCount; surfaceTypeIndex++)
@@ -172,9 +172,9 @@ namespace Manifold.IO.GFZ.CourseCollision
                 var submeshes = new SubMeshDescriptor[512];
 
                 //
-                var triMeshIndexTable = scene.surfaceAttributeMeshTable.triMeshIndexTable[surfaceTypeIndex];
+                var triMeshIndexTable = scene.staticColliderMeshTable.triMeshIndexTables[surfaceTypeIndex];
                 var triIndexLists = triMeshIndexTable.indexLists;
-                Assert.IsTrue(triIndexLists.Length == 0 || triIndexLists.Length == StaticMeshTableIndexes.kListCount);
+                Assert.IsTrue(triIndexLists.Length == 0 || triIndexLists.Length == StaticColliderMeshTable16x16.kListCount);
 
                 // meshIndex = 0-255
                 // triIndex = the indexes for the mesh 
@@ -229,9 +229,9 @@ namespace Manifold.IO.GFZ.CourseCollision
                 }
 
 
-                var quadMeshIndexes = scene.surfaceAttributeMeshTable.quadMeshIndexTable[surfaceTypeIndex];
+                var quadMeshIndexes = scene.staticColliderMeshTable.quadMeshIndexTables[surfaceTypeIndex];
                 var quadIndexLists = quadMeshIndexes.indexLists;
-                Assert.IsTrue(quadIndexLists.Length == 0 || quadIndexLists.Length == StaticMeshTableIndexes.kListCount);
+                Assert.IsTrue(quadIndexLists.Length == 0 || quadIndexLists.Length == StaticColliderMeshTable16x16.kListCount);
 
                 // meshIndex = 0-255
                 // triIndex = the indexes for the mesh 

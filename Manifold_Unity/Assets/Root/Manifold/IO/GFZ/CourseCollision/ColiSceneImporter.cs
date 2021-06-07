@@ -335,8 +335,8 @@ namespace Manifold.IO.GFZ.CourseCollision
 
             // Loop over every top transform
             int count = 0;
-            int total = scene.trackTransforms.Length;
-            foreach (var trackTransform in scene.trackTransforms)
+            int total = scene.rootTrackTransforms.Length;
+            foreach (var trackTransform in scene.rootTrackTransforms)
             {
                 // Recursively create transforms
                 count++;
@@ -357,8 +357,8 @@ namespace Manifold.IO.GFZ.CourseCollision
             // Loop over every top transform
             //int count = 0;
             int index = 0;
-            int total = scene.trackTransforms.Length;
-            foreach (var trackTransform in scene.trackTransforms)
+            int total = scene.rootTrackTransforms.Length;
+            foreach (var trackTransform in scene.rootTrackTransforms)
             {
                 //
                 var name = $"[{++index}/{total}] Control Point";
@@ -431,7 +431,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             var parent = new GameObject();
             parent.name = $"Static Mesh Colliders";
 
-            for (int i = 0; i < StaticMeshTable.SurfacesCount(scene); i++)
+            for (int i = 0; i < StaticColliderMeshes.SurfacesCount(scene); i++)
             {
                 var meshName = $"st{scene.ID:00}_{i:00}_{(StaticMeshColliderProperty)i}";
                 var assetPath = $"{stageFolder}/pf_{meshName}.prefab";
@@ -458,9 +458,9 @@ namespace Manifold.IO.GFZ.CourseCollision
             parent.name = $"Test Sample Path";
 
             //
-            var increment = 1f / 1000f * scene.trackTransforms.Length;
+            var increment = 1f / 1000f * scene.rootTrackTransforms.Length;
             int count = 0;
-            foreach (var tt in scene.trackTransforms)
+            foreach (var tt in scene.rootTrackTransforms)
             {
                 var subgroup = new GameObject();
                 subgroup.name = $"Subgroup {++count}";
@@ -525,9 +525,9 @@ namespace Manifold.IO.GFZ.CourseCollision
             parent.name = $"Test Sample Path";
 
             //
-            var increment = 1f / 1000f * scene.trackTransforms.Length;
+            var increment = 1f / 1000f * scene.rootTrackTransforms.Length;
             int count = 0;
-            foreach (var tt in scene.trackTransforms)
+            foreach (var tt in scene.rootTrackTransforms)
             {
                 var subgroup = new GameObject();
                 subgroup.name = $"Subgroup {++count}";
@@ -622,7 +622,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
             int chainIndex = 0;
             var trackNodes = sceneSobj.Value.trackNodes;
-            foreach (var indexList in sceneSobj.Value.trackIndexTable.indexLists)
+            foreach (var indexList in sceneSobj.Value.trackCheckpointTable8x8.indexLists)
             {
                 var chain = new GameObject();
                 chain.name = $"Chain {chainIndex++}";

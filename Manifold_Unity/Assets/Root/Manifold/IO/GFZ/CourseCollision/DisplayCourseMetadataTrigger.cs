@@ -24,8 +24,8 @@ namespace Manifold.IO.GFZ.CourseCollision
             {
                 var defaultScale = Vector3.one * size;
                 var isPath =
-                    item.course == CourseMetadataType.Lightning_Lightning ||
-                    item.course == CourseMetadataType.OuterSpace_Meteor;
+                    item.courseMetadata == CourseMetadataType.Lightning_Lightning ||
+                    item.courseMetadata == CourseMetadataType.OuterSpace_Meteor;
 
                 if (isPath)
                 {
