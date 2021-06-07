@@ -8,8 +8,9 @@ namespace GameCube.GFZ.CourseCollision
     {
         /// <summary>
         /// Is the driveable surface on the outside (cylinder) or inside (pipe).
+        /// If set is cylinder, if not set is pipe.
         /// </summary>
-        IsOuterPipeOrCylinder = 1 << 0,
+        IsCylinderNotPipe = 1 << 0,
         
         /// <summary>
         /// Is the cylinder or pipe open (transitioning from another segment type).

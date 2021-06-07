@@ -294,27 +294,6 @@ namespace Manifold.IO.GFZ.GMA
             return submesh;
         }
 
-        //public GameObject CreatePrefabFromModel(Mesh mesh, string path)
-        //{
-        //    // Remove "mdl_" prefix to build prefab name
-        //    var modelName = mesh.name.Remove(0, 4);
-        //    var prefabPath = $"{path}/pf_{modelName}.prefab";
-        //    // Construct the prefab to store the model data
-        //    var prefab = new GameObject();
-        //    var meshFilter = prefab.AddComponent<MeshFilter>();
-        //    meshFilter.mesh = mesh;
-        //    var meshRenderer = prefab.AddComponent<MeshRenderer>();
-        //    // HACK: Add a generic material to each model
-        //    // In the future, generate materials for models
-        //    var mats = new UnityEngine.Material[mesh.subMeshCount];
-        //    for (int i = 0; i < mats.Length; i++)
-        //        mats[i] = defaultMat;
-        //    meshRenderer.sharedMaterials = mats;
-        //    // Save model to asset database, return
-        //    PrefabUtility.SaveAsPrefabAsset(prefab, prefabPath);
-        //    return prefab;
-        //}
-
         public int CountModels(GmaSobj[] gmaSobjs, out int submeshes)
         {
             submeshes = 0;

@@ -9,15 +9,15 @@ namespace Manifold.IO
         IBinaryAddressable,
         IBinarySerializable
     {
-        //
+        // METADATA
         [UnityEngine.SerializeField] private AddressRange addressRange;
-
-        //
-        public string value = string.Empty;
         public Encoding encoding = Encoding.ASCII;
 
+        // FIELDS
+        public string value = string.Empty;
 
-        //
+
+        // PROPERTIES
         public AddressRange AddressRange
         {
             get => addressRange;
@@ -26,6 +26,8 @@ namespace Manifold.IO
 
         public int Length => value.Length;
 
+
+        // METHODS
         public static string ReadCString(BinaryReader reader)
         {
             var encoding = Encoding.ASCII;
@@ -69,11 +71,6 @@ namespace Manifold.IO
             this.RecordEndAddress(writer);
         }
 
-        public AddressRange SerializeWithReference(BinaryWriter writer)
-        {
-            Serialize(writer);
-            return addressRange;
-        }
 
         public static implicit operator string(CString cString)
         {

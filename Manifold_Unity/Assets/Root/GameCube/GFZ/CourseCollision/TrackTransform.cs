@@ -9,16 +9,13 @@ namespace GameCube.GFZ.CourseCollision
     /// 
     /// </summary>
     [Serializable]
-    public class TrackTransform : IBinarySerializable, IBinaryAddressable
+    public class TrackTransform :
+        IBinaryAddressable,
+        IBinarySerializable,
+        ISerializedBinaryAddressableReferer
     {
-        // CONSTANTS
-        public const byte kStructureSize = 0x50;
-        public const byte kHasChildren = 0x0C;
-
         // METADATA
-        [UnityEngine.SerializeField]
-        private AddressRange addressRange;
-
+        [UnityEngine.SerializeField] private AddressRange addressRange;
         public float4x4 localMatrix;
         public float4x4 worldMatrix;
         public int depth;
@@ -26,7 +23,7 @@ namespace GameCube.GFZ.CourseCollision
 
         // FIELDS
         public TrackTopologyMetadata topologyMetadata;
-        public TrackProperty trackProperty; 
+        public TrackProperty trackProperty;
         public TrackPerimeterOptions perimeterOptions;
         public TrackPipeCylinderOptions pipeCylinderOptions;
         public Pointer generalTopologyPtr;
@@ -126,10 +123,15 @@ namespace GameCube.GFZ.CourseCollision
                         ancestor = ancestor.parent;
                     }
                 }
+
+                // Assertions
+                Assert.IsTrue(zero_0x44 == 0);
+                Assert.IsTrue(zero_0x48 == 0);
             }
             this.SetReaderToEndAddress(reader);
         }
 
+        // TODO: remove
         public void SetChildIndex(TrackTransform parent)
         {
             foreach (var child in parent.children)
@@ -141,31 +143,54 @@ namespace GameCube.GFZ.CourseCollision
 
         public void Serialize(BinaryWriter writer)
         {
-            // TODO
-            // Write casted 0s in place of zero_0x##
+            {
+                childrenPtrs = children.GetArrayPointer();
+                generalTopologyPtr = trackTopology.GetPointer();
+                hairpinCornerTopologyPtr = hairpinCornerTopology.GetPointer();
+            }
+            this.RecordStartAddress(writer);
+            {
+                writer.WriteX(topologyMetadata);
+                writer.WriteX(trackProperty);
+                writer.WriteX(perimeterOptions);
+                writer.WriteX(pipeCylinderOptions);
+                writer.WriteX(generalTopologyPtr);
+                writer.WriteX(hairpinCornerTopologyPtr);
+                writer.WriteX(childrenPtrs);
+                writer.WriteX(localScale);
+                writer.WriteX(localRotation); // Mirror X
+                writer.WriteX(localPosition); // Mirror X
+                writer.WriteX(unk_0x38);
+                writer.WriteX(unk_0x39);
+                writer.WriteX(unk_0x3A);
+                writer.WriteX(unk_0x3B);
+                writer.WriteX(railHeightRight);
+                writer.WriteX(railHeightLeft);
+                writer.WriteX(zero_0x44);
+                writer.WriteX(zero_0x48);
+                writer.WriteX(unk_0x4C);
+            }
+            this.RecordEndAddress(writer);
+        }
 
-            writer.WriteX(topologyMetadata);
-            writer.WriteX(trackProperty);
-            writer.WriteX(perimeterOptions);
-            writer.WriteX(pipeCylinderOptions);
-            writer.WriteX(generalTopologyPtr);
-            writer.WriteX(hairpinCornerTopologyPtr);
-            writer.WriteX(childrenPtrs);
-            writer.WriteX(localScale);
-            writer.WriteX(localRotation); // Mirror X
-            writer.WriteX(localPosition); // Mirror X
-            writer.WriteX(unk_0x38);
-            writer.WriteX(unk_0x39);
-            writer.WriteX(unk_0x3A);
-            writer.WriteX(unk_0x3B);
-            writer.WriteX(railHeightRight);
-            writer.WriteX(railHeightLeft);
-            writer.WriteX(zero_0x44);
-            writer.WriteX(zero_0x48);
-            writer.WriteX(unk_0x4C);
+        public void ValidateReferences()
+        {
+            // Topology assertions
+            if (topologyMetadata == TrackTopologyMetadata.IsTransformParent)
+                Assert.IsTrue(childrenPtrs.IsNotNullPointer);
+            // TODO: more edge cases to assert
 
-            // HEY! Implement those pointers.
-            throw new NotImplementedException();
+            // Ensure rail flags AND height properties coincide
+            bool hasRailLeft = perimeterOptions.HasFlag(TrackPerimeterOptions.hasRailHeightLeft);
+            bool hasRailRight = perimeterOptions.HasFlag(TrackPerimeterOptions.hasRailHeightRight);
+            Assert.IsFalse(hasRailLeft ^ railHeightRight > 0);
+            Assert.IsFalse(hasRailRight ^ railHeightLeft > 0);
+
+            // Ensure that if there is a turn that one of the two flags for it are set
+            bool hasTurnLeft = perimeterOptions.HasFlag(TrackPerimeterOptions.has90TurnLeft);
+            bool hasTurnRight = perimeterOptions.HasFlag(TrackPerimeterOptions.has90TurnRight);
+            bool isTurnNotNull = hairpinCornerTopology != null;
+            Assert.IsTrue(hasTurnLeft || hasTurnRight && isTurnNotNull);
         }
 
     }

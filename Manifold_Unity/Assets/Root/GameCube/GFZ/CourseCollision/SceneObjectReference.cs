@@ -10,7 +10,8 @@ namespace GameCube.GFZ.CourseCollision
     [Serializable]
     public class SceneObjectReference :
         IBinaryAddressable,
-        IBinarySerializable
+        IBinarySerializable,
+        ISerializedBinaryAddressableReferer
     {
         // METADATA
         [UnityEngine.SerializeField]
@@ -34,6 +35,14 @@ namespace GameCube.GFZ.CourseCollision
 
 
         // METHODS
+        public void ValidateReferences()
+        {
+            // This pointer CANNOT be null and must refer to an object name.
+            Assert.IsTrue(namePtr.IsNotNullPointer);
+            Assert.IsTrue(name != null);
+            Assert.IsTrue(!string.IsNullOrEmpty(name.value));
+        }
+
         public void Deserialize(BinaryReader reader)
         {
             this.RecordStartAddress(reader);

@@ -73,12 +73,5 @@ namespace GameCube.GFZ.CourseCollision
             }
             this.RecordStartAddress(writer);
         }
-
-        public AddressRange SerializeWithReference(BinaryWriter writer)
-        {
-            Serialize(writer);
-            return addressRange;
-        }
-
     }
 }

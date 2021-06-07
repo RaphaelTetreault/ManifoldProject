@@ -15,7 +15,8 @@ namespace GameCube.GFZ.CourseCollision
     [Serializable]
     public class TrackNode :
         IBinaryAddressable,
-        IBinarySerializable
+        IBinarySerializable,
+        ISerializedBinaryAddressableReferer
     {
         // METADATA
         [UnityEngine.SerializeField]
@@ -62,10 +63,10 @@ namespace GameCube.GFZ.CourseCollision
 
         public void Serialize(BinaryWriter writer)
         {
-            writer.CommentType<TrackNode>(ColiCourseUtility.SerializeVerbose);
-
-            throw new NotImplementedException();
-
+            {
+                pointsPtr = points.GetArrayPointer();
+                transformPtr = transform.GetPointer();
+            }
             this.RecordStartAddress(writer);
             {
                 writer.WriteX(pointsPtr);
@@ -74,5 +75,12 @@ namespace GameCube.GFZ.CourseCollision
             this.RecordEndAddress(writer);
         }
 
+        public void ValidateReferences()
+        {
+            Assert.IsTrue(pointsPtr.IsNotNullPointer);
+            Assert.IsTrue(transformPtr.IsNotNullPointer);
+            Assert.IsTrue(points != null);
+            Assert.IsTrue(transform != null);
+        }
     }
 }

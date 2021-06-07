@@ -8,7 +8,10 @@ namespace GameCube.GFZ.CourseCollision
     /// 
     /// </summary>
     [Serializable]
-    public class ColliderGeometry : IBinarySerializable, IBinaryAddressable
+    public class ColliderGeometry :
+        IBinaryAddressable,
+        IBinarySerializable,
+        ISerializedBinaryAddressableReferer
     {
         // METADATA
         [UnityEngine.SerializeField]
@@ -23,8 +26,8 @@ namespace GameCube.GFZ.CourseCollision
         // this is a ArrayPointer2D, consider refactor
         public int triCount;
         public int quadCount;
-        public uint triAbsPtr;
-        public uint quadAbsPtr;
+        public Pointer trisPtr;
+        public Pointer quadsPtr;
         // FIELDS (deserialized from pointers)
         public ColliderTriangle[] tris;
         public ColliderQuad[] quads;
@@ -39,6 +42,22 @@ namespace GameCube.GFZ.CourseCollision
 
 
         // METHODS
+        public void ValidateReferences()
+        {
+            // Sanity check
+            if (tris.Length > 0)
+            {
+                Assert.IsTrue(triCount == tris.Length);
+                Assert.IsTrue(trisPtr.IsNotNullPointer);
+
+                foreach (var tri in tris)
+                {
+                    Assert.IsTrue(tri != null);
+                }
+            }
+
+        }
+
         public void Deserialize(BinaryReader reader)
         {
             this.RecordStartAddress(reader);
@@ -50,20 +69,20 @@ namespace GameCube.GFZ.CourseCollision
                 reader.ReadX(ref unk_0x10);
                 reader.ReadX(ref triCount);
                 reader.ReadX(ref quadCount);
-                reader.ReadX(ref triAbsPtr);
-                reader.ReadX(ref quadAbsPtr);
+                reader.ReadX(ref trisPtr);
+                reader.ReadX(ref quadsPtr);
             }
             this.RecordEndAddress(reader);
             {
                 if (triCount > 0)
                 {
-                    reader.BaseStream.Seek(triAbsPtr, SeekOrigin.Begin);
+                    reader.JumpToAddress(trisPtr);
                     reader.ReadX(ref tris, triCount, true);
                 }
 
                 if (quadCount > 0)
                 {
-                    reader.BaseStream.Seek(quadAbsPtr, SeekOrigin.Begin);
+                    reader.JumpToAddress(quadsPtr);
                     reader.ReadX(ref quads, quadCount, true);
                 }
             }
@@ -72,18 +91,25 @@ namespace GameCube.GFZ.CourseCollision
 
         public void Serialize(BinaryWriter writer)
         {
-            writer.WriteX(unk_0x00);
-            writer.WriteX(unk_0x04);
-            writer.WriteX(unk_0x08);
-            writer.WriteX(unk_0x0C);
-            writer.WriteX(unk_0x10);
-            writer.WriteX(triCount);
-            writer.WriteX(quadCount);
-            writer.WriteX(triAbsPtr);
-            writer.WriteX(quadAbsPtr);
-
-            // You need to implement saving the tris/quads
-            throw new NotImplementedException();
+            {
+                triCount = tris.Length;
+                quadCount = quads.Length;
+                trisPtr = tris.GetBasePointer();
+                quadsPtr = quads.GetBasePointer();
+            }
+            this.RecordStartAddress(writer);
+            {
+                writer.WriteX(unk_0x00);
+                writer.WriteX(unk_0x04);
+                writer.WriteX(unk_0x08);
+                writer.WriteX(unk_0x0C);
+                writer.WriteX(unk_0x10);
+                writer.WriteX(triCount);
+                writer.WriteX(quadCount);
+                writer.WriteX(trisPtr);
+                writer.WriteX(quadsPtr);
+            }
+            this.RecordEndAddress(writer);
         }
 
     }

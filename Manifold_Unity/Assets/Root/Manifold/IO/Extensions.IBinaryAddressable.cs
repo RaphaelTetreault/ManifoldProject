@@ -76,6 +76,21 @@ namespace Manifold.IO
         }
 
         /// <summary>
+        /// Get the address of the first element in the array. Address is relative to last (de)serialization stream.
+        /// </summary>
+        /// <param name="values">The values to get the pointer base from.</param>
+        /// <returns></returns>
+        public static Pointer GetBasePointer(this IBinaryAddressable[] values)
+        {
+            // TODO: consider null checks.
+
+            // Get pointer of first item in array
+            // If array is empty, return null pointer (0)
+            Pointer pointer = values.Length == 0 ? 0 : values[0].GetPointer();
+            return pointer;
+        }
+
+        /// <summary>
         /// Get the address of all values. Address is relative to last (de)serialization stream.
         /// </summary>
         /// <param name="values">The values to get pointers from.</param>
@@ -92,6 +107,9 @@ namespace Manifold.IO
 
             return pointers;
         }
+
+
+
 
         /// <summary>
         /// Get the length address of the value. Address is relative to last (de)serialization stream.

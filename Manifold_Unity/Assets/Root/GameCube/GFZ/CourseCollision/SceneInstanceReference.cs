@@ -10,7 +10,8 @@ namespace GameCube.GFZ.CourseCollision
     [Serializable]
     public class SceneInstanceReference :
         IBinaryAddressable,
-        IBinarySerializable
+        IBinarySerializable,
+        ISerializedBinaryAddressableReferer
     {
         // METADATA
         [UnityEngine.SerializeField] private AddressRange addressRange;
@@ -36,6 +37,13 @@ namespace GameCube.GFZ.CourseCollision
 
 
         // METHODS
+        public void ValidateReferences()
+        {
+            // This pointer CANNOT be null and must refer to an object.
+            Assert.IsTrue(objectReferencePtr.IsNotNullPointer);
+            Assert.IsTrue(objectReference != null);
+        }
+
         public void Deserialize(BinaryReader reader)
         {
             this.RecordStartAddress(reader);
@@ -68,9 +76,6 @@ namespace GameCube.GFZ.CourseCollision
             {
                 objectReferencePtr = objectReference.GetPointer();
                 colliderGeometryPtr = colliderGeometry.GetPointer();
-
-                // Only this ptr cannot be not
-                Assert.IsTrue(objectReferencePtr.IsNotNullPointer);
             }
             this.RecordStartAddress(writer);
             {
@@ -82,10 +87,5 @@ namespace GameCube.GFZ.CourseCollision
             this.RecordEndAddress(writer);
         }
 
-        public AddressRange SerializeWithReference(BinaryWriter writer)
-        {
-            Serialize(writer);
-            return addressRange;
-        }
     }
 }

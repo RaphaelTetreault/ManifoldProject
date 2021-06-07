@@ -10,11 +10,11 @@ namespace GameCube.GFZ.CourseCollision
     [Serializable]
     public class SceneObject :
         IBinaryAddressable,
-        IBinarySerializable
+        IBinarySerializable,
+        ISerializedBinaryAddressableReferer
     {
         // METADATA
-        [UnityEngine.SerializeField]
-        private AddressRange addressRange;
+        [UnityEngine.SerializeField] private AddressRange addressRange;
         /// <summary>
         /// Object's name from table sub-structure
         /// </summary>
@@ -47,6 +47,13 @@ namespace GameCube.GFZ.CourseCollision
 
 
         // METHODS
+        public void ValidateReferences()
+        {
+            // This pointer CANNOT be null and must refer to an object.
+            Assert.IsTrue(instanceReferencePtr.IsNotNullPointer);
+            Assert.IsTrue(instanceReference != null);
+        }
+
         public void Deserialize(BinaryReader reader)
         {
             this.RecordStartAddress(reader);
@@ -106,13 +113,12 @@ namespace GameCube.GFZ.CourseCollision
         public void Serialize(BinaryWriter writer)
         {
             {
+                // Get pointers from refered instances
                 instanceReferencePtr = instanceReference.GetPointer();
                 animationPtr = animation.GetPointer();
                 unkPtr_0x34 = unk1.GetPointer();
                 skeletalAnimatorPtr = skeletalAnimator.GetPointer();
                 transformPtr = transformMatrix3x4.GetPointer();
-
-                Assert.IsTrue(instanceReferencePtr.IsNotNullPointer);
             }
             this.RecordStartAddress(writer);
             {
@@ -127,15 +133,6 @@ namespace GameCube.GFZ.CourseCollision
                 writer.WriteX(transformPtr);
             }
             this.RecordEndAddress(writer);
-
-            // Write values pointed at, update ptrs above
-            //throw new NotImplementedException();
-        }
-
-        public AddressRange SerializeWithReference(BinaryWriter writer)
-        {
-            Serialize(writer);
-            return addressRange;
         }
     }
 }
