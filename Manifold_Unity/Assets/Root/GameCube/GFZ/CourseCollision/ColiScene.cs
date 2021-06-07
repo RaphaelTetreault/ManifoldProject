@@ -265,9 +265,9 @@ namespace GameCube.GFZ.CourseCollision
             //writer.WriteX(sceneOriginObjectsList, false);
             // 0x74, 0x78: unused in header
             writer.InlineDesc(ColiCourseUtility.SerializeVerbose, 0x80 + offset, unknownStageData2);
-            header.unknownStageData2Ptr = unknownStageData2.SerializeWithReference(writer).GetPointer();
+            writer.WriteX(unknownStageData2);
             writer.InlineDesc(ColiCourseUtility.SerializeVerbose, 0x84 + offset, unknownStageData1);
-            header.unknownStageData1Ptr = unknownStageData1.SerializeWithReference(writer).GetPointer();
+            writer.WriteX(unknownStageData1);
             // 0x88, 0x8C: unused in header
             writer.InlineDesc(ColiCourseUtility.SerializeVerbose, 0x90 + offset, trackLength);
             writer.CommentLineWide("Length:", trackLength.value.ToString("0.00"), true); // print length
@@ -300,6 +300,8 @@ namespace GameCube.GFZ.CourseCollision
             header.arcadeCheckpointTriggersPtr = arcadeCheckpointTriggers.GetArrayPointer();
             header.storyObjectTriggersPtr = storyObjectTriggers.GetArrayPointer();
             header.trackIndexTable = trackIndexTable.GetPointer();
+            header.unknownStageData2Ptr = unknownStageData2.GetPointer();
+            header.unknownStageData1Ptr = unknownStageData1.GetPointer();
             //
             header.trackNodesPtr = trackNodes.GetArrayPointer();
             //

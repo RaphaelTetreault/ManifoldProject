@@ -47,7 +47,7 @@ namespace GameCube.GFZ.CourseCollision
         {
             //
             {
-                animationCurvePtr = animationCurve.SerializeAsArrayReference(writer);
+                animationCurvePtr = animationCurve.GetArrayPointer();
             }
             this.RecordStartAddress(writer);
             {

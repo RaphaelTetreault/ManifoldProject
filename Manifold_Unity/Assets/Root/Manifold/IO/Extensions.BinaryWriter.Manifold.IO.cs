@@ -85,8 +85,8 @@ namespace Manifold.IO
         public static void CommentPtr(this BinaryWriter writer, int address, bool doWrite, char padding = ' ', int alignment = 16, string format = "x8")
             => CommentLineWide(writer, "PtrAdr:", address.ToString(format), doWrite, padding, alignment);
 
-        public static void CommentPtr(this BinaryWriter writer, IPointer pointer, bool doWrite, char padding = ' ', int alignment = 16)
-            => CommentPtr(writer, pointer.Address, doWrite, padding, alignment);
+        //public static void CommentPtr(this BinaryWriter writer, IPointer pointer, bool doWrite, char padding = ' ', int alignment = 16)
+        //    => CommentPtr(writer, pointer.Address, doWrite, padding, alignment);
 
         public static void CommentPtr(this BinaryWriter writer, AddressRange addresRange, bool doWrite, char padding = ' ', int alignment = 16)
             => CommentPtr(writer, (int)addresRange.startAddress, doWrite, padding, alignment);

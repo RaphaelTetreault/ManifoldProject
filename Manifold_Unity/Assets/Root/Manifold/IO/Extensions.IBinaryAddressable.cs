@@ -85,8 +85,8 @@ namespace Manifold.IO
             // TODO: consider null checks.
 
             // Get pointer of first item in array
-            // If array is empty, return null pointer (0)
-            Pointer pointer = values.Length == 0 ? 0 : values[0].GetPointer();
+            // If array is empty, return null pointer
+            Pointer pointer = values.Length == 0 ? new Pointer() : values[0].GetPointer();
             return pointer;
         }
 
@@ -133,23 +133,23 @@ namespace Manifold.IO
             return arrayPointer;
         }
 
-        /// <summary>
-        /// Get the length address of the value. Address is relative to last (de)serialization stream.
-        /// </summary>
-        /// <param name="values">The array to get the array pointer from.</param>
-        /// <returns></returns>
-        public static ArrayPointer2D GetArrayPointer2D(this IBinaryAddressable[] values)
-        {
-            // TODO: consider null checks.
+        ///// <summary>
+        ///// Get the length address of the value. Address is relative to last (de)serialization stream.
+        ///// </summary>
+        ///// <param name="values">The array to get the array pointer from.</param>
+        ///// <returns></returns>
+        //public static ArrayPointer2D GetArrayPointer2D(this IBinaryAddressable[] values)
+        //{
+        //    // TODO: consider null checks.
 
-            var arrayPointer = new ArrayPointer()
-            {
-                Length = values.Length,
-                // Address is 0 if no length, is address of first item otherwise
-                Address = values.Length == 0 ? 0 : values[0].AddressRange.GetPointer().address,
-            };
-            return arrayPointer;
-        }
+        //    var arrayPointer = new ArrayPointer()
+        //    {
+        //        Length = values.Length,
+        //        // Address is 0 if no length, is address of first item otherwise
+        //        Address = values.Length == 0 ? 0 : values[0].AddressRange.GetPointer().address,
+        //    };
+        //    return arrayPointer;
+        //}
 
     }
 }

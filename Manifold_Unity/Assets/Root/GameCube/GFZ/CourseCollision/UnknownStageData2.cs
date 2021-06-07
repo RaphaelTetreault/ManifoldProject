@@ -15,7 +15,7 @@ namespace GameCube.GFZ.CourseCollision
         IBinarySerializable
     {
         // CONSTANTS
-        public const int kElementCount = 6;
+        public const int kCurveCount = 6;
 
         // FIELDS
         [UnityEngine.SerializeField]
@@ -24,7 +24,7 @@ namespace GameCube.GFZ.CourseCollision
         // TODO: accessors which name the animation curves?
 
         public ArrayPointer[] animationCurvePtrs;
-        public AnimationCurve[] animationCurves = new AnimationCurve[kElementCount];
+        public AnimationCurve[] animationCurves = new AnimationCurve[kCurveCount];
 
         public UnknownStageData2()
         {
@@ -48,7 +48,7 @@ namespace GameCube.GFZ.CourseCollision
             this.RecordStartAddress(reader);
             {
                 // read 6 array pointers
-                reader.ReadX(ref animationCurvePtrs, kElementCount, true);
+                reader.ReadX(ref animationCurvePtrs, kCurveCount, true);
             }
             this.RecordEndAddress(reader);
             {
@@ -69,26 +69,25 @@ namespace GameCube.GFZ.CourseCollision
 
         public void Serialize(BinaryWriter writer)
         {
-            // Store current address since we will have to come back and overwrite it
-            var structureAddress = writer.GetPositionAsPointer();
-
-            // Serialize structure with null/garbage pointers 
-            SerializeStructure(writer);
-            // Serialize references
-            SerializeReferences(writer);
-            // Got back to structure, rewrite with real pointers
-            writer.JumpToAddress(structureAddress);
-            SerializeStructure(writer);
-
-            // Go back to end of stream
-            writer.SeekEnd();
-
+            {
+                // Ensure we have the correct amount of animation curves before indexing
+                Assert.IsTrue(animationCurves.Length == kCurveCount);
+                // Construct ArrayPointer2D for animation curves
+                animationCurvePtrs = new ArrayPointer[kCurveCount];
+                for (int i = 0; i < animationCurvePtrs.Length; i++)
+                    animationCurvePtrs[i] = animationCurves[i].GetArrayPointer();
+            }
+            this.RecordStartAddress(writer);
+            {
+                writer.WriteX(animationCurvePtrs, false);
+            }
+            this.RecordEndAddress(writer);
         }
 
         private void SerializeStructure(BinaryWriter writer)
         {
             // There shoul ALWAYS be 6 animation curves, even if some are "null"
-            Assert.IsTrue(animationCurves.Length == kElementCount);
+            Assert.IsTrue(animationCurves.Length == kCurveCount);
 
             this.RecordStartAddress(writer);
             {
@@ -97,61 +96,6 @@ namespace GameCube.GFZ.CourseCollision
                     writer.WriteX(arrayPointer);
             }
             this.RecordEndAddress(writer);
-        }
-
-        private void SerializeReferences(BinaryWriter writer)
-        {
-            // There shoul ALWAYS be 6 animation curve pointers, even if some are "null"
-            Assert.IsTrue(animationCurvePtrs.Length == kElementCount);
-
-            for (int i = 0; i < animationCurves.Length; i++)
-            {
-                // Make ref easy
-                var animationCurve = animationCurves[i];
-
-                // Write ASCII comment header
-                if (ColiCourseUtility.SerializeVerbose)
-                {
-                    writer.CommentNewLine(true, ' ');
-                    writer.CommentNewLine(true, '-');
-                    writer.CommentType<AnimationCurve>(true);
-                    writer.CommentPtr(ColiCourseUtility.Pointer, true);
-                    writer.CommentCnt(animationCurve.Length, true, format:"x8");
-                    writer.CommentCnt(animationCurve.Length, true);
-                    writer.CommentNewLine(true, '-');
-                }
-
-                // Serialize structure
-                var pointer = animationCurve.SerializeWithReference(writer).GetPointer();
-                // Assign array pointer for this animation curve
-                animationCurvePtrs[i] = new ArrayPointer(animationCurve.Length, pointer.address);
-            }
-        }
-
-        public AddressRange SerializeWithReference(BinaryWriter writer)
-        {
-            // According to notes, this structure can be null.
-            // If so, return new pointer un-init.
-            // This is a protection against an init but empty struct.
-            bool isNotNull = false;
-            foreach (var animationCurve in animationCurves)
-            {
-                if (animationCurve.Length != 0)
-                {
-                    isNotNull = true;
-                    break;
-                }
-            }
-
-            if (isNotNull)
-            {
-                Serialize(writer);
-                return addressRange;
-            }
-            else
-            {
-                return new AddressRange();
-            }
         }
 
     }

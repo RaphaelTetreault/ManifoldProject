@@ -107,16 +107,11 @@ namespace GameCube.GFZ.CourseCollision
             {
                 // Ensure we have the correct amount of animation curves before indexing
                 Assert.IsTrue(animationCurves.Length == kCurveCount);
-
                 // Construct ArrayPointer2D for animation curves
-                var ptrs2D = new ArrayPointer[kCurveCount];
-                for (int i = 0; i < ptrs2D.Length; i++)
-                {
-                    var length = animationCurves[i].Length;
-                    var address = animationCurves[i].GetPointer().address;
-                    ptrs2D[i] = new ArrayPointer(length, address);
-                }
-                curvePtrs2D = new ArrayPointer2D(ptrs2D);
+                var pointers = new ArrayPointer[kCurveCount];
+                for (int i = 0; i < pointers.Length; i++)
+                    pointers[i] = animationCurves[i].GetArrayPointer();
+                curvePtrs2D = new ArrayPointer2D(pointers);
             }
             this.RecordStartAddress(writer);
             {
@@ -125,7 +120,43 @@ namespace GameCube.GFZ.CourseCollision
             this.RecordEndAddress(writer);
         }
 
+        public void ValidateReferences()
+        {
+            // Assert array information
+            Assert.IsTrue(animationCurves != null);
+            Assert.IsTrue(animationCurves.Length == kCurveCount);
+            Assert.IsTrue(curvePtrs2D.Length == kCurveCount);
 
+            // Assert array items
+            for (int i = 0; i < kCurveCount; i++)
+            {
+                // Simplify access
+                var animationCurve = animationCurves[i];
+                var animationCurvePtrs = curvePtrs2D.ArrayPointers[i];
+
+                // Ensure each item in 2D array is not true null
+                Assert.IsTrue(animationCurve != null);
+                // Ensure data matches up
+                Assert.IsTrue(animationCurve.Length == animationCurvePtrs.Length);
+                Assert.IsTrue(animationCurve.AddressRange.GetPointer() == animationCurvePtrs.Pointer);
+
+                if (animationCurve.Length > 0)
+                {
+                    // Assert IS TRUE
+                    Assert.IsTrue(animationCurvePtrs.IsNotNullPointer);
+                    Assert.IsTrue(animationCurvePtrs.Length == 0);
+                }
+                else
+                {
+                    // Assert IS FALSE
+                    Assert.IsFalse(animationCurvePtrs.IsNotNullPointer);
+                    Assert.IsFalse(animationCurvePtrs.Length == 0);
+                }
+            }
+        }
+
+
+        // TODO: move these into Unity class
         public KeyableAttribute[] EnforceNoDuplicateTimes(KeyableAttribute[] keyables)
         {
             var removeIndexes = new List<int>();
@@ -227,40 +258,70 @@ namespace GameCube.GFZ.CourseCollision
             }
         }
 
-
-        public void ValidateReferences()
+        public Vector3 EvaluateScale(float t)
         {
-            // Assert array information
-            Assert.IsTrue(animationCurves != null);
-            Assert.IsTrue(animationCurves.Length == kCurveCount);
-            Assert.IsTrue(curvePtrs2D.Length == kCurveCount);
+            const float defaultValue = 1f;
 
-            // Assert array items
-            for (int i = 0; i < kCurveCount; i++)
-            {
-                // Simplify access
-                var animationCurve = animationCurves[i];
-                var animationCurvePtrs = curvePtrs2D.ArrayPointers[i];
+            var curveX = unityCurves[0];
+            var curveY = unityCurves[1];
+            var curveZ = unityCurves[2];
 
-                // Ensure each item in 2D array is not true null
-                Assert.IsTrue(animationCurve != null);
-                // Ensure data matches up
-                Assert.IsTrue(animationCurve.Length == animationCurvePtrs.Length);
-                Assert.IsTrue(animationCurve.AddressRange.GetPointer() == animationCurvePtrs.Pointer);
+            var scale = new Vector3(
+                EvaluateDefault(curveX, t, defaultValue),
+                EvaluateDefault(curveY, t, defaultValue),
+                EvaluateDefault(curveZ, t, defaultValue)
+                );
 
-                if (animationCurve.Length > 0)
-                {
-                    // Assert IS TRUE
-                    Assert.IsTrue(animationCurvePtrs.IsNotNullPointer);
-                    Assert.IsTrue(animationCurvePtrs.Length == 0);
-                }
-                else
-                {
-                    // Assert IS FALSE
-                    Assert.IsFalse(animationCurvePtrs.IsNotNullPointer);
-                    Assert.IsFalse(animationCurvePtrs.Length == 0);
-                }
-            }
+            return scale;
         }
+
+        public Vector3 EvaluateRotationEuler(float t)
+        {
+            const float defaultValue = 0f;
+
+            var curveX = unityCurves[3];
+            var curveY = unityCurves[4];
+            var curveZ = unityCurves[5];
+
+            var rotationEuler = new Vector3(
+                EvaluateDefault(curveX, t, defaultValue),
+                EvaluateDefault(curveY, t, defaultValue),
+                EvaluateDefault(curveZ, t, defaultValue)
+                );
+
+            return rotationEuler;
+        }
+
+        public Quaternion EvaluateRotation(float t)
+        {
+            var quaternion = Quaternion.Euler(EvaluateRotationEuler(t));
+            return quaternion;
+        }
+
+        public Vector3 EvaluatePosition(float t)
+        {
+            const float defaultValue = 0f;
+
+            var curveX = unityCurves[6];
+            var curveY = unityCurves[7];
+            var curveZ = unityCurves[8];
+
+            var scale = new Vector3(
+                EvaluateDefault(curveX, t, defaultValue),
+                EvaluateDefault(curveY, t, defaultValue),
+                EvaluateDefault(curveZ, t, defaultValue)
+                );
+
+            return scale;
+        }
+
+        public static float EvaluateDefault(UnityEngine.AnimationCurve curve, float time, float @default)
+        {
+            if (curve.length == 0)
+                return @default;
+
+            return curve.Evaluate(time);
+        }
+
     }
 }
