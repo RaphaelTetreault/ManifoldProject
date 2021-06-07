@@ -37,7 +37,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 {
                     // size = 10 like other triggers?
                     // BBO seems to work well with 27.5f
-                    Gizmos.DrawMesh(mesh, 0, item.position, item.Rotation, item.Scale * size);
+                    Gizmos.DrawMesh(mesh, 0, item.Position, item.Rotation, item.Scale * size);
                 }
             }
         }

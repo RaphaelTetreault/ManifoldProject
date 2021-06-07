@@ -54,23 +54,24 @@ namespace Manifold.IO.GFZ.CourseCollision
 
             if (exportHandMade)
             {
-                var temp = new ColiScene[]
-                   {
-                        new ColiScene() {
-                            FileName = "COLI_COURSE999",
-                            header = new Header()
-                            {
-                                Format = Header.SerializeFormat.GX,
-                            },
-                        }
-                   };
-                var exportedFiles = ExportUtility.ExportSerializable(temp, exportTo, "", allowOverwritingFiles);
-                if (exportCompressed)
-                {
-                    var compressedFiles = GfzUtility.CompressEachAsLZ(exportedFiles, allowOverwritingFiles);
-                    ExportUtility.PrintExportsToConsole(this, compressedFiles);
-                }
-                OSUtility.OpenDirectory(openFolderAfterExport, exportedFiles);
+                throw new System.NotImplementedException();
+                //var temp = new ColiScene[]
+                //   {
+                //        new ColiScene() {
+                //            FileName = "COLI_COURSE999",
+                //            header = new Header()
+                //            {
+                //                Format = Header.SerializeFormat.GX,
+                //            },
+                //        }
+                //   };
+                //var exportedFiles = ExportUtility.ExportSerializable(temp, exportTo, "", allowOverwritingFiles);
+                //if (exportCompressed)
+                //{
+                //    var compressedFiles = GfzUtility.CompressEachAsLZ(exportedFiles, allowOverwritingFiles);
+                //    ExportUtility.PrintExportsToConsole(this, compressedFiles);
+                //}
+                //OSUtility.OpenDirectory(openFolderAfterExport, exportedFiles);
             }
             else
             {

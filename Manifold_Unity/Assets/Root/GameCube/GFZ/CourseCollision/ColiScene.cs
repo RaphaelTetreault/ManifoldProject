@@ -496,11 +496,13 @@ namespace GameCube.GFZ.CourseCollision
                 reader.ReadX(ref unknownSolsTriggerPtrs);
                 reader.ReadX(ref sceneInstancesListPtrs);
                 reader.ReadX(ref sceneOriginObjectsListPtrs);
-                reader.ReadX(ref unused_0x74_0x78);
+                reader.ReadX(ref zero0x74);
+                reader.ReadX(ref zero0x78);
                 reader.ReadX(ref circuitType);
                 reader.ReadX(ref unknownStageData2Ptr);
                 reader.ReadX(ref unknownStageData1Ptr);
-                reader.ReadX(ref unused_0x88_0x8C);
+                reader.ReadX(ref zero0x88);
+                reader.ReadX(ref zero0x8C);
                 reader.ReadX(ref trackLengthPtr);
                 reader.ReadX(ref unknownTrigger1sPtr);
                 reader.ReadX(ref visualEffectTriggersPtr);
@@ -513,9 +515,10 @@ namespace GameCube.GFZ.CourseCollision
             }
             this.RecordEndAddress(reader);
             {
-                // Assert assumptions
-                Assert.IsTrue(unused_0x74_0x78.Length == 0 && unused_0x74_0x78.Address == 0);
-                Assert.IsTrue(unused_0x88_0x8C.Length == 0 && unused_0x88_0x8C.Address == 0);
+                Assert.IsTrue(zero0x74 == 0);
+                Assert.IsTrue(zero0x78 == 0);
+                Assert.IsTrue(zero0x88 == 0);
+                Assert.IsTrue(zero0x8C == 0);
 
                 for (int i = 0; i < zeroes0x28.Length; i++)
                     Assert.IsTrue(zeroes0x28[i] == 0);
@@ -597,10 +600,10 @@ namespace GameCube.GFZ.CourseCollision
 
         public void ValidateReferences()
         {
-            // Assert assumptions
-            // perhaps genericize this to ints
-            Assert.IsTrue(unused_0x74_0x78.Length == 0 && unused_0x74_0x78.Address == 0);
-            Assert.IsTrue(unused_0x88_0x8C.Length == 0 && unused_0x88_0x8C.Address == 0);
+            Assert.IsTrue(zero0x74 == 0);
+            Assert.IsTrue(zero0x78 == 0);
+            Assert.IsTrue(zero0x88 == 0);
+            Assert.IsTrue(zero0x8C == 0);
 
             for (int i = 0; i < zeroes0x28.Length; i++)
                 Assert.IsTrue(zeroes0x28[i] == 0);

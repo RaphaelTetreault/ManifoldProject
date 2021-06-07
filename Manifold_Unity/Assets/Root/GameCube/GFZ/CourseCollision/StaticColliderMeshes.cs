@@ -46,8 +46,8 @@ namespace GameCube.GFZ.CourseCollision
 
         public static int SurfacesCount(ColiScene scene)
         {
-            Assert.IsTrue(scene.header.IsValidFile);
-            return scene.header.IsFileAX
+            Assert.IsTrue(scene.IsValidFile);
+            return scene.IsFileAX
                 ? kCountAxSurfaceTypes
                 : kCountGxSurfaceTypes;
         }

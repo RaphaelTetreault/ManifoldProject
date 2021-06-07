@@ -149,10 +149,10 @@ namespace Manifold.IO.GFZ.CourseCollision
             // Create static scene colliders
             // Ensure either or (XOR), but not both
             // TODO: do this in header directly
-            Assert.IsTrue(scene.header.IsFileAX ^ scene.header.IsFileGX);
+            Assert.IsTrue(scene.IsFileAX ^ scene.IsFileGX);
 
             // Turn into function within StaticMeshTable (take param header)
-            var surfaceTypeCount = scene.header.IsFileAX
+            var surfaceTypeCount = scene.IsFileAX
                 ? StaticColliderMeshes.kCountAxSurfaceTypes
                 : StaticColliderMeshes.kCountGxSurfaceTypes;
 

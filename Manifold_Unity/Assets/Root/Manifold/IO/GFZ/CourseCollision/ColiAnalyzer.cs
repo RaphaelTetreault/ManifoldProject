@@ -356,7 +356,7 @@ namespace Manifold.IO.GFZ.CourseCollision
         }
         public void WriteKeyableAttribute(StreamWriter writer, ColiSceneSobj sobj, int nestedDepth, int keyableIndex, int keyableTotal, int keyablesSet, int trackTransformIndex, KeyableAttribute param, TrackTransform tt)
         {
-            string gameId = sobj.Value.header.IsFileGX ? "GX" : "AX";
+            string gameId = sobj.Value.IsFileGX ? "GX" : "AX";
 
             writer.WriteNextCol(sobj.FileName);
             writer.WriteNextCol(gameId);
@@ -982,69 +982,68 @@ namespace Manifold.IO.GFZ.CourseCollision
                 foreach (var sceneSobj in sceneSobjs)
                 {
                     var scene = sceneSobj.Value;
-                    var header = scene.header;
 
                     writer.WriteNextCol(scene.FileName);
                     writer.WriteNextCol(scene.ID);
                     writer.WriteNextCol(CourseUtility.GetVenueID(scene.ID).GetDescription());
                     writer.WriteNextCol(((CourseIndexAX)scene.ID).GetDescription());
-                    writer.WriteNextCol(header.IsFileGX ? "GX" : "AX");
+                    writer.WriteNextCol(scene.IsFileGX ? "GX" : "AX");
 
-                    writer.WriteNextCol(header.unk_0x00.a);
-                    writer.WriteNextCol(header.unk_0x00.b);
-                    writer.WriteNextCol(header.trackNodesPtr.Length);
-                    writer.WriteNextCol(header.trackNodesPtr.HexAddress);
-                    writer.WriteNextCol(header.surfaceAttributeAreasPtr.Length);
-                    writer.WriteNextCol(header.surfaceAttributeAreasPtr.HexAddress);
-                    writer.WriteNextCol(header.boostPadsActive);
-                    writer.WriteNextCol(header.surfaceAttributeMeshTablePtr.HexAddress);
-                    writer.WriteNextCol(header.zeroes0x20_Ptr.HexAddress);
-                    writer.WriteNextCol(header.trackMinHeightPtr.HexAddress);
+                    writer.WriteNextCol(scene.unk_0x00.a);
+                    writer.WriteNextCol(scene.unk_0x00.b);
+                    writer.WriteNextCol(scene.trackNodesPtr.Length);
+                    writer.WriteNextCol(scene.trackNodesPtr.HexAddress);
+                    writer.WriteNextCol(scene.surfaceAttributeAreasPtr.Length);
+                    writer.WriteNextCol(scene.surfaceAttributeAreasPtr.HexAddress);
+                    writer.WriteNextCol(scene.boostPadsActive);
+                    writer.WriteNextCol(scene.staticColliderMeshTablePtr.HexAddress);
+                    writer.WriteNextCol(scene.zeroes0x20Ptr.HexAddress);
+                    writer.WriteNextCol(scene.trackMinHeightPtr.HexAddress);
                     writer.WriteNextCol(0);// coliHeader.zero_0x28);
-                    writer.WriteNextCol(header.sceneObjectCount);
-                    if (header.IsFileGX)
+                    writer.WriteNextCol(scene.sceneObjectCount);
+                    if (scene.IsFileGX)
                     {
-                        writer.WriteNextCol(header.unk_sceneObjectCount1);
+                        writer.WriteNextCol(scene.unk_sceneObjectCount1);
                     }
                     else // is AX
                     {
                         writer.WriteNextCol();
                     }
-                    writer.WriteNextCol(header.unk_sceneObjectCount2);
-                    writer.WriteNextCol(header.sceneObjectsPtr.HexAddress);
-                    writer.WriteNextCol(header.unkBool32_0x58);
-                    writer.WriteNextCol(header.unknownSolsTriggerPtrs.Length);
-                    writer.WriteNextCol(header.unknownSolsTriggerPtrs.HexAddress);
-                    writer.WriteNextCol(header.sceneInstancesListPtrs.Length);
-                    writer.WriteNextCol(header.sceneInstancesListPtrs.HexAddress);
-                    writer.WriteNextCol(header.sceneOriginObjectsListPtrs.Length);
-                    writer.WriteNextCol(header.sceneOriginObjectsListPtrs.HexAddress);
-                    writer.WriteNextCol(header.unused_0x74_0x78.Length);
-                    writer.WriteNextCol(header.unused_0x74_0x78.HexAddress);
-                    writer.WriteNextCol(header.circuitType);
-                    writer.WriteNextCol(header.unknownStageData2Ptr.HexAddress);
-                    writer.WriteNextCol(header.unknownStageData1Ptr.HexAddress);
-                    writer.WriteNextCol(header.unused_0x88_0x8C.Length);
-                    writer.WriteNextCol(header.unused_0x88_0x8C.HexAddress);
-                    writer.WriteNextCol(header.trackLengthPtr.HexAddress);
-                    writer.WriteNextCol(header.unknownTrigger1sPtr.Length);
-                    writer.WriteNextCol(header.unknownTrigger1sPtr.HexAddress);
-                    writer.WriteNextCol(header.visualEffectTriggersPtr.Length);
-                    writer.WriteNextCol(header.visualEffectTriggersPtr.HexAddress);
-                    writer.WriteNextCol(header.courseMetadataTriggersPtr.Length);
-                    writer.WriteNextCol(header.courseMetadataTriggersPtr.HexAddress);
-                    writer.WriteNextCol(header.arcadeCheckpointTriggersPtr.Length);
-                    writer.WriteNextCol(header.arcadeCheckpointTriggersPtr.HexAddress);
-                    writer.WriteNextCol(header.storyObjectTriggersPtr.Length);
-                    writer.WriteNextCol(header.storyObjectTriggersPtr.HexAddress);
-                    writer.WriteNextCol(header.trackCheckpointTable8x8Ptr.HexAddress);
+                    writer.WriteNextCol(scene.unk_sceneObjectCount2);
+                    writer.WriteNextCol(scene.sceneObjectsPtr.HexAddress);
+                    writer.WriteNextCol(scene.unkBool32_0x58);
+                    writer.WriteNextCol(scene.unknownSolsTriggerPtrs.Length);
+                    writer.WriteNextCol(scene.unknownSolsTriggerPtrs.HexAddress);
+                    writer.WriteNextCol(scene.sceneInstancesListPtrs.Length);
+                    writer.WriteNextCol(scene.sceneInstancesListPtrs.HexAddress);
+                    writer.WriteNextCol(scene.sceneOriginObjectsListPtrs.Length);
+                    writer.WriteNextCol(scene.sceneOriginObjectsListPtrs.HexAddress);
+                    writer.WriteNextCol(scene.zero0x74);
+                    writer.WriteNextCol(scene.zero0x78);
+                    writer.WriteNextCol(scene.circuitType);
+                    writer.WriteNextCol(scene.unknownStageData2Ptr.HexAddress);
+                    writer.WriteNextCol(scene.unknownStageData1Ptr.HexAddress);
+                    writer.WriteNextCol(scene.zero0x88);
+                    writer.WriteNextCol(scene.zero0x8C);
+                    writer.WriteNextCol(scene.trackLengthPtr.HexAddress);
+                    writer.WriteNextCol(scene.unknownTrigger1sPtr.Length);
+                    writer.WriteNextCol(scene.unknownTrigger1sPtr.HexAddress);
+                    writer.WriteNextCol(scene.visualEffectTriggersPtr.Length);
+                    writer.WriteNextCol(scene.visualEffectTriggersPtr.HexAddress);
+                    writer.WriteNextCol(scene.courseMetadataTriggersPtr.Length);
+                    writer.WriteNextCol(scene.courseMetadataTriggersPtr.HexAddress);
+                    writer.WriteNextCol(scene.arcadeCheckpointTriggersPtr.Length);
+                    writer.WriteNextCol(scene.arcadeCheckpointTriggersPtr.HexAddress);
+                    writer.WriteNextCol(scene.storyObjectTriggersPtr.Length);
+                    writer.WriteNextCol(scene.storyObjectTriggersPtr.HexAddress);
+                    writer.WriteNextCol(scene.trackCheckpointTablePtr.HexAddress);
                     // Structure
-                    writer.WriteNextCol(header.courseBounds.x);
-                    writer.WriteNextCol(header.courseBounds.z);
-                    writer.WriteNextCol(header.courseBounds.unk_0x08);
-                    writer.WriteNextCol(header.courseBounds.unk_0x0C);
-                    writer.WriteNextCol(header.courseBounds.unk_0x10);
-                    writer.WriteNextCol(header.courseBounds.unk_0x14);
+                    writer.WriteNextCol(scene.courseBounds.x);
+                    writer.WriteNextCol(scene.courseBounds.z);
+                    writer.WriteNextCol(scene.courseBounds.unk_0x08);
+                    writer.WriteNextCol(scene.courseBounds.unk_0x0C);
+                    writer.WriteNextCol(scene.courseBounds.unk_0x10);
+                    writer.WriteNextCol(scene.courseBounds.unk_0x14);
                     //
                     writer.WriteNextCol(0);// coliHeader.zero_0xD8);
                     writer.WriteNextCol(scene.trackMinHeight.value);
@@ -1080,7 +1079,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                     var scene = file.Value;
                     var venueID = CourseUtility.GetVenueID(scene.ID).GetDescription();
                     var courseID = ((CourseIndexAX)scene.ID).GetDescription();
-                    var isAxGx = scene.header.IsFileGX ? "GX" : "AX";
+                    var isAxGx = scene.IsFileGX ? "GX" : "AX";
 
                     int count = 0;
                     int total = scene.unknownTrigger1s.Length;
@@ -1136,7 +1135,7 @@ namespace Manifold.IO.GFZ.CourseCollision
         //            var scene = file.Value;
         //            var venueID = CourseUtility.GetVenueID(scene.ID).GetDescription();
         //            var courseID = ((CourseIDEx)scene.ID).GetDescription();
-        //            var isAxGx = scene.header.IsFileGX ? "GX" : "AX";
+        //            var isAxGx = scene.IsFileGX ? "GX" : "AX";
 
         //            foreach (var item in scene.venueMetadataObjects)
         //            {
@@ -1189,7 +1188,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                     var scene = file.Value;
                     var venueID = CourseUtility.GetVenueID(scene.ID).GetDescription();
                     var courseID = ((CourseIndexAX)scene.ID).GetDescription();
-                    var isAxGx = scene.header.IsFileGX ? "GX" : "AX";
+                    var isAxGx = scene.IsFileGX ? "GX" : "AX";
 
                     foreach (var item in scene.storyObjectTriggers)
                     {
@@ -1242,7 +1241,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                     var scene = file.Value;
                     var venueID = CourseUtility.GetVenueID(scene.ID).GetDescription();
                     var courseID = ((CourseIndexAX)scene.ID).GetDescription();
-                    var isAxGx = scene.header.IsFileGX ? "GX" : "AX";
+                    var isAxGx = scene.IsFileGX ? "GX" : "AX";
 
                     var totalD1 = scene.unknownStageData2.animationCurves.Length;
                     var countD1 = 0;
@@ -1297,7 +1296,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                     var scene = file.Value;
                     var venueID = CourseUtility.GetVenueID(scene.ID).GetDescription();
                     var courseID = ((CourseIndexAX)scene.ID).GetDescription();
-                    var isAxGx = scene.header.IsFileGX ? "GX" : "AX";
+                    var isAxGx = scene.IsFileGX ? "GX" : "AX";
 
                     writer.WriteNextCol(scene.FileName);
                     writer.WriteNextCol(scene.ID);
@@ -1527,7 +1526,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                     var scene = sceneSobj.Value;
                     var venueID = CourseUtility.GetVenueID(scene.ID).GetDescription();
                     var courseID = ((CourseIndexAX)scene.ID).GetDescription();
-                    var isAxGx = scene.header.IsFileGX ? "GX" : "AX";
+                    var isAxGx = scene.IsFileGX ? "GX" : "AX";
 
                     // Get all the scene object references
                     var objectsList = new List<(SceneObjectReference sor, string category)>();
@@ -1590,7 +1589,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                     var scene = sceneSobj.Value;
                     var venueID = CourseUtility.GetVenueID(scene.ID).GetDescription();
                     var courseID = ((CourseIndexAX)scene.ID).GetDescription();
-                    var isAxGx = scene.header.IsFileGX ? "GX" : "AX";
+                    var isAxGx = scene.IsFileGX ? "GX" : "AX";
 
                     // Get all the scene object references
                     var objectsList = new List<(SceneInstanceReference sir, string category)>();
@@ -1655,7 +1654,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                     var scene = sceneSobj.Value;
                     var venueID = CourseUtility.GetVenueID(scene.ID).GetDescription();
                     var courseID = ((CourseIndexAX)scene.ID).GetDescription();
-                    var isAxGx = scene.header.IsFileGX ? "GX" : "AX";
+                    var isAxGx = scene.IsFileGX ? "GX" : "AX";
 
                     foreach (var sceneInstance in scene.sceneInstancesList)
                     {
