@@ -1036,7 +1036,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                     writer.WriteNextCol(scene.arcadeCheckpointTriggersPtr.HexAddress);
                     writer.WriteNextCol(scene.storyObjectTriggersPtr.Length);
                     writer.WriteNextCol(scene.storyObjectTriggersPtr.HexAddress);
-                    writer.WriteNextCol(scene.trackCheckpointTablePtr.HexAddress);
+                    writer.WriteNextCol(scene.trackCheckpointTable8x8Ptr.HexAddress);
                     // Structure
                     writer.WriteNextCol(scene.courseBounds.x);
                     writer.WriteNextCol(scene.courseBounds.z);
