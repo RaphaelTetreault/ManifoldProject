@@ -102,7 +102,7 @@ namespace GameCube.GFZ.CourseCollision
         public CourseMetadataTrigger[] courseMetadataTriggers = new CourseMetadataTrigger[0];
         public ArcadeCheckpointTrigger[] arcadeCheckpointTriggers = new ArcadeCheckpointTrigger[0];
         public StoryObjectTrigger[] storyObjectTriggers = new StoryObjectTrigger[0];
-        public TrackCheckpointTable8x8 trackCheckpointTable8x8 = new TrackCheckpointTable8x8();
+        public TrackCheckpointMatrix8x8 trackCheckpointTable8x8 = new TrackCheckpointMatrix8x8();
         // FIELDS (that require extra processing)
         public TrackTransform[] allTrackTransforms;
         public TrackTransform[] rootTrackTransforms;
@@ -406,8 +406,8 @@ namespace GameCube.GFZ.CourseCollision
 
                 // Static Collider Meshes and dependencies
                 referers.Add(staticColliderMeshes);
-                referers.AddRange(staticColliderMeshes.triMeshIndexTables);
-                referers.AddRange(staticColliderMeshes.quadMeshIndexTables);
+                referers.AddRange(staticColliderMeshes.triMeshIndexMatrices);
+                referers.AddRange(staticColliderMeshes.quadMeshIndexMatrices);
 
                 // OBJECTS
                 // The structure which points to the object name

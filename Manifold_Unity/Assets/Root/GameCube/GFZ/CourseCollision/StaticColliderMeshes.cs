@@ -34,8 +34,8 @@ namespace GameCube.GFZ.CourseCollision
         // This data holds the geometry data and indexes
         public ColliderTriangle[] colliderTriangles;
         public ColliderQuad[] colliderQuads;
-        public StaticColliderMeshTable16x16[] triMeshIndexTables;
-        public StaticColliderMeshTable16x16[] quadMeshIndexTables;
+        public StaticColliderMeshMatrix16x16[] triMeshIndexMatrices;
+        public StaticColliderMeshMatrix16x16[] quadMeshIndexMatrices;
 
 
         public AddressRange AddressRange
@@ -83,25 +83,25 @@ namespace GameCube.GFZ.CourseCollision
 
                 /////////////////
                 // Initialize arrays
-                triMeshIndexTables = new StaticColliderMeshTable16x16[countSurfaceTypes];
-                quadMeshIndexTables = new StaticColliderMeshTable16x16[countSurfaceTypes];
+                triMeshIndexMatrices = new StaticColliderMeshMatrix16x16[countSurfaceTypes];
+                quadMeshIndexMatrices = new StaticColliderMeshMatrix16x16[countSurfaceTypes];
 
                 // Read mesh data
                 for (int i = 0; i < countSurfaceTypes; i++)
                 {
                     // Triangles
                     var triIndexesPointer = collisionTriIndexesPtr[i];
-                    triMeshIndexTables[i] = new StaticColliderMeshTable16x16();
+                    triMeshIndexMatrices[i] = new StaticColliderMeshMatrix16x16();
                     //DebugConsole.Log($"tri{i+1}:{triPointer.HexAddress}");
                     reader.JumpToAddress(triIndexesPointer);
-                    reader.ReadX(ref triMeshIndexTables[i], false);
+                    reader.ReadX(ref triMeshIndexMatrices[i], false);
 
                     // Quads
                     var quadPointer = collisionQuadIndexesPtr[i];
-                    quadMeshIndexTables[i] = new StaticColliderMeshTable16x16();
+                    quadMeshIndexMatrices[i] = new StaticColliderMeshMatrix16x16();
                     //DebugConsole.Log($"quad{i+1}:{quadPointer.HexAddress}");
                     reader.JumpToAddress(quadPointer);
-                    reader.ReadX(ref quadMeshIndexTables[i], false);
+                    reader.ReadX(ref quadMeshIndexMatrices[i], false);
                 }
 
                 //
@@ -109,8 +109,8 @@ namespace GameCube.GFZ.CourseCollision
                 int numQuadVerts = 0;
                 for (int i = 0; i < countSurfaceTypes; i++)
                 {
-                    numTriVerts = math.max(triMeshIndexTables[i].IndexesLength, numTriVerts);
-                    numQuadVerts = math.max(quadMeshIndexTables[i].IndexesLength, numQuadVerts);
+                    numTriVerts = math.max(triMeshIndexMatrices[i].IndexesLength, numTriVerts);
+                    numQuadVerts = math.max(quadMeshIndexMatrices[i].IndexesLength, numQuadVerts);
                 }
 
                 reader.JumpToAddress(collisionTrisPtr);
@@ -149,9 +149,9 @@ namespace GameCube.GFZ.CourseCollision
                 // We don't need to store the length (from ArrayPointers).
                 // The game kinda just figures it out on pointer alone.
                 collisionTrisPtr = colliderTriangles.GetBasePointer();
-                collisionTriIndexesPtr = triMeshIndexTables.GetPointers();
+                collisionTriIndexesPtr = triMeshIndexMatrices.GetPointers();
                 collisionQuadsPtr = colliderQuads.GetBasePointer();
-                collisionQuadIndexesPtr = quadMeshIndexTables.GetPointers();
+                collisionQuadIndexesPtr = quadMeshIndexMatrices.GetPointers();
             }
             this.RecordStartAddress(writer);
             {

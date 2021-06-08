@@ -192,21 +192,21 @@ namespace Manifold.IO.GFZ.CourseCollision
             var colliderQuads = scm.colliderQuads;
 
             //
-            const int nLists = StaticColliderMeshTable16x16.kListCount;
+            const int nLists = StaticColliderMeshMatrix16x16.kListCount;
             var meshes = new Mesh[nLists];
 
             //
             int meshSurfaceTypeIndex = (int)meshSurfaceType;
 
             // Get triangle information for the current mesh type
-            var triIndex16x16 = scm.triMeshIndexTables[meshSurfaceTypeIndex];
+            var triIndex16x16 = scm.triMeshIndexMatrices[meshSurfaceTypeIndex];
             var triIndexLists = triIndex16x16.indexLists;
-            Assert.IsTrue(triIndexLists.Length == 0 || triIndexLists.Length == StaticColliderMeshTable16x16.kListCount);
+            Assert.IsTrue(triIndexLists.Length == 0 || triIndexLists.Length == StaticColliderMeshMatrix16x16.kListCount);
 
             //
-            var quadMeshIndexes = scm.quadMeshIndexTables[meshSurfaceTypeIndex];
+            var quadMeshIndexes = scm.quadMeshIndexMatrices[meshSurfaceTypeIndex];
             var quadIndexLists = quadMeshIndexes.indexLists;
-            Assert.IsTrue(quadIndexLists.Length == 0 || quadIndexLists.Length == StaticColliderMeshTable16x16.kListCount);
+            Assert.IsTrue(quadIndexLists.Length == 0 || quadIndexLists.Length == StaticColliderMeshMatrix16x16.kListCount);
 
             //
             for (int listIndex = 0; listIndex < nLists; listIndex++)
@@ -280,14 +280,14 @@ namespace Manifold.IO.GFZ.CourseCollision
                 var submeshes = new SubMeshDescriptor[2];
 
                 // Create triangle mesh from unique triangles
-                var triIndexLists = scm.triMeshIndexTables[meshSurfaceType].indexLists;
+                var triIndexLists = scm.triMeshIndexMatrices[meshSurfaceType].indexLists;
                 var triUniqueIndexes = GetUniqueIndexes(triIndexLists);
                 var colliderTrianglesSubset = GetIndexes(colliderTriangles, triUniqueIndexes);
                 var trianglesSubmesh = CreateTriSubmeshForMesh(mesh, colliderTrianglesSubset, createBackfaces);
                 submeshes[triSubmeshIndex] = trianglesSubmesh;
 
                 // Create triangle mesh from unique quads (quads are interpreted as triangles)
-                var quadIndexLists = scm.quadMeshIndexTables[meshSurfaceType].indexLists;
+                var quadIndexLists = scm.quadMeshIndexMatrices[meshSurfaceType].indexLists;
                 var quadUniqueIndexes = GetUniqueIndexes(quadIndexLists);
                 var colliderQuadsSubset = GetIndexes(colliderQuads, quadUniqueIndexes);
                 var quadSubmesh = CreateQuadSubmeshForMesh(mesh, colliderQuadsSubset, createBackfaces);

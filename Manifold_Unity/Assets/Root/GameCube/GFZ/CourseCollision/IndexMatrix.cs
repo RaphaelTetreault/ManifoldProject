@@ -8,7 +8,7 @@ namespace GameCube.GFZ.CourseCollision
     /// 
     /// </summary>
     [Serializable]
-    public abstract class IndexTable :
+    public abstract class IndexMatrix :
         IBinaryAddressable,
         IBinarySerializable,
         ISerializedBinaryAddressableReferer
