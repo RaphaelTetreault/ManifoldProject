@@ -431,7 +431,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             var parent = new GameObject();
             parent.name = $"Static Mesh Colliders";
 
-            for (int i = 0; i < StaticColliderMeshes.SurfacesCount(scene); i++)
+            for (int i = 0; i < StaticColliderMeshes.GetSurfacesCount(scene); i++)
             {
                 var meshName = $"st{scene.ID:00}_{i:00}_{(StaticMeshColliderProperty)i}";
                 var assetPath = $"{stageFolder}/pf_{meshName}.prefab";

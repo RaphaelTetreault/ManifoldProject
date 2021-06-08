@@ -87,7 +87,7 @@ namespace GameCube.GFZ.CourseCollision
         // REFERENCE FIELDS
         public TrackNode[] trackNodes = new TrackNode[0];
         public SurfaceAttributeArea[] surfaceAttributeAreas = new SurfaceAttributeArea[0];
-        public StaticColliderMeshes staticColliderMeshTable = new StaticColliderMeshes();
+        public StaticColliderMeshes staticColliderMeshes = new StaticColliderMeshes();
         public byte[] zeroes0x20 = new byte[kCountZeroes0x20];
         public TrackMinHeight trackMinHeight;
         public SceneObject[] sceneObjects = new SceneObject[0];
@@ -181,7 +181,7 @@ namespace GameCube.GFZ.CourseCollision
 
             // 0x1C 
             reader.JumpToAddress(staticColliderMeshTablePtr);
-            reader.ReadX(ref staticColliderMeshTable, true);
+            reader.ReadX(ref staticColliderMeshes, true);
 
             // 0x20
             reader.JumpToAddress(zeroes0x20Ptr);
@@ -306,8 +306,8 @@ namespace GameCube.GFZ.CourseCollision
 
             writer.InlineDesc(ColiCourseUtility.SerializeVerbose, 0x14, surfaceAttributeAreas);
             writer.WriteX(surfaceAttributeAreas, false);
-            writer.InlineDesc(ColiCourseUtility.SerializeVerbose, 0x1C, staticColliderMeshTable);
-            writer.WriteX(staticColliderMeshTable);
+            writer.InlineDesc(ColiCourseUtility.SerializeVerbose, 0x1C, staticColliderMeshes);
+            writer.WriteX(staticColliderMeshes);
 
             // SCENE OBJECTS
             // TEST. Next: try reserializing references with ISerailizedBinaryAddressableReferer.
@@ -405,9 +405,9 @@ namespace GameCube.GFZ.CourseCollision
                     referers.Add(trackTransform.trackTopology);
 
                 // Static Collider Meshes and dependencies
-                referers.Add(staticColliderMeshTable);
-                referers.AddRange(staticColliderMeshTable.triMeshIndexTables);
-                referers.AddRange(staticColliderMeshTable.quadMeshIndexTables);
+                referers.Add(staticColliderMeshes);
+                referers.AddRange(staticColliderMeshes.triMeshIndexTables);
+                referers.AddRange(staticColliderMeshes.quadMeshIndexTables);
 
                 // OBJECTS
                 // The structure which points to the object name
@@ -550,7 +550,7 @@ namespace GameCube.GFZ.CourseCollision
 
                 // UPDATE POINTERS AND COUNTS
                 // Track and stage data
-                staticColliderMeshTablePtr = staticColliderMeshTable.GetPointer();
+                staticColliderMeshTablePtr = staticColliderMeshes.GetPointer();
                 surfaceAttributeAreasPtr = surfaceAttributeAreas.GetArrayPointer();
                 trackCheckpointTable8x8Ptr = trackCheckpointTable8x8.GetPointer();
                 trackLengthPtr = trackLength.GetPointer();

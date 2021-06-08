@@ -1473,7 +1473,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 foreach (var file in sceneSobjs)
                 {
                     var scene = file.Value;
-                    var table = scene.staticColliderMeshTable;
+                    var table = scene.staticColliderMeshes;
 
                     writer.WriteNextCol(file.name);
                     writer.WriteNextCol(index++);

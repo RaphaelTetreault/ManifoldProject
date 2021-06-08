@@ -44,7 +44,7 @@ namespace GameCube.GFZ.CourseCollision
             set => addressRange = value;
         }
 
-        public static int SurfacesCount(ColiScene scene)
+        public static int GetSurfacesCount(ColiScene scene)
         {
             Assert.IsTrue(scene.IsValidFile);
             return scene.IsFileAX
