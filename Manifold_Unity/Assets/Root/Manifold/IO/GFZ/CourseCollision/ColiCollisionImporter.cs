@@ -13,8 +13,7 @@ namespace Manifold.IO.GFZ.CourseCollision
     public class ColiCollisionImporter : ExecutableScriptableObject,
         IImportable
     {
-        #region MEMBERS
-
+        // FIELDS
         [Header("Import Settings")]
         [SerializeField, BrowseFolderField()]
         protected string importFrom;
@@ -24,6 +23,15 @@ namespace Manifold.IO.GFZ.CourseCollision
 
         [SerializeField]
         protected IOOption importOption = IOOption.selectedFiles;
+
+        [Header("Mesh Generation Options")]
+        [SerializeField]
+        protected bool createBackfaces = true;
+        [SerializeField]
+        protected bool createMesh256OfType = false;
+        [SerializeField]
+        protected StaticMeshColliderProperty type = StaticMeshColliderProperty.recover;
+
 
         [Header("Mesh Materials")]
         [SerializeField]
@@ -41,7 +49,6 @@ namespace Manifold.IO.GFZ.CourseCollision
         [Header("Import Files")]
         [SerializeField] protected ColiSceneSobj[] sceneSobjs;
 
-        #endregion
 
         public override string ExecuteText => "Import COLI Object Collision";
 
@@ -69,7 +76,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                             ImportUtility.ProgressBar<SceneInstanceReference>(count, total, $"st{sceneSobj.Value.ID:00} {meshName}");
 
                             // Create mesh
-                            var mesh = CreateObjectColliderMesh(sceneObject);
+                            var mesh = CreateObjectColliderMesh(sceneObject, createBackfaces);
 
                             // Save mesh to Asset Database
                             var assetPath = $"Assets/{importTo}/st{sceneSobj.Value.ID:00}/coli_{meshName}.asset";
@@ -93,8 +100,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
                 // Create static scene colliders
                 {
-                    //var meshes = CreateStaticColliderMeshes512(sceneSobj);
-                    var meshes = CreateStaticColliderMeshes(sceneSobj);
+                    var meshes = CreateStaticColliderMeshes(sceneSobj, createBackfaces);
                     int total = meshes.Length;
                     int count = 0;
 
@@ -130,21 +136,55 @@ namespace Manifold.IO.GFZ.CourseCollision
                         var prefab = ImportUtility.CreatePrefabFromModel(mesh, materials, prefabPath);
                     }
                 }
+
+                // The lesson I learned is that generating 14 * 256 meshes AND prefabs is a bad idea.
+                //The current format create 256 per run.
+                if (createMesh256OfType)
+                {
+                    var meshes = CreateStaticColliderMeshes256(sceneSobj, type, createBackfaces);
+                    int total = meshes.Length;
+                    int count = 0;
+
+                    var material = triMaterials[(int)type];
+
+                    for (int meshIndex = 0; meshIndex < meshes.Length; meshIndex++)
+                    {
+                        // get mesh
+                        var mesh = meshes[meshIndex];
+                        var materials = new Material[mesh.subMeshCount];
+                        for (int subMeshIndex = 0; subMeshIndex < mesh.subMeshCount; subMeshIndex++)
+                             materials[subMeshIndex] = material;
+
+                        count++;
+                        var meshName = mesh.name;
+                        ImportUtility.ProgressBar<SceneInstanceReference>(count, total, $"st{sceneSobj.Value.ID:00} {meshName}");
+
+                        // Save mesh to Asset Database
+                        var meshPath = $"Assets/{importTo}/st{sceneSobj.Value.ID:00}/coli_{meshName}.asset";
+                        if (AssetDatabase.LoadAssetAtPath<Mesh>(meshPath) != null)
+                            AssetDatabase.DeleteAsset(meshPath);
+                        AssetDatabase.CreateAsset(mesh, meshPath);
+
+                        // Refresh instance reference
+                        // IMPORTANT! Sometimes reference gets lost.
+                        mesh = AssetDatabase.LoadAssetAtPath<Mesh>(meshPath);
+
+                        // Create mesh prefab
+                        var prefabPath = $"Assets/{importTo}/st{sceneSobj.Value.ID:00}/pf_{meshName}.prefab";
+                        var prefab = ImportUtility.CreatePrefabFromModel(mesh, materials, prefabPath);
+                    }
+                }
             }
 
             ImportUtility.ProgressBar<SceneInstanceReference>(1, 1, $"Saving assets...");
             ImportUtility.FinalizeAssetImport();
         }
 
-        public static Mesh[] CreateStaticColliderMeshes512(ColiSceneSobj sceneSobj)
+        public static Mesh[] CreateStaticColliderMeshes256(ColiSceneSobj sceneSobj, StaticMeshColliderProperty meshSurfaceType, bool createBackfaces)
         {
             // Get scene, assert validity
             var scene = sceneSobj.Value;
             Assert.IsTrue(scene.IsValidFile);
-
-            // Get number of mesh. AX and GX differ in count.
-            var meshCount = StaticColliderMeshes.GetSurfacesCount(scene);
-            var meshes = new Mesh[meshCount];
 
             // Simplify access to tris/quads
             var scm = scene.staticColliderMeshes;
@@ -153,54 +193,46 @@ namespace Manifold.IO.GFZ.CourseCollision
 
             //
             const int nLists = StaticColliderMeshTable16x16.kListCount;
-            const int triBaseIndex = 0;
-            const int quadBaseIndex = triBaseIndex + nLists;
+            var meshes = new Mesh[nLists];
 
-            // Iterate over each table index
-            for (int meshSurfaceType = 0; meshSurfaceType < meshCount; meshSurfaceType++)
+            //
+            int meshSurfaceTypeIndex = (int)meshSurfaceType;
+
+            // Get triangle information for the current mesh type
+            var triIndex16x16 = scm.triMeshIndexTables[meshSurfaceTypeIndex];
+            var triIndexLists = triIndex16x16.indexLists;
+            Assert.IsTrue(triIndexLists.Length == 0 || triIndexLists.Length == StaticColliderMeshTable16x16.kListCount);
+
+            //
+            var quadMeshIndexes = scm.quadMeshIndexTables[meshSurfaceTypeIndex];
+            var quadIndexLists = quadMeshIndexes.indexLists;
+            Assert.IsTrue(quadIndexLists.Length == 0 || quadIndexLists.Length == StaticColliderMeshTable16x16.kListCount);
+
+            //
+            for (int listIndex = 0; listIndex < nLists; listIndex++)
             {
                 // Create base data for mesh for EACH mesh type (boost, heal, etc)
                 var mesh = new Mesh()
                 {
-                    name = $"st{scene.ID:00}_{meshSurfaceType:00}_{(StaticMeshColliderProperty)meshSurfaceType}",
+                    name = $"st{scene.ID:00}_{meshSurfaceType:00}.{listIndex:000}_{(StaticMeshColliderProperty)meshSurfaceType}",
                 };
 
-                // Each tri/quad set has fixed size 256 each, so 512 total
-                var submeshes = new SubMeshDescriptor[nLists * 2];
+                // Get triangle indexes, get traingles from array using indexes, create submesh, then assign it.
+                var triIndexList = triIndexLists[listIndex];
+                var colliderTriangleSubset = GetIndexes(colliderTriangles, triIndexList.Indexes);
+                var trianglesSubmesh = CreateTriSubmeshForMesh(mesh, colliderTriangleSubset, createBackfaces);
 
-                // Get triangle information for the current mesh type
-                var triIndex16x16 = scm.triMeshIndexTables[meshSurfaceType];
-                var triIndexLists = triIndex16x16.indexLists;
-                Assert.IsTrue(triIndexLists.Length == 0 || triIndexLists.Length == StaticColliderMeshTable16x16.kListCount);
-                // meshIndex = 0-255, change to double for loop for x for y?
-                for (int index = 0; index < triIndexLists.Length; index++)
+                // Get quad indexes, get traingles from array using indexes, create submesh, then assign it.
+                var quadIndexList = quadIndexLists[listIndex];
+                var colliderQuadSubset = GetIndexes(colliderQuads, quadIndexList.Indexes);
+                var quadSubmesh = CreateQuadSubmeshForMesh(mesh, colliderQuadSubset, createBackfaces);
+
+                //
+                var submeshes = new SubMeshDescriptor[]
                 {
-                    // Get triangle indexes, get traingles from array using indexes, create submesh, then assign it.
-                    var triIndexList = triIndexLists[index];
-                    var colliderTriangleSubset = GetIndexes(colliderTriangles, triIndexList.Indexes);
-                    var trianglesSubmesh = CreateTriSubmeshForMesh(mesh, colliderTriangleSubset);
-                    //
-                    int submeshIndex = triBaseIndex + index;
-                    submeshes[submeshIndex] = trianglesSubmesh;
-                }
-
-
-                var quadMeshIndexes = scm.quadMeshIndexTables[meshSurfaceType];
-                var quadIndexLists = quadMeshIndexes.indexLists;
-                Assert.IsTrue(quadIndexLists.Length == 0 || quadIndexLists.Length == StaticColliderMeshTable16x16.kListCount);
-                // meshIndex = 0-255
-                for (int index = 0; index < quadIndexLists.Length; index++)
-                {
-                    // Get quad indexes, get traingles from array using indexes, create submesh, then assign it.
-                    var quadIndexList = quadIndexLists[index];
-                    var colliderQuadSubset = GetIndexes(colliderQuads, quadIndexList.Indexes);
-                    var quadSubmesh = CreateQuadSubmeshForMesh(mesh, colliderQuadSubset);
-                    //
-                    int submeshIndex = quadBaseIndex + index;
-                    submeshes[submeshIndex] = quadSubmesh;
-                }
-
-
+                        trianglesSubmesh,
+                        quadSubmesh,
+                };
                 // Set each submesh in the mesh
                 mesh.subMeshCount = submeshes.Length;
                 for (int submeshIndex = 0; submeshIndex < submeshes.Length; submeshIndex++)
@@ -211,13 +243,13 @@ namespace Manifold.IO.GFZ.CourseCollision
                 // Compute other Mesh data
                 mesh.RecalculateBounds();
                 // Assign mesh to mesh array
-                meshes[meshSurfaceType] = mesh;
+                meshes[listIndex] = mesh;
             }
 
             return meshes;
         }
 
-        public static Mesh[] CreateStaticColliderMeshes(ColiSceneSobj sceneSobj)
+        public static Mesh[] CreateStaticColliderMeshes(ColiSceneSobj sceneSobj, bool createBackfaces)
         {
             // Get scene, assert validity
             var scene = sceneSobj.Value;
@@ -235,7 +267,6 @@ namespace Manifold.IO.GFZ.CourseCollision
             //
             const int triSubmeshIndex = 0;
             const int quadSubmeshIndex = 1;
-            const bool createBackfaces = true;
 
             // Iterate over each table index
             for (int meshSurfaceType = 0; meshSurfaceType < meshCount; meshSurfaceType++)
@@ -258,7 +289,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 // Create triangle mesh from unique quads (quads are interpreted as triangles)
                 var quadIndexLists = scm.quadMeshIndexTables[meshSurfaceType].indexLists;
                 var quadUniqueIndexes = GetUniqueIndexes(quadIndexLists);
-                var colliderQuadsSubset = GetIndexes(colliderQuads, quadUniqueIndexes); 
+                var colliderQuadsSubset = GetIndexes(colliderQuads, quadUniqueIndexes);
                 var quadSubmesh = CreateQuadSubmeshForMesh(mesh, colliderQuadsSubset, createBackfaces);
                 submeshes[quadSubmeshIndex] = quadSubmesh;
 
@@ -422,100 +453,21 @@ namespace Manifold.IO.GFZ.CourseCollision
             return list.ToArray();
         }
 
-        public Mesh CreateObjectColliderMesh(SceneObject sceneObject)
+        public Mesh CreateObjectColliderMesh(SceneObject sceneObject, bool createBackfaces)
         {
-            var collision = sceneObject.instanceReference.colliderGeometry;
+            var colliderGeo = sceneObject.instanceReference.colliderGeometry;
 
             // Create base data for mesh
             var mesh = new Mesh();
             mesh.name = sceneObject.nameCopy;
-            var submeshes = new SubMeshDescriptor[2];
 
-            // TRIS
+            var trisSubmesh = CreateTriSubmeshForMesh(mesh, colliderGeo.tris, createBackfaces);
+            var quadsSubmesh = CreateQuadSubmeshForMesh(mesh, colliderGeo.quads, createBackfaces);
+            var submeshes = new SubMeshDescriptor[]
             {
-                var vertCount = collision.triCount * 3;
-                var vertices = new Vector3[vertCount];
-                var indices = new int[vertCount];
-                //
-                for (int i = 0; i < collision.triCount; i++)
-                {
-                    // Offset for each iteration through
-                    var triStride = i * 3;
-                    // Set vertices
-                    vertices[triStride + 0] = collision.tris[i].vertex0;
-                    vertices[triStride + 1] = collision.tris[i].vertex1;
-                    vertices[triStride + 2] = collision.tris[i].vertex2;
-                    // Set indexes
-                    indices[triStride + 0] = triStride + 0;
-                    indices[triStride + 1] = triStride + 1;
-                    indices[triStride + 2] = triStride + 2;
-                }
-
-                // Build submesh
-                var triSubmesh = new SubMeshDescriptor();
-                triSubmesh.baseVertex = mesh.vertexCount; // 0
-                triSubmesh.firstVertex = mesh.vertexCount; // 0
-                triSubmesh.indexCount = indices.Length;
-                triSubmesh.indexStart = mesh.triangles.Length; // 0
-                triSubmesh.topology = MeshTopology.Triangles;
-                triSubmesh.vertexCount = vertices.Length;
-
-                // Append to mesh
-                var verticesConcat = mesh.vertices.Concat(vertices).ToArray();
-                var trianglesConcat = mesh.triangles.Concat(indices).ToArray();
-
-                // Assign values to mesh
-                mesh.vertices = verticesConcat;
-                mesh.triangles = trianglesConcat;
-
-                // Set mesh to use submesh 0 for triangles
-                submeshes[0] = triSubmesh;
-            }
-
-            // QUADS
-            {
-                var quadCount = collision.quadCount;
-                var vertCount = quadCount * 4;
-                var vertices = new Vector3[vertCount];
-                var indices = new int[quadCount * 6];
-
-                for (int i = 0; i < quadCount; i++)
-                {
-                    var vertexStride = i * 4;
-                    vertices[vertexStride + 0] = collision.quads[i].vertex0;
-                    vertices[vertexStride + 1] = collision.quads[i].vertex1;
-                    vertices[vertexStride + 2] = collision.quads[i].vertex2;
-                    vertices[vertexStride + 3] = collision.quads[i].vertex3;
-
-                    var indexStride = i * 6;
-                    indices[indexStride + 0] = vertexStride + 0;
-                    indices[indexStride + 1] = vertexStride + 1;
-                    indices[indexStride + 2] = vertexStride + 2;
-                    indices[indexStride + 3] = vertexStride + 0;
-                    indices[indexStride + 4] = vertexStride + 2;
-                    indices[indexStride + 5] = vertexStride + 3;
-                }
-
-                // Build submesh
-                var quadSubmesh = new SubMeshDescriptor();
-                quadSubmesh.baseVertex = mesh.vertexCount;
-                quadSubmesh.firstVertex = mesh.vertexCount;
-                quadSubmesh.indexCount = indices.Length;
-                quadSubmesh.indexStart = mesh.triangles.Length;
-                quadSubmesh.topology = MeshTopology.Triangles;
-                quadSubmesh.vertexCount = vertices.Length;
-
-                // Append to mesh
-                var verticesConcat = mesh.vertices.Concat(vertices).ToArray();
-                var trianglesConcat = mesh.triangles.Concat(indices).ToArray();
-
-                // Assign values to mesh
-                mesh.vertices = verticesConcat;
-                mesh.triangles = trianglesConcat;
-
-                // Set mesh to use submesh 1 for triangles
-                submeshes[1] = quadSubmesh;
-            }
+                trisSubmesh,
+                quadsSubmesh,
+            };
 
             // Set each submesh in the mesh
             mesh.subMeshCount = submeshes.Length;
@@ -526,7 +478,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
             // Compute other Mesh data
             mesh.RecalculateBounds();
-            mesh.RecalculateNormals();
+            //mesh.RecalculateNormals();
 
             return mesh;
         }
