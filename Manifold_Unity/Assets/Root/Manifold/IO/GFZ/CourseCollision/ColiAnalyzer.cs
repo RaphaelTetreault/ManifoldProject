@@ -1300,12 +1300,12 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol(nameof(UnkStageLight.option));
                 writer.WriteNextCol(nameof(UnkStageLight.minMax0x04) + "." + nameof(MinMax.min));
                 writer.WriteNextCol(nameof(UnkStageLight.minMax0x04) + "." + nameof(MinMax.max));
-                writer.WriteNextCol(nameof(UnkStageLight.minMax0x0C) + "." + nameof(MinMax.min));
-                writer.WriteNextCol(nameof(UnkStageLight.minMax0x0C) + "." + nameof(MinMax.max));
-                writer.WriteNextCol(nameof(UnkStageLight.minMax0x14) + "." + nameof(MinMax.min));
-                writer.WriteNextCol(nameof(UnkStageLight.minMax0x14) + "." + nameof(MinMax.max));
-                writer.WriteNextCol(nameof(UnkStageLight.zero0x1C));
-                writer.WriteNextCol(nameof(UnkStageLight.zero0x20));
+                writer.WriteNextCol(nameof(UnkStageLight.colorRGB) + ".R");
+                writer.WriteNextCol(nameof(UnkStageLight.colorRGB) + ".G");
+                writer.WriteNextCol(nameof(UnkStageLight.colorRGB) + ".B");
+                writer.WriteNextCol(nameof(UnkStageLight.zero0x18) + ".x");
+                writer.WriteNextCol(nameof(UnkStageLight.zero0x18) + ".y");
+                writer.WriteNextCol(nameof(UnkStageLight.zero0x18) + ".z");
                 //
                 writer.WriteNextRow();
 
@@ -1325,12 +1325,12 @@ namespace Manifold.IO.GFZ.CourseCollision
                     writer.WriteNextCol(scene.unknownStageData1.option);
                     writer.WriteNextCol(scene.unknownStageData1.minMax0x04.min);
                     writer.WriteNextCol(scene.unknownStageData1.minMax0x04.max);
-                    writer.WriteNextCol(scene.unknownStageData1.minMax0x0C.min);
-                    writer.WriteNextCol(scene.unknownStageData1.minMax0x0C.max);
-                    writer.WriteNextCol(scene.unknownStageData1.minMax0x14.min);
-                    writer.WriteNextCol(scene.unknownStageData1.minMax0x14.max);
-                    writer.WriteNextCol(scene.unknownStageData1.zero0x1C);
-                    writer.WriteNextCol(scene.unknownStageData1.zero0x20);
+                    writer.WriteNextCol(scene.unknownStageData1.colorRGB.x);
+                    writer.WriteNextCol(scene.unknownStageData1.colorRGB.y);
+                    writer.WriteNextCol(scene.unknownStageData1.colorRGB.z);
+                    writer.WriteNextCol(scene.unknownStageData1.zero0x18.x);
+                    writer.WriteNextCol(scene.unknownStageData1.zero0x18.y);
+                    writer.WriteNextCol(scene.unknownStageData1.zero0x18.z);
                     //
                     writer.WriteNextRow();
                 }

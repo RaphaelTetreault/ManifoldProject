@@ -341,32 +341,26 @@ namespace GameCube.GFZ.CourseCollision
             {
                 reader.ReadX(ref option);
                 reader.ReadX(ref minMax0x04, true);
-                reader.ReadX(ref minMax0x0C, true);
-                reader.ReadX(ref minMax0x14, true);
-                reader.ReadX(ref zero0x1C);
-                reader.ReadX(ref zero0x20);
+                reader.ReadX(ref colorRGB);
+                reader.ReadX(ref zero0x18);
             }
             this.RecordEndAddress(reader);
             {
-                Assert.IsTrue(zero0x1C == 0);
-                Assert.IsTrue(zero0x20 == 0);
+                Assert.IsTrue(zero0x18.Equals(float3.zero));
             }
         }
 
         public void Serialize(BinaryWriter writer)
         {
             {
-                Assert.IsTrue(zero0x1C == 0);
-                Assert.IsTrue(zero0x20 == 0);
+                Assert.IsTrue(zero0x18.Equals(float3.zero));
             }
             this.RecordStartAddress(writer);
             {
                writer.WriteX(option);
                writer.WriteX(minMax0x04);
-               writer.WriteX(minMax0x0C);
-               writer.WriteX(minMax0x14);
-               writer.WriteX(zero0x1C);
-               writer.WriteX(zero0x20);
+               writer.WriteX(colorRGB);
+               writer.WriteX(zero0x18);
             }
             this.RecordEndAddress(writer);
         }
