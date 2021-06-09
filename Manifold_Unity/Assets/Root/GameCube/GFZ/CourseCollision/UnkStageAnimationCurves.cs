@@ -5,21 +5,24 @@ using System.IO;
 // NOTES
 // Uses single animation key with values from UnkStageRanges
 // GX: this data does not exist on Mute City or Sand Ocean for ? reasons.
-// AX: this data does not exist on NULL, Phantom Road, Mute City, Sand Ocean, and Big Blue (Story)
+// AX: this data does not exist on Mute City, Sand Ocean, NULL, Phantom Road, and Big Blue (Story)
 // In both cases, Mute City (COM) _does_ have this data, including COM story.
 //
 // Animation data
-// Indexes 1-6 are:
-// 0: UnkStageRanges.min
-// 1: UnkStageRanges.max
-// 2: float4.x
-// 3: float4.y
-// 4: float4.z
-// 5: float4.w (always 0)
-// NOTE: there is only 1 key per animation curve. Also, there is always exactly 1, except for
-//       CH8 4/6 GX (of course...) where there is 0, and CPDB AX, where ther are 2 (see note below).
-// Also, the time for each key is almost always 0. There is a case of 0.0333 in CH4 GX and CH6 AX
-// and a case of 60f in CPDB AX (where there are 2 keys per anim curve).
+// Indexes 0-5, length 6, values are:
+// 0: UnkStageX.min
+// 1: UnkStageX.max
+// 2: UnkStageX.colorRGB.x - color R
+// 3: UnkStageX.colorRGB.y - color G
+// 4: UnkStageX.colorRGB.z - color B
+// 5: (always 0)
+//
+// Get animation curves [6] easily with helper funtion UnkStageX.GetAnimationCurves().
+//
+// NOTE: there is always exactly 1 key per animation curve EXCEPT for CH8 4/6 GX (of course...) where
+//       there are 0 keys, and CPDB AX, where ther are 2 keys (see note below). ALSO, the time for each
+//       key is almost always 0. There is a case of 0.0333 in CH4 GX and CH6 AX and a case of 60f in
+//       CPDB AX (where there are 2 keys per anim curve).
 
 namespace GameCube.GFZ.CourseCollision
 {
@@ -58,9 +61,6 @@ namespace GameCube.GFZ.CourseCollision
             get => addressRange;
             set => addressRange = value;
         }
-
-        // TODO: accessors which name the animation curves?
-
 
 
         // METHODS
@@ -107,7 +107,16 @@ namespace GameCube.GFZ.CourseCollision
 
         public void ValidateReferences()
         {
-            throw new NotImplementedException();
+            // Ensure we have the correct amount of animation curves before indexing
+            Assert.IsTrue(animationCurves.Length == kCurveCount);
+            
+            // Each curve should only have 1 key. In reality, this is not true, but
+            // all the used data in the final game is like this (except ST44 where
+            // [5/6] is missing]). Suffice to say, OUR data should conform to this.
+            foreach (var animationCurve in animationCurves)
+            {
+                Assert.IsTrue(animationCurve.Length == 1);
+            }
         }
     }
 }

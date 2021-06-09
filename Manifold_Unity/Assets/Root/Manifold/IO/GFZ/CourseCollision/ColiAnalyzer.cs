@@ -107,7 +107,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
             if (coliUnk5)
             {
-                string fileName = $"{time} COLI {nameof(UnkStageRanges)}.tsv";
+                string fileName = $"{time} COLI {nameof(UnkStageLight)}.tsv";
                 string filePath = Path.Combine(outputPath, fileName);
                 EditorUtility.DisplayProgressBar(ExecuteText, filePath, .5f);
                 AnalyzeUnknownStageData1(filePath);
@@ -1297,15 +1297,15 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol("Venue");
                 writer.WriteNextCol("AX/GX");
                 //
-                writer.WriteNextCol(nameof(UnkStageRanges.rangeOption));
-                writer.WriteNextCol(nameof(UnkStageRanges.minMax0x04) + "." + nameof(MinMax.min));
-                writer.WriteNextCol(nameof(UnkStageRanges.minMax0x04) + "." + nameof(MinMax.max));
-                writer.WriteNextCol(nameof(UnkStageRanges.minMax0x0C) + "." + nameof(MinMax.min));
-                writer.WriteNextCol(nameof(UnkStageRanges.minMax0x0C) + "." + nameof(MinMax.max));
-                writer.WriteNextCol(nameof(UnkStageRanges.minMax0x14) + "." + nameof(MinMax.min));
-                writer.WriteNextCol(nameof(UnkStageRanges.minMax0x14) + "." + nameof(MinMax.max));
-                writer.WriteNextCol(nameof(UnkStageRanges.zero0x1C));
-                writer.WriteNextCol(nameof(UnkStageRanges.zero0x20));
+                writer.WriteNextCol(nameof(UnkStageLight.option));
+                writer.WriteNextCol(nameof(UnkStageLight.minMax0x04) + "." + nameof(MinMax.min));
+                writer.WriteNextCol(nameof(UnkStageLight.minMax0x04) + "." + nameof(MinMax.max));
+                writer.WriteNextCol(nameof(UnkStageLight.minMax0x0C) + "." + nameof(MinMax.min));
+                writer.WriteNextCol(nameof(UnkStageLight.minMax0x0C) + "." + nameof(MinMax.max));
+                writer.WriteNextCol(nameof(UnkStageLight.minMax0x14) + "." + nameof(MinMax.min));
+                writer.WriteNextCol(nameof(UnkStageLight.minMax0x14) + "." + nameof(MinMax.max));
+                writer.WriteNextCol(nameof(UnkStageLight.zero0x1C));
+                writer.WriteNextCol(nameof(UnkStageLight.zero0x20));
                 //
                 writer.WriteNextRow();
 
@@ -1322,7 +1322,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                     writer.WriteNextCol(courseID);
                     writer.WriteNextCol(isAxGx);
                     //
-                    writer.WriteNextCol(scene.unknownStageData1.rangeOption);
+                    writer.WriteNextCol(scene.unknownStageData1.option);
                     writer.WriteNextCol(scene.unknownStageData1.minMax0x04.min);
                     writer.WriteNextCol(scene.unknownStageData1.minMax0x04.max);
                     writer.WriteNextCol(scene.unknownStageData1.minMax0x0C.min);

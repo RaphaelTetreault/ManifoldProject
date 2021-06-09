@@ -95,7 +95,7 @@ namespace GameCube.GFZ.CourseCollision
         public SceneOriginObjects[] sceneOriginObjectsList = new SceneOriginObjects[0];
         public UnknownSolsTrigger[] unknownSolsTriggers = new UnknownSolsTrigger[0];
         public UnkStageAnimationCurves unknownStageData2 = new UnkStageAnimationCurves();
-        public UnkStageRanges unknownStageData1 = new UnkStageRanges();
+        public UnkStageLight unknownStageData1 = new UnkStageLight();
         public TrackLength trackLength;
         public UnknownTrigger1[] unknownTrigger1s = new UnknownTrigger1[0]; // "green"
         public VisualEffectTrigger[] visualEffectTriggers = new VisualEffectTrigger[0];
