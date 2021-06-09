@@ -14,12 +14,11 @@ namespace GameCube.GFZ.CourseCollision
         IBinarySerializable
     {
         // METADATA
-        [UnityEngine.SerializeField]
-        private AddressRange addressRange;
+        [UnityEngine.SerializeField] private AddressRange addressRange;
 
         // FIELDS
         // Note that default values appear in AX tests and similar. A good default set.
-        public StageFogOption option = StageFogOption.B_0x04;
+        public StageFogInterpolation interpolation = StageFogInterpolation.Linear;
         public Range fogRange = new Range(20f, 100f); // Not confirmed, but suspected. Near/far for fog. Negative near = always affected.
         public float3 colorRGB = float3.zero; // color as 3 floats in order RGB
         public float3 zero0x18 = float3.zero; // Always zero. Perhaps always black? The last 2 values are not used in anim curve, though.
@@ -54,7 +53,7 @@ namespace GameCube.GFZ.CourseCollision
         {
             return new StageFog()
             {
-                option = StageFogOption.B_0x04,
+                interpolation = StageFogInterpolation.Linear,
                 fogRange = new Range(300f, 3500f),
                 // #ffffec - soft yellow, almost beige
                 colorRGB = new float3(1f, 1f, 0.924f),
@@ -64,7 +63,7 @@ namespace GameCube.GFZ.CourseCollision
         {
             return new StageFog()
             {
-                option = StageFogOption.C_0x05,
+                interpolation = StageFogInterpolation.ExponentialSquared,
                 fogRange = new Range(500f, 4000f),
                 // #afdcff - soft blue
                 colorRGB = new float3(0.686f, 0.862f, 1f),
@@ -74,7 +73,7 @@ namespace GameCube.GFZ.CourseCollision
         {
             return new StageFog()
             {
-                option = StageFogOption.B_0x04,
+                interpolation = StageFogInterpolation.Linear,
                 fogRange = new Range(0f, 20000f),
                 // #000000 - black
                 colorRGB = new float3(0f, 0f, 0f),
@@ -84,7 +83,7 @@ namespace GameCube.GFZ.CourseCollision
         {
             return new StageFog()
             {
-                option = StageFogOption.B_0x04,
+                interpolation = StageFogInterpolation.Linear,
                 fogRange = new Range(4500f, 9000f),
                 // #000000 - black
                 colorRGB = new float3(0f, 0f, 0f),
@@ -94,7 +93,7 @@ namespace GameCube.GFZ.CourseCollision
         {
             return new StageFog()
             {
-                option = StageFogOption.A_0x02,
+                interpolation = StageFogInterpolation.Exponential,
                 fogRange = new Range(0f, 5500f),
                 // #c79064 - mid-tone brown
                 colorRGB = new float3(0.78f, 0.566f, 0.391f),
@@ -104,7 +103,7 @@ namespace GameCube.GFZ.CourseCollision
         {
             return new StageFog()
             {
-                option = StageFogOption.B_0x04,
+                interpolation = StageFogInterpolation.Linear,
                 fogRange = new Range(0f, 12000f),
                 // #2d3c50 - deep blue
                 colorRGB = new float3(0.176f, 0.235f, 0.313f),
@@ -114,7 +113,7 @@ namespace GameCube.GFZ.CourseCollision
         {
             return new StageFog()
             {
-                option = StageFogOption.C_0x05,
+                interpolation = StageFogInterpolation.ExponentialSquared,
                 // Intersection: -500, Mobius Ring: -250,
                 fogRange = new Range(-375f, 2400f),
                 // 0.701, 0.780, 0.898 - dull blue (like sky color)
@@ -125,7 +124,7 @@ namespace GameCube.GFZ.CourseCollision
         {
             return new StageFog()
             {
-                option = StageFogOption.C_0x05,
+                interpolation = StageFogInterpolation.ExponentialSquared,
                 fogRange = new Range(0f, 7500f),
                 // #b3bd9f - dull green
                 colorRGB = new float3(0.703f, 0.7422f, 0.625f),
@@ -135,7 +134,7 @@ namespace GameCube.GFZ.CourseCollision
         {
             return new StageFog()
             {
-                option = StageFogOption.B_0x04,
+                interpolation = StageFogInterpolation.Linear,
                 // Thunder Road: 3000f
                 fogRange = new Range(0f, 2400f),
                 // #181a1e - very dark blue, almost black
@@ -146,7 +145,7 @@ namespace GameCube.GFZ.CourseCollision
         {
             return new StageFog()
             {
-                option = StageFogOption.B_0x04,
+                interpolation = StageFogInterpolation.Linear,
                 fogRange = new Range(20f, 100f),
                 // #000000 - black
                 colorRGB = new float3(0f, 0f, 0f),
@@ -156,7 +155,7 @@ namespace GameCube.GFZ.CourseCollision
         {
             return new StageFog()
             {
-                option = StageFogOption.B_0x04,
+                interpolation = StageFogInterpolation.Linear,
                 fogRange = new Range(0f, 12000f),
                 // #2d3c50 - dark blue
                 colorRGB = new float3(0.1765f, 0.2353f, 0.3137f),
@@ -166,7 +165,7 @@ namespace GameCube.GFZ.CourseCollision
         {
             return new StageFog()
             {
-                option = StageFogOption.C_0x05,
+                interpolation = StageFogInterpolation.ExponentialSquared,
                 fogRange = new Range(2000f, 15000f),
                 // #000000 - black
                 colorRGB = new float3(0f, 0f, 0f),
@@ -176,7 +175,7 @@ namespace GameCube.GFZ.CourseCollision
         {
             return new StageFog()
             {
-                option = StageFogOption.B_0x04,
+                interpolation = StageFogInterpolation.Linear,
                 fogRange = new Range(0f, 8000f),
                 // #000000 - black
                 colorRGB = new float3(0f, 0f, 0f),
@@ -186,7 +185,7 @@ namespace GameCube.GFZ.CourseCollision
         {
             return new StageFog()
             {
-                option = StageFogOption.B_0x04,
+                interpolation = StageFogInterpolation.Linear,
                 fogRange = new Range(0f, 16000f),
                 // #000000 - very, very dark blue, consider black
                 colorRGB = new float3(0f, 0f, 0.1f),
@@ -196,7 +195,7 @@ namespace GameCube.GFZ.CourseCollision
         {
             return new StageFog()
             {
-                option = StageFogOption.B_0x04,
+                interpolation = StageFogInterpolation.Linear,
                 fogRange = new Range(0f, 16000f),
                 // #81634a - brown
                 colorRGB = new float3(0.505f, 0.388f, 0.29f),
@@ -206,7 +205,7 @@ namespace GameCube.GFZ.CourseCollision
         {
             return new StageFog()
             {
-                option = StageFogOption.C_0x05,
+                interpolation = StageFogInterpolation.ExponentialSquared,
                 fogRange = new Range(20f, 100f),
                 // #000000 - black
                 colorRGB = new float3(0f, 0f, 0f),
@@ -216,7 +215,7 @@ namespace GameCube.GFZ.CourseCollision
         {
             return new StageFog()
             {
-                option = StageFogOption.B_0x04,
+                interpolation = StageFogInterpolation.Linear,
                 fogRange = new Range(0f, 12000f),
                 // #2d3c50 - dark blue
                 colorRGB = new float3(0.176f, 0.235f, 0.313f),
@@ -227,7 +226,7 @@ namespace GameCube.GFZ.CourseCollision
         {
             return new StageFog()
             {
-                option = StageFogOption.C_0x05,
+                interpolation = StageFogInterpolation.ExponentialSquared,
                 fogRange = new Range(-3000f, 20000f),
                 // #373250 - dark indigo
                 colorRGB = new float3(0.2156f, 0.196f, 0.3137f),
@@ -237,7 +236,7 @@ namespace GameCube.GFZ.CourseCollision
         {
             return new StageFog()
             {
-                option = StageFogOption.A_0x02,
+                interpolation = StageFogInterpolation.Exponential,
                 fogRange = new Range(0f, 1500f),
                 // #ff7832 - saturated orange
                 colorRGB = new float3(1f, 0.469f, 0.1954f),
@@ -247,7 +246,7 @@ namespace GameCube.GFZ.CourseCollision
         {
             return new StageFog()
             {
-                option = StageFogOption.A_0x02,
+                interpolation = StageFogInterpolation.Exponential,
                 fogRange = new Range(200f, 1350f),
                 // #db5528 - mid-tone red-orange
                 colorRGB = new float3(0.8594f, 0.332f, 0.1563f),
@@ -257,7 +256,7 @@ namespace GameCube.GFZ.CourseCollision
         {
             return new StageFog()
             {
-                option = StageFogOption.B_0x04,
+                interpolation = StageFogInterpolation.Linear,
                 fogRange = new Range(600f, 7470f),
                 // #00c864 - saturated green-teal
                 colorRGB = new float3(0f, 0.7843f, 0.3922f),
@@ -267,7 +266,7 @@ namespace GameCube.GFZ.CourseCollision
         {
             return new StageFog()
             {
-                option = StageFogOption.C_0x05,
+                interpolation = StageFogInterpolation.ExponentialSquared,
                 fogRange = new Range(0f, 20000f),
                 // #000000 - black
                 colorRGB = new float3(0f, 0f, 0f),
@@ -277,7 +276,7 @@ namespace GameCube.GFZ.CourseCollision
         {
             return new StageFog()
             {
-                option = StageFogOption.B_0x04,
+                interpolation = StageFogInterpolation.Linear,
                 fogRange = new Range(50f, 70000f),
                 // #fffaf2 - light beige
                 colorRGB = new float3(1f, 0.98f, 0.95f),
@@ -339,7 +338,7 @@ namespace GameCube.GFZ.CourseCollision
         {
             this.RecordStartAddress(reader);
             {
-                reader.ReadX(ref option);
+                reader.ReadX(ref interpolation);
                 reader.ReadX(ref fogRange, true);
                 reader.ReadX(ref colorRGB);
                 reader.ReadX(ref zero0x18);
@@ -357,10 +356,10 @@ namespace GameCube.GFZ.CourseCollision
             }
             this.RecordStartAddress(writer);
             {
-               writer.WriteX(option);
-               writer.WriteX(fogRange);
-               writer.WriteX(colorRGB);
-               writer.WriteX(zero0x18);
+                writer.WriteX(interpolation);
+                writer.WriteX(fogRange);
+                writer.WriteX(colorRGB);
+                writer.WriteX(zero0x18);
             }
             this.RecordEndAddress(writer);
         }

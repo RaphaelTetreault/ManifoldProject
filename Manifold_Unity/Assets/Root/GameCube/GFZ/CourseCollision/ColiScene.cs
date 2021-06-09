@@ -50,7 +50,7 @@ namespace GameCube.GFZ.CourseCollision
 
 
         // FIELDS
-        public Range unk_0x00;
+        public Range unkRange0x00;
         public ArrayPointer trackNodesPtr;
         public ArrayPointer surfaceAttributeAreasPtr;
         public BoostPadsActive boostPadsActive;
@@ -384,7 +384,7 @@ namespace GameCube.GFZ.CourseCollision
 
 
             // Non pointer data (aside from SceneObject counts)
-            unk_0x00 = new Range();
+            unkRange0x00 = new Range();
             boostPadsActive = BoostPadsActive.Enabled;
             unkBool32_0x58 = Bool32.True;
             circuitType = CircuitType.ClosedCircuit;
@@ -481,7 +481,7 @@ namespace GameCube.GFZ.CourseCollision
             this.RecordStartAddress(reader);
             {
                 // Deserialize main structure
-                reader.ReadX(ref unk_0x00, true);
+                reader.ReadX(ref unkRange0x00, true);
                 reader.ReadX(ref trackNodesPtr);
                 reader.ReadX(ref surfaceAttributeAreasPtr);
                 reader.ReadX(ref boostPadsActive);
@@ -577,7 +577,7 @@ namespace GameCube.GFZ.CourseCollision
             }
             this.RecordStartAddress(writer);
             {
-                writer.WriteX(unk_0x00);
+                writer.WriteX(unkRange0x00);
                 writer.WriteX(trackNodesPtr);
                 writer.WriteX(surfaceAttributeAreasPtr);
                 writer.WriteX(boostPadsActive);

@@ -1003,8 +1003,8 @@ namespace Manifold.IO.GFZ.CourseCollision
                     writer.WriteNextCol(((CourseIndexAX)scene.ID).GetDescription());
                     writer.WriteNextCol(scene.IsFileGX ? "GX" : "AX");
 
-                    writer.WriteNextCol(scene.unk_0x00.near);
-                    writer.WriteNextCol(scene.unk_0x00.far);
+                    writer.WriteNextCol(scene.unkRange0x00.near);
+                    writer.WriteNextCol(scene.unkRange0x00.far);
                     writer.WriteNextCol(scene.trackNodesPtr.Length);
                     writer.WriteNextCol(scene.trackNodesPtr.HexAddress);
                     writer.WriteNextCol(scene.surfaceAttributeAreasPtr.Length);
@@ -1297,7 +1297,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol("Venue");
                 writer.WriteNextCol("AX/GX");
                 //
-                writer.WriteNextCol(nameof(StageFog.option));
+                writer.WriteNextCol(nameof(StageFog.interpolation));
                 writer.WriteNextCol(nameof(StageFog.fogRange) + "." + nameof(Range.near));
                 writer.WriteNextCol(nameof(StageFog.fogRange) + "." + nameof(Range.far));
                 writer.WriteNextCol(nameof(StageFog.colorRGB) + ".R");
@@ -1322,7 +1322,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                     writer.WriteNextCol(courseID);
                     writer.WriteNextCol(isAxGx);
                     //
-                    writer.WriteNextCol(scene.unknownStageData1.option);
+                    writer.WriteNextCol(scene.unknownStageData1.interpolation);
                     writer.WriteNextCol(scene.unknownStageData1.fogRange.near);
                     writer.WriteNextCol(scene.unknownStageData1.fogRange.far);
                     writer.WriteNextCol(scene.unknownStageData1.colorRGB.x);
