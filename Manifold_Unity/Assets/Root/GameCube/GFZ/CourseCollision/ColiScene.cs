@@ -291,6 +291,9 @@ namespace GameCube.GFZ.CourseCollision
                 ValidateFileFormatPointers();
             }
 
+            // Offset pointer address if AX file. Applies to pointers at address 0x
+            int offset = IsFileAX ? -4 : 0;
+
             // Write credit and useful debugging info
             writer.CommentDateAndCredits(true);
             writer.Comment("File Information", true);
@@ -339,17 +342,13 @@ namespace GameCube.GFZ.CourseCollision
             };
 
             // Write in reverse order. If references are correct, pointers will be correct when serializing.
+            // No direct pointer
             writer.InlineDesc(serializeVerbose, -1, nameTable);
             writer.WriteX(nameTable, false);
 
+            // No direct pointer
             writer.InlineDesc(serializeVerbose, -1, objectReferenceTable);
             writer.WriteX(objectReferenceTable, false);
-
-            writer.InlineDesc(serializeVerbose, -1, sceneInstancesList);
-            writer.WriteX(sceneInstancesList, false);
-
-            // Offset pointer address if AX file
-            int offset = IsFileAX ? -4 : 0;
 
             // 0x48 (count total), 0x4C, 0x50, 0x54 (pointer address): Scene Objects;
             writer.InlineDesc(serializeVerbose, 0x54 + offset, sceneObjects);

@@ -54,7 +54,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
             if (exportHandMade)
             {
-                throw new System.NotImplementedException();
+                //var scene = new colicourse
             }
             else
             {
