@@ -54,7 +54,7 @@ namespace GameCube.GFZ.CourseCollision
         public Range unkRange0x00;
         public ArrayPointer trackNodesPtr;
         public ArrayPointer surfaceAttributeAreasPtr;
-        public BoostPadsActive boostPadsActive;
+        public BoostPlatesActive boostPlatesActive;
         public Pointer staticColliderMeshesPtr;
         public Pointer zeroes0x20Ptr; // GX: 0xE8, AX: 0xE4
         public Pointer trackMinHeightPtr; // GX: 0xFC, AX: 0xF8
@@ -64,9 +64,9 @@ namespace GameCube.GFZ.CourseCollision
         public int unk_sceneObjectCount2; // GX exclusive
         public Pointer sceneObjectsPtr;
         public Bool32 unkBool32_0x58;
-        public ArrayPointer unknownSolsTriggerPtrs;
-        public ArrayPointer sceneInstancesListPtrs;
-        public ArrayPointer sceneOriginObjectsListPtrs;
+        public ArrayPointer unknownSolsTriggersPtr;
+        public ArrayPointer sceneInstancesPtr;
+        public ArrayPointer sceneOriginObjectsPtr;
         public int zero0x74; // Ptr? Array Ptr length?
         public int zero0x78; // Ptr? Array Ptr address?
         public CircuitType circuitType;
@@ -75,9 +75,9 @@ namespace GameCube.GFZ.CourseCollision
         public int zero0x88; // Ptr? Array Ptr length?
         public int zero0x8C; // Ptr? Array Ptr address?
         public Pointer trackLengthPtr;
-        public ArrayPointer unknownTriggersPtrs;
-        public ArrayPointer visualEffectTriggersPtrs;
-        public ArrayPointer courseMetadataTriggersPtrs;
+        public ArrayPointer unknownTriggersPtr;
+        public ArrayPointer visualEffectTriggersPtr;
+        public ArrayPointer courseMetadataTriggersPtr;
         public ArrayPointer arcadeCheckpointTriggersPtr;
         public ArrayPointer storyObjectTriggersPtr;
         public Pointer trackCheckpointMatrixPtr;
@@ -196,16 +196,16 @@ namespace GameCube.GFZ.CourseCollision
             reader.ReadX(ref sceneObjects, sceneObjectCount, true);
 
             // 0x5C and 0x60 SOLS values
-            reader.JumpToAddress(unknownSolsTriggerPtrs);
-            reader.ReadX(ref unknownSolsTriggers, unknownSolsTriggerPtrs.Length, true);
+            reader.JumpToAddress(unknownSolsTriggersPtr);
+            reader.ReadX(ref unknownSolsTriggers, unknownSolsTriggersPtr.Length, true);
 
             // 0x64 and 0x68
-            reader.JumpToAddress(sceneInstancesListPtrs);
-            reader.ReadX(ref sceneInstancesList, sceneInstancesListPtrs.Length, true);
+            reader.JumpToAddress(sceneInstancesPtr);
+            reader.ReadX(ref sceneInstancesList, sceneInstancesPtr.Length, true);
 
             // 0x6C and 0x70
-            reader.JumpToAddress(sceneOriginObjectsListPtrs);
-            reader.ReadX(ref sceneOriginObjectsList, sceneOriginObjectsListPtrs.Length, true);
+            reader.JumpToAddress(sceneOriginObjectsPtr);
+            reader.ReadX(ref sceneOriginObjectsList, sceneOriginObjectsPtr.Length, true);
 
             // 0x80
             if (fogAnimationCurvesPtr.IsNotNullPointer)
@@ -223,16 +223,16 @@ namespace GameCube.GFZ.CourseCollision
             reader.ReadX(ref trackLength, true);
 
             // 0x94 and 0x98
-            reader.JumpToAddress(unknownTriggersPtrs);
-            reader.ReadX(ref unknownTriggers, unknownTriggersPtrs.Length, true);
+            reader.JumpToAddress(unknownTriggersPtr);
+            reader.ReadX(ref unknownTriggers, unknownTriggersPtr.Length, true);
 
             // 0x9C and 0xA0
-            reader.JumpToAddress(visualEffectTriggersPtrs);
-            reader.ReadX(ref visualEffectTriggers, visualEffectTriggersPtrs.Length, true);
+            reader.JumpToAddress(visualEffectTriggersPtr);
+            reader.ReadX(ref visualEffectTriggers, visualEffectTriggersPtr.Length, true);
 
             // 0xA4 and 0xA8
-            reader.JumpToAddress(courseMetadataTriggersPtrs);
-            reader.ReadX(ref courseMetadataTriggers, courseMetadataTriggersPtrs.Length, true);
+            reader.JumpToAddress(courseMetadataTriggersPtr);
+            reader.ReadX(ref courseMetadataTriggers, courseMetadataTriggersPtr.Length, true);
 
             // 0xAC and 0xB0
             reader.JumpToAddress(arcadeCheckpointTriggersPtr);
@@ -401,7 +401,7 @@ namespace GameCube.GFZ.CourseCollision
 
             // Non pointer data (aside from SceneObject counts)
             unkRange0x00 = new Range(0f, 10000f); // default for test stages
-            boostPadsActive = BoostPadsActive.Enabled;
+            boostPlatesActive = BoostPlatesActive.Enabled;
             unkBool32_0x58 = Bool32.True;
             circuitType = CircuitType.ClosedCircuit;
             courseBounds = new Bounds();
@@ -501,7 +501,7 @@ namespace GameCube.GFZ.CourseCollision
                 reader.ReadX(ref unkRange0x00, true);
                 reader.ReadX(ref trackNodesPtr);
                 reader.ReadX(ref surfaceAttributeAreasPtr);
-                reader.ReadX(ref boostPadsActive);
+                reader.ReadX(ref boostPlatesActive);
                 reader.ReadX(ref staticColliderMeshesPtr);
                 reader.ReadX(ref zeroes0x20Ptr);
                 reader.ReadX(ref trackMinHeightPtr);
@@ -512,9 +512,9 @@ namespace GameCube.GFZ.CourseCollision
                 if (isFileGX) reader.ReadX(ref unk_sceneObjectCount2);
                 reader.ReadX(ref sceneObjectsPtr);
                 reader.ReadX(ref unkBool32_0x58);
-                reader.ReadX(ref unknownSolsTriggerPtrs);
-                reader.ReadX(ref sceneInstancesListPtrs);
-                reader.ReadX(ref sceneOriginObjectsListPtrs);
+                reader.ReadX(ref unknownSolsTriggersPtr);
+                reader.ReadX(ref sceneInstancesPtr);
+                reader.ReadX(ref sceneOriginObjectsPtr);
                 reader.ReadX(ref zero0x74);
                 reader.ReadX(ref zero0x78);
                 reader.ReadX(ref circuitType);
@@ -523,9 +523,9 @@ namespace GameCube.GFZ.CourseCollision
                 reader.ReadX(ref zero0x88);
                 reader.ReadX(ref zero0x8C);
                 reader.ReadX(ref trackLengthPtr);
-                reader.ReadX(ref unknownTriggersPtrs);
-                reader.ReadX(ref visualEffectTriggersPtrs);
-                reader.ReadX(ref courseMetadataTriggersPtrs);
+                reader.ReadX(ref unknownTriggersPtr);
+                reader.ReadX(ref visualEffectTriggersPtr);
+                reader.ReadX(ref courseMetadataTriggersPtr);
                 reader.ReadX(ref arcadeCheckpointTriggersPtr);
                 reader.ReadX(ref storyObjectTriggersPtr);
                 reader.ReadX(ref trackCheckpointMatrixPtr);
@@ -577,15 +577,15 @@ namespace GameCube.GFZ.CourseCollision
                 fogAnimationCurvesPtr = fogAnimationCurves.GetPointer();
                 // TRIGGERS
                 arcadeCheckpointTriggersPtr = arcadeCheckpointTriggers.GetArrayPointer();
-                courseMetadataTriggersPtrs = courseMetadataTriggers.GetArrayPointer();
+                courseMetadataTriggersPtr = courseMetadataTriggers.GetArrayPointer();
                 storyObjectTriggersPtr = storyObjectTriggers.GetArrayPointer();
-                unknownSolsTriggerPtrs = unknownSolsTriggers.GetArrayPointer();
-                unknownTriggersPtrs = unknownTriggers.GetArrayPointer();
-                visualEffectTriggersPtrs = visualEffectTriggers.GetArrayPointer();
+                unknownSolsTriggersPtr = unknownSolsTriggers.GetArrayPointer();
+                unknownTriggersPtr = unknownTriggers.GetArrayPointer();
+                visualEffectTriggersPtr = visualEffectTriggers.GetArrayPointer();
                 // SCENE OBJECTS
                 // References
-                sceneInstancesListPtrs = sceneInstancesList.GetArrayPointer();
-                sceneOriginObjectsListPtrs = sceneOriginObjectsList.GetArrayPointer();
+                sceneInstancesPtr = sceneInstancesList.GetArrayPointer();
+                sceneOriginObjectsPtr = sceneOriginObjectsList.GetArrayPointer();
                 // Main list
                 sceneObjectCount = sceneObjects.Length;
                 unk_sceneObjectCount1 = 0; // still don't know what this is for
@@ -597,7 +597,7 @@ namespace GameCube.GFZ.CourseCollision
                 writer.WriteX(unkRange0x00);
                 writer.WriteX(trackNodesPtr);
                 writer.WriteX(surfaceAttributeAreasPtr);
-                writer.WriteX(boostPadsActive);
+                writer.WriteX(boostPlatesActive);
                 writer.WriteX(staticColliderMeshesPtr);
                 writer.WriteX(zeroes0x20Ptr);
                 writer.WriteX(trackMinHeightPtr);
@@ -608,18 +608,18 @@ namespace GameCube.GFZ.CourseCollision
                     writer.WriteX(unk_sceneObjectCount2);
                 writer.WriteX(sceneObjectsPtr);
                 writer.WriteX(unkBool32_0x58);
-                writer.WriteX(unknownSolsTriggerPtrs);
-                writer.WriteX(sceneInstancesListPtrs);
-                writer.WriteX(sceneOriginObjectsListPtrs);
+                writer.WriteX(unknownSolsTriggersPtr);
+                writer.WriteX(sceneInstancesPtr);
+                writer.WriteX(sceneOriginObjectsPtr);
                 writer.WriteX(new ArrayPointer()); // const unused
                 writer.WriteX(circuitType);
                 writer.WriteX(fogAnimationCurvesPtr);
                 writer.WriteX(fogPtr);
                 writer.WriteX(new ArrayPointer()); // const unused
                 writer.WriteX(trackLengthPtr);
-                writer.WriteX(unknownTriggersPtrs);
-                writer.WriteX(visualEffectTriggersPtrs);
-                writer.WriteX(courseMetadataTriggersPtrs);
+                writer.WriteX(unknownTriggersPtr);
+                writer.WriteX(visualEffectTriggersPtr);
+                writer.WriteX(courseMetadataTriggersPtr);
                 writer.WriteX(arcadeCheckpointTriggersPtr);
                 writer.WriteX(storyObjectTriggersPtr);
                 writer.WriteX(trackCheckpointMatrixPtr);
@@ -649,22 +649,22 @@ namespace GameCube.GFZ.CourseCollision
             Assert.IsTrue(zeroes0x20Ptr.IsNotNullPointer);
             Assert.IsTrue(trackMinHeightPtr.IsNotNullPointer);
             Assert.IsTrue(sceneObjectsPtr.IsNotNullPointer);
-            Assert.IsTrue(sceneInstancesListPtrs.IsNotNullPointer);
-            Assert.IsTrue(sceneOriginObjectsListPtrs.IsNotNullPointer);
+            Assert.IsTrue(sceneInstancesPtr.IsNotNullPointer);
+            Assert.IsTrue(sceneOriginObjectsPtr.IsNotNullPointer);
             Assert.IsTrue(fogPtr.IsNotNullPointer);
             Assert.IsTrue(trackCheckpointMatrixPtr.IsNotNullPointer);
 
             // Assert pointers which can be null IF the reference type is not null
             if (unknownSolsTriggers != null)
-                Assert.IsTrue(unknownSolsTriggerPtrs.IsNotNullPointer);
+                Assert.IsTrue(unknownSolsTriggersPtr.IsNotNullPointer);
             if (fogAnimationCurves != null)
                 Assert.IsTrue(fogAnimationCurvesPtr.IsNotNullPointer);
             if (fog != null)
-                Assert.IsTrue(unknownTriggersPtrs.IsNotNullPointer);
+                Assert.IsTrue(unknownTriggersPtr.IsNotNullPointer);
             if (visualEffectTriggers != null)
-                Assert.IsTrue(visualEffectTriggersPtrs.IsNotNullPointer);
+                Assert.IsTrue(visualEffectTriggersPtr.IsNotNullPointer);
             if (courseMetadataTriggers != null)
-                Assert.IsTrue(courseMetadataTriggersPtrs.IsNotNullPointer);
+                Assert.IsTrue(courseMetadataTriggersPtr.IsNotNullPointer);
             if (arcadeCheckpointTriggers != null)
                 Assert.IsTrue(arcadeCheckpointTriggersPtr.IsNotNullPointer);
             if (storyObjectTriggers != null)

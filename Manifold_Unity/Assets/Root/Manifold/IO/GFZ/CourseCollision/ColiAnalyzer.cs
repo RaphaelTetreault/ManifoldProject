@@ -947,7 +947,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol(nameof(ColiScene.trackNodesPtr));
                 writer.WriteNextCol(nameof(ColiScene.surfaceAttributeAreasPtr));
                 writer.WriteNextCol(nameof(ColiScene.surfaceAttributeAreasPtr));
-                writer.WriteNextCol(nameof(ColiScene.boostPadsActive));
+                writer.WriteNextCol(nameof(ColiScene.boostPlatesActive));
                 writer.WriteNextCol(nameof(ColiScene.surfaceAttributeAreasPtr));
                 writer.WriteNextCol(nameof(ColiScene.zeroes0x20Ptr));
                 writer.WriteNextCol(nameof(ColiScene.trackMinHeightPtr));
@@ -957,12 +957,12 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol(nameof(ColiScene.unk_sceneObjectCount2));
                 writer.WriteNextCol(nameof(ColiScene.sceneObjectsPtr));
                 writer.WriteNextCol(nameof(ColiScene.unkBool32_0x58));
-                writer.WriteNextCol(nameof(ColiScene.unknownSolsTriggerPtrs));
-                writer.WriteNextCol(nameof(ColiScene.unknownSolsTriggerPtrs));
-                writer.WriteNextCol(nameof(ColiScene.sceneInstancesListPtrs));
-                writer.WriteNextCol(nameof(ColiScene.sceneInstancesListPtrs));
-                writer.WriteNextCol(nameof(ColiScene.sceneOriginObjectsListPtrs));
-                writer.WriteNextCol(nameof(ColiScene.sceneOriginObjectsListPtrs));
+                writer.WriteNextCol(nameof(ColiScene.unknownSolsTriggersPtr));
+                writer.WriteNextCol(nameof(ColiScene.unknownSolsTriggersPtr));
+                writer.WriteNextCol(nameof(ColiScene.sceneInstancesPtr));
+                writer.WriteNextCol(nameof(ColiScene.sceneInstancesPtr));
+                writer.WriteNextCol(nameof(ColiScene.sceneOriginObjectsPtr));
+                writer.WriteNextCol(nameof(ColiScene.sceneOriginObjectsPtr));
                 writer.WriteNextCol(nameof(ColiScene.zero0x74));
                 writer.WriteNextCol(nameof(ColiScene.zero0x78));
                 writer.WriteNextCol(nameof(ColiScene.circuitType));
@@ -971,12 +971,12 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol(nameof(ColiScene.zero0x88));
                 writer.WriteNextCol(nameof(ColiScene.zero0x8C));
                 writer.WriteNextCol(nameof(ColiScene.trackLengthPtr));
-                writer.WriteNextCol(nameof(ColiScene.unknownTriggersPtrs)); // len
-                writer.WriteNextCol(nameof(ColiScene.unknownTriggersPtrs)); // adr
-                writer.WriteNextCol(nameof(ColiScene.visualEffectTriggersPtrs)); // len
-                writer.WriteNextCol(nameof(ColiScene.visualEffectTriggersPtrs)); // adr
-                writer.WriteNextCol(nameof(ColiScene.courseMetadataTriggersPtrs)); // len
-                writer.WriteNextCol(nameof(ColiScene.courseMetadataTriggersPtrs)); // adr
+                writer.WriteNextCol(nameof(ColiScene.unknownTriggersPtr)); // len
+                writer.WriteNextCol(nameof(ColiScene.unknownTriggersPtr)); // adr
+                writer.WriteNextCol(nameof(ColiScene.visualEffectTriggersPtr)); // len
+                writer.WriteNextCol(nameof(ColiScene.visualEffectTriggersPtr)); // adr
+                writer.WriteNextCol(nameof(ColiScene.courseMetadataTriggersPtr)); // len
+                writer.WriteNextCol(nameof(ColiScene.courseMetadataTriggersPtr)); // adr
                 writer.WriteNextCol(nameof(ColiScene.arcadeCheckpointTriggersPtr)); // len
                 writer.WriteNextCol(nameof(ColiScene.arcadeCheckpointTriggersPtr)); // adr
                 writer.WriteNextCol(nameof(ColiScene.storyObjectTriggersPtr)); // len
@@ -1009,7 +1009,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                     writer.WriteNextCol(scene.trackNodesPtr.HexAddress);
                     writer.WriteNextCol(scene.surfaceAttributeAreasPtr.Length);
                     writer.WriteNextCol(scene.surfaceAttributeAreasPtr.HexAddress);
-                    writer.WriteNextCol(scene.boostPadsActive);
+                    writer.WriteNextCol(scene.boostPlatesActive);
                     writer.WriteNextCol(scene.staticColliderMeshesPtr.HexAddress);
                     writer.WriteNextCol(scene.zeroes0x20Ptr.HexAddress);
                     writer.WriteNextCol(scene.trackMinHeightPtr.HexAddress);
@@ -1026,12 +1026,12 @@ namespace Manifold.IO.GFZ.CourseCollision
                     writer.WriteNextCol(scene.unk_sceneObjectCount2);
                     writer.WriteNextCol(scene.sceneObjectsPtr.HexAddress);
                     writer.WriteNextCol(scene.unkBool32_0x58);
-                    writer.WriteNextCol(scene.unknownSolsTriggerPtrs.Length);
-                    writer.WriteNextCol(scene.unknownSolsTriggerPtrs.HexAddress);
-                    writer.WriteNextCol(scene.sceneInstancesListPtrs.Length);
-                    writer.WriteNextCol(scene.sceneInstancesListPtrs.HexAddress);
-                    writer.WriteNextCol(scene.sceneOriginObjectsListPtrs.Length);
-                    writer.WriteNextCol(scene.sceneOriginObjectsListPtrs.HexAddress);
+                    writer.WriteNextCol(scene.unknownSolsTriggersPtr.Length);
+                    writer.WriteNextCol(scene.unknownSolsTriggersPtr.HexAddress);
+                    writer.WriteNextCol(scene.sceneInstancesPtr.Length);
+                    writer.WriteNextCol(scene.sceneInstancesPtr.HexAddress);
+                    writer.WriteNextCol(scene.sceneOriginObjectsPtr.Length);
+                    writer.WriteNextCol(scene.sceneOriginObjectsPtr.HexAddress);
                     writer.WriteNextCol(scene.zero0x74);
                     writer.WriteNextCol(scene.zero0x78);
                     writer.WriteNextCol(scene.circuitType);
@@ -1040,12 +1040,12 @@ namespace Manifold.IO.GFZ.CourseCollision
                     writer.WriteNextCol(scene.zero0x88);
                     writer.WriteNextCol(scene.zero0x8C);
                     writer.WriteNextCol(scene.trackLengthPtr.HexAddress);
-                    writer.WriteNextCol(scene.unknownTriggersPtrs.Length);
-                    writer.WriteNextCol(scene.unknownTriggersPtrs.HexAddress);
-                    writer.WriteNextCol(scene.visualEffectTriggersPtrs.Length);
-                    writer.WriteNextCol(scene.visualEffectTriggersPtrs.HexAddress);
-                    writer.WriteNextCol(scene.courseMetadataTriggersPtrs.Length);
-                    writer.WriteNextCol(scene.courseMetadataTriggersPtrs.HexAddress);
+                    writer.WriteNextCol(scene.unknownTriggersPtr.Length);
+                    writer.WriteNextCol(scene.unknownTriggersPtr.HexAddress);
+                    writer.WriteNextCol(scene.visualEffectTriggersPtr.Length);
+                    writer.WriteNextCol(scene.visualEffectTriggersPtr.HexAddress);
+                    writer.WriteNextCol(scene.courseMetadataTriggersPtr.Length);
+                    writer.WriteNextCol(scene.courseMetadataTriggersPtr.HexAddress);
                     writer.WriteNextCol(scene.arcadeCheckpointTriggersPtr.Length);
                     writer.WriteNextCol(scene.arcadeCheckpointTriggersPtr.HexAddress);
                     writer.WriteNextCol(scene.storyObjectTriggersPtr.Length);
