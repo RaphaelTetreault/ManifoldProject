@@ -50,7 +50,7 @@ namespace GameCube.GFZ.CourseCollision
 
 
         // FIELDS
-        public MinMax unk_0x00;
+        public Range unk_0x00;
         public ArrayPointer trackNodesPtr;
         public ArrayPointer surfaceAttributeAreasPtr;
         public BoostPadsActive boostPadsActive;
@@ -94,8 +94,8 @@ namespace GameCube.GFZ.CourseCollision
         public SceneInstanceReference[] sceneInstancesList = new SceneInstanceReference[0];
         public SceneOriginObjects[] sceneOriginObjectsList = new SceneOriginObjects[0];
         public UnknownSolsTrigger[] unknownSolsTriggers = new UnknownSolsTrigger[0];
-        public UnkStageAnimationCurves unknownStageData2 = new UnkStageAnimationCurves();
-        public UnkStageLight unknownStageData1 = new UnkStageLight();
+        public StageFogAnimationCurves unknownStageData2 = new StageFogAnimationCurves();
+        public StageFog unknownStageData1 = new StageFog();
         public TrackLength trackLength;
         public UnknownTrigger1[] unknownTrigger1s = new UnknownTrigger1[0]; // "green"
         public VisualEffectTrigger[] visualEffectTriggers = new VisualEffectTrigger[0];
@@ -384,7 +384,7 @@ namespace GameCube.GFZ.CourseCollision
 
 
             // Non pointer data (aside from SceneObject counts)
-            unk_0x00 = new MinMax();
+            unk_0x00 = new Range();
             boostPadsActive = BoostPadsActive.Enabled;
             unkBool32_0x58 = Bool32.True;
             circuitType = CircuitType.ClosedCircuit;

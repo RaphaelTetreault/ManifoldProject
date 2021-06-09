@@ -107,7 +107,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
             if (coliUnk5)
             {
-                string fileName = $"{time} COLI {nameof(UnkStageLight)}.tsv";
+                string fileName = $"{time} COLI {nameof(StageFog)}.tsv";
                 string filePath = Path.Combine(outputPath, fileName);
                 EditorUtility.DisplayProgressBar(ExecuteText, filePath, .5f);
                 AnalyzeUnknownStageData1(filePath);
@@ -216,7 +216,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
             if (unknownAnimationData)
             {
-                string fileName = $"{time} COLI {nameof(UnkStageAnimationCurves)}.tsv";
+                string fileName = $"{time} COLI {nameof(StageFogAnimationCurves)}.tsv";
                 string filePath = Path.Combine(outputPath, fileName);
                 EditorUtility.DisplayProgressBar(ExecuteText, filePath, .5f);
                 AnalyzeUnknownAnimationData(filePath);
@@ -1003,8 +1003,8 @@ namespace Manifold.IO.GFZ.CourseCollision
                     writer.WriteNextCol(((CourseIndexAX)scene.ID).GetDescription());
                     writer.WriteNextCol(scene.IsFileGX ? "GX" : "AX");
 
-                    writer.WriteNextCol(scene.unk_0x00.min);
-                    writer.WriteNextCol(scene.unk_0x00.max);
+                    writer.WriteNextCol(scene.unk_0x00.near);
+                    writer.WriteNextCol(scene.unk_0x00.far);
                     writer.WriteNextCol(scene.trackNodesPtr.Length);
                     writer.WriteNextCol(scene.trackNodesPtr.HexAddress);
                     writer.WriteNextCol(scene.surfaceAttributeAreasPtr.Length);
@@ -1297,15 +1297,15 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol("Venue");
                 writer.WriteNextCol("AX/GX");
                 //
-                writer.WriteNextCol(nameof(UnkStageLight.option));
-                writer.WriteNextCol(nameof(UnkStageLight.minMax0x04) + "." + nameof(MinMax.min));
-                writer.WriteNextCol(nameof(UnkStageLight.minMax0x04) + "." + nameof(MinMax.max));
-                writer.WriteNextCol(nameof(UnkStageLight.colorRGB) + ".R");
-                writer.WriteNextCol(nameof(UnkStageLight.colorRGB) + ".G");
-                writer.WriteNextCol(nameof(UnkStageLight.colorRGB) + ".B");
-                writer.WriteNextCol(nameof(UnkStageLight.zero0x18) + ".x");
-                writer.WriteNextCol(nameof(UnkStageLight.zero0x18) + ".y");
-                writer.WriteNextCol(nameof(UnkStageLight.zero0x18) + ".z");
+                writer.WriteNextCol(nameof(StageFog.option));
+                writer.WriteNextCol(nameof(StageFog.fogRange) + "." + nameof(Range.near));
+                writer.WriteNextCol(nameof(StageFog.fogRange) + "." + nameof(Range.far));
+                writer.WriteNextCol(nameof(StageFog.colorRGB) + ".R");
+                writer.WriteNextCol(nameof(StageFog.colorRGB) + ".G");
+                writer.WriteNextCol(nameof(StageFog.colorRGB) + ".B");
+                writer.WriteNextCol(nameof(StageFog.zero0x18) + ".x");
+                writer.WriteNextCol(nameof(StageFog.zero0x18) + ".y");
+                writer.WriteNextCol(nameof(StageFog.zero0x18) + ".z");
                 //
                 writer.WriteNextRow();
 
@@ -1323,8 +1323,8 @@ namespace Manifold.IO.GFZ.CourseCollision
                     writer.WriteNextCol(isAxGx);
                     //
                     writer.WriteNextCol(scene.unknownStageData1.option);
-                    writer.WriteNextCol(scene.unknownStageData1.minMax0x04.min);
-                    writer.WriteNextCol(scene.unknownStageData1.minMax0x04.max);
+                    writer.WriteNextCol(scene.unknownStageData1.fogRange.near);
+                    writer.WriteNextCol(scene.unknownStageData1.fogRange.far);
                     writer.WriteNextCol(scene.unknownStageData1.colorRGB.x);
                     writer.WriteNextCol(scene.unknownStageData1.colorRGB.y);
                     writer.WriteNextCol(scene.unknownStageData1.colorRGB.z);

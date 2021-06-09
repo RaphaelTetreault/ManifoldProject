@@ -3,7 +3,7 @@ namespace GameCube.GFZ.CourseCollision
     /// <summary>
     /// 
     /// </summary>
-    public enum UnkStageLightOption
+    public enum StageFogOption
     {
         A_0x02 = 0x02000000,
         B_0x04 = 0x04000000,

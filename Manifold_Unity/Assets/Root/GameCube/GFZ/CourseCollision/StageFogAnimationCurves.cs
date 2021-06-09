@@ -10,14 +10,14 @@ using System.IO;
 //
 // Animation data
 // Indexes 0-5, length 6, values are:
-// 0: UnkStageX.min
-// 1: UnkStageX.max
-// 2: UnkStageX.colorRGB.x - color R
-// 3: UnkStageX.colorRGB.y - color G
-// 4: UnkStageX.colorRGB.z - color B
+// 0: StageFog.min
+// 1: StageFog.max
+// 2: StageFog.colorRGB.x - color R
+// 3: StageFog.colorRGB.y - color G
+// 4: StageFog.colorRGB.z - color B
 // 5: (always 0)
 //
-// Get animation curves [6] easily with helper funtion UnkStageX.GetAnimationCurves().
+// Get animation curves [6] easily with helper funtion StageFog.GetAnimationCurves().
 //
 // NOTE: there is always exactly 1 key per animation curve EXCEPT for CH8 4/6 GX (of course...) where
 //       there are 0 keys, and CPDB AX, where ther are 2 keys (see note below). ALSO, the time for each
@@ -30,7 +30,7 @@ namespace GameCube.GFZ.CourseCollision
     /// 
     /// </summary>
     [Serializable]
-    public class UnkStageAnimationCurves :
+    public class StageFogAnimationCurves :
         IBinaryAddressable,
         IBinarySerializable,
         ISerializedBinaryAddressableReferer
@@ -47,7 +47,7 @@ namespace GameCube.GFZ.CourseCollision
         public AnimationCurve[] animationCurves = new AnimationCurve[kCurveCount];
 
         // CONSTRUCTORS
-        public UnkStageAnimationCurves()
+        public StageFogAnimationCurves()
         {
             // Initialize values so no null errors
             for (int i = 0; i < animationCurves.Length; i++)
@@ -113,6 +113,9 @@ namespace GameCube.GFZ.CourseCollision
             // Each curve should only have 1 key. In reality, this is not true, but
             // all the used data in the final game is like this (except ST44 where
             // [5/6] is missing]). Suffice to say, OUR data should conform to this.
+            //
+            // TO TEST: try an anim curve with multiple keys and interpolate between
+            // 2 or more colours.
             foreach (var animationCurve in animationCurves)
             {
                 Assert.IsTrue(animationCurve.Length == 1);

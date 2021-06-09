@@ -8,28 +8,28 @@ namespace GameCube.GFZ.CourseCollision
     /// 
     /// </summary>
     [Serializable]
-    public struct MinMax :
+    public struct Range :
         IBinarySerializable
     {
-        public float min;
-        public float max;
+        public float near;
+        public float far;
 
-        public MinMax(float min, float max)
+        public Range(float near, float far)
         {
-            this.min = min;
-            this.max = max;
+            this.near = near;
+            this.far = far;
         }
 
         public void Deserialize(BinaryReader reader)
         {
-            reader.ReadX(ref min);
-            reader.ReadX(ref max);
+            reader.ReadX(ref near);
+            reader.ReadX(ref far);
         }
 
         public void Serialize(BinaryWriter writer)
         {
-            writer.WriteX(min);
-            writer.WriteX(max);
+            writer.WriteX(near);
+            writer.WriteX(far);
         }
     }
 }

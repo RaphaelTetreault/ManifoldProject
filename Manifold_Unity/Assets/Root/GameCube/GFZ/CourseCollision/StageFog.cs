@@ -9,7 +9,7 @@ namespace GameCube.GFZ.CourseCollision
     /// 
     /// </summary>
     [Serializable]
-    public class UnkStageLight :
+    public class StageFog :
         IBinaryAddressable,
         IBinarySerializable
     {
@@ -19,8 +19,8 @@ namespace GameCube.GFZ.CourseCollision
 
         // FIELDS
         // Note that default values appear in AX tests and similar. A good default set.
-        public UnkStageLightOption option = UnkStageLightOption.B_0x04;
-        public MinMax minMax0x04 = new MinMax(20f, 100f); // might be a parameter for light
+        public StageFogOption option = StageFogOption.B_0x04;
+        public Range fogRange = new Range(20f, 100f); // Not confirmed, but suspected. Near/far for fog. Negative near = always affected.
         public float3 colorRGB = float3.zero; // color as 3 floats in order RGB
         public float3 zero0x18 = float3.zero; // Always zero. Perhaps always black? The last 2 values are not used in anim curve, though.
 
@@ -50,235 +50,235 @@ namespace GameCube.GFZ.CourseCollision
 
 
         // TEMPLATES
-        public UnkStageLight Aeropolis()
+        public StageFog Aeropolis()
         {
-            return new UnkStageLight()
+            return new StageFog()
             {
-                option = UnkStageLightOption.B_0x04,
-                minMax0x04 = new MinMax(300f, 3500f),
+                option = StageFogOption.B_0x04,
+                fogRange = new Range(300f, 3500f),
                 // #ffffec - soft yellow, almost beige
                 colorRGB = new float3(1f, 1f, 0.924f),
             };
         }
-        public UnkStageLight BigBlue()
+        public StageFog BigBlue()
         {
-            return new UnkStageLight()
+            return new StageFog()
             {
-                option = UnkStageLightOption.C_0x05,
-                minMax0x04 = new MinMax(500f, 4000f),
+                option = StageFogOption.C_0x05,
+                fogRange = new Range(500f, 4000f),
                 // #afdcff - soft blue
                 colorRGB = new float3(0.686f, 0.862f, 1f),
             };
         }
-        public UnkStageLight CasinoPalace()
+        public StageFog CasinoPalace()
         {
-            return new UnkStageLight()
+            return new StageFog()
             {
-                option = UnkStageLightOption.B_0x04,
-                minMax0x04 = new MinMax(0f, 20000f),
+                option = StageFogOption.B_0x04,
+                fogRange = new Range(0f, 20000f),
                 // #000000 - black
                 colorRGB = new float3(0f, 0f, 0f),
             };
         }
-        public UnkStageLight CosmoTerminal()
+        public StageFog CosmoTerminal()
         {
-            return new UnkStageLight()
+            return new StageFog()
             {
-                option = UnkStageLightOption.B_0x04,
-                minMax0x04 = new MinMax(4500f, 9000f),
+                option = StageFogOption.B_0x04,
+                fogRange = new Range(4500f, 9000f),
                 // #000000 - black
                 colorRGB = new float3(0f, 0f, 0f),
             };
         }
-        public UnkStageLight FireField()
+        public StageFog FireField()
         {
-            return new UnkStageLight()
+            return new StageFog()
             {
-                option = UnkStageLightOption.A_0x02,
-                minMax0x04 = new MinMax(0f, 5500f),
+                option = StageFogOption.A_0x02,
+                fogRange = new Range(0f, 5500f),
                 // #c79064 - mid-tone brown
                 colorRGB = new float3(0.78f, 0.566f, 0.391f),
             };
         }
-        public UnkStageLight GrandPrixPodium()
+        public StageFog GrandPrixPodium()
         {
-            return new UnkStageLight()
+            return new StageFog()
             {
-                option = UnkStageLightOption.B_0x04,
-                minMax0x04 = new MinMax(0f, 12000f),
+                option = StageFogOption.B_0x04,
+                fogRange = new Range(0f, 12000f),
                 // #2d3c50 - deep blue
                 colorRGB = new float3(0.176f, 0.235f, 0.313f),
             };
         }
-        public UnkStageLight GreenPlant()
+        public StageFog GreenPlant()
         {
-            return new UnkStageLight()
+            return new StageFog()
             {
-                option = UnkStageLightOption.C_0x05,
+                option = StageFogOption.C_0x05,
                 // Intersection: -500, Mobius Ring: -250,
-                minMax0x04 = new MinMax(-375f, 2400f),
+                fogRange = new Range(-375f, 2400f),
                 // 0.701, 0.780, 0.898 - dull blue (like sky color)
                 colorRGB = new float3(0.703f, 0.781f, 0.898f),
             };
         }
-        public UnkStageLight GreenPlantSpiral()
+        public StageFog GreenPlantSpiral()
         {
-            return new UnkStageLight()
+            return new StageFog()
             {
-                option = UnkStageLightOption.C_0x05,
-                minMax0x04 = new MinMax(0f, 7500f),
+                option = StageFogOption.C_0x05,
+                fogRange = new Range(0f, 7500f),
                 // #b3bd9f - dull green
                 colorRGB = new float3(0.703f, 0.7422f, 0.625f),
             };
         }
-        public UnkStageLight Lightning()
+        public StageFog Lightning()
         {
-            return new UnkStageLight()
+            return new StageFog()
             {
-                option = UnkStageLightOption.B_0x04,
+                option = StageFogOption.B_0x04,
                 // Thunder Road: 3000f
-                minMax0x04 = new MinMax(0f, 2400f),
+                fogRange = new Range(0f, 2400f),
                 // #181a1e - very dark blue, almost black
                 colorRGB = new float3(0.094f, 0.102f, 0.117f),
             };
         }
-        public UnkStageLight MuteCity()
+        public StageFog MuteCity()
         {
-            return new UnkStageLight()
+            return new StageFog()
             {
-                option = UnkStageLightOption.B_0x04,
-                minMax0x04 = new MinMax(20f, 100f),
+                option = StageFogOption.B_0x04,
+                fogRange = new Range(20f, 100f),
                 // #000000 - black
                 colorRGB = new float3(0f, 0f, 0f),
             };
         }
-        public UnkStageLight MuteCityCOM()
+        public StageFog MuteCityCOM()
         {
-            return new UnkStageLight()
+            return new StageFog()
             {
-                option = UnkStageLightOption.B_0x04,
-                minMax0x04 = new MinMax(0f, 12000f),
+                option = StageFogOption.B_0x04,
+                fogRange = new Range(0f, 12000f),
                 // #2d3c50 - dark blue
                 colorRGB = new float3(0.1765f, 0.2353f, 0.3137f),
             };
         }
-        public UnkStageLight OuterSpace()
+        public StageFog OuterSpace()
         {
-            return new UnkStageLight()
+            return new StageFog()
             {
-                option = UnkStageLightOption.C_0x05,
-                minMax0x04 = new MinMax(2000f, 15000f),
+                option = StageFogOption.C_0x05,
+                fogRange = new Range(2000f, 15000f),
                 // #000000 - black
                 colorRGB = new float3(0f, 0f, 0f),
             };
         }
-        public UnkStageLight PhantomRoad()
+        public StageFog PhantomRoad()
         {
-            return new UnkStageLight()
+            return new StageFog()
             {
-                option = UnkStageLightOption.B_0x04,
-                minMax0x04 = new MinMax(0f, 8000f),
+                option = StageFogOption.B_0x04,
+                fogRange = new Range(0f, 8000f),
                 // #000000 - black
                 colorRGB = new float3(0f, 0f, 0f),
             };
         }
-        public UnkStageLight PhantomRoadAX()
+        public StageFog PhantomRoadAX()
         {
-            return new UnkStageLight()
+            return new StageFog()
             {
-                option = UnkStageLightOption.B_0x04,
-                minMax0x04 = new MinMax(0f, 16000f),
+                option = StageFogOption.B_0x04,
+                fogRange = new Range(0f, 16000f),
                 // #000000 - very, very dark blue, consider black
                 colorRGB = new float3(0f, 0f, 0.1f),
             };
         }
-        public UnkStageLight PortTown()
+        public StageFog PortTown()
         {
-            return new UnkStageLight()
+            return new StageFog()
             {
-                option = UnkStageLightOption.B_0x04,
-                minMax0x04 = new MinMax(0f, 16000f),
+                option = StageFogOption.B_0x04,
+                fogRange = new Range(0f, 16000f),
                 // #81634a - brown
                 colorRGB = new float3(0.505f, 0.388f, 0.29f),
             };
         }
-        public UnkStageLight SandOcean()
+        public StageFog SandOcean()
         {
-            return new UnkStageLight()
+            return new StageFog()
             {
-                option = UnkStageLightOption.C_0x05,
-                minMax0x04 = new MinMax(20f, 100f),
+                option = StageFogOption.C_0x05,
+                fogRange = new Range(20f, 100f),
                 // #000000 - black
                 colorRGB = new float3(0f, 0f, 0f),
             };
         }
-        public UnkStageLight VictoryLap()
+        public StageFog VictoryLap()
         {
-            return new UnkStageLight()
+            return new StageFog()
             {
-                option = UnkStageLightOption.B_0x04,
-                minMax0x04 = new MinMax(0f, 12000f),
+                option = StageFogOption.B_0x04,
+                fogRange = new Range(0f, 12000f),
                 // #2d3c50 - dark blue
                 colorRGB = new float3(0.176f, 0.235f, 0.313f),
             };
         }
 
-        public UnkStageLight StoryBigBlue()
+        public StageFog StoryBigBlue()
         {
-            return new UnkStageLight()
+            return new StageFog()
             {
-                option = UnkStageLightOption.C_0x05,
-                minMax0x04 = new MinMax(-3000f, 20000f),
+                option = StageFogOption.C_0x05,
+                fogRange = new Range(-3000f, 20000f),
                 // #373250 - dark indigo
                 colorRGB = new float3(0.2156f, 0.196f, 0.3137f),
             };
         }
-        public UnkStageLight StoryFireField()
+        public StageFog StoryFireField()
         {
-            return new UnkStageLight()
+            return new StageFog()
             {
-                option = UnkStageLightOption.A_0x02,
-                minMax0x04 = new MinMax(0f, 1500f),
+                option = StageFogOption.A_0x02,
+                fogRange = new Range(0f, 1500f),
                 // #ff7832 - saturated orange
                 colorRGB = new float3(1f, 0.469f, 0.1954f),
             };
         }
-        public UnkStageLight StoryLightning()
+        public StageFog StoryLightning()
         {
-            return new UnkStageLight()
+            return new StageFog()
             {
-                option = UnkStageLightOption.A_0x02,
-                minMax0x04 = new MinMax(200f, 1350f),
+                option = StageFogOption.A_0x02,
+                fogRange = new Range(200f, 1350f),
                 // #db5528 - mid-tone red-orange
                 colorRGB = new float3(0.8594f, 0.332f, 0.1563f),
             };
         }
-        public UnkStageLight StoryMuteCityCOM()
+        public StageFog StoryMuteCityCOM()
         {
-            return new UnkStageLight()
+            return new StageFog()
             {
-                option = UnkStageLightOption.B_0x04,
-                minMax0x04 = new MinMax(600f, 7470f),
+                option = StageFogOption.B_0x04,
+                fogRange = new Range(600f, 7470f),
                 // #00c864 - saturated green-teal
                 colorRGB = new float3(0f, 0.7843f, 0.3922f),
             };
         }
-        public UnkStageLight StoryPortTown()
+        public StageFog StoryPortTown()
         {
-            return new UnkStageLight()
+            return new StageFog()
             {
-                option = UnkStageLightOption.C_0x05,
-                minMax0x04 = new MinMax(0f, 20000f),
+                option = StageFogOption.C_0x05,
+                fogRange = new Range(0f, 20000f),
                 // #000000 - black
                 colorRGB = new float3(0f, 0f, 0f),
             };
         }
-        public UnkStageLight StorySandOcean()
+        public StageFog StorySandOcean()
         {
-            return new UnkStageLight()
+            return new StageFog()
             {
-                option = UnkStageLightOption.B_0x04,
-                minMax0x04 = new MinMax(50f, 70000f),
+                option = StageFogOption.B_0x04,
+                fogRange = new Range(50f, 70000f),
                 // #fffaf2 - light beige
                 colorRGB = new float3(1f, 0.98f, 0.95f),
 
@@ -301,8 +301,8 @@ namespace GameCube.GFZ.CourseCollision
         {
             return new AnimationCurve[]
             {
-                ToAnimationCurve(minMax0x04.min),
-                ToAnimationCurve(minMax0x04.max),
+                ToAnimationCurve(fogRange.near),
+                ToAnimationCurve(fogRange.far),
                 ToAnimationCurve(colorRGB.x),
                 ToAnimationCurve(colorRGB.y),
                 ToAnimationCurve(colorRGB.z),
@@ -340,7 +340,7 @@ namespace GameCube.GFZ.CourseCollision
             this.RecordStartAddress(reader);
             {
                 reader.ReadX(ref option);
-                reader.ReadX(ref minMax0x04, true);
+                reader.ReadX(ref fogRange, true);
                 reader.ReadX(ref colorRGB);
                 reader.ReadX(ref zero0x18);
             }
@@ -358,7 +358,7 @@ namespace GameCube.GFZ.CourseCollision
             this.RecordStartAddress(writer);
             {
                writer.WriteX(option);
-               writer.WriteX(minMax0x04);
+               writer.WriteX(fogRange);
                writer.WriteX(colorRGB);
                writer.WriteX(zero0x18);
             }
