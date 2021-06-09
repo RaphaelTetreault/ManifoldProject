@@ -4,6 +4,10 @@ using System.IO;
 
 namespace GameCube.GFZ.CourseCollision
 {
+    /// <summary>
+    /// Descriptor for where along the track a desireble surface attribute is located
+    /// such as boost plates, jump plates, and heal strips. Likely for use by AI.
+    /// </summary>
     [Serializable]
     public class SurfaceAttributeArea :
         IBinaryAddressable,
