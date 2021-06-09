@@ -10,11 +10,13 @@ namespace GameCube.GFZ.CourseCollision
     [Serializable]
     public class AnimationClip :
         IBinaryAddressable,
-        IBinarySerializable,
-        ISerializedBinaryAddressableReferer
+        IBinarySerializable
     {
         // CONSTANTS
-        public const int kSizeCurvesPtrs = 6 + 5;
+        /// <summary>
+        /// Number of animation curves. Order: scale.xyz, rotation.xyz, position.xyz, unknown, unknown (light?)
+        /// </summary>
+        public const int kSizeCurvesPtrs = 11;
         const int kSizeZero_0x08 = 0x10;
 
         // METADATA
@@ -77,12 +79,6 @@ namespace GameCube.GFZ.CourseCollision
                 writer.WriteX(animationCurvePluses, false);
             }
             this.RecordEndAddress(writer);
-        }
-
-        public void ValidateReferences()
-        {
-            foreach (var zero in zeroes_0x08)
-                Assert.IsTrue(zero == 0);
         }
     }
 }

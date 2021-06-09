@@ -439,7 +439,7 @@ namespace GameCube.GFZ.CourseCollision
                 referers.AddRange(sceneObjects);
                 foreach (var obj in sceneObjects)
                 {
-                    referers.Add(obj.animation);
+                    //referers.Add(obj.animation);
                     foreach (var animationCurvePlus in obj.animation.animationCurvePluses)
                     {
                         referers.Add(animationCurvePlus);
