@@ -59,6 +59,20 @@ namespace Manifold.IO.GFZ.CourseCollision
             var time = AnalyzerUtility.GetFileTimestamp();
 
 
+            // if ()
+            {
+                var filePath = $"{time} COLI UnkStageData1.tsv";
+                filePath = Path.Combine(outputPath, filePath);
+                EditorUtility.DisplayProgressBar(ExecuteText, filePath, .5f);
+                AnalyzeUnknownStageData1(filePath);
+            }
+            {
+                var filePath = $"{time} COLI UnkStageData2.tsv";
+                filePath = Path.Combine(outputPath, filePath);
+                EditorUtility.DisplayProgressBar(ExecuteText, filePath, .5f);
+                AnalyzeUnknownAnimationData(filePath);
+            }
+
             if (animations)
             {
                 // ANIMATIONS
@@ -93,7 +107,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
             if (coliUnk5)
             {
-                string fileName = $"{time} COLI {nameof(UnknownStageData1)}.tsv";
+                string fileName = $"{time} COLI {nameof(UnkStageRanges)}.tsv";
                 string filePath = Path.Combine(outputPath, fileName);
                 EditorUtility.DisplayProgressBar(ExecuteText, filePath, .5f);
                 AnalyzeUnknownStageData1(filePath);
@@ -202,7 +216,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
             if (unknownAnimationData)
             {
-                string fileName = $"{time} COLI {nameof(UnknownStageData2)}.tsv";
+                string fileName = $"{time} COLI {nameof(UnkStageAnimationCurves)}.tsv";
                 string filePath = Path.Combine(outputPath, fileName);
                 EditorUtility.DisplayProgressBar(ExecuteText, filePath, .5f);
                 AnalyzeUnknownAnimationData(filePath);
@@ -989,8 +1003,8 @@ namespace Manifold.IO.GFZ.CourseCollision
                     writer.WriteNextCol(((CourseIndexAX)scene.ID).GetDescription());
                     writer.WriteNextCol(scene.IsFileGX ? "GX" : "AX");
 
-                    writer.WriteNextCol(scene.unk_0x00.a);
-                    writer.WriteNextCol(scene.unk_0x00.b);
+                    writer.WriteNextCol(scene.unk_0x00.min);
+                    writer.WriteNextCol(scene.unk_0x00.max);
                     writer.WriteNextCol(scene.trackNodesPtr.Length);
                     writer.WriteNextCol(scene.trackNodesPtr.HexAddress);
                     writer.WriteNextCol(scene.surfaceAttributeAreasPtr.Length);
@@ -1283,11 +1297,15 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol("Venue");
                 writer.WriteNextCol("AX/GX");
                 //
-                writer.WriteNextCol(nameof(UnknownStageData1.unk_0x00));
-                writer.WriteNextCol(nameof(UnknownStageData1.unk_0x04) + " " + nameof(UnknownStageData1.unk_0x04.a));
-                writer.WriteNextCol(nameof(UnknownStageData1.unk_0x04) + " " + nameof(UnknownStageData1.unk_0x04.b));
-                writer.WriteNextCol(nameof(UnknownStageData1.unk_0x0C));
-                writer.WriteNextCol(nameof(UnknownStageData1.unk_0x18));
+                writer.WriteNextCol(nameof(UnkStageRanges.rangeOption));
+                writer.WriteNextCol(nameof(UnkStageRanges.minMax0x04) + "." + nameof(MinMax.min));
+                writer.WriteNextCol(nameof(UnkStageRanges.minMax0x04) + "." + nameof(MinMax.max));
+                writer.WriteNextCol(nameof(UnkStageRanges.minMax0x0C) + "." + nameof(MinMax.min));
+                writer.WriteNextCol(nameof(UnkStageRanges.minMax0x0C) + "." + nameof(MinMax.max));
+                writer.WriteNextCol(nameof(UnkStageRanges.minMax0x14) + "." + nameof(MinMax.min));
+                writer.WriteNextCol(nameof(UnkStageRanges.minMax0x14) + "." + nameof(MinMax.max));
+                writer.WriteNextCol(nameof(UnkStageRanges.zero0x1C));
+                writer.WriteNextCol(nameof(UnkStageRanges.zero0x20));
                 //
                 writer.WriteNextRow();
 
@@ -1304,17 +1322,22 @@ namespace Manifold.IO.GFZ.CourseCollision
                     writer.WriteNextCol(courseID);
                     writer.WriteNextCol(isAxGx);
                     //
-                    writer.WriteNextCol(scene.unknownStageData1.unk_0x00);
-                    writer.WriteNextCol(scene.unknownStageData1.unk_0x04.a);
-                    writer.WriteNextCol(scene.unknownStageData1.unk_0x04.b);
-                    writer.WriteNextCol(scene.unknownStageData1.unk_0x0C);
-                    writer.WriteNextCol(scene.unknownStageData1.unk_0x18);
+                    writer.WriteNextCol(scene.unknownStageData1.rangeOption);
+                    writer.WriteNextCol(scene.unknownStageData1.minMax0x04.min);
+                    writer.WriteNextCol(scene.unknownStageData1.minMax0x04.max);
+                    writer.WriteNextCol(scene.unknownStageData1.minMax0x0C.min);
+                    writer.WriteNextCol(scene.unknownStageData1.minMax0x0C.max);
+                    writer.WriteNextCol(scene.unknownStageData1.minMax0x14.min);
+                    writer.WriteNextCol(scene.unknownStageData1.minMax0x14.max);
+                    writer.WriteNextCol(scene.unknownStageData1.zero0x1C);
+                    writer.WriteNextCol(scene.unknownStageData1.zero0x20);
                     //
                     writer.WriteNextRow();
                 }
                 writer.Flush();
             }
         }
+
 
 
         public void AnalyzeSceneObjectTransforms(string fileName)

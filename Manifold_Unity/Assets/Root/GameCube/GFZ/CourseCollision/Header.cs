@@ -31,7 +31,7 @@ namespace GameCube.GFZ.CourseCollision
         [UnityEngine.SerializeField] private AddressRange addressRange;
 
         // FIELDS
-        public UnknownFloatPair unk_0x00;
+        public MinMax unk_0x00;
         public ArrayPointer trackNodesPtr;
         public ArrayPointer surfaceAttributeAreasPtr;
         public BoostPadsActive boostPadsActive;

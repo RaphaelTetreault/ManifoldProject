@@ -10,7 +10,7 @@ namespace GameCube.GFZ.CourseCollision
     /// 
     /// </summary>
     [Serializable]
-    public class UnknownStageData2 :
+    public class UnkStageAnimationCurves :
         IBinaryAddressable,
         IBinarySerializable,
         ISerializedBinaryAddressableReferer
@@ -27,7 +27,7 @@ namespace GameCube.GFZ.CourseCollision
         public AnimationCurve[] animationCurves = new AnimationCurve[kCurveCount];
 
         // CONSTRUCTORS
-        public UnknownStageData2()
+        public UnkStageAnimationCurves()
         {
             // Initialize values so no null errors
             for (int i = 0; i < animationCurves.Length; i++)
