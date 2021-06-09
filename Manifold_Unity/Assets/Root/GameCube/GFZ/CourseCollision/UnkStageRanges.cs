@@ -23,10 +23,14 @@ namespace GameCube.GFZ.CourseCollision
         // FIELDS
         public RangeOption rangeOption = RangeOption.B_0x04;
         public MinMax minMax0x04 = new MinMax(20f, 100f);
-        public MinMax minMax0x0C = new MinMax(0f, 0f);
-        public MinMax minMax0x14 = new MinMax(0f, 0f);
+        public float4 unk0x0C;
+        //public MinMax minMax0x0C = new MinMax(0f, 0f);
+        //public MinMax minMax0x14 = new MinMax(0f, 0f);
         public int zero0x1C;
         public int zero0x20;
+
+
+        // PROPERTIES
 
 
         // NOTES
@@ -35,7 +39,6 @@ namespace GameCube.GFZ.CourseCollision
         // AX CPDB has different light values
         // GP -I and -MR differ from GPS (GPS is more "purple")
         // AX broken Loop Cross is it's own thing
-
         public UnkStageRanges Aeropolis()
         {
             return new UnkStageRanges()
