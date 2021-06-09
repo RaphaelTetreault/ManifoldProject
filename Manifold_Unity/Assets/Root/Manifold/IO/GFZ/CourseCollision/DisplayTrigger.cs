@@ -18,10 +18,10 @@ namespace Manifold.IO.GFZ.CourseCollision
         private void OnDrawGizmos()
         {
             var green = new Color32(0, 255, 0, 127);
-            DisplayTriggerArray(sceneSobj.Value.unknownTrigger1s, green);
+            DisplayTriggerArray(sceneSobj.Value.unknownTriggers, green);
         }
 
-        public void DisplayTriggerArray(UnknownTrigger1[] unknownTrigger1s, Color32 color, bool drawNumber = false)
+        public void DisplayTriggerArray(UnknownTrigger[] unknownTrigger1s, Color32 color, bool drawNumber = false)
         {
             var mesh = Resources.GetBuiltinResource<Mesh>("Cube.fbx");
             Gizmos.color = color;

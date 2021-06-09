@@ -236,11 +236,11 @@ namespace Manifold.IO.GFZ.CourseCollision
         private void CreateUnknownTrigger1Volumes(ColiScene scene)
         {
             var parentObject = new GameObject();
-            parentObject.name = $"{nameof(UnknownTrigger1)} Debug Objects";
+            parentObject.name = $"{nameof(UnknownTrigger)} Debug Objects";
 
             int triggerCount = 0;
-            int triggerTotal = scene.unknownTrigger1s.Length;
-            foreach (var trigger in scene.unknownTrigger1s)
+            int triggerTotal = scene.unknownTriggers.Length;
+            foreach (var trigger in scene.unknownTriggers)
             {
                 var triggerObject = new GameObject();
                 triggerObject.transform.parent = parentObject.transform;
@@ -622,7 +622,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
             int chainIndex = 0;
             var trackNodes = sceneSobj.Value.trackNodes;
-            foreach (var indexList in sceneSobj.Value.trackCheckpointTable8x8.indexLists)
+            foreach (var indexList in sceneSobj.Value.trackCheckpointMatrix.indexLists)
             {
                 var chain = new GameObject();
                 chain.name = $"Chain {chainIndex++}";

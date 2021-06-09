@@ -33,7 +33,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             int colorIndex = 0;
             var trackNodes = sceneSobj.Value.trackNodes;
 
-            foreach (var indexList in sceneSobj.Value.trackCheckpointTable8x8.indexLists)
+            foreach (var indexList in sceneSobj.Value.trackCheckpointMatrix.indexLists)
             {
                 Gizmos.color = gizmosColor[colorIndex];
                 for (int i = 0; i < indexList.Length - 1; i++)

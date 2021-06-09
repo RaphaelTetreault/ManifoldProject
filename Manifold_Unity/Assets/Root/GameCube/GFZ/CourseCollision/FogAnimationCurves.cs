@@ -30,7 +30,7 @@ namespace GameCube.GFZ.CourseCollision
     /// 
     /// </summary>
     [Serializable]
-    public class StageFogAnimationCurves :
+    public class FogAnimationCurves :
         IBinaryAddressable,
         IBinarySerializable,
         ISerializedBinaryAddressableReferer
@@ -47,7 +47,7 @@ namespace GameCube.GFZ.CourseCollision
         public AnimationCurve[] animationCurves = new AnimationCurve[kCurveCount];
 
         // CONSTRUCTORS
-        public StageFogAnimationCurves()
+        public FogAnimationCurves()
         {
             // Initialize values so no null errors
             for (int i = 0; i < animationCurves.Length; i++)

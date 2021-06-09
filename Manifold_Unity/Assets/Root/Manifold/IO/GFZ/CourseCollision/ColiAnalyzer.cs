@@ -107,7 +107,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
             if (coliUnk5)
             {
-                string fileName = $"{time} COLI {nameof(StageFog)}.tsv";
+                string fileName = $"{time} COLI {nameof(Fog)}.tsv";
                 string filePath = Path.Combine(outputPath, fileName);
                 EditorUtility.DisplayProgressBar(ExecuteText, filePath, .5f);
                 AnalyzeUnknownStageData1(filePath);
@@ -216,7 +216,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
             if (unknownAnimationData)
             {
-                string fileName = $"{time} COLI {nameof(StageFogAnimationCurves)}.tsv";
+                string fileName = $"{time} COLI {nameof(FogAnimationCurves)}.tsv";
                 string filePath = Path.Combine(outputPath, fileName);
                 EditorUtility.DisplayProgressBar(ExecuteText, filePath, .5f);
                 AnalyzeUnknownAnimationData(filePath);
@@ -224,7 +224,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
             if (unknownTrigger1)
             {
-                string fileName = $"{time} COLI {nameof(UnknownTrigger1)}.tsv";
+                string fileName = $"{time} COLI {nameof(UnknownTrigger)}.tsv";
                 string filePath = Path.Combine(outputPath, fileName);
                 EditorUtility.DisplayProgressBar(ExecuteText, filePath, .5f);
                 AnalyzeUnknownTrigger1(filePath);
@@ -1010,7 +1010,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                     writer.WriteNextCol(scene.surfaceAttributeAreasPtr.Length);
                     writer.WriteNextCol(scene.surfaceAttributeAreasPtr.HexAddress);
                     writer.WriteNextCol(scene.boostPadsActive);
-                    writer.WriteNextCol(scene.staticColliderMeshTablePtr.HexAddress);
+                    writer.WriteNextCol(scene.staticColliderMeshesPtr.HexAddress);
                     writer.WriteNextCol(scene.zeroes0x20Ptr.HexAddress);
                     writer.WriteNextCol(scene.trackMinHeightPtr.HexAddress);
                     writer.WriteNextCol(0);// coliHeader.zero_0x28);
@@ -1035,22 +1035,22 @@ namespace Manifold.IO.GFZ.CourseCollision
                     writer.WriteNextCol(scene.zero0x74);
                     writer.WriteNextCol(scene.zero0x78);
                     writer.WriteNextCol(scene.circuitType);
-                    writer.WriteNextCol(scene.unknownStageData2Ptr.HexAddress);
-                    writer.WriteNextCol(scene.unknownStageData1Ptr.HexAddress);
+                    writer.WriteNextCol(scene.fogAnimationCurvesPtr.HexAddress);
+                    writer.WriteNextCol(scene.fogPtr.HexAddress);
                     writer.WriteNextCol(scene.zero0x88);
                     writer.WriteNextCol(scene.zero0x8C);
                     writer.WriteNextCol(scene.trackLengthPtr.HexAddress);
-                    writer.WriteNextCol(scene.unknownTrigger1sPtr.Length);
-                    writer.WriteNextCol(scene.unknownTrigger1sPtr.HexAddress);
-                    writer.WriteNextCol(scene.visualEffectTriggersPtr.Length);
-                    writer.WriteNextCol(scene.visualEffectTriggersPtr.HexAddress);
-                    writer.WriteNextCol(scene.courseMetadataTriggersPtr.Length);
-                    writer.WriteNextCol(scene.courseMetadataTriggersPtr.HexAddress);
+                    writer.WriteNextCol(scene.unknownTriggersPtrs.Length);
+                    writer.WriteNextCol(scene.unknownTriggersPtrs.HexAddress);
+                    writer.WriteNextCol(scene.visualEffectTriggersPtrs.Length);
+                    writer.WriteNextCol(scene.visualEffectTriggersPtrs.HexAddress);
+                    writer.WriteNextCol(scene.courseMetadataTriggersPtrs.Length);
+                    writer.WriteNextCol(scene.courseMetadataTriggersPtrs.HexAddress);
                     writer.WriteNextCol(scene.arcadeCheckpointTriggersPtr.Length);
                     writer.WriteNextCol(scene.arcadeCheckpointTriggersPtr.HexAddress);
                     writer.WriteNextCol(scene.storyObjectTriggersPtr.Length);
                     writer.WriteNextCol(scene.storyObjectTriggersPtr.HexAddress);
-                    writer.WriteNextCol(scene.trackCheckpointTable8x8Ptr.HexAddress);
+                    writer.WriteNextCol(scene.trackCheckpointMatrixPtr.HexAddress);
                     // Structure
                     writer.WriteNextCol(scene.courseBounds.x);
                     writer.WriteNextCol(scene.courseBounds.z);
@@ -1081,8 +1081,8 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol("Start");
                 writer.WriteNextCol("End");
                 //
-                writer.WriteNextCol(nameof(UnknownTrigger1.unk_0x20));
-                writer.WriteNextCol(nameof(UnknownTrigger1.unk_0x20));
+                writer.WriteNextCol(nameof(UnknownTrigger.unk_0x20));
+                writer.WriteNextCol(nameof(UnknownTrigger.unk_0x20));
                 //
                 writer.WriteNextCol("Order");
                 writer.WriteNextCol("Index");
@@ -1096,8 +1096,8 @@ namespace Manifold.IO.GFZ.CourseCollision
                     var isAxGx = scene.IsFileGX ? "GX" : "AX";
 
                     int count = 0;
-                    int total = scene.unknownTrigger1s.Length;
-                    foreach (var item in scene.unknownTrigger1s)
+                    int total = scene.unknownTriggers.Length;
+                    foreach (var item in scene.unknownTriggers)
                     {
                         count++;
 
@@ -1257,9 +1257,9 @@ namespace Manifold.IO.GFZ.CourseCollision
                     var courseID = ((CourseIndexAX)scene.ID).GetDescription();
                     var isAxGx = scene.IsFileGX ? "GX" : "AX";
 
-                    var totalD1 = scene.unknownStageData2.animationCurves.Length;
+                    var totalD1 = scene.fogAnimationCurves.animationCurves.Length;
                     var countD1 = 0;
-                    foreach (var animationCurve in scene.unknownStageData2.animationCurves)
+                    foreach (var animationCurve in scene.fogAnimationCurves.animationCurves)
                     {
                         countD1++;
                         foreach (var keyableAttribute in animationCurve.keyableAttributes)
@@ -1297,15 +1297,15 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol("Venue");
                 writer.WriteNextCol("AX/GX");
                 //
-                writer.WriteNextCol(nameof(StageFog.interpolation));
-                writer.WriteNextCol(nameof(StageFog.fogRange) + "." + nameof(Range.near));
-                writer.WriteNextCol(nameof(StageFog.fogRange) + "." + nameof(Range.far));
-                writer.WriteNextCol(nameof(StageFog.colorRGB) + ".R");
-                writer.WriteNextCol(nameof(StageFog.colorRGB) + ".G");
-                writer.WriteNextCol(nameof(StageFog.colorRGB) + ".B");
-                writer.WriteNextCol(nameof(StageFog.zero0x18) + ".x");
-                writer.WriteNextCol(nameof(StageFog.zero0x18) + ".y");
-                writer.WriteNextCol(nameof(StageFog.zero0x18) + ".z");
+                writer.WriteNextCol(nameof(Fog.interpolation));
+                writer.WriteNextCol(nameof(Fog.fogRange) + "." + nameof(Range.near));
+                writer.WriteNextCol(nameof(Fog.fogRange) + "." + nameof(Range.far));
+                writer.WriteNextCol(nameof(Fog.colorRGB) + ".R");
+                writer.WriteNextCol(nameof(Fog.colorRGB) + ".G");
+                writer.WriteNextCol(nameof(Fog.colorRGB) + ".B");
+                writer.WriteNextCol(nameof(Fog.zero0x18) + ".x");
+                writer.WriteNextCol(nameof(Fog.zero0x18) + ".y");
+                writer.WriteNextCol(nameof(Fog.zero0x18) + ".z");
                 //
                 writer.WriteNextRow();
 
@@ -1322,15 +1322,15 @@ namespace Manifold.IO.GFZ.CourseCollision
                     writer.WriteNextCol(courseID);
                     writer.WriteNextCol(isAxGx);
                     //
-                    writer.WriteNextCol(scene.unknownStageData1.interpolation);
-                    writer.WriteNextCol(scene.unknownStageData1.fogRange.near);
-                    writer.WriteNextCol(scene.unknownStageData1.fogRange.far);
-                    writer.WriteNextCol(scene.unknownStageData1.colorRGB.x);
-                    writer.WriteNextCol(scene.unknownStageData1.colorRGB.y);
-                    writer.WriteNextCol(scene.unknownStageData1.colorRGB.z);
-                    writer.WriteNextCol(scene.unknownStageData1.zero0x18.x);
-                    writer.WriteNextCol(scene.unknownStageData1.zero0x18.y);
-                    writer.WriteNextCol(scene.unknownStageData1.zero0x18.z);
+                    writer.WriteNextCol(scene.fog.interpolation);
+                    writer.WriteNextCol(scene.fog.fogRange.near);
+                    writer.WriteNextCol(scene.fog.fogRange.far);
+                    writer.WriteNextCol(scene.fog.colorRGB.x);
+                    writer.WriteNextCol(scene.fog.colorRGB.y);
+                    writer.WriteNextCol(scene.fog.colorRGB.z);
+                    writer.WriteNextCol(scene.fog.zero0x18.x);
+                    writer.WriteNextCol(scene.fog.zero0x18.y);
+                    writer.WriteNextCol(scene.fog.zero0x18.z);
                     //
                     writer.WriteNextRow();
                 }

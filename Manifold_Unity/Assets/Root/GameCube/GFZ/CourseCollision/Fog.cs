@@ -9,7 +9,7 @@ namespace GameCube.GFZ.CourseCollision
     /// 
     /// </summary>
     [Serializable]
-    public class StageFog :
+    public class Fog :
         IBinaryAddressable,
         IBinarySerializable
     {
@@ -49,9 +49,9 @@ namespace GameCube.GFZ.CourseCollision
 
 
         // TEMPLATES
-        public StageFog Aeropolis()
+        public Fog Aeropolis()
         {
-            return new StageFog()
+            return new Fog()
             {
                 interpolation = StageFogInterpolation.Linear,
                 fogRange = new Range(300f, 3500f),
@@ -59,9 +59,9 @@ namespace GameCube.GFZ.CourseCollision
                 colorRGB = new float3(1f, 1f, 0.924f),
             };
         }
-        public StageFog BigBlue()
+        public Fog BigBlue()
         {
-            return new StageFog()
+            return new Fog()
             {
                 interpolation = StageFogInterpolation.ExponentialSquared,
                 fogRange = new Range(500f, 4000f),
@@ -69,9 +69,9 @@ namespace GameCube.GFZ.CourseCollision
                 colorRGB = new float3(0.686f, 0.862f, 1f),
             };
         }
-        public StageFog CasinoPalace()
+        public Fog CasinoPalace()
         {
-            return new StageFog()
+            return new Fog()
             {
                 interpolation = StageFogInterpolation.Linear,
                 fogRange = new Range(0f, 20000f),
@@ -79,9 +79,9 @@ namespace GameCube.GFZ.CourseCollision
                 colorRGB = new float3(0f, 0f, 0f),
             };
         }
-        public StageFog CosmoTerminal()
+        public Fog CosmoTerminal()
         {
-            return new StageFog()
+            return new Fog()
             {
                 interpolation = StageFogInterpolation.Linear,
                 fogRange = new Range(4500f, 9000f),
@@ -89,9 +89,9 @@ namespace GameCube.GFZ.CourseCollision
                 colorRGB = new float3(0f, 0f, 0f),
             };
         }
-        public StageFog FireField()
+        public Fog FireField()
         {
-            return new StageFog()
+            return new Fog()
             {
                 interpolation = StageFogInterpolation.Exponential,
                 fogRange = new Range(0f, 5500f),
@@ -99,9 +99,9 @@ namespace GameCube.GFZ.CourseCollision
                 colorRGB = new float3(0.78f, 0.566f, 0.391f),
             };
         }
-        public StageFog GrandPrixPodium()
+        public Fog GrandPrixPodium()
         {
-            return new StageFog()
+            return new Fog()
             {
                 interpolation = StageFogInterpolation.Linear,
                 fogRange = new Range(0f, 12000f),
@@ -109,9 +109,9 @@ namespace GameCube.GFZ.CourseCollision
                 colorRGB = new float3(0.176f, 0.235f, 0.313f),
             };
         }
-        public StageFog GreenPlant()
+        public Fog GreenPlant()
         {
-            return new StageFog()
+            return new Fog()
             {
                 interpolation = StageFogInterpolation.ExponentialSquared,
                 // Intersection: -500, Mobius Ring: -250,
@@ -120,9 +120,9 @@ namespace GameCube.GFZ.CourseCollision
                 colorRGB = new float3(0.703f, 0.781f, 0.898f),
             };
         }
-        public StageFog GreenPlantSpiral()
+        public Fog GreenPlantSpiral()
         {
-            return new StageFog()
+            return new Fog()
             {
                 interpolation = StageFogInterpolation.ExponentialSquared,
                 fogRange = new Range(0f, 7500f),
@@ -130,9 +130,9 @@ namespace GameCube.GFZ.CourseCollision
                 colorRGB = new float3(0.703f, 0.7422f, 0.625f),
             };
         }
-        public StageFog Lightning()
+        public Fog Lightning()
         {
-            return new StageFog()
+            return new Fog()
             {
                 interpolation = StageFogInterpolation.Linear,
                 // Thunder Road: 3000f
@@ -141,9 +141,9 @@ namespace GameCube.GFZ.CourseCollision
                 colorRGB = new float3(0.094f, 0.102f, 0.117f),
             };
         }
-        public StageFog MuteCity()
+        public Fog MuteCity()
         {
-            return new StageFog()
+            return new Fog()
             {
                 interpolation = StageFogInterpolation.Linear,
                 fogRange = new Range(20f, 100f),
@@ -151,9 +151,9 @@ namespace GameCube.GFZ.CourseCollision
                 colorRGB = new float3(0f, 0f, 0f),
             };
         }
-        public StageFog MuteCityCOM()
+        public Fog MuteCityCOM()
         {
-            return new StageFog()
+            return new Fog()
             {
                 interpolation = StageFogInterpolation.Linear,
                 fogRange = new Range(0f, 12000f),
@@ -161,9 +161,9 @@ namespace GameCube.GFZ.CourseCollision
                 colorRGB = new float3(0.1765f, 0.2353f, 0.3137f),
             };
         }
-        public StageFog OuterSpace()
+        public Fog OuterSpace()
         {
-            return new StageFog()
+            return new Fog()
             {
                 interpolation = StageFogInterpolation.ExponentialSquared,
                 fogRange = new Range(2000f, 15000f),
@@ -171,9 +171,9 @@ namespace GameCube.GFZ.CourseCollision
                 colorRGB = new float3(0f, 0f, 0f),
             };
         }
-        public StageFog PhantomRoad()
+        public Fog PhantomRoad()
         {
-            return new StageFog()
+            return new Fog()
             {
                 interpolation = StageFogInterpolation.Linear,
                 fogRange = new Range(0f, 8000f),
@@ -181,9 +181,9 @@ namespace GameCube.GFZ.CourseCollision
                 colorRGB = new float3(0f, 0f, 0f),
             };
         }
-        public StageFog PhantomRoadAX()
+        public Fog PhantomRoadAX()
         {
-            return new StageFog()
+            return new Fog()
             {
                 interpolation = StageFogInterpolation.Linear,
                 fogRange = new Range(0f, 16000f),
@@ -191,9 +191,9 @@ namespace GameCube.GFZ.CourseCollision
                 colorRGB = new float3(0f, 0f, 0.1f),
             };
         }
-        public StageFog PortTown()
+        public Fog PortTown()
         {
-            return new StageFog()
+            return new Fog()
             {
                 interpolation = StageFogInterpolation.Linear,
                 fogRange = new Range(0f, 16000f),
@@ -201,9 +201,9 @@ namespace GameCube.GFZ.CourseCollision
                 colorRGB = new float3(0.505f, 0.388f, 0.29f),
             };
         }
-        public StageFog SandOcean()
+        public Fog SandOcean()
         {
-            return new StageFog()
+            return new Fog()
             {
                 interpolation = StageFogInterpolation.ExponentialSquared,
                 fogRange = new Range(20f, 100f),
@@ -211,9 +211,9 @@ namespace GameCube.GFZ.CourseCollision
                 colorRGB = new float3(0f, 0f, 0f),
             };
         }
-        public StageFog VictoryLap()
+        public Fog VictoryLap()
         {
-            return new StageFog()
+            return new Fog()
             {
                 interpolation = StageFogInterpolation.Linear,
                 fogRange = new Range(0f, 12000f),
@@ -222,9 +222,9 @@ namespace GameCube.GFZ.CourseCollision
             };
         }
 
-        public StageFog StoryBigBlue()
+        public Fog StoryBigBlue()
         {
-            return new StageFog()
+            return new Fog()
             {
                 interpolation = StageFogInterpolation.ExponentialSquared,
                 fogRange = new Range(-3000f, 20000f),
@@ -232,9 +232,9 @@ namespace GameCube.GFZ.CourseCollision
                 colorRGB = new float3(0.2156f, 0.196f, 0.3137f),
             };
         }
-        public StageFog StoryFireField()
+        public Fog StoryFireField()
         {
-            return new StageFog()
+            return new Fog()
             {
                 interpolation = StageFogInterpolation.Exponential,
                 fogRange = new Range(0f, 1500f),
@@ -242,9 +242,9 @@ namespace GameCube.GFZ.CourseCollision
                 colorRGB = new float3(1f, 0.469f, 0.1954f),
             };
         }
-        public StageFog StoryLightning()
+        public Fog StoryLightning()
         {
-            return new StageFog()
+            return new Fog()
             {
                 interpolation = StageFogInterpolation.Exponential,
                 fogRange = new Range(200f, 1350f),
@@ -252,9 +252,9 @@ namespace GameCube.GFZ.CourseCollision
                 colorRGB = new float3(0.8594f, 0.332f, 0.1563f),
             };
         }
-        public StageFog StoryMuteCityCOM()
+        public Fog StoryMuteCityCOM()
         {
-            return new StageFog()
+            return new Fog()
             {
                 interpolation = StageFogInterpolation.Linear,
                 fogRange = new Range(600f, 7470f),
@@ -262,9 +262,9 @@ namespace GameCube.GFZ.CourseCollision
                 colorRGB = new float3(0f, 0.7843f, 0.3922f),
             };
         }
-        public StageFog StoryPortTown()
+        public Fog StoryPortTown()
         {
-            return new StageFog()
+            return new Fog()
             {
                 interpolation = StageFogInterpolation.ExponentialSquared,
                 fogRange = new Range(0f, 20000f),
@@ -272,9 +272,9 @@ namespace GameCube.GFZ.CourseCollision
                 colorRGB = new float3(0f, 0f, 0f),
             };
         }
-        public StageFog StorySandOcean()
+        public Fog StorySandOcean()
         {
-            return new StageFog()
+            return new Fog()
             {
                 interpolation = StageFogInterpolation.Linear,
                 fogRange = new Range(50f, 70000f),
