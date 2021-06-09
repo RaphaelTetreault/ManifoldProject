@@ -19,8 +19,7 @@ namespace GameCube.GFZ.CourseCollision
         public float widthRight;
         public SurfaceAttribute surfaceAttribute;
         public byte trackBranchID;
-        public byte zero_0x12;
-        public byte zero_0x13;
+        public ushort zero_0x12;
 
 
         // PROPERTIES
@@ -43,12 +42,10 @@ namespace GameCube.GFZ.CourseCollision
                 reader.ReadX(ref surfaceAttribute);
                 reader.ReadX(ref trackBranchID);
                 reader.ReadX(ref zero_0x12);
-                reader.ReadX(ref zero_0x13);
             }
             this.RecordEndAddress(reader);
             {
                 Assert.IsTrue(zero_0x12 == 0);
-                Assert.IsTrue(zero_0x13 == 0);
             }
         }
 
@@ -56,7 +53,6 @@ namespace GameCube.GFZ.CourseCollision
         {
             {
                 Assert.IsTrue(zero_0x12 == 0);
-                Assert.IsTrue(zero_0x13 == 0);
             }
             this.RecordStartAddress(writer);
             {
@@ -67,7 +63,6 @@ namespace GameCube.GFZ.CourseCollision
                 writer.WriteX(surfaceAttribute);
                 writer.WriteX(trackBranchID);
                 writer.WriteX(zero_0x12);
-                writer.WriteX(zero_0x13);
             }
             this.RecordEndAddress(writer);
         }
