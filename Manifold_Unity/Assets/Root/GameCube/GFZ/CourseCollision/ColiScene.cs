@@ -66,15 +66,13 @@ namespace GameCube.GFZ.CourseCollision
         public ArrayPointer unknownSolsTriggerPtrs;
         public ArrayPointer sceneInstancesListPtrs;
         public ArrayPointer sceneOriginObjectsListPtrs;
-        public int zero0x74;
-        public int zero0x78;
-        //public ArrayPointer unused_0x74_0x78;
+        public int zero0x74; // Ptr? Array Ptr length?
+        public int zero0x78; // Ptr? Array Ptr address?
         public CircuitType circuitType;
         public Pointer fogAnimationCurvesPtr;
         public Pointer fogPtr;
-        public int zero0x88;
-        public int zero0x8C;
-        //public ArrayPointer unused_0x88_0x8C;
+        public int zero0x88; // Ptr? Array Ptr length?
+        public int zero0x8C; // Ptr? Array Ptr address?
         public Pointer trackLengthPtr;
         public ArrayPointer unknownTriggersPtrs;
         public ArrayPointer visualEffectTriggersPtrs;
@@ -84,6 +82,7 @@ namespace GameCube.GFZ.CourseCollision
         public Pointer trackCheckpointMatrixPtr;
         public Bounds courseBounds;
         public byte[] zeroes0xD8;
+
         // REFERENCE FIELDS
         public TrackNode[] trackNodes = new TrackNode[0];
         public SurfaceAttributeArea[] surfaceAttributeAreas = new SurfaceAttributeArea[0];
@@ -97,7 +96,7 @@ namespace GameCube.GFZ.CourseCollision
         public FogAnimationCurves fogAnimationCurves;
         public Fog fog;
         public TrackLength trackLength;
-        public UnknownTrigger[] unknownTriggers = new UnknownTrigger[0]; // "green"
+        public UnknownTrigger[] unknownTriggers = new UnknownTrigger[0];
         public VisualEffectTrigger[] visualEffectTriggers = new VisualEffectTrigger[0];
         public CourseMetadataTrigger[] courseMetadataTriggers = new CourseMetadataTrigger[0];
         public ArcadeCheckpointTrigger[] arcadeCheckpointTriggers = new ArcadeCheckpointTrigger[0];
