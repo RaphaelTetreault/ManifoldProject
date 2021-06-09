@@ -14,8 +14,7 @@ namespace GameCube.GFZ.CourseCollision
         ISerializedBinaryAddressableReferer
     {
         // METADATA
-        [UnityEngine.SerializeField]
-        private AddressRange addressRange;
+        [UnityEngine.SerializeField] private AddressRange addressRange;
 
         // FIELDS
         public uint unk_0x00;
@@ -28,9 +27,9 @@ namespace GameCube.GFZ.CourseCollision
         public int quadCount;
         public Pointer trisPtr;
         public Pointer quadsPtr;
-        // FIELDS (deserialized from pointers)
-        public ColliderTriangle[] tris;
-        public ColliderQuad[] quads;
+        // REFERENCE FIELDS
+        public ColliderTriangle[] tris = new ColliderTriangle[0];
+        public ColliderQuad[] quads = new ColliderQuad[0];
 
 
         // PROPERTIES
@@ -56,6 +55,17 @@ namespace GameCube.GFZ.CourseCollision
                 }
             }
 
+            if (quads.Length > 0)
+            {
+                Assert.IsTrue(quadCount == quads.Length);
+                Assert.IsTrue(quadsPtr.IsNotNullPointer);
+
+                foreach (var quad in quads)
+                {
+                    Assert.IsTrue(quad != null);
+                }
+            }
+
         }
 
         public void Deserialize(BinaryReader reader)
@@ -74,13 +84,13 @@ namespace GameCube.GFZ.CourseCollision
             }
             this.RecordEndAddress(reader);
             {
-                if (triCount > 0)
+                if (trisPtr.IsNotNullPointer)
                 {
                     reader.JumpToAddress(trisPtr);
                     reader.ReadX(ref tris, triCount, true);
                 }
 
-                if (quadCount > 0)
+                if (quadsPtr.IsNotNullPointer)
                 {
                     reader.JumpToAddress(quadsPtr);
                     reader.ReadX(ref quads, quadCount, true);

@@ -214,7 +214,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 // Create base data for mesh for EACH mesh type (boost, heal, etc)
                 var mesh = new Mesh()
                 {
-                    name = $"st{scene.ID:00}_{meshSurfaceType:00}.{listIndex:000}_{(StaticMeshColliderProperty)meshSurfaceType}",
+                    name = $"st{scene.ID:00}_{meshSurfaceTypeIndex:00}.{listIndex:000}_{meshSurfaceType}",
                 };
 
                 // Get triangle indexes, get traingles from array using indexes, create submesh, then assign it.
