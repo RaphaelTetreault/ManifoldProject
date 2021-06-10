@@ -94,7 +94,7 @@ namespace GameCube.GFZ.CourseCollision
         public SceneInstanceReference[] sceneInstancesList = new SceneInstanceReference[0];
         public SceneOriginObjects[] sceneOriginObjectsList = new SceneOriginObjects[0];
         public UnknownSolsTrigger[] unknownSolsTriggers = new UnknownSolsTrigger[0];
-        public FogAnimationCurves fogAnimationCurves;
+        public FogCurves fogAnimationCurves;
         public Fog fog;
         public TrackLength trackLength;
         public UnknownTrigger[] unknownTriggers = new UnknownTrigger[0];
