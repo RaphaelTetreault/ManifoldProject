@@ -17,3 +17,4 @@ Type deserialize subtypes, break object references.
 ## Serialization
 
 Type does _not_ serialize subtypes to maintain references. Root structure handles serializing substructures, pointers are rewritten to maintain references regardless of serialization order.
+

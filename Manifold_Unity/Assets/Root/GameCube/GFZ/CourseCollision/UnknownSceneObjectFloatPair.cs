@@ -17,8 +17,8 @@ namespace GameCube.GFZ.CourseCollision
         private AddressRange addressRange;
 
         // FIELDS
-        public float unk_0x00;
-        public float unk_0x04;
+        public float unk_0x00; // range -3 to 6, indexes: 0-3
+        public float unk_0x04; // range -10 to 30, indexes: 0-3
 
 
         // PROPERTIES

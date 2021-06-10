@@ -8,7 +8,7 @@ namespace GameCube.GFZ.CourseCollision
     /// 
     /// </summary>
     [Serializable]
-    public sealed class Bounds :
+    public struct Bounds :
         IBinaryAddressable,
         IBinarySerializable
     {

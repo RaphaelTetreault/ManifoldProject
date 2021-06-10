@@ -20,7 +20,7 @@ namespace GameCube.GFZ.CourseCollision
         [UnityEngine.SerializeField] private AddressRange addressRange;
 
         // FIELDS
-        public Pointer[] unkAbsPtr;
+        public Pointer[] unkPtrs;
         // REFERENCE FIELDS
         public UnknownSceneObjectFloatPair[] unk = new UnknownSceneObjectFloatPair[0];
 
@@ -38,14 +38,14 @@ namespace GameCube.GFZ.CourseCollision
         {
             this.RecordStartAddress(reader);
             {
-                reader.ReadX(ref unkAbsPtr, kCount, true);
+                reader.ReadX(ref unkPtrs, kCount, true);
             }
             this.RecordEndAddress(reader);
             {
                 unk = new UnknownSceneObjectFloatPair[kCount];
                 for (int i = 0; i < kCount; i++)
                 {
-                    var pointer = unkAbsPtr[i];
+                    var pointer = unkPtrs[i];
                     if (pointer.IsNotNullPointer)
                     {
                         reader.JumpToAddress(pointer);
@@ -59,11 +59,11 @@ namespace GameCube.GFZ.CourseCollision
         public void Serialize(BinaryWriter writer)
         {
             {
-                unkAbsPtr = unk.GetPointers();
+                unkPtrs = unk.GetPointers();
             }
             this.RecordStartAddress(writer);
             {
-                writer.WriteX(unkAbsPtr, false);
+                writer.WriteX(unkPtrs, false);
             }
             this.RecordEndAddress(writer);
         }

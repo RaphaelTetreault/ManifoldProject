@@ -40,7 +40,7 @@ namespace GameCube.GFZ.CourseCollision
         // I did not write template fields for AX _story_ stages since they are WIP values.
         //
         // + Big Blue Story. AX has default value of black. This changed in GX.
-        // + Casino Palace [Double Branches]. AX has non-black value #0a0a0a. GX uses black.
+        // + Casino Palace [Double Branches]. AX has non-black value #0a0a0a. In anim data, is #18303c (blue). GX uses black.
         // + Phantom Road. AX has near-black value #00001a. GX uses black.
         // + Port Town [Long Pipe]. AX has different value, #785028 deeper brown than GX.
         // + Port Town Story. AX has near-black #050505. GX uses black.

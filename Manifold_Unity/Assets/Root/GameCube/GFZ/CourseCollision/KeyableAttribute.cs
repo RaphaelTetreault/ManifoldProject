@@ -8,13 +8,12 @@ namespace GameCube.GFZ.CourseCollision
     /// This structure appears to be a Maya (4.?) KeyableAttribute
     /// </summary>
     [Serializable]
-    public class KeyableAttribute :
+    public sealed class KeyableAttribute :
         IBinaryAddressable,
         IBinarySerializable
     {
         // METADATA
-        [UnityEngine.SerializeField]
-        private AddressRange addressRange;
+        [UnityEngine.SerializeField] private AddressRange addressRange;
 
         // FEILDS
         public InterpolationMode easeMode;

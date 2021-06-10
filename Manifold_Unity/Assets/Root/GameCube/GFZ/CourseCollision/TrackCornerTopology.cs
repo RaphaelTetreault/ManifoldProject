@@ -19,7 +19,7 @@ namespace GameCube.GFZ.CourseCollision
 
         // FIELDS
         public TransformMatrix3x4 matrix3x4; // never null
-        public float unkRotation; // range: -90.00 to +180.0 // rotation
+        public float width;
         private byte const_0x34; // Const: 0x02
         private byte zero_0x35; // Const: 0x00
         public TrackPerimeterOptions perimeterOptions;
@@ -40,7 +40,7 @@ namespace GameCube.GFZ.CourseCollision
             this.RecordStartAddress(reader);
             {
                 reader.ReadX(ref matrix3x4, true);
-                reader.ReadX(ref unkRotation);
+                reader.ReadX(ref width);
                 reader.ReadX(ref const_0x34);
                 reader.ReadX(ref zero_0x35);
                 reader.ReadX(ref perimeterOptions);
@@ -65,7 +65,7 @@ namespace GameCube.GFZ.CourseCollision
             this.RecordStartAddress(writer);
             {
                 writer.WriteX(matrix3x4);
-                writer.WriteX(unkRotation);
+                writer.WriteX(width);
                 writer.WriteX(const_0x34);
                 writer.WriteX(zero_0x35);
                 writer.WriteX(perimeterOptions);

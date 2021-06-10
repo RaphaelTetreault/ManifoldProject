@@ -22,7 +22,7 @@ namespace Manifold.IO.GFZ.CourseCollision
         [SerializeField]
         protected bool
             animations = true,
-            coliUnk5 = true,
+            fog = true,
             headers = true,
             sceneObjects = true,
             storyObjectTriggers = true,
@@ -99,13 +99,13 @@ namespace Manifold.IO.GFZ.CourseCollision
             //
             if (transformsComparison)
             {
-                string fileName = $"{time} COLI Comapre Transforms.tsv";
+                string fileName = $"{time} COLI Compare {nameof(GameCube.GFZ.CourseCollision.Transform)}.tsv";
                 string filePath = Path.Combine(outputPath, fileName);
                 EditorUtility.DisplayProgressBar(ExecuteText, filePath, .5f);
                 AnalyzeSceneObjectTransforms(filePath);
             }
 
-            if (coliUnk5)
+            if (fog)
             {
                 string fileName = $"{time} COLI {nameof(Fog)}.tsv";
                 string filePath = Path.Combine(outputPath, fileName);
@@ -441,7 +441,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 //writer.WriteNextColNicify(nameof(Track90DegreeCorner.unk_0x24));
                 //writer.WriteNextColNicify(nameof(Track90DegreeCorner.unk_0x28));
                 //writer.WriteNextColNicify(nameof(Track90DegreeCorner.unk_0x2C));
-                writer.WriteNextColNicify(nameof(TrackCornerTopology.unkRotation));
+                writer.WriteNextColNicify(nameof(TrackCornerTopology.width));
                 //writer.WriteNextColNicify(nameof(Track90DegreeCorner.const_0x34));
                 //writer.WriteNextColNicify(nameof(Track90DegreeCorner.zero_0x35));
                 writer.WriteNextColNicify(nameof(TrackCornerTopology.perimeterOptions));
@@ -520,7 +520,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 //writer.WriteNextCol(trackTransform.track90DegreeCorner.unk_0x24);
                 //writer.WriteNextCol(trackTransform.track90DegreeCorner.unk_0x28);
                 //writer.WriteNextCol(trackTransform.track90DegreeCorner.unk_0x2C);
-                writer.WriteNextCol(trackTransform.hairpinCornerTopology.unkRotation);
+                writer.WriteNextCol(trackTransform.hairpinCornerTopology.width);
                 //writer.WriteNextCol(trackTransform.track90DegreeCorner.const_0x34);
                 //writer.WriteNextCol(trackTransform.track90DegreeCorner.zero_0x35);
                 writer.WriteNextCol(trackTransform.hairpinCornerTopology.perimeterOptions);
