@@ -18,8 +18,8 @@ namespace GameCube.GFZ.CourseCollision
         // FIELDS
         public float maxX; // bounds -x. Value = max x value of track node. Negative in GX space.
         public float maxZ; // bounds -z. Value = max z value of track node. Negative in GX space.
-        public float width; // x axis. Width between min/max tracknodes.x * 1.25f
-        public float length; // z axis. Length between min/max tracknodes.z * 1.25f
+        public float width; // x axis. Width between min/max tracknodes.pos.x * 10f * 1.25f (+25%)
+        public float length; // z axis. Length between min/max tracknodes.pos.z * 10f * 1.25f (+25%)
         public BoundsOption xAxis; // educated guess
         public BoundsOption zAxis; // educated guess
 
