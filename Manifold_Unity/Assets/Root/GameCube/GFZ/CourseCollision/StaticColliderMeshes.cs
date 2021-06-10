@@ -26,10 +26,10 @@ namespace GameCube.GFZ.CourseCollision
         public int[] zero_0x00_0x20;
         public Pointer collisionTrisPtr;
         public Pointer[] collisionTriIndexesPtr;
-        public Bounds meshBounds;
+        public BoundsXZ meshBounds;
         public Pointer collisionQuadsPtr;
         public Pointer[] collisionQuadIndexesPtr;
-        public Bounds ununsedMeshBounds;
+        public BoundsXZ ununsedMeshBounds;
         // REFERENCE FIELDS
         // This data holds the geometry data and indexes
         public ColliderTriangle[] colliderTriangles;

@@ -81,7 +81,7 @@ namespace GameCube.GFZ.CourseCollision
         public ArrayPointer arcadeCheckpointTriggersPtr;
         public ArrayPointer storyObjectTriggersPtr;
         public Pointer trackCheckpointMatrixPtr;
-        public Bounds courseBounds;
+        public BoundsXZ courseBounds;
         public byte[] zeroes0xD8;
 
         // REFERENCE FIELDS
@@ -404,7 +404,7 @@ namespace GameCube.GFZ.CourseCollision
             boostPlatesActive = BoostPlatesActive.Enabled;
             unkBool32_0x58 = Bool32.True;
             circuitType = CircuitType.ClosedCircuit;
-            courseBounds = new Bounds();
+            courseBounds = new BoundsXZ();
 
 
             // GET ALL REFERERS, RE-SERIALIZE FOR POINTERS
