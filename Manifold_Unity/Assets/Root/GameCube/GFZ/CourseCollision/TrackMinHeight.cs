@@ -4,5 +4,6 @@ namespace GameCube.GFZ.CourseCollision
     /// Representes the lowest Y coordinate of any track checkpoint.
     /// May be used to generate a kill plane dynamically.
     /// </summary>
-    public class TrackMinHeight : FloatRef { }
+    [System.Serializable]
+    public sealed class TrackMinHeight : FloatRef { }
 }

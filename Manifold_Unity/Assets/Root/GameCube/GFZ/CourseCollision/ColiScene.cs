@@ -250,8 +250,8 @@ namespace GameCube.GFZ.CourseCollision
             var trackTransformPtrs = new List<Pointer>();
             foreach (var node in trackNodes)
             {
-                var pointer = node.AddressRange.GetPointer();
-                if (trackTransformPtrs.Contains(pointer))
+                var pointer = node.transformPtr;
+                if (!trackTransformPtrs.Contains(pointer))
                     trackTransformPtrs.Add(pointer);
             }
             rootTrackTransforms = new TrackTransform[trackTransformPtrs.Count];
@@ -259,7 +259,7 @@ namespace GameCube.GFZ.CourseCollision
             {
                 var pointer = trackTransformPtrs[i];
                 reader.JumpToAddress(pointer);
-                rootTrackTransforms[i].Deserialize(reader);
+                reader.ReadX(ref rootTrackTransforms[i], true);
             }
             // Track Transforms
 
