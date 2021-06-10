@@ -28,11 +28,11 @@ namespace GameCube.GFZ.CourseCollision
         public byte[] zeroes_0x08;
         public EnumFlags32 unk_layer_0x18;
         /// <summary>
-        /// idx: 0,1,2: scale
-        /// idx: 3,4,5: rotation
-        /// idx: 6,7,8: position
-        /// idx: 9: unused?
-        /// idx: 10: light
+        /// idx: 0,1,2: scale.xyz
+        /// idx: 3,4,5: rotation.xyz
+        /// idx: 6,7,8: position.xyz
+        /// idx: 9: unused
+        /// idx: 10: alpha channel
         /// </summary>
         public AnimationCurvePlus[] animationCurvePluses; // Written inline, not pointer refs
 
