@@ -538,23 +538,9 @@ namespace Manifold.IO.GFZ.CourseCollision
             //
             if (trackTransform.hairpinCornerTopologyPtr.IsNotNullPointer)
             {
-                //writer.WriteNextCol(trackTransform.track90DegreeCorner.unk_0x00);
-                //writer.WriteNextCol(trackTransform.track90DegreeCorner.unk_0x04);
-                //writer.WriteNextCol(trackTransform.track90DegreeCorner.unk_0x08);
-                //writer.WriteNextCol(trackTransform.track90DegreeCorner.unk_0x0C);
-                //writer.WriteNextCol(trackTransform.track90DegreeCorner.unk_0x10);
-                //writer.WriteNextCol(trackTransform.track90DegreeCorner.unk_0x14);
-                //writer.WriteNextCol(trackTransform.track90DegreeCorner.unk_0x18);
-                //writer.WriteNextCol(trackTransform.track90DegreeCorner.unk_0x1C);
-                //writer.WriteNextCol(trackTransform.track90DegreeCorner.unk_0x20);
-                //writer.WriteNextCol(trackTransform.track90DegreeCorner.unk_0x24);
-                //writer.WriteNextCol(trackTransform.track90DegreeCorner.unk_0x28);
-                //writer.WriteNextCol(trackTransform.track90DegreeCorner.unk_0x2C);
+                writer.WriteNextCol();
                 writer.WriteNextCol(trackTransform.hairpinCornerTopology.width);
-                //writer.WriteNextCol(trackTransform.track90DegreeCorner.const_0x34);
-                //writer.WriteNextCol(trackTransform.track90DegreeCorner.zero_0x35);
                 writer.WriteNextCol(trackTransform.hairpinCornerTopology.perimeterOptions);
-                //writer.WriteNextCol(trackTransform.track90DegreeCorner.zero_0x37);
             }
             //
             writer.WriteNextRow();
