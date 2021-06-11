@@ -26,6 +26,8 @@ namespace Manifold.IO.GFZ.CourseCollision
 
         [Header("Mesh Generation Options")]
         [SerializeField]
+        protected bool usePrecomputes = false;
+        [SerializeField]
         protected bool createBackfaces = true;
         [SerializeField]
         protected bool createMesh256OfType = false;
@@ -76,7 +78,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                             ImportUtility.ProgressBar<SceneInstanceReference>(count, total, $"st{sceneSobj.Value.ID:00} {meshName}");
 
                             // Create mesh
-                            var mesh = CreateObjectColliderMesh(sceneObject, createBackfaces);
+                            var mesh = CreateObjectColliderMesh(sceneObject, createBackfaces, usePrecomputes);
 
                             // Save mesh to Asset Database
                             var assetPath = $"Assets/{importTo}/st{sceneSobj.Value.ID:00}/coli_{meshName}.asset";
@@ -309,7 +311,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             return meshes;
         }
 
-        public static SubMeshDescriptor CreateTriSubmeshForMesh(Mesh mesh, ColliderTriangle[] triangles, bool addBackfaces = false)
+        public static SubMeshDescriptor CreateTriSubmeshForMesh(Mesh mesh, ColliderTriangle[] triangles, bool addBackfaces = false, bool usePrecompute = false)
         {
             var allVertices = new List<Vector3>();
             var allNormals = new List<Vector3>();
@@ -320,7 +322,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             {
                 // Get base data
                 var triangle = triangles[triIndex];
-                var vertices = triangle.GetVerts();
+                var vertices = usePrecompute ? triangle.GetPrecomputes() : triangle.GetVerts();
                 var vertTotal = vertices.Length;
 
                 // Iterate over each vertex (thus, 3 times per triangle)
@@ -363,7 +365,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             return triSubmesh;
         }
 
-        public static SubMeshDescriptor CreateQuadSubmeshForMesh(Mesh mesh, ColliderQuad[] colliderQuads, bool addBackfaces = false)
+        public static SubMeshDescriptor CreateQuadSubmeshForMesh(Mesh mesh, ColliderQuad[] colliderQuads, bool addBackfaces = false, bool usePrecompute = false)
         {
             var allVertices = new List<Vector3>();
             var allNormals = new List<Vector3>();
@@ -375,14 +377,15 @@ namespace Manifold.IO.GFZ.CourseCollision
                 // Get base data
                 var quad = colliderQuads[quadIndex];
                 var vertTotal = 6; // 2 triangles, 3 verts each
+                var verts = usePrecompute ? quad.GetPrecomputes() : quad.GetVerts();
 
                 // Add vertices for quad as 2 triangles
-                allVertices.Add(quad.vertex0);
-                allVertices.Add(quad.vertex1);
-                allVertices.Add(quad.vertex2);
-                allVertices.Add(quad.vertex2);
-                allVertices.Add(quad.vertex3);
-                allVertices.Add(quad.vertex0);
+                allVertices.Add(verts[0]);
+                allVertices.Add(verts[1]);
+                allVertices.Add(verts[2]);
+                allVertices.Add(verts[2]);
+                allVertices.Add(verts[3]);
+                allVertices.Add(verts[0]);
 
                 // Iterate over each vertex
                 for (int vertexIndex = 0; vertexIndex < vertTotal; vertexIndex++)
@@ -453,7 +456,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             return list.ToArray();
         }
 
-        public Mesh CreateObjectColliderMesh(SceneObject sceneObject, bool createBackfaces)
+        public Mesh CreateObjectColliderMesh(SceneObject sceneObject, bool createBackfaces, bool usePrecomputes)
         {
             var colliderGeo = sceneObject.instanceReference.colliderGeometry;
 
@@ -461,8 +464,8 @@ namespace Manifold.IO.GFZ.CourseCollision
             var mesh = new Mesh();
             mesh.name = sceneObject.nameCopy;
 
-            var trisSubmesh = CreateTriSubmeshForMesh(mesh, colliderGeo.tris, createBackfaces);
-            var quadsSubmesh = CreateQuadSubmeshForMesh(mesh, colliderGeo.quads, createBackfaces);
+            var trisSubmesh = CreateTriSubmeshForMesh(mesh, colliderGeo.tris, createBackfaces, usePrecomputes);
+            var quadsSubmesh = CreateQuadSubmeshForMesh(mesh, colliderGeo.quads, createBackfaces, usePrecomputes);
             var submeshes = new SubMeshDescriptor[]
             {
                 trisSubmesh,
@@ -482,6 +485,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
             return mesh;
         }
+
 
     }
 }

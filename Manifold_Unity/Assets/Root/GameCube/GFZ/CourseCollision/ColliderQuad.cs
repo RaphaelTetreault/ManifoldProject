@@ -44,6 +44,26 @@ namespace GameCube.GFZ.CourseCollision
         {
             return new float3[] { vertex0, vertex1, vertex2, vertex3 };
         }
+        public float3[] GetPrecomputes()
+        {
+            return new float3[] { precomputed0, precomputed1, precomputed2, precomputed3 };
+        }
+
+        public float3 VertCenter()
+        {
+            return (vertex0 + vertex1 + vertex2 + vertex3) / 4f;
+        }
+
+        public float3 PrecomputeCenter()
+        {
+            // Division inline since the values are BIG and would
+            // lose more precision if added first.
+            return
+                precomputed0 / 4f +
+                precomputed1 / 4f +
+                precomputed2 / 4f + 
+                precomputed3 / 4f;
+        }
 
         public void Deserialize(BinaryReader reader)
         {

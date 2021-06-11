@@ -839,13 +839,27 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol("Addr");
 
                 writer.WriteNextColNicify(nameof(ColliderTriangle.unk_0x00));
-                writer.WriteNextColNicify(nameof(ColliderTriangle.normal));
-                writer.WriteNextColNicify(nameof(ColliderTriangle.vertex0));
-                writer.WriteNextColNicify(nameof(ColliderTriangle.vertex1));
-                writer.WriteNextColNicify(nameof(ColliderTriangle.vertex2));
-                writer.WriteNextColNicify(nameof(ColliderTriangle.precomputed0));
-                writer.WriteNextColNicify(nameof(ColliderTriangle.precomputed1));
-                writer.WriteNextColNicify(nameof(ColliderTriangle.precomputed2));
+                writer.WriteNextColNicify(nameof(ColliderTriangle.normal) + ".x");
+                writer.WriteNextColNicify(nameof(ColliderTriangle.normal) + ".y");
+                writer.WriteNextColNicify(nameof(ColliderTriangle.normal) + ".z");
+                writer.WriteNextColNicify(nameof(ColliderTriangle.vertex0) + ".x");
+                writer.WriteNextColNicify(nameof(ColliderTriangle.vertex0) + ".y");
+                writer.WriteNextColNicify(nameof(ColliderTriangle.vertex0) + ".z");
+                writer.WriteNextColNicify(nameof(ColliderTriangle.vertex1) + ".x");
+                writer.WriteNextColNicify(nameof(ColliderTriangle.vertex1) + ".y");
+                writer.WriteNextColNicify(nameof(ColliderTriangle.vertex1) + ".z");
+                writer.WriteNextColNicify(nameof(ColliderTriangle.vertex2) + ".x");
+                writer.WriteNextColNicify(nameof(ColliderTriangle.vertex2) + ".y");
+                writer.WriteNextColNicify(nameof(ColliderTriangle.vertex2) + ".z");
+                writer.WriteNextColNicify(nameof(ColliderTriangle.precomputed0) + ".x");
+                writer.WriteNextColNicify(nameof(ColliderTriangle.precomputed0) + ".y");
+                writer.WriteNextColNicify(nameof(ColliderTriangle.precomputed0) + ".z");
+                writer.WriteNextColNicify(nameof(ColliderTriangle.precomputed1) + ".x");
+                writer.WriteNextColNicify(nameof(ColliderTriangle.precomputed1) + ".y");
+                writer.WriteNextColNicify(nameof(ColliderTriangle.precomputed1) + ".z");
+                writer.WriteNextColNicify(nameof(ColliderTriangle.precomputed2) + ".x");
+                writer.WriteNextColNicify(nameof(ColliderTriangle.precomputed2) + ".y");
+                writer.WriteNextColNicify(nameof(ColliderTriangle.precomputed2) + ".z");
 
                 writer.WriteNextRow();
 
@@ -870,13 +884,27 @@ namespace Manifold.IO.GFZ.CourseCollision
                             writer.WriteStartAddress(tri);
 
                             writer.WriteNextCol(tri.unk_0x00);
-                            writer.WriteNextCol(tri.normal);
-                            writer.WriteNextCol(tri.vertex0);
-                            writer.WriteNextCol(tri.vertex1);
-                            writer.WriteNextCol(tri.vertex2);
-                            writer.WriteNextCol(tri.precomputed0);
-                            writer.WriteNextCol(tri.precomputed1);
-                            writer.WriteNextCol(tri.precomputed2);
+                            writer.WriteNextCol(tri.normal.x);
+                            writer.WriteNextCol(tri.normal.y);
+                            writer.WriteNextCol(tri.normal.z);
+                            writer.WriteNextCol(tri.vertex0.x);
+                            writer.WriteNextCol(tri.vertex0.y);
+                            writer.WriteNextCol(tri.vertex0.z);
+                            writer.WriteNextCol(tri.vertex1.x);
+                            writer.WriteNextCol(tri.vertex1.y);
+                            writer.WriteNextCol(tri.vertex1.z);
+                            writer.WriteNextCol(tri.vertex2.x);
+                            writer.WriteNextCol(tri.vertex2.y);
+                            writer.WriteNextCol(tri.vertex2.z);
+                            writer.WriteNextCol(tri.precomputed0.x);
+                            writer.WriteNextCol(tri.precomputed0.y);
+                            writer.WriteNextCol(tri.precomputed0.z);
+                            writer.WriteNextCol(tri.precomputed1.x);
+                            writer.WriteNextCol(tri.precomputed1.y);
+                            writer.WriteNextCol(tri.precomputed1.z);
+                            writer.WriteNextCol(tri.precomputed2.x);
+                            writer.WriteNextCol(tri.precomputed2.y);
+                            writer.WriteNextCol(tri.precomputed2.z);
 
                             writer.WriteNextRow();
                         }
@@ -900,15 +928,33 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol("Addr");
 
                 writer.WriteNextColNicify(nameof(ColliderQuad.unk_0x00));
-                writer.WriteNextColNicify(nameof(ColliderQuad.normal));
-                writer.WriteNextColNicify(nameof(ColliderQuad.vertex0));
-                writer.WriteNextColNicify(nameof(ColliderQuad.vertex1));
-                writer.WriteNextColNicify(nameof(ColliderQuad.vertex2));
-                writer.WriteNextColNicify(nameof(ColliderQuad.vertex3));
-                writer.WriteNextColNicify(nameof(ColliderQuad.precomputed0));
-                writer.WriteNextColNicify(nameof(ColliderQuad.precomputed1));
-                writer.WriteNextColNicify(nameof(ColliderQuad.precomputed2));
-                writer.WriteNextColNicify(nameof(ColliderQuad.precomputed3));
+                writer.WriteNextColNicify(nameof(ColliderQuad.normal) + ".x");
+                writer.WriteNextColNicify(nameof(ColliderQuad.normal) + ".y");
+                writer.WriteNextColNicify(nameof(ColliderQuad.normal) + ".z");
+                writer.WriteNextColNicify(nameof(ColliderQuad.vertex0) + ".x");
+                writer.WriteNextColNicify(nameof(ColliderQuad.vertex0) + ".y");
+                writer.WriteNextColNicify(nameof(ColliderQuad.vertex0) + ".z");
+                writer.WriteNextColNicify(nameof(ColliderQuad.vertex1) + ".x");
+                writer.WriteNextColNicify(nameof(ColliderQuad.vertex1) + ".y");
+                writer.WriteNextColNicify(nameof(ColliderQuad.vertex1) + ".z");
+                writer.WriteNextColNicify(nameof(ColliderQuad.vertex2) + ".x");
+                writer.WriteNextColNicify(nameof(ColliderQuad.vertex2) + ".y");
+                writer.WriteNextColNicify(nameof(ColliderQuad.vertex2) + ".z");
+                writer.WriteNextColNicify(nameof(ColliderQuad.vertex3) + ".x");
+                writer.WriteNextColNicify(nameof(ColliderQuad.vertex3) + ".y");
+                writer.WriteNextColNicify(nameof(ColliderQuad.vertex3) + ".z");
+                writer.WriteNextColNicify(nameof(ColliderQuad.precomputed0) + ".x");
+                writer.WriteNextColNicify(nameof(ColliderQuad.precomputed0) + ".y");
+                writer.WriteNextColNicify(nameof(ColliderQuad.precomputed0) + ".z");
+                writer.WriteNextColNicify(nameof(ColliderQuad.precomputed1) + ".x");
+                writer.WriteNextColNicify(nameof(ColliderQuad.precomputed1) + ".y");
+                writer.WriteNextColNicify(nameof(ColliderQuad.precomputed1) + ".z");
+                writer.WriteNextColNicify(nameof(ColliderQuad.precomputed2) + ".x");
+                writer.WriteNextColNicify(nameof(ColliderQuad.precomputed2) + ".y");
+                writer.WriteNextColNicify(nameof(ColliderQuad.precomputed2) + ".z");
+                writer.WriteNextColNicify(nameof(ColliderQuad.precomputed3) + ".x");
+                writer.WriteNextColNicify(nameof(ColliderQuad.precomputed3) + ".y");
+                writer.WriteNextColNicify(nameof(ColliderQuad.precomputed3) + ".z");
 
                 writer.WriteNextRow();
 
@@ -933,15 +979,33 @@ namespace Manifold.IO.GFZ.CourseCollision
                             writer.WriteStartAddress(quad);
 
                             writer.WriteNextCol(quad.unk_0x00);
-                            writer.WriteNextCol(quad.normal);
-                            writer.WriteNextCol(quad.vertex0);
-                            writer.WriteNextCol(quad.vertex1);
-                            writer.WriteNextCol(quad.vertex2);
-                            writer.WriteNextCol(quad.vertex3);
-                            writer.WriteNextCol(quad.precomputed0);
-                            writer.WriteNextCol(quad.precomputed1);
-                            writer.WriteNextCol(quad.precomputed2);
-                            writer.WriteNextCol(quad.precomputed3);
+                            writer.WriteNextCol(quad.normal.x);
+                            writer.WriteNextCol(quad.normal.y);
+                            writer.WriteNextCol(quad.normal.z);
+                            writer.WriteNextCol(quad.vertex0.x);
+                            writer.WriteNextCol(quad.vertex0.y);
+                            writer.WriteNextCol(quad.vertex0.z);
+                            writer.WriteNextCol(quad.vertex1.x);
+                            writer.WriteNextCol(quad.vertex1.y);
+                            writer.WriteNextCol(quad.vertex1.z);
+                            writer.WriteNextCol(quad.vertex2.x);
+                            writer.WriteNextCol(quad.vertex2.y);
+                            writer.WriteNextCol(quad.vertex2.z);
+                            writer.WriteNextCol(quad.vertex3.x);
+                            writer.WriteNextCol(quad.vertex3.y);
+                            writer.WriteNextCol(quad.vertex3.z);
+                            writer.WriteNextCol(quad.precomputed0.x);
+                            writer.WriteNextCol(quad.precomputed0.y);
+                            writer.WriteNextCol(quad.precomputed0.z);
+                            writer.WriteNextCol(quad.precomputed1.x);
+                            writer.WriteNextCol(quad.precomputed1.y);
+                            writer.WriteNextCol(quad.precomputed1.z);
+                            writer.WriteNextCol(quad.precomputed2.x);
+                            writer.WriteNextCol(quad.precomputed2.y);
+                            writer.WriteNextCol(quad.precomputed2.z);
+                            writer.WriteNextCol(quad.precomputed3.x);
+                            writer.WriteNextCol(quad.precomputed3.y);
+                            writer.WriteNextCol(quad.precomputed3.z);
 
                             writer.WriteNextRow();
                         }
