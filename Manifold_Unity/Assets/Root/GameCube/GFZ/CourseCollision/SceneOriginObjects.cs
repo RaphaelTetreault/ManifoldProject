@@ -15,6 +15,7 @@ namespace GameCube.GFZ.CourseCollision
     {
         // METADATA
         [UnityEngine.SerializeField] private AddressRange addressRange;
+        [UnityEngine.SerializeField] private string nameCopy;
 
         // FIELDS
         public Pointer sceneObjectReferencePtr;
@@ -29,6 +30,7 @@ namespace GameCube.GFZ.CourseCollision
             set => addressRange = value;
         }
 
+        public string NameCopy => nameCopy;
 
         // METHODS
         public void Deserialize(BinaryReader reader)
@@ -42,6 +44,8 @@ namespace GameCube.GFZ.CourseCollision
                 Assert.IsTrue(sceneObjectReferencePtr.IsNotNullPointer);
                 reader.JumpToAddress(sceneObjectReferencePtr);
                 reader.ReadX(ref instanceReference, true);
+
+                nameCopy = instanceReference.nameCopy;
             }
             this.SetReaderToEndAddress(reader);
         }

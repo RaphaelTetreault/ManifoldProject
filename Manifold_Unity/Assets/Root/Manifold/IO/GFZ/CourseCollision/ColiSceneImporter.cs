@@ -39,10 +39,6 @@ namespace Manifold.IO.GFZ.CourseCollision
 
             foreach (var scene in courseScenes)
             {
-                // Progress bar values
-                var count = 0;
-                var total = scene.Value.sceneObjects.Length;
-
                 // Create new, empty scene
                 var sceneName = scene.name;
                 var scenePath = $"Assets/{importTo}/{sceneName}.unity";
@@ -52,7 +48,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 unityScene = EditorSceneManager.OpenScene(scenePath);
 
                 // Course-related values, used to find models
-                // Triple digits do overflow the "00" format, that's okay.
+                // Triple digit IDs do overflow the "00" format, that's okay.
                 var stageID = scene.Value.ID;
                 var stageNumber = stageID.ToString("00");
                 var venueID = CourseUtility.GetVenueID(stageID).ToString().ToLower();
@@ -67,144 +63,22 @@ namespace Manifold.IO.GFZ.CourseCollision
                 var venueFolder = $"Assets/{importFromRoot}/bg/bg_{venueID}";
                 var searchFolders = new string[] { initFolder, stageFolder, venueFolder };
 
-                // DEBUGGING DATA
-                {
-                    // Create debug object for visualization at top of scene hierarchy
-                    CreateDisplayerDebugObject(scene);
+                // SCENE OBJECTS
+                CreateSceneObjects(scene, searchFolders);
+                // ORIGIN OBJECTS
+                CreateOriginObjects(scene, searchFolders);
 
-                    // Unknown volumes
-                    CreateUnknownTrigger1Volumes(scene);
-
-                    // Track data transforms
-                    CreateTrackTransformHierarchy(scene);
-                    //CreateTrackTransformSet(scene);
-
-                    // Checkpoints?
-                    CreateTrackIndexChains(scene);
-                }
-
+                // MISC DATA
+                // Create debug object for visualization at top of scene hierarchy
+                CreateDisplayerDebugObject(scene);
+                // Unknown volumes
+                CreateUnknownTriggers(scene);
+                // Track data transforms
+                CreateTrackTransformHierarchy(scene);
+                // Checkpoints?
+                CreateTrackIndexChains(scene);
                 // Include other misc data
                 IncludeStaticMeshColliders(scene, stageFolder);
-
-                // TEST
-                //TestTransformHeirarchy(scene);
-                //NewTestTransformHierarchy(scene);
-
-                // Get some metadata from the number of scene objects
-                var sceneObjects = scene.Value.sceneObjects;
-                // Create a string format from the highest index number used
-                int displayDigitsLength = sceneObjects.Length.ToString().Length;
-                var digitsFormat = new string('0', displayDigitsLength);
-
-                // Create root for all scene objects
-                var sceneObjectsRoot = new GameObject();
-                sceneObjectsRoot.name = $"Scene Objects";
-
-                // Find all scene objects, add them to scene
-                foreach (var sceneObject in sceneObjects)
-                {
-                    // Skip empties.
-                    // TODO: should check if these are possible data?
-                    if (string.IsNullOrEmpty(sceneObject.nameCopy))
-                    {
-                        count++;
-                        continue;
-                    }
-
-                    // Generate the names of the objects we want
-                    var objectName = sceneObject.nameCopy;
-                    var prefabName = $"pf_{objectName}";
-                    var displayName = $"[{count.ToString(digitsFormat)}] {objectName}";
-
-                    // Store all possible matches for the object name in questions using the folder constraints
-                    var assetGuids = AssetDatabase.FindAssets(prefabName, searchFolders);
-                    // This variable will store the path to the object we want
-                    var assetPath = string.Empty;
-
-                    // Begin a triage of the asset database
-                    if (assetGuids.Length == 1)
-                    {
-                        // We only found 1 model. Great!
-                        assetPath = AssetDatabase.GUIDToAssetPath(assetGuids[0]);
-                    }
-                    else if (assetGuids.Length == 0)
-                    {
-                        // No models for this object. Make empty object.
-                        CreateNoMeshObject(displayName, sceneObjectsRoot.transform);
-                        // Stop here, go to next object in iteration
-                        count++;
-                        continue;
-                    }
-                    else
-                    {
-                        // We have multiple object matches
-                        foreach (var assetGuid in assetGuids)
-                        {
-                            // Get data about a specific object
-                            var tempAssetPath = AssetDatabase.GUIDToAssetPath(assetGuid);
-                            var tempAssetName = System.IO.Path.GetFileNameWithoutExtension(tempAssetPath);
-                            // See if it has the exact name
-                            if (tempAssetName.Equals(prefabName))
-                            {
-                                // If it does, load that one, break iteration
-                                assetPath = AssetDatabase.GUIDToAssetPath(assetGuid);
-                                break;
-                            }
-                        }
-
-                        // Case where name is simple (ei: TEST) and flags a bunch of models, but no models exists for it.
-                        // Moreover, skips models with empty string names (which is possible)
-                        if (string.IsNullOrEmpty(assetPath))
-                        {
-                            // No models for this object. Make empty object.
-                            CreateNoMeshObject(displayName, sceneObjectsRoot.transform);
-                            // Stop here, go to next object in iteration
-                            count++;
-                            continue;
-                        }
-                    }
-
-                    // Load asset based on previous triage
-                    var asset = AssetDatabase.LoadAssetAtPath<GameObject>(assetPath);
-
-                    // Progress bar update
-                    var title = $"Generating Scene ({scene.name})";
-                    var info = $"[{count.ToString(digitsFormat)}/{total}] {objectName}";
-                    var progress = (float)count / total;
-                    EditorUtility.DisplayProgressBar(title, info, progress);
-                    count++;
-
-                    // Create instance of the prefab
-                    var instance = Instantiate(asset, sceneObjectsRoot.transform);
-                    instance.name = displayName;
-
-                    // Tack data of object onto Unity GameObject for inspection
-                    var sceneObjectData = instance.AddComponent<TagSceneObject>();
-                    sceneObjectData.Data = sceneObject;
-
-                    //
-                    if (sceneObject.transformPtr.IsNotNullPointer)
-                    {
-                        // Perhaps best way when matrix exists? No compression rotation
-                        instance.transform.position = sceneObject.transformMatrix3x4.Position;
-                        instance.transform.rotation = sceneObject.transformMatrix3x4.Matrix.ToUnityMatrix4x4().rotation; // 'quaternion' is... lacking
-                        instance.transform.localScale = sceneObject.transformMatrix3x4.Scale;
-                    }
-                    else
-                    {
-                        // Apply GFZ Transform values onto Unity Transform
-                        instance.transform.position = sceneObject.transform.Position;
-                        instance.transform.rotation = sceneObject.transform.DecomposedRotation.Rotation; // Still using UnityEngine, not Unity.Mathematics
-                        instance.transform.localScale = sceneObject.transform.Scale;
-                    }
-                }
-
-                // HACK: force-add models for AX test stages
-                // In the future, this will break with custom stages with indexes > 50
-                if (stageID > 50)
-                {
-                    CreateLegacySceneFromAX(scene, stageFolder);
-                }
 
                 // Finally, save the scene file
                 EditorSceneManager.SaveScene(unityScene, scenePath, false);
@@ -219,29 +93,48 @@ namespace Manifold.IO.GFZ.CourseCollision
         /// </summary>
         /// <param name="displayName">The name of the object created</param>
         /// <returns></returns>
-        private GameObject CreateNoMeshObject(string displayName, UnityEngine.Transform parent = null)
+        private GameObject CreateNoMeshObject()
         {
             // No models for this object. Make empty object.
             var noMeshObject = new GameObject();
-            noMeshObject.name = displayName;
-            noMeshObject.transform.parent = parent;
+
             // Tag object with metadata
             noMeshObject.AddComponent<NoMeshTag>();
+
             // TEMP? Disable for visual clarity
             noMeshObject.SetActive(false);
 
             return noMeshObject;
         }
 
-        private void CreateUnknownTrigger1Volumes(ColiScene scene)
+        private GameObject CreateInstanceFromDatabase(string assetPath)
+        {
+            // Load asset from database
+            var asset = AssetDatabase.LoadAssetAtPath<GameObject>(assetPath);
+
+            // Create instance of the prefab
+            var instance = Instantiate(asset);
+            return instance;
+        }
+
+
+        private void CreateUnknownTriggers(ColiScene scene)
         {
             var parentObject = new GameObject();
             parentObject.name = $"{nameof(UnknownTrigger)} Debug Objects";
 
-            int triggerCount = 0;
-            int triggerTotal = scene.unknownTriggers.Length;
+            string title = $"Createing {nameof(UnknownTrigger)}";
+            int count = 0;
+            int total = scene.unknownTriggers.Length;
+            string format = WidthFormat(scene.unknownTriggers);
+
             foreach (var trigger in scene.unknownTriggers)
             {
+                count++;
+                // TODO: add data as component, not name?
+                var name = $"[{count.ToString(format)}/{total}] Trigger a:{(ushort)trigger.unk_0x20:X4} b:{(ushort)trigger.unk_0x22:X4}";
+                ImportUtility.ProgressBar(count, total, name, title);
+
                 var triggerObject = new GameObject();
                 triggerObject.transform.parent = parentObject.transform;
                 //var meshFilter = triggerObject.AddComponent<MeshFilter>();
@@ -255,9 +148,6 @@ namespace Manifold.IO.GFZ.CourseCollision
                 var displayer = triggerObject.AddComponent<TempDisplayUnknownTrigger1>();
                 displayer.unk1 = trigger.unk_0x20;
                 displayer.unk2 = trigger.unk_0x22;
-
-                triggerObject.name = $"Trigger[{triggerCount}/{triggerTotal}] a:{(ushort)trigger.unk_0x20:X4} b:{(ushort)trigger.unk_0x22:X4}";
-                triggerCount++;
             }
         }
 
@@ -282,38 +172,6 @@ namespace Manifold.IO.GFZ.CourseCollision
             foreach (var displayable in displayables)
             {
                 displayable.SceneSobj = scene;
-            }
-        }
-
-        private void CreateLegacySceneFromAX(ColiSceneSobj scene, string stageFolder)
-        {
-            // Create object to house other objects
-            var parent = new GameObject();
-            parent.name = $"Scene Objects (AX Legacy Format)";
-
-            // Get models for AX scene
-            // One of each is used in scene, all relative to origin.
-            var searchFolders = new string[] { stageFolder };
-            var guids = AssetDatabase.FindAssets("t:prefab", searchFolders);
-
-            // Progress bar variables
-            var count = 0;
-            var total = guids.Length;
-
-            foreach (var assetGuid in guids)
-            {
-                // Progress bar
-                var title = $"Generating Scene ({scene.name})";
-                var info = $"HACK: adding AX models...";
-                var progress = (float)count / total;
-                EditorUtility.DisplayProgressBar(title, info, progress);
-                count++;
-
-                // Load models
-                var hackPath = AssetDatabase.GUIDToAssetPath(assetGuid);
-                var hackObject = AssetDatabase.LoadAssetAtPath<GameObject>(hackPath);
-                var instance = Instantiate(hackObject, parent.transform);
-                instance.name = hackObject.name;
             }
         }
 
@@ -431,6 +289,9 @@ namespace Manifold.IO.GFZ.CourseCollision
             var parent = new GameObject();
             parent.name = $"Static Mesh Colliders";
 
+            // TODO: it would be wiser to tag the prefabs with some tag type so that
+            // we need only pull in objects of that type. The string loading method
+            // is bound to break at some point.
             for (int i = 0; i < StaticColliderMeshes.GetSurfacesCount(scene); i++)
             {
                 var meshName = $"st{scene.ID:00}_{i:00}_{(StaticMeshColliderProperty)i}";
@@ -448,7 +309,6 @@ namespace Manifold.IO.GFZ.CourseCollision
             }
 
         }
-
 
         public void TestTransformHeirarchy(ColiSceneSobj sceneSobj)
         {
@@ -646,6 +506,150 @@ namespace Manifold.IO.GFZ.CourseCollision
             }
         }
 
+        public string GetAssetPath(string prefabName, params string[] searchFolders)
+        {
+            // Store all possible matches for the object name in questions using the folder constraints
+            var assetGuids = AssetDatabase.FindAssets(prefabName, searchFolders);
+            // This variable will store the path to the object we want.
+            // It may end up staying empty in certain cases.
+            var assetPath = string.Empty;
+
+            // Begin a triage of the asset database
+            if (assetGuids.Length == 1)
+            {
+                // We only found 1 model. Great!
+                assetPath = AssetDatabase.GUIDToAssetPath(assetGuids[0]);
+            }
+            else // 0 or >1 matches
+            {
+                // If we have no 0 matches, the foreach will not run.
+                // If we have more than one, the foreach will run BUT may not get a result.
+                foreach (var assetGuid in assetGuids)
+                {
+                    // Get data about a specific object
+                    var tempAssetPath = AssetDatabase.GUIDToAssetPath(assetGuid);
+                    var tempAssetName = System.IO.Path.GetFileNameWithoutExtension(tempAssetPath);
+                    // See if it has the exact name
+                    if (tempAssetName.Equals(prefabName))
+                    {
+                        // If it does, load that one, break iteration
+                        assetPath = AssetDatabase.GUIDToAssetPath(assetGuid);
+                        break;
+                    }
+                }
+
+                // If the "break" is never hit, then there are 2 possibilities:
+                // (1) Name is simple (ei: TEST) and flags a bunch of models, but no models exists for it.
+                // (2) Model has empty string name, flagged a bunch of stuff, but has no exact match.
+            }
+
+            // Return our match. MAY BE EMPTY STRING.
+            return assetPath;
+        }
+        public string WidthFormat(System.Array array)
+        {
+            int displayDigitsLength = array.Length.ToString().Length;
+            var digitsFormat = new string('0', displayDigitsLength);
+            return digitsFormat;
+        }
+
+        public void CreateSceneObjects(ColiSceneSobj scene, params string[] searchFolders)
+        {
+
+            // Get some metadata from the number of scene objects
+            var sceneObjects = scene.Value.sceneObjects;
+            // Create a string format from the highest index number used
+            var digitsFormat = WidthFormat(sceneObjects);
+            int count = 0;
+            int total = sceneObjects.Length;
+            // Create root for all scene objects
+            var sceneObjectsRoot = new GameObject($"Scene Objects").transform;
+
+            // Find all scene objects, add them to scene
+            foreach (var sceneObject in sceneObjects)
+            {
+                // Generate the names of the objects we want
+                var objectName = sceneObject.nameCopy;
+                var prefabName = $"pf_{objectName}";
+                var displayName = $"[{count.ToString(digitsFormat)}] {objectName}";
+
+                // Progress bar update
+                var title = $"Generating Scene ({scene.name})";
+                var info = $"[{count.ToString(digitsFormat)}/{total}] {objectName}";
+                var progress = (float)count / total;
+                EditorUtility.DisplayProgressBar(title, info, progress);
+                count++;
+
+                // Find the asset path from database
+                var assetPath = GetAssetPath(prefabName, searchFolders);
+                // Create asset
+                GameObject assetInstance = string.IsNullOrEmpty(assetPath)
+                    ? CreateNoMeshObject()
+                    : CreateInstanceFromDatabase(assetPath);
+                // Assign name and set parent
+                assetInstance.name = displayName;
+                assetInstance.transform.parent = sceneObjectsRoot;
+
+                // Tack data of object onto Unity GameObject for inspection
+                var sceneObjectData = assetInstance.AddComponent<TagSceneObject>();
+                sceneObjectData.Data = sceneObject;
+
+                // Set object transform
+                if (sceneObject.transformPtr.IsNotNullPointer)
+                {
+                    // Perhaps best way when matrix exists? No compression rotation
+                    assetInstance.transform.position = sceneObject.transformMatrix3x4.Position;
+                    assetInstance.transform.rotation = sceneObject.transformMatrix3x4.Matrix.ToUnityMatrix4x4().rotation; // 'quaternion' is... lacking
+                    assetInstance.transform.localScale = sceneObject.transformMatrix3x4.Scale;
+                }
+                else
+                {
+                    // Apply GFZ Transform values onto Unity Transform
+                    assetInstance.transform.position = sceneObject.transform.Position;
+                    assetInstance.transform.rotation = sceneObject.transform.DecomposedRotation.Rotation; // Still using UnityEngine, not Unity.Mathematics
+                    assetInstance.transform.localScale = sceneObject.transform.Scale;
+                }
+            }
+        }
+        public void CreateOriginObjects(ColiSceneSobj scene, params string[] searchFolders)
+        {
+            // Get some metadata from the number of scene objects
+            var originObjects = scene.Value.sceneOriginObjects;
+
+            // Create a string format from the highest index number used
+            var digitsFormat = WidthFormat(originObjects);
+            int count = 0;
+            int total = originObjects.Length;
+
+            // Create root for all scene objects
+            var sceneObjectsRoot = new GameObject($"Origin Objects").transform;
+
+            // Find all origin objects, add them to scene
+            foreach (var originObject in originObjects)
+            {
+                // Generate the names of the objects we want
+                var objectName = originObject.NameCopy;
+                var prefabName = $"pf_{objectName}";
+                var displayName = $"[{count.ToString(digitsFormat)}] {objectName}";
+
+                // Progress bar update
+                var title = $"Generating Scene ({scene.name})";
+                var info = $"[{count.ToString(digitsFormat)}/{total}] {objectName}";
+                var progress = (float)count / total;
+                EditorUtility.DisplayProgressBar(title, info, progress);
+                count++;
+
+                // Find the asset path from database
+                var assetPath = GetAssetPath(prefabName, searchFolders);
+                // Create asset
+                GameObject assetInstance = string.IsNullOrEmpty(assetPath)
+                    ? CreateNoMeshObject()
+                    : CreateInstanceFromDatabase(assetPath);
+                // Assign name and set parent
+                assetInstance.name = displayName;
+                assetInstance.transform.parent = sceneObjectsRoot;
+            }
+        }
     }
 
     public static class AnimationCurveExtensions

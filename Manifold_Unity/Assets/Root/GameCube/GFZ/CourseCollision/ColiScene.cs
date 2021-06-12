@@ -92,7 +92,7 @@ namespace GameCube.GFZ.CourseCollision
         public TrackMinHeight trackMinHeight;
         public SceneObject[] sceneObjects = new SceneObject[0];
         public SceneInstanceReference[] sceneInstancesList = new SceneInstanceReference[0];
-        public SceneOriginObjects[] sceneOriginObjectsList = new SceneOriginObjects[0];
+        public SceneOriginObjects[] sceneOriginObjects = new SceneOriginObjects[0];
         public UnknownSolsTrigger[] unknownSolsTriggers = new UnknownSolsTrigger[0];
         public FogCurves fogAnimationCurves;
         public Fog fog;
@@ -205,7 +205,7 @@ namespace GameCube.GFZ.CourseCollision
 
             // 0x6C and 0x70
             reader.JumpToAddress(sceneOriginObjectsPtr);
-            reader.ReadX(ref sceneOriginObjectsList, sceneOriginObjectsPtr.Length, true);
+            reader.ReadX(ref sceneOriginObjects, sceneOriginObjectsPtr.Length, true);
 
             // 0x80
             if (fogCurvesPtr.IsNotNullPointer)
@@ -332,7 +332,7 @@ namespace GameCube.GFZ.CourseCollision
                 new SceneInstanceReference() { objectReference = sceneObjectReferences[0] },
                 new SceneInstanceReference() { objectReference = sceneObjectReferences[1] },
             };
-            sceneOriginObjectsList = new SceneOriginObjects[]
+            sceneOriginObjects = new SceneOriginObjects[]
             {
                 new SceneOriginObjects() { instanceReference = sceneInstancesList[1] }
             };
@@ -354,8 +354,8 @@ namespace GameCube.GFZ.CourseCollision
             writer.InlineDesc(serializeVerbose, 0x54 + offset, sceneObjects);
             writer.WriteX(sceneObjects, false);
             // 
-            writer.InlineDesc(serializeVerbose, 0x70 + offset, sceneOriginObjectsList);
-            writer.WriteX(sceneOriginObjectsList, false);
+            writer.InlineDesc(serializeVerbose, 0x70 + offset, sceneOriginObjects);
+            writer.WriteX(sceneOriginObjects, false);
 
             writer.InlineDesc(serializeVerbose, 0x60 + offset, unknownSolsTriggers);
             writer.WriteX(unknownSolsTriggers, false);
@@ -363,8 +363,8 @@ namespace GameCube.GFZ.CourseCollision
             writer.InlineDesc(serializeVerbose, 0x68 + offset, sceneInstancesList);
             writer.WriteX(sceneInstancesList, false);
 
-            writer.InlineDesc(serializeVerbose, 0x70 + offset, sceneOriginObjectsList);
-            writer.WriteX(sceneOriginObjectsList, false);
+            writer.InlineDesc(serializeVerbose, 0x70 + offset, sceneOriginObjects);
+            writer.WriteX(sceneOriginObjects, false);
 
             //0x74, 0x78: unused
 
@@ -434,7 +434,7 @@ namespace GameCube.GFZ.CourseCollision
                 foreach (var instance in sceneInstancesList)
                     referers.Add(instance.colliderGeometry);
                 // The list which points to objects placed at the origin
-                referers.AddRange(sceneOriginObjectsList);
+                referers.AddRange(sceneOriginObjects);
                 // The scene objects
                 referers.AddRange(sceneObjects);
                 foreach (var obj in sceneObjects)
@@ -585,7 +585,7 @@ namespace GameCube.GFZ.CourseCollision
                 // SCENE OBJECTS
                 // References
                 sceneInstancesPtr = sceneInstancesList.GetArrayPointer();
-                sceneOriginObjectsPtr = sceneOriginObjectsList.GetArrayPointer();
+                sceneOriginObjectsPtr = sceneOriginObjects.GetArrayPointer();
                 // Main list
                 sceneObjectCount = sceneObjects.Length;
                 unk_sceneObjectCount1 = 0; // still don't know what this is for

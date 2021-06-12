@@ -1796,7 +1796,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                         var sceneObjectReference = sceneObject.objectReference;
                         objectsList.Add((sceneObject.objectReference, "Instance"));
                     }
-                    foreach (var sceneOriginObject in scene.sceneOriginObjectsList)
+                    foreach (var sceneOriginObject in scene.sceneOriginObjects)
                     {
                         var sceneObjectReference = sceneOriginObject.instanceReference.objectReference;
                         objectsList.Add((sceneObjectReference, "Origin"));
@@ -1858,7 +1858,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                     {
                         objectsList.Add((sceneInstance, "Instance"));
                     }
-                    foreach (var sceneOriginObject in scene.sceneOriginObjectsList)
+                    foreach (var sceneOriginObject in scene.sceneOriginObjects)
                     {
                         var sceneInstance = sceneOriginObject.instanceReference;
                         objectsList.Add((sceneInstance, "Origin"));
