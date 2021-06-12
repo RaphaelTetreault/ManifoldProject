@@ -1055,7 +1055,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol(nameof(ColiScene.zero0x74));
                 writer.WriteNextCol(nameof(ColiScene.zero0x78));
                 writer.WriteNextCol(nameof(ColiScene.circuitType));
-                writer.WriteNextCol(nameof(ColiScene.fogAnimationCurvesPtr));
+                writer.WriteNextCol(nameof(ColiScene.fogCurvesPtr));
                 writer.WriteNextCol(nameof(ColiScene.fogPtr));
                 writer.WriteNextCol(nameof(ColiScene.zero0x88));
                 writer.WriteNextCol(nameof(ColiScene.zero0x8C));
@@ -1072,12 +1072,12 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol(nameof(ColiScene.storyObjectTriggersPtr)); // adr
                 writer.WriteNextCol(nameof(ColiScene.trackCheckpointMatrixPtr));
                 // Structure
-                writer.WriteNextCol(nameof(ColiScene.courseBounds) + "." + nameof(ColiScene.courseBounds.maxX));
-                writer.WriteNextCol(nameof(ColiScene.courseBounds) + "." + nameof(ColiScene.courseBounds.maxZ));
-                writer.WriteNextCol(nameof(ColiScene.courseBounds) + "." + nameof(ColiScene.courseBounds.width));
-                writer.WriteNextCol(nameof(ColiScene.courseBounds) + "." + nameof(ColiScene.courseBounds.length));
-                writer.WriteNextCol(nameof(ColiScene.courseBounds) + "." + nameof(ColiScene.courseBounds.subdivisionsX));
-                writer.WriteNextCol(nameof(ColiScene.courseBounds) + "." + nameof(ColiScene.courseBounds.subdivisionsZ));
+                writer.WriteNextCol(nameof(ColiScene.courseBoundsXZ) + "." + nameof(ColiScene.courseBoundsXZ.maxX));
+                writer.WriteNextCol(nameof(ColiScene.courseBoundsXZ) + "." + nameof(ColiScene.courseBoundsXZ.maxZ));
+                writer.WriteNextCol(nameof(ColiScene.courseBoundsXZ) + "." + nameof(ColiScene.courseBoundsXZ.width));
+                writer.WriteNextCol(nameof(ColiScene.courseBoundsXZ) + "." + nameof(ColiScene.courseBoundsXZ.length));
+                writer.WriteNextCol(nameof(ColiScene.courseBoundsXZ) + "." + nameof(ColiScene.courseBoundsXZ.subdivisionsX));
+                writer.WriteNextCol(nameof(ColiScene.courseBoundsXZ) + "." + nameof(ColiScene.courseBoundsXZ.subdivisionsZ));
                 // 
                 writer.WriteNextCol(nameof(ColiScene.zeroes0xD8));
                 writer.WriteNextRow();
@@ -1124,7 +1124,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                     writer.WriteNextCol(scene.zero0x74);
                     writer.WriteNextCol(scene.zero0x78);
                     writer.WriteNextCol(scene.circuitType);
-                    writer.WriteNextCol(scene.fogAnimationCurvesPtr.HexAddress);
+                    writer.WriteNextCol(scene.fogCurvesPtr.HexAddress);
                     writer.WriteNextCol(scene.fogPtr.HexAddress);
                     writer.WriteNextCol(scene.zero0x88);
                     writer.WriteNextCol(scene.zero0x8C);
@@ -1141,12 +1141,12 @@ namespace Manifold.IO.GFZ.CourseCollision
                     writer.WriteNextCol(scene.storyObjectTriggersPtr.HexAddress);
                     writer.WriteNextCol(scene.trackCheckpointMatrixPtr.HexAddress);
                     // Structure
-                    writer.WriteNextCol(scene.courseBounds.maxX);
-                    writer.WriteNextCol(scene.courseBounds.maxZ);
-                    writer.WriteNextCol(scene.courseBounds.width);
-                    writer.WriteNextCol(scene.courseBounds.length);
-                    writer.WriteNextCol(scene.courseBounds.subdivisionsX);
-                    writer.WriteNextCol(scene.courseBounds.subdivisionsZ);
+                    writer.WriteNextCol(scene.courseBoundsXZ.maxX);
+                    writer.WriteNextCol(scene.courseBoundsXZ.maxZ);
+                    writer.WriteNextCol(scene.courseBoundsXZ.width);
+                    writer.WriteNextCol(scene.courseBoundsXZ.length);
+                    writer.WriteNextCol(scene.courseBoundsXZ.subdivisionsX);
+                    writer.WriteNextCol(scene.courseBoundsXZ.subdivisionsZ);
                     //
                     writer.WriteNextCol(0);// coliHeader.zero_0xD8);
                     writer.WriteNextCol(scene.trackMinHeight.value);

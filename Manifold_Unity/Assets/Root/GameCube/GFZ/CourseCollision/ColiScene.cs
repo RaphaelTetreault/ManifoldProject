@@ -70,7 +70,7 @@ namespace GameCube.GFZ.CourseCollision
         public int zero0x74; // Ptr? Array Ptr length?
         public int zero0x78; // Ptr? Array Ptr address?
         public CircuitType circuitType;
-        public Pointer fogAnimationCurvesPtr;
+        public Pointer fogCurvesPtr;
         public Pointer fogPtr;
         public int zero0x88; // Ptr? Array Ptr length?
         public int zero0x8C; // Ptr? Array Ptr address?
@@ -81,7 +81,7 @@ namespace GameCube.GFZ.CourseCollision
         public ArrayPointer arcadeCheckpointTriggersPtr;
         public ArrayPointer storyObjectTriggersPtr;
         public Pointer trackCheckpointMatrixPtr;
-        public BoundsXZ courseBounds;
+        public BoundsXZ courseBoundsXZ;
         public byte[] zeroes0xD8;
 
         // REFERENCE FIELDS
@@ -208,9 +208,9 @@ namespace GameCube.GFZ.CourseCollision
             reader.ReadX(ref sceneOriginObjectsList, sceneOriginObjectsPtr.Length, true);
 
             // 0x80
-            if (fogAnimationCurvesPtr.IsNotNullPointer)
+            if (fogCurvesPtr.IsNotNullPointer)
             {
-                reader.JumpToAddress(fogAnimationCurvesPtr);
+                reader.JumpToAddress(fogCurvesPtr);
                 reader.ReadX(ref fogAnimationCurves, true);
             }
 
@@ -404,7 +404,7 @@ namespace GameCube.GFZ.CourseCollision
             boostPlatesActive = BoostPlatesActive.Enabled;
             unkBool32_0x58 = Bool32.True;
             circuitType = CircuitType.ClosedCircuit;
-            courseBounds = new BoundsXZ();
+            courseBoundsXZ = new BoundsXZ();
 
 
             // GET ALL REFERERS, RE-SERIALIZE FOR POINTERS
@@ -518,7 +518,7 @@ namespace GameCube.GFZ.CourseCollision
                 reader.ReadX(ref zero0x74);
                 reader.ReadX(ref zero0x78);
                 reader.ReadX(ref circuitType);
-                reader.ReadX(ref fogAnimationCurvesPtr);
+                reader.ReadX(ref fogCurvesPtr);
                 reader.ReadX(ref fogPtr);
                 reader.ReadX(ref zero0x88);
                 reader.ReadX(ref zero0x8C);
@@ -529,7 +529,7 @@ namespace GameCube.GFZ.CourseCollision
                 reader.ReadX(ref arcadeCheckpointTriggersPtr);
                 reader.ReadX(ref storyObjectTriggersPtr);
                 reader.ReadX(ref trackCheckpointMatrixPtr);
-                reader.ReadX(ref courseBounds, true);
+                reader.ReadX(ref courseBoundsXZ, true);
                 reader.ReadX(ref zeroes0xD8, kSizeOfZeroes0xD8);
             }
             this.RecordEndAddress(reader);
@@ -574,7 +574,7 @@ namespace GameCube.GFZ.CourseCollision
                 trackMinHeightPtr = trackMinHeight.GetPointer();
                 trackNodesPtr = trackNodes.GetArrayPointer();
                 fogPtr = fog.GetPointer();
-                fogAnimationCurvesPtr = fogAnimationCurves.GetPointer();
+                fogCurvesPtr = fogAnimationCurves.GetPointer();
                 // TRIGGERS
                 arcadeCheckpointTriggersPtr = arcadeCheckpointTriggers.GetArrayPointer();
                 courseMetadataTriggersPtr = courseMetadataTriggers.GetArrayPointer();
@@ -613,7 +613,7 @@ namespace GameCube.GFZ.CourseCollision
                 writer.WriteX(sceneOriginObjectsPtr);
                 writer.WriteX(new ArrayPointer()); // const unused
                 writer.WriteX(circuitType);
-                writer.WriteX(fogAnimationCurvesPtr);
+                writer.WriteX(fogCurvesPtr);
                 writer.WriteX(fogPtr);
                 writer.WriteX(new ArrayPointer()); // const unused
                 writer.WriteX(trackLengthPtr);
@@ -623,7 +623,7 @@ namespace GameCube.GFZ.CourseCollision
                 writer.WriteX(arcadeCheckpointTriggersPtr);
                 writer.WriteX(storyObjectTriggersPtr);
                 writer.WriteX(trackCheckpointMatrixPtr);
-                writer.WriteX(courseBounds);
+                writer.WriteX(courseBoundsXZ);
                 writer.WriteX(new byte[kSizeOfZeroes0xD8], false); // write const zeros
             }
             this.RecordEndAddress(writer);
@@ -658,7 +658,7 @@ namespace GameCube.GFZ.CourseCollision
             if (unknownSolsTriggers != null)
                 Assert.IsTrue(unknownSolsTriggersPtr.IsNotNullPointer);
             if (fogAnimationCurves != null)
-                Assert.IsTrue(fogAnimationCurvesPtr.IsNotNullPointer);
+                Assert.IsTrue(fogCurvesPtr.IsNotNullPointer);
             if (fog != null)
                 Assert.IsTrue(unknownTriggersPtr.IsNotNullPointer);
             if (visualEffectTriggers != null)
