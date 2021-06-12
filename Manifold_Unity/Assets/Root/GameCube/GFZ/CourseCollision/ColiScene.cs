@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using Unity.Mathematics;
 
 namespace GameCube.GFZ.CourseCollision
 {
@@ -149,6 +150,19 @@ namespace GameCube.GFZ.CourseCollision
             bool isGx0x24 = ptr0x24.address == kGxConstPtr0x24;
             bool isGX = isGx0x20 & isGx0x24;
             return isGX;
+        }
+
+        public float3 CourseBoundsPosition()
+        {
+            //return new float3(
+            //    courseBoundsXZ.width,
+            //    trackMinHeight.value,
+            //    courseBoundsXZ.length);
+
+            return
+                // *10f to correct scale for now
+                courseBoundsXZ.Center * 10f +
+                new float3(0, trackMinHeight.value, 0);
         }
 
         public void ValidateFileFormatPointers()

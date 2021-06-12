@@ -17,6 +17,12 @@ namespace GameCube.GFZ.CourseCollision
         public float value;
 
 
+        public static implicit operator float(FloatRef floatRef)
+        {
+            return floatRef.value;
+        }
+
+
         // PROPERTIES
         public AddressRange AddressRange
         {

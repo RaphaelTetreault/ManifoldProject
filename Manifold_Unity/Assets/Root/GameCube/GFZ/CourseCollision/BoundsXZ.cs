@@ -41,12 +41,19 @@ namespace GameCube.GFZ.CourseCollision
         public float3 CalcCenter()
         {
             // center of width/length
-            float3 halfWL = new float3(width, 0f, length) * 0.5f;
-            float3 offset = new float3(maxX, 0f, maxZ);
-            float3 center = halfWL + offset;
+            float3 halfWL = new float3(width, 0f, length) / 2f;
+            float3 edge = new float3(maxX, 0f, maxZ);
+            float3 center = halfWL + edge;
             return center;
         }
 
+        public float3 Scale
+        {
+            get
+            {
+                return new float3(width, 0f, length);
+            }
+        }
         public void Deserialize(BinaryReader reader)
         {
             this.RecordStartAddress(reader);

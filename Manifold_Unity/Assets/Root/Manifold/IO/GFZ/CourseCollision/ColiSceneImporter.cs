@@ -70,6 +70,8 @@ namespace Manifold.IO.GFZ.CourseCollision
                 // ORIGIN OBJECTS
                 CreateOriginObjects(scene, searchFolders);
 
+                CreateBoundsVisual(scene);
+
                 // MISC DATA
                 // Create debug object for visualization at top of scene hierarchy
                 CreateDisplayerDebugObject(scene);
@@ -778,6 +780,46 @@ namespace Manifold.IO.GFZ.CourseCollision
             return animationMatrix;
         }
 
+
+
+        public UnityEngine.Transform CreateBoundsVisual(ColiSceneSobj sceneSobj)
+        {
+            var scene = sceneSobj.Value;
+            var bounds = scene.courseBoundsXZ;
+
+            var boundsRoot = new GameObject("Bounds").transform;
+
+            var boundsExact = GameObject.CreatePrimitive(PrimitiveType.Cube).transform;
+            boundsExact.gameObject.name = "BoundsXZ & MinY (Exact)";
+            boundsExact.parent = boundsRoot;
+
+            var boundsPadded = GameObject.CreatePrimitive(PrimitiveType.Cube).transform;
+            boundsPadded.gameObject.name = "BoundsXZ & MinY (Internal)";
+            boundsPadded.parent = boundsRoot;
+
+            // correcting serialized values to this
+            // *10f for size, *0.80f to correct the 25% padding
+            float scaleCorrect = 10f * 0.80f;
+            // div by 2f due to plane default size
+            // Add min height to position it as if death plane.
+            float3 halfWL = new float3(bounds.width, 0f, bounds.length) * scaleCorrect / 2f;
+            float3 edge = new float3(bounds.maxX, 0f, bounds.maxZ);
+            float3 center = halfWL + edge;
+            var boundsPosition = center + new float3(0, scene.trackMinHeight, 0);
+
+            // Y axis needs a non-zero scale
+            float3 minScaleAdd = new float3(0f, 0.001f, 0f);
+            // Moving the planes down a bit looks better. TODO: find min Y offset?
+            float3 minOffset = new float3(0f, -10f, 0f);
+            //
+            boundsExact.position = boundsPosition + minOffset;
+            boundsExact.localScale = bounds.Scale* scaleCorrect + minScaleAdd;
+            //
+            boundsPadded.position = boundsPosition + minOffset;
+            boundsPadded.localScale = bounds.Scale * 10f + minScaleAdd;
+
+            return boundsRoot;
+        }
         public void CreateTrackIndexChains(ColiSceneSobj sceneSobj)
         {
             var scene = sceneSobj.Value;
@@ -857,6 +899,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             var digitsFormat = new string('0', displayDigitsLength);
             return digitsFormat;
         }
+
 
         public void CreateSceneObjects(ColiSceneSobj scene, params string[] searchFolders)
         {
