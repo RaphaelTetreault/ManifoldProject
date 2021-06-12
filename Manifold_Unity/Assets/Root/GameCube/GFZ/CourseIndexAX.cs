@@ -91,7 +91,7 @@ namespace GameCube.GFZ
         TestLoopCross = 77,
         [Description("Meteor Stream (test)")]
         TestMeteorStream = 86,
-        [Description("Cylindar Wave (test)")]
+        [Description("Cylinder Wave (test)")]
         TestCylinderWave = 87,
         [Description("Long Pipe (test)")]
         TestLongPipe = 90,

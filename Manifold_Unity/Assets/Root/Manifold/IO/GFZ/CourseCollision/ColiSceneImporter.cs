@@ -1,5 +1,7 @@
 ﻿using GameCube.GFZ;
 using GameCube.GFZ.CourseCollision;
+using Manifold.IO;
+using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -71,8 +73,13 @@ namespace Manifold.IO.GFZ.CourseCollision
                 // MISC DATA
                 // Create debug object for visualization at top of scene hierarchy
                 CreateDisplayerDebugObject(scene);
-                // Unknown volumes
-                CreateUnknownTriggers(scene);
+
+                // TRIGGERS
+                {
+                    CreateArcadeCheckpoints(scene);
+                    CreateUnknownTriggers(scene);
+                }
+
                 // Track data transforms
                 CreateTrackTransformHierarchy(scene);
                 // Checkpoints?
@@ -118,6 +125,146 @@ namespace Manifold.IO.GFZ.CourseCollision
         }
 
 
+        #region CREATE TRIGGERS
+        private UnityEngine.Transform CreateArcadeCheckpoints(ColiScene scene)
+        {
+            var typeName = nameof(ArcadeCheckpointTrigger);
+            string title = $"Creating {typeName}s";
+            int count = 0;
+            int total = scene.unknownTriggers.Length;
+            string format = WidthFormat(scene.unknownTriggers);
+
+            var root = new GameObject($"{typeName} [{total}]").transform;
+
+            foreach (var trigger in scene.arcadeCheckpointTriggers)
+            {
+                count++;
+                var name = $"{typeName} [{count.ToString(format)}]";
+                ImportUtility.ProgressBar(count, total, name, title);
+
+                var obj = GameObject.CreatePrimitive(PrimitiveType.Cube).transform;
+                obj.transform.parent = root;
+
+                // Assign transform values used for 
+                obj.transform.position = trigger.transform.Position;
+                obj.transform.rotation = trigger.transform.Rotation;
+                obj.transform.localScale = trigger.transform.Scale * 10f; // TODO: in code when converted
+            }
+
+            return root;
+        }
+
+        private UnityEngine.Transform CreateCourseMetadataTriggers(ColiScene scene)
+        {
+            // Create general data for progress bar, naming
+            var typeName = nameof(CourseMetadataTrigger);
+            string title = $"Creating {typeName}s";
+            int count = 0;
+            int total = scene.unknownTriggers.Length;
+            string format = WidthFormat(scene.unknownTriggers);
+
+            // Root object for all triggers
+            var root = new GameObject($"{typeName} [{total}]").transform;
+
+            // iterate over each trigger
+            foreach (var trigger in scene.courseMetadataTriggers)
+            {
+                //
+                count++;
+                var name = $"{typeName} [{count.ToString(format)}]";
+                ImportUtility.ProgressBar(count, total, name, title);
+
+                // Parse trigger type
+                // There are 3 ways this data is used
+                switch (trigger.courseMetadata)
+                {
+                    // Path data
+                    case CourseMetadataType.Lightning_Lightning:
+                        {
+                            var pathObject = CreateMetadataPathObj(trigger);
+                            pathObject.name = $"Lightning Path [{count}]";
+                            pathObject.parent = root;
+                        }
+                        break;
+                    case CourseMetadataType.OuterSpace_Meteor:
+                        {
+                            var pathObject = CreateMetadataPathObj(trigger);
+                            pathObject.name = $"Meteor Path [{count}]";
+                            pathObject.parent = root;
+                        }
+                        break;
+
+                    // Obscure trigger data
+                    case CourseMetadataType.BigBlueOrdeal:
+                        {
+                            var bboObject = CreateMetadataPathObj(trigger);
+                            bboObject.name = $"Big Blue Ordeal Unk Trigger [{count}]";
+                            bboObject.parent = root;
+                        }
+                        break;
+
+                    // Story capsule data
+                    case CourseMetadataType.Story1_CapsuleAX:
+                        {
+                            var storyCapsuleObject = CreateMetadataPathObj(trigger);
+                            storyCapsuleObject.name = $"AX Story 1 Capsule [{count}]";
+                            storyCapsuleObject.parent = root;
+                        }
+                        break;
+                    case CourseMetadataType.Story5_Capsule:
+                        {
+                            var storyCapsuleObject = CreateMetadataPathObj(trigger);
+                            storyCapsuleObject.name = $"Story 5 Capsule [{count}]";
+                            storyCapsuleObject.parent = root;
+                        }
+                        break;
+
+                    default:
+                        throw new NotImplementedException();
+                }
+            }
+
+            return root;
+        }
+        private UnityEngine.Transform CreateMetadataPathObj(CourseMetadataTrigger data)
+        {
+            var rootPathObject = new GameObject().transform;
+
+            var from = new GameObject("from").transform;
+            from.parent = rootPathObject;
+            from.position = data.PositionFrom;
+            from.rotation = data.Rotation;
+
+            var to = new GameObject("to").transform;
+            to.parent = rootPathObject;
+            to.position = data.PositionTo;
+            to.rotation = data.Rotation;
+
+            return rootPathObject;
+        }
+        private UnityEngine.Transform CreateMetadataBboObj(CourseMetadataTrigger data)
+        {
+            // Object named by caller
+            var obj = GameObject.CreatePrimitive(PrimitiveType.Cube).transform;
+            //var obj = new GameObject("Big Blue Ordeal Trigger").transform;
+            obj.transform.position = data.Position;
+            obj.transform.rotation = data.Rotation;
+            obj.transform.localScale = data.ScaleBigBlueOrdeal;
+
+            return obj;
+        }
+        private UnityEngine.Transform CreateMetadataCapsuleObj(CourseMetadataTrigger data)
+        {
+            var capsuleObject = GameObject.CreatePrimitive(PrimitiveType.Sphere).transform;
+            capsuleObject.position = data.Position;
+            capsuleObject.rotation = data.Rotation;
+            capsuleObject.localScale = data.ScaleCapsule;
+
+            return capsuleObject;
+        }
+
+
+
         private void CreateUnknownTriggers(ColiScene scene)
         {
             var parentObject = new GameObject();
@@ -150,6 +297,8 @@ namespace Manifold.IO.GFZ.CourseCollision
                 displayer.unk2 = trigger.unk_0x22;
             }
         }
+
+        #endregion
 
         private void CreateDisplayerDebugObject(ColiSceneSobj scene)
         {

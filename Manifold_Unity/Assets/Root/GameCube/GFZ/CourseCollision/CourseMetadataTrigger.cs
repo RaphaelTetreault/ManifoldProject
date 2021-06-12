@@ -30,6 +30,8 @@ namespace GameCube.GFZ.CourseCollision
         public float3 PositionFrom => transform.Position;
         public float3 PositionTo => transform.Scale;
         public float3 Scale => transform.Scale;
+        public float3 ScaleBigBlueOrdeal => transform.Scale * 27.5f;
+        public float3 ScaleCapsule => transform.Scale * 10f;
         public quaternion Rotation => transform.Rotation;
         public float3 RotationEuler => transform.RotationEuler;
 
