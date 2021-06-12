@@ -21,11 +21,11 @@ namespace GameCube.GFZ.CourseCollision
         public ushort zero_0x00;
         public byte rockGroupOrderIndex;
         public byte rockGroupAndDifficulty; // split lower/upper 4 bits
-        public float3 story2RockScale;
+        public float3 story2RockScale; // object scale?
         public Pointer storyObjectPathPtr;
-        public float3 scale;
-        public float3 rotation;
-        public float3 position;
+        public float3 scale;    // trigger scale?
+        public float3 rotation; // trigger rotation?
+        public float3 position; // trigger position?
         // FIELDS (deserialized from pointers)
         public StoryObjectPath storyObjectPath;
 
