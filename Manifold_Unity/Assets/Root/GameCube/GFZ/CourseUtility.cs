@@ -77,38 +77,38 @@
 
                 #region UNUSED GX STAGES
 
-                case 0: return (VenueName.SandOcean, VenueID.SAN, CourseIndexAX.ScrewDrive);
+                case 0: return (VenueName.SandOcean, VenueID.SAN, CourseIndexAX.TestScrewDrive);
 
                 #endregion
 
                 #region UNUSED AX STAGES
 
-                case 72: return (VenueName.None, VenueID.None, CourseIndexAX.SurfaceSlide);
+                case 72: return (VenueName.None, VenueID.None, CourseIndexAX.TestSurfaceSlide);
                 ////
-                case 77: return (VenueName.None, VenueID.None, CourseIndexAX.LoopCross);
+                case 77: return (VenueName.None, VenueID.None, CourseIndexAX.TestLoopCross);
                 ////
-                case 86: return (VenueName.None, VenueID.None, CourseIndexAX.MeteorStream);
-                case 87: return (VenueName.None, VenueID.None, CourseIndexAX.CylinderWave);
+                case 86: return (VenueName.None, VenueID.None, CourseIndexAX.TestMeteorStream);
+                case 87: return (VenueName.None, VenueID.None, CourseIndexAX.TestCylinderWave);
                 ////
-                case 90: return (VenueName.None, VenueID.None, CourseIndexAX.LongPipe);
-                case 91: return (VenueName.None, VenueID.None, CourseIndexAX.Story2);
-                case 92: return (VenueName.None, VenueID.None, CourseIndexAX.Story3);
-                case 93: return (VenueName.None, VenueID.None, CourseIndexAX.Story4);
-                case 94: return (VenueName.None, VenueID.None, CourseIndexAX.Story5);
-                case 95: return (VenueName.None, VenueID.None, CourseIndexAX.Story6);
-                case 96: return (VenueName.None, VenueID.None, CourseIndexAX.Story7);
-                case 97: return (VenueName.None, VenueID.None, CourseIndexAX.Story8);
-                case 98: return (VenueName.None, VenueID.None, CourseIndexAX.Story9);
+                case 90: return (VenueName.None, VenueID.None, CourseIndexAX.TestLongPipe);
+                case 91: return (VenueName.None, VenueID.None, CourseIndexAX.TestStory2);
+                case 92: return (VenueName.None, VenueID.None, CourseIndexAX.TestStory3);
+                case 93: return (VenueName.None, VenueID.None, CourseIndexAX.TestStory4);
+                case 94: return (VenueName.None, VenueID.None, CourseIndexAX.TestStory5);
+                case 95: return (VenueName.None, VenueID.None, CourseIndexAX.TestStory6);
+                case 96: return (VenueName.None, VenueID.None, CourseIndexAX.TestStory7);
+                case 97: return (VenueName.None, VenueID.None, CourseIndexAX.TestStory8);
+                case 98: return (VenueName.None, VenueID.None, CourseIndexAX.TestStory9);
                 ////
-                case 101: return (VenueName.None, VenueID.None, CourseIndexAX.TwistRoad);
-                case 102: return (VenueName.None, VenueID.None, CourseIndexAX.TwistRoad);
-                case 103: return (VenueName.None, VenueID.None, CourseIndexAX.Multiplex);
-                case 104: return (VenueName.None, VenueID.None, CourseIndexAX.Intersection);
-                case 105: return (VenueName.None, VenueID.None, CourseIndexAX.Undulation);
+                case 101: return (VenueName.None, VenueID.None, CourseIndexAX.TestTwistRoadOld);
+                case 102: return (VenueName.None, VenueID.None, CourseIndexAX.TestTwistRoad);
+                case 103: return (VenueName.None, VenueID.None, CourseIndexAX.TestMultiplex);
+                case 104: return (VenueName.None, VenueID.None, CourseIndexAX.TestIntersection);
+                case 105: return (VenueName.None, VenueID.None, CourseIndexAX.TestUndulation);
                 ////
-                case 107: return (VenueName.None, VenueID.None, CourseIndexAX.DriftHighway);
-                case 108: return (VenueName.None, VenueID.None, CourseIndexAX.AeroDive);
-                case 109: return (VenueName.None, VenueID.None, CourseIndexAX.LateralShift);
+                case 107: return (VenueName.None, VenueID.None, CourseIndexAX.TestDriftHighway);
+                case 108: return (VenueName.None, VenueID.None, CourseIndexAX.TestAeroDive);
+                case 109: return (VenueName.None, VenueID.None, CourseIndexAX.TestLateralShift);
 
                 #endregion
 

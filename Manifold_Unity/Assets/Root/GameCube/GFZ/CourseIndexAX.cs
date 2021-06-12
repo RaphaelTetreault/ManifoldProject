@@ -92,7 +92,7 @@ namespace GameCube.GFZ
         [Description("Meteor Stream (test)")]
         TestMeteorStream = 86,
         [Description("Cylindar Wave (test)")]
-        TestCylindarWave = 87,
+        TestCylinderWave = 87,
         [Description("Long Pipe (test)")]
         TestLongPipe = 90,
         [Description("Story 2 (test)")]
