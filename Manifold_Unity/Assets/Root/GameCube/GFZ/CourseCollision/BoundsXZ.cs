@@ -1,6 +1,7 @@
 using Manifold.IO;
 using System;
 using System.IO;
+using Unity.Mathematics;
 
 namespace GameCube.GFZ.CourseCollision
 {
@@ -14,6 +15,7 @@ namespace GameCube.GFZ.CourseCollision
     {
         // METADATA
         [UnityEngine.SerializeField] AddressRange addressRange;
+        [UnityEngine.SerializeField] float3 center;
 
         // FIELDS
         public float maxX; // bounds -x. Value = max x value of track node. Negative in GX space.
@@ -32,8 +34,19 @@ namespace GameCube.GFZ.CourseCollision
             set => addressRange = value;
         }
 
+        public float3 Center => center;
+
 
         // METHODS
+        public float3 CalcCenter()
+        {
+            // center of width/length
+            float3 halfWL = new float3(width, 0f, length) * 0.5f;
+            float3 offset = new float3(maxX, 0f, maxZ);
+            float3 center = halfWL + offset;
+            return center;
+        }
+
         public void Deserialize(BinaryReader reader)
         {
             this.RecordStartAddress(reader);
@@ -46,6 +59,9 @@ namespace GameCube.GFZ.CourseCollision
                 reader.ReadX(ref subdivisionsZ);
             }
             this.RecordEndAddress(reader);
+            {
+                center = CalcCenter();
+            }
         }
 
         public void Serialize(BinaryWriter writer)
