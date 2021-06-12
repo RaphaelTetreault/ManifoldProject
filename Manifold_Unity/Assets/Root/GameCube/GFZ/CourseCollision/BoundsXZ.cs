@@ -14,8 +14,8 @@ namespace GameCube.GFZ.CourseCollision
         IBinarySerializable
     {
         // METADATA
-        [UnityEngine.SerializeField] AddressRange addressRange;
-        [UnityEngine.SerializeField] float3 center;
+        [UnityEngine.SerializeField] private AddressRange addressRange;
+        [UnityEngine.SerializeField] private float3 center;
 
         // FIELDS
         public float maxX; // bounds -x. Value = max x value of track node. Negative in GX space.
