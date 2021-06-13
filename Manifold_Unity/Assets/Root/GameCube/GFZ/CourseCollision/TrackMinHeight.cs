@@ -7,12 +7,15 @@ namespace GameCube.GFZ.CourseCollision
     [System.Serializable]
     public sealed class TrackMinHeight : FloatRef
     {
+        // CONSTRUCTORS
         public TrackMinHeight()
         {
-            // Default value as see in AX test files.
+            // Default value as seen in AX test files.
             value = -10000f;
         }
 
+
+        // METHODS
 
         /// <summary>
         /// Returns the lowest Y coordinate among all track nodes.
