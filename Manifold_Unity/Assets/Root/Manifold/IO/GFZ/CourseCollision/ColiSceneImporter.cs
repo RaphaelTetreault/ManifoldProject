@@ -152,9 +152,9 @@ namespace Manifold.IO.GFZ.CourseCollision
         #region CREATE TRIGGERS
         private UnityEngine.Transform CreateArcadeCheckpointTriggers(ColiScene scene)
         {
-            var triggers = scene.arcadeCheckpointTriggers;
+            var arcadeCheckpointTriggers = scene.arcadeCheckpointTriggers;
             int count = 0;
-            int total = triggers.Length;
+            int total = arcadeCheckpointTriggers.Length;
 
             // Don't bother if no triggers
             var hasTriggers = total > 0;
@@ -163,24 +163,21 @@ namespace Manifold.IO.GFZ.CourseCollision
 
             var typeName = nameof(ArcadeCheckpointTrigger);
             string title = $"Creating {typeName}s";
-            string format = WidthFormat(triggers);
+            string format = WidthFormat(arcadeCheckpointTriggers);
 
             var root = new GameObject($"{typeName} [{total}]").transform;
 
-            foreach (var trigger in triggers)
+            foreach (var arcadeCheckpointTrigger in arcadeCheckpointTriggers)
             {
                 count++;
                 var name = $"[{count.ToString(format)}] {typeName}";
                 ImportUtility.ProgressBar(count, total, name, title);
 
-                var obj = GameObject.CreatePrimitive(PrimitiveType.Cube).transform;
-                obj.transform.parent = root;
-                obj.name = name;
-
-                // Assign transform values used for 
-                obj.transform.position = trigger.transform.Position;
-                obj.transform.rotation = trigger.transform.Rotation;
-                obj.transform.localScale = trigger.transform.Scale * 10f; // TODO: in code when converted
+                // Represent trigger as cube
+                var gobj = CreatePrimitive(PrimitiveType.Cube, name, root).gameObject;
+                // Add script to trigger, se values
+                var script = gobj.AddComponent<GfzArcadeCheckpoint>();
+                script.ImportGfz(arcadeCheckpointTrigger);
             }
 
             return root;
@@ -188,9 +185,9 @@ namespace Manifold.IO.GFZ.CourseCollision
 
         private UnityEngine.Transform CreateCourseMetadataTriggers(ColiScene scene)
         {
-            var triggers = scene.courseMetadataTriggers;
+            var courseMetadataTriggers = scene.courseMetadataTriggers;
             int count = 0;
-            int total = triggers.Length;
+            int total = courseMetadataTriggers.Length;
 
             // Don't bother if no triggers
             var hasTriggers = total > 0;
@@ -200,13 +197,13 @@ namespace Manifold.IO.GFZ.CourseCollision
             // Create general data for progress bar, naming
             var typeName = nameof(CourseMetadataTrigger);
             string title = $"Creating {typeName}s";
-            string format = WidthFormat(triggers);
+            string format = WidthFormat(courseMetadataTriggers);
 
             // Root object for all triggers
             var root = new GameObject($"{typeName} [{total}]").transform;
 
             // iterate over each trigger
-            foreach (var trigger in triggers)
+            foreach (var courseMetadataTrigger in courseMetadataTriggers)
             {
                 //
                 count++;
@@ -215,12 +212,12 @@ namespace Manifold.IO.GFZ.CourseCollision
 
                 // Parse trigger type
                 // There are 3 ways this data is used
-                switch (trigger.courseMetadata)
+                switch (courseMetadataTrigger.metadataType)
                 {
                     // Path data
                     case CourseMetadataType.Lightning_Lightning:
                         {
-                            var pathObject = CreateMetadataPathObj(trigger);
+                            var pathObject = CreateMetadataPathObj(courseMetadataTrigger);
                             pathObject.name = $"[{count.ToString(format)}] Lightning Path";
                             pathObject.transform.parent = root;
                             pathObject.gizmosColor = Color.yellow;
@@ -228,7 +225,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                         break;
                     case CourseMetadataType.OuterSpace_Meteor:
                         {
-                            var pathObject = CreateMetadataPathObj(trigger);
+                            var pathObject = CreateMetadataPathObj(courseMetadataTrigger);
                             pathObject.name = $"[{count.ToString(format)}] Meteor Path";
                             pathObject.transform.parent = root;
                             pathObject.gizmosColor = new Color32(255, 127, 0, 255); // orange
@@ -238,7 +235,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                     // Obscure trigger data
                     case CourseMetadataType.BigBlueOrdeal:
                         {
-                            var bboObject = CreateMetadataBboObj(trigger);
+                            var bboObject = CreateMetadataBboObj(courseMetadataTrigger);
                             bboObject.name = $"[{count.ToString(format)}] Big Blue Ordeal Unk Trigger";
                             bboObject.parent = root;
                         }
@@ -247,21 +244,22 @@ namespace Manifold.IO.GFZ.CourseCollision
                     // Story capsule data
                     case CourseMetadataType.Story1_CapsuleAX:
                         {
-                            var storyCapsuleObject = CreateMetadataCapsuleObj(trigger);
+                            var storyCapsuleObject = CreateMetadataCapsuleObj(courseMetadataTrigger);
                             storyCapsuleObject.name = $"[{count.ToString(format)}] AX Story 1 Capsule";
                             storyCapsuleObject.parent = root;
                         }
                         break;
                     case CourseMetadataType.Story5_Capsule:
                         {
-                            var storyCapsuleObject = CreateMetadataCapsuleObj(trigger);
+                            var storyCapsuleObject = CreateMetadataCapsuleObj(courseMetadataTrigger);
                             storyCapsuleObject.name = $"[{count.ToString(format)}] Story 5 Capsule";
                             storyCapsuleObject.parent = root;
                         }
                         break;
 
                     default:
-                        throw new NotImplementedException();
+                        int index = (int)courseMetadataTrigger.metadataType;
+                        throw new NotImplementedException($"{nameof(CourseMetadataType)} index {index} '{courseMetadataTrigger.metadataType}'");
                 }
             }
 
@@ -282,40 +280,37 @@ namespace Manifold.IO.GFZ.CourseCollision
             to.position = data.PositionTo;
             to.rotation = data.Rotation;
 
-            var objectPathVisualizer = pathObject.AddComponent<GfzObjectPath>();
-            objectPathVisualizer.from = from;
-            objectPathVisualizer.to = to;
+            var objectPath = pathObject.AddComponent<GfzObjectPath>();
+            objectPath.from = from;
+            objectPath.to = to;
 
-            return objectPathVisualizer;
+            return objectPath;
         }
         private UnityEngine.Transform CreateMetadataBboObj(CourseMetadataTrigger data)
         {
             // Object named by caller
-            var obj = GameObject.CreatePrimitive(PrimitiveType.Cube).transform;
-            //var obj = new GameObject("Big Blue Ordeal Trigger").transform;
-            obj.transform.position = data.Position;
-            obj.transform.rotation = data.Rotation;
-            obj.transform.localScale = data.ScaleBigBlueOrdeal;
+            var gobj = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            var bboTrigger = gobj.AddComponent<GfzUnknownCourseMetadataTrigger>();
+            bboTrigger.ImportGfz(data);
 
-            return obj;
+            return gobj.transform;
         }
         private UnityEngine.Transform CreateMetadataCapsuleObj(CourseMetadataTrigger data)
         {
-            var capsuleObject = GameObject.CreatePrimitive(PrimitiveType.Sphere).transform;
-            capsuleObject.position = data.Position;
-            capsuleObject.rotation = data.Rotation;
-            capsuleObject.localScale = data.ScaleCapsule;
+            var gobj = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            var capsuleTrigger = gobj.gameObject.AddComponent<GfzStoryCapsule>();
+            capsuleTrigger.ImportGfz(data);
 
-            return capsuleObject;
+            return gobj.transform;
         }
 
         private UnityEngine.Transform CreateStoryObjectTriggers(ColiScene scene)
         {
             // TODO: add animation paths.
 
-            var triggers = scene.storyObjectTriggers;
+            var storyObjectTriggers = scene.storyObjectTriggers;
             int count = 0;
-            int total = triggers.Length;
+            int total = storyObjectTriggers.Length;
 
             // Don't bother if no triggers
             var hasTriggers = total > 0;
@@ -324,24 +319,22 @@ namespace Manifold.IO.GFZ.CourseCollision
 
             var typeName = nameof(StoryObjectTrigger);
             string title = $"Creating {typeName}s";
-            string format = WidthFormat(triggers);
+            string format = WidthFormat(storyObjectTriggers);
 
             var root = new GameObject($"{typeName} [{total}]").transform;
 
-            foreach (var trigger in triggers)
+            foreach (var storyObjectTrigger in storyObjectTriggers)
             {
                 count++;
                 // TODO: add data as component, not name?
                 var name = $"[{count.ToString(format)}] {typeName}";
                 ImportUtility.ProgressBar(count, total, name, title);
 
-                var storyObjectTrigger = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                storyObjectTrigger.transform.parent = root;
-                storyObjectTrigger.name = name;
-
-                storyObjectTrigger.transform.position = trigger.position;
-                storyObjectTrigger.transform.rotation = Quaternion.Euler(trigger.rotation);
-                storyObjectTrigger.transform.localScale = trigger.scale * 100f; // this is a guess
+                // Create primite to represent trigger
+                var gobj = CreatePrimitive(PrimitiveType.Cube, name, root).gameObject;
+                // Assign script and values
+                var script = gobj.AddComponent<GfzStoryObjectTrigger>();
+                script.ImportGfz(storyObjectTrigger);
             }
 
             return root;
@@ -349,9 +342,9 @@ namespace Manifold.IO.GFZ.CourseCollision
 
         private UnityEngine.Transform CreateUnknownSolsTriggers(ColiScene scene)
         {
-            var triggers = scene.unknownSolsTriggers;
+            var unknownSolsTriggers = scene.unknownSolsTriggers;
             int count = 0;
-            int total = triggers.Length;
+            int total = unknownSolsTriggers.Length;
 
             // Don't bother if no triggers
             var hasTriggers = total > 0;
@@ -360,24 +353,22 @@ namespace Manifold.IO.GFZ.CourseCollision
 
             var typeName = nameof(UnknownSolsTrigger);
             string title = $"Creating {typeName}s";
-            string format = WidthFormat(triggers);
+            string format = WidthFormat(unknownSolsTriggers);
 
             var root = new GameObject($"{typeName} [{total}]").transform;
 
-            foreach (var trigger in triggers)
+            foreach (var unknownSolsTrigger in unknownSolsTriggers)
             {
                 count++;
                 // TODO: add data as component, not name?
                 var name = $"[{count.ToString(format)}] {typeName}";
                 ImportUtility.ProgressBar(count, total, name, title);
 
-                var triggerObject = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                triggerObject.transform.parent = root;
-                triggerObject.name = name;
-
-                triggerObject.transform.position = trigger.transform.Position;
-                triggerObject.transform.rotation = trigger.transform.Rotation;
-                triggerObject.transform.localScale = trigger.transform.Scale * 10f;
+                //
+                var gobj = CreatePrimitive(PrimitiveType.Cube, name, root).gameObject;
+                //
+                var script = gobj.AddComponent<GfzUnknownSolsTrigger>();
+                script.ImportGfz(unknownSolsTrigger);
             }
 
             return root;
@@ -385,9 +376,9 @@ namespace Manifold.IO.GFZ.CourseCollision
 
         private UnityEngine.Transform CreateUnknownTriggers(ColiScene scene)
         {
-            var triggers = scene.unknownTriggers;
+            var unknownTriggers = scene.unknownTriggers;
             int count = 0;
-            int total = triggers.Length;
+            int total = unknownTriggers.Length;
 
             // Don't bother if no triggers
             var hasTriggers = total > 0;
@@ -396,29 +387,21 @@ namespace Manifold.IO.GFZ.CourseCollision
 
             var typeName = nameof(UnknownTrigger);
             string title = $"Creating {typeName}s";
-            string format = WidthFormat(triggers);
+            string format = WidthFormat(unknownTriggers);
 
             var root = new GameObject($"{typeName} [{total}]").transform;
 
-            foreach (var trigger in triggers)
+            foreach (var unknownTrigger in unknownTriggers)
             {
                 count++;
-                // TODO: add data as component, not name?
-                var name = $"[{count.ToString(format)}/{total}] {typeName} a:{(ushort)trigger.unk_0x20:X4} b:{(ushort)trigger.unk_0x22:X4}";
+                var name = $"[{count.ToString(format)}/{total}] {typeName}";
                 ImportUtility.ProgressBar(count, total, name, title);
 
-                var triggerObject = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                triggerObject.transform.parent = root;
-                triggerObject.name = name;
-
-                // Assign transform values used for 
-                triggerObject.transform.position = trigger.transform.Position;
-                triggerObject.transform.rotation = trigger.transform.Rotation;
-                triggerObject.transform.localScale = trigger.transform.Scale * 10f;
-
-                var displayer = triggerObject.AddComponent<TempDisplayUnknownTrigger1>();
-                displayer.unk1 = trigger.unk_0x20;
-                displayer.unk2 = trigger.unk_0x22;
+                //
+                var gobj = CreatePrimitive(PrimitiveType.Cube, name, root).gameObject;
+                //
+                var script = gobj.AddComponent<GfzUnknownTrigger>();
+                script.ImportGfz(unknownTrigger);
             }
 
             return root;
@@ -426,9 +409,9 @@ namespace Manifold.IO.GFZ.CourseCollision
 
         private UnityEngine.Transform CreateVisualEffectTriggers(ColiScene scene)
         {
-            var triggers = scene.visualEffectTriggers;
+            var vfxTriggers = scene.visualEffectTriggers;
             int count = 0;
-            int total = triggers.Length;
+            int total = vfxTriggers.Length;
 
             // Don't bother if no triggers
             var hasTriggers = total > 0;
@@ -437,24 +420,19 @@ namespace Manifold.IO.GFZ.CourseCollision
 
             var typeName = nameof(VisualEffectTrigger);
             string title = $"Creating {typeName}s";
-            string format = WidthFormat(triggers);
+            string format = WidthFormat(vfxTriggers);
 
             var root = new GameObject($"{typeName} [{total}]").transform;
 
-            foreach (var trigger in triggers)
+            foreach (var vfxTrigger in vfxTriggers)
             {
                 count++;
-                // TODO: add data as component, not name?
                 var name = $"[{count.ToString(format)}] {typeName}";
                 ImportUtility.ProgressBar(count, total, name, title);
 
-                var triggerObject = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                triggerObject.transform.parent = root;
-                triggerObject.name = name;
-
-                triggerObject.transform.position = trigger.transform.Position;
-                triggerObject.transform.rotation = trigger.transform.Rotation;
-                triggerObject.transform.localScale = trigger.transform.Scale * 10f;
+                var gobj = CreatePrimitive(PrimitiveType.Cube, name, root).gameObject;
+                var script = gobj.AddComponent<GfzVisualEffectTrigger>();
+                script.ImportGfz(vfxTrigger);
             }
 
             return root;
@@ -700,9 +678,8 @@ namespace Manifold.IO.GFZ.CourseCollision
             int count = 0;
             foreach (var tt in scene.rootTrackTransforms)
             {
-                var subgroup = new GameObject();
-                subgroup.name = $"Subgroup {++count}";
-                subgroup.transform.parent = parent.transform;
+                var subgroup = new GameObject($"Subgroup {++count}").transform;
+                subgroup.parent = parent.transform;
 
                 var topology = tt.trackTopology;
                 var transformMatrix = GetTransformMatrix(tt, increment);
@@ -712,13 +689,10 @@ namespace Manifold.IO.GFZ.CourseCollision
                     var animMatrix = GetAnimMatrix(tt, t);
                     var finalMatrix = transformMatrix * animMatrix;
 
-                    var cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                    cube.name = $"time {t:0.000}";
-                    cube.transform.parent = subgroup.transform;
-
-                    cube.transform.position = finalMatrix.Position();
-                    cube.transform.rotation = finalMatrix.Rotation();
-                    cube.transform.localScale = finalMatrix.Scale();
+                    var cube = CreatePrimitive(PrimitiveType.Cube, $"time {t:0.000}", subgroup);
+                    cube.position = finalMatrix.Position();
+                    cube.rotation = finalMatrix.Rotation();
+                    cube.localScale = finalMatrix.Scale();
                 }
             }
         }
@@ -785,6 +759,19 @@ namespace Manifold.IO.GFZ.CourseCollision
         }
 
 
+        public static UnityEngine.Transform CreatePrimitive(PrimitiveType primitiveType, string name = null, UnityEngine.Transform parent = null)
+        {
+            var gobj = GameObject.CreatePrimitive(primitiveType);
+            gobj.transform.parent = parent;
+
+            if (!string.IsNullOrEmpty(name))
+                gobj.name = name;
+
+            var collider = gobj.GetComponent<Collider>();
+            DestroyImmediate(collider);
+
+            return gobj.transform;
+        }
 
         public UnityEngine.Transform CreateBoundsVisual(ColiSceneSobj sceneSobj)
         {
@@ -792,14 +779,8 @@ namespace Manifold.IO.GFZ.CourseCollision
             var bounds = scene.courseBoundsXZ;
 
             var boundsRoot = new GameObject("Bounds").transform;
-
-            var boundsExact = GameObject.CreatePrimitive(PrimitiveType.Cube).transform;
-            boundsExact.gameObject.name = "BoundsXZ & MinY (Exact)";
-            boundsExact.parent = boundsRoot;
-
-            var boundsPadded = GameObject.CreatePrimitive(PrimitiveType.Cube).transform;
-            boundsPadded.gameObject.name = "BoundsXZ & MinY (Internal)";
-            boundsPadded.parent = boundsRoot;
+            var boundsExact = CreatePrimitive(PrimitiveType.Cube, "BoundsXZ & MinY (Exact)", boundsRoot);
+            var boundsPadded = CreatePrimitive(PrimitiveType.Cube, "BoundsXZ & MinY (Internal)", boundsRoot);
 
             // correcting serialized values to this
             // *10f for size, *0.80f to correct the 25% padding
@@ -835,9 +816,9 @@ namespace Manifold.IO.GFZ.CourseCollision
             var trackNodes = sceneSobj.Value.trackNodes;
             foreach (var indexList in sceneSobj.Value.trackCheckpointMatrix.indexLists)
             {
-                var chain = new GameObject();
+                var chain = new GameObject().transform;
                 chain.name = $"Chain {chainIndex++}";
-                chain.transform.parent = root.transform;
+                chain.parent = root.transform;
 
                 for (int i = 0; i < indexList.Length; i++)
                 {
@@ -847,11 +828,9 @@ namespace Manifold.IO.GFZ.CourseCollision
                     for (int j = 0; j < node.points.Length; j++)
                     {
                         var position = node.points[j].positionStart;
-                        var instance = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+                        var instance = CreatePrimitive(PrimitiveType.Sphere, $"{index}.{j}", chain);
                         instance.transform.position = position;
                         instance.transform.localScale = Vector3.one * 5f;
-                        instance.name = $"{index}.{j}";
-                        instance.transform.parent = chain.transform;
                     }
                 }
             }
@@ -897,7 +876,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             // Return our match. MAY BE EMPTY STRING.
             return assetPath;
         }
-        public string WidthFormat(System.Array array)
+        public string WidthFormat(Array array)
         {
             int displayDigitsLength = array.Length.ToString().Length;
             var digitsFormat = new string('0', displayDigitsLength);
@@ -1007,8 +986,8 @@ namespace Manifold.IO.GFZ.CourseCollision
         {
             var scene = sceneSobj.Value;
 
-            var globalParamsObj = new GameObject("Global Parameters");
-            var globalParams = globalParamsObj.AddComponent<GfzSceneParameters>();
+            var sceneParamsObj = new GameObject("Scene Parameters");
+            var globalParams = sceneParamsObj.AddComponent<GfzSceneParameters>();
             globalParams.venue = CourseUtility.GetVenue(scene.ID);
             // TODO: embed course name in file, use that if it exists.
             globalParams.courseName = CourseUtility.GetCourseName(scene.ID);

@@ -327,6 +327,13 @@ namespace GameCube.GFZ.CourseCollision
             set => addressRange = value;
         }
 
+        public FogCurves ToFogCurves(Fog fog)
+        {
+            var value = new FogCurves();
+            value.animationCurves = fog.ToAnimationCurves();
+            return value;
+        }
+
         /// <summary>
         /// Method to convert this object into UnkStageAnimationCurves animation curves.
         /// </summary>

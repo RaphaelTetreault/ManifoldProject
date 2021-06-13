@@ -1,21 +1,50 @@
-using System.Collections;
-using System.Collections.Generic;
+using GameCube.GFZ.CourseCollision;
 using UnityEngine;
 
-namespace Manifold
+namespace Manifold.IO.GFZ.CourseCollision
 {
-    public class GfzArcadeCheckpoint : MonoBehaviour
+    /// <summary>
+    /// 
+    /// </summary>
+    public class GfzArcadeCheckpoint : MonoBehaviour,
+        IGfzConvertable<ArcadeCheckpointTrigger>
     {
-        // Start is called before the first frame update
-        void Start()
+        /// <summary>
+        /// Arcade checkpoint trigger scale (when compared to default Unity cube).
+        /// </summary>
+        public const float scale = 10f;
+
+        // INSPECTOR FIELDS
+        [SerializeField] private ArcadeCheckpointType type;
+
+        // PROPERTIES
+        public ArcadeCheckpointType Type
         {
-        
+            get => type;
+            set => type = value;
         }
 
-        // Update is called once per frame
-        void Update()
+        // METHODS
+        public ArcadeCheckpointTrigger ExportGfz()
         {
-        
+            // Convert unity transform to gfz transform
+            var transform = TransformConverter.ToGfzTransform(this.transform);
+            transform.Scale /= scale;
+
+            var value = new ArcadeCheckpointTrigger
+            {
+                transform = transform,
+                type = type,
+            };
+
+            return value;
+        }
+
+        public void ImportGfz(ArcadeCheckpointTrigger value)
+        {
+            transform.CopyGfzTransform(value.transform);
+            transform.localScale *= scale;
+            type = value.type;
         }
     }
 }

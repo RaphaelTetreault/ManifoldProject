@@ -62,12 +62,36 @@ namespace GameCube.GFZ.CourseCollision
             set => addressRange = value;
         }
 
-        public AnimationCurve FogCurveNear => animationCurves[0];
-        public AnimationCurve FogCurveFar => animationCurves[1];
-        public AnimationCurve FogCurveR => animationCurves[2];
-        public AnimationCurve FogCurveG => animationCurves[3];
-        public AnimationCurve FogCurveB => animationCurves[4];
-        public AnimationCurve FogCurveUnk => animationCurves[5];
+        public AnimationCurve FogCurveNear
+        {
+            get => animationCurves[0];
+            set => animationCurves[0] = value;
+        }
+        public AnimationCurve FogCurveFar
+        {
+            get => animationCurves[1];
+            set => animationCurves[1] = value;
+        }
+        public AnimationCurve FogCurveR
+        {
+            get => animationCurves[2];
+            set => animationCurves[2] = value;
+        }
+        public AnimationCurve FogCurveG
+        {
+            get => animationCurves[3];
+            set => animationCurves[3] = value;
+        }
+        public AnimationCurve FogCurveB
+        {
+            get => animationCurves[4];
+            set => animationCurves[4] = value;
+        }
+        public AnimationCurve FogCurveUnk
+        {
+            get => animationCurves[5];
+            set => animationCurves[5] = value;
+        }
 
 
         // METHODS
@@ -116,7 +140,7 @@ namespace GameCube.GFZ.CourseCollision
         {
             // Ensure we have the correct amount of animation curves before indexing
             Assert.IsTrue(animationCurves.Length == kCurveCount);
-            
+
             // Each curve should only have 1 key. In reality, this is not true, but
             // all the used data in the final game is like this (except ST44 where
             // [5/6] is missing]). Suffice to say, OUR data should conform to this.

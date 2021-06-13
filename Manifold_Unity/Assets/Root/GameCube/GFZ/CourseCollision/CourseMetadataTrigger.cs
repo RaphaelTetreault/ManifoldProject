@@ -15,7 +15,7 @@ namespace GameCube.GFZ.CourseCollision
 
         // FIELDS
         public Transform transform;
-        public CourseMetadataType courseMetadata;
+        public CourseMetadataType metadataType;
 
 
         // PROPERTIES
@@ -30,8 +30,8 @@ namespace GameCube.GFZ.CourseCollision
         public float3 PositionFrom => transform.Position;
         public float3 PositionTo => transform.Scale;
         public float3 Scale => transform.Scale;
-        public float3 ScaleBigBlueOrdeal => transform.Scale * 27.5f;
-        public float3 ScaleCapsule => transform.Scale * 10f;
+        //public float3 ScaleBigBlueOrdeal => transform.Scale * 27.5f;
+        //public float3 ScaleCapsule => transform.Scale * 10f;
         public quaternion Rotation => transform.Rotation;
         public float3 RotationEuler => transform.RotationEuler;
 
@@ -42,7 +42,7 @@ namespace GameCube.GFZ.CourseCollision
             this.RecordStartAddress(reader);
             {
                 reader.ReadX(ref transform, true);
-                reader.ReadX(ref courseMetadata);
+                reader.ReadX(ref metadataType);
             }
             this.RecordEndAddress(reader);
         }
@@ -52,7 +52,7 @@ namespace GameCube.GFZ.CourseCollision
             this.RecordStartAddress(writer);
             {
                 writer.WriteX(transform);
-                writer.WriteX(courseMetadata);
+                writer.WriteX(metadataType);
             }
             this.RecordEndAddress(writer);
         }

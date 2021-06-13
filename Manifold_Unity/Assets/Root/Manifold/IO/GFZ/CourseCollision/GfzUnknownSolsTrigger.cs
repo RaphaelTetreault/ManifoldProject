@@ -1,21 +1,52 @@
+using GameCube.GFZ.CourseCollision;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Manifold
+namespace Manifold.IO.GFZ.CourseCollision
 {
-    public class GfzUnknownSolsTrigger : MonoBehaviour
+    /// <summary>
+    /// 
+    /// </summary>
+    public class GfzUnknownSolsTrigger : MonoBehaviour,
+        IGfzConvertable<UnknownSolsTrigger>
     {
-        // Start is called before the first frame update
-        void Start()
+        /// <summary>
+        /// Unknown SOLS trigger scale (when compared to default Unity cube).
+        /// THIS IS 100% A GUESS.
+        /// </summary>
+        public const float scale = 27.5f;
+
+        // INSPECTOR FIELDS
+        [SerializeField] private int unk_0x00;
+
+        // PROPERTIES
+        public int Unk_0x00
         {
-        
+            get => unk_0x00;
+            set => unk_0x00 = value;
         }
 
-        // Update is called once per frame
-        void Update()
+        // METHODS
+        public UnknownSolsTrigger ExportGfz()
         {
-        
+            // Convert unity transform to gfz transform
+            var transform = TransformConverter.ToGfzTransform(this.transform);
+
+            var value = new UnknownSolsTrigger
+            {
+                unk_0x00 = unk_0x00,
+                transform = transform
+            };
+
+            return value;
+        }
+
+        public void ImportGfz(UnknownSolsTrigger value)
+        {
+            transform.CopyGfzTransform(value.transform);
+            transform.localScale *= scale;
+            unk_0x00 = value.unk_0x00;
         }
     }
 }

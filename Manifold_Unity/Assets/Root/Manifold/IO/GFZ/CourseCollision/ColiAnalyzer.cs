@@ -1221,7 +1221,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol(nameof(CourseMetadataTrigger.RotationEuler));
                 writer.WriteNextCol(nameof(CourseMetadataTrigger.Scale) + " / PositionTo");
                 writer.WriteNextCol(nameof(CourseMetadataTrigger.transform.UnknownOption));
-                writer.WriteNextCol(nameof(CourseMetadataTrigger.courseMetadata));
+                writer.WriteNextCol(nameof(CourseMetadataTrigger.metadataType));
                 //
                 writer.WriteNextRow();
 
@@ -1244,7 +1244,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                         writer.WriteNextCol(cmt.RotationEuler);
                         writer.WriteNextCol(cmt.Scale);
                         writer.WriteNextCol(cmt.transform.UnknownOption);
-                        writer.WriteNextCol(cmt.courseMetadata);
+                        writer.WriteNextCol(cmt.metadataType);
                         //
                         writer.WriteNextRow();
                     }

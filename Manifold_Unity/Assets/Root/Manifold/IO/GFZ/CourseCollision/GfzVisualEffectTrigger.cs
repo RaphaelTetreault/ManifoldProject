@@ -1,21 +1,57 @@
-using System.Collections;
-using System.Collections.Generic;
+using GameCube.GFZ.CourseCollision;
 using UnityEngine;
 
-namespace Manifold
+namespace Manifold.IO.GFZ.CourseCollision
 {
-    public class GfzVisualEffectTrigger : MonoBehaviour
+    /// <summary>
+    /// 
+    /// </summary>
+    public class GfzVisualEffectTrigger : MonoBehaviour,
+        IGfzConvertable<VisualEffectTrigger>
     {
-        // Start is called before the first frame update
-        void Start()
+        /// <summary>
+        /// Visual effect trigger scale (when compared to default Unity cube).
+        /// </summary>
+        public const float scale = 10f;
+
+        // INSPECTOR FIELDS
+        [SerializeField] private new TriggerableAnimation animation;
+        [SerializeField] private TriggerableVisualEffect visualEffect;
+
+        // PROPERTIES
+        public TriggerableAnimation Animation
         {
-        
+            get => animation;
+            set => animation = value;
+        }
+        public TriggerableVisualEffect VisualEffect
+        {
+            get => visualEffect;
+            set => visualEffect = value;
         }
 
-        // Update is called once per frame
-        void Update()
+        // METHODS
+        public VisualEffectTrigger ExportGfz()
         {
-        
+            // Convert unity transform to gfz transform
+            var transform = TransformConverter.ToGfzTransform(this.transform);
+
+            var value = new VisualEffectTrigger
+            {
+                transform = transform,
+                animation = animation,
+                visualEffect = visualEffect,
+            };
+
+            return value;
+        }
+
+        public void ImportGfz(VisualEffectTrigger value)
+        {
+            transform.CopyGfzTransform(value.transform);
+            transform.localScale *= scale;
+            animation = value.animation;
+            visualEffect = value.visualEffect;
         }
     }
 }
