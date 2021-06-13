@@ -223,7 +223,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                             var pathObject = CreateMetadataPathObj(trigger);
                             pathObject.name = $"[{count.ToString(format)}] Lightning Path";
                             pathObject.transform.parent = root;
-                            pathObject.color = Color.yellow;
+                            pathObject.gizmosColor = Color.yellow;
                         }
                         break;
                     case CourseMetadataType.OuterSpace_Meteor:
@@ -231,7 +231,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                             var pathObject = CreateMetadataPathObj(trigger);
                             pathObject.name = $"[{count.ToString(format)}] Meteor Path";
                             pathObject.transform.parent = root;
-                            pathObject.color = new Color32(255, 127, 0, 255); // orange
+                            pathObject.gizmosColor = new Color32(255, 127, 0, 255); // orange
                         }
                         break;
 
@@ -267,7 +267,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
             return root;
         }
-        private ObjectPathVisualizer CreateMetadataPathObj(CourseMetadataTrigger data)
+        private GfzObjectPath CreateMetadataPathObj(CourseMetadataTrigger data)
         {
             var pathObject = new GameObject();
             var root = pathObject.transform;
@@ -282,7 +282,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             to.position = data.PositionTo;
             to.rotation = data.Rotation;
 
-            var objectPathVisualizer = pathObject.AddComponent<ObjectPathVisualizer>();
+            var objectPathVisualizer = pathObject.AddComponent<GfzObjectPath>();
             objectPathVisualizer.from = from;
             objectPathVisualizer.to = to;
 
@@ -1008,11 +1008,12 @@ namespace Manifold.IO.GFZ.CourseCollision
             var scene = sceneSobj.Value;
 
             var globalParamsObj = new GameObject("Global Parameters");
-            var globalParams = globalParamsObj.AddComponent<SceneGlobalParameters>();
+            var globalParams = globalParamsObj.AddComponent<GfzSceneParameters>();
             globalParams.venue = CourseUtility.GetVenue(scene.ID);
             // TODO: embed course name in file, use that if it exists.
             globalParams.courseName = CourseUtility.GetCourseName(scene.ID);
-            
+            globalParams.courseIndex = scene.ID;
+
             // Copy fog parameters over
             globalParams.exportCustomFog = true; // whatever we import, use that
             globalParams.fogInterpolation = scene.fog.interpolation;
