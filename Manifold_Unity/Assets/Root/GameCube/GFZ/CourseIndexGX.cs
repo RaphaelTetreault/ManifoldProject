@@ -10,7 +10,7 @@ namespace GameCube.GFZ
         [Description("Screw Drive (test)")]
         TestScrewDrive = 0,
 
-        [Description("Twist Road ")]
+        [Description("Twist Road")]
         TwistRoad = 1,
         [Description("Serial Gaps")]
         SerialGaps = 3,

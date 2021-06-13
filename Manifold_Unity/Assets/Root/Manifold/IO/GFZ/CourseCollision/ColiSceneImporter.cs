@@ -1007,7 +1007,7 @@ namespace Manifold.IO.GFZ.CourseCollision
         {
             var scene = sceneSobj.Value;
 
-            var globalParamsObj = new GameObject("Global Params");
+            var globalParamsObj = new GameObject("Global Parameters");
             var globalParams = globalParamsObj.AddComponent<SceneGlobalParameters>();
             globalParams.venue = CourseUtility.GetVenue(scene.ID);
             // TODO: embed course name in file, use that if it exists.
