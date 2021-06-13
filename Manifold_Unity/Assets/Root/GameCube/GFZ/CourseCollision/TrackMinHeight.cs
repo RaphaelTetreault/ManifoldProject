@@ -28,7 +28,7 @@ namespace GameCube.GFZ.CourseCollision
 
             foreach (var node in scene.trackNodes)
                 foreach (var point in node.points)
-                    if (point.positionStart.y > minY)
+                    if (point.positionStart.y < minY)
                         minY = point.positionStart.y;
 
             return minY;
