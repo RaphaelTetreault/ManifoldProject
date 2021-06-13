@@ -90,7 +90,7 @@ namespace GameCube.GFZ.CourseCollision
         public SurfaceAttributeArea[] surfaceAttributeAreas = new SurfaceAttributeArea[0];
         public StaticColliderMeshes staticColliderMeshes;
         public byte[] zeroes0x20 = new byte[kSizeOfZeroes0x20];
-        public TrackMinHeight trackMinHeight;
+        public TrackMinHeight trackMinHeight = new TrackMinHeight(); // has default constructor
         public SceneObject[] sceneObjects = new SceneObject[0];
         public SceneInstanceReference[] sceneInstancesList = new SceneInstanceReference[0];
         public SceneOriginObjects[] sceneOriginObjects = new SceneOriginObjects[0];
@@ -150,19 +150,6 @@ namespace GameCube.GFZ.CourseCollision
             bool isGx0x24 = ptr0x24.address == kGxConstPtr0x24;
             bool isGX = isGx0x20 & isGx0x24;
             return isGX;
-        }
-
-        public float3 CourseBoundsPosition()
-        {
-            //return new float3(
-            //    courseBoundsXZ.width,
-            //    trackMinHeight.value,
-            //    courseBoundsXZ.length);
-
-            return
-                // *10f to correct scale for now
-                courseBoundsXZ.Center * 10f +
-                new float3(0, trackMinHeight.value, 0);
         }
 
         public void ValidateFileFormatPointers()
