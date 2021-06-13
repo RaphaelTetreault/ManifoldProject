@@ -210,6 +210,64 @@
             };
         }
 
+        public static Venue GetVenue(int index)
+        {
+            return index switch
+            {
+                00 => Venue.SandOcean,      // Sand Ocean [Screw Drive] (unused)
+                01 => Venue.MuteCity,       // Mute City [Twist Road]
+                02 => Venue.MuteCity,
+                03 => Venue.MuteCity,       // Mute City [Serial Gaps]
+                04 => Venue.MuteCity,
+                05 => Venue.Aeropolis,      // Aeropolis [Multiplex]
+                06 => Venue.PortTown,
+                07 => Venue.PortTown,       // Port Town [Aero Dive]
+                08 => Venue.Lightning,      // Lightning [Loop Cross]
+                09 => Venue.Lightning,      // Lightning [Half-Pipe]
+                10 => Venue.GreenPlant,     // Green Plant [Intersection]
+                11 => Venue.GreenPlant,     // Green Plant [Mobius Ring]
+                12 => Venue.Lightning,
+                13 => Venue.PortTown,       // Port Town [Long Pipe]
+                14 => Venue.BigBlue,        // Big Blue [Drift Highway]
+                15 => Venue.FireField,      // Fire Field [Cylinder Knot]
+                16 => Venue.CasinoPalace,   // Casino Palace [Split Oval]
+                17 => Venue.FireField,      // Fire Field [Undulation]
+                18 => Venue.FireField,
+                19 => Venue.OuterSpace,
+                20 => Venue.OuterSpace,
+                21 => Venue.Aeropolis,      // Aeropolis [Dragon Slope]
+                22 => Venue.CosmoTerminal,
+                23 => Venue.Lightning,
+                24 => Venue.CosmoTerminal,  // Cosmo Terminal [Trident]
+                25 => Venue.SandOcean,      // Sand Ocean [Lateral Shift]
+                26 => Venue.SandOcean,      // Sand Ocean [Surface Slide]
+                27 => Venue.BigBlue,        // Big Blue [Ordeal]
+                28 => Venue.PhantomRoad,    // Phantom Road [Slim-line Slits]
+                29 => Venue.CasinoPalace,   // Casino Palace [Double Branches]
+                30 => Venue.SandOcean,
+                31 => Venue.Aeropolis,      // Aeropolis [Screw Drive]
+                32 => Venue.OuterSpace,     // Outer Space [Meteor Stream]
+                33 => Venue.PortTown,       // Port Town [Cylinder Wave]
+                34 => Venue.Lightning,      // Lightning [Thunder Road]
+                35 => Venue.GreenPlant,     // Green Plant [Sprial]
+                36 => Venue.MuteCityCOM,    // Mute City [Sonic Oval]
+                37 => Venue.StoryMuteCityCOM, // Story 1: Captain Falcon Trains
+                38 => Venue.StorySandOcean, // Story 2: Goroh: The Vengeful Samurai
+                39 => Venue.CasinoPalace,   // Story 3: High Stakes in Mute City
+                40 => Venue.StoryBigBlue,   // Story 4: Challenge of the Bloody Chain
+                41 => Venue.Lightning,      // Story 5: Save Jody Summer!
+                42 => Venue.StoryPortTown,  // Story 6: Black Shadow's Trap
+                43 => Venue.MuteCity,       // Story 7: The F-Zero Grand Prix
+                44 => Venue.StoryFireField, // Story 8: Secrets of the Champion Belt
+                45 => Venue.PhantomRoad,    // Story 9: Finale: Enter The Creators
+
+                49 => Venue.VictoryLap,     // Grand Prix Podium
+                50 => Venue.GrandPrixPodium, // Victory Lap
+
+                _ => Venue.None, // For all other indices, there is no venue
+            };
+        }
+
         public static CourseIndexGX GetCourseNameGX(int index)
         {
             var courseID = (CourseIndexGX)index;

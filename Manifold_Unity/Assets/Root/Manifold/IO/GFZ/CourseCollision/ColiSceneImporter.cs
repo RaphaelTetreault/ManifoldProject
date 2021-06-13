@@ -998,6 +998,16 @@ namespace Manifold.IO.GFZ.CourseCollision
                 assetInstance.transform.parent = sceneObjectsRoot;
             }
         }
+
+        public void CreateGlobalParams(ColiSceneSobj sceneSobj)
+        {
+            var scene = sceneSobj.Value;
+
+            var globalParamsObj = new GameObject("Global Params");
+            var globalParams = globalParamsObj.AddComponent<SceneGlobalParameters>();
+            globalParams.venue = CourseUtility.GetVenue(scene.ID);
+            globalParams.fog = scene.fog.CreateDeepCopy();
+        }
     }
 
     public static class AnimationCurveExtensions

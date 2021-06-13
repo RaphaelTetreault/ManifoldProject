@@ -11,7 +11,8 @@ namespace GameCube.GFZ.CourseCollision
     [Serializable]
     public class Fog :
         IBinaryAddressable,
-        IBinarySerializable
+        IBinarySerializable,
+        IDeepCopyable<Fog>
     {
         // METADATA
         [UnityEngine.SerializeField] private AddressRange addressRange;
@@ -49,7 +50,41 @@ namespace GameCube.GFZ.CourseCollision
 
 
         // TEMPLATES
-        public Fog Aeropolis()
+        public static Fog GetFogDefault(Venue venue)
+        {
+            return venue switch
+            {
+                Venue.BigBlue       => BigBlue(),
+                Venue.CasinoPalace  => CasinoPalace(),
+                Venue.MuteCityCOM   => MuteCityCOM(),
+                Venue.CosmoTerminal => CosmoTerminal(),
+                Venue.FireField     => FireField(),
+                Venue.GreenPlant    => GreenPlant(),
+                Venue.Lightning     => Lightning(),
+                Venue.PortTown      => PortTown(),
+                Venue.OuterSpace    => OuterSpace(),
+                Venue.MuteCity      => MuteCity(),
+                Venue.PhantomRoad   => PhantomRoad(),
+                Venue.SandOcean     => SandOcean(),
+                Venue.Aeropolis     => Aeropolis(),
+                Venue.VictoryLap    => VictoryLap(),
+                Venue.GrandPrixPodium => GrandPrixPodium(),
+
+                // Story
+                Venue.StoryBigBlue      => StoryBigBlue(),
+                Venue.StoryMuteCityCOM  => StoryMuteCityCOM(),
+                Venue.StoryFireField    => StoryFireField(),
+                Venue.StoryPortTown     => StoryPortTown(),
+                Venue.StorySandOcean    => StorySandOcean(),
+
+                // Default for none
+                Venue.None => new Fog(),
+
+                _ => throw new NotImplementedException(),
+            };
+        }
+
+        public static Fog Aeropolis()
         {
             return new Fog()
             {
@@ -59,7 +94,7 @@ namespace GameCube.GFZ.CourseCollision
                 colorRGB = new float3(1f, 1f, 0.924f),
             };
         }
-        public Fog BigBlue()
+        public static Fog BigBlue()
         {
             return new Fog()
             {
@@ -69,7 +104,7 @@ namespace GameCube.GFZ.CourseCollision
                 colorRGB = new float3(0.686f, 0.862f, 1f),
             };
         }
-        public Fog CasinoPalace()
+        public static Fog CasinoPalace()
         {
             return new Fog()
             {
@@ -79,7 +114,7 @@ namespace GameCube.GFZ.CourseCollision
                 colorRGB = new float3(0f, 0f, 0f),
             };
         }
-        public Fog CosmoTerminal()
+        public static Fog CosmoTerminal()
         {
             return new Fog()
             {
@@ -89,7 +124,7 @@ namespace GameCube.GFZ.CourseCollision
                 colorRGB = new float3(0f, 0f, 0f),
             };
         }
-        public Fog FireField()
+        public static Fog FireField()
         {
             return new Fog()
             {
@@ -99,7 +134,7 @@ namespace GameCube.GFZ.CourseCollision
                 colorRGB = new float3(0.78f, 0.566f, 0.391f),
             };
         }
-        public Fog GrandPrixPodium()
+        public static Fog GrandPrixPodium()
         {
             return new Fog()
             {
@@ -109,7 +144,7 @@ namespace GameCube.GFZ.CourseCollision
                 colorRGB = new float3(0.176f, 0.235f, 0.313f),
             };
         }
-        public Fog GreenPlant()
+        public static Fog GreenPlant()
         {
             return new Fog()
             {
@@ -120,7 +155,7 @@ namespace GameCube.GFZ.CourseCollision
                 colorRGB = new float3(0.703f, 0.781f, 0.898f),
             };
         }
-        public Fog GreenPlantSpiral()
+        public static Fog GreenPlantSpiral()
         {
             return new Fog()
             {
@@ -130,7 +165,7 @@ namespace GameCube.GFZ.CourseCollision
                 colorRGB = new float3(0.703f, 0.7422f, 0.625f),
             };
         }
-        public Fog Lightning()
+        public static Fog Lightning()
         {
             return new Fog()
             {
@@ -141,7 +176,7 @@ namespace GameCube.GFZ.CourseCollision
                 colorRGB = new float3(0.094f, 0.102f, 0.117f),
             };
         }
-        public Fog MuteCity()
+        public static Fog MuteCity()
         {
             return new Fog()
             {
@@ -151,7 +186,7 @@ namespace GameCube.GFZ.CourseCollision
                 colorRGB = new float3(0f, 0f, 0f),
             };
         }
-        public Fog MuteCityCOM()
+        public static Fog MuteCityCOM()
         {
             return new Fog()
             {
@@ -161,7 +196,7 @@ namespace GameCube.GFZ.CourseCollision
                 colorRGB = new float3(0.1765f, 0.2353f, 0.3137f),
             };
         }
-        public Fog OuterSpace()
+        public static Fog OuterSpace()
         {
             return new Fog()
             {
@@ -171,7 +206,7 @@ namespace GameCube.GFZ.CourseCollision
                 colorRGB = new float3(0f, 0f, 0f),
             };
         }
-        public Fog PhantomRoad()
+        public static Fog PhantomRoad()
         {
             return new Fog()
             {
@@ -181,7 +216,7 @@ namespace GameCube.GFZ.CourseCollision
                 colorRGB = new float3(0f, 0f, 0f),
             };
         }
-        public Fog PhantomRoadAX()
+        public static Fog PhantomRoadAX()
         {
             return new Fog()
             {
@@ -191,7 +226,7 @@ namespace GameCube.GFZ.CourseCollision
                 colorRGB = new float3(0f, 0f, 0.1f),
             };
         }
-        public Fog PortTown()
+        public static Fog PortTown()
         {
             return new Fog()
             {
@@ -201,7 +236,7 @@ namespace GameCube.GFZ.CourseCollision
                 colorRGB = new float3(0.505f, 0.388f, 0.29f),
             };
         }
-        public Fog SandOcean()
+        public static Fog SandOcean()
         {
             return new Fog()
             {
@@ -211,7 +246,7 @@ namespace GameCube.GFZ.CourseCollision
                 colorRGB = new float3(0f, 0f, 0f),
             };
         }
-        public Fog VictoryLap()
+        public static Fog VictoryLap()
         {
             return new Fog()
             {
@@ -222,7 +257,7 @@ namespace GameCube.GFZ.CourseCollision
             };
         }
 
-        public Fog StoryBigBlue()
+        public static Fog StoryBigBlue()
         {
             return new Fog()
             {
@@ -232,7 +267,7 @@ namespace GameCube.GFZ.CourseCollision
                 colorRGB = new float3(0.2156f, 0.196f, 0.3137f),
             };
         }
-        public Fog StoryFireField()
+        public static Fog StoryFireField()
         {
             return new Fog()
             {
@@ -242,7 +277,7 @@ namespace GameCube.GFZ.CourseCollision
                 colorRGB = new float3(1f, 0.469f, 0.1954f),
             };
         }
-        public Fog StoryLightning()
+        public static Fog StoryLightning()
         {
             return new Fog()
             {
@@ -252,7 +287,7 @@ namespace GameCube.GFZ.CourseCollision
                 colorRGB = new float3(0.8594f, 0.332f, 0.1563f),
             };
         }
-        public Fog StoryMuteCityCOM()
+        public static Fog StoryMuteCityCOM()
         {
             return new Fog()
             {
@@ -262,7 +297,7 @@ namespace GameCube.GFZ.CourseCollision
                 colorRGB = new float3(0f, 0.7843f, 0.3922f),
             };
         }
-        public Fog StoryPortTown()
+        public static Fog StoryPortTown()
         {
             return new Fog()
             {
@@ -272,7 +307,7 @@ namespace GameCube.GFZ.CourseCollision
                 colorRGB = new float3(0f, 0f, 0f),
             };
         }
-        public Fog StorySandOcean()
+        public static Fog StorySandOcean()
         {
             return new Fog()
             {
@@ -364,5 +399,15 @@ namespace GameCube.GFZ.CourseCollision
             this.RecordEndAddress(writer);
         }
 
+        public Fog CreateDeepCopy()
+        {
+            return new Fog()
+            {
+                interpolation = interpolation,
+                fogRange = fogRange,
+                colorRGB = colorRGB,
+                zero0x18 = zero0x18,
+            };
+        }
     }
 }
