@@ -1,6 +1,7 @@
 ﻿using GameCube.GFZ;
 using GameCube.GFZ.CourseCollision;
 using Manifold.IO;
+using Manifold.IO.GFZ;
 using System;
 using System.Collections.Generic;
 using UnityEditor;
@@ -64,6 +65,9 @@ namespace Manifold.IO.GFZ.CourseCollision
                 var stageFolder = $"Assets/{importFromRoot}/stage/st{stageNumber}";
                 var venueFolder = $"Assets/{importFromRoot}/bg/bg_{venueID}";
                 var searchFolders = new string[] { initFolder, stageFolder, venueFolder };
+
+                // Adds object with general info about the course.
+                CreateGlobalParams(scene);
 
                 // SCENE OBJECTS
                 CreateSceneObjects(scene, searchFolders);
@@ -1006,7 +1010,21 @@ namespace Manifold.IO.GFZ.CourseCollision
             var globalParamsObj = new GameObject("Global Params");
             var globalParams = globalParamsObj.AddComponent<SceneGlobalParameters>();
             globalParams.venue = CourseUtility.GetVenue(scene.ID);
-            globalParams.fog = scene.fog.CreateDeepCopy();
+            // TODO: embed course name in file, use that if it exists.
+            globalParams.courseName = CourseUtility.GetCourseName(scene.ID);
+            
+            // Copy fog parameters over
+            globalParams.exportCustomFog = true; // whatever we import, use that
+            globalParams.fogInterpolation = scene.fog.interpolation;
+            globalParams.fogNear = scene.fog.fogRange.near;
+            globalParams.fogFar = scene.fog.fogRange.far;
+            var color = scene.fog.colorRGB;
+            globalParams.color = new Color(color.x, color.y, color.z);
+
+            // Convert from GFZ anim curves to Unity anim curves
+            globalParams.fogCurveR = scene.fogCurves.FogCurveR.ToUnity();
+            globalParams.fogCurveG = scene.fogCurves.FogCurveG.ToUnity();
+            globalParams.fogCurveB = scene.fogCurves.FogCurveB.ToUnity();
         }
     }
 

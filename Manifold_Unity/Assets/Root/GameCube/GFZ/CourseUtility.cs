@@ -290,5 +290,11 @@
             return courseID;
         }
 
+        public static string GetCourseName(int index)
+        {
+            var value = GetCourseNameAX(index);
+            var name = Manifold.IO.EnumExtensions.GetDescription(value);
+            return name;
+        }
     }
 }

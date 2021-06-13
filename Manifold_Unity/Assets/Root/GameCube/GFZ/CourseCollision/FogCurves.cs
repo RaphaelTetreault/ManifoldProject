@@ -62,6 +62,13 @@ namespace GameCube.GFZ.CourseCollision
             set => addressRange = value;
         }
 
+        public AnimationCurve FogCurveNear => animationCurves[0];
+        public AnimationCurve FogCurveFar => animationCurves[1];
+        public AnimationCurve FogCurveR => animationCurves[2];
+        public AnimationCurve FogCurveG => animationCurves[3];
+        public AnimationCurve FogCurveB => animationCurves[4];
+        public AnimationCurve FogCurveUnk => animationCurves[5];
+
 
         // METHODS
         public void Deserialize(BinaryReader reader)

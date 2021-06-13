@@ -95,7 +95,7 @@ namespace GameCube.GFZ.CourseCollision
         public SceneInstanceReference[] sceneInstancesList = new SceneInstanceReference[0];
         public SceneOriginObjects[] sceneOriginObjects = new SceneOriginObjects[0];
         public UnknownSolsTrigger[] unknownSolsTriggers = new UnknownSolsTrigger[0];
-        public FogCurves fogAnimationCurves;
+        public FogCurves fogCurves;
         public Fog fog;
         public TrackLength trackLength;
         public UnknownTrigger[] unknownTriggers = new UnknownTrigger[0];
@@ -212,7 +212,7 @@ namespace GameCube.GFZ.CourseCollision
             if (fogCurvesPtr.IsNotNullPointer)
             {
                 reader.JumpToAddress(fogCurvesPtr);
-                reader.ReadX(ref fogAnimationCurves, true);
+                reader.ReadX(ref fogCurves, true);
             }
 
             // 0x84
@@ -369,8 +369,8 @@ namespace GameCube.GFZ.CourseCollision
 
             //0x74, 0x78: unused
 
-            writer.InlineDesc(serializeVerbose, 0x80 + offset, fogAnimationCurves);
-            writer.WriteX(fogAnimationCurves);
+            writer.InlineDesc(serializeVerbose, 0x80 + offset, fogCurves);
+            writer.WriteX(fogCurves);
 
             writer.InlineDesc(serializeVerbose, 0x84 + offset, fog);
             writer.WriteX(fog);
@@ -450,7 +450,7 @@ namespace GameCube.GFZ.CourseCollision
                 }
 
                 // The structure that points to 6 anim curves
-                referers.Add(fogAnimationCurves);
+                referers.Add(fogCurves);
                 // The story mode checkpoints
                 foreach (var storyObjectTrigger in storyObjectTriggers)
                 {
@@ -575,7 +575,7 @@ namespace GameCube.GFZ.CourseCollision
                 trackMinHeightPtr = trackMinHeight.GetPointer();
                 trackNodesPtr = trackNodes.GetArrayPointer();
                 fogPtr = fog.GetPointer();
-                fogCurvesPtr = fogAnimationCurves.GetPointer();
+                fogCurvesPtr = fogCurves.GetPointer();
                 // TRIGGERS
                 arcadeCheckpointTriggersPtr = arcadeCheckpointTriggers.GetArrayPointer();
                 courseMetadataTriggersPtr = courseMetadataTriggers.GetArrayPointer();
@@ -658,7 +658,7 @@ namespace GameCube.GFZ.CourseCollision
             // Assert pointers which can be null IF the reference type is not null
             if (unknownSolsTriggers != null)
                 Assert.IsTrue(unknownSolsTriggersPtr.IsNotNullPointer);
-            if (fogAnimationCurves != null)
+            if (fogCurves != null)
                 Assert.IsTrue(fogCurvesPtr.IsNotNullPointer);
             if (fog != null)
                 Assert.IsTrue(unknownTriggersPtr.IsNotNullPointer);

@@ -1492,9 +1492,9 @@ namespace Manifold.IO.GFZ.CourseCollision
                     var courseID = ((CourseIndexAX)scene.ID).GetDescription();
                     var isAxGx = scene.IsFileGX ? "GX" : "AX";
 
-                    var totalD1 = scene.fogAnimationCurves.animationCurves.Length;
+                    var totalD1 = scene.fogCurves.animationCurves.Length;
                     var countD1 = 0;
-                    foreach (var animationCurve in scene.fogAnimationCurves.animationCurves)
+                    foreach (var animationCurve in scene.fogCurves.animationCurves)
                     {
                         countD1++;
                         foreach (var keyableAttribute in animationCurve.keyableAttributes)
