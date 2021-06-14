@@ -66,7 +66,6 @@ namespace Manifold.IO
             return exportedFiles.ToArray();
         }
 
-
         public static string[] ExportSerializable<TBS>(TBS[] serializables, string exportDest, string extension, bool overwriteFiles, FileMode mode = FileMode.Create, FileAccess access = FileAccess.ReadWrite, FileShare share = FileShare.Read)
             where TBS : IBinarySerializable, IFile
         {
@@ -108,6 +107,15 @@ namespace Manifold.IO
 
             return exportedFiles.ToArray();
         }
+
+        public static string ExportSerializable<TBS>(TBS serializable, string exportDest, string extension, bool overwriteFiles, FileMode mode = FileMode.Create, FileAccess access = FileAccess.ReadWrite, FileShare share = FileShare.Read)
+            where TBS : IBinarySerializable, IFile
+        {
+            var exportedFiles = ExportSerializable(new TBS[] { serializable }, exportDest, extension, overwriteFiles, mode, access, share);
+            return exportedFiles[0];
+        }
+
+
         public static void PrintExportsToConsole<T>(T sobj, string[] filePaths)
             where T : ExecutableScriptableObject, IExportable
         {

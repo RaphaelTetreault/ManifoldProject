@@ -28,7 +28,10 @@ namespace GameCube.GFZ.CourseCollision
         {
             keyableAttributes = new KeyableAttribute[numKeyables];
         }
-
+        public AnimationCurve(KeyableAttribute[] keyables)
+        {
+            keyableAttributes = keyables;
+        }
 
         // PROPERTIES
         public AddressRange AddressRange

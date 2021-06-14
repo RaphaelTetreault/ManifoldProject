@@ -475,8 +475,8 @@ namespace Manifold.IO.GFZ.CourseCollision
 
             // Loop over every top transform
             int count = 0;
-            int total = scene.rootTrackTransforms.Length;
-            foreach (var trackTransform in scene.rootTrackTransforms)
+            int total = scene.rootTrackSegments.Length;
+            foreach (var trackTransform in scene.rootTrackSegments)
             {
                 // Recursively create transforms
                 count++;
@@ -497,8 +497,8 @@ namespace Manifold.IO.GFZ.CourseCollision
             // Loop over every top transform
             //int count = 0;
             int index = 0;
-            int total = scene.rootTrackTransforms.Length;
-            foreach (var trackTransform in scene.rootTrackTransforms)
+            int total = scene.rootTrackSegments.Length;
+            foreach (var trackTransform in scene.rootTrackSegments)
             {
                 //
                 var name = $"[{++index}/{total}] Control Point";
@@ -574,7 +574,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             // TODO: it would be wiser to tag the prefabs with some tag type so that
             // we need only pull in objects of that type. The string loading method
             // is bound to break at some point.
-            for (int i = 0; i < StaticColliderMeshes.GetSurfacesCount(scene); i++)
+            for (int i = 0; i < scene.staticColliderMeshes.SurfaceCount; i++)
             {
                 var property = (StaticColliderMeshProperty)i;
                 var meshName = $"st{scene.ID:00}_{i:00}_{property}";
@@ -605,9 +605,9 @@ namespace Manifold.IO.GFZ.CourseCollision
             parent.name = $"Test Sample Path";
 
             //
-            var increment = 1f / 1000f * scene.rootTrackTransforms.Length;
+            var increment = 1f / 1000f * scene.rootTrackSegments.Length;
             int count = 0;
-            foreach (var tt in scene.rootTrackTransforms)
+            foreach (var tt in scene.rootTrackSegments)
             {
                 var subgroup = new GameObject();
                 subgroup.name = $"Subgroup {++count}";
@@ -672,9 +672,9 @@ namespace Manifold.IO.GFZ.CourseCollision
             parent.name = $"Test Sample Path";
 
             //
-            var increment = 1f / 1000f * scene.rootTrackTransforms.Length;
+            var increment = 1f / 1000f * scene.rootTrackSegments.Length;
             int count = 0;
-            foreach (var tt in scene.rootTrackTransforms)
+            foreach (var tt in scene.rootTrackSegments)
             {
                 var subgroup = new GameObject($"Subgroup {++count}").transform;
                 subgroup.parent = parent.transform;

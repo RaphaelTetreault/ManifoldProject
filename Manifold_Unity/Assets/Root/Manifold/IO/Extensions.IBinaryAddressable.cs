@@ -82,11 +82,18 @@ namespace Manifold.IO
         /// <returns></returns>
         public static Pointer GetBasePointer(this IBinaryAddressable[] values)
         {
-            // TODO: consider null checks.
+            // Return null pointer if null OR if array empty. Perfect!
+            if (values == null || values.Length == 0)
+                return new Pointer();
 
             // Get pointer of first item in array
-            // If array is empty, return null pointer
-            Pointer pointer = values.Length == 0 ? new Pointer() : values[0].GetPointer();
+            // Return null pointer if null.
+            var firstValue = values[0];
+            if (firstValue == null)
+                return new Pointer();
+
+            // Get pointer of first item in array which exists and is not null.
+            Pointer pointer = values[0].GetPointer();
             return pointer;
         }
 
@@ -97,12 +104,22 @@ namespace Manifold.IO
         /// <returns></returns>
         public static Pointer[] GetPointers(this IBinaryAddressable[] values)
         {
-            // TODO: consider null checks.
+            // Since we want a pointer for each thing, throw an error since
+            // we would be returning 0 pointers. AFAIK this is not wanted behaviour.
+            if (values == null || values.Length == 0)
+                throw new System.ArgumentException("Array cannot be null!");
 
+            // Get a pointer to each item in array
             var pointers = new Pointer[values.Length];
             for (int i = 0; i < pointers.Length; i++)
             {
-                pointers[i] = values[i].GetPointer();
+                var value = values[i];
+                var isNull = value == null;
+
+                // Assign pointer based on value
+                pointers[i] = isNull
+                    ? new Pointer()
+                    : values[i].GetPointer();
             }
 
             return pointers;

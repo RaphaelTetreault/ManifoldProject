@@ -27,7 +27,20 @@ namespace GameCube.GFZ.CourseCollision
         // FIELDS
         public Pointer[] indexArrayPtrs = new Pointer[0];
         // REFERENCE FIELDS
-        public IndexList[] indexLists = new IndexList[0];
+        public IndexList[] indexLists;
+
+
+        public IndexMatrix()
+        {
+            // Initialize array to default/const size.
+            // Requires inheriter to finalize count.
+            indexLists = new IndexList[Count];
+            for (int i = 0; i < indexLists.Length; i++)
+            {
+                indexLists[i] = new IndexList();
+            }
+        }
+
 
         // PROPERTIES
         public AddressRange AddressRange

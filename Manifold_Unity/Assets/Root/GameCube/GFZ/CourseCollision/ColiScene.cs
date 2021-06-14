@@ -92,7 +92,7 @@ namespace GameCube.GFZ.CourseCollision
         public byte[] zeroes0x20 = new byte[kSizeOfZeroes0x20];
         public TrackMinHeight trackMinHeight = new TrackMinHeight(); // has default constructor
         public SceneObject[] sceneObjects = new SceneObject[0];
-        public SceneInstanceReference[] sceneInstancesList = new SceneInstanceReference[0];
+        public SceneInstanceReference[] sceneInstances = new SceneInstanceReference[0];
         public SceneOriginObjects[] sceneOriginObjects = new SceneOriginObjects[0];
         public UnknownSolsTrigger[] unknownSolsTriggers = new UnknownSolsTrigger[0];
         public FogCurves fogCurves;
@@ -105,10 +105,10 @@ namespace GameCube.GFZ.CourseCollision
         public StoryObjectTrigger[] storyObjectTriggers = new StoryObjectTrigger[0];
         public TrackCheckpointMatrix trackCheckpointMatrix;
         // FIELDS (that require extra processing)
-        public TrackTransform[] allTrackTransforms;
-        public TrackTransform[] rootTrackTransforms;
-        public CString[] nameTable;
-        public SceneObjectReference[] objectReferenceTable;
+        public TrackTransform[] allTrackSegments = new TrackTransform[0];
+        public TrackTransform[] rootTrackSegments = new TrackTransform[0];
+        public CString[] objectNames = new CString[0];
+        public SceneObjectReference[] sceneObjectReferences = new SceneObjectReference[0];
 
 
 
@@ -181,8 +181,10 @@ namespace GameCube.GFZ.CourseCollision
             reader.ReadX(ref surfaceAttributeAreas, surfaceAttributeAreasPtr.Length, true);
 
             // 0x1C 
+            // Format is deserialized in DeserializeSelf(reader);
+            staticColliderMeshes = new StaticColliderMeshes(Format);
             reader.JumpToAddress(staticColliderMeshesPtr);
-            reader.ReadX(ref staticColliderMeshes, true);
+            reader.ReadX(ref staticColliderMeshes, false);
 
             // 0x20
             reader.JumpToAddress(zeroes0x20Ptr);
@@ -202,7 +204,7 @@ namespace GameCube.GFZ.CourseCollision
 
             // 0x64 and 0x68
             reader.JumpToAddress(sceneInstancesPtr);
-            reader.ReadX(ref sceneInstancesList, sceneInstancesPtr.Length, true);
+            reader.ReadX(ref sceneInstances, sceneInstancesPtr.Length, true);
 
             // 0x6C and 0x70
             reader.JumpToAddress(sceneOriginObjectsPtr);
@@ -255,12 +257,12 @@ namespace GameCube.GFZ.CourseCollision
                 if (!trackTransformPtrs.Contains(pointer))
                     trackTransformPtrs.Add(pointer);
             }
-            rootTrackTransforms = new TrackTransform[trackTransformPtrs.Count];
-            for (int i = 0; i < rootTrackTransforms.Length; i++)
+            rootTrackSegments = new TrackTransform[trackTransformPtrs.Count];
+            for (int i = 0; i < rootTrackSegments.Length; i++)
             {
                 var pointer = trackTransformPtrs[i];
                 reader.JumpToAddress(pointer);
-                reader.ReadX(ref rootTrackTransforms[i], true);
+                reader.ReadX(ref rootTrackSegments[i], true);
             }
             // Track Transforms
 
@@ -317,39 +319,39 @@ namespace GameCube.GFZ.CourseCollision
             writer.WriteX(staticColliderMeshes);
 
             // SCENE OBJECTS
-            // TEST. Next: try reserializing references with ISerailizedBinaryAddressableReferer.
-            var names = new CString[]
-            {
-                new CString{ value = "TEST_STRING" },
-                new CString{ value = "ORIGIN_OBJECT" }
-            };
-            var sceneObjectReferences = new SceneObjectReference[]
-            {
-                new SceneObjectReference() { name = names[0] },
-                new SceneObjectReference() { name = names[1] },
-            };
-            sceneInstancesList = new SceneInstanceReference[]
-            {
-                new SceneInstanceReference() { objectReference = sceneObjectReferences[0] },
-                new SceneInstanceReference() { objectReference = sceneObjectReferences[1] },
-            };
-            sceneOriginObjects = new SceneOriginObjects[]
-            {
-                new SceneOriginObjects() { instanceReference = sceneInstancesList[1] }
-            };
-            sceneObjects = new SceneObject[]
-            {
-                new SceneObject() {instanceReference = sceneInstancesList[0] }
-            };
+            //// TEST. Next: try reserializing references with ISerailizedBinaryAddressableReferer.
+            //var names = new CString[]
+            //{
+            //    new CString{ value = "TEST_STRING" },
+            //    new CString{ value = "ORIGIN_OBJECT" }
+            //};
+            //var sceneObjectReferences = new SceneObjectReference[]
+            //{
+            //    new SceneObjectReference() { name = names[0] },
+            //    new SceneObjectReference() { name = names[1] },
+            //};
+            //sceneInstances = new SceneInstanceReference[]
+            //{
+            //    new SceneInstanceReference() { objectReference = sceneObjectReferences[0] },
+            //    new SceneInstanceReference() { objectReference = sceneObjectReferences[1] },
+            //};
+            //sceneOriginObjects = new SceneOriginObjects[]
+            //{
+            //    new SceneOriginObjects() { instanceReference = sceneInstances[1] }
+            //};
+            //sceneObjects = new SceneObject[]
+            //{
+            //    new SceneObject() {instanceReference = sceneInstances[0] }
+            //};
 
             // Write in reverse order. If references are correct, pointers will be correct when serializing.
             // No direct pointer
-            writer.InlineDesc(serializeVerbose, -1, nameTable);
-            writer.WriteX(nameTable, false);
+            writer.InlineDesc(serializeVerbose, -1, objectNames);
+            writer.WriteX(objectNames, false);
 
             // No direct pointer
-            writer.InlineDesc(serializeVerbose, -1, objectReferenceTable);
-            writer.WriteX(objectReferenceTable, false);
+            writer.InlineDesc(serializeVerbose, -1, sceneObjectReferences);
+            writer.WriteX(sceneObjectReferences, false);
 
             // 0x48 (count total), 0x4C, 0x50, 0x54 (pointer address): Scene Objects;
             writer.InlineDesc(serializeVerbose, 0x54 + offset, sceneObjects);
@@ -361,8 +363,8 @@ namespace GameCube.GFZ.CourseCollision
             writer.InlineDesc(serializeVerbose, 0x60 + offset, unknownSolsTriggers);
             writer.WriteX(unknownSolsTriggers, false);
 
-            writer.InlineDesc(serializeVerbose, 0x68 + offset, sceneInstancesList);
-            writer.WriteX(sceneInstancesList, false);
+            writer.InlineDesc(serializeVerbose, 0x68 + offset, sceneInstances);
+            writer.WriteX(sceneInstances, false);
 
             writer.InlineDesc(serializeVerbose, 0x70 + offset, sceneOriginObjects);
             writer.WriteX(sceneOriginObjects, false);
@@ -418,8 +420,8 @@ namespace GameCube.GFZ.CourseCollision
 
                 // Track Nodes and dependencies
                 referers.AddRange(trackNodes);
-                referers.AddRange(allTrackTransforms);
-                foreach (var trackTransform in allTrackTransforms)
+                referers.AddRange(allTrackSegments);
+                foreach (var trackTransform in allTrackSegments)
                     referers.Add(trackTransform.trackTopology);
 
                 // Static Collider Meshes and dependencies
@@ -431,8 +433,8 @@ namespace GameCube.GFZ.CourseCollision
                 // The structure which points to the object name
                 referers.AddRange(sceneObjectReferences);
                 // The structure which points to the above and collider geometry
-                referers.AddRange(sceneInstancesList);
-                foreach (var instance in sceneInstancesList)
+                referers.AddRange(sceneInstances);
+                foreach (var instance in sceneInstances)
                     referers.Add(instance.colliderGeometry);
                 // The list which points to objects placed at the origin
                 referers.AddRange(sceneOriginObjects);
@@ -441,12 +443,23 @@ namespace GameCube.GFZ.CourseCollision
                 foreach (var obj in sceneObjects)
                 {
                     //referers.Add(obj.animation);
-                    foreach (var animationCurvePlus in obj.animation.animationCurvePluses)
+                    if (obj.animation != null)
                     {
-                        referers.Add(animationCurvePlus);
+                        foreach (var animationCurvePlus in obj.animation.animationCurvePluses)
+                        {
+                            referers.Add(animationCurvePlus);
+                        }
                     }
-                    referers.Add(obj.unk1);
-                    referers.Add(obj.skeletalAnimator);
+
+                    if (obj.unk1 != null)
+                    {
+                        referers.Add(obj.unk1);
+                    }
+
+                    if (obj.skeletalAnimator != null)
+                    {
+                        referers.Add(obj.skeletalAnimator);
+                    }
                 }
 
                 // The structure that points to 6 anim curves
@@ -585,7 +598,7 @@ namespace GameCube.GFZ.CourseCollision
                 visualEffectTriggersPtr = visualEffectTriggers.GetArrayPointer();
                 // SCENE OBJECTS
                 // References
-                sceneInstancesPtr = sceneInstancesList.GetArrayPointer();
+                sceneInstancesPtr = sceneInstances.GetArrayPointer();
                 sceneOriginObjectsPtr = sceneOriginObjects.GetArrayPointer();
                 // Main list
                 sceneObjectCount = sceneObjects.Length;

@@ -21,6 +21,7 @@ namespace GameCube.GFZ.CourseCollision
 
         // METADATA
         [UnityEngine.SerializeField] private AddressRange addressRange;
+        [UnityEngine.SerializeField] private ColiScene.SerializeFormat serializeFormat;
 
         // FIELDS
         public int[] zero_0x00_0x20;
@@ -32,11 +33,23 @@ namespace GameCube.GFZ.CourseCollision
         public BoundsXZ ununsedMeshBounds;
         // REFERENCE FIELDS
         // This data holds the geometry data and indexes
-        public ColliderTriangle[] colliderTriangles;
-        public ColliderQuad[] colliderQuads;
+        public ColliderTriangle[] colliderTriangles = new ColliderTriangle[0];
+        public ColliderQuad[] colliderQuads = new ColliderQuad[0];
         public StaticColliderMeshMatrix[] triMeshIndexMatrices;
         public StaticColliderMeshMatrix[] quadMeshIndexMatrices;
 
+        public StaticColliderMeshes()
+        {
+            serializeFormat = ColiScene.SerializeFormat.InvalidFormat;
+        }
+
+        public StaticColliderMeshes(ColiScene.SerializeFormat serializeFormat)
+        {
+            this.serializeFormat = serializeFormat;
+            int count = SurfaceCount;
+            triMeshIndexMatrices = new StaticColliderMeshMatrix[count];
+            quadMeshIndexMatrices = new StaticColliderMeshMatrix[count];
+        }
 
         public AddressRange AddressRange
         {
@@ -44,25 +57,36 @@ namespace GameCube.GFZ.CourseCollision
             set => addressRange = value;
         }
 
-        public static int GetSurfacesCount(ColiScene scene)
+        public ColiScene.SerializeFormat SerializeFormat
         {
-            Assert.IsTrue(scene.IsValidFile);
-            return scene.IsFileAX
-                ? kCountAxSurfaceTypes
-                : kCountGxSurfaceTypes;
+            get => serializeFormat;
+            set => serializeFormat = value;
+        }
+
+        public int SurfaceCount
+        {
+            get
+            {
+                switch (serializeFormat)
+                {
+                    case ColiScene.SerializeFormat.AX:
+                        return kCountAxSurfaceTypes;
+
+                    case ColiScene.SerializeFormat.GX:
+                        return kCountGxSurfaceTypes;
+
+                    case ColiScene.SerializeFormat.InvalidFormat:
+                        throw new ArgumentException("Invalid serialization format!");
+
+                    default:
+                        throw new NotImplementedException();
+                }
+            }
         }
 
         public void Deserialize(BinaryReader reader)
         {
-            // AX/GX have different amounts of pointers to collision mesh data
-            var isFileGX = ColiCourseUtility.IsFileGX(reader);
-            var isFileAX = ColiCourseUtility.IsFileAX(reader);
-            // Ensure file is valid. XOR file flags.
-            Assert.IsTrue(isFileAX ^ isFileGX);
-
-            var countSurfaceTypes = isFileGX
-                ? kCountGxSurfaceTypes
-                : kCountAxSurfaceTypes;
+            var countSurfaceTypes = SurfaceCount;
 
             // Deserialize values
             this.RecordStartAddress(reader);

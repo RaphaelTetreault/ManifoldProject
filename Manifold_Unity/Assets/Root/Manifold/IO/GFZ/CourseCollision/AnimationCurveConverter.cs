@@ -2,6 +2,7 @@ using GameCube.GFZ.CourseCollision;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 
 namespace Manifold.IO.GFZ
 {
@@ -12,11 +13,12 @@ namespace Manifold.IO.GFZ
             var keyframes = KeyablesToKeyframes(curve.keyableAttributes);
             return new UnityEngine.AnimationCurve(keyframes);
         }
+
         public static GameCube.GFZ.CourseCollision.AnimationCurve ToGfz(this UnityEngine.AnimationCurve curve)
         {
-            throw new NotImplementedException();
-            //var keyables = keyfra(curve.keyableAttributes);
-            //return new UnityEngine.AnimationCurve(keyframes);
+            var keyables = UnityAnimationCurveToKeyables(curve);
+            var gfzCurve = new GameCube.GFZ.CourseCollision.AnimationCurve(keyables);
+            return gfzCurve;
         }
 
         public static KeyableAttribute[] EnforceNoDuplicateTimes(KeyableAttribute[] keyables)
@@ -68,12 +70,40 @@ namespace Manifold.IO.GFZ
             var keyframes = new Keyframe[keyables.Length];
             for (int i = 0; i < keyframes.Length; i++)
             {
-                var key = keyables[i];
-                var keyframe = new Keyframe(key.time, key.value, key.zTangentIn, key.zTangentOut);
+                var keyable = keyables[i];
+                var keyframe = new Keyframe(keyable.time, keyable.value, keyable.zTangentIn, keyable.zTangentOut);
                 keyframes[i] = keyframe;
             }
 
             return keyframes;
+        }
+
+        public static KeyableAttribute[] UnityAnimationCurveToKeyables(UnityEngine.AnimationCurve animationCurve)
+        {
+            var keyframes = animationCurve.keys;
+            var keyables = new KeyableAttribute[keyframes.Length];
+            for (int i = 0; i < keyables.Length; i++)
+            {
+                var keyframe = keyframes[i];
+
+                // Must be the same for GFZ!
+                var modeL = AnimationUtility.GetKeyLeftTangentMode(animationCurve, i);
+                var modeR = AnimationUtility.GetKeyRightTangentMode(animationCurve, i);
+                if (modeL != modeR)
+                    throw new ArgumentException("GFZ keyables must have same tangent mode for L/R tangents!");
+
+                var keyable = new KeyableAttribute()
+                {
+                    time = keyframe.time,
+                    value = keyframe.value,
+                    easeMode = UnityToGfzTangentMode(modeL),
+                    zTangentIn = keyframe.inTangent,
+                    zTangentOut = keyframe.outTangent,
+                };
+                keyables[i] = keyable;
+            }
+
+            return keyables;
         }
 
         public static void SetGfzTangentsToUnityTangents(KeyableAttribute[] keyables, UnityEngine.AnimationCurve curve)
@@ -117,6 +147,27 @@ namespace Manifold.IO.GFZ
                 //// Set tangent type in Unity's format
                 //UnityEditor.AnimationUtility.SetKeyLeftTangentMode(curve, i, mode);
                 //UnityEditor.AnimationUtility.SetKeyRightTangentMode(curve, i, mode);
+            }
+        }
+
+        public static InterpolationMode UnityToGfzTangentMode(AnimationUtility.TangentMode tangentMode)
+        {
+            switch (tangentMode)
+            {
+                case AnimationUtility.TangentMode.Constant:
+                    return InterpolationMode.Constant;
+
+                case AnimationUtility.TangentMode.Linear:
+                    return InterpolationMode.Linear;
+
+                // Not 100% on this.
+                case AnimationUtility.TangentMode.Free:
+                case AnimationUtility.TangentMode.Auto:
+                case AnimationUtility.TangentMode.ClampedAuto:
+                    return InterpolationMode.unknown1;
+
+                default:
+                    throw new NotImplementedException();
             }
         }
 

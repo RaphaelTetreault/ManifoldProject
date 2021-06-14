@@ -8,14 +8,23 @@ namespace Manifold.IO.GFZ.CourseCollision
     /// Component class for Object Paths. Uses cases are: Lightning's lightning,
     /// Outer Space's meteors.
     /// </summary>
-    public class GfzObjectPath : MonoBehaviour
+    public class GfzObjectPath : MonoBehaviour,
+        IGfzConvertable<CourseMetadataTrigger>
     {
+        public enum PathObjectVenue
+        {
+            Lightning,
+            OuterSpace,
+        }
+
         [Header("Gizmos")]
         public float gizmosRadius = 10f;
         public Color gizmosColor = Color.white;
         [Header("Path")]
         public UnityEngine.Transform from;
         public UnityEngine.Transform to;
+        [Header("Venue")]
+        public PathObjectVenue objectVenue;
 
         private void OnDrawGizmos()
         {
@@ -27,15 +36,19 @@ namespace Manifold.IO.GFZ.CourseCollision
         }
 
         // METHODS
-        public CourseMetadataTrigger ExportGfz(Venue venue)
+        public CourseMetadataTrigger ExportGfz()
         {
-            // Path object should only exist on Lightning or Outer Space
-            var isValidVenue = venue == Venue.Lightning || venue == Venue.OuterSpace;
-            if (!isValidVenue)
-                throw new System.FormatException($"Invalid venue {venue} for PathObject!");
+            //// Path object should only exist on Lightning or Outer Space
+            //var isValidVenue = venue == Venue.Lightning || venue == Venue.OuterSpace;
+            //if (!isValidVenue)
+            //    throw new System.FormatException($"Invalid venue {venue} for PathObject!");
 
-            // Select which type based on venue
-            var metadataType = venue == Venue.Lightning
+            //// Select which type based on venue
+            //var metadataType = venue == Venue.Lightning
+            //    ? CourseMetadataType.Lightning_Lightning
+            //    : CourseMetadataType.OuterSpace_Meteor;
+
+            var metadataType = objectVenue == PathObjectVenue.Lightning
                 ? CourseMetadataType.Lightning_Lightning
                 : CourseMetadataType.OuterSpace_Meteor;
 
@@ -52,6 +65,11 @@ namespace Manifold.IO.GFZ.CourseCollision
             };
 
             return value;
+        }
+
+        public void ImportGfz(CourseMetadataTrigger value)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

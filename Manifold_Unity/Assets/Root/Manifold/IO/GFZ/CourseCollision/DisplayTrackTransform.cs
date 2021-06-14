@@ -35,7 +35,7 @@ namespace Manifold.IO.GFZ.CourseCollision
         {
             var mesh = Resources.GetBuiltinResource<Mesh>("Cube.fbx");
 
-            foreach (var trackTransform in sceneSobj.Value.rootTrackTransforms)
+            foreach (var trackTransform in sceneSobj.Value.rootTrackSegments)
             {
                 Draw(trackTransform, mesh, 0);
             }

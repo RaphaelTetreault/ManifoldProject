@@ -340,7 +340,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 {
                     // foreach Transform
                     int trackIndex = 0;
-                    foreach (var trackTransform in sobj.Value.rootTrackTransforms)
+                    foreach (var trackTransform in sobj.Value.rootTrackSegments)
                     {
                         for (int keyablesIndex = 0; keyablesIndex < TopologyParameters.kCurveCount; keyablesIndex++)
                         {
@@ -387,7 +387,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 {
                     // foreach Transform
                     int trackTransformIndex = 0;
-                    foreach (var trackTransform in sobj.Value.rootTrackTransforms)
+                    foreach (var trackTransform in sobj.Value.rootTrackSegments)
                     {
                         WriteTrackKeyableAttributeRecursive(writer, sobj, nestedDepth: 0, keyablesSet, trackTransformIndex++, trackTransform);
                     }
@@ -486,8 +486,8 @@ namespace Manifold.IO.GFZ.CourseCollision
                 {
                     var scene = sceneSobj.Value;
                     var index = 0;
-                    var total = scene.rootTrackTransforms.Length;
-                    foreach (var trackTransform in scene.rootTrackTransforms)
+                    var total = scene.rootTrackSegments.Length;
+                    foreach (var trackTransform in scene.rootTrackSegments)
                     {
                         WriteTrackTransformRecursive(writer, sceneSobj, 0, ++index, total, trackTransform);
                     }
@@ -1791,7 +1791,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
                     // Get all the scene object references
                     var objectsList = new List<(SceneObjectReference sor, string category)>();
-                    foreach (var sceneObject in scene.sceneInstancesList)
+                    foreach (var sceneObject in scene.sceneInstances)
                     {
                         var sceneObjectReference = sceneObject.objectReference;
                         objectsList.Add((sceneObject.objectReference, "Instance"));
@@ -1854,7 +1854,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
                     // Get all the scene object references
                     var objectsList = new List<(SceneInstanceReference sir, string category)>();
-                    foreach (var sceneInstance in scene.sceneInstancesList)
+                    foreach (var sceneInstance in scene.sceneInstances)
                     {
                         objectsList.Add((sceneInstance, "Instance"));
                     }
@@ -1917,7 +1917,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                     var courseID = ((CourseIndexAX)scene.ID).GetDescription();
                     var isAxGx = scene.IsFileGX ? "GX" : "AX";
 
-                    foreach (var sceneInstance in scene.sceneInstancesList)
+                    foreach (var sceneInstance in scene.sceneInstances)
                     {
                         writer.WriteNextCol(scene.FileName);
                         writer.WriteNextCol(scene.ID);

@@ -14,6 +14,10 @@ namespace GameCube.GFZ.CourseCollision
             value = -10000f;
         }
 
+        public TrackMinHeight(float minHeight)
+        {
+            value = minHeight;
+        }
 
         // METHODS
 

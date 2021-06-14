@@ -259,7 +259,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             Assert.IsTrue(scene.IsValidFile);
 
             // Get number of mesh. AX and GX differ in count.
-            var meshCount = StaticColliderMeshes.GetSurfacesCount(scene);
+            var meshCount = scene.staticColliderMeshes.SurfaceCount;
             var meshes = new Mesh[meshCount];
 
             // Simplify access to tris/quads
