@@ -4,6 +4,10 @@ using System.IO;
 
 namespace GameCube.GFZ.CourseCollision
 {
+    // NOTES:
+    // Indexes 0-3 ARE USED
+    // Indexes 4-11 unused
+
     /// <summary>
     /// 
     /// </summary>
