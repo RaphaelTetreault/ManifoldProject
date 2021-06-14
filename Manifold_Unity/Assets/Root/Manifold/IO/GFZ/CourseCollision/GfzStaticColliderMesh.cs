@@ -1,21 +1,27 @@
-using System.Collections;
-using System.Collections.Generic;
+using GameCube.GFZ.CourseCollision;
 using UnityEngine;
 
-namespace Manifold
+namespace Manifold.IO.GFZ.CourseCollision
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class GfzStaticColliderMesh : MonoBehaviour
     {
-        // Start is called before the first frame update
-        void Start()
+        [SerializeField] private StaticColliderMeshProperty property;
+        [SerializeField] private MeshFilter colliderMesh;
+
+        public StaticColliderMeshProperty Property
         {
-        
+            get => property;
+            set => property = value;
         }
 
-        // Update is called once per frame
-        void Update()
+        public MeshFilter ColliderMesh
         {
-        
+            get => colliderMesh;
+            set => colliderMesh = value;
         }
+
     }
 }

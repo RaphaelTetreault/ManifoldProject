@@ -583,7 +583,8 @@ namespace Manifold.IO.GFZ.CourseCollision
             // is bound to break at some point.
             for (int i = 0; i < StaticColliderMeshes.GetSurfacesCount(scene); i++)
             {
-                var meshName = $"st{scene.ID:00}_{i:00}_{(StaticMeshColliderProperty)i}";
+                var property = (StaticColliderMeshProperty)i;
+                var meshName = $"st{scene.ID:00}_{i:00}_{property}";
                 var assetPath = $"{stageFolder}/pf_{meshName}.prefab";
                 var asset = AssetDatabase.LoadAssetAtPath<GameObject>(assetPath);
 
@@ -595,6 +596,10 @@ namespace Manifold.IO.GFZ.CourseCollision
 
                 var instance = Instantiate(asset, parent.transform);
                 instance.name = meshName;
+                
+                var script = instance.AddComponent<GfzStaticColliderMesh>();
+                script.Property = property;
+                script.ColliderMesh = instance.GetComponent<MeshFilter>();
             }
 
         }

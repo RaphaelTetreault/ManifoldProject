@@ -32,7 +32,7 @@ namespace Manifold.IO.GFZ.CourseCollision
         [SerializeField]
         protected bool createMesh256OfType = false;
         [SerializeField]
-        protected StaticMeshColliderProperty type = StaticMeshColliderProperty.recover;
+        protected StaticColliderMeshProperty type = StaticColliderMeshProperty.recover;
 
 
         [Header("Mesh Materials")]
@@ -182,7 +182,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             ImportUtility.FinalizeAssetImport();
         }
 
-        public static Mesh[] CreateStaticColliderMeshes256(ColiSceneSobj sceneSobj, StaticMeshColliderProperty meshSurfaceType, bool createBackfaces)
+        public static Mesh[] CreateStaticColliderMeshes256(ColiSceneSobj sceneSobj, StaticColliderMeshProperty meshSurfaceType, bool createBackfaces)
         {
             // Get scene, assert validity
             var scene = sceneSobj.Value;
@@ -276,7 +276,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 // Create base data for mesh for EACH mesh type (boost, heal, etc)
                 var mesh = new Mesh()
                 {
-                    name = $"st{scene.ID:00}_{meshSurfaceType:00}_{(StaticMeshColliderProperty)meshSurfaceType}",
+                    name = $"st{scene.ID:00}_{meshSurfaceType:00}_{(StaticColliderMeshProperty)meshSurfaceType}",
                 };
                 // one submesh for tris, one for quads
                 var submeshes = new SubMeshDescriptor[2];
