@@ -12,7 +12,10 @@ namespace GameCube.GFZ.CourseCollision
         // 0x03 not used
         Exponential = 0x04000000,
         ExponentialSquared = 0x05000000,
-        ReverseExponential = 0x06000000,
-        ReverseExponentialSquared = 0x07000000,
+
+        // UNUSED IN GAME
+        // Uncomment if you want to go experimental.
+        //ReverseExponential = 0x06000000,
+        //ReverseExponentialSquared = 0x07000000,
     }
 }

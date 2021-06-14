@@ -103,7 +103,7 @@ namespace GameCube.GFZ.CourseCollision
         public CourseMetadataTrigger[] courseMetadataTriggers = new CourseMetadataTrigger[0];
         public ArcadeCheckpointTrigger[] arcadeCheckpointTriggers = new ArcadeCheckpointTrigger[0];
         public StoryObjectTrigger[] storyObjectTriggers = new StoryObjectTrigger[0];
-        public TrackCheckpointMatrix8x8 trackCheckpointMatrix;
+        public TrackCheckpointMatrix trackCheckpointMatrix;
         // FIELDS (that require extra processing)
         public TrackTransform[] allTrackTransforms;
         public TrackTransform[] rootTrackTransforms;

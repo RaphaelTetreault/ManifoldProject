@@ -1,6 +1,6 @@
 ﻿namespace GameCube.GFZ.CourseCollision
 {
-    // Super Monkey Ball (SEGA AV developed) had infor on keys 0, 1.
+    // Super Monkey Ball (SEGA AV developed) had info on keys 0, 1.
     // https://craftedcart.github.io/SMBLevelWorkshop/documentation/index.html?page=stagedefFormat2#spec-stagedefFormat2-section-animationKeyframe
 
     // Review types
@@ -24,7 +24,7 @@
         /// <summary>
         /// 
         /// </summary>
-        unknown1, // could be auto or auto clamped?
+        unknown1, // could be auto or auto clamped? SMB2 community calls it "ease"
 
         /// <summary>
         /// 

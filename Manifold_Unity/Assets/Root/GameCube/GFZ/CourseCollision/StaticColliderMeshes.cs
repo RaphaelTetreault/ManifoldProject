@@ -34,8 +34,8 @@ namespace GameCube.GFZ.CourseCollision
         // This data holds the geometry data and indexes
         public ColliderTriangle[] colliderTriangles;
         public ColliderQuad[] colliderQuads;
-        public StaticColliderMeshMatrix16x16[] triMeshIndexMatrices;
-        public StaticColliderMeshMatrix16x16[] quadMeshIndexMatrices;
+        public StaticColliderMeshMatrix[] triMeshIndexMatrices;
+        public StaticColliderMeshMatrix[] quadMeshIndexMatrices;
 
 
         public AddressRange AddressRange
@@ -83,22 +83,22 @@ namespace GameCube.GFZ.CourseCollision
 
                 /////////////////
                 // Initialize arrays
-                triMeshIndexMatrices = new StaticColliderMeshMatrix16x16[countSurfaceTypes];
-                quadMeshIndexMatrices = new StaticColliderMeshMatrix16x16[countSurfaceTypes];
+                triMeshIndexMatrices = new StaticColliderMeshMatrix[countSurfaceTypes];
+                quadMeshIndexMatrices = new StaticColliderMeshMatrix[countSurfaceTypes];
 
                 // Read mesh data
                 for (int i = 0; i < countSurfaceTypes; i++)
                 {
                     // Triangles
                     var triIndexesPointer = collisionTriIndexesPtr[i];
-                    triMeshIndexMatrices[i] = new StaticColliderMeshMatrix16x16();
+                    triMeshIndexMatrices[i] = new StaticColliderMeshMatrix();
                     //DebugConsole.Log($"tri{i+1}:{triPointer.HexAddress}");
                     reader.JumpToAddress(triIndexesPointer);
                     reader.ReadX(ref triMeshIndexMatrices[i], false);
 
                     // Quads
                     var quadPointer = collisionQuadIndexesPtr[i];
-                    quadMeshIndexMatrices[i] = new StaticColliderMeshMatrix16x16();
+                    quadMeshIndexMatrices[i] = new StaticColliderMeshMatrix();
                     //DebugConsole.Log($"quad{i+1}:{quadPointer.HexAddress}");
                     reader.JumpToAddress(quadPointer);
                     reader.ReadX(ref quadMeshIndexMatrices[i], false);

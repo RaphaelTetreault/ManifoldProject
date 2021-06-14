@@ -14,7 +14,10 @@ namespace GameCube.GFZ.CourseCollision
         ISerializedBinaryAddressableReferer
     {
         // "CONSTANTS"
-        public abstract int ListCount { get; }
+        public int Count => SubdivisionsX * SubdivisionsZ;
+        public abstract int SubdivisionsX { get; }
+        public abstract int SubdivisionsZ { get; }
+
 
         // METADATA
         [UnityEngine.SerializeField] private AddressRange addressRange;
@@ -87,17 +90,17 @@ namespace GameCube.GFZ.CourseCollision
             // Read index arrays
             this.RecordStartAddress(reader);
             {
-                reader.ReadX(ref indexArrayPtrs, ListCount, true);
+                reader.ReadX(ref indexArrayPtrs, Count, true);
             }
             this.RecordEndAddress(reader);
             {
-                indexLists = new IndexList[ListCount];
+                indexLists = new IndexList[Count];
 
                 // Should always be init to const size by now
-                Assert.IsTrue(indexArrayPtrs.Length == ListCount);
-                Assert.IsTrue(indexLists.Length == ListCount);
+                Assert.IsTrue(indexArrayPtrs.Length == Count);
+                Assert.IsTrue(indexLists.Length == Count);
 
-                for (int i = 0; i < ListCount; i++)
+                for (int i = 0; i < Count; i++)
                 {
                     // init value
                     indexLists[i] = new IndexList();
@@ -149,10 +152,10 @@ namespace GameCube.GFZ.CourseCollision
 
             {
                 // Ensure we have the correct amount of lists before indexing
-                Assert.IsTrue(indexLists.Length == ListCount);
+                Assert.IsTrue(indexLists.Length == Count);
 
                 // Construct Pointer[]
-                var pointers = new Pointer[ListCount];
+                var pointers = new Pointer[Count];
                 for (int i = 0; i < pointers.Length; i++)
                     pointers[i] = indexLists[i].GetPointer();
                 indexArrayPtrs = pointers;
@@ -179,8 +182,8 @@ namespace GameCube.GFZ.CourseCollision
         public void ValidateReferences()
         {
             // Should always be init to const size
-            Assert.IsTrue(indexArrayPtrs.Length == ListCount);
-            Assert.IsTrue(indexLists.Length == ListCount);
+            Assert.IsTrue(indexArrayPtrs.Length == Count);
+            Assert.IsTrue(indexLists.Length == Count);
         }
     }
 }

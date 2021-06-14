@@ -195,7 +195,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             var colliderQuads = scm.colliderQuads;
 
             //
-            const int nLists = StaticColliderMeshMatrix16x16.kListCount;
+            const int nLists = StaticColliderMeshMatrix.kListCount;
             var meshes = new Mesh[nLists];
 
             //
@@ -204,12 +204,12 @@ namespace Manifold.IO.GFZ.CourseCollision
             // Get triangle information for the current mesh type
             var triIndex16x16 = scm.triMeshIndexMatrices[meshSurfaceTypeIndex];
             var triIndexLists = triIndex16x16.indexLists;
-            Assert.IsTrue(triIndexLists.Length == 0 || triIndexLists.Length == StaticColliderMeshMatrix16x16.kListCount);
+            Assert.IsTrue(triIndexLists.Length == 0 || triIndexLists.Length == StaticColliderMeshMatrix.kListCount);
 
             //
             var quadMeshIndexes = scm.quadMeshIndexMatrices[meshSurfaceTypeIndex];
             var quadIndexLists = quadMeshIndexes.indexLists;
-            Assert.IsTrue(quadIndexLists.Length == 0 || quadIndexLists.Length == StaticColliderMeshMatrix16x16.kListCount);
+            Assert.IsTrue(quadIndexLists.Length == 0 || quadIndexLists.Length == StaticColliderMeshMatrix.kListCount);
 
             //
             for (int listIndex = 0; listIndex < nLists; listIndex++)

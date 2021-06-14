@@ -9,41 +9,50 @@ namespace GameCube.GFZ.CourseCollision
         /// 
         /// </summary>
         TerminateCode,
+
         /// <summary>
         /// Recharge areas collision type.
         /// </summary>
-        Recover,
+        Recover = 1,
+
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        //idx2,
+
         /// <summary>
         /// 
         /// </summary>
-        idx2,
-        /// <summary>
-        /// 
-        /// </summary>
-        BoostPad,
+        BoostPad = 3,
+
         /// <summary>
         /// Boost pad collision type.
         /// </summary>
-        JumpPad,
-        /// <summary>
-        /// 
-        /// </summary>
-        idx5,
-        /// <summary>
-        /// 
-        /// </summary>
-        idx6,
-        /// <summary>
-        /// 
-        /// </summary>
-        idx7,
-        /// <summary>
-        /// 
-        /// </summary>
-        idx8,
-        /// <summary>
-        /// 
-        /// </summary>
-        idx9,
+        JumpPad = 4,
+
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        //idx5,
+
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        //idx6,
+
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        //idx7,
+
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        //idx8,
+
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        //idx9,
     }
 }
