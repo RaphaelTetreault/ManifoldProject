@@ -85,12 +85,12 @@ namespace GameCube.GFZ.CourseCollision
                 for (int i = 0; i < animationCurves.Length; i++)
                 {
                     var animationCurve = animationCurves[i];
-                    var keyables = AnimationCurveUtility.EnforceNoDuplicateTimes(animationCurve.keyableAttributes);
-                    var keyframes = AnimationCurveUtility.KeyablesToKeyframes(keyables);
+                    var keyables = AnimationCurveConverter.EnforceNoDuplicateTimes(animationCurve.keyableAttributes);
+                    var keyframes = AnimationCurveConverter.KeyablesToKeyframes(keyables);
                     unityCurves[i] = new UnityEngine.AnimationCurve(keyframes);
 
                     // 
-                    AnimationCurveUtility.SetGfzTangentsToUnityTangents(keyables, unityCurves[i]);
+                    AnimationCurveConverter.SetGfzTangentsToUnityTangents(keyables, unityCurves[i]);
 
                     // TEST - re-apply key values.
                     // Not being respected by Unity?

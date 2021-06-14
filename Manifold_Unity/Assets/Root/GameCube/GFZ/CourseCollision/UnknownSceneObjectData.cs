@@ -6,7 +6,7 @@ namespace GameCube.GFZ.CourseCollision
 {
     // NOTES:
     // Indexes 0-3 ARE USED
-    // Indexes 4-11 unused
+    // Indexes 4-11 unused, always (0f, 0f)
 
     /// <summary>
     /// 

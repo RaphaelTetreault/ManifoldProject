@@ -5,9 +5,8 @@ using UnityEngine;
 
 namespace Manifold.IO.GFZ
 {
-    public static class AnimationCurveUtility
+    public static class AnimationCurveConverter
     {
-        // move to converter class? Rename AS converter class?
         public static UnityEngine.AnimationCurve ToUnity(this GameCube.GFZ.CourseCollision.AnimationCurve curve)
         {
             var keyframes = KeyablesToKeyframes(curve.keyableAttributes);
