@@ -921,25 +921,13 @@ namespace Manifold.IO.GFZ.CourseCollision
                 assetInstance.name = displayName;
                 assetInstance.transform.parent = sceneObjectsRoot;
 
-                // Tack data of object onto Unity GameObject for inspection
-                var sceneObjectData = assetInstance.AddComponent<TagSceneObject>();
-                sceneObjectData.Data = sceneObject;
+                //// Tack data of object onto Unity GameObject for inspection
+                //var sceneObjectData = assetInstance.AddComponent<TagSceneObject>();
+                //sceneObjectData.Data = sceneObject;
 
-                // Set object transform
-                if (sceneObject.transformPtr.IsNotNullPointer)
-                {
-                    // Perhaps best way when matrix exists? No compression rotation
-                    assetInstance.transform.position = sceneObject.transformMatrix3x4.Position;
-                    assetInstance.transform.rotation = sceneObject.transformMatrix3x4.Matrix.ToUnityMatrix4x4().rotation; // 'quaternion' is... lacking
-                    assetInstance.transform.localScale = sceneObject.transformMatrix3x4.Scale;
-                }
-                else
-                {
-                    // Apply GFZ Transform values onto Unity Transform
-                    assetInstance.transform.position = sceneObject.transform.Position;
-                    assetInstance.transform.rotation = sceneObject.transform.DecomposedRotation.Rotation; // Still using UnityEngine, not Unity.Mathematics
-                    assetInstance.transform.localScale = sceneObject.transform.Scale;
-                }
+                // Copy out values other than models
+                var script = assetInstance.AddComponent<GfzSceneObject>();
+                script.SetBaseValues(sceneObject);
             }
         }
         public void CreateOriginObjects(ColiSceneSobj scene, params string[] searchFolders)

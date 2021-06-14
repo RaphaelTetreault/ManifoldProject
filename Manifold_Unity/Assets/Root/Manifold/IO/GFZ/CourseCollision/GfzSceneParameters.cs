@@ -17,6 +17,10 @@ namespace Manifold.IO.GFZ.CourseCollision
         public string courseName;
         public int courseIndex; // TODO: validate export venue to index
 
+        [Header("Unknown Range")]
+        public float rangeNear;
+        public float rangeFar;
+
         [Header("Fog")]
         public bool exportCustomFog = false;
         public FogType fogInterpolation;

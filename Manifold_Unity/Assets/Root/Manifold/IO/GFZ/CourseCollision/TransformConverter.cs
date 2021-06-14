@@ -52,7 +52,8 @@ namespace Manifold.IO.GFZ.CourseCollision
         {
             // Apply transform values to target
             to.localPosition = from.Position;
-            to.rotation = from.Rotation;
+            //to.rotation = from.Rotation; // 'quaternion' is... lacking
+            to.rotation = from.Matrix.ToUnityMatrix4x4().rotation;
             to.localScale = from.Scale;
         }
 

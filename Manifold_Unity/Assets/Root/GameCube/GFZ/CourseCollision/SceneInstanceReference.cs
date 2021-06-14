@@ -18,9 +18,8 @@ namespace GameCube.GFZ.CourseCollision
         public string nameCopy;
 
         // STRUCTURE
-        public uint unk_0x00; // 0, 1, 3, 64, 65, 193, 194, 195, 256 (flags? 1, 2, 64, 128, 256)
-        // One case of 6. Almost all values > 1 have float in objRef, almost all with value 1 have 0f
-        public uint unk_0x04; // 1, 2, 3, 4, 6 (flags? 1, 2, 4)
+        public UnkInstanceFlag unk_0x00;
+        public UnkInstanceOption unk_0x04;
         public Pointer objectReferencePtr;
         public Pointer colliderGeometryPtr;
         // FIELDS (deserialized from pointers)
