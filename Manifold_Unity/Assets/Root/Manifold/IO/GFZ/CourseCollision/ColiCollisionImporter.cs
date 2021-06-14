@@ -94,7 +94,8 @@ namespace Manifold.IO.GFZ.CourseCollision
                             var prefab = ImportUtility.CreatePrefabFromModel(mesh, materials, prefabPath);
 
                             // Edit then save again
-                            prefab.AddComponent<ColliderObjectTag>();
+                            var script = prefab.AddComponent<GfzObjectColliderMesh>();
+                            script.ColliderMesh = script.GetComponent<MeshFilter>();
                             PrefabUtility.SavePrefabAsset(prefab);
                         }
                     }
