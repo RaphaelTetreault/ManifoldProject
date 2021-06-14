@@ -449,14 +449,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             // Add displayers and assign value to all
             var displayables = new List<IColiCourseDisplayable>
                 {
-                    empty.AddComponent<DisplayCourseMetadataTrigger>(),
-                    empty.AddComponent<DisplayStoryObjects>(),
                     empty.AddComponent<DisplayTrackCheckpoint>(),
-                    empty.AddComponent<DisplayTrackIndexes>(),
-                    empty.AddComponent<DisplayTrigger>(),
-                    empty.AddComponent<DisplayUnknownTrigger2>(),
-                    empty.AddComponent<DisplayVisualEffectTrigger>(),
-                    empty.AddComponent<TempLodView>(),
                 };
             foreach (var displayable in displayables)
             {
