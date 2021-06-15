@@ -31,7 +31,7 @@ namespace GameCube.GFZ.CourseCollision
             float minY = float.PositiveInfinity;
 
             foreach (var node in scene.trackNodes)
-                foreach (var point in node.points)
+                foreach (var point in node.checkpoints)
                     if (point.positionStart.y < minY)
                         minY = point.positionStart.y;
 

@@ -23,9 +23,9 @@ namespace Manifold.IO.GFZ.CourseCollision
             var mesh = UnityEditor.AssetDatabase.LoadAssetAtPath<Mesh>("Assets/Root/Resources/normal-cylinder-16-hollowed.fbx");
             foreach (var node in sceneSobj.Value.trackNodes)
             {
-                for (int i = 0; i < node.points.Length; i++)
+                for (int i = 0; i < node.checkpoints.Length; i++)
                 {
-                    var point = node.points[i];
+                    var point = node.checkpoints[i];
                     var from = point.positionStart;
                     var to = point.positionEnd;
                     var halfWidth = point.trackWidth / 2f;

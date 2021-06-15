@@ -1,4 +1,4 @@
 namespace Manifold.IO
 {
-    public class TagTrackTransform : DataTag<GameCube.GFZ.CourseCollision.TrackTransform> { }
+    public class TagTrackTransform : DataTag<GameCube.GFZ.CourseCollision.TrackSegment> { }
 }

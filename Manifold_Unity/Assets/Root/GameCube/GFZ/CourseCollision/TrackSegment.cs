@@ -9,7 +9,7 @@ namespace GameCube.GFZ.CourseCollision
     /// 
     /// </summary>
     [Serializable]
-    public class TrackTransform :
+    public class TrackSegment :
         IBinaryAddressable,
         IBinarySerializable,
         ISerializedBinaryAddressableReferer
@@ -19,7 +19,7 @@ namespace GameCube.GFZ.CourseCollision
         public float4x4 localMatrix;
         public float4x4 worldMatrix;
         public int depth;
-        public TrackTransform parent; // TODO: remove direct reference. Maybe use struct for name, index, metadata
+        public TrackSegment parent; // TODO: remove direct reference. Maybe use struct for name, index, metadata
 
         // FIELDS
         public TrackTopologyMetadata topologyMetadata;
@@ -48,7 +48,7 @@ namespace GameCube.GFZ.CourseCollision
         // REFERENCE FIELDS
         public TopologyParameters trackTopology;
         public TrackCornerTopology hairpinCornerTopology;
-        public TrackTransform[] children = new TrackTransform[0];
+        public TrackSegment[] children = new TrackSegment[0];
 
 
         // PROPERTIES
@@ -132,7 +132,7 @@ namespace GameCube.GFZ.CourseCollision
         }
 
         // TODO: remove
-        public void SetChildIndex(TrackTransform parent)
+        public void SetChildIndex(TrackSegment parent)
         {
             foreach (var child in parent.children)
             {

@@ -270,7 +270,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             // TRACK TRANSFORMS
             if (trackTransform)
             {
-                var filePath = $"{time} COLI {nameof(TrackTransform)}.tsv";
+                var filePath = $"{time} COLI {nameof(TrackSegment)}.tsv";
                 filePath = Path.Combine(outputPath, filePath);
                 EditorUtility.DisplayProgressBar(ExecuteText, filePath, RandomTime);
                 AnalyzeTrackTransforms(filePath);
@@ -314,12 +314,12 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol("FileName");
                 writer.WriteNextCol("Game");
 
-                writer.WriteNextCol(nameof(TrackTransform.topologyMetadata));
-                writer.WriteNextCol(nameof(TrackTransform.trackProperty));
-                writer.WriteNextCol(nameof(TrackTransform.perimeterOptions));
-                writer.WriteNextCol(nameof(TrackTransform.pipeCylinderOptions));
-                writer.WriteNextCol(nameof(TrackTransform.unk_0x38));
-                writer.WriteNextCol(nameof(TrackTransform.unk_0x3A));
+                writer.WriteNextCol(nameof(TrackSegment.topologyMetadata));
+                writer.WriteNextCol(nameof(TrackSegment.trackProperty));
+                writer.WriteNextCol(nameof(TrackSegment.perimeterOptions));
+                writer.WriteNextCol(nameof(TrackSegment.pipeCylinderOptions));
+                writer.WriteNextCol(nameof(TrackSegment.unk_0x38));
+                writer.WriteNextCol(nameof(TrackSegment.unk_0x3A));
 
                 writer.WriteNextCol("TrackTransform Index");
                 writer.WriteNextCol("Keyable /9");
@@ -361,12 +361,12 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol("FileName");
                 writer.WriteNextCol("Game");
 
-                writer.WriteNextCol(nameof(TrackTransform.topologyMetadata));
-                writer.WriteNextCol(nameof(TrackTransform.trackProperty));
-                writer.WriteNextCol(nameof(TrackTransform.perimeterOptions));
-                writer.WriteNextCol(nameof(TrackTransform.pipeCylinderOptions));
-                writer.WriteNextCol(nameof(TrackTransform.unk_0x38));
-                writer.WriteNextCol(nameof(TrackTransform.unk_0x3A));
+                writer.WriteNextCol(nameof(TrackSegment.topologyMetadata));
+                writer.WriteNextCol(nameof(TrackSegment.trackProperty));
+                writer.WriteNextCol(nameof(TrackSegment.perimeterOptions));
+                writer.WriteNextCol(nameof(TrackSegment.pipeCylinderOptions));
+                writer.WriteNextCol(nameof(TrackSegment.unk_0x38));
+                writer.WriteNextCol(nameof(TrackSegment.unk_0x3A));
 
                 writer.WriteNextCol("TrackTransform Index");
                 writer.WriteNextCol("Keyable /9");
@@ -396,7 +396,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.Flush();
             }
         }
-        public void WriteTrackKeyableAttributeRecursive(StreamWriter writer, ColiSceneSobj sobj, int nestedDepth, int animationCurveIndex, int trackTransformIndex, TrackTransform trackTransform)
+        public void WriteTrackKeyableAttributeRecursive(StreamWriter writer, ColiSceneSobj sobj, int nestedDepth, int animationCurveIndex, int trackTransformIndex, TrackSegment trackTransform)
         {
             var animationCurves = trackTransform.trackTopology.animationCurves;
             var keyableIndex = 1; // 0-n, depends on number of keyables in array
@@ -413,7 +413,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 WriteTrackKeyableAttributeRecursive(writer, sobj, nestedDepth + 1, animationCurveIndex, trackTransformIndex, child);
         }
 
-        public void WriteKeyableAttribute(StreamWriter writer, ColiSceneSobj sobj, int nestedDepth, int keyableIndex, int keyableTotal, int keyablesSet, int trackTransformIndex, KeyableAttribute param, TrackTransform tt)
+        public void WriteKeyableAttribute(StreamWriter writer, ColiSceneSobj sobj, int nestedDepth, int keyableIndex, int keyableTotal, int keyablesSet, int trackTransformIndex, KeyableAttribute param, TrackSegment tt)
         {
             string gameId = sobj.Value.IsFileGX ? "GX" : "AX";
 
@@ -454,25 +454,25 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol("Root Index");
                 writer.WriteNextCol("Transform Depth");
                 writer.WriteNextCol("Address");
-                writer.WriteNextCol(nameof(TrackTransform.topologyMetadata));
-                writer.WriteNextCol(nameof(TrackTransform.trackProperty));
-                writer.WriteNextCol(nameof(TrackTransform.perimeterOptions));
-                writer.WriteNextCol(nameof(TrackTransform.pipeCylinderOptions));
-                writer.WriteNextCol(nameof(TrackTransform.generalTopologyPtr));
-                writer.WriteNextCol(nameof(TrackTransform.hairpinCornerTopologyPtr));
-                writer.WriteNextCol(nameof(TrackTransform.childrenPtrs));
-                writer.WriteNextCol(nameof(TrackTransform.localScale));
-                writer.WriteNextCol(nameof(TrackTransform.localRotation));
-                writer.WriteNextCol(nameof(TrackTransform.localPosition));
-                writer.WriteNextCol(nameof(TrackTransform.unk_0x38));
-                writer.WriteNextCol(nameof(TrackTransform.unk_0x39));
-                writer.WriteNextCol(nameof(TrackTransform.unk_0x3A));
-                writer.WriteNextCol(nameof(TrackTransform.unk_0x3B));
-                writer.WriteNextCol(nameof(TrackTransform.railHeightRight));
-                writer.WriteNextCol(nameof(TrackTransform.railHeightLeft));
-                writer.WriteNextCol(nameof(TrackTransform.zero_0x44));
-                writer.WriteNextCol(nameof(TrackTransform.zero_0x48));
-                writer.WriteNextCol(nameof(TrackTransform.unk_0x4C));
+                writer.WriteNextCol(nameof(TrackSegment.topologyMetadata));
+                writer.WriteNextCol(nameof(TrackSegment.trackProperty));
+                writer.WriteNextCol(nameof(TrackSegment.perimeterOptions));
+                writer.WriteNextCol(nameof(TrackSegment.pipeCylinderOptions));
+                writer.WriteNextCol(nameof(TrackSegment.generalTopologyPtr));
+                writer.WriteNextCol(nameof(TrackSegment.hairpinCornerTopologyPtr));
+                writer.WriteNextCol(nameof(TrackSegment.childrenPtrs));
+                writer.WriteNextCol(nameof(TrackSegment.localScale));
+                writer.WriteNextCol(nameof(TrackSegment.localRotation));
+                writer.WriteNextCol(nameof(TrackSegment.localPosition));
+                writer.WriteNextCol(nameof(TrackSegment.unk_0x38));
+                writer.WriteNextCol(nameof(TrackSegment.unk_0x39));
+                writer.WriteNextCol(nameof(TrackSegment.unk_0x3A));
+                writer.WriteNextCol(nameof(TrackSegment.unk_0x3B));
+                writer.WriteNextCol(nameof(TrackSegment.railHeightRight));
+                writer.WriteNextCol(nameof(TrackSegment.railHeightLeft));
+                writer.WriteNextCol(nameof(TrackSegment.zero_0x44));
+                writer.WriteNextCol(nameof(TrackSegment.zero_0x48));
+                writer.WriteNextCol(nameof(TrackSegment.unk_0x4C));
                 writer.WriteNextCol();
                 writer.WriteNextColNicify(nameof(TrackCornerTopology.width));
                 writer.WriteNextColNicify(nameof(TrackCornerTopology.perimeterOptions));
@@ -497,7 +497,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             }
         }
         // Writes self and children
-        public void WriteTrackTransformRecursive(StreamWriter writer, ColiSceneSobj sobj, int depth, int index, int total, TrackTransform trackTransform)
+        public void WriteTrackTransformRecursive(StreamWriter writer, ColiSceneSobj sobj, int depth, int index, int total, TrackSegment trackTransform)
         {
             // Write Parent
             WriteTrackTransform(writer, sobj, depth, index, total, trackTransform);
@@ -509,7 +509,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             }
         }
         // The actual writing to file
-        public void WriteTrackTransform(StreamWriter writer, ColiSceneSobj sobj, int depth, int index, int total, TrackTransform trackTransform)
+        public void WriteTrackTransform(StreamWriter writer, ColiSceneSobj sobj, int depth, int index, int total, TrackSegment trackTransform)
         {
             writer.WriteNextCol(sobj.FileName);
             writer.WriteNextCol($"{s_order++}");
@@ -1647,20 +1647,20 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol("File");
                 writer.WriteNextCol("Track Node");
                 writer.WriteNextCol("Track Point");
-                writer.WriteNextColNicify(nameof(TrackPoint.unk_0x00));
-                writer.WriteNextColNicify(nameof(TrackPoint.unk_0x04));
-                writer.WriteNextColNicify(nameof(TrackPoint.trackDistanceStart));
-                writer.WriteNextColNicify(nameof(TrackPoint.tangentStart));
-                writer.WriteNextColNicify(nameof(TrackPoint.positionStart));
-                writer.WriteNextColNicify(nameof(TrackPoint.trackDistanceEnd));
-                writer.WriteNextColNicify(nameof(TrackPoint.tangentEnd));
-                writer.WriteNextColNicify(nameof(TrackPoint.positionEnd));
-                writer.WriteNextColNicify(nameof(TrackPoint.transformDistanceEnd));
-                writer.WriteNextColNicify(nameof(TrackPoint.transformDistanceStart));
-                writer.WriteNextColNicify(nameof(TrackPoint.trackWidth));
-                writer.WriteNextColNicify(nameof(TrackPoint.isTrackContinuousStart));
-                writer.WriteNextColNicify(nameof(TrackPoint.isTrackContinuousEnd));
-                writer.WriteNextColNicify(nameof(TrackPoint.zero_0x4E));
+                writer.WriteNextColNicify(nameof(TrackCheckpoint.unk_0x00));
+                writer.WriteNextColNicify(nameof(TrackCheckpoint.unk_0x04));
+                writer.WriteNextColNicify(nameof(TrackCheckpoint.trackDistanceStart));
+                writer.WriteNextColNicify(nameof(TrackCheckpoint.tangentStart));
+                writer.WriteNextColNicify(nameof(TrackCheckpoint.positionStart));
+                writer.WriteNextColNicify(nameof(TrackCheckpoint.trackDistanceEnd));
+                writer.WriteNextColNicify(nameof(TrackCheckpoint.tangentEnd));
+                writer.WriteNextColNicify(nameof(TrackCheckpoint.positionEnd));
+                writer.WriteNextColNicify(nameof(TrackCheckpoint.transformDistanceEnd));
+                writer.WriteNextColNicify(nameof(TrackCheckpoint.transformDistanceStart));
+                writer.WriteNextColNicify(nameof(TrackCheckpoint.trackWidth));
+                writer.WriteNextColNicify(nameof(TrackCheckpoint.isTrackContinuousStart));
+                writer.WriteNextColNicify(nameof(TrackCheckpoint.isTrackContinuousEnd));
+                writer.WriteNextColNicify(nameof(TrackCheckpoint.zero_0x4E));
                 writer.WriteNextRow();
 
                 foreach (var file in sceneSobjs)
@@ -1669,9 +1669,9 @@ namespace Manifold.IO.GFZ.CourseCollision
                     int nodeIndex = 0;
                     foreach (var trackNode in file.Value.trackNodes)
                     {
-                        int pointLength = trackNode.points.Length;
+                        int pointLength = trackNode.checkpoints.Length;
                         int pointIndex = 0;
-                        foreach (var trackPoint in trackNode.points)
+                        foreach (var trackPoint in trackNode.checkpoints)
                         {
                             writer.WriteNextCol(file.name);
                             writer.WriteNextCol($"[{nodeIndex}/{nodeLength}]");

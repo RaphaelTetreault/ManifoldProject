@@ -23,11 +23,11 @@ namespace GameCube.GFZ.CourseCollision
         private AddressRange addressRange;
 
         // FIELDS
-        public ArrayPointer pointsPtr;
-        public Pointer transformPtr;
+        public ArrayPointer checkpointsPtr;
+        public Pointer segmentPtr;
         // FIELDS (deserialized from pointers)
-        public TrackPoint[] points;
-        public TrackTransform transform;
+        public TrackCheckpoint[] checkpoints;
+        public TrackSegment segment;
 
 
         // PROPERTIES
@@ -43,14 +43,14 @@ namespace GameCube.GFZ.CourseCollision
         {
             this.RecordStartAddress(reader);
             {
-                reader.ReadX(ref pointsPtr);
-                reader.ReadX(ref transformPtr);
+                reader.ReadX(ref checkpointsPtr);
+                reader.ReadX(ref segmentPtr);
             }
             this.RecordEndAddress(reader);
             {
                 // Get point
-                reader.JumpToAddress(pointsPtr);
-                reader.ReadX(ref points, pointsPtr.Length, true);
+                reader.JumpToAddress(checkpointsPtr);
+                reader.ReadX(ref checkpoints, checkpointsPtr.Length, true);
 
                 // Get transform
                 // NOTE: since this data is referenced many times, I instead
@@ -64,23 +64,23 @@ namespace GameCube.GFZ.CourseCollision
         public void Serialize(BinaryWriter writer)
         {
             {
-                pointsPtr = points.GetArrayPointer();
-                transformPtr = transform.GetPointer();
+                checkpointsPtr = checkpoints.GetArrayPointer();
+                segmentPtr = segment.GetPointer();
             }
             this.RecordStartAddress(writer);
             {
-                writer.WriteX(pointsPtr);
-                writer.WriteX(transformPtr);
+                writer.WriteX(checkpointsPtr);
+                writer.WriteX(segmentPtr);
             }
             this.RecordEndAddress(writer);
         }
 
         public void ValidateReferences()
         {
-            Assert.IsTrue(pointsPtr.IsNotNullPointer);
-            Assert.IsTrue(transformPtr.IsNotNullPointer);
-            Assert.IsTrue(points != null);
-            Assert.IsTrue(transform != null);
+            Assert.IsTrue(checkpointsPtr.IsNotNullPointer);
+            Assert.IsTrue(segmentPtr.IsNotNullPointer);
+            Assert.IsTrue(checkpoints != null);
+            Assert.IsTrue(segment != null);
         }
     }
 }

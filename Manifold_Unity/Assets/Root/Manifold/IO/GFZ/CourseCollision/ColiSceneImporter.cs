@@ -514,7 +514,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             }
         }
 
-        public void CreateControlPointRecursive(TrackTransform trackTransform, GameObject parent, Mesh mesh, string name, int depth)
+        public void CreateControlPointRecursive(TrackSegment trackTransform, GameObject parent, Mesh mesh, string name, int depth)
         {
             //
             var controlPoint = new GameObject();
@@ -542,7 +542,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             }
         }
 
-        public void CreateControlPointSequential(TrackTransform trackTransform, GameObject parent, Mesh mesh, string name, int depth, int index)
+        public void CreateControlPointSequential(TrackSegment trackTransform, GameObject parent, Mesh mesh, string name, int depth, int index)
         {
             //Create new control point
             var controlPoint = new GameObject();
@@ -695,7 +695,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             }
         }
 
-        public Matrix4x4 GetTransformMatrix(TrackTransform trackTransform, float increment)
+        public Matrix4x4 GetTransformMatrix(TrackSegment trackTransform, float increment)
         {
             var transformMatrix = new Matrix4x4();
             transformMatrix.SetTRS(
@@ -713,7 +713,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             return transformMatrix;
         }
 
-        public Matrix4x4 GetAnimMatrix(TrackTransform trackTransform, float time)
+        public Matrix4x4 GetAnimMatrix(TrackSegment trackTransform, float time)
         {
             var topology = trackTransform.trackTopology;
             float3 timeScale = new float3(
@@ -823,9 +823,9 @@ namespace Manifold.IO.GFZ.CourseCollision
                     int index = indexList.Indexes[i];
                     var node = trackNodes[index];
 
-                    for (int j = 0; j < node.points.Length; j++)
+                    for (int j = 0; j < node.checkpoints.Length; j++)
                     {
-                        var position = node.points[j].positionStart;
+                        var position = node.checkpoints[j].positionStart;
                         var instance = CreatePrimitive(PrimitiveType.Sphere, $"{index}.{j}", chain);
                         instance.transform.position = position;
                         instance.transform.localScale = Vector3.one * 5f;

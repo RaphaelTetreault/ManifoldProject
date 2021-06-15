@@ -41,7 +41,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             }
         }
 
-        public void Draw(TrackTransform trackTransform, Mesh mesh, int depth)
+        public void Draw(TrackSegment trackTransform, Mesh mesh, int depth)
         {
             // Draw self
             var worldMatrix = trackTransform.worldMatrix;

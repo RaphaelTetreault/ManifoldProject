@@ -108,8 +108,8 @@ namespace GameCube.GFZ.CourseCollision
         public StoryObjectTrigger[] storyObjectTriggers = new StoryObjectTrigger[0];
         public TrackCheckpointMatrix trackCheckpointMatrix;
         // FIELDS (that require extra processing)
-        public TrackTransform[] allTrackSegments = new TrackTransform[0];
-        public TrackTransform[] rootTrackSegments = new TrackTransform[0];
+        public TrackSegment[] allTrackSegments = new TrackSegment[0];
+        public TrackSegment[] rootTrackSegments = new TrackSegment[0];
         public CString[] objectNames = new CString[0];
         public SceneObjectReference[] sceneObjectReferences = new SceneObjectReference[0];
 
@@ -278,11 +278,11 @@ namespace GameCube.GFZ.CourseCollision
             var trackTransformPtrs = new List<Pointer>();
             foreach (var node in trackNodes)
             {
-                var pointer = node.transformPtr;
+                var pointer = node.segmentPtr;
                 if (!trackTransformPtrs.Contains(pointer))
                     trackTransformPtrs.Add(pointer);
             }
-            rootTrackSegments = new TrackTransform[trackTransformPtrs.Count];
+            rootTrackSegments = new TrackSegment[trackTransformPtrs.Count];
             for (int i = 0; i < rootTrackSegments.Length; i++)
             {
                 var pointer = trackTransformPtrs[i];
@@ -358,10 +358,10 @@ namespace GameCube.GFZ.CourseCollision
 
                     // TODO: better type comment
                     // hm.... maybe worth the local array for this reason
-                    writer.InlineDesc(serializeVerbose, new TrackPoint());
+                    writer.InlineDesc(serializeVerbose, new TrackCheckpoint());
                     // Ensure sequential order in ROM for array pointer deserialization
                     foreach (var trackNode in trackNodes)
-                        foreach (var trackPoint in trackNode.points)
+                        foreach (var trackPoint in trackNode.checkpoints)
                             writer.WriteX(trackPoint);
 
                     // TODO: ensure proper array serialization order!

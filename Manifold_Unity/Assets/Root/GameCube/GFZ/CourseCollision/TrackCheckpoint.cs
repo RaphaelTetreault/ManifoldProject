@@ -9,7 +9,7 @@ namespace GameCube.GFZ.CourseCollision
     /// 
     /// </summary>
     [Serializable]
-    public class TrackPoint :
+    public class TrackCheckpoint :
         IBinaryAddressable,
         IBinarySerializable
     {
