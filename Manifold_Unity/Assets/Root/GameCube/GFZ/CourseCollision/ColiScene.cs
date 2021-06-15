@@ -419,7 +419,7 @@ namespace GameCube.GFZ.CourseCollision
                 foreach (var triIndexMatrix in staticColliderMeshes.triMeshIndexMatrices)
                 {
                     // Only write if it has indexes
-                    if (triIndexMatrix.HasIndexes)
+                    if (triIndexMatrix == null || !triIndexMatrix.HasIndexes)
                         continue;
 
                     writer.InlineDesc(serializeVerbose, triPtr, triIndexMatrix);
@@ -437,7 +437,7 @@ namespace GameCube.GFZ.CourseCollision
                 foreach (var quadIndexMatrix in staticColliderMeshes.quadMeshIndexMatrices)
                 {
                     // Only write if it has indexes
-                    if (!quadIndexMatrix.HasIndexes)
+                    if (quadIndexMatrix == null || !quadIndexMatrix.HasIndexes)
                         continue;
 
                     writer.InlineDesc(serializeVerbose, quadPtr, quadIndexMatrix);

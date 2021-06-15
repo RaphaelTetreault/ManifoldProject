@@ -992,6 +992,8 @@ namespace Manifold.IO.GFZ.CourseCollision
             sceneParams.color = new Color(color.x, color.y, color.z);
 
             // Convert from GFZ anim curves to Unity anim curves
+            sceneParams.fogCurveNear = scene.fogCurves.FogCurveNear.ToUnity();
+            sceneParams.fogCurveFar = scene.fogCurves.FogCurveFar.ToUnity();
             sceneParams.fogCurveR = scene.fogCurves.FogCurveR.ToUnity();
             sceneParams.fogCurveG = scene.fogCurves.FogCurveG.ToUnity();
             sceneParams.fogCurveB = scene.fogCurves.FogCurveB.ToUnity();

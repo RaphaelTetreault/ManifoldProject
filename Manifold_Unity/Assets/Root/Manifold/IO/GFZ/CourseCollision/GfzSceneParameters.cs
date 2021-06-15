@@ -61,7 +61,8 @@ namespace Manifold.IO.GFZ.CourseCollision
             fogCurves.FogCurveG = fogCurveG.ToGfz();
             fogCurves.FogCurveB = fogCurveB.ToGfz();
             // Create empty curve with 1 keyable
-            fogCurves.FogCurveUnk = new GameCube.GFZ.CourseCollision.AnimationCurve(1);
+            var keyables5 = new KeyableAttribute[] { new KeyableAttribute() };
+            fogCurves.FogCurveUnk = new GameCube.GFZ.CourseCollision.AnimationCurve(keyables5);
 
             return fogCurves;
         }
