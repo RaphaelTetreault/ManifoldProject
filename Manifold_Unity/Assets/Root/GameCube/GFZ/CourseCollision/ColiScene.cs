@@ -567,7 +567,12 @@ namespace GameCube.GFZ.CourseCollision
                     {
                         // Uncomment if you want super-inline -- maybe have that as option?
                         //writer.InlineDesc(serializeVerbose, storyObjectTrigger.GetPointer(), storyObjectTrigger);
-                        writer.WriteX(storyObjectTriggers, false);
+                        writer.WriteX(storyObjectPath);
+
+                        // Assert is true. This data is always here if existing
+                        Assert.IsTrue(storyObjectPath.animationCurve != null);
+                        // breaking the rules again. Should inlining be allows for these ptr types?
+                        writer.WriteX(storyObjectPath.animationCurve);
                     }
                 }
             }
