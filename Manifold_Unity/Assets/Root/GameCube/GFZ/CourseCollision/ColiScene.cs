@@ -47,7 +47,10 @@ namespace GameCube.GFZ.CourseCollision
         [UnityEngine.SerializeField] private bool isFileGX;
         [UnityEngine.SerializeField] private AddressRange addressRange;
         [UnityEngine.SerializeField] private int id;
-        [UnityEngine.SerializeField] private string name;
+        [UnityEngine.SerializeField] private string fileName;
+        [UnityEngine.SerializeField] private Venue venue;
+        [UnityEngine.SerializeField] private string courseName;
+        [UnityEngine.SerializeField] private string author;
         [UnityEngine.SerializeField] private bool serializeVerbose = true;
 
 
@@ -55,7 +58,7 @@ namespace GameCube.GFZ.CourseCollision
         public Range unkRange0x00;
         public ArrayPointer trackNodesPtr;
         public ArrayPointer surfaceAttributeAreasPtr;
-        public BoostPlatesActive boostPlatesActive;
+        public BoostPlatesActive boostPlatesActive = BoostPlatesActive.Enabled;
         public Pointer staticColliderMeshesPtr;
         public Pointer zeroes0x20Ptr; // GX: 0xE8, AX: 0xE4
         public Pointer trackMinHeightPtr; // GX: 0xFC, AX: 0xF8
@@ -64,13 +67,13 @@ namespace GameCube.GFZ.CourseCollision
         public int unk_sceneObjectCount1;
         public int unk_sceneObjectCount2; // GX exclusive
         public Pointer sceneObjectsPtr;
-        public Bool32 unkBool32_0x58;
+        public Bool32 unkBool32_0x58 = Bool32.True;
         public ArrayPointer unknownSolsTriggersPtr;
         public ArrayPointer sceneInstancesPtr;
         public ArrayPointer sceneOriginObjectsPtr;
         public int zero0x74; // Ptr? Array Ptr length?
         public int zero0x78; // Ptr? Array Ptr address?
-        public CircuitType circuitType;
+        public CircuitType circuitType = CircuitType.ClosedCircuit;
         public Pointer fogCurvesPtr;
         public Pointer fogPtr;
         public int zero0x88; // Ptr? Array Ptr length?
@@ -126,12 +129,34 @@ namespace GameCube.GFZ.CourseCollision
             get => addressRange;
             set => addressRange = value;
         }
+
         public string FileName
         {
-            get => name;
-            set => name = value;
+            get => fileName;
+            set => fileName = value;
         }
 
+        public string CourseName
+        {
+            get => courseName;
+            set => courseName = value;
+        }
+
+        public string VenueName
+        {
+            get => EnumExtensions.GetDescription(venue);
+        }
+
+        public Venue Venue
+        {
+            get => venue;
+            set => venue = value;
+        }
+        public string Author
+        {
+            get => author;
+            set => author = value;
+        }
         public int ID => id;
 
 
@@ -272,7 +297,6 @@ namespace GameCube.GFZ.CourseCollision
         public void Serialize(BinaryWriter writer)
         {
             BinaryIoUtility.PushEndianess(false);
-            DebugConsole.Log(FileName);
 
             // Write header
             SerializeSelf(writer);
@@ -290,13 +314,14 @@ namespace GameCube.GFZ.CourseCollision
                 trackMinHeightPtr = trackMinHeight.GetPointer();
 
                 // The pointers written by the last 2 calls should create a valid AX or GX file header.
-                // If not, an assert will trigger.
+                // If not, an assert will trigger. Compatibility is important for re-importing scene.
                 ValidateFileFormatPointers();
             }
 
-            // Offset pointer address if AX file. Applies to pointers at address 0x
+            // Offset pointer address if AX file. Applies to pointers from 0x54 onwards
             int offset = IsFileAX ? -4 : 0;
 
+            // CREDIT / DEBUG INFO / METADATA
             // Write credit and useful debugging info
             writer.CommentDateAndCredits(true);
             writer.Comment("File Information", true);
@@ -304,119 +329,253 @@ namespace GameCube.GFZ.CourseCollision
             writer.CommentLineWide("Verbose:", serializeVerbose, true);
             writer.CommentLineWide("Universal:", false, true);
             writer.CommentNewLine(true, '-');
+            writer.Comment("File name:", true);
+            writer.Comment(FileName, true);
+            writer.CommentNewLine(true, ' ');
+            writer.Comment("Course Name:", true);
+            writer.Comment(VenueName, true);
+            writer.Comment(courseName, true);
+            writer.CommentNewLine(true, ' ');
+            writer.Comment("Stage Author(s):", true);
+            writer.Comment(author, true);
+            writer.CommentNewLine(true, '-');
 
-            //writer.CommentNewLine(serializeVerbose);
-            //writer.CommentPointer(0x08, serializeVerbose);
-            //writer.CommentPointer(0x0C, serializeVerbose);
-            //trackNodesPtr = trackNodes.SerializeReferences(writer).GetArrayPointer();
-            writer.InlineDesc(serializeVerbose, 0x0C, trackNodes);
-            writer.WriteX(trackNodes, false);
 
-            writer.InlineDesc(serializeVerbose, 0x14, surfaceAttributeAreas);
-            writer.WriteX(surfaceAttributeAreas, false);
+            // TRACK DATA
+            {
+                // TODO: consider re-serializing min height
+                // Print track length
+                writer.InlineDesc(serializeVerbose, 0x90 + offset, trackLength);
+                writer.CommentLineWide("Length:", trackLength.value.ToString("0.00"), serializeVerbose);
+                writer.CommentNewLine(serializeVerbose, '-');
+                writer.WriteX(trackLength);
 
-            writer.InlineDesc(serializeVerbose, 0x1C, staticColliderMeshes);
-            writer.WriteX(staticColliderMeshes);
+                // The actual track data
+                {
+                    // Write each tracknode - stitch of trackpoint and tracksegment
+                    writer.InlineDesc(serializeVerbose, 0x0C, trackNodes);
+                    writer.WriteX(trackNodes, false);
+
+                    // TODO: better type comment
+                    // hm.... maybe worth the local array for this reason
+                    writer.InlineDesc(serializeVerbose, new TrackPoint());
+                    // Ensure sequential order in ROM for array pointer deserialization
+                    foreach (var trackNode in trackNodes)
+                        foreach (var trackPoint in trackNode.points)
+                            writer.WriteX(trackPoint);
+
+                    // TODO: ensure proper array serialization order!
+                    writer.InlineDesc(serializeVerbose, allTrackSegments);
+                    writer.WriteX(allTrackSegments, false);
+
+                    // TODO: better type comment
+                    writer.InlineDesc(serializeVerbose, new TopologyParameters());
+                    foreach (var trackSegment in allTrackSegments)
+                    {
+                        var topology = trackSegment.trackTopology;
+                        writer.WriteX(topology);
+                    }
+                    // TODO: better type comment
+                    writer.InlineDesc(serializeVerbose, new TrackCornerTopology());
+                    foreach (var trackSegment in allTrackSegments)
+                    {
+                        var corner = trackSegment.hairpinCornerTopology;
+                        if (corner != null)
+                        {
+                            writer.WriteX(corner);
+                        }
+                    }
+                }
+
+                // Write track checkpoint indexers
+                writer.InlineDesc(serializeVerbose, 0xBC + offset, trackCheckpointMatrix);
+                writer.WriteX(trackCheckpointMatrix);
+                var trackIndexListPtr = trackCheckpointMatrix.GetPointer();
+                // Only write if it has indexes
+                writer.InlineDesc(serializeVerbose, trackIndexListPtr, trackCheckpointMatrix.indexLists);
+                foreach (var trackIndexList in trackCheckpointMatrix.indexLists)
+                {
+                    writer.WriteX(trackIndexList);
+                }
+
+                //
+                writer.InlineDesc(serializeVerbose, 0x14, surfaceAttributeAreas);
+                writer.WriteX(surfaceAttributeAreas, false);
+            }
+
+            // STATIC COLLIDER MESHES
+            {
+                // STATIC COLLIDER MESHES
+                // Write main structure
+                writer.InlineDesc(serializeVerbose, 0x1C, staticColliderMeshes);
+                writer.WriteX(staticColliderMeshes);
+                var scmPtr = staticColliderMeshes.GetPointer();
+
+                // COLLIDER TRIANGLES
+                writer.InlineDesc(serializeVerbose, scmPtr, staticColliderMeshes.colliderTriangles);
+                writer.WriteX(staticColliderMeshes.colliderTriangles, false);
+                var triPtr = staticColliderMeshes.colliderTriangles.GetBasePointer();
+                // Write each triangle index list IF they exists, use referer ptr in comment
+                foreach (var triIndexMatrix in staticColliderMeshes.triMeshIndexMatrices)
+                {
+                    // Only write if it has indexes
+                    if (triIndexMatrix.HasIndexes)
+                        continue;
+
+                    writer.InlineDesc(serializeVerbose, triPtr, triIndexMatrix);
+                    foreach (var triIndexList in triIndexMatrix.indexLists)
+                    {
+                        writer.WriteX(triIndexList);
+                    }
+                }
+
+                // COLLIDER QUADS
+                writer.InlineDesc(serializeVerbose, scmPtr, staticColliderMeshes.colliderQuads);
+                writer.WriteX(staticColliderMeshes.colliderQuads, false);
+                var quadPtr = staticColliderMeshes.colliderQuads.GetBasePointer();
+                // Write each quad index list IF they exists, use referer ptr in comment
+                foreach (var quadIndexMatrix in staticColliderMeshes.quadMeshIndexMatrices)
+                {
+                    // Only write if it has indexes
+                    if (!quadIndexMatrix.HasIndexes)
+                        continue;
+
+                    writer.InlineDesc(serializeVerbose, quadPtr, quadIndexMatrix);
+                    foreach (var quadIndexList in quadIndexMatrix.indexLists)
+                    {
+                        writer.WriteX(quadIndexList);
+                    }
+                }
+
+            }
+
+            // FOG
+            {
+                // Stage always has fog parameters
+                writer.InlineDesc(serializeVerbose, 0x84 + offset, fog);
+                writer.WriteX(fog);
+
+                // ... but does not always have associated curves
+                if (fogCurves != null)
+                {
+                    // TODO: assert venue vs fog curves?
+
+                    // 
+                    writer.InlineDesc(serializeVerbose, 0x80 + offset, fogCurves);
+                    writer.WriteX(fogCurves);
+                    var fogCurvesPtr = fogCurves.GetPointer();
+
+                    // Write the animation data associated with fog curves
+                    writer.InlineDesc(serializeVerbose, fogCurvesPtr, fogCurves);
+                    foreach (var curve in fogCurves.animationCurves)
+                    {
+                        writer.WriteX(curve);
+                    }
+                }
+            }
 
             // SCENE OBJECTS
-            //// TEST. Next: try reserializing references with ISerailizedBinaryAddressableReferer.
-            //var names = new CString[]
-            //{
-            //    new CString{ value = "TEST_STRING" },
-            //    new CString{ value = "ORIGIN_OBJECT" }
-            //};
-            //var sceneObjectReferences = new SceneObjectReference[]
-            //{
-            //    new SceneObjectReference() { name = names[0] },
-            //    new SceneObjectReference() { name = names[1] },
-            //};
-            //sceneInstances = new SceneInstanceReference[]
-            //{
-            //    new SceneInstanceReference() { objectReference = sceneObjectReferences[0] },
-            //    new SceneInstanceReference() { objectReference = sceneObjectReferences[1] },
-            //};
-            //sceneOriginObjects = new SceneOriginObjects[]
-            //{
-            //    new SceneOriginObjects() { instanceReference = sceneInstances[1] }
-            //};
-            //sceneObjects = new SceneObject[]
-            //{
-            //    new SceneObject() {instanceReference = sceneInstances[0] }
-            //};
+            {
+                // SCENE OBJECTS
+                // 0x48 (count total), 0x4C, 0x50 (GX exclusive count), 0x54 (pointer address)
+                writer.InlineDesc(serializeVerbose, 0x54 + offset, sceneObjects);
+                writer.WriteX(sceneObjects, false);
 
-            // Write in reverse order. If references are correct, pointers will be correct when serializing.
-            // No direct pointer
-            writer.InlineDesc(serializeVerbose, -1, objectNames);
-            writer.WriteX(objectNames, false);
+                // SCENE ORIGIN OBJECTS
+                writer.InlineDesc(serializeVerbose, 0x70 + offset, sceneOriginObjects);
+                writer.WriteX(sceneOriginObjects, false);
 
-            // No direct pointer
-            writer.InlineDesc(serializeVerbose, -1, sceneObjectReferences);
-            writer.WriteX(sceneObjectReferences, false);
+                // SCENE INSTANCES
+                writer.InlineDesc(serializeVerbose, 0x68 + offset, sceneInstances);
+                writer.WriteX(sceneInstances, false);
 
-            // 0x48 (count total), 0x4C, 0x50, 0x54 (pointer address): Scene Objects;
-            writer.InlineDesc(serializeVerbose, 0x54 + offset, sceneObjects);
-            writer.WriteX(sceneObjects, false);
-            // 
-            writer.InlineDesc(serializeVerbose, 0x70 + offset, sceneOriginObjects);
-            writer.WriteX(sceneOriginObjects, false);
+                // SCENE OBJECT REFERENCES
+                writer.InlineDesc(serializeVerbose, sceneObjectReferences);
+                writer.WriteX(sceneObjectReferences, false);
 
-            writer.InlineDesc(serializeVerbose, 0x60 + offset, unknownSolsTriggers);
-            writer.WriteX(unknownSolsTriggers, false);
+                // SCENE OBJECT NAMES
+                // No direct pointer. Names are aligned to 4 bytes.
+                writer.InlineDesc(serializeVerbose, objectNames);
+                foreach (var objectName in objectNames)
+                {
+                    writer.WriteX(objectName, false);
+                    writer.AlignTo(4);
+                }
 
-            writer.InlineDesc(serializeVerbose, 0x68 + offset, sceneInstances);
-            writer.WriteX(sceneInstances, false);
+                // SCENE OBJECTS TRANSFORMS
+                // TODO: better type comments
+                writer.InlineDesc(serializeVerbose, new TransformMatrix3x4());
+                foreach (var sceneObject in sceneObjects)
+                {
+                    var sceneObjectMatrix = sceneObject.transformMatrix3x4;
+                    if (sceneObjectMatrix != null)
+                    {
+                        writer.WriteX(sceneObjectMatrix);
+                    }
+                }
 
-            writer.InlineDesc(serializeVerbose, 0x70 + offset, sceneOriginObjects);
-            writer.WriteX(sceneOriginObjects, false);
+                // SCENE OBJECTS unknown data
+                // TODO: better type comments
+                writer.InlineDesc(serializeVerbose, new UnknownSceneObjectData());
+                foreach (var sceneObject in sceneObjects)
+                {
+                    var sceneObjectUnk = sceneObject.unk1;
+                    if (sceneObjectUnk != null)
+                    {
+                        writer.WriteX(sceneObjectUnk);
 
-            //0x74, 0x78: unused
+                        // NOTE: I'm breaking the rules here and serializing inline.
+                        // TODO: should make a list and serialize as list, not interwoven?
+                        // This COULD be okay, IDK.
+                        var subdata = sceneObjectUnk.unk;
+                        writer.WriteX(subdata, false);
+                    }
+                }
 
-            writer.InlineDesc(serializeVerbose, 0x80 + offset, fogCurves);
-            writer.WriteX(fogCurves);
+                // TODO: Serialize
+                // + animation clips
+                // + skeletal animators
 
-            writer.InlineDesc(serializeVerbose, 0x84 + offset, fog);
-            writer.WriteX(fog);
+            }
 
-            // 0x88, 0x8C: unused
+            // TRIGGERS
+            {
+                writer.InlineDesc(serializeVerbose, 0x60 + offset, unknownSolsTriggers);
+                writer.WriteX(unknownSolsTriggers, false);
 
-            writer.InlineDesc(serializeVerbose, 0x90 + offset, trackLength);
-            writer.CommentLineWide("Length:", trackLength.value.ToString("0.00"), true); // print length
-            writer.CommentNewLine(true, '-');
-            writer.WriteX(trackLength);
+                writer.InlineDesc(serializeVerbose, 0x94 + offset, unknownTriggers);
+                writer.WriteX(unknownTriggers, false);
 
-            writer.InlineDesc(serializeVerbose, 0x94 + offset, unknownTriggers);
-            writer.WriteX(unknownTriggers, false);
+                writer.InlineDesc(serializeVerbose, 0x9C + offset, visualEffectTriggers);
+                writer.WriteX(visualEffectTriggers, false);
 
-            writer.InlineDesc(serializeVerbose, 0x9C + offset, visualEffectTriggers);
-            writer.WriteX(visualEffectTriggers, false);
+                writer.InlineDesc(serializeVerbose, 0xA8 + offset, courseMetadataTriggers);
+                writer.WriteX(courseMetadataTriggers, false);
 
-            writer.InlineDesc(serializeVerbose, 0xA8 + offset, courseMetadataTriggers);
-            writer.WriteX(courseMetadataTriggers, false);
+                writer.InlineDesc(serializeVerbose, 0xB0 + offset, arcadeCheckpointTriggers);
+                writer.WriteX(arcadeCheckpointTriggers, false);
 
-            writer.InlineDesc(serializeVerbose, 0xB0 + offset, arcadeCheckpointTriggers);
-            writer.WriteX(arcadeCheckpointTriggers, false);
-
-            writer.InlineDesc(serializeVerbose, 0xB8 + offset, storyObjectTriggers);
-            writer.WriteX(storyObjectTriggers, false);
-
-            writer.InlineDesc(serializeVerbose, 0xBC + offset, trackCheckpointMatrix);
-            writer.WriteX(trackCheckpointMatrix);
-
-            // Non pointer data (aside from SceneObject counts)
-            unkRange0x00 = new Range(0f, 10000f); // default for test stages
-            boostPlatesActive = BoostPlatesActive.Enabled;
-            unkBool32_0x58 = Bool32.True;
-            circuitType = CircuitType.ClosedCircuit;
-            courseBoundsXZ = new BoundsXZ();
-
+                writer.InlineDesc(serializeVerbose, 0xB8 + offset, storyObjectTriggers);
+                writer.WriteX(storyObjectTriggers, false);
+                // Get better comment? Get proper pointers?
+                writer.InlineDesc(serializeVerbose, new StoryObjectPath());
+                foreach (var storyObjectTrigger in storyObjectTriggers)
+                {
+                    // Optional data
+                    var storyObjectPath = storyObjectTrigger.storyObjectPath;
+                    if (storyObjectPath != null)
+                    {
+                        // Uncomment if you want super-inline -- maybe have that as option?
+                        //writer.InlineDesc(serializeVerbose, storyObjectTrigger.GetPointer(), storyObjectTrigger);
+                        writer.WriteX(storyObjectTriggers, false);
+                    }
+                }
+            }
 
             // GET ALL REFERERS, RE-SERIALIZE FOR POINTERS
             {
                 // Get a reference to EVERY object in file that has a pointer to an object
                 var referers = new List<ISerializedBinaryAddressableReferer>();
-
-                // The file header has many dependencies
-                referers.Add(this);
 
                 // Track Nodes and dependencies
                 referers.AddRange(trackNodes);
@@ -477,35 +636,23 @@ namespace GameCube.GFZ.CourseCollision
                 foreach (var referer in referers)
                 {
                     var pointer = referer.GetPointer();
-                    writer.JumpToAddress(pointer);
-                    referer.Serialize(writer);
-                    // Run assertions on referer to ensure pointer requirements are met
-                    referer.ValidateReferences();
+                    if (pointer.IsNotNullPointer)
+                    {
+                        writer.JumpToAddress(pointer);
+                        referer.Serialize(writer);
+                        // Run assertions on referer to ensure pointer requirements are met
+                        referer.ValidateReferences();
+                    }
                 }
             } // end patching pointers
 
+            // RE-WRITE ColiScene HEADER TO RESERIALIZE POINTERS
+            // Rewrite main block pointers
+            writer.JumpToAddress(0);
+            SerializeSelf(writer);
+
             BinaryIoUtility.PopEndianess();
         }
-
-        public T[] RemoveDuplicateInstances<T>(T[] array)
-            where T : IBinaryAddressable
-        {
-            var uniqueList = new List<T>();
-            var uniqueAddressses = new List<int>();
-            foreach (var item in array)
-            {
-                var address = item.AddressRange.GetPointer().address;
-                if (!uniqueAddressses.Contains(address))
-                {
-                    // Keep track of current address
-                    uniqueAddressses.Add(address);
-                    uniqueList.Add(item);
-                }
-            }
-            return uniqueList.ToArray();
-        }
-
-
 
         public void DeserializeSelf(BinaryReader reader)
         {
@@ -570,14 +717,7 @@ namespace GameCube.GFZ.CourseCollision
                 // Refresh metadata
                 isFileAX = Format == SerializeFormat.AX;
                 isFileGX = Format == SerializeFormat.GX;
-
-                // TODO: below. Can't assert, this is called twice.
-                // Two pointers should already be serialized...
-                // Might be worth putting the zeroes in some class, then
-                // both could just .GetPointer() and there would be no
-                // issues around when this function is called.
-                //Assert.IsTrue(zeroes0x20Ptr.IsNotNullPointer);
-                //Assert.IsTrue(trackMinHeightPtr.IsNotNullPointer);
+                Assert.IsFalse(Format == SerializeFormat.InvalidFormat);
 
                 // UPDATE POINTERS AND COUNTS
                 // Track and stage data

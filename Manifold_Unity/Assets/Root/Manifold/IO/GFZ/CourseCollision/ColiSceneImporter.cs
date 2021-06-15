@@ -978,6 +978,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             // TODO: embed course name in file, use that if it exists.
             globalParams.courseName = CourseUtility.GetCourseName(scene.ID);
             globalParams.courseIndex = scene.ID;
+            globalParams.author = "Amusement Vision";
 
             // Copy fog parameters over
             globalParams.exportCustomFog = true; // whatever we import, use that

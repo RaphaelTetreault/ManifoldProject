@@ -88,7 +88,6 @@ namespace Manifold.IO.GFZ.CourseCollision
                 EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Single);
                 // ... so we can start doing the usual Unity methods to find stuff
 
-
                 // Get scene parameters for general info
                 var sceneParameters = FindObjectsOfType<GfzSceneParameters>();
                 Assert.IsTrue(sceneParameters.Length == 1);
@@ -118,6 +117,9 @@ namespace Manifold.IO.GFZ.CourseCollision
                 {
                     // Set filename to what F-Zero GX/AX would use
                     coliScene.FileName = internalName;
+                    coliScene.CourseName = sceneParams.courseName;
+                    coliScene.Venue= sceneParams.venue;
+                    coliScene.Author = sceneParams.author;
                     // Construct range from 2 parameters
                     coliScene.unkRange0x00 = new Range(sceneParams.rangeNear, sceneParams.rangeFar);
                     // Use functions to get form parameters

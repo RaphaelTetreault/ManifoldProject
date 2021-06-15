@@ -141,15 +141,15 @@ namespace GameCube.GFZ.CourseCollision
             // Ensure we have the correct amount of animation curves before indexing
             Assert.IsTrue(animationCurves.Length == kCurveCount);
 
-            // Each curve should only have 1 key. In reality, this is not true, but
+            // Each curve should 1 or more keys. In reality, this is not true, but
             // all the used data in the final game is like this (except ST44 where
             // [5/6] is missing]). Suffice to say, OUR data should conform to this.
-            //
+            
             // TO TEST: try an anim curve with multiple keys and interpolate between
             // 2 or more colours.
             foreach (var animationCurve in animationCurves)
             {
-                Assert.IsTrue(animationCurve.Length == 1);
+                Assert.IsTrue(animationCurve.Length > 0);
             }
         }
     }

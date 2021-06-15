@@ -33,6 +33,9 @@ namespace Manifold.IO
             if (!doWrite)
                 return;
 
+            if (string.IsNullOrEmpty(message))
+                return;
+
             var bytes = Encoding.ASCII.GetBytes(message);
             byte padByte = (byte)padding;
 
@@ -123,6 +126,16 @@ namespace Manifold.IO
             CommentNewLine(writer, true, '-', alignment);
         }
 
+        public static void InlineDesc<T>(this BinaryWriter writer, bool doWrite, T type, char padding = ' ', int alignment = 16)
+        {
+            if (!doWrite)
+                return;
+
+            writer.AlignTo(alignment, (byte)padding);
+            CommentNewLine(writer, true, '-', alignment);
+            writer.CommentType(type, true, ' ', alignment);
+            CommentNewLine(writer, true, '-', alignment);
+        }
 
         public static void CommentDateAndCredits(this BinaryWriter writer, bool doWrite)
         {
@@ -137,7 +150,7 @@ namespace Manifold.IO
             writer.Comment($"Time: {DateTime.Now:HH:mm:ss}", true);
             writer.CommentNewLine(true);
             writer.Comment("Manifold", true);
-            writer.Comment("created by", true);
+            writer.Comment("created by:", true);
             writer.WriteX(new byte[] { 0x52, 0x61, 0x70, 0x68, 0x61, 0xeb, 0x6c, 0x54, 0xe9, 0x74, 0x72, 0x65, 0x61, 0x75, 0x6c, 0x74 }, false); // RaphaëlTétreault
             writer.Comment("aka StarkNebula", true);
             writer.CommentNewLine(true, '-');

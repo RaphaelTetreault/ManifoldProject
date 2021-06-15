@@ -49,6 +49,9 @@ namespace GameCube.GFZ.CourseCollision
             int count = SurfaceCount;
             triMeshIndexMatrices = new StaticColliderMeshMatrix[count];
             quadMeshIndexMatrices = new StaticColliderMeshMatrix[count];
+
+            // initialize arrays
+            //for (int i = 0; i < count; i++)
         }
 
         public AddressRange AddressRange
@@ -201,7 +204,32 @@ namespace GameCube.GFZ.CourseCollision
 
         public void ValidateReferences()
         {
-            throw new NotImplementedException();
+            // if we have tris, ensure pointer exists
+            if (colliderTriangles != null && colliderTriangles.Length > 0)
+            {
+                Assert.IsTrue(collisionTrisPtr.IsNotNullPointer);
+
+                // Ensure that we have at least a list to point to quads
+                int listCount = 0;
+                foreach (var list in triMeshIndexMatrices)
+                    listCount += list.IndexesLength;
+                Assert.IsTrue(listCount > 0);
+            }
+
+            // if we have quads, ensure pointer exists
+            if (colliderQuads != null && colliderQuads.Length > 0)
+            {
+                Assert.IsTrue(collisionQuadsPtr.IsNotNullPointer);
+                
+                // Ensure that we have at least a list to point to quads
+                int listCount = 0;
+                foreach (var list in quadMeshIndexMatrices)
+                    listCount += list.IndexesLength;
+                Assert.IsTrue(listCount > 0);
+            }
+            //
+
+
         }
     }
 }
