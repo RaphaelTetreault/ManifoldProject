@@ -973,25 +973,28 @@ namespace Manifold.IO.GFZ.CourseCollision
             var scene = sceneSobj.Value;
 
             var sceneParamsObj = new GameObject("Scene Parameters");
-            var globalParams = sceneParamsObj.AddComponent<GfzSceneParameters>();
-            globalParams.venue = CourseUtility.GetVenue(scene.ID);
+            var sceneParams = sceneParamsObj.AddComponent<GfzSceneParameters>();
+            sceneParams.venue = CourseUtility.GetVenue(scene.ID);
             // TODO: embed course name in file, use that if it exists.
-            globalParams.courseName = CourseUtility.GetCourseName(scene.ID);
-            globalParams.courseIndex = scene.ID;
-            globalParams.author = "Amusement Vision";
+            sceneParams.courseName = CourseUtility.GetCourseName(scene.ID);
+            sceneParams.courseIndex = scene.ID;
+            sceneParams.author = "Amusement Vision";
+            // Other data
+            sceneParams.areBoostPlatesEnabled = scene.boostPlatesActive;
+            sceneParams.circuitType = scene.circuitType;
 
             // Copy fog parameters over
-            globalParams.exportCustomFog = true; // whatever we import, use that
-            globalParams.fogInterpolation = scene.fog.interpolation;
-            globalParams.fogNear = scene.fog.fogRange.near;
-            globalParams.fogFar = scene.fog.fogRange.far;
+            sceneParams.exportCustomFog = true; // whatever we import, use that
+            sceneParams.fogInterpolation = scene.fog.interpolation;
+            sceneParams.fogNear = scene.fog.fogRange.near;
+            sceneParams.fogFar = scene.fog.fogRange.far;
             var color = scene.fog.colorRGB;
-            globalParams.color = new Color(color.x, color.y, color.z);
+            sceneParams.color = new Color(color.x, color.y, color.z);
 
             // Convert from GFZ anim curves to Unity anim curves
-            globalParams.fogCurveR = scene.fogCurves.FogCurveR.ToUnity();
-            globalParams.fogCurveG = scene.fogCurves.FogCurveG.ToUnity();
-            globalParams.fogCurveB = scene.fogCurves.FogCurveB.ToUnity();
+            sceneParams.fogCurveR = scene.fogCurves.FogCurveR.ToUnity();
+            sceneParams.fogCurveG = scene.fogCurves.FogCurveG.ToUnity();
+            sceneParams.fogCurveB = scene.fogCurves.FogCurveB.ToUnity();
         }
     }
 

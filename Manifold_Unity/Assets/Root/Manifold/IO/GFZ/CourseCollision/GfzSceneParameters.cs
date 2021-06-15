@@ -12,13 +12,17 @@ namespace Manifold.IO.GFZ.CourseCollision
         //IGfzConvertable<Fog>,
         //IGfzConvertable<FogCurves>
     {
-        [Header("Details")]
+        [Header("About")]
         public string author;
 
         [Header("Course Details")]
         public Venue venue; // TODO: change to VenueName, make indexer helper
         public string courseName;
         public int courseIndex; // TODO: validate export venue to index
+        public CircuitType circuitType = CircuitType.ClosedCircuit;
+        public BoostPlatesActive areBoostPlatesEnabled = BoostPlatesActive.Enabled;
+        //public Bool32 unkBool32 = Bool32.True;
+
 
         [Header("Unknown Range")]
         public float rangeNear;
@@ -36,11 +40,6 @@ namespace Manifold.IO.GFZ.CourseCollision
         public UnityEngine.AnimationCurve fogCurveR;
         public UnityEngine.AnimationCurve fogCurveG;
         public UnityEngine.AnimationCurve fogCurveB;
-
-        // To consider
-        //boostPlatesActive = BoostPlatesActive.Enabled;
-        //unkBool32_0x58 = Bool32.True;
-        //circuitType = CircuitType.ClosedCircuit;
         
         private Fog CreateCustomFog()
         {
