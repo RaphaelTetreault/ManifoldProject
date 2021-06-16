@@ -74,6 +74,8 @@ namespace Manifold.IO.GFZ.CourseCollision
             {
                 // DEBUG
                 const bool findInactive = true;
+                const int width = 32;
+                const string padding = "-";
 
                 // 
                 coliScenes[sceneIndex] = new ColiScene();
@@ -105,6 +107,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 var log = new MarkdownTextLogger(logPath);
 
                 // Write file and course title
+                log.WriteHeading("FILE INFORMATION", padding, width);
                 log.WriteLine($"File: {internalName}");
                 log.WriteLine($"Name: {displayName}");
                 log.WriteLine();
@@ -138,6 +141,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                         ? $"{nameof(FogCurves)}: using custom fog curves."
                         : $"{nameof(FogCurves)}: using default fog curves for {sceneParams.venue}.";
                     log.WriteLine(fogCurvesMsg);
+                    log.WriteLine();
                 }
 
                 // Static Collider Meshes
@@ -147,58 +151,61 @@ namespace Manifold.IO.GFZ.CourseCollision
 
                 // Triggers
                 {
-                    log.WriteLine();
-                    log.WriteLine("TRIGGERS");
-
                     var arcadeCheckpointTriggers = FindObjectsOfType<GfzArcadeCheckpoint>(findInactive);
                     coliScene.arcadeCheckpointTriggers = GetGfzValues(arcadeCheckpointTriggers);
-                    log.WriteLineSummary(coliScene.arcadeCheckpointTriggers);
 
                     // This trigger type is a mess... Get all 3 representations, combine, assign.
-                    {
-                        // Collect all trigger types. They all get converted to the same GFZ base type.
-                        var objectPaths = FindObjectsOfType<GfzObjectPath>(findInactive);
-                        var storyCapsules = FindObjectsOfType<GfzStoryCapsule>(findInactive);
-                        var unknownMetadataTriggers = FindObjectsOfType<GfzUnknownCourseMetadataTrigger>(findInactive);
-                        // Make a list, add range for each type
-                        var courseMetadataTriggers = new List<CourseMetadataTrigger>();
-                        courseMetadataTriggers.AddRange(GetGfzValues(objectPaths));
-                        courseMetadataTriggers.AddRange(GetGfzValues(storyCapsules));
-                        courseMetadataTriggers.AddRange(GetGfzValues(unknownMetadataTriggers));
-                        // Convert list to array, assign to ColiScene
-                        coliScene.courseMetadataTriggers = courseMetadataTriggers.ToArray();
-                        // Log. TODO: more granularity in type.
-                        log.WriteLineSummary(coliScene.courseMetadataTriggers);
-                    }
+                    // Collect all trigger types. They all get converted to the same GFZ base type.
+                    var objectPaths = FindObjectsOfType<GfzObjectPath>(findInactive);
+                    var storyCapsules = FindObjectsOfType<GfzStoryCapsule>(findInactive);
+                    var unknownMetadataTriggers = FindObjectsOfType<GfzUnknownCourseMetadataTrigger>(findInactive);
+                    // Make a list, add range for each type
+                    var courseMetadataTriggers = new List<CourseMetadataTrigger>();
+                    courseMetadataTriggers.AddRange(GetGfzValues(objectPaths));
+                    courseMetadataTriggers.AddRange(GetGfzValues(storyCapsules));
+                    courseMetadataTriggers.AddRange(GetGfzValues(unknownMetadataTriggers));
+                    // Convert list to array, assign to ColiScene
+                    coliScene.courseMetadataTriggers = courseMetadataTriggers.ToArray();
 
-                    // TODO: story object triggers
+                    // TODO:
+                    // story object triggers
 
                     // This trigger type is a mess... Get all 3 representations, combine, assign.
                     var unknownTriggers = FindObjectsOfType<GfzUnknownTrigger>(findInactive);
                     coliScene.unknownTriggers = GetGfzValues(unknownTriggers);
-                    log.WriteLineSummary(coliScene.unknownTriggers);
 
                     var unknownSolsTriggers = FindObjectsOfType<GfzUnknownSolsTrigger>(findInactive);
                     coliScene.unknownSolsTriggers = GetGfzValues(unknownSolsTriggers);
-                    log.WriteLineSummary(coliScene.unknownSolsTriggers);
 
                     var visualEffectTriggers = FindObjectsOfType<GfzVisualEffectTrigger>(findInactive);
                     coliScene.visualEffectTriggers = GetGfzValues(visualEffectTriggers);
+
+
+                    log.WriteLine("TRIGGERS");
+                    log.WriteLineSummary(coliScene.arcadeCheckpointTriggers);
+                    // Log. TODO: more granularity in type.
+                    log.WriteLineSummary(coliScene.courseMetadataTriggers);
+                    log.WriteLineSummary(coliScene.unknownTriggers);
+                    log.WriteLineSummary(coliScene.unknownSolsTriggers);
                     log.WriteLineSummary(coliScene.visualEffectTriggers);
+                    log.WriteLine();
                 }
 
                 // Scene Objects / Instances / References / Names
                 {
-                    log.WriteLine();
-                    log.WriteLine("SCENE OBJECTS");
-
                     var sceneObjects = FindObjectsOfType<GfzSceneObject>(findInactive);
                     coliScene.sceneObjects = new SceneObject[0];
 
+                    // TODO: construct the actual objects...
+
+                    log.WriteLine();
+                    log.WriteLine("SCENE OBJECTS");
                     log.WriteLineSummary(coliScene.sceneObjects);
+                    log.WriteLineSummary(coliScene.sceneOriginObjects);
                     log.WriteLineSummary(coliScene.sceneInstances);
                     log.WriteLineSummary(coliScene.sceneObjectReferences);
                     log.WriteLineSummary(coliScene.objectNames);
+                    log.WriteLine();
                 }
 
                 // Track Data
@@ -219,16 +226,54 @@ namespace Manifold.IO.GFZ.CourseCollision
                 }
                 Debug.LogWarning("TODO: define bounds");
 
-                // TEMP: flush in case errors ahead
-                log.Close();
-
                 // Export the file
                 var exported = ExportUtility.ExportSerializable(coliScene, exportTo, "", allowOverwritingFiles);
-                //log.WriteLine($"Exported file to path \"{exported}\"");
+                log.WriteHeading("EXPORT", padding, width);
+                log.WriteLine($"Exported file to path \"{exported}\"");
+                log.WriteLine();
 
+                // Write out all types and their address in file
+                log.WriteHeading("SERIALIZATION SUMMARY", padding, width);
+                log.WriteLine();
                 //
-                //log.Close();
+                log.WriteAddress(coliScene.fog);
+                log.WriteAddress(coliScene.fogCurves);
+                log.WriteLine();
+                //
+                log.WriteAddress(coliScene.trackLength);
+                log.WriteAddress(coliScene.trackMinHeight);
+                log.WriteAddress(coliScene.trackCheckpointMatrix);
+                log.WriteAddress(coliScene.trackNodes);
+                log.WriteLine();
+                // checkpoints
+                // segments
+                //
+                log.WriteHeading("STATIC COLLISION", padding, width);
+                log.WriteAddress(coliScene.staticColliderMeshes);
+                log.WriteLine();
+                log.WriteLine("TRIANGLES");
+                log.WriteAddress(coliScene.staticColliderMeshes.colliderTriangles);
+                log.WriteAddress(coliScene.staticColliderMeshes.triMeshIndexMatrices);
+                foreach (var triIndexList in coliScene.staticColliderMeshes.triMeshIndexMatrices)
+                    if (triIndexList != null)
+                    log.WriteAddress(triIndexList.indexLists);
+                log.WriteLine("QUADS");
+                log.WriteAddress(coliScene.staticColliderMeshes.colliderQuads);
+                log.WriteAddress(coliScene.staticColliderMeshes.quadMeshIndexMatrices);
+                foreach (var quadIndexList in coliScene.staticColliderMeshes.quadMeshIndexMatrices)
+                    if (quadIndexList != null)
+                        log.WriteAddress(quadIndexList.indexLists);
+                // triggers
+                log.WriteAddress(coliScene.arcadeCheckpointTriggers);
+                log.WriteAddress(coliScene.courseMetadataTriggers);
+                log.WriteAddress(coliScene.storyObjectTriggers);
+                log.WriteAddress(coliScene.unknownSolsTriggers);
+                log.WriteAddress(coliScene.unknownTriggers);
+                log.WriteAddress(coliScene.visualEffectTriggers);
+                log.WriteLine();
 
+
+                log.Close();
                 OSUtility.OpenDirectory(openFolderAfterExport, exported);
                 OSUtility.OpenDirectory(openFolderAfterExport, logPath);
             }

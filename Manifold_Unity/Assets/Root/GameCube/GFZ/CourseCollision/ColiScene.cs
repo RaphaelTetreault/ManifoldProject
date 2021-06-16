@@ -833,13 +833,13 @@ namespace GameCube.GFZ.CourseCollision
                 Assert.IsTrue(zeroes0xD8[i] == 0);
 
             // Assert all pointers which are never null in game files
-            Assert.IsTrue(trackNodesPtr.IsNotNullPointer);
+            ////Assert.IsTrue(trackNodesPtr.IsNotNullPointer);
             Assert.IsTrue(surfaceAttributeAreasPtr.IsNotNullPointer);
             Assert.IsTrue(staticColliderMeshesPtr.IsNotNullPointer);
             Assert.IsTrue(zeroes0x20Ptr.IsNotNullPointer);
             Assert.IsTrue(trackMinHeightPtr.IsNotNullPointer);
-            Assert.IsTrue(sceneObjectsPtr.IsNotNullPointer);
-            Assert.IsTrue(sceneInstancesPtr.IsNotNullPointer);
+            ////Assert.IsTrue(sceneObjectsPtr.IsNotNullPointer);
+            ////Assert.IsTrue(sceneInstancesPtr.IsNotNullPointer);
             Assert.IsTrue(fogPtr.IsNotNullPointer);
             Assert.IsTrue(trackCheckpointMatrixPtr.IsNotNullPointer);
 
