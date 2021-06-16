@@ -131,7 +131,9 @@ namespace Manifold.IO
             if (!doWrite)
                 return;
 
+            // Align with desired padding, not '-' from next call
             writer.AlignTo(alignment, (byte)padding);
+
             CommentNewLine(writer, true, '-', alignment);
             writer.CommentType(type, true, ' ', alignment);
             CommentNewLine(writer, true, '-', alignment);

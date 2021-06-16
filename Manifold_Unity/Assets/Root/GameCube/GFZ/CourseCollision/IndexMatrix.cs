@@ -136,33 +136,6 @@ namespace GameCube.GFZ.CourseCollision
 
         public void Serialize(BinaryWriter writer)
         {
-            //// Print out comments if required.
-            //// Do one big check since there are many useless calls otherwise.
-            //if (ColiCourseUtility.SerializeVerbose)
-            //{
-            //    // Gather some metadata
-            //    var type = GetType(); // Since there is inheritance, get type dynamically.
-            //    var index = ColiCourseUtility.Index; // setting up data in static class to get print index
-            //    var listCount = 0;
-            //    foreach (var indexList in indexLists)
-            //        listCount += indexList.Length > 0 ? 1 : 0;
-
-            //    // Write this data type and associated metadata
-            //    writer.CommentAlign(true);
-            //    writer.CommentNewLine(true, padding: '-');
-            //    writer.Comment(type.Name, true);
-            //    if (type == typeof(StaticMeshTableIndexes))
-            //    {
-            //        writer.CommentLineWide("T:", $"{(StaticMeshColliderProperty)index}", true);
-            //        writer.CommentIdx(index, true);
-            //    }
-            //    writer.CommentPtr(ColiCourseUtility.Pointer, true, padding: ' ');
-            //    writer.CommentLineWide("Lists:", $"{listCount}", true);
-            //    writer.CommentLineWide("LargestIdx:", $"{largestIndex}", true);
-            //    writer.CommentNewLine(true, padding: '-');
-            //}
-
-
             {
                 // Ensure we have the correct amount of lists before indexing
                 Assert.IsTrue(indexLists.Length == Count);
@@ -177,16 +150,11 @@ namespace GameCube.GFZ.CourseCollision
             {
                 ValidateReferences();
 
-                for (int i = 0; i < indexLists.Length; i++)
+                // Write all pointers
+                for (int ptrIndex = 0; ptrIndex < indexArrayPtrs.Length; ptrIndex++)
                 {
-                    var indexList = indexLists[i];
-                    if (indexList.Length > 0)
-                    {
-                        // TODO: resolve pointer
-                        // ALSO, StaticMeshTable PROBABLY maps collision into 16x16 table as does checkpoints!!!
-                        throw new NotImplementedException();
-                        //indexArrayPtrs[i] = indexList.SerializeWithReference(writer).GetPointer();
-                    }
+                    var ptr = indexArrayPtrs[ptrIndex];
+                    writer.WriteX(ptr);
                 }
             }
             this.RecordEndAddress(writer);

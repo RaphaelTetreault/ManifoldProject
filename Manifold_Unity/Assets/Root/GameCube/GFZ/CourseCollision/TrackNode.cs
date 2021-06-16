@@ -10,7 +10,7 @@ namespace GameCube.GFZ.CourseCollision
     /// the actual track stucture itself ("transform"). Thus, transform is
     /// referenced by many of these multiple times, while points are unqiue
     /// per TrackNode. If branched, points is an array of a point on each branch
-    /// and an avergaed node acting sort of as the center (always index 0).
+    /// and an averaged node acting sort of as the center (always index 0).
     /// </summary>
     [Serializable]
     public class TrackNode :

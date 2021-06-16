@@ -1,4 +1,5 @@
-﻿using Manifold.IO;
+﻿using Manifold;
+using Manifold.IO;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -387,6 +388,7 @@ namespace GameCube.GFZ.CourseCollision
                     }
                 }
 
+                // 
                 // Write track checkpoint indexers
                 writer.InlineDesc(serializeVerbose, 0xBC + offset, trackCheckpointMatrix);
                 writer.WriteX(trackCheckpointMatrix);
@@ -460,17 +462,14 @@ namespace GameCube.GFZ.CourseCollision
                 {
                     // TODO: assert venue vs fog curves?
 
-                    // 
+                    // Write FogCurves pointers to animation curves...
                     writer.InlineDesc(serializeVerbose, 0x80 + offset, fogCurves);
                     writer.WriteX(fogCurves);
                     var fogCurvesPtr = fogCurves.GetPointer();
-
-                    // Write the animation data associated with fog curves
+                    // ... then write the animation data associated with fog curves
                     writer.InlineDesc(serializeVerbose, fogCurvesPtr, fogCurves);
                     foreach (var curve in fogCurves.animationCurves)
-                    {
                         writer.WriteX(curve);
-                    }
                 }
             }
 
@@ -482,7 +481,8 @@ namespace GameCube.GFZ.CourseCollision
                 writer.WriteX(sceneObjects, false);
 
                 // SCENE ORIGIN OBJECTS
-                writer.InlineDesc(serializeVerbose, 0x70 + offset, sceneOriginObjects);
+                if (!sceneOriginObjects.IsNullOrEmpty())
+                    writer.InlineDesc(serializeVerbose, 0x70 + offset, sceneOriginObjects);
                 writer.WriteX(sceneOriginObjects, false);
 
                 // SCENE INSTANCES
@@ -495,7 +495,11 @@ namespace GameCube.GFZ.CourseCollision
 
                 // SCENE OBJECT NAMES
                 // No direct pointer. Names are aligned to 4 bytes.
-                writer.InlineDesc(serializeVerbose, objectNames);
+                writer.CommentAlign(serializeVerbose);
+                writer.CommentNewLine(serializeVerbose, '-');
+                writer.Comment("ObjectNames[]", serializeVerbose, ' ');
+                writer.CommentNewLine(serializeVerbose, '-');
+                //
                 foreach (var objectName in objectNames)
                 {
                     writer.WriteX(objectName, false);
@@ -540,25 +544,21 @@ namespace GameCube.GFZ.CourseCollision
 
             // TRIGGERS
             {
-                writer.InlineDesc(serializeVerbose, 0x60 + offset, unknownSolsTriggers);
-                writer.WriteX(unknownSolsTriggers, false);
-
-                writer.InlineDesc(serializeVerbose, 0x94 + offset, unknownTriggers);
-                writer.WriteX(unknownTriggers, false);
-
-                writer.InlineDesc(serializeVerbose, 0x9C + offset, visualEffectTriggers);
-                writer.WriteX(visualEffectTriggers, false);
-
-                writer.InlineDesc(serializeVerbose, 0xA8 + offset, courseMetadataTriggers);
-                writer.WriteX(courseMetadataTriggers, false);
-
-                writer.InlineDesc(serializeVerbose, 0xB0 + offset, arcadeCheckpointTriggers);
+                if (!arcadeCheckpointTriggers.IsNullOrEmpty())
+                    writer.InlineDesc(serializeVerbose, 0xB0 + offset, arcadeCheckpointTriggers);
                 writer.WriteX(arcadeCheckpointTriggers, false);
 
-                writer.InlineDesc(serializeVerbose, 0xB8 + offset, storyObjectTriggers);
+                if (!courseMetadataTriggers.IsNullOrEmpty())
+                    writer.InlineDesc(serializeVerbose, 0xA8 + offset, courseMetadataTriggers);
+                writer.WriteX(courseMetadataTriggers, false);
+
+                if (!storyObjectTriggers.IsNullOrEmpty())
+                    writer.InlineDesc(serializeVerbose, 0xB8 + offset, storyObjectTriggers);
                 writer.WriteX(storyObjectTriggers, false);
+                //
                 // Get better comment? Get proper pointers?
-                writer.InlineDesc(serializeVerbose, new StoryObjectPath());
+                if (!storyObjectTriggers.IsNullOrEmpty())
+                    writer.InlineDesc(serializeVerbose, new StoryObjectPath());
                 foreach (var storyObjectTrigger in storyObjectTriggers)
                 {
                     // Optional data
@@ -575,6 +575,18 @@ namespace GameCube.GFZ.CourseCollision
                         writer.WriteX(storyObjectPath.animationCurve);
                     }
                 }
+
+                if (!unknownSolsTriggers.IsNullOrEmpty())
+                    writer.InlineDesc(serializeVerbose, 0x60 + offset, unknownSolsTriggers);
+                writer.WriteX(unknownSolsTriggers, false);
+
+                if (!unknownTriggers.IsNullOrEmpty())
+                    writer.InlineDesc(serializeVerbose, 0x94 + offset, unknownTriggers);
+                writer.WriteX(unknownTriggers, false);
+
+                if (!visualEffectTriggers.IsNullOrEmpty())
+                    writer.InlineDesc(serializeVerbose, 0x9C + offset, visualEffectTriggers);
+                writer.WriteX(visualEffectTriggers, false);
             }
 
             // GET ALL REFERERS, RE-SERIALIZE FOR POINTERS

@@ -10,7 +10,7 @@ namespace GameCube.GFZ.CourseCollision
         IBinarySerializable
     {
         // CONSTANTS
-        public const int kUshortArrayTerminator = 0xFFFF;
+        public const ushort kUshortArrayTerminator = 0xFFFF;
 
         // METADATA
         [UnityEngine.SerializeField] private AddressRange addressRange;
@@ -58,14 +58,18 @@ namespace GameCube.GFZ.CourseCollision
 
         public void Serialize(BinaryWriter writer)
         {
-            // Write each index
-            foreach (var index in indexes)
+            // Only serialize list if we have indexes to serialize.
+            // Otherwise we serialize a null terminator.
+            if (Length > 0)
             {
-                writer.WriteX(index);
+                // Write each index
+                foreach (var index in indexes)
+                {
+                    writer.WriteX(index);
+                }
+                // Write terminating character
+                writer.WriteX(kUshortArrayTerminator);
             }
-            // Write terminating character
-            writer.WriteX(kUshortArrayTerminator);
         }
-
     }
 }

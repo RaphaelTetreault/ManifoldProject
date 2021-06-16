@@ -72,6 +72,9 @@ namespace Manifold.IO.GFZ.CourseCollision
 
             for (int sceneIndex = 0; sceneIndex < coliScenes.Length; sceneIndex++)
             {
+                // DEBUG
+                const bool findInactive = true;
+
                 // 
                 coliScenes[sceneIndex] = new ColiScene();
 
@@ -118,7 +121,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                     // Set filename to what F-Zero GX/AX would use
                     coliScene.FileName = internalName;
                     coliScene.CourseName = sceneParams.courseName;
-                    coliScene.Venue= sceneParams.venue;
+                    coliScene.Venue = sceneParams.venue;
                     coliScene.Author = sceneParams.author;
                     // Construct range from 2 parameters
                     coliScene.unkRange0x00 = new Range(sceneParams.rangeNear, sceneParams.rangeFar);
@@ -126,14 +129,15 @@ namespace Manifold.IO.GFZ.CourseCollision
                     coliScene.fog = sceneParams.ToGfzFog();
                     coliScene.fogCurves = sceneParams.ToGfzFogCurves();
 
-                    if (sceneParams.exportCustomFog)
-                    {
-                        log.WriteLine($"Fog: using custom fog.");
-                    }
-                    else
-                    {
-                        log.WriteLine($"Fog: using default fog for {sceneParams.venue}.");
-                    }
+                    var fogMsg = sceneParams.exportCustomFog
+                        ? $"{nameof(Fog)}: using custom fog."
+                        : $"{nameof(Fog)}: using default fog for {sceneParams.venue}.";
+                    log.WriteLine(fogMsg);
+
+                    var fogCurvesMsg = sceneParams.exportCustomFog
+                        ? $"{nameof(FogCurves)}: using custom fog curves."
+                        : $"{nameof(FogCurves)}: using default fog curves for {sceneParams.venue}.";
+                    log.WriteLine(fogCurvesMsg);
                 }
 
                 // Static Collider Meshes
@@ -146,16 +150,16 @@ namespace Manifold.IO.GFZ.CourseCollision
                     log.WriteLine();
                     log.WriteLine("TRIGGERS");
 
-                    var arcadeCheckpointTriggers = FindObjectsOfType<GfzArcadeCheckpoint>();
+                    var arcadeCheckpointTriggers = FindObjectsOfType<GfzArcadeCheckpoint>(findInactive);
                     coliScene.arcadeCheckpointTriggers = GetGfzValues(arcadeCheckpointTriggers);
                     log.WriteLineSummary(coliScene.arcadeCheckpointTriggers);
 
                     // This trigger type is a mess... Get all 3 representations, combine, assign.
                     {
                         // Collect all trigger types. They all get converted to the same GFZ base type.
-                        var objectPaths = FindObjectsOfType<GfzObjectPath>();
-                        var storyCapsules = FindObjectsOfType<GfzStoryCapsule>();
-                        var unknownMetadataTriggers = FindObjectsOfType<GfzUnknownCourseMetadataTrigger>();
+                        var objectPaths = FindObjectsOfType<GfzObjectPath>(findInactive);
+                        var storyCapsules = FindObjectsOfType<GfzStoryCapsule>(findInactive);
+                        var unknownMetadataTriggers = FindObjectsOfType<GfzUnknownCourseMetadataTrigger>(findInactive);
                         // Make a list, add range for each type
                         var courseMetadataTriggers = new List<CourseMetadataTrigger>();
                         courseMetadataTriggers.AddRange(GetGfzValues(objectPaths));
@@ -170,15 +174,15 @@ namespace Manifold.IO.GFZ.CourseCollision
                     // TODO: story object triggers
 
                     // This trigger type is a mess... Get all 3 representations, combine, assign.
-                    var unknownTriggers = FindObjectsOfType<GfzUnknownTrigger>();
+                    var unknownTriggers = FindObjectsOfType<GfzUnknownTrigger>(findInactive);
                     coliScene.unknownTriggers = GetGfzValues(unknownTriggers);
                     log.WriteLineSummary(coliScene.unknownTriggers);
 
-                    var unknownSolsTriggers = FindObjectsOfType<GfzUnknownSolsTrigger>();
+                    var unknownSolsTriggers = FindObjectsOfType<GfzUnknownSolsTrigger>(findInactive);
                     coliScene.unknownSolsTriggers = GetGfzValues(unknownSolsTriggers);
                     log.WriteLineSummary(coliScene.unknownSolsTriggers);
 
-                    var visualEffectTriggers = FindObjectsOfType<GfzVisualEffectTrigger>();
+                    var visualEffectTriggers = FindObjectsOfType<GfzVisualEffectTrigger>(findInactive);
                     coliScene.visualEffectTriggers = GetGfzValues(visualEffectTriggers);
                     log.WriteLineSummary(coliScene.visualEffectTriggers);
                 }
@@ -188,7 +192,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                     log.WriteLine();
                     log.WriteLine("SCENE OBJECTS");
 
-                    var sceneObjects = FindObjectsOfType<GfzSceneObject>();
+                    var sceneObjects = FindObjectsOfType<GfzSceneObject>(findInactive);
                     coliScene.sceneObjects = new SceneObject[0];
 
                     log.WriteLineSummary(coliScene.sceneObjects);
@@ -199,7 +203,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
                 // Track Data
                 {
-                    var controlPoints = FindObjectsOfType<GfzControlPoint>();
+                    var controlPoints = FindObjectsOfType<GfzControlPoint>(findInactive);
 
                     //coliScene.
 
@@ -213,6 +217,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                     coliScene.trackLength = new TrackLength();
                     coliScene.trackMinHeight = new TrackMinHeight();
                 }
+                Debug.LogWarning("TODO: define bounds");
 
                 // TEMP: flush in case errors ahead
                 log.Close();
@@ -233,11 +238,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             // TODO: make these export functions less long.
             var exportedFiles = ExportUtility.ExportSerializable(coliScenes, exportTo, "", allowOverwritingFiles);
             OSUtility.OpenDirectory(openFolderAfterExport, exportedFiles);
-
-
-
         }
-
 
 
         public static T[] GetGfzValues<T>(IGfzConvertable<T>[] unity)

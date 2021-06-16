@@ -65,9 +65,15 @@ namespace GameCube.GFZ
             // Multiply by "shortMax" to set range -32768 through +32767
             //short result = (short)(normalized * shortMax);
 
+            // TODO:
+            // uh... won't wrapping of value mean you don't need to care
+            // until floating point precision becomes a problem? Even then,
+            // clamping rotations with % yields same result, no?
+            //Debug.Log(value);
+
             // ASSERT WE ARE DEALING WITH PROPER VALUES
             // Check range, -180 inclusive, +180 exclusive
-            Assert.IsTrue(value <  +180f);
+            Assert.IsTrue(value <= +180f); // 2021/06/15: made <= ok.
             Assert.IsTrue(value >= -180f);
             // Normalize float from -180 through +180 to -1 through +1
             float normalized = value / 180f;
