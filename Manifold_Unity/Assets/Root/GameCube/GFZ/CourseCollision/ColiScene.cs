@@ -339,6 +339,7 @@ namespace GameCube.GFZ.CourseCollision
 
             // 
             {
+                // Read all ROOT track segments
                 var rootTrackSegmentDict = new Dictionary<Pointer, TrackSegment>();
                 foreach (var trackNode in trackNodes)
                 {
@@ -346,36 +347,72 @@ namespace GameCube.GFZ.CourseCollision
                 }
                 rootTrackSegments = rootTrackSegmentDict.Values.ToArray();
 
-                // TODO: deserialize when refactored as graph
-                //var allTrackSegmentDict = new Dictionary<Pointer, TrackSegment>();
-                //foreach (var trackNode in trackNodes)
-                //{
-                //    GetSerializable(reader, trackNode.segmentPtr, ref trackNode.segment, rootTrackSegmentDict);
-                //}
-                //allTrackSegments = allTrackSegmentDict.Values.ToArray();
+                // Read ALL track segments
+                // Master list of all TrackSegments
+                var allTrackSegments = new Dictionary<Pointer, TrackSegment>();
+                // Start by iterating over each root node in graph
+                foreach (var rootSegment in rootTrackSegments)
+                {
+                    // Read out children fo root, then continue deserializing children recursively
+                    // Deserialization method respects ArayPointer order in list.
+                    ReadTrackSegmentsRecursive(reader, allTrackSegments, rootSegment);
+                }
+                this.allTrackSegments = allTrackSegments.Values.ToArray();
             }
 
-            //// DESERIALIZE UNIQUE TRACK TRANSFORMS
-            //{
-            //    var trackTransformPtrs = new List<Pointer>();
-            //    foreach (var node in trackNodes)
-            //    {
-            //        var pointer = node.segmentPtr;
-            //        if (!trackTransformPtrs.Contains(pointer))
-            //            trackTransformPtrs.Add(pointer);
-            //    }
-            //    rootTrackSegments = new TrackSegment[trackTransformPtrs.Count];
-            //    for (int i = 0; i < rootTrackSegments.Length; i++)
-            //    {
-            //        var pointer = trackTransformPtrs[i];
-            //        reader.JumpToAddress(pointer);
-            //        reader.ReadX(ref rootTrackSegments[i], true);
-            //    }
-            //}
-            //// Track Transforms
-            //// TODO: all refs
-
             BinaryIoUtility.PopEndianess();
+        }
+
+
+        public void ReadTrackSegmentsRecursive(BinaryReader reader, Dictionary<Pointer, TrackSegment> allTrackSegments, TrackSegment parent)
+        {
+            // Add parent node to master list
+            var parentPtr = parent.GetPointer();
+            if (!allTrackSegments.ContainsKey(parentPtr))
+                allTrackSegments.Add(parentPtr, parent);
+
+            // Deserialize children (if any)
+            var children = parent.GetChildren(reader);
+            var requiresDeserialization = new List<TrackSegment>();
+
+            // Get the index of where these children WILL be in list
+            var childIndexes = new int[children.Length];
+            for (int i = 0; i < childIndexes.Length; i++)
+            {
+                var child = children[i];
+                var childPtr = child.GetPointer();
+
+                var listContainsChild = allTrackSegments.ContainsKey(childPtr);
+                if (listContainsChild)
+                {
+                    // Child is in master list, get index
+                    for (int j = 0; j < allTrackSegments.Count; j++)
+                    {
+                        if (allTrackSegments[j].GetPointer() == childPtr)
+                        {
+                            childIndexes[i] = j;
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    // Add child to master list
+                    // child index is COUNT (oob), add to list (is now in array bounds)
+                    childIndexes[i] = allTrackSegments.Count;
+                    allTrackSegments.Add(childPtr, child);
+                    requiresDeserialization.Add(child);
+                }
+            }
+
+            // Set indexes of children to 
+            parent.childIndexes = childIndexes;
+
+            // Read children recursively (if any).
+            foreach (var child in requiresDeserialization)
+            {
+                ReadTrackSegmentsRecursive(reader, allTrackSegments, child);
+            }
         }
 
         public void Serialize(BinaryWriter writer)

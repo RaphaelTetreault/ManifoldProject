@@ -103,7 +103,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 }
 
                 // Track data transforms
-                CreateTrackTransformHierarchy(scene);
+                //CreateTrackTransformHierarchy(scene);
                 //TestTransformHeirarchy(scene);
 
                 // Checkpoints?
@@ -458,111 +458,112 @@ namespace Manifold.IO.GFZ.CourseCollision
         }
 
 
-        #region Track Transform Hierarchies
+        //#region Track Transform Hierarchies
 
-        private int elementIndex = 0;
-        public void CreateTrackTransformHierarchy(ColiScene scene)
-        {
-            // Get mesh for debugging
-            var mesh = Resources.GetBuiltinResource<Mesh>("Cube.fbx");
+        //private int elementIndex = 0;
+        //public void CreateTrackTransformHierarchy(ColiScene scene)
+        //{
+        //    // Get mesh for debugging
+        //    var mesh = Resources.GetBuiltinResource<Mesh>("Cube.fbx");
 
-            // Create object to house data
-            var controlPointsParent = new GameObject();
-            controlPointsParent.name = "Control Points Hierarchy";
+        //    // Create object to house data
+        //    var controlPointsParent = new GameObject();
+        //    controlPointsParent.name = "Control Points Hierarchy";
 
-            //
-            elementIndex = 0;
+        //    //
+        //    elementIndex = 0;
 
-            // Loop over every top transform
-            int count = 0;
-            int total = scene.rootTrackSegments.Length;
-            foreach (var trackTransform in scene.rootTrackSegments)
-            {
-                // Recursively create transforms
-                count++;
-                var name = $"[{count}/{total}] Control Point | {count}";
-                CreateControlPointRecursive(trackTransform, controlPointsParent, mesh, name, 0);
-            }
-        }
+        //    // Loop over every top transform
+        //    int count = 0;
+        //    int total = scene.rootTrackSegments.Length;
+        //    foreach (var trackTransform in scene.rootTrackSegments)
+        //    {
+        //        // Recursively create transforms
+        //        count++;
+        //        var name = $"[{count}/{total}] Control Point | {count}";
+        //        CreateControlPointRecursive(trackTransform, controlPointsParent, mesh, name, 0);
+        //    }
+        //}
 
-        public void CreateTrackTransformSet(ColiScene scene)
-        {
-            // Get mesh for debugging
-            var mesh = Resources.GetBuiltinResource<Mesh>("Cube.fbx");
+        //public void CreateTrackTransformSet(ColiScene scene)
+        //{
+        //    // Get mesh for debugging
+        //    var mesh = Resources.GetBuiltinResource<Mesh>("Cube.fbx");
 
-            // Create object to house data
-            var controlPointsRoot = new GameObject();
-            controlPointsRoot.name = "Control Points Set";
+        //    // Create object to house data
+        //    var controlPointsRoot = new GameObject();
+        //    controlPointsRoot.name = "Control Points Set";
 
-            // Loop over every top transform
-            //int count = 0;
-            int index = 0;
-            int total = scene.rootTrackSegments.Length;
-            foreach (var trackTransform in scene.rootTrackSegments)
-            {
-                //
-                var name = $"[{++index}/{total}] Control Point";
-                var controlPointSet = new GameObject();
-                controlPointSet.name = name;
-                controlPointSet.transform.parent = controlPointsRoot.transform;
-                CreateControlPointSequential(trackTransform, controlPointSet, mesh, name, 0, 0);
+        //    // Loop over every top transform
+        //    //int count = 0;
+        //    int index = 0;
+        //    int total = scene.rootTrackSegments.Length;
+        //    foreach (var trackTransform in scene.rootTrackSegments)
+        //    {
+        //        //
+        //        var name = $"[{++index}/{total}] Control Point";
+        //        var controlPointSet = new GameObject();
+        //        controlPointSet.name = name;
+        //        controlPointSet.transform.parent = controlPointsRoot.transform;
+        //        CreateControlPointSequential(trackTransform, controlPointSet, mesh, name, 0, 0);
 
-                // Recursively create transforms
-                //count++;
-                //var name = $"[{count}/{total}] Control Point | {count}";
-                //CreateControlPointRecursive(trackTransform, controlPointsParent, mesh, name, 0);
-            }
-        }
+        //        // Recursively create transforms
+        //        //count++;
+        //        //var name = $"[{count}/{total}] Control Point | {count}";
+        //        //CreateControlPointRecursive(trackTransform, controlPointsParent, mesh, name, 0);
+        //    }
+        //}
 
-        public void CreateControlPointRecursive(TrackSegment trackTransform, GameObject parent, Mesh mesh, string name, int depth)
-        {
-            //
-            var controlPoint = new GameObject();
-            var tag = controlPoint.AddComponent<TagTrackTransform>();
-            tag.Data = trackTransform;
-            //
-            controlPoint.name = $"{elementIndex++} {name}";
-            controlPoint.transform.parent = parent.transform;
-            // Set transform
-            controlPoint.transform.localPosition = trackTransform.localPosition;
-            controlPoint.transform.localRotation = Quaternion.Euler(trackTransform.localRotation);
-            controlPoint.transform.localScale = trackTransform.localScale;
+        //public void CreateControlPointRecursive(TrackSegment trackTransform, GameObject parent, Mesh mesh, string name, int depth)
+        //{
+        //    //
+        //    var controlPoint = new GameObject();
+        //    var tag = controlPoint.AddComponent<TagTrackTransform>();
+        //    tag.Data = trackTransform;
+        //    //
+        //    controlPoint.name = $"{elementIndex++} {name}";
+        //    controlPoint.transform.parent = parent.transform;
+        //    // Set transform
+        //    controlPoint.transform.localPosition = trackTransform.localPosition;
+        //    controlPoint.transform.localRotation = Quaternion.Euler(trackTransform.localRotation);
+        //    controlPoint.transform.localScale = trackTransform.localScale;
 
-            //
-            var display = controlPoint.AddComponent<DisplayTrackTransformSingle>();
-            display.depth = depth;
+        //    //
+        //    var display = controlPoint.AddComponent<DisplayTrackTransformSingle>();
+        //    display.depth = depth;
 
-            //
-            int count = 1;
-            int total = trackTransform.children.Length;
-            foreach (var child in trackTransform.children)
-            {
-                name = $"{name}.{count++}";
-                CreateControlPointRecursive(child, controlPoint, mesh, name, depth + 1);
-            }
-        }
+        //    //
+        //    int count = 1;
+        //    int total = trackTransform.children.Length;
+        //    foreach (var child in trackTransform.children)
+        //    {
+        //        name = $"{name}.{count++}";
+        //        CreateControlPointRecursive(child, controlPoint, mesh, name, depth + 1);
+        //    }
+        //}
 
-        public void CreateControlPointSequential(TrackSegment trackTransform, GameObject parent, Mesh mesh, string name, int depth, int index)
-        {
-            //Create new control point
-            var controlPoint = new GameObject();
-            //
-            controlPoint.name = $"{name} {depth}.{index}";
-            controlPoint.transform.parent = parent.transform;
-            // Set transform
-            controlPoint.transform.position = trackTransform.localPosition;
-            controlPoint.transform.rotation = Quaternion.Euler(trackTransform.localRotation);
-            controlPoint.transform.localScale = trackTransform.localScale;
+        //public void CreateControlPointSequential(TrackSegment trackTransform, GameObject parent, Mesh mesh, string name, int depth, int index)
+        //{
+        //    //Create new control point
+        //    var controlPoint = new GameObject();
+        //    //
+        //    controlPoint.name = $"{name} {depth}.{index}";
+        //    controlPoint.transform.parent = parent.transform;
+        //    // Set transform
+        //    controlPoint.transform.position = trackTransform.localPosition;
+        //    controlPoint.transform.rotation = Quaternion.Euler(trackTransform.localRotation);
+        //    controlPoint.transform.localScale = trackTransform.localScale;
 
-            //
-            index = 0;
-            foreach (var next in trackTransform.children)
-            {
-                CreateControlPointSequential(next, parent, mesh, name, depth + 1, ++index);
-            }
-        }
+        //    //
+        //    index = 0;
+        //    foreach (var next in trackTransform.children)
+        //    {
+        //        CreateControlPointSequential(next, parent, mesh, name, depth + 1, ++index);
+        //    }
+        //}
 
-        #endregion
+
+        //#endregion
 
         // COLLIDER OBJECTS
         public void IncludeStaticMeshColliders(ColiSceneSobj sceneSobj, string stageFolder)
@@ -704,11 +705,11 @@ namespace Manifold.IO.GFZ.CourseCollision
                 trackTransform.localScale);
 
             // get child matrix
-            if (trackTransform.topologyMetadata == TrackTopologyMetadata.IsTransformParent)
-            {
-                var childMatrix = GetTransformMatrix(trackTransform.children[0], increment);
-                return transformMatrix * childMatrix;
-            }
+            //if (trackTransform.topologyMetadata == TrackTopologyMetadata.IsTransformParent)
+            //{
+            //    var childMatrix = GetTransformMatrix(trackTransform.children[0], increment);
+            //    return transformMatrix * childMatrix;
+            //}
 
             return transformMatrix;
         }
@@ -746,12 +747,12 @@ namespace Manifold.IO.GFZ.CourseCollision
             animationMatrix.SetTRS(position, Quaternion.Euler(rotation), scale);
 
             // get child matrix
-            if (trackTransform.topologyMetadata == TrackTopologyMetadata.IsTransformParent)
-            {
-                var childMatrix = GetAnimMatrix(trackTransform.children[0], time);
-
-                return animationMatrix * childMatrix;
-            }
+            //if (trackTransform.topologyMetadata == TrackTopologyMetadata.IsTransformParent)
+            //{
+            //    var childMatrix = GetAnimMatrix(trackTransform.children[0], time);
+            //
+            //    return animationMatrix * childMatrix;
+            //}
 
             return animationMatrix;
         }

@@ -19,7 +19,6 @@ namespace GameCube.GFZ.CourseCollision
         public float4x4 localMatrix;
         public float4x4 worldMatrix;
         public int depth;
-        public TrackSegment parent; // TODO: remove direct reference. Maybe use struct for name, index, metadata
 
         // FIELDS
         public TrackTopologyMetadata topologyMetadata;
@@ -48,7 +47,8 @@ namespace GameCube.GFZ.CourseCollision
         // REFERENCE FIELDS
         public TopologyParameters trackSegment;
         public TrackCornerTopology hairpinCornerTopology;
-        public TrackSegment[] children = new TrackSegment[0];
+        public int[] childIndexes = new int[0];
+        //public TrackSegment[] graph = new TrackSegment[0];
 
 
         // PROPERTIES
@@ -101,28 +101,28 @@ namespace GameCube.GFZ.CourseCollision
                 // Create a matrix for convenience
                 localMatrix = float4x4.TRS(localPosition, quaternion.EulerXYZ(localRotation), localScale);
                 // Update values based on children
-                worldMatrix = localMatrix;
+                //worldMatrix = localMatrix;
 
-                // Read children recusively
-                if (childrenPtrs.IsNotNullPointer)
-                {
-                    reader.JumpToAddress(childrenPtrs);
-                    reader.ReadX(ref children, childrenPtrs.Length, true);
+                //// Read children recusively
+                //if (childrenPtrs.IsNotNullPointer)
+                //{
+                //    reader.JumpToAddress(childrenPtrs);
+                //    reader.ReadX(ref children, childrenPtrs.Length, true);
 
-                    foreach (var child in children)
-                    {
-                        child.worldMatrix = worldMatrix * child.localMatrix;
-                        child.parent = this;
-                    }
+                //    foreach (var child in children)
+                //    {
+                //        child.worldMatrix = worldMatrix * child.localMatrix;
+                //        child.parent = this;
+                //    }
 
-                    // Calculate depth by recursively evaluating lineage
-                    var ancestor = parent;
-                    while (ancestor != null)
-                    {
-                        depth++;
-                        ancestor = ancestor.parent;
-                    }
-                }
+                //    // Calculate depth by recursively evaluating lineage
+                //    var ancestor = parent;
+                //    while (ancestor != null)
+                //    {
+                //        depth++;
+                //        ancestor = ancestor.parent;
+                //    }
+                //}
 
                 // Assertions
                 Assert.IsTrue(zero_0x44 == 0);
@@ -131,20 +131,53 @@ namespace GameCube.GFZ.CourseCollision
             this.SetReaderToEndAddress(reader);
         }
 
-        // TODO: remove
-        public void SetChildIndex(TrackSegment parent)
+        //// TODO: remove
+        //public void SetChildIndex(TrackSegment parent)
+        //{
+        //    foreach (var child in parent.children)
+        //    {
+        //        child.depth = parent.depth + 1;
+        //        SetChildIndex(child);
+        //    }
+        //}
+
+        public void SetChildPointers(TrackSegment[] children)
         {
-            foreach (var child in parent.children)
+            children.GetArrayPointer();
+
+            // Assert that children are truly sequential.
+            // This is a HARD requirement of ArrayPointer.
+            // Iterate from 0 - (n-1). If length == 1, no looping.
+            for (int i = 0; i < children.Length - 1; i++)
             {
-                child.depth = parent.depth + 1;
-                SetChildIndex(child);
+                var curr = children[i + 0];
+                var next = children[i + 1];
+                // The end address of the current child must be the same as the next child
+                Assert.IsTrue(curr.AddressRange.startAddress == next.AddressRange.endAddress);
             }
         }
+
+        public TrackSegment[] GetChildren(BinaryReader reader)
+        {
+            // Read children recusively
+            var children = new TrackSegment[0];
+            if (childrenPtrs.IsNotNullPointer)
+            {
+                // NOTE: children are always consecutive (ArrayPointer)
+                reader.JumpToAddress(childrenPtrs);
+                reader.ReadX(ref children, childrenPtrs.Length, true);
+            }
+            return children;
+        }
+
 
         public void Serialize(BinaryWriter writer)
         {
             {
-                childrenPtrs = children.GetArrayPointer();
+                // Child pointers are handled by ColiScene due to the
+                // recursive nature of this type.
+                // See "SetChildPointers(TrackSegment[] children)"
+
                 generalTopologyPtr = trackSegment.GetPointer();
                 hairpinCornerTopologyPtr = hairpinCornerTopology.GetPointer();
             }
@@ -191,6 +224,23 @@ namespace GameCube.GFZ.CourseCollision
             bool hasTurnRight = perimeterOptions.HasFlag(TrackPerimeterOptions.has90TurnRight);
             bool isTurnNotNull = hairpinCornerTopology != null;
             Assert.IsTrue(hasTurnLeft || hasTurnRight && isTurnNotNull);
+        }
+
+        public override string ToString()
+        {
+            var builder = new System.Text.StringBuilder();
+            builder.Append(nameof(TrackSegment));
+            builder.Append("(Children [");
+            builder.Append(childIndexes.Length);
+            builder.Append("]");
+            foreach (var childIndex in childIndexes)
+            {
+                builder.Append(", ");
+                builder.Append(childIndex);
+            }
+            builder.Append(")");
+
+            return builder.ToString();
         }
 
     }

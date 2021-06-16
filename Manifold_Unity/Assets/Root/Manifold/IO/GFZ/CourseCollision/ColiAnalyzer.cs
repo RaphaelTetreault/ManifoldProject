@@ -409,8 +409,9 @@ namespace Manifold.IO.GFZ.CourseCollision
             }
 
             // Go to track transform children, write their anim data (calls this function)
-            foreach (var child in trackTransform.children)
-                WriteTrackKeyableAttributeRecursive(writer, sobj, nestedDepth + 1, animationCurveIndex, trackTransformIndex, child);
+            Debug.LogWarning("You refactored this analysis out!");
+            //foreach (var child in trackTransform.children)
+            //    WriteTrackKeyableAttributeRecursive(writer, sobj, nestedDepth + 1, animationCurveIndex, trackTransformIndex, child);
         }
 
         public void WriteKeyableAttribute(StreamWriter writer, ColiSceneSobj sobj, int nestedDepth, int keyableIndex, int keyableTotal, int keyablesSet, int trackTransformIndex, KeyableAttribute param, TrackSegment tt)
@@ -503,10 +504,10 @@ namespace Manifold.IO.GFZ.CourseCollision
             WriteTrackTransform(writer, sobj, depth, index, total, trackTransform);
 
             // Write children
-            foreach (var child in trackTransform.children)
-            {
-                WriteTrackTransformRecursive(writer, sobj, depth + 1, index, total, child);
-            }
+            //foreach (var child in trackTransform.children)
+            //{
+            //    WriteTrackTransformRecursive(writer, sobj, depth + 1, index, total, child);
+            //}
         }
         // The actual writing to file
         public void WriteTrackTransform(StreamWriter writer, ColiSceneSobj sobj, int depth, int index, int total, TrackSegment trackTransform)
