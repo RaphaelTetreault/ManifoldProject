@@ -38,38 +38,44 @@ namespace GameCube.GFZ.CourseCollision
         // METHODS
         public void Deserialize(BinaryReader reader)
         {
-            var list = new List<ushort>();
-            while (true)
+            this.RecordStartAddress(reader);
             {
-                // Read next value
-                var value = reader.ReadX_UInt16();
-                // Break loop, don't add value if terminator
-                if (value == kUshortArrayTerminator)
+                var list = new List<ushort>();
+                while (true)
                 {
-                    break;
+                    // Read next value
+                    var value = reader.ReadX_UInt16();
+                    // Break loop, don't add value if terminator
+                    if (value == kUshortArrayTerminator)
+                    {
+                        break;
+                    }
+                    // Add value to collection
+                    list.Add(value);
                 }
-                // Add value to collection
-                list.Add(value);
+                indexes = list.ToArray();
             }
-
-            // Return collection as array
-            indexes = list.ToArray();
+            this.RecordEndAddress(reader);
         }
 
         public void Serialize(BinaryWriter writer)
         {
-            // Only serialize list if we have indexes to serialize.
-            // Otherwise we accidentally serialize a null terminator.
-            if (Length > 0)
+            this.RecordStartAddress(writer);
             {
-                // Write each index
-                foreach (var index in indexes)
+                // Only serialize list if we have indexes to serialize.
+                // Otherwise we accidentally serialize a null terminator.
+                if (Length > 0)
                 {
-                    writer.WriteX(index);
+                    // Write each index
+                    foreach (var index in indexes)
+                    {
+                        writer.WriteX(index);
+                    }
+                    // Write terminating character
+                    writer.WriteX(kUshortArrayTerminator);
                 }
-                // Write terminating character
-                writer.WriteX(kUshortArrayTerminator);
             }
+            this.RecordEndAddress(writer);
         }
     }
 }

@@ -64,6 +64,17 @@ namespace Manifold.IO.GFZ.CourseCollision
         {
             ColiCourseUtility.SerializeVerbose = serializeVerbose;
 
+            {
+                var sobj = exportSobjs[0];
+                var dateTime = DateTime.Now;
+                var timestamp = $"[{dateTime:yyyy-MM-dd}][{dateTime:HH-mm-ss}]";
+                var logPath = Path.Combine(exportTo, $"{timestamp} - {sobj.FileName}.txt");
+                var log = new MarkdownTextLogger(logPath);
+                WriteFullReport(log, sobj);
+                log.Close();
+                return;
+            }
+
             // Construct ColiScene from Unity Scene "scenes"
             var coliScenes = new ColiScene[scenes.Length];
 
@@ -74,7 +85,8 @@ namespace Manifold.IO.GFZ.CourseCollision
             {
                 // DEBUG
                 const bool findInactive = true;
-                const int width = 32;
+                const int h1Width = 96;
+                const int h2Width = 32;
                 const string padding = "-";
 
                 // 
@@ -107,7 +119,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 var log = new MarkdownTextLogger(logPath);
 
                 // Write file and course title
-                log.WriteHeading("FILE INFORMATION", padding, width);
+                log.WriteHeading("FILE INFORMATION", padding, h2Width);
                 log.WriteLine($"File: {internalName}");
                 log.WriteLine($"Name: {displayName}");
                 log.WriteLine();
@@ -228,52 +240,14 @@ namespace Manifold.IO.GFZ.CourseCollision
 
                 // Export the file
                 var exported = ExportUtility.ExportSerializable(coliScene, exportTo, "", allowOverwritingFiles);
-                log.WriteHeading("EXPORT", padding, width);
+                log.WriteHeading("EXPORT", padding, h1Width);
                 log.WriteLine($"Exported file to path \"{exported}\"");
                 log.WriteLine();
-
-                // Write out all types and their address in file
-                log.WriteHeading("SERIALIZATION SUMMARY", padding, width);
+                WriteFullReport(log, coliScene);
                 log.WriteLine();
-                //
-                log.WriteAddress(coliScene.fog);
-                log.WriteAddress(coliScene.fogCurves);
-                log.WriteLine();
-                //
-                log.WriteAddress(coliScene.trackLength);
-                log.WriteAddress(coliScene.trackMinHeight);
-                log.WriteAddress(coliScene.trackCheckpointMatrix);
-                log.WriteAddress(coliScene.trackNodes);
-                log.WriteLine();
-                // checkpoints
-                // segments
-                //
-                log.WriteHeading("STATIC COLLISION", padding, width);
-                log.WriteAddress(coliScene.staticColliderMeshes);
-                log.WriteLine();
-                log.WriteLine("TRIANGLES");
-                log.WriteAddress(coliScene.staticColliderMeshes.colliderTriangles);
-                log.WriteAddress(coliScene.staticColliderMeshes.triMeshIndexMatrices);
-                foreach (var triIndexList in coliScene.staticColliderMeshes.triMeshIndexMatrices)
-                    if (triIndexList != null)
-                    log.WriteAddress(triIndexList.indexLists);
-                log.WriteLine("QUADS");
-                log.WriteAddress(coliScene.staticColliderMeshes.colliderQuads);
-                log.WriteAddress(coliScene.staticColliderMeshes.quadMeshIndexMatrices);
-                foreach (var quadIndexList in coliScene.staticColliderMeshes.quadMeshIndexMatrices)
-                    if (quadIndexList != null)
-                        log.WriteAddress(quadIndexList.indexLists);
-                // triggers
-                log.WriteAddress(coliScene.arcadeCheckpointTriggers);
-                log.WriteAddress(coliScene.courseMetadataTriggers);
-                log.WriteAddress(coliScene.storyObjectTriggers);
-                log.WriteAddress(coliScene.unknownSolsTriggers);
-                log.WriteAddress(coliScene.unknownTriggers);
-                log.WriteAddress(coliScene.visualEffectTriggers);
-                log.WriteLine();
-
-
+                log.WriteHeading("END OF FILE", padding, h1Width);
                 log.Close();
+
                 OSUtility.OpenDirectory(openFolderAfterExport, exported);
                 OSUtility.OpenDirectory(openFolderAfterExport, logPath);
             }
@@ -294,5 +268,132 @@ namespace Manifold.IO.GFZ.CourseCollision
 
             return gfz;
         }
+
+
+        public static void WriteFullReport(MarkdownTextLogger log, ColiScene coliScene)
+        {
+            const int h1Width = 96;
+            const int h2Width = 64;
+            const int h3Width = 32;
+            const string padding = "-";
+
+            // Write out all types and their address in file
+            log.WriteHeading("SERIALIZATION SUMMARY", padding, h1Width);
+            log.WriteLine();
+            log.WriteHeading("GENERAL", padding, h2Width);
+            log.WriteLine(coliScene.unkRange0x00);
+            log.WriteAddress(coliScene.fog);
+            log.WriteAddress(coliScene.fogCurves);
+            log.WriteLine(); //
+            log.WriteLine(); // yes, 2 WriteLines
+            log.WriteHeading("SCENE OBJECTS", padding, h2Width);
+            log.WriteLine("Object Names");
+            log.WriteAddress(coliScene.objectNames);
+            log.WriteAddress(coliScene.sceneObjectReferences);
+            log.WriteAddress(coliScene.sceneInstances);
+            log.WriteAddress(coliScene.sceneOriginObjects);
+            log.WriteAddress(coliScene.sceneObjects);
+            {
+                log.WriteHeading("FULL OBJECT SUMMARY", padding, h2Width);
+                int total = coliScene.sceneObjects.Length;
+                for (int i = 0; i < total; i++)
+                {
+                    var sceneObject = coliScene.sceneObjects[i];
+
+                    log.WriteLine($"[{i}/{total}] {sceneObject.nameCopy}");
+                    log.WriteAddress(sceneObject);
+                    log.WriteAddress(sceneObject.instanceReference);
+                    log.WriteAddress(sceneObject.instanceReference.objectReference);
+                    log.WriteAddress(sceneObject.instanceReference.objectReference.name);
+                    log.WriteAddress(sceneObject.transformMatrix3x4);
+
+                    log.WriteAddress(sceneObject.skeletalAnimator);
+                    if (sceneObject.skeletalAnimator != null)
+                        log.WriteAddress(sceneObject.skeletalAnimator.properties);
+
+                    log.WriteAddress(sceneObject.animation);
+                    if (sceneObject.animation != null)
+                        log.WriteAddress(sceneObject.animation.animationCurvePluses);
+                    // TODO: other sub classes?
+
+                    log.WriteAddress(sceneObject.unk1);
+                    if (sceneObject.unk1 != null)
+                        log.WriteAddress(sceneObject.unk1.unk);
+
+                    log.WriteLine();
+                }
+            }
+            log.WriteLine();
+            log.WriteHeading("TRACK DATA", padding, h2Width);
+            log.WriteAddress(coliScene.trackLength);
+            log.WriteAddress(coliScene.trackMinHeight);
+            log.WriteAddress(coliScene.courseBoundsXZ);
+            log.WriteAddress(coliScene.surfaceAttributeAreas);
+            log.WriteLine("ROOT SEGMENTS");
+            log.WriteAddress(coliScene.rootTrackSegments);
+            log.WriteLine("ALL SEGMENTS");
+            log.WriteAddress(coliScene.allTrackSegments);
+            log.WriteLine(); // TODO: temp, remove when allTrackSegments implemented properly
+            log.WriteAddress(coliScene.trackCheckpointMatrix);
+            log.WriteAddress(coliScene.trackNodes);
+            {
+                var checkpoints = new List<TrackCheckpoint>();
+                foreach (var trackNode in coliScene.trackNodes)
+                    foreach (var checkpoint in trackNode.checkpoints)
+                        checkpoints.Add(checkpoint);
+                log.WriteAddress(checkpoints.ToArray());
+            }
+            // checkpoints
+            // segments
+            log.WriteLine();
+            log.WriteHeading("STATIC COLLISION", padding, h2Width);
+            log.WriteAddress(coliScene.staticColliderMeshes);
+            log.WriteLine();
+            log.WriteLine("Mesh Bounds");
+            log.WriteAddress(coliScene.staticColliderMeshes.meshBounds);
+            log.WriteAddress(coliScene.staticColliderMeshes.ununsedMeshBounds);
+            log.WriteLine();
+            log.WriteLine("TRIANGLES");
+            log.WriteAddress(coliScene.staticColliderMeshes.colliderTriangles);
+            log.WriteAddress(coliScene.staticColliderMeshes.triMeshIndexMatrices);
+            // Write each index list
+            log.WriteNullInArray = false;
+            for (int i = 0; i < coliScene.staticColliderMeshes.triMeshIndexMatrices.Length; i++)
+            {
+                var triIndexList = coliScene.staticColliderMeshes.triMeshIndexMatrices[i];
+                if (triIndexList != null)
+                {
+                    log.WriteLine($"COLLIDER TYPE [{i}]: {(StaticColliderMeshProperty)i}");
+                    log.WriteAddress(triIndexList.indexLists);
+                }
+            }
+            log.WriteNullInArray = true;
+
+            log.WriteLine("QUADS");
+            log.WriteAddress(coliScene.staticColliderMeshes.colliderQuads);
+            log.WriteAddress(coliScene.staticColliderMeshes.quadMeshIndexMatrices);
+            // Write each index list
+            log.WriteNullInArray = false;
+            for (int i = 0; i < coliScene.staticColliderMeshes.quadMeshIndexMatrices.Length; i++)
+            {
+                var quadIndexList = coliScene.staticColliderMeshes.quadMeshIndexMatrices[i];
+                if (quadIndexList != null)
+                {
+                    log.WriteLine($"COLLIDER TYPE [{i}]: {(StaticColliderMeshProperty)i}");
+                    log.WriteAddress(quadIndexList.indexLists);
+                }
+            }
+            log.WriteNullInArray = true;
+            log.WriteLine();
+            //
+            log.WriteHeading("TRIGGERS", padding, h2Width);
+            log.WriteAddress(coliScene.arcadeCheckpointTriggers);
+            log.WriteAddress(coliScene.courseMetadataTriggers);
+            log.WriteAddress(coliScene.storyObjectTriggers);
+            log.WriteAddress(coliScene.unknownSolsTriggers);
+            log.WriteAddress(coliScene.unknownTriggers);
+            log.WriteAddress(coliScene.visualEffectTriggers);
+        }
+
     }
 }

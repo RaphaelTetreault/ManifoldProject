@@ -196,7 +196,7 @@ namespace GameCube.GFZ.CourseCollision
             id = int.Parse(matchDigits.Value);
 
             // Read COLI_COURSE## file header
-            DeserializeSelf(reader);
+            DeserializeHeader(reader);
 
             // 0x08 and 0x0C: Track Nodes
             reader.JumpToAddress(trackNodesPtr);
@@ -275,6 +275,7 @@ namespace GameCube.GFZ.CourseCollision
             reader.JumpToAddress(trackCheckpointMatrixPtr);
             reader.ReadX(ref trackCheckpointMatrix, true);
 
+
             // DESERIALIZE UNIQUE TRACK TRANSFORMS
             var trackTransformPtrs = new List<Pointer>();
             foreach (var node in trackNodes)
@@ -300,7 +301,7 @@ namespace GameCube.GFZ.CourseCollision
             BinaryIoUtility.PushEndianess(false);
 
             // Write header
-            SerializeSelf(writer);
+            SerializeHeader(writer);
 
             // MAINTAIN FILE IDENTIFICATION COMPATIBILITY
             {
@@ -682,14 +683,14 @@ namespace GameCube.GFZ.CourseCollision
             // RE-WRITE ColiScene HEADER TO RESERIALIZE POINTERS
             // Rewrite main block pointers
             writer.JumpToAddress(0);
-            SerializeSelf(writer);
+            SerializeHeader(writer);
             // Validate this structure before finishing.
             ValidateReferences();
 
             BinaryIoUtility.PopEndianess();
         }
 
-        public void DeserializeSelf(BinaryReader reader)
+        public void DeserializeHeader(BinaryReader reader)
         {
             this.RecordStartAddress(reader);
             {
@@ -746,7 +747,7 @@ namespace GameCube.GFZ.CourseCollision
             }
         }
 
-        public void SerializeSelf(BinaryWriter writer)
+        public void SerializeHeader(BinaryWriter writer)
         {
             {
                 // Refresh metadata

@@ -9,7 +9,7 @@ namespace GameCube.GFZ.CourseCollision
     /// 
     /// </summary>
     [Serializable]
-    public struct BoundsXZ :
+    public class BoundsXZ :
         IBinaryAddressable,
         IBinarySerializable
     {

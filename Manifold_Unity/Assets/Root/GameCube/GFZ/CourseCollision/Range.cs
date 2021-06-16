@@ -31,5 +31,11 @@ namespace GameCube.GFZ.CourseCollision
             writer.WriteX(near);
             writer.WriteX(far);
         }
+
+        public override string ToString()
+        {
+            return $"Range({nameof(near)}: {near:0}, {nameof(far)}: {far:0})";
+        }
+
     }
 }
