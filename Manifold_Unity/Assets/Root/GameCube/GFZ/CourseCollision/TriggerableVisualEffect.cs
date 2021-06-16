@@ -1,5 +1,7 @@
 namespace GameCube.GFZ.CourseCollision
 {
+    // TODO: Use System.ComponentModel.Description to get this in order?
+
     /// <summary>
     /// Denotes which visual effect is triggered. Some values are
     /// shared between venues and may or may not have same effect.

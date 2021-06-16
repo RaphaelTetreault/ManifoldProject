@@ -8,7 +8,7 @@ namespace GameCube.GFZ.CourseCollision
     /// This structure points to an object which does not use a transform for placement within the scene.
     /// </summary>
     [Serializable]
-    public class SceneOriginObjects :
+    public class SceneOriginObject :
         IBinaryAddressable,
         IBinarySerializable,
         ISerializedBinaryAddressableReferer
@@ -68,5 +68,13 @@ namespace GameCube.GFZ.CourseCollision
             Assert.IsTrue(sceneObjectReferencePtr.IsNotNullPointer);
         }
 
+
+        public override string ToString()
+        {
+            return 
+                $"{nameof(SceneOriginObject)}(" +
+                $"Name: {nameCopy}" +
+                $")";
+        }
     }
 }

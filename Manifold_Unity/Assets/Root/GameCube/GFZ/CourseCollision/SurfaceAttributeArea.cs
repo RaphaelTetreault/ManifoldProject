@@ -94,5 +94,18 @@ namespace GameCube.GFZ.CourseCollision
             this.RecordEndAddress(writer);
         }
 
+        public override string ToString()
+        {
+            return 
+                $"{nameof(SurfaceAttributeArea)}(" +
+                $"{nameof(lengthFrom)}: {lengthFrom}, " +
+                $"{nameof(lengthTo)}: {lengthTo}, " +
+                $"{nameof(widthLeft)}: {widthLeft}, " +
+                $"{nameof(widthRight)}: {widthRight}, " +
+                $"{nameof(surfaceAttribute)}: {surfaceAttribute}, " +
+                $"{nameof(trackBranchID)}: {trackBranchID}" +
+                $")";
+        }
+
     }
 }

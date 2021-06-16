@@ -78,5 +78,10 @@ namespace GameCube.GFZ.CourseCollision
             // this way you can be confident in asserting object reference and pointer
             throw new NotImplementedException();
         }
+
+        public override string ToString()
+        {
+            return $"{nameof(UnknownSceneObjectData)} (ptr wrapper type)";
+        }
     }
 }

@@ -97,7 +97,7 @@ namespace GameCube.GFZ.CourseCollision
         public TrackMinHeight trackMinHeight = new TrackMinHeight(); // has default constructor
         public SceneObject[] sceneObjects = new SceneObject[0];
         public SceneInstanceReference[] sceneInstances = new SceneInstanceReference[0];
-        public SceneOriginObjects[] sceneOriginObjects = new SceneOriginObjects[0];
+        public SceneOriginObject[] sceneOriginObjects = new SceneOriginObject[0];
         public UnknownSolsTrigger[] unknownSolsTriggers = new UnknownSolsTrigger[0];
         public FogCurves fogCurves;
         public Fog fog;

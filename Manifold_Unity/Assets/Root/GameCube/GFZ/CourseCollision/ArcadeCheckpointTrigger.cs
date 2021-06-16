@@ -49,5 +49,14 @@ namespace GameCube.GFZ.CourseCollision
             this.RecordEndAddress(writer);
         }
 
+        public override string ToString()
+        {
+            return
+                $"{nameof(ArcadeCheckpointTrigger)}(" +
+                $"{nameof(type)}: {type}, " +
+                $"{transform}" +
+                $")";
+        }
+
     }
 }

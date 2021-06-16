@@ -52,5 +52,13 @@ namespace GameCube.GFZ.CourseCollision
             this.RecordEndAddress(writer);
         }
 
+        public override string ToString()
+        {
+            return
+                $"{nameof(UnknownSolsTrigger)}(" +
+                $"{transform}" +
+                $")";
+        }
+
     }
 }

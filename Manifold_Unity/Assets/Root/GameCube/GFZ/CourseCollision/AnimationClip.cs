@@ -80,5 +80,15 @@ namespace GameCube.GFZ.CourseCollision
             }
             this.RecordEndAddress(writer);
         }
+
+        public override string ToString()
+        {
+            return
+                $"{nameof(AnimationClip)}(" +
+                $"{nameof(unk_0x00)}: {unk_0x00}, " +
+                $"{nameof(unk_0x04)}: {unk_0x04}, " +
+                $"{nameof(unk_layer_0x18)}: {unk_layer_0x18}" +
+                $")";
+        }
     }
 }

@@ -23,8 +23,8 @@ namespace GameCube.GFZ.CourseCollision
         // NOTE: prior to adding 25% to W/L, the "box" lines up to that edge and is thus properly centered.
         public float width; // x axis. Width between min/max tracknodes.pos.x * 10f * 1.25f (+25%)
         public float length; // z axis. Length between min/max tracknodes.pos.z * 10f * 1.25f (+25%)
-        public int subdivisionsX; // number of subvidions along x-axis. 8 for course checkpoints, 16 for collider geo.
-        public int subdivisionsZ; // number of subvidions along z-axis. 8 for course checkpoints, 16 for collider geo.
+        public int subdivisionsX; // number of subdivisions along x-axis. 8 for course checkpoints, 16 for collider geo.
+        public int subdivisionsZ; // number of subdivisions along z-axis. 8 for course checkpoints, 16 for collider geo.
 
 
         // PROPERTIES
@@ -83,6 +83,19 @@ namespace GameCube.GFZ.CourseCollision
                 writer.WriteX(subdivisionsZ);
             }
             this.RecordEndAddress(writer);
+        }
+
+        public override string ToString()
+        {
+            return 
+                $"{nameof(BoundsXZ)}(" +
+                $"{nameof(maxX)}: {maxX}, " +
+                $"{nameof(maxZ)}: {maxZ}, " +
+                $"{nameof(width)}: {width}, " +
+                $"{nameof(length)}: {length}, " +
+                $"{nameof(subdivisionsX)}: {subdivisionsX}, " +
+                $"{nameof(subdivisionsZ)}: {subdivisionsZ}" +
+                $")";
         }
 
     }

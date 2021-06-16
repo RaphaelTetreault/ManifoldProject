@@ -147,5 +147,16 @@ namespace GameCube.GFZ.CourseCollision
             Assert.IsTrue(zero_0x2C == 0);
         }
 
+        public override string ToString()
+        {
+            return
+                $"{nameof(SceneObject)}(" +
+                $"LOD A: {lodNear}, " +
+                $"LOD B: {lodFar}, " +
+                $"{transform} " +
+                $"Name: {nameCopy}" +
+                $")";
+        }
+
     }
 }

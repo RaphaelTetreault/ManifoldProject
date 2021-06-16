@@ -46,7 +46,7 @@ namespace Manifold.IO
 
         public bool WriteNullInArray { get; set; } = true;
 
-        public void WriteAddress<T>(T value, bool inlineType = true, int typePadRight = 32)
+        public void WriteAddress<T>(T value, bool inlineType = true, int typePadRight = 24)
             where T : IBinaryAddressable
         {
             var typeDesc = inlineType ?
@@ -68,7 +68,7 @@ namespace Manifold.IO
             }
         }
 
-        public void WriteAddress<T>(T[] values, bool inlineType = false, int typePadRight = 32)
+        public void WriteAddress<T>(T[] values, bool inlineType = false, int typePadRight = 24)
             where T : IBinaryAddressable
         {
             if (values.IsNullOrEmpty())

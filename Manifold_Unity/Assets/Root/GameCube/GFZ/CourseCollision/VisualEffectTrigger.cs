@@ -52,5 +52,15 @@ namespace GameCube.GFZ.CourseCollision
             this.RecordEndAddress(writer);
         }
 
+        public override string ToString()
+        {
+            return
+                $"{nameof(VisualEffectTrigger)}(" +
+                $"{nameof(animation)}: {animation}, " +
+                $"{nameof(visualEffect)}: {visualEffect}, " +
+                $"{transform}, " +
+                $")";
+        }
+
     }
 }

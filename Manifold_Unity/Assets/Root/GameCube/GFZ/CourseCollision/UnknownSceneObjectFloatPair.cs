@@ -50,5 +50,14 @@ namespace GameCube.GFZ.CourseCollision
             this.RecordEndAddress(writer);
         }
 
+        public override string ToString()
+        {
+            return
+                $"{nameof(UnknownSceneObjectFloatPair)}(" +
+                $"{nameof(unk_0x00)}: {unk_0x00}, " +
+                $"{nameof(unk_0x04)}: {unk_0x04}" +
+                $")";
+        }
+
     }
 }

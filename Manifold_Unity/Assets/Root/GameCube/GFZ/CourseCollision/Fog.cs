@@ -416,5 +416,16 @@ namespace GameCube.GFZ.CourseCollision
                 zero0x18 = zero0x18,
             };
         }
+
+        public override string ToString()
+        {
+            return 
+                $"{nameof(Fog)}(" +
+                $"{nameof(interpolation)}: {interpolation}, " +
+                $"{nameof(fogRange)}: {fogRange}, " +
+                $"{nameof(colorRGB)}(r:{colorRGB.x}, g:{colorRGB.y}, b:{colorRGB.z})" +
+                $")";
+        }
+
     }
 }

@@ -45,11 +45,10 @@ namespace GameCube.GFZ.CourseCollision
             }
             this.RecordEndAddress(reader);
             {
-                if (propertiesPtr.IsNotNullPointer)
-                {
-                    reader.JumpToAddress(propertiesPtr);
-                    reader.ReadX(ref properties, true);
-                }
+                // 2021/06/16: should ALWAYS exist
+                Assert.IsTrue(propertiesPtr.IsNotNullPointer);
+                reader.JumpToAddress(propertiesPtr);
+                reader.ReadX(ref properties, true);
             }
             this.SetReaderToEndAddress(reader);
         }
@@ -72,6 +71,11 @@ namespace GameCube.GFZ.CourseCollision
         public void ValidateReferences()
         {
             throw new NotImplementedException();
+        }
+
+        public override string ToString()
+        {
+            return $"{nameof(SkeletalAnimator)}";
         }
     }
 }

@@ -83,5 +83,14 @@ namespace GameCube.GFZ.CourseCollision
             Assert.IsTrue(zero_0x00 == 0);
             Assert.IsTrue(zero_0x08 == 0);
         }
+
+        public override string ToString()
+        {
+            return
+                $"{nameof(SceneObjectReference)}(" +
+                $"{nameof(unk_0x0C)}: {unk_0x0C}, " +
+                $"Name: {name}" +
+                $")";
+        }
     }
 }

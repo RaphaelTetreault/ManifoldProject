@@ -5,7 +5,7 @@ using System.IO;
 namespace GameCube.GFZ.CourseCollision
 {
     [Serializable]
-    public class FloatRef :
+    public abstract class FloatRef :
         IBinaryAddressable,
         IBinarySerializable
     {
@@ -50,5 +50,9 @@ namespace GameCube.GFZ.CourseCollision
             this.RecordEndAddress(writer);
         }
 
+        public override string ToString()
+        {
+            return $"{GetType().Name}({value})";
+        }
     }
 }

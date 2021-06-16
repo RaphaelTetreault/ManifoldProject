@@ -57,5 +57,14 @@ namespace GameCube.GFZ.CourseCollision
             this.RecordEndAddress(writer);
         }
 
+        public override string ToString()
+        {
+            return
+                $"{nameof(CourseMetadataTrigger)}(" +
+                $"{nameof(metadataType)}: {metadataType}, " +
+                $"{transform}" +
+                $")";
+        }
+
     }
 }

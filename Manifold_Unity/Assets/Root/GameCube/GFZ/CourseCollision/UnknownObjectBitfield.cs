@@ -44,5 +44,10 @@ namespace GameCube.GFZ.CourseCollision
             writer.WriteX(data32);
         }
 
+        public override string ToString()
+        {
+            return $"{data32:x8}";
+        }
+
     }
 }

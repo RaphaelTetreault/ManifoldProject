@@ -86,5 +86,16 @@ namespace GameCube.GFZ.CourseCollision
             Assert.IsTrue(objectReference != null);
         }
 
+        public override string ToString()
+        {
+            return 
+                $"{nameof(SceneInstanceReference)}(" +
+                $"{nameof(unk_0x00)}: {unk_0x00}, " +
+                $"{nameof(unk_0x04)}: {unk_0x04}, " +
+                $"Has {nameof(ColliderGeometry)}: {colliderGeometryPtr.IsNotNullPointer}, " +
+                $"Name: {nameCopy}" +
+                $")";
+        }
+
     }
 }

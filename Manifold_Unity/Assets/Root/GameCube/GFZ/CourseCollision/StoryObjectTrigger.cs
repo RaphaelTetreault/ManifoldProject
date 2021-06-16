@@ -107,5 +107,19 @@ namespace GameCube.GFZ.CourseCollision
                 Assert.IsTrue(storyObjectPathPtr.IsNotNullPointer);
         }
 
+        public override string ToString()
+        {
+            return
+                $"{nameof(StoryObjectTrigger)}(" +
+                $"{nameof(RockGroup)}: {RockGroup}, " +
+                $"{nameof(rockGroupOrderIndex)}: {rockGroupOrderIndex}, " +
+                $"{nameof(Difficulty)}: {Difficulty}, " +
+                $"Has {nameof(storyObjectPath)}: {storyObjectPathPtr.IsNotNullPointer}, " +
+                $"{nameof(position)}(x:{position.x:0.0}, y:{position.y:0.0}, z:{position.z:0.0}), " +
+                $"{nameof(rotation)}(x:{rotation.x:0.0}, y:{rotation.y:0.0}, z:{rotation.z:0.0}), " +
+                $"{nameof(scale)}(x:{scale.x:0.0}, y:{scale.y:0.0}, z:{scale.z:0.0})" +
+                $")";
+        }
+
     }
 }

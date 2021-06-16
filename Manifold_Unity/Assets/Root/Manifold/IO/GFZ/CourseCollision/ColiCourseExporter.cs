@@ -273,20 +273,95 @@ namespace Manifold.IO.GFZ.CourseCollision
         public static void WriteFullReport(MarkdownTextLogger log, ColiScene coliScene)
         {
             const int h1Width = 96;
-            const int h2Width = 64;
-            const int h3Width = 32;
             const string padding = "-";
 
             // Write out all types and their address in file
             log.WriteHeading("SERIALIZATION SUMMARY", padding, h1Width);
             log.WriteLine();
-            log.WriteHeading("GENERAL", padding, h2Width);
-            log.WriteLine(coliScene.unkRange0x00);
+
+            log.WriteHeading("GENERAL", padding, h1Width);
+            log.WriteLine($"Venue: {coliScene.Venue}");
+            log.WriteLine($"Course: {coliScene.VenueName} [{coliScene.CourseName}]");
+            log.WriteLine($"Author: {coliScene.Author}");
+            log.WriteLine($"{nameof(CircuitType)}: {coliScene.circuitType}");
+            log.WriteLine($"{nameof(BoostPlatesActive)}: {coliScene.boostPlatesActive}");
+            log.WriteLine($"{nameof(coliScene.unkRange0x00)}: {coliScene.unkRange0x00}");
             log.WriteAddress(coliScene.fog);
             log.WriteAddress(coliScene.fogCurves);
             log.WriteLine(); //
             log.WriteLine(); // yes, 2 WriteLines
-            log.WriteHeading("SCENE OBJECTS", padding, h2Width);
+
+            log.WriteHeading("TRIGGERS", padding, h1Width);
+            log.WriteAddress(coliScene.arcadeCheckpointTriggers);
+            log.WriteAddress(coliScene.courseMetadataTriggers);
+            log.WriteAddress(coliScene.storyObjectTriggers);
+            log.WriteAddress(coliScene.unknownSolsTriggers);
+            log.WriteAddress(coliScene.unknownTriggers);
+            log.WriteAddress(coliScene.visualEffectTriggers);
+
+            log.WriteHeading("TRACK DATA", padding, h1Width);
+            log.WriteAddress(coliScene.trackLength);
+            log.WriteAddress(coliScene.trackMinHeight);
+            log.WriteAddress(coliScene.courseBoundsXZ);
+            log.WriteLine();
+            log.WriteAddress(coliScene.surfaceAttributeAreas);
+            log.WriteLine("ROOT SEGMENTS");
+            log.WriteAddress(coliScene.rootTrackSegments);
+            log.WriteLine("ALL SEGMENTS");
+            log.WriteAddress(coliScene.allTrackSegments);
+            log.WriteLine(); // TODO: temp, remove when allTrackSegments implemented properly
+            log.WriteAddress(coliScene.trackCheckpointMatrix);
+            log.WriteAddress(coliScene.trackNodes);
+            {
+                var checkpoints = new List<TrackCheckpoint>();
+                foreach (var trackNode in coliScene.trackNodes)
+                    foreach (var checkpoint in trackNode.checkpoints)
+                        checkpoints.Add(checkpoint);
+                log.WriteAddress(checkpoints.ToArray());
+            }
+            // checkpoints
+            // segments
+            log.WriteLine();
+            log.WriteHeading("STATIC COLLISION", padding, h1Width);
+            log.WriteAddress(coliScene.staticColliderMeshes);
+            log.WriteLine();
+            log.WriteLine("Mesh Bounds");
+            log.WriteAddress(coliScene.staticColliderMeshes.meshBounds);
+            log.WriteAddress(coliScene.staticColliderMeshes.ununsedMeshBounds);
+            log.WriteLine();
+            log.WriteLine("TRIANGLES");
+            log.WriteAddress(coliScene.staticColliderMeshes.colliderTriangles);
+            log.WriteAddress(coliScene.staticColliderMeshes.triMeshIndexMatrices);
+            // Write each index list
+            log.WriteNullInArray = false;
+            for (int i = 0; i < coliScene.staticColliderMeshes.triMeshIndexMatrices.Length; i++)
+            {
+                var triIndexList = coliScene.staticColliderMeshes.triMeshIndexMatrices[i];
+                if (triIndexList != null)
+                {
+                    log.WriteLine($"COLLIDER TYPE [{i}]: {(StaticColliderMeshProperty)i}");
+                    log.WriteAddress(triIndexList.indexLists);
+                }
+            }
+            log.WriteNullInArray = true;
+            log.WriteLine("QUADS");
+            log.WriteAddress(coliScene.staticColliderMeshes.colliderQuads);
+            log.WriteAddress(coliScene.staticColliderMeshes.quadMeshIndexMatrices);
+            // Write each index list
+            log.WriteNullInArray = false;
+            for (int i = 0; i < coliScene.staticColliderMeshes.quadMeshIndexMatrices.Length; i++)
+            {
+                var quadIndexList = coliScene.staticColliderMeshes.quadMeshIndexMatrices[i];
+                if (quadIndexList != null)
+                {
+                    log.WriteLine($"COLLIDER TYPE [{i}]: {(StaticColliderMeshProperty)i}");
+                    log.WriteAddress(quadIndexList.indexLists);
+                }
+            }
+            log.WriteNullInArray = true;
+            log.WriteLine();
+
+            log.WriteHeading("SCENE OBJECTS", padding, h1Width);
             log.WriteLine("Object Names");
             log.WriteAddress(coliScene.objectNames);
             log.WriteAddress(coliScene.sceneObjectReferences);
@@ -294,7 +369,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             log.WriteAddress(coliScene.sceneOriginObjects);
             log.WriteAddress(coliScene.sceneObjects);
             {
-                log.WriteHeading("FULL OBJECT SUMMARY", padding, h2Width);
+                log.WriteHeading("FULL OBJECT SUMMARY", padding, h1Width);
                 int total = coliScene.sceneObjects.Length;
                 for (int i = 0; i < total; i++)
                 {
@@ -324,75 +399,6 @@ namespace Manifold.IO.GFZ.CourseCollision
                 }
             }
             log.WriteLine();
-            log.WriteHeading("TRACK DATA", padding, h2Width);
-            log.WriteAddress(coliScene.trackLength);
-            log.WriteAddress(coliScene.trackMinHeight);
-            log.WriteAddress(coliScene.courseBoundsXZ);
-            log.WriteAddress(coliScene.surfaceAttributeAreas);
-            log.WriteLine("ROOT SEGMENTS");
-            log.WriteAddress(coliScene.rootTrackSegments);
-            log.WriteLine("ALL SEGMENTS");
-            log.WriteAddress(coliScene.allTrackSegments);
-            log.WriteLine(); // TODO: temp, remove when allTrackSegments implemented properly
-            log.WriteAddress(coliScene.trackCheckpointMatrix);
-            log.WriteAddress(coliScene.trackNodes);
-            {
-                var checkpoints = new List<TrackCheckpoint>();
-                foreach (var trackNode in coliScene.trackNodes)
-                    foreach (var checkpoint in trackNode.checkpoints)
-                        checkpoints.Add(checkpoint);
-                log.WriteAddress(checkpoints.ToArray());
-            }
-            // checkpoints
-            // segments
-            log.WriteLine();
-            log.WriteHeading("STATIC COLLISION", padding, h2Width);
-            log.WriteAddress(coliScene.staticColliderMeshes);
-            log.WriteLine();
-            log.WriteLine("Mesh Bounds");
-            log.WriteAddress(coliScene.staticColliderMeshes.meshBounds);
-            log.WriteAddress(coliScene.staticColliderMeshes.ununsedMeshBounds);
-            log.WriteLine();
-            log.WriteLine("TRIANGLES");
-            log.WriteAddress(coliScene.staticColliderMeshes.colliderTriangles);
-            log.WriteAddress(coliScene.staticColliderMeshes.triMeshIndexMatrices);
-            // Write each index list
-            log.WriteNullInArray = false;
-            for (int i = 0; i < coliScene.staticColliderMeshes.triMeshIndexMatrices.Length; i++)
-            {
-                var triIndexList = coliScene.staticColliderMeshes.triMeshIndexMatrices[i];
-                if (triIndexList != null)
-                {
-                    log.WriteLine($"COLLIDER TYPE [{i}]: {(StaticColliderMeshProperty)i}");
-                    log.WriteAddress(triIndexList.indexLists);
-                }
-            }
-            log.WriteNullInArray = true;
-
-            log.WriteLine("QUADS");
-            log.WriteAddress(coliScene.staticColliderMeshes.colliderQuads);
-            log.WriteAddress(coliScene.staticColliderMeshes.quadMeshIndexMatrices);
-            // Write each index list
-            log.WriteNullInArray = false;
-            for (int i = 0; i < coliScene.staticColliderMeshes.quadMeshIndexMatrices.Length; i++)
-            {
-                var quadIndexList = coliScene.staticColliderMeshes.quadMeshIndexMatrices[i];
-                if (quadIndexList != null)
-                {
-                    log.WriteLine($"COLLIDER TYPE [{i}]: {(StaticColliderMeshProperty)i}");
-                    log.WriteAddress(quadIndexList.indexLists);
-                }
-            }
-            log.WriteNullInArray = true;
-            log.WriteLine();
-            //
-            log.WriteHeading("TRIGGERS", padding, h2Width);
-            log.WriteAddress(coliScene.arcadeCheckpointTriggers);
-            log.WriteAddress(coliScene.courseMetadataTriggers);
-            log.WriteAddress(coliScene.storyObjectTriggers);
-            log.WriteAddress(coliScene.unknownSolsTriggers);
-            log.WriteAddress(coliScene.unknownTriggers);
-            log.WriteAddress(coliScene.visualEffectTriggers);
         }
 
     }
