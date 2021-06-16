@@ -613,7 +613,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 subgroup.name = $"Subgroup {++count}";
                 subgroup.transform.parent = parent.transform;
 
-                var topology = tt.trackTopology;
+                var topology = tt.trackSegment;
                 float3 timeScale = new float3(
                     GetCurveTime(topology.unityCurves[0]),
                     GetCurveTime(topology.unityCurves[1]),
@@ -679,7 +679,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 var subgroup = new GameObject($"Subgroup {++count}").transform;
                 subgroup.parent = parent.transform;
 
-                var topology = tt.trackTopology;
+                var topology = tt.trackSegment;
                 var transformMatrix = GetTransformMatrix(tt, increment);
 
                 for (float t = 0f; t < 1f; t += increment)
@@ -715,7 +715,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
         public Matrix4x4 GetAnimMatrix(TrackSegment trackTransform, float time)
         {
-            var topology = trackTransform.trackTopology;
+            var topology = trackTransform.trackSegment;
             float3 timeScale = new float3(
                 GetCurveTime(topology.unityCurves[0]),
                 GetCurveTime(topology.unityCurves[1]),

@@ -46,7 +46,7 @@ namespace GameCube.GFZ.CourseCollision
         public uint zero_0x48; // zero confirmed
         public TrackUnkOption2 unk_0x4C; // 0, 1, 2, 3
         // REFERENCE FIELDS
-        public TopologyParameters trackTopology;
+        public TopologyParameters trackSegment;
         public TrackCornerTopology hairpinCornerTopology;
         public TrackSegment[] children = new TrackSegment[0];
 
@@ -88,7 +88,7 @@ namespace GameCube.GFZ.CourseCollision
             {
                 // Read Topology
                 reader.JumpToAddress(generalTopologyPtr);
-                reader.ReadX(ref trackTopology, true);
+                reader.ReadX(ref trackSegment, true);
 
                 // Read hairpin turn
                 if (hairpinCornerTopologyPtr.IsNotNullPointer)
@@ -145,7 +145,7 @@ namespace GameCube.GFZ.CourseCollision
         {
             {
                 childrenPtrs = children.GetArrayPointer();
-                generalTopologyPtr = trackTopology.GetPointer();
+                generalTopologyPtr = trackSegment.GetPointer();
                 hairpinCornerTopologyPtr = hairpinCornerTopology.GetPointer();
             }
             this.RecordStartAddress(writer);

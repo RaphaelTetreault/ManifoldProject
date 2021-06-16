@@ -17,12 +17,13 @@ namespace GameCube.GFZ.CourseCollision
         [UnityEngine.SerializeField] private AddressRange addressRange;
 
         // FIELDS
-        public float lengthFrom;
-        public float lengthTo;
-        public float widthLeft;
-        public float widthRight;
-        public SurfaceAttribute surfaceAttribute;
-        public byte trackBranchID;
+        // Default values represent final node.
+        public float lengthFrom = -1f;
+        public float lengthTo = -1f;
+        public float widthLeft = 0;
+        public float widthRight = 0;
+        public SurfaceAttribute surfaceAttribute = SurfaceAttribute.TerminateCode;
+        public byte trackBranchID = 0;
         public ushort zero_0x12;
 
 
@@ -31,6 +32,28 @@ namespace GameCube.GFZ.CourseCollision
         {
             get => addressRange;
             set => addressRange = value;
+        }
+
+        public static SurfaceAttributeArea Terminator()
+        {
+            return new SurfaceAttributeArea()
+            {
+                lengthFrom = -1f,
+                lengthTo = -1f,
+                widthLeft = 0,
+                widthRight = 0,
+                surfaceAttribute = SurfaceAttribute.TerminateCode,
+                trackBranchID = 0,
+                zero_0x12 = 0,
+            };
+        }
+
+        public static SurfaceAttributeArea[] DefaultArray()
+        {
+            return new SurfaceAttributeArea[]
+            {
+                Terminator(),
+            };
         }
 
 

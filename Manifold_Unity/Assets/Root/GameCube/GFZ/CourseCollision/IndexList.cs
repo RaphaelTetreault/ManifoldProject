@@ -59,7 +59,7 @@ namespace GameCube.GFZ.CourseCollision
         public void Serialize(BinaryWriter writer)
         {
             // Only serialize list if we have indexes to serialize.
-            // Otherwise we serialize a null terminator.
+            // Otherwise we accidentally serialize a null terminator.
             if (Length > 0)
             {
                 // Write each index

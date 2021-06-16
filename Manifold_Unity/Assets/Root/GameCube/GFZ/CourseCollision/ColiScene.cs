@@ -63,7 +63,7 @@ namespace GameCube.GFZ.CourseCollision
         public Pointer staticColliderMeshesPtr;
         public Pointer zeroes0x20Ptr; // GX: 0xE8, AX: 0xE4
         public Pointer trackMinHeightPtr; // GX: 0xFC, AX: 0xF8
-        public byte[] zeroes0x28;
+        public byte[] zeroes0x28 = new byte[kSizeOfZeroes0x28]; //
         public int sceneObjectCount;
         public int unk_sceneObjectCount1;
         public int unk_sceneObjectCount2; // GX exclusive
@@ -87,11 +87,11 @@ namespace GameCube.GFZ.CourseCollision
         public ArrayPointer storyObjectTriggersPtr;
         public Pointer trackCheckpointMatrixPtr;
         public BoundsXZ courseBoundsXZ;
-        public byte[] zeroes0xD8;
+        public byte[] zeroes0xD8 = new byte[kSizeOfZeroes0xD8]; // 
 
         // REFERENCE FIELDS
         public TrackNode[] trackNodes = new TrackNode[0];
-        public SurfaceAttributeArea[] surfaceAttributeAreas = new SurfaceAttributeArea[0];
+        public SurfaceAttributeArea[] surfaceAttributeAreas = SurfaceAttributeArea.DefaultArray();
         public StaticColliderMeshes staticColliderMeshes;
         public byte[] zeroes0x20 = new byte[kSizeOfZeroes0x20];
         public TrackMinHeight trackMinHeight = new TrackMinHeight(); // has default constructor
@@ -306,8 +306,9 @@ namespace GameCube.GFZ.CourseCollision
             {
                 // 0x20
                 // Resulting pointer should be 0xE4 or 0xE8 for AX or GX, respectively.
+                zeroes0x20 = new byte[kSizeOfZeroes0x20];
                 zeroes0x20Ptr = writer.GetPositionAsPointer();
-                writer.WriteX(new byte[kSizeOfZeroes0x20], false); // TODO: HARD-CODED
+                writer.WriteX(zeroes0x20, false); // TODO: HARD-CODED
 
                 // 0x24
                 // Resulting pointer should be 0xF8 or 0xFC for AX or GX, respectively.
@@ -318,7 +319,6 @@ namespace GameCube.GFZ.CourseCollision
                 // If not, an assert will trigger. Compatibility is important for re-importing scene.
                 ValidateFileFormatPointers();
             }
-
             // Offset pointer address if AX file. Applies to pointers from 0x54 onwards
             int offset = IsFileAX ? -4 : 0;
 
@@ -373,7 +373,7 @@ namespace GameCube.GFZ.CourseCollision
                     writer.InlineDesc(serializeVerbose, new TopologyParameters());
                     foreach (var trackSegment in allTrackSegments)
                     {
-                        var topology = trackSegment.trackTopology;
+                        var topology = trackSegment.trackSegment;
                         writer.WriteX(topology);
                     }
                     // TODO: better type comment
@@ -388,7 +388,7 @@ namespace GameCube.GFZ.CourseCollision
                     }
                 }
 
-                // 
+
                 // Write track checkpoint indexers
                 writer.InlineDesc(serializeVerbose, 0xBC + offset, trackCheckpointMatrix);
                 writer.WriteX(trackCheckpointMatrix);
@@ -414,9 +414,14 @@ namespace GameCube.GFZ.CourseCollision
                 var scmPtr = staticColliderMeshes.GetPointer();
 
                 // COLLIDER TRIANGLES
-                writer.InlineDesc(serializeVerbose, scmPtr, staticColliderMeshes.colliderTriangles);
-                writer.WriteX(staticColliderMeshes.colliderTriangles, false);
-                var triPtr = staticColliderMeshes.colliderTriangles.GetBasePointer();
+                // Breakout value
+                var colliderTriangles = staticColliderMeshes.colliderTriangles;
+                // Write comment
+                if (!colliderTriangles.IsNullOrEmpty())
+                    writer.InlineDesc(serializeVerbose, scmPtr, colliderTriangles);
+                // Write values
+                writer.WriteX(colliderTriangles, false);
+                var triPtr = colliderTriangles.GetBasePointer();
                 // Write each triangle index list IF they exists, use referer ptr in comment
                 foreach (var triIndexMatrix in staticColliderMeshes.triMeshIndexMatrices)
                 {
@@ -432,9 +437,11 @@ namespace GameCube.GFZ.CourseCollision
                 }
 
                 // COLLIDER QUADS
-                writer.InlineDesc(serializeVerbose, scmPtr, staticColliderMeshes.colliderQuads);
-                writer.WriteX(staticColliderMeshes.colliderQuads, false);
-                var quadPtr = staticColliderMeshes.colliderQuads.GetBasePointer();
+                var colliderQuads = staticColliderMeshes.colliderQuads;
+                if (!colliderTriangles.IsNullOrEmpty())
+                    writer.InlineDesc(serializeVerbose, scmPtr, colliderQuads);
+                writer.WriteX(colliderQuads, false);
+                var quadPtr = colliderQuads.GetBasePointer();
                 // Write each quad index list IF they exists, use referer ptr in comment
                 foreach (var quadIndexMatrix in staticColliderMeshes.quadMeshIndexMatrices)
                 {
@@ -467,7 +474,7 @@ namespace GameCube.GFZ.CourseCollision
                     writer.WriteX(fogCurves);
                     var fogCurvesPtr = fogCurves.GetPointer();
                     // ... then write the animation data associated with fog curves
-                    writer.InlineDesc(serializeVerbose, fogCurvesPtr, fogCurves);
+                    writer.InlineDesc(serializeVerbose, fogCurvesPtr, fogCurves.animationCurves);
                     foreach (var curve in fogCurves.animationCurves)
                         writer.WriteX(curve);
                 }
@@ -536,22 +543,25 @@ namespace GameCube.GFZ.CourseCollision
                     }
                 }
 
-                // TODO: Serialize
+                // TODO:
+                // Serialize the following:
                 // + animation clips
                 // + skeletal animators
-
             }
 
             // TRIGGERS
             {
+                // ARCADE CHECKPOINT TRIGGERS
                 if (!arcadeCheckpointTriggers.IsNullOrEmpty())
                     writer.InlineDesc(serializeVerbose, 0xB0 + offset, arcadeCheckpointTriggers);
                 writer.WriteX(arcadeCheckpointTriggers, false);
 
+                // COURSE METADATA TRIGGERS
                 if (!courseMetadataTriggers.IsNullOrEmpty())
                     writer.InlineDesc(serializeVerbose, 0xA8 + offset, courseMetadataTriggers);
                 writer.WriteX(courseMetadataTriggers, false);
 
+                // STORY OBJECT TRIGGERS
                 if (!storyObjectTriggers.IsNullOrEmpty())
                     writer.InlineDesc(serializeVerbose, 0xB8 + offset, storyObjectTriggers);
                 writer.WriteX(storyObjectTriggers, false);
@@ -576,14 +586,17 @@ namespace GameCube.GFZ.CourseCollision
                     }
                 }
 
+                // UNKNOWN SOLS TRIGGERS
                 if (!unknownSolsTriggers.IsNullOrEmpty())
                     writer.InlineDesc(serializeVerbose, 0x60 + offset, unknownSolsTriggers);
                 writer.WriteX(unknownSolsTriggers, false);
 
+                // UNKNOWN TRIGGERS
                 if (!unknownTriggers.IsNullOrEmpty())
                     writer.InlineDesc(serializeVerbose, 0x94 + offset, unknownTriggers);
                 writer.WriteX(unknownTriggers, false);
 
+                // VISUAL EFFECT TRIGGERS
                 if (!visualEffectTriggers.IsNullOrEmpty())
                     writer.InlineDesc(serializeVerbose, 0x9C + offset, visualEffectTriggers);
                 writer.WriteX(visualEffectTriggers, false);
@@ -597,8 +610,10 @@ namespace GameCube.GFZ.CourseCollision
                 // Track Nodes and dependencies
                 referers.AddRange(trackNodes);
                 referers.AddRange(allTrackSegments);
-                foreach (var trackTransform in allTrackSegments)
-                    referers.Add(trackTransform.trackTopology);
+                foreach (var trackSegment in allTrackSegments)
+                    referers.Add(trackSegment.trackSegment);
+                // The checkpoint table
+                referers.Add(trackCheckpointMatrix);
 
                 // Static Collider Meshes and dependencies
                 referers.Add(staticColliderMeshes);
@@ -638,17 +653,18 @@ namespace GameCube.GFZ.CourseCollision
                     }
                 }
 
-                // The structure that points to 6 anim curves
+                // FOG
+                // The structure points to 6 anim curves
                 referers.Add(fogCurves);
+
                 // The story mode checkpoints
                 foreach (var storyObjectTrigger in storyObjectTriggers)
                 {
                     referers.Add(storyObjectTrigger);
                     referers.Add(storyObjectTrigger.storyObjectPath);
                 }
-                // The checkpoint table
-                referers.Add(trackCheckpointMatrix);
 
+                // RE-SERIALIZE
                 // Patch pointers by re-writing structure in same place as previously serialized
                 foreach (var referer in referers)
                 {
@@ -667,6 +683,8 @@ namespace GameCube.GFZ.CourseCollision
             // Rewrite main block pointers
             writer.JumpToAddress(0);
             SerializeSelf(writer);
+            // Validate this structure before finishing.
+            ValidateReferences();
 
             BinaryIoUtility.PopEndianess();
         }
@@ -807,9 +825,10 @@ namespace GameCube.GFZ.CourseCollision
             Assert.IsTrue(zero0x88 == 0);
             Assert.IsTrue(zero0x8C == 0);
 
+            for (int i = 0; i < zeroes0x20.Length; i++)
+                Assert.IsTrue(zeroes0x20[i] == 0);
             for (int i = 0; i < zeroes0x28.Length; i++)
                 Assert.IsTrue(zeroes0x28[i] == 0);
-
             for (int i = 0; i < zeroes0xD8.Length; i++)
                 Assert.IsTrue(zeroes0xD8[i] == 0);
 
@@ -821,24 +840,27 @@ namespace GameCube.GFZ.CourseCollision
             Assert.IsTrue(trackMinHeightPtr.IsNotNullPointer);
             Assert.IsTrue(sceneObjectsPtr.IsNotNullPointer);
             Assert.IsTrue(sceneInstancesPtr.IsNotNullPointer);
-            Assert.IsTrue(sceneOriginObjectsPtr.IsNotNullPointer);
             Assert.IsTrue(fogPtr.IsNotNullPointer);
             Assert.IsTrue(trackCheckpointMatrixPtr.IsNotNullPointer);
 
+            if (!sceneOriginObjects.IsNullOrEmpty())
+                Assert.IsTrue(sceneOriginObjectsPtr.IsNotNullPointer);
+
             // Assert pointers which can be null IF the reference type is not null
-            if (unknownSolsTriggers != null)
-                Assert.IsTrue(unknownSolsTriggersPtr.IsNotNullPointer);
             if (fogCurves != null)
                 Assert.IsTrue(fogCurvesPtr.IsNotNullPointer);
-            if (fog != null)
+            // triggers
+            if (!unknownSolsTriggers.IsNullOrEmpty())
+                Assert.IsTrue(unknownSolsTriggersPtr.IsNotNullPointer);
+            if (!unknownTriggers.IsNullOrEmpty())
                 Assert.IsTrue(unknownTriggersPtr.IsNotNullPointer);
-            if (visualEffectTriggers != null)
+            if (!visualEffectTriggers.IsNullOrEmpty())
                 Assert.IsTrue(visualEffectTriggersPtr.IsNotNullPointer);
-            if (courseMetadataTriggers != null)
+            if (!courseMetadataTriggers.IsNullOrEmpty())
                 Assert.IsTrue(courseMetadataTriggersPtr.IsNotNullPointer);
-            if (arcadeCheckpointTriggers != null)
+            if (!arcadeCheckpointTriggers.IsNullOrEmpty())
                 Assert.IsTrue(arcadeCheckpointTriggersPtr.IsNotNullPointer);
-            if (storyObjectTriggers != null)
+            if (!storyObjectTriggers.IsNullOrEmpty())
                 Assert.IsTrue(storyObjectTriggersPtr.IsNotNullPointer);
         }
     }
