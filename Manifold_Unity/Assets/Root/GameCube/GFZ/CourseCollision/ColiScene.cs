@@ -109,11 +109,13 @@ namespace GameCube.GFZ.CourseCollision
         public StoryObjectTrigger[] storyObjectTriggers = new StoryObjectTrigger[0];
         public TrackCheckpointMatrix trackCheckpointMatrix;
         // FIELDS (that require extra processing)
+        // Shared references
         public TrackSegment[] allTrackSegments = new TrackSegment[0];
         public TrackSegment[] rootTrackSegments = new TrackSegment[0];
         public CString[] objectNames = new CString[0];
         public SceneObjectReference[] sceneObjectReferences = new SceneObjectReference[0];
-
+        // NOTE: instances are also shared
+        public ColliderGeometry[] sceneColliderGeometries = new ColliderGeometry[0];
 
 
         // PROPERTIES
@@ -275,23 +277,103 @@ namespace GameCube.GFZ.CourseCollision
             reader.JumpToAddress(trackCheckpointMatrixPtr);
             reader.ReadX(ref trackCheckpointMatrix, true);
 
+            //// TEMP
+            //// TEST - clean references, ensure shared.
+            //{
+            //    var instancesDict = new Dictionary<Pointer, SceneInstanceReference>();
+            //    foreach (var sceneObject in sceneObjects)
+            //    {
+            //        GetSerializable(reader, sceneObject.instanceReferencePtr, ref sceneObject.instanceReference, instancesDict);
+            //    }
+            //    sceneInstances = instancesDict.Values.ToArray();
+            //    //
+            //    var objRefsDict = new Dictionary<Pointer, SceneObjectReference>();
+            //    var colliderGeoDict = new Dictionary<Pointer, ColliderGeometry>();
+            //    foreach (var instance in sceneInstances)
+            //    {
+            //        GetSerializable(reader, instance.objectReferencePtr, ref instance.objectReference, objRefsDict);
+            //        GetSerializable(reader, instance.colliderGeometryPtr, ref instance.colliderGeometry, colliderGeoDict);
+            //    }
+            //    sceneObjectReferences = objRefsDict.Values.ToArray();
+            //    // TODO: collider geo?
+            //    //
+            //    var objNamesDict = new Dictionary<Pointer, CString>();
+            //    foreach (var sceneObjectReference in sceneObjectReferences)
+            //    {
+            //        GetSerializable(reader, sceneObjectReference.namePtr, ref sceneObjectReference.name, objNamesDict);
+            //    }
+            //    objectNames = objNamesDict.Values.ToArray();
+            //}
 
-            // DESERIALIZE UNIQUE TRACK TRANSFORMS
-            var trackTransformPtrs = new List<Pointer>();
-            foreach (var node in trackNodes)
+            // DESERIALIZE SCENE OBJECT SUB-TYPES WHILE MAINTAINING REFERENCE
             {
-                var pointer = node.segmentPtr;
-                if (!trackTransformPtrs.Contains(pointer))
-                    trackTransformPtrs.Add(pointer);
+                // Keep a dictionary of each shared reference type
+                var instanceRefsDict = new Dictionary<Pointer, SceneInstanceReference>();
+                var objectRefsDict = new Dictionary<Pointer, SceneObjectReference>();
+                var colliderGeoDict = new Dictionary<Pointer, ColliderGeometry>();
+                var objNamesDict = new Dictionary<Pointer, CString>();
+
+                // Deserialize instances as unique
+                foreach (var sceneObject in sceneObjects)
+                {
+                    GetSerializable(reader, sceneObject.instanceReferencePtr, ref sceneObject.instanceReference, instanceRefsDict);
+                }
+                // Deserialize object references / collider geo as unique
+                foreach (var instance in instanceRefsDict.Values)
+                {
+                    GetSerializable(reader, instance.objectReferencePtr, ref instance.objectReference, objectRefsDict);
+                    GetSerializable(reader, instance.colliderGeometryPtr, ref instance.colliderGeometry, colliderGeoDict);
+                }
+                // Serialize object names as unique
+                foreach (var sceneObjectReference in objectRefsDict.Values)
+                {
+                    GetSerializable(reader, sceneObjectReference.namePtr, ref sceneObjectReference.name, objNamesDict);
+                }
+
+                // Assign lists to local arrays for easy access and debugging.
+                sceneInstances = instanceRefsDict.Values.ToArray();
+                sceneObjectReferences = objectRefsDict.Values.ToArray();
+                sceneColliderGeometries = colliderGeoDict.Values.ToArray();
+                objectNames = objNamesDict.Values.ToArray();
             }
-            rootTrackSegments = new TrackSegment[trackTransformPtrs.Count];
-            for (int i = 0; i < rootTrackSegments.Length; i++)
+
+            // 
             {
-                var pointer = trackTransformPtrs[i];
-                reader.JumpToAddress(pointer);
-                reader.ReadX(ref rootTrackSegments[i], true);
+                var rootTrackSegmentDict = new Dictionary<Pointer, TrackSegment>();
+                foreach (var trackNode in trackNodes)
+                {
+                    GetSerializable(reader, trackNode.segmentPtr, ref trackNode.segment, rootTrackSegmentDict);
+                }
+                rootTrackSegments = rootTrackSegmentDict.Values.ToArray();
+
+                // TODO: deserialize when refactored as graph
+                //var allTrackSegmentDict = new Dictionary<Pointer, TrackSegment>();
+                //foreach (var trackNode in trackNodes)
+                //{
+                //    GetSerializable(reader, trackNode.segmentPtr, ref trackNode.segment, rootTrackSegmentDict);
+                //}
+                //allTrackSegments = allTrackSegmentDict.Values.ToArray();
             }
-            // Track Transforms
+
+            //// DESERIALIZE UNIQUE TRACK TRANSFORMS
+            //{
+            //    var trackTransformPtrs = new List<Pointer>();
+            //    foreach (var node in trackNodes)
+            //    {
+            //        var pointer = node.segmentPtr;
+            //        if (!trackTransformPtrs.Contains(pointer))
+            //            trackTransformPtrs.Add(pointer);
+            //    }
+            //    rootTrackSegments = new TrackSegment[trackTransformPtrs.Count];
+            //    for (int i = 0; i < rootTrackSegments.Length; i++)
+            //    {
+            //        var pointer = trackTransformPtrs[i];
+            //        reader.JumpToAddress(pointer);
+            //        reader.ReadX(ref rootTrackSegments[i], true);
+            //    }
+            //}
+            //// Track Transforms
+            //// TODO: all refs
 
             BinaryIoUtility.PopEndianess();
         }
@@ -864,5 +946,30 @@ namespace GameCube.GFZ.CourseCollision
             if (!storyObjectTriggers.IsNullOrEmpty())
                 Assert.IsTrue(storyObjectTriggersPtr.IsNotNullPointer);
         }
+
+        public static void GetSerializable<T>(BinaryReader reader, Pointer ptr, ref T reference, Dictionary<Pointer, T> dict)
+            where T : class, IBinarySerializable, new()
+        {
+            // If ptr is null, set reference to null, return
+            if (!ptr.IsNotNullPointer)
+            {
+                reference = null;
+                return;
+            }
+
+            // If we have have this reference, return it
+            if (dict.ContainsKey(ptr))
+            {
+                reference = dict[ptr];
+            }
+            // If we don't have this reference, deserialize it, store in dict, return it
+            else
+            {
+                reader.JumpToAddress(ptr);
+                reader.ReadX(ref reference, true);
+                dict.Add(ptr, reference);
+            }
+        }
+
     }
 }
