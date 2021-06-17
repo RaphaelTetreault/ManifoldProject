@@ -191,8 +191,8 @@ namespace GameCube.GFZ.CourseCollision
                 writer.WriteX(hairpinCornerTopologyPtr);
                 writer.WriteX(childrenPtrs);
                 writer.WriteX(localScale);
-                writer.WriteX(localRotation); // Mirror X
-                writer.WriteX(localPosition); // Mirror X
+                writer.WriteX(localRotation);
+                writer.WriteX(localPosition);
                 writer.WriteX(unk_0x38);
                 writer.WriteX(unk_0x39);
                 writer.WriteX(unk_0x3A);

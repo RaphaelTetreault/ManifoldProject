@@ -72,6 +72,10 @@ namespace Manifold.IO.GFZ.CourseCollision
                 var log = new MarkdownTextLogger(logPath);
                 WriteFullReport(log, sobj);
                 log.Close();
+
+                var x = ExportUtility.ExportSerializable(sobj, exportTo, "", allowOverwritingFiles);
+                OSUtility.OpenDirectory(openFolderAfterExport, x);
+
                 return;
             }
 

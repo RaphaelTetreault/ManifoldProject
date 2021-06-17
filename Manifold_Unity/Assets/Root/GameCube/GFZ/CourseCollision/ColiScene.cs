@@ -116,6 +116,10 @@ namespace GameCube.GFZ.CourseCollision
         public SceneObjectReference[] sceneObjectReferences = new SceneObjectReference[0];
         // NOTE: instances are also shared
         public ColliderGeometry[] sceneColliderGeometries = new ColliderGeometry[0];
+        // NOTE: these ones MIGHT be? TODO: validate with analytics?
+        public UnknownSceneObjectData[] unkSceneObjData = new UnknownSceneObjectData[0];
+        public AnimationClip[] animationClips = new AnimationClip[0];
+        public SkeletalAnimator[] skeletalAnimators = new SkeletalAnimator[0];
 
 
         // PROPERTIES
@@ -277,33 +281,6 @@ namespace GameCube.GFZ.CourseCollision
             reader.JumpToAddress(trackCheckpointMatrixPtr);
             reader.ReadX(ref trackCheckpointMatrix, true);
 
-            //// TEMP
-            //// TEST - clean references, ensure shared.
-            //{
-            //    var instancesDict = new Dictionary<Pointer, SceneInstanceReference>();
-            //    foreach (var sceneObject in sceneObjects)
-            //    {
-            //        GetSerializable(reader, sceneObject.instanceReferencePtr, ref sceneObject.instanceReference, instancesDict);
-            //    }
-            //    sceneInstances = instancesDict.Values.ToArray();
-            //    //
-            //    var objRefsDict = new Dictionary<Pointer, SceneObjectReference>();
-            //    var colliderGeoDict = new Dictionary<Pointer, ColliderGeometry>();
-            //    foreach (var instance in sceneInstances)
-            //    {
-            //        GetSerializable(reader, instance.objectReferencePtr, ref instance.objectReference, objRefsDict);
-            //        GetSerializable(reader, instance.colliderGeometryPtr, ref instance.colliderGeometry, colliderGeoDict);
-            //    }
-            //    sceneObjectReferences = objRefsDict.Values.ToArray();
-            //    // TODO: collider geo?
-            //    //
-            //    var objNamesDict = new Dictionary<Pointer, CString>();
-            //    foreach (var sceneObjectReference in sceneObjectReferences)
-            //    {
-            //        GetSerializable(reader, sceneObjectReference.namePtr, ref sceneObjectReference.name, objNamesDict);
-            //    }
-            //    objectNames = objNamesDict.Values.ToArray();
-            //}
 
             // DESERIALIZE SCENE OBJECT SUB-TYPES WHILE MAINTAINING REFERENCE
             {
@@ -312,11 +289,20 @@ namespace GameCube.GFZ.CourseCollision
                 var objectRefsDict = new Dictionary<Pointer, SceneObjectReference>();
                 var colliderGeoDict = new Dictionary<Pointer, ColliderGeometry>();
                 var objNamesDict = new Dictionary<Pointer, CString>();
+                //
+                var unkDict = new Dictionary<Pointer, UnknownSceneObjectData>();
+                var skeletalAnimatorDict = new Dictionary<Pointer, SkeletalAnimator>();
+                var animationClipDict = new Dictionary<Pointer, AnimationClip>();
+
 
                 // Deserialize instances as unique
                 foreach (var sceneObject in sceneObjects)
                 {
                     GetSerializable(reader, sceneObject.instanceReferencePtr, ref sceneObject.instanceReference, instanceRefsDict);
+                    // 3 types below are being tested. Not 100% sure if multiple ptr use - but possible
+                    GetSerializable(reader, sceneObject.unkPtr_0x34, ref sceneObject.unk1, unkDict);
+                    GetSerializable(reader, sceneObject.skeletalAnimatorPtr, ref sceneObject.skeletalAnimator, skeletalAnimatorDict);
+                    GetSerializable(reader, sceneObject.animationPtr, ref sceneObject.animation, animationClipDict);
                 }
                 // Deserialize object references / collider geo as unique
                 foreach (var instance in instanceRefsDict.Values)
@@ -335,6 +321,10 @@ namespace GameCube.GFZ.CourseCollision
                 sceneObjectReferences = objectRefsDict.Values.ToArray();
                 sceneColliderGeometries = colliderGeoDict.Values.ToArray();
                 objectNames = objNamesDict.Values.ToArray();
+                //
+                unkSceneObjData = unkDict.Values.ToArray();
+                animationClips = animationClipDict.Values.ToArray();
+                skeletalAnimators = skeletalAnimatorDict.Values.ToArray();
             }
 
             // 
@@ -645,28 +635,41 @@ namespace GameCube.GFZ.CourseCollision
                     }
                 }
 
-                // SCENE OBJECTS unknown data
-                // TODO: better type comments
-                writer.InlineDesc(serializeVerbose, new UnknownSceneObjectData());
-                foreach (var sceneObject in sceneObjects)
+                // SCENE OBJECTS - unknown data
+                writer.InlineDesc(serializeVerbose, unkSceneObjData);
+                foreach (var unk in unkSceneObjData)
                 {
-                    var sceneObjectUnk = sceneObject.unk1;
-                    if (sceneObjectUnk != null)
-                    {
-                        writer.WriteX(sceneObjectUnk);
+                    writer.WriteX(unk);
+                    // TODO: don't inline?
+                    writer.WriteX(unk.unk, false);
+                }
 
-                        // NOTE: I'm breaking the rules here and serializing inline.
-                        // TODO: should make a list and serialize as list, not interwoven?
-                        // This COULD be okay, IDK.
-                        var subdata = sceneObjectUnk.unk;
-                        writer.WriteX(subdata, false);
-                    }
+                // SCENE OBJECTS - 
+                writer.InlineDesc(serializeVerbose, skeletalAnimators);
+                foreach (var skeletalAnimator in skeletalAnimators)
+                {
+                    writer.WriteX(skeletalAnimator);
+                    // TODO: don't inline?
+                    writer.WriteX(skeletalAnimator.properties);
+                }
+
+                writer.InlineDesc(serializeVerbose, animationClips);
+                foreach (var animationClip in animationClips)
+                {
+                    writer.WriteX(animationClip);
+                    // TODO: don't inline?
+                    foreach (var curvePlus in animationClip.animationCurvePluses)
+                        if (curvePlus != null)
+                            writer.WriteX(curvePlus);
                 }
 
                 // TODO:
                 // Serialize the following:
                 // + animation clips
                 // + skeletal animators
+
+
+
             }
 
             // TRIGGERS

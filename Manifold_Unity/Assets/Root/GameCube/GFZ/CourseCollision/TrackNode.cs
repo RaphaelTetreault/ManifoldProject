@@ -82,5 +82,14 @@ namespace GameCube.GFZ.CourseCollision
             Assert.IsTrue(checkpoints != null);
             Assert.IsTrue(segment != null);
         }
+
+        public override string ToString()
+        {
+            return 
+                $"{nameof(TrackNode)}(" +
+                $"{nameof(segmentPtr)}: 0x{segmentPtr}, " +
+                $"{nameof(checkpoints)}: {checkpoints.Length}" +
+                $")";
+        }
     }
 }

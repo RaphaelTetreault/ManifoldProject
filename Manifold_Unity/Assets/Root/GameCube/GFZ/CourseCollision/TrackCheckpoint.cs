@@ -17,8 +17,8 @@ namespace GameCube.GFZ.CourseCollision
         [UnityEngine.SerializeField] private AddressRange addressRange;
 
         // FIELDS
-        public float unk_0x00;
-        public float unk_0x04;
+        public float curveTimeStart;
+        public float curveTimeEnd;
         // Make Struct?
         public float trackDistanceStart;
         public float3 tangentStart;
@@ -49,8 +49,8 @@ namespace GameCube.GFZ.CourseCollision
         {
             this.RecordStartAddress(reader);
             {
-                reader.ReadX(ref unk_0x00);
-                reader.ReadX(ref unk_0x04);
+                reader.ReadX(ref curveTimeStart);
+                reader.ReadX(ref curveTimeEnd);
                 reader.ReadX(ref trackDistanceStart);
                 reader.ReadX(ref tangentStart);
                 reader.ReadX(ref positionStart);
@@ -71,8 +71,8 @@ namespace GameCube.GFZ.CourseCollision
         {
             this.RecordStartAddress(writer);
             {
-                writer.WriteX(unk_0x00);
-                writer.WriteX(unk_0x04);
+                writer.WriteX(curveTimeStart);
+                writer.WriteX(curveTimeEnd);
                 writer.WriteX(trackDistanceStart);
                 writer.WriteX(tangentStart);
                 writer.WriteX(positionStart);
@@ -87,6 +87,26 @@ namespace GameCube.GFZ.CourseCollision
                 writer.WriteX(zero_0x4E);
             }
             this.RecordEndAddress(writer);
+        }
+
+        public override string ToString()
+        {
+            return
+                $"{nameof(TrackCheckpoint)}(" +
+                $"{nameof(curveTimeStart)}: {curveTimeStart:0.00}, " +
+                $"{nameof(curveTimeEnd)}: {curveTimeEnd:0.00}, " +
+                $"{nameof(trackDistanceStart)}: {trackDistanceStart:0.0}, " +
+                $"{nameof(trackDistanceEnd)}: {trackDistanceEnd:0.0}, " +
+                $"{nameof(tangentStart)}(x:{tangentStart.x:0.0}, y:{tangentStart.y:0.0}, z:{tangentStart.z:0.0}), " +
+                $"{nameof(tangentEnd)}(x:{tangentEnd.x:0.0}, y:{tangentEnd.y:0.0}, z:{tangentEnd.z:0.0}), " +
+                $"{nameof(positionStart)}(x:{positionStart.x:0.0}, y:{positionStart.y:0.0}, z:{positionStart.z:0.0}), " +
+                $"{nameof(positionEnd)}(x:{positionEnd.x:0.0}, y:{positionEnd.y:0.0}, z:{positionEnd.z:0.0}), " +
+                $"{nameof(transformDistanceEnd)}: {transformDistanceEnd:0.0}, " +
+                $"{nameof(transformDistanceStart)}: {transformDistanceStart:0.0}, " +
+                $"{nameof(trackWidth)}: {trackWidth:0.0}, " +
+                $"{nameof(isTrackContinuousEnd)}: {isTrackContinuousEnd}, " +
+                $"{nameof(isTrackContinuousEnd)}: {isTrackContinuousEnd}" +
+                $")";
         }
 
     }

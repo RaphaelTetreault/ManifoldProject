@@ -19,7 +19,7 @@ namespace Manifold.IO.GFZ.CourseCollision
         public Venue venue; // TODO: change to VenueName, make indexer helper
         public string courseName;
         public int courseIndex; // TODO: validate export venue to index
-        public CircuitType circuitType = CircuitType.ClosedCircuit;
+        public CircuitType circuitType = CircuitType.ClosedCircuit; // will become param from control points.
         public BoostPlatesActive areBoostPlatesEnabled = BoostPlatesActive.Enabled;
         //public Bool32 unkBool32 = Bool32.True;
 

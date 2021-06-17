@@ -1648,8 +1648,8 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol("File");
                 writer.WriteNextCol("Track Node");
                 writer.WriteNextCol("Track Point");
-                writer.WriteNextColNicify(nameof(TrackCheckpoint.unk_0x00));
-                writer.WriteNextColNicify(nameof(TrackCheckpoint.unk_0x04));
+                writer.WriteNextColNicify(nameof(TrackCheckpoint.curveTimeStart));
+                writer.WriteNextColNicify(nameof(TrackCheckpoint.curveTimeEnd));
                 writer.WriteNextColNicify(nameof(TrackCheckpoint.trackDistanceStart));
                 writer.WriteNextColNicify(nameof(TrackCheckpoint.tangentStart));
                 writer.WriteNextColNicify(nameof(TrackCheckpoint.positionStart));
@@ -1678,8 +1678,8 @@ namespace Manifold.IO.GFZ.CourseCollision
                             writer.WriteNextCol($"[{nodeIndex}/{nodeLength}]");
                             writer.WriteNextCol($"[{pointIndex}/{pointLength}]");
 
-                            writer.WriteNextCol(trackPoint.unk_0x00);
-                            writer.WriteNextCol(trackPoint.unk_0x04);
+                            writer.WriteNextCol(trackPoint.curveTimeStart);
+                            writer.WriteNextCol(trackPoint.curveTimeEnd);
                             writer.WriteNextCol(trackPoint.trackDistanceStart);
                             writer.WriteNextCol(trackPoint.tangentStart);
                             writer.WriteNextCol(trackPoint.positionStart);
