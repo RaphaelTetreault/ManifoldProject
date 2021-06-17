@@ -558,7 +558,7 @@ namespace GameCube.GFZ.CourseCollision
                 //
                 foreach (var objectName in objectNames)
                 {
-                    writer.WriteX(objectName, false);
+                    writer.WriteX(objectName);
                     writer.AlignTo(4);
                 }
 
