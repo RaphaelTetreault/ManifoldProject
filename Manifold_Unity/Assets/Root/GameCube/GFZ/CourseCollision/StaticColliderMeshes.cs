@@ -173,35 +173,6 @@ namespace GameCube.GFZ.CourseCollision
             this.RecordEndAddress(writer);
         }
 
-        //private void SerializeReferences(BinaryWriter writer)
-        //{
-        //    // TRIANGLES
-        //    writer.InlineDesc(ColiCourseUtility.SerializeVerbose, ColiCourseUtility.Pointer, colliderTriangles);
-        //    writer.WriteX(colliderTriangles, false);
-        //    writer.InlineDesc(ColiCourseUtility.SerializeVerbose, ColiCourseUtility.Pointer, triMeshIndexTable);
-        //    writer.Comment($"var: {nameof(triMeshIndexTable)}", ColiCourseUtility.SerializeVerbose);
-        //    writer.WriteX(triMeshIndexTable, false);
-        //    // Using a static value to embed metadata in the above type upon serialization
-        //    ColiCourseUtility.ResetDebugIndex();
-
-        //    // QUADS
-        //    writer.InlineDesc(ColiCourseUtility.SerializeVerbose, ColiCourseUtility.Pointer, colliderQuads);
-        //    writer.WriteX(colliderQuads, false);
-        //    writer.InlineDesc(ColiCourseUtility.SerializeVerbose, ColiCourseUtility.Pointer, quadMeshIndexTable);
-        //    writer.Comment($"var: {nameof(quadMeshIndexTable)}", ColiCourseUtility.SerializeVerbose);
-        //    writer.WriteX(quadMeshIndexTable, false);
-        //    // Using a static value to embed metadata in the above type upon serialization
-        //    ColiCourseUtility.ResetDebugIndex();
-
-        //    // POINTERS
-        //    // We don't need to store the length (from ArrayPointers).
-        //    // The game kinda just figures it out on pointer alone.
-        //    collisionTrisPtr = colliderTriangles.GetArrayPointer().Pointer;
-        //    collisionTriIndexesPtr = triMeshIndexTable.GetPointers();
-        //    collisionQuadsPtr = colliderQuads.GetArrayPointer().Pointer;
-        //    collisionQuadIndexesPtr = quadMeshIndexTable.GetPointers();
-        //}
-
         public void ValidateReferences()
         {
             // if we have tris, ensure pointer exists

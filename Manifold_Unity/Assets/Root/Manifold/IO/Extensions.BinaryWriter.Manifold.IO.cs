@@ -79,8 +79,8 @@ namespace Manifold.IO
         public static void CommentLineWide(this BinaryWriter writer, string lMsg, object rMsg, bool doWrite, char padding = ' ', int alignment = 16)
             => CommentLineWide(writer, lMsg, rMsg.ToString(), doWrite, padding, alignment);
 
-        public static void CommentIdx(this BinaryWriter writer, int count, bool doWrite, char padding = ' ', int alignment = 16, string format = "d")
-            => CommentLineWide(writer, "Index:", count.ToString(format), doWrite, padding, alignment);
+        public static void CommentIdx(this BinaryWriter writer, int index, bool doWrite, char padding = ' ', int alignment = 16, string format = "d")
+            => CommentLineWide(writer, "Index:", index.ToString(format), doWrite, padding, alignment);
 
         public static void CommentCnt(this BinaryWriter writer, int count, bool doWrite, char padding = ' ', int alignment = 16, string format = "d")
             => CommentLineWide(writer, "Count:", count.ToString(format), doWrite, padding, alignment);

@@ -48,7 +48,8 @@ namespace Manifold.IO.GFZ.CourseCollision
 
         public void ImportGfz(StoryObjectTrigger value)
         {
-            throw new System.NotImplementedException();
+            Debug.LogWarning($"{nameof(GfzStoryObjectTrigger)} did not properly assign values.");
+            //throw new System.NotImplementedException();
         }
 
     }

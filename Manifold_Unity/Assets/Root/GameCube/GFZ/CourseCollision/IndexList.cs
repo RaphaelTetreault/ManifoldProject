@@ -66,16 +66,25 @@ namespace GameCube.GFZ.CourseCollision
                 // Otherwise we accidentally serialize a null terminator.
                 if (Length > 0)
                 {
-                    // Write each index
-                    foreach (var index in indexes)
+                    this.RecordStartAddress(writer);
                     {
-                        writer.WriteX(index);
+                        // Write each index
+                        foreach (var index in indexes)
+                        {
+                            writer.WriteX(index);
+                        }
+                        // Write terminating character
+                        writer.WriteX(kUshortArrayTerminator);
                     }
-                    // Write terminating character
-                    writer.WriteX(kUshortArrayTerminator);
+                    this.RecordEndAddress(writer);
+                }
+                else
+                {
+                    // Reset AddressRange as it WILL be converted
+                    // to pointer. Since we are "null", reset = null ptr.
+                    addressRange = new AddressRange();
                 }
             }
-            this.RecordEndAddress(writer);
         }
     }
 }

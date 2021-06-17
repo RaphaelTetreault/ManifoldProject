@@ -90,7 +90,7 @@ namespace GameCube.GFZ.CourseCollision
                 writer.WriteX(precomputed1);
                 writer.WriteX(precomputed2);
             }
-            this.RecordStartAddress(writer);
+            this.RecordEndAddress(writer);
         }
     }
 }

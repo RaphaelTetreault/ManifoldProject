@@ -358,58 +358,6 @@ namespace GameCube.GFZ.CourseCollision
             BinaryIoUtility.PopEndianess();
         }
 
-
-        public void ReadTrackSegmentsRecursive(BinaryReader reader, Dictionary<Pointer, TrackSegment> allTrackSegments, TrackSegment parent)
-        {
-            // Add parent node to master list
-            var parentPtr = parent.GetPointer();
-            if (!allTrackSegments.ContainsKey(parentPtr))
-                allTrackSegments.Add(parentPtr, parent);
-
-            // Deserialize children (if any)
-            var children = parent.GetChildren(reader);
-            var requiresDeserialization = new List<TrackSegment>();
-
-            // Get the index of where these children WILL be in list
-            var childIndexes = new int[children.Length];
-            for (int i = 0; i < childIndexes.Length; i++)
-            {
-                var child = children[i];
-                var childPtr = child.GetPointer();
-
-                var listContainsChild = allTrackSegments.ContainsKey(childPtr);
-                if (listContainsChild)
-                {
-                    // Child is in master list, get index
-                    for (int j = 0; j < allTrackSegments.Count; j++)
-                    {
-                        if (allTrackSegments[j].GetPointer() == childPtr)
-                        {
-                            childIndexes[i] = j;
-                            break;
-                        }
-                    }
-                }
-                else
-                {
-                    // Add child to master list
-                    // child index is COUNT (oob), add to list (is now in array bounds)
-                    childIndexes[i] = allTrackSegments.Count;
-                    allTrackSegments.Add(childPtr, child);
-                    requiresDeserialization.Add(child);
-                }
-            }
-
-            // Set indexes of children to 
-            parent.childIndexes = childIndexes;
-
-            // Read children recursively (if any).
-            foreach (var child in requiresDeserialization)
-            {
-                ReadTrackSegmentsRecursive(reader, allTrackSegments, child);
-            }
-        }
-
         public void Serialize(BinaryWriter writer)
         {
             BinaryIoUtility.PushEndianess(false);
@@ -491,7 +439,7 @@ namespace GameCube.GFZ.CourseCollision
                     // Manually refresh pointers due to recursive format.
                     foreach (var trackSegment in allTrackSegments)
                         trackSegment.SetChildPointers(allTrackSegments);
-                    
+
                     //
                     writer.InlineDesc(serializeVerbose, allTrackSegments.GetBasePointer(), new TopologyParameters());
                     foreach (var trackSegment in allTrackSegments)
@@ -537,47 +485,24 @@ namespace GameCube.GFZ.CourseCollision
                 writer.WriteX(staticColliderMeshes);
                 var scmPtr = staticColliderMeshes.GetPointer();
 
-                // COLLIDER TRIANGLES
-                // Breakout value
-                var colliderTriangles = staticColliderMeshes.colliderTriangles;
-                // Write comment
-                if (!colliderTriangles.IsNullOrEmpty())
-                    writer.InlineDesc(serializeVerbose, scmPtr, colliderTriangles);
-                // Write values
-                writer.WriteX(colliderTriangles, false);
-                var triPtr = colliderTriangles.GetBasePointer();
-                // Write each triangle index list IF they exists, use referer ptr in comment
-                foreach (var triIndexMatrix in staticColliderMeshes.triMeshIndexMatrices)
+                // COLLIDER TRIS
                 {
-                    // Only write if it has indexes
-                    if (triIndexMatrix == null || !triIndexMatrix.HasIndexes)
-                        continue;
-
-                    writer.InlineDesc(serializeVerbose, triPtr, triIndexMatrix);
-                    foreach (var triIndexList in triIndexMatrix.indexLists)
-                    {
-                        writer.WriteX(triIndexList);
-                    }
+                    var colliderTris = staticColliderMeshes.colliderTriangles;
+                    // Write tri data and comment
+                    if (!colliderTris.IsNullOrEmpty())
+                        writer.InlineDesc(serializeVerbose, scmPtr, colliderTris);
+                    writer.WriteX(colliderTris, false);
+                    WriteStaticColliderMeshMatrices(writer, scmPtr, "ColiTri", staticColliderMeshes.triMeshIndexMatrices);
                 }
 
                 // COLLIDER QUADS
-                var colliderQuads = staticColliderMeshes.colliderQuads;
-                if (!colliderTriangles.IsNullOrEmpty())
-                    writer.InlineDesc(serializeVerbose, scmPtr, colliderQuads);
-                writer.WriteX(colliderQuads, false);
-                var quadPtr = colliderQuads.GetBasePointer();
-                // Write each quad index list IF they exists, use referer ptr in comment
-                foreach (var quadIndexMatrix in staticColliderMeshes.quadMeshIndexMatrices)
                 {
-                    // Only write if it has indexes
-                    if (quadIndexMatrix == null || !quadIndexMatrix.HasIndexes)
-                        continue;
-
-                    writer.InlineDesc(serializeVerbose, quadPtr, quadIndexMatrix);
-                    foreach (var quadIndexList in quadIndexMatrix.indexLists)
-                    {
-                        writer.WriteX(quadIndexList);
-                    }
+                    var colliderQuads = staticColliderMeshes.colliderQuads;
+                    // Write quad data and comment
+                    if (!colliderQuads.IsNullOrEmpty())
+                        writer.InlineDesc(serializeVerbose, scmPtr, colliderQuads);
+                    writer.WriteX(colliderQuads, false);
+                    WriteStaticColliderMeshMatrices(writer, scmPtr, "ColiQuad", staticColliderMeshes.quadMeshIndexMatrices);
                 }
 
             }
@@ -828,6 +753,118 @@ namespace GameCube.GFZ.CourseCollision
 
             BinaryIoUtility.PopEndianess();
         }
+
+        /// <summary>
+        /// Writes out a StaticColliderMeshMatrix[] with loads of comments.
+        /// </summary>
+        /// <param name="writer"></param>
+        /// <param name="refPtr"></param>
+        /// <param name="id"></param>
+        /// <param name="staticColliderMeshMatrix"></param>
+        public void WriteStaticColliderMeshMatrices(BinaryWriter writer, Pointer refPtr, string id, StaticColliderMeshMatrix[] staticColliderMeshMatrix)
+        {
+            // GX COUNT: 14. "Pointer table" of 256 ptrs PER item.
+            var nMatrices = staticColliderMeshMatrix.Length;
+            const int w = 2; //
+
+            for (int i = 0; i < nMatrices; i++)
+            {
+                var indexMatrix = staticColliderMeshMatrix[i];
+                var type = (StaticColliderMeshProperty)(i);
+
+                // Cannot be null
+                Assert.IsTrue(indexMatrix != null);
+
+                // Write extra-helpful comment.
+                writer.CommentAlign(serializeVerbose, ' ');
+                writer.CommentNewLine(serializeVerbose, '-');
+                writer.CommentType(indexMatrix, serializeVerbose);
+                writer.CommentPtr(refPtr, serializeVerbose);
+                writer.CommentNewLine(serializeVerbose, '-');
+                writer.CommentLineWide("Owner:", id, serializeVerbose);
+                writer.CommentLineWide("Index:", $"[{i,w}/{nMatrices}]", serializeVerbose);
+                writer.CommentLineWide("Type:", type, serializeVerbose);
+                writer.CommentLineWide("Mtx:", $"x:{indexMatrix.SubdivisionsX,2}, z:{indexMatrix.SubdivisionsZ,2}", serializeVerbose);
+                writer.CommentLineWide("MtxCnt:", indexMatrix.Count, serializeVerbose);
+                writer.CommentNewLine(serializeVerbose, '-');
+                //
+                writer.WriteX(indexMatrix);
+                var qmiPtr = indexMatrix.GetPointer();
+
+                if (indexMatrix.HasIndexes)
+                {
+                    // 256 lists
+                    writer.CommentAlign(serializeVerbose, ' ');
+                    writer.CommentNewLine(serializeVerbose, '-');
+                    writer.Comment($"{nameof(IndexList)}[{i,w}/{nMatrices}]", serializeVerbose);
+                    writer.CommentPtr(qmiPtr, serializeVerbose);
+                    writer.CommentLineWide("Type:", type, serializeVerbose);
+                    writer.CommentLineWide("Owner:", id, serializeVerbose);
+                    writer.CommentNewLine(serializeVerbose, '-');
+                    for (int index = 0; index < indexMatrix.indexLists.Length; index++)
+                        if (indexMatrix.indexLists[index].Length > 0)
+                            writer.CommentIdx(index, serializeVerbose);
+                    writer.CommentNewLine(serializeVerbose, '-');
+                    for (int index = 0; index < indexMatrix.indexLists.Length; index++)
+                    {
+                        var quadIndexList = indexMatrix.indexLists[index];
+                        writer.WriteX(quadIndexList);
+                    }
+                }
+            }
+        }
+
+        public void ReadTrackSegmentsRecursive(BinaryReader reader, Dictionary<Pointer, TrackSegment> allTrackSegments, TrackSegment parent)
+        {
+            // Add parent node to master list
+            var parentPtr = parent.GetPointer();
+            if (!allTrackSegments.ContainsKey(parentPtr))
+                allTrackSegments.Add(parentPtr, parent);
+
+            // Deserialize children (if any)
+            var children = parent.GetChildren(reader);
+            var requiresDeserialization = new List<TrackSegment>();
+
+            // Get the index of where these children WILL be in list
+            var childIndexes = new int[children.Length];
+            for (int i = 0; i < childIndexes.Length; i++)
+            {
+                var child = children[i];
+                var childPtr = child.GetPointer();
+
+                var listContainsChild = allTrackSegments.ContainsKey(childPtr);
+                if (listContainsChild)
+                {
+                    // Child is in master list, get index
+                    for (int j = 0; j < allTrackSegments.Count; j++)
+                    {
+                        if (allTrackSegments[j].GetPointer() == childPtr)
+                        {
+                            childIndexes[i] = j;
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    // Add child to master list
+                    // child index is COUNT (oob), add to list (is now in array bounds)
+                    childIndexes[i] = allTrackSegments.Count;
+                    allTrackSegments.Add(childPtr, child);
+                    requiresDeserialization.Add(child);
+                }
+            }
+
+            // Set indexes of children to 
+            parent.childIndexes = childIndexes;
+
+            // Read children recursively (if any).
+            foreach (var child in requiresDeserialization)
+            {
+                ReadTrackSegmentsRecursive(reader, allTrackSegments, child);
+            }
+        }
+
 
         public void DeserializeHeader(BinaryReader reader)
         {
