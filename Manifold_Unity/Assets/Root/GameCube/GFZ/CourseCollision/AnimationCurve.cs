@@ -1,4 +1,5 @@
-﻿using Manifold.IO;
+﻿using Manifold;
+using Manifold.IO;
 using System;
 using System.IO;
 
@@ -69,6 +70,10 @@ namespace GameCube.GFZ.CourseCollision
         /// <returns></returns>
         public ArrayPointer GetArrayPointer()
         {
+            //var arrayPtr = keyableAttributes.IsNullOrEmpty()
+            //    ? new ArrayPointer()
+            //    : keyableAttributes.GetArrayPointer();
+
             return keyableAttributes.GetArrayPointer();
         }
 

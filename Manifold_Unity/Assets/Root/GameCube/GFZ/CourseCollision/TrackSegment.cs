@@ -112,8 +112,6 @@ namespace GameCube.GFZ.CourseCollision
 
         public void SetChildPointers(TrackSegment[] children)
         {
-            children.GetArrayPointer();
-
             // Assert that children are truly sequential.
             // This is a HARD requirement of ArrayPointer.
             // Iterate from 0 - (n-1). If length == 1, no looping.
@@ -122,7 +120,23 @@ namespace GameCube.GFZ.CourseCollision
                 var curr = children[i + 0];
                 var next = children[i + 1];
                 // The end address of the current child must be the same as the next child
-                Assert.IsTrue(curr.AddressRange.startAddress == next.AddressRange.endAddress);
+                var currAddress = curr.AddressRange.endAddress;
+                var nextAddress = next.AddressRange.startAddress;
+                Assert.IsTrue(currAddress == nextAddress, $"Curr[{i}]:{currAddress}, Next[{i+1}]:{nextAddress}");
+            }
+
+            // Create a pointer given the children
+            if (childIndexes.Length > 0)
+            {
+                var index0 = childIndexes[0];
+                var arrayBaseChild = children[index0];
+                childrenPtrs = new ArrayPointer(
+                    childIndexes.Length,
+                    arrayBaseChild.GetPointer());
+            }
+            else
+            {
+                childrenPtrs = new ArrayPointer();
             }
         }
 

@@ -473,30 +473,33 @@ namespace GameCube.GFZ.CourseCollision
                 {
                     // Write each tracknode - stitch of trackpoint and tracksegment
                     writer.InlineDesc(serializeVerbose, 0x0C, trackNodes);
-                    writer.Flush();
                     writer.WriteX(trackNodes, false);
+                    var trackNodesPtr = trackNodes.GetBasePointer();
 
                     // TODO: better type comment
                     // hm.... maybe worth the local array for this reason
-                    writer.InlineDesc(serializeVerbose, new TrackCheckpoint());
-                    writer.Flush();
+                    writer.InlineDesc(serializeVerbose, trackNodesPtr, new TrackCheckpoint());
 
                     // Ensure sequential order in ROM for array pointer deserialization
                     foreach (var trackNode in trackNodes)
                         foreach (var trackPoint in trackNode.checkpoints)
                             writer.WriteX(trackPoint);
 
-                    // TODO: ensure proper array serialization order!
-                    writer.InlineDesc(serializeVerbose, allTrackSegments);
+                    // TRACK SEGMENTS
+                    writer.InlineDesc(serializeVerbose, trackNodesPtr, allTrackSegments);
                     writer.WriteX(allTrackSegments, false);
-
-                    // TODO: better type comment
-                    writer.InlineDesc(serializeVerbose, new TopologyParameters());
+                    // Manually refresh pointers due to recursive format.
+                    foreach (var trackSegment in allTrackSegments)
+                        trackSegment.SetChildPointers(allTrackSegments);
+                    
+                    //
+                    writer.InlineDesc(serializeVerbose, allTrackSegments.GetBasePointer(), new TopologyParameters());
                     foreach (var trackSegment in allTrackSegments)
                     {
                         var topology = trackSegment.trackAnimationCurves;
                         writer.WriteX(topology);
                     }
+
                     // TODO: better type comment
                     writer.InlineDesc(serializeVerbose, new TrackCornerTopology());
                     foreach (var trackSegment in allTrackSegments)
