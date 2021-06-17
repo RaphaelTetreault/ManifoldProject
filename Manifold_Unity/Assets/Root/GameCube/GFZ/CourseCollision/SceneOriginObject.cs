@@ -18,7 +18,7 @@ namespace GameCube.GFZ.CourseCollision
         [UnityEngine.SerializeField] private string nameCopy;
 
         // FIELDS
-        public Pointer sceneObjectReferencePtr;
+        public Pointer sceneInstanceReferencePtr;
         // REFERENCE FIELDS
         public SceneInstanceReference instanceReference;
 
@@ -37,12 +37,12 @@ namespace GameCube.GFZ.CourseCollision
         {
             this.RecordStartAddress(reader);
             {
-                reader.ReadX(ref sceneObjectReferencePtr);
+                reader.ReadX(ref sceneInstanceReferencePtr);
             }
             this.RecordEndAddress(reader);
             {
-                Assert.IsTrue(sceneObjectReferencePtr.IsNotNullPointer);
-                reader.JumpToAddress(sceneObjectReferencePtr);
+                Assert.IsTrue(sceneInstanceReferencePtr.IsNotNullPointer);
+                reader.JumpToAddress(sceneInstanceReferencePtr);
                 reader.ReadX(ref instanceReference, true);
 
                 nameCopy = instanceReference.nameCopy;
@@ -53,11 +53,11 @@ namespace GameCube.GFZ.CourseCollision
         public void Serialize(BinaryWriter writer)
         {
             {
-                sceneObjectReferencePtr = instanceReference.GetPointer();
+                sceneInstanceReferencePtr = instanceReference.GetPointer();
             }
             this.RecordStartAddress(writer);
             {
-                writer.WriteX(sceneObjectReferencePtr);
+                writer.WriteX(sceneInstanceReferencePtr);
             }
             this.RecordEndAddress(writer);
 
@@ -65,7 +65,7 @@ namespace GameCube.GFZ.CourseCollision
 
         public void ValidateReferences()
         {
-            Assert.IsTrue(sceneObjectReferencePtr.IsNotNullPointer);
+            Assert.IsTrue(sceneInstanceReferencePtr.IsNotNullPointer);
         }
 
 

@@ -299,7 +299,7 @@ namespace GameCube.GFZ.CourseCollision
                 var skeletalAnimatorDict = new Dictionary<Pointer, SkeletalAnimator>();
                 var animationClipDict = new Dictionary<Pointer, AnimationClip>();
 
-
+                // PHASE 1
                 // Deserialize instances as unique
                 foreach (var sceneObject in sceneObjects)
                 {
@@ -309,12 +309,20 @@ namespace GameCube.GFZ.CourseCollision
                     GetSerializable(reader, sceneObject.skeletalAnimatorPtr, ref sceneObject.skeletalAnimator, skeletalAnimatorDict);
                     GetSerializable(reader, sceneObject.animationPtr, ref sceneObject.animation, animationClipDict);
                 }
+                foreach (var sceneOriginObject in sceneOriginObjects)
+                {
+                    GetSerializable(reader, sceneOriginObject.sceneInstanceReferencePtr, ref sceneOriginObject.instanceReference, instanceRefsDict);
+                }
+
+                // PHASE 2
                 // Deserialize object references / collider geo as unique
                 foreach (var instance in instanceRefsDict.Values)
                 {
                     GetSerializable(reader, instance.objectReferencePtr, ref instance.objectReference, objectRefsDict);
                     GetSerializable(reader, instance.colliderGeometryPtr, ref instance.colliderGeometry, colliderGeoDict);
                 }
+
+                // PHASE 3
                 // Serialize object names as unique
                 foreach (var sceneObjectReference in objectRefsDict.Values)
                 {
@@ -686,37 +694,49 @@ namespace GameCube.GFZ.CourseCollision
                 referers.AddRange(staticColliderMeshes.quadMeshIndexMatrices);
 
                 // OBJECTS
-                // The structure which points to the object name
                 referers.AddRange(sceneObjectReferences);
-                // The structure which points to the above and collider geometry
                 referers.AddRange(sceneInstances);
-                foreach (var instance in sceneInstances)
-                    referers.Add(instance.colliderGeometry);
-                // The list which points to objects placed at the origin
+                //
+                referers.AddRange(sceneColliderGeometries);
+                //
                 referers.AddRange(sceneOriginObjects);
-                // The scene objects
                 referers.AddRange(sceneObjects);
-                foreach (var obj in sceneObjects)
-                {
-                    //referers.Add(obj.animation);
-                    if (obj.animation != null)
-                    {
-                        foreach (var animationCurvePlus in obj.animation.animationCurvePluses)
-                        {
-                            referers.Add(animationCurvePlus);
-                        }
-                    }
+                //
+                referers.AddRange(unkSceneObjData);
+                referers.AddRange(skeletalAnimators);
+                foreach (var anim in animationClips)
+                    if (!anim.animationCurvePluses.IsNullOrEmpty())
+                        referers.AddRange(anim.animationCurvePluses);
 
-                    if (obj.unk1 != null)
-                    {
-                        referers.Add(obj.unk1);
-                    }
 
-                    if (obj.skeletalAnimator != null)
-                    {
-                        referers.Add(obj.skeletalAnimator);
-                    }
-                }
+
+                //foreach (var instance in sceneInstances)
+                //    referers.Add(instance.colliderGeometry);
+                // The list which points to objects placed at the origin
+                //referers.AddRange(sceneOriginObjects);
+                // The scene objects
+                //referers.AddRange(sceneObjects);
+                //foreach (var obj in sceneObjects)
+                //{
+                //    //referers.Add(obj.animation);
+                //    if (obj.animation != null)
+                //    {
+                //        foreach (var animationCurvePlus in obj.animation.animationCurvePluses)
+                //        {
+                //            referers.Add(animationCurvePlus);
+                //        }
+                //    }
+
+                //    if (obj.unk1 != null)
+                //    {
+                //        referers.Add(obj.unk1);
+                //    }
+
+                //    if (obj.skeletalAnimator != null)
+                //    {
+                //        referers.Add(obj.skeletalAnimator);
+                //    }
+                //}
 
                 // FOG
                 // The structure points to 6 anim curves
