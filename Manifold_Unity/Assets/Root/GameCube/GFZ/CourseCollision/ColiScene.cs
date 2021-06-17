@@ -53,6 +53,7 @@ namespace GameCube.GFZ.CourseCollision
         [UnityEngine.SerializeField] private string courseName;
         [UnityEngine.SerializeField] private string author;
         [UnityEngine.SerializeField] private bool serializeVerbose = true;
+        [UnityEngine.SerializeField] private SerializeFormat format;
 
 
         // FIELDS
@@ -129,7 +130,11 @@ namespace GameCube.GFZ.CourseCollision
         /// Returns true if file is tagged either AX or GX, but not both
         /// </summary>
         public bool IsValidFile => isFileAX ^ isFileGX;
-        public SerializeFormat Format { get; set; }
+        public SerializeFormat Format
+        {
+            get => format;
+            set => format = value;
+        }
 
         public AddressRange AddressRange
         {
@@ -409,6 +414,9 @@ namespace GameCube.GFZ.CourseCollision
         {
             BinaryIoUtility.PushEndianess(false);
 
+            // TEMP HACK 
+            serializeVerbose = true;
+
             // Write header
             SerializeHeader(writer);
 
@@ -465,11 +473,14 @@ namespace GameCube.GFZ.CourseCollision
                 {
                     // Write each tracknode - stitch of trackpoint and tracksegment
                     writer.InlineDesc(serializeVerbose, 0x0C, trackNodes);
+                    writer.Flush();
                     writer.WriteX(trackNodes, false);
 
                     // TODO: better type comment
                     // hm.... maybe worth the local array for this reason
                     writer.InlineDesc(serializeVerbose, new TrackCheckpoint());
+                    writer.Flush();
+
                     // Ensure sequential order in ROM for array pointer deserialization
                     foreach (var trackNode in trackNodes)
                         foreach (var trackPoint in trackNode.checkpoints)
@@ -483,7 +494,7 @@ namespace GameCube.GFZ.CourseCollision
                     writer.InlineDesc(serializeVerbose, new TopologyParameters());
                     foreach (var trackSegment in allTrackSegments)
                     {
-                        var topology = trackSegment.trackSegment;
+                        var topology = trackSegment.trackAnimationCurves;
                         writer.WriteX(topology);
                     }
                     // TODO: better type comment
@@ -637,17 +648,25 @@ namespace GameCube.GFZ.CourseCollision
 
                 // SCENE OBJECTS - unknown data
                 writer.InlineDesc(serializeVerbose, unkSceneObjData);
-                foreach (var unk in unkSceneObjData)
+                foreach (var unk1 in unkSceneObjData)
                 {
-                    writer.WriteX(unk);
+                    if (unk1 == null)
+                        continue;
+
+                    writer.WriteX(unk1);
                     // TODO: don't inline?
-                    writer.WriteX(unk.unk, false);
+                    foreach (var unk2 in unk1.unk)
+                        if (unk2 != null)
+                            writer.WriteX(unk2);
                 }
 
                 // SCENE OBJECTS - 
                 writer.InlineDesc(serializeVerbose, skeletalAnimators);
                 foreach (var skeletalAnimator in skeletalAnimators)
                 {
+                    if (skeletalAnimator == null)
+                        continue;
+
                     writer.WriteX(skeletalAnimator);
                     // TODO: don't inline?
                     writer.WriteX(skeletalAnimator.properties);
@@ -656,20 +675,15 @@ namespace GameCube.GFZ.CourseCollision
                 writer.InlineDesc(serializeVerbose, animationClips);
                 foreach (var animationClip in animationClips)
                 {
+                    if (animationClip == null)
+                        continue;
+
                     writer.WriteX(animationClip);
                     // TODO: don't inline?
                     foreach (var curvePlus in animationClip.animationCurvePluses)
                         if (curvePlus != null)
                             writer.WriteX(curvePlus);
                 }
-
-                // TODO:
-                // Serialize the following:
-                // + animation clips
-                // + skeletal animators
-
-
-
             }
 
             // TRIGGERS
@@ -734,7 +748,7 @@ namespace GameCube.GFZ.CourseCollision
                 referers.AddRange(trackNodes);
                 referers.AddRange(allTrackSegments);
                 foreach (var trackSegment in allTrackSegments)
-                    referers.Add(trackSegment.trackSegment);
+                    referers.Add(trackSegment.trackAnimationCurves);
                 // The checkpoint table
                 referers.Add(trackCheckpointMatrix);
 

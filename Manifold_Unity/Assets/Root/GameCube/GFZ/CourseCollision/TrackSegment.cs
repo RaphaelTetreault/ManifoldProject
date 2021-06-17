@@ -45,7 +45,7 @@ namespace GameCube.GFZ.CourseCollision
         public uint zero_0x48; // zero confirmed
         public TrackUnkOption2 unk_0x4C; // 0, 1, 2, 3
         // REFERENCE FIELDS
-        public TopologyParameters trackSegment;
+        public TopologyParameters trackAnimationCurves;
         public TrackCornerTopology hairpinCornerTopology;
         public int[] childIndexes = new int[0];
         //public TrackSegment[] graph = new TrackSegment[0];
@@ -88,7 +88,7 @@ namespace GameCube.GFZ.CourseCollision
             {
                 // Read Topology
                 reader.JumpToAddress(generalTopologyPtr);
-                reader.ReadX(ref trackSegment, true);
+                reader.ReadX(ref trackAnimationCurves, true);
 
                 // Read hairpin turn
                 if (hairpinCornerTopologyPtr.IsNotNullPointer)
@@ -103,43 +103,12 @@ namespace GameCube.GFZ.CourseCollision
                 // Update values based on children
                 //worldMatrix = localMatrix;
 
-                //// Read children recusively
-                //if (childrenPtrs.IsNotNullPointer)
-                //{
-                //    reader.JumpToAddress(childrenPtrs);
-                //    reader.ReadX(ref children, childrenPtrs.Length, true);
-
-                //    foreach (var child in children)
-                //    {
-                //        child.worldMatrix = worldMatrix * child.localMatrix;
-                //        child.parent = this;
-                //    }
-
-                //    // Calculate depth by recursively evaluating lineage
-                //    var ancestor = parent;
-                //    while (ancestor != null)
-                //    {
-                //        depth++;
-                //        ancestor = ancestor.parent;
-                //    }
-                //}
-
                 // Assertions
                 Assert.IsTrue(zero_0x44 == 0);
                 Assert.IsTrue(zero_0x48 == 0);
             }
             this.SetReaderToEndAddress(reader);
         }
-
-        //// TODO: remove
-        //public void SetChildIndex(TrackSegment parent)
-        //{
-        //    foreach (var child in parent.children)
-        //    {
-        //        child.depth = parent.depth + 1;
-        //        SetChildIndex(child);
-        //    }
-        //}
 
         public void SetChildPointers(TrackSegment[] children)
         {
@@ -178,7 +147,7 @@ namespace GameCube.GFZ.CourseCollision
                 // recursive nature of this type.
                 // See "SetChildPointers(TrackSegment[] children)"
 
-                generalTopologyPtr = trackSegment.GetPointer();
+                generalTopologyPtr = trackAnimationCurves.GetPointer();
                 hairpinCornerTopologyPtr = hairpinCornerTopology.GetPointer();
             }
             this.RecordStartAddress(writer);
@@ -220,10 +189,13 @@ namespace GameCube.GFZ.CourseCollision
             Assert.IsFalse(hasRailRight ^ railHeightLeft > 0);
 
             // Ensure that if there is a turn that one of the two flags for it are set
-            bool hasTurnLeft = perimeterOptions.HasFlag(TrackPerimeterOptions.has90TurnLeft);
-            bool hasTurnRight = perimeterOptions.HasFlag(TrackPerimeterOptions.has90TurnRight);
-            bool isTurnNotNull = hairpinCornerTopology != null;
-            Assert.IsTrue(hasTurnLeft || hasTurnRight && isTurnNotNull);
+            if (hairpinCornerTopologyPtr.IsNotNullPointer)
+            {
+                bool hasTurnLeft = perimeterOptions.HasFlag(TrackPerimeterOptions.has90TurnLeft);
+                bool hasTurnRight = perimeterOptions.HasFlag(TrackPerimeterOptions.has90TurnRight);
+                bool isTurnNotNull = hairpinCornerTopology != null;
+                Assert.IsTrue(hasTurnLeft || hasTurnRight && isTurnNotNull);
+            } 
         }
 
         public override string ToString()

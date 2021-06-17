@@ -60,20 +60,28 @@ namespace Manifold.IO.GFZ.CourseCollision
 
         public override void Execute() => Export();
 
+
+        public string filePath = "";
         public void Export()
         {
             ColiCourseUtility.SerializeVerbose = serializeVerbose;
 
             {
-                var sobj = exportSobjs[0];
+                var reader = new BinaryReader(File.OpenRead(filePath));
+                var selectScene = new ColiScene();
+                selectScene.FileName = Path.GetFileName(filePath);
+                reader.ReadX(ref selectScene, false);
+
+
+                //var sobj = exportSobjs[0];
                 var dateTime = DateTime.Now;
                 var timestamp = $"[{dateTime:yyyy-MM-dd}][{dateTime:HH-mm-ss}]";
-                var logPath = Path.Combine(exportTo, $"{timestamp} - {sobj.FileName}.txt");
+                var logPath = Path.Combine(exportTo, $"{timestamp} - Course {selectScene.ID}.txt");
                 var log = new MarkdownTextLogger(logPath);
-                WriteFullReport(log, sobj);
+                WriteFullReport(log, selectScene);
                 log.Close();
 
-                var x = ExportUtility.ExportSerializable(sobj, exportTo, "", allowOverwritingFiles);
+                var x = ExportUtility.ExportSerializable(selectScene, exportTo, "", allowOverwritingFiles);
                 OSUtility.OpenDirectory(openFolderAfterExport, x);
 
                 return;

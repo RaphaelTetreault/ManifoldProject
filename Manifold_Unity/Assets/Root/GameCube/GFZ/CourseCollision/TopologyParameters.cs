@@ -108,10 +108,12 @@ namespace GameCube.GFZ.CourseCollision
             {
                 // Ensure we have the correct amount of animation curves before indexing
                 Assert.IsTrue(animationCurves.Length == kCurveCount);
+
                 // Construct ArrayPointer2D for animation curves
                 var pointers = new ArrayPointer[kCurveCount];
                 for (int i = 0; i < pointers.Length; i++)
                     pointers[i] = animationCurves[i].GetArrayPointer();
+
                 curvePtrs2D = new ArrayPointer2D(pointers);
             }
             this.RecordStartAddress(writer);
@@ -145,13 +147,13 @@ namespace GameCube.GFZ.CourseCollision
                 {
                     // Assert IS TRUE
                     Assert.IsTrue(animationCurvePtrs.IsNotNullPointer);
-                    Assert.IsTrue(animationCurvePtrs.Length == 0);
+                    Assert.IsTrue(animationCurvePtrs.Length > 0);
                 }
                 else
                 {
                     // Assert IS FALSE
                     Assert.IsFalse(animationCurvePtrs.IsNotNullPointer);
-                    Assert.IsFalse(animationCurvePtrs.Length == 0);
+                    Assert.IsFalse(animationCurvePtrs.Length > 0);
                 }
             }
         }

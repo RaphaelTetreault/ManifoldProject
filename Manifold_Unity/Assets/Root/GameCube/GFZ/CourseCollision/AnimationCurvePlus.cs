@@ -60,7 +60,11 @@ namespace GameCube.GFZ.CourseCollision
         public void Serialize(BinaryWriter writer)
         {
             {
-                animationCurvePtrs = animationCurve.GetArrayPointer();
+                var ptr = animationCurve != null
+                    ? animationCurve.GetArrayPointer()
+                    : new ArrayPointer();
+
+                animationCurvePtrs = ptr;
             }
             this.RecordStartAddress(writer);
             {
@@ -75,13 +79,11 @@ namespace GameCube.GFZ.CourseCollision
 
         public void ValidateReferences()
         {
-            // TODO: if anim not null, then if anim has keys, assert is not null ptr
-            throw new NotImplementedException();
+            if (animationCurvePtrs.IsNotNullPointer)
+                Assert.IsTrue(animationCurve != null);
 
-            //if (animationCurve != null)
-            //{
-            //    Assert.IsTrue(anima);
-            //}
+            if (animationCurve != null)
+                Assert.IsTrue(animationCurvePtrs.IsNotNullPointer);
         }
     }
 }

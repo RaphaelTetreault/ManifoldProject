@@ -398,7 +398,7 @@ namespace Manifold.IO.GFZ.CourseCollision
         }
         public void WriteTrackKeyableAttributeRecursive(StreamWriter writer, ColiSceneSobj sobj, int nestedDepth, int animationCurveIndex, int trackTransformIndex, TrackSegment trackTransform)
         {
-            var animationCurves = trackTransform.trackSegment.animationCurves;
+            var animationCurves = trackTransform.trackAnimationCurves.animationCurves;
             var keyableIndex = 1; // 0-n, depends on number of keyables in array
             int keyableTotal = animationCurves[animationCurveIndex].Length;
 

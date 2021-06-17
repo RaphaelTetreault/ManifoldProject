@@ -77,7 +77,8 @@ namespace GameCube.GFZ.CourseCollision
             // This pointer CANNOT be null and must refer to an object name.
             Assert.IsTrue(namePtr.IsNotNullPointer);
             Assert.IsTrue(name != null);
-            Assert.IsTrue(!string.IsNullOrEmpty(name.value));
+            // HACK: this is because game data DOES have null names... why?
+            //Assert.IsTrue(!string.IsNullOrEmpty(name.value));
 
             //
             Assert.IsTrue(zero_0x00 == 0);

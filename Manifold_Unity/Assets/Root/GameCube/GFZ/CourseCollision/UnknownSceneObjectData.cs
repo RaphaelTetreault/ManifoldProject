@@ -74,9 +74,14 @@ namespace GameCube.GFZ.CourseCollision
 
         public void ValidateReferences()
         {
-            // TODO: null check in GetPointer(s) etc
-            // this way you can be confident in asserting object reference and pointer
-            throw new NotImplementedException();
+            for (int i = 0; i < kCount; i++)
+            {
+                if (unkPtrs[i].IsNotNullPointer)
+                    Assert.IsTrue(unk[i] != null);
+
+                if (unk[i] != null)
+                    Assert.IsTrue(unkPtrs[i].IsNotNullPointer);
+            }
         }
 
         public override string ToString()

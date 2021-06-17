@@ -58,7 +58,7 @@ namespace GameCube.GFZ.CourseCollision
         {
             {
                 Assert.IsTrue(matrix3x4 != null);
-                Assert.IsTrue(const_0x34 == 0x02);
+                Assert.IsTrue(const_0x34 == 0x02, $"{nameof(const_0x34)} is not 0x02! Is: {const_0x34}");
                 Assert.IsTrue(zero_0x35 == 0x00);
                 Assert.IsTrue(zero_0x37 == 0x00);
             }
