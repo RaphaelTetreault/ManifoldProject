@@ -459,7 +459,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol(nameof(TrackSegment.trackProperty));
                 writer.WriteNextCol(nameof(TrackSegment.perimeterOptions));
                 writer.WriteNextCol(nameof(TrackSegment.pipeCylinderOptions));
-                writer.WriteNextCol(nameof(TrackSegment.generalTopologyPtr));
+                writer.WriteNextCol(nameof(TrackSegment.trackAnimationCurvesPtr));
                 writer.WriteNextCol(nameof(TrackSegment.hairpinCornerTopologyPtr));
                 writer.WriteNextCol(nameof(TrackSegment.childrenPtrs));
                 writer.WriteNextCol(nameof(TrackSegment.localScale));
@@ -521,7 +521,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             writer.WriteNextCol(trackTransform.trackProperty);
             writer.WriteNextCol(trackTransform.perimeterOptions);
             writer.WriteNextCol(trackTransform.pipeCylinderOptions);
-            writer.WriteNextCol(trackTransform.generalTopologyPtr);
+            writer.WriteNextCol(trackTransform.trackAnimationCurvesPtr);
             writer.WriteNextCol(trackTransform.hairpinCornerTopologyPtr);
             writer.WriteNextCol(trackTransform.childrenPtrs);
             writer.WriteNextCol(trackTransform.localScale);

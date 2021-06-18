@@ -56,12 +56,21 @@ namespace GameCube.GFZ.CourseCollision
 
         public void Serialize(BinaryWriter writer)
         {
-            this.RecordStartAddress(writer);
+            if (keyableAttributes.Length > 0)
             {
-                foreach (var keyable in keyableAttributes)
-                    writer.WriteX(keyable);
+                this.RecordStartAddress(writer);
+                {
+                    foreach (var keyable in keyableAttributes)
+                        writer.WriteX(keyable);
+                }
+                this.RecordEndAddress(writer);
             }
-            this.RecordEndAddress(writer);
+            else
+            {
+                // If nothing to serialize, zero out address as
+                // it will be used to get ptr
+                addressRange = new AddressRange();
+            }
         }
 
         /// <summary>
@@ -70,10 +79,6 @@ namespace GameCube.GFZ.CourseCollision
         /// <returns></returns>
         public ArrayPointer GetArrayPointer()
         {
-            //var arrayPtr = keyableAttributes.IsNullOrEmpty()
-            //    ? new ArrayPointer()
-            //    : keyableAttributes.GetArrayPointer();
-
             return keyableAttributes.GetArrayPointer();
         }
 

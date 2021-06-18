@@ -432,28 +432,57 @@ namespace GameCube.GFZ.CourseCollision
                     writer.WriteX(trackNodes, false);
                     var trackNodesPtr = trackNodes.GetBasePointer();
 
-                    // TODO: better type comment
-                    // hm.... maybe worth the local array for this reason
-                    writer.InlineDesc(serializeVerbose, trackNodesPtr, new TrackCheckpoint());
+                    // TRACK CHECKPOINTS
+                    {
+                        // NOTICE:
+                        // Ensure sequential order in ROM for array pointer deserialization
 
-                    // Ensure sequential order in ROM for array pointer deserialization
-                    foreach (var trackNode in trackNodes)
-                        foreach (var trackPoint in trackNode.checkpoints)
-                            writer.WriteX(trackPoint);
+                        var all = new List<TrackCheckpoint>();
+                        foreach (var trackNode in trackNodes)
+                            foreach (var trackCheckpoint in trackNode.checkpoints)
+                                all.Add(trackCheckpoint);
+                        var array = all.ToArray();
+
+                        writer.InlineDesc(serializeVerbose, trackNodesPtr, array);
+                        writer.WriteX(array, false);
+                    }
 
                     // TRACK SEGMENTS
-                    writer.InlineDesc(serializeVerbose, trackNodesPtr, allTrackSegments);
-                    writer.WriteX(allTrackSegments, false);
-                    // Manually refresh pointers due to recursive format.
-                    foreach (var trackSegment in allTrackSegments)
-                        trackSegment.SetChildPointers(allTrackSegments);
-
-                    //
-                    writer.InlineDesc(serializeVerbose, allTrackSegments.GetBasePointer(), new TopologyParameters());
-                    foreach (var trackSegment in allTrackSegments)
                     {
-                        var topology = trackSegment.trackAnimationCurves;
-                        writer.WriteX(topology);
+                        writer.InlineDesc(serializeVerbose, trackNodesPtr, allTrackSegments);
+                        writer.WriteX(allTrackSegments, false);
+                        // Manually refresh pointers due to recursive format.
+                        foreach (var trackSegment in allTrackSegments)
+                            trackSegment.SetChildPointers(allTrackSegments);
+                    }
+
+                    // TRACK ANIMATION CURVES
+                    {
+                        //
+                        var allX = new List<TopologyParameters>();
+                        foreach (var trackSegment in allTrackSegments)
+                            allX.Add(trackSegment.trackAnimationCurves);
+                        var allTrackAnimationCurves = allX.ToArray();
+                        // Write anim curve ptrs
+                        writer.InlineDesc(serializeVerbose, allTrackSegments.GetBasePointer(), allTrackAnimationCurves);
+                        writer.WriteX(allTrackAnimationCurves, false);
+                        
+                        //
+                        var listTrackAnimationCurves = new List<AnimationCurve>();
+                        foreach (var trackAnimationCurve in allTrackAnimationCurves)
+                            foreach (var x in trackAnimationCurve.animationCurves)
+                                listTrackAnimationCurves.Add(x);
+                        var allAnimationCurves = listTrackAnimationCurves.ToArray();
+                        //
+                        writer.InlineDesc(serializeVerbose, allTrackAnimationCurves.GetBasePointer(), allAnimationCurves);
+                        writer.WriteX(allAnimationCurves, false);
+
+                        //// TOPO
+                        //foreach (var trackSegment in allTrackSegments)
+                        //{
+                        //    var topology = trackSegment.trackAnimationCurves;
+                        //    writer.WriteX(topology);
+                        //}
                     }
 
                     // TODO: better type comment
@@ -696,9 +725,7 @@ namespace GameCube.GFZ.CourseCollision
                 // OBJECTS
                 referers.AddRange(sceneObjectReferences);
                 referers.AddRange(sceneInstances);
-                //
                 referers.AddRange(sceneColliderGeometries);
-                //
                 referers.AddRange(sceneOriginObjects);
                 referers.AddRange(sceneObjects);
                 //
@@ -707,36 +734,6 @@ namespace GameCube.GFZ.CourseCollision
                 foreach (var anim in animationClips)
                     if (!anim.animationCurvePluses.IsNullOrEmpty())
                         referers.AddRange(anim.animationCurvePluses);
-
-
-
-                //foreach (var instance in sceneInstances)
-                //    referers.Add(instance.colliderGeometry);
-                // The list which points to objects placed at the origin
-                //referers.AddRange(sceneOriginObjects);
-                // The scene objects
-                //referers.AddRange(sceneObjects);
-                //foreach (var obj in sceneObjects)
-                //{
-                //    //referers.Add(obj.animation);
-                //    if (obj.animation != null)
-                //    {
-                //        foreach (var animationCurvePlus in obj.animation.animationCurvePluses)
-                //        {
-                //            referers.Add(animationCurvePlus);
-                //        }
-                //    }
-
-                //    if (obj.unk1 != null)
-                //    {
-                //        referers.Add(obj.unk1);
-                //    }
-
-                //    if (obj.skeletalAnimator != null)
-                //    {
-                //        referers.Add(obj.skeletalAnimator);
-                //    }
-                //}
 
                 // FOG
                 // The structure points to 6 anim curves

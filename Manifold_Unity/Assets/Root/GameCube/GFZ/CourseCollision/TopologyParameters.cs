@@ -26,7 +26,7 @@ namespace GameCube.GFZ.CourseCollision
         [UnityEngine.SerializeField] private AddressRange addressRange;
 
         // FIELDS
-        public ArrayPointer2D curvePtrs2D = new ArrayPointer2D(kCurveCount);
+        public ArrayPointer2D curvesPtr2D = new ArrayPointer2D(kCurveCount);
         // REFERENCE FIELDS
         public AnimationCurve[] animationCurves = new AnimationCurve[0];
 
@@ -48,7 +48,7 @@ namespace GameCube.GFZ.CourseCollision
         {
             this.RecordStartAddress(reader);
             {
-                reader.ReadX(ref curvePtrs2D);
+                reader.ReadX(ref curvesPtr2D);
             }
             this.RecordEndAddress(reader);
             {
@@ -57,7 +57,7 @@ namespace GameCube.GFZ.CourseCollision
 
                 for (int i = 0; i < animationCurves.Length; i++)
                 {
-                    var arrayPointer = curvePtrs2D.ArrayPointers[i];
+                    var arrayPointer = curvesPtr2D.ArrayPointers[i];
                     if (arrayPointer.IsNotNullPointer)
                     {
                         // Deserialization is a bit different. Init array length here.
@@ -114,11 +114,11 @@ namespace GameCube.GFZ.CourseCollision
                 for (int i = 0; i < pointers.Length; i++)
                     pointers[i] = animationCurves[i].GetArrayPointer();
 
-                curvePtrs2D = new ArrayPointer2D(pointers);
+                curvesPtr2D = new ArrayPointer2D(pointers);
             }
             this.RecordStartAddress(writer);
             {
-                writer.WriteX(curvePtrs2D);
+                writer.WriteX(curvesPtr2D);
             }
             this.RecordEndAddress(writer);
         }
@@ -128,14 +128,14 @@ namespace GameCube.GFZ.CourseCollision
             // Assert array information
             Assert.IsTrue(animationCurves != null);
             Assert.IsTrue(animationCurves.Length == kCurveCount);
-            Assert.IsTrue(curvePtrs2D.Length == kCurveCount);
+            Assert.IsTrue(curvesPtr2D.Length == kCurveCount);
 
             // Assert array items
             for (int i = 0; i < kCurveCount; i++)
             {
                 // Simplify access
                 var animationCurve = animationCurves[i];
-                var animationCurvePtrs = curvePtrs2D.ArrayPointers[i];
+                var animationCurvePtrs = curvesPtr2D.ArrayPointers[i];
 
                 // Ensure each item in 2D array is not true null
                 Assert.IsTrue(animationCurve != null);

@@ -25,7 +25,7 @@ namespace GameCube.GFZ.CourseCollision
         public TrackProperty trackProperty;
         public TrackPerimeterOptions perimeterOptions;
         public TrackPipeCylinderOptions pipeCylinderOptions;
-        public Pointer generalTopologyPtr;
+        public Pointer trackAnimationCurvesPtr;
         public Pointer hairpinCornerTopologyPtr;
         public ArrayPointer childrenPtrs;
         public float3 localScale;
@@ -68,7 +68,7 @@ namespace GameCube.GFZ.CourseCollision
                 reader.ReadX(ref trackProperty);
                 reader.ReadX(ref perimeterOptions);
                 reader.ReadX(ref pipeCylinderOptions);
-                reader.ReadX(ref generalTopologyPtr);
+                reader.ReadX(ref trackAnimationCurvesPtr);
                 reader.ReadX(ref hairpinCornerTopologyPtr);
                 reader.ReadX(ref childrenPtrs);
                 reader.ReadX(ref localScale);
@@ -87,7 +87,7 @@ namespace GameCube.GFZ.CourseCollision
             this.RecordEndAddress(reader);
             {
                 // Read Topology
-                reader.JumpToAddress(generalTopologyPtr);
+                reader.JumpToAddress(trackAnimationCurvesPtr);
                 reader.ReadX(ref trackAnimationCurves, true);
 
                 // Read hairpin turn
@@ -161,7 +161,7 @@ namespace GameCube.GFZ.CourseCollision
                 // recursive nature of this type.
                 // See "SetChildPointers(TrackSegment[] children)"
 
-                generalTopologyPtr = trackAnimationCurves.GetPointer();
+                trackAnimationCurvesPtr = trackAnimationCurves.GetPointer();
                 hairpinCornerTopologyPtr = hairpinCornerTopology.GetPointer();
             }
             this.RecordStartAddress(writer);
@@ -170,7 +170,7 @@ namespace GameCube.GFZ.CourseCollision
                 writer.WriteX(trackProperty);
                 writer.WriteX(perimeterOptions);
                 writer.WriteX(pipeCylinderOptions);
-                writer.WriteX(generalTopologyPtr);
+                writer.WriteX(trackAnimationCurvesPtr);
                 writer.WriteX(hairpinCornerTopologyPtr);
                 writer.WriteX(childrenPtrs);
                 writer.WriteX(localScale);
