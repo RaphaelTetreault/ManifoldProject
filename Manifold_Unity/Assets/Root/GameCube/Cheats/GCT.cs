@@ -89,7 +89,7 @@ namespace GameCube.Cheats
     public class GfzCupGctGen
     {
         // Reference:
-        https://pastebin.com/4W2uLHSY
+        // https://pastebin.com/4W2uLHSY
 
         const ulong CodeConst = 0x401A9B84_00000000;
 
