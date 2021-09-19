@@ -79,11 +79,22 @@ namespace GameCube.GFZ.CourseCollision
 
         public void ValidateReferences()
         {
+            // Ensure both animation curve and ptr match up as null or not-null
+
+            // 2021/09/18: problem is you can't guarantee this on desirealize-reserialize
+            // since ref is made but ptr is null.
+
+            //var refNotNull = animationCurve != null;
+            //var ptrNotNull = animationCurvePtrs.IsNotNullPointer;
+            //var isSameState = !(refNotNull ^ ptrNotNull);
+            //Assert.IsTrue(isSameState);
+
+            // seems like this might be the only valid check... see note above.
             if (animationCurvePtrs.IsNotNullPointer)
                 Assert.IsTrue(animationCurve != null);
 
-            if (animationCurve != null)
-                Assert.IsTrue(animationCurvePtrs.IsNotNullPointer);
+            //if (animationCurve != null)
+            //    Assert.IsTrue(animationCurvePtrs.IsNotNullPointer);
         }
     }
 }

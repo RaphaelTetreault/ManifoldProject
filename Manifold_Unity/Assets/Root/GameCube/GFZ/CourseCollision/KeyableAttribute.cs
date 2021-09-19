@@ -8,7 +8,7 @@ namespace GameCube.GFZ.CourseCollision
     /// This structure appears to be a Maya (4.?) KeyableAttribute
     /// </summary>
     [Serializable]
-    public sealed class KeyableAttribute :
+    public struct KeyableAttribute :
         IBinaryAddressable,
         IBinarySerializable
     {

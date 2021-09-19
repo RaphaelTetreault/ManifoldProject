@@ -67,16 +67,20 @@ namespace GameCube.GFZ.CourseCollision
 
         public void Serialize(BinaryWriter writer)
         {
-            // the matrix only returns colunms but we need rows, so transpose to swap row/col
-            var matrixTransposed = math.transpose(matrix);
-            var row0 = matrixTransposed.c0;
-            var row1 = matrixTransposed.c1;
-            var row2 = matrixTransposed.c2;
+            this.RecordStartAddress(writer);
+            {
+                // the matrix only returns colunms but we need rows, so transpose to swap row/col
+                var matrixTransposed = math.transpose(matrix);
+                var row0 = matrixTransposed.c0;
+                var row1 = matrixTransposed.c1;
+                var row2 = matrixTransposed.c2;
 
-            // Write rows
-            writer.WriteX(row0);
-            writer.WriteX(row1);
-            writer.WriteX(row2);
+                // Write rows
+                writer.WriteX(row0);
+                writer.WriteX(row1);
+                writer.WriteX(row2);
+            }
+            this.RecordEndAddress(writer);
         }
 
         public override string ToString()

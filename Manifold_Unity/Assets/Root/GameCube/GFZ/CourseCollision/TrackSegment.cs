@@ -73,7 +73,7 @@ namespace GameCube.GFZ.CourseCollision
                 reader.ReadX(ref childrenPtrs);
                 reader.ReadX(ref localScale);
                 reader.ReadX(ref localRotation);
-                reader.ReadX(ref localPosition); //AvEditorUtil.InvertX(ref localPosition);
+                reader.ReadX(ref localPosition);
                 reader.ReadX(ref unk_0x38);
                 reader.ReadX(ref unk_0x39);
                 reader.ReadX(ref unk_0x3A);

@@ -21,7 +21,13 @@ namespace GameCube.GFZ.CourseCollision
         public string nameCopy;
 
         // FIELDS
+        /// <summary>
+        /// Appears to be render flags. 0x00000001 seems to be basic value. Alpha clip.
+        /// </summary>
         public UnknownObjectBitfield lodFar;
+        /// <summary>
+        /// 
+        /// </summary>
         public UnknownObjectBitfield lodNear;
         public Pointer instanceReferencePtr;
         public Transform transform = new Transform();

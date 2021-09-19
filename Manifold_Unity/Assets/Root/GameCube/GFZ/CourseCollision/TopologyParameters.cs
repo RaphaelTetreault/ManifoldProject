@@ -135,25 +135,27 @@ namespace GameCube.GFZ.CourseCollision
             {
                 // Simplify access
                 var animationCurve = animationCurves[i];
+                var animationCurvePtr = animationCurves[i].GetPointer();
                 var animationCurvePtrs = curvesPtr2D.ArrayPointers[i];
 
                 // Ensure each item in 2D array is not true null
                 Assert.IsTrue(animationCurve != null);
                 // Ensure data matches up
                 Assert.IsTrue(animationCurve.Length == animationCurvePtrs.Length);
-                Assert.IsTrue(animationCurve.AddressRange.GetPointer() == animationCurvePtrs.Pointer);
+                // idea was to make sure index 0 address is == array base address. Redundant?
+                //Assert.IsTrue(animationCurve.AddressRange.GetPointer() == animationCurvePtrs.Pointer);
 
                 if (animationCurve.Length > 0)
                 {
                     // Assert IS TRUE
-                    Assert.IsTrue(animationCurvePtrs.IsNotNullPointer);
-                    Assert.IsTrue(animationCurvePtrs.Length > 0);
+                    Assert.IsTrue(animationCurvePtr.IsNotNullPointer);
+                    //Assert.IsTrue(animationCurvePtrs.Length > 0);
                 }
                 else
                 {
                     // Assert IS FALSE
-                    Assert.IsFalse(animationCurvePtrs.IsNotNullPointer);
-                    Assert.IsFalse(animationCurvePtrs.Length > 0);
+                    Assert.IsFalse(animationCurvePtr.IsNotNullPointer);
+                    //Assert.IsFalse(animationCurvePtrs.Length > 0);
                 }
             }
         }

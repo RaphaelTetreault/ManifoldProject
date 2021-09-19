@@ -26,10 +26,18 @@ namespace GameCube.GFZ.CourseCollision
         [NumFormat(numDigits: 2, numBase: 16)]
         public byte data8d;
 
-        public void Deserialize(BinaryReader reader)
+        public static implicit operator UnknownObjectBitfield(uint value)
         {
-            reader.ReadX(ref data32);
+            var x = new UnknownObjectBitfield()
+            {
+                data32 = value,
+            };
+            x.SetValues();
+            return x;
+        }
 
+        private void SetValues()
+        {
             data16a = (ushort)((data32 >> 8 * 2) & 0xFFFF);
             data16b = (ushort)((data32 >> 8 * 0) & 0xFFFF);
 
@@ -37,6 +45,11 @@ namespace GameCube.GFZ.CourseCollision
             data8b = (byte)((data32 >> 8 * 2) & 0xFF);
             data8c = (byte)((data32 >> 8 * 1) & 0xFF);
             data8d = (byte)((data32 >> 8 * 0) & 0xFF);
+        }
+        public void Deserialize(BinaryReader reader)
+        {
+            reader.ReadX(ref data32);
+            SetValues();
         }
 
         public void Serialize(BinaryWriter writer)

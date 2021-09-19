@@ -136,6 +136,11 @@ namespace GameCube.GFZ.CourseCollision
             set => format = value;
         }
 
+        public bool SerializeVerbose
+        {
+            get => serializeVerbose;
+            set => serializeVerbose = value;
+        }
         public AddressRange AddressRange
         {
             get => addressRange;
@@ -301,6 +306,10 @@ namespace GameCube.GFZ.CourseCollision
 
                 // PHASE 1
                 // Deserialize instances as unique
+                foreach (var sceneOriginObject in sceneOriginObjects)
+                {
+                    GetSerializable(reader, sceneOriginObject.sceneInstanceReferencePtr, ref sceneOriginObject.instanceReference, instanceRefsDict);
+                }
                 foreach (var sceneObject in sceneObjects)
                 {
                     GetSerializable(reader, sceneObject.instanceReferencePtr, ref sceneObject.instanceReference, instanceRefsDict);
@@ -309,10 +318,7 @@ namespace GameCube.GFZ.CourseCollision
                     GetSerializable(reader, sceneObject.skeletalAnimatorPtr, ref sceneObject.skeletalAnimator, skeletalAnimatorDict);
                     GetSerializable(reader, sceneObject.animationPtr, ref sceneObject.animation, animationClipDict);
                 }
-                foreach (var sceneOriginObject in sceneOriginObjects)
-                {
-                    GetSerializable(reader, sceneOriginObject.sceneInstanceReferencePtr, ref sceneOriginObject.instanceReference, instanceRefsDict);
-                }
+
 
                 // PHASE 2
                 // Deserialize object references / collider geo as unique
@@ -370,8 +376,14 @@ namespace GameCube.GFZ.CourseCollision
         {
             BinaryIoUtility.PushEndianess(false);
 
-            // TEMP HACK 
-            serializeVerbose = true;
+            // Disable static collider meshes for testing...
+            boostPlatesActive = BoostPlatesActive.Disabled;
+
+            foreach (var x in sceneObjects)
+            {
+                x.lodFar = 1;
+                x.lodNear = uint.MaxValue;
+            }
 
             // Write header
             SerializeHeader(writer);
@@ -451,6 +463,7 @@ namespace GameCube.GFZ.CourseCollision
                     {
                         writer.InlineDesc(serializeVerbose, trackNodesPtr, allTrackSegments);
                         writer.WriteX(allTrackSegments, false);
+
                         // Manually refresh pointers due to recursive format.
                         foreach (var trackSegment in allTrackSegments)
                             trackSegment.SetChildPointers(allTrackSegments);
@@ -459,30 +472,23 @@ namespace GameCube.GFZ.CourseCollision
                     // TRACK ANIMATION CURVES
                     {
                         //
-                        var allX = new List<TopologyParameters>();
+                        var listTrackAnimationCurves = new List<TopologyParameters>();
                         foreach (var trackSegment in allTrackSegments)
-                            allX.Add(trackSegment.trackAnimationCurves);
-                        var allTrackAnimationCurves = allX.ToArray();
+                            listTrackAnimationCurves.Add(trackSegment.trackAnimationCurves);
+                        var allTrackAnimationCurves = listTrackAnimationCurves.ToArray();
                         // Write anim curve ptrs
                         writer.InlineDesc(serializeVerbose, allTrackSegments.GetBasePointer(), allTrackAnimationCurves);
                         writer.WriteX(allTrackAnimationCurves, false);
                         
                         //
-                        var listTrackAnimationCurves = new List<AnimationCurve>();
+                        var listAnimationCurves = new List<AnimationCurve>();
                         foreach (var trackAnimationCurve in allTrackAnimationCurves)
-                            foreach (var x in trackAnimationCurve.animationCurves)
-                                listTrackAnimationCurves.Add(x);
-                        var allAnimationCurves = listTrackAnimationCurves.ToArray();
+                            foreach (var animationCurve in trackAnimationCurve.animationCurves)
+                                listAnimationCurves.Add(animationCurve);
+                        var allAnimationCurves = listAnimationCurves.ToArray();
                         //
                         writer.InlineDesc(serializeVerbose, allTrackAnimationCurves.GetBasePointer(), allAnimationCurves);
                         writer.WriteX(allAnimationCurves, false);
-
-                        //// TOPO
-                        //foreach (var trackSegment in allTrackSegments)
-                        //{
-                        //    var topology = trackSegment.trackAnimationCurves;
-                        //    writer.WriteX(topology);
-                        //}
                     }
 
                     // TODO: better type comment
@@ -786,29 +792,29 @@ namespace GameCube.GFZ.CourseCollision
 
             for (int i = 0; i < nMatrices; i++)
             {
-                var indexMatrix = staticColliderMeshMatrix[i];
+                var matrix = staticColliderMeshMatrix[i];
                 var type = (StaticColliderMeshProperty)(i);
 
                 // Cannot be null
-                Assert.IsTrue(indexMatrix != null);
+                Assert.IsTrue(matrix != null);
 
                 // Write extra-helpful comment.
                 writer.CommentAlign(serializeVerbose, ' ');
                 writer.CommentNewLine(serializeVerbose, '-');
-                writer.CommentType(indexMatrix, serializeVerbose);
+                writer.CommentType(matrix, serializeVerbose);
                 writer.CommentPtr(refPtr, serializeVerbose);
                 writer.CommentNewLine(serializeVerbose, '-');
                 writer.CommentLineWide("Owner:", id, serializeVerbose);
                 writer.CommentLineWide("Index:", $"[{i,w}/{nMatrices}]", serializeVerbose);
                 writer.CommentLineWide("Type:", type, serializeVerbose);
-                writer.CommentLineWide("Mtx:", $"x:{indexMatrix.SubdivisionsX,2}, z:{indexMatrix.SubdivisionsZ,2}", serializeVerbose);
-                writer.CommentLineWide("MtxCnt:", indexMatrix.Count, serializeVerbose);
+                writer.CommentLineWide("Mtx:", $"x:{matrix.SubdivisionsX,2}, z:{matrix.SubdivisionsZ,2}", serializeVerbose);
+                writer.CommentLineWide("MtxCnt:", matrix.Count, serializeVerbose);
                 writer.CommentNewLine(serializeVerbose, '-');
                 //
-                writer.WriteX(indexMatrix);
-                var qmiPtr = indexMatrix.GetPointer();
+                writer.WriteX(matrix);
+                var qmiPtr = matrix.GetPointer();
 
-                if (indexMatrix.HasIndexes)
+                if (matrix.HasIndexes)
                 {
                     // 256 lists
                     writer.CommentAlign(serializeVerbose, ' ');
@@ -818,13 +824,13 @@ namespace GameCube.GFZ.CourseCollision
                     writer.CommentLineWide("Type:", type, serializeVerbose);
                     writer.CommentLineWide("Owner:", id, serializeVerbose);
                     writer.CommentNewLine(serializeVerbose, '-');
-                    for (int index = 0; index < indexMatrix.indexLists.Length; index++)
-                        if (indexMatrix.indexLists[index].Length > 0)
+                    for (int index = 0; index < matrix.indexLists.Length; index++)
+                        if (matrix.indexLists[index].Length > 0)
                             writer.CommentIdx(index, serializeVerbose);
                     writer.CommentNewLine(serializeVerbose, '-');
-                    for (int index = 0; index < indexMatrix.indexLists.Length; index++)
+                    for (int index = 0; index < matrix.indexLists.Length; index++)
                     {
-                        var quadIndexList = indexMatrix.indexLists[index];
+                        var quadIndexList = matrix.indexLists[index];
                         writer.WriteX(quadIndexList);
                     }
                 }
@@ -1072,6 +1078,7 @@ namespace GameCube.GFZ.CourseCollision
             if (dict.ContainsKey(ptr))
             {
                 reference = dict[ptr];
+                //DebugConsole.Log($"REMOVING: {ptr} of {typeof(T).Name} ({reference})");
             }
             // If we don't have this reference, deserialize it, store in dict, return it
             else
