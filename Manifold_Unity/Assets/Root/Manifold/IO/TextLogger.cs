@@ -6,11 +6,11 @@ namespace Manifold.IO
     /// <summary>
     /// 
     /// </summary>
-    public class MarkdownTextLogger
+    public class TextLogger
     {
         private StreamWriter streamWriter;
 
-        public MarkdownTextLogger(string path)
+        public TextLogger(string path)
         {
             var file = File.Create(path);
             streamWriter = new StreamWriter(file);
@@ -22,7 +22,7 @@ namespace Manifold.IO
         public void WriteInfo()
         {
             var dateTime = DateTime.Now;
-            streamWriter.WriteLine($"Created by {nameof(MarkdownTextLogger)}.cs");
+            streamWriter.WriteLine($"Created by {nameof(TextLogger)}.cs");
             streamWriter.WriteLine($"Date: {dateTime:yyyy-MM-dd}");
             streamWriter.WriteLine($"Time: {dateTime:HH:mm:ss}");
             streamWriter.WriteLine();
@@ -59,7 +59,7 @@ namespace Manifold.IO
             }
             else if (!value.GetPointer().IsNotNullPointer)
             {
-                WriteLine($"Address: 0x{0:x8}{typeDesc}\t(pointer is null, reference exists)");
+                WriteLine($"Address: 0x{0:x8}{typeDesc}\t(pointer is null, C# reference exists)");
             }
             else
             {
@@ -91,6 +91,29 @@ namespace Manifold.IO
                 WriteAddress(value, inlineType, typePadRight);
             }
             WriteLine();
+        }
+
+        public void WriteArrayToString<T>(T[] values)
+        {
+            if (values == null)
+                return;
+
+            var digitWidth = values.Length.ToString().Length;
+            WriteLine($"{typeof(T).Name}.Length[{values.Length}]");
+            for (int i = 0; i < values.Length; i++)
+            {
+                Write($"\t[{i.ToString().PadLeft(digitWidth)}] ");
+
+                var value = values[i];
+                if (value == null)
+                {
+                    WriteLine($"(null)");
+                }
+                else 
+                {
+                    WriteLine(value.ToString());
+                }
+            }
         }
 
 

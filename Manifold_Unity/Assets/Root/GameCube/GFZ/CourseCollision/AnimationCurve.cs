@@ -82,5 +82,10 @@ namespace GameCube.GFZ.CourseCollision
             return keyableAttributes.GetArrayPointer();
         }
 
+        //public override string ToString()
+        //{
+        //    return $"";
+        //}
+
     }
 }

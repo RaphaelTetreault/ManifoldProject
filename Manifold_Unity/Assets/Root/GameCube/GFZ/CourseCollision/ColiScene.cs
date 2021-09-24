@@ -115,6 +115,8 @@ namespace GameCube.GFZ.CourseCollision
         public TrackSegment[] rootTrackSegments = new TrackSegment[0];
         public CString[] objectNames = new CString[0];
         public SceneObjectReference[] sceneObjectReferences = new SceneObjectReference[0];
+
+        // TODO: basic analytics suggest these types never share pointers.
         // NOTE: instances are also shared
         public ColliderGeometry[] sceneColliderGeometries = new ColliderGeometry[0];
         // NOTE: these ones MIGHT be? TODO: validate with analytics?
@@ -356,16 +358,21 @@ namespace GameCube.GFZ.CourseCollision
                 }
                 rootTrackSegments = rootTrackSegmentDict.Values.ToArray();
 
+                // 2021/09/22: test tagging for serialization order
+                foreach (var rootTrackSegment in rootTrackSegments)
+                    rootTrackSegment.isRoot = true;
+
                 // Read ALL track segments
                 // Master list of all TrackSegments
                 var allTrackSegments = new Dictionary<Pointer, TrackSegment>();
                 // Start by iterating over each root node in graph
                 foreach (var rootSegment in rootTrackSegments)
                 {
-                    // Read out children fo root, then continue deserializing children recursively
+                    // Read out children of root, then continue deserializing children recursively
                     // Deserialization method respects ArayPointer order in list.
                     ReadTrackSegmentsRecursive(reader, allTrackSegments, rootSegment);
                 }
+                // Reorder deserialized values by ptr
                 this.allTrackSegments = allTrackSegments.Values.ToArray();
             }
 
@@ -379,11 +386,11 @@ namespace GameCube.GFZ.CourseCollision
             // Disable static collider meshes for testing...
             boostPlatesActive = BoostPlatesActive.Disabled;
 
-            foreach (var x in sceneObjects)
-            {
-                x.lodFar = 1;
-                x.lodNear = uint.MaxValue;
-            }
+            //foreach (var x in sceneObjects)
+            //{
+            //    x.lodFar = 1;
+            //    x.lodNear = uint.MaxValue;
+            //}
 
             // Write header
             SerializeHeader(writer);
@@ -462,7 +469,32 @@ namespace GameCube.GFZ.CourseCollision
                     // TRACK SEGMENTS
                     {
                         writer.InlineDesc(serializeVerbose, trackNodesPtr, allTrackSegments);
-                        writer.WriteX(allTrackSegments, false);
+                        //writer.WriteX(allTrackSegments, false);
+
+                        TrackSegment root = null;
+                        for (int i = 0; i < allTrackSegments.Length; i++)
+                        {
+                            var trackSegment = allTrackSegments[i];
+                            if (trackSegment.isRoot)
+                            {
+                                // If we are holding onto a reference, write
+                                if (root != null)
+                                    writer.WriteX(root);
+
+                                // record next root
+                                root = trackSegment;
+                                continue;
+                            }
+                            else
+                            {
+                                writer.WriteX(trackSegment);
+                            }
+                        }
+                        if (root != null)
+                        {
+                            writer.WriteX(root);
+                        }
+
 
                         // Manually refresh pointers due to recursive format.
                         foreach (var trackSegment in allTrackSegments)
@@ -471,7 +503,7 @@ namespace GameCube.GFZ.CourseCollision
 
                     // TRACK ANIMATION CURVES
                     {
-                        //
+                        // Construct list of all track animation curves (sets of 9 ptrs)
                         var listTrackAnimationCurves = new List<TopologyParameters>();
                         foreach (var trackSegment in allTrackSegments)
                             listTrackAnimationCurves.Add(trackSegment.trackAnimationCurves);
@@ -479,8 +511,8 @@ namespace GameCube.GFZ.CourseCollision
                         // Write anim curve ptrs
                         writer.InlineDesc(serializeVerbose, allTrackSegments.GetBasePointer(), allTrackAnimationCurves);
                         writer.WriteX(allTrackAnimationCurves, false);
-                        
-                        //
+
+                        // Construct list of all /animation curves/ (breakout from track structure)
                         var listAnimationCurves = new List<AnimationCurve>();
                         foreach (var trackAnimationCurve in allTrackAnimationCurves)
                             foreach (var animationCurve in trackAnimationCurve.animationCurves)
@@ -689,7 +721,7 @@ namespace GameCube.GFZ.CourseCollision
 
                         // Assert is true. This data is always here if existing
                         Assert.IsTrue(storyObjectPath.animationCurve != null);
-                        // breaking the rules again. Should inlining be allows for these ptr types?
+                        // breaking the rules again. Should inlining be allowed for these ptr types?
                         writer.WriteX(storyObjectPath.animationCurve);
                     }
                 }
@@ -788,7 +820,7 @@ namespace GameCube.GFZ.CourseCollision
         {
             // GX COUNT: 14. "Pointer table" of 256 ptrs PER item.
             var nMatrices = staticColliderMeshMatrix.Length;
-            const int w = 2; //
+            const int w = 2; // number width format
 
             for (int i = 0; i < nMatrices; i++)
             {
@@ -812,7 +844,7 @@ namespace GameCube.GFZ.CourseCollision
                 writer.CommentNewLine(serializeVerbose, '-');
                 //
                 writer.WriteX(matrix);
-                var qmiPtr = matrix.GetPointer();
+                var qmiPtr = matrix.GetPointer(); // quad mesh indices? rename as is generic function between quad/tri
 
                 if (matrix.HasIndexes)
                 {
@@ -837,7 +869,8 @@ namespace GameCube.GFZ.CourseCollision
             }
         }
 
-        public void ReadTrackSegmentsRecursive(BinaryReader reader, Dictionary<Pointer, TrackSegment> allTrackSegments, TrackSegment parent)
+
+        public void ReadTrackSegmentsRecursive(BinaryReader reader, Dictionary<Pointer, TrackSegment> allTrackSegments, TrackSegment parent, bool isFirstCall = true)
         {
             // Add parent node to master list
             var parentPtr = parent.GetPointer();
@@ -884,7 +917,7 @@ namespace GameCube.GFZ.CourseCollision
             // Read children recursively (if any).
             foreach (var child in requiresDeserialization)
             {
-                ReadTrackSegmentsRecursive(reader, allTrackSegments, child);
+                ReadTrackSegmentsRecursive(reader, allTrackSegments, child, false);
             }
         }
 
@@ -1064,6 +1097,15 @@ namespace GameCube.GFZ.CourseCollision
                 Assert.IsTrue(storyObjectTriggersPtr.IsNotNullPointer);
         }
 
+        /// <summary>
+        /// Adds serialized reference to Dictionary<> if not present, otherwise skips adding it. 'ref' is used so that
+        /// the calling function can access the reference if found within the dictionary.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="reader"></param>
+        /// <param name="ptr"></param>
+        /// <param name="reference"></param>
+        /// <param name="dict"></param>
         public static void GetSerializable<T>(BinaryReader reader, Pointer ptr, ref T reference, Dictionary<Pointer, T> dict)
             where T : class, IBinarySerializable, new()
         {
@@ -1079,6 +1121,7 @@ namespace GameCube.GFZ.CourseCollision
             {
                 reference = dict[ptr];
                 //DebugConsole.Log($"REMOVING: {ptr} of {typeof(T).Name} ({reference})");
+                //DebugConsole.Log($"type:{reference.GetType()}");
             }
             // If we don't have this reference, deserialize it, store in dict, return it
             else

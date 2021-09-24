@@ -8,7 +8,7 @@ namespace GameCube.GFZ.CourseCollision
     /// This structure appears to be a Maya (4.?) KeyableAttribute
     /// </summary>
     [Serializable]
-    public struct KeyableAttribute :
+    public class KeyableAttribute :
         IBinaryAddressable,
         IBinarySerializable
     {
@@ -56,6 +56,17 @@ namespace GameCube.GFZ.CourseCollision
                 writer.WriteX(zTangentOut);
             }
             this.RecordEndAddress(writer);
+        }
+
+        public override string ToString()
+        {
+            return
+                $"{nameof(KeyableAttribute)}" +
+                $"({nameof(easeMode)}: {easeMode}," +
+                $" {nameof(time)}: {time:0.000}," +
+                $" {nameof(value)}: {value:0.000}," +
+                $" {nameof(zTangentIn)}: {zTangentIn:0.00}," +
+                $" {nameof(zTangentOut)}: {zTangentOut:0.00})";
         }
 
     }

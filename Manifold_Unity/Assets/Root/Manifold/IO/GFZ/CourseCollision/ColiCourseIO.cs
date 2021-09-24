@@ -1,5 +1,6 @@
 using GameCube.GFZ;
 using GameCube.GFZ.CourseCollision;
+using Manifold.IO.GFZ.CourseCollision;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -7,95 +8,82 @@ using UnityEngine;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 
-namespace Manifold.IO.GFZ.CourseCollision
+namespace Manifold.IO.GFZ
 {
-
-    [CreateAssetMenu(menuName = Const.Menu.GfzCourseCollision + "COLI Exporter")]
-    public class ColiCourseExporter : ExecutableScriptableObject,
-        IExportable
+    public static class ColiCourseIO
     {
-        [Header("Export Settings")]
-        [SerializeField]
-        protected IOOption exportOptions = IOOption.selectedFiles;
-
-        [SerializeField]
-        protected ColiScene.SerializeFormat format = ColiScene.SerializeFormat.GX;
-
-        [SerializeField, BrowseFolderField, Tooltip("Used for ExportOptions.ExportAllOfTypeInFolder")]
-        protected string exportFrom = string.Empty;
-
-        [SerializeField, BrowseFolderField]
-        protected string exportTo;
-
-        [SerializeField]
-        protected bool allowOverwritingFiles = true;
-
-        [SerializeField]
-        protected bool preserveFolderStructure = true;
-
-        [SerializeField]
-        protected bool exportCompressed = false;
-
-        [Header("Preferences")]
-        [SerializeField]
-        protected bool openFolderAfterExport = true;
-
-        [Header("Exports")]
-        [SerializeField]
-        protected ColiSceneSobj[] exportSobjs;
-        [SerializeField]
-        protected UnityEditor.SceneAsset[] scenes;
-
-
-        [Header("Testing")]
-        [SerializeField]
-        protected bool exportHandMade;
-        [SerializeField]
-        protected bool serializeVerbose = true;
-
-        [Header("Export Overrides")]
-        [SerializeField] protected bool excludeStaticMeshCollider;
-        [SerializeField] protected bool excludeTriggers;
-
-        public override string ExecuteText => "Export COLI_COURSE";
-
-        public override void Execute() => Export();
-
-
-        public string filePath = "";
-        public void Export()
+        [MenuItem("Manifold/IO/Test IO 1")]
+        public static void TestIO1()
         {
-            ColiCourseUtility.SerializeVerbose = serializeVerbose;
+            TestImportExportLog("C:/GFZJ01/stage/COLI_COURSE01", true);
+        }
+
+        //[MenuItem("Manifold/IO/Test All")]
+        //public static void TestAll()
+        //{
+        //    for (int i = 0; i < 51; i++)
+        //        try
+        //        {
+        //            TestImportExportLog($"C:/GFZJ01/stage/COLI_COURSE{i:00}", true);
+        //        }
+        //        catch (Exception e)
+        //        {
+        //            Debug.LogError(e.Message);
+        //        }
+        //}
+
+        public static void TestImportExportLog(string filePath, bool serializeVerbose)
+        {
+            // TEMP from previous function
+            var openFolderAfterExport = true;
+            var allowOverwritingFiles = true;
+            var exportTo = "W:/Windows Directories/Desktop/test";
+            /////////////////////////////////////////////////////
+
+            // Open file at path
+            var reader = new BinaryReader(File.OpenRead(filePath));
+            var scene = new ColiScene();
+            scene.FileName = Path.GetFileName(filePath);
+            scene.SerializeVerbose = serializeVerbose;
+            reader.ReadX(ref scene, false);
+
+            // Construct time stamp string
+            var dateTime = DateTime.Now;
+            var timestamp = $"[{dateTime:yyyy-MM-dd}][{dateTime:HH-mm-ss}]";
 
             {
-                var reader = new BinaryReader(File.OpenRead(filePath));
-                var selectScene = new ColiScene();
-                selectScene.FileName = Path.GetFileName(filePath);
-                selectScene.SerializeVerbose = serializeVerbose;
-                reader.ReadX(ref selectScene, false);
-
-                var dateTime = DateTime.Now;
-                var timestamp = $"[{dateTime:yyyy-MM-dd}][{dateTime:HH-mm-ss}]";
-                
-                {
-                    var logPath = Path.Combine(exportTo, $"{timestamp} - IN  Course{selectScene.ID}.txt");
-                    var log = new TextLogger(logPath);
-                    WriteFullReport(log, selectScene);
-                    log.Close();
-                }
-
-                var x = ExportUtility.ExportSerializable(selectScene, exportTo, "", allowOverwritingFiles);
-                OSUtility.OpenDirectory(openFolderAfterExport, x);
-
-                {
-                    var logPath = Path.Combine(exportTo, $"{timestamp} - OUT Course{selectScene.ID}.txt");
-                    var log = new TextLogger(logPath);
-                    WriteFullReport(log, selectScene);
-                    log.Close();
-                }
-
-                return;
+                var logPath = Path.Combine(exportTo, $"{timestamp} - IN  Course{scene.ID}.txt");
+                var log = new TextLogger(logPath);
+                WriteFullReport(log, scene);
+                log.Close();
             }
+
+            // Set static variable
+            ColiCourseUtility.SerializeVerbose = serializeVerbose;
+            // Export file...
+            var x = ExportUtility.ExportSerializable(scene, exportTo, "", allowOverwritingFiles);
+            OSUtility.OpenDirectory(openFolderAfterExport, x);
+
+            // exported so wthat we may get a log of it.
+            {
+                var logPath = Path.Combine(exportTo, $"{timestamp} - OUT Course{scene.ID}.txt");
+                var log = new TextLogger(logPath);
+                WriteFullReport(log, scene);
+                log.Close();
+            }
+        }
+
+
+        public static void ExportUnityScenes(ColiScene.SerializeFormat format, params SceneAsset[] scenes)
+        {
+            // TEMP from previous function
+            var serializeVerbose = true;
+            var openFolderAfterExport = true;
+            var allowOverwritingFiles = true;
+            var exportTo = "W:/Windows Directories/Desktop/test";
+            /////////////////////////////////////////////////////
+
+            ColiCourseUtility.SerializeVerbose = serializeVerbose;
 
             // Construct ColiScene from Unity Scene "scenes"
             var coliScenes = new ColiScene[scenes.Length];
@@ -106,7 +94,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             for (int sceneIndex = 0; sceneIndex < coliScenes.Length; sceneIndex++)
             {
                 // DEBUG
-                const bool findInactive = true;
+                const bool canFindInactive = true;
                 const int h1Width = 96;
                 const int h2Width = 32;
                 const string padding = "-";
@@ -128,7 +116,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 // ... so we can start doing the usual Unity methods to find stuff
 
                 // Get scene parameters for general info
-                var sceneParameters = FindObjectsOfType<GfzSceneParameters>();
+                var sceneParameters = GameObject.FindObjectsOfType<GfzSceneParameters>();
                 Assert.IsTrue(sceneParameters.Length == 1);
                 var sceneParams = sceneParameters[0];
 
@@ -185,14 +173,14 @@ namespace Manifold.IO.GFZ.CourseCollision
 
                 // Triggers
                 {
-                    var arcadeCheckpointTriggers = FindObjectsOfType<GfzArcadeCheckpoint>(findInactive);
+                    var arcadeCheckpointTriggers = GameObject.FindObjectsOfType<GfzArcadeCheckpoint>(canFindInactive);
                     coliScene.arcadeCheckpointTriggers = GetGfzValues(arcadeCheckpointTriggers);
 
                     // This trigger type is a mess... Get all 3 representations, combine, assign.
                     // Collect all trigger types. They all get converted to the same GFZ base type.
-                    var objectPaths = FindObjectsOfType<GfzObjectPath>(findInactive);
-                    var storyCapsules = FindObjectsOfType<GfzStoryCapsule>(findInactive);
-                    var unknownMetadataTriggers = FindObjectsOfType<GfzUnknownCourseMetadataTrigger>(findInactive);
+                    var objectPaths = GameObject.FindObjectsOfType<GfzObjectPath>(canFindInactive);
+                    var storyCapsules = GameObject.FindObjectsOfType<GfzStoryCapsule>(canFindInactive);
+                    var unknownMetadataTriggers = GameObject.FindObjectsOfType<GfzUnknownCourseMetadataTrigger>(canFindInactive);
                     // Make a list, add range for each type
                     var courseMetadataTriggers = new List<CourseMetadataTrigger>();
                     courseMetadataTriggers.AddRange(GetGfzValues(objectPaths));
@@ -205,13 +193,13 @@ namespace Manifold.IO.GFZ.CourseCollision
                     // story object triggers
 
                     // This trigger type is a mess... Get all 3 representations, combine, assign.
-                    var unknownTriggers = FindObjectsOfType<GfzUnknownTrigger>(findInactive);
+                    var unknownTriggers = GameObject.FindObjectsOfType<GfzUnknownTrigger>(canFindInactive);
                     coliScene.unknownTriggers = GetGfzValues(unknownTriggers);
 
-                    var unknownSolsTriggers = FindObjectsOfType<GfzUnknownSolsTrigger>(findInactive);
+                    var unknownSolsTriggers = GameObject.FindObjectsOfType<GfzUnknownSolsTrigger>(canFindInactive);
                     coliScene.unknownSolsTriggers = GetGfzValues(unknownSolsTriggers);
 
-                    var visualEffectTriggers = FindObjectsOfType<GfzVisualEffectTrigger>(findInactive);
+                    var visualEffectTriggers = GameObject.FindObjectsOfType<GfzVisualEffectTrigger>(canFindInactive);
                     coliScene.visualEffectTriggers = GetGfzValues(visualEffectTriggers);
 
 
@@ -227,7 +215,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
                 // Scene Objects / Instances / References / Names
                 {
-                    var sceneObjects = FindObjectsOfType<GfzSceneObject>(findInactive);
+                    var sceneObjects = GameObject.FindObjectsOfType<GfzSceneObject>(canFindInactive);
                     coliScene.sceneObjects = new SceneObject[0];
 
                     // TODO: construct the actual objects...
@@ -244,7 +232,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
                 // Track Data
                 {
-                    var controlPoints = FindObjectsOfType<GfzControlPoint>(findInactive);
+                    var controlPoints = GameObject.FindObjectsOfType<GfzControlPoint>(canFindInactive);
 
                     //coliScene.
 
@@ -294,8 +282,8 @@ namespace Manifold.IO.GFZ.CourseCollision
 
         public static void WriteFullReport(TextLogger log, ColiScene coliScene)
         {
-            const int h1Width = 96;
-            const string padding = "-";
+            const int h1Width = 96; // heading 1 character width
+            const string padding = "-"; // heading padding character
 
             // Write out all types and their address in file
             log.WriteHeading("SERIALIZATION SUMMARY", padding, h1Width);
@@ -321,17 +309,53 @@ namespace Manifold.IO.GFZ.CourseCollision
             log.WriteAddress(coliScene.unknownTriggers);
             log.WriteAddress(coliScene.visualEffectTriggers);
 
+            // Writes non-array track data
             log.WriteHeading("TRACK DATA", padding, h1Width);
             log.WriteAddress(coliScene.trackLength);
             log.WriteAddress(coliScene.trackMinHeight);
             log.WriteAddress(coliScene.courseBoundsXZ);
             log.WriteLine();
+            // Writes track objects array
             log.WriteAddress(coliScene.surfaceAttributeAreas);
+            // Writes track segments (root then all)
             log.WriteLine("ROOT SEGMENTS");
             log.WriteAddress(coliScene.rootTrackSegments);
             log.WriteLine("ALL SEGMENTS");
             log.WriteAddress(coliScene.allTrackSegments);
-            log.WriteLine(); // TODO: temp, remove when allTrackSegments implemented properly
+            log.WriteLine();
+
+            // This block writes out the contents of each TrackSegments AnimationCurves
+            log.WriteLine("TRACK SEGMENT ANIMATION CURVES");
+            log.WriteLine($"{nameof(TrackSegment)}.{nameof(TrackSegment.trackAnimationCurves)}");
+            string[] labelSRP = new string[] { "Scale", "Rotation", "Position" };
+            string[] labelXYZ = new string[] { "x", "y", "z" };
+            for (int segmentIndex = 0; segmentIndex < coliScene.allTrackSegments.Length; segmentIndex++)
+            {
+                var trackSegment = coliScene.allTrackSegments[segmentIndex];
+                log.WriteLine($"{nameof(TrackSegment)}[{segmentIndex}]\t{trackSegment}");
+
+                for (int animIndex = 0; animIndex < trackSegment.trackAnimationCurves.animationCurves.Length; animIndex++)
+                {
+                    var animCurve = trackSegment.trackAnimationCurves.animationCurves[animIndex];
+                    var currLabelSRP = labelSRP[animIndex / 3];
+                    var currLabelXYZ = labelXYZ[animIndex % 3];
+                    log.WriteLine($"{currLabelSRP}.{currLabelXYZ} [{animIndex}] ");
+                    log.WriteArrayToString(animCurve.keyableAttributes);
+                    log.WriteLine();
+                }
+            }
+
+            //
+            for (int i = 0; i < coliScene.allTrackSegments.Length; i++)
+            {
+                var segment = coliScene.allTrackSegments[i];
+                log.WriteLine($"{nameof(TrackSegment)} Transform Coords [{i}]");
+                log.WriteLine($"\tPosition: {segment.localPosition}");
+                log.WriteLine($"\tRotation: {segment.localRotation}");
+                log.WriteLine($"\tScale...: {segment.localScale}");
+            }
+            log.WriteLine();
+            //
             log.WriteAddress(coliScene.trackCheckpointMatrix);
             log.WriteAddress(coliScene.trackNodes);
             {
@@ -341,6 +365,8 @@ namespace Manifold.IO.GFZ.CourseCollision
                         checkpoints.Add(checkpoint);
                 log.WriteAddress(checkpoints.ToArray());
             }
+
+
             // checkpoints
             // segments
             log.WriteLine();
@@ -423,5 +449,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             log.WriteLine();
         }
 
+
     }
+
 }
