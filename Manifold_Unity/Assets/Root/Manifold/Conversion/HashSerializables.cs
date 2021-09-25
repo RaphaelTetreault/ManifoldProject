@@ -7,13 +7,14 @@ namespace Manifold.Conversion
 {
     public static class HashSerializables
     {
-        public static string Hash(IBinarySerializable self)
+        public static string Hash(HashAlgorithm hashAlgorithm, IBinarySerializable binarySerializable)
         {
             // Convert IBinarySerializable into hash
-            var sha1 = MD5.Create();
             var writer = new BinaryWriter(new MemoryStream());
-            self.Serialize(writer);
-            var hash = sha1.ComputeHash(writer.BaseStream);
+            binarySerializable.Serialize(writer);
+            writer.Flush();
+            writer.BaseStream.Seek(0, SeekOrigin.Begin);
+            var hash = hashAlgorithm.ComputeHash(writer.BaseStream);
 
             // then to string representation
             StringBuilder builder = new StringBuilder();

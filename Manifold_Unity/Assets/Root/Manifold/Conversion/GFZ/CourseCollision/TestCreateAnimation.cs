@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using UnityEngine;
 using UnityEditor;
 
@@ -19,6 +20,8 @@ namespace Manifold.Conversion
 
         public override void Execute()
         {
+            var md5 = MD5.Create();
+
             foreach (var gobj in scene.Value.sceneObjects)
             {
                 if (gobj.animation.animationCurvePluses.Length == 0)
@@ -27,7 +30,7 @@ namespace Manifold.Conversion
                 }
 
                 var clip = AnimationConverter.GfzToUnity(gobj.animation);
-                var hash = HashSerializables.Hash(gobj.animation);
+                var hash = HashSerializables.Hash(md5, gobj.animation);
                 var name = $"anim_{gobj.nameCopy}_{hash}.anim";
                 var path = $"Assets/Untracked/Anim/{name}";
                 AssetDatabase.CreateAsset(clip, path);

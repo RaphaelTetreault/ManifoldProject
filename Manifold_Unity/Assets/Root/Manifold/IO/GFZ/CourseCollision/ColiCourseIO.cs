@@ -8,6 +8,9 @@ using UnityEngine;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 
+using Manifold.Conversion;
+using System.Security.Cryptography;
+
 namespace Manifold.IO.GFZ
 {
     public static class ColiCourseIO
@@ -15,7 +18,7 @@ namespace Manifold.IO.GFZ
         [MenuItem("Manifold/IO/Test IO 1")]
         public static void TestIO1()
         {
-            TestImportExportLog("C:/GFZJ01/stage/COLI_COURSE01", true);
+            LogRoundtrip("C:/GFZJ01/stage/COLI_COURSE01", true);
         }
 
         //[MenuItem("Manifold/IO/Test All")]
@@ -32,7 +35,7 @@ namespace Manifold.IO.GFZ
         //        }
         //}
 
-        public static void TestImportExportLog(string filePath, bool serializeVerbose)
+        public static void LogRoundtrip(string filePath, bool serializeVerbose)
         {
             // TEMP from previous function
             var openFolderAfterExport = true;
@@ -40,37 +43,56 @@ namespace Manifold.IO.GFZ
             var exportTo = "W:/Windows Directories/Desktop/test";
             /////////////////////////////////////////////////////
 
-            // Open file at path
-            var reader = new BinaryReader(File.OpenRead(filePath));
-            var scene = new ColiScene();
-            scene.FileName = Path.GetFileName(filePath);
-            scene.SerializeVerbose = serializeVerbose;
-            reader.ReadX(ref scene, false);
-
             // Construct time stamp string
             var dateTime = DateTime.Now;
             var timestamp = $"[{dateTime:yyyy-MM-dd}][{dateTime:HH-mm-ss}]";
 
-            {
-                var logPath = Path.Combine(exportTo, $"{timestamp} - IN  Course{scene.ID}.txt");
-                var log = new TextLogger(logPath);
-                WriteFullReport(log, scene);
-                log.Close();
-            }
-
-            // Set static variable
+            // still valid??
             ColiCourseUtility.SerializeVerbose = serializeVerbose;
-            // Export file...
-            var x = ExportUtility.ExportSerializable(scene, exportTo, "", allowOverwritingFiles);
-            OSUtility.OpenDirectory(openFolderAfterExport, x);
 
-            // exported so wthat we may get a log of it.
+
+            // LOAD FRESH FILE IN
+            var readerIn = new BinaryReader(File.OpenRead(filePath));
+            var sceneIn = new ColiScene();
+            sceneIn.FileName = Path.GetFileName(filePath);
+            sceneIn.SerializeVerbose = serializeVerbose;
+            readerIn.ReadX(ref sceneIn, false);
+            // Log true file
             {
-                var logPath = Path.Combine(exportTo, $"{timestamp} - OUT Course{scene.ID}.txt");
+                var logPath = Path.Combine(exportTo, $"{timestamp} - COLI_COURSE{sceneIn.ID:d2} IN.txt");
                 var log = new TextLogger(logPath);
-                WriteFullReport(log, scene);
+                WriteFullReport(log, sceneIn);
                 log.Close();
             }
+
+            // WRITE INTERMEDIARY
+            // Write scene out to memory stream...
+            var writer = new BinaryWriter(new MemoryStream());
+            writer.WriteX(sceneIn);
+            writer.Flush();
+            writer.BaseStream.Seek(0, SeekOrigin.Begin);
+            
+            // LOAD INTERMEDIARY
+            // Load saved file back in
+            var readerOut = new BinaryReader(writer.BaseStream);
+            var sceneOut = new ColiScene();
+            sceneOut.SerializeVerbose = serializeVerbose;
+            sceneOut.FileName = sceneIn.FileName;
+            readerOut.ReadX(ref sceneOut, false);
+            // Log intermediary
+            {
+                var logPath = Path.Combine(exportTo, $"{timestamp} - COLI_COURSE{sceneIn.ID:d2} OUT.txt");
+                var log = new TextLogger(logPath);
+                WriteFullReport(log, sceneIn);
+                log.Close();
+            }
+
+            // open folder location
+            OSUtility.OpenDirectory(openFolderAfterExport, exportTo);
+            // Set static variable
+            // Export file...
+            //var x = ExportUtility.ExportSerializable(sceneIn, exportTo, "", allowOverwritingFiles);
+            //OSUtility.OpenDirectory(openFolderAfterExport, x);
         }
 
 
@@ -279,9 +301,18 @@ namespace Manifold.IO.GFZ
             return gfz;
         }
 
-
+        public static void TestHash(TextLogger log, ColiScene coliScene)
+        {
+            var md5 = MD5.Create();
+            foreach (var trackSegment in coliScene.allTrackSegments)
+            {
+                log.WriteLine(HashSerializables.Hash(md5, trackSegment));
+            }
+        }
         public static void WriteFullReport(TextLogger log, ColiScene coliScene)
         {
+            var md5 = MD5.Create();
+
             const int h1Width = 96; // heading 1 character width
             const string padding = "-"; // heading padding character
 
@@ -323,6 +354,8 @@ namespace Manifold.IO.GFZ
             log.WriteLine("ALL SEGMENTS");
             log.WriteAddress(coliScene.allTrackSegments);
             log.WriteLine();
+            TestHash(log, coliScene);
+            log.WriteLine();
 
             // This block writes out the contents of each TrackSegments AnimationCurves
             log.WriteLine("TRACK SEGMENT ANIMATION CURVES");
@@ -340,7 +373,8 @@ namespace Manifold.IO.GFZ
                     var currLabelSRP = labelSRP[animIndex / 3];
                     var currLabelXYZ = labelXYZ[animIndex % 3];
                     log.WriteLine($"{currLabelSRP}.{currLabelXYZ} [{animIndex}] ");
-                    log.WriteArrayToString(animCurve.keyableAttributes);
+                    //log.WriteArrayToString(animCurve.keyableAttributes);
+                    log.WriteLine(HashSerializables.Hash(md5, animCurve));
                     log.WriteLine();
                 }
             }
