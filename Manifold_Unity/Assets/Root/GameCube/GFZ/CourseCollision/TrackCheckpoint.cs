@@ -81,9 +81,9 @@ namespace GameCube.GFZ.CourseCollision
                 writer.WriteX(positionEnd);
                 writer.WriteX(transformDistanceEnd);
                 writer.WriteX(transformDistanceStart);
+                writer.WriteX(trackWidth);
                 writer.WriteX(isTrackContinuousStart);
                 writer.WriteX(isTrackContinuousEnd);
-                writer.WriteX(trackWidth);
                 writer.WriteX(zero_0x4E);
             }
             this.RecordEndAddress(writer);
@@ -101,10 +101,10 @@ namespace GameCube.GFZ.CourseCollision
                 $"{nameof(tangentEnd)}(x:{tangentEnd.x:0.0}, y:{tangentEnd.y:0.0}, z:{tangentEnd.z:0.0}), " +
                 $"{nameof(positionStart)}(x:{positionStart.x:0.0}, y:{positionStart.y:0.0}, z:{positionStart.z:0.0}), " +
                 $"{nameof(positionEnd)}(x:{positionEnd.x:0.0}, y:{positionEnd.y:0.0}, z:{positionEnd.z:0.0}), " +
-                $"{nameof(transformDistanceEnd)}: {transformDistanceEnd:0.0}, " +
                 $"{nameof(transformDistanceStart)}: {transformDistanceStart:0.0}, " +
+                $"{nameof(transformDistanceEnd)}: {transformDistanceEnd:0.0}, " +
                 $"{nameof(trackWidth)}: {trackWidth:0.0}, " +
-                $"{nameof(isTrackContinuousEnd)}: {isTrackContinuousEnd}, " +
+                $"{nameof(isTrackContinuousStart)}: {isTrackContinuousStart}, " +
                 $"{nameof(isTrackContinuousEnd)}: {isTrackContinuousEnd}" +
                 $")";
         }

@@ -82,6 +82,14 @@ namespace Manifold.IO
             return $"{prefix}{endAddress.ToString(format)}";
         }
 
+        public static string PrintAddressRange<T>(this T binaryAddressable, string format = "x8")
+            where T : IBinaryAddressable
+        {
+            var addressRange = binaryAddressable.AddressRange;
+            var size = addressRange.Size;
+
+            return $"Address: 0x{addressRange.startAddress:x8} to 0x{addressRange.endAddress:x8} (hex:{size:x}, dec:{size})";
+        }
 
         /// <summary>
         /// Get the address of the value. Address is relative to last (de)serialization stream.

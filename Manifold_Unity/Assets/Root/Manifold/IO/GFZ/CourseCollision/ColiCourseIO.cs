@@ -64,7 +64,7 @@ namespace Manifold.IO.GFZ
             writer.WriteX(sceneIn);
             writer.Flush();
             writer.BaseStream.Seek(0, SeekOrigin.Begin);
-            
+
             // LOAD INTERMEDIARY
             // Load memory stream back in
             var readerOut = new BinaryReader(writer.BaseStream);
@@ -299,7 +299,7 @@ namespace Manifold.IO.GFZ
             var md5 = MD5.Create();
             foreach (var trackSegment in coliScene.allTrackSegments)
             {
-                log.WriteLine(HashSerializables.Hash(md5, trackSegment));
+                log.WriteLine(HashUtility.HashBinary(md5, trackSegment));
             }
         }
         public static void WriteFullReport(TextLogger log, ColiScene coliScene)
@@ -501,8 +501,8 @@ namespace Manifold.IO.GFZ
             readerIn.SeekBegin();
             var sceneIndex = sceneIn.ID;
             var sceneHash = md5.ComputeHash(readerIn.BaseStream);
-            var sceneHashStr = HashSerializables.ByteArrayToString(sceneHash);
-            var romHashStr = HashSerializables.ColiCourseMD5NtscJ[sceneIndex];
+            var sceneHashStr = HashUtility.ByteArrayToString(sceneHash);
+            var romHashStr = HashUtility.ColiCourseMD5Gfzj01[sceneIndex];
             if (romHashStr == sceneHashStr)
             {
                 sceneIn.Venue = CourseUtility.GetVenue(sceneIndex);
@@ -514,7 +514,11 @@ namespace Manifold.IO.GFZ
             {
                 var logPath = Path.Combine(exportTo, $"{timestamp} - Hash COLI_COURSE{sceneIn.ID:d2} IN.txt");
                 var log = new TextLogger(logPath);
-                WriteTrackDataHashReport(log, sceneIn);
+                //WriteTrackDataHashReport(log, sceneIn);
+                for (int i = 0; i < NumFunctions; i++)
+                {
+                    LogColiScene(sceneIn, log, i);
+                }
                 log.Close();
             }
 
@@ -536,7 +540,12 @@ namespace Manifold.IO.GFZ
             {
                 var logPath = Path.Combine(exportTo, $"{timestamp} - Hash COLI_COURSE{sceneIn.ID:d2} OUT.txt");
                 var log = new TextLogger(logPath);
-                WriteTrackDataHashReport(log, sceneIn);
+                for (int i = 0; i < NumFunctions; i++)
+                {
+                    LogColiScene(sceneOut, log, i);
+                }
+                //LogColiScene(sceneIn, log, HashUtility.HashBinaryMD5);
+                //LogColiScene(sceneIn, log, HashUtility.PrintAddress);
                 log.Close();
             }
 
@@ -544,8 +553,8 @@ namespace Manifold.IO.GFZ
             OSUtility.OpenDirectory(openFolderAfterExport, $"{exportTo}/");
             // Set static variable
             // Export file...
-            //var x = ExportUtility.ExportSerializable(sceneIn, exportTo, "", allowOverwritingFiles);
-            //OSUtility.OpenDirectory(openFolderAfterExport, x);
+            var x = ExportUtility.ExportSerializable(sceneIn, exportTo, "", true);
+            OSUtility.OpenDirectory(openFolderAfterExport, x);
         }
 
         public static void WriteTrackDataHashReport(TextLogger log, ColiScene coliScene)
@@ -586,7 +595,7 @@ namespace Manifold.IO.GFZ
                     var jFormat = j.ArrayFormat(trackNode.checkpoints);
 
                     log.Write($"[{iFormat},{jFormat}]\t");
-                    log.WriteLine(HashSerializables.Hash(md5, checkpoint));
+                    log.WriteLine(HashUtility.HashBinary(md5, checkpoint));
                 }
             }
             log.WriteLine();
@@ -600,9 +609,10 @@ namespace Manifold.IO.GFZ
                 // Clear ptrs from hash calculation
                 trackSegment.hairpinCornerTopologyPtr = 0;
                 trackSegment.trackAnimationCurvesPtr = 0;
+                trackSegment.trackAnimationCurves.AddressRange = new AddressRange();
                 trackSegment.childrenPtrs = new ArrayPointer();
                 log.Write($"[{iFormat}]\t");
-                log.WriteLine(HashSerializables.Hash(md5, trackSegment));
+                log.WriteLine(HashUtility.HashBinary(md5, trackSegment));
             }
             log.WriteLine();
             //
@@ -611,15 +621,8 @@ namespace Manifold.IO.GFZ
             {
                 var trackSegment = coliScene.allTrackSegments[i];
                 var iFormat = i.ArrayFormat(coliScene.allTrackSegments);
-                // Clear ptrs from hash calculation
-                trackSegment.hairpinCornerTopologyPtr = 0;
-                trackSegment.trackAnimationCurvesPtr = 0;
-                trackSegment.childrenPtrs = new ArrayPointer();
                 log.Write($"[{iFormat}]\t");
-                var w = new BinaryWriter(new MemoryStream());
-                w.WriteX(trackSegment);
-                var x = HashSerializables.StreamToString(w.BaseStream);
-                log.WriteLine(x);
+                log.WriteLine(HashUtility.SerializableToStreamString(trackSegment));
             }
             log.WriteLine();
             //
@@ -628,10 +631,6 @@ namespace Manifold.IO.GFZ
             {
                 var trackSegment = coliScene.allTrackSegments[i];
                 var iFormat = i.ArrayFormat(coliScene.allTrackSegments);
-                // Clear ptrs from hash calculation
-                trackSegment.hairpinCornerTopologyPtr = 0;
-                trackSegment.trackAnimationCurvesPtr = 0;
-                trackSegment.childrenPtrs = new ArrayPointer();
                 log.Write($"[{iFormat}]\t");
                 log.WriteLine(trackSegment.ToString2());
             }
@@ -657,11 +656,138 @@ namespace Manifold.IO.GFZ
                     var currLabelSRP = labelSRP[animIndex / 3];
                     var currLabelXYZ = labelXYZ[animIndex % 3];
                     log.Write($"[{segmentIndexFormat},{animIndex}]\t");
-                    log.Write(HashSerializables.Hash(md5, animCurve));
+                    log.Write(HashUtility.HashBinary(md5, animCurve));
                     log.WriteLine($"\t({currLabelSRP}.{currLabelXYZ})");
                 }
             }
             log.WriteLine();
+        }
+
+
+
+        public const int NumFunctions = 4;
+        public static string PrintData<T>(int index, T data)
+            where T : IBinaryAddressable, IBinarySerializable
+        {
+            switch (index)
+            {
+                case 0: return PrintValue(data);
+                case 1: return PrintHashMD5(data);
+                case 2: return PrintAddress(data);
+                case 3: return PrintStream(data);
+                default: throw new NotImplementedException();
+            }
+        }
+
+        // Move somewhere else...
+        public static string PrintHashMD5<T>(T binarySerializable)
+            where T : IBinarySerializable, IBinaryAddressable
+        {
+            return $"MD5 Hash: {HashUtility.HashBinary(MD5.Create(), binarySerializable)}";
+        }
+        public static string PrintAddress<T>(T binarySerializable)
+            where T : IBinarySerializable, IBinaryAddressable
+        {
+            return binarySerializable.PrintAddressRange();
+        }
+        public static string PrintValue<T>(T binarySerializable)
+            where T : IBinarySerializable, IBinaryAddressable
+        {
+            return binarySerializable.ToString();
+        }
+        public static string PrintStream<T>(T binarySerializable)
+            where T : IBinarySerializable, IBinaryAddressable
+        {
+            return $"Stream: {HashUtility.SerializableToStreamString(binarySerializable)}";
+        }
+
+        public static string PrintIndex(int i, Array array)
+        {
+            var iFormat = i.ArrayFormat(array);
+            return $"[{iFormat}]\t";
+        }
+
+        public static void LogColiScene(ColiScene coliScene, TextLogger log, int functionIdx)
+        {
+            // TRACK DATA
+            {
+                log.WriteLine($"{nameof(TrackNode)}");
+                for (int i = 0; i < coliScene.trackNodes.Length; i++)
+                {
+                    var trackNode = coliScene.trackNodes[i];
+                    log.Write(PrintIndex(i, coliScene.trackNodes));
+                    log.WriteLine(PrintData(functionIdx, trackNode));
+                }
+                log.WriteLine();
+
+                log.WriteLine($"{nameof(TrackCheckpoint)}");
+                for (int i = 0; i < coliScene.trackNodes.Length; i++)
+                {
+                    var trackNode = coliScene.trackNodes[i];
+                    var iFormat = i.ArrayFormat(coliScene.trackNodes);
+
+                    for (int j = 0; j < trackNode.checkpoints.Length; j++)
+                    {
+                        var checkpoint = trackNode.checkpoints[j];
+                        var jFormat = j.ArrayFormat(trackNode.checkpoints);
+                        // Write index, string to log
+                        log.Write($"[{iFormat},{jFormat}]\t");
+                        log.WriteLine(PrintData(functionIdx, checkpoint));
+                    }
+                }
+                log.WriteLine();
+
+                //
+                log.WriteLine($"{nameof(TrackSegment)}");
+                for (int i = 0; i < coliScene.allTrackSegments.Length; i++)
+                {
+                    var trackSegment = coliScene.allTrackSegments[i];
+                    var iFormat = i.ArrayFormat(coliScene.allTrackSegments);
+                    // Write index, string to log
+                    log.Write($"[{iFormat}]\t");
+                    log.WriteLine(PrintData(functionIdx, trackSegment));
+                }
+                log.WriteLine();
+
+                //
+                log.WriteLine($"{nameof(TrackSegment)}.{nameof(TrackSegment.trackAnimationCurves)}");
+                string[] labelSRP = new string[] { "Scale", "Rotation", "Position" };
+                string[] labelXYZ = new string[] { "x", "y", "z" };
+                for (int segmentIndex = 0; segmentIndex < coliScene.allTrackSegments.Length; segmentIndex++)
+                {
+                    var trackSegment = coliScene.allTrackSegments[segmentIndex];
+                    var segmentIndexFormat = segmentIndex.ArrayFormat(coliScene.trackNodes);
+                    log.WriteLine($"[{segmentIndex}]\t");
+
+                    for (int animIndex = 0; animIndex < trackSegment.trackAnimationCurves.animationCurves.Length; animIndex++)
+                    {
+                        var animCurve = trackSegment.trackAnimationCurves.animationCurves[animIndex];
+                        // NOTE: delete. At most 4, so no 2 digit indexes
+                        //var animCurveFormat = segmentIndex.ArrayFormat(coliScene.trackNodes);
+                        var currLabelSRP = labelSRP[animIndex / 3];
+                        var currLabelXYZ = labelXYZ[animIndex % 3];
+                        log.Write($"[{segmentIndexFormat},{animIndex}]\t");
+                        log.WriteLine(PrintData(functionIdx, animCurve));
+                        log.WriteLine($"\t({currLabelSRP}.{currLabelXYZ})");
+                    }
+                }
+                log.WriteLine();
+
+                //
+                log.WriteLine($"{nameof(TrackSegment)}.{nameof(TrackCornerTopology)}");
+                for (int i = 0; i < coliScene.allTrackSegments.Length; i++)
+                {
+                    var cornerTopology = coliScene.allTrackSegments[i].hairpinCornerTopology;
+                    var iFormat = i.ArrayFormat(coliScene.trackNodes);
+                    log.Write($"[{iFormat}]\t");
+                    if (cornerTopology != null)
+                        log.WriteLine(PrintData(functionIdx, cornerTopology));
+                    else
+                        log.WriteLine("null");
+                }
+                log.WriteLine();
+            }
+
         }
     }
 

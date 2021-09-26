@@ -30,7 +30,7 @@ namespace Manifold.Conversion
                 }
 
                 var clip = AnimationConverter.GfzToUnity(gobj.animation);
-                var hash = HashSerializables.Hash(md5, gobj.animation);
+                var hash = HashUtility.HashBinary(md5, gobj.animation);
                 var name = $"anim_{gobj.nameCopy}_{hash}.anim";
                 var path = $"Assets/Untracked/Anim/{name}";
                 AssetDatabase.CreateAsset(clip, path);
