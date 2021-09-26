@@ -232,5 +232,37 @@ namespace GameCube.GFZ.CourseCollision
             return builder.ToString();
         }
 
+        public string ToString2()
+        {
+            var builder = new System.Text.StringBuilder();
+            builder.Append($"{nameof(TrackSegment)}");
+            //
+            builder.Append($"\n\t{nameof(topologyMetadata)}: {topologyMetadata}");
+            builder.Append($"\n\t{nameof(trackProperty)}: {trackProperty}");
+            builder.Append($"\n\t{nameof(perimeterOptions)}: {perimeterOptions}");
+            builder.Append($"\n\t{nameof(topologyMetadata)}: {topologyMetadata}");
+            //
+            builder.Append($"\n\t{nameof(trackAnimationCurvesPtr)}: {trackAnimationCurvesPtr}");
+            builder.Append($"\n\t{nameof(hairpinCornerTopologyPtr)}: {hairpinCornerTopologyPtr}");
+            builder.Append($"\n\t{nameof(childrenPtrs)}: {childrenPtrs}");
+            //
+            builder.Append($"\n\t{nameof(localScale)}: {localScale}");
+            builder.Append($"\n\t{nameof(localRotation)}: {localRotation}");
+            builder.Append($"\n\t{nameof(localPosition)}: {localPosition}");
+            //
+            builder.Append($"\n\t{nameof(unk_0x38)}: {unk_0x38}");
+            builder.Append($"\n\t{nameof(unk_0x39)}: {unk_0x39}");
+            builder.Append($"\n\t{nameof(unk_0x3A)}: {unk_0x3A}");
+            builder.Append($"\n\t{nameof(unk_0x3B)}: {unk_0x3B}");
+            //
+            builder.Append($"\n\t{nameof(zero_0x44)}: {zero_0x44}");
+            builder.Append($"\n\t{nameof(zero_0x48)}: {zero_0x48}");
+            //
+            builder.Append($"\n\t{nameof(railHeightRight)}: {railHeightRight}");
+            builder.Append($"\n\t{nameof(railHeightLeft)}: {railHeightLeft}");
+            builder.Append($"\n\t{nameof(unk_0x4C)}: {unk_0x4C}");
+
+            return builder.ToString();
+        }
     }
 }

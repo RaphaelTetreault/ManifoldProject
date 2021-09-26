@@ -21,19 +21,12 @@ namespace Manifold.IO.GFZ
             LogRoundtrip("C:/GFZJ01/stage/COLI_COURSE01", true);
         }
 
-        //[MenuItem("Manifold/IO/Test All")]
-        //public static void TestAll()
-        //{
-        //    for (int i = 0; i < 51; i++)
-        //        try
-        //        {
-        //            TestImportExportLog($"C:/GFZJ01/stage/COLI_COURSE{i:00}", true);
-        //        }
-        //        catch (Exception e)
-        //        {
-        //            Debug.LogError(e.Message);
-        //        }
-        //}
+        [MenuItem("Manifold/IO/Test Hash %F1")]
+        public static void TestHash()
+        {
+            LogX("C:/GFZJ01/stage/COLI_COURSE01", true);
+        }
+
 
         public static void LogRoundtrip(string filePath, bool serializeVerbose)
         {
@@ -73,7 +66,7 @@ namespace Manifold.IO.GFZ
             writer.BaseStream.Seek(0, SeekOrigin.Begin);
             
             // LOAD INTERMEDIARY
-            // Load saved file back in
+            // Load memory stream back in
             var readerOut = new BinaryReader(writer.BaseStream);
             var sceneOut = new ColiScene();
             sceneOut.SerializeVerbose = serializeVerbose;
@@ -373,8 +366,8 @@ namespace Manifold.IO.GFZ
                     var currLabelSRP = labelSRP[animIndex / 3];
                     var currLabelXYZ = labelXYZ[animIndex % 3];
                     log.WriteLine($"{currLabelSRP}.{currLabelXYZ} [{animIndex}] ");
-                    //log.WriteArrayToString(animCurve.keyableAttributes);
-                    log.WriteLine(HashSerializables.Hash(md5, animCurve));
+                    log.WriteArrayToString(animCurve.keyableAttributes);
+                    //log.WriteLine(HashSerializables.Hash(md5, animCurve));
                     log.WriteLine();
                 }
             }
@@ -484,6 +477,192 @@ namespace Manifold.IO.GFZ
         }
 
 
+        public static void LogX(string filePath, bool serializeVerbose)
+        {
+            var md5 = MD5.Create();
+            // TEMP from previous function
+            var openFolderAfterExport = true;
+            var exportTo = "W:/Windows Directories/Desktop/test";
+            /////////////////////////////////////////////////////
+
+            // Construct time stamp string
+            var dateTime = DateTime.Now;
+            var timestamp = $"[{dateTime:yyyy-MM-dd}][{dateTime:HH-mm-ss}]";
+
+            // LOAD FRESH FILE IN
+            var readerIn = new BinaryReader(File.OpenRead(filePath));
+            // Set scene instance, deserialize data
+            var sceneIn = new ColiScene();
+            sceneIn.FileName = Path.GetFileName(filePath);
+            sceneIn.SerializeVerbose = serializeVerbose;
+            readerIn.ReadX(ref sceneIn, false);
+            // Check to see if file is from ROM. Add correct metadata.
+            // TODO: remove hardcoded match and use dynamic JP/EN/PAL
+            readerIn.SeekBegin();
+            var sceneIndex = sceneIn.ID;
+            var sceneHash = md5.ComputeHash(readerIn.BaseStream);
+            var sceneHashStr = HashSerializables.ByteArrayToString(sceneHash);
+            var romHashStr = HashSerializables.ColiCourseMD5NtscJ[sceneIndex];
+            if (romHashStr == sceneHashStr)
+            {
+                sceneIn.Venue = CourseUtility.GetVenue(sceneIndex);
+                sceneIn.CourseName = CourseUtility.GetCourseName(sceneIndex);
+                sceneIn.Author = "Amusement Vision";
+            }
+
+            // Log true file
+            {
+                var logPath = Path.Combine(exportTo, $"{timestamp} - Hash COLI_COURSE{sceneIn.ID:d2} IN.txt");
+                var log = new TextLogger(logPath);
+                WriteTrackDataHashReport(log, sceneIn);
+                log.Close();
+            }
+
+            // WRITE INTERMEDIARY
+            // Write scene out to memory stream...
+            var writer = new BinaryWriter(new MemoryStream());
+            writer.WriteX(sceneIn);
+            writer.Flush();
+            writer.BaseStream.Seek(0, SeekOrigin.Begin);
+
+            // LOAD INTERMEDIARY
+            // Load memory stream back in
+            var readerOut = new BinaryReader(writer.BaseStream);
+            var sceneOut = new ColiScene();
+            sceneOut.SerializeVerbose = serializeVerbose;
+            sceneOut.FileName = sceneIn.FileName;
+            readerOut.ReadX(ref sceneOut, false);
+            // Log intermediary
+            {
+                var logPath = Path.Combine(exportTo, $"{timestamp} - Hash COLI_COURSE{sceneIn.ID:d2} OUT.txt");
+                var log = new TextLogger(logPath);
+                WriteTrackDataHashReport(log, sceneIn);
+                log.Close();
+            }
+
+            // open folder location
+            OSUtility.OpenDirectory(openFolderAfterExport, $"{exportTo}/");
+            // Set static variable
+            // Export file...
+            //var x = ExportUtility.ExportSerializable(sceneIn, exportTo, "", allowOverwritingFiles);
+            //OSUtility.OpenDirectory(openFolderAfterExport, x);
+        }
+
+        public static void WriteTrackDataHashReport(TextLogger log, ColiScene coliScene)
+        {
+            var md5 = MD5.Create();
+            const int h1Width = 96; // heading 1 character width
+            const string padding = "-"; // heading padding character
+
+            log.WriteHeading("GENERAL", padding, h1Width);
+            log.WriteLine($"Course: {coliScene.VenueName} [{coliScene.CourseName}]");
+            log.WriteLine($"Author: {coliScene.Author}");
+            log.WriteLine(); //
+
+            // THIS IS JUST A POINTER TYPE
+            //log.WriteLine($"{nameof(TrackNode)}");
+            //for (int i = 0; i < coliScene.trackNodes.Length; i++)
+            //{
+            //    var trackNode = coliScene.trackNodes[i];
+            //    var iFormat = i.ArrayFormat(coliScene.trackNodes);
+            //    // Clear ptrs from hash calculation
+            //    trackNode.checkpointsPtr = new ArrayPointer();
+            //    trackNode.segmentPtr = 0;
+            //    log.Write($"[{iFormat}]\t");
+            //    log.WriteLine(HashSerializables.Hash(md5, trackNode));
+            //}
+            //log.WriteLine();
+
+            //
+            log.WriteLine($"{nameof(TrackCheckpoint)}");
+            for (int i = 0; i < coliScene.trackNodes.Length; i++)
+            {
+                var trackNode = coliScene.trackNodes[i];
+                var iFormat = i.ArrayFormat(coliScene.trackNodes);
+
+                for (int j = 0; j < trackNode.checkpoints.Length; j++)
+                {
+                    var checkpoint = trackNode.checkpoints[j];
+                    var jFormat = j.ArrayFormat(trackNode.checkpoints);
+
+                    log.Write($"[{iFormat},{jFormat}]\t");
+                    log.WriteLine(HashSerializables.Hash(md5, checkpoint));
+                }
+            }
+            log.WriteLine();
+
+            //
+            log.WriteLine($"{nameof(TrackSegment)}");
+            for (int i = 0; i < coliScene.allTrackSegments.Length; i++)
+            {
+                var trackSegment = coliScene.allTrackSegments[i];
+                var iFormat = i.ArrayFormat(coliScene.allTrackSegments);
+                // Clear ptrs from hash calculation
+                trackSegment.hairpinCornerTopologyPtr = 0;
+                trackSegment.trackAnimationCurvesPtr = 0;
+                trackSegment.childrenPtrs = new ArrayPointer();
+                log.Write($"[{iFormat}]\t");
+                log.WriteLine(HashSerializables.Hash(md5, trackSegment));
+            }
+            log.WriteLine();
+            //
+            log.WriteLine($"{nameof(TrackSegment)} Streams");
+            for (int i = 0; i < coliScene.allTrackSegments.Length; i++)
+            {
+                var trackSegment = coliScene.allTrackSegments[i];
+                var iFormat = i.ArrayFormat(coliScene.allTrackSegments);
+                // Clear ptrs from hash calculation
+                trackSegment.hairpinCornerTopologyPtr = 0;
+                trackSegment.trackAnimationCurvesPtr = 0;
+                trackSegment.childrenPtrs = new ArrayPointer();
+                log.Write($"[{iFormat}]\t");
+                var w = new BinaryWriter(new MemoryStream());
+                w.WriteX(trackSegment);
+                var x = HashSerializables.StreamToString(w.BaseStream);
+                log.WriteLine(x);
+            }
+            log.WriteLine();
+            //
+            log.WriteLine($"{nameof(TrackSegment)}");
+            for (int i = 0; i < coliScene.allTrackSegments.Length; i++)
+            {
+                var trackSegment = coliScene.allTrackSegments[i];
+                var iFormat = i.ArrayFormat(coliScene.allTrackSegments);
+                // Clear ptrs from hash calculation
+                trackSegment.hairpinCornerTopologyPtr = 0;
+                trackSegment.trackAnimationCurvesPtr = 0;
+                trackSegment.childrenPtrs = new ArrayPointer();
+                log.Write($"[{iFormat}]\t");
+                log.WriteLine(trackSegment.ToString2());
+            }
+            log.WriteLine();
+
+            //
+            //log.WriteLine($"{nameof(TrackSegment)}");
+            // This block writes out the contents of each TrackSegments AnimationCurves
+            log.WriteLine($"{nameof(TrackSegment)}.{nameof(TrackSegment.trackAnimationCurves)}");
+            string[] labelSRP = new string[] { "Scale", "Rotation", "Position" };
+            string[] labelXYZ = new string[] { "x", "y", "z" };
+            for (int segmentIndex = 0; segmentIndex < coliScene.allTrackSegments.Length; segmentIndex++)
+            {
+                var trackSegment = coliScene.allTrackSegments[segmentIndex];
+                var segmentIndexFormat = segmentIndex.ArrayFormat(coliScene.trackNodes);
+                log.WriteLine($"[{segmentIndex}]\t");
+
+                for (int animIndex = 0; animIndex < trackSegment.trackAnimationCurves.animationCurves.Length; animIndex++)
+                {
+                    var animCurve = trackSegment.trackAnimationCurves.animationCurves[animIndex];
+                    // NOTE: delete. At most 4, so no 2 digit indexes
+                    //var animCurveFormat = segmentIndex.ArrayFormat(coliScene.trackNodes);
+                    var currLabelSRP = labelSRP[animIndex / 3];
+                    var currLabelXYZ = labelXYZ[animIndex % 3];
+                    log.Write($"[{segmentIndexFormat},{animIndex}]\t");
+                    log.Write(HashSerializables.Hash(md5, animCurve));
+                    log.WriteLine($"\t({currLabelSRP}.{currLabelXYZ})");
+                }
+            }
+            log.WriteLine();
+        }
     }
 
 }

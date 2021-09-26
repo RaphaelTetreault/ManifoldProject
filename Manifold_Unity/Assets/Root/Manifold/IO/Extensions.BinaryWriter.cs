@@ -15,6 +15,14 @@ namespace Manifold.IO
             return bytesToAlign;
         }
 
+        /// <summary>
+        /// Sets the stream's position to 0.
+        /// </summary>
+        /// <param name="writer"></param>
+        public static void SeekBegin(this BinaryWriter writer)
+        {
+            writer.BaseStream.Seek(0, SeekOrigin.Begin);
+        }
 
         // BinaryIOUtility function forwarding
 

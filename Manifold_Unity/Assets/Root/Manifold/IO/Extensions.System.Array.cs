@@ -14,5 +14,18 @@ namespace Manifold
         {
             return (array == null || array.Length == 0);
         }
+
+        public static int LengthToFormat(this Array array)
+        {
+            var length = array.Length;
+            var charWidth = length.ToString().Length;
+            return charWidth;
+        }
+
+        public static string ArrayFormat(this int i, Array array)
+        {
+            var charWidth = LengthToFormat(array);
+            return i.ToString().PadLeft(charWidth);
+        }
     }
 }
