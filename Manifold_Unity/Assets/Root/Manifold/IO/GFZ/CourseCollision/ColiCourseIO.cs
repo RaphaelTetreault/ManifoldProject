@@ -27,6 +27,27 @@ namespace Manifold.IO.GFZ
             LogX("C:/GFZJ01/stage/COLI_COURSE01", true);
         }
 
+        [MenuItem("Manifold/IO/Roundtrip No Log %F2")]
+        public static void ExportRoundtripNoLog()
+        {
+            RoundtripNoLog("C:/GFZJ01/stage/COLI_COURSE01", true);
+        }
+
+
+        [MenuItem("Manifold/IO/Roundtrip Error Check %F3")]
+        public static void RoundtripErrorCheck()
+        {
+            RoundtripErrorTest("C:/GFZJ01/stage/COLI_COURSE01", true);
+        }
+
+        [MenuItem("Manifold/IO/Roundtrip Error Check ALL %F4")]
+        public static void RoundtripErrorCheck2()
+        {
+            for (int i = 0; i <= 50; i++)
+            {
+                RoundtripErrorTest($"C:/GFZJ01/stage/COLI_COURSE{i:d2}", true);
+            }
+        }
 
         public static void LogRoundtrip(string filePath, bool serializeVerbose)
         {
@@ -480,6 +501,8 @@ namespace Manifold.IO.GFZ
         public static void LogX(string filePath, bool serializeVerbose)
         {
             var md5 = MD5.Create();
+            string[] labels = new string[] { "Value", "Address", "Stream", "Hash"};
+
             // TEMP from previous function
             var openFolderAfterExport = true;
             var exportTo = "W:/Windows Directories/Desktop/test";
@@ -502,7 +525,7 @@ namespace Manifold.IO.GFZ
             var sceneIndex = sceneIn.ID;
             var sceneHash = md5.ComputeHash(readerIn.BaseStream);
             var sceneHashStr = HashUtility.ByteArrayToString(sceneHash);
-            var romHashStr = HashUtility.ColiCourseMD5Gfzj01[sceneIndex];
+            var romHashStr = HashLibrary.ColiCourseMD5_GFZJ01[sceneIndex];
             if (romHashStr == sceneHashStr)
             {
                 sceneIn.Venue = CourseUtility.GetVenue(sceneIndex);
@@ -512,14 +535,14 @@ namespace Manifold.IO.GFZ
 
             // Log true file
             {
-                var logPath = Path.Combine(exportTo, $"{timestamp} - Hash COLI_COURSE{sceneIn.ID:d2} IN.txt");
-                var log = new TextLogger(logPath);
                 //WriteTrackDataHashReport(log, sceneIn);
                 for (int i = 0; i < NumFunctions; i++)
                 {
+                    var logPath = Path.Combine(exportTo, $"{timestamp} - {i+1} {labels[i]} COLI_COURSE{sceneIn.ID:d2} IN.txt");
+                    var log = new TextLogger(logPath);
                     LogColiScene(sceneIn, log, i);
+                    log.Close();
                 }
-                log.Close();
             }
 
             // WRITE INTERMEDIARY
@@ -538,15 +561,14 @@ namespace Manifold.IO.GFZ
             readerOut.ReadX(ref sceneOut, false);
             // Log intermediary
             {
-                var logPath = Path.Combine(exportTo, $"{timestamp} - Hash COLI_COURSE{sceneIn.ID:d2} OUT.txt");
-                var log = new TextLogger(logPath);
+                //WriteTrackDataHashReport(log, sceneIn);
                 for (int i = 0; i < NumFunctions; i++)
                 {
-                    LogColiScene(sceneOut, log, i);
+                    var logPath = Path.Combine(exportTo, $"{timestamp} - {i + 1} {labels[i]} COLI_COURSE{sceneIn.ID:d2} OUT.txt");
+                    var log = new TextLogger(logPath);
+                    LogColiScene(sceneIn, log, i);
+                    log.Close();
                 }
-                //LogColiScene(sceneIn, log, HashUtility.HashBinaryMD5);
-                //LogColiScene(sceneIn, log, HashUtility.PrintAddress);
-                log.Close();
             }
 
             // open folder location
@@ -556,6 +578,103 @@ namespace Manifold.IO.GFZ
             var x = ExportUtility.ExportSerializable(sceneIn, exportTo, "", true);
             OSUtility.OpenDirectory(openFolderAfterExport, x);
         }
+
+        public static void RoundtripNoLog(string filePath, bool serializeVerbose)
+        {
+            var md5 = MD5.Create();
+            // TEMP from previous function
+            var openFolderAfterExport = true;
+            var exportTo = "W:/Windows Directories/Desktop/test";
+            /////////////////////////////////////////////////////
+
+            // Construct time stamp string
+            var dateTime = DateTime.Now;
+            var timestamp = $"[{dateTime:yyyy-MM-dd}][{dateTime:HH-mm-ss}]";
+
+            // LOAD FRESH FILE IN
+            var readerIn = new BinaryReader(File.OpenRead(filePath));
+            // Set scene instance, deserialize data
+            var sceneIn = new ColiScene();
+            sceneIn.FileName = Path.GetFileName(filePath);
+            sceneIn.SerializeVerbose = serializeVerbose;
+            readerIn.ReadX(ref sceneIn, false);
+            // Check to see if file is from ROM. Add correct metadata.
+            // TODO: remove hardcoded match and use dynamic JP/EN/PAL
+            readerIn.SeekBegin();
+            var sceneIndex = sceneIn.ID;
+            var sceneHash = md5.ComputeHash(readerIn.BaseStream);
+            var sceneHashStr = HashUtility.ByteArrayToString(sceneHash);
+            var romHashStr = HashLibrary.ColiCourseMD5_GFZJ01[sceneIndex];
+            if (romHashStr == sceneHashStr)
+            {
+                sceneIn.Venue = CourseUtility.GetVenue(sceneIndex);
+                sceneIn.CourseName = CourseUtility.GetCourseName(sceneIndex);
+                sceneIn.Author = "Amusement Vision";
+            }
+
+            // WRITE INTERMEDIARY
+            // Write scene out to memory stream...
+            var writer = new BinaryWriter(new MemoryStream());
+            writer.WriteX(sceneIn);
+            writer.Flush();
+            writer.BaseStream.Seek(0, SeekOrigin.Begin);
+
+            // LOAD INTERMEDIARY
+            // Load memory stream back in
+            var readerOut = new BinaryReader(writer.BaseStream);
+            var sceneOut = new ColiScene();
+            sceneOut.SerializeVerbose = serializeVerbose;
+            sceneOut.FileName = sceneIn.FileName;
+            readerOut.ReadX(ref sceneOut, false);
+       
+            // open folder location
+            OSUtility.OpenDirectory(openFolderAfterExport, $"{exportTo}/");
+            // Set static variable
+            // Export file...
+            var x = ExportUtility.ExportSerializable(sceneIn, exportTo, "", true);
+            OSUtility.OpenDirectory(openFolderAfterExport, x);
+        }
+
+        /// <summary>
+        /// Function goal: round trip asset multiple times. If misalignment somewhere, should cause error.
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <param name="serializeVerbose"></param>
+        public static void RoundtripErrorTest(string filePath, bool serializeVerbose)
+        {
+            if (!File.Exists(filePath))
+                return;
+
+            // Stream is changed after each iteration
+            Stream stream = File.OpenRead(filePath);
+            string filename = Path.GetFileName(filePath);
+            const int iterations = 5;
+
+            for (int i = 0; i < iterations; i++)
+            {
+                EditorUtility.DisplayProgressBar("Roundtrip Error Test", $"{filename} iter.{i+1}", i/(float)iterations);
+
+                // LOAD FRESH FILE IN
+                var readerIn = new BinaryReader(stream);
+                var sceneIn = new ColiScene();
+                sceneIn.FileName = filename;
+                sceneIn.SerializeVerbose = serializeVerbose;
+                readerIn.ReadX(ref sceneIn, false);
+
+                // WRITE INTERMEDIARY
+                // Write scene out to memory stream...
+                var writer = new BinaryWriter(new MemoryStream());
+                writer.WriteX(sceneIn);
+                writer.Flush();
+                writer.BaseStream.Seek(0, SeekOrigin.Begin);
+
+                // set for next iteration
+                stream = writer.BaseStream;
+            }
+
+            EditorUtility.ClearProgressBar();
+        }
+
 
         public static void WriteTrackDataHashReport(TextLogger log, ColiScene coliScene)
         {
@@ -669,12 +788,15 @@ namespace Manifold.IO.GFZ
         public static string PrintData<T>(int index, T data)
             where T : IBinaryAddressable, IBinarySerializable
         {
+            if (data == null)
+                return "null";
+
             switch (index)
             {
                 case 0: return PrintValue(data);
-                case 1: return PrintHashMD5(data);
-                case 2: return PrintAddress(data);
-                case 3: return PrintStream(data);
+                case 1: return PrintAddress(data);
+                case 2: return PrintStream(data);
+                case 3: return PrintHashMD5(data);
                 default: throw new NotImplementedException();
             }
         }
@@ -742,9 +864,7 @@ namespace Manifold.IO.GFZ
                 for (int i = 0; i < coliScene.allTrackSegments.Length; i++)
                 {
                     var trackSegment = coliScene.allTrackSegments[i];
-                    var iFormat = i.ArrayFormat(coliScene.allTrackSegments);
-                    // Write index, string to log
-                    log.Write($"[{iFormat}]\t");
+                    log.Write(PrintIndex(i, coliScene.trackNodes));
                     log.WriteLine(PrintData(functionIdx, trackSegment));
                 }
                 log.WriteLine();
@@ -756,7 +876,7 @@ namespace Manifold.IO.GFZ
                 for (int segmentIndex = 0; segmentIndex < coliScene.allTrackSegments.Length; segmentIndex++)
                 {
                     var trackSegment = coliScene.allTrackSegments[segmentIndex];
-                    var segmentIndexFormat = segmentIndex.ArrayFormat(coliScene.trackNodes);
+                    var segmentIndexFormat = segmentIndex.ArrayFormat(coliScene.allTrackSegments);
                     log.WriteLine($"[{segmentIndex}]\t");
 
                     for (int animIndex = 0; animIndex < trackSegment.trackAnimationCurves.animationCurves.Length; animIndex++)
@@ -767,8 +887,8 @@ namespace Manifold.IO.GFZ
                         var currLabelSRP = labelSRP[animIndex / 3];
                         var currLabelXYZ = labelXYZ[animIndex % 3];
                         log.Write($"[{segmentIndexFormat},{animIndex}]\t");
+                        log.Write($"({currLabelSRP}.{currLabelXYZ})\t");
                         log.WriteLine(PrintData(functionIdx, animCurve));
-                        log.WriteLine($"\t({currLabelSRP}.{currLabelXYZ})");
                     }
                 }
                 log.WriteLine();
@@ -788,6 +908,110 @@ namespace Manifold.IO.GFZ
                 log.WriteLine();
             }
 
+            // Scene Objects
+            {
+                log.WriteLine($"{nameof(SceneObject)}");
+                for (int i = 0; i < coliScene.sceneObjects.Length; i++)
+                {
+                    var sceneObject = coliScene.sceneObjects[i];
+                    log.Write(PrintIndex(i, coliScene.sceneObjects));
+                    log.WriteLine(PrintData(functionIdx, sceneObject));
+                }
+                log.WriteLine();
+
+                // TODO: add indexes
+                log.WriteLine($"{nameof(AnimationCurvePlus)}");
+                for (int i = 0; i < coliScene.sceneObjects.Length; i++)
+                {
+                    var animClip = coliScene.sceneObjects[i].animation;
+
+                    if (animClip == null)
+                        continue;
+
+                    for (int j = 0; j < animClip.animationCurvePluses.Length; j++)
+                    {
+                        var animCurvesPlus = animClip.animationCurvePluses[j];
+                        //log.Write(PrintIndex(i, coliScene.sceneObjects));
+                        log.WriteLine(PrintData(functionIdx, animCurvesPlus));
+                    }
+                }
+                log.WriteLine();
+
+                // TODO: add indexes
+                log.WriteLine($"{nameof(UnknownSceneObjectFloatPair)}");
+                for (int i = 0; i < coliScene.sceneObjects.Length; i++)
+                {
+                    var unknown1 = coliScene.sceneObjects[i].unk1;
+                    if (unknown1 == null)
+                        continue;
+                    log.Write(PrintIndex(i, coliScene.sceneObjects));
+                    log.WriteLine(PrintData(functionIdx, unknown1));
+                }
+                log.WriteLine();
+
+                log.WriteLine($"{nameof(SkeletalAnimator)}");
+                for (int i = 0; i < coliScene.sceneObjects.Length; i++)
+                {
+                    var skeletalAnimator = coliScene.sceneObjects[i].skeletalAnimator;
+                    if (skeletalAnimator == null)
+                        continue;
+                    log.Write(PrintIndex(i, coliScene.sceneObjects));
+                    log.WriteLine(PrintData(functionIdx, skeletalAnimator));
+                }
+                log.WriteLine();
+
+                log.WriteLine($"{nameof(TransformMatrix3x4)}");
+                for (int i = 0; i < coliScene.sceneObjects.Length; i++)
+                {
+                    var matrix = coliScene.sceneObjects[i].transformMatrix3x4;
+                    if (matrix == null)
+                        continue;
+                    log.Write(PrintIndex(i, coliScene.sceneObjects));
+                    log.WriteLine(PrintData(functionIdx, matrix));
+                }
+                log.WriteLine();
+            }
+
+            //
+            {
+                log.WriteLine($"{nameof(SceneInstanceReference)}");
+                for (int i = 0; i < coliScene.sceneInstances.Length; i++)
+                {
+                    var sceneInstance = coliScene.sceneInstances[i];
+                    log.Write(PrintIndex(i, coliScene.sceneInstances));
+                    log.WriteLine(PrintData(functionIdx, sceneInstance));
+                }
+                log.WriteLine();
+
+                log.WriteLine($"{nameof(ColliderGeometry)}");
+                for (int i = 0; i < coliScene.sceneInstances.Length; i++)
+                {
+                    var colliderGeometry = coliScene.sceneInstances[i].colliderGeometry;
+                    if (colliderGeometry == null)
+                        continue;
+                    log.Write(PrintIndex(i, coliScene.sceneInstances));
+                    log.WriteLine(PrintData(functionIdx, colliderGeometry));
+                }
+                log.WriteLine();
+
+                log.WriteLine($"{nameof(SceneInstanceReference)}");
+                for (int i = 0; i < coliScene.sceneObjectReferences.Length; i++)
+                {
+                    var sceneObjectReference = coliScene.sceneObjectReferences[i];
+                    log.Write(PrintIndex(i, coliScene.sceneObjectReferences));
+                    log.WriteLine(PrintData(functionIdx, sceneObjectReference));
+                }
+                log.WriteLine();
+
+                log.WriteLine($"{nameof(CString)}");
+                for (int i = 0; i < coliScene.objectNames.Length; i++)
+                {
+                    var objectName = coliScene.objectNames[i];
+                    log.Write(PrintIndex(i, coliScene.objectNames));
+                    log.WriteLine(PrintData(functionIdx, objectName));
+                }
+                log.WriteLine();
+            }
         }
     }
 

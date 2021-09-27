@@ -202,8 +202,9 @@ namespace GameCube.GFZ.CourseCollision
             // Ensure rail flags AND height properties coincide
             bool hasRailLeft = perimeterOptions.HasFlag(TrackPerimeterOptions.hasRailHeightLeft);
             bool hasRailRight = perimeterOptions.HasFlag(TrackPerimeterOptions.hasRailHeightRight);
-            Assert.IsFalse(hasRailLeft ^ railHeightRight > 0);
-            Assert.IsFalse(hasRailRight ^ railHeightLeft > 0);
+            // Both true or false, but not one of either.
+            Assert.IsFalse(hasRailLeft ^ railHeightLeft > 0);
+            Assert.IsFalse(hasRailRight ^ railHeightRight > 0);
 
             // Ensure that if there is a turn that one of the two flags for it are set
             if (hairpinCornerTopologyPtr.IsNotNullPointer)
