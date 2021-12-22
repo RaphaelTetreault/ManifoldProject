@@ -47,6 +47,7 @@ namespace Manifold.IO.GFZ
             {
                 RoundtripErrorTest($"C:/GFZJ01/stage/COLI_COURSE{i:d2}", true);
             }
+            EditorUtility.DisplayDialog("Roundtrip Error Check All Gfze", "All tests passed!", "ok");
         }
 
         [MenuItem("Manifold/IO/GFZE/Log All")]
@@ -61,10 +62,11 @@ namespace Manifold.IO.GFZ
                 }
                 catch
                 {
-                    Debug.Log($"Skipping index {i:d2}");
+                    //Debug.Log($"Skipping index {i:d2}");
                 }
             }
         }
+
         public static void LogRoundtrip(string filePath, bool serializeVerbose)
         {
             // TEMP from previous function

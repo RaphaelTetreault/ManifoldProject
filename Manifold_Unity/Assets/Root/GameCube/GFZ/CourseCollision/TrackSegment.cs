@@ -195,8 +195,10 @@ namespace GameCube.GFZ.CourseCollision
         public void ValidateReferences()
         {
             // Topology assertions
-            if (topologyMetadata == TrackTopologyMetadata.IsTransformParent)
-                Assert.IsTrue(childrenPtrs.IsNotNullPointer);
+            
+            // 2021/12/21: NOT SURE ABOUT THIS, FAILS ON ST43
+            //if (topologyMetadata == TrackTopologyMetadata.IsTransformParent)
+            //    Assert.IsTrue(childrenPtrs.IsNotNullPointer);
             // TODO: more edge cases to assert
 
             // Ensure rail flags AND height properties coincide

@@ -149,7 +149,8 @@ namespace GameCube.GFZ.CourseCollision
             // 2 or more colours.
             foreach (var animationCurve in animationCurves)
             {
-                Assert.IsTrue(animationCurve.Length > 0);
+                // TODO: warn, don't assert
+                //Assert.IsTrue(animationCurve.Length > 0);
             }
         }
     }
