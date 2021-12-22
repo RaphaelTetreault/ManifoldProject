@@ -29,5 +29,15 @@ namespace Manifold.IO
 
         public static void IsFalse(bool value, string message = null)
             => IsTrue(!value, message);
+
+        public static void PointerReferenceValid(object reference, IPointer pointer)
+        {
+            bool referenceNull = reference == null;
+            bool pointerNull = pointer.Address == 0;
+            // There is an issue if one of the two are set, but when both are the same, no issue
+            bool invalidState = pointerNull ^ pointerNull;
+
+            IsFalse(invalidState);
+        }
     }
 }

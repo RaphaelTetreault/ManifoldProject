@@ -70,7 +70,7 @@ namespace GameCube.GFZ.CourseCollision
 
         public void ValidateReferences()
         {
-            throw new NotImplementedException();
+            Assert.PointerReferenceValid(properties, propertiesPtr);
         }
 
         public override string ToString()
