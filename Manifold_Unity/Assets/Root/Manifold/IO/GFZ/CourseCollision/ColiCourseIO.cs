@@ -49,6 +49,22 @@ namespace Manifold.IO.GFZ
             }
         }
 
+        [MenuItem("Manifold/IO/GFZE/Log All")]
+        public static void RoundtripErrorCheckAllGfze()
+        {
+            
+            for (int i = 0; i <= 50; i++)
+            {
+                try
+                {
+                    LogX($"C:/GFZE01/stage/COLI_COURSE{i:d2}", true);
+                }
+                catch
+                {
+                    Debug.Log($"Skipping index {i:d2}");
+                }
+            }
+        }
         public static void LogRoundtrip(string filePath, bool serializeVerbose)
         {
             // TEMP from previous function
@@ -487,9 +503,9 @@ namespace Manifold.IO.GFZ
                         log.WriteAddress(sceneObject.animation.animationCurvePluses);
                     // TODO: other sub classes?
 
-                    log.WriteAddress(sceneObject.unk1);
-                    if (sceneObject.unk1 != null)
-                        log.WriteAddress(sceneObject.unk1.unk);
+                    log.WriteAddress(sceneObject.textureMetadata);
+                    if (sceneObject.textureMetadata != null)
+                        log.WriteAddress(sceneObject.textureMetadata.fields);
 
                     log.WriteLine();
                 }
@@ -648,11 +664,12 @@ namespace Manifold.IO.GFZ
             // Stream is changed after each iteration
             Stream stream = File.OpenRead(filePath);
             string filename = Path.GetFileName(filePath);
-            const int iterations = 5;
+            const int iterations = 3;
 
             for (int i = 0; i < iterations; i++)
             {
-                EditorUtility.DisplayProgressBar("Roundtrip Error Test", $"{filename} iter.{i+1}", i/(float)iterations);
+                int index = i + 1;
+                EditorUtility.DisplayProgressBar("Roundtrip Error Test", $"{filename} iter.{index}", index/(float)iterations);
 
                 // LOAD FRESH FILE IN
                 var readerIn = new BinaryReader(stream);
@@ -673,113 +690,6 @@ namespace Manifold.IO.GFZ
             }
 
             EditorUtility.ClearProgressBar();
-        }
-
-
-        public static void WriteTrackDataHashReport(TextLogger log, ColiScene coliScene)
-        {
-            var md5 = MD5.Create();
-            const int h1Width = 96; // heading 1 character width
-            const string padding = "-"; // heading padding character
-
-            log.WriteHeading("GENERAL", padding, h1Width);
-            log.WriteLine($"Course: {coliScene.VenueName} [{coliScene.CourseName}]");
-            log.WriteLine($"Author: {coliScene.Author}");
-            log.WriteLine(); //
-
-            // THIS IS JUST A POINTER TYPE
-            //log.WriteLine($"{nameof(TrackNode)}");
-            //for (int i = 0; i < coliScene.trackNodes.Length; i++)
-            //{
-            //    var trackNode = coliScene.trackNodes[i];
-            //    var iFormat = i.ArrayFormat(coliScene.trackNodes);
-            //    // Clear ptrs from hash calculation
-            //    trackNode.checkpointsPtr = new ArrayPointer();
-            //    trackNode.segmentPtr = 0;
-            //    log.Write($"[{iFormat}]\t");
-            //    log.WriteLine(HashSerializables.Hash(md5, trackNode));
-            //}
-            //log.WriteLine();
-
-            //
-            log.WriteLine($"{nameof(TrackCheckpoint)}");
-            for (int i = 0; i < coliScene.trackNodes.Length; i++)
-            {
-                var trackNode = coliScene.trackNodes[i];
-                var iFormat = i.ArrayFormat(coliScene.trackNodes);
-
-                for (int j = 0; j < trackNode.checkpoints.Length; j++)
-                {
-                    var checkpoint = trackNode.checkpoints[j];
-                    var jFormat = j.ArrayFormat(trackNode.checkpoints);
-
-                    log.Write($"[{iFormat},{jFormat}]\t");
-                    log.WriteLine(HashUtility.HashBinary(md5, checkpoint));
-                }
-            }
-            log.WriteLine();
-
-            //
-            log.WriteLine($"{nameof(TrackSegment)}");
-            for (int i = 0; i < coliScene.allTrackSegments.Length; i++)
-            {
-                var trackSegment = coliScene.allTrackSegments[i];
-                var iFormat = i.ArrayFormat(coliScene.allTrackSegments);
-                // Clear ptrs from hash calculation
-                trackSegment.hairpinCornerTopologyPtr = 0;
-                trackSegment.trackAnimationCurvesPtr = 0;
-                trackSegment.trackAnimationCurves.AddressRange = new AddressRange();
-                trackSegment.childrenPtrs = new ArrayPointer();
-                log.Write($"[{iFormat}]\t");
-                log.WriteLine(HashUtility.HashBinary(md5, trackSegment));
-            }
-            log.WriteLine();
-            //
-            log.WriteLine($"{nameof(TrackSegment)} Streams");
-            for (int i = 0; i < coliScene.allTrackSegments.Length; i++)
-            {
-                var trackSegment = coliScene.allTrackSegments[i];
-                var iFormat = i.ArrayFormat(coliScene.allTrackSegments);
-                log.Write($"[{iFormat}]\t");
-                log.WriteLine(HashUtility.SerializableToStreamString(trackSegment));
-            }
-            log.WriteLine();
-            //
-            log.WriteLine($"{nameof(TrackSegment)}");
-            for (int i = 0; i < coliScene.allTrackSegments.Length; i++)
-            {
-                var trackSegment = coliScene.allTrackSegments[i];
-                var iFormat = i.ArrayFormat(coliScene.allTrackSegments);
-                log.Write($"[{iFormat}]\t");
-                log.WriteLine(trackSegment.ToString2());
-            }
-            log.WriteLine();
-
-            //
-            //log.WriteLine($"{nameof(TrackSegment)}");
-            // This block writes out the contents of each TrackSegments AnimationCurves
-            log.WriteLine($"{nameof(TrackSegment)}.{nameof(TrackSegment.trackAnimationCurves)}");
-            string[] labelSRP = new string[] { "Scale", "Rotation", "Position" };
-            string[] labelXYZ = new string[] { "x", "y", "z" };
-            for (int segmentIndex = 0; segmentIndex < coliScene.allTrackSegments.Length; segmentIndex++)
-            {
-                var trackSegment = coliScene.allTrackSegments[segmentIndex];
-                var segmentIndexFormat = segmentIndex.ArrayFormat(coliScene.trackNodes);
-                log.WriteLine($"[{segmentIndex}]\t");
-
-                for (int animIndex = 0; animIndex < trackSegment.trackAnimationCurves.animationCurves.Length; animIndex++)
-                {
-                    var animCurve = trackSegment.trackAnimationCurves.animationCurves[animIndex];
-                    // NOTE: delete. At most 4, so no 2 digit indexes
-                    //var animCurveFormat = segmentIndex.ArrayFormat(coliScene.trackNodes);
-                    var currLabelSRP = labelSRP[animIndex / 3];
-                    var currLabelXYZ = labelXYZ[animIndex % 3];
-                    log.Write($"[{segmentIndexFormat},{animIndex}]\t");
-                    log.Write(HashUtility.HashBinary(md5, animCurve));
-                    log.WriteLine($"\t({currLabelSRP}.{currLabelXYZ})");
-                }
-            }
-            log.WriteLine();
         }
 
 
@@ -937,15 +847,15 @@ namespace Manifold.IO.GFZ
                 }
                 log.WriteLine();
 
-                // TODO: add indexes
-                log.WriteLine($"{nameof(UnknownSceneObjectFloatPair)}");
+                // TODO: add (print???) indexes
+                log.WriteLine($"{nameof(TextureMetadata)}");
                 for (int i = 0; i < coliScene.sceneObjects.Length; i++)
                 {
-                    var unknown1 = coliScene.sceneObjects[i].unk1;
-                    if (unknown1 == null)
+                    var textureMetadata = coliScene.sceneObjects[i].textureMetadata;
+                    if (textureMetadata == null)
                         continue;
                     log.Write(PrintIndex(i, coliScene.sceneObjects));
-                    log.WriteLine(PrintData(functionIdx, unknown1));
+                    log.WriteLine(PrintData(functionIdx, textureMetadata));
                 }
                 log.WriteLine();
 

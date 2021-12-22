@@ -6,13 +6,17 @@ namespace GameCube.GFZ.CourseCollision
 {
     // NOTES:
     // Indexes 0-3 ARE USED
+    //  idx0: uv.xy scrolling (or, at least, on some models)
+    //  idx1: ?
+    //  idx2: ?
+    //  idx3: ?
     // Indexes 4-11 unused, always (0f, 0f)
 
     /// <summary>
     /// 
     /// </summary>
     [Serializable]
-    public class UnknownSceneObjectData :
+    public class TextureMetadata :
         IBinaryAddressable,
         IBinarySerializable,
         ISerializedBinaryAddressableReferer
@@ -24,9 +28,9 @@ namespace GameCube.GFZ.CourseCollision
         [UnityEngine.SerializeField] private AddressRange addressRange;
 
         // FIELDS
-        public Pointer[] unkPtrs;
+        public Pointer[] fieldPtrs;
         // REFERENCE FIELDS
-        public UnknownSceneObjectFloatPair[] unk = new UnknownSceneObjectFloatPair[0];
+        public TextureMetadataField[] fields = new TextureMetadataField[0];
 
 
         // PROPERTIES
@@ -42,18 +46,18 @@ namespace GameCube.GFZ.CourseCollision
         {
             this.RecordStartAddress(reader);
             {
-                reader.ReadX(ref unkPtrs, kCount, true);
+                reader.ReadX(ref fieldPtrs, kCount, true);
             }
             this.RecordEndAddress(reader);
             {
-                unk = new UnknownSceneObjectFloatPair[kCount];
+                fields = new TextureMetadataField[kCount];
                 for (int i = 0; i < kCount; i++)
                 {
-                    var pointer = unkPtrs[i];
+                    var pointer = fieldPtrs[i];
                     if (pointer.IsNotNullPointer)
                     {
                         reader.JumpToAddress(pointer);
-                        reader.ReadX(ref unk[i], true);
+                        reader.ReadX(ref fields[i], true);
                     }
                 }
             }
@@ -63,11 +67,11 @@ namespace GameCube.GFZ.CourseCollision
         public void Serialize(BinaryWriter writer)
         {
             {
-                unkPtrs = unk.GetPointers();
+                fieldPtrs = fields.GetPointers();
             }
             this.RecordStartAddress(writer);
             {
-                writer.WriteX(unkPtrs, false);
+                writer.WriteX(fieldPtrs, false);
             }
             this.RecordEndAddress(writer);
         }
@@ -76,17 +80,19 @@ namespace GameCube.GFZ.CourseCollision
         {
             for (int i = 0; i < kCount; i++)
             {
-                if (unkPtrs[i].IsNotNullPointer)
-                    Assert.IsTrue(unk[i] != null);
+                // Validate object references if pointer exists
+                if (fieldPtrs[i].IsNotNullPointer)
+                    Assert.IsTrue(fields[i] != null);
 
-                if (unk[i] != null)
-                    Assert.IsTrue(unkPtrs[i].IsNotNullPointer);
+                // Validate pointers if object reference exists
+                if (fields[i] != null)
+                    Assert.IsTrue(fieldPtrs[i].IsNotNullPointer);
             }
         }
 
         public override string ToString()
         {
-            return $"{nameof(UnknownSceneObjectData)} (ptr wrapper type)";
+            return $"{nameof(TextureMetadata)} (ptr wrapper type)";
         }
     }
 }

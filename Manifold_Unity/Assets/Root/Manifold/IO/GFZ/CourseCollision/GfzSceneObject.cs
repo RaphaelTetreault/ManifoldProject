@@ -74,13 +74,13 @@ namespace Manifold.IO.GFZ.CourseCollision
             lodFar = value.lodFar;
 
             // Copy out values
-            if (value.unkPtr_0x34.IsNotNullPointer)
+            if (value.textureMetadataPtr.IsNotNullPointer)
             {
-                unkData = new Vector2[value.unk1.unk.Length];
+                unkData = new Vector2[value.textureMetadata.fields.Length];
                 for (int i = 0; i < unkData.Length; i++)
                 {
-                    var item = value.unk1.unk[i];
-                    unkData[i] = new Vector2(item.unk_0x00, item.unk_0x04);
+                    var item = value.textureMetadata.fields[i];
+                    unkData[i] = new Vector2(item.x, item.y);
                 }
             }
 

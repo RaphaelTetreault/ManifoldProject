@@ -5,10 +5,10 @@ using System.IO;
 namespace GameCube.GFZ.CourseCollision
 {
     /// <summary>
-    /// 
+    /// A single data field for TextureMetadata
     /// </summary>
     [Serializable]
-    public class UnknownSceneObjectFloatPair :
+    public class TextureMetadataField :
         IBinaryAddressable,
         IBinarySerializable
     {
@@ -17,8 +17,8 @@ namespace GameCube.GFZ.CourseCollision
         private AddressRange addressRange;
 
         // FIELDS
-        public float unk_0x00; // range -3 to 6, indexes: 0-3
-        public float unk_0x04; // range -10 to 30, indexes: 0-3
+        public float x; // range -3 to 6, indexes: 0-3
+        public float y; // range -10 to 30, indexes: 0-3
 
 
         // PROPERTIES
@@ -34,8 +34,8 @@ namespace GameCube.GFZ.CourseCollision
         {
             this.RecordStartAddress(reader);
             {
-                reader.ReadX(ref unk_0x00);
-                reader.ReadX(ref unk_0x04);
+                reader.ReadX(ref x);
+                reader.ReadX(ref y);
             }
             this.RecordEndAddress(reader);
         }
@@ -44,8 +44,8 @@ namespace GameCube.GFZ.CourseCollision
         {
             this.RecordStartAddress(writer);
             {
-                writer.WriteX(unk_0x00);
-                writer.WriteX(unk_0x04);
+                writer.WriteX(x);
+                writer.WriteX(y);
             }
             this.RecordEndAddress(writer);
         }
@@ -53,9 +53,9 @@ namespace GameCube.GFZ.CourseCollision
         public override string ToString()
         {
             return
-                $"{nameof(UnknownSceneObjectFloatPair)}(" +
-                $"{nameof(unk_0x00)}: {unk_0x00}, " +
-                $"{nameof(unk_0x04)}: {unk_0x04}" +
+                $"{nameof(TextureMetadataField)}(" +
+                $"{nameof(x)}: {x}, " +
+                $"{nameof(y)}: {y}" +
                 $")";
         }
 

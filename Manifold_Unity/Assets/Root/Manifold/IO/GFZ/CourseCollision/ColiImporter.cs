@@ -40,8 +40,13 @@ namespace Manifold.IO.GFZ.CourseCollision
         {
             importFiles = Directory.GetFiles(importFrom, searchPattern, fileSearchOption);
             importFiles = UnityPathUtility.EnforceUnitySeparators(importFiles);
+
+            // 
             //var importFilesUncompressed = isAX
-            //? GFZX01Utility.DecompressEachLZ(importFiles, LibGxFormat.AvGame.FZeroAX)
+            //GfzUtility.DecompressEachLZ(importFiles, LibGxFormat.AvGame.FZeroAX);
+
+            // TODO: implement check for non LZ files
+
             var importFilesUncompressed = GfzUtility.DecompressEachLZ(importFiles);
             ImportUtility.ImportManyAs<ColiSceneSobj>(importFilesUncompressed, importFrom, importTo);
         }

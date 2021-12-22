@@ -15,7 +15,7 @@ namespace GameCube.GFZ.CourseCollision
     {
         // METADATA
         [UnityEngine.SerializeField] private AddressRange addressRange;
-        public string nameCopy;
+        public string nameCopy; // todo: use forwarder instead? Is that not safer?
 
         // STRUCTURE
         public UnkInstanceFlag unk_0x00;

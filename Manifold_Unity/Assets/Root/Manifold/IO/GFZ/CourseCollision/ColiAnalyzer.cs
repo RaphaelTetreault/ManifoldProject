@@ -195,7 +195,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 }
 
                 {
-                    var fileName = $"{time} COLI {nameof(SceneObject)} {nameof(UnknownSceneObjectData)}.tsv";
+                    var fileName = $"{time} COLI {nameof(SceneObject)} {nameof(TextureMetadata)}.tsv";
                     var filePath = Path.Combine(outputPath, fileName);
                     EditorUtility.DisplayProgressBar(ExecuteText, filePath, .3f);
                     AnalyzeSceneObjectsUnk1(filePath);
@@ -690,7 +690,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol(nameof(SceneObject.transform.Scale));
                 writer.WriteNextCol(nameof(SceneObject.zero_0x2C));
                 writer.WriteNextCol(nameof(SceneObject.animationPtr));
-                writer.WriteNextCol(nameof(SceneObject.unkPtr_0x34));
+                writer.WriteNextCol(nameof(SceneObject.textureMetadataPtr));
                 writer.WriteNextCol(nameof(SceneObject.skeletalAnimatorPtr));
                 writer.WriteNextCol(nameof(SceneObject.transformPtr));
                 writer.WriteNextRow();
@@ -713,7 +713,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                         writer.WriteNextCol(sceneObject.transform.Scale);
                         writer.WriteNextCol(sceneObject.zero_0x2C);
                         writer.WriteNextCol(sceneObject.animationPtr.HexAddress);
-                        writer.WriteNextCol(sceneObject.unkPtr_0x34.HexAddress);
+                        writer.WriteNextCol(sceneObject.textureMetadataPtr.HexAddress);
                         writer.WriteNextCol(sceneObject.skeletalAnimatorPtr.HexAddress);
                         writer.WriteNextCol(sceneObject.transformPtr.HexAddress);
                         writer.WriteNextRow();
@@ -734,8 +734,8 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol("Game Object #");
                 writer.WriteNextCol("Game Object");
                 writer.WriteNextCol("Unknown 1 Index");
-                writer.WriteNextColNicify(nameof(UnknownSceneObjectFloatPair.unk_0x00));
-                writer.WriteNextColNicify(nameof(UnknownSceneObjectFloatPair.unk_0x04));
+                writer.WriteNextColNicify(nameof(TextureMetadataField.x));
+                writer.WriteNextColNicify(nameof(TextureMetadataField.y));
                 writer.WriteNextRow();
 
                 foreach (var file in sceneSobjs)
@@ -743,18 +743,18 @@ namespace Manifold.IO.GFZ.CourseCollision
                     int gameObjectIndex = 0;
                     foreach (var sceneObject in file.Value.sceneObjects)
                     {
-                        if (sceneObject.unk1 == null)
+                        if (sceneObject.textureMetadata == null)
                             continue;
 
                         int unkIndex = 0;
-                        foreach (var unk1 in sceneObject.unk1.unk)
+                        foreach (var unk1 in sceneObject.textureMetadata.fields)
                         {
                             writer.WriteNextCol(file.FileName);
                             writer.WriteNextCol(gameObjectIndex);
                             writer.WriteNextCol(sceneObject.nameCopy);
                             writer.WriteNextCol(unkIndex);
-                            writer.WriteNextCol(unk1.unk_0x00);
-                            writer.WriteNextCol(unk1.unk_0x04);
+                            writer.WriteNextCol(unk1.x);
+                            writer.WriteNextCol(unk1.y);
                             writer.WriteNextRow();
                             unkIndex++;
                         }

@@ -52,7 +52,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.ide.visualstudio": {
-      "version": "2.0.7",
+      "version": "2.0.12",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -61,7 +61,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.ide.vscode": {
-      "version": "1.2.3",
+      "version": "1.2.4",
       "depth": 0,
       "source": "registry",
       "dependencies": {},
@@ -90,7 +90,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.recorder": {
-      "version": "2.5.5",
+      "version": "2.5.7",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -99,7 +99,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.test-framework": {
-      "version": "1.1.24",
+      "version": "1.1.30",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -110,7 +110,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.textmeshpro": {
-      "version": "3.0.4",
+      "version": "3.0.6",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -119,7 +119,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.timeline": {
-      "version": "1.5.4",
+      "version": "1.5.7",
       "depth": 0,
       "source": "registry",
       "dependencies": {

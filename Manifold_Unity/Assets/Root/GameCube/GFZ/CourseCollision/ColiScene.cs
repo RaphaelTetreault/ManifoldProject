@@ -60,7 +60,9 @@ namespace GameCube.GFZ.CourseCollision
         public Range unkRange0x00;
         public ArrayPointer trackNodesPtr;
         public ArrayPointer surfaceAttributeAreasPtr;
-        public BoostPlatesActive boostPlatesActive = BoostPlatesActive.Enabled;
+        // TODO: this is actually an ArrayPointer with the next value (this = len, next = pointer).
+        // ...so you should make it represented that way... I think, anyway. 2021/12/19
+        public BoostPlatesActive boostPlatesActive = BoostPlatesActive.Enabled; 
         public Pointer staticColliderMeshesPtr;
         public Pointer zeroes0x20Ptr; // GX: 0xE8, AX: 0xE4
         public Pointer trackMinHeightPtr; // GX: 0xFC, AX: 0xF8
@@ -120,7 +122,7 @@ namespace GameCube.GFZ.CourseCollision
         // NOTE: instances are also shared
         public ColliderGeometry[] sceneColliderGeometries = new ColliderGeometry[0];
         // NOTE: these ones MIGHT be? TODO: validate with analytics?
-        public UnknownSceneObjectData[] unkSceneObjData = new UnknownSceneObjectData[0];
+        public TextureMetadata[] textureMetadata = new TextureMetadata[0];
         public AnimationClip[] animationClips = new AnimationClip[0];
         public SkeletalAnimator[] skeletalAnimators = new SkeletalAnimator[0];
 
@@ -296,13 +298,17 @@ namespace GameCube.GFZ.CourseCollision
 
             // DESERIALIZE SCENE OBJECT SUB-TYPES WHILE MAINTAINING REFERENCE
             {
+                // 2021/12/19 TODO: not all objects here need this cleansing. Only data that
+                //                  has duplicates does. Reconfirm those, focus. Make sure to
+                //                  clean the code references at the end of serialization, too.
+
                 // Keep a dictionary of each shared reference type
                 var instanceRefsDict = new Dictionary<Pointer, SceneInstanceReference>();
                 var objectRefsDict = new Dictionary<Pointer, SceneObjectReference>();
                 var colliderGeoDict = new Dictionary<Pointer, ColliderGeometry>();
                 var objNamesDict = new Dictionary<Pointer, CString>();
                 //
-                var unkDict = new Dictionary<Pointer, UnknownSceneObjectData>();
+                var textureMetadataDict = new Dictionary<Pointer, TextureMetadata>();
                 var skeletalAnimatorDict = new Dictionary<Pointer, SkeletalAnimator>();
                 var animationClipDict = new Dictionary<Pointer, AnimationClip>();
 
@@ -316,7 +322,7 @@ namespace GameCube.GFZ.CourseCollision
                 {
                     GetSerializable(reader, sceneObject.instanceReferencePtr, ref sceneObject.instanceReference, instanceRefsDict);
                     // 3 types below are being tested. Not 100% sure if multiple ptr use - but possible
-                    GetSerializable(reader, sceneObject.unkPtr_0x34, ref sceneObject.unk1, unkDict);
+                    GetSerializable(reader, sceneObject.textureMetadataPtr, ref sceneObject.textureMetadata, textureMetadataDict);
                     GetSerializable(reader, sceneObject.skeletalAnimatorPtr, ref sceneObject.skeletalAnimator, skeletalAnimatorDict);
                     GetSerializable(reader, sceneObject.animationPtr, ref sceneObject.animation, animationClipDict);
                 }
@@ -343,7 +349,7 @@ namespace GameCube.GFZ.CourseCollision
                 sceneColliderGeometries = colliderGeoDict.Values.ToArray();
                 objectNames = objNamesDict.Values.ToArray();
                 //
-                unkSceneObjData = unkDict.Values.ToArray();
+                textureMetadata = textureMetadataDict.Values.ToArray();
                 animationClips = animationClipDict.Values.ToArray();
                 skeletalAnimators = skeletalAnimatorDict.Values.ToArray();
             }
@@ -385,12 +391,6 @@ namespace GameCube.GFZ.CourseCollision
 
             // Disable static collider meshes for testing...
             boostPlatesActive = BoostPlatesActive.Disabled;
-
-            //foreach (var x in sceneObjects)
-            //{
-            //    x.lodFar = 1;
-            //    x.lodNear = uint.MaxValue;
-            //}
 
             // Write header
             SerializeHeader(writer);
@@ -620,6 +620,17 @@ namespace GameCube.GFZ.CourseCollision
                 writer.InlineDesc(serializeVerbose, 0x68 + offset, sceneInstances);
                 writer.WriteX(sceneInstances, false);
 
+                //
+                writer.InlineDesc(serializeVerbose, new ColliderGeometry());
+                foreach (var sceneInstance in sceneInstances)
+                {
+                    var colliderGeometry = sceneInstance.colliderGeometry;
+                    if (colliderGeometry != null)
+                    {
+                        writer.WriteX(colliderGeometry);
+                    }
+                }
+
                 // SCENE OBJECT REFERENCES
                 writer.InlineDesc(serializeVerbose, sceneObjectReferences);
                 writer.WriteX(sceneObjectReferences, false);
@@ -649,21 +660,21 @@ namespace GameCube.GFZ.CourseCollision
                     }
                 }
 
-                // SCENE OBJECTS - unknown data
-                writer.InlineDesc(serializeVerbose, unkSceneObjData);
-                foreach (var unk1 in unkSceneObjData)
+                // SCENE OBJECTS - texture metadata
+                writer.InlineDesc(serializeVerbose, textureMetadata);
+                foreach (var textureMetadata in textureMetadata)
                 {
-                    if (unk1 == null)
+                    if (textureMetadata == null)
                         continue;
 
-                    writer.WriteX(unk1);
+                    writer.WriteX(textureMetadata);
                     // TODO: don't inline?
-                    foreach (var unk2 in unk1.unk)
-                        if (unk2 != null)
-                            writer.WriteX(unk2);
+                    foreach (var textureMetadataField in textureMetadata.fields)
+                        if (textureMetadataField != null)
+                            writer.WriteX(textureMetadataField);
                 }
 
-                // SCENE OBJECTS - 
+                // SCENE OBJECTS - skeletal animator
                 writer.InlineDesc(serializeVerbose, skeletalAnimators);
                 foreach (var skeletalAnimator in skeletalAnimators)
                 {
@@ -675,6 +686,7 @@ namespace GameCube.GFZ.CourseCollision
                     writer.WriteX(skeletalAnimator.properties);
                 }
 
+                //
                 writer.InlineDesc(serializeVerbose, animationClips);
                 foreach (var animationClip in animationClips)
                 {
@@ -767,7 +779,7 @@ namespace GameCube.GFZ.CourseCollision
                 referers.AddRange(sceneOriginObjects);
                 referers.AddRange(sceneObjects);
                 //
-                referers.AddRange(unkSceneObjData);
+                referers.AddRange(textureMetadata);
                 referers.AddRange(skeletalAnimators);
                 foreach (var anim in animationClips)
                     if (!anim.animationCurvePluses.IsNullOrEmpty())
