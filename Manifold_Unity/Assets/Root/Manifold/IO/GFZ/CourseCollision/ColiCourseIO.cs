@@ -671,7 +671,7 @@ namespace Manifold.IO.GFZ
             for (int i = 0; i < iterations; i++)
             {
                 int index = i + 1;
-                EditorUtility.DisplayProgressBar("Roundtrip Error Test", $"{filename} iter.{index}", index/(float)iterations);
+                EditorUtility.DisplayProgressBar("Roundtrip Error Test", $"{filename}, Test ({index}/{iterations})", index/(float)iterations);
 
                 // LOAD FRESH FILE IN
                 var readerIn = new BinaryReader(stream);
@@ -734,12 +734,12 @@ namespace Manifold.IO.GFZ
         {
             return $"Stream: {HashUtility.SerializableToStreamString(binarySerializable)}";
         }
-
         public static string PrintIndex(int i, Array array)
         {
             var iFormat = i.ArrayFormat(array);
             return $"[{iFormat}]\t";
         }
+
 
         public static void LogColiScene(ColiScene coliScene, TextLogger log, int functionIdx)
         {
