@@ -741,6 +741,15 @@ namespace Manifold.IO.GFZ
 
         public static void LogColiScene(ColiScene coliScene, TextLogger log, int functionIdx)
         {
+            // Write some metadata
+            var venueName = CourseUtility.GetCourseName((int)coliScene.Venue);
+            log.WriteLine($"Stage: {venueName} [{coliScene.CourseName}]");
+            log.WriteLine($"Stage ID: {coliScene.ID}");
+            log.WriteLine($"Stage Author: {coliScene.Author}");
+            log.WriteLine($"Format: {coliScene.Format}");
+            log.WriteLine($"File Size: {coliScene.FileSize:n0} bytes");
+            log.WriteLine();
+
             // TRACK DATA
             {
                 log.WriteLine($"{nameof(TrackNode)}");

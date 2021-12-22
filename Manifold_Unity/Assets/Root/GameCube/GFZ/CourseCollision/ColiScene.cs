@@ -49,6 +49,7 @@ namespace GameCube.GFZ.CourseCollision
         [UnityEngine.SerializeField] private AddressRange addressRange;
         [UnityEngine.SerializeField] private int id;
         [UnityEngine.SerializeField] private string fileName;
+        [UnityEngine.SerializeField] private int fileSize;
         [UnityEngine.SerializeField] private Venue venue;
         [UnityEngine.SerializeField] private string courseName;
         [UnityEngine.SerializeField] private string author;
@@ -157,6 +158,12 @@ namespace GameCube.GFZ.CourseCollision
             set => fileName = value;
         }
 
+        public int FileSize
+        {
+            get => fileSize;
+            set => fileSize = value;
+        }
+
         public string CourseName
         {
             get => courseName;
@@ -210,6 +217,9 @@ namespace GameCube.GFZ.CourseCollision
         {
             BinaryIoUtility.PushEndianess(false);
             DebugConsole.Log(FileName);
+
+            // Record metatada
+            fileSize = (int)reader.BaseStream.Length;
 
             // Store the stage index, can solve venue and course name from this
             var matchDigits = Regex.Match(FileName, Const.Regex.MatchIntegers);
@@ -817,6 +827,9 @@ namespace GameCube.GFZ.CourseCollision
             SerializeHeader(writer);
             // Validate this structure before finishing.
             ValidateReferences();
+
+            //
+            fileSize = (int)writer.BaseStream.Length;
 
             BinaryIoUtility.PopEndianess();
         }
