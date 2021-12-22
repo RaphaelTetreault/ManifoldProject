@@ -128,6 +128,56 @@ namespace Manifold.IO.GFZ
         }
 
 
+        // 2021/12/21: load stage in, save stage out (todo: is hardcoded)
+        [MenuItem("Manifold/IO/Save Out Stages")]
+        public static void InOutStage()
+        {
+            // TEMP from previous function
+            var serializeVerbose = true;
+            var openFolderAfterExport = true;
+            var allowOverwritingFiles = true;
+            var exportTo = "W:/Windows Directories/Desktop/test";
+            /////////////////////////////////////////////////////
+            // Construct time stamp string
+            var dateTime = DateTime.Now;
+            var timestamp = $"[{dateTime:yyyy-MM-dd}][{dateTime:HH-mm-ss}]";
+            var md5 = MD5.Create();
+
+            for (int i = 0; i < 50; i++)
+            {
+                // Get file name (must exists)
+                var filePath = $"C:/GFZE01/stage/COLI_COURSE{i:d2}";
+                if (!File.Exists(filePath))
+                    continue;
+
+                // LOAD FRESH FILE IN
+                var readerIn = new BinaryReader(File.OpenRead(filePath));
+                // Set scene instance, deserialize data
+                var scene = new ColiScene();
+                scene.FileName = Path.GetFileName(filePath);
+                scene.SerializeVerbose = serializeVerbose;
+                readerIn.ReadX(ref scene, false);
+                // Check to see if file is from ROM. Add correct metadata.
+                // TODO: remove hardcoded match and use dynamic JP/EN/PAL
+                readerIn.SeekBegin();
+                var sceneIndex = scene.ID;
+                var sceneHash = md5.ComputeHash(readerIn.BaseStream);
+                var sceneHashStr = HashUtility.ByteArrayToString(sceneHash);
+                var romHashStr = HashLibrary.ColiCourseMD5_GFZJ01[sceneIndex];
+                if (romHashStr == sceneHashStr)
+                {
+                    scene.Venue = CourseUtility.GetVenue(sceneIndex);
+                    scene.CourseName = CourseUtility.GetCourseName(sceneIndex);
+                    scene.Author = "Amusement Vision";
+                }
+
+                var sceneSavePath = ExportUtility.ExportSerializable(scene, exportTo, "", allowOverwritingFiles);
+                GfzUtility.CompressAv(sceneSavePath, LibGxFormat.AvGame.FZeroGX, true, out _);
+                OSUtility.OpenDirectory(sceneSavePath);
+            }
+        }
+
+
         public static void ExportUnityScenes(ColiScene.SerializeFormat format, params SceneAsset[] scenes)
         {
             // TEMP from previous function
