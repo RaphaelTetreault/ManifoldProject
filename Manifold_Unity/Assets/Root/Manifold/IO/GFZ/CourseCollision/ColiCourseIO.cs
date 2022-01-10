@@ -407,7 +407,7 @@ namespace Manifold.IO.GFZ
             log.WriteLine($"Course: {coliScene.VenueName} [{coliScene.CourseName}]");
             log.WriteLine($"Author: {coliScene.Author}");
             log.WriteLine($"{nameof(CircuitType)}: {coliScene.circuitType}");
-            log.WriteLine($"{nameof(BoostPlatesActive)}: {coliScene.boostPlatesActive}");
+            log.WriteLine($"{nameof(BoostPlatesActive)}: {coliScene.staticColliderMeshesActive}");
             log.WriteLine($"{nameof(coliScene.unkRange0x00)}: {coliScene.unkRange0x00}");
             log.WriteAddress(coliScene.fog);
             log.WriteAddress(coliScene.fogCurves);
@@ -891,7 +891,7 @@ namespace Manifold.IO.GFZ
                 log.WriteLine();
 
                 // TODO: add indexes
-                log.WriteLine($"{nameof(AnimationCurvePlus)}");
+                log.WriteLine($"{nameof(AnimationCurveWithMetadata)}");
                 for (int i = 0; i < coliScene.sceneObjects.Length; i++)
                 {
                     var animClip = coliScene.sceneObjects[i].animation;

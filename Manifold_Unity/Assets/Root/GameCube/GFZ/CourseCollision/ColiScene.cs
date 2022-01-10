@@ -63,7 +63,7 @@ namespace GameCube.GFZ.CourseCollision
         public ArrayPointer surfaceAttributeAreasPtr;
         // TODO: this is actually an ArrayPointer with the next value (this = len, next = pointer).
         // ...so you should make it represented that way... I think, anyway. 2021/12/19
-        public BoostPlatesActive boostPlatesActive = BoostPlatesActive.Enabled; 
+        public Bool32 staticColliderMeshesActive = Bool32.True; 
         public Pointer staticColliderMeshesPtr;
         public Pointer zeroes0x20Ptr; // GX: 0xE8, AX: 0xE4
         public Pointer trackMinHeightPtr; // GX: 0xFC, AX: 0xF8
@@ -400,7 +400,7 @@ namespace GameCube.GFZ.CourseCollision
             BinaryIoUtility.PushEndianess(false);
 
             // Disable static collider meshes for testing...
-            boostPlatesActive = BoostPlatesActive.Disabled;
+            staticColliderMeshesActive = BoostPlatesActive.Disabled;
 
             // Write header
             SerializeHeader(writer);
@@ -955,7 +955,7 @@ namespace GameCube.GFZ.CourseCollision
                 reader.ReadX(ref unkRange0x00, true);
                 reader.ReadX(ref trackNodesPtr);
                 reader.ReadX(ref surfaceAttributeAreasPtr);
-                reader.ReadX(ref boostPlatesActive);
+                reader.ReadX(ref staticColliderMeshesActive);
                 reader.ReadX(ref staticColliderMeshesPtr);
                 reader.ReadX(ref zeroes0x20Ptr);
                 reader.ReadX(ref trackMinHeightPtr);
@@ -1044,7 +1044,7 @@ namespace GameCube.GFZ.CourseCollision
                 writer.WriteX(unkRange0x00);
                 writer.WriteX(trackNodesPtr);
                 writer.WriteX(surfaceAttributeAreasPtr);
-                writer.WriteX(boostPlatesActive);
+                writer.WriteX(staticColliderMeshesActive);
                 writer.WriteX(staticColliderMeshesPtr);
                 writer.WriteX(zeroes0x20Ptr);
                 writer.WriteX(trackMinHeightPtr);

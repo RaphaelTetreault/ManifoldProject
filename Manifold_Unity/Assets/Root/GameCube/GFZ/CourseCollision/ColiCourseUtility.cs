@@ -5,8 +5,9 @@ using System.IO;
 namespace GameCube.GFZ.CourseCollision
 {
     /// <summary>
-    /// 
+    /// A (deprecated) utility script.
     /// </summary>
+    [System.Obsolete]
     public static class ColiCourseUtility
     {
         // TODO:

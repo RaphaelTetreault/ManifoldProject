@@ -56,7 +56,7 @@ namespace Manifold.Conversion.GFZ.CourseCollision
             return unityAnimClip;
         }
 
-        public static void SetCurve(UnityEngine.AnimationClip unityClip, AnimationCurvePlus gfzCurve, Type type, string propertyName)
+        public static void SetCurve(UnityEngine.AnimationClip unityClip, AnimationCurveWithMetadata gfzCurve, Type type, string propertyName)
         {
             // ignore empty anims
             if (gfzCurve.animationCurve.Length == 0)

@@ -5,10 +5,10 @@ using System.IO;
 namespace GameCube.GFZ.CourseCollision
 {
     /// <summary>
-    /// 
+    /// A metadata-enhanced AnimationCurve.
     /// </summary>
     [Serializable]
-    public class AnimationCurvePlus :
+    public class AnimationCurveWithMetadata :
         IBinaryAddressable,
         IBinarySerializable,
         ISerializedBinaryAddressableReferer

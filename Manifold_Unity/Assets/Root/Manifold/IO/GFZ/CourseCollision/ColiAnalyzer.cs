@@ -1037,7 +1037,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol(nameof(ColiScene.trackNodesPtr));
                 writer.WriteNextCol(nameof(ColiScene.surfaceAttributeAreasPtr));
                 writer.WriteNextCol(nameof(ColiScene.surfaceAttributeAreasPtr));
-                writer.WriteNextCol(nameof(ColiScene.boostPlatesActive));
+                writer.WriteNextCol(nameof(ColiScene.staticColliderMeshesActive));
                 writer.WriteNextCol(nameof(ColiScene.surfaceAttributeAreasPtr));
                 writer.WriteNextCol(nameof(ColiScene.zeroes0x20Ptr));
                 writer.WriteNextCol(nameof(ColiScene.trackMinHeightPtr));
@@ -1099,7 +1099,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                     writer.WriteNextCol(scene.trackNodesPtr.HexAddress);
                     writer.WriteNextCol(scene.surfaceAttributeAreasPtr.Length);
                     writer.WriteNextCol(scene.surfaceAttributeAreasPtr.HexAddress);
-                    writer.WriteNextCol(scene.boostPlatesActive);
+                    writer.WriteNextCol(scene.staticColliderMeshesActive);
                     writer.WriteNextCol(scene.staticColliderMeshesPtr.HexAddress);
                     writer.WriteNextCol(scene.zeroes0x20Ptr.HexAddress);
                     writer.WriteNextCol(scene.trackMinHeightPtr.HexAddress);

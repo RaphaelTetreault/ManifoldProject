@@ -6,7 +6,9 @@ using System.IO;
 namespace GameCube.GFZ.CourseCollision
 {
     /// <summary>
+    /// A series of animation keys to define how a singular float value changes over "time"
     /// 
+    /// Structurally, thus class is a simple wrapper around a KeyableAttribute[].
     /// </summary>
     [Serializable]
     public class AnimationCurve :

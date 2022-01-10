@@ -5,7 +5,12 @@ using System.IO;
 namespace GameCube.GFZ.CourseCollision
 {
     /// <summary>
+    /// Expresses an animation with associated metadata. Animation can set positional data,
+    /// rotational data, or affect the alpha channel of certain textures.
     /// 
+    /// There appears to be some matrix math involved. Animation values are transformed by
+    /// associated Transform on the same object. In that sense, they are local, or child of
+    /// a transform and thus affected by the parent's transform.
     /// </summary>
     [Serializable]
     public class AnimationClip :
@@ -34,7 +39,7 @@ namespace GameCube.GFZ.CourseCollision
         /// idx: 9: unused
         /// idx: 10: alpha channel
         /// </summary>
-        public AnimationCurvePlus[] animationCurvePluses; // Written inline, not pointer refs
+        public AnimationCurveWithMetadata[] animationCurvePluses; // Written inline, not pointer refs
 
 
         // PROPERTIES
