@@ -407,7 +407,7 @@ namespace Manifold.IO.GFZ
             log.WriteLine($"Course: {coliScene.VenueName} [{coliScene.CourseName}]");
             log.WriteLine($"Author: {coliScene.Author}");
             log.WriteLine($"{nameof(CircuitType)}: {coliScene.circuitType}");
-            log.WriteLine($"{nameof(BoostPlatesActive)}: {coliScene.staticColliderMeshesActive}");
+            log.WriteLine($"{nameof(Bool32)}: {coliScene.staticColliderMeshesActive}");
             log.WriteLine($"{nameof(coliScene.unkRange0x00)}: {coliScene.unkRange0x00}");
             log.WriteAddress(coliScene.fog);
             log.WriteAddress(coliScene.fogCurves);
