@@ -400,7 +400,7 @@ namespace GameCube.GFZ.CourseCollision
             BinaryIoUtility.PushEndianess(false);
 
             // Disable static collider meshes for testing...
-            staticColliderMeshesActive = BoostPlatesActive.Disabled;
+            staticColliderMeshesActive = Bool32.False;
 
             // Write header
             SerializeHeader(writer);

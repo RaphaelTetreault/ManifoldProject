@@ -981,7 +981,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             sceneParams.courseIndex = scene.ID;
             sceneParams.author = "Amusement Vision";
             // Other data
-            sceneParams.areBoostPlatesEnabled = scene.staticColliderMeshesActive;
+            sceneParams.staticColliderMeshesActive = scene.staticColliderMeshesActive;
             sceneParams.circuitType = scene.circuitType;
 
             // Copy fog parameters over
