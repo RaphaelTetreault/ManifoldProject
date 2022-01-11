@@ -8,9 +8,10 @@ namespace GameCube.GFZ.CourseCollision
     /// NOTE: this is probably the format indexed for runtime use of the data.
     /// Itself, it is basically checkpoint data ("points") pointing back to
     /// the actual track stucture itself ("transform"). Thus, transform is
-    /// referenced by many of these multiple times, while points are unqiue
-    /// per TrackNode. If branched, points is an array of a point on each branch
-    /// and an averaged node acting sort of as the center (always index 0).
+    /// referenced by many of these multiple times, while points are unique
+    /// per TrackNode. If the track has branching paths, element[0] of the
+    /// array points to an averaged node/position. Other elements beyond 
+    /// the first indicate the specific branched path and it's own data.
     /// </summary>
     [Serializable]
     public class TrackNode :

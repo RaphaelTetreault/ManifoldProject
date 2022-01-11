@@ -11,7 +11,9 @@ using Unity.Mathematics;
 namespace GameCube.GFZ.CourseCollision
 {
     /// <summary>
-    /// 
+    /// The data structure representing a scene in F-Zero AX/GX. It contains all the necessary
+    /// data for object placement, object animations, fog, collision data for track and surfaces,
+    /// track metadata, and triggers for mission, visual effects, etc.
     /// </summary>
     [Serializable]
     public class ColiScene :
@@ -58,6 +60,7 @@ namespace GameCube.GFZ.CourseCollision
 
 
         // FIELDS
+        // Note: order of folowing structures is same as they appear in binary
         public Range unkRange0x00;
         public ArrayPointer trackNodesPtr;
         public ArrayPointer surfaceAttributeAreasPtr;
@@ -99,9 +102,9 @@ namespace GameCube.GFZ.CourseCollision
         public StaticColliderMeshes staticColliderMeshes;
         public byte[] zeroes0x20 = new byte[kSizeOfZeroes0x20];
         public TrackMinHeight trackMinHeight = new TrackMinHeight(); // has default constructor
-        public SceneObject[] sceneObjects = new SceneObject[0];
-        public SceneInstanceReference[] sceneInstances = new SceneInstanceReference[0];
-        public SceneOriginObject[] sceneOriginObjects = new SceneOriginObject[0];
+        public SceneObjectDynamic[] sceneObjects = new SceneObjectDynamic[0];
+        public SceneObjectDynamicReference[] sceneInstances = new SceneObjectDynamicReference[0];
+        public SceneObjectStatic[] sceneOriginObjects = new SceneObjectStatic[0];
         public UnknownSolsTrigger[] unknownSolsTriggers = new UnknownSolsTrigger[0];
         public FogCurves fogCurves;
         public Fog fog;
@@ -313,7 +316,7 @@ namespace GameCube.GFZ.CourseCollision
                 //                  clean the code references at the end of serialization, too.
 
                 // Keep a dictionary of each shared reference type
-                var instanceRefsDict = new Dictionary<Pointer, SceneInstanceReference>();
+                var instanceRefsDict = new Dictionary<Pointer, SceneObjectDynamicReference>();
                 var objectRefsDict = new Dictionary<Pointer, SceneObjectReference>();
                 var colliderGeoDict = new Dictionary<Pointer, ColliderGeometry>();
                 var objNamesDict = new Dictionary<Pointer, CString>();
@@ -514,7 +517,7 @@ namespace GameCube.GFZ.CourseCollision
                     // TRACK ANIMATION CURVES
                     {
                         // Construct list of all track animation curves (sets of 9 ptrs)
-                        var listTrackAnimationCurves = new List<TopologyParameters>();
+                        var listTrackAnimationCurves = new List<TrackCurve>();
                         foreach (var trackSegment in allTrackSegments)
                             listTrackAnimationCurves.Add(trackSegment.trackAnimationCurves);
                         var allTrackAnimationCurves = listTrackAnimationCurves.ToArray();
@@ -534,10 +537,10 @@ namespace GameCube.GFZ.CourseCollision
                     }
 
                     // TODO: better type comment
-                    writer.InlineDesc(serializeVerbose, new TrackCornerTopology());
+                    writer.InlineDesc(serializeVerbose, new TrackCorner());
                     foreach (var trackSegment in allTrackSegments)
                     {
-                        var corner = trackSegment.hairpinCornerTopology;
+                        var corner = trackSegment.trackCorner;
                         if (corner != null)
                         {
                             writer.WriteX(corner);

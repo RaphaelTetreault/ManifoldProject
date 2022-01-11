@@ -5,8 +5,11 @@ using Unity.Mathematics;
 
 namespace GameCube.GFZ.CourseCollision
 {
+    // TODO: rename rocks => boulders?
+    // TODO: confirm ALL use cases. Story 1AX, 2, 5?
+
     /// <summary>
-    /// 
+    /// A trigger for special Story Mode objects.
     /// </summary>
     [Serializable]
     public class StoryObjectTrigger :
@@ -20,12 +23,12 @@ namespace GameCube.GFZ.CourseCollision
         // FIELDS
         public ushort zero_0x00;
         public byte rockGroupOrderIndex;
-        public byte rockGroupAndDifficulty; // split lower/upper 4 bits
-        public float3 story2RockScale; // object scale?
+        public byte rockGroupAndDifficulty; // split lower/upper 4 bits, see properties
+        public float3 story2RockScale; // object/rock scale
         public Pointer storyObjectPathPtr;
-        public float3 scale;    // trigger scale?
-        public float3 rotation; // trigger rotation?
-        public float3 position; // trigger position?
+        public float3 scale;    // trigger scale
+        public float3 rotation; // trigger rotation
+        public float3 position; // trigger position
         // FIELDS (deserialized from pointers)
         public StoryObjectPath storyObjectPath;
 

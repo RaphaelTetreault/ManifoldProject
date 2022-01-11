@@ -5,10 +5,10 @@ using System.IO;
 namespace GameCube.GFZ.CourseCollision
 {
     /// <summary>
-    /// 
+    /// Binds a SceneObjectDynamic to a SceneObjectReference. Includes some other data.
     /// </summary>
     [Serializable]
-    public class SceneInstanceReference :
+    public class SceneObjectDynamicReference :
         IBinaryAddressable,
         IBinarySerializable,
         ISerializedBinaryAddressableReferer
@@ -89,7 +89,7 @@ namespace GameCube.GFZ.CourseCollision
         public override string ToString()
         {
             return 
-                $"{nameof(SceneInstanceReference)}(" +
+                $"{nameof(SceneObjectDynamicReference)}(" +
                 $"{nameof(unk_0x00)}: {unk_0x00}, " +
                 $"{nameof(unk_0x04)}: {unk_0x04}, " +
                 $"Has {nameof(ColliderGeometry)}: {colliderGeometryPtr.IsNotNullPointer}, " +

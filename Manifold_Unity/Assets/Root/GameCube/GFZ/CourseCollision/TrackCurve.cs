@@ -11,10 +11,13 @@ using UnityEngine;
 namespace GameCube.GFZ.CourseCollision
 {
     /// <summary>
-    /// 
+    /// Defines the tracks position, rotation, and scale using 9 animation curves,
+    /// each defining the X, Y, and Z properties. Their values are (asummed to be)
+    /// multiplied with an associated Transform. Hierarchies of these exists, each
+    /// being multiplied with it's parent up a tree structure.
     /// </summary>
     [Serializable]
-    public class TopologyParameters :
+    public class TrackCurve :
         IBinaryAddressable,
         IBinarySerializable,
         ISerializedBinaryAddressableReferer

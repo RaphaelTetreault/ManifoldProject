@@ -5,6 +5,12 @@ using Unity.Mathematics;
 
 namespace GameCube.GFZ.CourseCollision
 {
+    /// <summary>
+    /// Highest-level structure which consolidates all static collider meshes in a scene.
+    /// Two tables store the triangles and quads proper. Many matrices index these triangles
+    /// and quads (11 in AX, 14 in GX). Thus, a single tri/quad can technically have more
+    /// than 1 property.
+    /// </summary>
     [Serializable]
     public class StaticColliderMeshes :
         IBinaryAddressable,
@@ -30,7 +36,7 @@ namespace GameCube.GFZ.CourseCollision
         public BoundsXZ meshBounds;
         public Pointer collisionQuadsPtr;
         public Pointer[] collisionQuadIndexesPtr;
-        public BoundsXZ ununsedMeshBounds;
+        public BoundsXZ unusedMeshBounds;
         // REFERENCE FIELDS
         // This data holds the geometry data and indexes
         public ColliderTriangle[] colliderTriangles = new ColliderTriangle[0];
@@ -100,7 +106,7 @@ namespace GameCube.GFZ.CourseCollision
                 reader.ReadX(ref meshBounds, true);
                 reader.ReadX(ref collisionQuadsPtr);
                 reader.ReadX(ref collisionQuadIndexesPtr, countSurfaceTypes, true);
-                reader.ReadX(ref ununsedMeshBounds, true);
+                reader.ReadX(ref unusedMeshBounds, true);
             }
             this.RecordEndAddress(reader);
             {
@@ -168,7 +174,7 @@ namespace GameCube.GFZ.CourseCollision
                 writer.WriteX(meshBounds);
                 writer.WriteX(collisionQuadsPtr);
                 writer.WriteX(collisionQuadIndexesPtr, false);
-                writer.WriteX(ununsedMeshBounds);
+                writer.WriteX(unusedMeshBounds);
             }
             this.RecordEndAddress(writer);
         }

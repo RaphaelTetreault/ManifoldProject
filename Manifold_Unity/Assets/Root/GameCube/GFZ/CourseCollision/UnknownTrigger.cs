@@ -5,7 +5,8 @@ using System.IO;
 namespace GameCube.GFZ.CourseCollision
 {
     /// <summary>
-    /// 
+    /// A trigger volume of unknown purpose. Some courses have a lot of these,
+    /// some courses have few if not none at all.
     /// </summary>
     [Serializable]
     public class UnknownTrigger :

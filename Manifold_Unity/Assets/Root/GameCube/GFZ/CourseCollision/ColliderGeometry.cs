@@ -5,7 +5,11 @@ using System.IO;
 namespace GameCube.GFZ.CourseCollision
 {
     /// <summary>
+    /// Represent a "dynamic" collider object. Static collision is stored in a
+    /// separate table, while colliders attached to object (which may animate)
+    /// is stored in this structure.
     /// 
+    /// Example: rotary collider in Port Town [Long Pipe]
     /// </summary>
     [Serializable]
     public class ColliderGeometry :

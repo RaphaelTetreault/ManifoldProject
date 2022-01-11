@@ -5,7 +5,7 @@ using System.IO;
 namespace GameCube.GFZ.CourseCollision
 {
     /// <summary>
-    /// SceneObject ptr1
+    /// Binds an object name to a loadable display model.
     /// </summary>
     [Serializable]
     public class SceneObjectReference :

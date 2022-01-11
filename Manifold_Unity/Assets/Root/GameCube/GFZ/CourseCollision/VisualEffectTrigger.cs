@@ -5,6 +5,7 @@ using System.IO;
 namespace GameCube.GFZ.CourseCollision
 {
     /// <summary>
+    /// A volume which triggers some visial effect.
     /// NOTE: assumed mesh scale for trigger is 10xyz
     /// </summary>
     [Serializable]

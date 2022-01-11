@@ -5,6 +5,10 @@ using Unity.Mathematics;
 
 namespace GameCube.GFZ.CourseCollision
 {
+    /// <summary>
+    /// A trigger volume that has many different use cases depending on
+    /// which course it appears. Consule enum comments for more details.
+    /// </summary>
     [Serializable]
     public class CourseMetadataTrigger :
         IBinaryAddressable,

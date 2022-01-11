@@ -5,7 +5,7 @@ using System;
 namespace GameCube.GFZ.CourseCollision
 {
     /// <summary>
-    /// This structure appears to be a Maya (4.?) KeyableAttribute
+    /// Represents a Maya (4.X) KeyableAttribute (animation keyframe).
     /// </summary>
     [Serializable]
     public class KeyableAttribute :

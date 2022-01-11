@@ -5,7 +5,7 @@ using System.IO;
 namespace GameCube.GFZ.CourseCollision
 {
     /// <summary>
-    /// 
+    /// Data (presumably) referenced by a SkeletalAnimator.
     /// </summary>
     [Serializable]
     public class SkeletalProperties :

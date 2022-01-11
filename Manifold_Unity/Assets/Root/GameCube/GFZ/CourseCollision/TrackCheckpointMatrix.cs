@@ -1,7 +1,8 @@
 namespace GameCube.GFZ.CourseCollision
 {
     /// <summary>
-    /// 
+    /// A matrix table for index lists specifically for track checkpoints.
+    /// This class acts a wrapper to make serialization easy (in Unity).
     /// </summary>
     [System.Serializable]
     public class TrackCheckpointMatrix : IndexMatrix

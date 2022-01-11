@@ -57,7 +57,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
         //}
 
-        public void SetBaseValues(SceneObject value)
+        public void SetBaseValues(SceneObjectDynamic value)
         {
             // Copy most reliable transform if available
             if (value.transformPtr.IsNotNullPointer)

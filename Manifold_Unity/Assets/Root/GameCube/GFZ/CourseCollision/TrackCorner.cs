@@ -6,10 +6,11 @@ using System.IO;
 namespace GameCube.GFZ.CourseCollision
 {
     /// <summary>
-    /// 
+    /// This special metadata defines a 90-degree angle as part of the track geometry.
+    /// It is assumed this is necessary for AI rather than anything else.
     /// </summary>
     [Serializable]
-    public class TrackCornerTopology :
+    public class TrackCorner :
         IBinaryAddressable,
         IBinarySerializable
     {

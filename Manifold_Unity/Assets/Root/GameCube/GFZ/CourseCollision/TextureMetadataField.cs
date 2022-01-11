@@ -5,7 +5,7 @@ using System.IO;
 namespace GameCube.GFZ.CourseCollision
 {
     /// <summary>
-    /// A single data field for TextureMetadata
+    /// A single data field for TextureMetadata.
     /// </summary>
     [Serializable]
     public class TextureMetadataField :

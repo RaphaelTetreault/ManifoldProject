@@ -3,6 +3,11 @@ using System.IO;
 
 namespace GameCube.GFZ.CourseCollision
 {
+    /// <summary>
+    /// Defines a path for a Story Mode object.
+    /// 
+    /// Example: Chapter 2's falling rocks.
+    /// </summary>
     public class StoryObjectPath :
         IBinaryAddressable,
         IBinarySerializable,

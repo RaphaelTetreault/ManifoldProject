@@ -4,6 +4,10 @@ using System.Collections.Generic;
 
 namespace GameCube.GFZ.CourseCollision
 {
+    /// <summary>
+    /// A list of indexes (u16). Used to index collider triangles/quads and
+    /// track checkpoint nodes.
+    /// </summary>
     [System.Serializable]
     public class IndexList :
         IBinaryAddressable,

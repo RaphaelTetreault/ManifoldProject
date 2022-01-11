@@ -4,6 +4,12 @@ using System.Text;
 
 namespace Manifold.IO
 {
+    /// <summary>
+    /// Simple wrapper class for string to encode and decode a null-terminated
+    /// string in ASCII format.
+    /// 
+    /// NOTE: may need to consider SHIFT-JIS uses.
+    /// </summary>
     [Serializable]
     public class CString :
         IBinaryAddressable,

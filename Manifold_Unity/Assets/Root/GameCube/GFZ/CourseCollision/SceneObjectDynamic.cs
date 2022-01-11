@@ -8,7 +8,7 @@ namespace GameCube.GFZ.CourseCollision
     /// 
     /// </summary>
     [Serializable]
-    public class SceneObject :
+    public class SceneObjectDynamic :
         IBinaryAddressable,
         IBinarySerializable,
         ISerializedBinaryAddressableReferer
@@ -37,7 +37,7 @@ namespace GameCube.GFZ.CourseCollision
         public Pointer skeletalAnimatorPtr;
         public Pointer transformPtr;
         // FIELDS (deserialized from pointers)
-        public SceneInstanceReference instanceReference;
+        public SceneObjectDynamicReference instanceReference;
         public AnimationClip animation;
         public TextureMetadata textureMetadata;
         public SkeletalAnimator skeletalAnimator;
@@ -136,8 +136,9 @@ namespace GameCube.GFZ.CourseCollision
         public void ValidateReferences()
         {
             // This pointer CANNOT be null and must refer to an object.
-            Assert.IsTrue(instanceReferencePtr.IsNotNullPointer);
-            Assert.IsTrue(instanceReference != null);
+            Assert.PointerReferenceValid(instanceReference, instanceReferencePtr);
+            //Assert.IsTrue(instanceReferencePtr.IsNotNullPointer);
+            //Assert.IsTrue(instanceReference != null);
 
             // Assert pointers only if type is not null
             if (animation != null)
@@ -156,7 +157,7 @@ namespace GameCube.GFZ.CourseCollision
         public override string ToString()
         {
             return
-                $"{nameof(SceneObject)}(" +
+                $"{nameof(SceneObjectDynamic)}(" +
                 $"LOD A: {lodNear}, " +
                 $"LOD B: {lodFar}, " +
                 $"{transform} " +

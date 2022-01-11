@@ -29,7 +29,7 @@ namespace GameCube.GFZ.CourseCollision
         Story1_CapsuleAX = 1 << 30,
         
         /// <summary>
-        /// 
+        /// Trigger volumes for capsules in Story 5.
         /// </summary>
         Story5_Capsule = 1 << 31,
     }

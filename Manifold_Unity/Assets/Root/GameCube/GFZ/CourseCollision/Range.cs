@@ -5,7 +5,7 @@ using System.IO;
 namespace GameCube.GFZ.CourseCollision
 {
     /// <summary>
-    /// 
+    /// Represents a near/far range. Used primarily for Fog range.
     /// </summary>
     [Serializable]
     public struct Range :

@@ -6,7 +6,9 @@ using Unity.Mathematics;
 namespace GameCube.GFZ.CourseCollision
 {
     /// <summary>
-    /// 
+    /// Defines a checkpoint along the track spline. This is mostly metadata.
+    /// It is used by the game to determine progression and (presumably) find
+    /// when the player takes an excessive shortcut.
     /// </summary>
     [Serializable]
     public class TrackCheckpoint :

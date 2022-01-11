@@ -144,7 +144,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             log.WriteLine();
             log.WriteLine("Mesh Bounds");
             log.WriteAddress(coliScene.staticColliderMeshes.meshBounds);
-            log.WriteAddress(coliScene.staticColliderMeshes.ununsedMeshBounds);
+            log.WriteAddress(coliScene.staticColliderMeshes.unusedMeshBounds);
             log.WriteLine();
             log.WriteLine("TRIANGLES");
             log.WriteAddress(coliScene.staticColliderMeshes.colliderTriangles);
@@ -354,7 +354,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 // Scene Objects / Instances / References / Names
                 {
                     var sceneObjects = FindObjectsOfType<GfzSceneObject>(findInactive);
-                    coliScene.sceneObjects = new SceneObject[0];
+                    coliScene.sceneObjects = new SceneObjectDynamic[0];
 
                     // TODO: construct the actual objects...
 

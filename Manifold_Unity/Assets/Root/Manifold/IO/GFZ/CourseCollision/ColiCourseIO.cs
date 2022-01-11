@@ -320,7 +320,7 @@ namespace Manifold.IO.GFZ
                 // Scene Objects / Instances / References / Names
                 {
                     var sceneObjects = GameObject.FindObjectsOfType<GfzSceneObject>(canFindInactive);
-                    coliScene.sceneObjects = new SceneObject[0];
+                    coliScene.sceneObjects = new SceneObjectDynamic[0];
 
                     // TODO: construct the actual objects...
 
@@ -491,7 +491,7 @@ namespace Manifold.IO.GFZ
             log.WriteLine();
             log.WriteLine("Mesh Bounds");
             log.WriteAddress(coliScene.staticColliderMeshes.meshBounds);
-            log.WriteAddress(coliScene.staticColliderMeshes.ununsedMeshBounds);
+            log.WriteAddress(coliScene.staticColliderMeshes.unusedMeshBounds);
             log.WriteLine();
             log.WriteLine("TRIANGLES");
             log.WriteAddress(coliScene.staticColliderMeshes.colliderTriangles);
@@ -865,10 +865,10 @@ namespace Manifold.IO.GFZ
                 log.WriteLine();
 
                 //
-                log.WriteLine($"{nameof(TrackSegment)}.{nameof(TrackCornerTopology)}");
+                log.WriteLine($"{nameof(TrackSegment)}.{nameof(TrackCorner)}");
                 for (int i = 0; i < coliScene.allTrackSegments.Length; i++)
                 {
-                    var cornerTopology = coliScene.allTrackSegments[i].hairpinCornerTopology;
+                    var cornerTopology = coliScene.allTrackSegments[i].trackCorner;
                     var iFormat = i.ArrayFormat(coliScene.trackNodes);
                     log.Write($"[{iFormat}]\t");
                     if (cornerTopology != null)
@@ -881,7 +881,7 @@ namespace Manifold.IO.GFZ
 
             // Scene Objects
             {
-                log.WriteLine($"{nameof(SceneObject)}");
+                log.WriteLine($"{nameof(SceneObjectDynamic)}");
                 for (int i = 0; i < coliScene.sceneObjects.Length; i++)
                 {
                     var sceneObject = coliScene.sceneObjects[i];
@@ -945,7 +945,7 @@ namespace Manifold.IO.GFZ
 
             //
             {
-                log.WriteLine($"{nameof(SceneInstanceReference)}");
+                log.WriteLine($"{nameof(SceneObjectDynamicReference)}");
                 for (int i = 0; i < coliScene.sceneInstances.Length; i++)
                 {
                     var sceneInstance = coliScene.sceneInstances[i];
@@ -965,7 +965,7 @@ namespace Manifold.IO.GFZ
                 }
                 log.WriteLine();
 
-                log.WriteLine($"{nameof(SceneInstanceReference)}");
+                log.WriteLine($"{nameof(SceneObjectDynamicReference)}");
                 for (int i = 0; i < coliScene.sceneObjectReferences.Length; i++)
                 {
                     var sceneObjectReference = coliScene.sceneObjectReferences[i];

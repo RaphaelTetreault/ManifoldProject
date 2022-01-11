@@ -4,6 +4,9 @@ using System.IO;
 
 namespace GameCube.GFZ.CourseCollision
 {
+    /// <summary>
+    /// A referenceable 'float'. Has associated address.
+    /// </summary>
     [Serializable]
     public abstract class FloatRef :
         IBinaryAddressable,

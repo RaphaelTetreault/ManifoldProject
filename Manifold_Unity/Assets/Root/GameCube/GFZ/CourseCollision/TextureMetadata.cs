@@ -13,7 +13,7 @@ namespace GameCube.GFZ.CourseCollision
     // Indexes 4-11 unused, always (0f, 0f)
 
     /// <summary>
-    /// 
+    /// Texture metadata. In some instasnces defines how a texture scrolls.
     /// </summary>
     [Serializable]
     public class TextureMetadata :

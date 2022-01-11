@@ -188,35 +188,35 @@ namespace Manifold.IO.GFZ.CourseCollision
             if (sceneObjectsAndData)
             {
                 {
-                    var fileName = $"{time} COLI {nameof(SceneObject)}.tsv";
+                    var fileName = $"{time} COLI {nameof(SceneObjectDynamic)}.tsv";
                     var filePath = Path.Combine(outputPath, fileName);
                     EditorUtility.DisplayProgressBar(ExecuteText, filePath, .1f);
                     AnalyzeSceneObjects(filePath);
                 }
 
                 {
-                    var fileName = $"{time} COLI {nameof(SceneObject)} {nameof(TextureMetadata)}.tsv";
+                    var fileName = $"{time} COLI {nameof(SceneObjectDynamic)} {nameof(TextureMetadata)}.tsv";
                     var filePath = Path.Combine(outputPath, fileName);
                     EditorUtility.DisplayProgressBar(ExecuteText, filePath, .3f);
                     AnalyzeSceneObjectsUnk1(filePath);
                 }
 
                 {
-                    var fileName = $"{time} COLI {nameof(SceneObject)} {nameof(SkeletalAnimator)}.tsv";
+                    var fileName = $"{time} COLI {nameof(SceneObjectDynamic)} {nameof(SkeletalAnimator)}.tsv";
                     var filePath = Path.Combine(outputPath, fileName);
                     EditorUtility.DisplayProgressBar(ExecuteText, filePath, .5f);
                     AnalyzeSceneObjectsSkeletalAnimator(filePath);
                 }
 
                 {
-                    var fileName = $"{time} COLI {nameof(SceneObject)} {nameof(ColliderTriangle)}.tsv";
+                    var fileName = $"{time} COLI {nameof(SceneObjectDynamic)} {nameof(ColliderTriangle)}.tsv";
                     var filePath = Path.Combine(outputPath, fileName);
                     EditorUtility.DisplayProgressBar(ExecuteText, filePath, .7f);
                     AnalyzeSceneObjectsCollisionTri(filePath);
                 }
 
                 {
-                    var fileName = $"{time} COLI {nameof(SceneObject)} {nameof(ColliderQuad)}.tsv";
+                    var fileName = $"{time} COLI {nameof(SceneObjectDynamic)} {nameof(ColliderQuad)}.tsv";
                     var filePath = Path.Combine(outputPath, fileName);
                     EditorUtility.DisplayProgressBar(ExecuteText, filePath, .9f);
                     AnalyzeSceneObjectsCollisionQuad(filePath);
@@ -233,14 +233,14 @@ namespace Manifold.IO.GFZ.CourseCollision
                 }
 
                 {
-                    var fileName = $"{time} COLI {nameof(SceneInstanceReference)}.tsv";
+                    var fileName = $"{time} COLI {nameof(SceneObjectDynamicReference)}.tsv";
                     var filePath = Path.Combine(outputPath, fileName);
                     EditorUtility.DisplayProgressBar(ExecuteText, filePath, .66f);
                     AnalyzeSceneInstanceReferences(filePath);
                 }
 
                 {
-                    var fileName = $"{time} COLI {nameof(SceneInstanceReference)} and {nameof(SceneObjectReference)}.tsv";
+                    var fileName = $"{time} COLI {nameof(SceneObjectDynamicReference)} and {nameof(SceneObjectReference)}.tsv";
                     var filePath = Path.Combine(outputPath, fileName);
                     EditorUtility.DisplayProgressBar(ExecuteText, filePath, 1f);
                     AnalyzeSceneInstanceAndObjectReferences(filePath);
@@ -250,17 +250,17 @@ namespace Manifold.IO.GFZ.CourseCollision
             // TOPOLOGY PARAMETERS
             if (topologyParameters)
             {
-                var count = TopologyParameters.kCurveCount;
+                var count = TrackCurve.kCurveCount;
                 for (int i = 0; i < count; i++)
                 {
-                    var fileName = $"{time} COLI {nameof(TopologyParameters)} {i + 1}.tsv";
+                    var fileName = $"{time} COLI {nameof(TrackCurve)} {i + 1}.tsv";
                     var filePath = Path.Combine(outputPath, fileName);
-                    EditorUtility.DisplayProgressBar(ExecuteText, filePath, (float)(i + 1) / TopologyParameters.kCurveCount);
+                    EditorUtility.DisplayProgressBar(ExecuteText, filePath, (float)(i + 1) / TrackCurve.kCurveCount);
                     AnalyzeTrackKeyables(filePath, i);
                 }
 
                 {
-                    var fileName = $"{time} COLI {nameof(TopologyParameters)} ALL.tsv";
+                    var fileName = $"{time} COLI {nameof(TrackCurve)} ALL.tsv";
                     var filePath = Path.Combine(outputPath, fileName);
                     EditorUtility.DisplayProgressBar(ExecuteText, filePath, RandomTime);
                     AnalyzeTrackKeyablesAll(filePath);
@@ -342,7 +342,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                     int trackIndex = 0;
                     foreach (var trackTransform in sobj.Value.rootTrackSegments)
                     {
-                        for (int keyablesIndex = 0; keyablesIndex < TopologyParameters.kCurveCount; keyablesIndex++)
+                        for (int keyablesIndex = 0; keyablesIndex < TrackCurve.kCurveCount; keyablesIndex++)
                         {
                             WriteTrackKeyableAttributeRecursive(writer, sobj, 0, keyablesIndex, ++trackIndex, trackTransform);
                         }
@@ -475,8 +475,8 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol(nameof(TrackSegment.zero_0x48));
                 writer.WriteNextCol(nameof(TrackSegment.unk_0x4C));
                 writer.WriteNextCol();
-                writer.WriteNextColNicify(nameof(TrackCornerTopology.width));
-                writer.WriteNextColNicify(nameof(TrackCornerTopology.perimeterOptions));
+                writer.WriteNextColNicify(nameof(TrackCorner.width));
+                writer.WriteNextColNicify(nameof(TrackCorner.perimeterOptions));
                 //
                 writer.WriteNextRow();
 
@@ -540,8 +540,8 @@ namespace Manifold.IO.GFZ.CourseCollision
             if (trackTransform.hairpinCornerTopologyPtr.IsNotNullPointer)
             {
                 writer.WriteNextCol();
-                writer.WriteNextCol(trackTransform.hairpinCornerTopology.width);
-                writer.WriteNextCol(trackTransform.hairpinCornerTopology.perimeterOptions);
+                writer.WriteNextCol(trackTransform.trackCorner.width);
+                writer.WriteNextCol(trackTransform.trackCorner.perimeterOptions);
             }
             //
             writer.WriteNextRow();
@@ -680,19 +680,19 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol("File");
                 writer.WriteNextCol("Game Object #");
                 writer.WriteNextCol("Game Object");
-                writer.WriteNextCol(nameof(SceneObject.lodFar));
-                writer.WriteNextCol(nameof(SceneObject.lodFar));
-                writer.WriteNextCol(nameof(SceneObject.lodNear));
-                writer.WriteNextCol(nameof(SceneObject.lodNear));
-                writer.WriteNextCol(nameof(SceneObject.instanceReferencePtr));
-                writer.WriteNextCol(nameof(SceneObject.transform.Position));
-                writer.WriteNextCol(nameof(SceneObject.transform.RotationEuler));
-                writer.WriteNextCol(nameof(SceneObject.transform.Scale));
-                writer.WriteNextCol(nameof(SceneObject.zero_0x2C));
-                writer.WriteNextCol(nameof(SceneObject.animationPtr));
-                writer.WriteNextCol(nameof(SceneObject.textureMetadataPtr));
-                writer.WriteNextCol(nameof(SceneObject.skeletalAnimatorPtr));
-                writer.WriteNextCol(nameof(SceneObject.transformPtr));
+                writer.WriteNextCol(nameof(SceneObjectDynamic.lodFar));
+                writer.WriteNextCol(nameof(SceneObjectDynamic.lodFar));
+                writer.WriteNextCol(nameof(SceneObjectDynamic.lodNear));
+                writer.WriteNextCol(nameof(SceneObjectDynamic.lodNear));
+                writer.WriteNextCol(nameof(SceneObjectDynamic.instanceReferencePtr));
+                writer.WriteNextCol(nameof(SceneObjectDynamic.transform.Position));
+                writer.WriteNextCol(nameof(SceneObjectDynamic.transform.RotationEuler));
+                writer.WriteNextCol(nameof(SceneObjectDynamic.transform.Scale));
+                writer.WriteNextCol(nameof(SceneObjectDynamic.zero_0x2C));
+                writer.WriteNextCol(nameof(SceneObjectDynamic.animationPtr));
+                writer.WriteNextCol(nameof(SceneObjectDynamic.textureMetadataPtr));
+                writer.WriteNextCol(nameof(SceneObjectDynamic.skeletalAnimatorPtr));
+                writer.WriteNextCol(nameof(SceneObjectDynamic.transformPtr));
                 writer.WriteNextRow();
 
                 foreach (var file in sceneSobjs)
@@ -1749,12 +1749,12 @@ namespace Manifold.IO.GFZ.CourseCollision
                     writer.WriteNextCol(table.meshBounds.subdivisionsZ);
                     writer.WriteNextCol(table.collisionQuadsPtr.HexAddress);
                     writer.WriteNextCol(table.collisionQuadIndexesPtr.Length);
-                    writer.WriteNextCol(table.ununsedMeshBounds.maxX);
-                    writer.WriteNextCol(table.ununsedMeshBounds.maxZ);
-                    writer.WriteNextCol(table.ununsedMeshBounds.width);
-                    writer.WriteNextCol(table.ununsedMeshBounds.length);
-                    writer.WriteNextCol(table.ununsedMeshBounds.subdivisionsX);
-                    writer.WriteNextCol(table.ununsedMeshBounds.subdivisionsZ);
+                    writer.WriteNextCol(table.unusedMeshBounds.maxX);
+                    writer.WriteNextCol(table.unusedMeshBounds.maxZ);
+                    writer.WriteNextCol(table.unusedMeshBounds.width);
+                    writer.WriteNextCol(table.unusedMeshBounds.length);
+                    writer.WriteNextCol(table.unusedMeshBounds.subdivisionsX);
+                    writer.WriteNextCol(table.unusedMeshBounds.subdivisionsZ);
                     writer.WriteNextCol(table.colliderTriangles.Length);
                     writer.WriteNextCol(table.colliderQuads.Length);
                     writer.WriteNextRow();
@@ -1839,10 +1839,10 @@ namespace Manifold.IO.GFZ.CourseCollision
                 //
                 writer.WriteNextCol("name");
                 writer.WriteNextCol("Object Type");
-                writer.WriteNextCol(nameof(SceneInstanceReference.unk_0x00));
-                writer.WriteNextCol(nameof(SceneInstanceReference.unk_0x04));
-                writer.WriteNextCol(nameof(SceneInstanceReference.objectReferencePtr));
-                writer.WriteNextCol(nameof(SceneInstanceReference.colliderGeometryPtr));
+                writer.WriteNextCol(nameof(SceneObjectDynamicReference.unk_0x00));
+                writer.WriteNextCol(nameof(SceneObjectDynamicReference.unk_0x04));
+                writer.WriteNextCol(nameof(SceneObjectDynamicReference.objectReferencePtr));
+                writer.WriteNextCol(nameof(SceneObjectDynamicReference.colliderGeometryPtr));
                 //
                 writer.WriteNextRow();
 
@@ -1854,7 +1854,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                     var isAxGx = scene.IsFileGX ? "GX" : "AX";
 
                     // Get all the scene object references
-                    var objectsList = new List<(SceneInstanceReference sir, string category)>();
+                    var objectsList = new List<(SceneObjectDynamicReference sir, string category)>();
                     foreach (var sceneInstance in scene.sceneInstances)
                     {
                         objectsList.Add((sceneInstance, "Instance"));
@@ -1900,10 +1900,10 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol("AX/GX");
                 //
                 writer.WriteNextCol("name");
-                writer.WriteNextCol(nameof(SceneInstanceReference.unk_0x00));
-                writer.WriteNextCol(nameof(SceneInstanceReference.unk_0x04));
-                writer.WriteNextCol(nameof(SceneInstanceReference.objectReferencePtr));
-                writer.WriteNextCol(nameof(SceneInstanceReference.colliderGeometryPtr));
+                writer.WriteNextCol(nameof(SceneObjectDynamicReference.unk_0x00));
+                writer.WriteNextCol(nameof(SceneObjectDynamicReference.unk_0x04));
+                writer.WriteNextCol(nameof(SceneObjectDynamicReference.objectReferencePtr));
+                writer.WriteNextCol(nameof(SceneObjectDynamicReference.colliderGeometryPtr));
                 writer.WriteNextCol(nameof(SceneObjectReference.zero_0x00));
                 writer.WriteNextCol(nameof(SceneObjectReference.namePtr));
                 writer.WriteNextCol(nameof(SceneObjectReference.zero_0x08));

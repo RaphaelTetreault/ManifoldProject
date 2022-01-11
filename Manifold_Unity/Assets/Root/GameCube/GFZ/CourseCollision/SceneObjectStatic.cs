@@ -5,10 +5,13 @@ using System.IO;
 namespace GameCube.GFZ.CourseCollision
 {
     /// <summary>
-    /// This structure points to an object which does not use a transform for placement within the scene.
+    /// An object which does not use a transform for placement within the scene. The model's
+    /// origin will align with the scene's origin.
+    /// 
+    /// This kind of object was used for all test objects in old AX scenes.
     /// </summary>
     [Serializable]
-    public class SceneOriginObject :
+    public class SceneObjectStatic :
         IBinaryAddressable,
         IBinarySerializable,
         ISerializedBinaryAddressableReferer
@@ -20,7 +23,7 @@ namespace GameCube.GFZ.CourseCollision
         // FIELDS
         public Pointer sceneInstanceReferencePtr;
         // REFERENCE FIELDS
-        public SceneInstanceReference instanceReference;
+        public SceneObjectDynamicReference instanceReference;
 
 
         // PROPERTIES
@@ -72,7 +75,7 @@ namespace GameCube.GFZ.CourseCollision
         public override string ToString()
         {
             return 
-                $"{nameof(SceneOriginObject)}(" +
+                $"{nameof(SceneObjectStatic)}(" +
                 $"Name: {nameCopy}" +
                 $")";
         }

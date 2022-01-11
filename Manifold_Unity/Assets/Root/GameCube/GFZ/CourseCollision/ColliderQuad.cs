@@ -5,6 +5,9 @@ using Unity.Mathematics;
 
 namespace GameCube.GFZ.CourseCollision
 {
+    /// <summary>
+    /// An individual quad as part of a collider mesh.
+    /// </summary>
     [Serializable]
     public sealed class ColliderQuad :
         IBinaryAddressable,
@@ -57,7 +60,7 @@ namespace GameCube.GFZ.CourseCollision
         public float3 PrecomputeCenter()
         {
             // Division inline since the values are BIG and would
-            // lose more precision if added first.
+            // lose more precision if summed first.
             return
                 precomputed0 / 4f +
                 precomputed1 / 4f +

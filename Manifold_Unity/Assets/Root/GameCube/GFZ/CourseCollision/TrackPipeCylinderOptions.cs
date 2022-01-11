@@ -7,7 +7,7 @@ namespace GameCube.GFZ.CourseCollision
     public enum TrackPipeCylinderOptions : byte
     {
         /// <summary>
-        /// Is the driveable surface on the outside (cylinder) or inside (pipe).
+        /// Is the driveable surface on the outside (cylinder) or inside (pipe)?
         /// If set is cylinder, if not set is pipe.
         /// </summary>
         IsCylinderNotPipe = 1 << 0,

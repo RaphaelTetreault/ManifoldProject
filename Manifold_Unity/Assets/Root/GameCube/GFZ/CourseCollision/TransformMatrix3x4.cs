@@ -6,7 +6,7 @@ using Unity.Mathematics;
 namespace GameCube.GFZ.CourseCollision
 {
     /// <summary>
-    /// Column-major matrix with 3 rows and 4 columns.
+    /// Column-major transform matrix with 3 rows and 4 columns.
     /// </summary>
     [Serializable]
     public class TransformMatrix3x4 :

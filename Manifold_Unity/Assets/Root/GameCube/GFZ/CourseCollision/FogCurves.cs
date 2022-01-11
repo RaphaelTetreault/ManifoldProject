@@ -10,14 +10,14 @@ using System.IO;
 //
 // Animation data
 // Indexes 0-5, length 6, values are:
-// 0: StageFog.min
-// 1: StageFog.max
-// 2: StageFog.colorRGB.x - color R
-// 3: StageFog.colorRGB.y - color G
-// 4: StageFog.colorRGB.z - color B
+// 0: Fog.fogRange.near
+// 1: Fog.fogRange.far
+// 2: Fog.colorRGB.x - color R
+// 3: Fog.colorRGB.y - color G
+// 4: Fog.colorRGB.z - color B
 // 5: (always 0)
 //
-// Get animation curves [6] easily with helper funtion StageFog.GetAnimationCurves().
+// Get animation curves [6] easily with helper funtion Fog.GetAnimationCurves().
 //
 // NOTE: there is always exactly 1 key per animation curve EXCEPT for CH8 4/6 GX (of course...) where
 //       there are 0 keys, and CPDB AX, where ther are 2 keys (see note below). ALSO, the time for each
@@ -141,8 +141,8 @@ namespace GameCube.GFZ.CourseCollision
             // Ensure we have the correct amount of animation curves before indexing
             Assert.IsTrue(animationCurves.Length == kCurveCount);
 
-            // Each curve should 1 or more keys. In reality, this is not true, but
-            // all the used data in the final game is like this (except ST44 where
+            // Each curve should have 1 or more keys. In reality, this is not true.
+            // All the used data in the final game is like this (except ST44 where
             // [5/6] is missing]). Suffice to say, OUR data should conform to this.
             
             // TO TEST: try an anim curve with multiple keys and interpolate between

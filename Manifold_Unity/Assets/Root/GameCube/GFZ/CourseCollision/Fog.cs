@@ -6,7 +6,7 @@ using Unity.Mathematics;
 namespace GameCube.GFZ.CourseCollision
 {
     /// <summary>
-    /// 
+    /// Defines parameters to produce and render fog.
     /// </summary>
     [Serializable]
     public class Fog :
@@ -27,11 +27,11 @@ namespace GameCube.GFZ.CourseCollision
         // NOTES
         // Below are notes on the observed values in all stage files for AX and GX.
         // + Inline comments for Aeropolis and Green Plant. They have quirks.
-        // + GP -I and -MR differ from GPS. Soft dull blue vs soft dull green, respectively.
+        // + GPI and GPMR differ from GPS. Soft dull blue vs soft dull green, respectively.
 
         // Imprecision Differences
         // Some color values are barely different between stages/venues. It appears that
-        // some went and standardize this later on, but some differences still exist.
+        // someone went and standardize this later on, but some differences still exist.
         // 
         // + Aeropolis - GX tracks AM ADS vs AX track ASD (track, not game)
         // + Port Town - GX tracks PTAD PTLP vs AX track PTCW (track, not game)

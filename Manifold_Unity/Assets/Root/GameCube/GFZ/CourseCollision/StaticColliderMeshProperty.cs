@@ -3,7 +3,8 @@ namespace GameCube.GFZ.CourseCollision
     // TODO: confirm indices for AX stages.
 
     /// <summary>
-    /// 
+    /// Indicates which property a StaticColliderMeshMatrix represents. F-Zero AX and
+    /// F-Zero GX differ in the higher end.
     /// </summary>
     public enum StaticColliderMeshProperty
     {

@@ -5,6 +5,10 @@ using Unity.Mathematics;
 
 namespace GameCube.GFZ.CourseCollision
 {
+    /// <summary>
+    /// Represents a transformation. This is used on scene objects specifically (where
+    /// hierarchy is not important - flat structures, no trees).
+    /// </summary>
     [Serializable]
     public class Transform :
         IBinarySerializable,

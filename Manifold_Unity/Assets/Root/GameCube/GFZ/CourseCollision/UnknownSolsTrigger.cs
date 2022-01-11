@@ -7,7 +7,7 @@ using System.IO;
 namespace GameCube.GFZ.CourseCollision
 {
     /// <summary>
-    /// Only available in Sand Ocean Lateral Shift
+    /// Trigger volume only available in Sand Ocean Lateral Shift
     /// GX: 6 instances, AX: 9 instances
     /// </summary>
     [Serializable]

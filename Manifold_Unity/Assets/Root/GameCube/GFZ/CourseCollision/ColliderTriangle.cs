@@ -54,7 +54,7 @@ namespace GameCube.GFZ.CourseCollision
         public float3 PrecomputeCenter()
         {
             // Division inline since the values are BIG and would
-            // lose more precision if added first.
+            // lose more precision if summed first.
             return
                 precomputed0 / 3f +
                 precomputed1 / 3f +

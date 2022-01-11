@@ -1,7 +1,7 @@
 namespace GameCube.GFZ.CourseCollision
 {
     /// <summary>
-    /// Denotes data related to perimeter of the current graph node.
+    /// Denotes data related to perimeter of the current track graph node.
     /// </summary>
     [System.Flags]
     public enum TrackPerimeterOptions : byte

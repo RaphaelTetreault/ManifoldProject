@@ -6,7 +6,7 @@ using Unity.Mathematics;
 namespace GameCube.GFZ.CourseCollision
 {
     /// <summary>
-    /// 
+    /// Defines a segment of track.
     /// </summary>
     [Serializable]
     public class TrackSegment :
@@ -22,7 +22,7 @@ namespace GameCube.GFZ.CourseCollision
         public bool isRoot;
 
         // FIELDS
-        public TrackTopologyMetadata topologyMetadata;
+        public TrackSegmentMetadata topologyMetadata;
         public TrackProperty trackProperty;
         public TrackPerimeterOptions perimeterOptions;
         public TrackPipeCylinderOptions pipeCylinderOptions;
@@ -46,8 +46,8 @@ namespace GameCube.GFZ.CourseCollision
         public uint zero_0x48; // zero confirmed
         public TrackUnkOption2 unk_0x4C; // 0, 1, 2, 3
         // REFERENCE FIELDS
-        public TopologyParameters trackAnimationCurves;
-        public TrackCornerTopology hairpinCornerTopology;
+        public TrackCurve trackAnimationCurves;
+        public TrackCorner trackCorner;
         public int[] childIndexes = new int[0];
         //public TrackSegment[] graph = new TrackSegment[0];
 
@@ -95,7 +95,7 @@ namespace GameCube.GFZ.CourseCollision
                 if (hairpinCornerTopologyPtr.IsNotNullPointer)
                 {
                     reader.JumpToAddress(hairpinCornerTopologyPtr);
-                    reader.ReadX(ref hairpinCornerTopology, true);
+                    reader.ReadX(ref trackCorner, true);
                 }
 
                 // TODO: make this functional
@@ -149,7 +149,7 @@ namespace GameCube.GFZ.CourseCollision
             var children = new TrackSegment[0];
             if (childrenPtrs.IsNotNullPointer)
             {
-                // NOTE: children are always consecutive (ArrayPointer)
+                // NOTE: children are always sequential (ArrayPointer)
                 reader.JumpToAddress(childrenPtrs);
                 reader.ReadX(ref children, childrenPtrs.Length, true);
             }
@@ -165,7 +165,7 @@ namespace GameCube.GFZ.CourseCollision
                 // See "SetChildPointers(TrackSegment[] children)"
 
                 trackAnimationCurvesPtr = trackAnimationCurves.GetPointer();
-                hairpinCornerTopologyPtr = hairpinCornerTopology.GetPointer();
+                hairpinCornerTopologyPtr = trackCorner.GetPointer();
             }
             this.RecordStartAddress(writer);
             {
@@ -213,7 +213,7 @@ namespace GameCube.GFZ.CourseCollision
             {
                 bool hasTurnLeft = perimeterOptions.HasFlag(TrackPerimeterOptions.has90TurnLeft);
                 bool hasTurnRight = perimeterOptions.HasFlag(TrackPerimeterOptions.has90TurnRight);
-                bool isTurnNotNull = hairpinCornerTopology != null;
+                bool isTurnNotNull = trackCorner != null;
                 Assert.IsTrue(hasTurnLeft || hasTurnRight && isTurnNotNull);
             } 
         }

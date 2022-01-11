@@ -5,7 +5,8 @@ using System.IO;
 namespace GameCube.GFZ.CourseCollision
 {
     /// <summary>
-    /// 
+    /// A matrix of index lists. Matrix is used as base class for matrices used
+    /// to index collider triangles/quads (static meshes) and checkpoint nodes.
     /// </summary>
     [Serializable]
     public abstract class IndexMatrix :
