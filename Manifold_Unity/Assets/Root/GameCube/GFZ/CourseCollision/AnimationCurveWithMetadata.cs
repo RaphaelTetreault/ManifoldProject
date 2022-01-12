@@ -96,5 +96,10 @@ namespace GameCube.GFZ.CourseCollision
             //if (animationCurve != null)
             //    Assert.IsTrue(animationCurvePtrs.IsNotNullPointer);
         }
+
+        public override string ToString()
+        {
+            return $"{unk_0x00}, {unk_0x04}, {unk_0x08}, {unk_0x0C}, {animationCurve}";
+        }
     }
 }

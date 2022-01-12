@@ -21,9 +21,9 @@ namespace GameCube.GFZ.CourseCollision
         [UnityEngine.SerializeField] private string nameCopy;
 
         // FIELDS
-        public Pointer sceneInstanceReferencePtr;
+        public Pointer templateSceneObjectPtr;
         // REFERENCE FIELDS
-        public SceneObjectDynamicReference instanceReference;
+        public SceneObjectTemplate templateSceneObject;
 
 
         // PROPERTIES
@@ -40,15 +40,15 @@ namespace GameCube.GFZ.CourseCollision
         {
             this.RecordStartAddress(reader);
             {
-                reader.ReadX(ref sceneInstanceReferencePtr);
+                reader.ReadX(ref templateSceneObjectPtr);
             }
             this.RecordEndAddress(reader);
             {
-                Assert.IsTrue(sceneInstanceReferencePtr.IsNotNullPointer);
-                reader.JumpToAddress(sceneInstanceReferencePtr);
-                reader.ReadX(ref instanceReference, true);
+                Assert.IsTrue(templateSceneObjectPtr.IsNotNullPointer);
+                reader.JumpToAddress(templateSceneObjectPtr);
+                reader.ReadX(ref templateSceneObject, true);
 
-                nameCopy = instanceReference.nameCopy;
+                nameCopy = templateSceneObject.nameCopy;
             }
             this.SetReaderToEndAddress(reader);
         }
@@ -56,11 +56,11 @@ namespace GameCube.GFZ.CourseCollision
         public void Serialize(BinaryWriter writer)
         {
             {
-                sceneInstanceReferencePtr = instanceReference.GetPointer();
+                templateSceneObjectPtr = templateSceneObject.GetPointer();
             }
             this.RecordStartAddress(writer);
             {
-                writer.WriteX(sceneInstanceReferencePtr);
+                writer.WriteX(templateSceneObjectPtr);
             }
             this.RecordEndAddress(writer);
 
@@ -68,7 +68,7 @@ namespace GameCube.GFZ.CourseCollision
 
         public void ValidateReferences()
         {
-            Assert.IsTrue(sceneInstanceReferencePtr.IsNotNullPointer);
+            Assert.IsTrue(templateSceneObjectPtr.IsNotNullPointer);
         }
 
 

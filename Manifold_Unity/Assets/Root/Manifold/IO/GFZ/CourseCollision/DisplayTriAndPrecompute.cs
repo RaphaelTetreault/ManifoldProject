@@ -28,8 +28,8 @@ namespace Manifold.IO.GFZ.CourseCollision
             Debug.DrawLine(Vector3.forward * size, -Vector3.forward * size, Color.blue);
 
             var scene = sceneSobj.Value;
-            var sceneObject = scene.sceneObjects[objectIndex];
-            var colliderGeo = sceneObject.instanceReference.colliderGeometry;
+            var sceneObject = scene.dynamicSceneObjects[objectIndex];
+            var colliderGeo = sceneObject.templateSceneObject.colliderGeometry;
 
             index = Mathf.Clamp(index, 0, colliderGeo.triCount - 1);
 

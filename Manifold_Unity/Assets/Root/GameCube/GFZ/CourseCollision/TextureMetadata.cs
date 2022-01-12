@@ -92,7 +92,16 @@ namespace GameCube.GFZ.CourseCollision
 
         public override string ToString()
         {
-            return $"{nameof(TextureMetadata)} (ptr wrapper type)";
+            var stringBuilder = new System.Text.StringBuilder();
+            stringBuilder.Append(nameof(TextureMetadata));
+            for (int i = 0; i < fields.Length; i++)
+            {
+                if (fields[i] == null)
+                    continue;
+                stringBuilder.Append($"[{i}]{fields[i]}, ");
+            }
+
+            return stringBuilder.ToString();
         }
     }
 }

@@ -17,7 +17,7 @@ namespace GameCube.GFZ.CourseCollision
     /// being multiplied with it's parent up a tree structure.
     /// </summary>
     [Serializable]
-    public class TrackCurve :
+    public class TrackCurves :
         IBinaryAddressable,
         IBinarySerializable,
         ISerializedBinaryAddressableReferer
@@ -162,7 +162,6 @@ namespace GameCube.GFZ.CourseCollision
                 }
             }
         }
-
 
     }
 }

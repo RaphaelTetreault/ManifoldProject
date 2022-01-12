@@ -19,7 +19,7 @@ namespace GameCube.GFZ.CourseCollision
     {
         // CONSTANTS
         /// <summary>
-        /// Number of animation curves. Order: scale.xyz, rotation.xyz, position.xyz, unknown, unknown (light?)
+        /// Number of animation curves. Order: scale.xyz, rotation.xyz, position.xyz, unknown, texture alpha
         /// </summary>
         public const int kSizeCurvesPtrs = 11;
         const int kSizeZero_0x08 = 0x10;
@@ -39,7 +39,7 @@ namespace GameCube.GFZ.CourseCollision
         /// idx: 9: unused
         /// idx: 10: alpha channel
         /// </summary>
-        public AnimationCurveWithMetadata[] animationCurvePluses; // Written inline, not pointer refs
+        public AnimationCurveWithMetadata[] animationCurveWithMetadata; // Written inline, not pointer refs
 
 
         // PROPERTIES
@@ -59,7 +59,7 @@ namespace GameCube.GFZ.CourseCollision
                 reader.ReadX(ref unk_0x04);
                 reader.ReadX(ref zeroes_0x08, kSizeZero_0x08);
                 reader.ReadX(ref unk_layer_0x18);
-                reader.ReadX(ref animationCurvePluses, kSizeCurvesPtrs, true);
+                reader.ReadX(ref animationCurveWithMetadata, kSizeCurvesPtrs, true);
             }
             this.RecordEndAddress(reader);
             {
@@ -81,7 +81,7 @@ namespace GameCube.GFZ.CourseCollision
                 writer.WriteX(unk_0x04);
                 writer.WriteX(zeroes_0x08, false);
                 writer.WriteX(unk_layer_0x18);
-                writer.WriteX(animationCurvePluses, false);
+                writer.WriteX(animationCurveWithMetadata, false);
             }
             this.RecordEndAddress(writer);
         }

@@ -16,21 +16,21 @@ namespace Manifold.Conversion.GFZ.CourseCollision
             // http://gyanendushekhar.com/2018/03/18/create-play-animation-runtime-unity-tutorial/
 
             // Scale
-            var gfxAnimClipScaleX = animationClip.animationCurvePluses[0];
-            var gfxAnimClipScaleY = animationClip.animationCurvePluses[1];
-            var gfxAnimClipScaleZ = animationClip.animationCurvePluses[2];
+            var gfxAnimClipScaleX = animationClip.animationCurveWithMetadata[0];
+            var gfxAnimClipScaleY = animationClip.animationCurveWithMetadata[1];
+            var gfxAnimClipScaleZ = animationClip.animationCurveWithMetadata[2];
             // Rotation
-            var gfxAnimClipRotationX = animationClip.animationCurvePluses[3];
-            var gfxAnimClipRotationY = animationClip.animationCurvePluses[4];
-            var gfxAnimClipRotationZ = animationClip.animationCurvePluses[5];
+            var gfxAnimClipRotationX = animationClip.animationCurveWithMetadata[3];
+            var gfxAnimClipRotationY = animationClip.animationCurveWithMetadata[4];
+            var gfxAnimClipRotationZ = animationClip.animationCurveWithMetadata[5];
             // Position
-            var gfxAnimClipPositionX = animationClip.animationCurvePluses[6];
-            var gfxAnimClipPositionY = animationClip.animationCurvePluses[7];
-            var gfxAnimClipPositionZ = animationClip.animationCurvePluses[8];
+            var gfxAnimClipPositionX = animationClip.animationCurveWithMetadata[6];
+            var gfxAnimClipPositionY = animationClip.animationCurveWithMetadata[7];
+            var gfxAnimClipPositionZ = animationClip.animationCurveWithMetadata[8];
             // Unknown
-            var gfxAnimClipUnknown = animationClip.animationCurvePluses[9];
+            var gfxAnimClipUnknown = animationClip.animationCurveWithMetadata[9];
             // Light
-            var gfxAnimClipLight = animationClip.animationCurvePluses[10];
+            var gfxAnimClipLight = animationClip.animationCurveWithMetadata[10];
 
 
             var transformType = typeof(UnityEngine.Transform);

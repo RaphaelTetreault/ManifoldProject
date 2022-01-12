@@ -8,7 +8,7 @@ namespace GameCube.GFZ.CourseCollision
     /// Binds an object name to a loadable display model.
     /// </summary>
     [Serializable]
-    public class SceneObjectReference :
+    public class SceneObject :
         IBinaryAddressable,
         IBinarySerializable,
         ISerializedBinaryAddressableReferer
@@ -88,7 +88,7 @@ namespace GameCube.GFZ.CourseCollision
         public override string ToString()
         {
             return
-                $"{nameof(SceneObjectReference)}(" +
+                $"{nameof(SceneObject)}(" +
                 $"{nameof(unk_0x0C)}: {unk_0x0C}, " +
                 $"Name: {name}" +
                 $")";

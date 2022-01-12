@@ -66,16 +66,16 @@ namespace Manifold.IO.GFZ.CourseCollision
 
                 // Create object-based collider meshes
                 {
-                    int total = scene.sceneObjects.Length;
+                    int total = scene.dynamicSceneObjects.Length;
                     int count = 0;
-                    foreach (var sceneObject in scene.sceneObjects)
+                    foreach (var sceneObject in scene.dynamicSceneObjects)
                     {
                         count++;
 
-                        if (sceneObject.instanceReference.colliderGeometryPtr.IsNotNullPointer)
+                        if (sceneObject.templateSceneObject.colliderGeometryPtr.IsNotNullPointer)
                         {
                             var meshName = sceneObject.nameCopy;
-                            ImportUtility.ProgressBar<SceneObjectDynamicReference>(count, total, $"st{sceneSobj.Value.ID:00} {meshName}");
+                            ImportUtility.ProgressBar<SceneObjectTemplate>(count, total, $"st{sceneSobj.Value.ID:00} {meshName}");
 
                             // Create mesh
                             var mesh = CreateObjectColliderMesh(sceneObject, createBackfaces, usePrecomputes);
@@ -122,7 +122,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
                         count++;
                         var meshName = mesh.name;
-                        ImportUtility.ProgressBar<SceneObjectDynamicReference>(count, total, $"st{sceneSobj.Value.ID:00} {meshName}");
+                        ImportUtility.ProgressBar<SceneObjectTemplate>(count, total, $"st{sceneSobj.Value.ID:00} {meshName}");
 
                         // Save mesh to Asset Database
                         var meshPath = $"Assets/{importTo}/st{sceneSobj.Value.ID:00}/coli_{meshName}.asset";
@@ -160,7 +160,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
                         count++;
                         var meshName = mesh.name;
-                        ImportUtility.ProgressBar<SceneObjectDynamicReference>(count, total, $"st{sceneSobj.Value.ID:00} {meshName}");
+                        ImportUtility.ProgressBar<SceneObjectTemplate>(count, total, $"st{sceneSobj.Value.ID:00} {meshName}");
 
                         // Save mesh to Asset Database
                         var meshPath = $"Assets/{importTo}/st{sceneSobj.Value.ID:00}/coli_{meshName}.asset";
@@ -179,7 +179,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 }
             }
 
-            ImportUtility.ProgressBar<SceneObjectDynamicReference>(1, 1, $"Saving assets...");
+            ImportUtility.ProgressBar<SceneObjectTemplate>(1, 1, $"Saving assets...");
             ImportUtility.FinalizeAssetImport();
         }
 
@@ -459,7 +459,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
         public Mesh CreateObjectColliderMesh(SceneObjectDynamic sceneObject, bool createBackfaces, bool usePrecomputes)
         {
-            var colliderGeo = sceneObject.instanceReference.colliderGeometry;
+            var colliderGeo = sceneObject.templateSceneObject.colliderGeometry;
 
             // Create base data for mesh
             var mesh = new Mesh();

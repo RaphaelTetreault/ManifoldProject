@@ -296,5 +296,12 @@
             var name = Manifold.IO.EnumExtensions.GetDescription(value);
             return name;
         }
+
+        public static string GetVenueName(int index)
+        {
+            var value = GetVenue(index);
+            var name = Manifold.IO.EnumExtensions.GetDescription(value);
+            return name;
+        }
     }
 }

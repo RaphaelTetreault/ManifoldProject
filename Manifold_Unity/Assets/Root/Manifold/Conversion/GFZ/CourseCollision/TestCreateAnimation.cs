@@ -22,9 +22,9 @@ namespace Manifold.Conversion
         {
             var md5 = MD5.Create();
 
-            foreach (var gobj in scene.Value.sceneObjects)
+            foreach (var gobj in scene.Value.dynamicSceneObjects)
             {
-                if (gobj.animation.animationCurvePluses.Length == 0)
+                if (gobj.animation.animationCurveWithMetadata.Length == 0)
                 {
                     continue;
                 }

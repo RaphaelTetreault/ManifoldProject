@@ -8,7 +8,7 @@ namespace GameCube.GFZ.CourseCollision
     /// Binds a SceneObjectDynamic to a SceneObjectReference. Includes some other data.
     /// </summary>
     [Serializable]
-    public class SceneObjectDynamicReference :
+    public class SceneObjectTemplate :
         IBinaryAddressable,
         IBinarySerializable,
         ISerializedBinaryAddressableReferer
@@ -20,10 +20,10 @@ namespace GameCube.GFZ.CourseCollision
         // STRUCTURE
         public UnkInstanceFlag unk_0x00;
         public UnkInstanceOption unk_0x04;
-        public Pointer objectReferencePtr;
+        public Pointer sceneObjectPtr;
         public Pointer colliderGeometryPtr;
         // FIELDS (deserialized from pointers)
-        public SceneObjectReference objectReference;
+        public SceneObject sceneObject;
         public ColliderGeometry colliderGeometry;
 
 
@@ -42,14 +42,14 @@ namespace GameCube.GFZ.CourseCollision
             {
                 reader.ReadX(ref unk_0x00);
                 reader.ReadX(ref unk_0x04);
-                reader.ReadX(ref objectReferencePtr);
+                reader.ReadX(ref sceneObjectPtr);
                 reader.ReadX(ref colliderGeometryPtr);
             }
             this.RecordEndAddress(reader);
             {
-                Assert.IsTrue(objectReferencePtr.IsNotNullPointer);
-                reader.JumpToAddress(objectReferencePtr);
-                reader.ReadX(ref objectReference, true);
+                Assert.IsTrue(sceneObjectPtr.IsNotNullPointer);
+                reader.JumpToAddress(sceneObjectPtr);
+                reader.ReadX(ref sceneObject, true);
 
                 // Collision is not required, load only if pointer is not null
                 if (colliderGeometryPtr.IsNotNullPointer)
@@ -58,7 +58,7 @@ namespace GameCube.GFZ.CourseCollision
                     reader.ReadX(ref colliderGeometry, true);
                 }
 
-                nameCopy = objectReference.name;
+                nameCopy = sceneObject.name;
             }
             this.SetReaderToEndAddress(reader);
         }
@@ -66,14 +66,14 @@ namespace GameCube.GFZ.CourseCollision
         public void Serialize(BinaryWriter writer)
         {
             {
-                objectReferencePtr = objectReference.GetPointer();
+                sceneObjectPtr = sceneObject.GetPointer();
                 colliderGeometryPtr = colliderGeometry.GetPointer();
             }
             this.RecordStartAddress(writer);
             {
                 writer.WriteX(unk_0x00);
                 writer.WriteX(unk_0x04);
-                writer.WriteX(objectReferencePtr);
+                writer.WriteX(sceneObjectPtr);
                 writer.WriteX(colliderGeometryPtr);
             }
             this.RecordEndAddress(writer);
@@ -82,14 +82,14 @@ namespace GameCube.GFZ.CourseCollision
         public void ValidateReferences()
         {
             // This pointer CANNOT be null and must refer to an object.
-            Assert.IsTrue(objectReferencePtr.IsNotNullPointer);
-            Assert.IsTrue(objectReference != null);
+            Assert.IsTrue(sceneObjectPtr.IsNotNullPointer);
+            Assert.IsTrue(sceneObject != null);
         }
 
         public override string ToString()
         {
             return 
-                $"{nameof(SceneObjectDynamicReference)}(" +
+                $"{nameof(SceneObjectTemplate)}(" +
                 $"{nameof(unk_0x00)}: {unk_0x00}, " +
                 $"{nameof(unk_0x04)}: {unk_0x04}, " +
                 $"Has {nameof(ColliderGeometry)}: {colliderGeometryPtr.IsNotNullPointer}, " +

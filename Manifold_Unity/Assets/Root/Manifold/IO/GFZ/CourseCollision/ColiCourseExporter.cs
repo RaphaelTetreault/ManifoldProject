@@ -180,23 +180,23 @@ namespace Manifold.IO.GFZ.CourseCollision
 
             log.WriteHeading("SCENE OBJECTS", padding, h1Width);
             log.WriteLine("Object Names");
-            log.WriteAddress(coliScene.objectNames);
-            log.WriteAddress(coliScene.sceneObjectReferences);
-            log.WriteAddress(coliScene.sceneInstances);
-            log.WriteAddress(coliScene.sceneOriginObjects);
+            log.WriteAddress(coliScene.sceneObjectNames);
             log.WriteAddress(coliScene.sceneObjects);
+            log.WriteAddress(coliScene.templateSceneObjects);
+            log.WriteAddress(coliScene.staticSceneObjects);
+            log.WriteAddress(coliScene.dynamicSceneObjects);
             {
                 log.WriteHeading("FULL OBJECT SUMMARY", padding, h1Width);
-                int total = coliScene.sceneObjects.Length;
+                int total = coliScene.dynamicSceneObjects.Length;
                 for (int i = 0; i < total; i++)
                 {
-                    var sceneObject = coliScene.sceneObjects[i];
+                    var sceneObject = coliScene.dynamicSceneObjects[i];
 
                     log.WriteLine($"[{i}/{total}] {sceneObject.nameCopy}");
                     log.WriteAddress(sceneObject);
-                    log.WriteAddress(sceneObject.instanceReference);
-                    log.WriteAddress(sceneObject.instanceReference.objectReference);
-                    log.WriteAddress(sceneObject.instanceReference.objectReference.name);
+                    log.WriteAddress(sceneObject.templateSceneObject);
+                    log.WriteAddress(sceneObject.templateSceneObject.sceneObject);
+                    log.WriteAddress(sceneObject.templateSceneObject.sceneObject.name);
                     log.WriteAddress(sceneObject.transformMatrix3x4);
 
                     log.WriteAddress(sceneObject.skeletalAnimator);
@@ -205,7 +205,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
                     log.WriteAddress(sceneObject.animation);
                     if (sceneObject.animation != null)
-                        log.WriteAddress(sceneObject.animation.animationCurvePluses);
+                        log.WriteAddress(sceneObject.animation.animationCurveWithMetadata);
                     // TODO: other sub classes?
 
                     log.WriteAddress(sceneObject.textureMetadata);
@@ -354,17 +354,17 @@ namespace Manifold.IO.GFZ.CourseCollision
                 // Scene Objects / Instances / References / Names
                 {
                     var sceneObjects = FindObjectsOfType<GfzSceneObject>(findInactive);
-                    coliScene.sceneObjects = new SceneObjectDynamic[0];
+                    coliScene.dynamicSceneObjects = new SceneObjectDynamic[0];
 
                     // TODO: construct the actual objects...
 
                     log.WriteLine();
                     log.WriteLine("SCENE OBJECTS");
+                    log.WriteLineSummary(coliScene.dynamicSceneObjects);
+                    log.WriteLineSummary(coliScene.staticSceneObjects);
+                    log.WriteLineSummary(coliScene.templateSceneObjects);
                     log.WriteLineSummary(coliScene.sceneObjects);
-                    log.WriteLineSummary(coliScene.sceneOriginObjects);
-                    log.WriteLineSummary(coliScene.sceneInstances);
-                    log.WriteLineSummary(coliScene.sceneObjectReferences);
-                    log.WriteLineSummary(coliScene.objectNames);
+                    log.WriteLineSummary(coliScene.sceneObjectNames);
                     log.WriteLine();
                 }
 

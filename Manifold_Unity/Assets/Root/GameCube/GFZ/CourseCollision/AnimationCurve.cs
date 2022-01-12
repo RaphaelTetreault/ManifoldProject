@@ -84,10 +84,24 @@ namespace GameCube.GFZ.CourseCollision
             return keyableAttributes.GetArrayPointer();
         }
 
-        //public override string ToString()
-        //{
-        //    return $"";
-        //}
+        public override string ToString()
+        {
+            int lengthKeyables = keyableAttributes.Length;
+            var stringBuilder = new System.Text.StringBuilder();
+            stringBuilder.Append($"Length[{lengthKeyables}]\t");
+            for (int i = 0; i < lengthKeyables; i++)
+            {
+                var keyable = keyableAttributes[i];
+                stringBuilder.Append($"[{i}]");
+                stringBuilder.Append(keyable.ToString());
+
+                // Add comma separator if another value to come
+                if (i < lengthKeyables - 1)
+                    stringBuilder.Append(", ");
+            }
+
+            return stringBuilder.ToString();
+        }
 
     }
 }

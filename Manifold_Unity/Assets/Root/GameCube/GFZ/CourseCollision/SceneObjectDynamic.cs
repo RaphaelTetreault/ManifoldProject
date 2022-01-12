@@ -29,7 +29,7 @@ namespace GameCube.GFZ.CourseCollision
         /// 
         /// </summary>
         public UnknownObjectBitfield lodNear;
-        public Pointer instanceReferencePtr;
+        public Pointer templateSceneObjectPtr;
         public Transform transform = new Transform();
         public int zero_0x2C; // null ptr?
         public Pointer animationPtr;
@@ -37,7 +37,7 @@ namespace GameCube.GFZ.CourseCollision
         public Pointer skeletalAnimatorPtr;
         public Pointer transformPtr;
         // FIELDS (deserialized from pointers)
-        public SceneObjectDynamicReference instanceReference;
+        public SceneObjectTemplate templateSceneObject;
         public AnimationClip animation;
         public TextureMetadata textureMetadata;
         public SkeletalAnimator skeletalAnimator;
@@ -59,7 +59,7 @@ namespace GameCube.GFZ.CourseCollision
             {
                 reader.ReadX(ref lodFar, false);
                 reader.ReadX(ref lodNear, false);
-                reader.ReadX(ref instanceReferencePtr);
+                reader.ReadX(ref templateSceneObjectPtr);
                 reader.ReadX(ref transform, true);
                 reader.ReadX(ref zero_0x2C);
                 reader.ReadX(ref animationPtr);
@@ -70,9 +70,9 @@ namespace GameCube.GFZ.CourseCollision
             this.RecordEndAddress(reader);
             {
                 //
-                reader.JumpToAddress(instanceReferencePtr);
-                reader.ReadX(ref instanceReference, true);
-                nameCopy = instanceReference.objectReference.name;
+                reader.JumpToAddress(templateSceneObjectPtr);
+                reader.ReadX(ref templateSceneObject, true);
+                nameCopy = templateSceneObject.sceneObject.name;
 
                 if (animationPtr.IsNotNullPointer)
                 {
@@ -112,7 +112,7 @@ namespace GameCube.GFZ.CourseCollision
         {
             {
                 // Get pointers from refered instances
-                instanceReferencePtr = instanceReference.GetPointer();
+                templateSceneObjectPtr = templateSceneObject.GetPointer();
                 animationPtr = animation.GetPointer();
                 textureMetadataPtr = textureMetadata.GetPointer();
                 skeletalAnimatorPtr = skeletalAnimator.GetPointer();
@@ -122,7 +122,7 @@ namespace GameCube.GFZ.CourseCollision
             {
                 writer.WriteX(lodFar);
                 writer.WriteX(lodNear);
-                writer.WriteX(instanceReferencePtr);
+                writer.WriteX(templateSceneObjectPtr);
                 writer.WriteX(transform);
                 writer.WriteX(zero_0x2C);
                 writer.WriteX(animationPtr);
@@ -136,7 +136,7 @@ namespace GameCube.GFZ.CourseCollision
         public void ValidateReferences()
         {
             // This pointer CANNOT be null and must refer to an object.
-            Assert.PointerReferenceValid(instanceReference, instanceReferencePtr);
+            Assert.PointerReferenceValid(templateSceneObject, templateSceneObjectPtr);
             //Assert.IsTrue(instanceReferencePtr.IsNotNullPointer);
             //Assert.IsTrue(instanceReference != null);
 

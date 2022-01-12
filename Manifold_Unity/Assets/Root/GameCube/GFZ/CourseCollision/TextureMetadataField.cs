@@ -53,8 +53,8 @@ namespace GameCube.GFZ.CourseCollision
         public override string ToString()
         {
             return
-                $"{nameof(TextureMetadataField)}(" +
-                $"{nameof(x)}: {x}, " +
+                //$"{nameof(TextureMetadataField)}(" +
+                $"({nameof(x)}: {x}, " +
                 $"{nameof(y)}: {y}" +
                 $")";
         }

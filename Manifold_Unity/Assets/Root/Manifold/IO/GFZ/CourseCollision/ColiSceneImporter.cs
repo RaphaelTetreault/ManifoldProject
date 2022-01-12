@@ -887,7 +887,7 @@ namespace Manifold.IO.GFZ.CourseCollision
         {
 
             // Get some metadata from the number of scene objects
-            var sceneObjects = scene.Value.sceneObjects;
+            var sceneObjects = scene.Value.dynamicSceneObjects;
             // Create a string format from the highest index number used
             var digitsFormat = WidthFormat(sceneObjects);
             int count = 0;
@@ -932,7 +932,7 @@ namespace Manifold.IO.GFZ.CourseCollision
         public void CreateOriginObjects(ColiSceneSobj scene, params string[] searchFolders)
         {
             // Get some metadata from the number of scene objects
-            var originObjects = scene.Value.sceneOriginObjects;
+            var originObjects = scene.Value.staticSceneObjects;
 
             // Create a string format from the highest index number used
             var digitsFormat = WidthFormat(originObjects);

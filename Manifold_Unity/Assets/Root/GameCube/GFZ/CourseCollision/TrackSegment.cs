@@ -46,7 +46,7 @@ namespace GameCube.GFZ.CourseCollision
         public uint zero_0x48; // zero confirmed
         public TrackUnkOption2 unk_0x4C; // 0, 1, 2, 3
         // REFERENCE FIELDS
-        public TrackCurve trackAnimationCurves;
+        public TrackCurves trackAnimationCurves;
         public TrackCorner trackCorner;
         public int[] childIndexes = new int[0];
         //public TrackSegment[] graph = new TrackSegment[0];
