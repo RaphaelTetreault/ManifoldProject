@@ -578,11 +578,11 @@ namespace Manifold.IO.GFZ.CourseCollision
                         if (gameObject.animation == null)
                             continue;
 
-                        if (gameObject.animation.animationCurveWithMetadata == null)
+                        if (gameObject.animation.curve == null)
                             continue;
 
                         int animIndex = 0;
-                        foreach (var animationCurvePlus in gameObject.animation.animationCurveWithMetadata)
+                        foreach (var animationCurvePlus in gameObject.animation.curve)
                         {
                             foreach (var keyable in animationCurvePlus.animationCurve.keyableAttributes)
                             {
@@ -634,11 +634,11 @@ namespace Manifold.IO.GFZ.CourseCollision
                         if (gameObject.animation == null)
                             continue;
 
-                        if (gameObject.animation.animationCurveWithMetadata == null)
+                        if (gameObject.animation.curve == null)
                             continue;
 
                         int animIndex = 0;
-                        foreach (var animationCurvePlus in gameObject.animation.animationCurveWithMetadata)
+                        foreach (var animationCurvePlus in gameObject.animation.curve)
                         {
                             foreach (var keyable in animationCurvePlus.animationCurve.keyableAttributes)
                             {

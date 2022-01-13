@@ -24,7 +24,7 @@ namespace Manifold.Conversion
 
             foreach (var gobj in scene.Value.dynamicSceneObjects)
             {
-                if (gobj.animation.animationCurveWithMetadata.Length == 0)
+                if (gobj.animation.curve.Length == 0)
                 {
                     continue;
                 }

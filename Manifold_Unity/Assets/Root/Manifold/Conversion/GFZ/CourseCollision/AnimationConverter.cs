@@ -16,21 +16,21 @@ namespace Manifold.Conversion.GFZ.CourseCollision
             // http://gyanendushekhar.com/2018/03/18/create-play-animation-runtime-unity-tutorial/
 
             // Scale
-            var gfxAnimClipScaleX = animationClip.animationCurveWithMetadata[0];
-            var gfxAnimClipScaleY = animationClip.animationCurveWithMetadata[1];
-            var gfxAnimClipScaleZ = animationClip.animationCurveWithMetadata[2];
+            var gfxAnimClipScaleX = animationClip.curve[0];
+            var gfxAnimClipScaleY = animationClip.curve[1];
+            var gfxAnimClipScaleZ = animationClip.curve[2];
             // Rotation
-            var gfxAnimClipRotationX = animationClip.animationCurveWithMetadata[3];
-            var gfxAnimClipRotationY = animationClip.animationCurveWithMetadata[4];
-            var gfxAnimClipRotationZ = animationClip.animationCurveWithMetadata[5];
+            var gfxAnimClipRotationX = animationClip.curve[3];
+            var gfxAnimClipRotationY = animationClip.curve[4];
+            var gfxAnimClipRotationZ = animationClip.curve[5];
             // Position
-            var gfxAnimClipPositionX = animationClip.animationCurveWithMetadata[6];
-            var gfxAnimClipPositionY = animationClip.animationCurveWithMetadata[7];
-            var gfxAnimClipPositionZ = animationClip.animationCurveWithMetadata[8];
+            var gfxAnimClipPositionX = animationClip.curve[6];
+            var gfxAnimClipPositionY = animationClip.curve[7];
+            var gfxAnimClipPositionZ = animationClip.curve[8];
             // Unknown
-            var gfxAnimClipUnknown = animationClip.animationCurveWithMetadata[9];
+            var gfxAnimClipUnknown = animationClip.curve[9];
             // Light
-            var gfxAnimClipLight = animationClip.animationCurveWithMetadata[10];
+            var gfxAnimClipLight = animationClip.curve[10];
 
 
             var transformType = typeof(UnityEngine.Transform);
@@ -56,7 +56,7 @@ namespace Manifold.Conversion.GFZ.CourseCollision
             return unityAnimClip;
         }
 
-        public static void SetCurve(UnityEngine.AnimationClip unityClip, AnimationCurveWithMetadata gfzCurve, Type type, string propertyName)
+        public static void SetCurve(UnityEngine.AnimationClip unityClip, AnimationClipCurve gfzCurve, Type type, string propertyName)
         {
             // ignore empty anims
             if (gfzCurve.animationCurve.Length == 0)

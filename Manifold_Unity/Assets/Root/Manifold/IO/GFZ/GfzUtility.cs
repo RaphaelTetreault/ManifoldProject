@@ -71,7 +71,7 @@ namespace Manifold.IO.GFZ
             return importFilesList.ToArray();
         }
 
-
+        [System.Obsolete]
         public static MemoryStream CompressAv(string exportFile, AvGame game, bool saveCompressed, out string filePath)
         {
             using (var fileStream = File.Open(exportFile, FileMode.Open, FileAccess.Read, FileShare.Read))
@@ -100,6 +100,28 @@ namespace Manifold.IO.GFZ
                 }
 
                 return compressedFile;
+            }
+        }
+
+        public static void CompressAv(string filePath, AvGame game)
+        {
+            using (var file = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
+            {
+                // Write file compressed into lzStream
+                var lzStream = new MemoryStream();
+                Lz.PackAvLz(file, lzStream, game);
+
+                // See if files has been compressed before
+                var outputFile = $"{filePath}.lz";
+                //if (File.Exists(outputFile))
+                //    File.Delete(outputFile);
+
+                using (var writer = File.Create(outputFile, (int)lzStream.Length))
+                {
+                    lzStream.Seek(0, SeekOrigin.Begin);
+                    lzStream.CopyTo(writer);
+                    lzStream.Flush(); // is this line necessary?
+                }
             }
         }
 

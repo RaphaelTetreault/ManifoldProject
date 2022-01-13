@@ -8,7 +8,7 @@ namespace GameCube.GFZ.CourseCollision
     /// A metadata-enhanced AnimationCurve.
     /// </summary>
     [Serializable]
-    public class AnimationCurveWithMetadata :
+    public class AnimationClipCurve :
         IBinaryAddressable,
         IBinarySerializable,
         ISerializedBinaryAddressableReferer

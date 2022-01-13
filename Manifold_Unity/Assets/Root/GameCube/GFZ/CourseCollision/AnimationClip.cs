@@ -39,7 +39,7 @@ namespace GameCube.GFZ.CourseCollision
         /// idx: 9: unused
         /// idx: 10: alpha channel
         /// </summary>
-        public AnimationCurveWithMetadata[] animationCurveWithMetadata; // Written inline, not pointer refs
+        public AnimationClipCurve[] curve; // Written inline, not pointer refs
 
 
         // PROPERTIES
@@ -59,7 +59,7 @@ namespace GameCube.GFZ.CourseCollision
                 reader.ReadX(ref unk_0x04);
                 reader.ReadX(ref zeroes_0x08, kSizeZero_0x08);
                 reader.ReadX(ref unk_layer_0x18);
-                reader.ReadX(ref animationCurveWithMetadata, kSizeCurvesPtrs, true);
+                reader.ReadX(ref curve, kSizeCurvesPtrs, true);
             }
             this.RecordEndAddress(reader);
             {
@@ -81,7 +81,7 @@ namespace GameCube.GFZ.CourseCollision
                 writer.WriteX(unk_0x04);
                 writer.WriteX(zeroes_0x08, false);
                 writer.WriteX(unk_layer_0x18);
-                writer.WriteX(animationCurveWithMetadata, false);
+                writer.WriteX(curve, false);
             }
             this.RecordEndAddress(writer);
         }

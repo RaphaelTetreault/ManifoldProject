@@ -58,10 +58,22 @@ namespace Manifold.IO.GFZ
             EditorUtility.DisplayDialog("Roundtrip Error Check All Gfze", "All tests passed!", "ok");
         }
 
+        [MenuItem("Manifold/IO/Test Load Stage 01 GFZJ")]
+        public static void TestLoadStage01()
+        {            
+                var filePath = $"C:/GFZJ01/stage/COLI_COURSE01";
+                var fileName = Path.GetFileName(filePath);
+                // LOAD FRESH FILE IN
+                var reader = new BinaryReader(File.OpenRead(filePath));
+                var scene = new ColiScene();
+                scene.FileName = fileName;
+                reader.ReadX(ref scene, false);
+        }
+
         [MenuItem("Manifold/IO/Test Load All Stages GFZJ")]
         public static void TestLoadAllStages()
         {
-            for (int i = 0; i < 50; i++)
+            for (int i = 0; i <= 50; i++)
             {
                 // Get file name (must exist)
                 var filePath = $"C:/GFZJ01/stage/COLI_COURSE{i:d2}";
@@ -76,6 +88,38 @@ namespace Manifold.IO.GFZ
                 var scene = new ColiScene();
                 scene.FileName = fileName;
                 reader.ReadX(ref scene, false);
+            }
+            EditorUtility.ClearProgressBar();
+        }
+
+        [MenuItem("Manifold/IO/SAVE All Stages GFZJ")]
+        public static void TestSaveAllStages()
+        {
+            for (int i = 0; i <= 50; i++)
+            {
+                // Get file name (must exist)
+                var filePath = $"C:/GFZJ01/stage/COLI_COURSE{i:d2}";
+                if (!File.Exists(filePath))
+                    continue;
+                var fileName = Path.GetFileName(filePath);
+
+                EditorUtility.DisplayProgressBar("Save All Stages", fileName, i / 50f);
+
+                // Load scene files
+                var reader = new BinaryReader(File.OpenRead(filePath));
+                var scene = new ColiScene();
+                scene.FileName = fileName;
+                reader.ReadX(ref scene, false);
+                // Save scene files
+                var savePath = $"C:/test/output/{fileName}";
+                var writer = new BinaryWriter(File.OpenWrite(savePath));
+                scene.SerializeVerbose = true;
+                scene.Serialize(writer);
+                // Close reader/writer
+                writer.Close();
+                reader.Close();
+                // Compress output
+                GfzUtility.CompressAv(savePath, LibGxFormat.AvGame.FZeroGX);
             }
             EditorUtility.ClearProgressBar();
         }
@@ -587,7 +631,7 @@ namespace Manifold.IO.GFZ
 
                     log.WriteAddress(sceneObject.animation);
                     if (sceneObject.animation != null)
-                        log.WriteAddress(sceneObject.animation.animationCurveWithMetadata);
+                        log.WriteAddress(sceneObject.animation.curve);
                     // TODO: other sub classes?
 
                     log.WriteAddress(sceneObject.textureMetadata);
@@ -932,7 +976,7 @@ namespace Manifold.IO.GFZ
                 log.WriteLine();
 
                 // TODO: add indexes
-                log.WriteLine($"{nameof(AnimationCurveWithMetadata)}");
+                log.WriteLine($"{nameof(AnimationClipCurve)}");
                 for (int i = 0; i < coliScene.dynamicSceneObjects.Length; i++)
                 {
                     var animClip = coliScene.dynamicSceneObjects[i].animation;
@@ -943,9 +987,9 @@ namespace Manifold.IO.GFZ
                     var iFormat = i.ArrayFormat(coliScene.dynamicSceneObjects);
                     log.WriteLine($"[{iFormat}]\t");
 
-                    for (int j = 0; j < animClip.animationCurveWithMetadata.Length; j++)
+                    for (int j = 0; j < animClip.curve.Length; j++)
                     {
-                        var animCurvesPlus = animClip.animationCurveWithMetadata[j];
+                        var animCurvesPlus = animClip.curve[j];
                         //log.Write(PrintIndex(i, coliScene.sceneObjects));
                         log.WriteLine(PrintData(functionIdx, animCurvesPlus));
                     }
