@@ -80,13 +80,7 @@ namespace GameCube.GFZ.CourseCollision
         {
             for (int i = 0; i < kCount; i++)
             {
-                // Validate object references if pointer exists
-                if (fieldPtrs[i].IsNotNullPointer)
-                    Assert.IsTrue(fields[i] != null);
-
-                // Validate pointers if object reference exists
-                if (fields[i] != null)
-                    Assert.IsTrue(fieldPtrs[i].IsNotNullPointer);
+                Assert.PointerReferenceValid(fields[i], fieldPtrs[i]);
             }
         }
 

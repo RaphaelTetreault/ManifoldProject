@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace Manifold.IO
 {
@@ -38,6 +40,15 @@ namespace Manifold.IO
             bool invalidState = pointerNull ^ pointerNull;
 
             IsFalse(invalidState);
+        }
+
+        public static void ContainsNoNulls<T>(T ienumerable)
+            where T : IEnumerable
+        {
+            foreach (var item in ienumerable)
+            {
+                IsTrue(item != null, $"Value null found in ienumerable type {nameof(T)}!");
+            }
         }
     }
 }
