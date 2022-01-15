@@ -31,5 +31,10 @@ namespace Manifold.IO
         }
 
         public int Size => (int)(endAddress - startAddress);
+
+        public override string ToString()
+        {
+            return $"Start: {startAddress:x8}, End: {endAddress:x8}, Size: {Size} ({Size:x})";
+        }
     }
 }

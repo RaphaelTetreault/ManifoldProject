@@ -106,13 +106,14 @@ namespace Manifold.IO.GFZ
                 EditorUtility.DisplayProgressBar("Save All Stages", fileName, i / 50f);
 
                 // Load scene files
-                var reader = new BinaryReader(File.OpenRead(filePath));
+                var reader = new AddressLogBinaryReader(File.OpenRead(filePath));
                 var scene = new ColiScene();
                 scene.FileName = fileName;
                 reader.ReadX(ref scene, false);
+                reader.LogRangesRead($"C:/test/output/log-ranges-read-{fileName}.txt");
                 // Save scene files
                 var savePath = $"C:/test/output/{fileName}";
-                var writer = new BinaryWriter(File.OpenWrite(savePath));
+                var writer = new AddressLogBinaryWriter(File.Create(savePath));
                 scene.SerializeVerbose = true;
                 scene.Serialize(writer);
                 // Close reader/writer

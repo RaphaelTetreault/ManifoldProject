@@ -413,9 +413,17 @@ namespace GameCube.GFZ.CourseCollision
 
         public void Serialize(BinaryWriter writer)
         {
+            //// DEBUG
+            //if (writer.GetType() == typeof(MemoryGuardedBinaryWriter))
+            //{
+            //    //((MemoryGuardedBinaryWriter)writer).InitMemoryGuard();
+            //    //((MemoryGuardedBinaryWriter)writer).MemoryGuardActive = true;
+            //}
+
             BinaryIoUtility.PushEndianess(false);
 
             // Disable static collider meshes for testing...
+            // staticColliderMeshes serialization is currently broken
             staticColliderMeshesActive = Bool32.False;
 
             // Write header. At first, pointers will be null or broken.
@@ -809,6 +817,15 @@ namespace GameCube.GFZ.CourseCollision
                 writer.WriteX(visualEffectTriggers, false);
             }
 
+            // DEBUG
+            // Assuming the writer for this stream is the type specified below,
+            // It will error if we write to the same address twice. this is useful
+            // for finding bugs where 
+            if (writer.GetType() == typeof(AddressLogBinaryWriter))
+            {
+                ((AddressLogBinaryWriter)writer).MemoryLogActive = false;
+            }
+
             // GET ALL REFERERS, RE-SERIALIZE FOR POINTERS
             {
                 // Get a reference to EVERY object in file that has a pointer to an object
@@ -1194,8 +1211,8 @@ namespace GameCube.GFZ.CourseCollision
             {
                 reference = dict[ptr];
                 //DebugConsole.Log($"REMOVING: {ptr} of {typeof(T).Name} ({reference})");
-                DebugConsole.Log($"REMOVING: {typeof(T).Name}");
-                DebugConsole.Log($"REMOVING: {ptr} of {typeof(T).Name} ({reference}) macthes ref {dict[ptr]}");
+                //DebugConsole.Log($"REMOVING: {typeof(T).Name}");
+                //DebugConsole.Log($"REMOVING: {ptr} of {typeof(T).Name} ({reference}) macthes ref {dict[ptr]}");
             }
             // If we don't have this reference, deserialize it, store in dict, return it
             else
