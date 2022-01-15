@@ -314,6 +314,13 @@ namespace GameCube.GFZ.CourseCollision
             reader.JumpToAddress(trackCheckpointMatrixPtr);
             reader.ReadX(ref trackCheckpointMatrix, true);
 
+            // TEMP
+            // For some reason, this structure points back to these
+            staticColliderMeshes.UnknownSolsTrigger = unknownSolsTriggers;
+            staticColliderMeshes.staticSceneObjects = staticSceneObjects;
+            Assert.IsTrue(staticColliderMeshes.unknownSolsTriggersPtr == unknownSolsTriggersPtr);
+            Assert.IsTrue(staticColliderMeshes.staticSceneObjectsPtr == staticSceneObjectsPtr);
+
 
             // UNMANGLE SHARED REFERENCES
             {
@@ -424,7 +431,7 @@ namespace GameCube.GFZ.CourseCollision
 
             // Disable static collider meshes for testing...
             // staticColliderMeshes serialization is currently broken
-            staticColliderMeshesActive = Bool32.False;
+            //staticColliderMeshesActive = Bool32.False;
 
             // Write header. At first, pointers will be null or broken.
             SerializeHeader(writer);
@@ -614,6 +621,9 @@ namespace GameCube.GFZ.CourseCollision
                     WriteStaticColliderMeshMatrices(writer, scmPtr, "ColiQuad", staticColliderMeshes.quadMeshIndexMatrices);
                 }
 
+                // Write this one other thing
+                writer.InlineDesc(serializeVerbose, staticColliderMeshes.unkBounds2D);
+                writer.WriteX(staticColliderMeshes.unkBounds2D);
             }
 
             // FOG

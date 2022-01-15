@@ -52,5 +52,24 @@ namespace Manifold.IO
         {
             return $"Length: {Length}, Address: {HexAddress}";
         }
+
+        public static bool operator ==(ArrayPointer lhs, ArrayPointer rhs)
+        {
+            return lhs.address == rhs.address && lhs.length == rhs.length;
+        }
+
+        public static bool operator !=(ArrayPointer lhs, ArrayPointer rhs)
+        {
+            return (lhs.address == rhs.address && lhs.length == rhs.length);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj.GetType() != typeof(ArrayPointer))
+                return false;
+
+            return (ArrayPointer)obj == this;
+        }
+
     }
 }

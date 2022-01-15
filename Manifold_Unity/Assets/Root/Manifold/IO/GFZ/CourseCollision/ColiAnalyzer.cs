@@ -1749,12 +1749,12 @@ namespace Manifold.IO.GFZ.CourseCollision
                     writer.WriteNextCol(table.meshBounds.subdivisionsZ);
                     writer.WriteNextCol(table.collisionQuadsPtr.HexAddress);
                     writer.WriteNextCol(table.collisionQuadIndexesPtr.Length);
-                    writer.WriteNextCol(table.unusedMeshBounds.maxX);
-                    writer.WriteNextCol(table.unusedMeshBounds.maxZ);
-                    writer.WriteNextCol(table.unusedMeshBounds.width);
-                    writer.WriteNextCol(table.unusedMeshBounds.length);
-                    writer.WriteNextCol(table.unusedMeshBounds.subdivisionsX);
-                    writer.WriteNextCol(table.unusedMeshBounds.subdivisionsZ);
+                    //writer.WriteNextCol(table.unusedMeshBounds.maxX);
+                    //writer.WriteNextCol(table.unusedMeshBounds.maxZ);
+                    //writer.WriteNextCol(table.unusedMeshBounds.width);
+                    //writer.WriteNextCol(table.unusedMeshBounds.length);
+                    //writer.WriteNextCol(table.unusedMeshBounds.subdivisionsX);
+                    //writer.WriteNextCol(table.unusedMeshBounds.subdivisionsZ);
                     writer.WriteNextCol(table.colliderTriangles.Length);
                     writer.WriteNextCol(table.colliderQuads.Length);
                     writer.WriteNextRow();

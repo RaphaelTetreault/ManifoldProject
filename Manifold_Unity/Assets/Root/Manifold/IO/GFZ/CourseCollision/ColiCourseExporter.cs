@@ -144,7 +144,6 @@ namespace Manifold.IO.GFZ.CourseCollision
             log.WriteLine();
             log.WriteLine("Mesh Bounds");
             log.WriteAddress(coliScene.staticColliderMeshes.meshBounds);
-            log.WriteAddress(coliScene.staticColliderMeshes.unusedMeshBounds);
             log.WriteLine();
             log.WriteLine("TRIANGLES");
             log.WriteAddress(coliScene.staticColliderMeshes.colliderTriangles);
@@ -176,6 +175,12 @@ namespace Manifold.IO.GFZ.CourseCollision
                 }
             }
             log.WriteNullInArray = true;
+            // TODO: print out the other data
+            //for (int i = 0; i < coliScene.staticColliderMeshes.unk_data_7.Length; i++)
+            //{
+            //    var data = coliScene.staticColliderMeshes.unk_data_7[i];
+            //    log.WriteLine($"[{i,3}] {data:x8} {data}");
+            //}
             log.WriteLine();
 
             log.WriteHeading("SCENE OBJECTS", padding, h1Width);

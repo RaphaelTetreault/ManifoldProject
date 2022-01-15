@@ -92,6 +92,28 @@ namespace Manifold.IO.GFZ
             EditorUtility.ClearProgressBar();
         }
 
+        [MenuItem("Manifold/IO/Test Load All Stages AX")]
+        public static void TestLoadAllStagesAX()
+        {
+            for (int i = 0; i <= 120; i++)
+            {
+                // Get file name (must exist)
+                var filePath = $"C:/GFZJ8P/stage/COLI_COURSE{i:d2}";
+                if (!File.Exists(filePath))
+                    continue;
+                var fileName = Path.GetFileName(filePath);
+
+                EditorUtility.DisplayProgressBar("Test Load All Stages", fileName, i / 120f);
+
+                // LOAD FRESH FILE IN
+                var reader = new BinaryReader(File.OpenRead(filePath));
+                var scene = new ColiScene();
+                scene.FileName = fileName;
+                reader.ReadX(ref scene, false);
+            }
+            EditorUtility.ClearProgressBar();
+        }
+
         [MenuItem("Manifold/IO/SAVE All Stages GFZJ")]
         public static void TestSaveAllStages()
         {
@@ -116,6 +138,9 @@ namespace Manifold.IO.GFZ
                 var writer = new AddressLogBinaryWriter(File.Create(savePath));
                 scene.SerializeVerbose = true;
                 scene.Serialize(writer);
+                //
+                var log = new TextLogger($"C:/test/output/log-full-{fileName}.txt");
+                LogSceneData(log, scene);
                 // Close reader/writer
                 writer.Close();
                 reader.Close();
@@ -569,9 +594,16 @@ namespace Manifold.IO.GFZ
             log.WriteHeading("STATIC COLLISION", padding, h1Width);
             log.WriteAddress(coliScene.staticColliderMeshes);
             log.WriteLine();
+            log.WriteLine("NEW DATA");
+            log.WriteLine("Unknown Bounds XZ");
+            log.WriteLine(coliScene.staticColliderMeshes.unkBounds2D);
+            log.WriteLine("unk float: " + coliScene.staticColliderMeshes.unk_float);
+            log.WriteLine(coliScene.staticColliderMeshes.unknownSolsTriggersPtr);
+            log.WriteLine(coliScene.staticColliderMeshes.staticSceneObjectsPtr);
+            // TODO: SOLS triggers, static scene objects
+            log.WriteLine();
             log.WriteLine("Mesh Bounds");
             log.WriteAddress(coliScene.staticColliderMeshes.meshBounds);
-            log.WriteAddress(coliScene.staticColliderMeshes.unusedMeshBounds);
             log.WriteLine();
             log.WriteLine("TRIANGLES");
             log.WriteAddress(coliScene.staticColliderMeshes.colliderTriangles);
@@ -730,62 +762,6 @@ namespace Manifold.IO.GFZ
             var x = ExportUtility.ExportSerializable(sceneIn, exportTo, "", true);
             OSUtility.OpenDirectory(openFolderAfterExport, x);
         }
-
-        //public static void RoundtripNoLog(string filePath, bool serializeVerbose)
-        //{
-        //    var md5 = MD5.Create();
-        //    // TEMP from previous function
-        //    var openFolderAfterExport = true;
-        //    var exportTo = "W:/Windows Directories/Desktop/test";
-        //    /////////////////////////////////////////////////////
-
-        //    // Construct time stamp string
-        //    var dateTime = DateTime.Now;
-        //    var timestamp = $"[{dateTime:yyyy-MM-dd}][{dateTime:HH-mm-ss}]";
-
-        //    // LOAD FRESH FILE IN
-        //    var readerIn = new BinaryReader(File.OpenRead(filePath));
-        //    // Set scene instance, deserialize data
-        //    var sceneIn = new ColiScene();
-        //    sceneIn.FileName = Path.GetFileName(filePath);
-        //    sceneIn.SerializeVerbose = serializeVerbose;
-        //    readerIn.ReadX(ref sceneIn, false);
-        //    // Check to see if file is from ROM. Add correct metadata.
-        //    // TODO: remove hardcoded match and use dynamic JP/EN/PAL
-        //    readerIn.SeekBegin();
-        //    var sceneIndex = sceneIn.ID;
-        //    var sceneHash = md5.ComputeHash(readerIn.BaseStream);
-        //    var sceneHashStr = HashUtility.ByteArrayToString(sceneHash);
-        //    var romHashStr = HashLibrary.ColiCourseMD5_GFZJ01[sceneIndex];
-        //    if (romHashStr == sceneHashStr)
-        //    {
-        //        sceneIn.Venue = CourseUtility.GetVenue(sceneIndex);
-        //        sceneIn.CourseName = CourseUtility.GetCourseName(sceneIndex);
-        //        sceneIn.Author = "Amusement Vision";
-        //    }
-
-        //    // WRITE INTERMEDIARY
-        //    // Write scene out to memory stream...
-        //    var writer = new BinaryWriter(new MemoryStream());
-        //    writer.WriteX(sceneIn);
-        //    writer.Flush();
-        //    writer.BaseStream.Seek(0, SeekOrigin.Begin);
-
-        //    // LOAD INTERMEDIARY
-        //    // Load memory stream back in
-        //    var readerOut = new BinaryReader(writer.BaseStream);
-        //    var sceneOut = new ColiScene();
-        //    sceneOut.SerializeVerbose = serializeVerbose;
-        //    sceneOut.FileName = sceneIn.FileName;
-        //    readerOut.ReadX(ref sceneOut, false);
-
-        //    // open folder location
-        //    OSUtility.OpenDirectory(openFolderAfterExport, $"{exportTo}/");
-        //    // Set static variable
-        //    // Export file...
-        //    var x = ExportUtility.ExportSerializable(sceneIn, exportTo, "", true);
-        //    OSUtility.OpenDirectory(openFolderAfterExport, x);
-        //}
 
         /// <summary>
         /// Function goal: round trip asset multiple times. If misalignment somewhere, should cause errors.
