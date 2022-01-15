@@ -119,7 +119,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             log.WriteHeading("TRACK DATA", padding, h1Width);
             log.WriteAddress(coliScene.trackLength);
             log.WriteAddress(coliScene.trackMinHeight);
-            log.WriteAddress(coliScene.courseBoundsXZ);
+            log.WriteAddress(coliScene.trackNodeBoundsXZ);
             log.WriteLine();
             log.WriteAddress(coliScene.surfaceAttributeAreas);
             log.WriteLine("ROOT SEGMENTS");

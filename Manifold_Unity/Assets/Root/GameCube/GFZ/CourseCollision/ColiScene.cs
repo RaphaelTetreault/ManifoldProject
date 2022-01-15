@@ -93,7 +93,7 @@ namespace GameCube.GFZ.CourseCollision
         public ArrayPointer arcadeCheckpointTriggersPtr;
         public ArrayPointer storyObjectTriggersPtr;
         public Pointer trackCheckpointMatrixPtr;
-        public BoundsXZ courseBoundsXZ;
+        public BoundsXZ trackNodeBoundsXZ;
         public byte[] zeroes0xD8 = new byte[kSizeOfZeroes0xD8]; // 
 
         // REFERENCE FIELDS
@@ -601,6 +601,10 @@ namespace GameCube.GFZ.CourseCollision
                 writer.WriteX(staticColliderMeshes);
                 var scmPtr = staticColliderMeshes.GetPointer();
 
+                // Write collider bounds (applies to to non-tri/quad collision, too)
+                writer.InlineDesc(serializeVerbose, staticColliderMeshes.unkBounds2D);
+                writer.WriteX(staticColliderMeshes.unkBounds2D);
+
                 // COLLIDER TRIS
                 {
                     var colliderTris = staticColliderMeshes.colliderTriangles;
@@ -620,10 +624,6 @@ namespace GameCube.GFZ.CourseCollision
                     writer.WriteX(colliderQuads, false);
                     WriteStaticColliderMeshMatrices(writer, scmPtr, "ColiQuad", staticColliderMeshes.quadMeshIndexMatrices);
                 }
-
-                // Write this one other thing
-                writer.InlineDesc(serializeVerbose, staticColliderMeshes.unkBounds2D);
-                writer.WriteX(staticColliderMeshes.unkBounds2D);
             }
 
             // FOG
@@ -1056,7 +1056,7 @@ namespace GameCube.GFZ.CourseCollision
                 reader.ReadX(ref arcadeCheckpointTriggersPtr);
                 reader.ReadX(ref storyObjectTriggersPtr);
                 reader.ReadX(ref trackCheckpointMatrixPtr);
-                reader.ReadX(ref courseBoundsXZ, true);
+                reader.ReadX(ref trackNodeBoundsXZ, true);
                 reader.ReadX(ref zeroes0xD8, kSizeOfZeroes0xD8);
             }
             this.RecordEndAddress(reader);
@@ -1145,7 +1145,7 @@ namespace GameCube.GFZ.CourseCollision
                 writer.WriteX(arcadeCheckpointTriggersPtr);
                 writer.WriteX(storyObjectTriggersPtr);
                 writer.WriteX(trackCheckpointMatrixPtr);
-                writer.WriteX(courseBoundsXZ);
+                writer.WriteX(trackNodeBoundsXZ);
                 writer.WriteX(new byte[kSizeOfZeroes0xD8], false); // write const zeros
             }
             this.RecordEndAddress(writer);

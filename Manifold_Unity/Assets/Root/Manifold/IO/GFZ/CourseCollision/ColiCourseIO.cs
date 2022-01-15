@@ -140,10 +140,12 @@ namespace Manifold.IO.GFZ
                 scene.Serialize(writer);
                 //
                 var log = new TextLogger($"C:/test/output/log-full-{fileName}.txt");
+                log.Flush();
                 LogSceneData(log, scene);
                 // Close reader/writer
                 writer.Close();
                 reader.Close();
+                log.Close();
                 // Compress output
                 GfzUtility.CompressAv(savePath, LibGxFormat.AvGame.FZeroGX);
             }
@@ -531,7 +533,7 @@ namespace Manifold.IO.GFZ
             log.WriteHeading("TRACK DATA", padding, h1Width);
             log.WriteAddress(coliScene.trackLength);
             log.WriteAddress(coliScene.trackMinHeight);
-            log.WriteAddress(coliScene.courseBoundsXZ);
+            log.WriteAddress(coliScene.trackNodeBoundsXZ);
             log.WriteLine();
             // Writes track objects array
             log.WriteAddress(coliScene.surfaceAttributeAreas);

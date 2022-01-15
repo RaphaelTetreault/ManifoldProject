@@ -47,7 +47,7 @@ namespace GameCube.GFZ.CourseCollision
         public ArrayPointer unknownSolsTriggersPtr; // # 8, 9
         public ArrayPointer staticSceneObjectsPtr; // # 10, 11
         public int[] zeroes_b; // size: 4 ints
-        public Pointer unkBoundsPtr; // # 16
+        public Pointer unkBounds2DPtr; // # 16
         public int[] zeroes_c; // size: 5 ints
         public float unk_float; // #22
         public int[] zeroes_d; // size: 233 ints
@@ -57,10 +57,7 @@ namespace GameCube.GFZ.CourseCollision
         public ColliderQuad[] colliderQuads = new ColliderQuad[0];
         public StaticColliderMeshMatrix[] triMeshIndexMatrices;
         public StaticColliderMeshMatrix[] quadMeshIndexMatrices;
-        // newer stuff
-        public Bounds2D unkBoundsXZ = new Bounds2D();
-        //public StaticColliderMeshObjects templateSceneObjects_8_9 = new StaticColliderMeshObjects();
-        //public StaticColliderMeshObjects templateSceneObjects_10_11 = new StaticColliderMeshObjects();
+        public Bounds2D unkBounds2D = new Bounds2D();
         public UnknownSolsTrigger[] UnknownSolsTrigger;
         public SceneObjectStatic[] staticSceneObjects;
 
@@ -131,7 +128,7 @@ namespace GameCube.GFZ.CourseCollision
                 reader.ReadX(ref unknownSolsTriggersPtr);
                 reader.ReadX(ref staticSceneObjectsPtr);
                 reader.ReadX(ref zeroes_b, kZeroesB);
-                reader.ReadX(ref unkBoundsPtr);
+                reader.ReadX(ref unkBounds2DPtr);
                 reader.ReadX(ref zeroes_c, kZeroesC);
                 reader.ReadX(ref unk_float);
                 reader.ReadX(ref zeroes_d, kZeroesD);
@@ -181,24 +178,18 @@ namespace GameCube.GFZ.CourseCollision
                 reader.ReadX(ref colliderQuads, numQuadVerts, true);
 
                 // NEWER STUFF
-                reader.JumpToAddress(unkBoundsPtr);
-                reader.ReadX(ref unkBoundsXZ, true);
-                //
-                //templateSceneObjects_8_9.pointers = new Pointer[unk_ptr_8_9.Length];
-                //reader.JumpToAddress(unk_ptr_8_9);
-                //reader.ReadX(ref templateSceneObjects_8_9, false);
-                ////
-                //templateSceneObjects_10_11.pointers = new Pointer[unk_ptr_10_11.Length];
-                //reader.JumpToAddress(unk_ptr_10_11);
-                //reader.ReadX(ref templateSceneObjects_10_11, false);
-
+                reader.JumpToAddress(unkBounds2DPtr);
+                reader.ReadX(ref unkBounds2D, true);
+                // I don't read the SceneObjectTemplates and UnknownSolsTriggers
+                // since it's easier to patch that in ColiScene directly and saves
+                // some deserialization time
 
                 // 2022-01-14: all sorts of asserts
                 // All these are always populated in GX J
                 Assert.IsTrue(staticSceneObjectsPtr.Length != 0);
                 Assert.IsTrue(staticSceneObjectsPtr.IsNotNullPointer);
-                Assert.IsTrue(unkBoundsPtr.IsNotNullPointer);
-                DebugConsole.Log($"idx16: {unkBoundsPtr.HexAddress}");
+                Assert.IsTrue(unkBounds2DPtr.IsNotNullPointer);
+                DebugConsole.Log($"idx16: {unkBounds2DPtr.HexAddress}");
 
                 // Assert that all of this other junk is empty
                 for (int i = 0; i < kZeroesA; i++)
@@ -242,6 +233,8 @@ namespace GameCube.GFZ.CourseCollision
                 collisionTriIndexesPtr = triMeshIndexMatrices.GetPointers();
                 collisionQuadsPtr = colliderQuads.GetBasePointer();
                 collisionQuadIndexesPtr = quadMeshIndexMatrices.GetPointers();
+                //
+                unkBounds2DPtr = unkBounds2D.GetPointer();
             }
             this.RecordStartAddress(writer);
             {
@@ -256,7 +249,7 @@ namespace GameCube.GFZ.CourseCollision
                 writer.WriteX(unknownSolsTriggersPtr);
                 writer.WriteX(staticSceneObjectsPtr);
                 writer.WriteX(zeroes_b, false);
-                writer.WriteX(unkBoundsPtr);
+                writer.WriteX(unkBounds2DPtr);
                 writer.WriteX(zeroes_c, false);
                 writer.WriteX(unk_float);
                 writer.WriteX(zeroes_d, false);
