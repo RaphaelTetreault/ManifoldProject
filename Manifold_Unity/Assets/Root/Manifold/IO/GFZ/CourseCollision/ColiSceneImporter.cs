@@ -789,39 +789,43 @@ namespace Manifold.IO.GFZ.CourseCollision
 
             float yHeight = scene.trackMinHeight;
 
-            var boundsTrackNodesExact       = CreateBoundsObject(boundsTrack, 10f * 0.8f, yHeight, "Track Nodes (Scaled)");
-            var boundsStaticCollidersExact  = CreateBoundsObject(boundsColliders, 10f * 1.6f, yHeight, "Static Colliders (Scaled)");
-            var boundsUnknownExact          = CreateBoundsObject(boundsUnknown, 10f * 0.1f, yHeight, "Unknown (Scaled)");
-            var boundsTrackNodesPadded      = Instantiate(boundsTrackNodesExact);
-            var boundsStaticCollidersPadded = Instantiate(boundsStaticCollidersExact);
-            var boundsUnknownPadded         = Instantiate(boundsUnknownExact);
+            //DebugConsole.Log($"boundsTrack: {boundsTrack == null}");
+            //DebugConsole.Log($"boundsColliders: {boundsColliders == null}");
+            //DebugConsole.Log($"boundsUnknown: {boundsUnknown == null}");
+
+            var boundsTrackNodesExact       = CreateBoundsObject(boundsTrack, 8, yHeight, "Track Nodes (8x8)");
+            var boundsStaticCollidersExact  = CreateBoundsObject(boundsColliders, 16, yHeight, "Static Colliders (8x8)");
+            var boundsUnknownExact          = CreateBoundsObject(boundsUnknown, 1, yHeight, "Unknown (1x1)");
+            //var boundsTrackNodesPadded      = Instantiate(boundsTrackNodesExact);
+            //var boundsStaticCollidersPadded = Instantiate(boundsStaticCollidersExact);
+            //var boundsUnknownPadded         = Instantiate(boundsUnknownExact);
 
             // Correct scales on padded objects
-            boundsTrackNodesPadded.localScale       *= 1.25f; // (1.0f / 0.8f);
-            boundsStaticCollidersPadded.localScale  *= 1.25f; //  (1.0f / 1.6f);
-            boundsUnknownPadded.localScale          *= 1.25f; //  (1.0f / 0.8f);
+            //boundsTrackNodesPadded.localScale       *= 1.25f; // (1.0f / 0.8f);
+            //boundsStaticCollidersPadded.localScale  *= 1.25f; //  (1.0f / 1.6f);
+            //boundsUnknownPadded.localScale          *= 1.25f; //  (1.0f / 0.8f);
 
             //
-            boundsTrackNodesPadded.name         = "Track Nodes (Unscaled)";
-            boundsStaticCollidersPadded.name    = "Static Colliders (Unscaled)";
-            boundsUnknownPadded.name            = "Unknown (Unscaled)";
+            //boundsTrackNodesPadded.name         = "Track Nodes (Unscaled)";
+            //boundsStaticCollidersPadded.name    = "Static Colliders (Unscaled)";
+            //boundsUnknownPadded.name            = "Unknown (Unscaled)";
 
             // Set object parents
             boundsTrackNodesExact.transform.SetParent(boundsRoot);
             boundsStaticCollidersExact.transform.SetParent(boundsRoot);
             boundsUnknownExact.transform.SetParent(boundsRoot);
-            boundsTrackNodesPadded.transform.SetParent(boundsRoot);
-            boundsStaticCollidersPadded.transform.SetParent(boundsRoot);
-            boundsUnknownPadded.transform.SetParent(boundsRoot);
+            //boundsTrackNodesPadded.transform.SetParent(boundsRoot);
+            //boundsStaticCollidersPadded.transform.SetParent(boundsRoot);
+            //boundsUnknownPadded.transform.SetParent(boundsRoot);
 
 
             // testing
             //boundsTrackNodesExact.gameObject.SetActive(false);
-            boundsStaticCollidersExact.gameObject.SetActive(false);
-            boundsUnknownExact.gameObject.SetActive(false);
+            //boundsStaticCollidersExact.gameObject.SetActive(false);
+            //boundsUnknownExact.gameObject.SetActive(false);
             //boundsTrackNodesPadded.gameObject.SetActive(false);
-            boundsStaticCollidersPadded.gameObject.SetActive(false);
-            boundsUnknownPadded.gameObject.SetActive(false);
+            //boundsStaticCollidersPadded.gameObject.SetActive(false);
+            //boundsUnknownPadded.gameObject.SetActive(false);
 
 
             // return parent object

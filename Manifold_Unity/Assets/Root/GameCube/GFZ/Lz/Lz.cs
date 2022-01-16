@@ -301,11 +301,37 @@ namespace LibGxFormat.Lz
             // Read file header
             int headerSizeField = inputBinaryStream.ReadInt32();
             int uncompressedSize = inputBinaryStream.ReadInt32();
+			int compressedSize = headerSizeField;
 
+			// OK, let's get sophisticated
+			// It looks like some AX files might be in GX format. 
+			// So what we can do it compare the actual file length
+			// and compare it to what's in the file. Depending on
+			// the value, do the thing.
+			if (game == AvGame.FZeroGX || game == AvGame.FZeroAX)
+            {
+				// If size in file and size in header are the same, we subtract 8 bytes
+				// from the header size. If they
+				int fileLength = (int)inputBinaryStream.BaseStream.Length;
+				bool isMatching = headerSizeField == fileLength;
+				// ... and if it isn't, ensure it is exactly 8 less. Otherwise we may
+				// be dealing with a different kind of file.
+				bool isMinus8 = headerSizeField == fileLength - 8;
+
+				if (isMatching)
+                {
+					compressedSize -= 8;
+                }
+                else if (!isMinus8)
+                {
+					var msg = "You are not dealing with an F-Zero AX/GX LZ file!";
+					throw new InvalidLzFileException(msg);
+				}
+			}
 			// If an F-Zero game, do not hack count
-            int compressedSize = headerSizeField;
-            if (game != AvGame.FZeroGX && game != AvGame.FZeroAX)
-                compressedSize -= 8; // SMB counts the 8 bytes of header in the compressed size field
+			//int compressedSize = headerSizeField;
+			//if (game != AvGame.FZeroGX)// && game != AvGame.FZeroAX)
+            //    compressedSize -= 8; // SMB counts the 8 bytes of header in the compressed size field
 
             // Check that the size of the input matches the expected value
             if (compressedSize + 8 != inputStream.Length)
@@ -334,7 +360,7 @@ namespace LibGxFormat.Lz
             if (outputStream == null)
                 throw new ArgumentNullException("outputStream");
             if (!Enum.IsDefined(typeof(AvGame), game))
-                throw new ArgumentOutOfRangeException("game");
+                throw new ArgumentOutOfRangeException($"{nameof(game)}, ({game})");
 
             // Read the input data and compress with LZSS
             byte[] uncompressedData = StreamUtil.ReadFully(inputStream);
@@ -344,8 +370,12 @@ namespace LibGxFormat.Lz
 
             // Write file header and data
             int headerSizeField = compressedData.Length;
-            if (game != AvGame.FZeroGX)
-                 headerSizeField += 8; // SMB counts the 8 bytes of header in the compressed size field
+			if (game != AvGame.FZeroGX)
+			{
+				// SMB counts the 8 bytes of header in the compressed size field
+				// F-Zero AX as well
+				headerSizeField += 8; 
+			}
 
             EndianBinaryWriter outputBinaryWriter = new EndianBinaryWriter(EndianBitConverter.Little, outputStream);
             outputBinaryWriter.Write(headerSizeField);

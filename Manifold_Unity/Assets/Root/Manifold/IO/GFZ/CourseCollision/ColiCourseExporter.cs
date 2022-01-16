@@ -61,7 +61,7 @@ namespace Manifold.IO.GFZ.CourseCollision
         //public string filePath = "";
         public void Export()
         {
-            ColiCourseUtility.SerializeVerbose = serializeVerbose;
+            //ColiCourseUtility.SerializeVerbose = serializeVerbose;
             OSUtility.OpenDirectory(openFolderAfterExport, exportTo);
 
             var dateTime = DateTime.Now;

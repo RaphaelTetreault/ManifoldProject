@@ -64,8 +64,8 @@ namespace GameCube.GFZ.CourseCollision
         public Range unkRange0x00;
         public ArrayPointer trackNodesPtr;
         public ArrayPointer surfaceAttributeAreasPtr;
-        // TODO: this is actually an ArrayPointer with the next value (this = len, next = pointer).
-        // ...so you should make it represented that way... I think, anyway. 2021/12/19
+        // 2022-01-14: this is a bool, the game loads the following structure regardless
+        // (because it'd crash anways because of it when unloading)
         public Bool32 staticColliderMeshesActive = Bool32.True; 
         public Pointer staticColliderMeshesPtr;
         public Pointer zeroes0x20Ptr; // GX: 0xE8, AX: 0xE4

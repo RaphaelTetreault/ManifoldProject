@@ -11,6 +11,9 @@ namespace Manifold.IO
         /// <param name="filePath">Open folder window at this path.</param>
         public static void OpenDirectory(params string[] filePaths)
         {
+            // 2022/01-15
+            // Check to see if UnityEditor.RevealInFinder(path) is better
+
             foreach (string filePath in filePaths)
             {
                 var sysPath = UnityPathUtility.EnforceSystemSeparators(filePath);
