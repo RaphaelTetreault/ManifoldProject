@@ -8,35 +8,107 @@ using UnityEngine;
 using UnityEditor;
 using GameCube.GFZ.CourseCollision;
 
+using Manifold.IO.GFZ;
 
 namespace Manifold
 {
-    public abstract class EditorData
-    {
-        public void Draw(string heading)
-        {
-            if (!string.IsNullOrEmpty(heading))
-            {
-                var label = ObjectNames.NicifyVariableName(heading);
-                EditorGUILayout.LabelField(label, EditorStyles.boldLabel);
-            }
+    //public abstract class EditorData
+    //{
+    //    public void Draw(string heading)
+    //    {
+    //        if (!string.IsNullOrEmpty(heading))
+    //        {
+    //            var label = ObjectNames.NicifyVariableName(heading);
+    //            EditorGUILayout.LabelField(label, EditorStyles.boldLabel);
+    //        }
 
-            OnGUI();
-        }
+    //        OnGUI();
+    //    }
 
-        public abstract void OnGUI();
+    //    public void Draw()
+    //    {
+    //        OnGUI();
+    //    }
 
-    }
+    //    public abstract void OnGUI();
+
+    //}
 
 
     [Serializable]
-    public class GfzProjectSettings : EditorData
+    public class GfzProjectSettings
     {
-        public ColiScene.SerializeFormat serializeFormat = ColiScene.SerializeFormat.GX;
+        [SerializeField] ColiScene.SerializeFormat serializeFormat = ColiScene.SerializeFormat.GX;
+        [SerializeField] string rootFolder = string.Empty;
+        [SerializeField] string testGfzj01 = string.Empty;
+        [SerializeField] string testGfze01 = string.Empty;
+        [SerializeField] string testGfzp01 = string.Empty;
+        [SerializeField] string testGfzj8p = string.Empty;
+        [SerializeField] string testOutput = string.Empty;
 
-        public sealed override void OnGUI()
+        public ColiScene.SerializeFormat SerializeFormat => serializeFormat;
+        public string RootFolder => rootFolder;
+        public string TestOutput => testOutput;
+
+        // Easy accessors for common places
+        public string StageDir => $"{rootFolder}/stage/";
+
+
+
+
+
+
+        public string[] GetTestRootDirectories()
         {
+            return new string[]
+            {
+                testGfzj01,
+                testGfze01,
+                testGfzp01,
+                testGfzj8p,
+            };
+        }
+
+        public string SeekRootStart()
+        {
+            // TODO: change per editor platform
+            return "C:/";
+        }
+
+        public void DrawSettingsTab()
+        {
+            EditorGUILayout.Space();
             serializeFormat = GuiSimple.EnumPopup(nameof(serializeFormat), serializeFormat);
+            rootFolder = GuiSimple.BrowseFolder(rootFolder, "Root Folder", "Open Root GFZ Folder", SeekRootStart(), "");
+        }
+
+        public void DrawTestTab()
+        {
+            EditorGUILayout.Space();
+            GuiSimple.Label("Folders for all version for mass tests", EditorStyles.boldLabel);
+            testGfzj01 = GuiSimple.BrowseFolder(testGfzj01, "Root Folder (gfzj01)", "Open Root GFZ J Folder", testGfzj01, "");
+            testGfze01 = GuiSimple.BrowseFolder(testGfze01, "Root Folder (gfze01)", "Open Root GFZ E Folder", testGfze01, "");
+            testGfzp01 = GuiSimple.BrowseFolder(testGfzp01, "Root Folder (gfzp01)", "Open Root GFZ P Folder", testGfzp01, "");
+            testGfzj8p = GuiSimple.BrowseFolder(testGfzj8p, "Root Folder (gfzj8p)", "Open Root AX Folder", testGfzj8p, "");
+            EditorGUILayout.Space();
+            GuiSimple.Label("Output Logs Go Here", EditorStyles.boldLabel);
+            testOutput = GuiSimple.BrowseFolder(testOutput, "Log Output Directory", "Open Log Directory", testOutput, "");
+        }
+
+
+        public static GfzProjectSettings Load(string fileName)
+        {
+            // Load in data
+            var settings = new GfzProjectSettings();
+            var data = EditorPrefs.GetString(fileName, JsonUtility.ToJson(settings, false));
+            JsonUtility.FromJsonOverwrite(data, settings);
+            return settings;
+        }
+
+        public static void Save(string fileName, GfzProjectSettings projectSettings)
+        {
+            var data = JsonUtility.ToJson(projectSettings, false);
+            EditorPrefs.SetString(fileName, data);
         }
     }
 
@@ -44,35 +116,40 @@ namespace Manifold
 
     public class GfzProjectWindow : EditorWindow
     {
+        private static GfzProjectWindow self;
+
         // Handy window serialization
         // https://answers.unity.com/questions/119978/how-do-i-have-an-editorwindow-save-its-data-inbetw.html
-        private const string saveName = "gfz-window";
+        public const string saveName = "gfz-project-window";
 
         // Serialize values so they persist
         [SerializeField] int tabIndex;
         [SerializeField] GfzProjectSettings settings = new GfzProjectSettings();
-        [SerializeField] string rootFolder = string.Empty;
+
 
         private void OnEnable()
         {
             // Load in data
-            var data = EditorPrefs.GetString(saveName, JsonUtility.ToJson(this, false));
-            JsonUtility.FromJsonOverwrite(data, this);
+            settings = GfzProjectSettings.Load(saveName);
+            //
+            self = this;
         }
 
         private void OnDisable()
         {
             // Save out data
-            var data = JsonUtility.ToJson(this, false);
-            EditorPrefs.SetString(saveName, data);
+            GfzProjectSettings.Save(saveName, settings);
+            //
+            self = null;
         }
 
         // Add menu named "My Window" to the Window menu
-        [MenuItem("Manifold/Open Settings Window")]
-        static void Init()
+        [MenuItem(Const.Menu.Manifold + "Open Settings Window")]
+        static void OpenNewWindow()
         {
             // Get existing open window or if none, make a new one:
             GfzProjectWindow window = (GfzProjectWindow)GetWindow(typeof(GfzProjectWindow));
+            window.titleContent = new GUIContent("GFZ Project Settings");
             window.Show();
         }
 
@@ -81,20 +158,19 @@ namespace Manifold
             // The current window instance in serializable format
             var window = new SerializedObject(this);
             // The window tab we want to look at
-            tabIndex = GUILayout.Toolbar(tabIndex, new string[] { "Tab 0", "Tab 1", "Tab 2" });
+            tabIndex = GUILayout.Toolbar(tabIndex, new string[] { "Settings", "Tests", "TBD" });
 
             switch (tabIndex)
             {
                 case 0:
                     {
-                        settings.Draw("Settings");
-                        rootFolder = GuiSimple.BrowseFolder(rootFolder, "Root Folder", "Open Root GFZ Folder", "C:/", "");
+                        settings.DrawSettingsTab();
                     }
                     break;
 
                 case 1:
                     {
-
+                        settings.DrawTestTab();
                     }
                     break;
 
@@ -111,11 +187,40 @@ namespace Manifold
             // Save changes
             window.ApplyModifiedProperties();
         }
+
+
+        /// <summary>
+        /// Returns setting data stored in the GFZ Project Window panel.
+        /// </summary>
+        /// <returns></returns>
+        public static GfzProjectSettings GetSettings()
+        {
+            if (self != null)
+            {
+                //Debug.Log("Got instance data");
+                return self.settings;
+            }
+            else
+            {
+                //Debug.Log("Got data from disk");
+                return GfzProjectSettings.Load(saveName);
+            }
+        }
     }
 
 
     public static class GuiSimple
     {
+        public static void Label(string label, params GUILayoutOption[] options)
+        {
+            EditorGUILayout.LabelField(Labelize(label), options);
+        }
+        public static void Label(string label, GUIStyle style)
+        {
+            EditorGUILayout.LabelField(Labelize(label), style);
+        }
+
+
         public static int Int(string name, int value)
         {
             var label = ObjectNames.NicifyVariableName(name);
@@ -165,7 +270,7 @@ namespace Manifold
                 var result = EditorUtility.OpenFolderPanel(title, directory, defaultName);
                 if (!string.IsNullOrEmpty(result))
                 {
-                    value = result;
+                    value = result + "/";
                 }
             }
             value = EditorGUILayout.TextField(value);
@@ -182,7 +287,7 @@ namespace Manifold
                 var result = EditorUtility.OpenFilePanelWithFilters(title, directory, filters);
                 if (!string.IsNullOrEmpty(result))
                 {
-                    value = result;
+                    value = result + "/";
                 }
             }
             value = EditorGUILayout.TextField(value);

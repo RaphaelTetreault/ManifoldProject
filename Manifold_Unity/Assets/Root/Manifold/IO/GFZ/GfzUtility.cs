@@ -2,7 +2,6 @@
 using LibGxFormat.Lz;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using UnityEngine;
 using UnityEditor;
 
@@ -10,20 +9,19 @@ namespace Manifold.IO.GFZ
 {
     public class GfzUtility
     {
+        public const string GfzMenu = Const.Menu.Manifold + "Utility/";
+
         /// <summary>
         /// Decompresses all F-Zero GX LZ files in selected folder and subfolders
         /// </summary>
-        [MenuItem(Const.Menu.allRegions + "Decompress All LZ")]
-        public static void DecompressAllGxAvLzAtRoot() => DecompressAllAvLzAtRoot();
+        [MenuItem(GfzMenu + "Decompress LZ in All Directories")]
+        public static void DecompressAllAvLzFromRoot() => DecompressAllAvLz(SearchOption.AllDirectories);
 
-        ///// <summary>
-        ///// Decompresses all F-Zero AX LZ files in selected folder and subfolders
-        ///// </summary>
-        //[MenuItem(Const.Menu.ax + "Decompress All LZ")]
-        //public static void DecompressAllAxAvLzAtRoot() => DecompressAllAvLzAtRoot(AvGame.FZeroAX);
-
-
-        public static void DecompressAllAvLzAtRoot(SearchOption searchOption = SearchOption.AllDirectories)
+        /// <summary>
+        /// Decompresses all F-Zero GX LZ files in selected folder and subfolders
+        /// </summary>
+        /// <param name="searchOption">Option applied to directory search.</param>
+        public static void DecompressAllAvLz(SearchOption searchOption = SearchOption.AllDirectories)
         {
             var rootPath = EditorUtility.OpenFolderPanel("Select GFZ Root Folder", "", "");
             DecompressAvLzFolderToDisk(rootPath, "Decompressing LZ Files...", SearchOption.AllDirectories);
@@ -102,6 +100,7 @@ namespace Manifold.IO.GFZ
         }
 
 
+
         public static MemoryStream DecompressAvLz(string filePath)
         {
             var decompressedFile = new MemoryStream();
@@ -133,6 +132,7 @@ namespace Manifold.IO.GFZ
             // File.Create will clear any existing file data
             using (var writer = File.Create(outputPath, (int)decompressedFile.Length))
             {
+                decompressedFile.Seek(0, SeekOrigin.Begin);
                 decompressedFile.CopyTo(writer);
             }
 
@@ -161,7 +161,7 @@ namespace Manifold.IO.GFZ
         /// <param name="avGame"></param>
         /// <param name="searchOption"></param>
         /// <exception cref="IOException"></exception>
-        public static void DecompressAvLzFolderToDisk(string rootPath, string processTitle, SearchOption searchOption)
+        public static void DecompressAvLzFolderToDisk(string rootPath, string processTitle, SearchOption searchOption, bool overwriteFiles = true)
         {
             // Find all files within folder matching this format
             var filePaths = Directory.GetFiles(rootPath, "*.lz", searchOption);
@@ -193,7 +193,7 @@ namespace Manifold.IO.GFZ
 
                 // Write file if it does not exist
                 bool fileDoesNotExist = !File.Exists(outputPath);
-                if (fileDoesNotExist)
+                if (overwriteFiles || fileDoesNotExist)
                 {
                     bool success = DecompressAvLzToDisk(filePath);
                     if (!success)
@@ -205,6 +205,8 @@ namespace Manifold.IO.GFZ
             EditorUtility.ClearProgressBar();
         }
 
+
+        #region OBSOLETE
 
         public const string compressedExt = ".lz";
 
@@ -337,5 +339,8 @@ namespace Manifold.IO.GFZ
 
             return exportFilesList.ToArray();
         }
+
+        #endregion
+
     }
 }

@@ -15,42 +15,20 @@ namespace Manifold.IO.GFZ
 {
     public static class ColiCourseIO
     {
-        //public static void DecompressAllStages(string path, string processTitle, LibGxFormat.AvGame avGame)
-        //{
-        //    // Get record of all available files
-        //    var filePaths = new List<string>();
-
-        //    // Iterate over directory to get files
-        //    for (int i = 0; i < 256; i++)
-        //    {
-        //        // Compressed file names
-        //        string filePath = $"{path}/COLI_COURSE{i:d2}.lz";
-
-        //        if (File.Exists(filePath))
-        //            filePaths.Add(filePath);
-        //    }
-
-        //    foreach (var filePath in filePaths)
-        //    {
-        //        bool fileDoesNotExist = !File.Exists(filePath);
-        //        if (fileDoesNotExist)
-        //        {
-        //            bool success = GfzUtility.DecompressAvLzToDisk(filePath, avGame);
-        //            if (!success)
-        //            {
-        //                throw new IOException("Failed to save file. This should not happen.");
-        //            }
-        //        }
-        //    }
-        //}
-
-        // done
+        /// <summary>
+        /// Loads all stages at the designated <paramref name="path"/> in iterative pattern,
+        /// only loads one stages, passes it, than yields until next iteration.
+        /// </summary>
+        /// <param name="path">Path to load all stages from.</param>
+        /// <param name="processTitle">Title of the dialog window.</param>
+        /// <returns>ColiScene one at a time during iteration.</returns>
         public static IEnumerable<ColiScene> LoadAllStages(string path, string processTitle)
         {
             // Get record of all available files
             var filePaths = new List<string>();
 
             // Iterate over directory to get files
+            // Const 256 = max stages addressable (FF isn't addressable, too).
             for (int i = 0; i < 256; i++)
             {
                 // Uncompressed file names
@@ -74,7 +52,7 @@ namespace Manifold.IO.GFZ
 
                 // Read scene file
                 var filePath = filePaths[i];
-                var reader = new BinaryReader(File.Open(filePath, FileMode.Open));
+                var reader = new BinaryReader(File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read));
                 var scene = new ColiScene();
                 scene.FileName = fileName;
                 scene.Deserialize(reader);
@@ -142,37 +120,77 @@ namespace Manifold.IO.GFZ
             reader.ReadX(ref scene, false);
         }
 
+        private const string TestLoad = "Load All Stages";
+        private const string TestSave = "Save All Stages";
+        private const string ActiveRoot = " (Active Root)";
+        private const string DebugAllRegions = " (Debug All Regions)";
+
 
         #region Test Load All Stages
 
-        private const string label = "Test Load All Stages";
-
         public static void TestLoadAllStages(string title, string path)
         {
+            // TODO: should use AddressLogBinaryReader. Complications with
+            // the iterator and making it generic.
+
             // This loads all stages but does nothing with them
             foreach (var _ in LoadAllStages(path, title))
             { }
         }
 
-        [MenuItem(Const.Menu.gxJapanese + label)]
-        public static void TestLoadAllStagesGfzj() => TestLoadAllStages(label, "C:/GFZJ01/stage/");
-
-        [MenuItem(Const.Menu.gxEnglish + label)]
-        public static void TestLoadAllStagesGfze() => TestLoadAllStages(label, "C:/GFZE01/stage/");
-
-        [MenuItem(Const.Menu.gxEurope + label)]
-        public static void TestLoadAllStagesGfzp() => TestLoadAllStages(label, "C:/GFZP01/stage/");
-
-        [MenuItem(Const.Menu.ax + label)]
-        public static void TestLoadAllStagesGfzj8p() => TestLoadAllStages(label, "C:/GFZJ8P/stage/");
-
-        [MenuItem(Const.Menu.allRegions + label)]
-        public static void TestLoadAllStagesAllRegions()
+        [MenuItem(Const.Menu.tests + TestLoad + ActiveRoot)]
+        public static void TestLoadAllStages()
         {
-            foreach (var gameCode in Const.RegionCode.allRegions)
+            var settings = GfzProjectWindow.GetSettings();
+            var root = settings.RootFolder;
+            var path = $"{root}/stage/";
+            TestLoadAllStages(TestLoad, path);
+        }
+
+        [MenuItem(Const.Menu.tests + TestLoad + DebugAllRegions)]
+        public static void TestLoadAllStagesDebugAllRegions()
+        {
+            var settings = GfzProjectWindow.GetSettings();
+            var directories = settings.GetTestRootDirectories();
+            foreach (var directory in directories)
             {
-                var title = $"{label} ({gameCode})";
-                TestLoadAllStages(title, $"C:/{gameCode}/stage/");
+                var path = $"{directory}/stage/";
+                TestLoadAllStages(TestLoad, path);
+            }
+        }
+
+        #endregion
+
+        #region Test Save All Stages
+
+        public static void TestSaveAllStages(string title, string path)
+        {
+            // Iterate over all stages, serialize them to RAM.
+            foreach (var coliScene in LoadAllStages(path, title))
+            {
+                var writer = new AddressLogBinaryWriter(new MemoryStream());
+                writer.WriteX(coliScene);
+            }
+        }
+
+        [MenuItem(Const.Menu.tests + TestSave + ActiveRoot)]
+        public static void TestSaveAllStages()
+        {
+            var settings = GfzProjectWindow.GetSettings();
+            var root = settings.RootFolder;
+            var path = $"{root}/stage/";
+            TestSaveAllStages(TestSave, path);
+        }
+
+        [MenuItem(Const.Menu.tests + TestSave + DebugAllRegions)]
+        public static void TestSaveAllStagesDebugAllRegions()
+        {
+            var settings = GfzProjectWindow.GetSettings();
+            var directories = settings.GetTestRootDirectories();
+            foreach (var directory in directories)
+            {
+                var path = $"{directory}/stage/";
+                TestSaveAllStages(TestLoad, path);
             }
         }
 
@@ -180,51 +198,64 @@ namespace Manifold.IO.GFZ
 
         #region
 
+        [MenuItem(Const.Menu.logs + "Log All Stages" + ActiveRoot)]
+        public static void ExportColiSceneLog()
+        {
+            var settings = GfzProjectWindow.GetSettings();
 
+            foreach (var coliScene in LoadAllStages(settings.StageDir, "Logging Stages..."))
+            {
+                var outputFile = $"{settings.TestOutput}/log-{coliScene.FileName}.txt";
+                var log = new TextLogger(outputFile);
+                LogSceneData(log, coliScene);
+                log.Flush();
+                log.Close();
+            }
+
+            OSUtility.OpenDirectory(settings.TestOutput);
+        }
 
         #endregion
 
+        //[MenuItem("Manifold/IO/SAVE All Stages GFZJ")]
+        //public static void TestSaveAllStages()
+        //{
+        //    for (int i = 0; i <= 50; i++)
+        //    {
+        //        // Get file name (must exist)
+        //        var filePath = $"C:/GFZJ01/stage/COLI_COURSE{i:d2}";
+        //        if (!File.Exists(filePath))
+        //            continue;
+        //        var fileName = Path.GetFileName(filePath);
 
+        //        var cancel = EditorUtility.DisplayCancelableProgressBar("Save All Stages", fileName, i / 50f);
+        //        if (cancel)
+        //            break;
 
-        [MenuItem("Manifold/IO/SAVE All Stages GFZJ")]
-        public static void TestSaveAllStages()
-        {
-            for (int i = 0; i <= 50; i++)
-            {
-                // Get file name (must exist)
-                var filePath = $"C:/GFZJ01/stage/COLI_COURSE{i:d2}";
-                if (!File.Exists(filePath))
-                    continue;
-                var fileName = Path.GetFileName(filePath);
-
-                var cancel = EditorUtility.DisplayCancelableProgressBar("Save All Stages", fileName, i / 50f);
-                if (cancel)
-                    break;
-
-                // Load scene files
-                var reader = new AddressLogBinaryReader(File.OpenRead(filePath));
-                var scene = new ColiScene();
-                scene.FileName = fileName;
-                reader.ReadX(ref scene, false);
-                reader.LogRangesRead($"C:/test/output/log-ranges-read-{fileName}.txt");
-                // Save scene files
-                var savePath = $"C:/test/output/{fileName}";
-                var writer = new AddressLogBinaryWriter(File.Create(savePath));
-                scene.SerializeVerbose = true;
-                scene.Serialize(writer);
-                //
-                var log = new TextLogger($"C:/test/output/log-full-{fileName}.txt");
-                log.Flush();
-                LogSceneData(log, scene);
-                // Close reader/writer
-                writer.Close();
-                reader.Close();
-                log.Close();
-                // Compress output
-                GfzUtility.CompressAvLzToDisk(savePath, LibGxFormat.AvGame.FZeroGX);
-            }
-            EditorUtility.ClearProgressBar();
-        }
+        //        // Load scene files
+        //        var reader = new AddressLogBinaryReader(File.OpenRead(filePath));
+        //        var scene = new ColiScene();
+        //        scene.FileName = fileName;
+        //        reader.ReadX(ref scene, false);
+        //        reader.LogRangesRead($"C:/test/output/log-ranges-read-{fileName}.txt");
+        //        // Save scene files
+        //        var savePath = $"C:/test/output/{fileName}";
+        //        var writer = new AddressLogBinaryWriter(File.Create(savePath));
+        //        scene.SerializeVerbose = true;
+        //        scene.Serialize(writer);
+        //        //
+        //        var log = new TextLogger($"C:/test/output/log-full-{fileName}.txt");
+        //        log.Flush();
+        //        LogSceneData(log, scene);
+        //        // Close reader/writer
+        //        writer.Close();
+        //        reader.Close();
+        //        log.Close();
+        //        // Compress output
+        //        GfzUtility.CompressAvLzToDisk(savePath, LibGxFormat.AvGame.FZeroGX);
+        //    }
+        //    EditorUtility.ClearProgressBar();
+        //}
 
         [MenuItem("Manifold/IO/GFZE/Log All")]
         public static void RoundtripErrorCheckAllGfze()
