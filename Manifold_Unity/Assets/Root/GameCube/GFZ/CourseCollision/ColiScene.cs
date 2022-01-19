@@ -757,7 +757,7 @@ namespace GameCube.GFZ.CourseCollision
             foreach (var animationClipCurve in animationClipCurves)
                 writer.WriteX(animationClipCurve);
             // 2022-01-18: add serilization for animation data!
-            writer.InlineDesc(serializeVerbose, animationClipCurves.ToArray());
+            writer.InlineComment(serializeVerbose, nameof(AnimationClip), "AnimClipCurve", $"{nameof(AnimationCurve)}[]");
             foreach (var animationClipCurve in animationClipCurves)
                 if (animationClipCurve.animationCurve != null)
                     writer.WriteX(animationClipCurve.animationCurve);
@@ -1042,6 +1042,11 @@ namespace GameCube.GFZ.CourseCollision
             }
         }
 
+        /// <summary>
+        /// Returns an array of all IBinaryAddressables (possibly with nulls) in this ColiScene.
+        /// Useful to check if values are written to disk if addresses are set to consts beforehand.
+        /// </summary>
+        /// <returns></returns>
         public IBinaryAddressable[] GetAllAddressables()
         {
             var list = new List<IBinaryAddressable>();

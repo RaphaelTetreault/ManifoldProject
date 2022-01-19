@@ -25,6 +25,11 @@ namespace Manifold.IO
             writer.BaseStream.Seek(0, SeekOrigin.Begin);
         }
 
+        private const int kAlignment = 16;
+        private const char kWhiteSpace = ' ';
+        private const char kPadding = '-';
+
+
 
         // Added the below extensions to help debug file outputs
         public static void Comment(this BinaryWriter writer, string message, bool doWrite, char padding = ' ', int alignment = 16)
@@ -137,6 +142,22 @@ namespace Manifold.IO
             CommentNewLine(writer, true, '-', alignment);
             writer.CommentType(type, true, ' ', alignment);
             CommentNewLine(writer, true, '-', alignment);
+        }
+
+        public static void InlineComment(this BinaryWriter writer, bool doWrite, params string[] comments)
+        {
+            if (!doWrite)
+                return;
+
+            // Align with desired padding, not '-' from next call
+            writer.AlignTo(kAlignment, (byte)kWhiteSpace);
+
+            CommentNewLine(writer, true, '-', kAlignment);
+            foreach (var comment in comments)
+            {
+                writer.Comment(comment, true, ' ', kAlignment);
+            }
+            CommentNewLine(writer, true, '-', kAlignment);
         }
 
         public static void CommentDateAndCredits(this BinaryWriter writer, bool doWrite)

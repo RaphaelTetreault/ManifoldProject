@@ -57,8 +57,10 @@ namespace Manifold.IO.GFZ
                     uniqueKeyframeTimes.RemoveAt(index);
                 }
 
+                // TFollowing line triggers on stock stage 43
+                //DebugConsole.Log($"Removed duplicate keyframe times! Total: {removeIndexes.Count}");
+                
                 // Re-assign new list to used parameters
-                DebugConsole.Log($"Removed duplicate keyframe times! Total: {removeIndexes.Count}");
                 keyables = uniqueKeyframeTimes.ToArray();
             }
 
