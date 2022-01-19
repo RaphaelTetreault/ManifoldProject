@@ -102,6 +102,5 @@ namespace GameCube.GFZ.CourseCollision
 
             return stringBuilder.ToString();
         }
-
     }
 }

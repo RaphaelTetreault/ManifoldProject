@@ -4,5 +4,6 @@ namespace Manifold.IO
     {
         int Address { get; }
         bool IsNotNullPointer { get; }
+        bool IsNull { get; }
     }
 }

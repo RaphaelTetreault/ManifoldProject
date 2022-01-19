@@ -80,10 +80,12 @@ namespace GameCube.GFZ.CourseCollision
 
         public void ValidateReferences()
         {
-            // Ensure both animation curve and ptr match up as null or not-null
-
-            // 2021/09/18: problem is you can't guarantee this on desirealize-reserialize
-            // since ref is made but ptr is null.
+            // 2022/01/19: Since this is a wrapper class, check if the curve pointer
+            // for the collection (wehich points to the base item [0]) is the same
+            // as what the array pointer points to.
+            Assert.ReferencePointer(animationCurve, animationCurvePtrs);
+            // Ensure that we have the same amount of keyables as we say we do.
+            Assert.IsTrue(animationCurve.keyableAttributes.Length == animationCurvePtrs.Length);
 
             // seems like this might be the only valid check... see note above.
             if (animationCurvePtrs.IsNotNullPointer)

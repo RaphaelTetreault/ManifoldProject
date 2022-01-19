@@ -78,10 +78,13 @@ namespace GameCube.GFZ.CourseCollision
 
         public void ValidateReferences()
         {
+            // Validate pointer instance relationship
+            Assert.ValidateReferencePointer(checkpoints, checkpointsPtr);
+            Assert.ReferencePointer(segment, segmentPtr);
+
+            // This type should never have any nulls
             Assert.IsTrue(checkpointsPtr.IsNotNullPointer);
             Assert.IsTrue(segmentPtr.IsNotNullPointer);
-            Assert.IsTrue(checkpoints != null);
-            Assert.IsTrue(segment != null);
         }
 
         public override string ToString()

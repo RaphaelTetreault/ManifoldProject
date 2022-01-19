@@ -611,12 +611,12 @@ namespace GameCube.GFZ.CourseCollision
 
                 // COLLIDER TRIS
                 {
-                    var colliderTris = staticColliderMeshes.colliderTriangles;
+                    var colliderTris = staticColliderMeshes.colliderTris;
                     // Write tri data and comment
                     if (!colliderTris.IsNullOrEmpty())
                         writer.InlineDesc(serializeVerbose, scmPtr, colliderTris);
                     writer.WriteX(colliderTris, false);
-                    WriteStaticColliderMeshMatrices(writer, scmPtr, "ColiTri", staticColliderMeshes.triMeshIndexMatrices);
+                    WriteStaticColliderMeshMatrices(writer, scmPtr, "ColiTri", staticColliderMeshes.triMeshMatrices);
                 }
 
                 // COLLIDER QUADS
@@ -626,7 +626,7 @@ namespace GameCube.GFZ.CourseCollision
                     if (!colliderQuads.IsNullOrEmpty())
                         writer.InlineDesc(serializeVerbose, scmPtr, colliderQuads);
                     writer.WriteX(colliderQuads, false);
-                    WriteStaticColliderMeshMatrices(writer, scmPtr, "ColiQuad", staticColliderMeshes.quadMeshIndexMatrices);
+                    WriteStaticColliderMeshMatrices(writer, scmPtr, "ColiQuad", staticColliderMeshes.quadMeshMatrices);
                 }
             }
 
@@ -862,8 +862,8 @@ namespace GameCube.GFZ.CourseCollision
 
                 // Static Collider Meshes and dependencies
                 referers.Add(staticColliderMeshes);
-                referers.AddRange(staticColliderMeshes.triMeshIndexMatrices);
-                referers.AddRange(staticColliderMeshes.quadMeshIndexMatrices);
+                referers.AddRange(staticColliderMeshes.triMeshMatrices);
+                referers.AddRange(staticColliderMeshes.quadMeshMatrices);
 
                 // OBJECTS
                 // Scene Objects
@@ -1069,14 +1069,14 @@ namespace GameCube.GFZ.CourseCollision
 
             // Static Collider Meshes
             list.Add(staticColliderMeshes);
-            list.AddRange(staticColliderMeshes.colliderTriangles);
+            list.AddRange(staticColliderMeshes.colliderTris);
             list.AddRange(staticColliderMeshes.colliderQuads);
-            foreach (var matrix in staticColliderMeshes.triMeshIndexMatrices)
+            foreach (var matrix in staticColliderMeshes.triMeshMatrices)
             {
                 list.Add(matrix);
                 //list.AddRange(matrix.indexLists);
             }
-            foreach (var matrix in staticColliderMeshes.quadMeshIndexMatrices)
+            foreach (var matrix in staticColliderMeshes.quadMeshMatrices)
             {
                 list.Add(matrix);
                 //list.AddRange(matrix.indexLists);
@@ -1288,6 +1288,7 @@ namespace GameCube.GFZ.CourseCollision
 
         public void ValidateReferences()
         {
+            // "Constants"
             Assert.IsTrue(zero0x74 == 0);
             Assert.IsTrue(zero0x78 == 0);
             Assert.IsTrue(zero0x88 == 0);
@@ -1300,36 +1301,34 @@ namespace GameCube.GFZ.CourseCollision
             for (int i = 0; i < zeroes0xD8.Length; i++)
                 Assert.IsTrue(zeroes0xD8[i] == 0);
 
-            // Assert all pointers which are never null in game files
-            ////Assert.IsTrue(trackNodesPtr.IsNotNullPointer);
+            // Structures that always exist
+            Assert.IsTrue(trackNodesPtr.IsNotNullPointer);
             Assert.IsTrue(surfaceAttributeAreasPtr.IsNotNullPointer);
+            Assert.IsTrue(trackMinHeightPtr.IsNotNullPointer);
             Assert.IsTrue(staticColliderMeshesPtr.IsNotNullPointer);
             Assert.IsTrue(zeroes0x20Ptr.IsNotNullPointer);
             Assert.IsTrue(trackMinHeightPtr.IsNotNullPointer);
-            ////Assert.IsTrue(sceneObjectsPtr.IsNotNullPointer);
-            ////Assert.IsTrue(sceneInstancesPtr.IsNotNullPointer);
+            Assert.IsTrue(templateSceneObjectsPtr.IsNotNullPointer);
             Assert.IsTrue(fogPtr.IsNotNullPointer);
+            Assert.IsTrue(trackLengthPtr.IsNotNullPointer);
             Assert.IsTrue(trackCheckpointMatrixPtr.IsNotNullPointer);
 
-            if (!staticSceneObjects.IsNullOrEmpty())
-                Assert.IsTrue(staticSceneObjectsPtr.IsNotNullPointer);
-
-            // Assert pointers which can be null IF the reference type is not null
-            if (fogCurves != null)
-                Assert.IsTrue(fogCurvesPtr.IsNotNullPointer);
-            // triggers
-            if (!unknownSolsTriggers.IsNullOrEmpty())
-                Assert.IsTrue(unknownSolsTriggersPtr.IsNotNullPointer);
-            if (!unknownTriggers.IsNullOrEmpty())
-                Assert.IsTrue(unknownTriggersPtr.IsNotNullPointer);
-            if (!visualEffectTriggers.IsNullOrEmpty())
-                Assert.IsTrue(visualEffectTriggersPtr.IsNotNullPointer);
-            if (!courseMetadataTriggers.IsNullOrEmpty())
-                Assert.IsTrue(courseMetadataTriggersPtr.IsNotNullPointer);
-            if (!arcadeCheckpointTriggers.IsNullOrEmpty())
-                Assert.IsTrue(arcadeCheckpointTriggersPtr.IsNotNullPointer);
-            if (!storyObjectTriggers.IsNullOrEmpty())
-                Assert.IsTrue(storyObjectTriggersPtr.IsNotNullPointer);
+            // Ensure existing structures pointers were resolved correctly
+            Assert.ReferencePointer(trackNodes, trackNodesPtr);
+            Assert.ReferencePointer(surfaceAttributeAreas, surfaceAttributeAreasPtr);
+            Assert.ReferencePointer(trackMinHeight, trackMinHeightPtr);
+            Assert.ReferencePointer(dynamicSceneObjects, new ArrayPointer(dynamicSceneObjectCount, dynamicSceneObjectsPtr));
+            Assert.ReferencePointer(templateSceneObjects, templateSceneObjectsPtr);
+            Assert.ReferencePointer(staticSceneObjects, staticSceneObjectsPtr);
+            Assert.ReferencePointer(unknownSolsTriggers, unknownSolsTriggersPtr);
+            Assert.ReferencePointer(fogCurves, fogCurvesPtr);
+            Assert.ReferencePointer(fog, fogPtr);
+            Assert.ReferencePointer(trackLength, trackLengthPtr);
+            Assert.ReferencePointer(unknownTriggers, unknownTriggersPtr);
+            Assert.ReferencePointer(courseMetadataTriggers, courseMetadataTriggersPtr);
+            Assert.ReferencePointer(arcadeCheckpointTriggers, arcadeCheckpointTriggersPtr);
+            Assert.ReferencePointer(storyObjectTriggers, storyObjectTriggersPtr);
+            Assert.ReferencePointer(trackCheckpointMatrix, trackCheckpointMatrixPtr);
         }
 
         /// <summary>

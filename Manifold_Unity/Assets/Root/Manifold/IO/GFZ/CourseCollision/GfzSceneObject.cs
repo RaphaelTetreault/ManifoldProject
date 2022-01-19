@@ -60,7 +60,7 @@ namespace Manifold.IO.GFZ.CourseCollision
         public void SetBaseValues(SceneObjectDynamic value)
         {
             // Copy most reliable transform if available
-            if (value.transformPtr.IsNotNullPointer)
+            if (value.transformMatrix3x4Ptr.IsNotNullPointer)
             {
                 transform.CopyGfzTransform(value.transformMatrix3x4);
             }

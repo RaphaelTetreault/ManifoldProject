@@ -32,14 +32,41 @@ namespace Manifold.IO
         public static void IsFalse(bool value, string message = null)
             => IsTrue(!value, message);
 
-        public static void PointerReferenceValid(object reference, IPointer pointer)
+        public static void ValidateReferencePointer(object reference, IPointer pointer)
         {
-            bool referenceNull = reference == null;
-            bool pointerNull = pointer.Address == 0;
+            bool referenceIsNull = reference == null;
             // There is an issue if one of the two are set, but when both are the same, no issue
-            bool invalidState = pointerNull ^ pointerNull;
-
+            bool invalidState = referenceIsNull ^ pointer.IsNull;
             IsFalse(invalidState);
+        }
+
+
+        public static void ReferencePointer(IBinaryAddressable reference, IPointer pointer)
+        {
+            // Validates reference-pointer null/instance connection
+            ValidateReferencePointer(reference, pointer);
+
+            // Validates that pointer and reference share the same address
+            if (reference != null)
+            {
+                var refPtr = reference.GetPointer();
+                var isSamePointer = pointer.Address == refPtr.Address;
+                IsTrue(isSamePointer);
+            }
+        }
+
+        public static void ReferencePointer(IBinaryAddressable[] reference, ArrayPointer pointer)
+        {
+            // Validates reference-pointer null/instance connection
+            ValidateReferencePointer(reference, pointer);
+
+            // Validates that pointer and reference share the same address
+            if (reference != null && reference.Length > 0)
+            {
+                var refPtr = reference[0].GetPointer();
+                var isSamePointer = pointer.Address == refPtr.Address;
+                IsTrue(isSamePointer);
+            }
         }
 
         public static void ContainsNoNulls<T>(T ienumerable)

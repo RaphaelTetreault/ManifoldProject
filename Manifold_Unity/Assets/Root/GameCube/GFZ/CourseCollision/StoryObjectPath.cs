@@ -17,7 +17,7 @@ namespace GameCube.GFZ.CourseCollision
         [UnityEngine.SerializeField] private AddressRange addressRange;
 
         // FIELDS
-        public ArrayPointer animationCurvePtrs;
+        public ArrayPointer animationCurvePtr;
         // FIELDS (deserialized from pointer)
         public AnimationCurve animationCurve;
 
@@ -35,15 +35,15 @@ namespace GameCube.GFZ.CourseCollision
         {
             this.RecordStartAddress(reader);
             {
-                reader.ReadX(ref animationCurvePtrs);
+                reader.ReadX(ref animationCurvePtr);
             }
             this.RecordEndAddress(reader);
             {
-                if (animationCurvePtrs.IsNotNullPointer)
+                if (animationCurvePtr.IsNotNullPointer)
                 {
                     // Init anim curve, jump, read without creating new instance
-                    animationCurve = new AnimationCurve(animationCurvePtrs.Length);
-                    reader.JumpToAddress(animationCurvePtrs);
+                    animationCurve = new AnimationCurve(animationCurvePtr.Length);
+                    reader.JumpToAddress(animationCurvePtr);
                     reader.ReadX(ref animationCurve, false);
                 }
             }
@@ -54,19 +54,18 @@ namespace GameCube.GFZ.CourseCollision
         {
             //
             {
-                animationCurvePtrs = animationCurve.GetArrayPointer();
+                animationCurvePtr = animationCurve.GetArrayPointer();
             }
             this.RecordStartAddress(writer);
             {
-                writer.WriteX(animationCurvePtrs);
+                writer.WriteX(animationCurvePtr);
             }
             this.RecordEndAddress(writer);
         }
 
         public void ValidateReferences()
         {
-            if (animationCurve != null)
-                Assert.IsTrue(animationCurvePtrs.IsNotNullPointer);
+            Assert.ReferencePointer(animationCurve, animationCurvePtr);
         }
 
     }

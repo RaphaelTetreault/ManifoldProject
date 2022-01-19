@@ -32,10 +32,10 @@ namespace GameCube.GFZ.CourseCollision
         public Pointer templateSceneObjectPtr;
         public Transform transform = new Transform();
         public int zero_0x2C; // null ptr?
-        public Pointer animationPtr;
+        public Pointer animationClipPtr;
         public Pointer textureMetadataPtr;
         public Pointer skeletalAnimatorPtr;
-        public Pointer transformPtr;
+        public Pointer transformMatrix3x4Ptr;
         // FIELDS (deserialized from pointers)
         public SceneObjectTemplate templateSceneObject;
         public AnimationClip animationClip;
@@ -62,10 +62,10 @@ namespace GameCube.GFZ.CourseCollision
                 reader.ReadX(ref templateSceneObjectPtr);
                 reader.ReadX(ref transform, true);
                 reader.ReadX(ref zero_0x2C);
-                reader.ReadX(ref animationPtr);
+                reader.ReadX(ref animationClipPtr);
                 reader.ReadX(ref textureMetadataPtr);
                 reader.ReadX(ref skeletalAnimatorPtr);
-                reader.ReadX(ref transformPtr);
+                reader.ReadX(ref transformMatrix3x4Ptr);
             }
             this.RecordEndAddress(reader);
             {
@@ -74,9 +74,9 @@ namespace GameCube.GFZ.CourseCollision
                 reader.ReadX(ref templateSceneObject, true);
                 nameCopy = templateSceneObject.sceneObject.name;
 
-                if (animationPtr.IsNotNullPointer)
+                if (animationClipPtr.IsNotNullPointer)
                 {
-                    reader.JumpToAddress(animationPtr);
+                    reader.JumpToAddress(animationClipPtr);
                     reader.ReadX(ref animationClip, true);
                 }
 
@@ -95,9 +95,9 @@ namespace GameCube.GFZ.CourseCollision
                 // 1518 objects without a transform
                 // They appear to use animation, so the matrix is null
                 // They do have a "normal" transform, though
-                if (transformPtr.IsNotNullPointer)
+                if (transformMatrix3x4Ptr.IsNotNullPointer)
                 {
-                    reader.JumpToAddress(transformPtr);
+                    reader.JumpToAddress(transformMatrix3x4Ptr);
                     reader.ReadX(ref transformMatrix3x4, true);
                 }
 
@@ -113,10 +113,10 @@ namespace GameCube.GFZ.CourseCollision
             {
                 // Get pointers from refered instances
                 templateSceneObjectPtr = templateSceneObject.GetPointer();
-                animationPtr = animationClip.GetPointer();
+                animationClipPtr = animationClip.GetPointer();
                 textureMetadataPtr = textureMetadata.GetPointer();
                 skeletalAnimatorPtr = skeletalAnimator.GetPointer();
-                transformPtr = transformMatrix3x4.GetPointer();
+                transformMatrix3x4Ptr = transformMatrix3x4.GetPointer();
             }
             this.RecordStartAddress(writer);
             {
@@ -125,10 +125,10 @@ namespace GameCube.GFZ.CourseCollision
                 writer.WriteX(templateSceneObjectPtr);
                 writer.WriteX(transform);
                 writer.WriteX(zero_0x2C);
-                writer.WriteX(animationPtr);
+                writer.WriteX(animationClipPtr);
                 writer.WriteX(textureMetadataPtr);
                 writer.WriteX(skeletalAnimatorPtr);
-                writer.WriteX(transformPtr);
+                writer.WriteX(transformMatrix3x4Ptr);
             }
             this.RecordEndAddress(writer);
         }
@@ -136,19 +136,17 @@ namespace GameCube.GFZ.CourseCollision
         public void ValidateReferences()
         {
             // This pointer CANNOT be null and must refer to an object.
-            Assert.PointerReferenceValid(templateSceneObject, templateSceneObjectPtr);
-            //Assert.IsTrue(instanceReferencePtr.IsNotNullPointer);
-            //Assert.IsTrue(instanceReference != null);
+            Assert.IsTrue(templateSceneObject != null);
+            Assert.IsTrue(templateSceneObjectPtr.IsNotNullPointer);
+            Assert.ReferencePointer(templateSceneObject, templateSceneObjectPtr);
+            // This should always exist
+            Assert.IsTrue(transform != null);
 
-            // Assert pointers only if type is not null
-            if (animationClip != null)
-                Assert.IsTrue(animationPtr.IsNotNullPointer);
-            if (textureMetadata != null)
-                Assert.IsTrue(textureMetadataPtr.IsNotNullPointer);
-            if (skeletalAnimator != null)
-                Assert.IsTrue(skeletalAnimatorPtr.IsNotNullPointer);
-            if (transformMatrix3x4 != null)
-                Assert.IsTrue(transformPtr.IsNotNullPointer);
+            // Optional data
+            Assert.ReferencePointer(animationClip, animationClipPtr);
+            Assert.ReferencePointer(textureMetadata, textureMetadataPtr);
+            Assert.ReferencePointer(skeletalAnimator, skeletalAnimatorPtr);
+            Assert.ReferencePointer(transformMatrix3x4, transformMatrix3x4Ptr);
 
             // Constants 
             Assert.IsTrue(zero_0x2C == 0);

@@ -42,7 +42,7 @@ namespace GameCube.GFZ.CourseCollision
         [UnityEngine.SerializeField] private AddressRange addressRange;
 
         // FIELDS
-        public ArrayPointer[] animationCurvePtrs;
+        public ArrayPointer[] animationCurvesPtrs;
         // REFERENCE FIELDS
         public AnimationCurve[] animationCurves = new AnimationCurve[kCurveCount];
 
@@ -100,14 +100,14 @@ namespace GameCube.GFZ.CourseCollision
             this.RecordStartAddress(reader);
             {
                 // read 6 array pointers
-                reader.ReadX(ref animationCurvePtrs, kCurveCount, true);
+                reader.ReadX(ref animationCurvesPtrs, kCurveCount, true);
             }
             this.RecordEndAddress(reader);
             {
                 // Go through each array pointer
-                for (int i = 0; i < animationCurvePtrs.Length; i++)
+                for (int i = 0; i < animationCurvesPtrs.Length; i++)
                 {
-                    var arrayPointer = animationCurvePtrs[i];
+                    var arrayPointer = animationCurvesPtrs[i];
                     var animationCurve = new AnimationCurve(arrayPointer.Length);
 
                     reader.JumpToAddress(arrayPointer);
@@ -125,13 +125,13 @@ namespace GameCube.GFZ.CourseCollision
                 // Ensure we have the correct amount of animation curves before indexing
                 Assert.IsTrue(animationCurves.Length == kCurveCount);
                 // Construct ArrayPointer2D for animation curves
-                animationCurvePtrs = new ArrayPointer[kCurveCount];
-                for (int i = 0; i < animationCurvePtrs.Length; i++)
-                    animationCurvePtrs[i] = animationCurves[i].GetArrayPointer();
+                animationCurvesPtrs = new ArrayPointer[kCurveCount];
+                for (int i = 0; i < animationCurvesPtrs.Length; i++)
+                    animationCurvesPtrs[i] = animationCurves[i].GetArrayPointer();
             }
             this.RecordStartAddress(writer);
             {
-                writer.WriteX(animationCurvePtrs, false);
+                writer.WriteX(animationCurvesPtrs, false);
             }
             this.RecordEndAddress(writer);
         }
@@ -140,18 +140,22 @@ namespace GameCube.GFZ.CourseCollision
         {
             // Ensure we have the correct amount of animation curves before indexing
             Assert.IsTrue(animationCurves.Length == kCurveCount);
+            for (int i = 0; i < kCurveCount; i++)
+            {
+                Assert.ReferencePointer(animationCurves[i], animationCurvesPtrs[i]);
+            }
 
             // Each curve should have 1 or more keys. In reality, this is not true.
             // All the used data in the final game is like this (except ST44 where
             // [5/6] is missing]). Suffice to say, OUR data should conform to this.
-            
+
             // TO TEST: try an anim curve with multiple keys and interpolate between
             // 2 or more colours.
-            foreach (var animationCurve in animationCurves)
-            {
-                // TODO: warn, don't assert
-                //Assert.IsTrue(animationCurve.Length > 0);
-            }
+            //foreach (var animationCurve in animationCurves)
+            //{
+            //    // TODO: warn, don't assert
+            //    //Assert.IsTrue(animationCurve.Length > 0);
+            //}
         }
     }
 }

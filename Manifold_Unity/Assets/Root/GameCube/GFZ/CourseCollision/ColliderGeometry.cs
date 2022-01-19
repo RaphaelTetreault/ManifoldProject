@@ -43,11 +43,17 @@ namespace GameCube.GFZ.CourseCollision
             set => addressRange = value;
         }
 
+        public ArrayPointer TrisArrayPtr => new ArrayPointer(triCount, trisPtr);
+        public ArrayPointer QuadsArrayPtr => new ArrayPointer(quadCount, quadsPtr);
 
         // METHODS
         public void ValidateReferences()
         {
-            // Sanity check
+            Assert.ReferencePointer(tris, TrisArrayPtr);
+            Assert.ReferencePointer(quads, QuadsArrayPtr);
+
+            // SANITY CHECK
+            // Make sure counts line up
             if (tris.Length > 0)
             {
                 Assert.IsTrue(triCount == tris.Length);

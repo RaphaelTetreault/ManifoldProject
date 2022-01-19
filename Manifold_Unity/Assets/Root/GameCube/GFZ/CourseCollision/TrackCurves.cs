@@ -133,33 +133,12 @@ namespace GameCube.GFZ.CourseCollision
             Assert.IsTrue(animationCurves.Length == kCurveCount);
             Assert.IsTrue(curvesPtr2D.Length == kCurveCount);
 
-            // Assert array items
+            // Assert each animation curve
             for (int i = 0; i < kCurveCount; i++)
             {
-                // Simplify access
-                var animationCurve = animationCurves[i];
-                var animationCurvePtr = animationCurves[i].GetPointer();
-                var animationCurvePtrs = curvesPtr2D.ArrayPointers[i];
-
-                // Ensure each item in 2D array is not true null
-                Assert.IsTrue(animationCurve != null);
-                // Ensure data matches up
-                Assert.IsTrue(animationCurve.Length == animationCurvePtrs.Length);
-                // idea was to make sure index 0 address is == array base address. Redundant?
-                //Assert.IsTrue(animationCurve.AddressRange.GetPointer() == animationCurvePtrs.Pointer);
-
-                if (animationCurve.Length > 0)
-                {
-                    // Assert IS TRUE
-                    Assert.IsTrue(animationCurvePtr.IsNotNullPointer);
-                    //Assert.IsTrue(animationCurvePtrs.Length > 0);
-                }
-                else
-                {
-                    // Assert IS FALSE
-                    Assert.IsFalse(animationCurvePtr.IsNotNullPointer);
-                    //Assert.IsFalse(animationCurvePtrs.Length > 0);
-                }
+                var animCurve = animationCurves[i];
+                var pointer = curvesPtr2D.arrayPointers[i];
+                Assert.ReferencePointer(animCurve, pointer);
             }
         }
 

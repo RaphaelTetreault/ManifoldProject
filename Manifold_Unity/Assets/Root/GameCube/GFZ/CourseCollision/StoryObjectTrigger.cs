@@ -106,8 +106,7 @@ namespace GameCube.GFZ.CourseCollision
 
         public void ValidateReferences()
         {
-            if (storyObjectPath != null)
-                Assert.IsTrue(storyObjectPathPtr.IsNotNullPointer);
+            Assert.ReferencePointer(storyObjectPath, storyObjectPathPtr);
         }
 
         public override string ToString()

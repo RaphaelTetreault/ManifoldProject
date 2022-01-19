@@ -26,7 +26,7 @@ namespace GameCube.GFZ.CourseCollision
         [UnityEngine.SerializeField] private bool hasIndexes;
 
         // FIELDS
-        public Pointer[] indexArrayPtrs = new Pointer[0];
+        public Pointer[] indexListPtrs = new Pointer[0];
         // REFERENCE FIELDS
         public IndexList[] indexLists;
 
@@ -36,10 +36,10 @@ namespace GameCube.GFZ.CourseCollision
             // Initialize array to default/const size.
             // Requires inheriter to finalize count.
             indexLists = new IndexList[Count];
-            for (int i = 0; i < indexLists.Length; i++)
-            {
-                indexLists[i] = new IndexList();
-            }
+            //for (int i = 0; i < indexLists.Length; i++)
+            //{
+            //    indexLists[i] = new IndexList();
+            //}
         }
 
 
@@ -104,14 +104,14 @@ namespace GameCube.GFZ.CourseCollision
             // Read index arrays
             this.RecordStartAddress(reader);
             {
-                reader.ReadX(ref indexArrayPtrs, Count, true);
+                reader.ReadX(ref indexListPtrs, Count, true);
             }
             this.RecordEndAddress(reader);
             {
                 indexLists = new IndexList[Count];
 
                 // Should always be init to const size by now
-                Assert.IsTrue(indexArrayPtrs.Length == Count);
+                Assert.IsTrue(indexListPtrs.Length == Count);
                 Assert.IsTrue(indexLists.Length == Count);
 
                 for (int i = 0; i < Count; i++)
@@ -119,7 +119,7 @@ namespace GameCube.GFZ.CourseCollision
                     // init value
                     indexLists[i] = new IndexList();
 
-                    var indexArrayPtr = indexArrayPtrs[i];
+                    var indexArrayPtr = indexListPtrs[i];
                     if (indexArrayPtr.IsNotNullPointer)
                     {
                         var indexList = indexLists[i];
@@ -145,16 +145,16 @@ namespace GameCube.GFZ.CourseCollision
                 var pointers = new Pointer[Count];
                 for (int i = 0; i < pointers.Length; i++)
                     pointers[i] = indexLists[i].GetPointer();
-                indexArrayPtrs = pointers;
+                indexListPtrs = pointers;
             }
             this.RecordStartAddress(writer);
             {
                 ValidateReferences();
 
                 // Write all pointers
-                for (int ptrIndex = 0; ptrIndex < indexArrayPtrs.Length; ptrIndex++)
+                for (int ptrIndex = 0; ptrIndex < indexListPtrs.Length; ptrIndex++)
                 {
-                    var ptr = indexArrayPtrs[ptrIndex];
+                    var ptr = indexListPtrs[ptrIndex];
                     writer.WriteX(ptr);
                 }
             }
@@ -164,8 +164,13 @@ namespace GameCube.GFZ.CourseCollision
         public void ValidateReferences()
         {
             // Should always be init to const size
-            Assert.IsTrue(indexArrayPtrs.Length == Count);
+            Assert.IsTrue(indexListPtrs.Length == Count);
             Assert.IsTrue(indexLists.Length == Count);
+
+            for (int i = 0; i < Count; i++)
+            {
+                Assert.ReferencePointer(indexLists[i], indexListPtrs[i]);
+            }
         }
     }
 }

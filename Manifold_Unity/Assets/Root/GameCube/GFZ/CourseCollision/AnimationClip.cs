@@ -69,7 +69,7 @@ namespace GameCube.GFZ.CourseCollision
                 foreach (var curve in curves)
                 {
                     Assert.IsTrue(curve != null);
-                    Assert.PointerReferenceValid(curve.animationCurve, curve.animationCurvePtrs);
+                    Assert.ReferencePointer(curve.animationCurve, curve.animationCurvePtrs);
                 }
             }
             // No jumping required

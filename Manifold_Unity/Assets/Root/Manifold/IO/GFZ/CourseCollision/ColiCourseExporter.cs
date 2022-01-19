@@ -146,13 +146,13 @@ namespace Manifold.IO.GFZ.CourseCollision
             log.WriteAddress(coliScene.staticColliderMeshes.meshBounds);
             log.WriteLine();
             log.WriteLine("TRIANGLES");
-            log.WriteAddress(coliScene.staticColliderMeshes.colliderTriangles);
-            log.WriteAddress(coliScene.staticColliderMeshes.triMeshIndexMatrices);
+            log.WriteAddress(coliScene.staticColliderMeshes.colliderTris);
+            log.WriteAddress(coliScene.staticColliderMeshes.triMeshMatrices);
             // Write each index list
             log.WriteNullInArray = false;
-            for (int i = 0; i < coliScene.staticColliderMeshes.triMeshIndexMatrices.Length; i++)
+            for (int i = 0; i < coliScene.staticColliderMeshes.triMeshMatrices.Length; i++)
             {
-                var triIndexList = coliScene.staticColliderMeshes.triMeshIndexMatrices[i];
+                var triIndexList = coliScene.staticColliderMeshes.triMeshMatrices[i];
                 if (triIndexList != null)
                 {
                     log.WriteLine($"COLLIDER TYPE [{i}]: {(StaticColliderMeshProperty)i}");
@@ -162,12 +162,12 @@ namespace Manifold.IO.GFZ.CourseCollision
             log.WriteNullInArray = true;
             log.WriteLine("QUADS");
             log.WriteAddress(coliScene.staticColliderMeshes.colliderQuads);
-            log.WriteAddress(coliScene.staticColliderMeshes.quadMeshIndexMatrices);
+            log.WriteAddress(coliScene.staticColliderMeshes.quadMeshMatrices);
             // Write each index list
             log.WriteNullInArray = false;
-            for (int i = 0; i < coliScene.staticColliderMeshes.quadMeshIndexMatrices.Length; i++)
+            for (int i = 0; i < coliScene.staticColliderMeshes.quadMeshMatrices.Length; i++)
             {
-                var quadIndexList = coliScene.staticColliderMeshes.quadMeshIndexMatrices[i];
+                var quadIndexList = coliScene.staticColliderMeshes.quadMeshMatrices[i];
                 if (quadIndexList != null)
                 {
                     log.WriteLine($"COLLIDER TYPE [{i}]: {(StaticColliderMeshProperty)i}");

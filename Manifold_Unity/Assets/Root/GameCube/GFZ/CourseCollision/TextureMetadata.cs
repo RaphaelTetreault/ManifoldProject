@@ -78,9 +78,10 @@ namespace GameCube.GFZ.CourseCollision
 
         public void ValidateReferences()
         {
+            // Validate each field/pointer
             for (int i = 0; i < kCount; i++)
             {
-                Assert.PointerReferenceValid(fields[i], fieldPtrs[i]);
+                Assert.ReferencePointer(fields[i], fieldPtrs[i]);
             }
         }
 

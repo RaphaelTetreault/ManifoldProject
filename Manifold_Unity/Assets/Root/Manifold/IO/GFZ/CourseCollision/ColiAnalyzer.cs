@@ -459,8 +459,8 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol(nameof(TrackSegment.trackProperty));
                 writer.WriteNextCol(nameof(TrackSegment.perimeterOptions));
                 writer.WriteNextCol(nameof(TrackSegment.pipeCylinderOptions));
-                writer.WriteNextCol(nameof(TrackSegment.trackAnimationCurvesPtr));
-                writer.WriteNextCol(nameof(TrackSegment.hairpinCornerTopologyPtr));
+                writer.WriteNextCol(nameof(TrackSegment.trackCurvesPtr));
+                writer.WriteNextCol(nameof(TrackSegment.trackCornerPtr));
                 writer.WriteNextCol(nameof(TrackSegment.childrenPtrs));
                 writer.WriteNextCol(nameof(TrackSegment.localScale));
                 writer.WriteNextCol(nameof(TrackSegment.localRotation));
@@ -521,8 +521,8 @@ namespace Manifold.IO.GFZ.CourseCollision
             writer.WriteNextCol(trackTransform.trackProperty);
             writer.WriteNextCol(trackTransform.perimeterOptions);
             writer.WriteNextCol(trackTransform.pipeCylinderOptions);
-            writer.WriteNextCol(trackTransform.trackAnimationCurvesPtr);
-            writer.WriteNextCol(trackTransform.hairpinCornerTopologyPtr);
+            writer.WriteNextCol(trackTransform.trackCurvesPtr);
+            writer.WriteNextCol(trackTransform.trackCornerPtr);
             writer.WriteNextCol(trackTransform.childrenPtrs);
             writer.WriteNextCol(trackTransform.localScale);
             writer.WriteNextCol(trackTransform.localRotation);
@@ -537,7 +537,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             writer.WriteNextCol(trackTransform.zero_0x48);
             writer.WriteNextCol(trackTransform.unk_0x4C);
             //
-            if (trackTransform.hairpinCornerTopologyPtr.IsNotNullPointer)
+            if (trackTransform.trackCornerPtr.IsNotNullPointer)
             {
                 writer.WriteNextCol();
                 writer.WriteNextCol(trackTransform.trackCorner.width);
@@ -689,10 +689,10 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol(nameof(SceneObjectDynamic.transform.RotationEuler));
                 writer.WriteNextCol(nameof(SceneObjectDynamic.transform.Scale));
                 writer.WriteNextCol(nameof(SceneObjectDynamic.zero_0x2C));
-                writer.WriteNextCol(nameof(SceneObjectDynamic.animationPtr));
+                writer.WriteNextCol(nameof(SceneObjectDynamic.animationClipPtr));
                 writer.WriteNextCol(nameof(SceneObjectDynamic.textureMetadataPtr));
                 writer.WriteNextCol(nameof(SceneObjectDynamic.skeletalAnimatorPtr));
-                writer.WriteNextCol(nameof(SceneObjectDynamic.transformPtr));
+                writer.WriteNextCol(nameof(SceneObjectDynamic.transformMatrix3x4Ptr));
                 writer.WriteNextRow();
 
                 foreach (var file in sceneSobjs)
@@ -712,10 +712,10 @@ namespace Manifold.IO.GFZ.CourseCollision
                         writer.WriteNextCol(sceneObject.transform.RotationEuler);
                         writer.WriteNextCol(sceneObject.transform.Scale);
                         writer.WriteNextCol(sceneObject.zero_0x2C);
-                        writer.WriteNextCol(sceneObject.animationPtr.HexAddress);
+                        writer.WriteNextCol(sceneObject.animationClipPtr.HexAddress);
                         writer.WriteNextCol(sceneObject.textureMetadataPtr.HexAddress);
                         writer.WriteNextCol(sceneObject.skeletalAnimatorPtr.HexAddress);
-                        writer.WriteNextCol(sceneObject.transformPtr.HexAddress);
+                        writer.WriteNextCol(sceneObject.transformMatrix3x4Ptr.HexAddress);
                         writer.WriteNextRow();
 
                         sceneObjectIndex++;
@@ -1604,7 +1604,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                     {
                         // Skip objects that don;'t have both matrix and decomposed rotation
                         // These are not helpful for comparision
-                        if (!sceneObject.transformPtr.IsNotNullPointer)
+                        if (!sceneObject.transformMatrix3x4Ptr.IsNotNullPointer)
                             continue;
 
                         writer.WriteNextCol(file.FileName);
@@ -1710,23 +1710,23 @@ namespace Manifold.IO.GFZ.CourseCollision
                 // Write header
                 writer.WriteNextCol("File");
                 writer.WriteNextCol("Index");
-                writer.WriteNextColNicify(nameof(StaticColliderMeshes.collisionTrisPtr));
-                writer.WriteNextColNicify(nameof(StaticColliderMeshes.collisionTriIndexesPtr));
+                writer.WriteNextColNicify(nameof(StaticColliderMeshes.colliderTrisPtr));
+                writer.WriteNextColNicify(nameof(StaticColliderMeshes.triMeshMatrixPtrs));
                 writer.WriteNextColNicify(nameof(GameCube.GFZ.CourseCollision.BoundsXZ.bounds2D.left));
                 writer.WriteNextColNicify(nameof(GameCube.GFZ.CourseCollision.BoundsXZ.bounds2D.top));
                 writer.WriteNextColNicify(nameof(GameCube.GFZ.CourseCollision.BoundsXZ.bounds2D.width));
                 writer.WriteNextColNicify(nameof(GameCube.GFZ.CourseCollision.BoundsXZ.bounds2D.length));
                 writer.WriteNextColNicify(nameof(GameCube.GFZ.CourseCollision.BoundsXZ.subdivisionsX));
                 writer.WriteNextColNicify(nameof(GameCube.GFZ.CourseCollision.BoundsXZ.subdivisionsZ));
-                writer.WriteNextColNicify(nameof(StaticColliderMeshes.collisionQuadsPtr));
-                writer.WriteNextColNicify(nameof(StaticColliderMeshes.collisionQuadIndexesPtr));
+                writer.WriteNextColNicify(nameof(StaticColliderMeshes.colliderQuadsPtr));
+                writer.WriteNextColNicify(nameof(StaticColliderMeshes.quadMeshMatrixPtrs));
                 writer.WriteNextColNicify(nameof(GameCube.GFZ.CourseCollision.BoundsXZ.bounds2D.left));
                 writer.WriteNextColNicify(nameof(GameCube.GFZ.CourseCollision.BoundsXZ.bounds2D.top));
                 writer.WriteNextColNicify(nameof(GameCube.GFZ.CourseCollision.BoundsXZ.bounds2D.width));
                 writer.WriteNextColNicify(nameof(GameCube.GFZ.CourseCollision.BoundsXZ.bounds2D.length));
                 writer.WriteNextColNicify(nameof(GameCube.GFZ.CourseCollision.BoundsXZ.subdivisionsX));
                 writer.WriteNextColNicify(nameof(GameCube.GFZ.CourseCollision.BoundsXZ.subdivisionsZ));
-                writer.WriteNextColNicify(nameof(StaticColliderMeshes.colliderTriangles));
+                writer.WriteNextColNicify(nameof(StaticColliderMeshes.colliderTris));
                 writer.WriteNextColNicify(nameof(StaticColliderMeshes.colliderQuads));
                 writer.WriteNextRow();
 
@@ -1739,23 +1739,23 @@ namespace Manifold.IO.GFZ.CourseCollision
 
                     writer.WriteNextCol(file.name);
                     writer.WriteNextCol(index++);
-                    writer.WriteNextCol(table.collisionTrisPtr.HexAddress);
-                    writer.WriteNextCol(table.collisionTriIndexesPtr.Length);
+                    writer.WriteNextCol(table.colliderTrisPtr.HexAddress);
+                    writer.WriteNextCol(table.triMeshMatrixPtrs.Length);
                     writer.WriteNextCol(table.meshBounds.bounds2D.left);
                     writer.WriteNextCol(table.meshBounds.bounds2D.top);
                     writer.WriteNextCol(table.meshBounds.bounds2D.width);
                     writer.WriteNextCol(table.meshBounds.bounds2D.length);
                     writer.WriteNextCol(table.meshBounds.subdivisionsX);
                     writer.WriteNextCol(table.meshBounds.subdivisionsZ);
-                    writer.WriteNextCol(table.collisionQuadsPtr.HexAddress);
-                    writer.WriteNextCol(table.collisionQuadIndexesPtr.Length);
+                    writer.WriteNextCol(table.colliderQuadsPtr.HexAddress);
+                    writer.WriteNextCol(table.quadMeshMatrixPtrs.Length);
                     //writer.WriteNextCol(table.unusedMeshBounds.maxX);
                     //writer.WriteNextCol(table.unusedMeshBounds.maxZ);
                     //writer.WriteNextCol(table.unusedMeshBounds.width);
                     //writer.WriteNextCol(table.unusedMeshBounds.length);
                     //writer.WriteNextCol(table.unusedMeshBounds.subdivisionsX);
                     //writer.WriteNextCol(table.unusedMeshBounds.subdivisionsZ);
-                    writer.WriteNextCol(table.colliderTriangles.Length);
+                    writer.WriteNextCol(table.colliderTris.Length);
                     writer.WriteNextCol(table.colliderQuads.Length);
                     writer.WriteNextRow();
                 }
