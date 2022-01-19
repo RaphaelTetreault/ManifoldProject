@@ -546,7 +546,7 @@ namespace Manifold.IO.GFZ
                     coliScene.unknownTriggers = GetGfzValues(unknownTriggers);
 
                     var unknownSolsTriggers = GameObject.FindObjectsOfType<GfzUnknownSolsTrigger>(canFindInactive);
-                    coliScene.unknownSolsTriggers = GetGfzValues(unknownSolsTriggers);
+                    coliScene.unknownColliders = GetGfzValues(unknownSolsTriggers);
 
                     var visualEffectTriggers = GameObject.FindObjectsOfType<GfzVisualEffectTrigger>(canFindInactive);
                     coliScene.visualEffectTriggers = GetGfzValues(visualEffectTriggers);
@@ -557,7 +557,7 @@ namespace Manifold.IO.GFZ
                     // Log. TODO: more granularity in type.
                     log.WriteLineSummary(coliScene.courseMetadataTriggers);
                     log.WriteLineSummary(coliScene.unknownTriggers);
-                    log.WriteLineSummary(coliScene.unknownSolsTriggers);
+                    log.WriteLineSummary(coliScene.unknownColliders);
                     log.WriteLineSummary(coliScene.visualEffectTriggers);
                     log.WriteLine();
                 }
@@ -669,7 +669,7 @@ namespace Manifold.IO.GFZ
             log.WriteAddress(coliScene.arcadeCheckpointTriggers);
             log.WriteAddress(coliScene.courseMetadataTriggers);
             log.WriteAddress(coliScene.storyObjectTriggers);
-            log.WriteAddress(coliScene.unknownSolsTriggers);
+            log.WriteAddress(coliScene.unknownColliders);
             log.WriteAddress(coliScene.unknownTriggers);
             log.WriteAddress(coliScene.visualEffectTriggers);
 

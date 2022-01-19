@@ -1391,7 +1391,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                     var courseID = ((CourseIndexAX)scene.ID).GetDescription();
                     var isAxGx = scene.IsFileGX ? "GX" : "AX";
 
-                    foreach (var unkSols in scene.unknownSolsTriggers)
+                    foreach (var unkSols in scene.unknownColliders)
                     {
                         writer.WriteNextCol(scene.FileName);
                         writer.WriteNextCol(scene.ID);

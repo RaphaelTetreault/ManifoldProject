@@ -342,7 +342,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
         private UnityEngine.Transform CreateUnknownSolsTriggers(ColiScene scene)
         {
-            var unknownSolsTriggers = scene.unknownSolsTriggers;
+            var unknownSolsTriggers = scene.unknownColliders;
             int count = 0;
             int total = unknownSolsTriggers.Length;
 

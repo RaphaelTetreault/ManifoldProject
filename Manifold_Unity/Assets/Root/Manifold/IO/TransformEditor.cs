@@ -32,6 +32,8 @@ namespace Manifold.IO
             var rot = EditorGUILayout.Vector3Field(rotationLabel, m_Rotation.quaternionValue.eulerAngles);
             var sca = EditorGUILayout.Vector3Field(scaleLabel, m_Scale.vector3Value);
 
+            EditorGUILayout.Separator();
+
             // DRAW GLOBAL
             EditorGUILayout.LabelField("Global", EditorStyles.boldLabel);
             GUI.enabled = false;
