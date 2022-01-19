@@ -12,6 +12,7 @@ namespace Manifold.IO
         [Hex(8)]
         public long endAddress;
 
+
         public void RecordStartAddress(Stream stream)
         {
             startAddress = stream.Position;

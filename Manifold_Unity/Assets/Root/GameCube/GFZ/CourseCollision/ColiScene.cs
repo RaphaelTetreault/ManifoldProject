@@ -66,7 +66,7 @@ namespace GameCube.GFZ.CourseCollision
         public ArrayPointer surfaceAttributeAreasPtr;
         // 2022-01-14: this is a bool, the game loads the following structure regardless
         // (because it'd crash anways because of it when unloading)
-        public Bool32 staticColliderMeshesActive = Bool32.True; 
+        public Bool32 staticColliderMeshesActive = Bool32.True;
         public Pointer staticColliderMeshesPtr;
         public Pointer zeroes0x20Ptr; // GX: 0xE8, AX: 0xE4
         public Pointer trackMinHeightPtr; // GX: 0xFC, AX: 0xF8
@@ -421,17 +421,21 @@ namespace GameCube.GFZ.CourseCollision
         public void Serialize(BinaryWriter writer)
         {
             //// DEBUG
-            //if (writer.GetType() == typeof(MemoryGuardedBinaryWriter))
-            //{
-            //    //((MemoryGuardedBinaryWriter)writer).InitMemoryGuard();
-            //    //((MemoryGuardedBinaryWriter)writer).MemoryGuardActive = true;
-            //}
+            var addressables = GetAllAddressables();
+            foreach (var addressable in addressables)
+            {
+                if (addressable == null)
+                    continue;
+
+                addressable.AddressRange = new AddressRange()
+                {
+                    startAddress = int.MaxValue,
+                    endAddress = int.MaxValue,
+                };
+            }
+
 
             BinaryIoUtility.PushEndianess(false);
-
-            // Disable static collider meshes for testing...
-            // staticColliderMeshes serialization is currently broken
-            //staticColliderMeshesActive = Bool32.False;
 
             // Write header. At first, pointers will be null or broken.
             SerializeHeader(writer);
@@ -650,133 +654,135 @@ namespace GameCube.GFZ.CourseCollision
 
             // SCENE OBJECTS
             //{
-                // SCENE OBJECT NAMES
-                // No direct pointer. Names are aligned to 4 bytes.
-                writer.CommentAlign(serializeVerbose);
-                writer.CommentNewLine(serializeVerbose, '-');
-                writer.Comment("ScnObjectNames[]", serializeVerbose, ' ');
-                writer.CommentNewLine(serializeVerbose, '-');
-                foreach (var sceneObjectName in sceneObjectNames)
+            // SCENE OBJECT NAMES
+            // No direct pointer. Names are aligned to 4 bytes.
+            writer.CommentAlign(serializeVerbose);
+            writer.CommentNewLine(serializeVerbose, '-');
+            writer.Comment("ScnObjectNames[]", serializeVerbose, ' ');
+            writer.CommentNewLine(serializeVerbose, '-');
+            foreach (var sceneObjectName in sceneObjectNames)
+            {
+                writer.WriteX(sceneObjectName);
+                writer.AlignTo(4);
+            }
+
+            // SCENE OBJECTS
+            writer.InlineDesc(serializeVerbose, sceneObjects);
+            writer.WriteX(sceneObjects, false);
+
+            // SCENE OBJECT TEMPLATES
+            // Grab sub-structures of SceneObjectTemplate
+            var colliderGeomertries = new List<ColliderGeometry>();
+            foreach (var templateSceneObject in templateSceneObjects)
+            {
+                if (templateSceneObject.colliderGeometry != null)
                 {
-                    writer.WriteX(sceneObjectName);
-                    writer.AlignTo(4);
+                    colliderGeomertries.Add(templateSceneObject.colliderGeometry);
+                }
+            }
+            // Scene Object Template
+            writer.InlineDesc(serializeVerbose, 0x68 + offset, templateSceneObjects);
+            writer.WriteX(templateSceneObjects, false);
+            // Collider Geometry
+            writer.InlineDesc(serializeVerbose, colliderGeomertries);
+            foreach (var colliderGeometry in colliderGeomertries)
+                writer.WriteX(colliderGeometry);
+
+            // STATIC SCENE OBJECTS
+            if (!staticSceneObjects.IsNullOrEmpty())
+                writer.InlineDesc(serializeVerbose, 0x70 + offset, staticSceneObjects);
+            writer.WriteX(staticSceneObjects, false);
+
+            // DYNAMIC SCENE OBJECTS
+            writer.InlineDesc(serializeVerbose, 0x54 + offset, dynamicSceneObjects);
+            writer.WriteX(dynamicSceneObjects, false);
+
+            // Grab all of the data needed to serialize. By doing this, we can
+            // create linear blocks of data for each type. It simplifies the
+            // process since we can check for nulls in one loop, and serialize
+            // all the values in their own mini loops.
+            var animationClips = new List<AnimationClip>();
+            var animationClipCurves = new List<AnimationClipCurve>();
+            var textureMetadatas = new List<TextureMetadata>();
+            var textureMetadataFields = new List<TextureMetadataField>();
+            var skeletalAnimators = new List<SkeletalAnimator>();
+            var skeletalProperties = new List<SkeletalProperties>();
+            var transformMatrices = new List<TransformMatrix3x4>();
+
+            // Collect data from SceneObjectDynamics
+            foreach (var dynamicSceneObject in dynamicSceneObjects)
+            {
+                // Animation Data
+                if (dynamicSceneObject.animationClip != null)
+                {
+                    animationClips.Add(dynamicSceneObject.animationClip);
+                    // Serialize individual animation clip curves
+                    foreach (var animationClipCurve in dynamicSceneObject.animationClip.curves)
+                        animationClipCurves.Add(animationClipCurve);
                 }
 
-                // SCENE OBJECTS
-                writer.InlineDesc(serializeVerbose, sceneObjects);
-                writer.WriteX(sceneObjects, false);
-
-                // SCENE OBJECT TEMPLATES
-                // Grab sub-structures of SceneObjectTemplate
-                var colliderGeomertries = new List<ColliderGeometry>();
-                foreach (var templateSceneObject in templateSceneObjects)
+                // Texture Metadata
+                if (dynamicSceneObject.textureMetadata != null)
                 {
-                    if (templateSceneObject.colliderGeometry != null)
+                    textureMetadatas.Add(dynamicSceneObject.textureMetadata);
+                    foreach (var field in dynamicSceneObject.textureMetadata.fields)
                     {
-                        colliderGeomertries.Add(templateSceneObject.colliderGeometry);
-                    }
-                }
-                // Scene Object Template
-                writer.InlineDesc(serializeVerbose, 0x68 + offset, templateSceneObjects);
-                writer.WriteX(templateSceneObjects, false);
-                // Collider Geometry
-                writer.InlineDesc(serializeVerbose, colliderGeomertries);
-                foreach (var colliderGeometry in colliderGeomertries)
-                    writer.WriteX(colliderGeometry);
-
-                // STATIC SCENE OBJECTS
-                if (!staticSceneObjects.IsNullOrEmpty())
-                    writer.InlineDesc(serializeVerbose, 0x70 + offset, staticSceneObjects);
-                writer.WriteX(staticSceneObjects, false);
-
-                // DYNAMIC SCENE OBJECTS
-                writer.InlineDesc(serializeVerbose, 0x54 + offset, dynamicSceneObjects);
-                writer.WriteX(dynamicSceneObjects, false);
-
-                // Grab all of the data needed to serialize. By doing this, we can
-                // create linear blocks of data for each type. It simplifies the
-                // process since we can check for nulls in one loop, and serialize
-                // all the values in their own mini loops.
-                var animationClips = new List<AnimationClip>();
-                var animationClipCurves = new List<AnimationClipCurve>();
-                var textureMetadatas = new List<TextureMetadata>();
-                var textureMetadataFields = new List<TextureMetadataField>();
-                var skeletalAnimators = new List<SkeletalAnimator>();
-                var skeletalProperties = new List<SkeletalProperties>();
-                var transformMatrices = new List<TransformMatrix3x4>();
-
-                // Collect data from SceneObjectDynamics
-                foreach (var dynamicSceneObject in dynamicSceneObjects)
-                {
-                    // Animation Data
-                    if (dynamicSceneObject.animationClip != null)
-                    {
-                        animationClips.Add(dynamicSceneObject.animationClip);
-                        // Serialize individual animation clip curves
-                        foreach (var animationClipCurve in dynamicSceneObject.animationClip.curves)
-                            animationClipCurves.Add(animationClipCurve);
-                    }
-
-                    // Texture Metadata
-                    if (dynamicSceneObject.textureMetadata != null)
-                    {
-                        textureMetadatas.Add(dynamicSceneObject.textureMetadata);
-                        foreach (var field in dynamicSceneObject.textureMetadata.fields)
+                        if (field != null)
                         {
-                            if (field != null)
-                            {
-                                textureMetadataFields.Add(field);
-                            }
+                            textureMetadataFields.Add(field);
                         }
                     }
-
-                    // Skeletal Animator
-                    if (dynamicSceneObject.skeletalAnimator != null)
-                    {
-                        skeletalAnimators.Add(dynamicSceneObject.skeletalAnimator);
-                        skeletalProperties.Add(dynamicSceneObject.skeletalAnimator.properties);
-                    }
-
-                    // Transforms
-                    if (dynamicSceneObject.transformMatrix3x4 != null)
-                    {
-                        transformMatrices.Add(dynamicSceneObject.transformMatrix3x4);
-                    }
                 }
-                
-                // Animation clips
-                writer.InlineDesc(serializeVerbose, animationClips.ToArray());
-                foreach (var animationClip in animationClips)
-                    writer.WriteX(animationClip);
-                writer.InlineDesc(serializeVerbose, animationClipCurves.ToArray());
-                foreach (var animationClipCurve in animationClipCurves)
-                    writer.WriteX(animationClipCurve);
-                // 2022-01-18: add serilization this animation data!
-                foreach (var animationClipCurve in animationClipCurves)
-                    if (animationClipCurve.animationCurve != null)
-                        foreach (var keyable in animationClipCurve.animationCurve.keyableAttributes)
-                            writer.WriteX(keyable);
 
-                // Texture metadata
-                writer.InlineDesc(serializeVerbose, textureMetadatas.ToArray());
-                foreach (var textureMetadata in textureMetadatas)
-                    writer.WriteX(textureMetadata);
-                writer.InlineDesc(serializeVerbose, textureMetadataFields.ToArray());
-                foreach (var textureMetadataField in textureMetadataFields)
-                    writer.WriteX(textureMetadataField);
+                // Skeletal Animator
+                if (dynamicSceneObject.skeletalAnimator != null)
+                {
+                    skeletalAnimators.Add(dynamicSceneObject.skeletalAnimator);
+                    skeletalProperties.Add(dynamicSceneObject.skeletalAnimator.properties);
+                }
 
-                // Skeletal animator
-                writer.InlineDesc(serializeVerbose, skeletalAnimators.ToArray());
-                foreach (var skeletalAnimator in skeletalAnimators)
-                    writer.WriteX(skeletalAnimator);
-                writer.InlineDesc(serializeVerbose, skeletalProperties.ToArray());
-                foreach (var skeletalProperty in skeletalProperties)
-                    writer.WriteX(skeletalProperty);
+                // Transforms
+                if (dynamicSceneObject.transformMatrix3x4 != null)
+                {
+                    transformMatrices.Add(dynamicSceneObject.transformMatrix3x4);
+                }
+            }
 
-                // Transforms for dynamic scene objects
-                writer.InlineDesc(serializeVerbose, transformMatrices.ToArray());
-                foreach (var transformMatrix3x4 in transformMatrices)
-                    writer.WriteX(transformMatrix3x4);
+            // Animation clips
+            writer.InlineDesc(serializeVerbose, animationClips.ToArray());
+            foreach (var animationClip in animationClips)
+                writer.WriteX(animationClip);
+            // Animation Clip Curves
+            writer.InlineDesc(serializeVerbose, animationClipCurves.ToArray());
+            foreach (var animationClipCurve in animationClipCurves)
+                writer.WriteX(animationClipCurve);
+            // 2022-01-18: add serilization for animation data!
+            writer.InlineDesc(serializeVerbose, animationClipCurves.ToArray());
+            foreach (var animationClipCurve in animationClipCurves)
+                if (animationClipCurve.animationCurve != null)
+                    writer.WriteX(animationClipCurve.animationCurve);
+
+
+            // Texture metadata
+            writer.InlineDesc(serializeVerbose, textureMetadatas.ToArray());
+            foreach (var textureMetadata in textureMetadatas)
+                writer.WriteX(textureMetadata);
+            writer.InlineDesc(serializeVerbose, textureMetadataFields.ToArray());
+            foreach (var textureMetadataField in textureMetadataFields)
+                writer.WriteX(textureMetadataField);
+
+            // Skeletal animator
+            writer.InlineDesc(serializeVerbose, skeletalAnimators.ToArray());
+            foreach (var skeletalAnimator in skeletalAnimators)
+                writer.WriteX(skeletalAnimator);
+            writer.InlineDesc(serializeVerbose, skeletalProperties.ToArray());
+            foreach (var skeletalProperty in skeletalProperties)
+                writer.WriteX(skeletalProperty);
+
+            // Transforms for dynamic scene objects
+            writer.InlineDesc(serializeVerbose, transformMatrices.ToArray());
+            foreach (var transformMatrix3x4 in transformMatrices)
+                writer.WriteX(transformMatrix3x4);
             //}
 
             // TRIGGERS
@@ -910,6 +916,18 @@ namespace GameCube.GFZ.CourseCollision
             fileSize = (int)writer.BaseStream.Length;
 
             BinaryIoUtility.PopEndianess();
+
+            // DEBUG
+            foreach (var addressable in addressables)
+            {
+                if (addressable == null)
+                    continue;
+                var range = addressable.AddressRange;
+                if (range.startAddress == int.MaxValue || range.endAddress == int.MaxValue)
+                {
+                    DebugConsole.Log(addressable.GetType().FullName);
+                }
+            }
         }
 
         /// <summary>
@@ -1022,6 +1040,113 @@ namespace GameCube.GFZ.CourseCollision
             {
                 ReadTrackSegmentsRecursive(reader, allTrackSegments, child, false);
             }
+        }
+
+        public IBinaryAddressable[] GetAllAddressables()
+        {
+            var list = new List<IBinaryAddressable>();
+
+            foreach (var trackNode in trackNodes)
+            {
+                list.Add(trackNode);
+                list.AddRange(trackNode.checkpoints);
+                list.Add(trackNode.segment);
+                list.Add(trackNode.segment.trackCurves);
+                list.AddRange(trackNode.segment.trackCurves.animationCurves);
+                foreach (var anim in trackNode.segment.trackCurves.animationCurves) // null?
+                    list.AddRange(anim.keyableAttributes);
+                list.Add(trackNode.segment.trackCorner);
+                if (trackNode.segment.trackCorner != null)
+                    list.Add(trackNode.segment.trackCorner.matrix3x4);
+            }
+
+            list.AddRange(surfaceAttributeAreas);
+
+            // Static Collider Meshes
+            list.Add(staticColliderMeshes);
+            list.AddRange(staticColliderMeshes.colliderTriangles);
+            list.AddRange(staticColliderMeshes.colliderQuads);
+            foreach (var matrix in staticColliderMeshes.triMeshIndexMatrices)
+            {
+                list.Add(matrix);
+                //list.AddRange(matrix.indexLists);
+            }
+            foreach (var matrix in staticColliderMeshes.quadMeshIndexMatrices)
+            {
+                list.Add(matrix);
+                //list.AddRange(matrix.indexLists);
+            }
+            list.Add(staticColliderMeshes.meshBounds);
+            list.Add(staticColliderMeshes.unkBounds2D);
+
+            list.Add(trackMinHeight);
+
+            foreach (var dynamicSceneObject in dynamicSceneObjects)
+            {
+                list.Add(dynamicSceneObject);
+                list.Add(dynamicSceneObject.animationClip);
+                if (dynamicSceneObject.animationClip != null)
+                {
+                    foreach (var animClipCurve in dynamicSceneObject.animationClip.curves)
+                    {
+                        list.Add(animClipCurve);
+                        list.Add(animClipCurve.animationCurve);
+                        if (animClipCurve.animationCurve != null)
+                            list.AddRange(animClipCurve.animationCurve.keyableAttributes);
+                    }
+                }
+                list.Add(dynamicSceneObject.textureMetadata);
+                if (dynamicSceneObject.textureMetadata != null)
+                    list.AddRange(dynamicSceneObject.textureMetadata.fields);
+                list.Add(dynamicSceneObject.skeletalAnimator);
+                if (dynamicSceneObject.skeletalAnimator != null)
+                    list.Add(dynamicSceneObject.skeletalAnimator.properties);
+                list.Add(dynamicSceneObject.transformMatrix3x4);
+                // Elsewhere: Scene Object Templates
+            }
+
+            list.AddRange(unknownSolsTriggers);
+
+            foreach (var template in templateSceneObjects)
+            {
+                list.Add(template);
+                list.Add(template.colliderGeometry);
+                list.Add(template.sceneObject);
+                list.Add(template.sceneObject.name);
+            }
+
+            list.Add(fog);
+            list.Add(fogCurves);
+            if (fogCurves != null)
+            {
+                foreach (var curve in fogCurves.animationCurves)
+                {
+                    list.Add(curve);
+                    list.AddRange(curve.keyableAttributes);
+                }
+            }
+
+            list.Add(trackLength);
+            list.AddRange(unknownTriggers);
+            list.AddRange(visualEffectTriggers);
+            list.AddRange(courseMetadataTriggers);
+            list.AddRange(arcadeCheckpointTriggers);
+
+            foreach (var trigger in storyObjectTriggers)
+            {
+                list.Add(trigger);
+                list.Add(trigger.storyObjectPath);
+                if (trigger.storyObjectPath != null)
+                {
+                    list.Add(trigger.storyObjectPath.animationCurve);
+                    list.AddRange(trigger.storyObjectPath.animationCurve.keyableAttributes);
+                }
+            }
+
+            list.Add(trackCheckpointMatrix);
+            //list.AddRange(trackCheckpointMatrix.indexLists);
+
+            return list.ToArray();
         }
 
 
