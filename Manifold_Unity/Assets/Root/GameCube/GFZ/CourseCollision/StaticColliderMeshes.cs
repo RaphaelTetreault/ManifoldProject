@@ -189,7 +189,7 @@ namespace GameCube.GFZ.CourseCollision
                 Assert.IsTrue(staticSceneObjectsPtr.Length != 0);
                 Assert.IsTrue(staticSceneObjectsPtr.IsNotNullPointer);
                 Assert.IsTrue(unkBounds2DPtr.IsNotNullPointer);
-                DebugConsole.Log($"idx16: {unkBounds2DPtr.HexAddress}");
+                //DebugConsole.Log($"idx16: {unkBounds2DPtr.HexAddress}");
 
                 // Assert that all of this other junk is empty
                 for (int i = 0; i < kZeroesA; i++)
@@ -201,10 +201,10 @@ namespace GameCube.GFZ.CourseCollision
                 for (int i = 0; i < kZeroesD; i++)
                     Assert.IsTrue(zeroes_d[i] == 0, $"Index D {22+i} is {zeroes_d[i]:x8}");
 
-                if (unknownSolsTriggersPtr.IsNotNullPointer)
-                    DebugConsole.Log($"idx 8/9: {unknownSolsTriggersPtr.Length}, {unknownSolsTriggersPtr.HexAddress}");
-                if (unk_float != 0)
-                    DebugConsole.Log($"idx 22: {unk_float}");
+                //if (unknownSolsTriggersPtr.IsNotNullPointer)
+                //    DebugConsole.Log($"idx 8/9: {unknownSolsTriggersPtr.Length}, {unknownSolsTriggersPtr.HexAddress}");
+                //if (unk_float != 0)
+                //    DebugConsole.Log($"idx 22: {unk_float}");
 
                 // Analysis: 2022-01-14
 

@@ -208,9 +208,9 @@ namespace Manifold.IO.GFZ.CourseCollision
                     if (sceneObject.skeletalAnimator != null)
                         log.WriteAddress(sceneObject.skeletalAnimator.properties);
 
-                    log.WriteAddress(sceneObject.animation);
-                    if (sceneObject.animation != null)
-                        log.WriteAddress(sceneObject.animation.curve);
+                    log.WriteAddress(sceneObject.animationClip);
+                    if (sceneObject.animationClip != null)
+                        log.WriteAddress(sceneObject.animationClip.curves);
                     // TODO: other sub classes?
 
                     log.WriteAddress(sceneObject.textureMetadata);

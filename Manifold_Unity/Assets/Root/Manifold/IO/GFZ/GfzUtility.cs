@@ -64,14 +64,14 @@ namespace Manifold.IO.GFZ
                 return false;
             }
 
-            var compressedFile = CompressAvLz(outputPath, game);
+            var compressedFile = CompressAvLz(filePath, game);
 
             // Save stream from RAM to disk
             // File.Create will clear any existing file data
             using (var writer = File.Create(outputPath, (int)compressedFile.Length))
             {
                 // Go to start of stream, then copy it over
-                //lzStream.Seek(0, SeekOrigin.Begin);
+                compressedFile.Seek(0, SeekOrigin.Begin);
                 compressedFile.CopyTo(writer);
                 //lzStream.Flush(); // is this line necessary?
             }
@@ -99,6 +99,17 @@ namespace Manifold.IO.GFZ
             return successes;
         }
 
+
+        [MenuItem(GfzMenu + "Compress single AV LZ (GX)")]
+        public static void temp()
+        {
+            var settings = GfzProjectWindow.GetSettings();
+            var openPath = settings.FileOutput;
+            var filePath = EditorUtility.OpenFilePanel("Open File to Compress with AV LZ", openPath, "");
+            if (string.IsNullOrEmpty(filePath))
+                return;
+            CompressAvLzToDisk(filePath, AvGame.FZeroGX, true);
+        }
 
 
         public static MemoryStream DecompressAvLz(string filePath)

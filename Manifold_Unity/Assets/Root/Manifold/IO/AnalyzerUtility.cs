@@ -20,7 +20,7 @@ namespace Manifold.IO
 
         public static StreamWriter OpenWriter(
             string filePath,
-            FileMode mode = FileMode.OpenOrCreate,
+            FileMode mode = FileMode.Create,
             FileAccess access = FileAccess.ReadWrite,
             FileShare share = FileShare.Read
             )

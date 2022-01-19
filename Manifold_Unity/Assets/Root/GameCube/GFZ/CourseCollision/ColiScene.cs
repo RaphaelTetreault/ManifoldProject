@@ -544,23 +544,23 @@ namespace GameCube.GFZ.CourseCollision
 
                     // TRACK ANIMATION CURVES
                     {
-                        // Construct list of all track animation curves (sets of 9 ptrs)
-                        var listTrackAnimationCurves = new List<TrackCurves>();
+                        // Construct list of all track curves (sets of 9 ptrs)
+                        var listTrackCurves = new List<TrackCurves>();
                         foreach (var trackSegment in allTrackSegments)
-                            listTrackAnimationCurves.Add(trackSegment.trackAnimationCurves);
-                        var allTrackAnimationCurves = listTrackAnimationCurves.ToArray();
+                            listTrackCurves.Add(trackSegment.trackCurves);
+                        var allTrackCurves = listTrackCurves.ToArray();
                         // Write anim curve ptrs
-                        writer.InlineDesc(serializeVerbose, allTrackSegments.GetBasePointer(), allTrackAnimationCurves);
-                        writer.WriteX(allTrackAnimationCurves, false);
+                        writer.InlineDesc(serializeVerbose, allTrackSegments.GetBasePointer(), allTrackCurves);
+                        writer.WriteX(allTrackCurves, false);
 
                         // Construct list of all /animation curves/ (breakout from track structure)
                         var listAnimationCurves = new List<AnimationCurve>();
-                        foreach (var trackAnimationCurve in allTrackAnimationCurves)
+                        foreach (var trackAnimationCurve in allTrackCurves)
                             foreach (var animationCurve in trackAnimationCurve.animationCurves)
                                 listAnimationCurves.Add(animationCurve);
                         var allAnimationCurves = listAnimationCurves.ToArray();
                         //
-                        writer.InlineDesc(serializeVerbose, allTrackAnimationCurves.GetBasePointer(), allAnimationCurves);
+                        writer.InlineDesc(serializeVerbose, allTrackCurves.GetBasePointer(), allAnimationCurves);
                         writer.WriteX(allAnimationCurves, false);
                     }
 
@@ -709,11 +709,11 @@ namespace GameCube.GFZ.CourseCollision
                 foreach (var dynamicSceneObject in dynamicSceneObjects)
                 {
                     // Animation Data
-                    if (dynamicSceneObject.animation != null)
+                    if (dynamicSceneObject.animationClip != null)
                     {
-                        animationClips.Add(dynamicSceneObject.animation);
+                        animationClips.Add(dynamicSceneObject.animationClip);
                         // Serialize individual animation clip curves
-                        foreach (var animationClipCurve in dynamicSceneObject.animation.curve)
+                        foreach (var animationClipCurve in dynamicSceneObject.animationClip.curves)
                             animationClipCurves.Add(animationClipCurve);
                     }
 
@@ -751,6 +751,11 @@ namespace GameCube.GFZ.CourseCollision
                 writer.InlineDesc(serializeVerbose, animationClipCurves.ToArray());
                 foreach (var animationClipCurve in animationClipCurves)
                     writer.WriteX(animationClipCurve);
+                // 2022-01-18: add serilization this animation data!
+                foreach (var animationClipCurve in animationClipCurves)
+                    if (animationClipCurve.animationCurve != null)
+                        foreach (var keyable in animationClipCurve.animationCurve.keyableAttributes)
+                            writer.WriteX(keyable);
 
                 // Texture metadata
                 writer.InlineDesc(serializeVerbose, textureMetadatas.ToArray());
@@ -845,7 +850,7 @@ namespace GameCube.GFZ.CourseCollision
                 referers.AddRange(trackNodes);
                 referers.AddRange(allTrackSegments);
                 foreach (var trackSegment in allTrackSegments)
-                    referers.Add(trackSegment.trackAnimationCurves);
+                    referers.Add(trackSegment.trackCurves);
                 // The checkpoint table
                 referers.Add(trackCheckpointMatrix);
 

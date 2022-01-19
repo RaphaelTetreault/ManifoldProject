@@ -44,11 +44,16 @@ namespace Manifold
         [SerializeField] string testGfze01 = string.Empty;
         [SerializeField] string testGfzp01 = string.Empty;
         [SerializeField] string testGfzj8p = string.Empty;
+        //
         [SerializeField] string testOutput = string.Empty;
+        [SerializeField] string analysisOutput = string.Empty;
+        [SerializeField] string fileOutput = string.Empty;
 
         public ColiScene.SerializeFormat SerializeFormat => serializeFormat;
         public string RootFolder => rootFolder;
         public string TestOutput => testOutput;
+        public string AnalysisOutput => analysisOutput;
+        public string FileOutput => fileOutput;
 
         // Easy accessors for common places
         public string StageDir => $"{rootFolder}/stage/";
@@ -93,6 +98,12 @@ namespace Manifold
             EditorGUILayout.Space();
             GuiSimple.Label("Output Logs Go Here", EditorStyles.boldLabel);
             testOutput = GuiSimple.BrowseFolder(testOutput, "Log Output Directory", "Open Log Directory", testOutput, "");
+            EditorGUILayout.Space();
+            GuiSimple.Label("Analysis", EditorStyles.boldLabel);
+            analysisOutput = GuiSimple.BrowseFolder(analysisOutput, "Analysis Output Directory", "Open Analysis Directory", analysisOutput, "");
+            EditorGUILayout.Space();
+            GuiSimple.Label("File (Binaries)", EditorStyles.boldLabel);
+            fileOutput = GuiSimple.BrowseFolder(fileOutput, "File/Binary Output Directory", "Open File Output Directory", fileOutput, "");
         }
 
 

@@ -71,5 +71,10 @@ namespace Manifold.IO
             return (ArrayPointer)obj == this;
         }
 
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
     }
 }

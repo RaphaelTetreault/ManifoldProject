@@ -46,7 +46,7 @@ namespace GameCube.GFZ.CourseCollision
         public uint zero_0x48; // zero confirmed
         public TrackUnkOption2 unk_0x4C; // 0, 1, 2, 3
         // REFERENCE FIELDS
-        public TrackCurves trackAnimationCurves;
+        public TrackCurves trackCurves;
         public TrackCorner trackCorner;
         public int[] childIndexes = new int[0];
         //public TrackSegment[] graph = new TrackSegment[0];
@@ -89,7 +89,7 @@ namespace GameCube.GFZ.CourseCollision
             {
                 // Read Topology
                 reader.JumpToAddress(trackAnimationCurvesPtr);
-                reader.ReadX(ref trackAnimationCurves, true);
+                reader.ReadX(ref trackCurves, true);
 
                 // Read hairpin turn
                 if (hairpinCornerTopologyPtr.IsNotNullPointer)
@@ -164,7 +164,7 @@ namespace GameCube.GFZ.CourseCollision
                 // recursive nature of this type.
                 // See "SetChildPointers(TrackSegment[] children)"
 
-                trackAnimationCurvesPtr = trackAnimationCurves.GetPointer();
+                trackAnimationCurvesPtr = trackCurves.GetPointer();
                 hairpinCornerTopologyPtr = trackCorner.GetPointer();
             }
             this.RecordStartAddress(writer);

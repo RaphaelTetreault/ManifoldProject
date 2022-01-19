@@ -24,13 +24,13 @@ namespace Manifold.Conversion
 
             foreach (var gobj in scene.Value.dynamicSceneObjects)
             {
-                if (gobj.animation.curve.Length == 0)
+                if (gobj.animationClip.curves.Length == 0)
                 {
                     continue;
                 }
 
-                var clip = AnimationConverter.GfzToUnity(gobj.animation);
-                var hash = HashUtility.HashBinary(md5, gobj.animation);
+                var clip = AnimationConverter.GfzToUnity(gobj.animationClip);
+                var hash = HashUtility.HashBinary(md5, gobj.animationClip);
                 var name = $"anim_{gobj.nameCopy}_{hash}.anim";
                 var path = $"Assets/Untracked/Anim/{name}";
                 AssetDatabase.CreateAsset(clip, path);

@@ -11,16 +11,40 @@ using System.IO;
 
 namespace Manifold.IO.GFZ.CourseCollision
 {
-    public static class ColiCourseTableLogger
+    public static class ColiCourseTsvLogger
     {
         private static float RandomTime => 1f;
         private static string ExecuteText => "TEMP";
 
-        [MenuItem("Manifold/Analysis/Coli Course All")]
+
+        private const string menu = Const.Menu.Manifold + "Analysis/";
+
+
+        [MenuItem(menu + "Analyze all ColiCourse" + " (Active Dir) #F5")]
         public static void AnalyzeAllPartsOfColiCourse()
         {
-
+            var settings = GfzProjectWindow.GetSettings();
+            var sceneIterator = ColiCourseIO.LoadAllStages(settings.StageDir, "Loading Stages...");
+            var scenes = sceneIterator.ToArray();
+            var output = settings.AnalysisOutput + "/" + AnalyzerUtility.GetFileTimestamp() + "/";
+            Directory.CreateDirectory(output);
+            Analyze(scenes, output);
+            OSUtility.OpenDirectory(settings.AnalysisOutput);
         }
+
+        //// Trying to make this stuff automatic?
+        //public static void Forwarder(Action<ColiScene[], string> action)
+        //{
+        //    var settings = GfzProjectWindow.GetSettings();
+        //    var sceneIterator = ColiCourseIO.LoadAllStages(settings.StageDir, "Loading Stages...");
+        //    var scenes = sceneIterator.ToArray();
+        //    var output = settings.AnalysisOutput + "/" + AnalyzerUtility.GetFileTimestamp() + "/"; // TODO: make folder with timestamp instead of files
+        //    Directory.CreateDirectory(output);
+        //    action.Invoke(scenes, output);
+        //    OSUtility.OpenDirectory(settings.AnalysisOutput);
+        //}
+
+
 
         public static void Analyze(ColiScene[] scenes, string outputPath)
         {
@@ -63,7 +87,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             {
                 // ANIMATIONS
                 {
-                    var fileName = $"{time} COLI {nameof(GameCube.GFZ.CourseCollision.AnimationClip)}.tsv";
+                    var fileName = $"{time} COLI {nameof(AnimationClip)}.tsv";
                     var filePath = Path.Combine(outputPath, fileName);
                     EditorUtility.DisplayProgressBar(ExecuteText, filePath, RandomTime);
                     AnalyzeGameObjectAnimationClips(scenes, filePath);
@@ -71,10 +95,10 @@ namespace Manifold.IO.GFZ.CourseCollision
 
                 // ANIMATIONS INDIVIDUALIZED
                 {
-                    var count = GameCube.GFZ.CourseCollision.AnimationClip.kSizeCurvesPtrs;
+                    var count = AnimationClip.kSizeCurvesPtrs;
                     for (int i = 0; i < count; i++)
                     {
-                        var fileName = $"{time} COLI {nameof(GameCube.GFZ.CourseCollision.AnimationClip)} {i}.tsv";
+                        var fileName = $"{time} COLI {nameof(AnimationClip)} {i}.tsv";
                         var filePath = Path.Combine(outputPath, fileName);
                         EditorUtility.DisplayProgressBar(ExecuteText, filePath, (float)(i + 1) / count);
                         AnalyzeGameObjectAnimationClipIndex(scenes, filePath, i);
@@ -83,7 +107,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             }
 
             {
-                string fileName = $"{time} COLI Compare {nameof(GameCube.GFZ.CourseCollision.Transform)}.tsv";
+                string fileName = $"{time} COLI Compare {nameof(Transform)}.tsv";
                 string filePath = Path.Combine(outputPath, fileName);
                 EditorUtility.DisplayProgressBar(ExecuteText, filePath, RandomTime);
                 AnalyzeSceneObjectTransforms(scenes, filePath);
@@ -251,7 +275,6 @@ namespace Manifold.IO.GFZ.CourseCollision
         }
 
 
-
         #region Track Data / Transforms
 
         public static void AnalyzeTrackKeyablesAll(ColiScene[] scenes, string filename)
@@ -346,7 +369,7 @@ namespace Manifold.IO.GFZ.CourseCollision
         }
         public static void WriteTrackKeyableAttributeRecursive(StreamWriter writer, ColiScene scene, int nestedDepth, int animationCurveIndex, int trackTransformIndex, TrackSegment trackTransform)
         {
-            var animationCurves = trackTransform.trackAnimationCurves.animationCurves;
+            var animationCurves = trackTransform.trackCurves.animationCurves;
             var keyableIndex = 1; // 0-n, depends on number of keyables in array
             int keyableTotal = animationCurves[animationCurveIndex].Length;
 
@@ -523,21 +546,23 @@ namespace Manifold.IO.GFZ.CourseCollision
                     int gameObjectIndex = 0;
                     foreach (var gameObject in scene.dynamicSceneObjects)
                     {
-                        if (gameObject.animation == null)
+                        if (gameObject.animationClip == null)
                             continue;
-
-                        if (gameObject.animation.curve == null)
+                        if (gameObject.animationClip.curves == null)
                             continue;
 
                         int animIndex = 0;
-                        foreach (var animationCurvePlus in gameObject.animation.curve)
+                        foreach (var animationClipCurve in gameObject.animationClip.curves)
                         {
-                            foreach (var keyable in animationCurvePlus.animationCurve.keyableAttributes)
+                            if (animationClipCurve.animationCurve == null)
+                                continue;
+
+                            foreach (var keyable in animationClipCurve.animationCurve.keyableAttributes)
                             {
                                 writer.WriteNextCol(scene.FileName);
                                 writer.WriteNextCol(gameObjectIndex);
                                 writer.WriteNextCol(gameObject.nameCopy);
-                                writer.WriteNextCol(animationCurvePlus.StartAddressHex());
+                                writer.WriteNextCol(animationClipCurve.StartAddressHex());
                                 writer.WriteNextCol(keyable.StartAddressHex());
                                 writer.WriteNextCol(animIndex);
                                 writer.WriteNextCol(keyable.easeMode);
@@ -566,39 +591,52 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol("Game Object");
                 writer.WriteNextCol("Anim Addr");
                 writer.WriteNextCol("Key Addr");
+                writer.WriteNextColNicify(nameof(AnimationClipCurve.unk_0x00));
+                writer.WriteNextColNicify(nameof(AnimationClipCurve.unk_0x04));
+                writer.WriteNextColNicify(nameof(AnimationClipCurve.unk_0x08));
+                writer.WriteNextColNicify(nameof(AnimationClipCurve.unk_0x0C));
+                writer.WriteNextCol("AnimClip Metadata");
+                writer.WriteNextCol("AnimClip Metadata");
+                writer.WriteNextCol("AnimClip Metadata");
                 writer.WriteNextCol("Anim Index [0-10]");
-                writer.WriteNextCol("Unk_0x00");
-                writer.WriteNextCol("Time");
-                writer.WriteNextCol("Value");
-                writer.WriteNextCol("Unk_0x0C");
-                writer.WriteNextCol("Unk_0x10");
+                writer.WriteNextColNicify(nameof(KeyableAttribute.easeMode));
+                writer.WriteNextColNicify(nameof(KeyableAttribute.time));
+                writer.WriteNextColNicify(nameof(KeyableAttribute.value));
+                writer.WriteNextColNicify(nameof(KeyableAttribute.zTangentIn));
+                writer.WriteNextColNicify(nameof(KeyableAttribute.zTangentOut));
                 writer.WriteNextRow();
 
                 foreach (var scene in scenes)
                 {
-                    int gameObjectIndex = 0;
-                    foreach (var gameObject in scene.dynamicSceneObjects)
+                    int objIndex = 0;
+                    foreach (var dynamicSceneObject in scene.dynamicSceneObjects)
                     {
-                        if (gameObject.animation == null)
+                        if (dynamicSceneObject.animationClip == null)
                             continue;
-
-                        if (gameObject.animation.curve == null)
-                            continue;
+                        //if (gameObject.animation.curve == null)
+                        //    continue;
 
                         int animIndex = 0;
-                        foreach (var animationCurvePlus in gameObject.animation.curve)
+                        foreach (var animationClipCurve in dynamicSceneObject.animationClip.curves)
                         {
-                            foreach (var keyable in animationCurvePlus.animationCurve.keyableAttributes)
+                            //if (animationClipCurve.animationCurve == null)
+                            //    continue;
+
+                            foreach (var keyable in animationClipCurve.animationCurve.keyableAttributes)
                             {
                                 /// HACK, write each anim index as separate file
                                 if (animIndex != index)
                                     continue;
 
                                 writer.WriteNextCol(scene.FileName);
-                                writer.WriteNextCol(gameObjectIndex);
-                                writer.WriteNextCol(gameObject.nameCopy);
-                                writer.WriteNextCol(animationCurvePlus.StartAddressHex());
+                                writer.WriteNextCol(objIndex);
+                                writer.WriteNextCol(dynamicSceneObject.nameCopy);
+                                writer.WriteNextCol(animationClipCurve.StartAddressHex());
                                 writer.WriteNextCol(keyable.StartAddressHex());
+                                writer.WriteNextCol(animationClipCurve.unk_0x00);
+                                writer.WriteNextCol(animationClipCurve.unk_0x04);
+                                writer.WriteNextCol(animationClipCurve.unk_0x08);
+                                writer.WriteNextCol(animationClipCurve.unk_0x0C);
                                 writer.WriteNextCol(animIndex);
                                 writer.WriteNextCol(keyable.easeMode);
                                 writer.WriteNextCol(keyable.time);
@@ -609,7 +647,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                             }
                             animIndex++;
                         }
-                        gameObjectIndex++;
+                        objIndex++;
                     }
                 }
                 writer.Flush();
@@ -694,17 +732,20 @@ namespace Manifold.IO.GFZ.CourseCollision
                         if (sceneObject.textureMetadata == null)
                             continue;
 
-                        int unkIndex = 0;
-                        foreach (var unk1 in sceneObject.textureMetadata.fields)
+                        int fieldArrayIndex = 0;
+                        foreach (var field in sceneObject.textureMetadata.fields)
                         {
+                            if (field == null)
+                                return;
+
                             writer.WriteNextCol(scene.FileName);
                             writer.WriteNextCol(gameObjectIndex);
                             writer.WriteNextCol(sceneObject.nameCopy);
-                            writer.WriteNextCol(unkIndex);
-                            writer.WriteNextCol(unk1.x);
-                            writer.WriteNextCol(unk1.y);
+                            writer.WriteNextCol(fieldArrayIndex);
+                            writer.WriteNextCol(field.x);
+                            writer.WriteNextCol(field.y);
                             writer.WriteNextRow();
-                            unkIndex++;
+                            fieldArrayIndex++;
                         }
                         gameObjectIndex++;
                     }
@@ -741,31 +782,31 @@ namespace Manifold.IO.GFZ.CourseCollision
                 foreach (var scene in scenes)
                 {
                     int gameObjectIndex = 0;
-                    foreach (var sceneObject in scene.dynamicSceneObjects)
+                    foreach (var dynamicSceneObject in scene.dynamicSceneObjects)
                     {
-                        if (!sceneObject.skeletalAnimator.propertiesPtr.IsNotNullPointer)
-                        {
+                        if (dynamicSceneObject.skeletalAnimator == null)
                             continue;
-                        }
+                        if (dynamicSceneObject.skeletalAnimator.propertiesPtr.IsNull)
+                            continue;
 
                         writer.WriteNextCol(scene.FileName);
                         writer.WriteNextCol(gameObjectIndex);
-                        writer.WriteNextCol(sceneObject.nameCopy);
+                        writer.WriteNextCol(dynamicSceneObject.nameCopy);
 
-                        writer.WriteNextCol(sceneObject.skeletalAnimator.zero_0x00);
-                        writer.WriteNextCol(sceneObject.skeletalAnimator.zero_0x04);
-                        writer.WriteNextCol(sceneObject.skeletalAnimator.one_0x08);
-                        writer.WriteNextCol(sceneObject.skeletalAnimator.propertiesPtr);
+                        writer.WriteNextCol(dynamicSceneObject.skeletalAnimator.zero_0x00);
+                        writer.WriteNextCol(dynamicSceneObject.skeletalAnimator.zero_0x04);
+                        writer.WriteNextCol(dynamicSceneObject.skeletalAnimator.one_0x08);
+                        writer.WriteNextCol(dynamicSceneObject.skeletalAnimator.propertiesPtr);
 
-                        writer.WriteNextCol(sceneObject.skeletalAnimator.properties.unk_0x00);
-                        writer.WriteNextCol(sceneObject.skeletalAnimator.properties.unk_0x04);
-                        writer.WriteFlags(sceneObject.skeletalAnimator.properties.unk_0x04);
-                        writer.WriteNextCol(sceneObject.skeletalAnimator.properties.unk_0x08);
-                        writer.WriteFlags(sceneObject.skeletalAnimator.properties.unk_0x08);
-                        writer.WriteNextCol(sceneObject.skeletalAnimator.properties.zero_0x0C);
-                        writer.WriteNextCol(sceneObject.skeletalAnimator.properties.zero_0x10);
-                        writer.WriteNextCol(sceneObject.skeletalAnimator.properties.zero_0x14);
-                        writer.WriteNextCol(sceneObject.skeletalAnimator.properties.zero_0x18);
+                        writer.WriteNextCol(dynamicSceneObject.skeletalAnimator.properties.unk_0x00);
+                        writer.WriteNextCol(dynamicSceneObject.skeletalAnimator.properties.unk_0x04);
+                        writer.WriteFlags(dynamicSceneObject.skeletalAnimator.properties.unk_0x04);
+                        writer.WriteNextCol(dynamicSceneObject.skeletalAnimator.properties.unk_0x08);
+                        writer.WriteFlags(dynamicSceneObject.skeletalAnimator.properties.unk_0x08);
+                        writer.WriteNextCol(dynamicSceneObject.skeletalAnimator.properties.zero_0x0C);
+                        writer.WriteNextCol(dynamicSceneObject.skeletalAnimator.properties.zero_0x10);
+                        writer.WriteNextCol(dynamicSceneObject.skeletalAnimator.properties.zero_0x14);
+                        writer.WriteNextCol(dynamicSceneObject.skeletalAnimator.properties.zero_0x18);
                         writer.WriteNextRow();
 
                         gameObjectIndex++;
@@ -815,19 +856,19 @@ namespace Manifold.IO.GFZ.CourseCollision
                 foreach (var scene in scenes)
                 {
                     int gameObjectIndex = 0;
-                    foreach (var gameObject in scene.dynamicSceneObjects)
+                    foreach (var dynamicSceneObject in scene.dynamicSceneObjects)
                     {
-                        if (gameObject.templateSceneObject.colliderGeometry.triCount == 0)
-                        {
+                        if (dynamicSceneObject.templateSceneObject.colliderGeometry == null)
                             continue;
-                        }
+                        if (dynamicSceneObject.templateSceneObject.colliderGeometry.triCount == 0)
+                            continue;
 
                         int triIndex = 0;
-                        foreach (var tri in gameObject.templateSceneObject.colliderGeometry.tris)
+                        foreach (var tri in dynamicSceneObject.templateSceneObject.colliderGeometry.tris)
                         {
                             writer.WriteNextCol(scene.FileName);
                             writer.WriteNextCol(gameObjectIndex);
-                            writer.WriteNextCol(gameObject.nameCopy);
+                            writer.WriteNextCol(dynamicSceneObject.nameCopy);
 
                             writer.WriteNextCol(triIndex++);
                             writer.WriteStartAddress(tri);
@@ -910,19 +951,19 @@ namespace Manifold.IO.GFZ.CourseCollision
                 foreach (var scene in scenes)
                 {
                     int gameObjectIndex = 0;
-                    foreach (var gameObject in scene.dynamicSceneObjects)
+                    foreach (var dynamicSceneObject in scene.dynamicSceneObjects)
                     {
-                        if (gameObject.templateSceneObject.colliderGeometry.quadCount == 0)
-                        {
+                        if (dynamicSceneObject.templateSceneObject.colliderGeometry == null)
                             continue;
-                        }
+                        if (dynamicSceneObject.templateSceneObject.colliderGeometry.quadCount == 0)
+                            continue;
 
                         int quadIndex = 0;
-                        foreach (var quad in gameObject.templateSceneObject.colliderGeometry.quads)
+                        foreach (var quad in dynamicSceneObject.templateSceneObject.colliderGeometry.quads)
                         {
                             writer.WriteNextCol(scene.FileName);
                             writer.WriteNextCol(gameObjectIndex);
-                            writer.WriteNextCol(gameObject.nameCopy);
+                            writer.WriteNextCol(dynamicSceneObject.nameCopy);
 
                             writer.WriteNextCol(quadIndex++);
                             writer.WriteStartAddress(quad);
@@ -1428,6 +1469,9 @@ namespace Manifold.IO.GFZ.CourseCollision
 
                 foreach (var scene in scenes)
                 {
+                    if (scene.fogCurves == null)
+                        continue;
+
                     var venueID = CourseUtility.GetVenueID(scene.ID).GetDescription();
                     var courseID = ((CourseIndexAX)scene.ID).GetDescription();
                     var isAxGx = scene.IsFileGX ? "GX" : "AX";
@@ -1658,42 +1702,43 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextColNicify(nameof(BoundsXZ.subdivisionsZ));
                 writer.WriteNextColNicify(nameof(StaticColliderMeshes.collisionQuadsPtr));
                 writer.WriteNextColNicify(nameof(StaticColliderMeshes.collisionQuadIndexesPtr));
-                writer.WriteNextColNicify(nameof(BoundsXZ.bounds2D.left));
-                writer.WriteNextColNicify(nameof(BoundsXZ.bounds2D.top));
-                writer.WriteNextColNicify(nameof(BoundsXZ.bounds2D.width));
-                writer.WriteNextColNicify(nameof(BoundsXZ.bounds2D.length));
-                writer.WriteNextColNicify(nameof(BoundsXZ.subdivisionsX));
-                writer.WriteNextColNicify(nameof(BoundsXZ.subdivisionsZ));
-                writer.WriteNextColNicify(nameof(StaticColliderMeshes.colliderTriangles));
-                writer.WriteNextColNicify(nameof(StaticColliderMeshes.colliderQuads));
+                writer.WriteNextColNicify(nameof(StaticColliderMeshes.unkBounds2DPtr));
+                writer.WriteNextColNicify(nameof(StaticColliderMeshes.staticSceneObjectsPtr));
+                writer.WriteNextColNicify(nameof(StaticColliderMeshes.unknownSolsTriggersPtr));
+                writer.WriteNextCol();
+                writer.WriteNextColNicify(nameof(Bounds2D.left));
+                writer.WriteNextColNicify(nameof(Bounds2D.top));
+                writer.WriteNextColNicify(nameof(Bounds2D.width));
+                writer.WriteNextColNicify(nameof(Bounds2D.length));
                 writer.WriteNextRow();
+
 
                 int index = 0;
 
                 foreach (var scene in scenes)
                 {
-                    var table = scene.staticColliderMeshes;
+                    var staticColliderMeshes = scene.staticColliderMeshes;
 
                     writer.WriteNextCol($"COLI_COURSE{scene.ID:d2}");
                     writer.WriteNextCol(index++);
-                    writer.WriteNextCol(table.collisionTrisPtr.HexAddress);
-                    writer.WriteNextCol(table.collisionTriIndexesPtr.Length);
-                    writer.WriteNextCol(table.meshBounds.bounds2D.left);
-                    writer.WriteNextCol(table.meshBounds.bounds2D.top);
-                    writer.WriteNextCol(table.meshBounds.bounds2D.width);
-                    writer.WriteNextCol(table.meshBounds.bounds2D.length);
-                    writer.WriteNextCol(table.meshBounds.subdivisionsX);
-                    writer.WriteNextCol(table.meshBounds.subdivisionsZ);
-                    writer.WriteNextCol(table.collisionQuadsPtr.HexAddress);
-                    writer.WriteNextCol(table.collisionQuadIndexesPtr.Length);
-                    //writer.WriteNextCol(table.unusedMeshBounds.maxX);
-                    //writer.WriteNextCol(table.unusedMeshBounds.maxZ);
-                    //writer.WriteNextCol(table.unusedMeshBounds.width);
-                    //writer.WriteNextCol(table.unusedMeshBounds.length);
-                    //writer.WriteNextCol(table.unusedMeshBounds.subdivisionsX);
-                    //writer.WriteNextCol(table.unusedMeshBounds.subdivisionsZ);
-                    writer.WriteNextCol(table.colliderTriangles.Length);
-                    writer.WriteNextCol(table.colliderQuads.Length);
+                    writer.WriteNextCol(staticColliderMeshes.collisionTrisPtr.HexAddress);
+                    writer.WriteNextCol(staticColliderMeshes.collisionTriIndexesPtr.Length);
+                    writer.WriteNextCol(staticColliderMeshes.meshBounds.bounds2D.left);
+                    writer.WriteNextCol(staticColliderMeshes.meshBounds.bounds2D.top);
+                    writer.WriteNextCol(staticColliderMeshes.meshBounds.bounds2D.width);
+                    writer.WriteNextCol(staticColliderMeshes.meshBounds.bounds2D.length);
+                    writer.WriteNextCol(staticColliderMeshes.meshBounds.subdivisionsX);
+                    writer.WriteNextCol(staticColliderMeshes.meshBounds.subdivisionsZ);
+                    writer.WriteNextCol(staticColliderMeshes.collisionQuadsPtr.HexAddress);
+                    writer.WriteNextCol(staticColliderMeshes.collisionQuadIndexesPtr.Length);
+                    writer.WriteNextCol(staticColliderMeshes.unkBounds2DPtr.HexAddress);
+                    writer.WriteNextCol(staticColliderMeshes.staticSceneObjectsPtr.HexAddress);
+                    writer.WriteNextCol(staticColliderMeshes.unknownSolsTriggersPtr.HexAddress);
+                    writer.WriteNextCol();
+                    writer.WriteNextCol(staticColliderMeshes.unkBounds2D.left);
+                    writer.WriteNextCol(staticColliderMeshes.unkBounds2D.top);
+                    writer.WriteNextCol(staticColliderMeshes.unkBounds2D.width);
+                    writer.WriteNextCol(staticColliderMeshes.unkBounds2D.length);
                     writer.WriteNextRow();
                 }
                 writer.Flush();

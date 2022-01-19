@@ -163,7 +163,46 @@ namespace Manifold.IO.GFZ
 
         #region Test Save All Stages
 
-        public static void TestSaveAllStages(string title, string path)
+        public static void TestSaveAllStagesDisk(string title, string path, string dest)
+        {
+            // Iterate over all stages, serialize them to RAM.
+            foreach (var coliScene in LoadAllStages(path, title))
+            {
+                var outputPath = dest + "stage/";
+                var outputFile = outputPath + coliScene.FileName;
+                var outputLog = outputPath + coliScene.FileName + "-log.txt";
+                using (var writer = new BinaryWriter(File.OpenWrite(outputFile)))
+                {
+                    // Serialize the scene data to file
+                    coliScene.SerializeVerbose = true;
+                    writer.WriteX(coliScene);
+                    writer.Flush();
+                }
+
+                // Write a log of the output file
+                var log = new TextLogger(outputLog);
+                LogSceneData(log, coliScene);
+                log.Flush();
+                log.Close();
+
+                // Compress and make an LZed copy
+                GfzUtility.CompressAvLzToDisk(outputFile, LibGxFormat.AvGame.FZeroGX);
+                OSUtility.OpenDirectory(outputPath);
+            }
+
+        }
+
+        [MenuItem(Const.Menu.tests + TestSave + " To Disk" + ActiveRoot)]
+        public static void Temp()
+        {
+            var settings = GfzProjectWindow.GetSettings();
+            var inputPath = settings.StageDir;
+            var outputPath = settings.FileOutput;
+            var title = $"Writing {nameof(ColiScene)} to disk...";
+            TestSaveAllStagesDisk(title, inputPath, outputPath);
+        }
+
+        public static void TestSaveAllStagesMemory(string title, string path)
         {
             // Iterate over all stages, serialize them to RAM.
             foreach (var coliScene in LoadAllStages(path, title))
@@ -174,29 +213,29 @@ namespace Manifold.IO.GFZ
         }
 
         [MenuItem(Const.Menu.tests + TestSave + ActiveRoot)]
-        public static void TestSaveAllStages()
+        public static void TestSaveAllStagesMemory()
         {
             var settings = GfzProjectWindow.GetSettings();
             var root = settings.RootFolder;
             var path = $"{root}/stage/";
-            TestSaveAllStages(TestSave, path);
+            TestSaveAllStagesMemory(TestSave, path);
         }
 
         [MenuItem(Const.Menu.tests + TestSave + DebugAllRegions)]
-        public static void TestSaveAllStagesDebugAllRegions()
+        public static void TestSaveAllStagesMemoryDebugAllRegions()
         {
             var settings = GfzProjectWindow.GetSettings();
             var directories = settings.GetTestRootDirectories();
             foreach (var directory in directories)
             {
                 var path = $"{directory}/stage/";
-                TestSaveAllStages(TestLoad, path);
+                TestSaveAllStagesMemory(TestLoad, path);
             }
         }
 
         #endregion
 
-        #region
+        #region Logs
 
         [MenuItem(Const.Menu.logs + "Log All Stages" + ActiveRoot)]
         public static void ExportColiSceneLog()
@@ -653,7 +692,7 @@ namespace Manifold.IO.GFZ
 
             // This block writes out the contents of each TrackSegments AnimationCurves
             log.WriteLine("TRACK SEGMENT ANIMATION CURVES");
-            log.WriteLine($"{nameof(TrackSegment)}.{nameof(TrackSegment.trackAnimationCurves)}");
+            log.WriteLine($"{nameof(TrackSegment)}.{nameof(TrackSegment.trackCurves)}");
             string[] labelSRP = new string[] { "Sca", "Rot", "Pos" };
             string[] labelXYZ = new string[] { "x", "y", "z" };
             for (int segmentIndex = 0; segmentIndex < coliScene.allTrackSegments.Length; segmentIndex++)
@@ -661,9 +700,9 @@ namespace Manifold.IO.GFZ
                 var trackSegment = coliScene.allTrackSegments[segmentIndex];
                 log.WriteLine($"{nameof(TrackSegment)}[{segmentIndex}]\t{trackSegment}");
 
-                for (int animIndex = 0; animIndex < trackSegment.trackAnimationCurves.animationCurves.Length; animIndex++)
+                for (int animIndex = 0; animIndex < trackSegment.trackCurves.animationCurves.Length; animIndex++)
                 {
-                    var animCurve = trackSegment.trackAnimationCurves.animationCurves[animIndex];
+                    var animCurve = trackSegment.trackCurves.animationCurves[animIndex];
                     var currLabelSRP = labelSRP[animIndex / 3];
                     var currLabelXYZ = labelXYZ[animIndex % 3];
                     log.WriteLine($"{currLabelSRP}.{currLabelXYZ} [{animIndex}] ");
@@ -769,9 +808,9 @@ namespace Manifold.IO.GFZ
                     if (sceneObject.skeletalAnimator != null)
                         log.WriteAddress(sceneObject.skeletalAnimator.properties);
 
-                    log.WriteAddress(sceneObject.animation);
-                    if (sceneObject.animation != null)
-                        log.WriteAddress(sceneObject.animation.curve);
+                    log.WriteAddress(sceneObject.animationClip);
+                    if (sceneObject.animationClip != null)
+                        log.WriteAddress(sceneObject.animationClip.curves);
                     // TODO: other sub classes?
 
                     log.WriteAddress(sceneObject.textureMetadata);
@@ -1010,7 +1049,7 @@ namespace Manifold.IO.GFZ
                 log.WriteLine();
 
                 //
-                log.WriteLine($"{nameof(TrackSegment)}.{nameof(TrackSegment.trackAnimationCurves)}");
+                log.WriteLine($"{nameof(TrackSegment)}.{nameof(TrackSegment.trackCurves)}");
                 string[] labelSRP = new string[] { "Sca", "Rot", "Pos" }; // scale, rotation, position
                 string[] labelXYZ = new string[] { "x", "y", "z" };
                 for (int segmentIndex = 0; segmentIndex < coliScene.allTrackSegments.Length; segmentIndex++)
@@ -1019,9 +1058,9 @@ namespace Manifold.IO.GFZ
                     var segmentIndexFormat = segmentIndex.ArrayFormat(coliScene.allTrackSegments);
                     log.WriteLine($"[{segmentIndex}]\t");
 
-                    for (int animIndex = 0; animIndex < trackSegment.trackAnimationCurves.animationCurves.Length; animIndex++)
+                    for (int animIndex = 0; animIndex < trackSegment.trackCurves.animationCurves.Length; animIndex++)
                     {
-                        var animCurve = trackSegment.trackAnimationCurves.animationCurves[animIndex];
+                        var animCurve = trackSegment.trackCurves.animationCurves[animIndex];
                         // NOTE: delete. At most 4, so no 2 digit indexes
                         //var animCurveFormat = segmentIndex.ArrayFormat(coliScene.trackNodes);
                         var currLabelSRP = labelSRP[animIndex / 3];
@@ -1063,7 +1102,7 @@ namespace Manifold.IO.GFZ
                 log.WriteLine($"{nameof(AnimationClipCurve)}");
                 for (int i = 0; i < coliScene.dynamicSceneObjects.Length; i++)
                 {
-                    var animClip = coliScene.dynamicSceneObjects[i].animation;
+                    var animClip = coliScene.dynamicSceneObjects[i].animationClip;
 
                     if (animClip == null)
                         continue;
@@ -1071,9 +1110,9 @@ namespace Manifold.IO.GFZ
                     var iFormat = i.ArrayFormat(coliScene.dynamicSceneObjects);
                     log.WriteLine($"[{iFormat}]\t");
 
-                    for (int j = 0; j < animClip.curve.Length; j++)
+                    for (int j = 0; j < animClip.curves.Length; j++)
                     {
-                        var animCurvesPlus = animClip.curve[j];
+                        var animCurvesPlus = animClip.curves[j];
                         //log.Write(PrintIndex(i, coliScene.sceneObjects));
                         log.WriteLine(PrintData(functionIdx, animCurvesPlus));
                     }

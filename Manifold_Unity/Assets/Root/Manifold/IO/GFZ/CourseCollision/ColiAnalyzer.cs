@@ -398,7 +398,7 @@ namespace Manifold.IO.GFZ.CourseCollision
         }
         public void WriteTrackKeyableAttributeRecursive(StreamWriter writer, ColiSceneSobj sobj, int nestedDepth, int animationCurveIndex, int trackTransformIndex, TrackSegment trackTransform)
         {
-            var animationCurves = trackTransform.trackAnimationCurves.animationCurves;
+            var animationCurves = trackTransform.trackCurves.animationCurves;
             var keyableIndex = 1; // 0-n, depends on number of keyables in array
             int keyableTotal = animationCurves[animationCurveIndex].Length;
 
@@ -575,14 +575,14 @@ namespace Manifold.IO.GFZ.CourseCollision
                     int gameObjectIndex = 0;
                     foreach (var gameObject in file.Value.dynamicSceneObjects)
                     {
-                        if (gameObject.animation == null)
+                        if (gameObject.animationClip == null)
                             continue;
 
-                        if (gameObject.animation.curve == null)
+                        if (gameObject.animationClip.curves == null)
                             continue;
 
                         int animIndex = 0;
-                        foreach (var animationCurvePlus in gameObject.animation.curve)
+                        foreach (var animationCurvePlus in gameObject.animationClip.curves)
                         {
                             foreach (var keyable in animationCurvePlus.animationCurve.keyableAttributes)
                             {
@@ -631,14 +631,14 @@ namespace Manifold.IO.GFZ.CourseCollision
                     int gameObjectIndex = 0;
                     foreach (var gameObject in file.Value.dynamicSceneObjects)
                     {
-                        if (gameObject.animation == null)
+                        if (gameObject.animationClip == null)
                             continue;
 
-                        if (gameObject.animation.curve == null)
+                        if (gameObject.animationClip.curves == null)
                             continue;
 
                         int animIndex = 0;
-                        foreach (var animationCurvePlus in gameObject.animation.curve)
+                        foreach (var animationCurvePlus in gameObject.animationClip.curves)
                         {
                             foreach (var keyable in animationCurvePlus.animationCurve.keyableAttributes)
                             {

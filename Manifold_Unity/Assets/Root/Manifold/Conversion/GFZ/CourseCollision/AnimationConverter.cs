@@ -16,21 +16,21 @@ namespace Manifold.Conversion.GFZ.CourseCollision
             // http://gyanendushekhar.com/2018/03/18/create-play-animation-runtime-unity-tutorial/
 
             // Scale
-            var gfxAnimClipScaleX = animationClip.curve[0];
-            var gfxAnimClipScaleY = animationClip.curve[1];
-            var gfxAnimClipScaleZ = animationClip.curve[2];
+            var gfxAnimClipScaleX = animationClip.curves[0];
+            var gfxAnimClipScaleY = animationClip.curves[1];
+            var gfxAnimClipScaleZ = animationClip.curves[2];
             // Rotation
-            var gfxAnimClipRotationX = animationClip.curve[3];
-            var gfxAnimClipRotationY = animationClip.curve[4];
-            var gfxAnimClipRotationZ = animationClip.curve[5];
+            var gfxAnimClipRotationX = animationClip.curves[3];
+            var gfxAnimClipRotationY = animationClip.curves[4];
+            var gfxAnimClipRotationZ = animationClip.curves[5];
             // Position
-            var gfxAnimClipPositionX = animationClip.curve[6];
-            var gfxAnimClipPositionY = animationClip.curve[7];
-            var gfxAnimClipPositionZ = animationClip.curve[8];
+            var gfxAnimClipPositionX = animationClip.curves[6];
+            var gfxAnimClipPositionY = animationClip.curves[7];
+            var gfxAnimClipPositionZ = animationClip.curves[8];
             // Unknown
-            var gfxAnimClipUnknown = animationClip.curve[9];
+            var gfxAnimClipUnknown = animationClip.curves[9];
             // Light
-            var gfxAnimClipLight = animationClip.curve[10];
+            var gfxAnimClipLight = animationClip.curves[10];
 
 
             var transformType = typeof(UnityEngine.Transform);

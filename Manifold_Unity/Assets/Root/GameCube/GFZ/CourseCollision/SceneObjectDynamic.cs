@@ -38,7 +38,7 @@ namespace GameCube.GFZ.CourseCollision
         public Pointer transformPtr;
         // FIELDS (deserialized from pointers)
         public SceneObjectTemplate templateSceneObject;
-        public AnimationClip animation;
+        public AnimationClip animationClip;
         public TextureMetadata textureMetadata;
         public SkeletalAnimator skeletalAnimator;
         public TransformMatrix3x4 transformMatrix3x4;
@@ -77,7 +77,7 @@ namespace GameCube.GFZ.CourseCollision
                 if (animationPtr.IsNotNullPointer)
                 {
                     reader.JumpToAddress(animationPtr);
-                    reader.ReadX(ref animation, true);
+                    reader.ReadX(ref animationClip, true);
                 }
 
                 if (textureMetadataPtr.IsNotNullPointer)
@@ -113,7 +113,7 @@ namespace GameCube.GFZ.CourseCollision
             {
                 // Get pointers from refered instances
                 templateSceneObjectPtr = templateSceneObject.GetPointer();
-                animationPtr = animation.GetPointer();
+                animationPtr = animationClip.GetPointer();
                 textureMetadataPtr = textureMetadata.GetPointer();
                 skeletalAnimatorPtr = skeletalAnimator.GetPointer();
                 transformPtr = transformMatrix3x4.GetPointer();
@@ -141,7 +141,7 @@ namespace GameCube.GFZ.CourseCollision
             //Assert.IsTrue(instanceReference != null);
 
             // Assert pointers only if type is not null
-            if (animation != null)
+            if (animationClip != null)
                 Assert.IsTrue(animationPtr.IsNotNullPointer);
             if (textureMetadata != null)
                 Assert.IsTrue(textureMetadataPtr.IsNotNullPointer);
