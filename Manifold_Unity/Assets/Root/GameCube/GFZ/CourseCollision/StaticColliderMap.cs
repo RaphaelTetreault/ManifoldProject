@@ -21,41 +21,34 @@ namespace GameCube.GFZ.CourseCollision
         ISerializedBinaryAddressableReferer
     {
         // CONSTANTS
-        /// <summary>
-        /// 0x24 = 0x4 * 9
-        /// </summary>
-        public const int kCountZeros = 9;
         public const int kCountAxSurfaceTypes = 11;
         public const int kCountGxSurfaceTypes = 14;
-        public const int kZeroesA = 8; // 0-7
-        //                          4; // 8, 9, 10, 11
-        public const int kZeroesB = 4; // 12-15
-        //                          1; // 16
-        public const int kZeroesC = 5; // 17-21
-        //                          1; // 22
-        public const int kZeroesD = 232;// 23-254
+        public const int kZeroesGroup1 = 0x24; // 36 bytes
+        public const int kZeroesGroup2 = 0x20; // 32 bytes
+        public const int kZeroesGroup3 = 0x10; // 16 bytes
+        public const int kZeroesGroup4 = 0x14; // 20 bytes
+        public const int kZeroesGroup5 = 0x3A0; // 926 bytes
 
         // METADATA
         [UnityEngine.SerializeField] private AddressRange addressRange;
         [UnityEngine.SerializeField] private ColiScene.SerializeFormat serializeFormat;
 
         // FIELDS
-        public int[] zero_0x00_0x20;
+        public byte[] zeroes_group1;
         public Pointer staticColliderTrisPtr;
-        public Pointer[] triMeshMatrixPtrs;
+        public Pointer[] triMeshMatrixPtrs; // variable AX/GX
         public MatrixBoundsXZ meshBounds;
         public Pointer staticColliderQuadsPtr;
-        public Pointer[] quadMeshMatrixPtrs;
-        public int[] zeroes_a; // size: 8 ints
-        public ArrayPointer unknownSolsTriggersPtr; // # 8, 9
-        public ArrayPointer staticSceneObjectsPtr; // # 10, 11
-        public int[] zeroes_b; // size: 4 ints
-        public Pointer unkBounds2DPtr; // # 16
-        public int[] zeroes_c; // size: 5 ints
-        public float unk_float; // #22
-        public int[] zeroes_d; // size: 232 ints
+        public Pointer[] quadMeshMatrixPtrs; // variable AX/GX
+        public byte[] zeroes_group2;
+        public ArrayPointer unknownCollidersPtr;
+        public ArrayPointer staticSceneObjectsPtr;
+        public byte[] zeroes_group3;
+        public Pointer unkDataPtr;
+        public byte[] zeroes_group4;
+        public float unk_float;
+        public byte[] zeroes_group5;
         // REFERENCE FIELDS
-        // This data holds the geometry data and indexes
         public ColliderTriangle[] colliderTris = new ColliderTriangle[0];
         public ColliderQuad[] colliderQuads = new ColliderQuad[0];
         public StaticColliderMeshMatrix[] triMeshMatrices;
@@ -121,26 +114,26 @@ namespace GameCube.GFZ.CourseCollision
             // Deserialize values
             this.RecordStartAddress(reader);
             {
-                reader.ReadX(ref zero_0x00_0x20, kCountZeros);
+                reader.ReadX(ref zeroes_group1, kZeroesGroup1);
                 reader.ReadX(ref staticColliderTrisPtr);
                 reader.ReadX(ref triMeshMatrixPtrs, countSurfaceTypes, true);
                 reader.ReadX(ref meshBounds, true);
                 reader.ReadX(ref staticColliderQuadsPtr);
                 reader.ReadX(ref quadMeshMatrixPtrs, countSurfaceTypes, true);
-                reader.ReadX(ref zeroes_a, kZeroesA);
-                reader.ReadX(ref unknownSolsTriggersPtr);
+                reader.ReadX(ref zeroes_group2, kZeroesGroup2);
+                reader.ReadX(ref unknownCollidersPtr);
                 reader.ReadX(ref staticSceneObjectsPtr);
-                reader.ReadX(ref zeroes_b, kZeroesB);
-                reader.ReadX(ref unkBounds2DPtr);
-                reader.ReadX(ref zeroes_c, kZeroesC);
+                reader.ReadX(ref zeroes_group3, kZeroesGroup3);
+                reader.ReadX(ref unkDataPtr);
+                reader.ReadX(ref zeroes_group4, kZeroesGroup4);
                 reader.ReadX(ref unk_float);
-                reader.ReadX(ref zeroes_d, kZeroesD);
+                reader.ReadX(ref zeroes_group5, kZeroesGroup5);
             }
             this.RecordEndAddress(reader);
             {
                 // Asserts
-                for (int i = 0; i < zero_0x00_0x20.Length; i++)
-                    Assert.IsTrue(zero_0x00_0x20[i] == 0);
+                for (int i = 0; i < zeroes_group1.Length; i++)
+                    Assert.IsTrue(zeroes_group1[i] == 0);
 
                 /////////////////
                 // Initialize arrays
@@ -181,7 +174,7 @@ namespace GameCube.GFZ.CourseCollision
                 reader.ReadX(ref colliderQuads, numQuadVerts, true);
 
                 // NEWER STUFF
-                reader.JumpToAddress(unkBounds2DPtr);
+                reader.JumpToAddress(unkDataPtr);
                 reader.ReadX(ref unkData, true);
                 // I don't read the SceneObjectTemplates and UnknownSolsTriggers
                 // since it's easier to patch that in ColiScene directly and saves
@@ -191,18 +184,18 @@ namespace GameCube.GFZ.CourseCollision
                 // All these are always populated in GX J
                 Assert.IsTrue(staticSceneObjectsPtr.Length != 0);
                 Assert.IsTrue(staticSceneObjectsPtr.IsNotNullPointer);
-                Assert.IsTrue(unkBounds2DPtr.IsNotNullPointer);
+                Assert.IsTrue(unkDataPtr.IsNotNullPointer);
                 //DebugConsole.Log($"idx16: {unkBounds2DPtr.HexAddress}");
 
                 // Assert that all of this other junk is empty
-                for (int i = 0; i < kZeroesA; i++)
-                    Assert.IsTrue(zeroes_a[i] == 0, $"Index A {00+i} is {zeroes_a[i]:x8}");
-                for (int i = 0; i < kZeroesB; i++)
-                    Assert.IsTrue(zeroes_b[i] == 0, $"Index B {08+i} is {zeroes_b[i]:x8}");
-                for (int i = 0; i < kZeroesC; i++)
-                    Assert.IsTrue(zeroes_c[i] == 0, $"Index C {16+i} is {zeroes_c[i]:x8}");
-                for (int i = 0; i < kZeroesD; i++)
-                    Assert.IsTrue(zeroes_d[i] == 0, $"Index D {22+i} is {zeroes_d[i]:x8}");
+                for (int i = 0; i < kZeroesGroup2; i++)
+                    Assert.IsTrue(zeroes_group2[i] == 0, $"Index A {00+i} is {zeroes_group2[i]:x8}");
+                for (int i = 0; i < kZeroesGroup3; i++)
+                    Assert.IsTrue(zeroes_group3[i] == 0, $"Index B {08+i} is {zeroes_group3[i]:x8}");
+                for (int i = 0; i < kZeroesGroup4; i++)
+                    Assert.IsTrue(zeroes_group4[i] == 0, $"Index C {16+i} is {zeroes_group4[i]:x8}");
+                for (int i = 0; i < kZeroesGroup5; i++)
+                    Assert.IsTrue(zeroes_group5[i] == 0, $"Index D {22+i} is {zeroes_group5[i]:x8}");
 
                 //if (unknownSolsTriggersPtr.IsNotNullPointer)
                 //    DebugConsole.Log($"idx 8/9: {unknownSolsTriggersPtr.Length}, {unknownSolsTriggersPtr.HexAddress}");
@@ -237,25 +230,25 @@ namespace GameCube.GFZ.CourseCollision
                 triMeshMatrixPtrs = triMeshMatrices.GetPointers();
                 quadMeshMatrixPtrs = quadMeshMatrices.GetPointers();
                 //
-                unkBounds2DPtr = unkData.GetPointer();
+                unkDataPtr = unkData.GetPointer();
             }
             this.RecordStartAddress(writer);
             {
                 // Write empty int array for unknown
-                writer.WriteX(new int[kCountZeros], false);
+                writer.WriteX(new int[kZeroesGroup1], false);
                 writer.WriteX(staticColliderTrisPtr);
                 writer.WriteX(triMeshMatrixPtrs, false);
                 writer.WriteX(meshBounds);
                 writer.WriteX(staticColliderQuadsPtr);
                 writer.WriteX(quadMeshMatrixPtrs, false);
-                writer.WriteX(zeroes_a, false);
-                writer.WriteX(unknownSolsTriggersPtr);
+                writer.WriteX(zeroes_group2, false);
+                writer.WriteX(unknownCollidersPtr);
                 writer.WriteX(staticSceneObjectsPtr);
-                writer.WriteX(zeroes_b, false);
-                writer.WriteX(unkBounds2DPtr);
-                writer.WriteX(zeroes_c, false);
+                writer.WriteX(zeroes_group3, false);
+                writer.WriteX(unkDataPtr);
+                writer.WriteX(zeroes_group4, false);
                 writer.WriteX(unk_float);
-                writer.WriteX(zeroes_d, false);
+                writer.WriteX(zeroes_group5, false);
             }
             this.RecordEndAddress(writer);
         }

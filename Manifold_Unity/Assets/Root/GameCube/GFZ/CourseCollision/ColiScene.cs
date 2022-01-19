@@ -318,7 +318,7 @@ namespace GameCube.GFZ.CourseCollision
             // For some reason, this structure points back to these
             colliderMap.UnknownColliders = unknownSolsTriggers;
             colliderMap.staticSceneObjects = staticSceneObjects;
-            Assert.IsTrue(colliderMap.unknownSolsTriggersPtr == unknownSolsTriggersPtr);
+            Assert.IsTrue(colliderMap.unknownCollidersPtr == unknownSolsTriggersPtr);
             Assert.IsTrue(colliderMap.staticSceneObjectsPtr == staticSceneObjectsPtr);
 
 

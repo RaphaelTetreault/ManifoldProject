@@ -745,7 +745,7 @@ namespace Manifold.IO.GFZ
             log.WriteAddress(coliScene.colliderMap.unkData);
             log.WriteLine(coliScene.colliderMap.unkData);
             log.WriteLine("unk float: " + coliScene.colliderMap.unk_float);
-            log.WriteLine(coliScene.colliderMap.unknownSolsTriggersPtr);
+            log.WriteLine(coliScene.colliderMap.unknownCollidersPtr);
             log.WriteLine(coliScene.colliderMap.staticSceneObjectsPtr);
             log.WriteLine();
             log.WriteLine("Mesh Bounds");

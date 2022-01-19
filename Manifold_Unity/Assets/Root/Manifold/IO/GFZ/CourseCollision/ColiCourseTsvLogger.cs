@@ -1702,9 +1702,9 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextColNicify(nameof(MatrixBoundsXZ.numSubdivisionsZ));
                 writer.WriteNextColNicify(nameof(StaticColliderMap.staticColliderQuadsPtr));
                 writer.WriteNextColNicify(nameof(StaticColliderMap.quadMeshMatrixPtrs));
-                writer.WriteNextColNicify(nameof(StaticColliderMap.unkBounds2DPtr));
+                writer.WriteNextColNicify(nameof(StaticColliderMap.unkDataPtr));
                 writer.WriteNextColNicify(nameof(StaticColliderMap.staticSceneObjectsPtr));
-                writer.WriteNextColNicify(nameof(StaticColliderMap.unknownSolsTriggersPtr));
+                writer.WriteNextColNicify(nameof(StaticColliderMap.unknownCollidersPtr));
                 writer.WriteNextCol();
                 writer.WriteNextColNicify(nameof(UnknownStaticColliderMapData.unk_0x00));
                 writer.WriteNextColNicify(nameof(UnknownStaticColliderMapData.unk_0x04));
@@ -1731,9 +1731,9 @@ namespace Manifold.IO.GFZ.CourseCollision
                     writer.WriteNextCol(staticColliderMeshes.meshBounds.numSubdivisionsZ);
                     writer.WriteNextCol(staticColliderMeshes.staticColliderQuadsPtr.HexAddress);
                     writer.WriteNextCol(staticColliderMeshes.quadMeshMatrixPtrs.Length);
-                    writer.WriteNextCol(staticColliderMeshes.unkBounds2DPtr.HexAddress);
+                    writer.WriteNextCol(staticColliderMeshes.unkDataPtr.HexAddress);
                     writer.WriteNextCol(staticColliderMeshes.staticSceneObjectsPtr.HexAddress);
-                    writer.WriteNextCol(staticColliderMeshes.unknownSolsTriggersPtr.HexAddress);
+                    writer.WriteNextCol(staticColliderMeshes.unknownCollidersPtr.HexAddress);
                     writer.WriteNextCol();
                     writer.WriteNextCol(staticColliderMeshes.unkData.unk_0x00);
                     writer.WriteNextCol(staticColliderMeshes.unkData.unk_0x04);
