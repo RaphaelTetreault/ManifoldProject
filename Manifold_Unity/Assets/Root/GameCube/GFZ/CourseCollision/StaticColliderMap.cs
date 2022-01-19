@@ -235,7 +235,7 @@ namespace GameCube.GFZ.CourseCollision
             this.RecordStartAddress(writer);
             {
                 // Write empty int array for unknown
-                writer.WriteX(new int[kZeroesGroup1], false);
+                writer.WriteX(zeroes_group1, false);
                 writer.WriteX(staticColliderTrisPtr);
                 writer.WriteX(triMeshMatrixPtrs, false);
                 writer.WriteX(meshBounds);
