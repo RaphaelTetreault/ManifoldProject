@@ -517,7 +517,7 @@ namespace Manifold.IO.GFZ
 
                 // Static Collider Meshes
                 {
-                    coliScene.staticColliderMeshes = new StaticColliderMeshes(format);
+                    coliScene.colliderMap = new StaticColliderMap(format);
                 }
 
                 // Triggers
@@ -738,27 +738,27 @@ namespace Manifold.IO.GFZ
             // segments
             log.WriteLine();
             log.WriteHeading("STATIC COLLISION", padding, h1Width);
-            log.WriteAddress(coliScene.staticColliderMeshes);
+            log.WriteAddress(coliScene.colliderMap);
             log.WriteLine();
             log.WriteLine("NEW DATA");
-            log.WriteLine("Unknown Bounds XZ");
-            log.WriteLine(coliScene.staticColliderMeshes.unkBounds2D);
-            log.WriteLine("unk float: " + coliScene.staticColliderMeshes.unk_float);
-            log.WriteLine(coliScene.staticColliderMeshes.unknownSolsTriggersPtr);
-            log.WriteLine(coliScene.staticColliderMeshes.staticSceneObjectsPtr);
-            // TODO: SOLS triggers, static scene objects
+            log.WriteLine(nameof(UnknownStaticColliderMapData));
+            log.WriteAddress(coliScene.colliderMap.unkData);
+            log.WriteLine(coliScene.colliderMap.unkData);
+            log.WriteLine("unk float: " + coliScene.colliderMap.unk_float);
+            log.WriteLine(coliScene.colliderMap.unknownSolsTriggersPtr);
+            log.WriteLine(coliScene.colliderMap.staticSceneObjectsPtr);
             log.WriteLine();
             log.WriteLine("Mesh Bounds");
-            log.WriteAddress(coliScene.staticColliderMeshes.meshBounds);
+            log.WriteAddress(coliScene.colliderMap.meshBounds);
             log.WriteLine();
             log.WriteLine("TRIANGLES");
-            log.WriteAddress(coliScene.staticColliderMeshes.colliderTris);
-            log.WriteAddress(coliScene.staticColliderMeshes.triMeshMatrices);
+            log.WriteAddress(coliScene.colliderMap.colliderTris);
+            log.WriteAddress(coliScene.colliderMap.triMeshMatrices);
             // Write each index list
             log.WriteNullInArray = false;
-            for (int i = 0; i < coliScene.staticColliderMeshes.triMeshMatrices.Length; i++)
+            for (int i = 0; i < coliScene.colliderMap.triMeshMatrices.Length; i++)
             {
-                var triIndexList = coliScene.staticColliderMeshes.triMeshMatrices[i];
+                var triIndexList = coliScene.colliderMap.triMeshMatrices[i];
                 if (triIndexList != null)
                 {
                     log.WriteLine($"COLLIDER TYPE [{i}]: {(StaticColliderMeshProperty)i}");
@@ -767,13 +767,13 @@ namespace Manifold.IO.GFZ
             }
             log.WriteNullInArray = true;
             log.WriteLine("QUADS");
-            log.WriteAddress(coliScene.staticColliderMeshes.colliderQuads);
-            log.WriteAddress(coliScene.staticColliderMeshes.quadMeshMatrices);
+            log.WriteAddress(coliScene.colliderMap.colliderQuads);
+            log.WriteAddress(coliScene.colliderMap.quadMeshMatrices);
             // Write each index list
             log.WriteNullInArray = false;
-            for (int i = 0; i < coliScene.staticColliderMeshes.quadMeshMatrices.Length; i++)
+            for (int i = 0; i < coliScene.colliderMap.quadMeshMatrices.Length; i++)
             {
-                var quadIndexList = coliScene.staticColliderMeshes.quadMeshMatrices[i];
+                var quadIndexList = coliScene.colliderMap.quadMeshMatrices[i];
                 if (quadIndexList != null)
                 {
                     log.WriteLine($"COLLIDER TYPE [{i}]: {(StaticColliderMeshProperty)i}");

@@ -93,19 +93,19 @@ namespace GameCube.GFZ.CourseCollision
         public ArrayPointer arcadeCheckpointTriggersPtr;
         public ArrayPointer storyObjectTriggersPtr;
         public Pointer trackCheckpointMatrixPtr;
-        public BoundsXZ trackNodeBoundsXZ;
+        public MatrixBoundsXZ trackNodeBoundsXZ;
         public byte[] zeroes0xD8 = new byte[kSizeOfZeroes0xD8]; // 
 
         // REFERENCE FIELDS
         public TrackNode[] trackNodes;// = new TrackNode[0];
         public SurfaceAttributeArea[] surfaceAttributeAreas = SurfaceAttributeArea.DefaultArray();
-        public StaticColliderMeshes staticColliderMeshes;
+        public StaticColliderMap colliderMap;
         public byte[] zeroes0x20 = new byte[kSizeOfZeroes0x20];
         public TrackMinHeight trackMinHeight;// = new TrackMinHeight(); // has default constructor
         public SceneObjectDynamic[] dynamicSceneObjects;// = new SceneObjectDynamic[0];
         public SceneObjectTemplate[] templateSceneObjects;// = new SceneObjectTemplate[0];
         public SceneObjectStatic[] staticSceneObjects;// = new SceneObjectStatic[0];
-        public UnknownSolsTrigger[] unknownSolsTriggers;// = new UnknownSolsTrigger[0];
+        public UnknownCollider[] unknownSolsTriggers;// = new UnknownSolsTrigger[0];
         public FogCurves fogCurves;
         public Fog fog;
         public TrackLength trackLength;
@@ -246,9 +246,9 @@ namespace GameCube.GFZ.CourseCollision
             // 0x1C 
             // Format is deserialized in DeserializeSelf(reader);
             // The structure's size differs between AX and GX. Format defines which it uses.
-            staticColliderMeshes = new StaticColliderMeshes(Format);
+            colliderMap = new StaticColliderMap(Format);
             reader.JumpToAddress(staticColliderMeshesPtr);
-            reader.ReadX(ref staticColliderMeshes, false);
+            reader.ReadX(ref colliderMap, false);
 
             // 0x20
             reader.JumpToAddress(zeroes0x20Ptr);
@@ -316,10 +316,10 @@ namespace GameCube.GFZ.CourseCollision
 
             // TEMP
             // For some reason, this structure points back to these
-            staticColliderMeshes.UnknownSolsTrigger = unknownSolsTriggers;
-            staticColliderMeshes.staticSceneObjects = staticSceneObjects;
-            Assert.IsTrue(staticColliderMeshes.unknownSolsTriggersPtr == unknownSolsTriggersPtr);
-            Assert.IsTrue(staticColliderMeshes.staticSceneObjectsPtr == staticSceneObjectsPtr);
+            colliderMap.UnknownColliders = unknownSolsTriggers;
+            colliderMap.staticSceneObjects = staticSceneObjects;
+            Assert.IsTrue(colliderMap.unknownSolsTriggersPtr == unknownSolsTriggersPtr);
+            Assert.IsTrue(colliderMap.staticSceneObjectsPtr == staticSceneObjectsPtr);
 
 
             // UNMANGLE SHARED REFERENCES
@@ -601,32 +601,32 @@ namespace GameCube.GFZ.CourseCollision
             {
                 // STATIC COLLIDER MESHES
                 // Write main structure
-                writer.InlineDesc(serializeVerbose, 0x1C, staticColliderMeshes);
-                writer.WriteX(staticColliderMeshes);
-                var scmPtr = staticColliderMeshes.GetPointer();
+                writer.InlineDesc(serializeVerbose, 0x1C, colliderMap);
+                writer.WriteX(colliderMap);
+                var scmPtr = colliderMap.GetPointer();
 
                 // Write collider bounds (applies to to non-tri/quad collision, too)
-                writer.InlineDesc(serializeVerbose, staticColliderMeshes.unkBounds2D);
-                writer.WriteX(staticColliderMeshes.unkBounds2D);
+                writer.InlineDesc(serializeVerbose, colliderMap.unkData);
+                writer.WriteX(colliderMap.unkData);
 
                 // COLLIDER TRIS
                 {
-                    var colliderTris = staticColliderMeshes.colliderTris;
+                    var colliderTris = colliderMap.colliderTris;
                     // Write tri data and comment
                     if (!colliderTris.IsNullOrEmpty())
                         writer.InlineDesc(serializeVerbose, scmPtr, colliderTris);
                     writer.WriteX(colliderTris, false);
-                    WriteStaticColliderMeshMatrices(writer, scmPtr, "ColiTri", staticColliderMeshes.triMeshMatrices);
+                    WriteStaticColliderMeshMatrices(writer, scmPtr, "ColiTri", colliderMap.triMeshMatrices);
                 }
 
                 // COLLIDER QUADS
                 {
-                    var colliderQuads = staticColliderMeshes.colliderQuads;
+                    var colliderQuads = colliderMap.colliderQuads;
                     // Write quad data and comment
                     if (!colliderQuads.IsNullOrEmpty())
                         writer.InlineDesc(serializeVerbose, scmPtr, colliderQuads);
                     writer.WriteX(colliderQuads, false);
-                    WriteStaticColliderMeshMatrices(writer, scmPtr, "ColiQuad", staticColliderMeshes.quadMeshMatrices);
+                    WriteStaticColliderMeshMatrices(writer, scmPtr, "ColiQuad", colliderMap.quadMeshMatrices);
                 }
             }
 
@@ -861,9 +861,9 @@ namespace GameCube.GFZ.CourseCollision
                 referers.Add(trackCheckpointMatrix);
 
                 // Static Collider Meshes and dependencies
-                referers.Add(staticColliderMeshes);
-                referers.AddRange(staticColliderMeshes.triMeshMatrices);
-                referers.AddRange(staticColliderMeshes.quadMeshMatrices);
+                referers.Add(colliderMap);
+                referers.AddRange(colliderMap.triMeshMatrices);
+                referers.AddRange(colliderMap.quadMeshMatrices);
 
                 // OBJECTS
                 // Scene Objects
@@ -1068,21 +1068,21 @@ namespace GameCube.GFZ.CourseCollision
             list.AddRange(surfaceAttributeAreas);
 
             // Static Collider Meshes
-            list.Add(staticColliderMeshes);
-            list.AddRange(staticColliderMeshes.colliderTris);
-            list.AddRange(staticColliderMeshes.colliderQuads);
-            foreach (var matrix in staticColliderMeshes.triMeshMatrices)
+            list.Add(colliderMap);
+            list.AddRange(colliderMap.colliderTris);
+            list.AddRange(colliderMap.colliderQuads);
+            foreach (var matrix in colliderMap.triMeshMatrices)
             {
                 list.Add(matrix);
                 list.AddRange(matrix.indexLists);
             }
-            foreach (var matrix in staticColliderMeshes.quadMeshMatrices)
+            foreach (var matrix in colliderMap.quadMeshMatrices)
             {
                 list.Add(matrix);
                 list.AddRange(matrix.indexLists);
             }
-            list.Add(staticColliderMeshes.meshBounds);
-            list.Add(staticColliderMeshes.unkBounds2D);
+            list.Add(colliderMap.meshBounds);
+            list.Add(colliderMap.unkData);
 
             list.Add(trackMinHeight);
 
@@ -1222,7 +1222,7 @@ namespace GameCube.GFZ.CourseCollision
 
                 // UPDATE POINTERS AND COUNTS
                 // Track and stage data
-                staticColliderMeshesPtr = staticColliderMeshes.GetPointer();
+                staticColliderMeshesPtr = colliderMap.GetPointer();
                 surfaceAttributeAreasPtr = surfaceAttributeAreas.GetArrayPointer();
                 trackCheckpointMatrixPtr = trackCheckpointMatrix.GetPointer();
                 trackLengthPtr = trackLength.GetPointer();

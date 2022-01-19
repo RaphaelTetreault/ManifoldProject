@@ -9,7 +9,7 @@ namespace Manifold.IO.GFZ.CourseCollision
     /// 
     /// </summary>
     public class GfzUnknownSolsTrigger : MonoBehaviour,
-        IGfzConvertable<UnknownSolsTrigger>
+        IGfzConvertable<UnknownCollider>
     {
         /// <summary>
         /// Unknown SOLS trigger scale (when compared to default Unity cube).
@@ -28,12 +28,12 @@ namespace Manifold.IO.GFZ.CourseCollision
         }
 
         // METHODS
-        public UnknownSolsTrigger ExportGfz()
+        public UnknownCollider ExportGfz()
         {
             // Convert unity transform to gfz transform
             var transform = TransformConverter.ToGfzTransform(this.transform);
 
-            var value = new UnknownSolsTrigger
+            var value = new UnknownCollider
             {
                 unk_0x00 = unk_0x00,
                 transform = transform
@@ -42,7 +42,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             return value;
         }
 
-        public void ImportGfz(UnknownSolsTrigger value)
+        public void ImportGfz(UnknownCollider value)
         {
             transform.CopyGfzTransform(value.transform);
             transform.localScale *= scale;

@@ -1,17 +1,15 @@
-using Manifold.IO;
-using System;
+﻿using System;
 using System.IO;
-
-// TODO: test by creating custom triggers, moving them onto the track.
+using Manifold.IO;
+using Unity.Mathematics;
 
 namespace GameCube.GFZ.CourseCollision
 {
     /// <summary>
-    /// Trigger volume only available in Sand Ocean Lateral Shift
-    /// GX: 6 instances, AX: 9 instances
+    /// 
     /// </summary>
     [Serializable]
-    public class UnknownSolsTrigger :
+    public class UnknownStaticColliderMapData :
         IBinaryAddressable,
         IBinarySerializable
     {
@@ -19,8 +17,10 @@ namespace GameCube.GFZ.CourseCollision
         [UnityEngine.SerializeField] private AddressRange addressRange;
 
         // FIELDS
-        public int unk_0x00;
-        public Transform transform;
+        public float unk_0x00;
+        public float unk_0x04;
+        public float unk_0x08;
+        public float unk_0x0C;
 
 
         // PROPERTIES
@@ -30,14 +30,15 @@ namespace GameCube.GFZ.CourseCollision
             set => addressRange = value;
         }
 
-
-        // METHODS
+     
         public void Deserialize(BinaryReader reader)
         {
             this.RecordStartAddress(reader);
             {
                 reader.ReadX(ref unk_0x00);
-                reader.ReadX(ref transform, true);
+                reader.ReadX(ref unk_0x04);
+                reader.ReadX(ref unk_0x08);
+                reader.ReadX(ref unk_0x0C);
             }
             this.RecordEndAddress(reader);
         }
@@ -47,7 +48,9 @@ namespace GameCube.GFZ.CourseCollision
             this.RecordStartAddress(writer);
             {
                 writer.WriteX(unk_0x00);
-                writer.WriteX(transform);
+                writer.WriteX(unk_0x04);
+                writer.WriteX(unk_0x08);
+                writer.WriteX(unk_0x0C);
             }
             this.RecordEndAddress(writer);
         }
@@ -55,9 +58,11 @@ namespace GameCube.GFZ.CourseCollision
         public override string ToString()
         {
             return
-                $"{nameof(UnknownSolsTrigger)}(" +
-                $"{transform}" +
-                $")";
+                $"{nameof(UnknownStaticColliderMapData)}(" +
+                $"{nameof(unk_0x00)}: {unk_0x00}, " +
+                $"{nameof(unk_0x04)}: {unk_0x04}, " +
+                $"{nameof(unk_0x08)}: {unk_0x08}, " +
+                $"{nameof(unk_0x0C)}: {unk_0x0C})";
         }
 
     }

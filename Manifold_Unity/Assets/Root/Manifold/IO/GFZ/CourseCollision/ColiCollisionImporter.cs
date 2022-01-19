@@ -190,7 +190,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             Assert.IsTrue(scene.IsValidFile);
 
             // Simplify access to tris/quads
-            var scm = scene.staticColliderMeshes;
+            var scm = scene.colliderMap;
             var colliderTriangles = scm.colliderTris;
             var colliderQuads = scm.colliderQuads;
 
@@ -259,11 +259,11 @@ namespace Manifold.IO.GFZ.CourseCollision
             Assert.IsTrue(scene.IsValidFile);
 
             // Get number of mesh. AX and GX differ in count.
-            var meshCount = scene.staticColliderMeshes.SurfaceCount;
+            var meshCount = scene.colliderMap.SurfaceCount;
             var meshes = new Mesh[meshCount];
 
             // Simplify access to tris/quads
-            var scm = scene.staticColliderMeshes;
+            var scm = scene.colliderMap;
             var colliderTriangles = scm.colliderTris;
             var colliderQuads = scm.colliderQuads;
 

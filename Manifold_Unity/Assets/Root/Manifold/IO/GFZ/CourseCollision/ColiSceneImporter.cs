@@ -351,7 +351,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             if (!hasTriggers)
                 return null;
 
-            var typeName = nameof(UnknownSolsTrigger);
+            var typeName = nameof(UnknownCollider);
             string title = $"Creating {typeName}s";
             string format = WidthFormat(unknownSolsTriggers);
 
@@ -575,7 +575,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             // TODO: it would be wiser to tag the prefabs with some tag type so that
             // we need only pull in objects of that type. The string loading method
             // is bound to break at some point.
-            for (int i = 0; i < scene.staticColliderMeshes.SurfaceCount; i++)
+            for (int i = 0; i < scene.colliderMap.SurfaceCount; i++)
             {
                 var property = (StaticColliderMeshProperty)i;
                 var meshName = $"st{scene.ID:00}_{i:00}_{property}";
@@ -777,102 +777,34 @@ namespace Manifold.IO.GFZ.CourseCollision
             var scene = sceneSobj.Value;
 
             // Get all bounds
-            var boundsTrack = scene.trackNodeBoundsXZ.bounds2D;
-            var boundsColliders = scene.staticColliderMeshes.meshBounds.bounds2D;
-            var boundsUnknown = scene.staticColliderMeshes.unkBounds2D;
+            var boundsTrack = scene.trackNodeBoundsXZ;
+            var boundsColliders = scene.colliderMap.meshBounds;
+            //
+            float yHeight = scene.trackMinHeight;
 
             // Create objects
             var boundsRoot = new GameObject("Bounds").transform;
-            //var objTrack = CreateBoundsObject(boundsTrack, scene.trackMinHeight, "Track Nodes 8x8");
-            //var objColliders = CreateBoundsObject(boundsColliders, scene.trackMinHeight, "Colliders 16x16");
-            //var objUnknown = CreateBoundsObject(boundsUnknown, scene.trackMinHeight, "Unknown Bounds");
-
-            float yHeight = scene.trackMinHeight;
-
-            //DebugConsole.Log($"boundsTrack: {boundsTrack == null}");
-            //DebugConsole.Log($"boundsColliders: {boundsColliders == null}");
-            //DebugConsole.Log($"boundsUnknown: {boundsUnknown == null}");
-
-            var boundsTrackNodesExact       = CreateBoundsObject(boundsTrack, 8, yHeight, "Track Nodes (8x8)");
-            var boundsStaticCollidersExact  = CreateBoundsObject(boundsColliders, 16, yHeight, "Static Colliders (8x8)");
-            var boundsUnknownExact          = CreateBoundsObject(boundsUnknown, 1, yHeight, "Unknown (1x1)");
-            //var boundsTrackNodesPadded      = Instantiate(boundsTrackNodesExact);
-            //var boundsStaticCollidersPadded = Instantiate(boundsStaticCollidersExact);
-            //var boundsUnknownPadded         = Instantiate(boundsUnknownExact);
-
-            // Correct scales on padded objects
-            //boundsTrackNodesPadded.localScale       *= 1.25f; // (1.0f / 0.8f);
-            //boundsStaticCollidersPadded.localScale  *= 1.25f; //  (1.0f / 1.6f);
-            //boundsUnknownPadded.localScale          *= 1.25f; //  (1.0f / 0.8f);
-
-            //
-            //boundsTrackNodesPadded.name         = "Track Nodes (Unscaled)";
-            //boundsStaticCollidersPadded.name    = "Static Colliders (Unscaled)";
-            //boundsUnknownPadded.name            = "Unknown (Unscaled)";
+            var boundsTrackNodes = CreateBoundsObject(boundsTrack, yHeight, "Track Nodes");
+            var boundsStaticColliders = CreateBoundsObject(boundsColliders, yHeight, $"Static Colliders");
 
             // Set object parents
-            boundsTrackNodesExact.transform.SetParent(boundsRoot);
-            boundsStaticCollidersExact.transform.SetParent(boundsRoot);
-            boundsUnknownExact.transform.SetParent(boundsRoot);
-            //boundsTrackNodesPadded.transform.SetParent(boundsRoot);
-            //boundsStaticCollidersPadded.transform.SetParent(boundsRoot);
-            //boundsUnknownPadded.transform.SetParent(boundsRoot);
-
-
-            // testing
-            //boundsTrackNodesExact.gameObject.SetActive(false);
-            //boundsStaticCollidersExact.gameObject.SetActive(false);
-            //boundsUnknownExact.gameObject.SetActive(false);
-            //boundsTrackNodesPadded.gameObject.SetActive(false);
-            //boundsStaticCollidersPadded.gameObject.SetActive(false);
-            //boundsUnknownPadded.gameObject.SetActive(false);
-
+            boundsTrackNodes.transform.SetParent(boundsRoot);
+            boundsStaticColliders.transform.SetParent(boundsRoot);
 
             // return parent object
             return boundsRoot;
         }
 
-        public UnityEngine.Transform CreateBoundsObject(Bounds2D bounds, float yHeight, string name)
+        public UnityEngine.Transform CreateBoundsObject(MatrixBoundsXZ bounds, float yHeight, string name)
         {
-            var boundsRoot = new GameObject(name).transform;
-            var boundsExact = CreatePrimitive(PrimitiveType.Cube, $"{name} (Exact)", boundsRoot);
-            var boundsPadded = CreatePrimitive(PrimitiveType.Cube, $"{name} (Internal)", boundsRoot);
-
-            // correcting serialized values to this
-            // *10f for size, *0.80f to correct the 25% padding
-            float scaleCorrect = 10f * 0.80f;
-            // div by 2f due to plane default size
-            // Add min height to position it as if death plane.
-            float3 halfWL = new float3(bounds.width, 0f, bounds.length) * scaleCorrect / 2f;
-            float3 edge = new float3(bounds.left, 0f, bounds.top);
-            float3 center = halfWL + edge;
-            var boundsPosition = center + new float3(0, yHeight, 0);
-
-            // Y axis needs a non-zero scale
-            float3 minScaleAdd = new float3(0f, 0.001f, 0f);
-            // Moving the planes down a bit looks better. TODO: find min Y offset?
-            float3 minOffset = new float3(0f, -10f, 0f);
-            //
-            boundsExact.position = boundsPosition + minOffset;
-            boundsExact.localScale = bounds.Scale * scaleCorrect + minScaleAdd;
-            //
-            boundsPadded.position = boundsPosition + minOffset;
-            boundsPadded.localScale = bounds.Scale * 10f + minScaleAdd;
-
-            return boundsRoot;
-        }
-
-        public UnityEngine.Transform CreateBoundsObject(Bounds2D bounds, float scaleCorrect, float yHeight, string name)
-        {
-            var boundsObject = CreatePrimitive(PrimitiveType.Cube, $"{name}");
-            (var center, var scale) = bounds.GetCenterAndScale(scaleCorrect);
+            var displayName = $"{name} ({bounds.numSubdivisionsX}x{bounds.numSubdivisionsZ})";
+            var boundsObject = CreatePrimitive(PrimitiveType.Cube, displayName);
+            (var center, var scale) = bounds.GetCenterAndScale();
             boundsObject.position = new float3(center.x, yHeight, center.y);
             boundsObject.localScale = new float3(scale.x, 1f, scale.y);
 
             return boundsObject;
         }
-
-
 
 
         public void CreateTrackIndexChains(ColiSceneSobj sceneSobj)

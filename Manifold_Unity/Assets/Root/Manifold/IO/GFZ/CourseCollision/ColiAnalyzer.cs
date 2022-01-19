@@ -169,7 +169,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
                 // UNKNOWN SOLS TRIGGERS
                 {
-                    string fileName = $"{time} COLI {nameof(UnknownSolsTrigger)}.tsv";
+                    string fileName = $"{time} COLI {nameof(UnknownCollider)}.tsv";
                     string filePath = Path.Combine(outputPath, fileName);
                     EditorUtility.DisplayProgressBar(ExecuteText, filePath, RandomTime);
                     AnalyzeUnknownSolsTriggers(filePath);
@@ -279,7 +279,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             //
             if (staticCollider)
             {
-                var fileName = $"{time} COLI {nameof(StaticColliderMeshes)}.tsv";
+                var fileName = $"{time} COLI {nameof(StaticColliderMap)}.tsv";
                 var filePath = Path.Combine(outputPath, fileName);
                 EditorUtility.DisplayProgressBar(ExecuteText, filePath, RandomTime);
                 AnalyzeSceneStaticCollider(filePath);
@@ -1073,12 +1073,12 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol(nameof(ColiScene.storyObjectTriggersPtr)); // adr
                 writer.WriteNextCol(nameof(ColiScene.trackCheckpointMatrixPtr));
                 // Structure
-                writer.WriteNextCol(nameof(ColiScene.trackNodeBoundsXZ) + "." + nameof(ColiScene.trackNodeBoundsXZ.bounds2D.left));
-                writer.WriteNextCol(nameof(ColiScene.trackNodeBoundsXZ) + "." + nameof(ColiScene.trackNodeBoundsXZ.bounds2D.top));
-                writer.WriteNextCol(nameof(ColiScene.trackNodeBoundsXZ) + "." + nameof(ColiScene.trackNodeBoundsXZ.bounds2D.width));
-                writer.WriteNextCol(nameof(ColiScene.trackNodeBoundsXZ) + "." + nameof(ColiScene.trackNodeBoundsXZ.bounds2D.length));
-                writer.WriteNextCol(nameof(ColiScene.trackNodeBoundsXZ) + "." + nameof(ColiScene.trackNodeBoundsXZ.subdivisionsX));
-                writer.WriteNextCol(nameof(ColiScene.trackNodeBoundsXZ) + "." + nameof(ColiScene.trackNodeBoundsXZ.subdivisionsZ));
+                writer.WriteNextCol(nameof(ColiScene.trackNodeBoundsXZ) + "." + nameof(ColiScene.trackNodeBoundsXZ.left));
+                writer.WriteNextCol(nameof(ColiScene.trackNodeBoundsXZ) + "." + nameof(ColiScene.trackNodeBoundsXZ.top));
+                writer.WriteNextCol(nameof(ColiScene.trackNodeBoundsXZ) + "." + nameof(ColiScene.trackNodeBoundsXZ.subdivionWidth));
+                writer.WriteNextCol(nameof(ColiScene.trackNodeBoundsXZ) + "." + nameof(ColiScene.trackNodeBoundsXZ.subdivisionLength));
+                writer.WriteNextCol(nameof(ColiScene.trackNodeBoundsXZ) + "." + nameof(ColiScene.trackNodeBoundsXZ.numSubdivisionsX));
+                writer.WriteNextCol(nameof(ColiScene.trackNodeBoundsXZ) + "." + nameof(ColiScene.trackNodeBoundsXZ.numSubdivisionsZ));
                 // 
                 writer.WriteNextCol(nameof(ColiScene.zeroes0xD8));
                 writer.WriteNextRow();
@@ -1142,12 +1142,12 @@ namespace Manifold.IO.GFZ.CourseCollision
                     writer.WriteNextCol(scene.storyObjectTriggersPtr.HexAddress);
                     writer.WriteNextCol(scene.trackCheckpointMatrixPtr.HexAddress);
                     // Structure
-                    writer.WriteNextCol(scene.trackNodeBoundsXZ.bounds2D.left);
-                    writer.WriteNextCol(scene.trackNodeBoundsXZ.bounds2D.top);
-                    writer.WriteNextCol(scene.trackNodeBoundsXZ.bounds2D.width);
-                    writer.WriteNextCol(scene.trackNodeBoundsXZ.bounds2D.length);
-                    writer.WriteNextCol(scene.trackNodeBoundsXZ.subdivisionsX);
-                    writer.WriteNextCol(scene.trackNodeBoundsXZ.subdivisionsZ);
+                    writer.WriteNextCol(scene.trackNodeBoundsXZ.left);
+                    writer.WriteNextCol(scene.trackNodeBoundsXZ.top);
+                    writer.WriteNextCol(scene.trackNodeBoundsXZ.subdivionWidth);
+                    writer.WriteNextCol(scene.trackNodeBoundsXZ.subdivisionLength);
+                    writer.WriteNextCol(scene.trackNodeBoundsXZ.numSubdivisionsX);
+                    writer.WriteNextCol(scene.trackNodeBoundsXZ.numSubdivisionsZ);
                     //
                     writer.WriteNextCol(0);// coliHeader.zero_0xD8);
                     writer.WriteNextCol(scene.trackMinHeight.value);
@@ -1376,11 +1376,11 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol("Course");
                 writer.WriteNextCol("AX/GX");
                 //
-                writer.WriteNextCol(nameof(UnknownSolsTrigger.unk_0x00));
-                writer.WriteNextCol(nameof(UnknownSolsTrigger.transform.Position));
-                writer.WriteNextCol(nameof(UnknownSolsTrigger.transform.RotationEuler));
-                writer.WriteNextCol(nameof(UnknownSolsTrigger.transform.Scale));
-                writer.WriteNextCol(nameof(UnknownSolsTrigger.transform.UnknownOption));
+                writer.WriteNextCol(nameof(UnknownCollider.unk_0x00));
+                writer.WriteNextCol(nameof(UnknownCollider.transform.Position));
+                writer.WriteNextCol(nameof(UnknownCollider.transform.RotationEuler));
+                writer.WriteNextCol(nameof(UnknownCollider.transform.Scale));
+                writer.WriteNextCol(nameof(UnknownCollider.transform.UnknownOption));
                 //
                 writer.WriteNextRow();
 
@@ -1710,24 +1710,24 @@ namespace Manifold.IO.GFZ.CourseCollision
                 // Write header
                 writer.WriteNextCol("File");
                 writer.WriteNextCol("Index");
-                writer.WriteNextColNicify(nameof(StaticColliderMeshes.colliderTrisPtr));
-                writer.WriteNextColNicify(nameof(StaticColliderMeshes.triMeshMatrixPtrs));
-                writer.WriteNextColNicify(nameof(GameCube.GFZ.CourseCollision.BoundsXZ.bounds2D.left));
-                writer.WriteNextColNicify(nameof(GameCube.GFZ.CourseCollision.BoundsXZ.bounds2D.top));
-                writer.WriteNextColNicify(nameof(GameCube.GFZ.CourseCollision.BoundsXZ.bounds2D.width));
-                writer.WriteNextColNicify(nameof(GameCube.GFZ.CourseCollision.BoundsXZ.bounds2D.length));
-                writer.WriteNextColNicify(nameof(GameCube.GFZ.CourseCollision.BoundsXZ.subdivisionsX));
-                writer.WriteNextColNicify(nameof(GameCube.GFZ.CourseCollision.BoundsXZ.subdivisionsZ));
-                writer.WriteNextColNicify(nameof(StaticColliderMeshes.colliderQuadsPtr));
-                writer.WriteNextColNicify(nameof(StaticColliderMeshes.quadMeshMatrixPtrs));
-                writer.WriteNextColNicify(nameof(GameCube.GFZ.CourseCollision.BoundsXZ.bounds2D.left));
-                writer.WriteNextColNicify(nameof(GameCube.GFZ.CourseCollision.BoundsXZ.bounds2D.top));
-                writer.WriteNextColNicify(nameof(GameCube.GFZ.CourseCollision.BoundsXZ.bounds2D.width));
-                writer.WriteNextColNicify(nameof(GameCube.GFZ.CourseCollision.BoundsXZ.bounds2D.length));
-                writer.WriteNextColNicify(nameof(GameCube.GFZ.CourseCollision.BoundsXZ.subdivisionsX));
-                writer.WriteNextColNicify(nameof(GameCube.GFZ.CourseCollision.BoundsXZ.subdivisionsZ));
-                writer.WriteNextColNicify(nameof(StaticColliderMeshes.colliderTris));
-                writer.WriteNextColNicify(nameof(StaticColliderMeshes.colliderQuads));
+                writer.WriteNextColNicify(nameof(StaticColliderMap.staticColliderTrisPtr));
+                writer.WriteNextColNicify(nameof(StaticColliderMap.triMeshMatrixPtrs));
+                writer.WriteNextColNicify(nameof(GameCube.GFZ.CourseCollision.MatrixBoundsXZ.left));
+                writer.WriteNextColNicify(nameof(GameCube.GFZ.CourseCollision.MatrixBoundsXZ.top));
+                writer.WriteNextColNicify(nameof(GameCube.GFZ.CourseCollision.MatrixBoundsXZ.subdivionWidth));
+                writer.WriteNextColNicify(nameof(GameCube.GFZ.CourseCollision.MatrixBoundsXZ.subdivisionLength));
+                writer.WriteNextColNicify(nameof(GameCube.GFZ.CourseCollision.MatrixBoundsXZ.numSubdivisionsX));
+                writer.WriteNextColNicify(nameof(GameCube.GFZ.CourseCollision.MatrixBoundsXZ.numSubdivisionsZ));
+                writer.WriteNextColNicify(nameof(StaticColliderMap.staticColliderQuadsPtr));
+                writer.WriteNextColNicify(nameof(StaticColliderMap.quadMeshMatrixPtrs));
+                writer.WriteNextColNicify(nameof(GameCube.GFZ.CourseCollision.MatrixBoundsXZ.left));
+                writer.WriteNextColNicify(nameof(GameCube.GFZ.CourseCollision.MatrixBoundsXZ.top));
+                writer.WriteNextColNicify(nameof(GameCube.GFZ.CourseCollision.MatrixBoundsXZ.subdivionWidth));
+                writer.WriteNextColNicify(nameof(GameCube.GFZ.CourseCollision.MatrixBoundsXZ.subdivisionLength));
+                writer.WriteNextColNicify(nameof(GameCube.GFZ.CourseCollision.MatrixBoundsXZ.numSubdivisionsX));
+                writer.WriteNextColNicify(nameof(GameCube.GFZ.CourseCollision.MatrixBoundsXZ.numSubdivisionsZ));
+                writer.WriteNextColNicify(nameof(StaticColliderMap.colliderTris));
+                writer.WriteNextColNicify(nameof(StaticColliderMap.colliderQuads));
                 writer.WriteNextRow();
 
                 int index = 0;
@@ -1735,19 +1735,19 @@ namespace Manifold.IO.GFZ.CourseCollision
                 foreach (var file in sceneSobjs)
                 {
                     var scene = file.Value;
-                    var table = scene.staticColliderMeshes;
+                    var table = scene.colliderMap;
 
                     writer.WriteNextCol(file.name);
                     writer.WriteNextCol(index++);
-                    writer.WriteNextCol(table.colliderTrisPtr.HexAddress);
+                    writer.WriteNextCol(table.staticColliderTrisPtr.HexAddress);
                     writer.WriteNextCol(table.triMeshMatrixPtrs.Length);
-                    writer.WriteNextCol(table.meshBounds.bounds2D.left);
-                    writer.WriteNextCol(table.meshBounds.bounds2D.top);
-                    writer.WriteNextCol(table.meshBounds.bounds2D.width);
-                    writer.WriteNextCol(table.meshBounds.bounds2D.length);
-                    writer.WriteNextCol(table.meshBounds.subdivisionsX);
-                    writer.WriteNextCol(table.meshBounds.subdivisionsZ);
-                    writer.WriteNextCol(table.colliderQuadsPtr.HexAddress);
+                    writer.WriteNextCol(table.meshBounds.left);
+                    writer.WriteNextCol(table.meshBounds.top);
+                    writer.WriteNextCol(table.meshBounds.subdivionWidth);
+                    writer.WriteNextCol(table.meshBounds.subdivisionLength);
+                    writer.WriteNextCol(table.meshBounds.numSubdivisionsX);
+                    writer.WriteNextCol(table.meshBounds.numSubdivisionsZ);
+                    writer.WriteNextCol(table.staticColliderQuadsPtr.HexAddress);
                     writer.WriteNextCol(table.quadMeshMatrixPtrs.Length);
                     //writer.WriteNextCol(table.unusedMeshBounds.maxX);
                     //writer.WriteNextCol(table.unusedMeshBounds.maxZ);

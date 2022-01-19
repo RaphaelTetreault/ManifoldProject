@@ -6,13 +6,16 @@ using Unity.Mathematics;
 namespace GameCube.GFZ.CourseCollision
 {
     /// <summary>
-    /// Highest-level structure which consolidates all static collider meshes in a scene.
-    /// Two tables store the triangles and quads proper. Many matrices index these triangles
+    /// Highest-level structure which consolidates all collider of a scene.
+    /// 
+    /// Two tables store static triangles and quads proper. Many matrices index these triangles
     /// and quads (11 in AX, 14 in GX). Thus, a single tri/quad can technically have more
-    /// than 1 property.
+    /// than 1 property (road, heal, boost...).
+    /// 
+    /// It also points to some data which the ColiScene header points to. Notably, it points to 
     /// </summary>
     [Serializable]
-    public class StaticColliderMeshes :
+    public class StaticColliderMap :
         IBinaryAddressable,
         IBinarySerializable,
         ISerializedBinaryAddressableReferer
@@ -38,10 +41,10 @@ namespace GameCube.GFZ.CourseCollision
 
         // FIELDS
         public int[] zero_0x00_0x20;
-        public Pointer colliderTrisPtr;
+        public Pointer staticColliderTrisPtr;
         public Pointer[] triMeshMatrixPtrs;
-        public BoundsXZ meshBounds;
-        public Pointer colliderQuadsPtr;
+        public MatrixBoundsXZ meshBounds;
+        public Pointer staticColliderQuadsPtr;
         public Pointer[] quadMeshMatrixPtrs;
         public int[] zeroes_a; // size: 8 ints
         public ArrayPointer unknownSolsTriggersPtr; // # 8, 9
@@ -50,24 +53,24 @@ namespace GameCube.GFZ.CourseCollision
         public Pointer unkBounds2DPtr; // # 16
         public int[] zeroes_c; // size: 5 ints
         public float unk_float; // #22
-        public int[] zeroes_d; // size: 233 ints
+        public int[] zeroes_d; // size: 232 ints
         // REFERENCE FIELDS
         // This data holds the geometry data and indexes
         public ColliderTriangle[] colliderTris = new ColliderTriangle[0];
         public ColliderQuad[] colliderQuads = new ColliderQuad[0];
         public StaticColliderMeshMatrix[] triMeshMatrices;
         public StaticColliderMeshMatrix[] quadMeshMatrices;
-        public Bounds2D unkBounds2D = new Bounds2D();
-        public UnknownSolsTrigger[] UnknownSolsTrigger;
-        public SceneObjectStatic[] staticSceneObjects;
+        public UnknownStaticColliderMapData unkData = new UnknownStaticColliderMapData();
+        public UnknownCollider[] UnknownColliders;
+        public SceneObjectStatic[] staticSceneObjects; // Some of these used to be name-parsed colliders! (eg: *_CLASS2, etc)
 
 
-        public StaticColliderMeshes()
+        public StaticColliderMap()
         {
             serializeFormat = ColiScene.SerializeFormat.InvalidFormat;
         }
 
-        public StaticColliderMeshes(ColiScene.SerializeFormat serializeFormat)
+        public StaticColliderMap(ColiScene.SerializeFormat serializeFormat)
         {
             this.serializeFormat = serializeFormat;
             int count = SurfaceCount;
@@ -119,10 +122,10 @@ namespace GameCube.GFZ.CourseCollision
             this.RecordStartAddress(reader);
             {
                 reader.ReadX(ref zero_0x00_0x20, kCountZeros);
-                reader.ReadX(ref colliderTrisPtr);
+                reader.ReadX(ref staticColliderTrisPtr);
                 reader.ReadX(ref triMeshMatrixPtrs, countSurfaceTypes, true);
                 reader.ReadX(ref meshBounds, true);
-                reader.ReadX(ref colliderQuadsPtr);
+                reader.ReadX(ref staticColliderQuadsPtr);
                 reader.ReadX(ref quadMeshMatrixPtrs, countSurfaceTypes, true);
                 reader.ReadX(ref zeroes_a, kZeroesA);
                 reader.ReadX(ref unknownSolsTriggersPtr);
@@ -171,15 +174,15 @@ namespace GameCube.GFZ.CourseCollision
                     numQuadVerts = math.max(quadMeshMatrices[i].IndexesLength, numQuadVerts);
                 }
 
-                reader.JumpToAddress(colliderTrisPtr);
+                reader.JumpToAddress(staticColliderTrisPtr);
                 reader.ReadX(ref colliderTris, numTriVerts, true);
 
-                reader.JumpToAddress(colliderQuadsPtr);
+                reader.JumpToAddress(staticColliderQuadsPtr);
                 reader.ReadX(ref colliderQuads, numQuadVerts, true);
 
                 // NEWER STUFF
                 reader.JumpToAddress(unkBounds2DPtr);
-                reader.ReadX(ref unkBounds2D, true);
+                reader.ReadX(ref unkData, true);
                 // I don't read the SceneObjectTemplates and UnknownSolsTriggers
                 // since it's easier to patch that in ColiScene directly and saves
                 // some deserialization time
@@ -229,21 +232,21 @@ namespace GameCube.GFZ.CourseCollision
                 // POINTERS
                 // We don't need to store the length (from ArrayPointers).
                 // The game kinda just figures it out on pointer alone.
-                colliderTrisPtr = colliderTris.GetBasePointer();
-                colliderQuadsPtr = colliderQuads.GetBasePointer();
+                staticColliderTrisPtr = colliderTris.GetBasePointer();
+                staticColliderQuadsPtr = colliderQuads.GetBasePointer();
                 triMeshMatrixPtrs = triMeshMatrices.GetPointers();
                 quadMeshMatrixPtrs = quadMeshMatrices.GetPointers();
                 //
-                unkBounds2DPtr = unkBounds2D.GetPointer();
+                unkBounds2DPtr = unkData.GetPointer();
             }
             this.RecordStartAddress(writer);
             {
                 // Write empty int array for unknown
                 writer.WriteX(new int[kCountZeros], false);
-                writer.WriteX(colliderTrisPtr);
+                writer.WriteX(staticColliderTrisPtr);
                 writer.WriteX(triMeshMatrixPtrs, false);
                 writer.WriteX(meshBounds);
-                writer.WriteX(colliderQuadsPtr);
+                writer.WriteX(staticColliderQuadsPtr);
                 writer.WriteX(quadMeshMatrixPtrs, false);
                 writer.WriteX(zeroes_a, false);
                 writer.WriteX(unknownSolsTriggersPtr);
@@ -265,7 +268,7 @@ namespace GameCube.GFZ.CourseCollision
             // TRIS
             if (colliderTris.Length > 0)
             {
-                Assert.ValidateReferencePointer(colliderTris, colliderTrisPtr);
+                Assert.ValidateReferencePointer(colliderTris, staticColliderTrisPtr);
 
                 // Ensure that we have at least a list to point to tris
                 int listCount = 0;
@@ -276,7 +279,7 @@ namespace GameCube.GFZ.CourseCollision
             // QUADS
             if (colliderQuads != null && colliderQuads.Length > 0)
             {
-                Assert.ValidateReferencePointer(colliderQuads, colliderQuadsPtr);
+                Assert.ValidateReferencePointer(colliderQuads, staticColliderQuadsPtr);
 
                 // Ensure that we have at least a list to point to quads
                 int listCount = 0;
