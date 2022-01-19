@@ -212,7 +212,7 @@ namespace Manifold.IO.GFZ
             }
         }
 
-        [MenuItem(Const.Menu.tests + TestSave + ActiveRoot)]
+        [MenuItem(Const.Menu.tests + TestSave + ActiveRoot + " _F7")]
         public static void TestSaveAllStagesMemory()
         {
             var settings = GfzProjectWindow.GetSettings();

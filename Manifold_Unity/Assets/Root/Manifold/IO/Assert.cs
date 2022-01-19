@@ -37,7 +37,12 @@ namespace Manifold.IO
             bool referenceIsNull = reference == null;
             // There is an issue if one of the two are set, but when both are the same, no issue
             bool invalidState = referenceIsNull ^ pointer.IsNull;
-            IsFalse(invalidState);
+
+            var msg = referenceIsNull
+                ? $"Reference is null but pointer is not! Ptr(0x{pointer.Address:x8})"
+                : $"Reference exists but pointer is null!";
+
+            IsFalse(invalidState, msg);
         }
 
 
@@ -51,7 +56,8 @@ namespace Manifold.IO
             {
                 var refPtr = reference.GetPointer();
                 var isSamePointer = pointer.Address == refPtr.Address;
-                IsTrue(isSamePointer);
+                const string msg = "Reference's pointer and supplied pointer do not match!";
+                IsTrue(isSamePointer, msg);
             }
         }
 

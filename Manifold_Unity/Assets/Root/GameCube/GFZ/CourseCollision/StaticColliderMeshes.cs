@@ -230,8 +230,8 @@ namespace GameCube.GFZ.CourseCollision
                 // We don't need to store the length (from ArrayPointers).
                 // The game kinda just figures it out on pointer alone.
                 colliderTrisPtr = colliderTris.GetBasePointer();
-                triMeshMatrixPtrs = triMeshMatrices.GetPointers();
                 colliderQuadsPtr = colliderQuads.GetBasePointer();
+                triMeshMatrixPtrs = triMeshMatrices.GetPointers();
                 quadMeshMatrixPtrs = quadMeshMatrices.GetPointers();
                 //
                 unkBounds2DPtr = unkBounds2D.GetPointer();
@@ -259,35 +259,37 @@ namespace GameCube.GFZ.CourseCollision
 
         public void ValidateReferences()
         {
-            // Tris/quads
-            Assert.ValidateReferencePointer(colliderTris, colliderTrisPtr);
-            Assert.ValidateReferencePointer(colliderQuads, colliderQuadsPtr);
-            // Matrices
-            for (int i = 0; i < SurfaceCount; i++)
-            {
-                Assert.ReferencePointer(triMeshMatrices[i], triMeshMatrixPtrs[i]);
-                Assert.ReferencePointer(quadMeshMatrices[i], quadMeshMatrixPtrs[i]);
-            }
-
             // SANITY CHECK
             // If we have triangles or quads, make sure they found their way into
             // the index lists! Otherwise we have colliders but they are not referenced.
-            if (colliderTris != null && colliderTris.Length > 0)
+            // TRIS
+            if (colliderTris.Length > 0)
             {
+                Assert.ValidateReferencePointer(colliderTris, colliderTrisPtr);
+
                 // Ensure that we have at least a list to point to tris
                 int listCount = 0;
                 foreach (var list in triMeshMatrices)
                     listCount += list.IndexesLength;
                 Assert.IsTrue(listCount > 0);
             }
-            //
+            // QUADS
             if (colliderQuads != null && colliderQuads.Length > 0)
-            {                
+            {
+                Assert.ValidateReferencePointer(colliderQuads, colliderQuadsPtr);
+
                 // Ensure that we have at least a list to point to quads
                 int listCount = 0;
                 foreach (var list in quadMeshMatrices)
                     listCount += list.IndexesLength;
                 Assert.IsTrue(listCount > 0);
+            }
+
+            // Matrices
+            for (int i = 0; i < SurfaceCount; i++)
+            {
+                Assert.ReferencePointer(triMeshMatrices[i], triMeshMatrixPtrs[i]);
+                Assert.ReferencePointer(quadMeshMatrices[i], quadMeshMatrixPtrs[i]);
             }
         }
 

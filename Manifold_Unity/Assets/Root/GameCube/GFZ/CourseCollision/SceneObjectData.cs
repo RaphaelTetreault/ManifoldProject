@@ -86,7 +86,7 @@ namespace GameCube.GFZ.CourseCollision
             Assert.IsTrue(sceneObject != null);
             // Assert that instance/pointer is correct
             Assert.ReferencePointer(sceneObject, sceneObjectPtr);
-            Assert.ReferencePointer(colliderGeometry, sceneObjectPtr);
+            Assert.ReferencePointer(colliderGeometry, colliderGeometryPtr);
         }
 
         public override string ToString()

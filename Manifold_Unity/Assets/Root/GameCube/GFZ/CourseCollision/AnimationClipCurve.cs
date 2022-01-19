@@ -85,11 +85,8 @@ namespace GameCube.GFZ.CourseCollision
             // as what the array pointer points to.
             Assert.ReferencePointer(animationCurve, animationCurvePtrs);
             // Ensure that we have the same amount of keyables as we say we do.
-            Assert.IsTrue(animationCurve.keyableAttributes.Length == animationCurvePtrs.Length);
-
-            // seems like this might be the only valid check... see note above.
-            if (animationCurvePtrs.IsNotNullPointer)
-                Assert.IsTrue(animationCurve != null);
+            if (animationCurve != null)
+                Assert.IsTrue(animationCurve.keyableAttributes.Length == animationCurvePtrs.Length);
         }
 
         public override string ToString()

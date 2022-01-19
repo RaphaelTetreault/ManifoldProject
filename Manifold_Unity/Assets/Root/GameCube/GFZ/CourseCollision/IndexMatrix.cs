@@ -169,7 +169,11 @@ namespace GameCube.GFZ.CourseCollision
 
             for (int i = 0; i < Count; i++)
             {
-                Assert.ReferencePointer(indexLists[i], indexListPtrs[i]);
+                var indexList = indexLists[i];
+                var pointer = indexListPtrs[i];
+
+                if (indexList.Length != 0)
+                    Assert.ReferencePointer(indexList, pointer);
             }
         }
     }

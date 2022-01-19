@@ -142,7 +142,7 @@ namespace GameCube.GFZ.CourseCollision
             Assert.IsTrue(animationCurves.Length == kCurveCount);
             for (int i = 0; i < kCurveCount; i++)
             {
-                Assert.ReferencePointer(animationCurves[i], animationCurvesPtrs[i]);
+                //Assert.ReferencePointer(animationCurves[i], animationCurvesPtrs[i]);
             }
 
             // Each curve should have 1 or more keys. In reality, this is not true.

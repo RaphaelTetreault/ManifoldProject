@@ -32,8 +32,8 @@ namespace GameCube.GFZ.CourseCollision
         public Pointer trisPtr;
         public Pointer quadsPtr;
         // REFERENCE FIELDS
-        public ColliderTriangle[] tris = new ColliderTriangle[0];
-        public ColliderQuad[] quads = new ColliderQuad[0];
+        public ColliderTriangle[] tris;// = new ColliderTriangle[0];
+        public ColliderQuad[] quads;// = new ColliderQuad[0];
 
 
         // PROPERTIES
@@ -54,28 +54,33 @@ namespace GameCube.GFZ.CourseCollision
 
             // SANITY CHECK
             // Make sure counts line up
-            if (tris.Length > 0)
+            if (tris != null)
             {
-                Assert.IsTrue(triCount == tris.Length);
-                Assert.IsTrue(trisPtr.IsNotNullPointer);
-
-                foreach (var tri in tris)
+                if (tris.Length > 0)
                 {
-                    Assert.IsTrue(tri != null);
+                    Assert.IsTrue(triCount == tris.Length);
+                    Assert.IsTrue(trisPtr.IsNotNullPointer);
+
+                    foreach (var tri in tris)
+                    {
+                        Assert.IsTrue(tri != null);
+                    }
                 }
             }
 
-            if (quads.Length > 0)
+            if (quads != null)
             {
-                Assert.IsTrue(quadCount == quads.Length);
-                Assert.IsTrue(quadsPtr.IsNotNullPointer);
-
-                foreach (var quad in quads)
+                if (quads.Length > 0)
                 {
-                    Assert.IsTrue(quad != null);
+                    Assert.IsTrue(quadCount == quads.Length);
+                    Assert.IsTrue(quadsPtr.IsNotNullPointer);
+
+                    foreach (var quad in quads)
+                    {
+                        Assert.IsTrue(quad != null);
+                    }
                 }
             }
-
         }
 
         public void Deserialize(BinaryReader reader)
@@ -112,8 +117,8 @@ namespace GameCube.GFZ.CourseCollision
         public void Serialize(BinaryWriter writer)
         {
             {
-                triCount = tris.Length;
-                quadCount = quads.Length;
+                triCount = tris == null ? 0 : tris.Length;
+                quadCount = quads == null ? 0 : quads.Length;
                 trisPtr = tris.GetBasePointer();
                 quadsPtr = quads.GetBasePointer();
             }

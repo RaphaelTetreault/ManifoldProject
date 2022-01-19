@@ -97,30 +97,30 @@ namespace GameCube.GFZ.CourseCollision
         public byte[] zeroes0xD8 = new byte[kSizeOfZeroes0xD8]; // 
 
         // REFERENCE FIELDS
-        public TrackNode[] trackNodes = new TrackNode[0];
+        public TrackNode[] trackNodes;// = new TrackNode[0];
         public SurfaceAttributeArea[] surfaceAttributeAreas = SurfaceAttributeArea.DefaultArray();
         public StaticColliderMeshes staticColliderMeshes;
         public byte[] zeroes0x20 = new byte[kSizeOfZeroes0x20];
-        public TrackMinHeight trackMinHeight = new TrackMinHeight(); // has default constructor
-        public SceneObjectDynamic[] dynamicSceneObjects = new SceneObjectDynamic[0];
-        public SceneObjectTemplate[] templateSceneObjects = new SceneObjectTemplate[0];
-        public SceneObjectStatic[] staticSceneObjects = new SceneObjectStatic[0];
-        public UnknownSolsTrigger[] unknownSolsTriggers = new UnknownSolsTrigger[0];
+        public TrackMinHeight trackMinHeight;// = new TrackMinHeight(); // has default constructor
+        public SceneObjectDynamic[] dynamicSceneObjects;// = new SceneObjectDynamic[0];
+        public SceneObjectTemplate[] templateSceneObjects;// = new SceneObjectTemplate[0];
+        public SceneObjectStatic[] staticSceneObjects;// = new SceneObjectStatic[0];
+        public UnknownSolsTrigger[] unknownSolsTriggers;// = new UnknownSolsTrigger[0];
         public FogCurves fogCurves;
         public Fog fog;
         public TrackLength trackLength;
-        public UnknownTrigger[] unknownTriggers = new UnknownTrigger[0];
-        public VisualEffectTrigger[] visualEffectTriggers = new VisualEffectTrigger[0];
-        public CourseMetadataTrigger[] courseMetadataTriggers = new CourseMetadataTrigger[0];
-        public ArcadeCheckpointTrigger[] arcadeCheckpointTriggers = new ArcadeCheckpointTrigger[0];
-        public StoryObjectTrigger[] storyObjectTriggers = new StoryObjectTrigger[0];
+        public UnknownTrigger[] unknownTriggers;// = new UnknownTrigger[0];
+        public VisualEffectTrigger[] visualEffectTriggers;// = new VisualEffectTrigger[0];
+        public CourseMetadataTrigger[] courseMetadataTriggers;// = new CourseMetadataTrigger[0];
+        public ArcadeCheckpointTrigger[] arcadeCheckpointTriggers;// = new ArcadeCheckpointTrigger[0];
+        public StoryObjectTrigger[] storyObjectTriggers;// = new StoryObjectTrigger[0];
         public TrackCheckpointMatrix trackCheckpointMatrix;
         // FIELDS (that require extra processing)
         // Shared references
-        public TrackSegment[] allTrackSegments = new TrackSegment[0];
-        public TrackSegment[] rootTrackSegments = new TrackSegment[0];
-        public CString[] sceneObjectNames = new CString[0];
-        public SceneObject[] sceneObjects = new SceneObject[0];
+        public TrackSegment[] allTrackSegments;// = new TrackSegment[0];
+        public TrackSegment[] rootTrackSegments;// = new TrackSegment[0];
+        public CString[] sceneObjectNames;// = new CString[0];
+        public SceneObject[] sceneObjects;// = new SceneObject[0];
 
         // TODO: basic analytics suggest these types never share pointers.
         // NOTE: instances are also shared
@@ -421,18 +421,18 @@ namespace GameCube.GFZ.CourseCollision
         public void Serialize(BinaryWriter writer)
         {
             //// DEBUG
-            var addressables = GetAllAddressables();
-            foreach (var addressable in addressables)
-            {
-                if (addressable == null)
-                    continue;
+            //var addressables = GetAllAddressables();
+            //foreach (var addressable in addressables)
+            //{
+            //    if (addressable == null)
+            //        continue;
 
-                addressable.AddressRange = new AddressRange()
-                {
-                    startAddress = int.MaxValue,
-                    endAddress = int.MaxValue,
-                };
-            }
+            //    addressable.AddressRange = new AddressRange()
+            //    {
+            //        startAddress = int.MaxValue,
+            //        endAddress = int.MaxValue,
+            //    };
+            //}
 
 
             BinaryIoUtility.PushEndianess(false);
@@ -918,16 +918,16 @@ namespace GameCube.GFZ.CourseCollision
             BinaryIoUtility.PopEndianess();
 
             // DEBUG
-            foreach (var addressable in addressables)
-            {
-                if (addressable == null)
-                    continue;
-                var range = addressable.AddressRange;
-                if (range.startAddress == int.MaxValue || range.endAddress == int.MaxValue)
-                {
-                    DebugConsole.Log(addressable.GetType().FullName);
-                }
-            }
+            //foreach (var addressable in addressables)
+            //{
+            //    if (addressable == null)
+            //        continue;
+            //    var range = addressable.AddressRange;
+            //    if (range.startAddress == int.MaxValue || range.endAddress == int.MaxValue)
+            //    {
+            //        DebugConsole.Log(addressable.GetType().FullName);
+            //    }
+            //}
         }
 
         /// <summary>
@@ -1074,12 +1074,12 @@ namespace GameCube.GFZ.CourseCollision
             foreach (var matrix in staticColliderMeshes.triMeshMatrices)
             {
                 list.Add(matrix);
-                //list.AddRange(matrix.indexLists);
+                list.AddRange(matrix.indexLists);
             }
             foreach (var matrix in staticColliderMeshes.quadMeshMatrices)
             {
                 list.Add(matrix);
-                //list.AddRange(matrix.indexLists);
+                list.AddRange(matrix.indexLists);
             }
             list.Add(staticColliderMeshes.meshBounds);
             list.Add(staticColliderMeshes.unkBounds2D);
@@ -1149,7 +1149,7 @@ namespace GameCube.GFZ.CourseCollision
             }
 
             list.Add(trackCheckpointMatrix);
-            //list.AddRange(trackCheckpointMatrix.indexLists);
+            list.AddRange(trackCheckpointMatrix.indexLists);
 
             return list.ToArray();
         }
@@ -1320,14 +1320,19 @@ namespace GameCube.GFZ.CourseCollision
             Assert.ReferencePointer(dynamicSceneObjects, new ArrayPointer(dynamicSceneObjectCount, dynamicSceneObjectsPtr));
             Assert.ReferencePointer(templateSceneObjects, templateSceneObjectsPtr);
             Assert.ReferencePointer(staticSceneObjects, staticSceneObjectsPtr);
-            Assert.ReferencePointer(unknownSolsTriggers, unknownSolsTriggersPtr);
+            if (unknownSolsTriggers.Length > 0)
+                Assert.ReferencePointer(unknownSolsTriggers, unknownSolsTriggersPtr);
             Assert.ReferencePointer(fogCurves, fogCurvesPtr);
             Assert.ReferencePointer(fog, fogPtr);
             Assert.ReferencePointer(trackLength, trackLengthPtr);
-            Assert.ReferencePointer(unknownTriggers, unknownTriggersPtr);
-            Assert.ReferencePointer(courseMetadataTriggers, courseMetadataTriggersPtr);
-            Assert.ReferencePointer(arcadeCheckpointTriggers, arcadeCheckpointTriggersPtr);
-            Assert.ReferencePointer(storyObjectTriggers, storyObjectTriggersPtr);
+            if (unknownTriggers.Length > 0)
+                Assert.ReferencePointer(unknownTriggers, unknownTriggersPtr);
+            if (courseMetadataTriggers.Length > 0)
+                Assert.ReferencePointer(courseMetadataTriggers, courseMetadataTriggersPtr);
+            if (arcadeCheckpointTriggers.Length > 0)
+                Assert.ReferencePointer(arcadeCheckpointTriggers, arcadeCheckpointTriggersPtr);
+            if (storyObjectTriggers.Length > 0)
+                Assert.ReferencePointer(storyObjectTriggers, storyObjectTriggersPtr);
             Assert.ReferencePointer(trackCheckpointMatrix, trackCheckpointMatrixPtr);
         }
 
