@@ -70,8 +70,8 @@ namespace Manifold.IO.GFZ.CourseCollision
             }
 
             // Scene object data
-            lodNear = value.lodNear;
-            lodFar = value.lodFar;
+            //lodNear = value.lodNear;
+            //lodFar = value.lodFar;
 
             // Copy out values
             if (value.textureMetadataPtr.IsNotNullPointer)

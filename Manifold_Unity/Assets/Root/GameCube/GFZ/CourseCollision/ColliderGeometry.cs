@@ -135,6 +135,7 @@ namespace GameCube.GFZ.CourseCollision
                 writer.WriteX(quadsPtr);
             }
             this.RecordEndAddress(writer);
+
         }
 
     }

@@ -24,11 +24,11 @@ namespace GameCube.GFZ.CourseCollision
         /// <summary>
         /// Appears to be render flags. 0x00000001 seems to be basic value. Alpha clip.
         /// </summary>
-        public UnknownObjectBitfield lodFar;
+        public int unk0x00;
         /// <summary>
         /// 
         /// </summary>
-        public UnknownObjectBitfield lodNear;
+        public int unk0x04;
         public Pointer templateSceneObjectPtr;
         public Transform transform = new Transform();
         public int zero_0x2C; // null ptr?
@@ -57,8 +57,8 @@ namespace GameCube.GFZ.CourseCollision
         {
             this.RecordStartAddress(reader);
             {
-                reader.ReadX(ref lodFar, false);
-                reader.ReadX(ref lodNear, false);
+                reader.ReadX(ref unk0x00);
+                reader.ReadX(ref unk0x04);
                 reader.ReadX(ref templateSceneObjectPtr);
                 reader.ReadX(ref transform, true);
                 reader.ReadX(ref zero_0x2C);
@@ -120,8 +120,8 @@ namespace GameCube.GFZ.CourseCollision
             }
             this.RecordStartAddress(writer);
             {
-                writer.WriteX(lodFar);
-                writer.WriteX(lodNear);
+                writer.WriteX(unk0x00);
+                writer.WriteX(unk0x04);
                 writer.WriteX(templateSceneObjectPtr);
                 writer.WriteX(transform);
                 writer.WriteX(zero_0x2C);
@@ -156,8 +156,8 @@ namespace GameCube.GFZ.CourseCollision
         {
             return
                 $"{nameof(SceneObjectDynamic)}(" +
-                $"LOD A: {lodNear}, " +
-                $"LOD B: {lodFar}, " +
+                $"{nameof(unk0x04)}: {unk0x04:x8}, " +
+                $"{nameof(unk0x00)}: {unk0x00:x8}, " +
                 $"{transform} " +
                 $"Name: {nameCopy}" +
                 $")";

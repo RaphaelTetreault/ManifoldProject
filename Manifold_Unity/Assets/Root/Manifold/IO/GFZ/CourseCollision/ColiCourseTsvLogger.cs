@@ -667,10 +667,10 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol("File");
                 writer.WriteNextCol("Game Object #");
                 writer.WriteNextCol("Game Object");
-                writer.WriteNextCol(nameof(SceneObjectDynamic.lodFar));
-                writer.WriteNextCol(nameof(SceneObjectDynamic.lodFar));
-                writer.WriteNextCol(nameof(SceneObjectDynamic.lodNear));
-                writer.WriteNextCol(nameof(SceneObjectDynamic.lodNear));
+                writer.WriteNextCol(nameof(SceneObjectDynamic.unk0x00));
+                writer.WriteNextCol(nameof(SceneObjectDynamic.unk0x00));
+                writer.WriteNextCol(nameof(SceneObjectDynamic.unk0x04));
+                writer.WriteNextCol(nameof(SceneObjectDynamic.unk0x04));
                 writer.WriteNextCol(nameof(SceneObjectDynamic.templateSceneObjectPtr));
                 writer.WriteNextCol(nameof(SceneObjectDynamic.transform.Position));
                 writer.WriteNextCol(nameof(SceneObjectDynamic.transform.RotationEuler));
@@ -690,10 +690,10 @@ namespace Manifold.IO.GFZ.CourseCollision
                         writer.WriteNextCol(scene.FileName);
                         writer.WriteNextCol(sceneObjectIndex);
                         writer.WriteNextCol(sceneObject.nameCopy);
-                        writer.WriteNextCol(sceneObject.lodFar.data32);
-                        writer.WriteNextCol($"0x{sceneObject.lodFar.data32:x8}");
-                        writer.WriteNextCol(sceneObject.lodNear.data32);
-                        writer.WriteNextCol($"0x{sceneObject.lodNear.data32:x8}");
+                        writer.WriteNextCol(sceneObject.unk0x00);
+                        writer.WriteNextCol($"0x{sceneObject.unk0x00:x8}");
+                        writer.WriteNextCol(sceneObject.unk0x04);
+                        writer.WriteNextCol($"0x{sceneObject.unk0x04:x8}");
                         writer.WriteNextCol(sceneObject.templateSceneObjectPtr.HexAddress);
                         writer.WriteNextCol(sceneObject.transform.Position);
                         writer.WriteNextCol(sceneObject.transform.RotationEuler);
@@ -1706,6 +1706,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextColNicify(nameof(StaticColliderMap.unkDataPtr));
                 writer.WriteNextColNicify(nameof(StaticColliderMap.staticSceneObjectsPtr));
                 writer.WriteNextColNicify(nameof(StaticColliderMap.unknownCollidersPtr));
+                writer.WriteNextColNicify(nameof(StaticColliderMap.unk_float));
                 writer.WriteNextCol();
                 writer.WriteNextColNicify(nameof(UnknownStaticColliderMapData.unk_0x00));
                 writer.WriteNextColNicify(nameof(UnknownStaticColliderMapData.unk_0x04));
@@ -1735,6 +1736,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                     writer.WriteNextCol(staticColliderMeshes.unkDataPtr.HexAddress);
                     writer.WriteNextCol(staticColliderMeshes.staticSceneObjectsPtr.HexAddress);
                     writer.WriteNextCol(staticColliderMeshes.unknownCollidersPtr.HexAddress);
+                    writer.WriteNextCol(staticColliderMeshes.unk_float);
                     writer.WriteNextCol();
                     writer.WriteNextCol(staticColliderMeshes.unkData.unk_0x00);
                     writer.WriteNextCol(staticColliderMeshes.unkData.unk_0x04);

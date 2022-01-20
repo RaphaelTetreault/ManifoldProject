@@ -702,21 +702,38 @@ namespace GameCube.GFZ.CourseCollision
 
             // SCENE OBJECT TEMPLATES
             // Grab sub-structures of SceneObjectTemplate
-            var colliderGeomertries = new List<ColliderGeometry>();
+            var colliderGeometries = new List<ColliderGeometry>();
+            var colliderGeoTris = new List<ColliderTriangle>();
+            var colliderGeoQuads = new List<ColliderQuad>();
             foreach (var templateSceneObject in templateSceneObjects)
             {
-                if (templateSceneObject.colliderGeometry != null)
+                var colliderGeo = templateSceneObject.colliderGeometry;
+                if (colliderGeo != null)
                 {
-                    colliderGeomertries.Add(templateSceneObject.colliderGeometry);
+                    colliderGeometries.Add(colliderGeo);
+
+                    if (colliderGeo.triCount > 0)
+                        colliderGeoTris.AddRange(colliderGeo.tris);
+
+                    if (colliderGeo.quadCount > 0)
+                        colliderGeoQuads.AddRange(colliderGeo.quads);
                 }
             }
             // Scene Object Template
             writer.InlineDesc(serializeVerbose, 0x68 + offset, templateSceneObjects);
             writer.WriteX(templateSceneObjects, false);
             // Collider Geometry
-            writer.InlineDesc(serializeVerbose, colliderGeomertries);
-            foreach (var colliderGeometry in colliderGeomertries)
+            writer.InlineComment(serializeVerbose, nameof(ColliderGeometry));
+            foreach (var colliderGeometry in colliderGeometries)
                 writer.WriteX(colliderGeometry);
+            //
+            writer.InlineComment(serializeVerbose, nameof(ColliderGeometry), nameof(ColliderTriangle));
+            foreach (var tri in colliderGeoTris)
+                writer.WriteX(tri);
+            writer.InlineComment(serializeVerbose, nameof(ColliderGeometry), nameof(ColliderQuad));
+            foreach (var quad in colliderGeoQuads)
+                writer.WriteX(quad);
+
 
             // STATIC SCENE OBJECTS
             if (!staticSceneObjects.IsNullOrEmpty())
@@ -902,7 +919,7 @@ namespace GameCube.GFZ.CourseCollision
                 referers.AddRange(sceneObjects);
                 // Scene Object Templates
                 referers.AddRange(templateSceneObjects);
-                referers.AddRange(colliderGeomertries);
+                referers.AddRange(colliderGeometries);
                 // Scene Object Statics
                 referers.AddRange(staticSceneObjects);
                 // Scene Object Dynamics

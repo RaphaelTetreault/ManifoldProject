@@ -15,6 +15,13 @@ namespace Manifold.IO.GFZ
 {
     public static class ColiCourseIO
     {
+        // CONSTANTS
+        private const string TestLoad = "Load All Stages";
+        private const string TestSave = "Save All Stages";
+        private const string ActiveRoot = " (Active Root)";
+        private const string DebugAllRegions = " (Debug All Regions)";
+
+
         /// <summary>
         /// Loads all stages at the designated <paramref name="path"/> in iterative pattern,
         /// only loads one stages, passes it, than yields until next iteration.
@@ -63,67 +70,6 @@ namespace Manifold.IO.GFZ
 
             EditorUtility.ClearProgressBar();
         }
-
-
-        [MenuItem("Manifold/IO/Test IO 1")]
-        public static void TestIO1()
-        {
-            LogRoundtrip("C:/GFZJ01/stage/COLI_COURSE01", true);
-        }
-
-        [MenuItem("Manifold/IO/Export Roundtrip Summaries (4 formats) %F1")]
-        public static void TestHash()
-        {
-            LogSceneDataRoundtripFormat4("C:/GFZJ01/stage/COLI_COURSE01", true);
-            //for (int i = 0; i <= 50; i++)
-            //{
-            //    try
-            //    {
-            //        LogSceneDataRoundtripFormat4($"C:/GFZJ01/stage/COLI_COURSE{i:d2}", true);
-            //    }
-            //    catch { }
-            //}
-        }
-
-        //[MenuItem("Manifold/IO/Roundtrip No Log %F2")]
-        //public static void ExportRoundtripNoLog()
-        //{
-        //    RoundtripNoLog("C:/GFZJ01/stage/COLI_COURSE01", true);
-        //}
-
-
-        [MenuItem("Manifold/IO/Roundtrip Error Check %F3")]
-        public static void RoundtripErrorCheck()
-        {
-            SceneRoundtripErrorTest("C:/GFZJ01/stage/COLI_COURSE01", true);
-        }
-
-        [MenuItem("Manifold/IO/Roundtrip Error Check All GFZJ %F4")]
-        public static void RoundtripErrorCheck2()
-        {
-            for (int i = 0; i <= 50; i++)
-            {
-                SceneRoundtripErrorTest($"C:/GFZJ01/stage/COLI_COURSE{i:d2}", true);
-            }
-            EditorUtility.DisplayDialog("Roundtrip Error Check All Gfze", "All tests passed!", "ok");
-        }
-
-        [MenuItem("Manifold/IO/Test Load Stage 01 GFZJ")]
-        public static void TestLoadStage01()
-        {
-            var filePath = $"C:/GFZJ01/stage/COLI_COURSE01";
-            var fileName = Path.GetFileName(filePath);
-            // LOAD FRESH FILE IN
-            var reader = new BinaryReader(File.OpenRead(filePath));
-            var scene = new ColiScene();
-            scene.FileName = fileName;
-            reader.ReadX(ref scene, false);
-        }
-
-        private const string TestLoad = "Load All Stages";
-        private const string TestSave = "Save All Stages";
-        private const string ActiveRoot = " (Active Root)";
-        private const string DebugAllRegions = " (Debug All Regions)";
 
 
         #region Test Load All Stages
@@ -272,6 +218,9 @@ namespace Manifold.IO.GFZ
             {
                 // Assign scene to temp, get initial hash
                 sceneWrite = coliScene;
+                var logInit = new TextLogger($"{logPath}log-init-{coliScene.FileName}.txt");
+                LogSceneData(logInit, coliScene);
+                logInit.Close();
 
                 for (int i = 0; i < 2; i++)
                 {
@@ -728,17 +677,20 @@ namespace Manifold.IO.GFZ
             log.WriteLine($"Author: {coliScene.Author}");
             log.WriteLine($"{nameof(CircuitType)}: {coliScene.circuitType}");
             log.WriteLine($"{nameof(Bool32)}: {coliScene.staticColliderMeshesActive}");
+            log.WriteLine($"{nameof(Bool32)}: {coliScene.unkBool32_0x58}");
             log.WriteLine($"{nameof(coliScene.unkRange0x00)}: {coliScene.unkRange0x00}");
-            log.WriteAddress(coliScene.fog);
-            log.WriteAddress(coliScene.fogCurves);
             log.WriteLine(); //
             log.WriteLine(); // yes, 2 WriteLines
+
+            log.WriteHeading("FOG", padding, h1Width);
+            log.WriteAddress(coliScene.fog);
+            log.WriteAddress(coliScene.fogCurves);
+            log.WriteLine();
 
             log.WriteHeading("TRIGGERS", padding, h1Width);
             log.WriteAddress(coliScene.arcadeCheckpointTriggers);
             log.WriteAddress(coliScene.courseMetadataTriggers);
             log.WriteAddress(coliScene.storyObjectTriggers);
-            log.WriteAddress(coliScene.unknownColliders);
             log.WriteAddress(coliScene.unknownTriggers);
             log.WriteAddress(coliScene.visualEffectTriggers);
 
@@ -801,19 +753,17 @@ namespace Manifold.IO.GFZ
                         checkpoints.Add(checkpoint);
                 log.WriteAddress(checkpoints.ToArray());
             }
-
-
-            // checkpoints
-            // segments
             log.WriteLine();
+
             log.WriteHeading("STATIC COLLISION", padding, h1Width);
             log.WriteAddress(coliScene.staticColliderMap);
             log.WriteLine();
-            log.WriteLine("NEW DATA");
+            log.WriteLine(nameof(UnknownCollider) + "[]");
+            log.WriteAddress(coliScene.unknownColliders);
+            log.WriteLine();
             log.WriteLine(nameof(UnknownStaticColliderMapData));
-            log.WriteAddress(coliScene.staticColliderMap.unkData);
-            log.WriteLine(coliScene.staticColliderMap.unkData);
             log.WriteLine("unk float: " + coliScene.staticColliderMap.unk_float);
+            log.WriteAddress(coliScene.staticColliderMap.unkData);
             log.WriteLine(coliScene.staticColliderMap.unknownCollidersPtr);
             log.WriteLine(coliScene.staticColliderMap.staticSceneObjectsPtr);
             log.WriteLine();
