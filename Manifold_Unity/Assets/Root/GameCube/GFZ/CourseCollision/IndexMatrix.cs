@@ -36,10 +36,10 @@ namespace GameCube.GFZ.CourseCollision
             // Initialize array to default/const size.
             // Requires inheriter to finalize count.
             indexLists = new IndexList[Count];
-            //for (int i = 0; i < indexLists.Length; i++)
-            //{
-            //    indexLists[i] = new IndexList();
-            //}
+            for (int i = 0; i < indexLists.Length; i++)
+            {
+                indexLists[i] = new IndexList();
+            }
         }
 
 

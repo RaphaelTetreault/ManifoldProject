@@ -54,7 +54,7 @@ namespace GameCube.GFZ.CourseCollision
         public StaticColliderMeshMatrix[] triMeshMatrices;
         public StaticColliderMeshMatrix[] quadMeshMatrices;
         public UnknownStaticColliderMapData unkData = new UnknownStaticColliderMapData();
-        public UnknownCollider[] UnknownColliders;
+        public UnknownCollider[] unknownColliders;
         public SceneObjectStatic[] staticSceneObjects; // Some of these used to be name-parsed colliders! (eg: *_CLASS2, etc)
 
 
@@ -231,6 +231,8 @@ namespace GameCube.GFZ.CourseCollision
                 quadMeshMatrixPtrs = quadMeshMatrices.GetPointers();
                 //
                 unkDataPtr = unkData.GetPointer();
+                unknownCollidersPtr = unknownColliders.GetArrayPointer();
+                staticSceneObjectsPtr = staticSceneObjects.GetArrayPointer();
             }
             this.RecordStartAddress(writer);
             {

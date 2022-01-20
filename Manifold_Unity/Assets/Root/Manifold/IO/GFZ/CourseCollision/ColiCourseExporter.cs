@@ -140,19 +140,19 @@ namespace Manifold.IO.GFZ.CourseCollision
             // segments
             log.WriteLine();
             log.WriteHeading("STATIC COLLISION", padding, h1Width);
-            log.WriteAddress(coliScene.colliderMap);
+            log.WriteAddress(coliScene.staticColliderMap);
             log.WriteLine();
             log.WriteLine("Mesh Bounds");
-            log.WriteAddress(coliScene.colliderMap.meshBounds);
+            log.WriteAddress(coliScene.staticColliderMap.meshBounds);
             log.WriteLine();
             log.WriteLine("TRIANGLES");
-            log.WriteAddress(coliScene.colliderMap.colliderTris);
-            log.WriteAddress(coliScene.colliderMap.triMeshMatrices);
+            log.WriteAddress(coliScene.staticColliderMap.colliderTris);
+            log.WriteAddress(coliScene.staticColliderMap.triMeshMatrices);
             // Write each index list
             log.WriteNullInArray = false;
-            for (int i = 0; i < coliScene.colliderMap.triMeshMatrices.Length; i++)
+            for (int i = 0; i < coliScene.staticColliderMap.triMeshMatrices.Length; i++)
             {
-                var triIndexList = coliScene.colliderMap.triMeshMatrices[i];
+                var triIndexList = coliScene.staticColliderMap.triMeshMatrices[i];
                 if (triIndexList != null)
                 {
                     log.WriteLine($"COLLIDER TYPE [{i}]: {(StaticColliderMeshProperty)i}");
@@ -161,13 +161,13 @@ namespace Manifold.IO.GFZ.CourseCollision
             }
             log.WriteNullInArray = true;
             log.WriteLine("QUADS");
-            log.WriteAddress(coliScene.colliderMap.colliderQuads);
-            log.WriteAddress(coliScene.colliderMap.quadMeshMatrices);
+            log.WriteAddress(coliScene.staticColliderMap.colliderQuads);
+            log.WriteAddress(coliScene.staticColliderMap.quadMeshMatrices);
             // Write each index list
             log.WriteNullInArray = false;
-            for (int i = 0; i < coliScene.colliderMap.quadMeshMatrices.Length; i++)
+            for (int i = 0; i < coliScene.staticColliderMap.quadMeshMatrices.Length; i++)
             {
-                var quadIndexList = coliScene.colliderMap.quadMeshMatrices[i];
+                var quadIndexList = coliScene.staticColliderMap.quadMeshMatrices[i];
                 if (quadIndexList != null)
                 {
                     log.WriteLine($"COLLIDER TYPE [{i}]: {(StaticColliderMeshProperty)i}");
@@ -311,7 +311,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
                 // Static Collider Meshes
                 {
-                    coliScene.colliderMap = new StaticColliderMap(format);
+                    coliScene.staticColliderMap = new StaticColliderMap(format);
                 }
 
                 // Triggers

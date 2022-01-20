@@ -619,8 +619,9 @@ namespace Manifold.IO.GFZ.CourseCollision
                         int animIndex = 0;
                         foreach (var animationClipCurve in dynamicSceneObject.animationClip.curves)
                         {
-                            //if (animationClipCurve.animationCurve == null)
-                            //    continue;
+                            // Failing for some reason on indexes 6+ :/
+                            if (animationClipCurve.animationCurve == null)
+                                continue;
 
                             foreach (var keyable in animationClipCurve.animationCurve.keyableAttributes)
                             {
@@ -1036,8 +1037,8 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol(nameof(ColiScene.unk_sceneObjectCount2));
                 writer.WriteNextCol(nameof(ColiScene.dynamicSceneObjectsPtr));
                 writer.WriteNextCol(nameof(ColiScene.unkBool32_0x58));
-                writer.WriteNextCol(nameof(ColiScene.unknownSolsTriggersPtr));
-                writer.WriteNextCol(nameof(ColiScene.unknownSolsTriggersPtr));
+                writer.WriteNextCol(nameof(ColiScene.unknownCollidersPtr));
+                writer.WriteNextCol(nameof(ColiScene.unknownCollidersPtr));
                 writer.WriteNextCol(nameof(ColiScene.templateSceneObjectsPtr));
                 writer.WriteNextCol(nameof(ColiScene.templateSceneObjectsPtr));
                 writer.WriteNextCol(nameof(ColiScene.staticSceneObjectsPtr));
@@ -1103,8 +1104,8 @@ namespace Manifold.IO.GFZ.CourseCollision
                     writer.WriteNextCol(scene.unk_sceneObjectCount2);
                     writer.WriteNextCol(scene.dynamicSceneObjectsPtr.HexAddress);
                     writer.WriteNextCol(scene.unkBool32_0x58);
-                    writer.WriteNextCol(scene.unknownSolsTriggersPtr.Length);
-                    writer.WriteNextCol(scene.unknownSolsTriggersPtr.HexAddress);
+                    writer.WriteNextCol(scene.unknownCollidersPtr.Length);
+                    writer.WriteNextCol(scene.unknownCollidersPtr.HexAddress);
                     writer.WriteNextCol(scene.templateSceneObjectsPtr.Length);
                     writer.WriteNextCol(scene.templateSceneObjectsPtr.HexAddress);
                     writer.WriteNextCol(scene.staticSceneObjectsPtr.Length);
@@ -1717,7 +1718,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
                 foreach (var scene in scenes)
                 {
-                    var staticColliderMeshes = scene.colliderMap;
+                    var staticColliderMeshes = scene.staticColliderMap;
 
                     writer.WriteNextCol($"COLI_COURSE{scene.ID:d2}");
                     writer.WriteNextCol(index++);

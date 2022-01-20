@@ -244,17 +244,73 @@ namespace Manifold.IO.GFZ
 
             foreach (var coliScene in LoadAllStages(settings.StageDir, "Logging Stages..."))
             {
-                var outputFile = $"{settings.TestOutput}/log-{coliScene.FileName}.txt";
+                var outputFile = $"{settings.LogOutput}/log-{coliScene.FileName}.txt";
                 var log = new TextLogger(outputFile);
                 LogSceneData(log, coliScene);
                 log.Flush();
                 log.Close();
             }
 
-            OSUtility.OpenDirectory(settings.TestOutput);
+            OSUtility.OpenDirectory(settings.LogOutput);
         }
 
         #endregion
+
+        #region Roundtrip
+
+        [MenuItem("Manifold/Tests/Roundtrip Test (Active Dir) _F8")]
+        public static void x()
+        {
+            var settings = GfzProjectWindow.GetSettings();
+            var path = settings.StageDir;
+            var title = "Roundtrip Test";
+            ColiScene sceneWrite;
+            var logPath = settings.LogOutput;
+
+            // This loads all stages but does nothing with them
+            foreach (var coliScene in LoadAllStages(path, title))
+            {
+                // Assign scene to temp, get initial hash
+                sceneWrite = coliScene;
+
+                for (int i = 0; i < 2; i++)
+                {
+                    var logWrite = new TextLogger($"{logPath}log-in-out-{sceneWrite.FileName}-[{i}]-write.txt");
+                    var logRead = new TextLogger($"{logPath}log-in-out-{sceneWrite.FileName}-[{i}]-read.txt");
+
+                    // Write scene to buffer
+                    var buffer = new MemoryStream();
+                    var writer = new BinaryWriter(buffer);
+                    writer.WriteX(sceneWrite);
+                    writer.Flush();
+                    //
+                    LogSceneData(logWrite, sceneWrite);
+                    logWrite.Close();
+                    // Reset buffer address
+                    buffer.Seek(0, SeekOrigin.Begin);
+                    // Create new scene to read buffer into
+                    var sceneRead = new ColiScene();
+                    sceneRead.SerializeVerbose = true;
+                    sceneRead.FileName = sceneWrite.FileName;
+                    // Read buffer, think of it like File.Open
+                    var reader = new BinaryReader(buffer);
+                    reader.ReadX(ref sceneRead, false);
+                    //
+                    LogSceneData(logRead, sceneRead);
+                    logRead.Close();
+                    //
+                    sceneWrite = sceneRead;
+                }
+
+                // Skeep it to 1 stage for now
+                break;
+            }
+
+            EditorUtility.ClearProgressBar();
+        }
+
+        #endregion
+
 
         //[MenuItem("Manifold/IO/SAVE All Stages GFZJ")]
         //public static void TestSaveAllStages()
@@ -517,7 +573,7 @@ namespace Manifold.IO.GFZ
 
                 // Static Collider Meshes
                 {
-                    coliScene.colliderMap = new StaticColliderMap(format);
+                    coliScene.staticColliderMap = new StaticColliderMap(format);
                 }
 
                 // Triggers
@@ -738,27 +794,27 @@ namespace Manifold.IO.GFZ
             // segments
             log.WriteLine();
             log.WriteHeading("STATIC COLLISION", padding, h1Width);
-            log.WriteAddress(coliScene.colliderMap);
+            log.WriteAddress(coliScene.staticColliderMap);
             log.WriteLine();
             log.WriteLine("NEW DATA");
             log.WriteLine(nameof(UnknownStaticColliderMapData));
-            log.WriteAddress(coliScene.colliderMap.unkData);
-            log.WriteLine(coliScene.colliderMap.unkData);
-            log.WriteLine("unk float: " + coliScene.colliderMap.unk_float);
-            log.WriteLine(coliScene.colliderMap.unknownCollidersPtr);
-            log.WriteLine(coliScene.colliderMap.staticSceneObjectsPtr);
+            log.WriteAddress(coliScene.staticColliderMap.unkData);
+            log.WriteLine(coliScene.staticColliderMap.unkData);
+            log.WriteLine("unk float: " + coliScene.staticColliderMap.unk_float);
+            log.WriteLine(coliScene.staticColliderMap.unknownCollidersPtr);
+            log.WriteLine(coliScene.staticColliderMap.staticSceneObjectsPtr);
             log.WriteLine();
             log.WriteLine("Mesh Bounds");
-            log.WriteAddress(coliScene.colliderMap.meshBounds);
+            log.WriteAddress(coliScene.staticColliderMap.meshBounds);
             log.WriteLine();
             log.WriteLine("TRIANGLES");
-            log.WriteAddress(coliScene.colliderMap.colliderTris);
-            log.WriteAddress(coliScene.colliderMap.triMeshMatrices);
+            log.WriteAddress(coliScene.staticColliderMap.colliderTris);
+            log.WriteAddress(coliScene.staticColliderMap.triMeshMatrices);
             // Write each index list
             log.WriteNullInArray = false;
-            for (int i = 0; i < coliScene.colliderMap.triMeshMatrices.Length; i++)
+            for (int i = 0; i < coliScene.staticColliderMap.triMeshMatrices.Length; i++)
             {
-                var triIndexList = coliScene.colliderMap.triMeshMatrices[i];
+                var triIndexList = coliScene.staticColliderMap.triMeshMatrices[i];
                 if (triIndexList != null)
                 {
                     log.WriteLine($"COLLIDER TYPE [{i}]: {(StaticColliderMeshProperty)i}");
@@ -767,13 +823,13 @@ namespace Manifold.IO.GFZ
             }
             log.WriteNullInArray = true;
             log.WriteLine("QUADS");
-            log.WriteAddress(coliScene.colliderMap.colliderQuads);
-            log.WriteAddress(coliScene.colliderMap.quadMeshMatrices);
+            log.WriteAddress(coliScene.staticColliderMap.colliderQuads);
+            log.WriteAddress(coliScene.staticColliderMap.quadMeshMatrices);
             // Write each index list
             log.WriteNullInArray = false;
-            for (int i = 0; i < coliScene.colliderMap.quadMeshMatrices.Length; i++)
+            for (int i = 0; i < coliScene.staticColliderMap.quadMeshMatrices.Length; i++)
             {
-                var quadIndexList = coliScene.colliderMap.quadMeshMatrices[i];
+                var quadIndexList = coliScene.staticColliderMap.quadMeshMatrices[i];
                 if (quadIndexList != null)
                 {
                     log.WriteLine($"COLLIDER TYPE [{i}]: {(StaticColliderMeshProperty)i}");
@@ -821,6 +877,7 @@ namespace Manifold.IO.GFZ
                 }
             }
             log.WriteLine();
+            log.Flush();
         }
 
         /// <summary>

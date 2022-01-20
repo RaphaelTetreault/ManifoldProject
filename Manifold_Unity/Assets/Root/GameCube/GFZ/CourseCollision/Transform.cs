@@ -107,8 +107,8 @@ namespace GameCube.GFZ.CourseCollision
             {
                 writer.WriteX(position);
                 writer.WriteX(decomposedRotation);
-                writer.WriteX(objectActiveOverride);
                 writer.WriteX(unknownOption);
+                writer.WriteX(objectActiveOverride);
                 writer.WriteX(scale);
             }
             this.RecordEndAddress(writer);

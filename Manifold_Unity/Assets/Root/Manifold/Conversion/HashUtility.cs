@@ -22,6 +22,20 @@ namespace Manifold.Conversion
             return hashString;
         }
 
+        public static string HashBinary(HashAlgorithm hashAlgorithm, IBinarySerializable[] binarySerializables)
+        {
+            StringBuilder builder = new StringBuilder();
+            foreach (var x in binarySerializables)
+            {
+                var hash = HashBinary(hashAlgorithm, x);
+                builder.Append(hash);
+            }
+
+            var asBytes = Encoding.ASCII.GetBytes(builder.ToString());
+            var temp = hashAlgorithm.ComputeHash(asBytes);
+            var hashString = ByteArrayToString(temp);
+            return hashString;
+        }
 
         public static string SerializableToStreamString(IBinarySerializable binarySerializable)
         {

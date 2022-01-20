@@ -1,7 +1,9 @@
 ﻿using GameCube.GFZ;
 using GameCube.GFZ.CourseCollision;
+
 using Manifold.IO;
 using Manifold.IO.GFZ;
+
 using System;
 using System.Collections.Generic;
 using UnityEditor;
@@ -11,111 +13,97 @@ using Unity.Mathematics;
 
 namespace Manifold.IO.GFZ.CourseCollision
 {
-    [CreateAssetMenu(menuName = Const.Menu.GfzCourseCollision + "COLI Scene Importer")]
-    public class ColiSceneImporter : ExecutableScriptableObject,
-        IImportable
+    public static class GfzUnitySceneIO
     {
-        #region MEMBERS
+        public const string ExecuteText = "Import COLI as Unity Scene";
 
-        [Header("Import Settings")]
-        [SerializeField, BrowseFolderField()]
-        protected string importFrom;
-
-        [SerializeField, BrowseFolderField("Assets/")]
-        protected string importTo;
-
-        [SerializeField]
-        protected IOOption importOption = IOOption.selectedFiles;
-
-        [Header("Import Files")]
-        [SerializeField] protected ColiSceneSobj[] courseScenes;
-
-        #endregion
-
-        public override string ExecuteText => "Import COLI as Unity Scene";
-
-        public override void Execute() => Import();
-
-        public void Import()
+        [MenuItem("Manifold/Scene/Create All (Active Dir)")]
+        public static void ImportScene()
         {
-            courseScenes = AssetDatabaseUtility.GetSobjByOption(courseScenes, importOption, importFrom);
+            var title = "Reading Scene File";
 
-            foreach (var scene in courseScenes)
+            var settings = GfzProjectWindow.GetSettings();
+            var inputPath = settings.StageDir;
+            var outputPath = settings.UnityImportDir;
+
+            foreach (var scene in ColiCourseIO.LoadAllStages(inputPath, title))
             {
-                // Create new, empty scene
-                var sceneName = scene.name;
-                var scenePath = $"Assets/{importTo}/{sceneName}.unity";
-                var unityScene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
-                EditorSceneManager.SaveScene(unityScene, scenePath);
-                // Keep reference of new scene
-                unityScene = EditorSceneManager.OpenScene(scenePath);
+                Import(scene, outputPath);
+            }
+        }
 
-                // Course-related values, used to find models
-                // Triple digit IDs do overflow the "00" format, that's okay.
-                var stageID = scene.Value.ID;
-                var stageNumber = stageID.ToString("00");
-                var venueID = CourseUtility.GetVenueID(stageID).ToString().ToLower();
+        public static void Import(ColiScene scene, string unityDestRoot)
+        {
+            // Create new, empty scene
+            var sceneName = scene.FileName;
+            var outputPath = $"Assets/{unityDestRoot}/{sceneName}.unity";
+            var unityScene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+            EditorSceneManager.SaveScene(unityScene, outputPath);
+            // Keep reference of new scene
+            unityScene = EditorSceneManager.OpenScene(outputPath);
 
-                // TEMP: Get folder at root of import path.
-                // TODO: use parameter in sobj for base folder?
-                var importFromRoot = importFrom.Split('/')[0];
+            // Course-related values, used to find models
+            // Triple digit IDs do overflow the "00" format, that's okay.
+            var stageID = scene.ID;
+            var stageNumber = stageID.ToString("00");
+            var venueID = CourseUtility.GetVenueID(stageID).ToString().ToLower();
 
-                // Models are loaded from 3 folders.
-                var initFolder = $"Assets/{importFromRoot}/init";
-                var stageFolder = $"Assets/{importFromRoot}/stage/st{stageNumber}";
-                var venueFolder = $"Assets/{importFromRoot}/bg/bg_{venueID}";
-                var searchFolders = new string[] { initFolder, stageFolder, venueFolder };
+            // Models are loaded from 3 folders.
+            var initFolder = $"Assets/{unityDestRoot}/init";
+            var stageFolder = $"Assets/{unityDestRoot}/stage/st{stageNumber}";
+            var venueFolder = $"Assets/{unityDestRoot}/bg/bg_{venueID}";
+            var searchFolders = new string[] { initFolder, stageFolder, venueFolder };
 
-                // Adds object with general info about the course.
-                CreateGlobalParams(scene);
+            // Adds object with general info about the course.
+            CreateGlobalParams(scene);
 
-                // SCENE OBJECTS
-                CreateSceneObjects(scene, searchFolders);
-                // ORIGIN OBJECTS
-                CreateOriginObjects(scene, searchFolders);
+            // SCENE OBJECTS
+            CreateSceneObjects(scene, searchFolders);
+            // ORIGIN OBJECTS
+            CreateOriginObjects(scene, searchFolders);
 
-                CreateBoundsVisual(scene);
+            CreateBoundsVisual(scene);
 
-                // MISC DATA
-                // Create debug object for visualization at top of scene hierarchy
-                CreateDisplayerDebugObject(scene);
+            // MISC DATA
+            // Create debug object for visualization at top of scene hierarchy
+            CreateDisplayerDebugObject(scene);
 
-                // TRIGGERS
+            // TRIGGERS
+            {
+                // Create triggers, lump them all under 1 transform.
+                var triggersRoot = new GameObject("Triggers").transform;
+                var children = new List<UnityEngine.Transform>();
+                children.Add(CreateArcadeCheckpointTriggers(scene));
+                children.Add(CreateCourseMetadataTriggers(scene));
+                children.Add(CreateStoryObjectTriggers(scene));
+                children.Add(CreateUnknownSolsTriggers(scene));
+                children.Add(CreateUnknownTriggers(scene));
+                children.Add(CreateVisualEffectTriggers(scene));
+                foreach (var child in children)
                 {
-                    // Create triggers, lump them all under 1 transform.
-                    var triggersRoot = new GameObject("Triggers").transform;
-                    var children = new List<UnityEngine.Transform>();
-                    children.Add(CreateArcadeCheckpointTriggers(scene));
-                    children.Add(CreateCourseMetadataTriggers(scene));
-                    children.Add(CreateStoryObjectTriggers(scene));
-                    children.Add(CreateUnknownSolsTriggers(scene));
-                    children.Add(CreateUnknownTriggers(scene));
-                    children.Add(CreateVisualEffectTriggers(scene));
-                    foreach (var child in children)
+                    if (child != null)
                     {
-                        if (child != null)
-                        {
-                            child.parent = triggersRoot;
-                            // Turn off root object for each trigger type.
-                            child.gameObject.SetActive(false);
-                        }
+                        child.parent = triggersRoot;
+                        // Turn off root object for each trigger type.
+                        child.gameObject.SetActive(false);
                     }
                 }
+            }
 
-                // Track data transforms
-                //CreateTrackTransformHierarchy(scene);
-                //TestTransformHeirarchy(scene);
+            // Track data transforms
+            //CreateTrackTransformHierarchy(scene);
+            //TestTransformHeirarchy(scene);
 
-                // Checkpoints?
-                CreateTrackIndexChains(scene);
-                // Include other misc data
-                IncludeStaticMeshColliders(scene, stageFolder);
+            // Checkpoints?
+            CreateTrackIndexChains(scene);
+            // Include other misc data
+            IncludeStaticMeshColliders(scene, stageFolder);
 
-                // Finally, save the scene file
-                EditorSceneManager.SaveScene(unityScene, scenePath, false);
-            } // foreach COLI_COURSE
-            EditorUtility.ClearProgressBar();
-            AssetDatabase.Refresh();
+            // Finally, save the scene file
+            EditorSceneManager.SaveScene(unityScene, outputPath, false);
+            //} // foreach COLI_COURSE
+            //EditorUtility.ClearProgressBar();
+            //AssetDatabase.Refresh();
         }
 
 
@@ -124,7 +112,7 @@ namespace Manifold.IO.GFZ.CourseCollision
         /// </summary>
         /// <param name="displayName">The name of the object created</param>
         /// <returns></returns>
-        private GameObject CreateNoMeshObject()
+        private static GameObject CreateNoMeshObject()
         {
             // No models for this object. Make empty object.
             var noMeshObject = new GameObject();
@@ -138,19 +126,19 @@ namespace Manifold.IO.GFZ.CourseCollision
             return noMeshObject;
         }
 
-        private GameObject CreateInstanceFromDatabase(string assetPath)
+        private static GameObject CreateInstanceFromDatabase(string assetPath)
         {
             // Load asset from database
             var asset = AssetDatabase.LoadAssetAtPath<GameObject>(assetPath);
 
             // Create instance of the prefab
-            var instance = Instantiate(asset);
+            var instance = GameObject.Instantiate(asset);
             return instance;
         }
 
 
         #region CREATE TRIGGERS
-        private UnityEngine.Transform CreateArcadeCheckpointTriggers(ColiScene scene)
+        private static UnityEngine.Transform CreateArcadeCheckpointTriggers(ColiScene scene)
         {
             var arcadeCheckpointTriggers = scene.arcadeCheckpointTriggers;
             int count = 0;
@@ -183,7 +171,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             return root;
         }
 
-        private UnityEngine.Transform CreateCourseMetadataTriggers(ColiScene scene)
+        private static UnityEngine.Transform CreateCourseMetadataTriggers(ColiScene scene)
         {
             var courseMetadataTriggers = scene.courseMetadataTriggers;
             int count = 0;
@@ -265,7 +253,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
             return root;
         }
-        private GfzObjectPath CreateMetadataPathObj(CourseMetadataTrigger data)
+        private static GfzObjectPath CreateMetadataPathObj(CourseMetadataTrigger data)
         {
             var pathObject = new GameObject();
             var root = pathObject.transform;
@@ -286,7 +274,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
             return objectPath;
         }
-        private UnityEngine.Transform CreateMetadataBboObj(CourseMetadataTrigger data)
+        private static UnityEngine.Transform CreateMetadataBboObj(CourseMetadataTrigger data)
         {
             // Object named by caller
             var gobj = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -295,7 +283,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
             return gobj.transform;
         }
-        private UnityEngine.Transform CreateMetadataCapsuleObj(CourseMetadataTrigger data)
+        private static UnityEngine.Transform CreateMetadataCapsuleObj(CourseMetadataTrigger data)
         {
             var gobj = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             var capsuleTrigger = gobj.gameObject.AddComponent<GfzStoryCapsule>();
@@ -304,7 +292,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             return gobj.transform;
         }
 
-        private UnityEngine.Transform CreateStoryObjectTriggers(ColiScene scene)
+        private static UnityEngine.Transform CreateStoryObjectTriggers(ColiScene scene)
         {
             // TODO: add animation paths.
 
@@ -340,7 +328,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             return root;
         }
 
-        private UnityEngine.Transform CreateUnknownSolsTriggers(ColiScene scene)
+        private static UnityEngine.Transform CreateUnknownSolsTriggers(ColiScene scene)
         {
             var unknownSolsTriggers = scene.unknownColliders;
             int count = 0;
@@ -374,7 +362,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             return root;
         }
 
-        private UnityEngine.Transform CreateUnknownTriggers(ColiScene scene)
+        private static UnityEngine.Transform CreateUnknownTriggers(ColiScene scene)
         {
             var unknownTriggers = scene.unknownTriggers;
             int count = 0;
@@ -407,7 +395,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             return root;
         }
 
-        private UnityEngine.Transform CreateVisualEffectTriggers(ColiScene scene)
+        private static UnityEngine.Transform CreateVisualEffectTriggers(ColiScene scene)
         {
             var vfxTriggers = scene.visualEffectTriggers;
             int count = 0;
@@ -440,135 +428,26 @@ namespace Manifold.IO.GFZ.CourseCollision
 
         #endregion
 
-        private void CreateDisplayerDebugObject(ColiSceneSobj scene)
+        private static void CreateDisplayerDebugObject(ColiScene scene)
         {
-            // TEMP DATA
-            // Create track vis, set parameter
-            var empty = new GameObject();
-            empty.name = "DEBUG - Display Data";
-            // Add displayers and assign value to all
-            var displayables = new List<IColiCourseDisplayable>
-                {
-                    empty.AddComponent<DisplayTrackCheckpoint>(),
-                };
-            foreach (var displayable in displayables)
-            {
-                displayable.SceneSobj = scene;
-            }
+            //// TEMP DATA
+            //// Create track vis, set parameter
+            //var empty = new GameObject();
+            //empty.name = "DEBUG - Display Data";
+            //// Add displayers and assign value to all
+            //var displayables = new List<IColiCourseDisplayable>
+            //    {
+            //        empty.AddComponent<DisplayTrackCheckpoint>(),
+            //    };
+            //foreach (var displayable in displayables)
+            //{
+            //    displayable.SceneSobj = scene;
+            //}
         }
 
-
-        //#region Track Transform Hierarchies
-
-        //private int elementIndex = 0;
-        //public void CreateTrackTransformHierarchy(ColiScene scene)
-        //{
-        //    // Get mesh for debugging
-        //    var mesh = Resources.GetBuiltinResource<Mesh>("Cube.fbx");
-
-        //    // Create object to house data
-        //    var controlPointsParent = new GameObject();
-        //    controlPointsParent.name = "Control Points Hierarchy";
-
-        //    //
-        //    elementIndex = 0;
-
-        //    // Loop over every top transform
-        //    int count = 0;
-        //    int total = scene.rootTrackSegments.Length;
-        //    foreach (var trackTransform in scene.rootTrackSegments)
-        //    {
-        //        // Recursively create transforms
-        //        count++;
-        //        var name = $"[{count}/{total}] Control Point | {count}";
-        //        CreateControlPointRecursive(trackTransform, controlPointsParent, mesh, name, 0);
-        //    }
-        //}
-
-        //public void CreateTrackTransformSet(ColiScene scene)
-        //{
-        //    // Get mesh for debugging
-        //    var mesh = Resources.GetBuiltinResource<Mesh>("Cube.fbx");
-
-        //    // Create object to house data
-        //    var controlPointsRoot = new GameObject();
-        //    controlPointsRoot.name = "Control Points Set";
-
-        //    // Loop over every top transform
-        //    //int count = 0;
-        //    int index = 0;
-        //    int total = scene.rootTrackSegments.Length;
-        //    foreach (var trackTransform in scene.rootTrackSegments)
-        //    {
-        //        //
-        //        var name = $"[{++index}/{total}] Control Point";
-        //        var controlPointSet = new GameObject();
-        //        controlPointSet.name = name;
-        //        controlPointSet.transform.parent = controlPointsRoot.transform;
-        //        CreateControlPointSequential(trackTransform, controlPointSet, mesh, name, 0, 0);
-
-        //        // Recursively create transforms
-        //        //count++;
-        //        //var name = $"[{count}/{total}] Control Point | {count}";
-        //        //CreateControlPointRecursive(trackTransform, controlPointsParent, mesh, name, 0);
-        //    }
-        //}
-
-        //public void CreateControlPointRecursive(TrackSegment trackTransform, GameObject parent, Mesh mesh, string name, int depth)
-        //{
-        //    //
-        //    var controlPoint = new GameObject();
-        //    var tag = controlPoint.AddComponent<TagTrackTransform>();
-        //    tag.Data = trackTransform;
-        //    //
-        //    controlPoint.name = $"{elementIndex++} {name}";
-        //    controlPoint.transform.parent = parent.transform;
-        //    // Set transform
-        //    controlPoint.transform.localPosition = trackTransform.localPosition;
-        //    controlPoint.transform.localRotation = Quaternion.Euler(trackTransform.localRotation);
-        //    controlPoint.transform.localScale = trackTransform.localScale;
-
-        //    //
-        //    var display = controlPoint.AddComponent<DisplayTrackTransformSingle>();
-        //    display.depth = depth;
-
-        //    //
-        //    int count = 1;
-        //    int total = trackTransform.children.Length;
-        //    foreach (var child in trackTransform.children)
-        //    {
-        //        name = $"{name}.{count++}";
-        //        CreateControlPointRecursive(child, controlPoint, mesh, name, depth + 1);
-        //    }
-        //}
-
-        //public void CreateControlPointSequential(TrackSegment trackTransform, GameObject parent, Mesh mesh, string name, int depth, int index)
-        //{
-        //    //Create new control point
-        //    var controlPoint = new GameObject();
-        //    //
-        //    controlPoint.name = $"{name} {depth}.{index}";
-        //    controlPoint.transform.parent = parent.transform;
-        //    // Set transform
-        //    controlPoint.transform.position = trackTransform.localPosition;
-        //    controlPoint.transform.rotation = Quaternion.Euler(trackTransform.localRotation);
-        //    controlPoint.transform.localScale = trackTransform.localScale;
-
-        //    //
-        //    index = 0;
-        //    foreach (var next in trackTransform.children)
-        //    {
-        //        CreateControlPointSequential(next, parent, mesh, name, depth + 1, ++index);
-        //    }
-        //}
-
-
-        //#endregion
-
         // COLLIDER OBJECTS
-        public void IncludeStaticMeshColliders(ColiSceneSobj sceneSobj, string stageFolder)
+        public static void IncludeStaticMeshColliders(ColiScene scene, string stageFolder)
         {
-            var scene = sceneSobj.Value;
             var parent = new GameObject();
             parent.name = $"Static Mesh Colliders";
 
@@ -588,7 +467,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                     continue;
                 }
 
-                var instance = Instantiate(asset, parent.transform);
+                var instance = GameObject.Instantiate(asset, parent.transform);
                 instance.name = meshName;
 
                 var script = instance.AddComponent<GfzStaticColliderMesh>();
@@ -598,10 +477,8 @@ namespace Manifold.IO.GFZ.CourseCollision
 
         }
 
-        public void TestTransformHeirarchy(ColiSceneSobj sceneSobj)
+        public static void TestTransformHeirarchy(ColiScene scene)
         {
-            var scene = sceneSobj.Value;
-
             var parent = new GameObject();
             parent.name = $"Test Sample Path";
 
@@ -657,7 +534,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             }
         }
 
-        public float GetCurveTime(UnityEngine.AnimationCurve curve)
+        public static float GetCurveTime(UnityEngine.AnimationCurve curve)
         {
             if (curve.length == 0)
                 return 0f;
@@ -665,10 +542,8 @@ namespace Manifold.IO.GFZ.CourseCollision
             return curve.keys[curve.length - 1].time;
         }
 
-        public void NewTestTransformHierarchy(ColiSceneSobj sceneSobj)
+        public static void NewTestTransformHierarchy(ColiScene scene)
         {
-            var scene = sceneSobj.Value;
-
             var parent = new GameObject();
             parent.name = $"Test Sample Path";
 
@@ -696,7 +571,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             }
         }
 
-        public Matrix4x4 GetTransformMatrix(TrackSegment trackTransform, float increment)
+        public static Matrix4x4 GetTransformMatrix(TrackSegment trackTransform, float increment)
         {
             var transformMatrix = new Matrix4x4();
             transformMatrix.SetTRS(
@@ -714,7 +589,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             return transformMatrix;
         }
 
-        public Matrix4x4 GetAnimMatrix(TrackSegment trackTransform, float time)
+        public static Matrix4x4 GetAnimMatrix(TrackSegment trackTransform, float time)
         {
             var topology = trackTransform.trackCurves;
             float3 timeScale = new float3(
@@ -767,15 +642,13 @@ namespace Manifold.IO.GFZ.CourseCollision
                 gobj.name = name;
 
             var collider = gobj.GetComponent<Collider>();
-            DestroyImmediate(collider);
+            GameObject.DestroyImmediate(collider);
 
             return gobj.transform;
         }
 
-        public UnityEngine.Transform CreateBoundsVisual(ColiSceneSobj sceneSobj)
+        public static UnityEngine.Transform CreateBoundsVisual(ColiScene scene)
         {
-            var scene = sceneSobj.Value;
-
             // Get all bounds
             var boundsTrack = scene.trackNodeBoundsXZ;
             var boundsColliders = scene.staticColliderMap.meshBounds;
@@ -795,7 +668,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             return boundsRoot;
         }
 
-        public UnityEngine.Transform CreateBoundsObject(MatrixBoundsXZ bounds, float yHeight, string name)
+        public static UnityEngine.Transform CreateBoundsObject(MatrixBoundsXZ bounds, float yHeight, string name)
         {
             var displayName = $"{name} ({bounds.numSubdivisionsX}x{bounds.numSubdivisionsZ})";
             var boundsObject = CreatePrimitive(PrimitiveType.Cube, displayName);
@@ -807,16 +680,14 @@ namespace Manifold.IO.GFZ.CourseCollision
         }
 
 
-        public void CreateTrackIndexChains(ColiSceneSobj sceneSobj)
+        public static void CreateTrackIndexChains(ColiScene scene)
         {
-            var scene = sceneSobj.Value;
-
             var root = new GameObject();
             root.name = $"Track Index Chains";
 
             int chainIndex = 0;
-            var trackNodes = sceneSobj.Value.trackNodes;
-            foreach (var indexList in sceneSobj.Value.trackCheckpointMatrix.indexLists)
+            var trackNodes = scene.trackNodes;
+            foreach (var indexList in scene.trackCheckpointMatrix.indexLists)
             {
                 var chain = new GameObject().transform;
                 chain.name = $"Chain {chainIndex++}";
@@ -838,7 +709,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             }
         }
 
-        public string GetAssetPath(string prefabName, params string[] searchFolders)
+        public static string GetAssetPath(string prefabName, params string[] searchFolders)
         {
             // Store all possible matches for the object name in questions using the folder constraints
             var assetGuids = AssetDatabase.FindAssets(prefabName, searchFolders);
@@ -878,7 +749,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             // Return our match. MAY BE EMPTY STRING.
             return assetPath;
         }
-        public string WidthFormat(Array array)
+        public static string WidthFormat(Array array)
         {
             int displayDigitsLength = array.Length.ToString().Length;
             var digitsFormat = new string('0', displayDigitsLength);
@@ -886,11 +757,10 @@ namespace Manifold.IO.GFZ.CourseCollision
         }
 
 
-        public void CreateSceneObjects(ColiSceneSobj scene, params string[] searchFolders)
+        public static void CreateSceneObjects(ColiScene scene, params string[] searchFolders)
         {
-
             // Get some metadata from the number of scene objects
-            var sceneObjects = scene.Value.dynamicSceneObjects;
+            var sceneObjects = scene.dynamicSceneObjects;
             // Create a string format from the highest index number used
             var digitsFormat = WidthFormat(sceneObjects);
             int count = 0;
@@ -907,7 +777,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 var displayName = $"[{count.ToString(digitsFormat)}] {objectName}";
 
                 // Progress bar update
-                var title = $"Generating Scene ({scene.name})";
+                var title = $"Generating Scene ({scene.FileName})";
                 var info = $"[{count.ToString(digitsFormat)}/{total}] {objectName}";
                 var progress = (float)count / total;
                 EditorUtility.DisplayProgressBar(title, info, progress);
@@ -932,10 +802,10 @@ namespace Manifold.IO.GFZ.CourseCollision
                 script.SetBaseValues(sceneObject);
             }
         }
-        public void CreateOriginObjects(ColiSceneSobj scene, params string[] searchFolders)
+        public static void CreateOriginObjects(ColiScene scene, params string[] searchFolders)
         {
             // Get some metadata from the number of scene objects
-            var originObjects = scene.Value.staticSceneObjects;
+            var originObjects = scene.staticSceneObjects;
 
             // Create a string format from the highest index number used
             var digitsFormat = WidthFormat(originObjects);
@@ -954,7 +824,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 var displayName = $"[{count.ToString(digitsFormat)}] {objectName}";
 
                 // Progress bar update
-                var title = $"Generating Scene ({scene.name})";
+                var title = $"Generating Scene ({scene.FileName})";
                 var info = $"[{count.ToString(digitsFormat)}/{total}] {objectName}";
                 var progress = (float)count / total;
                 EditorUtility.DisplayProgressBar(title, info, progress);
@@ -972,10 +842,8 @@ namespace Manifold.IO.GFZ.CourseCollision
             }
         }
 
-        public void CreateGlobalParams(ColiSceneSobj sceneSobj)
+        public static void CreateGlobalParams(ColiScene scene)
         {
-            var scene = sceneSobj.Value;
-
             var sceneParamsObj = new GameObject("Scene Parameters");
             var sceneParams = sceneParamsObj.AddComponent<GfzSceneParameters>();
             sceneParams.venue = CourseUtility.GetVenue(scene.ID);
@@ -996,22 +864,25 @@ namespace Manifold.IO.GFZ.CourseCollision
             sceneParams.color = new Color(color.x, color.y, color.z);
 
             // Convert from GFZ anim curves to Unity anim curves
-            sceneParams.fogCurveNear = scene.fogCurves.FogCurveNear.ToUnity();
-            sceneParams.fogCurveFar = scene.fogCurves.FogCurveFar.ToUnity();
-            sceneParams.fogCurveR = scene.fogCurves.FogCurveR.ToUnity();
-            sceneParams.fogCurveG = scene.fogCurves.FogCurveG.ToUnity();
-            sceneParams.fogCurveB = scene.fogCurves.FogCurveB.ToUnity();
+            if (scene.fogCurves != null)
+            {
+                sceneParams.fogCurveNear = scene.fogCurves.FogCurveNear.ToUnity();
+                sceneParams.fogCurveFar = scene.fogCurves.FogCurveFar.ToUnity();
+                sceneParams.fogCurveR = scene.fogCurves.FogCurveR.ToUnity();
+                sceneParams.fogCurveG = scene.fogCurves.FogCurveG.ToUnity();
+                sceneParams.fogCurveB = scene.fogCurves.FogCurveB.ToUnity();
+            }
         }
     }
 
-    public static class AnimationCurveExtensions
-    {
-        public static float EvaluateDefault(this UnityEngine.AnimationCurve curve, float time, float @default)
-        {
-            if (time == 0f)
-                return @default;
+    //public static class AnimationCurveExtensions
+    //{
+    //    public static float EvaluateDefault(this UnityEngine.AnimationCurve curve, float time, float @default)
+    //    {
+    //        if (time == 0f)
+    //            return @default;
 
-            return curve.Evaluate(time);
-        }
-    }
+    //        return curve.Evaluate(time);
+    //    }
+    //}
 }

@@ -45,15 +45,17 @@ namespace Manifold
         [SerializeField] string testGfzp01 = string.Empty;
         [SerializeField] string testGfzj8p = string.Empty;
         //
-        [SerializeField] string testOutput = string.Empty;
+        [SerializeField] string logOutput = string.Empty;
         [SerializeField] string analysisOutput = string.Empty;
         [SerializeField] string fileOutput = string.Empty;
+        [SerializeField] string unityImportDir = "GFZ/";
 
         public ColiScene.SerializeFormat SerializeFormat => serializeFormat;
         public string RootFolder => rootFolder;
-        public string TestOutput => testOutput;
+        public string LogOutput => logOutput;
         public string AnalysisOutput => analysisOutput;
         public string FileOutput => fileOutput;
+        public string UnityImportDir => unityImportDir;
 
         // Easy accessors for common places
         public string StageDir => $"{rootFolder}/stage/";
@@ -97,13 +99,16 @@ namespace Manifold
             testGfzj8p = GuiSimple.BrowseFolder(testGfzj8p, "Root Folder (gfzj8p)", "Open Root AX Folder", testGfzj8p, "");
             EditorGUILayout.Space();
             GuiSimple.Label("Output Logs Go Here", EditorStyles.boldLabel);
-            testOutput = GuiSimple.BrowseFolder(testOutput, "Log Output Directory", "Open Log Directory", testOutput, "");
+            logOutput = GuiSimple.BrowseFolder(logOutput, "Log Output Directory", "Open Log Directory", logOutput, "");
             EditorGUILayout.Space();
             GuiSimple.Label("Analysis", EditorStyles.boldLabel);
             analysisOutput = GuiSimple.BrowseFolder(analysisOutput, "Analysis Output Directory", "Open Analysis Directory", analysisOutput, "");
             EditorGUILayout.Space();
             GuiSimple.Label("File (Binaries)", EditorStyles.boldLabel);
             fileOutput = GuiSimple.BrowseFolder(fileOutput, "File/Binary Output Directory", "Open File Output Directory", fileOutput, "");
+            EditorGUILayout.Space();
+            GuiSimple.Label("GFZ->Unity Output", EditorStyles.boldLabel);
+            unityImportDir = GuiSimple.String("Unity Import Dest", unityImportDir);
         }
 
 
@@ -222,6 +227,12 @@ namespace Manifold
 
     public static class GuiSimple
     {
+        public static string Labelize(string name)
+        {
+            return ObjectNames.NicifyVariableName(name);
+        }
+
+
         public static void Label(string label, params GUILayoutOption[] options)
         {
             EditorGUILayout.LabelField(Labelize(label), options);
@@ -244,16 +255,18 @@ namespace Manifold
             return EditorGUILayout.FloatField(label, value);
         }
 
+        public static string String(string label, string value)
+        {
+            return EditorGUILayout.TextField(Labelize(label), value);
+        }
+
+
         public static TEnum EnumPopup<TEnum>(string name, TEnum @enum) where TEnum : Enum
         {
             var label = ObjectNames.NicifyVariableName(name);
             return (TEnum)EditorGUILayout.EnumPopup(label, @enum);
         }
 
-        public static string Labelize(string name)
-        {
-            return ObjectNames.NicifyVariableName(name);
-        }
 
         public static string BrowseFile(string value, string label, string title, string directory, string extensions)
         {

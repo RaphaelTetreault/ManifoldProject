@@ -1047,8 +1047,8 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol(nameof(ColiScene.unk_sceneObjectCount2));
                 writer.WriteNextCol(nameof(ColiScene.dynamicSceneObjectsPtr));
                 writer.WriteNextCol(nameof(ColiScene.unkBool32_0x58));
-                writer.WriteNextCol(nameof(ColiScene.unknownSolsTriggersPtr));
-                writer.WriteNextCol(nameof(ColiScene.unknownSolsTriggersPtr));
+                writer.WriteNextCol(nameof(ColiScene.unknownCollidersPtr));
+                writer.WriteNextCol(nameof(ColiScene.unknownCollidersPtr));
                 writer.WriteNextCol(nameof(ColiScene.templateSceneObjectsPtr));
                 writer.WriteNextCol(nameof(ColiScene.templateSceneObjectsPtr));
                 writer.WriteNextCol(nameof(ColiScene.staticSceneObjectsPtr));
@@ -1116,8 +1116,8 @@ namespace Manifold.IO.GFZ.CourseCollision
                     writer.WriteNextCol(scene.unk_sceneObjectCount2);
                     writer.WriteNextCol(scene.dynamicSceneObjectsPtr.HexAddress);
                     writer.WriteNextCol(scene.unkBool32_0x58);
-                    writer.WriteNextCol(scene.unknownSolsTriggersPtr.Length);
-                    writer.WriteNextCol(scene.unknownSolsTriggersPtr.HexAddress);
+                    writer.WriteNextCol(scene.unknownCollidersPtr.Length);
+                    writer.WriteNextCol(scene.unknownCollidersPtr.HexAddress);
                     writer.WriteNextCol(scene.templateSceneObjectsPtr.Length);
                     writer.WriteNextCol(scene.templateSceneObjectsPtr.HexAddress);
                     writer.WriteNextCol(scene.staticSceneObjectsPtr.Length);
@@ -1735,7 +1735,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 foreach (var file in sceneSobjs)
                 {
                     var scene = file.Value;
-                    var table = scene.colliderMap;
+                    var table = scene.staticColliderMap;
 
                     writer.WriteNextCol(file.name);
                     writer.WriteNextCol(index++);
