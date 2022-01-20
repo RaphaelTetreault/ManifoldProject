@@ -15,7 +15,8 @@ namespace GameCube.GFZ.CourseCollision
     [Serializable]
     public class AnimationClip :
         IBinaryAddressable,
-        IBinarySerializable
+        IBinarySerializable,
+        ISerializedBinaryAddressableReferer
     {
         // CONSTANTS
         /// <summary>
@@ -66,11 +67,11 @@ namespace GameCube.GFZ.CourseCollision
                 foreach (var zero in zeroes_0x08)
                     Assert.IsTrue(zero == 0);
 
-                foreach (var curve in curves)
-                {
-                    Assert.IsTrue(curve != null);
-                    Assert.ReferencePointer(curve.animationCurve, curve.animationCurvePtrs);
-                }
+                //foreach (var curve in curves)
+                //{
+                //    Assert.IsTrue(curve != null);
+                //    Assert.ReferencePointer(curve.animationCurve, curve.animationCurvePtrs);
+                //}
             }
             // No jumping required
         }
@@ -92,6 +93,19 @@ namespace GameCube.GFZ.CourseCollision
             this.RecordEndAddress(writer);
         }
 
+        public void ValidateReferences()
+        {
+            // TRICKY! The inlined classes make it look not like a referer
+            foreach (var zero in zeroes_0x08)
+                Assert.IsTrue(zero == 0);
+
+            foreach (var curve in curves)
+            {
+                Assert.IsTrue(curve != null);
+                Assert.ReferencePointer(curve.animationCurve, curve.animationCurvePtrs);
+            }
+        }
+
         public override string ToString()
         {
             return
@@ -101,5 +115,7 @@ namespace GameCube.GFZ.CourseCollision
                 $"{nameof(unk_layer_0x18)}: {unk_layer_0x18}" +
                 $")";
         }
+
+
     }
 }

@@ -907,6 +907,7 @@ namespace GameCube.GFZ.CourseCollision
                 referers.AddRange(dynamicSceneObjects);
                 referers.AddRange(textureMetadatas);
                 referers.AddRange(skeletalAnimators);
+                referers.AddRange(animationClips);
                 referers.AddRange(animationClipCurves);
 
                 // FOG

@@ -9,9 +9,11 @@ namespace Manifold.IO
     public class TextLogger
     {
         private StreamWriter streamWriter;
+        public string Path { get; private set; }
 
         public TextLogger(string path)
         {
+            Path = path;
             var file = File.Create(path);
             streamWriter = new StreamWriter(file);
 

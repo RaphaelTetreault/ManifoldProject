@@ -284,6 +284,12 @@ namespace Manifold.IO.GFZ
                     writer.WriteX(sceneWrite);
                     writer.Flush();
                     //
+                    var fsw = File.Create(logWrite.Path + ".bin");
+                    fsw.Write(buffer.ToArray(), 0, (int)buffer.Length);
+                    fsw.Flush();
+                    fsw.Close();
+                    buffer.Seek(0, SeekOrigin.Begin);
+                    //
                     LogSceneData(logWrite, sceneWrite);
                     logWrite.Close();
                     // Reset buffer address
@@ -295,6 +301,13 @@ namespace Manifold.IO.GFZ
                     // Read buffer, think of it like File.Open
                     var reader = new BinaryReader(buffer);
                     reader.ReadX(ref sceneRead, false);
+                    buffer.Seek(0, SeekOrigin.Begin);
+                    //
+                    var fsr = File.Create(logRead.Path + ".bin");
+                    fsr.Write(buffer.ToArray(), 0, (int)buffer.Length);
+                    fsr.Flush();
+                    fsr.Close();
+                    buffer.Seek(0, SeekOrigin.Begin);
                     //
                     LogSceneData(logRead, sceneRead);
                     logRead.Close();
