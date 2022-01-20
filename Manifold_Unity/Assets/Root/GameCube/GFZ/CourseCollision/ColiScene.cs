@@ -440,13 +440,13 @@ namespace GameCube.GFZ.CourseCollision
             BinaryIoUtility.PopEndianess();
         }
 
-        public List<AnimationClip> animationClips = new List<AnimationClip>();
+        //public List<AnimationClip> animationClips = new List<AnimationClip>();
         //List<AnimationClipCurve> animationClipCurves = new List<AnimationClipCurve>();
-        public List<TextureMetadata> textureMetadatas = new List<TextureMetadata>();
+        //public List<TextureMetadata> textureMetadatas = new List<TextureMetadata>();
         //List<TextureMetadataField> textureMetadataFields = new List<TextureMetadataField>();
-        public List<SkeletalAnimator> skeletalAnimators = new List<SkeletalAnimator>();
+        //public List<SkeletalAnimator> skeletalAnimators = new List<SkeletalAnimator>();
         //List<SkeletalProperties> skeletalProperties = new List<SkeletalProperties>();
-        public List<TransformMatrix3x4> transformMatrices = new List<TransformMatrix3x4>();
+        //public List<TransformMatrix3x4> transformMatrices = new List<TransformMatrix3x4>();
 
         public void Serialize(BinaryWriter writer)
         {
@@ -731,13 +731,13 @@ namespace GameCube.GFZ.CourseCollision
             // create linear blocks of data for each type. It simplifies the
             // process since we can check for nulls in one loop, and serialize
             // all the values in their own mini loops.
-            //var animationClips = new List<AnimationClip>();
+            var animationClips = new List<AnimationClip>();
             var animationClipCurves = new List<AnimationClipCurve>();
-            //var textureMetadatas = new List<TextureMetadata>();
+            var textureMetadatas = new List<TextureMetadata>();
             var textureMetadataFields = new List<TextureMetadataField>();
-            //var skeletalAnimators = new List<SkeletalAnimator>();
+            var skeletalAnimators = new List<SkeletalAnimator>();
             var skeletalProperties = new List<SkeletalProperties>();
-            //var transformMatrices = new List<TransformMatrix3x4>();
+            var transformMatrices = new List<TransformMatrix3x4>();
 
             // Collect data from SceneObjectDynamics
             foreach (var dynamicSceneObject in dynamicSceneObjects)
@@ -779,13 +779,15 @@ namespace GameCube.GFZ.CourseCollision
             }
 
             // Animation clips
-            writer.InlineDesc(serializeVerbose, animationClips.ToArray());
+            //writer.InlineDesc(serializeVerbose, animationClips.ToArray());
+            writer.InlineComment(serializeVerbose, nameof(AnimationClip) + "[]");
             foreach (var animationClip in animationClips)
                 writer.WriteX(animationClip);
             // Animation Clip Curves
-            writer.InlineDesc(serializeVerbose, animationClipCurves.ToArray());
-            foreach (var animationClipCurve in animationClipCurves)
-                writer.WriteX(animationClipCurve);
+            //writer.InlineDesc(serializeVerbose, animationClipCurves.ToArray());
+            //foreach (var animationClipCurve in animationClipCurves)
+            //    writer.WriteX(animationClipCurve);
+
             // 2022-01-18: add serilization for animation data!
             writer.InlineComment(serializeVerbose, nameof(AnimationClip), "AnimClipCurve", $"{nameof(AnimationCurve)}[]");
             foreach (var animationClipCurve in animationClipCurves)
