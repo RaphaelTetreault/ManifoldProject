@@ -239,6 +239,10 @@ namespace GameCube.GFZ.CourseCollision
         }
 
 
+        public SceneObjectTemplate[] tempSot;
+        public SceneObject[] tempSo;
+        public CString[] tempSoNames;
+
         public void Deserialize(BinaryReader reader)
         {
             BinaryIoUtility.PushEndianess(false);
@@ -364,6 +368,15 @@ namespace GameCube.GFZ.CourseCollision
                     types in memory.
                 /*/
 
+                tempSot = templateSceneObjects;
+                tempSo = new SceneObject[tempSot.Length];
+                tempSoNames = new CString[tempSot.Length];
+                for (int i = 0; i < tempSo.Length; i++)
+                {
+                    tempSo[i] = tempSot[i].sceneObject;
+                    tempSoNames[i] = tempSot[i].sceneObject.name;
+                }
+
                 // Keep a dictionary of each shared reference type
                 var templateSceneObjectsDict = new Dictionary<Pointer, SceneObjectTemplate>();
                 var sceneObjectNamesDict = new Dictionary<Pointer, CString>();
@@ -378,7 +391,9 @@ namespace GameCube.GFZ.CourseCollision
                 {
                     GetSerializable(reader, dynamicSceneObject.templateSceneObjectPtr, ref dynamicSceneObject.templateSceneObject, templateSceneObjectsDict);
                 }
+                // Save, order by address
                 templateSceneObjects = templateSceneObjectsDict.Values.ToArray();
+                templateSceneObjects = templateSceneObjects.OrderBy(x => x.AddressRange.startAddress).ToArray();
 
                 // Copy over the instances into it's own array
                 sceneObjects = new SceneObject[templateSceneObjects.Length];
@@ -386,6 +401,7 @@ namespace GameCube.GFZ.CourseCollision
                 {
                     sceneObjects[i] = templateSceneObjects[i].sceneObject;
                 }
+                sceneObjects = sceneObjects.OrderBy(x => x.AddressRange.startAddress).ToArray();
 
                 // Get all unique instances of SceneObjectTemplates' names
                 // NOTE: since SceneObjectTemplates instances can use the same name/model, there is occasionally a few duplicate names.
@@ -393,7 +409,9 @@ namespace GameCube.GFZ.CourseCollision
                 {
                     GetSerializable(reader, templateSceneObject.sceneObject.namePtr, ref templateSceneObject.sceneObject.name, sceneObjectNamesDict);
                 }
+                // Save, order by name (alphabetical)
                 sceneObjectNames = sceneObjectNamesDict.Values.ToArray();
+                sceneObjectNames = sceneObjectNames.OrderBy(x => x.AddressRange.startAddress).ToArray();
             }
 
             // DESERIALIZE TRACK SEGMENTS
@@ -450,21 +468,6 @@ namespace GameCube.GFZ.CourseCollision
 
         public void Serialize(BinaryWriter writer)
         {
-            //// DEBUG
-            //var addressables = GetAllAddressables();
-            //foreach (var addressable in addressables)
-            //{
-            //    if (addressable == null)
-            //        continue;
-
-            //    addressable.AddressRange = new AddressRange()
-            //    {
-            //        startAddress = int.MaxValue,
-            //        endAddress = int.MaxValue,
-            //    };
-            //}
-
-
             BinaryIoUtility.PushEndianess(false);
 
             // Write header. At first, pointers will be null or broken.
@@ -698,9 +701,30 @@ namespace GameCube.GFZ.CourseCollision
 
             // SCENE OBJECTS
             writer.InlineDesc(serializeVerbose, sceneObjects);
+            writer.InlineComment(serializeVerbose,
+                nameof(SceneObject),
+                nameof(SceneObjectTemplate),
+                nameof(SceneObjectStatic),
+                nameof(SceneObjectDynamic));
             writer.WriteX(sceneObjects, false);
 
             // SCENE OBJECT TEMPLATES
+            writer.InlineDesc(serializeVerbose, 0x68 + offset, templateSceneObjects);
+            writer.WriteX(templateSceneObjects, false);
+
+            // STATIC SCENE OBJECTS
+            //if (!staticSceneObjects.IsNullOrEmpty())
+            writer.InlineDesc(serializeVerbose, 0x70 + offset, staticSceneObjects);
+            writer.WriteX(staticSceneObjects, false);
+
+            // DYNAMIC SCENE OBJECTS
+            writer.InlineDesc(serializeVerbose, 0x54 + offset, dynamicSceneObjects);
+            writer.WriteX(dynamicSceneObjects, false);
+
+            //writer.WriteX(staticColliderMap.unkData);
+
+            // Scene Object Collider Geo
+            //{
             // Grab sub-structures of SceneObjectTemplate
             var colliderGeometries = new List<ColliderGeometry>();
             var colliderGeoTris = new List<ColliderTriangle>();
@@ -719,9 +743,6 @@ namespace GameCube.GFZ.CourseCollision
                         colliderGeoQuads.AddRange(colliderGeo.quads);
                 }
             }
-            // Scene Object Template
-            writer.InlineDesc(serializeVerbose, 0x68 + offset, templateSceneObjects);
-            writer.WriteX(templateSceneObjects, false);
             // Collider Geometry
             writer.InlineComment(serializeVerbose, nameof(ColliderGeometry));
             foreach (var colliderGeometry in colliderGeometries)
@@ -733,16 +754,7 @@ namespace GameCube.GFZ.CourseCollision
             writer.InlineComment(serializeVerbose, nameof(ColliderGeometry), nameof(ColliderQuad));
             foreach (var quad in colliderGeoQuads)
                 writer.WriteX(quad);
-
-
-            // STATIC SCENE OBJECTS
-            if (!staticSceneObjects.IsNullOrEmpty())
-                writer.InlineDesc(serializeVerbose, 0x70 + offset, staticSceneObjects);
-            writer.WriteX(staticSceneObjects, false);
-
-            // DYNAMIC SCENE OBJECTS
-            writer.InlineDesc(serializeVerbose, 0x54 + offset, dynamicSceneObjects);
-            writer.WriteX(dynamicSceneObjects, false);
+            //}
 
             // Grab all of the data needed to serialize. By doing this, we can
             // create linear blocks of data for each type. It simplifies the
@@ -800,11 +812,7 @@ namespace GameCube.GFZ.CourseCollision
             writer.InlineComment(serializeVerbose, nameof(AnimationClip) + "[]");
             foreach (var animationClip in animationClips)
                 writer.WriteX(animationClip);
-            // Animation Clip Curves
-            //writer.InlineDesc(serializeVerbose, animationClipCurves.ToArray());
-            //foreach (var animationClipCurve in animationClipCurves)
-            //    writer.WriteX(animationClipCurve);
-
+            // Animation clips' animation curves
             // 2022-01-18: add serilization for animation data!
             writer.InlineComment(serializeVerbose, nameof(AnimationClip), "AnimClipCurve", $"{nameof(AnimationCurve)}[]");
             foreach (var animationClipCurve in animationClipCurves)
