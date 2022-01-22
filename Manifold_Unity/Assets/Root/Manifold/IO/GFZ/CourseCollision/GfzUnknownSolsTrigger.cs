@@ -33,9 +33,10 @@ namespace Manifold.IO.GFZ.CourseCollision
             // Convert unity transform to gfz transform
             var transform = TransformConverter.ToGfzTransform(this.transform);
 
+            throw new System.NotImplementedException();
             var value = new UnknownCollider
             {
-                unk_0x00 = unk_0x00,
+                //unk_0x00 = unk_0x00,
                 transform = transform
             };
 
@@ -44,9 +45,10 @@ namespace Manifold.IO.GFZ.CourseCollision
 
         public void ImportGfz(UnknownCollider value)
         {
+            throw new System.NotImplementedException();
             transform.CopyGfzTransform(value.transform);
             transform.localScale *= scale;
-            unk_0x00 = value.unk_0x00;
+            //unk_0x00 = value.unk_0x00;
         }
     }
 }

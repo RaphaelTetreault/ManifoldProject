@@ -378,6 +378,10 @@ namespace GameCube.GFZ.CourseCollision
                 {
                     GetSerializable(reader, dynamicSceneObject.templateSceneObjectPtr, ref dynamicSceneObject.templateSceneObject, templateSceneObjectsDict);
                 }
+                foreach (var unknownCollider in unknownColliders)
+                {
+                    GetSerializable(reader, unknownCollider.templateSceneObjectPtr, ref unknownCollider.templateSceneObject, templateSceneObjectsDict);
+                }
                 // Save, order by address
                 templateSceneObjects = templateSceneObjectsDict.Values.ToArray();
                 templateSceneObjects = templateSceneObjects.OrderBy(x => x.AddressRange.startAddress).ToArray();
@@ -697,19 +701,17 @@ namespace GameCube.GFZ.CourseCollision
             writer.WriteX(sceneObjects, false);
 
             // SCENE OBJECT TEMPLATES
-            //writer.InlineDesc(serializeVerbose, 0x68 + offset, templateSceneObjects); // <<<<
+            writer.InlineDesc(serializeVerbose, 0x68 + offset, templateSceneObjects); // <<<<
             writer.WriteX(templateSceneObjects, false);
 
             // STATIC SCENE OBJECTS
-            //if (!staticSceneObjects.IsNullOrEmpty())
-            //writer.InlineDesc(serializeVerbose, 0x70 + offset, staticSceneObjects); // <<<<
+            if (!staticSceneObjects.IsNullOrEmpty())
+                writer.InlineDesc(serializeVerbose, 0x70 + offset, staticSceneObjects); // <<<<
             writer.WriteX(staticSceneObjects, false);
 
             // DYNAMIC SCENE OBJECTS
             writer.InlineDesc(serializeVerbose, 0x54 + offset, dynamicSceneObjects);
             writer.WriteX(dynamicSceneObjects, false);
-
-            //writer.WriteX(staticColliderMap.unkData);
 
             // Scene Object Collider Geo
             //{
@@ -870,11 +872,6 @@ namespace GameCube.GFZ.CourseCollision
                     }
                 }
 
-                // UNKNOWN SOLS TRIGGERS
-                if (!unknownColliders.IsNullOrEmpty())
-                    writer.InlineDesc(serializeVerbose, 0x60 + offset, unknownColliders);
-                writer.WriteX(unknownColliders, false);
-
                 // UNKNOWN TRIGGERS
                 if (!unknownTriggers.IsNullOrEmpty())
                     writer.InlineDesc(serializeVerbose, 0x94 + offset, unknownTriggers);
@@ -884,6 +881,12 @@ namespace GameCube.GFZ.CourseCollision
                 if (!visualEffectTriggers.IsNullOrEmpty())
                     writer.InlineDesc(serializeVerbose, 0x9C + offset, visualEffectTriggers);
                 writer.WriteX(visualEffectTriggers, false);
+
+
+                // UNKNOWN COLLIDERS (SOLS ONLY)
+                if (!unknownColliders.IsNullOrEmpty())
+                    writer.InlineDesc(serializeVerbose, 0x60 + offset, unknownColliders);
+                writer.WriteX(unknownColliders, false);
             }
 
             // DEBUG
@@ -912,6 +915,7 @@ namespace GameCube.GFZ.CourseCollision
                 referers.Add(staticColliderMap);
                 referers.AddRange(staticColliderMap.triMeshMatrices);
                 referers.AddRange(staticColliderMap.quadMeshMatrices);
+                referers.AddRange(unknownColliders);
 
                 // OBJECTS
                 // Scene Objects

@@ -2,8 +2,6 @@ using Manifold.IO;
 using System;
 using System.IO;
 
-// TODO: test by creating custom triggers, moving them onto the track.
-
 namespace GameCube.GFZ.CourseCollision
 {
     /// <summary>
@@ -14,15 +12,17 @@ namespace GameCube.GFZ.CourseCollision
     [Serializable]
     public class UnknownCollider :
         IBinaryAddressable,
-        IBinarySerializable
+        IBinarySerializable,
+        IHasReference
     {
         // METADATA
         [UnityEngine.SerializeField] private AddressRange addressRange;
 
         // FIELDS
-        public int unk_0x00;
+        public Pointer templateSceneObjectPtr;
         public Transform transform;
-
+        //
+        public SceneObjectTemplate templateSceneObject;
 
         // PROPERTIES
         public AddressRange AddressRange
@@ -37,17 +37,28 @@ namespace GameCube.GFZ.CourseCollision
         {
             this.RecordStartAddress(reader);
             {
-                reader.ReadX(ref unk_0x00);
+                reader.ReadX(ref templateSceneObjectPtr);
                 reader.ReadX(ref transform, true);
             }
             this.RecordEndAddress(reader);
+            {
+                if (templateSceneObjectPtr.IsNotNullPointer)
+                {
+                    reader.JumpToAddress(templateSceneObjectPtr);
+                    reader.ReadX(ref templateSceneObject, true);
+                }
+            }
+            this.SetReaderToEndAddress(reader);
         }
 
         public void Serialize(BinaryWriter writer)
         {
+            {
+                templateSceneObjectPtr = templateSceneObject.GetPointer();
+            }
             this.RecordStartAddress(writer);
             {
-                writer.WriteX(unk_0x00);
+                writer.WriteX(templateSceneObjectPtr);
                 writer.WriteX(transform);
             }
             this.RecordEndAddress(writer);
@@ -61,5 +72,9 @@ namespace GameCube.GFZ.CourseCollision
                 $")";
         }
 
+        public void ValidateReferences()
+        {
+            Assert.ReferencePointer(templateSceneObject, templateSceneObjectPtr);
+        }
     }
 }

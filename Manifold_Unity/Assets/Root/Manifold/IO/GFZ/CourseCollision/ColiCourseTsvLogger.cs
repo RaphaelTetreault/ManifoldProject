@@ -1360,7 +1360,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol("Course");
                 writer.WriteNextCol("AX/GX");
                 //
-                writer.WriteNextCol(nameof(UnknownCollider.unk_0x00));
+                writer.WriteNextCol(nameof(UnknownCollider.templateSceneObjectPtr));
                 writer.WriteNextCol(nameof(UnknownCollider.transform.Position));
                 writer.WriteNextCol(nameof(UnknownCollider.transform.RotationEuler));
                 writer.WriteNextCol(nameof(UnknownCollider.transform.Scale));
@@ -1382,7 +1382,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                         writer.WriteNextCol(courseID);
                         writer.WriteNextCol(isAxGx);
                         //
-                        writer.WriteNextCol(unkSols.unk_0x00);
+                        writer.WriteNextCol(unkSols.templateSceneObjectPtr);
                         writer.WriteNextCol(unkSols.transform.Position);
                         writer.WriteNextCol(unkSols.transform.RotationEuler);
                         writer.WriteNextCol(unkSols.transform.Scale);
