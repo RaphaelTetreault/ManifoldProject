@@ -99,7 +99,7 @@ namespace GameCube.GFZ.CourseCollision
         // REFERENCE FIELDS
         public TrackNode[] trackNodes;
         public SurfaceAttributeArea[] surfaceAttributeAreas;
-        public StaticColliderMap staticColliderMap;
+        public StaticColliderMeshes staticColliderMap;
         public byte[] zeroes0x20 = new byte[kSizeOfZeroes0x20];
         public TrackMinHeight trackMinHeight;
         public SceneObjectDynamic[] dynamicSceneObjects;
@@ -207,7 +207,7 @@ namespace GameCube.GFZ.CourseCollision
             // REFERENCE FIELDS
             trackNodes = new TrackNode[0];
             surfaceAttributeAreas = SurfaceAttributeArea.DefaultArray();
-            staticColliderMap = new StaticColliderMap();
+            staticColliderMap = new StaticColliderMeshes();
 
             trackMinHeight = new TrackMinHeight(); // has default constructor
             dynamicSceneObjects = new SceneObjectDynamic[0];
@@ -272,7 +272,7 @@ namespace GameCube.GFZ.CourseCollision
             // 0x1C 
             // Format is deserialized in DeserializeSelf(reader);
             // The structure's size differs between AX and GX. Format defines which it uses.
-            staticColliderMap = new StaticColliderMap(Format);
+            staticColliderMap = new StaticColliderMeshes(Format);
             reader.JumpToAddress(staticColliderMeshesPtr);
             reader.ReadX(ref staticColliderMap, false);
 

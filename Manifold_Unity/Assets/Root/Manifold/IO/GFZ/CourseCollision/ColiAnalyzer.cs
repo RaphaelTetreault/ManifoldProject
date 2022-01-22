@@ -279,7 +279,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             //
             if (staticCollider)
             {
-                var fileName = $"{time} COLI {nameof(StaticColliderMap)}.tsv";
+                var fileName = $"{time} COLI {nameof(StaticColliderMeshes)}.tsv";
                 var filePath = Path.Combine(outputPath, fileName);
                 EditorUtility.DisplayProgressBar(ExecuteText, filePath, RandomTime);
                 AnalyzeSceneStaticCollider(filePath);
@@ -1710,24 +1710,24 @@ namespace Manifold.IO.GFZ.CourseCollision
                 // Write header
                 writer.WriteNextCol("File");
                 writer.WriteNextCol("Index");
-                writer.WriteNextColNicify(nameof(StaticColliderMap.staticColliderTrisPtr));
-                writer.WriteNextColNicify(nameof(StaticColliderMap.triMeshMatrixPtrs));
+                writer.WriteNextColNicify(nameof(StaticColliderMeshes.staticColliderTrisPtr));
+                writer.WriteNextColNicify(nameof(StaticColliderMeshes.triMeshMatrixPtrs));
                 writer.WriteNextColNicify(nameof(GameCube.GFZ.CourseCollision.MatrixBoundsXZ.left));
                 writer.WriteNextColNicify(nameof(GameCube.GFZ.CourseCollision.MatrixBoundsXZ.top));
                 writer.WriteNextColNicify(nameof(GameCube.GFZ.CourseCollision.MatrixBoundsXZ.subdivionWidth));
                 writer.WriteNextColNicify(nameof(GameCube.GFZ.CourseCollision.MatrixBoundsXZ.subdivisionLength));
                 writer.WriteNextColNicify(nameof(GameCube.GFZ.CourseCollision.MatrixBoundsXZ.numSubdivisionsX));
                 writer.WriteNextColNicify(nameof(GameCube.GFZ.CourseCollision.MatrixBoundsXZ.numSubdivisionsZ));
-                writer.WriteNextColNicify(nameof(StaticColliderMap.staticColliderQuadsPtr));
-                writer.WriteNextColNicify(nameof(StaticColliderMap.quadMeshMatrixPtrs));
+                writer.WriteNextColNicify(nameof(StaticColliderMeshes.staticColliderQuadsPtr));
+                writer.WriteNextColNicify(nameof(StaticColliderMeshes.quadMeshMatrixPtrs));
                 writer.WriteNextColNicify(nameof(GameCube.GFZ.CourseCollision.MatrixBoundsXZ.left));
                 writer.WriteNextColNicify(nameof(GameCube.GFZ.CourseCollision.MatrixBoundsXZ.top));
                 writer.WriteNextColNicify(nameof(GameCube.GFZ.CourseCollision.MatrixBoundsXZ.subdivionWidth));
                 writer.WriteNextColNicify(nameof(GameCube.GFZ.CourseCollision.MatrixBoundsXZ.subdivisionLength));
                 writer.WriteNextColNicify(nameof(GameCube.GFZ.CourseCollision.MatrixBoundsXZ.numSubdivisionsX));
                 writer.WriteNextColNicify(nameof(GameCube.GFZ.CourseCollision.MatrixBoundsXZ.numSubdivisionsZ));
-                writer.WriteNextColNicify(nameof(StaticColliderMap.colliderTris));
-                writer.WriteNextColNicify(nameof(StaticColliderMap.colliderQuads));
+                writer.WriteNextColNicify(nameof(StaticColliderMeshes.colliderTris));
+                writer.WriteNextColNicify(nameof(StaticColliderMeshes.colliderQuads));
                 writer.WriteNextRow();
 
                 int index = 0;

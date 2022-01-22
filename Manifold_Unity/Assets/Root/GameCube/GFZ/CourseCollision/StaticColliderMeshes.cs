@@ -15,7 +15,7 @@ namespace GameCube.GFZ.CourseCollision
     /// It also points to some data which the ColiScene header points to. Notably, it points to 
     /// </summary>
     [Serializable]
-    public class StaticColliderMap :
+    public class StaticColliderMeshes :
         IBinaryAddressable,
         IBinarySerializable,
         ISerializedBinaryAddressableReferer
@@ -58,12 +58,12 @@ namespace GameCube.GFZ.CourseCollision
         public SceneObjectStatic[] staticSceneObjects; // Some of these used to be name-parsed colliders! (eg: *_CLASS2, etc)
 
 
-        public StaticColliderMap()
+        public StaticColliderMeshes()
         {
             serializeFormat = ColiScene.SerializeFormat.InvalidFormat;
         }
 
-        public StaticColliderMap(ColiScene.SerializeFormat serializeFormat)
+        public StaticColliderMeshes(ColiScene.SerializeFormat serializeFormat)
         {
             this.serializeFormat = serializeFormat;
             int count = SurfaceCount;
