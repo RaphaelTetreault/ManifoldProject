@@ -239,10 +239,6 @@ namespace GameCube.GFZ.CourseCollision
         }
 
 
-        public SceneObjectTemplate[] tempSot;
-        public SceneObject[] tempSo;
-        public CString[] tempSoNames;
-
         public void Deserialize(BinaryReader reader)
         {
             BinaryIoUtility.PushEndianess(false);
@@ -368,15 +364,6 @@ namespace GameCube.GFZ.CourseCollision
                     types in memory.
                 /*/
 
-                tempSot = templateSceneObjects;
-                tempSo = new SceneObject[tempSot.Length];
-                tempSoNames = new CString[tempSot.Length];
-                for (int i = 0; i < tempSo.Length; i++)
-                {
-                    tempSo[i] = tempSot[i].sceneObject;
-                    tempSoNames[i] = tempSot[i].sceneObject.name;
-                }
-
                 // Keep a dictionary of each shared reference type
                 var templateSceneObjectsDict = new Dictionary<Pointer, SceneObjectTemplate>();
                 var sceneObjectNamesDict = new Dictionary<Pointer, CString>();
@@ -412,17 +399,6 @@ namespace GameCube.GFZ.CourseCollision
                 // Save, order by name (alphabetical)
                 sceneObjectNames = sceneObjectNamesDict.Values.ToArray();
                 sceneObjectNames = sceneObjectNames.OrderBy(x => x.AddressRange.startAddress).ToArray();
-
-                //// temp
-                //sceneObjectNames = new CString[sceneObjects.Length];
-                //for (int i = 0; i < sceneObjectNames.Length; i++)
-                //{
-                //    sceneObjectNames[i] = string.Copy(sceneObjects[i].name);
-                //    // Copy string so each object has own unique name copy
-                //    sceneObjects[i].name = sceneObjectNames[i];
-                //}
-                //DebugConsole.Log($"[{id}] {sceneObjectNames.Length}");
-                
             }
 
             // DESERIALIZE TRACK SEGMENTS
@@ -469,13 +445,6 @@ namespace GameCube.GFZ.CourseCollision
             BinaryIoUtility.PopEndianess();
         }
 
-        //public List<AnimationClip> animationClips = new List<AnimationClip>();
-        //List<AnimationClipCurve> animationClipCurves = new List<AnimationClipCurve>();
-        //public List<TextureMetadata> textureMetadatas = new List<TextureMetadata>();
-        //List<TextureMetadataField> textureMetadataFields = new List<TextureMetadataField>();
-        //public List<SkeletalAnimator> skeletalAnimators = new List<SkeletalAnimator>();
-        //List<SkeletalProperties> skeletalProperties = new List<SkeletalProperties>();
-        //public List<TransformMatrix3x4> transformMatrices = new List<TransformMatrix3x4>();
 
         public void Serialize(BinaryWriter writer)
         {
@@ -987,18 +956,6 @@ namespace GameCube.GFZ.CourseCollision
             fileSize = (int)writer.BaseStream.Length;
 
             BinaryIoUtility.PopEndianess();
-
-            // DEBUG
-            //foreach (var addressable in addressables)
-            //{
-            //    if (addressable == null)
-            //        continue;
-            //    var range = addressable.AddressRange;
-            //    if (range.startAddress == int.MaxValue || range.endAddress == int.MaxValue)
-            //    {
-            //        DebugConsole.Log(addressable.GetType().FullName);
-            //    }
-            //}
         }
 
         /// <summary>
