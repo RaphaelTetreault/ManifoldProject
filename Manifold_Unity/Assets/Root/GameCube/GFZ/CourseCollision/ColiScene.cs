@@ -383,18 +383,27 @@ namespace GameCube.GFZ.CourseCollision
                 templateSceneObjects = templateSceneObjects.OrderBy(x => x.AddressRange.startAddress).ToArray();
 
                 // Copy over the instances into it's own array
-                sceneObjects = new SceneObject[templateSceneObjects.Length];
-                for (int i = 0; i < sceneObjects.Length; i++)
+                var sceneObjects = new List<SceneObject>();
+                for (int i = 0; i < templateSceneObjects.Length; i++)
                 {
-                    sceneObjects[i] = templateSceneObjects[i].sceneObject;
+                    var template = templateSceneObjects[i];
+                    for (int j = 0; j < template.sceneObjects.Length; j++)
+                    {
+                        sceneObjects.Add(template.sceneObjects[j]);
+                    }
                 }
-                sceneObjects = sceneObjects.OrderBy(x => x.AddressRange.startAddress).ToArray();
+                this.sceneObjects = sceneObjects.OrderBy(x => x.AddressRange.startAddress).ToArray();
 
                 // Get all unique instances of SceneObjectTemplates' names
                 // NOTE: since SceneObjectTemplates instances can use the same name/model, there is occasionally a few duplicate names.
                 foreach (var templateSceneObject in templateSceneObjects)
                 {
-                    GetSerializable(reader, templateSceneObject.sceneObject.namePtr, ref templateSceneObject.sceneObject.name, sceneObjectNamesDict);
+                    foreach (var so in templateSceneObject.sceneObjects)
+                    {
+                        GetSerializable(reader, so.namePtr, ref so.name, sceneObjectNamesDict);
+
+                    }
+                    //GetSerializable(reader, templateSceneObject.PrimarySceneObject.namePtr, ref templateSceneObject.PrimarySceneObject.name, sceneObjectNamesDict);
                 }
                 // Save, order by name (alphabetical)
                 sceneObjectNames = sceneObjectNamesDict.Values.ToArray();
@@ -1144,8 +1153,8 @@ namespace GameCube.GFZ.CourseCollision
             {
                 list.Add(template);
                 list.Add(template.colliderGeometry);
-                list.Add(template.sceneObject);
-                list.Add(template.sceneObject.name);
+                list.AddRange(template.sceneObjects);
+                list.Add(template.PrimarySceneObject.name);
             }
 
             list.Add(fog);

@@ -20,24 +20,25 @@ namespace Manifold.Conversion
 
         public override void Execute()
         {
-            var md5 = MD5.Create();
+            throw new System.Exception();
+            //var md5 = MD5.Create();
 
-            foreach (var gobj in scene.Value.dynamicSceneObjects)
-            {
-                if (gobj.animationClip.curves.Length == 0)
-                {
-                    continue;
-                }
+            //foreach (var gobj in scene.Value.dynamicSceneObjects)
+            //{
+            //    if (gobj.animationClip.curves.Length == 0)
+            //    {
+            //        continue;
+            //    }
 
-                var clip = AnimationConverter.GfzToUnity(gobj.animationClip);
-                var hash = HashUtility.HashBinary(md5, gobj.animationClip);
-                var name = $"anim_{gobj.nameCopy}_{hash}.anim";
-                var path = $"Assets/Untracked/Anim/{name}";
-                AssetDatabase.CreateAsset(clip, path);
-                Debug.Log(path);
+            //    var clip = AnimationConverter.GfzToUnity(gobj.animationClip);
+            //    var hash = HashUtility.HashBinary(md5, gobj.animationClip);
+            //    var name = $"anim_{gobj.nameCopy}_{hash}.anim";
+            //    var path = $"Assets/Untracked/Anim/{name}";
+            //    AssetDatabase.CreateAsset(clip, path);
+            //    Debug.Log(path);
 
-                //break;
-            }
+            //    //break;
+            //}
         }
     }
 }

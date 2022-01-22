@@ -214,16 +214,16 @@ namespace Manifold.IO.GFZ
                 //
                 log.WriteLine(coliScene.FileName);
                 log.WriteLine();
-                log.WriteLine("TEMPS");
+                //log.WriteLine("TEMPS");
                 //log.WriteLine("Object Names");
                 //log.WriteAddress(coliScene.tempSoNames);
                 //log.WriteLine();
-                log.WriteLine(nameof(SceneObject));
-                log.WriteAddress(coliScene.tempSo);
-                log.WriteLine();
-                log.WriteLine(nameof(SceneObjectTemplate));
-                log.WriteAddress(coliScene.tempSot);
-                log.WriteLine("[END TEMPS]");
+                //log.WriteLine(nameof(SceneObject));
+                //log.WriteAddress(coliScene.tempSo);
+                //log.WriteLine();
+                //log.WriteLine(nameof(SceneObjectTemplate));
+                //log.WriteAddress(coliScene.tempSot);
+                //log.WriteLine("[END TEMPS]");
                 log.WriteLine();
                 log.WriteLine("Object Names");
                 log.WriteAddress(coliScene.sceneObjectNames);
@@ -961,11 +961,11 @@ namespace Manifold.IO.GFZ
                 {
                     var sceneObject = coliScene.dynamicSceneObjects[i];
 
-                    log.WriteLine($"[{i}/{total}] {sceneObject.nameCopy}");
+                    log.WriteLine($"[{i}/{total}] {sceneObject.Name}");
                     log.WriteAddress(sceneObject);
                     log.WriteAddress(sceneObject.templateSceneObject);
-                    log.WriteAddress(sceneObject.templateSceneObject.sceneObject);
-                    log.WriteAddress(sceneObject.templateSceneObject.sceneObject.name);
+                    log.WriteAddress(sceneObject.templateSceneObject.sceneObjects);
+                    log.WriteAddress(sceneObject.templateSceneObject.PrimarySceneObject.name);
                     log.WriteAddress(sceneObject.transformMatrix3x4);
 
                     log.WriteAddress(sceneObject.skeletalAnimator);

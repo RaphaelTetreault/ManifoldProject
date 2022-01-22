@@ -15,10 +15,6 @@ namespace GameCube.GFZ.CourseCollision
     {
         // METADATA
         [UnityEngine.SerializeField] private AddressRange addressRange;
-        /// <summary>
-        /// Object's name from table sub-structure
-        /// </summary>
-        public string nameCopy;
 
         // FIELDS
         /// <summary>
@@ -51,6 +47,7 @@ namespace GameCube.GFZ.CourseCollision
             set => addressRange = value;
         }
 
+        public string Name => templateSceneObject.Name;
 
         // METHODS
         public void Deserialize(BinaryReader reader)
@@ -72,7 +69,6 @@ namespace GameCube.GFZ.CourseCollision
                 //
                 reader.JumpToAddress(templateSceneObjectPtr);
                 reader.ReadX(ref templateSceneObject, true);
-                nameCopy = templateSceneObject.sceneObject.name;
 
                 if (animationClipPtr.IsNotNullPointer)
                 {
@@ -159,7 +155,7 @@ namespace GameCube.GFZ.CourseCollision
                 $"{nameof(unk0x04)}: {unk0x04:x8}, " +
                 $"{nameof(unk0x00)}: {unk0x00:x8}, " +
                 $"{transform} " +
-                $"Name: {nameCopy}" +
+                $"Name: {Name}" +
                 $")";
         }
 

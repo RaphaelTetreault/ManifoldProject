@@ -84,12 +84,15 @@ namespace Manifold.IO.GFZ.CourseCollision
                 }
             }
 
+            // fix from edits
+            throw new System.Exception();
+
             // Instance data
-            unk_flag = value.templateSceneObject.unk_0x00;
-            unk_option = value.templateSceneObject.unk_0x04;
+            //unk_flag = value.templateSceneObject.unk_0x00;
+            //unk_option = value.templateSceneObject.unk_0x04;
 
             // Reference data
-            unkLod = value.templateSceneObject.sceneObject.unk_0x0C;
+            //unkLod = value.templateSceneObject.sceneObjects.unk_0x0C;
         }
 
         private void OnDrawGizmosSelected()

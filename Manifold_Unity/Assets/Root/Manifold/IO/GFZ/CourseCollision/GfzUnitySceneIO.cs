@@ -772,7 +772,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             foreach (var sceneObject in sceneObjects)
             {
                 // Generate the names of the objects we want
-                var objectName = sceneObject.nameCopy;
+                var objectName = sceneObject.Name;
                 var prefabName = $"pf_{objectName}";
                 var displayName = $"[{count.ToString(digitsFormat)}] {objectName}";
 
@@ -819,7 +819,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             foreach (var originObject in originObjects)
             {
                 // Generate the names of the objects we want
-                var objectName = originObject.NameCopy;
+                var objectName = originObject.Name;
                 var prefabName = $"pf_{objectName}";
                 var displayName = $"[{count.ToString(digitsFormat)}] {objectName}";
 

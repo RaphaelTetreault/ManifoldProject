@@ -74,7 +74,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
                         if (sceneObject.templateSceneObject.colliderGeometryPtr.IsNotNullPointer)
                         {
-                            var meshName = sceneObject.nameCopy;
+                            var meshName = sceneObject.Name;
                             ImportUtility.ProgressBar<SceneObjectTemplate>(count, total, $"st{sceneSobj.Value.ID:00} {meshName}");
 
                             // Create mesh
@@ -463,7 +463,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
             // Create base data for mesh
             var mesh = new Mesh();
-            mesh.name = sceneObject.nameCopy;
+            mesh.name = sceneObject.Name;
 
             var trisSubmesh = CreateTriSubmeshForMesh(mesh, colliderGeo.tris, createBackfaces, usePrecomputes);
             var quadsSubmesh = CreateQuadSubmeshForMesh(mesh, colliderGeo.quads, createBackfaces, usePrecomputes);

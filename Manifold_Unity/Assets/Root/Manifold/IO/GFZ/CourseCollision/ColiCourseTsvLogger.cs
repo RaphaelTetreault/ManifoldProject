@@ -561,7 +561,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                             {
                                 writer.WriteNextCol(scene.FileName);
                                 writer.WriteNextCol(gameObjectIndex);
-                                writer.WriteNextCol(gameObject.nameCopy);
+                                writer.WriteNextCol(gameObject.Name);
                                 writer.WriteNextCol(animationClipCurve.StartAddressHex());
                                 writer.WriteNextCol(keyable.StartAddressHex());
                                 writer.WriteNextCol(animIndex);
@@ -631,7 +631,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
                                 writer.WriteNextCol(scene.FileName);
                                 writer.WriteNextCol(objIndex);
-                                writer.WriteNextCol(dynamicSceneObject.nameCopy);
+                                writer.WriteNextCol(dynamicSceneObject.Name);
                                 writer.WriteNextCol(animationClipCurve.StartAddressHex());
                                 writer.WriteNextCol(keyable.StartAddressHex());
                                 writer.WriteNextCol(animationClipCurve.unk_0x00);
@@ -689,7 +689,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                     {
                         writer.WriteNextCol(scene.FileName);
                         writer.WriteNextCol(sceneObjectIndex);
-                        writer.WriteNextCol(sceneObject.nameCopy);
+                        writer.WriteNextCol(sceneObject.Name);
                         writer.WriteNextCol(sceneObject.unk0x00);
                         writer.WriteNextCol($"0x{sceneObject.unk0x00:x8}");
                         writer.WriteNextCol(sceneObject.unk0x04);
@@ -741,7 +741,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
                             writer.WriteNextCol(scene.FileName);
                             writer.WriteNextCol(gameObjectIndex);
-                            writer.WriteNextCol(sceneObject.nameCopy);
+                            writer.WriteNextCol(sceneObject.Name);
                             writer.WriteNextCol(fieldArrayIndex);
                             writer.WriteNextCol(field.x);
                             writer.WriteNextCol(field.y);
@@ -792,7 +792,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
                         writer.WriteNextCol(scene.FileName);
                         writer.WriteNextCol(gameObjectIndex);
-                        writer.WriteNextCol(dynamicSceneObject.nameCopy);
+                        writer.WriteNextCol(dynamicSceneObject.Name);
 
                         writer.WriteNextCol(dynamicSceneObject.skeletalAnimator.zero_0x00);
                         writer.WriteNextCol(dynamicSceneObject.skeletalAnimator.zero_0x04);
@@ -869,7 +869,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                         {
                             writer.WriteNextCol(scene.FileName);
                             writer.WriteNextCol(gameObjectIndex);
-                            writer.WriteNextCol(dynamicSceneObject.nameCopy);
+                            writer.WriteNextCol(dynamicSceneObject.Name);
 
                             writer.WriteNextCol(triIndex++);
                             writer.WriteStartAddress(tri);
@@ -964,7 +964,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                         {
                             writer.WriteNextCol(scene.FileName);
                             writer.WriteNextCol(gameObjectIndex);
-                            writer.WriteNextCol(dynamicSceneObject.nameCopy);
+                            writer.WriteNextCol(dynamicSceneObject.Name);
 
                             writer.WriteNextCol(quadIndex++);
                             writer.WriteStartAddress(quad);
@@ -1592,7 +1592,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
                         writer.WriteNextCol(scene.FileName);
                         writer.WriteNextCol(sceneObjectIndex);
-                        writer.WriteNextCol(sceneObject.nameCopy);
+                        writer.WriteNextCol(sceneObject.Name);
 
                         // Rotation values from clean, uncompressed matrix
                         var matrix = sceneObject.transformMatrix3x4.rotationEuler;
@@ -1778,13 +1778,15 @@ namespace Manifold.IO.GFZ.CourseCollision
                     var objectsList = new List<(SceneObject sor, string category)>();
                     foreach (var sceneObject in scene.templateSceneObjects)
                     {
-                        var sceneObjectReference = sceneObject.sceneObject;
-                        objectsList.Add((sceneObject.sceneObject, "Instance"));
+                        throw new System.NotImplementedException();
+                        var sceneObjectReference = sceneObject.sceneObjects;
+                        //objectsList.Add((sceneObject.sceneObjects, "Instance"));
                     }
                     foreach (var sceneOriginObject in scene.staticSceneObjects)
                     {
-                        var sceneObjectReference = sceneOriginObject.templateSceneObject.sceneObject;
-                        objectsList.Add((sceneObjectReference, "Origin"));
+                        throw new System.NotImplementedException();
+                        var sceneObjectReference = sceneOriginObject.templateSceneObject.sceneObjects;
+                        //objectsList.Add((sceneObjectReference, "Origin"));
                     }
 
                     // iterate
@@ -1824,8 +1826,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol("name");
                 writer.WriteNextCol("Object Type");
                 writer.WriteNextCol(nameof(SceneObjectTemplate.unk_0x00));
-                writer.WriteNextCol(nameof(SceneObjectTemplate.unk_0x04));
-                writer.WriteNextCol(nameof(SceneObjectTemplate.sceneObjectPtr));
+                writer.WriteNextCol(nameof(SceneObjectTemplate.sceneObjectsPtr));
                 writer.WriteNextCol(nameof(SceneObjectTemplate.colliderGeometryPtr));
                 //
                 writer.WriteNextRow();
@@ -1857,11 +1858,10 @@ namespace Manifold.IO.GFZ.CourseCollision
                         writer.WriteNextCol(courseID);
                         writer.WriteNextCol(isAxGx);
                         //
-                        writer.WriteNextCol(sceneObjectReference.sir.sceneObject.name);
+                        writer.WriteNextCol(sceneObjectReference.sir.PrimarySceneObject.name);
                         writer.WriteNextCol(sceneObjectReference.category);
                         writer.WriteNextCol(sceneObjectReference.sir.unk_0x00);
-                        writer.WriteNextCol(sceneObjectReference.sir.unk_0x04);
-                        writer.WriteNextCol(sceneObjectReference.sir.sceneObjectPtr);
+                        writer.WriteNextCol(sceneObjectReference.sir.sceneObjectsPtr);
                         writer.WriteNextCol(sceneObjectReference.sir.colliderGeometryPtr);
                         //
                         writer.WriteNextRow();
@@ -1884,8 +1884,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 //
                 writer.WriteNextCol("name");
                 writer.WriteNextCol(nameof(SceneObjectTemplate.unk_0x00));
-                writer.WriteNextCol(nameof(SceneObjectTemplate.unk_0x04));
-                writer.WriteNextCol(nameof(SceneObjectTemplate.sceneObjectPtr));
+                writer.WriteNextCol(nameof(SceneObjectTemplate.sceneObjectsPtr));
                 writer.WriteNextCol(nameof(SceneObjectTemplate.colliderGeometryPtr));
                 writer.WriteNextCol(nameof(SceneObject.zero_0x00));
                 writer.WriteNextCol(nameof(SceneObject.namePtr));
@@ -1908,16 +1907,17 @@ namespace Manifold.IO.GFZ.CourseCollision
                         writer.WriteNextCol(courseID);
                         writer.WriteNextCol(isAxGx);
                         //
-                        var objectReference = sceneInstance.sceneObject;
-                        writer.WriteNextCol(objectReference.name);
-                        writer.WriteNextCol(sceneInstance.unk_0x00);
-                        writer.WriteNextCol(sceneInstance.unk_0x04);
-                        writer.WriteNextCol(sceneInstance.sceneObjectPtr);
-                        writer.WriteNextCol(sceneInstance.colliderGeometryPtr);
-                        writer.WriteNextCol(objectReference.zero_0x00);
-                        writer.WriteNextCol(objectReference.namePtr);
-                        writer.WriteNextCol(objectReference.zero_0x08);
-                        writer.WriteNextCol(objectReference.unk_0x0C);
+                        throw new System.NotImplementedException();
+                        //var objectReference = sceneInstance.sceneObjects;
+                        //writer.WriteNextCol(objectReference.name);
+                        //writer.WriteNextCol(sceneInstance.unk_0x00);
+                        //writer.WriteNextCol(sceneInstance.unk_0x04);
+                        //writer.WriteNextCol(sceneInstance.sceneObjectsPtr);
+                        //writer.WriteNextCol(sceneInstance.colliderGeometryPtr);
+                        //writer.WriteNextCol(objectReference.zero_0x00);
+                        //writer.WriteNextCol(objectReference.namePtr);
+                        //writer.WriteNextCol(objectReference.zero_0x08);
+                        //writer.WriteNextCol(objectReference.unk_0x0C);
                         writer.WriteNextRow();
                     }
                 }

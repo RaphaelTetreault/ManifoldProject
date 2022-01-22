@@ -197,11 +197,11 @@ namespace Manifold.IO.GFZ.CourseCollision
                 {
                     var sceneObject = coliScene.dynamicSceneObjects[i];
 
-                    log.WriteLine($"[{i}/{total}] {sceneObject.nameCopy}");
+                    log.WriteLine($"[{i}/{total}] {sceneObject.Name}");
                     log.WriteAddress(sceneObject);
                     log.WriteAddress(sceneObject.templateSceneObject);
-                    log.WriteAddress(sceneObject.templateSceneObject.sceneObject);
-                    log.WriteAddress(sceneObject.templateSceneObject.sceneObject.name);
+                    log.WriteAddress(sceneObject.templateSceneObject.sceneObjects);
+                    log.WriteAddress(sceneObject.templateSceneObject.PrimarySceneObject.name);
                     log.WriteAddress(sceneObject.transformMatrix3x4);
 
                     log.WriteAddress(sceneObject.skeletalAnimator);
