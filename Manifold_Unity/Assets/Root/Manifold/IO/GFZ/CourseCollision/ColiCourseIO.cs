@@ -120,7 +120,7 @@ namespace Manifold.IO.GFZ
                 using (var writer = new BinaryWriter(File.OpenWrite(outputFile)))
                 {
                     // Serialize the scene data to file
-                    coliScene.SerializeVerbose = false;
+                    coliScene.SerializeVerbose = true;
                     writer.WriteX(coliScene);
                     writer.Flush();
                 }

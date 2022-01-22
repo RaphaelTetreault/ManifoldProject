@@ -89,7 +89,7 @@ namespace Manifold.IO
                         continue;
 
                 var indexStr = i.ToString().PadLeft(lengthLength);
-                Write($"Index: [{indexStr}]\t");
+                Write($"[{indexStr}]\t");
                 WriteAddress(value, inlineType, typePadRight);
             }
             WriteLine();

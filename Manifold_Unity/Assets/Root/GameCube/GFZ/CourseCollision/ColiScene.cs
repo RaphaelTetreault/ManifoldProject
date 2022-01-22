@@ -412,6 +412,17 @@ namespace GameCube.GFZ.CourseCollision
                 // Save, order by name (alphabetical)
                 sceneObjectNames = sceneObjectNamesDict.Values.ToArray();
                 sceneObjectNames = sceneObjectNames.OrderBy(x => x.AddressRange.startAddress).ToArray();
+
+                //// temp
+                //sceneObjectNames = new CString[sceneObjects.Length];
+                //for (int i = 0; i < sceneObjectNames.Length; i++)
+                //{
+                //    sceneObjectNames[i] = string.Copy(sceneObjects[i].name);
+                //    // Copy string so each object has own unique name copy
+                //    sceneObjects[i].name = sceneObjectNames[i];
+                //}
+                //DebugConsole.Log($"[{id}] {sceneObjectNames.Length}");
+                
             }
 
             // DESERIALIZE TRACK SEGMENTS
@@ -700,8 +711,7 @@ namespace GameCube.GFZ.CourseCollision
             }
 
             // SCENE OBJECTS
-            writer.InlineDesc(serializeVerbose, sceneObjects);
-            writer.InlineComment(serializeVerbose,
+            writer.InlineComment(serializeVerbose, //<<<<
                 nameof(SceneObject),
                 nameof(SceneObjectTemplate),
                 nameof(SceneObjectStatic),
@@ -709,12 +719,12 @@ namespace GameCube.GFZ.CourseCollision
             writer.WriteX(sceneObjects, false);
 
             // SCENE OBJECT TEMPLATES
-            writer.InlineDesc(serializeVerbose, 0x68 + offset, templateSceneObjects);
+            //writer.InlineDesc(serializeVerbose, 0x68 + offset, templateSceneObjects); // <<<<
             writer.WriteX(templateSceneObjects, false);
 
             // STATIC SCENE OBJECTS
             //if (!staticSceneObjects.IsNullOrEmpty())
-            writer.InlineDesc(serializeVerbose, 0x70 + offset, staticSceneObjects);
+            //writer.InlineDesc(serializeVerbose, 0x70 + offset, staticSceneObjects); // <<<<
             writer.WriteX(staticSceneObjects, false);
 
             // DYNAMIC SCENE OBJECTS
@@ -840,6 +850,9 @@ namespace GameCube.GFZ.CourseCollision
             writer.InlineDesc(serializeVerbose, transformMatrices.ToArray());
             foreach (var transformMatrix3x4 in transformMatrices)
                 writer.WriteX(transformMatrix3x4);
+
+            //writer.InlineDesc(serializeVerbose, 0x54 + offset, dynamicSceneObjects);
+            //writer.WriteX(dynamicSceneObjects, false);
             //}
 
             // TRIGGERS
