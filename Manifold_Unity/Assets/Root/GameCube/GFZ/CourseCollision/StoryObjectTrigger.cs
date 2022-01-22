@@ -15,7 +15,7 @@ namespace GameCube.GFZ.CourseCollision
     public class StoryObjectTrigger :
         IBinaryAddressable,
         IBinarySerializable,
-        ISerializedBinaryAddressableReferer
+        IHasReference
     {
         // METADATA
         [UnityEngine.SerializeField] private AddressRange addressRange;

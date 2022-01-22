@@ -20,7 +20,7 @@ namespace GameCube.GFZ.CourseCollision
     public class TrackCurves :
         IBinaryAddressable,
         IBinarySerializable,
-        ISerializedBinaryAddressableReferer
+        IHasReference
     {
         // CONSTANTS
         public const int kCurveCount = 9;

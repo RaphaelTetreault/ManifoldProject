@@ -18,7 +18,7 @@ namespace GameCube.GFZ.CourseCollision
     public class StaticColliderMeshes :
         IBinaryAddressable,
         IBinarySerializable,
-        ISerializedBinaryAddressableReferer
+        IHasReference
     {
         // CONSTANTS
         public const int kCountAxSurfaceTypes = 11;

@@ -1,11 +1,11 @@
 namespace Manifold.IO
 {
     /// <summary>
-    /// Interface "tag" to indicate this IBinarySerializable referes to some
+    /// Interface "tag" to indicate this IBinarySerializable references some
     /// other IBinarySerializable + IBinaryAddressable and thus needs to be
     /// re-serialized after the refered type to ensure it has a valid pointer.
     /// </summary>
-    public interface ISerializedBinaryAddressableReferer :
+    public interface IHasReference :
         IBinaryAddressable,
         IBinarySerializable
     {

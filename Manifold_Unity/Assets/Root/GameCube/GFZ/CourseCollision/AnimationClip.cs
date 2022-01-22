@@ -16,7 +16,7 @@ namespace GameCube.GFZ.CourseCollision
     public class AnimationClip :
         IBinaryAddressable,
         IBinarySerializable,
-        ISerializedBinaryAddressableReferer
+        IHasReference
     {
         // CONSTANTS
         /// <summary>

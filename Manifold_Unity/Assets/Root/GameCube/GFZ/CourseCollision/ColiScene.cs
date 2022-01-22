@@ -20,7 +20,7 @@ namespace GameCube.GFZ.CourseCollision
         IBinaryAddressable,
         IBinarySerializable,
         IFile,
-        ISerializedBinaryAddressableReferer
+        IHasReference
     {
 
         // To find
@@ -920,7 +920,7 @@ namespace GameCube.GFZ.CourseCollision
             // GET ALL REFERERS, RE-SERIALIZE FOR POINTERS
             {
                 // Get a reference to EVERY object in file that has a pointer to an object
-                var referers = new List<ISerializedBinaryAddressableReferer>();
+                var referers = new List<IHasReference>();
 
                 // Track Nodes and dependencies
                 referers.AddRange(trackNodes);

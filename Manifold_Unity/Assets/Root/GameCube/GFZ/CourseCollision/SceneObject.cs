@@ -11,7 +11,7 @@ namespace GameCube.GFZ.CourseCollision
     public class SceneObject :
         IBinaryAddressable,
         IBinarySerializable,
-        ISerializedBinaryAddressableReferer
+        IHasReference
     {
         // METADATA
         [UnityEngine.SerializeField] private AddressRange addressRange;

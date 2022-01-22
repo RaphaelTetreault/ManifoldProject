@@ -33,7 +33,7 @@ namespace GameCube.GFZ.CourseCollision
     public class FogCurves :
         IBinaryAddressable,
         IBinarySerializable,
-        ISerializedBinaryAddressableReferer
+        IHasReference
     {
         // CONSTANTS
         public const int kCurveCount = 6;

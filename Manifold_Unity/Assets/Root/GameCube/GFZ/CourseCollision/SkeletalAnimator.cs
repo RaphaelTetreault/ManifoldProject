@@ -11,7 +11,7 @@ namespace GameCube.GFZ.CourseCollision
     public class SkeletalAnimator :
         IBinaryAddressable,
         IBinarySerializable,
-        ISerializedBinaryAddressableReferer
+        IHasReference
     {
         // METADATA
         [UnityEngine.SerializeField] private AddressRange addressRange;

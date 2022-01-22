@@ -12,7 +12,7 @@ namespace GameCube.GFZ.CourseCollision
     public abstract class IndexMatrix :
         IBinaryAddressable,
         IBinarySerializable,
-        ISerializedBinaryAddressableReferer
+        IHasReference
     {
         // "CONSTANTS"
         public int Count => SubdivisionsX * SubdivisionsZ;

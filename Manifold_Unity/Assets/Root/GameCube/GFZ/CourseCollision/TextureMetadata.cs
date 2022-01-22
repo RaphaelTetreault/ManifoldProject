@@ -19,7 +19,7 @@ namespace GameCube.GFZ.CourseCollision
     public class TextureMetadata :
         IBinaryAddressable,
         IBinarySerializable,
-        ISerializedBinaryAddressableReferer
+        IHasReference
     {
         // CONSTANTS
         public const int kCount = 12;
