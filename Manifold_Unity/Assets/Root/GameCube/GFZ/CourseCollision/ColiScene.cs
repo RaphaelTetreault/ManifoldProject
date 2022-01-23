@@ -103,7 +103,7 @@ namespace GameCube.GFZ.CourseCollision
         public byte[] zeroes0x20 = new byte[kSizeOfZeroes0x20];
         public TrackMinHeight trackMinHeight;
         public SceneObjectDynamic[] dynamicSceneObjects;
-        public SceneObjectTemplate[] templateSceneObjects;
+        public SceneObject[] templateSceneObjects;
         public SceneObjectStatic[] staticSceneObjects;
         public UnknownCollider[] unknownColliders;
         public FogCurves fogCurves;
@@ -120,7 +120,7 @@ namespace GameCube.GFZ.CourseCollision
         public TrackSegment[] allTrackSegments;
         public TrackSegment[] rootTrackSegments;
         public CString[] sceneObjectNames;
-        public SceneObject[] sceneObjects;
+        public SceneObjectLOD[] sceneObjects;
 
 
         // PROPERTIES
@@ -211,7 +211,7 @@ namespace GameCube.GFZ.CourseCollision
 
             trackMinHeight = new TrackMinHeight(); // has default constructor
             dynamicSceneObjects = new SceneObjectDynamic[0];
-            templateSceneObjects = new SceneObjectTemplate[0];
+            templateSceneObjects = new SceneObject[0];
             staticSceneObjects = new SceneObjectStatic[0];
             unknownColliders = new UnknownCollider[0];
             fogCurves = new FogCurves();
@@ -228,7 +228,7 @@ namespace GameCube.GFZ.CourseCollision
             allTrackSegments = new TrackSegment[0];
             rootTrackSegments = new TrackSegment[0];
             sceneObjectNames = new CString[0];
-            sceneObjects = new SceneObject[0];
+            sceneObjects = new SceneObjectLOD[0];
         }
 
         public void ValidateFileFormatPointers()
@@ -365,7 +365,7 @@ namespace GameCube.GFZ.CourseCollision
                 /*/
 
                 // Keep a dictionary of each shared reference type
-                var templateSceneObjectsDict = new Dictionary<Pointer, SceneObjectTemplate>();
+                var templateSceneObjectsDict = new Dictionary<Pointer, SceneObject>();
                 var sceneObjectNamesDict = new Dictionary<Pointer, CString>();
 
                 // Get all unique instances of SceneObjectTemplates
@@ -376,7 +376,7 @@ namespace GameCube.GFZ.CourseCollision
                 }
                 foreach (var dynamicSceneObject in dynamicSceneObjects)
                 {
-                    GetSerializable(reader, dynamicSceneObject.templateSceneObjectPtr, ref dynamicSceneObject.templateSceneObject, templateSceneObjectsDict);
+                    GetSerializable(reader, dynamicSceneObject.sceneObjectPtr, ref dynamicSceneObject.sceneObject, templateSceneObjectsDict);
                 }
                 foreach (var unknownCollider in unknownColliders)
                 {
@@ -387,13 +387,13 @@ namespace GameCube.GFZ.CourseCollision
                 templateSceneObjects = templateSceneObjects.OrderBy(x => x.AddressRange.startAddress).ToArray();
 
                 // Copy over the instances into it's own array
-                var sceneObjects = new List<SceneObject>();
+                var sceneObjects = new List<SceneObjectLOD>();
                 for (int i = 0; i < templateSceneObjects.Length; i++)
                 {
                     var template = templateSceneObjects[i];
-                    for (int j = 0; j < template.sceneObjects.Length; j++)
+                    for (int j = 0; j < template.lods.Length; j++)
                     {
-                        sceneObjects.Add(template.sceneObjects[j]);
+                        sceneObjects.Add(template.lods[j]);
                     }
                 }
                 this.sceneObjects = sceneObjects.OrderBy(x => x.AddressRange.startAddress).ToArray();
@@ -402,9 +402,9 @@ namespace GameCube.GFZ.CourseCollision
                 // NOTE: since SceneObjectTemplates instances can use the same name/model, there is occasionally a few duplicate names.
                 foreach (var templateSceneObject in templateSceneObjects)
                 {
-                    foreach (var so in templateSceneObject.sceneObjects)
+                    foreach (var so in templateSceneObject.lods)
                     {
-                        GetSerializable(reader, so.namePtr, ref so.name, sceneObjectNamesDict);
+                        GetSerializable(reader, so.lodNamePtr, ref so.name, sceneObjectNamesDict);
 
                     }
                     //GetSerializable(reader, templateSceneObject.PrimarySceneObject.namePtr, ref templateSceneObject.PrimarySceneObject.name, sceneObjectNamesDict);
@@ -694,8 +694,8 @@ namespace GameCube.GFZ.CourseCollision
 
             // SCENE OBJECTS
             writer.InlineComment(serializeVerbose, //<<<<
+                nameof(SceneObjectLOD),
                 nameof(SceneObject),
-                nameof(SceneObjectTemplate),
                 nameof(SceneObjectStatic),
                 nameof(SceneObjectDynamic));
             writer.WriteX(sceneObjects, false);
@@ -1157,7 +1157,7 @@ namespace GameCube.GFZ.CourseCollision
             {
                 list.Add(template);
                 list.Add(template.colliderGeometry);
-                list.AddRange(template.sceneObjects);
+                list.AddRange(template.lods);
                 list.Add(template.PrimarySceneObject.name);
             }
 

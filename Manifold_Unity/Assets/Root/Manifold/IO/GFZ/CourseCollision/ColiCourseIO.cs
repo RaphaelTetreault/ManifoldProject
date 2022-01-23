@@ -228,10 +228,10 @@ namespace Manifold.IO.GFZ
                 log.WriteLine("Object Names");
                 log.WriteAddress(coliScene.sceneObjectNames);
                 log.WriteLine();
-                log.WriteLine(nameof(SceneObject));
+                log.WriteLine(nameof(SceneObjectLOD));
                 log.WriteAddress(coliScene.sceneObjects);
                 log.WriteLine();
-                log.WriteLine(nameof(SceneObjectTemplate));
+                log.WriteLine(nameof(SceneObject));
                 log.WriteAddress(coliScene.templateSceneObjects);
                 log.WriteLine();
                 log.WriteLine(nameof(SceneObjectStatic));
@@ -766,7 +766,7 @@ namespace Manifold.IO.GFZ
 
             // Scene Object Dynamic Reference + internal data
             {
-                log.WriteLine($"{nameof(SceneObjectTemplate)}");
+                log.WriteLine($"{nameof(SceneObject)}");
                 for (int i = 0; i < coliScene.templateSceneObjects.Length; i++)
                 {
                     var sceneInstance = coliScene.templateSceneObjects[i];
@@ -786,7 +786,7 @@ namespace Manifold.IO.GFZ
                 }
                 log.WriteLine();
 
-                log.WriteLine($"{nameof(SceneObjectTemplate)}");
+                log.WriteLine($"{nameof(SceneObject)}");
                 for (int i = 0; i < coliScene.sceneObjects.Length; i++)
                 {
                     var sceneObjectReference = coliScene.sceneObjects[i];
@@ -963,9 +963,9 @@ namespace Manifold.IO.GFZ
 
                     log.WriteLine($"[{i}/{total}] {sceneObject.Name}");
                     log.WriteAddress(sceneObject);
-                    log.WriteAddress(sceneObject.templateSceneObject);
-                    log.WriteAddress(sceneObject.templateSceneObject.sceneObjects);
-                    log.WriteAddress(sceneObject.templateSceneObject.PrimarySceneObject.name);
+                    log.WriteAddress(sceneObject.sceneObject);
+                    log.WriteAddress(sceneObject.sceneObject.lods);
+                    log.WriteAddress(sceneObject.sceneObject.PrimarySceneObject.name);
                     log.WriteAddress(sceneObject.transformMatrix3x4);
 
                     log.WriteAddress(sceneObject.skeletalAnimator);

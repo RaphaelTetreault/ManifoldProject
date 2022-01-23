@@ -15,7 +15,7 @@ namespace Manifold.IO.GFZ.CourseCollision
         [SerializeField] private float unkLod;
         // Instance data
         [Header("Instance Data")]
-        [SerializeField] private UnkInstanceFlag unk_flag;
+        [SerializeField] private LodRenderFlags unk_flag;
         [SerializeField] private UnkInstanceOption unk_option = UnkInstanceOption.unk1_default;
         [SerializeField] private MeshFilter colliderMesh;
         // Scene Object data

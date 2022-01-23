@@ -199,9 +199,9 @@ namespace Manifold.IO.GFZ.CourseCollision
 
                     log.WriteLine($"[{i}/{total}] {sceneObject.Name}");
                     log.WriteAddress(sceneObject);
-                    log.WriteAddress(sceneObject.templateSceneObject);
-                    log.WriteAddress(sceneObject.templateSceneObject.sceneObjects);
-                    log.WriteAddress(sceneObject.templateSceneObject.PrimarySceneObject.name);
+                    log.WriteAddress(sceneObject.sceneObject);
+                    log.WriteAddress(sceneObject.sceneObject.lods);
+                    log.WriteAddress(sceneObject.sceneObject.PrimarySceneObject.name);
                     log.WriteAddress(sceneObject.transformMatrix3x4);
 
                     log.WriteAddress(sceneObject.skeletalAnimator);

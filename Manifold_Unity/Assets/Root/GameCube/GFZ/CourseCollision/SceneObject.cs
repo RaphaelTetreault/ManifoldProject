@@ -5,7 +5,7 @@ using System.IO;
 namespace GameCube.GFZ.CourseCollision
 {
     /// <summary>
-    /// Binds an object name to a loadable display model.
+    /// An object to display in a scene. Refers to LODs.
     /// </summary>
     [Serializable]
     public class SceneObject :
@@ -16,13 +16,13 @@ namespace GameCube.GFZ.CourseCollision
         // METADATA
         [UnityEngine.SerializeField] private AddressRange addressRange;
 
-        // FIELDS
-        public uint zero_0x00;
-        public Pointer namePtr;
-        public uint zero_0x08;
-        public float unk_0x0C; // LOD?
-        // REFERENCE FIELDS
-        public CString name;
+        // STRUCTURE
+        public LodRenderFlags lodRenderFlags;
+        public ArrayPointer lodsPtr;
+        public Pointer colliderGeometryPtr;
+        // FIELDS (deserialized from pointers)
+        public SceneObjectLOD[] lods;
+        public ColliderGeometry colliderGeometry;
 
 
         // PROPERTIES
@@ -32,24 +32,31 @@ namespace GameCube.GFZ.CourseCollision
             set => addressRange = value;
         }
 
+        public string Name => lods[0].name;
+
+        public SceneObjectLOD PrimarySceneObject => lods[0];
 
         // METHODS
         public void Deserialize(BinaryReader reader)
         {
             this.RecordStartAddress(reader);
             {
-                reader.ReadX(ref zero_0x00);
-                reader.ReadX(ref namePtr);
-                reader.ReadX(ref zero_0x08);
-                reader.ReadX(ref unk_0x0C);
+                reader.ReadX(ref lodRenderFlags);
+                reader.ReadX(ref lodsPtr);
+                reader.ReadX(ref colliderGeometryPtr);
             }
             this.RecordEndAddress(reader);
             {
-                Assert.IsTrue(zero_0x00 == 0);
-                Assert.IsTrue(zero_0x08 == 0);
+                Assert.IsTrue(lodsPtr.IsNotNullPointer);
+                reader.JumpToAddress(lodsPtr);
+                reader.ReadX(ref lods, lodsPtr.Length, true);
 
-                reader.JumpToAddress(namePtr);
-                reader.ReadX(ref name, true);
+                // Collision is not required, load only if pointer is not null
+                if (colliderGeometryPtr.IsNotNullPointer)
+                {
+                    reader.JumpToAddress(colliderGeometryPtr);
+                    reader.ReadX(ref colliderGeometry, true);
+                }
             }
             this.SetReaderToEndAddress(reader);
         }
@@ -57,42 +64,36 @@ namespace GameCube.GFZ.CourseCollision
         public void Serialize(BinaryWriter writer)
         {
             {
-                Assert.IsTrue(zero_0x00 == 0);
-                Assert.IsTrue(zero_0x08 == 0);
-
-                namePtr = name.GetPointer();
+                lodsPtr = lods.GetArrayPointer();
+                colliderGeometryPtr = colliderGeometry.GetPointer();
             }
             this.RecordStartAddress(writer);
             {
-                writer.WriteX(zero_0x00);
-                writer.WriteX(namePtr);
-                writer.WriteX(zero_0x08);
-                writer.WriteX(unk_0x0C);
+                writer.WriteX(lodRenderFlags);
+                writer.WriteX(lodsPtr);
+                writer.WriteX(colliderGeometryPtr);
             }
             this.RecordEndAddress(writer);
         }
 
         public void ValidateReferences()
         {
-            // This pointer CANNOT be null and must refer to an object name.
-            Assert.IsTrue(namePtr.IsNotNullPointer);
-            Assert.IsTrue(name != null);
-            Assert.ReferencePointer(name, namePtr);
-            // HACK: this is because game data DOES have null names... why?
-            //Assert.IsTrue(!string.IsNullOrEmpty(name.value));
-
-            // Constants
-            Assert.IsTrue(zero_0x00 == 0);
-            Assert.IsTrue(zero_0x08 == 0);
+            // This pointer CANNOT be null and must refer to an object.
+            Assert.IsTrue(lodsPtr.IsNotNullPointer);
+            Assert.IsTrue(lods != null);
+            // Assert that instance/pointer is correct
+            Assert.ReferencePointer(lods, lodsPtr);
+            Assert.ReferencePointer(colliderGeometry, colliderGeometryPtr);
         }
 
         public override string ToString()
         {
-            return
+            return 
                 $"{nameof(SceneObject)}(" +
-                $"{nameof(unk_0x0C)}: {unk_0x0C}, " +
-                $"Name: {name}" +
+                $"{nameof(lodRenderFlags)}: {lodRenderFlags}, " +
+                $"Has {nameof(ColliderGeometry)}: {colliderGeometryPtr.IsNotNullPointer}, " +
                 $")";
         }
+
     }
 }

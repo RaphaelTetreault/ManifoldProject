@@ -226,21 +226,21 @@ namespace Manifold.IO.GFZ.CourseCollision
             if (sceneObjectInstanceReferences)
             {
                 {
-                    var fileName = $"{time} COLI {nameof(SceneObject)}.tsv";
+                    var fileName = $"{time} COLI {nameof(SceneObjectLOD)}.tsv";
                     var filePath = Path.Combine(outputPath, fileName);
                     EditorUtility.DisplayProgressBar(ExecuteText, filePath, .33f);
                     AnalyzeSceneObjectReferences(filePath);
                 }
 
                 {
-                    var fileName = $"{time} COLI {nameof(SceneObjectTemplate)}.tsv";
+                    var fileName = $"{time} COLI {nameof(SceneObject)}.tsv";
                     var filePath = Path.Combine(outputPath, fileName);
                     EditorUtility.DisplayProgressBar(ExecuteText, filePath, .66f);
                     AnalyzeSceneInstanceReferences(filePath);
                 }
 
                 {
-                    var fileName = $"{time} COLI {nameof(SceneObjectTemplate)} and {nameof(SceneObject)}.tsv";
+                    var fileName = $"{time} COLI {nameof(SceneObject)} and {nameof(SceneObjectLOD)}.tsv";
                     var filePath = Path.Combine(outputPath, fileName);
                     EditorUtility.DisplayProgressBar(ExecuteText, filePath, 1f);
                     AnalyzeSceneInstanceAndObjectReferences(filePath);
@@ -684,7 +684,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol(nameof(SceneObjectDynamic.unk0x00));
                 writer.WriteNextCol(nameof(SceneObjectDynamic.unk0x04));
                 writer.WriteNextCol(nameof(SceneObjectDynamic.unk0x04));
-                writer.WriteNextCol(nameof(SceneObjectDynamic.templateSceneObjectPtr));
+                writer.WriteNextCol(nameof(SceneObjectDynamic.sceneObjectPtr));
                 writer.WriteNextCol(nameof(SceneObjectDynamic.transform.Position));
                 writer.WriteNextCol(nameof(SceneObjectDynamic.transform.RotationEuler));
                 writer.WriteNextCol(nameof(SceneObjectDynamic.transform.Scale));
@@ -707,7 +707,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                         writer.WriteNextCol($"0x{sceneObject.unk0x00:x8}");
                         writer.WriteNextCol(sceneObject.unk0x04);
                         writer.WriteNextCol($"0x{sceneObject.unk0x04:x8}");
-                        writer.WriteNextCol(sceneObject.templateSceneObjectPtr.HexAddress);
+                        writer.WriteNextCol(sceneObject.sceneObjectPtr.HexAddress);
                         writer.WriteNextCol(sceneObject.transform.Position);
                         writer.WriteNextCol(sceneObject.transform.RotationEuler);
                         writer.WriteNextCol(sceneObject.transform.Scale);
@@ -869,13 +869,13 @@ namespace Manifold.IO.GFZ.CourseCollision
                     int gameObjectIndex = 0;
                     foreach (var gameObject in file.Value.dynamicSceneObjects)
                     {
-                        if (gameObject.templateSceneObject.colliderGeometry.triCount == 0)
+                        if (gameObject.sceneObject.colliderGeometry.triCount == 0)
                         {
                             continue;
                         }
 
                         int triIndex = 0;
-                        foreach (var tri in gameObject.templateSceneObject.colliderGeometry.tris)
+                        foreach (var tri in gameObject.sceneObject.colliderGeometry.tris)
                         {
                             writer.WriteNextCol(file.FileName);
                             writer.WriteNextCol(gameObjectIndex);
@@ -964,13 +964,13 @@ namespace Manifold.IO.GFZ.CourseCollision
                     int gameObjectIndex = 0;
                     foreach (var gameObject in file.Value.dynamicSceneObjects)
                     {
-                        if (gameObject.templateSceneObject.colliderGeometry.quadCount == 0)
+                        if (gameObject.sceneObject.colliderGeometry.quadCount == 0)
                         {
                             continue;
                         }
 
                         int quadIndex = 0;
-                        foreach (var quad in gameObject.templateSceneObject.colliderGeometry.quads)
+                        foreach (var quad in gameObject.sceneObject.colliderGeometry.quads)
                         {
                             writer.WriteNextCol(file.FileName);
                             writer.WriteNextCol(gameObjectIndex);
@@ -1776,10 +1776,10 @@ namespace Manifold.IO.GFZ.CourseCollision
                 //
                 writer.WriteNextCol("name");
                 writer.WriteNextCol("Object Type");
-                writer.WriteNextCol(nameof(SceneObject.zero_0x00));
-                writer.WriteNextCol(nameof(SceneObject.namePtr));
-                writer.WriteNextCol(nameof(SceneObject.zero_0x08));
-                writer.WriteNextCol(nameof(SceneObject.unk_0x0C));
+                writer.WriteNextCol(nameof(SceneObjectLOD.zero_0x00));
+                writer.WriteNextCol(nameof(SceneObjectLOD.lodNamePtr));
+                writer.WriteNextCol(nameof(SceneObjectLOD.zero_0x08));
+                writer.WriteNextCol(nameof(SceneObjectLOD.lodDistance));
                 //
                 writer.WriteNextRow();
 
@@ -1791,17 +1791,17 @@ namespace Manifold.IO.GFZ.CourseCollision
                     var isAxGx = scene.IsFileGX ? "GX" : "AX";
 
                     // Get all the scene object references
-                    var objectsList = new List<(SceneObject sor, string category)>();
+                    var objectsList = new List<(SceneObjectLOD sor, string category)>();
                     foreach (var sceneObject in scene.templateSceneObjects)
                     {
                         throw new System.NotImplementedException();
-                        var sceneObjectReference = sceneObject.sceneObjects;
+                        var sceneObjectReference = sceneObject.lods;
                         //objectsList.Add((sceneObject.sceneObjects, "Instance"));
                     }
                     foreach (var sceneOriginObject in scene.staticSceneObjects)
                     {
                         throw new System.NotImplementedException();
-                        var sceneObjectReference = sceneOriginObject.templateSceneObject.sceneObjects;
+                        var sceneObjectReference = sceneOriginObject.templateSceneObject.lods;
                         //objectsList.Add((sceneObjectReference, "Origin"));
                     }
 
@@ -1817,9 +1817,9 @@ namespace Manifold.IO.GFZ.CourseCollision
                         writer.WriteNextCol(sceneObjectReference.sor.name);
                         writer.WriteNextCol(sceneObjectReference.category);
                         writer.WriteNextCol(sceneObjectReference.sor.zero_0x00);
-                        writer.WriteNextCol(sceneObjectReference.sor.namePtr);
+                        writer.WriteNextCol(sceneObjectReference.sor.lodNamePtr);
                         writer.WriteNextCol(sceneObjectReference.sor.zero_0x08);
-                        writer.WriteNextCol(sceneObjectReference.sor.unk_0x0C);
+                        writer.WriteNextCol(sceneObjectReference.sor.lodDistance);
                         //
                         writer.WriteNextRow();
                     }
@@ -1841,9 +1841,9 @@ namespace Manifold.IO.GFZ.CourseCollision
                 //
                 writer.WriteNextCol("name");
                 writer.WriteNextCol("Object Type");
-                writer.WriteNextCol(nameof(SceneObjectTemplate.unk_0x00));
-                writer.WriteNextCol(nameof(SceneObjectTemplate.sceneObjectsPtr));
-                writer.WriteNextCol(nameof(SceneObjectTemplate.colliderGeometryPtr));
+                writer.WriteNextCol(nameof(SceneObject.lodRenderFlags));
+                writer.WriteNextCol(nameof(SceneObject.lodsPtr));
+                writer.WriteNextCol(nameof(SceneObject.colliderGeometryPtr));
                 //
                 writer.WriteNextRow();
 
@@ -1855,7 +1855,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                     var isAxGx = scene.IsFileGX ? "GX" : "AX";
 
                     // Get all the scene object references
-                    var objectsList = new List<(SceneObjectTemplate sir, string category)>();
+                    var objectsList = new List<(SceneObject sir, string category)>();
                     foreach (var sceneInstance in scene.templateSceneObjects)
                     {
                         objectsList.Add((sceneInstance, "Instance"));
@@ -1877,8 +1877,8 @@ namespace Manifold.IO.GFZ.CourseCollision
                         //
                         writer.WriteNextCol(sceneObjectReference.sir.PrimarySceneObject.name);
                         writer.WriteNextCol(sceneObjectReference.category);
-                        writer.WriteNextCol(sceneObjectReference.sir.unk_0x00);
-                        writer.WriteNextCol(sceneObjectReference.sir.sceneObjectsPtr);
+                        writer.WriteNextCol(sceneObjectReference.sir.lodRenderFlags);
+                        writer.WriteNextCol(sceneObjectReference.sir.lodsPtr);
                         writer.WriteNextCol(sceneObjectReference.sir.colliderGeometryPtr);
                         //
                         writer.WriteNextRow();
@@ -1900,13 +1900,13 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol("AX/GX");
                 //
                 writer.WriteNextCol("name");
-                writer.WriteNextCol(nameof(SceneObjectTemplate.unk_0x00));
-                writer.WriteNextCol(nameof(SceneObjectTemplate.sceneObjectsPtr));
-                writer.WriteNextCol(nameof(SceneObjectTemplate.colliderGeometryPtr));
-                writer.WriteNextCol(nameof(SceneObject.zero_0x00));
-                writer.WriteNextCol(nameof(SceneObject.namePtr));
-                writer.WriteNextCol(nameof(SceneObject.zero_0x08));
-                writer.WriteNextCol(nameof(SceneObject.unk_0x0C));
+                writer.WriteNextCol(nameof(SceneObject.lodRenderFlags));
+                writer.WriteNextCol(nameof(SceneObject.lodsPtr));
+                writer.WriteNextCol(nameof(SceneObject.colliderGeometryPtr));
+                writer.WriteNextCol(nameof(SceneObjectLOD.zero_0x00));
+                writer.WriteNextCol(nameof(SceneObjectLOD.lodNamePtr));
+                writer.WriteNextCol(nameof(SceneObjectLOD.zero_0x08));
+                writer.WriteNextCol(nameof(SceneObjectLOD.lodDistance));
                 //
                 writer.WriteNextRow();
 
@@ -1926,7 +1926,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                         writer.WriteNextCol(isAxGx);
                         //
                         throw new System.NotImplementedException();
-                        var objectReference = sceneInstance.sceneObjects;
+                        var objectReference = sceneInstance.lods;
                         //writer.WriteNextCol(objectReference.name);
                         //writer.WriteNextCol(sceneInstance.unk_0x00);
                         //writer.WriteNextCol(sceneInstance.unk_0x04);

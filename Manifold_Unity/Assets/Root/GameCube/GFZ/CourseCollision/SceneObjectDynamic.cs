@@ -5,7 +5,7 @@ using System.IO;
 namespace GameCube.GFZ.CourseCollision
 {
     /// <summary>
-    /// 
+    /// Represents a complex scene object that can have various properties.
     /// </summary>
     [Serializable]
     public class SceneObjectDynamic :
@@ -17,15 +17,9 @@ namespace GameCube.GFZ.CourseCollision
         [UnityEngine.SerializeField] private AddressRange addressRange;
 
         // FIELDS
-        /// <summary>
-        /// Appears to be render flags. 0x00000001 seems to be basic value. Alpha clip.
-        /// </summary>
-        public int unk0x00;
-        /// <summary>
-        /// 
-        /// </summary>
-        public int unk0x04;
-        public Pointer templateSceneObjectPtr;
+        public int unk0x00; // rendering?
+        public int unk0x04; // rendering?
+        public Pointer sceneObjectPtr;
         public Transform transform = new Transform();
         public int zero_0x2C; // null ptr?
         public Pointer animationClipPtr;
@@ -33,7 +27,7 @@ namespace GameCube.GFZ.CourseCollision
         public Pointer skeletalAnimatorPtr;
         public Pointer transformMatrix3x4Ptr;
         // FIELDS (deserialized from pointers)
-        public SceneObjectTemplate templateSceneObject;
+        public SceneObject sceneObject;
         public AnimationClip animationClip;
         public TextureMetadata textureMetadata;
         public SkeletalAnimator skeletalAnimator;
@@ -47,7 +41,7 @@ namespace GameCube.GFZ.CourseCollision
             set => addressRange = value;
         }
 
-        public string Name => templateSceneObject.Name;
+        public string Name => sceneObject.Name;
 
         // METHODS
         public void Deserialize(BinaryReader reader)
@@ -56,7 +50,7 @@ namespace GameCube.GFZ.CourseCollision
             {
                 reader.ReadX(ref unk0x00);
                 reader.ReadX(ref unk0x04);
-                reader.ReadX(ref templateSceneObjectPtr);
+                reader.ReadX(ref sceneObjectPtr);
                 reader.ReadX(ref transform, true);
                 reader.ReadX(ref zero_0x2C);
                 reader.ReadX(ref animationClipPtr);
@@ -67,8 +61,8 @@ namespace GameCube.GFZ.CourseCollision
             this.RecordEndAddress(reader);
             {
                 //
-                reader.JumpToAddress(templateSceneObjectPtr);
-                reader.ReadX(ref templateSceneObject, true);
+                reader.JumpToAddress(sceneObjectPtr);
+                reader.ReadX(ref sceneObject, true);
 
                 if (animationClipPtr.IsNotNullPointer)
                 {
@@ -108,7 +102,7 @@ namespace GameCube.GFZ.CourseCollision
         {
             {
                 // Get pointers from refered instances
-                templateSceneObjectPtr = templateSceneObject.GetPointer();
+                sceneObjectPtr = sceneObject.GetPointer();
                 animationClipPtr = animationClip.GetPointer();
                 textureMetadataPtr = textureMetadata.GetPointer();
                 skeletalAnimatorPtr = skeletalAnimator.GetPointer();
@@ -118,7 +112,7 @@ namespace GameCube.GFZ.CourseCollision
             {
                 writer.WriteX(unk0x00);
                 writer.WriteX(unk0x04);
-                writer.WriteX(templateSceneObjectPtr);
+                writer.WriteX(sceneObjectPtr);
                 writer.WriteX(transform);
                 writer.WriteX(zero_0x2C);
                 writer.WriteX(animationClipPtr);
@@ -132,9 +126,9 @@ namespace GameCube.GFZ.CourseCollision
         public void ValidateReferences()
         {
             // This pointer CANNOT be null and must refer to an object.
-            Assert.IsTrue(templateSceneObject != null);
-            Assert.IsTrue(templateSceneObjectPtr.IsNotNullPointer);
-            Assert.ReferencePointer(templateSceneObject, templateSceneObjectPtr);
+            Assert.IsTrue(sceneObject != null);
+            Assert.IsTrue(sceneObjectPtr.IsNotNullPointer);
+            Assert.ReferencePointer(sceneObject, sceneObjectPtr);
             // This should always exist
             Assert.IsTrue(transform != null);
 
@@ -155,7 +149,7 @@ namespace GameCube.GFZ.CourseCollision
                 $"{nameof(unk0x04)}: {unk0x04:x8}, " +
                 $"{nameof(unk0x00)}: {unk0x00:x8}, " +
                 $"{transform} " +
-                $"Name: {Name}" +
+                $"{nameof(Name)}: {Name}" +
                 $")";
         }
 
