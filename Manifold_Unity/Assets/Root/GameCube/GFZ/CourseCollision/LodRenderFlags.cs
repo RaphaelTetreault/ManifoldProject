@@ -15,6 +15,7 @@ namespace GameCube.GFZ.CourseCollision
     /// <summary>
     /// How to display Scene Object LODs.
     /// TODO: none = no LODS (?). There's going to be a pop-in option and a fade-in option.
+    /// Some flags may also have to do with multiplayer (ie: do not render in 3/4 player mode).
     /// </summary>
     [System.Flags]
     public enum LodRenderFlags : uint

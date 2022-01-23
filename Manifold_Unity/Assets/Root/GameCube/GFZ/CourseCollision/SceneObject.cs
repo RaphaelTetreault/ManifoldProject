@@ -4,6 +4,23 @@ using System.IO;
 
 namespace GameCube.GFZ.CourseCollision
 {
+    // Regarding LODs: LODs appear to be ordered using 2 criteria. First, they are sorted alphabetically by name.
+    // Then, they are sorted by LOD distance ASCENDING. So an example sorting looks like the following. However,
+    // if this is a hard fact, I do not know. The only thing that is consistent is using a null name after to denote
+    // reusing the same model. In such a case, as noted above, the distance is ascending.
+    //
+    // SAMPLE 1 (ST01)
+    // 30	PODHOUSE02_A_LOD
+    // 10	PODHOUSE02_B_LOD
+    // 5	PODHOUSE02_C_LOD
+    // 10	[string.Empty]
+    //
+    // SAMPLE 2 (confusing sample from ST01, consider WTF)
+    // 0	STADIUM_CEILING_LOD
+    // 351	STADIUM_CEILING_A_LOD
+    // 61	STADIUM_CEILING_B_LOD
+    // 82	[string.Empty]
+
     /// <summary>
     /// An object to display in a scene. Refers to LODs.
     /// </summary>
@@ -91,7 +108,8 @@ namespace GameCube.GFZ.CourseCollision
             return 
                 $"{nameof(SceneObject)}(" +
                 $"{nameof(lodRenderFlags)}: {lodRenderFlags}, " +
-                $"Has {nameof(ColliderGeometry)}: {colliderGeometryPtr.IsNotNullPointer}, " +
+                $"LOD Count: {lodsPtr.Length}, " +
+                $"Has {nameof(ColliderGeometry)}: {colliderGeometryPtr.IsNotNullPointer}" +
                 $")";
         }
 
