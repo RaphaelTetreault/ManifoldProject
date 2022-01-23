@@ -13,11 +13,35 @@ namespace Manifold.IO.GFZ.CourseCollision
 {
     public static class ColiCourseTsvLogger
     {
-        private static float RandomTime => 1f;
-        private static string ExecuteText => "TEMP";
-
-
         private const string menu = Const.Menu.Manifold + "Analysis/";
+
+        // Names of files generated
+        private static readonly string tsvHeader = $"{nameof(ColiScene)}-Header.tsv";
+        private static readonly string tsvGeneralData = $"General Data.tsv";
+        private static readonly string tsvTrackKeyablesAll = $"Track Keyables All.tsv";
+        private static readonly string tsvTrackSegment = $"{nameof(TrackSegment)}.tsv";
+        private static readonly string tsvSurfaceAttributeArea = $"{nameof(SurfaceAttributeArea)}.tsv";
+        private static readonly string tsvTrackNode = $"{nameof(TrackNode)}.tsv";
+        private static readonly string tsvSceneObject = $"{nameof(SceneObject)}.tsv";
+        private static readonly string tsvSceneObjectLod = $"{nameof(SceneObjectLOD)}.tsv";
+        private static readonly string tsvSceneObjectsAndLod = $"{nameof(SceneObjectLOD)}.tsv";
+        private static readonly string tsvSceneObjectDynamic = $"{nameof(SceneObjectDynamic)}.tsv";
+        private static readonly string tsvAnimationClip = $"{nameof(SceneObjectDynamic)}-{nameof(AnimationClip)}.tsv";
+        private static readonly string tsvTextureMetadata = $"{nameof(SceneObjectDynamic)}-{nameof(TextureMetadata)}.tsv";
+        private static readonly string tsvSkeletalAnimator = $"{nameof(SceneObjectDynamic)}-{nameof(SkeletalAnimator)}.tsv";
+        private static readonly string tsvColliderGeometryTri = $"{nameof(SceneObjectDynamic)}-{nameof(ColliderGeometry)}-Tris.tsv";
+        private static readonly string tsvColliderGeometryQuad = $"{nameof(SceneObjectDynamic)}-{nameof(ColliderGeometry)}-Quads.tsv";
+        private static readonly string tsvTransform = $"{nameof(Transform)}.tsv";
+        private static readonly string tsvArcadeCheckpointTrigger = $"{nameof(ArcadeCheckpointTrigger)}.tsv";
+        private static readonly string tsvCourseMetadataTrigger = $"{nameof(CourseMetadataTrigger)}.tsv";
+        private static readonly string tsvStoryObjectTrigger = $"{nameof(StoryObjectTrigger)}.tsv";
+        private static readonly string tsvUnknownTrigger = $"{nameof(UnknownTrigger)}.tsv";
+        private static readonly string tsvVisualEffectTrigger = $"{nameof(VisualEffectTrigger)}.tsv";
+        private static readonly string tsvFog = $"{nameof(Fog)}.tsv";
+        private static readonly string tsvFogCurves = $"{nameof(FogCurves)}.tsv";
+        private static readonly string tsvStaticColliderMeshes = $"{nameof(StaticColliderMeshes)}.tsv";
+        private static readonly string tsvUnknownCollider = $"{nameof(UnknownCollider)}.tsv";
+
 
         #region Menu Items
 
@@ -27,7 +51,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             var settings = GfzProjectWindow.GetSettings();
             var sceneIterator = ColiCourseIO.LoadAllStages(settings.StageDir, "Loading Stages...");
             var scenes = sceneIterator.ToArray();
-            var output = settings.AnalysisOutput + "/" + AnalyzerUtility.GetFileTimestamp() + "/";
+            var output = settings.AnalysisOutput;
             Directory.CreateDirectory(output);
             Analyze(scenes, output);
             OSUtility.OpenDirectory(settings.AnalysisOutput);
@@ -35,324 +59,265 @@ namespace Manifold.IO.GFZ.CourseCollision
 
 
         [MenuItem(menu + "Coli Scene (Header)")]
-        public static void MenuAnalyzeHeaders() => MenuForward(AnalyzeHeaders, $"{nameof(ColiScene)}-Header.tsv");
+        public static void MenuAnalyzeHeaders() => MenuForward(AnalyzeHeaders, tsvHeader);
 
         [MenuItem(menu + "General Data")]
-        public static void MenuAnalyzeGeneralData() => MenuForward(AnalyzeGeneralData, $"{nameof(SceneObject)}.tsv");
+        public static void MenuAnalyzeGeneralData() => MenuForward(AnalyzeGeneralData, tsvGeneralData);
 
 
         [MenuItem(menu + "Track Keyables All")]
-        public static void MenuAnalyzeTrackKeyablesAll() => MenuForward(AnalyzeTrackKeyablesAll, $"Track Keyables All.tsv");
+        public static void MenuAnalyzeTrackKeyablesAll() => MenuForward(AnalyzeTrackKeyablesAll, tsvTrackKeyablesAll);
 
         [MenuItem(menu + "Track Transforms")]
-        public static void MenuAnalyzeTrackSegments() => MenuForward(AnalyzeTrackSegments, $"{nameof(TrackSegment)}.tsv");
+        public static void MenuAnalyzeTrackSegments() => MenuForward(AnalyzeTrackSegments, tsvTrackSegment);
 
         [MenuItem(menu + "Surface Attribute Areas")]
-        public static void MenuAnalyzeSurfaceAttributeAreas() => MenuForward(AnalyzeSurfaceAttributeAreas, $"{nameof(SceneObject)}.tsv");
+        public static void MenuAnalyzeSurfaceAttributeAreas() => MenuForward(AnalyzeSurfaceAttributeAreas, tsvSurfaceAttributeArea);
 
         [MenuItem(menu + "Track Nodes")]
-        public static void MenuAnalyzeTrackNodes() => MenuForward(AnalyzeTrackNodes, $"{nameof(TrackNode)}.tsv");
+        public static void MenuAnalyzeTrackNodes() => MenuForward(AnalyzeTrackNodes, tsvTrackNode);
 
 
         [MenuItem(menu + "Scene Objects")]
-        public static void MenuAnalyzeSceneObjects() => MenuForward(AnalyzeSceneObjects, $"{nameof(SceneObject)}.tsv");
+        public static void MenuAnalyzeSceneObjects() => MenuForward(AnalyzeSceneObjects, tsvSceneObject);
 
         [MenuItem(menu + "Scene Object LODs")]
-        public static void MenuAnalyzeSceneObjectLODs() => MenuForward(AnalyzeSceneObjectLODs, $"{nameof(SceneObjectLOD)}.tsv");
+        public static void MenuAnalyzeSceneObjectLODs() => MenuForward(AnalyzeSceneObjectLODs, tsvSceneObjectLod);
+
+        [MenuItem(menu + "Scene Object + Scene Object LODs")]
+        public static void MenuAnalyzeSceneObjectsAndLODs() => MenuForward(AnalyzeSceneObjectsAndLODs, tsvSceneObjectsAndLod);
 
 
         [MenuItem(menu + "Scene Objects Dynamic")]
-        public static void MenuAnalyzeSceneObjectDynamic() => MenuForward(AnalyzeSceneObjectDynamic, $"{nameof(SceneObjectDynamic)}.tsv");
+        public static void MenuAnalyzeSceneObjectDynamic() => MenuForward(AnalyzeSceneObjectDynamic, tsvSceneObjectDynamic);
 
         [MenuItem(menu + "Scene Objects Dynamic - Animation Clip")]
-        public static void MenuAnalyzeAnimationClips() => MenuForward(AnalyzeAnimationClips, $"{nameof(SceneObjectDynamic)}-{nameof(AnimationClip)}.tsv");
+        public static void MenuAnalyzeAnimationClips() => MenuForward(AnalyzeAnimationClips, tsvAnimationClip);
 
         [MenuItem(menu + "Scene Objects Dynamic - Texture Metadata")]
-        public static void MenuAnalyzeTextureMetadata() => MenuForward(AnalyzeTextureMetadata, $"{nameof(SceneObjectDynamic)}-{nameof(TextureMetadata)}.tsv");
+        public static void MenuAnalyzeTextureMetadata() => MenuForward(AnalyzeTextureMetadata, tsvTextureMetadata);
 
         [MenuItem(menu + "Scene Objects Dynamic - Skeletal Animator")]
-        public static void MenuAnalyzeSkeletalAnimator() => MenuForward(AnalyzeSkeletalAnimator, $"{nameof(SceneObjectDynamic)}-{nameof(SkeletalAnimator)}.tsv");
+        public static void MenuAnalyzeSkeletalAnimator() => MenuForward(AnalyzeSkeletalAnimator, tsvSkeletalAnimator);
 
         [MenuItem(menu + "Scene Objects Dynamic - Collider Geometry (Tris)")]
-        public static void MenuAnalyzeColliderGeometryTri() => MenuForward(AnalyzeColliderGeometryTri, $"{nameof(SceneObjectDynamic)}-{nameof(ColliderGeometry)}-Tris.tsv");
+        public static void MenuAnalyzeColliderGeometryTri() => MenuForward(AnalyzeColliderGeometryTri, tsvColliderGeometryTri);
 
         [MenuItem(menu + "Scene Objects Dynamic - Collider Geometry (Quads)")]
-        public static void MenuAnalyzeColliderGeometryQuad() => MenuForward(AnalyzeColliderGeometryQuad, $"{nameof(SceneObjectDynamic)}-{nameof(ColliderGeometry)}-Quads.tsv");
+        public static void MenuAnalyzeColliderGeometryQuad() => MenuForward(AnalyzeColliderGeometryQuad, tsvColliderGeometryQuad);
 
         [MenuItem(menu + "Scene Object Dynamic - Transform")]
-        public static void MenuAnalyzeSceneObjectTransforms() => MenuForward(AnalyzeSceneObjectTransforms, $"{nameof(Transform)}.tsv");
+        public static void MenuAnalyzeSceneObjectTransforms() => MenuForward(AnalyzeSceneObjectTransforms, tsvTransform);
 
 
         [MenuItem(menu + "Trigger - Arcade Checkpoints")]
-        public static void MenuAnalyzeArcadeCheckpointTriggers() => MenuForward(AnalyzeArcadeCheckpointTriggers, $"{nameof(ArcadeCheckpointTrigger)}.tsv");
+        public static void MenuAnalyzeArcadeCheckpointTriggers() => MenuForward(AnalyzeArcadeCheckpointTriggers, tsvArcadeCheckpointTrigger);
 
         [MenuItem(menu + "Trigger - Course Metadata")]
-        public static void MenuAnalyzeCourseMetadataTriggers() => MenuForward(AnalyzeCourseMetadataTriggers, $"{nameof(CourseMetadataTrigger)}.tsv");
+        public static void MenuAnalyzeCourseMetadataTriggers() => MenuForward(AnalyzeCourseMetadataTriggers, tsvCourseMetadataTrigger);
 
         [MenuItem(menu + "Trigger - Story Object")]
-        public static void MenuAnalyzeStoryObjectTrigger() => MenuForward(AnalyzeStoryObjectTrigger, $"{nameof(StoryObjectTrigger)}.tsv");
+        public static void MenuAnalyzeStoryObjectTrigger() => MenuForward(AnalyzeStoryObjectTrigger, tsvStoryObjectTrigger);
 
         [MenuItem(menu + "Trigger - Unknown Trigger")]
-        public static void MenuAnalyzeUnknownTrigger() => MenuForward(AnalyzeUnknownTrigger, $"{nameof(UnknownTrigger)}.tsv");
+        public static void MenuAnalyzeUnknownTrigger() => MenuForward(AnalyzeUnknownTrigger, tsvUnknownTrigger);
 
         [MenuItem(menu + "Trigger - Visual Effect Trigger")]
-        public static void MenuAnalyzeVisualEffectTriggers() => MenuForward(AnalyzeVisualEffectTriggers, $"{nameof(VisualEffectTrigger)}.tsv");
+        public static void MenuAnalyzeVisualEffectTriggers() => MenuForward(AnalyzeVisualEffectTriggers, tsvVisualEffectTrigger);
 
 
         [MenuItem(menu + "Fog")]
-        public static void MenuAnalyzeFog() => MenuForward(AnalyzeFog, $"{nameof(Fog)}.tsv");
+        public static void MenuAnalyzeFog() => MenuForward(AnalyzeFog, tsvFog);
 
         [MenuItem(menu + "Fog Curves")]
-        public static void MenuAnalyzeFogCurves() => MenuForward(AnalyzeFogCurves, $"{nameof(FogCurves)}.tsv");
+        public static void MenuAnalyzeFogCurves() => MenuForward(AnalyzeFogCurves, tsvFogCurves);
 
 
 
         [MenuItem(menu + "Static Collider Meshses")]
-        public static void MenuAnalyzeSceneStaticCollider() => MenuForward(AnalyzeStaticColliderMeshes, $"{nameof(StaticColliderMeshes)}.tsv");
+        public static void MenuAnalyzeSceneStaticCollider() => MenuForward(AnalyzeStaticColliderMeshes, tsvStaticColliderMeshes);
 
         [MenuItem(menu + "Unknown Collider")]
-        public static void MenuAnalyzeUnknownCollider() => MenuForward(AnalyzeUnknownCollider, $"{nameof(UnknownCollider)}.tsv");
+        public static void MenuAnalyzeUnknownCollider() => MenuForward(AnalyzeUnknownCollider, tsvUnknownCollider);
 
         #endregion
 
 
-        // Trying to make this stuff automatic?
+        /// <summary>
+        /// Forwards most analysis functions 
+        /// </summary>
+        /// <param name="action"></param>
+        /// <param name="fileName"></param>
         public static void MenuForward(Action<ColiScene[], string> action, string fileName)
         {
             var settings = GfzProjectWindow.GetSettings();
             var sceneIterator = ColiCourseIO.LoadAllStages(settings.StageDir, "Loading Stages...");
             var scenes = sceneIterator.ToArray();
             var outputPath = settings.AnalysisOutput + fileName;
-            Directory.CreateDirectory(outputPath);
             action.Invoke(scenes, outputPath);
             OSUtility.OpenDirectory(settings.AnalysisOutput);
         }
 
         public static void Analyze(ColiScene[] scenes, string outputPath)
         {
+            var progress = 1f;
+            var title = "Analysing All ColiScene Files...";
             var time = AnalyzerUtility.GetFileTimestamp();
+            bool cancel;
 
+            var destination = Path.Combine(outputPath, time);
+            Directory.CreateDirectory(destination);
+
+            // GENERAL DATA
+            cancel = EditorUtility.DisplayCancelableProgressBar(title, tsvGeneralData, progress);
+            AnalyzeGeneralData(scenes, Path.Combine(destination, tsvGeneralData));
+            if (cancel) goto END;
+
+            // FOG
+            cancel = EditorUtility.DisplayCancelableProgressBar(title, tsvFog, progress);
+            AnalyzeFog(scenes, Path.Combine(destination, tsvFog));
+            if (cancel) goto END;
+
+            // FOG CURVES
+            cancel = EditorUtility.DisplayCancelableProgressBar(title, tsvFogCurves, progress);
+            AnalyzeFogCurves(scenes, Path.Combine(destination, tsvFogCurves));
+            if (cancel) goto END;
+
+            // COLI SCENE HEADER
+            cancel = EditorUtility.DisplayCancelableProgressBar(title, tsvHeader, progress);
+            AnalyzeHeaders(scenes, Path.Combine(destination, tsvHeader));
+            if (cancel) goto END;
+
+            // ANIMATION CLIPS
+            cancel = EditorUtility.DisplayCancelableProgressBar(title, tsvAnimationClip, progress);
+            AnalyzeAnimationClips(scenes, Path.Combine(destination, tsvAnimationClip));
+            if (cancel) goto END;
+
+            // ANIMATIONS INDIVIDUALIZED
             {
-                var fileName = $"{time} COLI General Data.tsv";
-                var filePath = Path.Combine(outputPath, fileName);
-                EditorUtility.DisplayProgressBar(ExecuteText, filePath, RandomTime);
-                AnalyzeGeneralData(scenes, filePath);
-            }
-
-            {
-                // FOG parameter
+                var count = AnimationClip.kSizeCurvesPtrs;
+                for (int i = 0; i < count; i++)
                 {
-                    var fileName = $"{time} COLI {nameof(Fog)}.tsv";
-                    var filePath = Path.Combine(outputPath, fileName);
-                    EditorUtility.DisplayProgressBar(ExecuteText, filePath, RandomTime);
-                    AnalyzeFog(scenes, filePath);
-                }
-
-                // FOG CURVE which is based off of FOG parameter
-                {
-                    var fileName = $"{time} COLI {nameof(FogCurves)}.tsv";
-                    var filePath = Path.Combine(outputPath, fileName);
-                    EditorUtility.DisplayProgressBar(ExecuteText, filePath, RandomTime);
-                    AnalyzeFogCurves(scenes, filePath);
-                }
-            }
-
-            {
-                string filePath = string.Empty;
-
-                filePath = $"{time} COLI {nameof(ColiScene)} header.tsv";
-                filePath = Path.Combine(outputPath, filePath);
-                EditorUtility.DisplayProgressBar(ExecuteText, filePath, RandomTime);
-                AnalyzeHeaders(scenes, filePath);
-            }
-
-            {
-                // ANIMATIONS
-                {
-                    var fileName = $"{time} COLI {nameof(AnimationClip)}.tsv";
-                    var filePath = Path.Combine(outputPath, fileName);
-                    EditorUtility.DisplayProgressBar(ExecuteText, filePath, RandomTime);
-                    AnalyzeAnimationClips(scenes, filePath);
-                }
-
-                // ANIMATIONS INDIVIDUALIZED
-                {
-                    var count = AnimationClip.kSizeCurvesPtrs;
-                    for (int i = 0; i < count; i++)
-                    {
-                        var fileName = $"{time} COLI {nameof(AnimationClip)} {i}.tsv";
-                        var filePath = Path.Combine(outputPath, fileName);
-                        EditorUtility.DisplayProgressBar(ExecuteText, filePath, (float)(i + 1) / count);
-                        AnalyzeGameObjectAnimationClipIndex(scenes, filePath, i);
-                    }
+                    var fileName = $"{nameof(SceneObjectDynamic)}-{nameof(AnimationClip)}[{i}].tsv";
+                    var filePath = Path.Combine(destination, fileName);
+                    cancel = EditorUtility.DisplayCancelableProgressBar(title, fileName, (float)(i + 1) / count);
+                    AnalyzeGameObjectAnimationClipIndex(scenes, filePath, i);
+                    if (cancel) goto END;
                 }
             }
 
-            {
-                string fileName = $"{time} COLI Compare {nameof(Transform)}.tsv";
-                string filePath = Path.Combine(outputPath, fileName);
-                EditorUtility.DisplayProgressBar(ExecuteText, filePath, RandomTime);
-                AnalyzeSceneObjectTransforms(scenes, filePath);
-            }
+            // TRANSFORMS
+            cancel = EditorUtility.DisplayCancelableProgressBar(title, tsvTransform, progress);
+            AnalyzeSceneObjectTransforms(scenes, Path.Combine(destination, tsvTransform));
+            if (cancel) goto END;
 
-            {
-                // AX ARCADE CHECKPOINTS
-                {
-                    string fileName = $"{time} COLI {nameof(ArcadeCheckpointTrigger)}.tsv";
-                    string filePath = Path.Combine(outputPath, fileName);
-                    EditorUtility.DisplayProgressBar(ExecuteText, filePath, RandomTime);
-                    AnalyzeArcadeCheckpointTriggers(scenes, filePath);
-                }
+            // ARCADE CHECKPOINT TRIGGERS (AX)
+            cancel = EditorUtility.DisplayCancelableProgressBar(title, tsvArcadeCheckpointTrigger, progress);
+            AnalyzeArcadeCheckpointTriggers(scenes, Path.Combine(destination, tsvArcadeCheckpointTrigger));
+            if (cancel) goto END;
 
-                // COURSE METADATA TRIGGERS
-                {
-                    string fileName = $"{time} COLI {nameof(CourseMetadataTrigger)}.tsv";
-                    string filePath = Path.Combine(outputPath, fileName);
-                    EditorUtility.DisplayProgressBar(ExecuteText, filePath, RandomTime);
-                    AnalyzeCourseMetadataTriggers(scenes, filePath);
-                }
+            // COURSE METADATA TRIGGERS
+            cancel = EditorUtility.DisplayCancelableProgressBar(title, tsvCourseMetadataTrigger, progress);
+            AnalyzeCourseMetadataTriggers(scenes, Path.Combine(destination, tsvCourseMetadataTrigger));
+            if (cancel) goto END;
 
-                // STORY OBJECT TRIGGERS
-                {
-                    string fileName = $"{time} COLI {nameof(StoryObjectTrigger)}.tsv";
-                    string filePath = Path.Combine(outputPath, fileName);
-                    EditorUtility.DisplayProgressBar(ExecuteText, filePath, RandomTime);
-                    AnalyzeStoryObjectTrigger(scenes, filePath);
-                }
+            // STORY OBJECT TRIGGERS
+            cancel = EditorUtility.DisplayCancelableProgressBar(title, tsvStoryObjectTrigger, progress);
+            AnalyzeStoryObjectTrigger(scenes, Path.Combine(destination, tsvStoryObjectTrigger));
+            if (cancel) goto END;
 
-                // UNKNOWN TRIGGERS
-                {
-                    string fileName = $"{time} COLI {nameof(UnknownTrigger)}.tsv";
-                    string filePath = Path.Combine(outputPath, fileName);
-                    EditorUtility.DisplayProgressBar(ExecuteText, filePath, RandomTime);
-                    AnalyzeUnknownTrigger(scenes, filePath);
-                }
+            // UNKNOWN TRIGGERS
+            cancel = EditorUtility.DisplayCancelableProgressBar(title, tsvUnknownTrigger, progress);
+            AnalyzeUnknownTrigger(scenes, Path.Combine(destination, tsvUnknownTrigger));
+            if (cancel) goto END;
 
-                // UNKNOWN SOLS TRIGGERS
-                {
-                    string fileName = $"{time} COLI {nameof(UnknownCollider)}.tsv";
-                    string filePath = Path.Combine(outputPath, fileName);
-                    EditorUtility.DisplayProgressBar(ExecuteText, filePath, RandomTime);
-                    AnalyzeUnknownCollider(scenes, filePath);
-                }
+            // VISUAL EFFECT TRIGGERS
+            cancel = EditorUtility.DisplayCancelableProgressBar(title, tsvVisualEffectTrigger, progress);
+            AnalyzeVisualEffectTriggers(scenes, Path.Combine(destination, tsvVisualEffectTrigger));
+            if (cancel) goto END;
 
-                // VFX TRIGGERS
-                {
-                    string fileName = $"{time} COLI {nameof(VisualEffectTrigger)}.tsv";
-                    string filePath = Path.Combine(outputPath, fileName);
-                    EditorUtility.DisplayProgressBar(ExecuteText, filePath, RandomTime);
-                    AnalyzeVisualEffectTriggers(scenes, filePath);
-                }
-            }
 
-            //GAME OBJECTS
-            {
-                {
-                    var fileName = $"{time} COLI {nameof(SceneObjectDynamic)}.tsv";
-                    var filePath = Path.Combine(outputPath, fileName);
-                    EditorUtility.DisplayProgressBar(ExecuteText, filePath, .1f);
-                    AnalyzeSceneObjectDynamic(scenes, filePath);
-                }
+            // UNKNOWN COLLIDERS
+            cancel = EditorUtility.DisplayCancelableProgressBar(title, tsvUnknownCollider, progress);
+            AnalyzeUnknownCollider(scenes, Path.Combine(destination, tsvUnknownCollider));
+            if (cancel) goto END;
 
-                {
-                    var fileName = $"{time} COLI {nameof(SceneObjectDynamic)} {nameof(TextureMetadata)}.tsv";
-                    var filePath = Path.Combine(outputPath, fileName);
-                    EditorUtility.DisplayProgressBar(ExecuteText, filePath, .3f);
-                    AnalyzeTextureMetadata(scenes, filePath);
-                }
 
-                {
-                    var fileName = $"{time} COLI {nameof(SceneObjectDynamic)} {nameof(SkeletalAnimator)}.tsv";
-                    var filePath = Path.Combine(outputPath, fileName);
-                    EditorUtility.DisplayProgressBar(ExecuteText, filePath, .5f);
-                    AnalyzeSkeletalAnimator(scenes, filePath);
-                }
+            // SCENE OBJECT DYNAMIC
+            cancel = EditorUtility.DisplayCancelableProgressBar(title, tsvSceneObjectDynamic, progress);
+            AnalyzeSceneObjectDynamic(scenes, Path.Combine(destination, tsvSceneObjectDynamic));
+            if (cancel) goto END;
 
-                {
-                    var fileName = $"{time} COLI {nameof(SceneObjectDynamic)} {nameof(ColliderTriangle)}.tsv";
-                    var filePath = Path.Combine(outputPath, fileName);
-                    EditorUtility.DisplayProgressBar(ExecuteText, filePath, .7f);
-                    AnalyzeColliderGeometryTri(scenes, filePath);
-                }
+            // TEXTURE METADATA
+            cancel = EditorUtility.DisplayCancelableProgressBar(title, tsvTextureMetadata, progress);
+            AnalyzeTextureMetadata(scenes, Path.Combine(destination, tsvTextureMetadata));
+            if (cancel) goto END;
 
-                {
-                    var fileName = $"{time} COLI {nameof(SceneObjectDynamic)} {nameof(ColliderQuad)}.tsv";
-                    var filePath = Path.Combine(outputPath, fileName);
-                    EditorUtility.DisplayProgressBar(ExecuteText, filePath, .9f);
-                    AnalyzeColliderGeometryQuad(scenes, filePath);
-                }
-            }
+            // SKELETAL ANIMATOR
+            cancel = EditorUtility.DisplayCancelableProgressBar(title, tsvSkeletalAnimator, progress);
+            AnalyzeSkeletalAnimator(scenes, Path.Combine(destination, tsvSkeletalAnimator));
+            if (cancel) goto END;
 
-            {
-                {
-                    var fileName = $"{time} COLI {nameof(SceneObjectLOD)}.tsv";
-                    var filePath = Path.Combine(outputPath, fileName);
-                    EditorUtility.DisplayProgressBar(ExecuteText, filePath, .33f);
-                    AnalyzeSceneObjectLODs(scenes, filePath);
-                }
+            // COLLIDER GEOMETRY (TRI)
+            cancel = EditorUtility.DisplayCancelableProgressBar(title, tsvColliderGeometryTri, progress);
+            AnalyzeColliderGeometryTri(scenes, Path.Combine(destination, tsvColliderGeometryTri));
+            if (cancel) goto END;
 
-                {
-                    var fileName = $"{time} COLI {nameof(SceneObject)}.tsv";
-                    var filePath = Path.Combine(outputPath, fileName);
-                    EditorUtility.DisplayProgressBar(ExecuteText, filePath, .66f);
-                    AnalyzeSceneObjects(scenes, filePath);
-                }
+            // COLLIDER GEOMETRY (QUAD)
+            cancel = EditorUtility.DisplayCancelableProgressBar(title, tsvColliderGeometryQuad, progress);
+            AnalyzeColliderGeometryQuad(scenes, Path.Combine(destination, tsvColliderGeometryQuad));
+            if (cancel) goto END;
 
-                {
-                    var fileName = $"{time} COLI {nameof(SceneObject)} and {nameof(SceneObjectLOD)}.tsv";
-                    var filePath = Path.Combine(outputPath, fileName);
-                    EditorUtility.DisplayProgressBar(ExecuteText, filePath, 1f);
-                    AnalyzeSceneObjectsAndLODs(scenes, filePath);
-                }
-            }
+            // SCENE OBJECT LOD
+            cancel = EditorUtility.DisplayCancelableProgressBar(title, tsvSceneObjectLod, progress);
+            AnalyzeSceneObjectLODs(scenes, Path.Combine(destination, tsvSceneObjectLod));
+            if (cancel) goto END;
 
-            // TOPOLOGY PARAMETERS
+            // SCENE OBJECT
+            cancel = EditorUtility.DisplayCancelableProgressBar(title, tsvSceneObject, progress);
+            AnalyzeSceneObjects(scenes, Path.Combine(destination, tsvSceneObject));
+            if (cancel) goto END;
+
+            // SCENE OBJECTS + SCENE OBJECT LODS
+            cancel = EditorUtility.DisplayCancelableProgressBar(title, tsvSceneObjectsAndLod, progress);
+            AnalyzeSceneObjectsAndLODs(scenes, Path.Combine(destination, tsvSceneObjectsAndLod));
+            if (cancel) goto END;
+
+            // TRACK SEGMENT KEYABLES (INDEXED)
             {
                 var count = TrackCurves.kCurveCount;
                 for (int i = 0; i < count; i++)
                 {
-                    var fileName = $"{time} COLI {nameof(TrackCurves)} {i + 1}.tsv";
-                    var filePath = Path.Combine(outputPath, fileName);
-                    EditorUtility.DisplayProgressBar(ExecuteText, filePath, (float)(i + 1) / TrackCurves.kCurveCount);
+                    var fileName = $"{nameof(TrackCurves)}[{i+1}].tsv";
+                    var filePath = Path.Combine(destination, fileName);
+                    EditorUtility.DisplayProgressBar(title, filePath, (float)(i + 1) / TrackCurves.kCurveCount);
                     AnalyzeTrackKeyables(scenes, filePath, i);
                 }
-
-                {
-                    var fileName = $"{time} COLI {nameof(TrackCurves)} ALL.tsv";
-                    var filePath = Path.Combine(outputPath, fileName);
-                    EditorUtility.DisplayProgressBar(ExecuteText, filePath, RandomTime);
-                    AnalyzeTrackKeyablesAll(scenes, filePath);
-                }
             }
 
-            // TRACK TRANSFORMS
-            {
-                var filePath = $"{time} COLI {nameof(TrackSegment)}.tsv";
-                filePath = Path.Combine(outputPath, filePath);
-                EditorUtility.DisplayProgressBar(ExecuteText, filePath, RandomTime);
-                AnalyzeTrackSegments(scenes, filePath);
-            }
+            // TRACK SEGMENT KEYABLES (ALL)
+            cancel = EditorUtility.DisplayCancelableProgressBar(title, tsvTrackKeyablesAll, progress);
+            AnalyzeTrackKeyablesAll(scenes, Path.Combine(destination, tsvTrackKeyablesAll));
+            if (cancel) goto END;
 
-            //
-            {
-                var fileName = $"{time} COLI {nameof(StaticColliderMeshes)}.tsv";
-                var filePath = Path.Combine(outputPath, fileName);
-                EditorUtility.DisplayProgressBar(ExecuteText, filePath, RandomTime);
-                AnalyzeStaticColliderMeshes(scenes, filePath);
-            }
+            // TRACK SEGMENTS
+            cancel = EditorUtility.DisplayCancelableProgressBar(title, tsvTrackSegment, progress);
+            AnalyzeTrackSegments(scenes, Path.Combine(destination, tsvTrackSegment));
+            if (cancel) goto END;
 
-            {
-                var fileName = $"{time} COLI {nameof(SurfaceAttributeArea)}.tsv";
-                var filePath = Path.Combine(outputPath, fileName);
-                EditorUtility.DisplayProgressBar(ExecuteText, filePath, RandomTime);
-                AnalyzeSurfaceAttributeAreas(scenes, filePath);
-            }
+            // STATIC COLLIDER MESHES
+            cancel = EditorUtility.DisplayCancelableProgressBar(title, tsvStaticColliderMeshes, progress);
+            AnalyzeStaticColliderMeshes(scenes, Path.Combine(destination, tsvStaticColliderMeshes));
+            if (cancel) goto END;
 
-            // OPEN FOLDER after analysis
-            if (true)
-            {
-                OSUtility.OpenDirectory(outputPath + "/");
-            }
+            // SURFACE ATTRIBUTE AREAS
+            cancel = EditorUtility.DisplayCancelableProgressBar(title, tsvSurfaceAttributeArea, progress);
+            AnalyzeSurfaceAttributeAreas(scenes, Path.Combine(destination, tsvSurfaceAttributeArea));
+            if (cancel) goto END;
+
+
+            END:
+            OSUtility.OpenDirectory(Path.Combine(outputPath, time));
             EditorUtility.ClearProgressBar();
         }
 
