@@ -372,7 +372,7 @@ namespace GameCube.GFZ.CourseCollision
                 // NOTE: instances can share the same name/model but have different properties.
                 foreach (var staticSceneObject in staticSceneObjects)
                 {
-                    GetSerializable(reader, staticSceneObject.templateSceneObjectPtr, ref staticSceneObject.templateSceneObject, templateSceneObjectsDict);
+                    GetSerializable(reader, staticSceneObject.sceneObjectPtr, ref staticSceneObject.sceneObject, templateSceneObjectsDict);
                 }
                 foreach (var dynamicSceneObject in dynamicSceneObjects)
                 {

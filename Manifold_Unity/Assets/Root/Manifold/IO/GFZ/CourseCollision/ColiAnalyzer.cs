@@ -1801,7 +1801,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                     foreach (var sceneOriginObject in scene.staticSceneObjects)
                     {
                         throw new System.NotImplementedException();
-                        var sceneObjectReference = sceneOriginObject.templateSceneObject.lods;
+                        var sceneObjectReference = sceneOriginObject.sceneObject.lods;
                         //objectsList.Add((sceneObjectReference, "Origin"));
                     }
 
@@ -1862,7 +1862,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                     }
                     foreach (var sceneOriginObject in scene.staticSceneObjects)
                     {
-                        var sceneInstance = sceneOriginObject.templateSceneObject;
+                        var sceneInstance = sceneOriginObject.sceneObject;
                         objectsList.Add((sceneInstance, "Origin"));
                     }
 

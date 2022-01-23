@@ -20,9 +20,9 @@ namespace GameCube.GFZ.CourseCollision
         [UnityEngine.SerializeField] private AddressRange addressRange;
 
         // FIELDS
-        public Pointer templateSceneObjectPtr;
+        public Pointer sceneObjectPtr;
         // REFERENCE FIELDS
-        public SceneObject templateSceneObject;
+        public SceneObject sceneObject;
 
         // PROPERTIES
         public AddressRange AddressRange
@@ -31,20 +31,20 @@ namespace GameCube.GFZ.CourseCollision
             set => addressRange = value;
         }
 
-        public string Name => templateSceneObject.Name;
+        public string Name => sceneObject.Name;
 
         // METHODS
         public void Deserialize(BinaryReader reader)
         {
             this.RecordStartAddress(reader);
             {
-                reader.ReadX(ref templateSceneObjectPtr);
+                reader.ReadX(ref sceneObjectPtr);
             }
             this.RecordEndAddress(reader);
             {
-                Assert.IsTrue(templateSceneObjectPtr.IsNotNullPointer);
-                reader.JumpToAddress(templateSceneObjectPtr);
-                reader.ReadX(ref templateSceneObject, true);
+                Assert.IsTrue(sceneObjectPtr.IsNotNullPointer);
+                reader.JumpToAddress(sceneObjectPtr);
+                reader.ReadX(ref sceneObject, true);
             }
             this.SetReaderToEndAddress(reader);
         }
@@ -52,11 +52,11 @@ namespace GameCube.GFZ.CourseCollision
         public void Serialize(BinaryWriter writer)
         {
             {
-                templateSceneObjectPtr = templateSceneObject.GetPointer();
+                sceneObjectPtr = sceneObject.GetPointer();
             }
             this.RecordStartAddress(writer);
             {
-                writer.WriteX(templateSceneObjectPtr);
+                writer.WriteX(sceneObjectPtr);
             }
             this.RecordEndAddress(writer);
 
@@ -64,7 +64,7 @@ namespace GameCube.GFZ.CourseCollision
 
         public void ValidateReferences()
         {
-            Assert.IsTrue(templateSceneObjectPtr.IsNotNullPointer);
+            Assert.IsTrue(sceneObjectPtr.IsNotNullPointer);
         }
 
 

@@ -1844,7 +1844,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                     }
                     foreach (var sceneOriginObject in scene.staticSceneObjects)
                     {
-                        var sceneInstance = sceneOriginObject.templateSceneObject;
+                        var sceneInstance = sceneOriginObject.sceneObject;
                         objectsList.Add((sceneInstance, "Origin"));
                     }
 
