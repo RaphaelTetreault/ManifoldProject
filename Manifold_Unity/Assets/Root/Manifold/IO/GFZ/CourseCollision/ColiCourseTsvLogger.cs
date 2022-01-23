@@ -19,8 +19,9 @@ namespace Manifold.IO.GFZ.CourseCollision
 
         private const string menu = Const.Menu.Manifold + "Analysis/";
 
+        #region Menu Items
 
-        [MenuItem(menu + "Analyze all ColiCourse" + " (Active Dir) #F5")]
+        [MenuItem(menu + "Analyze all ColiScene Data #F5")]
         public static void AnalyzeAllPartsOfColiCourse()
         {
             var settings = GfzProjectWindow.GetSettings();
@@ -32,19 +33,100 @@ namespace Manifold.IO.GFZ.CourseCollision
             OSUtility.OpenDirectory(settings.AnalysisOutput);
         }
 
-        //// Trying to make this stuff automatic?
-        //public static void Forwarder(Action<ColiScene[], string> action)
-        //{
-        //    var settings = GfzProjectWindow.GetSettings();
-        //    var sceneIterator = ColiCourseIO.LoadAllStages(settings.StageDir, "Loading Stages...");
-        //    var scenes = sceneIterator.ToArray();
-        //    var output = settings.AnalysisOutput + "/" + AnalyzerUtility.GetFileTimestamp() + "/"; // TODO: make folder with timestamp instead of files
-        //    Directory.CreateDirectory(output);
-        //    action.Invoke(scenes, output);
-        //    OSUtility.OpenDirectory(settings.AnalysisOutput);
-        //}
+
+        [MenuItem(menu + "Coli Scene (Header)")]
+        public static void MenuAnalyzeHeaders() => MenuForward(AnalyzeHeaders, $"{nameof(ColiScene)}-Header.tsv");
+
+        [MenuItem(menu + "General Data")]
+        public static void MenuAnalyzeGeneralData() => MenuForward(AnalyzeGeneralData, $"{nameof(SceneObject)}.tsv");
 
 
+        [MenuItem(menu + "Track Keyables All")]
+        public static void MenuAnalyzeTrackKeyablesAll() => MenuForward(AnalyzeTrackKeyablesAll, $"Track Keyables All.tsv");
+
+        [MenuItem(menu + "Track Transforms")]
+        public static void MenuAnalyzeTrackSegments() => MenuForward(AnalyzeTrackSegments, $"{nameof(TrackSegment)}.tsv");
+
+        [MenuItem(menu + "Surface Attribute Areas")]
+        public static void MenuAnalyzeSurfaceAttributeAreas() => MenuForward(AnalyzeSurfaceAttributeAreas, $"{nameof(SceneObject)}.tsv");
+
+        [MenuItem(menu + "Track Nodes")]
+        public static void MenuAnalyzeTrackNodes() => MenuForward(AnalyzeTrackNodes, $"{nameof(TrackNode)}.tsv");
+
+
+        [MenuItem(menu + "Scene Objects")]
+        public static void MenuAnalyzeSceneObjects() => MenuForward(AnalyzeSceneObjects, $"{nameof(SceneObject)}.tsv");
+
+        [MenuItem(menu + "Scene Object LODs")]
+        public static void MenuAnalyzeSceneObjectLODs() => MenuForward(AnalyzeSceneObjectLODs, $"{nameof(SceneObjectLOD)}.tsv");
+
+
+        [MenuItem(menu + "Scene Objects Dynamic")]
+        public static void MenuAnalyzeSceneObjectDynamic() => MenuForward(AnalyzeSceneObjectDynamic, $"{nameof(SceneObjectDynamic)}.tsv");
+
+        [MenuItem(menu + "Scene Objects Dynamic - Animation Clip")]
+        public static void MenuAnalyzeAnimationClips() => MenuForward(AnalyzeAnimationClips, $"{nameof(SceneObjectDynamic)}-{nameof(AnimationClip)}.tsv");
+
+        [MenuItem(menu + "Scene Objects Dynamic - Texture Metadata")]
+        public static void MenuAnalyzeTextureMetadata() => MenuForward(AnalyzeTextureMetadata, $"{nameof(SceneObjectDynamic)}-{nameof(TextureMetadata)}.tsv");
+
+        [MenuItem(menu + "Scene Objects Dynamic - Skeletal Animator")]
+        public static void MenuAnalyzeSkeletalAnimator() => MenuForward(AnalyzeSkeletalAnimator, $"{nameof(SceneObjectDynamic)}-{nameof(SkeletalAnimator)}.tsv");
+
+        [MenuItem(menu + "Scene Objects Dynamic - Collider Geometry (Tris)")]
+        public static void MenuAnalyzeColliderGeometryTri() => MenuForward(AnalyzeColliderGeometryTri, $"{nameof(SceneObjectDynamic)}-{nameof(ColliderGeometry)}-Tris.tsv");
+
+        [MenuItem(menu + "Scene Objects Dynamic - Collider Geometry (Quads)")]
+        public static void MenuAnalyzeColliderGeometryQuad() => MenuForward(AnalyzeColliderGeometryQuad, $"{nameof(SceneObjectDynamic)}-{nameof(ColliderGeometry)}-Quads.tsv");
+
+        [MenuItem(menu + "Scene Object Dynamic - Transform")]
+        public static void MenuAnalyzeSceneObjectTransforms() => MenuForward(AnalyzeSceneObjectTransforms, $"{nameof(Transform)}.tsv");
+
+
+        [MenuItem(menu + "Trigger - Arcade Checkpoints")]
+        public static void MenuAnalyzeArcadeCheckpointTriggers() => MenuForward(AnalyzeArcadeCheckpointTriggers, $"{nameof(ArcadeCheckpointTrigger)}.tsv");
+
+        [MenuItem(menu + "Trigger - Course Metadata")]
+        public static void MenuAnalyzeCourseMetadataTriggers() => MenuForward(AnalyzeCourseMetadataTriggers, $"{nameof(CourseMetadataTrigger)}.tsv");
+
+        [MenuItem(menu + "Trigger - Story Object")]
+        public static void MenuAnalyzeStoryObjectTrigger() => MenuForward(AnalyzeStoryObjectTrigger, $"{nameof(StoryObjectTrigger)}.tsv");
+
+        [MenuItem(menu + "Trigger - Unknown Trigger")]
+        public static void MenuAnalyzeUnknownTrigger() => MenuForward(AnalyzeUnknownTrigger, $"{nameof(UnknownTrigger)}.tsv");
+
+        [MenuItem(menu + "Trigger - Visual Effect Trigger")]
+        public static void MenuAnalyzeVisualEffectTriggers() => MenuForward(AnalyzeVisualEffectTriggers, $"{nameof(VisualEffectTrigger)}.tsv");
+
+
+        [MenuItem(menu + "Fog")]
+        public static void MenuAnalyzeFog() => MenuForward(AnalyzeFog, $"{nameof(Fog)}.tsv");
+
+        [MenuItem(menu + "Fog Curves")]
+        public static void MenuAnalyzeFogCurves() => MenuForward(AnalyzeFogCurves, $"{nameof(FogCurves)}.tsv");
+
+
+
+        [MenuItem(menu + "Static Collider Meshses")]
+        public static void MenuAnalyzeSceneStaticCollider() => MenuForward(AnalyzeStaticColliderMeshes, $"{nameof(StaticColliderMeshes)}.tsv");
+
+        [MenuItem(menu + "Unknown Collider")]
+        public static void MenuAnalyzeUnknownCollider() => MenuForward(AnalyzeUnknownCollider, $"{nameof(UnknownCollider)}.tsv");
+
+        #endregion
+
+
+        // Trying to make this stuff automatic?
+        public static void MenuForward(Action<ColiScene[], string> action, string fileName)
+        {
+            var settings = GfzProjectWindow.GetSettings();
+            var sceneIterator = ColiCourseIO.LoadAllStages(settings.StageDir, "Loading Stages...");
+            var scenes = sceneIterator.ToArray();
+            var outputPath = settings.AnalysisOutput + fileName;
+            Directory.CreateDirectory(outputPath);
+            action.Invoke(scenes, outputPath);
+            OSUtility.OpenDirectory(settings.AnalysisOutput);
+        }
 
         public static void Analyze(ColiScene[] scenes, string outputPath)
         {
@@ -90,7 +172,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                     var fileName = $"{time} COLI {nameof(AnimationClip)}.tsv";
                     var filePath = Path.Combine(outputPath, fileName);
                     EditorUtility.DisplayProgressBar(ExecuteText, filePath, RandomTime);
-                    AnalyzeGameObjectAnimationClips(scenes, filePath);
+                    AnalyzeAnimationClips(scenes, filePath);
                 }
 
                 // ANIMATIONS INDIVIDUALIZED
@@ -151,7 +233,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                     string fileName = $"{time} COLI {nameof(UnknownCollider)}.tsv";
                     string filePath = Path.Combine(outputPath, fileName);
                     EditorUtility.DisplayProgressBar(ExecuteText, filePath, RandomTime);
-                    AnalyzeUnknownSolsTriggers(scenes, filePath);
+                    AnalyzeUnknownCollider(scenes, filePath);
                 }
 
                 // VFX TRIGGERS
@@ -169,7 +251,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                     var fileName = $"{time} COLI {nameof(SceneObjectDynamic)}.tsv";
                     var filePath = Path.Combine(outputPath, fileName);
                     EditorUtility.DisplayProgressBar(ExecuteText, filePath, .1f);
-                    AnalyzeSceneObjects(scenes, filePath);
+                    AnalyzeSceneObjectDynamic(scenes, filePath);
                 }
 
                 {
@@ -183,21 +265,21 @@ namespace Manifold.IO.GFZ.CourseCollision
                     var fileName = $"{time} COLI {nameof(SceneObjectDynamic)} {nameof(SkeletalAnimator)}.tsv";
                     var filePath = Path.Combine(outputPath, fileName);
                     EditorUtility.DisplayProgressBar(ExecuteText, filePath, .5f);
-                    AnalyzeSceneObjectsSkeletalAnimator(scenes, filePath);
+                    AnalyzeSkeletalAnimator(scenes, filePath);
                 }
 
                 {
                     var fileName = $"{time} COLI {nameof(SceneObjectDynamic)} {nameof(ColliderTriangle)}.tsv";
                     var filePath = Path.Combine(outputPath, fileName);
                     EditorUtility.DisplayProgressBar(ExecuteText, filePath, .7f);
-                    AnalyzeSceneObjectsCollisionTri(scenes, filePath);
+                    AnalyzeColliderGeometryTri(scenes, filePath);
                 }
 
                 {
                     var fileName = $"{time} COLI {nameof(SceneObjectDynamic)} {nameof(ColliderQuad)}.tsv";
                     var filePath = Path.Combine(outputPath, fileName);
                     EditorUtility.DisplayProgressBar(ExecuteText, filePath, .9f);
-                    AnalyzeSceneObjectsCollisionQuad(scenes, filePath);
+                    AnalyzeColliderGeometryQuad(scenes, filePath);
                 }
             }
 
@@ -206,21 +288,21 @@ namespace Manifold.IO.GFZ.CourseCollision
                     var fileName = $"{time} COLI {nameof(SceneObjectLOD)}.tsv";
                     var filePath = Path.Combine(outputPath, fileName);
                     EditorUtility.DisplayProgressBar(ExecuteText, filePath, .33f);
-                    AnalyzeSceneObjectReferences(scenes, filePath);
+                    AnalyzeSceneObjectLODs(scenes, filePath);
                 }
 
                 {
                     var fileName = $"{time} COLI {nameof(SceneObject)}.tsv";
                     var filePath = Path.Combine(outputPath, fileName);
                     EditorUtility.DisplayProgressBar(ExecuteText, filePath, .66f);
-                    AnalyzeSceneInstanceReferences(scenes, filePath);
+                    AnalyzeSceneObjects(scenes, filePath);
                 }
 
                 {
                     var fileName = $"{time} COLI {nameof(SceneObject)} and {nameof(SceneObjectLOD)}.tsv";
                     var filePath = Path.Combine(outputPath, fileName);
                     EditorUtility.DisplayProgressBar(ExecuteText, filePath, 1f);
-                    AnalyzeSceneInstanceAndObjectReferences(scenes, filePath);
+                    AnalyzeSceneObjectsAndLODs(scenes, filePath);
                 }
             }
 
@@ -248,7 +330,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 var filePath = $"{time} COLI {nameof(TrackSegment)}.tsv";
                 filePath = Path.Combine(outputPath, filePath);
                 EditorUtility.DisplayProgressBar(ExecuteText, filePath, RandomTime);
-                AnalyzeTrackTransforms(scenes, filePath);
+                AnalyzeTrackSegments(scenes, filePath);
             }
 
             //
@@ -256,7 +338,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 var fileName = $"{time} COLI {nameof(StaticColliderMeshes)}.tsv";
                 var filePath = Path.Combine(outputPath, fileName);
                 EditorUtility.DisplayProgressBar(ExecuteText, filePath, RandomTime);
-                AnalyzeSceneStaticCollider(scenes, filePath);
+                AnalyzeStaticColliderMeshes(scenes, filePath);
             }
 
             {
@@ -385,7 +467,6 @@ namespace Manifold.IO.GFZ.CourseCollision
             //foreach (var child in trackTransform.children)
             //    WriteTrackKeyableAttributeRecursive(writer, sobj, nestedDepth + 1, animationCurveIndex, trackTransformIndex, child);
         }
-
         public static void WriteKeyableAttribute(StreamWriter writer, ColiScene scene, int nestedDepth, int keyableIndex, int keyableTotal, int keyablesSet, int trackTransformIndex, KeyableAttribute param, TrackSegment tt)
         {
             string gameId = scene.IsFileGX ? "GX" : "AX";
@@ -418,7 +499,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
         // Kicks off recursive write
         private static int s_order;
-        public static void AnalyzeTrackTransforms(ColiScene[] scenes, string filename)
+        public static void AnalyzeTrackSegments(ColiScene[] scenes, string filename)
         {
             using (var writer = AnalyzerUtility.OpenWriter(filename))
             {
@@ -461,7 +542,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                     var total = scene.rootTrackSegments.Length;
                     foreach (var trackTransform in scene.rootTrackSegments)
                     {
-                        WriteTrackTransformRecursive(writer, scene, 0, ++index, total, trackTransform);
+                        WriteTrackSegmentRecursive(writer, scene, 0, ++index, total, trackTransform);
                     }
                 }
 
@@ -469,10 +550,10 @@ namespace Manifold.IO.GFZ.CourseCollision
             }
         }
         // Writes self and children
-        public static void WriteTrackTransformRecursive(StreamWriter writer, ColiScene scene, int depth, int index, int total, TrackSegment trackTransform)
+        public static void WriteTrackSegmentRecursive(StreamWriter writer, ColiScene scene, int depth, int index, int total, TrackSegment trackTransform)
         {
             // Write Parent
-            WriteTrackTransform(writer, scene, depth, index, total, trackTransform);
+            WriteTrackSegment(writer, scene, depth, index, total, trackTransform);
 
             // Write children
             //foreach (var child in trackTransform.children)
@@ -481,7 +562,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             //}
         }
         // The actual writing to file
-        public static void WriteTrackTransform(StreamWriter writer, ColiScene scene, int depth, int index, int total, TrackSegment trackTransform)
+        public static void WriteTrackSegment(StreamWriter writer, ColiScene scene, int depth, int index, int total, TrackSegment trackTransform)
         {
             writer.WriteNextCol(scene.FileName);
             writer.WriteNextCol($"{s_order++}");
@@ -521,9 +602,9 @@ namespace Manifold.IO.GFZ.CourseCollision
 
         #endregion
 
-        #region GameObject Animations
+        #region Scene Objects' Animation Clips
 
-        public static void AnalyzeGameObjectAnimationClips(ColiScene[] scenes, string filename)
+        public static void AnalyzeAnimationClips(ColiScene[] scenes, string filename)
         {
             using (var writer = AnalyzerUtility.OpenWriter(filename))
             {
@@ -657,9 +738,9 @@ namespace Manifold.IO.GFZ.CourseCollision
 
         #endregion
 
-        #region GameObjects
+        #region Scene Objects
 
-        public static void AnalyzeSceneObjects(ColiScene[] scenes, string fileName)
+        public static void AnalyzeSceneObjectDynamic(ColiScene[] scenes, string fileName)
         {
             using (var writer = AnalyzerUtility.OpenWriter(fileName))
             {
@@ -755,7 +836,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             }
         }
 
-        public static void AnalyzeSceneObjectsSkeletalAnimator(ColiScene[] scenes, string fileName)
+        public static void AnalyzeSkeletalAnimator(ColiScene[] scenes, string fileName)
         {
             using (var writer = AnalyzerUtility.OpenWriter(fileName))
             {
@@ -817,7 +898,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             }
         }
 
-        public static void AnalyzeSceneObjectsCollisionTri(ColiScene[] scenes, string fileName)
+        public static void AnalyzeColliderGeometryTri(ColiScene[] scenes, string fileName)
         {
             using (var writer = AnalyzerUtility.OpenWriter(fileName))
             {
@@ -906,7 +987,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             }
         }
 
-        public static void AnalyzeSceneObjectsCollisionQuad(ColiScene[] scenes, string fileName)
+        public static void AnalyzeColliderGeometryQuad(ColiScene[] scenes, string fileName)
         {
             using (var writer = AnalyzerUtility.OpenWriter(fileName))
             {
@@ -1349,52 +1430,6 @@ namespace Manifold.IO.GFZ.CourseCollision
             }
         }
 
-        public static void AnalyzeUnknownSolsTriggers(ColiScene[] scenes, string fileName)
-        {
-            using (var writer = AnalyzerUtility.OpenWriter(fileName))
-            {
-                // Write header
-                writer.WriteNextCol("File");
-                writer.WriteNextCol("Index");
-                writer.WriteNextCol("Venue");
-                writer.WriteNextCol("Course");
-                writer.WriteNextCol("AX/GX");
-                //
-                writer.WriteNextCol(nameof(UnknownCollider.templateSceneObjectPtr));
-                writer.WriteNextCol(nameof(UnknownCollider.transform.Position));
-                writer.WriteNextCol(nameof(UnknownCollider.transform.RotationEuler));
-                writer.WriteNextCol(nameof(UnknownCollider.transform.Scale));
-                writer.WriteNextCol(nameof(UnknownCollider.transform.UnknownOption));
-                //
-                writer.WriteNextRow();
-
-                foreach (var scene in scenes)
-                {
-                    var venueID = CourseUtility.GetVenueID(scene.ID).GetDescription();
-                    var courseID = ((CourseIndexAX)scene.ID).GetDescription();
-                    var isAxGx = scene.IsFileGX ? "GX" : "AX";
-
-                    foreach (var unkSols in scene.unknownColliders)
-                    {
-                        writer.WriteNextCol(scene.FileName);
-                        writer.WriteNextCol(scene.ID);
-                        writer.WriteNextCol(venueID);
-                        writer.WriteNextCol(courseID);
-                        writer.WriteNextCol(isAxGx);
-                        //
-                        writer.WriteNextCol(unkSols.templateSceneObjectPtr);
-                        writer.WriteNextCol(unkSols.transform.Position);
-                        writer.WriteNextCol(unkSols.transform.RotationEuler);
-                        writer.WriteNextCol(unkSols.transform.Scale);
-                        writer.WriteNextCol(unkSols.transform.UnknownOption);
-                        //
-                        writer.WriteNextRow();
-                    }
-                    writer.Flush();
-                }
-            }
-        }
-
         public static void AnalyzeVisualEffectTriggers(ColiScene[] scenes, string fileName)
         {
             using (var writer = AnalyzerUtility.OpenWriter(fileName))
@@ -1443,10 +1478,10 @@ namespace Manifold.IO.GFZ.CourseCollision
             }
         }
 
-
         #endregion
 
         #region FOG
+
         public static void AnalyzeFogCurves(ColiScene[] scenes, string fileName)
         {
             using (var writer = AnalyzerUtility.OpenWriter(fileName))
@@ -1558,6 +1593,7 @@ namespace Manifold.IO.GFZ.CourseCollision
         }
 
         #endregion
+
 
         public static void AnalyzeSceneObjectTransforms(ColiScene[] scenes, string fileName)
         {
@@ -1686,7 +1722,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             }
         }
 
-        public static void AnalyzeSceneStaticCollider(ColiScene[] scenes, string fileName)
+        public static void AnalyzeStaticColliderMeshes(ColiScene[] scenes, string fileName)
         {
             using (var writer = AnalyzerUtility.OpenWriter(fileName))
             {
@@ -1748,7 +1784,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             }
         }
 
-        public static void AnalyzeSceneObjectReferences(ColiScene[] scenes, string fileName)
+        public static void AnalyzeSceneObjectLODs(ColiScene[] scenes, string fileName)
         {
             using (var writer = AnalyzerUtility.OpenWriter(fileName))
             {
@@ -1811,7 +1847,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             }
         }
 
-        public static void AnalyzeSceneInstanceReferences(ColiScene[] scenes, string fileName)
+        public static void AnalyzeSceneObjects(ColiScene[] scenes, string fileName)
         {
             using (var writer = AnalyzerUtility.OpenWriter(fileName))
             {
@@ -1837,19 +1873,19 @@ namespace Manifold.IO.GFZ.CourseCollision
                     var isAxGx = scene.IsFileGX ? "GX" : "AX";
 
                     // Get all the scene object references
-                    var objectsList = new List<(SceneObject sir, string category)>();
+                    var sceneObjectsList = new List<(SceneObject sir, string category)>();
                     foreach (var sceneInstance in scene.templateSceneObjects)
                     {
-                        objectsList.Add((sceneInstance, "Instance"));
+                        sceneObjectsList.Add((sceneInstance, "Instance"));
                     }
                     foreach (var sceneOriginObject in scene.staticSceneObjects)
                     {
                         var sceneInstance = sceneOriginObject.sceneObject;
-                        objectsList.Add((sceneInstance, "Origin"));
+                        sceneObjectsList.Add((sceneInstance, "Origin"));
                     }
 
                     // iterate
-                    foreach (var sceneObjectReference in objectsList)
+                    foreach (var sceneObject in sceneObjectsList)
                     {
                         writer.WriteNextCol(scene.FileName);
                         writer.WriteNextCol(scene.ID);
@@ -1857,11 +1893,11 @@ namespace Manifold.IO.GFZ.CourseCollision
                         writer.WriteNextCol(courseID);
                         writer.WriteNextCol(isAxGx);
                         //
-                        writer.WriteNextCol(sceneObjectReference.sir.PrimarySceneObject.name);
-                        writer.WriteNextCol(sceneObjectReference.category);
-                        writer.WriteNextCol(sceneObjectReference.sir.lodRenderFlags);
-                        writer.WriteNextCol(sceneObjectReference.sir.lodsPtr);
-                        writer.WriteNextCol(sceneObjectReference.sir.colliderGeometryPtr);
+                        writer.WriteNextCol(sceneObject.sir.PrimarySceneObject.name);
+                        writer.WriteNextCol(sceneObject.category);
+                        writer.WriteNextCol(sceneObject.sir.lodRenderFlags);
+                        writer.WriteNextCol(sceneObject.sir.lodsPtr);
+                        writer.WriteNextCol(sceneObject.sir.colliderGeometryPtr);
                         //
                         writer.WriteNextRow();
                     }
@@ -1870,7 +1906,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             }
         }
 
-        public static void AnalyzeSceneInstanceAndObjectReferences(ColiScene[] scenes, string fileName)
+        public static void AnalyzeSceneObjectsAndLODs(ColiScene[] scenes, string fileName)
         {
             using (var writer = AnalyzerUtility.OpenWriter(fileName))
             {
@@ -2020,6 +2056,53 @@ namespace Manifold.IO.GFZ.CourseCollision
                     }
                 }
                 writer.Flush();
+            }
+        }
+
+
+        public static void AnalyzeUnknownCollider(ColiScene[] scenes, string fileName)
+        {
+            using (var writer = AnalyzerUtility.OpenWriter(fileName))
+            {
+                // Write header
+                writer.WriteNextCol("File");
+                writer.WriteNextCol("Index");
+                writer.WriteNextCol("Venue");
+                writer.WriteNextCol("Course");
+                writer.WriteNextCol("AX/GX");
+                //
+                writer.WriteNextCol(nameof(UnknownCollider.templateSceneObjectPtr));
+                writer.WriteNextCol(nameof(UnknownCollider.transform.Position));
+                writer.WriteNextCol(nameof(UnknownCollider.transform.RotationEuler));
+                writer.WriteNextCol(nameof(UnknownCollider.transform.Scale));
+                writer.WriteNextCol(nameof(UnknownCollider.transform.UnknownOption));
+                //
+                writer.WriteNextRow();
+
+                foreach (var scene in scenes)
+                {
+                    var venueID = CourseUtility.GetVenueID(scene.ID).GetDescription();
+                    var courseID = ((CourseIndexAX)scene.ID).GetDescription();
+                    var isAxGx = scene.IsFileGX ? "GX" : "AX";
+
+                    foreach (var unkSols in scene.unknownColliders)
+                    {
+                        writer.WriteNextCol(scene.FileName);
+                        writer.WriteNextCol(scene.ID);
+                        writer.WriteNextCol(venueID);
+                        writer.WriteNextCol(courseID);
+                        writer.WriteNextCol(isAxGx);
+                        //
+                        writer.WriteNextCol(unkSols.templateSceneObjectPtr);
+                        writer.WriteNextCol(unkSols.transform.Position);
+                        writer.WriteNextCol(unkSols.transform.RotationEuler);
+                        writer.WriteNextCol(unkSols.transform.Scale);
+                        writer.WriteNextCol(unkSols.transform.UnknownOption);
+                        //
+                        writer.WriteNextRow();
+                    }
+                    writer.Flush();
+                }
             }
         }
 
