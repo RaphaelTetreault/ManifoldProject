@@ -1775,19 +1775,19 @@ namespace Manifold.IO.GFZ.CourseCollision
                     var isAxGx = scene.IsFileGX ? "GX" : "AX";
 
                     // Get all the scene object references
-                    var objectsList = new List<(SceneObject sor, string category)>();
-                    foreach (var sceneObject in scene.templateSceneObjects)
+                    var objectsList = new List<SceneObject>();
+                    foreach (var templateSceneObject in scene.templateSceneObjects)
                     {
-                        throw new System.NotImplementedException();
-                        var sceneObjectReference = sceneObject.sceneObjects;
-                        //objectsList.Add((sceneObject.sceneObjects, "Instance"));
+                        var sceneObjects = templateSceneObject.sceneObjects;
+                        foreach (var sceneObject in sceneObjects)
+                            objectsList.Add(sceneObject);
                     }
-                    foreach (var sceneOriginObject in scene.staticSceneObjects)
-                    {
-                        throw new System.NotImplementedException();
-                        var sceneObjectReference = sceneOriginObject.templateSceneObject.sceneObjects;
-                        //objectsList.Add((sceneObjectReference, "Origin"));
-                    }
+                    //foreach (var staticSceneObject in scene.staticSceneObjects)
+                    //{
+                    //    var sceneObjects = staticSceneObject.templateSceneObject.sceneObjects;
+                    //    foreach (var sceneObject in sceneObjects)
+                    //        objectsList.Add((sceneObject, "Instance"));
+                    //}
 
                     // iterate
                     foreach (var sceneObjectReference in objectsList)
@@ -1798,12 +1798,11 @@ namespace Manifold.IO.GFZ.CourseCollision
                         writer.WriteNextCol(courseID);
                         writer.WriteNextCol(isAxGx);
                         //
-                        writer.WriteNextCol(sceneObjectReference.sor.name);
-                        writer.WriteNextCol(sceneObjectReference.category);
-                        writer.WriteNextCol(sceneObjectReference.sor.zero_0x00);
-                        writer.WriteNextCol(sceneObjectReference.sor.namePtr);
-                        writer.WriteNextCol(sceneObjectReference.sor.zero_0x08);
-                        writer.WriteNextCol(sceneObjectReference.sor.unk_0x0C);
+                        writer.WriteNextCol(sceneObjectReference.name);
+                        writer.WriteNextCol(sceneObjectReference.zero_0x00);
+                        writer.WriteNextCol(sceneObjectReference.namePtr);
+                        writer.WriteNextCol(sceneObjectReference.zero_0x08);
+                        writer.WriteNextCol(sceneObjectReference.unk_0x0C);
                         //
                         writer.WriteNextRow();
                     }
@@ -1884,12 +1883,15 @@ namespace Manifold.IO.GFZ.CourseCollision
                 //
                 writer.WriteNextCol("name");
                 writer.WriteNextCol(nameof(SceneObjectTemplate.unk_0x00));
-                writer.WriteNextCol(nameof(SceneObjectTemplate.sceneObjectsPtr));
+                writer.WriteNextCol(nameof(SceneObjectTemplate.sceneObjectsPtr) + " Len");
+                writer.WriteNextCol(nameof(SceneObjectTemplate.sceneObjectsPtr) + " Adr");
                 writer.WriteNextCol(nameof(SceneObjectTemplate.colliderGeometryPtr));
+                writer.WriteNextCol(nameof(SceneObject) + " IDX");
                 writer.WriteNextCol(nameof(SceneObject.zero_0x00));
                 writer.WriteNextCol(nameof(SceneObject.namePtr));
                 writer.WriteNextCol(nameof(SceneObject.zero_0x08));
                 writer.WriteNextCol(nameof(SceneObject.unk_0x0C));
+                writer.WriteNextCol(nameof(SceneObject.name));
                 //
                 writer.WriteNextRow();
 
@@ -1899,26 +1901,31 @@ namespace Manifold.IO.GFZ.CourseCollision
                     var courseID = ((CourseIndexAX)scene.ID).GetDescription();
                     var isAxGx = scene.IsFileGX ? "GX" : "AX";
 
-                    foreach (var sceneInstance in scene.templateSceneObjects)
+                    foreach (var template in scene.templateSceneObjects)
                     {
-                        writer.WriteNextCol(scene.FileName);
-                        writer.WriteNextCol(scene.ID);
-                        writer.WriteNextCol(venueID);
-                        writer.WriteNextCol(courseID);
-                        writer.WriteNextCol(isAxGx);
-                        //
-                        throw new System.NotImplementedException();
-                        //var objectReference = sceneInstance.sceneObjects;
-                        //writer.WriteNextCol(objectReference.name);
-                        //writer.WriteNextCol(sceneInstance.unk_0x00);
-                        //writer.WriteNextCol(sceneInstance.unk_0x04);
-                        //writer.WriteNextCol(sceneInstance.sceneObjectsPtr);
-                        //writer.WriteNextCol(sceneInstance.colliderGeometryPtr);
-                        //writer.WriteNextCol(objectReference.zero_0x00);
-                        //writer.WriteNextCol(objectReference.namePtr);
-                        //writer.WriteNextCol(objectReference.zero_0x08);
-                        //writer.WriteNextCol(objectReference.unk_0x0C);
-                        writer.WriteNextRow();
+                        var index = 0;
+                        var length = template.sceneObjects.Length;
+                        foreach (var sceneObject in template.sceneObjects)
+                        {
+                            writer.WriteNextCol(scene.FileName);
+                            writer.WriteNextCol(scene.ID);
+                            writer.WriteNextCol(venueID);
+                            writer.WriteNextCol(courseID);
+                            writer.WriteNextCol(isAxGx);
+                            //
+                            writer.WriteNextCol(template.Name);
+                            writer.WriteNextCol(template.unk_0x00);
+                            writer.WriteNextCol(template.sceneObjectsPtr.Length);
+                            writer.WriteNextCol(template.sceneObjectsPtr.HexAddress);
+                            writer.WriteNextCol(template.colliderGeometryPtr);
+                            writer.WriteNextCol($"[{++index}/{length}]");
+                            writer.WriteNextCol(sceneObject.zero_0x00);
+                            writer.WriteNextCol(sceneObject.namePtr);
+                            writer.WriteNextCol(sceneObject.zero_0x08);
+                            writer.WriteNextCol(sceneObject.unk_0x0C);
+                            writer.WriteNextCol(sceneObject.name);
+                            writer.WriteNextRow();
+                        }
                     }
                 }
                 writer.Flush();
