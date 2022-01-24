@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace Manifold.IO.GFZ.CourseCollision
 {
-    internal class GfzSceneObject
+    internal class GfzTextureScroll
     {
+
     }
 }

@@ -45,8 +45,8 @@ namespace Manifold.IO
             return GetAllOfType<T>(new string[0]);
         }
 
-        public static T[] GetSobjByOption<T>(T[] sobjs, IOOption option, params string[] searchFolders)
-          where T : ScriptableObject
+        public static TScriptableObject[] GetSobjByOption<TScriptableObject>(TScriptableObject[] sobjs, IOOption option, params string[] searchFolders)
+          where TScriptableObject : ScriptableObject
         {
             switch (option)
             {
@@ -54,18 +54,18 @@ namespace Manifold.IO
                     return sobjs;
 
                 case IOOption.allFromSourceFolder:
-                    return GetAllOfType<T>(searchFolders);
+                    return GetAllOfType<TScriptableObject>(searchFolders);
 
                 case IOOption.allFromAssetDatabase:
-                    return GetAllOfType<T>();
+                    return GetAllOfType<TScriptableObject>();
 
                 default:
                     throw new NotImplementedException();
             }
         }
 
-        public static T[] GetSobjByOption<T>(T[] sobjs, IOOption option)
-            where T : ScriptableObject
+        public static TScriptableObject[] GetSobjByOption<TScriptableObject>(TScriptableObject[] sobjs, IOOption option)
+            where TScriptableObject : ScriptableObject
         {
             return GetSobjByOption(sobjs, option, new string[0]);
         }

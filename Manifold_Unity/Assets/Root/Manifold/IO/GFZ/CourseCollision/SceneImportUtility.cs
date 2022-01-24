@@ -915,7 +915,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 //sceneObjectData.Data = sceneObject;
 
                 // Copy out values other than models
-                var script = assetInstance.AddComponent<GfzSceneObject>();
+                var script = assetInstance.AddComponent<GfzSceneObjectDynamic>();
                 script.SetBaseValues(sceneObject);
             }
         }

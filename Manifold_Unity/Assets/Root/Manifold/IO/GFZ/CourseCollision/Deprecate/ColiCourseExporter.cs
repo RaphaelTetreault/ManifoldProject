@@ -358,7 +358,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
                 // Scene Objects / Instances / References / Names
                 {
-                    var sceneObjects = FindObjectsOfType<GfzSceneObject>(findInactive);
+                    var sceneObjects = FindObjectsOfType<GfzSceneObjectDynamic>(findInactive);
                     coliScene.dynamicSceneObjects = new SceneObjectDynamic[0];
 
                     // TODO: construct the actual objects...

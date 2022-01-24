@@ -1138,7 +1138,7 @@ namespace Manifold.IO.GFZ
 
                 // Scene Objects / Instances / References / Names
                 {
-                    var sceneObjects = GameObject.FindObjectsOfType<GfzSceneObject>(canFindInactive);
+                    var sceneObjects = GameObject.FindObjectsOfType<GfzSceneObjectDynamic>(canFindInactive);
                     coliScene.dynamicSceneObjects = new SceneObjectDynamic[0];
 
                     // TODO: construct the actual objects...

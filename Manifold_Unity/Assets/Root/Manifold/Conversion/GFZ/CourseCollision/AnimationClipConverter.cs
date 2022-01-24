@@ -28,12 +28,12 @@ namespace Manifold.Conversion.GFZ.CourseCollision
             var gfxAnimClipPositionY = animationClip.curves[7];
             var gfxAnimClipPositionZ = animationClip.curves[8];
             // Unknown
-            var gfxAnimClipUnknown = animationClip.curves[9];
+            var gfxAnimClipUnused = animationClip.curves[9];
             // Light
-            var gfxAnimClipLight = animationClip.curves[10];
+            var gfxAnimClipAlpha = animationClip.curves[10];
 
 
-            var transformType = typeof(UnityEngine.Transform);
+            var transformType = typeof(Transform);
 
             // Scale
             SetCurve(unityAnimClip, gfxAnimClipScaleX, transformType, "localScale.x");
@@ -49,9 +49,9 @@ namespace Manifold.Conversion.GFZ.CourseCollision
             SetCurve(unityAnimClip, gfxAnimClipPositionY, transformType, "localPosition.y");
             SetCurve(unityAnimClip, gfxAnimClipPositionZ, transformType, "localPosition.z");
             //
-            //SetCurve(unityAnimClip, gfxAnimClipUnknown, transformType, "localPosition.z");
+            SetCurve(unityAnimClip, gfxAnimClipUnused, transformType, "unused");
             //
-            //SetCurve(unityAnimClip, gfxAnimClipLight, transformType, "localPosition.z");
+            SetCurve(unityAnimClip, gfxAnimClipAlpha, transformType, "alpha");
 
             return unityAnimClip;
         }
