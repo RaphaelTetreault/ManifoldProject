@@ -72,11 +72,11 @@ namespace Manifold.IO.GFZ.CourseCollision
             // Copy most reliable transform if available
             if (value.transformMatrix3x4Ptr.IsNotNullPointer)
             {
-                transform.CopyGfzTransform(value.transformMatrix3x4);
+                transform.CopyGfzTransformMatrix3x4(value.transformMatrix3x4);
             }
             else
             {
-                transform.CopyGfzTransform(value.transformPRXS);
+                transform.CopyGfzTransformPRXS(value.transformPRXS);
             }
 
             // Copy out values

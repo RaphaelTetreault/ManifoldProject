@@ -208,7 +208,9 @@ namespace GameCube.GFZ.CourseCollision
             Assert.ReferencePointer(trackCorner, trackCornerPtr);
 
             // 2021/12/21: NOT SURE ABOUT THIS, FAILS ON ST43
-            //if (topologyMetadata == TrackTopologyMetadata.IsTransformParent)
+            // 2022/01/23: looks like if there are 2 nodes side-by-side and one beneath one of the
+            //          of the other children, this is valid. Very weird. ST43 nodes 14/16: 14.1 and 14.2
+            //if (topologyMetadata == TrackSegmentMetadata.IsTransformParent)
             //    Assert.IsTrue(childrenPtrs.IsNotNullPointer);
             // TODO: more edge cases to assert
 

@@ -28,7 +28,7 @@ namespace Manifold.IO.GFZ.CourseCollision
         public ArcadeCheckpointTrigger ExportGfz()
         {
             // Convert unity transform to gfz transform
-            var transform = TransformConverter.ToGfzTransform(this.transform);
+            var transform = TransformConverter.ToGfzTransformPRXS(this.transform);
             transform.Scale /= scale;
 
             var value = new ArcadeCheckpointTrigger
@@ -42,7 +42,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
         public void ImportGfz(ArcadeCheckpointTrigger value)
         {
-            transform.CopyGfzTransform(value.transform);
+            transform.CopyGfzTransformPRXS(value.transform);
             transform.localScale *= scale;
             type = value.type;
         }

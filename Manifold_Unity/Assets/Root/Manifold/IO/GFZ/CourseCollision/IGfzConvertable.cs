@@ -1,5 +1,9 @@
 namespace Manifold
 {
+    /// <summary>
+    /// Allows a class to be converted to a GFZ type.
+    /// </summary>
+    /// <typeparam name="T">The type the inheritor can become.</typeparam>
     public interface IGfzConvertable<T>
     {
         /// <summary>

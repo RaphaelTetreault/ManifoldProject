@@ -21,8 +21,8 @@ namespace Manifold.IO.GFZ.CourseCollision
         public float gizmosRadius = 10f;
         public Color gizmosColor = Color.white;
         [Header("Path")]
-        public UnityEngine.Transform from;
-        public UnityEngine.Transform to;
+        public Transform from;
+        public Transform to;
         [Header("Venue")]
         public PathObjectVenue objectVenue;
 
@@ -53,7 +53,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 : CourseMetadataType.OuterSpace_Meteor;
 
             // Get transform values from "from" node
-            var transform = TransformConverter.ToGfzTransform(from);
+            var transform = TransformConverter.ToGfzTransformPRXS(from);
             // The scale field is used as the "to" position
             transform.Scale = to.position;
 

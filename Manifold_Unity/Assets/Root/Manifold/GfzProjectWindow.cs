@@ -1,40 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿using GameCube.GFZ.CourseCollision;
+using System;
 using UnityEngine;
 using UnityEditor;
-using GameCube.GFZ.CourseCollision;
 
-using Manifold.IO.GFZ;
-
-namespace Manifold
+namespace Manifold.IO.GFZ
 {
-    //public abstract class EditorData
-    //{
-    //    public void Draw(string heading)
-    //    {
-    //        if (!string.IsNullOrEmpty(heading))
-    //        {
-    //            var label = ObjectNames.NicifyVariableName(heading);
-    //            EditorGUILayout.LabelField(label, EditorStyles.boldLabel);
-    //        }
-
-    //        OnGUI();
-    //    }
-
-    //    public void Draw()
-    //    {
-    //        OnGUI();
-    //    }
-
-    //    public abstract void OnGUI();
-
-    //}
-
-
     [Serializable]
     public class GfzProjectSettings
     {
@@ -49,6 +19,7 @@ namespace Manifold
         [SerializeField] string analysisOutput = string.Empty;
         [SerializeField] string fileOutput = string.Empty;
         [SerializeField] string unityImportDir = "GFZ/";
+        [SerializeField] int sceneOfInterestID = 1;
 
         public ColiScene.SerializeFormat SerializeFormat => serializeFormat;
         public string RootFolder => rootFolder;
@@ -56,13 +27,10 @@ namespace Manifold
         public string AnalysisOutput => analysisOutput;
         public string FileOutput => fileOutput;
         public string UnityImportDir => unityImportDir;
+        public int SceneOfInterestID => sceneOfInterestID;
 
         // Easy accessors for common places
         public string StageDir => $"{rootFolder}/stage/";
-
-
-
-
 
 
         public string[] GetTestRootDirectories()
@@ -109,6 +77,9 @@ namespace Manifold
             EditorGUILayout.Space();
             GuiSimple.Label("GFZ->Unity Output", EditorStyles.boldLabel);
             unityImportDir = GuiSimple.String("Unity Import Dest", unityImportDir);
+            EditorGUILayout.Space();
+            GuiSimple.Label("Scene Single", EditorStyles.boldLabel);
+            sceneOfInterestID = GuiSimple.Int("Scene Of Interest", sceneOfInterestID);
         }
 
 

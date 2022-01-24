@@ -339,7 +339,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                     var unknownTriggers = FindObjectsOfType<GfzUnknownTrigger>(findInactive);
                     coliScene.unknownTriggers = GetGfzValues(unknownTriggers);
 
-                    var unknownSolsTriggers = FindObjectsOfType<GfzUnknownSolsTrigger>(findInactive);
+                    var unknownSolsTriggers = FindObjectsOfType<GfzUnknownCollider>(findInactive);
                     coliScene.unknownColliders = GetGfzValues(unknownSolsTriggers);
 
                     var visualEffectTriggers = FindObjectsOfType<GfzVisualEffectTrigger>(findInactive);

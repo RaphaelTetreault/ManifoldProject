@@ -13,6 +13,8 @@ namespace Manifold.IO.GFZ.CourseCollision
 {
     public static class SceneImportUtility
     {
+        // todo: make title consistent across progress bars.
+
 
         public const string ExecuteText = "Import COLI as Unity Scene";
 
@@ -25,12 +27,24 @@ namespace Manifold.IO.GFZ.CourseCollision
             foreach (var scene in ColiCourseIO.LoadAllStages(inputPath, "Generating Unity Scene From GFZ Scene"))
             {
                 Import(scene, outputPath);
-                break;
             }
             EditorUtility.ClearProgressBar();
             AssetDatabase.Refresh();
         }
 
+        [MenuItem(Const.Menu.Manifold + "Scene Generation/Import Stage (Single)")]
+        public static void ImportSingle()
+        {
+            var settings = GfzProjectWindow.GetSettings();
+            var inputPath = settings.StageDir;
+            var outputPath = settings.UnityImportDir;
+            var sceneIndex = settings.SceneOfInterestID;
+            var filePath = $"{inputPath}COLI_COURSE{sceneIndex:00}";
+            var scene = ColiCourseIO.LoadScene(filePath);
+            Import(scene, outputPath);
+            EditorUtility.ClearProgressBar();
+            AssetDatabase.Refresh();
+        }
 
         public static void Import(ColiScene scene, string outputPath)
         {
@@ -362,7 +376,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 //
                 var gobj = CreatePrimitive(PrimitiveType.Cube, name, root).gameObject;
                 //
-                var script = gobj.AddComponent<GfzUnknownSolsTrigger>();
+                var script = gobj.AddComponent<GfzUnknownCollider>();
                 script.ImportGfz(unknownSolsTrigger);
             }
 
@@ -862,7 +876,6 @@ namespace Manifold.IO.GFZ.CourseCollision
 
         public static void CreateSceneObjects(ColiScene scene, params string[] searchFolders)
         {
-
             // Get some metadata from the number of scene objects
             var sceneObjects = scene.dynamicSceneObjects;
             // Create a string format from the highest index number used
@@ -884,7 +897,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 var title = $"Generating Scene ({scene.FileName})";
                 var info = $"[{count.ToString(digitsFormat)}/{total}] {objectName}";
                 var progress = (float)count / total;
-                EditorUtility.DisplayProgressBar(title, info, progress);
+                var cancel = EditorUtility.DisplayCancelableProgressBar(title, info, progress);
                 count++;
 
                 // Find the asset path from database

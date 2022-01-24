@@ -6,7 +6,7 @@ using GameCube.GFZ.CourseCollision;
 
 namespace Manifold.Conversion.GFZ.CourseCollision
 {
-    public static class AnimationConverter
+    public static class AnimationClipConverter
     {
         public static UnityEngine.AnimationClip GfzToUnity(GameCube.GFZ.CourseCollision.AnimationClip animationClip)
         {

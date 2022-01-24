@@ -11,7 +11,7 @@ namespace GameCube.GFZ.CourseCollision
         /// <summary>
         /// When set to nothing, TrackProperty has a value.
         /// </summary>
-        IsEmbeddedProperty = 0,
+        IsEmbeddedProperty = 0, // 0x00
 
         /// <summary>
         /// The flag for pipes or cylinders when NOT using TrackProperty?

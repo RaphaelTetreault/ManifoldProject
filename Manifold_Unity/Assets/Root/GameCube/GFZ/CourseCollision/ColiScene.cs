@@ -380,7 +380,7 @@ namespace GameCube.GFZ.CourseCollision
                 }
                 foreach (var unknownCollider in unknownColliders)
                 {
-                    GetSerializable(reader, unknownCollider.templateSceneObjectPtr, ref unknownCollider.templateSceneObject, templateSceneObjectsDict);
+                    GetSerializable(reader, unknownCollider.templateSceneObjectPtr, ref unknownCollider.sceneObject, templateSceneObjectsDict);
                 }
                 // Save, order by address
                 templateSceneObjects = templateSceneObjectsDict.Values.ToArray();

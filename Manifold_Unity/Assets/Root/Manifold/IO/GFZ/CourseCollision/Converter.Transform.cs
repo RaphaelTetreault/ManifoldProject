@@ -1,41 +1,37 @@
 using GameCube.GFZ.CourseCollision;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using Unity.Mathematics;
 
 namespace Manifold.IO.GFZ.CourseCollision
 {
     public static class TransformConverter
     {
         // EXTENSIONS
-        public static void CopyGfzTransform(this UnityEngine.Transform unityTransform, GameCube.GFZ.CourseCollision.TransformPRXS gfzTransform)
+        public static void CopyGfzTransformPRXS(this Transform unityTransform, TransformPRXS gfzTransform)
         {
             CopyToUnityTransform(gfzTransform, unityTransform);
         }
-        public static void CopyGfzTransform(this UnityEngine.Transform unityTransform, TransformMatrix3x4 gfzTransform)
+        public static void CopyGfzTransformMatrix3x4(this Transform unityTransform, TransformMatrix3x4 gfzTransform)
         {
             CopyToUnityTransform(gfzTransform, unityTransform);
         }
 
-        public static void CopyUnityTransform(this GameCube.GFZ.CourseCollision.TransformPRXS gfzTransform, UnityEngine.Transform unityTransform)
+        public static void CopyUnityTransform(this TransformPRXS gfzTransform, Transform unityTransform)
         {
-            CopyToGfzTransform(unityTransform, gfzTransform);
+            CopyToGfzTransformPRXS(unityTransform, gfzTransform);
         }
-        public static void CopyUnityTransform(this TransformMatrix3x4 gfzTransform, UnityEngine.Transform unityTransform)
+        public static void CopyUnityTransform(this TransformMatrix3x4 gfzTransform, Transform unityTransform)
         {
-            CopyToGfzTransformMatrix(unityTransform, gfzTransform);
+            CopyToGfzTransformMatrix3x4(unityTransform, gfzTransform);
         }
 
 
         // HELPERS
-
         /// <summary>
         /// Copies the TRS values from GFZ Transform <paramref name="from"/> to the Unity Transform <paramref name="to"/>
         /// </summary>
         /// <param name="from"></param>
         /// <param name="to"></param>
-        public static void CopyToUnityTransform(GameCube.GFZ.CourseCollision.TransformPRXS from, UnityEngine.Transform to)
+        public static void CopyToUnityTransform(TransformPRXS from, Transform to)
         {
             // Apply transform values to target
             to.localPosition = from.Position;
@@ -48,7 +44,7 @@ namespace Manifold.IO.GFZ.CourseCollision
         /// </summary>
         /// <param name="from">The transform to copy local TRS from.</param>
         /// <param name="to">The transform to apply TRS to.</param>
-        public static void CopyToUnityTransform(TransformMatrix3x4 from, UnityEngine.Transform to)
+        public static void CopyToUnityTransform(TransformMatrix3x4 from, Transform to)
         {
             // Apply transform values to target
             to.localPosition = from.Position;
@@ -63,7 +59,7 @@ namespace Manifold.IO.GFZ.CourseCollision
         /// </summary>
         /// <param name="from">The transform to copy global TRS from.</param>
         /// <param name="to">The transform to apply global TRS to.</param>
-        public static void CopyToGfzTransform(UnityEngine.Transform from, GameCube.GFZ.CourseCollision.TransformPRXS to)
+        public static void CopyToGfzTransformPRXS(Transform from, TransformPRXS to)
         {
             // Copy over GLOBAL position.
             // The game does uses "TransformMatrix3x4" for LOCAL coordinates.
@@ -77,7 +73,7 @@ namespace Manifold.IO.GFZ.CourseCollision
         /// </summary>
         /// <param name="from">The transform to copy local TRS from.</param>
         /// <param name="to">The transform to apply local TRS to.</param>
-        public static void CopyToGfzTransformMatrix(UnityEngine.Transform from, TransformMatrix3x4 to)
+        public static void CopyToGfzTransformMatrix3x4(Transform from, TransformMatrix3x4 to)
         {
             // Create Unity Matrix for easy setup of TRS.
             // Use LOCAL coordinates since this structure may exist in a hierarchy with parenting.
@@ -96,9 +92,9 @@ namespace Manifold.IO.GFZ.CourseCollision
         /// </summary>
         /// <param name="unityTransform">The transform to copy global TRS from.</param>
         /// <returns></returns>
-        public static GameCube.GFZ.CourseCollision.TransformPRXS ToGfzTransform(UnityEngine.Transform unityTransform)
+        public static TransformPRXS ToGfzTransformPRXS(Transform unityTransform)
         {
-            var value = new GameCube.GFZ.CourseCollision.TransformPRXS();
+            var value = new TransformPRXS();
             value.CopyUnityTransform(unityTransform);
 
             return value;
@@ -109,7 +105,7 @@ namespace Manifold.IO.GFZ.CourseCollision
         /// </summary>
         /// <param name="unityTransform">The transform to copy local TRS from.</param>
         /// <returns></returns>
-        public static TransformMatrix3x4 ToGfzTransformMatrix3x4(UnityEngine.Transform unityTransform)
+        public static TransformMatrix3x4 ToGfzTransformMatrix3x4(Transform unityTransform)
         {
             var value = new TransformMatrix3x4();
             value.CopyUnityTransform(unityTransform);

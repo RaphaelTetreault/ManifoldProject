@@ -57,11 +57,7 @@ namespace Manifold.IO.GFZ
                     break;
 
                 // Read scene file
-                var filePath = filePaths[i];
-                var reader = new BinaryReader(File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read));
-                var scene = new ColiScene();
-                scene.FileName = fileName;
-                scene.Deserialize(reader);
+                var scene = LoadScene(fileName);
 
                 // Return next scene
                 yield return scene;
@@ -70,6 +66,19 @@ namespace Manifold.IO.GFZ
             EditorUtility.ClearProgressBar();
         }
 
+
+        public static ColiScene LoadScene(string filePath)
+        {
+            var reader = new BinaryReader(File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read));
+            var scene = new ColiScene();
+            var fileName = Path.GetFileName(filePath);
+            scene.FileName = fileName;
+            scene.Deserialize(reader);
+
+            // TODO: assign metadata properly, like author if AV stage, etc.
+
+            return scene;
+        }
 
 
         #region Test Load All Stages
@@ -1110,7 +1119,7 @@ namespace Manifold.IO.GFZ
                     var unknownTriggers = GameObject.FindObjectsOfType<GfzUnknownTrigger>(canFindInactive);
                     coliScene.unknownTriggers = GetGfzValues(unknownTriggers);
 
-                    var unknownSolsTriggers = GameObject.FindObjectsOfType<GfzUnknownSolsTrigger>(canFindInactive);
+                    var unknownSolsTriggers = GameObject.FindObjectsOfType<GfzUnknownCollider>(canFindInactive);
                     coliScene.unknownColliders = GetGfzValues(unknownSolsTriggers);
 
                     var visualEffectTriggers = GameObject.FindObjectsOfType<GfzVisualEffectTrigger>(canFindInactive);

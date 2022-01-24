@@ -37,7 +37,7 @@ namespace Manifold.IO.GFZ.CourseCollision
         public CourseMetadataTrigger ExportGfz()
         {
             // Convert unity transform to gfz transform
-            var transform = TransformConverter.ToGfzTransform(this.transform);
+            var transform = TransformConverter.ToGfzTransformPRXS(this.transform);
 
             // Select which capsule type flag to use.
             CourseMetadataType metadataType = (CourseMetadataType)(-1);
@@ -67,7 +67,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
         public void ImportGfz(CourseMetadataTrigger value)
         {
-            transform.CopyGfzTransform(value.transform);
+            transform.CopyGfzTransformPRXS(value.transform);
             transform.localScale *= scale;
 
             // Select which capsule type flag to use.

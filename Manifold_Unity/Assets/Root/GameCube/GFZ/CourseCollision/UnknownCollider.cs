@@ -22,7 +22,7 @@ namespace GameCube.GFZ.CourseCollision
         public Pointer templateSceneObjectPtr;
         public TransformPRXS transform;
         //
-        public SceneObject templateSceneObject;
+        public SceneObject sceneObject;
 
         // PROPERTIES
         public AddressRange AddressRange
@@ -45,7 +45,7 @@ namespace GameCube.GFZ.CourseCollision
                 if (templateSceneObjectPtr.IsNotNullPointer)
                 {
                     reader.JumpToAddress(templateSceneObjectPtr);
-                    reader.ReadX(ref templateSceneObject, true);
+                    reader.ReadX(ref sceneObject, true);
                 }
             }
             this.SetReaderToEndAddress(reader);
@@ -54,7 +54,7 @@ namespace GameCube.GFZ.CourseCollision
         public void Serialize(BinaryWriter writer)
         {
             {
-                templateSceneObjectPtr = templateSceneObject.GetPointer();
+                templateSceneObjectPtr = sceneObject.GetPointer();
             }
             this.RecordStartAddress(writer);
             {
@@ -74,7 +74,7 @@ namespace GameCube.GFZ.CourseCollision
 
         public void ValidateReferences()
         {
-            Assert.ReferencePointer(templateSceneObject, templateSceneObjectPtr);
+            Assert.ReferencePointer(sceneObject, templateSceneObjectPtr);
         }
     }
 }

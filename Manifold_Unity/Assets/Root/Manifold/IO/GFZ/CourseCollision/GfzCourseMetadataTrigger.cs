@@ -20,7 +20,7 @@ namespace Manifold.IO.GFZ.CourseCollision
         public CourseMetadataTrigger ExportGfz()
         {
             // Convert unity transform to gfz transform
-            var transform = TransformConverter.ToGfzTransform(this.transform);
+            var transform = TransformConverter.ToGfzTransformPRXS(this.transform);
             transform.Scale /= scale;
 
             var value = new CourseMetadataTrigger
@@ -34,7 +34,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
         public void ImportGfz(CourseMetadataTrigger value)
         {
-            transform.CopyGfzTransform(value.transform);
+            transform.CopyGfzTransformPRXS(value.transform);
             transform.localScale *= scale;
         }
 
