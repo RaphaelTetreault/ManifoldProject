@@ -14,7 +14,7 @@ namespace Manifold.IO
 
         public static void RecordStartAddress<T>(this T binaryAddressable, BinaryReader reader)
             where T : IBinaryAddressable
-        { 
+        {
             RecordStartAddress(binaryAddressable, reader.BaseStream);
         }
 
@@ -34,13 +34,13 @@ namespace Manifold.IO
         }
         public static void RecordEndAddress<T>(this T binaryAddressable, BinaryReader reader)
             where T : IBinaryAddressable
-        { 
+        {
             RecordEndAddress(binaryAddressable, reader.BaseStream);
         }
 
         public static void RecordEndAddress<T>(this T binaryAddressable, BinaryWriter writer)
             where T : IBinaryAddressable
-        { 
+        {
             RecordEndAddress(binaryAddressable, writer.BaseStream);
         }
 
@@ -167,17 +167,15 @@ namespace Manifold.IO
         public static ArrayPointer GetArrayPointer<T>(this T[] values)
             where T : IBinaryAddressable
         {
-            // TODO: consider null checks.
+            if (values == null || values.Length == 0)
+                return new ArrayPointer();
 
             int length = values.Length;
-            var arrayPointer = new ArrayPointer();
-
-            // We only need to assign values if length > 0
-            if (length > 0)
+            var arrayPointer = new ArrayPointer()
             {
-                arrayPointer.Length = length;
-                arrayPointer.Address = values[0].GetPointer();
-            }
+                Length = length,
+                Address = values[0].GetPointer(),
+            };
 
             return arrayPointer;
         }

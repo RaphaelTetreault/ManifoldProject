@@ -115,6 +115,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             var mirrorRootChildren = mirrorRoot.GetChildren();
             foreach (var child in mirrorRootChildren)
             {
+                child.gameObject.AddComponent<GfzMirroredObject>();
                 child.SetParent(null);
             }
             GameObject.DestroyImmediate(mirrorRoot.gameObject);

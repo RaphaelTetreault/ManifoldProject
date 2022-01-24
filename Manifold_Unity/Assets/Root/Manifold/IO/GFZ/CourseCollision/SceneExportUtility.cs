@@ -100,6 +100,9 @@ namespace Manifold.IO.GFZ.CourseCollision
                     throw new NotImplementedException();
             }
 
+            var mirroredObjects = GameObject.FindObjectsOfType<GfzMirroredObject>();
+            foreach (var mirroredObject in mirroredObjects)
+                mirroredObject.MirrorTransformZ();
 
             // Build a new scene!
             var scene = new ColiScene()
@@ -184,9 +187,13 @@ namespace Manifold.IO.GFZ.CourseCollision
                 scene.sceneObjects = sceneObjects.ToArray();
                 scene.sceneObjectLODs = sceneObjectLODs.ToArray();
                 scene.sceneObjectNames = sceneObjectNames.ToArray();
-                
+
                 // not implemented
-                scene.staticSceneObjects = new SceneObjectStatic[0];
+                scene.staticSceneObjects = null; // new SceneObjectStatic[0];
+                //scene.sceneObjects = new SceneObject[0];
+                //scene.sceneObjectNames = new CString[0];
+                //scene.dynamicSceneObjects = new SceneObjectDynamic[0];
+                //scene.sceneObjectLODs = new SceneObjectLOD[0];
             }
 
             // Static Collider Meshes
@@ -235,6 +242,9 @@ namespace Manifold.IO.GFZ.CourseCollision
             }
             GfzUtility.CompressAvLzToDisk(outputFile, compressFormat);
             OSUtility.OpenDirectory(outputPath);
+
+            foreach (var mirroredObject in mirroredObjects)
+                mirroredObject.MirrorTransformZ();
         }
 
 
@@ -247,15 +257,32 @@ namespace Manifold.IO.GFZ.CourseCollision
                 var colliderGeo = sceneObject.colliderGeometry;
                 if (colliderGeo != null)
                 {
-                    if (colliderGeo.tris.Length == 0)
-                        colliderGeo.tris = null;
+                    if (colliderGeo.tris != null)
+                        if (colliderGeo.tris.Length == 0)
+                            colliderGeo.tris = null;
 
-                    if (colliderGeo.quads.Length == 0)
-                        colliderGeo.quads = null;
+                    if (colliderGeo.quads != null)
+                        if (colliderGeo.quads.Length == 0)
+                            colliderGeo.quads = null;
                 }
             }
 
+            foreach (var dynamicSceneObject in scene.dynamicSceneObjects)
+            {
+                if (dynamicSceneObject.animationClip == null)
+                    continue;
 
+                foreach (var animationClipCurve in dynamicSceneObject.animationClip.curves)
+                {
+                    if (animationClipCurve.animationCurve == null)
+                        continue;
+
+                    if (animationClipCurve.animationCurve.Length == 0)
+                    {
+                        animationClipCurve.animationCurve = null;
+                    }
+                }
+            }
         }
 
 

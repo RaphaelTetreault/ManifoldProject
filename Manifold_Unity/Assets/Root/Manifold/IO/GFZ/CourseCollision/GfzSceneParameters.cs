@@ -35,6 +35,7 @@ namespace Manifold.IO.GFZ.CourseCollision
         public float fogFar;
         public Color32 color;
         [Header("Fog Curve")]
+        public bool exportFogCurves = false;
         public bool exportCustomFogCurves = false;
         public UnityEngine.AnimationCurve fogCurveNear;
         public UnityEngine.AnimationCurve fogCurveFar;
@@ -96,6 +97,9 @@ namespace Manifold.IO.GFZ.CourseCollision
 
         public FogCurves ToGfzFogCurves()
         {
+            if (!exportFogCurves)
+                return null;
+
             if (exportCustomFogCurves)
             {
                 // Create fog from animation curve parameters

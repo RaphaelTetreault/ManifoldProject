@@ -77,7 +77,7 @@ namespace GameCube.GFZ.CourseCollision
         public Pointer dynamicSceneObjectsPtr;
         public Bool32 unkBool32_0x58 = Bool32.True;
         public ArrayPointer unknownCollidersPtr;
-        public ArrayPointer templateSceneObjectsPtr;
+        public ArrayPointer sceneObjectsPtr;
         public ArrayPointer staticSceneObjectsPtr;
         public int zero0x74; // Ptr? Array Ptr length?
         public int zero0x78; // Ptr? Array Ptr address?
@@ -289,8 +289,8 @@ namespace GameCube.GFZ.CourseCollision
             reader.ReadX(ref unknownColliders, unknownCollidersPtr.Length, true);
 
             // 0x64 and 0x68
-            reader.JumpToAddress(templateSceneObjectsPtr);
-            reader.ReadX(ref sceneObjects, templateSceneObjectsPtr.Length, true);
+            reader.JumpToAddress(sceneObjectsPtr);
+            reader.ReadX(ref sceneObjects, sceneObjectsPtr.Length, true);
 
             // 0x6C and 0x70
             reader.JumpToAddress(staticSceneObjectsPtr);
@@ -706,8 +706,10 @@ namespace GameCube.GFZ.CourseCollision
 
             // STATIC SCENE OBJECTS
             if (!staticSceneObjects.IsNullOrEmpty())
+            {
                 writer.InlineDesc(serializeVerbose, 0x70 + offset, staticSceneObjects); // <<<<
-            writer.WriteX(staticSceneObjects, false);
+                writer.WriteX(staticSceneObjects, false);
+            }
 
             // DYNAMIC SCENE OBJECTS
             writer.InlineDesc(serializeVerbose, 0x54 + offset, dynamicSceneObjects);
@@ -924,7 +926,8 @@ namespace GameCube.GFZ.CourseCollision
                 referers.AddRange(sceneObjects);
                 referers.AddRange(colliderGeometries);
                 // Scene Object Statics
-                referers.AddRange(staticSceneObjects);
+                if (staticSceneObjects != null)
+                    referers.AddRange(staticSceneObjects);
                 // Scene Object Dynamics
                 referers.AddRange(dynamicSceneObjects);
                 referers.AddRange(textureMetadatas);
@@ -1216,7 +1219,7 @@ namespace GameCube.GFZ.CourseCollision
                 reader.ReadX(ref dynamicSceneObjectsPtr);
                 reader.ReadX(ref unkBool32_0x58);
                 reader.ReadX(ref unknownCollidersPtr);
-                reader.ReadX(ref templateSceneObjectsPtr);
+                reader.ReadX(ref sceneObjectsPtr);
                 reader.ReadX(ref staticSceneObjectsPtr);
                 reader.ReadX(ref zero0x74);
                 reader.ReadX(ref zero0x78);
@@ -1280,7 +1283,7 @@ namespace GameCube.GFZ.CourseCollision
                 visualEffectTriggersPtr = visualEffectTriggers.GetArrayPointer();
                 // SCENE OBJECTS
                 // References
-                templateSceneObjectsPtr = sceneObjects.GetArrayPointer();
+                sceneObjectsPtr = sceneObjects.GetArrayPointer();
                 staticSceneObjectsPtr = staticSceneObjects.GetArrayPointer();
                 // Main list
                 dynamicSceneObjectCount = dynamicSceneObjects.Length;
@@ -1307,7 +1310,7 @@ namespace GameCube.GFZ.CourseCollision
                 writer.WriteX(dynamicSceneObjectsPtr);
                 writer.WriteX(unkBool32_0x58);
                 writer.WriteX(unknownCollidersPtr);
-                writer.WriteX(templateSceneObjectsPtr);
+                writer.WriteX(sceneObjectsPtr);
                 writer.WriteX(staticSceneObjectsPtr);
                 writer.WriteX(new ArrayPointer()); // const unused
                 writer.WriteX(circuitType);
@@ -1349,7 +1352,8 @@ namespace GameCube.GFZ.CourseCollision
             Assert.IsTrue(staticColliderMeshesPtr.IsNotNullPointer);
             Assert.IsTrue(zeroes0x20Ptr.IsNotNullPointer);
             Assert.IsTrue(trackMinHeightPtr.IsNotNullPointer);
-            Assert.IsTrue(templateSceneObjectsPtr.IsNotNullPointer);
+            if (sceneObjects.Length > 0)
+                Assert.IsTrue(sceneObjectsPtr.IsNotNullPointer);
             Assert.IsTrue(fogPtr.IsNotNullPointer);
             Assert.IsTrue(trackLengthPtr.IsNotNullPointer);
             Assert.IsTrue(trackCheckpointMatrixPtr.IsNotNullPointer);
@@ -1358,8 +1362,10 @@ namespace GameCube.GFZ.CourseCollision
             Assert.ReferencePointer(trackNodes, trackNodesPtr);
             Assert.ReferencePointer(surfaceAttributeAreas, surfaceAttributeAreasPtr);
             Assert.ReferencePointer(trackMinHeight, trackMinHeightPtr);
-            Assert.ReferencePointer(dynamicSceneObjects, new ArrayPointer(dynamicSceneObjectCount, dynamicSceneObjectsPtr));
-            Assert.ReferencePointer(sceneObjects, templateSceneObjectsPtr);
+            if (dynamicSceneObjects.Length > 0)
+                Assert.ReferencePointer(dynamicSceneObjects, new ArrayPointer(dynamicSceneObjectCount, dynamicSceneObjectsPtr));
+            if (sceneObjects.Length > 0)
+                Assert.ReferencePointer(sceneObjects, sceneObjectsPtr);
             Assert.ReferencePointer(staticSceneObjects, staticSceneObjectsPtr);
             if (unknownColliders.Length > 0)
                 Assert.ReferencePointer(unknownColliders, unknownCollidersPtr);

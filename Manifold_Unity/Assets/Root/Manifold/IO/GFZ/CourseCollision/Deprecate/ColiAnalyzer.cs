@@ -1049,8 +1049,8 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol(nameof(ColiScene.unkBool32_0x58));
                 writer.WriteNextCol(nameof(ColiScene.unknownCollidersPtr));
                 writer.WriteNextCol(nameof(ColiScene.unknownCollidersPtr));
-                writer.WriteNextCol(nameof(ColiScene.templateSceneObjectsPtr));
-                writer.WriteNextCol(nameof(ColiScene.templateSceneObjectsPtr));
+                writer.WriteNextCol(nameof(ColiScene.sceneObjectsPtr));
+                writer.WriteNextCol(nameof(ColiScene.sceneObjectsPtr));
                 writer.WriteNextCol(nameof(ColiScene.staticSceneObjectsPtr));
                 writer.WriteNextCol(nameof(ColiScene.staticSceneObjectsPtr));
                 writer.WriteNextCol(nameof(ColiScene.zero0x74));
@@ -1118,8 +1118,8 @@ namespace Manifold.IO.GFZ.CourseCollision
                     writer.WriteNextCol(scene.unkBool32_0x58);
                     writer.WriteNextCol(scene.unknownCollidersPtr.Length);
                     writer.WriteNextCol(scene.unknownCollidersPtr.HexAddress);
-                    writer.WriteNextCol(scene.templateSceneObjectsPtr.Length);
-                    writer.WriteNextCol(scene.templateSceneObjectsPtr.HexAddress);
+                    writer.WriteNextCol(scene.sceneObjectsPtr.Length);
+                    writer.WriteNextCol(scene.sceneObjectsPtr.HexAddress);
                     writer.WriteNextCol(scene.staticSceneObjectsPtr.Length);
                     writer.WriteNextCol(scene.staticSceneObjectsPtr.HexAddress);
                     writer.WriteNextCol(scene.zero0x74);
