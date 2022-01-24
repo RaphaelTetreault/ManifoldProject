@@ -734,8 +734,8 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol("Game Object #");
                 writer.WriteNextCol("Game Object");
                 writer.WriteNextCol("Unknown 1 Index");
-                writer.WriteNextColNicify(nameof(TextureMetadataField.x));
-                writer.WriteNextColNicify(nameof(TextureMetadataField.y));
+                writer.WriteNextColNicify(nameof(TextureScrollField.x));
+                writer.WriteNextColNicify(nameof(TextureScrollField.y));
                 writer.WriteNextRow();
 
                 foreach (var file in sceneSobjs)
@@ -1073,12 +1073,12 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol(nameof(ColiScene.storyObjectTriggersPtr)); // adr
                 writer.WriteNextCol(nameof(ColiScene.trackCheckpointMatrixPtr));
                 // Structure
-                writer.WriteNextCol(nameof(ColiScene.trackNodeBoundsXZ) + "." + nameof(ColiScene.trackNodeBoundsXZ.left));
-                writer.WriteNextCol(nameof(ColiScene.trackNodeBoundsXZ) + "." + nameof(ColiScene.trackNodeBoundsXZ.top));
-                writer.WriteNextCol(nameof(ColiScene.trackNodeBoundsXZ) + "." + nameof(ColiScene.trackNodeBoundsXZ.subdivionWidth));
-                writer.WriteNextCol(nameof(ColiScene.trackNodeBoundsXZ) + "." + nameof(ColiScene.trackNodeBoundsXZ.subdivisionLength));
-                writer.WriteNextCol(nameof(ColiScene.trackNodeBoundsXZ) + "." + nameof(ColiScene.trackNodeBoundsXZ.numSubdivisionsX));
-                writer.WriteNextCol(nameof(ColiScene.trackNodeBoundsXZ) + "." + nameof(ColiScene.trackNodeBoundsXZ.numSubdivisionsZ));
+                writer.WriteNextCol(nameof(ColiScene.trackCheckpointBoundsXZ) + "." + nameof(ColiScene.trackCheckpointBoundsXZ.left));
+                writer.WriteNextCol(nameof(ColiScene.trackCheckpointBoundsXZ) + "." + nameof(ColiScene.trackCheckpointBoundsXZ.top));
+                writer.WriteNextCol(nameof(ColiScene.trackCheckpointBoundsXZ) + "." + nameof(ColiScene.trackCheckpointBoundsXZ.subdivionWidth));
+                writer.WriteNextCol(nameof(ColiScene.trackCheckpointBoundsXZ) + "." + nameof(ColiScene.trackCheckpointBoundsXZ.subdivisionLength));
+                writer.WriteNextCol(nameof(ColiScene.trackCheckpointBoundsXZ) + "." + nameof(ColiScene.trackCheckpointBoundsXZ.numSubdivisionsX));
+                writer.WriteNextCol(nameof(ColiScene.trackCheckpointBoundsXZ) + "." + nameof(ColiScene.trackCheckpointBoundsXZ.numSubdivisionsZ));
                 // 
                 writer.WriteNextCol(nameof(ColiScene.zeroes0xD8));
                 writer.WriteNextRow();
@@ -1142,12 +1142,12 @@ namespace Manifold.IO.GFZ.CourseCollision
                     writer.WriteNextCol(scene.storyObjectTriggersPtr.HexAddress);
                     writer.WriteNextCol(scene.trackCheckpointMatrixPtr.HexAddress);
                     // Structure
-                    writer.WriteNextCol(scene.trackNodeBoundsXZ.left);
-                    writer.WriteNextCol(scene.trackNodeBoundsXZ.top);
-                    writer.WriteNextCol(scene.trackNodeBoundsXZ.subdivionWidth);
-                    writer.WriteNextCol(scene.trackNodeBoundsXZ.subdivisionLength);
-                    writer.WriteNextCol(scene.trackNodeBoundsXZ.numSubdivisionsX);
-                    writer.WriteNextCol(scene.trackNodeBoundsXZ.numSubdivisionsZ);
+                    writer.WriteNextCol(scene.trackCheckpointBoundsXZ.left);
+                    writer.WriteNextCol(scene.trackCheckpointBoundsXZ.top);
+                    writer.WriteNextCol(scene.trackCheckpointBoundsXZ.subdivionWidth);
+                    writer.WriteNextCol(scene.trackCheckpointBoundsXZ.subdivisionLength);
+                    writer.WriteNextCol(scene.trackCheckpointBoundsXZ.numSubdivisionsX);
+                    writer.WriteNextCol(scene.trackCheckpointBoundsXZ.numSubdivisionsZ);
                     //
                     writer.WriteNextCol(0);// coliHeader.zero_0xD8);
                     writer.WriteNextCol(scene.trackMinHeight.value);
@@ -1735,7 +1735,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 foreach (var file in sceneSobjs)
                 {
                     var scene = file.Value;
-                    var table = scene.staticColliderMap;
+                    var table = scene.staticColliderMeshes;
 
                     writer.WriteNextCol(file.name);
                     writer.WriteNextCol(index++);
@@ -1792,7 +1792,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
                     // Get all the scene object references
                     var objectsList = new List<(SceneObjectLOD sor, string category)>();
-                    foreach (var sceneObject in scene.templateSceneObjects)
+                    foreach (var sceneObject in scene.sceneObjects)
                     {
                         throw new System.NotImplementedException();
                         var sceneObjectReference = sceneObject.lods;
@@ -1856,7 +1856,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
                     // Get all the scene object references
                     var objectsList = new List<(SceneObject sir, string category)>();
-                    foreach (var sceneInstance in scene.templateSceneObjects)
+                    foreach (var sceneInstance in scene.sceneObjects)
                     {
                         objectsList.Add((sceneInstance, "Instance"));
                     }
@@ -1917,7 +1917,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                     var courseID = ((CourseIndexAX)scene.ID).GetDescription();
                     var isAxGx = scene.IsFileGX ? "GX" : "AX";
 
-                    foreach (var sceneInstance in scene.templateSceneObjects)
+                    foreach (var sceneInstance in scene.sceneObjects)
                     {
                         writer.WriteNextCol(scene.FileName);
                         writer.WriteNextCol(scene.ID);

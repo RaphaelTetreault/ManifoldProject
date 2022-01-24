@@ -8,7 +8,7 @@ using GameCube.GFZ.CourseCollision;
 
 namespace Manifold.IO.GFZ.CourseCollision
 {
-    public class GfzLegacyData
+    public class GfzLegacyData : MonoBehaviour
     {
         [SerializeField, HideInInspector]
         private ColiScene scene;

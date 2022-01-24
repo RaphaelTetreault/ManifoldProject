@@ -1,23 +1,35 @@
 ﻿using GameCube.GFZ.CourseCollision;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using UnityEngine;
 
 namespace Manifold.IO.GFZ.CourseCollision
 {
-    internal class GfzAnimationClip :
+    internal class GfzAnimationClip : MonoBehaviour,
         IGfzConvertable<GameCube.GFZ.CourseCollision.AnimationClip>
     {
-        public AnimationClip ExportGfz()
+        [SerializeField] private bool exportAnimationClip;
+        [SerializeField] private GameCube.GFZ.CourseCollision.AnimationClip srcAnimationClip;
+
+
+        public GameCube.GFZ.CourseCollision.AnimationClip ExportGfz()
         {
-            throw new NotImplementedException();
+            if (exportAnimationClip)
+            {
+                return srcAnimationClip;
+            }
+            else
+            {
+                return null;
+            }
         }
 
-        public void ImportGfz(AnimationClip value)
+        public void ImportGfz(GameCube.GFZ.CourseCollision.AnimationClip value)
         {
-            throw new NotImplementedException();
+            bool hasAnimationClip = value != null;
+            if (hasAnimationClip)
+            {
+                srcAnimationClip = value;
+            }
+            exportAnimationClip = hasAnimationClip;
         }
     }
 }

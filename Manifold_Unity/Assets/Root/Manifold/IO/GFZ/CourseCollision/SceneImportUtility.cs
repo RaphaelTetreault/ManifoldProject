@@ -70,23 +70,21 @@ namespace Manifold.IO.GFZ.CourseCollision
             var venueFolder = $"Assets/{importFromRoot}/bg/bg_{venueID}";
             var searchFolders = new string[] { initFolder, stageFolder, venueFolder };
 
+
             // Adds object with general info about the course.
             CreateGlobalParams(scene);
 
+            // Everything with a coordinate goes in here
+            var mirrorRoot = new GameObject("Scene Root (Mirror Z)").transform;
+
             //
-            TestTransformHeirarchy(scene);
-            //NewTestTransformHierarchy(scene);
-
-            // SCENE OBJECTS
-            CreateSceneObjects(scene, searchFolders);
-            // ORIGIN OBJECTS
-            CreateOriginObjects(scene, searchFolders);
-
-            CreateBoundsVisual(scene);
-
-            // MISC DATA
-            // Create debug object for visualization at top of scene hierarchy
-            //CreateDisplayerDebugObject(scene);
+            CreateDynamicSceneObjects(scene, searchFolders).SetParent(mirrorRoot);
+            CreateStaticSceneObjects(scene, searchFolders).SetParent(mirrorRoot);
+            TestTransformHeirarchy(scene).SetParent(mirrorRoot);
+            CreateTrackTransformHierarchy(scene).SetParent(mirrorRoot);
+            CreateTrackIndexChains(scene).SetParent(mirrorRoot);
+            IncludeStaticMeshColliders(scene, stageFolder).SetParent(mirrorRoot);
+            CreateBoundsVisual(scene).SetParent(mirrorRoot);
 
             // TRIGGERS
             {
@@ -108,21 +106,21 @@ namespace Manifold.IO.GFZ.CourseCollision
                         child.gameObject.SetActive(false);
                     }
                 }
+                triggersRoot.SetParent(mirrorRoot);
             }
 
-            // Track data transforms
-            CreateTrackTransformHierarchy(scene);
-            //TestTransformHeirarchy(scene);
-
-            // Checkpoints?
-            CreateTrackIndexChains(scene);
-            // Include other misc data
-            IncludeStaticMeshColliders(scene, stageFolder);
+            // Mirror all objects
+            mirrorRoot.transform.localScale = new Vector3(1f, 1f, -1f);
+            // Now that everything is placed right, get rid of mirror root
+            var mirrorRootChildren = mirrorRoot.GetChildren();
+            foreach (var child in mirrorRootChildren)
+            {
+                child.SetParent(null);
+            }
+            GameObject.DestroyImmediate(mirrorRoot.gameObject);
 
             // Finally, save the scene file
             EditorSceneManager.SaveScene(unityScene, scenePath, false);
-
-
         }
 
 
@@ -453,7 +451,7 @@ namespace Manifold.IO.GFZ.CourseCollision
         #region Track Transform Hierarchies
 
         private static int elementIndex = 0;
-        public static void CreateTrackTransformHierarchy(ColiScene scene)
+        public static Transform CreateTrackTransformHierarchy(ColiScene scene)
         {
             elementIndex = 0;
 
@@ -461,8 +459,8 @@ namespace Manifold.IO.GFZ.CourseCollision
             var mesh = Resources.GetBuiltinResource<Mesh>("Cube.fbx");
 
             // Create object to house data
-            var controlPointsParent = new GameObject();
-            controlPointsParent.name = "Control Points Hierarchy";
+            var root = new GameObject();
+            root.name = "Control Points Hierarchy";
 
             //
             elementIndex = 0;
@@ -475,8 +473,10 @@ namespace Manifold.IO.GFZ.CourseCollision
                 // Recursively create transforms
                 count++;
                 var name = $"[{count}/{total}] Control Point | {count}";
-                CreateControlPointRecursive(scene, trackTransform, controlPointsParent, mesh, name, 0);
+                CreateControlPointRecursive(scene, trackTransform, root, mesh, name, 0);
             }
+
+            return root.transform;
         }
 
         public static void CreateTrackTransformSet(ColiScene scene)
@@ -562,15 +562,15 @@ namespace Manifold.IO.GFZ.CourseCollision
         #endregion
 
         // COLLIDER OBJECTS
-        public static void IncludeStaticMeshColliders(ColiScene scene, string stageFolder)
+        public static Transform IncludeStaticMeshColliders(ColiScene scene, string stageFolder)
         {
-            var parent = new GameObject();
-            parent.name = $"Static Mesh Colliders";
+            var root = new GameObject();
+            root.name = $"Static Mesh Colliders";
 
             // TODO: it would be wiser to tag the prefabs with some tag type so that
             // we need only pull in objects of that type. The string loading method
             // is bound to break at some point.
-            for (int i = 0; i < scene.staticColliderMap.SurfaceCount; i++)
+            for (int i = 0; i < scene.staticColliderMeshes.SurfaceCount; i++)
             {
                 var property = (StaticColliderMeshProperty)i;
                 var meshName = $"st{scene.ID:00}_{i:00}_{property}";
@@ -583,7 +583,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                     continue;
                 }
 
-                var instance = GameObject.Instantiate(asset, parent.transform);
+                var instance = GameObject.Instantiate(asset, root.transform);
                 instance.name = meshName;
 
                 var script = instance.AddComponent<GfzStaticColliderMesh>();
@@ -591,12 +591,13 @@ namespace Manifold.IO.GFZ.CourseCollision
                 script.ColliderMesh = instance.GetComponent<MeshFilter>();
             }
 
+            return root.transform;
         }
 
-        public static void TestTransformHeirarchy(ColiScene scene)
+        public static Transform TestTransformHeirarchy(ColiScene scene)
         {
-            var parent = new GameObject();
-            parent.name = $"Test Sample Path";
+            var root = new GameObject();
+            root.name = $"Track Curves (Test)";
 
             //
             var increment = 1f / 1000f * scene.rootTrackSegments.Length;
@@ -605,7 +606,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             {
                 var subgroup = new GameObject();
                 subgroup.name = $"Subgroup {++count}";
-                subgroup.transform.parent = parent.transform;
+                subgroup.transform.parent = root.transform;
 
                 var topology = tt.trackCurves;
                 float3 timeScale = new float3(
@@ -648,6 +649,8 @@ namespace Manifold.IO.GFZ.CourseCollision
                     cube.transform.localScale = scale * tt.localScale;
                 }
             }
+
+            return root.transform;
         }
 
         public static float GetCurveTime(UnityEngine.AnimationCurve curve)
@@ -656,35 +659,6 @@ namespace Manifold.IO.GFZ.CourseCollision
                 return 0f;
 
             return curve.keys[curve.length - 1].time;
-        }
-
-        public static void NewTestTransformHierarchy(ColiScene scene)
-        {
-            var parent = new GameObject();
-            parent.name = $"Test Sample Path 2";
-
-            //
-            var increment = 1f / 1000f * scene.rootTrackSegments.Length;
-            int count = 0;
-            foreach (var tt in scene.rootTrackSegments)
-            {
-                var subgroup = new GameObject($"Subgroup {++count}").transform;
-                subgroup.parent = parent.transform;
-
-                var topology = tt.trackCurves;
-                var transformMatrix = GetTransformMatrix(tt, increment);
-
-                for (float t = 0f; t < 1f; t += increment)
-                {
-                    var animMatrix = GetAnimMatrix(tt, t);
-                    var finalMatrix = transformMatrix * animMatrix;
-
-                    var cube = CreatePrimitive(PrimitiveType.Cube, $"time {t:0.000}", subgroup);
-                    cube.position = finalMatrix.Position();
-                    cube.rotation = finalMatrix.Rotation();
-                    cube.localScale = finalMatrix.Scale();
-                }
-            }
         }
 
         public static Matrix4x4 GetTransformMatrix(TrackSegment trackTransform, float increment)
@@ -766,8 +740,8 @@ namespace Manifold.IO.GFZ.CourseCollision
         public static Transform CreateBoundsVisual(ColiScene scene)
         {
             // Get all bounds
-            var boundsTrack = scene.trackNodeBoundsXZ;
-            var boundsColliders = scene.staticColliderMap.meshBounds;
+            var boundsTrack = scene.trackCheckpointBoundsXZ;
+            var boundsColliders = scene.staticColliderMeshes.meshBounds;
             //
             float yHeight = scene.trackMinHeight;
 
@@ -796,7 +770,7 @@ namespace Manifold.IO.GFZ.CourseCollision
         }
 
 
-        public static void CreateTrackIndexChains(ColiScene scene)
+        public static Transform CreateTrackIndexChains(ColiScene scene)
         {
             var root = new GameObject();
             root.name = $"Track Index Chains";
@@ -823,6 +797,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                     }
                 }
             }
+            return root.transform;
         }
 
         public static string GetAssetPath(string prefabName, params string[] searchFolders)
@@ -874,22 +849,22 @@ namespace Manifold.IO.GFZ.CourseCollision
         }
 
 
-        public static void CreateSceneObjects(ColiScene scene, params string[] searchFolders)
+        public static Transform CreateDynamicSceneObjects(ColiScene scene, params string[] searchFolders)
         {
             // Get some metadata from the number of scene objects
-            var sceneObjects = scene.dynamicSceneObjects;
+            var dynamicSceneObjects = scene.dynamicSceneObjects;
             // Create a string format from the highest index number used
-            var digitsFormat = WidthFormat(sceneObjects);
+            var digitsFormat = WidthFormat(dynamicSceneObjects);
             int count = 0;
-            int total = sceneObjects.Length;
+            int total = dynamicSceneObjects.Length;
             // Create root for all scene objects
-            var sceneObjectsRoot = new GameObject($"Scene Objects").transform;
+            var root = new GameObject($"{nameof(SceneObjectDynamic)}s").transform;
 
             // Find all scene objects, add them to scene
-            foreach (var sceneObject in sceneObjects)
+            foreach (var dynamicSceneObject in dynamicSceneObjects)
             {
                 // Generate the names of the objects we want
-                var objectName = sceneObject.Name;
+                var objectName = dynamicSceneObject.Name;
                 var prefabName = $"pf_{objectName}";
                 var displayName = $"[{count.ToString(digitsFormat)}] {objectName}";
 
@@ -908,32 +883,30 @@ namespace Manifold.IO.GFZ.CourseCollision
                     : CreateInstanceFromDatabase(assetPath);
                 // Assign name and set parent
                 assetInstance.name = displayName;
-                assetInstance.transform.parent = sceneObjectsRoot;
+                assetInstance.transform.parent = root;
 
                 //// Tack data of object onto Unity GameObject for inspection
-                //var sceneObjectData = assetInstance.AddComponent<TagSceneObject>();
-                //sceneObjectData.Data = sceneObject;
-
-                // Copy out values other than models
                 var script = assetInstance.AddComponent<GfzSceneObjectDynamic>();
-                script.SetBaseValues(sceneObject);
+                script.ImportGfz(dynamicSceneObject);
             }
+
+            return root;
         }
-        public static void CreateOriginObjects(ColiScene scene, params string[] searchFolders)
+        public static Transform CreateStaticSceneObjects(ColiScene scene, params string[] searchFolders)
         {
             // Get some metadata from the number of scene objects
-            var originObjects = scene.staticSceneObjects;
+            var staticSceneObjects = scene.staticSceneObjects;
 
             // Create a string format from the highest index number used
-            var digitsFormat = WidthFormat(originObjects);
+            var digitsFormat = WidthFormat(staticSceneObjects);
             int count = 0;
-            int total = originObjects.Length;
+            int total = staticSceneObjects.Length;
 
             // Create root for all scene objects
-            var sceneObjectsRoot = new GameObject($"Origin Objects").transform;
+            var root = new GameObject($"{nameof(SceneObjectStatic)}s").transform;
 
             // Find all origin objects, add them to scene
-            foreach (var originObject in originObjects)
+            foreach (var originObject in staticSceneObjects)
             {
                 // Generate the names of the objects we want
                 var objectName = originObject.Name;
@@ -955,11 +928,13 @@ namespace Manifold.IO.GFZ.CourseCollision
                     : CreateInstanceFromDatabase(assetPath);
                 // Assign name and set parent
                 assetInstance.name = displayName;
-                assetInstance.transform.parent = sceneObjectsRoot;
+                assetInstance.transform.parent = root;
             }
+
+            return root;
         }
 
-        public static void CreateGlobalParams(ColiScene scene)
+        public static Transform CreateGlobalParams(ColiScene scene)
         {
             var sceneParamsObj = new GameObject("Scene Parameters");
             var sceneParams = sceneParamsObj.AddComponent<GfzSceneParameters>();
@@ -991,6 +966,8 @@ namespace Manifold.IO.GFZ.CourseCollision
                 sceneParams.fogCurveG = fogCurves.FogCurveG.ToUnity();
                 sceneParams.fogCurveB = fogCurves.FogCurveB.ToUnity();
             }
+
+            return sceneParamsObj.transform;
         }
     }
 

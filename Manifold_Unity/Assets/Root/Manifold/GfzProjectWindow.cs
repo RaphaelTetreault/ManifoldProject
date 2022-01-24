@@ -20,6 +20,7 @@ namespace Manifold.IO.GFZ
         [SerializeField] string fileOutput = string.Empty;
         [SerializeField] string unityImportDir = "GFZ/";
         [SerializeField] int sceneOfInterestID = 1;
+        [SerializeField] string sceneExportPath = string.Empty;
 
         public ColiScene.SerializeFormat SerializeFormat => serializeFormat;
         public string RootFolder => rootFolder;
@@ -28,9 +29,10 @@ namespace Manifold.IO.GFZ
         public string FileOutput => fileOutput;
         public string UnityImportDir => unityImportDir;
         public int SceneOfInterestID => sceneOfInterestID;
+        public string SceneExportPath => sceneExportPath;
 
         // Easy accessors for common places
-        public string StageDir => $"{rootFolder}/stage/";
+        public string StageDir => $"{rootFolder}stage/";
 
 
         public string[] GetTestRootDirectories()
@@ -77,9 +79,11 @@ namespace Manifold.IO.GFZ
             EditorGUILayout.Space();
             GuiSimple.Label("GFZ->Unity Output", EditorStyles.boldLabel);
             unityImportDir = GuiSimple.String("Unity Import Dest", unityImportDir);
+
             EditorGUILayout.Space();
             GuiSimple.Label("Scene Single", EditorStyles.boldLabel);
             sceneOfInterestID = GuiSimple.Int("Scene Of Interest", sceneOfInterestID);
+            sceneExportPath = GuiSimple.BrowseFolder(sceneExportPath, "Scene Export Path", "Open Scene Export Directory", sceneExportPath, "");
         }
 
 

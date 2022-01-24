@@ -21,7 +21,7 @@ namespace Manifold.IO.GFZ.CourseCollision
         public int courseIndex; // TODO: validate export venue to index
         public CircuitType circuitType = CircuitType.ClosedCircuit; // will become param from control points.
         public Bool32 staticColliderMeshesActive = Bool32.True;
-        //public Bool32 unkBool32 = Bool32.True;
+
 
 
         [Header("Unknown Range")]

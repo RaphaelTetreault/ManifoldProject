@@ -6,226 +6,71 @@ namespace Manifold.IO.GFZ.CourseCollision
     public sealed class GfzSceneObjectDynamic : MonoBehaviour,
         IGfzConvertable<SceneObjectDynamic>
     {
-        // NOTE: order below is to make flipping through items in
-        // inspector easier. Last entry is variable height.
-
-        [System.Serializable]
-        private struct GfzLOD
-        {
-            public string modelName;
-            public MeshFilter model;
-            public float lodDistance;
-        }
-
-
-        // Object Reference data
-        [Header("Scene Object LOD")]
-        [SerializeField] private MeshFilter model;
-        [SerializeField] private GfzLOD[] levelOfDetails;
-        // Instance data
-        [Header("Scene Object")]
-        [SerializeField] private LodRenderFlags lodRenderFlags;
-        [SerializeField] private MeshFilter colliderMesh;
-        [SerializeField] private bool exportColliderMesh;
-        [SerializeField] private ColliderGeometry srcColliderMesh;
-        // Scene Object data
-        [Header("Dynamic Data")]
         [SerializeField] [Hex] private int unk_0x00;
         [SerializeField] [Hex] private int unk_0x04;
-        [SerializeField] private Vector2[] textureScrollFields;
-        // Hold onto data in the meantime since I don't know how to convert from/to
-        [SerializeField] private bool exportSkeletalAnimator;
-        [SerializeField] private SkeletalAnimator srcSkeletalAnimator;
-        [SerializeField] private bool exportAnimationClip;
-        [SerializeField] private GameCube.GFZ.CourseCollision.AnimationClip srcAnimationClip;
+        [SerializeField] private GfzSceneObject sceneObject;
+        [SerializeField] private GfzAnimationClip animationClip;
+        [SerializeField] private GfzTextureScroll textureScroll;
+        [SerializeField] private GfzSkeletalAnimator skeletalAnimator;
 
-        public MeshFilter Model
-        {
-            get => model;
-            set => model = value;
-        }
-        public MeshFilter ColliderMesh
-        {
-            get => colliderMesh;
-            set => colliderMesh = value;
-        }
-
-
-        public void ImportGfz(SceneObject value)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public SceneObject ExportGfz()
-        {
-            //// Get GFZ transform
-            //var transform = new GameCube.GFZ.CourseCollision.Transform();
-            //transform.CopyUnityTransform(this.transform);
-
-            //// Get transform matrix if not an animated object
-            //TransformMatrix3x4 transformMatrix = null;
-            //var isNotAnimatedObject = true;
-            //if (isNotAnimatedObject)
-            //{
-            //    transformMatrix.CopyUnityTransform(this.transform);
-            //}
-
-            //var SceneObject
-            return null;
-        }
-
-        //public void SetBaseValues(SceneObjectDynamic value)
-        //{
-        //    // TRANSFORM
-        //    // Copy most reliable transform if available
-        //    if (value.transformMatrix3x4 != null)
-        //    {
-        //        transform.CopyGfzTransformMatrix3x4(value.transformMatrix3x4);
-        //    }
-        //    else
-        //    {
-        //        transform.CopyGfzTransformPRXS(value.transformPRXS);
-        //    }
-
-        //    // DYNAMIC DATA
-        //    {
-        //        unk_0x00 = value.unk0x00;
-        //        unk_0x04 = value.unk0x04;
-
-        //        // Copy out texture scroll values
-        //        if (value.textureScroll != null)
-        //        {
-        //            textureScrollFields = new Vector2[value.textureScroll.fields.Length];
-        //            for (int i = 0; i < textureScrollFields.Length; i++)
-        //            {
-        //                var item = value.textureScroll.fields[i];
-        //                if (item == null)
-        //                    continue;
-
-        //                textureScrollFields[i] = new Vector2(item.x, item.y);
-        //            }
-        //        }
-
-        //        // Copy values in
-        //        srcSkeletalAnimator = value.skeletalAnimator;
-        //        exportSkeletalAnimator = srcSkeletalAnimator != null;
-
-        //        // Unity will want to create instance, so keep track if we have data
-        //        // to export here. Advantage in that we can omit export if we want.
-        //        srcAnimationClip = value.animationClip;
-        //        exportAnimationClip = srcAnimationClip != null;
-        //    }
-
-        //    // SceneObject Data
-        //    {
-        //        lodRenderFlags = value.sceneObject.lodRenderFlags;
-        //        //
-        //        var lodCount = value.sceneObject.lods.Length;
-        //        levelOfDetails = new GfzLOD[lodCount];
-        //        for (int i = 0; i < lodCount; i++)
-        //        {
-        //            var modelName = value.sceneObject.lods[i].name;
-        //            MeshFilter model = null; // AssetDatabaseUtility.GetSobjByOption();
-        //            levelOfDetails[i] = new GfzLOD
-        //            {
-        //                modelName = modelName,
-        //                model = model,
-        //                lodDistance = value.sceneObject.lods[i].lodDistance,
-        //            };
-        //        }
-
-        //        srcColliderMesh = value.sceneObject.colliderGeometry;
-        //        exportColliderMesh = srcColliderMesh != null;
-        //    }
-
-        //    // 
-        //    model = GetComponent<MeshFilter>();
-        //}
-
-        SceneObjectDynamic IGfzConvertable<SceneObjectDynamic>.ExportGfz()
+        public SceneObjectDynamic ExportGfz()
         {
             var value = new SceneObjectDynamic();
+
+            // Data from this structure
             value.unk0x00 = unk_0x00;
             value.unk0x04 = unk_0x04;
+            value.transformPRXS = TransformConverter.ToGfzTransformPRXS(transform);
 
+            // Values from pointed classes
+            // These functions should return null if necessary
+            value.sceneObject = sceneObject.ExportGfz(); // todo, unmangle references in generator
+            value.animationClip = animationClip.ExportGfz();
+            value.textureScroll = textureScroll.ExportGfz();
+            value.skeletalAnimator = skeletalAnimator.ExportGfz();
+            // This value only exists if we don't have an animation
+            if (animationClip == null)
+            {
+                value.transformMatrix3x4 = TransformConverter.ToGfzTransformMatrix3x4(transform);
+            }
+
+            return value;
         }
 
-        public void ImportGfz(SceneObjectDynamic value)
+        public void ImportGfz(SceneObjectDynamic dynamicSceneObject)
         {
-            // TRANSFORM
-            // Copy most reliable transform if available
-            if (value.transformMatrix3x4 != null)
+            // SCENE OBJECT DYNAMIC
             {
-                transform.CopyGfzTransformMatrix3x4(value.transformMatrix3x4);
-            }
-            else
-            {
-                transform.CopyGfzTransformPRXS(value.transformPRXS);
-            }
+                unk_0x00 = dynamicSceneObject.unk0x00;
+                unk_0x04 = dynamicSceneObject.unk0x04;
 
-            // DYNAMIC DATA
-            {
-                unk_0x00 = value.unk0x00;
-                unk_0x04 = value.unk0x04;
-
-                // Copy out texture scroll values
-                if (value.textureScroll != null)
+                // TRANSFORM
+                // Copy most reliable transform if available
+                if (dynamicSceneObject.transformMatrix3x4 != null)
                 {
-                    textureScrollFields = new Vector2[value.textureScroll.fields.Length];
-                    for (int i = 0; i < textureScrollFields.Length; i++)
-                    {
-                        var item = value.textureScroll.fields[i];
-                        if (item == null)
-                            continue;
-
-                        textureScrollFields[i] = new Vector2(item.x, item.y);
-                    }
+                    transform.CopyGfzTransformMatrix3x4(dynamicSceneObject.transformMatrix3x4);
                 }
-
-                // Copy values in
-                srcSkeletalAnimator = value.skeletalAnimator;
-                exportSkeletalAnimator = srcSkeletalAnimator != null;
-
-                // Unity will want to create instance, so keep track if we have data
-                // to export here. Advantage in that we can omit export if we want.
-                srcAnimationClip = value.animationClip;
-                exportAnimationClip = srcAnimationClip != null;
-            }
-
-            // SceneObject Data
-            {
-                lodRenderFlags = value.sceneObject.lodRenderFlags;
-                //
-                var lodCount = value.sceneObject.lods.Length;
-                levelOfDetails = new GfzLOD[lodCount];
-                for (int i = 0; i < lodCount; i++)
+                else
                 {
-                    var modelName = value.sceneObject.lods[i].name;
-                    MeshFilter model = null; // AssetDatabaseUtility.GetSobjByOption();
-                    levelOfDetails[i] = new GfzLOD
-                    {
-                        modelName = modelName,
-                        model = model,
-                        lodDistance = value.sceneObject.lods[i].lodDistance,
-                    };
+                    transform.CopyGfzTransformPRXS(dynamicSceneObject.transformPRXS);
                 }
-
-                srcColliderMesh = value.sceneObject.colliderGeometry;
-                exportColliderMesh = srcColliderMesh != null;
             }
 
-            // 
-            model = GetComponent<MeshFilter>();
+            // Add scripts and import data
+            sceneObject = this.gameObject.AddComponent<GfzSceneObject>();
+            sceneObject.ImportGfz(dynamicSceneObject.sceneObject);
+
+            animationClip = this.gameObject.AddComponent<GfzAnimationClip>();
+            animationClip.ImportGfz(dynamicSceneObject.animationClip);
+
+            textureScroll = this.gameObject.AddComponent<GfzTextureScroll>();
+            textureScroll.ImportGfz(dynamicSceneObject.textureScroll);
+
+            skeletalAnimator = this.gameObject.AddComponent<GfzSkeletalAnimator>();
+            skeletalAnimator.ImportGfz(dynamicSceneObject.skeletalAnimator);
+
+            // Transform Matrix 3x4 is handled above and does not need a component
         }
-
-
-
-        //private void OnDrawGizmosSelected()
-        //{
-        //    Gizmos.color = new Color32(255, 0, 0, 127);
-        //    Gizmos.DrawSphere(transform.position, unkLod);
-        //    Gizmos.DrawWireSphere(transform.position, unkLod * 10f);
-        //}
 
     }
 }

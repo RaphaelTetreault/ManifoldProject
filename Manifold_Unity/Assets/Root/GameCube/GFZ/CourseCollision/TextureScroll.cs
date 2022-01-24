@@ -30,7 +30,7 @@ namespace GameCube.GFZ.CourseCollision
         // FIELDS
         public Pointer[] fieldPtrs;
         // REFERENCE FIELDS
-        public TextureMetadataField[] fields = new TextureMetadataField[0];
+        public TextureScrollField[] fields = new TextureScrollField[0];
 
 
         // PROPERTIES
@@ -50,7 +50,7 @@ namespace GameCube.GFZ.CourseCollision
             }
             this.RecordEndAddress(reader);
             {
-                fields = new TextureMetadataField[kCount];
+                fields = new TextureScrollField[kCount];
                 for (int i = 0; i < kCount; i++)
                 {
                     var pointer = fieldPtrs[i];

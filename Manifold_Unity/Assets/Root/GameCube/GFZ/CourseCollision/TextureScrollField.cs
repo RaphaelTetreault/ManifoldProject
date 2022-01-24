@@ -8,7 +8,7 @@ namespace GameCube.GFZ.CourseCollision
     /// A single data field for TextureMetadata.
     /// </summary>
     [Serializable]
-    public class TextureMetadataField :
+    public class TextureScrollField :
         IBinaryAddressable,
         IBinarySerializable
     {
