@@ -127,7 +127,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
             if (transformsComparison)
             {
-                string fileName = $"{time} COLI Compare {nameof(GameCube.GFZ.CourseCollision.Transform)}.tsv";
+                string fileName = $"{time} COLI Compare {nameof(GameCube.GFZ.CourseCollision.TransformPRXS)}.tsv";
                 string filePath = Path.Combine(outputPath, fileName);
                 EditorUtility.DisplayProgressBar(ExecuteText, filePath, RandomTime);
                 AnalyzeSceneObjectTransforms(filePath);
@@ -195,7 +195,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 }
 
                 {
-                    var fileName = $"{time} COLI {nameof(SceneObjectDynamic)} {nameof(TextureMetadata)}.tsv";
+                    var fileName = $"{time} COLI {nameof(SceneObjectDynamic)} {nameof(TextureScroll)}.tsv";
                     var filePath = Path.Combine(outputPath, fileName);
                     EditorUtility.DisplayProgressBar(ExecuteText, filePath, .3f);
                     AnalyzeSceneObjectsUnk1(filePath);
@@ -685,9 +685,9 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol(nameof(SceneObjectDynamic.unk0x04));
                 writer.WriteNextCol(nameof(SceneObjectDynamic.unk0x04));
                 writer.WriteNextCol(nameof(SceneObjectDynamic.sceneObjectPtr));
-                writer.WriteNextCol(nameof(SceneObjectDynamic.transform.Position));
-                writer.WriteNextCol(nameof(SceneObjectDynamic.transform.RotationEuler));
-                writer.WriteNextCol(nameof(SceneObjectDynamic.transform.Scale));
+                writer.WriteNextCol(nameof(SceneObjectDynamic.transformPRXS.Position));
+                writer.WriteNextCol(nameof(SceneObjectDynamic.transformPRXS.RotationEuler));
+                writer.WriteNextCol(nameof(SceneObjectDynamic.transformPRXS.Scale));
                 writer.WriteNextCol(nameof(SceneObjectDynamic.zero_0x2C));
                 writer.WriteNextCol(nameof(SceneObjectDynamic.animationClipPtr));
                 writer.WriteNextCol(nameof(SceneObjectDynamic.textureMetadataPtr));
@@ -708,9 +708,9 @@ namespace Manifold.IO.GFZ.CourseCollision
                         writer.WriteNextCol(sceneObject.unk0x04);
                         writer.WriteNextCol($"0x{sceneObject.unk0x04:x8}");
                         writer.WriteNextCol(sceneObject.sceneObjectPtr.HexAddress);
-                        writer.WriteNextCol(sceneObject.transform.Position);
-                        writer.WriteNextCol(sceneObject.transform.RotationEuler);
-                        writer.WriteNextCol(sceneObject.transform.Scale);
+                        writer.WriteNextCol(sceneObject.transformPRXS.Position);
+                        writer.WriteNextCol(sceneObject.transformPRXS.RotationEuler);
+                        writer.WriteNextCol(sceneObject.transformPRXS.Scale);
                         writer.WriteNextCol(sceneObject.zero_0x2C);
                         writer.WriteNextCol(sceneObject.animationClipPtr.HexAddress);
                         writer.WriteNextCol(sceneObject.textureMetadataPtr.HexAddress);
@@ -743,11 +743,11 @@ namespace Manifold.IO.GFZ.CourseCollision
                     int gameObjectIndex = 0;
                     foreach (var sceneObject in file.Value.dynamicSceneObjects)
                     {
-                        if (sceneObject.textureMetadata == null)
+                        if (sceneObject.textureScroll == null)
                             continue;
 
                         int unkIndex = 0;
-                        foreach (var unk1 in sceneObject.textureMetadata.fields)
+                        foreach (var unk1 in sceneObject.textureScroll.fields)
                         {
                             writer.WriteNextCol(file.FileName);
                             writer.WriteNextCol(gameObjectIndex);
@@ -1536,9 +1536,9 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol(nameof(Fog.interpolation));
                 writer.WriteNextCol(nameof(Fog.fogRange) + "." + nameof(Range.near));
                 writer.WriteNextCol(nameof(Fog.fogRange) + "." + nameof(Range.far));
-                writer.WriteNextCol(nameof(Fog.colorRGB) + ".R");
-                writer.WriteNextCol(nameof(Fog.colorRGB) + ".G");
-                writer.WriteNextCol(nameof(Fog.colorRGB) + ".B");
+                writer.WriteNextCol(nameof(Fog.colorRGBA) + ".R");
+                writer.WriteNextCol(nameof(Fog.colorRGBA) + ".G");
+                writer.WriteNextCol(nameof(Fog.colorRGBA) + ".B");
                 writer.WriteNextCol(nameof(Fog.zero0x18) + ".x");
                 writer.WriteNextCol(nameof(Fog.zero0x18) + ".y");
                 writer.WriteNextCol(nameof(Fog.zero0x18) + ".z");
@@ -1561,9 +1561,9 @@ namespace Manifold.IO.GFZ.CourseCollision
                     writer.WriteNextCol(scene.fog.interpolation);
                     writer.WriteNextCol(scene.fog.fogRange.near);
                     writer.WriteNextCol(scene.fog.fogRange.far);
-                    writer.WriteNextCol(scene.fog.colorRGB.x);
-                    writer.WriteNextCol(scene.fog.colorRGB.y);
-                    writer.WriteNextCol(scene.fog.colorRGB.z);
+                    writer.WriteNextCol(scene.fog.colorRGBA.x);
+                    writer.WriteNextCol(scene.fog.colorRGBA.y);
+                    writer.WriteNextCol(scene.fog.colorRGBA.z);
                     writer.WriteNextCol(scene.fog.zero0x18.x);
                     writer.WriteNextCol(scene.fog.zero0x18.y);
                     writer.WriteNextCol(scene.fog.zero0x18.z);
@@ -1618,19 +1618,19 @@ namespace Manifold.IO.GFZ.CourseCollision
                         writer.WriteNextCol(matrix.z);
 
                         // Rotation values as reconstructed
-                        var euler = sceneObject.transform.DecomposedRotation.EulerAngles;
+                        var euler = sceneObject.transformPRXS.DecomposedRotation.EulerAngles;
                         writer.WriteNextCol(euler.x);
                         writer.WriteNextCol(euler.y);
                         writer.WriteNextCol(euler.z);
 
                         // Decomposed rotation values, raw, requires processing to be used
-                        var decomposed = sceneObject.transform.DecomposedRotation;
+                        var decomposed = sceneObject.transformPRXS.DecomposedRotation;
                         writer.WriteNextCol(decomposed.phi);
                         writer.WriteNextCol(decomposed.theta);
                         writer.WriteNextCol(decomposed.psi);
                         // The other parameters that go with the structure
-                        writer.WriteNextCol(sceneObject.transform.UnknownOption);
-                        writer.WriteNextCol(sceneObject.transform.ObjectActiveOverride);
+                        writer.WriteNextCol(sceneObject.transformPRXS.UnknownOption);
+                        writer.WriteNextCol(sceneObject.transformPRXS.ObjectActiveOverride);
 
                         writer.WriteNextRow();
                         sceneObjectIndex++;

@@ -213,9 +213,9 @@ namespace Manifold.IO.GFZ.CourseCollision
                         log.WriteAddress(sceneObject.animationClip.curves);
                     // TODO: other sub classes?
 
-                    log.WriteAddress(sceneObject.textureMetadata);
-                    if (sceneObject.textureMetadata != null)
-                        log.WriteAddress(sceneObject.textureMetadata.fields);
+                    log.WriteAddress(sceneObject.textureScroll);
+                    if (sceneObject.textureScroll != null)
+                        log.WriteAddress(sceneObject.textureScroll.fields);
 
                     log.WriteLine();
                 }

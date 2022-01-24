@@ -17,7 +17,7 @@ namespace GameCube.GFZ.CourseCollision
         [UnityEngine.SerializeField] private AddressRange addressRange;
 
         // FIELDS
-        public Transform transform;
+        public TransformPRXS transform;
         public TriggerableAnimation animation;
         public TriggerableVisualEffect visualEffect;
 

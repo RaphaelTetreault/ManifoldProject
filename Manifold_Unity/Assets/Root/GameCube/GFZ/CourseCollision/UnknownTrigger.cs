@@ -18,7 +18,7 @@ namespace GameCube.GFZ.CourseCollision
         private AddressRange addressRange;
 
         // FIELDS
-        public Transform transform;
+        public TransformPRXS transform;
         public EnumFlags16 unk_0x20;
         public EnumFlags16 unk_0x22;
 

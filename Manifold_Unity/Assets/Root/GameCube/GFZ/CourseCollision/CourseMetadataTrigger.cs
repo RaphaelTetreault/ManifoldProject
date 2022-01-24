@@ -18,7 +18,7 @@ namespace GameCube.GFZ.CourseCollision
         [UnityEngine.SerializeField] private AddressRange addressRange;
 
         // FIELDS
-        public Transform transform;
+        public TransformPRXS transform;
         public CourseMetadataType metadataType;
 
 

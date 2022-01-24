@@ -20,7 +20,7 @@ namespace GameCube.GFZ.CourseCollision
         public int unk0x00; // rendering?
         public int unk0x04; // rendering?
         public Pointer sceneObjectPtr;
-        public Transform transform = new Transform();
+        public TransformPRXS transformPRXS = new TransformPRXS();
         public int zero_0x2C; // null ptr?
         public Pointer animationClipPtr;
         public Pointer textureMetadataPtr;
@@ -29,7 +29,7 @@ namespace GameCube.GFZ.CourseCollision
         // FIELDS (deserialized from pointers)
         public SceneObject sceneObject;
         public AnimationClip animationClip;
-        public TextureMetadata textureMetadata;
+        public TextureScroll textureScroll;
         public SkeletalAnimator skeletalAnimator;
         public TransformMatrix3x4 transformMatrix3x4;
 
@@ -51,7 +51,7 @@ namespace GameCube.GFZ.CourseCollision
                 reader.ReadX(ref unk0x00);
                 reader.ReadX(ref unk0x04);
                 reader.ReadX(ref sceneObjectPtr);
-                reader.ReadX(ref transform, true);
+                reader.ReadX(ref transformPRXS, true);
                 reader.ReadX(ref zero_0x2C);
                 reader.ReadX(ref animationClipPtr);
                 reader.ReadX(ref textureMetadataPtr);
@@ -73,7 +73,7 @@ namespace GameCube.GFZ.CourseCollision
                 if (textureMetadataPtr.IsNotNullPointer)
                 {
                     reader.JumpToAddress(textureMetadataPtr);
-                    reader.ReadX(ref textureMetadata, true);
+                    reader.ReadX(ref textureScroll, true);
                 }
 
                 if (skeletalAnimatorPtr.IsNotNullPointer)
@@ -104,7 +104,7 @@ namespace GameCube.GFZ.CourseCollision
                 // Get pointers from refered instances
                 sceneObjectPtr = sceneObject.GetPointer();
                 animationClipPtr = animationClip.GetPointer();
-                textureMetadataPtr = textureMetadata.GetPointer();
+                textureMetadataPtr = textureScroll.GetPointer();
                 skeletalAnimatorPtr = skeletalAnimator.GetPointer();
                 transformMatrix3x4Ptr = transformMatrix3x4.GetPointer();
             }
@@ -113,7 +113,7 @@ namespace GameCube.GFZ.CourseCollision
                 writer.WriteX(unk0x00);
                 writer.WriteX(unk0x04);
                 writer.WriteX(sceneObjectPtr);
-                writer.WriteX(transform);
+                writer.WriteX(transformPRXS);
                 writer.WriteX(zero_0x2C);
                 writer.WriteX(animationClipPtr);
                 writer.WriteX(textureMetadataPtr);
@@ -130,11 +130,11 @@ namespace GameCube.GFZ.CourseCollision
             Assert.IsTrue(sceneObjectPtr.IsNotNullPointer);
             Assert.ReferencePointer(sceneObject, sceneObjectPtr);
             // This should always exist
-            Assert.IsTrue(transform != null);
+            Assert.IsTrue(transformPRXS != null);
 
             // Optional data
             Assert.ReferencePointer(animationClip, animationClipPtr);
-            Assert.ReferencePointer(textureMetadata, textureMetadataPtr);
+            Assert.ReferencePointer(textureScroll, textureMetadataPtr);
             Assert.ReferencePointer(skeletalAnimator, skeletalAnimatorPtr);
             Assert.ReferencePointer(transformMatrix3x4, transformMatrix3x4Ptr);
 
@@ -148,7 +148,7 @@ namespace GameCube.GFZ.CourseCollision
                 $"{nameof(SceneObjectDynamic)}(" +
                 $"{nameof(unk0x04)}: {unk0x04:x8}, " +
                 $"{nameof(unk0x00)}: {unk0x00:x8}, " +
-                $"{transform} " +
+                $"{transformPRXS} " +
                 $"{nameof(Name)}: {Name}" +
                 $")";
         }

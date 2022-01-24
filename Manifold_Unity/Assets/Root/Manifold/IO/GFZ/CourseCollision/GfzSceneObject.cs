@@ -9,20 +9,30 @@ namespace Manifold.IO.GFZ.CourseCollision
         // NOTE: order below is to make flipping through items in
         // inspector easier. Last entry is variable height.
 
+        [System.Serializable]
+        private struct GfzLOD
+        {
+            public string modelName;
+            public float lodDistance;
+        }
+
+
         // Object Reference data
-        [Header("Object Reference Data")]
+        [Header("Scene Object LOD")]
         [SerializeField] private MeshFilter model;
-        [SerializeField] private float unkLod;
+        [SerializeField] private GfzLOD[] LODs;
         // Instance data
-        [Header("Instance Data")]
-        [SerializeField] private LodRenderFlags unk_flag;
+        [Header("Scene Object")]
+        [SerializeField] private LodRenderFlags lodRenderFlags;
         [SerializeField] private UnkInstanceOption unk_option = UnkInstanceOption.unk1_default;
         [SerializeField] private MeshFilter colliderMesh;
         // Scene Object data
-        [Header("SceneObject Data")]
+        [Header("Dynamic Data")]
         [SerializeField] private UnknownObjectBitfield lodFar;
         [SerializeField] private UnknownObjectBitfield lodNear;
-        [SerializeField] private Vector2[] unkData;
+        [SerializeField] private Vector2[] field;
+
+
         // TODO:
         // + Animation
         // + Skeletal animator
@@ -66,41 +76,45 @@ namespace Manifold.IO.GFZ.CourseCollision
             }
             else
             {
-                transform.CopyGfzTransform(value.transform);
+                transform.CopyGfzTransform(value.transformPRXS);
             }
 
-            // Scene object data
-            //lodNear = value.lodNear;
-            //lodFar = value.lodFar;
-
             // Copy out values
-            if (value.textureMetadataPtr.IsNotNullPointer)
+            if (value.textureScroll != null)
             {
-                unkData = new Vector2[value.textureMetadata.fields.Length];
-                for (int i = 0; i < unkData.Length; i++)
+                field = new Vector2[value.textureScroll.fields.Length];
+                for (int i = 0; i < field.Length; i++)
                 {
-                    var item = value.textureMetadata.fields[i];
-                    unkData[i] = new Vector2(item.x, item.y);
+                    var item = value.textureScroll.fields[i];
+                    if (item == null)
+                        continue;
+
+                    field[i] = new Vector2(item.x, item.y);
                 }
             }
 
-            // fix from edits
-            throw new System.Exception();
+            //
+            lodRenderFlags = value.sceneObject.lodRenderFlags;
 
-            // Instance data
-            //unk_flag = value.templateSceneObject.unk_0x00;
-            //unk_option = value.templateSceneObject.unk_0x04;
-
-            // Reference data
-            //unkLod = value.templateSceneObject.sceneObjects.unk_0x0C;
+            //
+            var lodCount = value.sceneObject.lods.Length;
+            LODs = new GfzLOD[lodCount];
+            for (int i = 0; i < lodCount; i++)
+            {
+                LODs[i] = new GfzLOD
+                {
+                    modelName = value.sceneObject.lods[i].name,
+                    lodDistance = value.sceneObject.lods[i].lodDistance,
+                };
+            }
         }
 
-        private void OnDrawGizmosSelected()
-        {
-            Gizmos.color = new Color32(255, 0, 0, 127);
-            Gizmos.DrawSphere(transform.position, unkLod);
-            Gizmos.DrawWireSphere(transform.position, unkLod * 10f);
-        }
+        //private void OnDrawGizmosSelected()
+        //{
+        //    Gizmos.color = new Color32(255, 0, 0, 127);
+        //    Gizmos.DrawSphere(transform.position, unkLod);
+        //    Gizmos.DrawWireSphere(transform.position, unkLod * 10f);
+        //}
 
     }
 }

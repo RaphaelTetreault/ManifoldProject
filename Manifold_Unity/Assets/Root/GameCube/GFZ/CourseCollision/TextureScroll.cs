@@ -16,7 +16,7 @@ namespace GameCube.GFZ.CourseCollision
     /// Texture metadata. In some instasnces defines how a texture scrolls.
     /// </summary>
     [Serializable]
-    public class TextureMetadata :
+    public class TextureScroll :
         IBinaryAddressable,
         IBinarySerializable,
         IHasReference
@@ -88,7 +88,7 @@ namespace GameCube.GFZ.CourseCollision
         public override string ToString()
         {
             var stringBuilder = new System.Text.StringBuilder();
-            stringBuilder.Append(nameof(TextureMetadata));
+            stringBuilder.Append(nameof(TextureScroll));
             for (int i = 0; i < fields.Length; i++)
             {
                 if (fields[i] == null)

@@ -10,10 +10,10 @@ namespace GameCube.GFZ.CourseCollision
     /// hierarchy is not important - flat structures, no trees).
     /// </summary>
     [Serializable]
-    public class Transform :
+    public class TransformPRXS :
         IBinarySerializable,
         IBinaryAddressable,
-        IDeepCopyable<Transform>
+        IDeepCopyable<TransformPRXS>
     {
         // METADATA
         [UnityEngine.SerializeField] private AddressRange addressRange;
@@ -75,9 +75,9 @@ namespace GameCube.GFZ.CourseCollision
 
 
         // METHODS
-        public Transform CreateDeepCopy()
+        public TransformPRXS CreateDeepCopy()
         {
-            var newInstance = new Transform()
+            var newInstance = new TransformPRXS()
             {
                 position = position,
                 decomposedRotation = decomposedRotation,
@@ -118,7 +118,7 @@ namespace GameCube.GFZ.CourseCollision
         {
             var euler = RotationEuler;
             return
-                $"{nameof(Transform)}(" +
+                $"{nameof(TransformPRXS)}(" +
                 $"{nameof(Position)}(x:{position.x:0.0}, y:{position.y:0.0}, z:{position.z:0.0}), " +
                 $"{nameof(RotationEuler)}(x:{euler.x:0.0}, y:{euler.y:0.0}, z:{euler.z:0.0}), " +
                 $"{nameof(Scale)}(x:{scale.x:0.0}, y:{scale.y:0.0}, z:{scale.z:0.0}), " +

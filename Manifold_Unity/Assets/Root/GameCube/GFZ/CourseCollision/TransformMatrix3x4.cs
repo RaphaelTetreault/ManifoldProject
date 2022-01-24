@@ -90,7 +90,7 @@ namespace GameCube.GFZ.CourseCollision
             var scale = Scale;
 
             return
-                $"{nameof(Transform)}(" +
+                $"{nameof(TransformPRXS)}(" +
                 $"{nameof(Position)}(x:{position.x:0.0}, y:{position.y:0.0}, z:{position.z:0.0}), " +
                 $"RotationEuler(x:{euler.x:0.0}, y:{euler.y:0.0}, z:{euler.z:0.0}), " +
                 $"{nameof(Scale)}(x:{scale.x:0.0}, y:{scale.y:0.0}, z:{scale.z:0.0})" +

@@ -992,7 +992,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             sceneParams.fogInterpolation = scene.fog.interpolation;
             sceneParams.fogNear = scene.fog.fogRange.near;
             sceneParams.fogFar = scene.fog.fogRange.far;
-            var color = scene.fog.colorRGB;
+            var color = scene.fog.colorRGBA;
             sceneParams.color = new Color(color.x, color.y, color.z);
 
             // Convert from GFZ anim curves to Unity anim curves
@@ -1001,17 +1001,6 @@ namespace Manifold.IO.GFZ.CourseCollision
             sceneParams.fogCurveR = scene.fogCurves.FogCurveR.ToUnity();
             sceneParams.fogCurveG = scene.fogCurves.FogCurveG.ToUnity();
             sceneParams.fogCurveB = scene.fogCurves.FogCurveB.ToUnity();
-        }
-    }
-
-    public static class AnimationCurveExtensions
-    {
-        public static float EvaluateDefault(this UnityEngine.AnimationCurve curve, float time, float @default)
-        {
-            if (time == 0f)
-                return @default;
-
-            return curve.Evaluate(time);
         }
     }
 }

@@ -156,6 +156,15 @@ namespace GameCube.GFZ.CourseCollision
             return children;
         }
 
+        public TrackSegment[] GetChildren(TrackSegment[] allTrackSegments)
+        {
+            var children = new System.Collections.Generic.List<TrackSegment>();
+            foreach (var index in childIndexes)
+            {
+                children.Add(allTrackSegments[index]);
+            }
+            return children.ToArray();
+        }
 
         public void Serialize(BinaryWriter writer)
         {

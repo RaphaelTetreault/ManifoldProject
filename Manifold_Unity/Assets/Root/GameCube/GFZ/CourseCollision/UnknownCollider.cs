@@ -20,7 +20,7 @@ namespace GameCube.GFZ.CourseCollision
 
         // FIELDS
         public Pointer templateSceneObjectPtr;
-        public Transform transform;
+        public TransformPRXS transform;
         //
         public SceneObject templateSceneObject;
 

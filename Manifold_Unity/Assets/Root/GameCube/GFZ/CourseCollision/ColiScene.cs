@@ -752,7 +752,7 @@ namespace GameCube.GFZ.CourseCollision
             // all the values in their own mini loops.
             var animationClips = new List<AnimationClip>();
             var animationClipCurves = new List<AnimationClipCurve>();
-            var textureMetadatas = new List<TextureMetadata>();
+            var textureMetadatas = new List<TextureScroll>();
             var textureMetadataFields = new List<TextureMetadataField>();
             var skeletalAnimators = new List<SkeletalAnimator>();
             var skeletalProperties = new List<SkeletalProperties>();
@@ -771,10 +771,10 @@ namespace GameCube.GFZ.CourseCollision
                 }
 
                 // Texture Metadata
-                if (dynamicSceneObject.textureMetadata != null)
+                if (dynamicSceneObject.textureScroll != null)
                 {
-                    textureMetadatas.Add(dynamicSceneObject.textureMetadata);
-                    foreach (var field in dynamicSceneObject.textureMetadata.fields)
+                    textureMetadatas.Add(dynamicSceneObject.textureScroll);
+                    foreach (var field in dynamicSceneObject.textureScroll.fields)
                     {
                         if (field != null)
                         {
@@ -1141,9 +1141,9 @@ namespace GameCube.GFZ.CourseCollision
                             list.AddRange(animClipCurve.animationCurve.keyableAttributes);
                     }
                 }
-                list.Add(dynamicSceneObject.textureMetadata);
-                if (dynamicSceneObject.textureMetadata != null)
-                    list.AddRange(dynamicSceneObject.textureMetadata.fields);
+                list.Add(dynamicSceneObject.textureScroll);
+                if (dynamicSceneObject.textureScroll != null)
+                    list.AddRange(dynamicSceneObject.textureScroll.fields);
                 list.Add(dynamicSceneObject.skeletalAnimator);
                 if (dynamicSceneObject.skeletalAnimator != null)
                     list.Add(dynamicSceneObject.skeletalAnimator.properties);
