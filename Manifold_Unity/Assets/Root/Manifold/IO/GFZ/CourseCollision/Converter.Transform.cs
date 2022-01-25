@@ -26,6 +26,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
 
         // HELPERS
+
         /// <summary>
         /// Copies the TRS values from GFZ Transform <paramref name="from"/> to the Unity Transform <paramref name="to"/>
         /// </summary>
@@ -35,7 +36,7 @@ namespace Manifold.IO.GFZ.CourseCollision
         {
             // Apply transform values to target
             to.localPosition = from.Position;
-            to.rotation = from.Rotation;
+            to.localRotation = from.Rotation;
             to.localScale = from.Scale;
         }
 
@@ -49,23 +50,23 @@ namespace Manifold.IO.GFZ.CourseCollision
             // Apply transform values to target
             to.localPosition = from.Position;
             //to.rotation = from.Rotation; // 'quaternion' is... lacking
-            to.rotation = from.Matrix.ToUnityMatrix4x4().rotation;
+            to.localRotation = from.Matrix.ToUnityMatrix4x4().rotation;
             to.localScale = from.Scale;
         }
 
 
         /// <summary>
-        /// Copies the (global) TRS values from the Unity Transform <paramref name="from"/> to the GFZ Transform <paramref name="to"/>.
+        /// Copies the (global) TRS values from the Unity Transform <paramref name="unity"/> to the GFZ Transform <paramref name="gfzPRXS"/>.
         /// </summary>
-        /// <param name="from">The transform to copy global TRS from.</param>
-        /// <param name="to">The transform to apply global TRS to.</param>
-        public static void CopyToGfzTransformPRXS(Transform from, TransformPRXS to)
+        /// <param name="unity">The transform to copy global TRS from.</param>
+        /// <param name="gfzPRXS">The transform to apply global TRS to.</param>
+        public static void CopyToGfzTransformPRXS(Transform unity, TransformPRXS gfzPRXS)
         {
             // Copy over GLOBAL position.
             // The game does uses "TransformMatrix3x4" for LOCAL coordinates.
-            to.Position = from.position;
-            to.DecomposedRotation = from.rotation;
-            to.Scale = from.lossyScale;
+            gfzPRXS.Position = unity.position;
+            gfzPRXS.DecomposedRotation = unity.rotation.eulerAngles;
+            gfzPRXS.Scale = unity.lossyScale;
         }
 
         /// <summary>

@@ -31,6 +31,9 @@ namespace Manifold.IO.GFZ.CourseCollision
             dynamicSceneObject.unk0x00 = unk_0x00;
             dynamicSceneObject.unk0x04 = unk_0x04;
             dynamicSceneObject.transformPRXS = TransformConverter.ToGfzTransformPRXS(transform);
+            //dynamicSceneObject.transformPRXS.Position = new Unity.Mathematics.float3();
+            //dynamicSceneObject.transformPRXS.DecomposedRotation = new GameCube.GFZ.Int16Rotation3();
+            //dynamicSceneObject.transformPRXS.Scale = new Unity.Mathematics.float3(1,1,1);
 
             // Values from pointed classes
             // These functions should return null if necessary
@@ -46,7 +49,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 dynamicSceneObject.skeletalAnimator = skeletalAnimator.ExportGfz();
 
             // This value only exists if we don't have an animation
-            if (dynamicSceneObject.animationClip == null)
+            //if (dynamicSceneObject.animationClip == null)
                 dynamicSceneObject.transformMatrix3x4 = TransformConverter.ToGfzTransformMatrix3x4(transform);
 
             return dynamicSceneObject;
