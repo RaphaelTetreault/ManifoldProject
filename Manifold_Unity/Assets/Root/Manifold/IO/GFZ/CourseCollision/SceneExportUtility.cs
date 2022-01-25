@@ -192,7 +192,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 scene.dynamicSceneObjects = GetGfzValues(gfzDynamicSceneObjects);
                 scene.staticSceneObjects = GetGfzValues(gfzStaticSceneObjects);
                 scene.sceneObjects = GetGfzValues(gfzSceneObjects);
-                
+
                 // LODs
                 var sceneObjectLODs = new List<SceneObjectLOD>();
                 foreach (var sceneObject in scene.sceneObjects)
@@ -205,9 +205,17 @@ namespace Manifold.IO.GFZ.CourseCollision
                 var sceneObjectNames = new List<CString>();
                 foreach (var thing in scene.sceneObjectLODs)
                 {
-                    sceneObjectNames.Add(thing.name);
+                    if (!string.IsNullOrEmpty(thing.name))
+                    {
+                        sceneObjectNames.Add(thing.name);
+                    }
+                    else
+                    {
+                        thing.AddressRange = new AddressRange();
+                    }
                 }
-                scene.sceneObjectNames = sceneObjectNames.ToArray();
+                // alphabetize, store
+                scene.sceneObjectNames = sceneObjectNames.OrderBy(x => x.value).ToArray();
 
                 // Errors are not from this
                 //foreach (var dyn in scene.dynamicSceneObjects)
@@ -220,20 +228,20 @@ namespace Manifold.IO.GFZ.CourseCollision
 
             }
 
-            //// Static Collider Meshes
-            //{
-            //    // TODO: generate from GFZ scene data
+            // Static Collider Meshes
+            {
+                // TODO: generate from GFZ scene data
 
-            //    var unknownColliders = GameObject.FindObjectsOfType<GfzUnknownCollider>(findInactive);
-            //    scene.unknownColliders = GetGfzValues(unknownColliders);
+                //var unknownColliders = GameObject.FindObjectsOfType<GfzUnknownCollider>(findInactive);
+                //scene.unknownColliders = GetGfzValues(unknownColliders);
 
-            //    // Get data from scene
-            //    scene.staticColliderMeshes = oldScene.staticColliderMeshes;
-            //    scene.staticColliderMeshes.SerializeFormat = format;
-            //    // Point to existing references
-            //    scene.staticColliderMeshes.unknownColliders = scene.unknownColliders;
-            //    scene.staticColliderMeshes.staticSceneObjects = scene.staticSceneObjects;
-            //}
+                // Get data from scene
+                //scene.staticColliderMeshes = oldScene.staticColliderMeshes;
+                scene.staticColliderMeshes.SerializeFormat = format;
+                // Point to existing references
+                scene.staticColliderMeshes.unknownColliders = scene.unknownColliders;
+                scene.staticColliderMeshes.staticSceneObjects = scene.staticSceneObjects;
+            }
 
             //// Track Data
             //{

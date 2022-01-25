@@ -411,7 +411,7 @@ namespace GameCube.GFZ.CourseCollision
                 }
                 // Save, order by name (alphabetical)
                 sceneObjectNames = sceneObjectNamesDict.Values.ToArray();
-                sceneObjectNames = sceneObjectNames.OrderBy(x => x.AddressRange.startAddress).ToArray();
+                sceneObjectNames = sceneObjectNames.OrderBy(x => x.value).ToArray();
             }
 
             // DESERIALIZE TRACK SEGMENTS
@@ -689,15 +689,11 @@ namespace GameCube.GFZ.CourseCollision
             foreach (var sceneObjectName in sceneObjectNames)
             {
                 writer.WriteX(sceneObjectName);
-                writer.AlignTo(4);
+                //writer.AlignTo(4);
             }
 
             // SCENE OBJECTS
-            writer.InlineComment(serializeVerbose, //<<<<
-                nameof(SceneObjectLOD),
-                nameof(SceneObject),
-                nameof(SceneObjectStatic),
-                nameof(SceneObjectDynamic));
+            writer.InlineComment(serializeVerbose, nameof(SceneObjectLOD));
             writer.WriteX(sceneObjectLODs, false);
 
             // SCENE OBJECT TEMPLATES

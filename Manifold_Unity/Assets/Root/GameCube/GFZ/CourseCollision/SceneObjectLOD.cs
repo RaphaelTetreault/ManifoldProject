@@ -75,9 +75,17 @@ namespace GameCube.GFZ.CourseCollision
         public void ValidateReferences()
         {
             // This pointer CANNOT be null and must refer to an object name.
-            Assert.IsTrue(lodNamePtr.IsNotNullPointer);
+
             Assert.IsTrue(name != null); // true null only, name can be string.Empty
-            Assert.ReferencePointer(name, lodNamePtr);
+            //if (!string.IsNullOrEmpty(name))
+            //{
+            //    Assert.IsTrue(lodNamePtr.IsNull);
+            //}
+            //else
+            //{
+            //    Assert.IsTrue(lodNamePtr.IsNotNullPointer);
+            //}
+            //Assert.ReferencePointer(name, lodNamePtr);
 
             // Constants
             Assert.IsTrue(zero_0x00 == 0);
