@@ -93,6 +93,22 @@ namespace Manifold.IO.GFZ
             { }
         }
 
+        [MenuItem(Const.Menu.tests + "Load Stage (Single)")]
+        public static void TestLoadSingle()
+        {
+            var settings = GfzProjectWindow.GetSettings();
+            var root = settings.RootFolder;
+            var path = $"{root}/stage/";
+            var file = EditorUtility.OpenFilePanel("Select Scene", path, "");
+
+            if (string.IsNullOrEmpty(file))
+                return;
+
+            LoadScene(file);
+
+            DebugConsole.Log("Test single complete!");
+        }
+
         [MenuItem(Const.Menu.tests + TestLoad + ActiveRoot + " _F6")]
         public static void TestLoadAllStages()
         {
@@ -329,8 +345,7 @@ namespace Manifold.IO.GFZ
                     sceneWrite = sceneRead;
                 }
 
-                // Skeep it to 1 stage for now
-                break;
+                //break;
             }
 
             EditorUtility.ClearProgressBar();

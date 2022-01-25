@@ -182,8 +182,9 @@ namespace GameCube.GFZ.CourseCollision
 
                 // 2022-01-14: all sorts of asserts
                 // All these are always populated in GX J
-                Assert.IsTrue(staticSceneObjectsPtr.Length != 0);
-                Assert.IsTrue(staticSceneObjectsPtr.IsNotNullPointer);
+                // 2022-01-24: disabled for testin export
+                //Assert.IsTrue(staticSceneObjectsPtr.Length != 0);
+                //Assert.IsTrue(staticSceneObjectsPtr.IsNotNullPointer);
                 Assert.IsTrue(unkDataPtr.IsNotNullPointer);
                 //DebugConsole.Log($"idx16: {unkBounds2DPtr.HexAddress}");
 

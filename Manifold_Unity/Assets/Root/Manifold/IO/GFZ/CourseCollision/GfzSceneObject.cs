@@ -36,12 +36,12 @@ namespace Manifold.IO.GFZ.CourseCollision
             sceneObjectLODs = this.gameObject.AddComponent<GfzSceneObjectLODs>();
             sceneObjectLODs.ImportGfz(sceneObject.lods);
 
-            bool hasSceneObject = sceneObject != null;
-            if (hasSceneObject)
+            bool hasColliderGeometry = sceneObject.colliderGeometry != null;
+            if (hasColliderGeometry)
             {
                 srcColliderMesh = sceneObject.colliderGeometry;
             }
-            exportColliderMesh = hasSceneObject;
+            exportColliderMesh = hasColliderGeometry;
 
         }
     }

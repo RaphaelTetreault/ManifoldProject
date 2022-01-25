@@ -33,6 +33,10 @@ namespace Manifold.IO.GFZ.CourseCollision
             for (int i = 0; i < textureScrollFields.Length; i++)
             {
                 var field = textureScrollFields[i];
+
+                if (field.x == 0 && field.y == 0)
+                    continue;
+
                 textureScroll.fields[i] = new TextureScrollField()
                 {
                     x = field.x,

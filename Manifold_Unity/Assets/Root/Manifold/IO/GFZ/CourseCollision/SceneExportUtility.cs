@@ -104,73 +104,85 @@ namespace Manifold.IO.GFZ.CourseCollision
             foreach (var mirroredObject in mirroredObjects)
                 mirroredObject.MirrorTransformZ();
 
-            // Build a new scene!
-            var scene = new ColiScene()
-            {
-                // Serialization settings
-                Format = format,
-                SerializeVerbose = verbose,
-                // Exported filename 'COLI_COURSE##'
-                FileName = sceneParams.GetGfzInternalName(),
-                // Data about the creator
-                Author = sceneParams.author,
-                Venue = sceneParams.venue,
-                CourseName = sceneParams.courseName,
-            };
-
-
             // TEST
             // Load the old stage to use it's data I don't know how to generate yet
-            var oldScene = ColiCourseIO.LoadScene(settings.StageDir + scene.FileName);
+            //var oldScene = ColiCourseIO.LoadScene(settings.StageDir + scene.FileName);
+            
+            // TEST
+            // load in real, modify what you'd like
+            var scene = ColiCourseIO.LoadScene(settings.StageDir + sceneParams.GetGfzInternalName());
+            // Serialization settings
+            scene.Format = format;
+            scene.SerializeVerbose = verbose;
+            // Exported filename 'COLI_COURSE##'
+            //FileName = sceneParams.GetGfzInternalName();
+            // Data about the creator
+            scene.Author = sceneParams.author;
+            scene.Venue = sceneParams.venue;
+            scene.CourseName = sceneParams.courseName;
+
+            //// Build a new scene!
+            //var scene = new ColiScene()
+            //{
+            //    // Serialization settings
+            //    Format = format,
+            //    SerializeVerbose = verbose,
+            //    // Exported filename 'COLI_COURSE##'
+            //    FileName = sceneParams.GetGfzInternalName(),
+            //    // Data about the creator
+            //    Author = sceneParams.author,
+            //    Venue = sceneParams.venue,
+            //    CourseName = sceneParams.courseName,
+            //};
 
 
-            // Get scene-wide parameters from SceneParameters
-            {
-                // Construct range from 2 parameters
-                scene.unkRange0x00 = new Range(sceneParams.rangeNear, sceneParams.rangeFar);
-                // Use functions to get form parameters
-                scene.fog = sceneParams.ToGfzFog();
-                scene.fogCurves = sceneParams.ToGfzFogCurves();
-            }
+            //// Get scene-wide parameters from SceneParameters
+            //{
+            //    // Construct range from 2 parameters
+            //    scene.unkRange0x00 = new Range(sceneParams.rangeNear, sceneParams.rangeFar);
+            //    // Use functions to get form parameters
+            //    scene.fog = sceneParams.ToGfzFog();
+            //    scene.fogCurves = sceneParams.ToGfzFogCurves();
+            //}
 
-            // Triggers
-            {
-                var arcadeCheckpointTriggers = GameObject.FindObjectsOfType<GfzArcadeCheckpoint>(findInactive);
-                scene.arcadeCheckpointTriggers = GetGfzValues(arcadeCheckpointTriggers);
+            //// Triggers
+            //{
+            //    var arcadeCheckpointTriggers = GameObject.FindObjectsOfType<GfzArcadeCheckpoint>(findInactive);
+            //    scene.arcadeCheckpointTriggers = GetGfzValues(arcadeCheckpointTriggers);
 
-                // This trigger type is a mess... Get all 3 representations, combine, assign.
-                // Collect all trigger types. They all get converted to the same GFZ base type.
-                var objectPaths = GameObject.FindObjectsOfType<GfzObjectPath>(findInactive);
-                var storyCapsules = GameObject.FindObjectsOfType<GfzStoryCapsule>(findInactive);
-                var unknownMetadataTriggers = GameObject.FindObjectsOfType<GfzUnknownCourseMetadataTrigger>(findInactive);
-                // Make a list, add range for each type
-                var courseMetadataTriggers = new List<CourseMetadataTrigger>();
-                courseMetadataTriggers.AddRange(GetGfzValues(objectPaths));
-                courseMetadataTriggers.AddRange(GetGfzValues(storyCapsules));
-                courseMetadataTriggers.AddRange(GetGfzValues(unknownMetadataTriggers));
-                // Convert list to array, assign to ColiScene
-                scene.courseMetadataTriggers = courseMetadataTriggers.ToArray();
+            //    // This trigger type is a mess... Get all 3 representations, combine, assign.
+            //    // Collect all trigger types. They all get converted to the same GFZ base type.
+            //    var objectPaths = GameObject.FindObjectsOfType<GfzObjectPath>(findInactive);
+            //    var storyCapsules = GameObject.FindObjectsOfType<GfzStoryCapsule>(findInactive);
+            //    var unknownMetadataTriggers = GameObject.FindObjectsOfType<GfzUnknownCourseMetadataTrigger>(findInactive);
+            //    // Make a list, add range for each type
+            //    var courseMetadataTriggers = new List<CourseMetadataTrigger>();
+            //    courseMetadataTriggers.AddRange(GetGfzValues(objectPaths));
+            //    courseMetadataTriggers.AddRange(GetGfzValues(storyCapsules));
+            //    courseMetadataTriggers.AddRange(GetGfzValues(unknownMetadataTriggers));
+            //    // Convert list to array, assign to ColiScene
+            //    scene.courseMetadataTriggers = courseMetadataTriggers.ToArray();
 
-                // This trigger type is a mess... Get all 3 representations, combine, assign.
-                var unknownTriggers = GameObject.FindObjectsOfType<GfzUnknownTrigger>(findInactive);
-                scene.unknownTriggers = GetGfzValues(unknownTriggers);
+            //    // This trigger type is a mess... Get all 3 representations, combine, assign.
+            //    var unknownTriggers = GameObject.FindObjectsOfType<GfzUnknownTrigger>(findInactive);
+            //    scene.unknownTriggers = GetGfzValues(unknownTriggers);
 
-                // 
-                var visualEffectTriggers = GameObject.FindObjectsOfType<GfzVisualEffectTrigger>(findInactive);
-                scene.visualEffectTriggers = GetGfzValues(visualEffectTriggers);
+            //    // 
+            //    var visualEffectTriggers = GameObject.FindObjectsOfType<GfzVisualEffectTrigger>(findInactive);
+            //    scene.visualEffectTriggers = GetGfzValues(visualEffectTriggers);
 
-                // TODO:
-                var storyObjectTrigger = GameObject.FindObjectsOfType<GfzStoryObjectTrigger>(findInactive);
-                scene.storyObjectTriggers = GetGfzValues(storyObjectTrigger);
-            }
+            //    // TODO:
+            //    var storyObjectTrigger = GameObject.FindObjectsOfType<GfzStoryObjectTrigger>(findInactive);
+            //    scene.storyObjectTriggers = GetGfzValues(storyObjectTrigger);
+            //}
 
             // Scene Objects
             {
                 var dynamicSceneObjects = GameObject.FindObjectsOfType<GfzSceneObjectDynamic>(findInactive);
                 scene.dynamicSceneObjects = GetGfzValues(dynamicSceneObjects);
 
-                // This currently exports a ton opf repeated values...
-                // TODO: hash the scene objects/LODS, use uniqye one only.
+                // This currently exports a ton of repeated values...
+                // TODO: hash the scene objects/LODS, use unique one only.
                 List<SceneObject> sceneObjects = new List<SceneObject>();
                 List<SceneObjectLOD> sceneObjectLODs = new List<SceneObjectLOD>();
                 List<CString> sceneObjectNames = new List<CString>();
@@ -196,39 +208,39 @@ namespace Manifold.IO.GFZ.CourseCollision
                 //scene.sceneObjectLODs = new SceneObjectLOD[0];
             }
 
-            // Static Collider Meshes
-            {
-                // TODO: generate from GFZ scene data
+            //// Static Collider Meshes
+            //{
+            //    // TODO: generate from GFZ scene data
 
-                var unknownColliders = GameObject.FindObjectsOfType<GfzUnknownCollider>(findInactive);
-                scene.unknownColliders = GetGfzValues(unknownColliders);
+            //    var unknownColliders = GameObject.FindObjectsOfType<GfzUnknownCollider>(findInactive);
+            //    scene.unknownColliders = GetGfzValues(unknownColliders);
 
-                // Get data from scene
-                scene.staticColliderMeshes = oldScene.staticColliderMeshes;
-                scene.staticColliderMeshes.SerializeFormat = format;
-                // Point to existing references
-                scene.staticColliderMeshes.unknownColliders = scene.unknownColliders;
-                scene.staticColliderMeshes.staticSceneObjects = scene.staticSceneObjects;
-            }
+            //    // Get data from scene
+            //    scene.staticColliderMeshes = oldScene.staticColliderMeshes;
+            //    scene.staticColliderMeshes.SerializeFormat = format;
+            //    // Point to existing references
+            //    scene.staticColliderMeshes.unknownColliders = scene.unknownColliders;
+            //    scene.staticColliderMeshes.staticSceneObjects = scene.staticSceneObjects;
+            //}
 
-            // Track Data
-            {
-                // Actual track data
-                scene.allTrackSegments = oldScene.allTrackSegments;
-                scene.rootTrackSegments = oldScene.rootTrackSegments;
+            //// Track Data
+            //{
+            //    // Actual track data
+            //    scene.allTrackSegments = oldScene.allTrackSegments;
+            //    scene.rootTrackSegments = oldScene.rootTrackSegments;
 
-                // Checkpoint data
-                scene.trackNodes = oldScene.trackNodes;
-                scene.trackCheckpointBoundsXZ = oldScene.trackCheckpointBoundsXZ;
-                scene.trackCheckpointMatrix = oldScene.trackCheckpointMatrix;
+            //    // Checkpoint data
+            //    scene.trackNodes = oldScene.trackNodes;
+            //    scene.trackCheckpointBoundsXZ = oldScene.trackCheckpointBoundsXZ;
+            //    scene.trackCheckpointMatrix = oldScene.trackCheckpointMatrix;
 
-                // Track metadata
-                scene.trackMinHeight = oldScene.trackMinHeight;
-                scene.trackLength = oldScene.trackLength;
+            //    // Track metadata
+            //    scene.trackMinHeight = oldScene.trackMinHeight;
+            //    scene.trackLength = oldScene.trackLength;
 
-                //
-                scene.surfaceAttributeAreas = oldScene.surfaceAttributeAreas;
-            }
+            //    //
+            //    scene.surfaceAttributeAreas = oldScene.surfaceAttributeAreas;
+            //}
 
             //
             MakeTrueNulls(scene);

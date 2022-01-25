@@ -754,8 +754,8 @@ namespace GameCube.GFZ.CourseCollision
             // all the values in their own mini loops.
             var animationClips = new List<AnimationClip>();
             var animationClipCurves = new List<AnimationClipCurve>();
-            var textureMetadatas = new List<TextureScroll>();
-            var textureMetadataFields = new List<TextureScrollField>();
+            var textureScrolls = new List<TextureScroll>();
+            var textureScrollFields = new List<TextureScrollField>();
             var skeletalAnimators = new List<SkeletalAnimator>();
             var skeletalProperties = new List<SkeletalProperties>();
             var transformMatrices = new List<TransformMatrix3x4>();
@@ -775,12 +775,12 @@ namespace GameCube.GFZ.CourseCollision
                 // Texture Metadata
                 if (dynamicSceneObject.textureScroll != null)
                 {
-                    textureMetadatas.Add(dynamicSceneObject.textureScroll);
+                    textureScrolls.Add(dynamicSceneObject.textureScroll);
                     foreach (var field in dynamicSceneObject.textureScroll.fields)
                     {
                         if (field != null)
                         {
-                            textureMetadataFields.Add(field);
+                            textureScrollFields.Add(field);
                         }
                     }
                 }
@@ -813,11 +813,11 @@ namespace GameCube.GFZ.CourseCollision
 
 
             // Texture metadata
-            writer.InlineDesc(serializeVerbose, textureMetadatas.ToArray());
-            foreach (var textureMetadata in textureMetadatas)
+            writer.InlineDesc(serializeVerbose, textureScrolls.ToArray());
+            foreach (var textureMetadata in textureScrolls)
                 writer.WriteX(textureMetadata);
-            writer.InlineDesc(serializeVerbose, textureMetadataFields.ToArray());
-            foreach (var textureMetadataField in textureMetadataFields)
+            writer.InlineDesc(serializeVerbose, textureScrollFields.ToArray());
+            foreach (var textureMetadataField in textureScrollFields)
                 writer.WriteX(textureMetadataField);
 
             // Skeletal animator
@@ -930,7 +930,7 @@ namespace GameCube.GFZ.CourseCollision
                     referers.AddRange(staticSceneObjects);
                 // Scene Object Dynamics
                 referers.AddRange(dynamicSceneObjects);
-                referers.AddRange(textureMetadatas);
+                referers.AddRange(textureScrolls);
                 referers.AddRange(skeletalAnimators);
                 referers.AddRange(animationClips);
                 referers.AddRange(animationClipCurves);
