@@ -14,6 +14,10 @@ namespace GameCube.GFZ.CourseCollision
     // This effectively creates cells with some overlap between each other
     // This concept could be further enhanced by creating more subdivisions and overlapping
     // a small amount of cells. This is ideal in reducing reference counts.
+    //
+    // Notes from the future: looks like it's using (more or less) index +-2 cells in X/Z
+    // direction. There appears to be a min include sive. Though, I think what you generate
+    // will work using this.
 
     /// <summary>
     /// Defines an absolute, untransformed bounds along the X and Z axes. This is used as metadata to know

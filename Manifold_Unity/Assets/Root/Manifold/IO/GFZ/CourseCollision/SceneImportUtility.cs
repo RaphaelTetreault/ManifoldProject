@@ -973,11 +973,11 @@ namespace Manifold.IO.GFZ.CourseCollision
         {
             var sceneParamsObj = new GameObject("Scene Parameters");
             var sceneParams = sceneParamsObj.AddComponent<GfzSceneParameters>();
-            //sceneParams.venue = CourseUtility.GetVenue(scene.ID);
+            sceneParams.venue = CourseUtility.GetVenue(scene.ID);
             // TODO: embed course name in file, use that if it exists.
-            //sceneParams.courseName = CourseUtility.GetCourseName(scene.ID);
+            sceneParams.courseName = CourseUtility.GetCourseName(scene.ID);
             sceneParams.courseIndex = scene.ID;
-            //sceneParams.author = "Amusement Vision";
+            sceneParams.author = "Amusement Vision";
             // Other data
             sceneParams.staticColliderMeshesActive = scene.staticColliderMeshesActive;
             sceneParams.circuitType = scene.circuitType;

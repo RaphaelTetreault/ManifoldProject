@@ -71,7 +71,11 @@ namespace GameCube.GFZ.CourseCollision
             quadMeshMatrices = new StaticColliderMeshMatrix[count];
 
             // initialize arrays
-            //for (int i = 0; i < count; i++)
+            for (int i = 0; i < count; i++)
+            {
+                triMeshMatrices[i] = new StaticColliderMeshMatrix();
+                quadMeshMatrices[i] = new StaticColliderMeshMatrix();
+            }
         }
 
         public AddressRange AddressRange
@@ -105,6 +109,11 @@ namespace GameCube.GFZ.CourseCollision
                         throw new NotImplementedException();
                 }
             }
+        }
+
+        public void ComputeMatrixBoundsXZ()
+        {
+            throw new NotImplementedException();
         }
 
         public void Deserialize(BinaryReader reader)
@@ -238,24 +247,23 @@ namespace GameCube.GFZ.CourseCollision
             this.RecordStartAddress(writer);
             {
                 // Write empty int array for unknown
-                writer.WriteX(zeroes_group1, false);
+                writer.WriteX(new byte[kZeroesGroup1], false);
                 writer.WriteX(staticColliderTrisPtr);
                 writer.WriteX(triMeshMatrixPtrs, false);
                 writer.WriteX(meshBounds);
                 writer.WriteX(staticColliderQuadsPtr);
                 writer.WriteX(quadMeshMatrixPtrs, false);
-                writer.WriteX(zeroes_group2, false);
+                writer.WriteX(new byte[kZeroesGroup2], false);
                 writer.WriteX(unknownCollidersPtr);
                 writer.WriteX(staticSceneObjectsPtr);
-                writer.WriteX(zeroes_group3, false);
+                writer.WriteX(new byte[kZeroesGroup3], false);
                 writer.WriteX(unkDataPtr);
-                writer.WriteX(zeroes_group4, false);
+                writer.WriteX(new byte[kZeroesGroup4], false);
                 writer.WriteX(unk_float);
-                writer.WriteX(zeroes_group5, false);
+                writer.WriteX(new byte[kZeroesGroup5], false);
             }
             this.RecordEndAddress(writer);
         }
-
         public void ValidateReferences()
         {
             // SANITY CHECK

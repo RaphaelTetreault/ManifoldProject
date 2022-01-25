@@ -202,6 +202,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 scene.sceneObjectLODs = sceneObjectLODs.ToArray();
 
                 // CString names
+                // TODO: share references
                 var sceneObjectNames = new List<CString>();
                 sceneObjectNames.Add("");
                 foreach (var thing in scene.sceneObjectLODs)
@@ -213,15 +214,6 @@ namespace Manifold.IO.GFZ.CourseCollision
                 }
                 // alphabetize, store
                 scene.sceneObjectNames = sceneObjectNames.OrderBy(x => x.value).ToArray();
-
-                // Errors are not from this
-                //foreach (var dyn in scene.dynamicSceneObjects)
-                //{
-                //    dyn.animationClip = null;
-                //    dyn.textureScroll = null;
-                //    dyn.skeletalAnimator = null;
-                //    dyn.transformMatrix3x4 = null;
-                //}
             }
 
             // Static Collider Meshes
@@ -229,8 +221,17 @@ namespace Manifold.IO.GFZ.CourseCollision
                 // TODO: generate from GFZ scene data
 
                 //var unknownColliders = GameObject.FindObjectsOfType<GfzUnknownCollider>(findInactive);
-                //scene.unknownColliders = GetGfzValues(unknownColliders);
+                //scene.unknownColliders = GetGfzValues(unknownColliders
+                scene.unknownColliders = new UnknownCollider[0];
 
+                // Static Collider Matrix
+                scene.staticColliderMeshes = new StaticColliderMeshes(format);
+                // Bind to other references
+                scene.staticColliderMeshes.unknownColliders = scene.unknownColliders;
+                scene.staticColliderMeshes.staticSceneObjects = scene.staticSceneObjects;
+                //scene.staticColliderMeshes.ComputeMatrixBoundsXZ();
+                scene.staticColliderMeshes.meshBounds = new MatrixBoundsXZ();
+                
                 // Get data from scene
                 //scene.staticColliderMeshes = oldScene.staticColliderMeshes;
                 scene.staticColliderMeshes.SerializeFormat = format;
