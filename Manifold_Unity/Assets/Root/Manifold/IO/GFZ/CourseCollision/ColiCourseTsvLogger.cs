@@ -723,7 +723,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol(nameof(SceneObjectDynamic.transformPRXS.Scale));
                 writer.WriteNextCol(nameof(SceneObjectDynamic.zero_0x2C));
                 writer.WriteNextCol(nameof(SceneObjectDynamic.animationClipPtr));
-                writer.WriteNextCol(nameof(SceneObjectDynamic.textureMetadataPtr));
+                writer.WriteNextCol(nameof(SceneObjectDynamic.textureScrollPtr));
                 writer.WriteNextCol(nameof(SceneObjectDynamic.skeletalAnimatorPtr));
                 writer.WriteNextCol(nameof(SceneObjectDynamic.transformMatrix3x4Ptr));
                 writer.WriteNextRow();
@@ -746,7 +746,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                         writer.WriteNextCol(sceneObject.transformPRXS.Scale);
                         writer.WriteNextCol(sceneObject.zero_0x2C);
                         writer.WriteNextCol(sceneObject.animationClipPtr.HexAddress);
-                        writer.WriteNextCol(sceneObject.textureMetadataPtr.HexAddress);
+                        writer.WriteNextCol(sceneObject.textureScrollPtr.HexAddress);
                         writer.WriteNextCol(sceneObject.skeletalAnimatorPtr.HexAddress);
                         writer.WriteNextCol(sceneObject.transformMatrix3x4Ptr.HexAddress);
                         writer.WriteNextRow();

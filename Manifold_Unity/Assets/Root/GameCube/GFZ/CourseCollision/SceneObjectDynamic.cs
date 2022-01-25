@@ -23,7 +23,7 @@ namespace GameCube.GFZ.CourseCollision
         public TransformPRXS transformPRXS = new TransformPRXS();
         public int zero_0x2C; // null ptr?
         public Pointer animationClipPtr;
-        public Pointer textureMetadataPtr;
+        public Pointer textureScrollPtr;
         public Pointer skeletalAnimatorPtr;
         public Pointer transformMatrix3x4Ptr;
         // FIELDS (deserialized from pointers)
@@ -54,7 +54,7 @@ namespace GameCube.GFZ.CourseCollision
                 reader.ReadX(ref transformPRXS, true);
                 reader.ReadX(ref zero_0x2C);
                 reader.ReadX(ref animationClipPtr);
-                reader.ReadX(ref textureMetadataPtr);
+                reader.ReadX(ref textureScrollPtr);
                 reader.ReadX(ref skeletalAnimatorPtr);
                 reader.ReadX(ref transformMatrix3x4Ptr);
             }
@@ -70,9 +70,9 @@ namespace GameCube.GFZ.CourseCollision
                     reader.ReadX(ref animationClip, true);
                 }
 
-                if (textureMetadataPtr.IsNotNullPointer)
+                if (textureScrollPtr.IsNotNullPointer)
                 {
-                    reader.JumpToAddress(textureMetadataPtr);
+                    reader.JumpToAddress(textureScrollPtr);
                     reader.ReadX(ref textureScroll, true);
                 }
 
@@ -104,7 +104,7 @@ namespace GameCube.GFZ.CourseCollision
                 // Get pointers from refered instances
                 sceneObjectPtr = sceneObject.GetPointer();
                 animationClipPtr = animationClip.GetPointer();
-                textureMetadataPtr = textureScroll.GetPointer();
+                textureScrollPtr = textureScroll.GetPointer();
                 skeletalAnimatorPtr = skeletalAnimator.GetPointer();
                 transformMatrix3x4Ptr = transformMatrix3x4.GetPointer();
             }
@@ -116,7 +116,7 @@ namespace GameCube.GFZ.CourseCollision
                 writer.WriteX(transformPRXS);
                 writer.WriteX(zero_0x2C);
                 writer.WriteX(animationClipPtr);
-                writer.WriteX(textureMetadataPtr);
+                writer.WriteX(textureScrollPtr);
                 writer.WriteX(skeletalAnimatorPtr);
                 writer.WriteX(transformMatrix3x4Ptr);
             }
@@ -134,7 +134,7 @@ namespace GameCube.GFZ.CourseCollision
 
             // Optional data
             Assert.ReferencePointer(animationClip, animationClipPtr);
-            Assert.ReferencePointer(textureScroll, textureMetadataPtr);
+            Assert.ReferencePointer(textureScroll, textureScrollPtr);
             Assert.ReferencePointer(skeletalAnimator, skeletalAnimatorPtr);
             Assert.ReferencePointer(transformMatrix3x4, transformMatrix3x4Ptr);
 
