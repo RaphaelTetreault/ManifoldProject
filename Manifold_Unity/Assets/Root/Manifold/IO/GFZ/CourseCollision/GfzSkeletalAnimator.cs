@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Manifold.IO.GFZ.CourseCollision
 {
-    internal class GfzSkeletalAnimator : MonoBehaviour,
+    public class GfzSkeletalAnimator : MonoBehaviour,
         IGfzConvertable<SkeletalAnimator>
     {
         [SerializeField] private bool exportSkeletalAnimator;

@@ -869,13 +869,13 @@ namespace Manifold.IO.GFZ.CourseCollision
                     int gameObjectIndex = 0;
                     foreach (var gameObject in file.Value.dynamicSceneObjects)
                     {
-                        if (gameObject.sceneObject.colliderGeometry.triCount == 0)
+                        if (gameObject.sceneObject.colliderMesh.triCount == 0)
                         {
                             continue;
                         }
 
                         int triIndex = 0;
-                        foreach (var tri in gameObject.sceneObject.colliderGeometry.tris)
+                        foreach (var tri in gameObject.sceneObject.colliderMesh.tris)
                         {
                             writer.WriteNextCol(file.FileName);
                             writer.WriteNextCol(gameObjectIndex);
@@ -964,13 +964,13 @@ namespace Manifold.IO.GFZ.CourseCollision
                     int gameObjectIndex = 0;
                     foreach (var gameObject in file.Value.dynamicSceneObjects)
                     {
-                        if (gameObject.sceneObject.colliderGeometry.quadCount == 0)
+                        if (gameObject.sceneObject.colliderMesh.quadCount == 0)
                         {
                             continue;
                         }
 
                         int quadIndex = 0;
-                        foreach (var quad in gameObject.sceneObject.colliderGeometry.quads)
+                        foreach (var quad in gameObject.sceneObject.colliderMesh.quads)
                         {
                             writer.WriteNextCol(file.FileName);
                             writer.WriteNextCol(gameObjectIndex);

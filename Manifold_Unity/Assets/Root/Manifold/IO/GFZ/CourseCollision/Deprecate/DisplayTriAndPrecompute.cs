@@ -29,7 +29,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
             var scene = sceneSobj.Value;
             var sceneObject = scene.dynamicSceneObjects[objectIndex];
-            var colliderGeo = sceneObject.sceneObject.colliderGeometry;
+            var colliderGeo = sceneObject.sceneObject.colliderMesh;
 
             index = Mathf.Clamp(index, 0, colliderGeo.triCount - 1);
 

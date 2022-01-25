@@ -612,10 +612,10 @@ namespace Manifold.IO.GFZ
                 }
                 log.WriteLine();
 
-                log.WriteLine($"{nameof(ColliderGeometry)}");
+                log.WriteLine($"{nameof(ColliderMesh)}");
                 for (int i = 0; i < coliScene.sceneObjects.Length; i++)
                 {
-                    var colliderGeometry = coliScene.sceneObjects[i].colliderGeometry;
+                    var colliderGeometry = coliScene.sceneObjects[i].colliderMesh;
                     if (colliderGeometry == null)
                         continue;
                     log.Write(PrintIndex(i, coliScene.sceneObjects));

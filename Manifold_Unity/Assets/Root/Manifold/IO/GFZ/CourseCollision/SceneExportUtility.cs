@@ -107,7 +107,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             // TEST
             // Load the old stage to use it's data I don't know how to generate yet
             //var oldScene = ColiCourseIO.LoadScene(settings.StageDir + scene.FileName);
-            
+
             // TEST
             // load in real, modify what you'd like
             var scene = ColiCourseIO.LoadScene(settings.StageDir + sceneParams.GetGfzInternalName());
@@ -178,26 +178,39 @@ namespace Manifold.IO.GFZ.CourseCollision
 
             // Scene Objects
             {
-                var dynamicSceneObjects = GameObject.FindObjectsOfType<GfzSceneObjectDynamic>(findInactive);
-                scene.dynamicSceneObjects = GetGfzValues(dynamicSceneObjects);
+                var gfzDynamicSceneObjects = GameObject.FindObjectsOfType<GfzSceneObjectDynamic>(findInactive);
+                scene.dynamicSceneObjects = GetGfzValues(gfzDynamicSceneObjects);
+
+                List<CString> sceneObjectNames = new List<CString>();
+
 
                 // This currently exports a ton of repeated values...
                 // TODO: hash the scene objects/LODS, use unique one only.
-                List<SceneObject> sceneObjects = new List<SceneObject>();
-                List<SceneObjectLOD> sceneObjectLODs = new List<SceneObjectLOD>();
-                List<CString> sceneObjectNames = new List<CString>();
-                foreach (var dynamicSceneObject in scene.dynamicSceneObjects)
+                List<GfzSceneObject> sceneObjects = new List<GfzSceneObject>();
+                List<GfzSceneObjectLODs> sceneObjectLODs = new List<GfzSceneObjectLODs>();
+                foreach (var gfzDynamicSceneObject in gfzDynamicSceneObjects)
                 {
-                    var sceneObject = dynamicSceneObject.sceneObject;
-                    sceneObjects.Add(sceneObject);
-                    sceneObjectLODs.AddRange(sceneObject.lods);
-                    foreach (var lod in sceneObject.lods)
-                    {
-                        sceneObjectNames.Add(lod.name);
-                    }
+                    var x = gfzDynamicSceneObject.SceneObject;
+                    if (!sceneObjects.Contains(x))
+                        sceneObjects.Add(x);
+
+                    var y = gfzDynamicSceneObject.SceneObject.SceneObjectLODs;
+                    if (!sceneObjectLODs.Contains(y))
+                        sceneObjectLODs.Add(y);
                 }
-                scene.sceneObjects = sceneObjects.ToArray();
-                scene.sceneObjectLODs = sceneObjectLODs.ToArray();
+
+                //
+                scene.sceneObjects = GetGfzValues(sceneObjects.ToArray());
+
+                //
+                var all = new List<SceneObjectLOD>();
+                foreach (var x in sceneObjectLODs)
+                    all.AddRange(x.ExportGfz());
+                scene.sceneObjectLODs = all.ToArray();
+
+                //
+                foreach (var lod in scene.sceneObjectLODs)
+                    sceneObjectNames.Add(lod.name);
                 scene.sceneObjectNames = sceneObjectNames.ToArray();
 
                 // not implemented
@@ -266,7 +279,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             // This is because I must handle Unity serializing nulls with empty instances
             foreach (var sceneObject in scene.sceneObjects)
             {
-                var colliderGeo = sceneObject.colliderGeometry;
+                var colliderGeo = sceneObject.colliderMesh;
                 if (colliderGeo != null)
                 {
                     if (colliderGeo.tris != null)
@@ -307,5 +320,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
             return gfz;
         }
+
+
     }
 }

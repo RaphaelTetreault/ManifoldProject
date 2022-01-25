@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Manifold.IO.GFZ.CourseCollision
 {
-    internal class GfzTextureScroll : MonoBehaviour,
+    public class GfzTextureScroll : MonoBehaviour,
         IGfzConvertable<TextureScroll>
     {
         [SerializeField] private Vector2[] textureScrollFields;

@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Manifold.IO.GFZ.CourseCollision
 {
-    internal class GfzAnimationClip : MonoBehaviour,
+    public class GfzAnimationClip : MonoBehaviour,
         IGfzConvertable<GameCube.GFZ.CourseCollision.AnimationClip>
     {
         [SerializeField] private bool exportAnimationClip;

@@ -12,7 +12,7 @@ namespace GameCube.GFZ.CourseCollision
     /// Example: rotary collider in Port Town [Long Pipe]
     /// </summary>
     [Serializable]
-    public class ColliderGeometry :
+    public class ColliderMesh :
         IBinaryAddressable,
         IBinarySerializable,
         IHasReference

@@ -1,20 +1,31 @@
 ﻿using GameCube.GFZ.CourseCollision;
+using System;
 using UnityEngine;
 
 namespace Manifold.IO.GFZ.CourseCollision
 {
     public class GfzSceneObjectLODs : MonoBehaviour,
-        IGfzConvertable<SceneObjectLOD[]>
+        IGfzConvertable<SceneObjectLOD[]>,
+        IEquatable<GfzSceneObjectLODs>
     {
         [System.Serializable]
-        private struct GfzLOD
+        private struct GfzLOD : IEquatable<GfzLOD>
         {
+            //public MeshFilter model; // <-- ideal to have at some point?
             public string modelName;
-            //public MeshFilter model; // <-- ideal to have at some point
             public float lodDistance;
+
+            public bool Equals(GfzLOD other)
+            {
+                return
+                    other.lodDistance == lodDistance &&
+                    other.modelName == modelName;
+            }
         }
 
         [SerializeField] private GfzLOD[] levelOfDetails;
+
+
 
 
         public SceneObjectLOD[] ExportGfz()
@@ -48,6 +59,25 @@ namespace Manifold.IO.GFZ.CourseCollision
                     lodDistance = sceneObjectLOD.lodDistance,
                 };
             }
+        }
+
+        public bool Equals(GfzSceneObjectLODs other)
+        {
+            // array must be same length
+            if (other.levelOfDetails.Length != levelOfDetails.Length)
+                return false;
+
+            // All values must equate
+            for (int i = 0; i < levelOfDetails.Length; i++)
+            {
+                var isSame = other.levelOfDetails[i].Equals(levelOfDetails[i]);
+                if (!isSame)
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 }

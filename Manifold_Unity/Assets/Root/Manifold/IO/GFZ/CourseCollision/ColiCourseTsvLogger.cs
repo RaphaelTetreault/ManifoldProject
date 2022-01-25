@@ -29,8 +29,8 @@ namespace Manifold.IO.GFZ.CourseCollision
         private static readonly string tsvAnimationClip = $"{nameof(SceneObjectDynamic)}-{nameof(AnimationClip)}.tsv";
         private static readonly string tsvTextureMetadata = $"{nameof(SceneObjectDynamic)}-{nameof(TextureScroll)}.tsv";
         private static readonly string tsvSkeletalAnimator = $"{nameof(SceneObjectDynamic)}-{nameof(SkeletalAnimator)}.tsv";
-        private static readonly string tsvColliderGeometryTri = $"{nameof(SceneObjectDynamic)}-{nameof(ColliderGeometry)}-Tris.tsv";
-        private static readonly string tsvColliderGeometryQuad = $"{nameof(SceneObjectDynamic)}-{nameof(ColliderGeometry)}-Quads.tsv";
+        private static readonly string tsvColliderGeometryTri = $"{nameof(SceneObjectDynamic)}-{nameof(ColliderMesh)}-Tris.tsv";
+        private static readonly string tsvColliderGeometryQuad = $"{nameof(SceneObjectDynamic)}-{nameof(ColliderMesh)}-Quads.tsv";
         private static readonly string tsvTransform = $"{nameof(TransformPRXS)}.tsv";
         private static readonly string tsvArcadeCheckpointTrigger = $"{nameof(ArcadeCheckpointTrigger)}.tsv";
         private static readonly string tsvCourseMetadataTrigger = $"{nameof(CourseMetadataTrigger)}.tsv";
@@ -905,13 +905,13 @@ namespace Manifold.IO.GFZ.CourseCollision
                     int gameObjectIndex = 0;
                     foreach (var dynamicSceneObject in scene.dynamicSceneObjects)
                     {
-                        if (dynamicSceneObject.sceneObject.colliderGeometry == null)
+                        if (dynamicSceneObject.sceneObject.colliderMesh == null)
                             continue;
-                        if (dynamicSceneObject.sceneObject.colliderGeometry.triCount == 0)
+                        if (dynamicSceneObject.sceneObject.colliderMesh.triCount == 0)
                             continue;
 
                         int triIndex = 0;
-                        foreach (var tri in dynamicSceneObject.sceneObject.colliderGeometry.tris)
+                        foreach (var tri in dynamicSceneObject.sceneObject.colliderMesh.tris)
                         {
                             writer.WriteNextCol(scene.FileName);
                             writer.WriteNextCol(gameObjectIndex);
@@ -1000,13 +1000,13 @@ namespace Manifold.IO.GFZ.CourseCollision
                     int gameObjectIndex = 0;
                     foreach (var dynamicSceneObject in scene.dynamicSceneObjects)
                     {
-                        if (dynamicSceneObject.sceneObject.colliderGeometry == null)
+                        if (dynamicSceneObject.sceneObject.colliderMesh == null)
                             continue;
-                        if (dynamicSceneObject.sceneObject.colliderGeometry.quadCount == 0)
+                        if (dynamicSceneObject.sceneObject.colliderMesh.quadCount == 0)
                             continue;
 
                         int quadIndex = 0;
-                        foreach (var quad in dynamicSceneObject.sceneObject.colliderGeometry.quads)
+                        foreach (var quad in dynamicSceneObject.sceneObject.colliderMesh.quads)
                         {
                             writer.WriteNextCol(scene.FileName);
                             writer.WriteNextCol(gameObjectIndex);

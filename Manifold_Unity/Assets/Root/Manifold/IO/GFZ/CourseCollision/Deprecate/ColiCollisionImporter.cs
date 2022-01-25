@@ -459,7 +459,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
         public Mesh CreateObjectColliderMesh(SceneObjectDynamic sceneObject, bool createBackfaces, bool usePrecomputes)
         {
-            var colliderGeo = sceneObject.sceneObject.colliderGeometry;
+            var colliderGeo = sceneObject.sceneObject.colliderMesh;
 
             // Create base data for mesh
             var mesh = new Mesh();

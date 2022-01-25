@@ -39,7 +39,7 @@ namespace GameCube.GFZ.CourseCollision
         public Pointer colliderGeometryPtr;
         // FIELDS (deserialized from pointers)
         public SceneObjectLOD[] lods;
-        public ColliderGeometry colliderGeometry;
+        public ColliderMesh colliderMesh;
 
 
         // PROPERTIES
@@ -72,7 +72,7 @@ namespace GameCube.GFZ.CourseCollision
                 if (colliderGeometryPtr.IsNotNullPointer)
                 {
                     reader.JumpToAddress(colliderGeometryPtr);
-                    reader.ReadX(ref colliderGeometry, true);
+                    reader.ReadX(ref colliderMesh, true);
                 }
             }
             this.SetReaderToEndAddress(reader);
@@ -82,7 +82,7 @@ namespace GameCube.GFZ.CourseCollision
         {
             {
                 lodsPtr = lods.GetArrayPointer();
-                colliderGeometryPtr = colliderGeometry.GetPointer();
+                colliderGeometryPtr = colliderMesh.GetPointer();
             }
             this.RecordStartAddress(writer);
             {
@@ -100,7 +100,7 @@ namespace GameCube.GFZ.CourseCollision
             Assert.IsTrue(lods != null);
             // Assert that instance/pointer is correct
             Assert.ReferencePointer(lods, lodsPtr);
-            Assert.ReferencePointer(colliderGeometry, colliderGeometryPtr);
+            Assert.ReferencePointer(colliderMesh, colliderGeometryPtr);
         }
 
         public override string ToString()
@@ -109,7 +109,7 @@ namespace GameCube.GFZ.CourseCollision
                 $"{nameof(SceneObject)}(" +
                 $"{nameof(lodRenderFlags)}: {lodRenderFlags}, " +
                 $"LOD Count: {lodsPtr.Length}, " +
-                $"Has {nameof(ColliderGeometry)}: {colliderGeometryPtr.IsNotNullPointer}" +
+                $"Has {nameof(ColliderMesh)}: {colliderGeometryPtr.IsNotNullPointer}" +
                 $")";
         }
 

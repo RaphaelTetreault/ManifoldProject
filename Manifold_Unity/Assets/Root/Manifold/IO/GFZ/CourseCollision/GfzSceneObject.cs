@@ -1,18 +1,19 @@
 ﻿using GameCube.GFZ.CourseCollision;
+using System;
 using UnityEngine;
 
 namespace Manifold.IO.GFZ.CourseCollision
 {
-    internal class GfzSceneObject : MonoBehaviour,
-        IGfzConvertable<SceneObject>
+    public class GfzSceneObject : MonoBehaviour,
+        IGfzConvertable<SceneObject>,
+        IEquatable<GfzSceneObject>
     {
         [SerializeField] private LodRenderFlags lodRenderFlags;
-        //[SerializeField] private MeshFilter colliderMesh; // <-- Would be ideal sometime if this were how it's done
-        [SerializeField] private bool exportColliderMesh;
-        [SerializeField] private ColliderGeometry srcColliderMesh;
-
         [SerializeField] private GfzSceneObjectLODs sceneObjectLODs;
+        [SerializeField] private GfzColliderMesh colliderMesh;
 
+        public GfzSceneObjectLODs SceneObjectLODs => sceneObjectLODs;
+        public GfzColliderMesh ColliderMesh => colliderMesh;
 
         public SceneObject ExportGfz()
         {
@@ -20,11 +21,8 @@ namespace Manifold.IO.GFZ.CourseCollision
 
             sceneObject.lodRenderFlags = lodRenderFlags;
             sceneObject.lods = sceneObjectLODs.ExportGfz();
-
-            if (exportColliderMesh)
-            {
-                sceneObject.colliderGeometry = srcColliderMesh;
-            }
+            if (colliderMesh != null)
+                sceneObject.colliderMesh = colliderMesh.ExportGfz();
 
             return sceneObject;
         }
@@ -36,13 +34,17 @@ namespace Manifold.IO.GFZ.CourseCollision
             sceneObjectLODs = this.gameObject.AddComponent<GfzSceneObjectLODs>();
             sceneObjectLODs.ImportGfz(sceneObject.lods);
 
-            bool hasColliderGeometry = sceneObject.colliderGeometry != null;
-            if (hasColliderGeometry)
-            {
-                srcColliderMesh = sceneObject.colliderGeometry;
-            }
-            exportColliderMesh = hasColliderGeometry;
+            colliderMesh = this.gameObject.AddComponent<GfzColliderMesh>();
+            colliderMesh.ImportGfz(sceneObject.colliderMesh);
+        }
 
+        public bool Equals(GfzSceneObject other)
+        {
+            var hasFlags    = other.lodRenderFlags == lodRenderFlags;
+            var hasLODs     = other.sceneObjectLODs.Equals(sceneObjectLODs);
+            //var hasCollider = other.colliderMesh.Equals(colliderMesh);
+
+            return hasFlags && hasLODs; //&& hasCollider;
         }
     }
 }

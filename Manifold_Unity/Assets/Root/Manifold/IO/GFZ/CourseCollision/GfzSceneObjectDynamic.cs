@@ -13,6 +13,13 @@ namespace Manifold.IO.GFZ.CourseCollision
         [SerializeField] private GfzTextureScroll textureScroll;
         [SerializeField] private GfzSkeletalAnimator skeletalAnimator;
 
+        public GfzSceneObject SceneObject => sceneObject;
+        public GfzAnimationClip AnimationClip => animationClip;
+        public GfzTextureScroll TextureScroll => textureScroll; 
+        public GfzSkeletalAnimator SkeletalAnimator => skeletalAnimator;
+
+
+
         public SceneObjectDynamic ExportGfz()
         {
             var dynamicSceneObject = new SceneObjectDynamic();

@@ -718,12 +718,12 @@ namespace GameCube.GFZ.CourseCollision
             // Scene Object Collider Geo
             //{
             // Grab sub-structures of SceneObjectTemplate
-            var colliderGeometries = new List<ColliderGeometry>();
+            var colliderGeometries = new List<ColliderMesh>();
             var colliderGeoTris = new List<ColliderTriangle>();
             var colliderGeoQuads = new List<ColliderQuad>();
             foreach (var sceneObject in sceneObjects)
             {
-                var colliderGeo = sceneObject.colliderGeometry;
+                var colliderGeo = sceneObject.colliderMesh;
                 if (colliderGeo != null)
                 {
                     colliderGeometries.Add(colliderGeo);
@@ -736,14 +736,14 @@ namespace GameCube.GFZ.CourseCollision
                 }
             }
             // Collider Geometry
-            writer.InlineComment(serializeVerbose, nameof(ColliderGeometry));
+            writer.InlineComment(serializeVerbose, nameof(ColliderMesh));
             foreach (var colliderGeometry in colliderGeometries)
                 writer.WriteX(colliderGeometry);
             //
-            writer.InlineComment(serializeVerbose, nameof(ColliderGeometry), nameof(ColliderTriangle));
+            writer.InlineComment(serializeVerbose, nameof(ColliderMesh), nameof(ColliderTriangle));
             foreach (var tri in colliderGeoTris)
                 writer.WriteX(tri);
-            writer.InlineComment(serializeVerbose, nameof(ColliderGeometry), nameof(ColliderQuad));
+            writer.InlineComment(serializeVerbose, nameof(ColliderMesh), nameof(ColliderQuad));
             foreach (var quad in colliderGeoQuads)
                 writer.WriteX(quad);
             //}
@@ -1159,7 +1159,7 @@ namespace GameCube.GFZ.CourseCollision
             foreach (var template in sceneObjects)
             {
                 list.Add(template);
-                list.Add(template.colliderGeometry);
+                list.Add(template.colliderMesh);
                 list.AddRange(template.lods);
                 list.Add(template.PrimarySceneObject.name);
             }
