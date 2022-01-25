@@ -6,44 +6,16 @@ namespace Manifold.IO.GFZ.CourseCollision
     public class GfzTextureScroll : MonoBehaviour,
         IGfzConvertable<TextureScroll>
     {
-        [SerializeField] private Vector3[] textureScrollFields;
+        [SerializeField] private Vector2[] textureScrollFields;
 
         public TextureScroll ExportGfz()
         {
-            var hasData = false;
-            foreach (var field in textureScrollFields)
-            {
-                // See if the field has data
-                //var isNotNull = field != Vector3.zero;
-                var isNotNull = field.z > 0;
-                if (isNotNull)
-                {
-                    hasData = true;
-                    break;
-                }
-            }
-            // We have no data to export
-            if (!hasData)
-            {
-                DebugConsole.Log("??? " + name);
-
-                //return null;
-            }
-
             // If we get here, we have data. Let's build it.
             var textureScroll = new TextureScroll();
             textureScroll.fields = new TextureScrollField[TextureScroll.kCount];
             for (int i = 0; i < textureScrollFields.Length; i++)
             {
                 var field = textureScrollFields[i];
-
-                if (!(field.z > 0))
-                    continue;
-
-                Assert.IsTrue(field.z > 0);
-                //if (field.x == 0 && field.y == 0)
-                //    continue;
-
                 textureScroll.fields[i] = new TextureScrollField()
                 {
                     x = field.x,
@@ -55,7 +27,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
         public void ImportGfz(TextureScroll textureScroll)
         {
-            textureScrollFields = new Vector3[TextureScroll.kCount];
+            textureScrollFields = new Vector2[TextureScroll.kCount];
             // Only iterate if we have data to iterate over
             if (textureScroll != null)
             {
@@ -68,7 +40,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                     if (field == null)
                         continue;
 
-                    textureScrollFields[i] = new Vector3(field.x, field.y, 1000);
+                    textureScrollFields[i] = new Vector2(field.x, field.y);
                     DebugConsole.Log($"{textureScrollFields[i]}");
                 }
             }
