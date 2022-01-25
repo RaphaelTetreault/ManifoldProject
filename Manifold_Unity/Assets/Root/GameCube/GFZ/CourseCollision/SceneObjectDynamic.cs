@@ -17,8 +17,8 @@ namespace GameCube.GFZ.CourseCollision
         [UnityEngine.SerializeField] private AddressRange addressRange;
 
         // FIELDS
-        public int unk0x00; // rendering?
-        public int unk0x04; // rendering?
+        public int unk0x00; // rendering? 
+        public int unk0x04; // rendering?-- 2x 16bit values? Start/end?
         public Pointer sceneObjectPtr;
         public TransformPRXS transformPRXS = new TransformPRXS();
         public int zero_0x2C; // null ptr?

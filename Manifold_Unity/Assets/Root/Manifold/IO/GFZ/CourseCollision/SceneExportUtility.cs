@@ -136,45 +136,45 @@ namespace Manifold.IO.GFZ.CourseCollision
             //};
 
 
-            //// Get scene-wide parameters from SceneParameters
-            //{
-            //    // Construct range from 2 parameters
-            //    scene.unkRange0x00 = new Range(sceneParams.rangeNear, sceneParams.rangeFar);
-            //    // Use functions to get form parameters
-            //    scene.fog = sceneParams.ToGfzFog();
-            //    scene.fogCurves = sceneParams.ToGfzFogCurves();
-            //}
+            // Get scene-wide parameters from SceneParameters
+            {
+                // Construct range from 2 parameters
+                scene.unkRange0x00 = new Range(sceneParams.rangeNear, sceneParams.rangeFar);
+                // Use functions to get form parameters
+                scene.fog = sceneParams.ToGfzFog();
+                scene.fogCurves = sceneParams.ToGfzFogCurves();
+            }
 
-            //// Triggers
-            //{
-            //    var arcadeCheckpointTriggers = GameObject.FindObjectsOfType<GfzArcadeCheckpoint>(findInactive);
-            //    scene.arcadeCheckpointTriggers = GetGfzValues(arcadeCheckpointTriggers);
+            // Triggers
+            {
+                var arcadeCheckpointTriggers = GameObject.FindObjectsOfType<GfzArcadeCheckpoint>(findInactive);
+                scene.arcadeCheckpointTriggers = GetGfzValues(arcadeCheckpointTriggers);
 
-            //    // This trigger type is a mess... Get all 3 representations, combine, assign.
-            //    // Collect all trigger types. They all get converted to the same GFZ base type.
-            //    var objectPaths = GameObject.FindObjectsOfType<GfzObjectPath>(findInactive);
-            //    var storyCapsules = GameObject.FindObjectsOfType<GfzStoryCapsule>(findInactive);
-            //    var unknownMetadataTriggers = GameObject.FindObjectsOfType<GfzUnknownCourseMetadataTrigger>(findInactive);
-            //    // Make a list, add range for each type
-            //    var courseMetadataTriggers = new List<CourseMetadataTrigger>();
-            //    courseMetadataTriggers.AddRange(GetGfzValues(objectPaths));
-            //    courseMetadataTriggers.AddRange(GetGfzValues(storyCapsules));
-            //    courseMetadataTriggers.AddRange(GetGfzValues(unknownMetadataTriggers));
-            //    // Convert list to array, assign to ColiScene
-            //    scene.courseMetadataTriggers = courseMetadataTriggers.ToArray();
+                // This trigger type is a mess... Get all 3 representations, combine, assign.
+                // Collect all trigger types. They all get converted to the same GFZ base type.
+                var objectPaths = GameObject.FindObjectsOfType<GfzObjectPath>(findInactive);
+                var storyCapsules = GameObject.FindObjectsOfType<GfzStoryCapsule>(findInactive);
+                var unknownMetadataTriggers = GameObject.FindObjectsOfType<GfzUnknownCourseMetadataTrigger>(findInactive);
+                // Make a list, add range for each type
+                var courseMetadataTriggers = new List<CourseMetadataTrigger>();
+                courseMetadataTriggers.AddRange(GetGfzValues(objectPaths));
+                courseMetadataTriggers.AddRange(GetGfzValues(storyCapsules));
+                courseMetadataTriggers.AddRange(GetGfzValues(unknownMetadataTriggers));
+                // Convert list to array, assign to ColiScene
+                scene.courseMetadataTriggers = courseMetadataTriggers.ToArray();
 
-            //    // This trigger type is a mess... Get all 3 representations, combine, assign.
-            //    var unknownTriggers = GameObject.FindObjectsOfType<GfzUnknownTrigger>(findInactive);
-            //    scene.unknownTriggers = GetGfzValues(unknownTriggers);
+                // This trigger type is a mess... Get all 3 representations, combine, assign.
+                var unknownTriggers = GameObject.FindObjectsOfType<GfzUnknownTrigger>(findInactive);
+                scene.unknownTriggers = GetGfzValues(unknownTriggers);
 
-            //    // 
-            //    var visualEffectTriggers = GameObject.FindObjectsOfType<GfzVisualEffectTrigger>(findInactive);
-            //    scene.visualEffectTriggers = GetGfzValues(visualEffectTriggers);
+                // 
+                var visualEffectTriggers = GameObject.FindObjectsOfType<GfzVisualEffectTrigger>(findInactive);
+                scene.visualEffectTriggers = GetGfzValues(visualEffectTriggers);
 
-            //    // TODO:
-            //    var storyObjectTrigger = GameObject.FindObjectsOfType<GfzStoryObjectTrigger>(findInactive);
-            //    scene.storyObjectTriggers = GetGfzValues(storyObjectTrigger);
-            //}
+                // TODO:
+                var storyObjectTrigger = GameObject.FindObjectsOfType<GfzStoryObjectTrigger>(findInactive);
+                scene.storyObjectTriggers = GetGfzValues(storyObjectTrigger);
+            }
 
             // Scene Objects
             {
@@ -222,7 +222,6 @@ namespace Manifold.IO.GFZ.CourseCollision
                 //    dyn.skeletalAnimator = null;
                 //    dyn.transformMatrix3x4 = null;
                 //}
-
             }
 
             // Static Collider Meshes

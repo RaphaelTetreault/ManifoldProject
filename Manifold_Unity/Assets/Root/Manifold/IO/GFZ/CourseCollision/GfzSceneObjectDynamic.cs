@@ -46,10 +46,8 @@ namespace Manifold.IO.GFZ.CourseCollision
                 dynamicSceneObject.skeletalAnimator = skeletalAnimator.ExportGfz();
 
             // This value only exists if we don't have an animation
-            //if (dynamicSceneObject.animationClip == null)
-            // 2022/01/25: HOWEVER, you can still use this! It makes transform exports work for animated object.
-            //             The current issue is that the decomposed rotationisn't working as intended.
-            dynamicSceneObject.transformMatrix3x4 = TransformConverter.ToGfzTransformMatrix3x4(transform);
+            if (dynamicSceneObject.animationClip == null)
+                dynamicSceneObject.transformMatrix3x4 = TransformConverter.ToGfzTransformMatrix3x4(transform);
 
             return dynamicSceneObject;
         }
