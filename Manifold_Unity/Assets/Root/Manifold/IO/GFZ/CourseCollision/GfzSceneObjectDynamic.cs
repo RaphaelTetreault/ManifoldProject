@@ -83,6 +83,8 @@ namespace Manifold.IO.GFZ.CourseCollision
 
             if (dynamicSceneObject.textureScroll != null)
             {
+                Debug.Log($"{nameof(TextureScroll)}");
+                Debug.Log($"{name} has {nameof(TextureScroll)}");
                 textureScroll = this.gameObject.AddComponent<GfzTextureScroll>();
                 textureScroll.ImportGfz(dynamicSceneObject.textureScroll);
             }

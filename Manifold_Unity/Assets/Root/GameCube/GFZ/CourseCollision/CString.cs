@@ -13,7 +13,8 @@ namespace Manifold.IO
     [Serializable]
     public class CString :
         IBinaryAddressable,
-        IBinarySerializable
+        IBinarySerializable,
+        IEquatable<CString>
     {
         // METADATA
         [UnityEngine.SerializeField] private AddressRange addressRange;
@@ -90,6 +91,11 @@ namespace Manifold.IO
         public override string ToString()
         {
             return value;
+        }
+
+        public bool Equals(CString other)
+        {
+            return (value == other.value);
         }
     }
 }

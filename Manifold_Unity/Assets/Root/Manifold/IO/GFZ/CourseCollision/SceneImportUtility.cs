@@ -141,7 +141,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             noMeshObject.AddComponent<NoMeshTag>();
 
             // TEMP? Disable for visual clarity
-            noMeshObject.SetActive(false);
+            //noMeshObject.SetActive(false);
 
             return noMeshObject;
         }

@@ -203,16 +203,13 @@ namespace Manifold.IO.GFZ.CourseCollision
 
                 // CString names
                 var sceneObjectNames = new List<CString>();
+                sceneObjectNames.Add("");
                 foreach (var thing in scene.sceneObjectLODs)
                 {
-                    if (!string.IsNullOrEmpty(thing.name))
-                    {
+                    //if (!sceneObjectNames.Contains(thing.name))
+                    //{
                         sceneObjectNames.Add(thing.name);
-                    }
-                    else
-                    {
-                        thing.AddressRange = new AddressRange();
-                    }
+                    //}
                 }
                 // alphabetize, store
                 scene.sceneObjectNames = sceneObjectNames.OrderBy(x => x.value).ToArray();

@@ -148,7 +148,7 @@ namespace Manifold.IO.GFZ
                 var outputPath = dest + "stage/";
                 var outputFile = outputPath + coliScene.FileName;
                 var outputLog = outputPath + coliScene.FileName + "-log.txt";
-                using (var writer = new BinaryWriter(File.OpenWrite(outputFile)))
+                using (var writer = new BinaryWriter(File.Create(outputFile)))
                 {
                     // Serialize the scene data to file
                     coliScene.SerializeVerbose = true;

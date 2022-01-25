@@ -680,17 +680,17 @@ namespace GameCube.GFZ.CourseCollision
 
             // SCENE OBJECTS
             //{
-            // SCENE OBJECT NAMES
-            // No direct pointer. Names are aligned to 4 bytes.
-            writer.CommentAlign(serializeVerbose);
-            writer.CommentNewLine(serializeVerbose, '-');
-            writer.Comment("ScnObjectNames[]", serializeVerbose, ' ');
-            writer.CommentNewLine(serializeVerbose, '-');
-            foreach (var sceneObjectName in sceneObjectNames)
-            {
-                writer.WriteX(sceneObjectName);
-                //writer.AlignTo(4);
-            }
+            //// SCENE OBJECT NAMES
+            //// No direct pointer. Names are aligned to 4 bytes.
+            //writer.CommentAlign(serializeVerbose);
+            //writer.CommentNewLine(serializeVerbose, '-');
+            //writer.Comment("ScnObjectNames[]", serializeVerbose, ' ');
+            //writer.CommentNewLine(serializeVerbose, '-');
+            //foreach (var sceneObjectName in sceneObjectNames)
+            //{
+            //    writer.WriteX(sceneObjectName);
+            //    //writer.AlignTo(4);
+            //}
 
             // SCENE OBJECTS
             writer.InlineComment(serializeVerbose, nameof(SceneObjectLOD));
@@ -807,7 +807,6 @@ namespace GameCube.GFZ.CourseCollision
                 if (animationClipCurve.animationCurve != null)
                     writer.WriteX(animationClipCurve.animationCurve);
 
-
             // Texture metadata
             writer.InlineDesc(serializeVerbose, textureScrolls.ToArray());
             foreach (var textureMetadata in textureScrolls)
@@ -872,19 +871,36 @@ namespace GameCube.GFZ.CourseCollision
 
                 // UNKNOWN TRIGGERS
                 if (!unknownTriggers.IsNullOrEmpty())
+                {
                     writer.InlineDesc(serializeVerbose, 0x94 + offset, unknownTriggers);
-                writer.WriteX(unknownTriggers, false);
+                    writer.WriteX(unknownTriggers, false);
+                }
 
                 // VISUAL EFFECT TRIGGERS
                 if (!visualEffectTriggers.IsNullOrEmpty())
+                {
                     writer.InlineDesc(serializeVerbose, 0x9C + offset, visualEffectTriggers);
-                writer.WriteX(visualEffectTriggers, false);
-
+                    writer.WriteX(visualEffectTriggers, false);
+                }
 
                 // UNKNOWN COLLIDERS (SOLS ONLY)
                 if (!unknownColliders.IsNullOrEmpty())
+                {
                     writer.InlineDesc(serializeVerbose, 0x60 + offset, unknownColliders);
-                writer.WriteX(unknownColliders, false);
+                    writer.WriteX(unknownColliders, false);
+                }
+            }
+
+            // SCENE OBJECT NAMES
+            // No direct pointer. Names are aligned to 4 bytes.
+            writer.CommentAlign(serializeVerbose);
+            writer.CommentNewLine(serializeVerbose, '-');
+            writer.Comment("ScnObjectNames[]", serializeVerbose, ' ');
+            writer.CommentNewLine(serializeVerbose, '-');
+            foreach (var sceneObjectName in sceneObjectNames)
+            {
+                writer.WriteX(sceneObjectName);
+                //writer.AlignTo(4);
             }
 
             // DEBUG

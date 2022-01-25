@@ -6,7 +6,7 @@ namespace Manifold.IO.GFZ.CourseCollision
     public class GfzTextureScroll : MonoBehaviour,
         IGfzConvertable<TextureScroll>
     {
-        [SerializeField] private Vector2[] textureScrollFields;
+        [SerializeField] private Vector3[] textureScrollFields;
 
         public TextureScroll ExportGfz()
         {
@@ -14,7 +14,8 @@ namespace Manifold.IO.GFZ.CourseCollision
             foreach (var field in textureScrollFields)
             {
                 // See if the field has data
-                var isNotNull = field != Vector2.zero;
+                //var isNotNull = field != Vector3.zero;
+                var isNotNull = field.z > 0;
                 if (isNotNull)
                 {
                     hasData = true;
@@ -24,7 +25,9 @@ namespace Manifold.IO.GFZ.CourseCollision
             // We have no data to export
             if (!hasData)
             {
-                return null;
+                DebugConsole.Log("??? " + name);
+
+                //return null;
             }
 
             // If we get here, we have data. Let's build it.
@@ -34,8 +37,12 @@ namespace Manifold.IO.GFZ.CourseCollision
             {
                 var field = textureScrollFields[i];
 
-                if (field.x == 0 && field.y == 0)
+                if (!(field.z > 0))
                     continue;
+
+                Assert.IsTrue(field.z > 0);
+                //if (field.x == 0 && field.y == 0)
+                //    continue;
 
                 textureScroll.fields[i] = new TextureScrollField()
                 {
@@ -48,11 +55,12 @@ namespace Manifold.IO.GFZ.CourseCollision
 
         public void ImportGfz(TextureScroll textureScroll)
         {
-            textureScrollFields = new Vector2[TextureScroll.kCount];
+            textureScrollFields = new Vector3[TextureScroll.kCount];
             // Only iterate if we have data to iterate over
             if (textureScroll != null)
             {
                 Assert.IsTrue(textureScrollFields.Length == textureScroll.fields.Length);
+
                 for (int i = 0; i < textureScroll.fields.Length; i++)
                 {
                     var field = textureScroll.fields[i];
@@ -60,7 +68,8 @@ namespace Manifold.IO.GFZ.CourseCollision
                     if (field == null)
                         continue;
 
-                    textureScrollFields[i] = new Vector2(field.x, field.y);
+                    textureScrollFields[i] = new Vector3(field.x, field.y, 1000);
+                    DebugConsole.Log($"{textureScrollFields[i]}");
                 }
             }
         }
