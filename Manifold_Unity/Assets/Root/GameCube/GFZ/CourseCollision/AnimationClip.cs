@@ -31,7 +31,7 @@ namespace GameCube.GFZ.CourseCollision
         // FIELDS
         public float unk_0x00;
         public float unk_0x04;
-        public byte[] zeroes_0x08;
+        public byte[] zeroes_0x08 = new byte[kSizeZero_0x08];
         public EnumFlags32 unk_layer_0x18;
         /// <summary>
         /// idx: 0,1,2: scale.xyz

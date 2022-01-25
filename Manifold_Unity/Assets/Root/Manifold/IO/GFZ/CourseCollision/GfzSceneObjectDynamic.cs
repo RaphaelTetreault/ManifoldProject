@@ -15,7 +15,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
         public GfzSceneObject GfzSceneObject => sceneObject;
         public GfzAnimationClip AnimationClip => animationClip;
-        public GfzTextureScroll TextureScroll => textureScroll; 
+        public GfzTextureScroll TextureScroll => textureScroll;
         public GfzSkeletalAnimator SkeletalAnimator => skeletalAnimator;
 
         internal void SetSceneObject(GfzSceneObject sceneObject)
@@ -35,14 +35,19 @@ namespace Manifold.IO.GFZ.CourseCollision
             // Values from pointed classes
             // These functions should return null if necessary
             dynamicSceneObject.sceneObject = sceneObject.ExportGfz(); // todo, unmangle references in generator
-            dynamicSceneObject.animationClip = animationClip.ExportGfz();
-            dynamicSceneObject.textureScroll = textureScroll.ExportGfz();
-            dynamicSceneObject.skeletalAnimator = skeletalAnimator.ExportGfz();
+
+            if (animationClip != null)
+                dynamicSceneObject.animationClip = animationClip.ExportGfz();
+
+            if (textureScroll != null)
+                dynamicSceneObject.textureScroll = textureScroll.ExportGfz();
+
+            if (skeletalAnimator != null)
+                dynamicSceneObject.skeletalAnimator = skeletalAnimator.ExportGfz();
+
             // This value only exists if we don't have an animation
             if (dynamicSceneObject.animationClip == null)
-            {
                 dynamicSceneObject.transformMatrix3x4 = TransformConverter.ToGfzTransformMatrix3x4(transform);
-            }
 
             return dynamicSceneObject;
         }
@@ -70,14 +75,23 @@ namespace Manifold.IO.GFZ.CourseCollision
             //sceneObject = this.gameObject.AddComponent<GfzSceneObject>();
             //sceneObject.ImportGfz(dynamicSceneObject.sceneObject);
 
-            animationClip = this.gameObject.AddComponent<GfzAnimationClip>();
-            animationClip.ImportGfz(dynamicSceneObject.animationClip);
+            if (dynamicSceneObject.animationClip != null)
+            {
+                animationClip = this.gameObject.AddComponent<GfzAnimationClip>();
+                animationClip.ImportGfz(dynamicSceneObject.animationClip);
+            }
 
-            textureScroll = this.gameObject.AddComponent<GfzTextureScroll>();
-            textureScroll.ImportGfz(dynamicSceneObject.textureScroll);
+            if (dynamicSceneObject.textureScroll != null)
+            {
+                textureScroll = this.gameObject.AddComponent<GfzTextureScroll>();
+                textureScroll.ImportGfz(dynamicSceneObject.textureScroll);
+            }
 
-            skeletalAnimator = this.gameObject.AddComponent<GfzSkeletalAnimator>();
-            skeletalAnimator.ImportGfz(dynamicSceneObject.skeletalAnimator);
+            if (dynamicSceneObject.skeletalAnimator != null)
+            {
+                skeletalAnimator = this.gameObject.AddComponent<GfzSkeletalAnimator>();
+                skeletalAnimator.ImportGfz(dynamicSceneObject.skeletalAnimator);
+            }
 
             // Transform Matrix 3x4 is handled above and does not need a component
         }

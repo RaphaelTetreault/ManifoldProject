@@ -9,7 +9,7 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using Unity.Mathematics;
-
+using System.Linq;
 
 namespace Manifold.IO.GFZ.CourseCollision
 {
@@ -179,10 +179,10 @@ namespace Manifold.IO.GFZ.CourseCollision
             // Scene Objects
             {
                 // SCENE OBJECTs
-                var gfzDynamicSceneObjects = GameObject.FindObjectsOfType<GfzSceneObjectDynamic>(true);
-                var gfzStaticSceneObjects = GameObject.FindObjectsOfType<GfzSceneObjectStatic>(true);
-                var gfzSceneObjects = GameObject.FindObjectsOfType<GfzSceneObject>(true);
-                var gfzSceneObjectLODs = GameObject.FindObjectsOfType<GfzSceneObjectLODs>(true);
+                var gfzDynamicSceneObjects = GameObject.FindObjectsOfType<GfzSceneObjectDynamic>(true).Reverse().ToArray();
+                var gfzStaticSceneObjects = GameObject.FindObjectsOfType<GfzSceneObjectStatic>(true).Reverse().ToArray();
+                var gfzSceneObjects = GameObject.FindObjectsOfType<GfzSceneObject>(true).Reverse().ToArray();
+                var gfzSceneObjectLODs = GameObject.FindObjectsOfType<GfzSceneObjectLODs>(true).Reverse().ToArray();
 
                 // Init shared references before copying values out.
                 foreach (var gfzSceneObject in gfzSceneObjects)
@@ -208,6 +208,15 @@ namespace Manifold.IO.GFZ.CourseCollision
                     sceneObjectNames.Add(thing.name);
                 }
                 scene.sceneObjectNames = sceneObjectNames.ToArray();
+
+                // Errors are not from this
+                //foreach (var dyn in scene.dynamicSceneObjects)
+                //{
+                //    dyn.animationClip = null;
+                //    dyn.textureScroll = null;
+                //    dyn.skeletalAnimator = null;
+                //    dyn.transformMatrix3x4 = null;
+                //}
 
             }
 

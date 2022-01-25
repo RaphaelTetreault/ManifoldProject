@@ -10,12 +10,18 @@ namespace Manifold.IO.GFZ
     {
         public static UnityEngine.AnimationCurve ToUnity(this GameCube.GFZ.CourseCollision.AnimationCurve curve)
         {
+            if (curve == null)
+                return null;
+
             var keyframes = KeyablesToKeyframes(curve.keyableAttributes);
             return new UnityEngine.AnimationCurve(keyframes);
         }
 
         public static GameCube.GFZ.CourseCollision.AnimationCurve ToGfz(this UnityEngine.AnimationCurve curve)
         {
+            if (curve == null)
+                return null;
+
             var keyables = UnityAnimationCurveToKeyables(curve);
             var gfzCurve = new GameCube.GFZ.CourseCollision.AnimationCurve(keyables);
             return gfzCurve;
