@@ -23,10 +23,8 @@ namespace Manifold.IO.GFZ.CourseCollision
             }
         }
 
+
         [SerializeField] private GfzLOD[] levelOfDetails;
-
-
-
 
         public SceneObjectLOD[] ExportGfz()
         {

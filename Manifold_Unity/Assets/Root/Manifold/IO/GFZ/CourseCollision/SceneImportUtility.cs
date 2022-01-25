@@ -77,9 +77,11 @@ namespace Manifold.IO.GFZ.CourseCollision
             // Everything with a coordinate goes in here
             var mirrorRoot = new GameObject("Scene Root (Mirror Z)").transform;
 
-            //
-            CreateDynamicSceneObjects(scene, searchFolders).SetParent(mirrorRoot);
-            CreateStaticSceneObjects(scene, searchFolders).SetParent(mirrorRoot);
+            // Create scene objects, static objects, and dynamic objects
+            var rootTransforms = CreateAllSceneObjects(scene, searchFolders);
+            foreach (var transform in rootTransforms)
+                transform.SetParent(mirrorRoot);
+
             TestTransformHeirarchy(scene).SetParent(mirrorRoot);
             CreateTrackTransformHierarchy(scene).SetParent(mirrorRoot);
             CreateTrackIndexChains(scene).SetParent(mirrorRoot);
@@ -850,16 +852,38 @@ namespace Manifold.IO.GFZ.CourseCollision
         }
 
 
-        public static Transform CreateDynamicSceneObjects(ColiScene scene, params string[] searchFolders)
+        public static Transform[] CreateAllSceneObjects(ColiScene scene, params string[] searchFolders)
+        {
+            var sceneObjectRoot = new GameObject($"{nameof(SceneObject)}s");
+            var sceneObjectDict = new Dictionary<SceneObject, GfzSceneObject>();
+            int index = 0;
+            foreach (var sceneObject in scene.sceneObjects)
+            {
+                var gobj = new GameObject($"[{++index}] {sceneObject.Name}");
+                gobj.transform.SetParent(sceneObjectRoot.transform);
+                var gfzSceneObject = gobj.AddComponent<GfzSceneObject>();
+                gfzSceneObject.ImportGfz(sceneObject);
+                sceneObjectDict.Add(sceneObject, gfzSceneObject);
+            }
+
+            var rootStatics = CreateStaticSceneObjects(scene, sceneObjectDict, searchFolders);
+            var rootDynamics = CreateDynamicSceneObjects(scene, sceneObjectDict, searchFolders);
+
+            //
+            return new Transform[] { sceneObjectRoot.transform, rootStatics, rootDynamics };
+        }
+
+        public static Transform CreateDynamicSceneObjects(ColiScene scene, Dictionary<SceneObject, GfzSceneObject> sceneObjectDict, params string[] searchFolders)
         {
             // Get some metadata from the number of scene objects
             var dynamicSceneObjects = scene.dynamicSceneObjects;
+
             // Create a string format from the highest index number used
             var digitsFormat = WidthFormat(dynamicSceneObjects);
             int count = 0;
             int total = dynamicSceneObjects.Length;
             // Create root for all scene objects
-            var root = new GameObject($"{nameof(SceneObjectDynamic)}s").transform;
+            var dynamicsRoot = new GameObject($"{nameof(SceneObjectDynamic)}s").transform;
 
             // Find all scene objects, add them to scene
             foreach (var dynamicSceneObject in dynamicSceneObjects)
@@ -884,16 +908,21 @@ namespace Manifold.IO.GFZ.CourseCollision
                     : CreateInstanceFromDatabase(assetPath);
                 // Assign name and set parent
                 assetInstance.name = displayName;
-                assetInstance.transform.parent = root;
+                assetInstance.transform.parent = dynamicsRoot;
 
                 //// Tack data of object onto Unity GameObject for inspection
                 var script = assetInstance.AddComponent<GfzSceneObjectDynamic>();
                 script.ImportGfz(dynamicSceneObject);
+
+                // Bind reference
+                var gfzSceneObject = sceneObjectDict[dynamicSceneObject.sceneObject];
+                script.SetSceneObject(gfzSceneObject);
             }
 
-            return root;
+            return dynamicsRoot;
         }
-        public static Transform CreateStaticSceneObjects(ColiScene scene, params string[] searchFolders)
+
+        public static Transform CreateStaticSceneObjects(ColiScene scene, Dictionary<SceneObject, GfzSceneObject> sceneObjectDict, params string[] searchFolders)
         {
             // Get some metadata from the number of scene objects
             var staticSceneObjects = scene.staticSceneObjects;
@@ -907,10 +936,10 @@ namespace Manifold.IO.GFZ.CourseCollision
             var root = new GameObject($"{nameof(SceneObjectStatic)}s").transform;
 
             // Find all origin objects, add them to scene
-            foreach (var originObject in staticSceneObjects)
+            foreach (var staticSceneObject in staticSceneObjects)
             {
                 // Generate the names of the objects we want
-                var objectName = originObject.Name;
+                var objectName = staticSceneObject.Name;
                 var prefabName = $"pf_{objectName}";
                 var displayName = $"[{count.ToString(digitsFormat)}] {objectName}";
 
@@ -930,6 +959,11 @@ namespace Manifold.IO.GFZ.CourseCollision
                 // Assign name and set parent
                 assetInstance.name = displayName;
                 assetInstance.transform.parent = root;
+
+                var script = assetInstance.AddComponent<GfzSceneObjectStatic>();
+                // Bind reference
+                var gfzSceneObject = sceneObjectDict[staticSceneObject.sceneObject];
+                script.SetSceneObject(gfzSceneObject);
             }
 
             return root;

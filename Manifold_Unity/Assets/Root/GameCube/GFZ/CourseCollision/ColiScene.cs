@@ -903,60 +903,59 @@ namespace GameCube.GFZ.CourseCollision
             // GET ALL REFERERS, RE-SERIALIZE FOR POINTERS
             {
                 // Get a reference to EVERY object in file that has a pointer to an object
-                var referers = new List<IHasReference>();
+                var hasReferences = new List<IHasReference>();
 
                 // Track Nodes and dependencies
-                referers.AddRange(trackNodes);
-                referers.AddRange(allTrackSegments);
+                hasReferences.AddRange(trackNodes);
+                hasReferences.AddRange(allTrackSegments);
                 foreach (var trackSegment in allTrackSegments)
-                    referers.Add(trackSegment.trackCurves);
+                    hasReferences.Add(trackSegment.trackCurves);
                 // The checkpoint table
-                referers.Add(trackCheckpointMatrix);
+                hasReferences.Add(trackCheckpointMatrix);
 
                 // Static Collider Meshes and dependencies
-                referers.Add(staticColliderMeshes);
-                referers.AddRange(staticColliderMeshes.triMeshMatrices);
-                referers.AddRange(staticColliderMeshes.quadMeshMatrices);
-                referers.AddRange(unknownColliders);
+                hasReferences.Add(staticColliderMeshes);
+                hasReferences.AddRange(staticColliderMeshes.triMeshMatrices);
+                hasReferences.AddRange(staticColliderMeshes.quadMeshMatrices);
+                hasReferences.AddRange(unknownColliders);
 
                 // OBJECTS
                 // Scene Objects
-                referers.AddRange(sceneObjectLODs);
-                // Scene Object Templates
-                referers.AddRange(sceneObjects);
-                referers.AddRange(colliderGeometries);
+                hasReferences.AddRange(sceneObjectLODs);
+                hasReferences.AddRange(sceneObjects);
+                hasReferences.AddRange(colliderGeometries);
                 // Scene Object Statics
                 if (staticSceneObjects != null)
-                    referers.AddRange(staticSceneObjects);
+                    hasReferences.AddRange(staticSceneObjects);
                 // Scene Object Dynamics
-                referers.AddRange(dynamicSceneObjects);
-                referers.AddRange(textureScrolls);
-                referers.AddRange(skeletalAnimators);
-                referers.AddRange(animationClips);
-                referers.AddRange(animationClipCurves);
+                hasReferences.AddRange(dynamicSceneObjects);
+                hasReferences.AddRange(textureScrolls);
+                hasReferences.AddRange(skeletalAnimators);
+                hasReferences.AddRange(animationClips);
+                hasReferences.AddRange(animationClipCurves);
 
                 // FOG
                 // The structure points to 6 anim curves
-                referers.Add(fogCurves);
+                hasReferences.Add(fogCurves);
 
                 // The story mode checkpoints
                 foreach (var storyObjectTrigger in storyObjectTriggers)
                 {
-                    referers.Add(storyObjectTrigger);
-                    referers.Add(storyObjectTrigger.storyObjectPath);
+                    hasReferences.Add(storyObjectTrigger);
+                    hasReferences.Add(storyObjectTrigger.storyObjectPath);
                 }
 
                 // RE-SERIALIZE
                 // Patch pointers by re-writing structure in same place as previously serialized
-                foreach (var referer in referers)
+                foreach (var hasReference in hasReferences)
                 {
-                    var pointer = referer.GetPointer();
+                    var pointer = hasReference.GetPointer();
                     if (pointer.IsNotNullPointer)
                     {
                         writer.JumpToAddress(pointer);
-                        referer.Serialize(writer);
+                        hasReference.Serialize(writer);
                         // Run assertions on referer to ensure pointer requirements are met
-                        referer.ValidateReferences();
+                        hasReference.ValidateReferences();
                     }
                 }
             } // end patching pointers

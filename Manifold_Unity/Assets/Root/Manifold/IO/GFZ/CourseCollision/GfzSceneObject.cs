@@ -12,19 +12,25 @@ namespace Manifold.IO.GFZ.CourseCollision
         [SerializeField] private GfzSceneObjectLODs sceneObjectLODs;
         [SerializeField] private GfzColliderMesh colliderMesh;
 
-        public GfzSceneObjectLODs SceneObjectLODs => sceneObjectLODs;
+        public GfzSceneObjectLODs GfzSceneObjectLODs => sceneObjectLODs;
         public GfzColliderMesh ColliderMesh => colliderMesh;
+
+
+        private SceneObject reference;
+
+        public void InitSharedReference()
+        {
+            reference = new SceneObject();
+
+            reference.lodRenderFlags = lodRenderFlags;
+            reference.lods = sceneObjectLODs.ExportGfz();
+            reference.colliderMesh = colliderMesh.ExportGfz();
+        }
 
         public SceneObject ExportGfz()
         {
-            var sceneObject = new SceneObject();
-
-            sceneObject.lodRenderFlags = lodRenderFlags;
-            sceneObject.lods = sceneObjectLODs.ExportGfz();
-            if (colliderMesh != null)
-                sceneObject.colliderMesh = colliderMesh.ExportGfz();
-
-            return sceneObject;
+            // If null, you have not init the shared reference value
+            return reference;
         }
 
         public void ImportGfz(SceneObject sceneObject)

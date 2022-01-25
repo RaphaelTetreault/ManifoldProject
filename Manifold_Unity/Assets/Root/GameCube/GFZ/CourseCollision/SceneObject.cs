@@ -42,6 +42,9 @@ namespace GameCube.GFZ.CourseCollision
         public ColliderMesh colliderMesh;
 
 
+        public SceneObjectLOD[] LODs => lods;
+
+
         // PROPERTIES
         public AddressRange AddressRange
         {
@@ -96,8 +99,8 @@ namespace GameCube.GFZ.CourseCollision
         public void ValidateReferences()
         {
             // This pointer CANNOT be null and must refer to an object.
-            Assert.IsTrue(lodsPtr.IsNotNullPointer);
             Assert.IsTrue(lods != null);
+            Assert.IsTrue(lodsPtr.IsNotNullPointer);
             // Assert that instance/pointer is correct
             Assert.ReferencePointer(lods, lodsPtr);
             Assert.ReferencePointer(colliderMesh, colliderGeometryPtr);
@@ -112,6 +115,5 @@ namespace GameCube.GFZ.CourseCollision
                 $"Has {nameof(ColliderMesh)}: {colliderGeometryPtr.IsNotNullPointer}" +
                 $")";
         }
-
     }
 }

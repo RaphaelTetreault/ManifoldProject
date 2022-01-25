@@ -13,12 +13,15 @@ namespace Manifold.IO.GFZ.CourseCollision
         [SerializeField] private GfzTextureScroll textureScroll;
         [SerializeField] private GfzSkeletalAnimator skeletalAnimator;
 
-        public GfzSceneObject SceneObject => sceneObject;
+        public GfzSceneObject GfzSceneObject => sceneObject;
         public GfzAnimationClip AnimationClip => animationClip;
         public GfzTextureScroll TextureScroll => textureScroll; 
         public GfzSkeletalAnimator SkeletalAnimator => skeletalAnimator;
 
-
+        internal void SetSceneObject(GfzSceneObject sceneObject)
+        {
+            this.sceneObject = sceneObject;
+        }
 
         public SceneObjectDynamic ExportGfz()
         {
@@ -64,8 +67,8 @@ namespace Manifold.IO.GFZ.CourseCollision
             }
 
             // Add scripts and import data
-            sceneObject = this.gameObject.AddComponent<GfzSceneObject>();
-            sceneObject.ImportGfz(dynamicSceneObject.sceneObject);
+            //sceneObject = this.gameObject.AddComponent<GfzSceneObject>();
+            //sceneObject.ImportGfz(dynamicSceneObject.sceneObject);
 
             animationClip = this.gameObject.AddComponent<GfzAnimationClip>();
             animationClip.ImportGfz(dynamicSceneObject.animationClip);

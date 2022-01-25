@@ -178,47 +178,37 @@ namespace Manifold.IO.GFZ.CourseCollision
 
             // Scene Objects
             {
-                var gfzDynamicSceneObjects = GameObject.FindObjectsOfType<GfzSceneObjectDynamic>(findInactive);
+                // SCENE OBJECTs
+                var gfzDynamicSceneObjects = GameObject.FindObjectsOfType<GfzSceneObjectDynamic>(true);
+                var gfzStaticSceneObjects = GameObject.FindObjectsOfType<GfzSceneObjectStatic>(true);
+                var gfzSceneObjects = GameObject.FindObjectsOfType<GfzSceneObject>(true);
+                var gfzSceneObjectLODs = GameObject.FindObjectsOfType<GfzSceneObjectLODs>(true);
+
+                // Init shared references before copying values out.
+                foreach (var gfzSceneObject in gfzSceneObjects)
+                    gfzSceneObject.InitSharedReference();
+
+                // STATIC / DYNAMIC
                 scene.dynamicSceneObjects = GetGfzValues(gfzDynamicSceneObjects);
-
-                List<CString> sceneObjectNames = new List<CString>();
-
-
-                // This currently exports a ton of repeated values...
-                // TODO: hash the scene objects/LODS, use unique one only.
-                List<GfzSceneObject> sceneObjects = new List<GfzSceneObject>();
-                List<GfzSceneObjectLODs> sceneObjectLODs = new List<GfzSceneObjectLODs>();
-                foreach (var gfzDynamicSceneObject in gfzDynamicSceneObjects)
+                scene.staticSceneObjects = GetGfzValues(gfzStaticSceneObjects);
+                scene.sceneObjects = GetGfzValues(gfzSceneObjects);
+                
+                // LODs
+                var sceneObjectLODs = new List<SceneObjectLOD>();
+                foreach (var sceneObject in scene.sceneObjects)
                 {
-                    var x = gfzDynamicSceneObject.SceneObject;
-                    if (!sceneObjects.Contains(x))
-                        sceneObjects.Add(x);
-
-                    var y = gfzDynamicSceneObject.SceneObject.SceneObjectLODs;
-                    if (!sceneObjectLODs.Contains(y))
-                        sceneObjectLODs.Add(y);
+                    sceneObjectLODs.AddRange(sceneObject.lods);
                 }
+                scene.sceneObjectLODs = sceneObjectLODs.ToArray();
 
-                //
-                scene.sceneObjects = GetGfzValues(sceneObjects.ToArray());
-
-                //
-                var all = new List<SceneObjectLOD>();
-                foreach (var x in sceneObjectLODs)
-                    all.AddRange(x.ExportGfz());
-                scene.sceneObjectLODs = all.ToArray();
-
-                //
-                foreach (var lod in scene.sceneObjectLODs)
-                    sceneObjectNames.Add(lod.name);
+                // CString names
+                var sceneObjectNames = new List<CString>();
+                foreach (var thing in scene.sceneObjectLODs)
+                {
+                    sceneObjectNames.Add(thing.name);
+                }
                 scene.sceneObjectNames = sceneObjectNames.ToArray();
 
-                // not implemented
-                scene.staticSceneObjects = null; // new SceneObjectStatic[0];
-                //scene.sceneObjects = new SceneObject[0];
-                //scene.sceneObjectNames = new CString[0];
-                //scene.dynamicSceneObjects = new SceneObjectDynamic[0];
-                //scene.sceneObjectLODs = new SceneObjectLOD[0];
             }
 
             //// Static Collider Meshes
