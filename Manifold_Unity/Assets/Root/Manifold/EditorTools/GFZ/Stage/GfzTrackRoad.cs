@@ -2,20 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Manifold
+namespace Manifold.EditorTools.GC.GFZ.Stage
 {
-    public class GfzTrackRoad : MonoBehaviour
+    public class GfzTrackRoad : GfzTrackSegment
     {
-        // Start is called before the first frame update
-        void Start()
-        {
-        
-        }
+        [Header("Road Properties")]
+        [Min(0f)]
+        [SerializeField]
+        private float railHeightLeft = 5f;
 
-        // Update is called once per frame
-        void Update()
-        {
-        
-        }
+        [Min(0f)]
+        [SerializeField]
+        private float railHeightRight = 5f;
     }
 }

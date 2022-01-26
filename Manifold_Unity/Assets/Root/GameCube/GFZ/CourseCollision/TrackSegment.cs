@@ -22,10 +22,10 @@ namespace GameCube.GFZ.CourseCollision
         public bool isRoot;
 
         // FIELDS
-        public TrackSegmentMetadata topologyMetadata;
-        public TrackProperty trackProperty;
-        public TrackPerimeterOptions perimeterOptions;
-        public TrackPipeCylinderOptions pipeCylinderOptions;
+        public TrackSegmentType segmentType;
+        public TrackEmbeddedPropertyType embeddedPropertyType;
+        public TrackCornerFlags cornerFlags;
+        public TrackPipeCylinderFlags pipeCylinderFlags;
         public Pointer trackCurvesPtr;
         public Pointer trackCornerPtr;
         public ArrayPointer childrenPtrs;
@@ -65,10 +65,10 @@ namespace GameCube.GFZ.CourseCollision
         {
             this.RecordStartAddress(reader);
             {
-                reader.ReadX(ref topologyMetadata);
-                reader.ReadX(ref trackProperty);
-                reader.ReadX(ref perimeterOptions);
-                reader.ReadX(ref pipeCylinderOptions);
+                reader.ReadX(ref segmentType);
+                reader.ReadX(ref embeddedPropertyType);
+                reader.ReadX(ref cornerFlags);
+                reader.ReadX(ref pipeCylinderFlags);
                 reader.ReadX(ref trackCurvesPtr);
                 reader.ReadX(ref trackCornerPtr);
                 reader.ReadX(ref childrenPtrs);
@@ -178,10 +178,10 @@ namespace GameCube.GFZ.CourseCollision
             }
             this.RecordStartAddress(writer);
             {
-                writer.WriteX(topologyMetadata);
-                writer.WriteX(trackProperty);
-                writer.WriteX(perimeterOptions);
-                writer.WriteX(pipeCylinderOptions);
+                writer.WriteX(segmentType);
+                writer.WriteX(embeddedPropertyType);
+                writer.WriteX(cornerFlags);
+                writer.WriteX(pipeCylinderFlags);
                 writer.WriteX(trackCurvesPtr);
                 writer.WriteX(trackCornerPtr);
                 writer.WriteX(childrenPtrs);
@@ -215,8 +215,8 @@ namespace GameCube.GFZ.CourseCollision
             // TODO: more edge cases to assert
 
             // Ensure rail flags AND height properties coincide
-            bool hasRailLeft = perimeterOptions.HasFlag(TrackPerimeterOptions.hasRailHeightLeft);
-            bool hasRailRight = perimeterOptions.HasFlag(TrackPerimeterOptions.hasRailHeightRight);
+            bool hasRailLeft = cornerFlags.HasFlag(TrackCornerFlags.hasRailHeightLeft);
+            bool hasRailRight = cornerFlags.HasFlag(TrackCornerFlags.hasRailHeightRight);
             // Both true or false, but not one of either.
             Assert.IsFalse(hasRailLeft ^ railHeightLeft > 0);
             Assert.IsFalse(hasRailRight ^ railHeightRight > 0);
@@ -224,8 +224,8 @@ namespace GameCube.GFZ.CourseCollision
             // Ensure that if there is a turn that one of the two flags for it are set
             if (trackCornerPtr.IsNotNullPointer)
             {
-                bool hasTurnLeft = perimeterOptions.HasFlag(TrackPerimeterOptions.has90TurnLeft);
-                bool hasTurnRight = perimeterOptions.HasFlag(TrackPerimeterOptions.has90TurnRight);
+                bool hasTurnLeft = cornerFlags.HasFlag(TrackCornerFlags.isLeftTurn);
+                bool hasTurnRight = cornerFlags.HasFlag(TrackCornerFlags.isRightTurn);
                 Assert.IsTrue(hasTurnLeft || hasTurnRight);
             } 
         }
@@ -252,10 +252,10 @@ namespace GameCube.GFZ.CourseCollision
             var builder = new System.Text.StringBuilder();
             builder.Append($"{nameof(TrackSegment)}");
             //
-            builder.Append($"\n\t{nameof(topologyMetadata)}: {topologyMetadata}");
-            builder.Append($"\n\t{nameof(trackProperty)}: {trackProperty}");
-            builder.Append($"\n\t{nameof(perimeterOptions)}: {perimeterOptions}");
-            builder.Append($"\n\t{nameof(topologyMetadata)}: {topologyMetadata}");
+            builder.Append($"\n\t{nameof(segmentType)}: {segmentType}");
+            builder.Append($"\n\t{nameof(embeddedPropertyType)}: {embeddedPropertyType}");
+            builder.Append($"\n\t{nameof(cornerFlags)}: {cornerFlags}");
+            builder.Append($"\n\t{nameof(segmentType)}: {segmentType}");
             //
             builder.Append($"\n\t{nameof(trackCurvesPtr)}: {trackCurvesPtr}");
             builder.Append($"\n\t{nameof(trackCornerPtr)}: {trackCornerPtr}");

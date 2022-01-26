@@ -7,7 +7,7 @@ namespace GameCube.GFZ.CourseCollision
     /// Denotes what kind of property the animation data holds for
     /// this track segment on the current node.
     /// </summary>
-    public enum TrackProperty : byte
+    public enum TrackEmbeddedPropertyType : byte
     {
         None = 0,
         IS_UNUSED = 1 << 0,

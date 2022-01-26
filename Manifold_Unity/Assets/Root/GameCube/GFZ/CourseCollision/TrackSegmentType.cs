@@ -6,7 +6,7 @@ namespace GameCube.GFZ.CourseCollision
     /// <summary>
     /// 
     /// </summary>
-    public enum TrackSegmentMetadata : byte
+    public enum TrackSegmentType : byte
     {
         /// <summary>
         /// When set to nothing, TrackProperty has a value.

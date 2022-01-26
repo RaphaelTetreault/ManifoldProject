@@ -332,10 +332,10 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol("FileName");
                 writer.WriteNextCol("Game");
 
-                writer.WriteNextCol(nameof(TrackSegment.topologyMetadata));
-                writer.WriteNextCol(nameof(TrackSegment.trackProperty));
-                writer.WriteNextCol(nameof(TrackSegment.perimeterOptions));
-                writer.WriteNextCol(nameof(TrackSegment.pipeCylinderOptions));
+                writer.WriteNextCol(nameof(TrackSegment.segmentType));
+                writer.WriteNextCol(nameof(TrackSegment.embeddedPropertyType));
+                writer.WriteNextCol(nameof(TrackSegment.cornerFlags));
+                writer.WriteNextCol(nameof(TrackSegment.pipeCylinderFlags));
                 writer.WriteNextCol(nameof(TrackSegment.unk_0x38));
                 writer.WriteNextCol(nameof(TrackSegment.unk_0x3A));
 
@@ -379,10 +379,10 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol("FileName");
                 writer.WriteNextCol("Game");
 
-                writer.WriteNextCol(nameof(TrackSegment.topologyMetadata));
-                writer.WriteNextCol(nameof(TrackSegment.trackProperty));
-                writer.WriteNextCol(nameof(TrackSegment.perimeterOptions));
-                writer.WriteNextCol(nameof(TrackSegment.pipeCylinderOptions));
+                writer.WriteNextCol(nameof(TrackSegment.segmentType));
+                writer.WriteNextCol(nameof(TrackSegment.embeddedPropertyType));
+                writer.WriteNextCol(nameof(TrackSegment.cornerFlags));
+                writer.WriteNextCol(nameof(TrackSegment.pipeCylinderFlags));
                 writer.WriteNextCol(nameof(TrackSegment.unk_0x38));
                 writer.WriteNextCol(nameof(TrackSegment.unk_0x3A));
 
@@ -439,10 +439,10 @@ namespace Manifold.IO.GFZ.CourseCollision
             writer.WriteNextCol(scene.FileName);
             writer.WriteNextCol(gameId);
 
-            writer.WriteNextCol(tt.topologyMetadata);
-            writer.WriteNextCol(tt.trackProperty);
-            writer.WriteNextCol(tt.perimeterOptions);
-            writer.WriteNextCol(tt.pipeCylinderOptions);
+            writer.WriteNextCol(tt.segmentType);
+            writer.WriteNextCol(tt.embeddedPropertyType);
+            writer.WriteNextCol(tt.cornerFlags);
+            writer.WriteNextCol(tt.pipeCylinderFlags);
             writer.WriteNextCol(tt.unk_0x38);
             writer.WriteNextCol(tt.unk_0x3A);
 
@@ -473,10 +473,10 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol("Root Index");
                 writer.WriteNextCol("Transform Depth");
                 writer.WriteNextCol("Address");
-                writer.WriteNextCol(nameof(TrackSegment.topologyMetadata));
-                writer.WriteNextCol(nameof(TrackSegment.trackProperty));
-                writer.WriteNextCol(nameof(TrackSegment.perimeterOptions));
-                writer.WriteNextCol(nameof(TrackSegment.pipeCylinderOptions));
+                writer.WriteNextCol(nameof(TrackSegment.segmentType));
+                writer.WriteNextCol(nameof(TrackSegment.embeddedPropertyType));
+                writer.WriteNextCol(nameof(TrackSegment.cornerFlags));
+                writer.WriteNextCol(nameof(TrackSegment.pipeCylinderFlags));
                 writer.WriteNextCol(nameof(TrackSegment.trackCurvesPtr));
                 writer.WriteNextCol(nameof(TrackSegment.trackCornerPtr));
                 writer.WriteNextCol(nameof(TrackSegment.childrenPtrs));
@@ -534,10 +534,10 @@ namespace Manifold.IO.GFZ.CourseCollision
             writer.WriteNextCol($"[{index}/{total}]");
             writer.WriteNextCol($"{depth}");
             writer.WriteNextCol(trackTransform.StartAddressHex());
-            writer.WriteNextCol(trackTransform.topologyMetadata);
-            writer.WriteNextCol(trackTransform.trackProperty);
-            writer.WriteNextCol(trackTransform.perimeterOptions);
-            writer.WriteNextCol(trackTransform.pipeCylinderOptions);
+            writer.WriteNextCol(trackTransform.segmentType);
+            writer.WriteNextCol(trackTransform.embeddedPropertyType);
+            writer.WriteNextCol(trackTransform.cornerFlags);
+            writer.WriteNextCol(trackTransform.pipeCylinderFlags);
             writer.WriteNextCol(trackTransform.trackCurvesPtr);
             writer.WriteNextCol(trackTransform.trackCornerPtr);
             writer.WriteNextCol(trackTransform.childrenPtrs);

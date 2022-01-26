@@ -2,20 +2,24 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Manifold
+namespace Manifold.EditorTools.GC.GFZ.Stage
 {
     public class GfzTrack : MonoBehaviour
     {
-        // Start is called before the first frame update
-        void Start()
+        [SerializeField] private GfzTrackSegment startSegment;
+        [SerializeField] private GfzTrackSegment[] segments;
+
+
+        public GfzTrackSegment StartSegment
         {
-        
+            get => startSegment;
+            set => startSegment = value;
         }
 
-        // Update is called once per frame
-        void Update()
+        public GfzTrackSegment[] Segments
         {
-        
+            get => segments;
+            set => segments = value;
         }
     }
 }

@@ -2,20 +2,43 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Manifold
+namespace Manifold.EditorTools.GC.GFZ.Stage
 {
-    public class GfzTrackSegment : MonoBehaviour
+    public abstract class GfzTrackSegment : MonoBehaviour
     {
-        // Start is called before the first frame update
-        void Start()
+        // Define delegates
+        public delegate void OnEditCallback(GfzTrackSegment value);
+
+        // Events
+        public event OnEditCallback onEdit;
+
+        // Fields
+        [Header("Track Segment")]
+        [SerializeField] private GfzTrackSegment prev;
+        [SerializeField] private GfzTrackSegment next;
+
+        [Header("Track Curves")]
+        [SerializeField] private AnimationCurve3 position = new AnimationCurve3();
+        [SerializeField] private AnimationCurve3 rotation = new AnimationCurve3();
+        [SerializeField] private AnimationCurve3 scale = new AnimationCurve3();
+
+        // Properties
+        public GfzTrackSegment PreviousSegment
         {
-        
+            get => prev;
+            set => prev = value;
         }
 
-        // Update is called once per frame
-        void Update()
+        public GfzTrackSegment NextSegment
         {
-        
+            get => next;
+            set => next = value;
+        }
+
+        // Methods
+        public virtual void OnValidate()
+        {
+            onEdit?.Invoke(this);
         }
     }
 }

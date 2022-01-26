@@ -4,7 +4,7 @@ namespace GameCube.GFZ.CourseCollision
     /// Parameters to dictate how to interpret a cylindrical or capsule track segment.
     /// </summary>
     [System.Flags]
-    public enum TrackPipeCylinderOptions : byte
+    public enum TrackPipeCylinderFlags : byte
     {
         /// <summary>
         /// Is the driveable surface on the outside (cylinder) or inside (pipe)?

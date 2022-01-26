@@ -23,7 +23,7 @@ namespace Manifold.IO.GFZ.CourseCollision
         {
             var settings = GfzProjectWindow.GetSettings();
             var inputPath = settings.StageDir;
-            var outputPath = settings.UnityImportDir;
+            var outputPath = settings.UnityImportDir + "stage/";
             foreach (var scene in ColiCourseIO.LoadAllStages(inputPath, "Generating Unity Scene From GFZ Scene"))
             {
                 Import(scene, outputPath);
@@ -37,7 +37,7 @@ namespace Manifold.IO.GFZ.CourseCollision
         {
             var settings = GfzProjectWindow.GetSettings();
             var inputPath = settings.StageDir;
-            var outputPath = settings.UnityImportDir;
+            var outputPath = settings.UnityImportDir + "stage/";
             var sceneIndex = settings.SceneOfInterestID;
             var filePath = $"{inputPath}COLI_COURSE{sceneIndex:00}";
             var scene = ColiCourseIO.LoadScene(filePath);

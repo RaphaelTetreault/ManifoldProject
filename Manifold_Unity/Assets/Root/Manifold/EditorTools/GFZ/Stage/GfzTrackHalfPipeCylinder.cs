@@ -4,11 +4,10 @@ using UnityEngine;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage
 {
-    public class GfzTrackCapsulePipeCylinder : GfzTrackSegment
+    public class GfzTrackHalfPipeCylinder : GfzTrackSegment
     {
-        [Header("Pipe/Cylinder")]
+        [Header("Half-Pipe / Half-Cylinder")]
         [SerializeField] private PipeCylinderType type = PipeCylinderType.Pipe;
-
 
         public PipeCylinderType Type
         {
