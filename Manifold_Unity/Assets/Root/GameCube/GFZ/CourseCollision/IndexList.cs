@@ -90,5 +90,31 @@ namespace GameCube.GFZ.CourseCollision
                 }
             }
         }
+
+        public static IndexList CreateIndexList(List<int> indexes)
+        {
+            var indexList = new IndexList();
+
+            // If we have no indexes, return a base structure. It would be
+            // an error to return an array of just [1] with 0xFFFF
+            if (indexes.Count == 0)
+                return indexList;
+
+            // Copy indexes over, checking to see if there's an overflow
+            var _indexes = new ushort[indexes.Count + 1];
+            for (int i = 0; i < indexes.Count; i++)
+            {
+                if (i > ushort.MaxValue - 1)
+                    throw new System.Exception("Tried to make an index too large!");
+
+                _indexes[i] = (ushort)indexes[i];
+            }
+
+            // The last element is a teminating ushort
+            _indexes[indexes.Count] = kUshortArrayTerminator;
+            indexList.indexes = _indexes;
+
+            return indexList;
+        }
     }
 }

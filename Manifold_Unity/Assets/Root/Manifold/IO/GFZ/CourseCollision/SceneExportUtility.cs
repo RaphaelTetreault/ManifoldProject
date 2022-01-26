@@ -245,22 +245,22 @@ namespace Manifold.IO.GFZ.CourseCollision
                 var track = GameObject.FindObjectOfType<GfzTrack>();
                 track.InitTrackData();
 
-                scene.rootTrackSegments = track.GetRootSegments();
-                scene.allTrackSegments = track.GetAllSegments();
+                scene.rootTrackSegments = track.RootSegments;
+                scene.allTrackSegments = track.AllSegments;
 
                 // Nodes (checkpoints-segment bound together)
-                scene.trackNodes = track.GetTrackNodes();
+                scene.trackNodes = track.TrackNodes;
                 // Checkpoint matrix
-                scene.trackCheckpointMatrix = track.GetCheckpointMatrix();
-                scene.trackCheckpointBoundsXZ = track.GetCheckpointMatrixBoundsXZ();
+                scene.trackCheckpointMatrix = track.TrackCheckpointMatrix;
+                scene.trackCheckpointBoundsXZ = track.TrackCheckpointMatrixBoundsXZ;
 
                 // Track metadata
-                scene.trackLength = track.GetTrackLength();
-                scene.trackMinHeight = track.GetTrackMinHeight();
+                scene.trackLength = track.TrackLength;
+                scene.trackMinHeight = track.TrackMinHeight;
 
                 // AI data
                 // 2022/01/25: currently save out only the terminating element.
-                scene.surfaceAttributeAreas = track.GetEmbeddedPropertyAreas();
+                scene.surfaceAttributeAreas = track.EmbeddedPropertyAreas;
             }
 
             // TEMP until data is stored properly in GFZ unity components

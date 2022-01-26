@@ -31,7 +31,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         public TrackSegment[] AllSegments { get; private set; }
         public TrackCheckpoint[] Checkpoints { get; private set; }
         public TrackNode[] TrackNodes { get; private set; }
-        public SurfaceAttributeArea[] EmbededPropertyAreas { get; private set; }
+        public SurfaceAttributeArea[] EmbeddedPropertyAreas { get; private set; }
         public TrackCheckpointMatrix TrackCheckpointMatrix { get; private set; }
         public MatrixBoundsXZ TrackCheckpointMatrixBoundsXZ { get; private set; }
 
@@ -50,7 +50,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             var checkpoints = new List<TrackCheckpoint>();
             var trackNodes = new List<TrackNode>();
             //
-            var trackEmbededPropertyAreas = new List<SurfaceAttributeArea>();
+            var trackEmbeddedPropertyAreas = new List<SurfaceAttributeArea>();
 
             //
             var rootSegmentScripts = this.rootSegments;
@@ -72,7 +72,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
                 //
                 var embededPropertyAreas = rootSegmentScript.GetEmbededPropertyAreas();
-                trackEmbededPropertyAreas.AddRange(embededPropertyAreas);
+                trackEmbeddedPropertyAreas.AddRange(embededPropertyAreas);
 
                 // Compute some metadata based on segments
                 trackLength.value += rootSegmentScript.GetSegmentLength();
@@ -111,51 +111,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             AllSegments = allSegments.ToArray();
             Checkpoints = checkpointsArray;
             TrackNodes = trackNodes.ToArray();
-            EmbededPropertyAreas = trackEmbededPropertyAreas.ToArray();
+            EmbeddedPropertyAreas = trackEmbeddedPropertyAreas.ToArray();
             TrackCheckpointMatrix = trackCheckpointMatrix;
             TrackCheckpointMatrixBoundsXZ = checkpointMatrixBoundsXZ;
         }
 
-
-
-        public TrackSegment[] GetRootSegments()
-        {
-            return RootSegments;
-        }
-
-        public TrackSegment[] GetAllSegments()
-        {
-            return AllSegments;
-        }
-
-        public TrackNode[] GetTrackNodes()
-        {
-            return TrackNodes;
-        }
-
-        public TrackCheckpointMatrix GetCheckpointMatrix()
-        {
-            return TrackCheckpointMatrix;
-        }
-
-        public MatrixBoundsXZ GetCheckpointMatrixBoundsXZ()
-        {
-            return TrackCheckpointMatrixBoundsXZ;
-        }
-
-        public TrackMinHeight GetTrackMinHeight()
-        {
-            return TrackMinHeight;
-        }
-
-        public TrackLength GetTrackLength()
-        {
-            return TrackLength;
-        }
-
-        public SurfaceAttributeArea[] GetEmbeddedPropertyAreas()
-        {
-            return EmbededPropertyAreas;
-        }
     }
 }

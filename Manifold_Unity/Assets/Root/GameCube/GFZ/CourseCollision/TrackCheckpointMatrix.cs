@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Unity.Mathematics;
 
 namespace GameCube.GFZ.CourseCollision
@@ -45,7 +46,60 @@ namespace GameCube.GFZ.CourseCollision
 
         public void GenerateIndexes(MatrixBoundsXZ matrixBoundsXZ, TrackCheckpoint[] checkpoints)
         {
-            throw new System.NotImplementedException();
+            // Init. Value is from inherited structure.
+            indexLists = new IndexList[kListCount];
+
+            // Iterate over each subdivision in the course
+            for (int z = 0; z < SubdivisionsZ; z++)
+            {
+                // Get the minimum and maximum Z coordinates allowed to exist this cell
+                var minZIndex = math.clamp(z - 2, 0, SubdivisionsZ - 1);
+                var maxZIndex = math.clamp(z + 2, 0, SubdivisionsZ - 1);
+                var minZ = matrixBoundsXZ.top - (matrixBoundsXZ.subdivisionLength * minZIndex);
+                var maxZ = matrixBoundsXZ.top - (matrixBoundsXZ.subdivisionLength * maxZIndex);
+
+                for (int x = 0; x < SubdivisionsX; x++)
+                {
+                    // Get the minimum and maximum X coordinates allowed to exist this cell
+                    var minXIndex = math.clamp(x - 2, 0, SubdivisionsX - 1);
+                    var maxXIndex = math.clamp(x + 2, 0, SubdivisionsX - 1);
+                    var minX = matrixBoundsXZ.left - (matrixBoundsXZ.subdivisionLength * minXIndex);
+                    var maxX = matrixBoundsXZ.left - (matrixBoundsXZ.subdivisionLength * maxXIndex);
+
+                    // Iterate over every checkpoint the course has
+                    var indexes = new List<int>();
+                    for (int i = 0; i < checkpoints.Length; i++)
+                    {
+                        var checkpoint = checkpoints[i];
+
+                        var posX = checkpoint.start.position.x;
+                        var posZ = checkpoint.start.position.z;
+
+                        bool isBetweenX = IsBetween(posX, minX, maxX);
+                        bool isBetweenZ = IsBetween(posZ, minZ, maxZ);
+
+                        // if the x and z coordinates are within the region we want, store index to checkpoint
+                        bool isInRegion = isBetweenX && isBetweenZ;
+                        if (isInRegion)
+                        {
+                            indexes.Add(i);
+                        }
+                    }
+
+                    // Turn those indexes into the structure
+                    var cell = z * SubdivisionsZ + x;
+                    indexLists[cell] = IndexList.CreateIndexList(indexes);
+                }
+            }
         }
+
+        private bool IsBetween(float value, float min, float max)
+        {
+            bool isMoreThanMin = value >= min;
+            bool isLessThanMax = value <= max;
+            bool isBetween = isMoreThanMin && isLessThanMax;
+            return isBetween;
+        }
+
     }
 }
