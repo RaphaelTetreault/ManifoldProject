@@ -33,7 +33,7 @@
                 throw new System.ArgumentException(msg);
             }
 
-            var minTime = curve.keys[0].time;
+            var minTime = GetMinTime(curve);
             var minTimeIsZero = minTime == 0f;
             if (!minTimeIsZero)
             {
@@ -41,12 +41,40 @@
                 throw new System.ArgumentException(msg);
             }
 
-            // Get max time value, normalize input time
-            var lastIndex = curve.keys.Length - 1;
-            var maxTime = curve.keys[lastIndex].time;
+            var maxTime = GetMaxTime(curve);
             var time = maxTime * normalizedTime;
             var value = curve.Evaluate(time);
             return value;
         }
+
+
+        public static float GetMaxTime(this UnityEngine.AnimationCurve curve)
+        {
+            var hasKeys = curve.keys.Length > 0;
+            if (!hasKeys)
+            {
+                var msg = $"Curve is empty! Cannot evaluate.";
+                throw new System.ArgumentException(msg);
+            }
+
+            // Get max time value, normalize input time
+            var lastIndex = curve.keys.Length - 1;
+            var maxTime = curve.keys[lastIndex].time;
+            return maxTime;
+        }
+
+        public static float GetMinTime(this UnityEngine.AnimationCurve curve)
+        {
+            var hasKeys = curve.keys.Length > 0;
+            if (!hasKeys)
+            {
+                var msg = $"Curve is empty! Cannot evaluate.";
+                throw new System.ArgumentException(msg);
+            }
+
+            var minTime = curve.keys[0].time;
+            return minTime;
+        }
+
     }
 }

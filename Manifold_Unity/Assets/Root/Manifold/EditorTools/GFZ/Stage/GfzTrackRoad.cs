@@ -22,12 +22,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         {
             Gizmos.color = Color.red;
 
-            var increment = 1f / 1000f;
+            var increment = 1f / 500f;
             for (float p = 0; p < 1f; p += increment)
             {
-                var pos = position.EvaluateNormalized(p);
-                var rot = rotation.EvaluateNormalized(p);
-                var scl = scale.EvaluateNormalized(p);
+                var pos = animTransform.Position.EvaluateNormalized(p);
+                var rot = animTransform.Rotation.EvaluateNormalized(p);
+                var scl = animTransform.Scale.EvaluateNormalized(p);
 
                 Gizmos.DrawCube(pos, scl);
             }
@@ -39,11 +39,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         }
 
         public override void InitTrackSegment()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public override float GetSegmentLength()
         {
             throw new System.NotImplementedException();
         }

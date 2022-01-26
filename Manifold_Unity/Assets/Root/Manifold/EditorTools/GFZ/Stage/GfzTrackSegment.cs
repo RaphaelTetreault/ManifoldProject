@@ -14,12 +14,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         [SerializeField] protected GfzTrackSegment next;
 
         [Header("Track Curves")]
-        [SerializeField] protected AnimationCurve3 position = new AnimationCurve3();
-        [SerializeField] protected AnimationCurve3 rotation = new AnimationCurve3();
-        [SerializeField] protected AnimationCurve3 scale = new AnimationCurve3();
+        [SerializeField] protected AnimationCurveTransform animTransform = new AnimationCurveTransform();
 
 
         public event IEditableComponent<GfzTrackSegment>.OnEditCallback OnEdited;
+
+
 
 
         // Properties
@@ -33,10 +33,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             get => next;
             set => next = value;
         }
+        public AnimationCurveTransform AnimTransform => animTransform;
 
-        public AnimationCurve3 Position => position;
-        public AnimationCurve3 Rotation => rotation;
-        public AnimationCurve3 Scale => scale;
 
         // init track segment
         protected TrackSegment trackSegment;
@@ -46,7 +44,26 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         public abstract void InitTrackSegment();
 
-        public abstract float GetSegmentLength();
+        public virtual float GetSegmentLength()
+        {
+            var distance = 0f;
+            const float increment = 1f / 1000f;
+
+            var position = animTransform.Position;
+            var currPosition = position.EvaluateNormalized(0f);
+
+            //
+            for (float time = 0f; time < 1f; time = Mathf.Clamp01(time + increment))
+            {
+                time = Mathf.Clamp01(time);
+                var nextPosition = position.EvaluateNormalized(time);
+                var delta = Vector3.Distance(currPosition, nextPosition);
+                distance += delta;
+                currPosition = nextPosition;
+            }
+
+            return distance;
+        }
 
         public abstract Mesh[] GenerateMeshes();
 
