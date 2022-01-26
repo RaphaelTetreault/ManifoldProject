@@ -16,8 +16,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         [SerializeField]
         private float railHeightRight = 5f;
 
-        private readonly Vector3 gizmosScale = Vector3.one;
-
+        //private readonly Vector3 gizmosScale = Vector3.one;
 
         private void OnDrawGizmos()
         {
@@ -26,12 +25,17 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             var increment = 1f / 1000f;
             for (float p = 0; p < 1f; p += increment)
             {
-                var pos = position.Evaluate(p);
-                var rot = rotation.Evaluate(p);
-                var scl = scale.Evaluate(p);
+                var pos = position.EvaluateNormalized(p);
+                var rot = rotation.EvaluateNormalized(p);
+                var scl = scale.EvaluateNormalized(p);
 
                 Gizmos.DrawCube(pos, scl);
             }
+        }
+
+        public override Mesh[] GenerateMeshes()
+        {
+            throw new System.NotImplementedException();
         }
 
         public override void InitTrackSegment()

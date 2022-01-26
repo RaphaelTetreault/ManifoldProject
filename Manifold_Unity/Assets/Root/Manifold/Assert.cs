@@ -1,8 +1,9 @@
+using Manifold.IO; // see if you can split
 using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Manifold.IO
+namespace Manifold
 {
     public static class Assert
     {

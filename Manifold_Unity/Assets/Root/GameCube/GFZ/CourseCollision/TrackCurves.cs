@@ -1,7 +1,7 @@
-﻿using Manifold.IO;
+﻿using Manifold;
+using Manifold.IO;
 using Manifold.IO.GFZ;
 using System;
-using System.Collections.Generic;
 using System.IO;
 
 // TODO: move Unity-specific functions to Manifold script!

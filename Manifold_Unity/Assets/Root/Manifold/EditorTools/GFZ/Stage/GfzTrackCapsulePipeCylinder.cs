@@ -17,6 +17,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             set => type = value;
         }
 
+        public override Mesh[] GenerateMeshes()
+        {
+            throw new System.NotImplementedException();
+        }
+
         public override float GetSegmentLength()
         {
             throw new System.NotImplementedException();

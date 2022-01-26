@@ -16,6 +16,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             set => type = value;
         }
 
+        public override Mesh[] GenerateMeshes()
+        {
+            throw new System.NotImplementedException();
+        }
+
         public override void InitTrackSegment()
         {
             throw new System.NotImplementedException();

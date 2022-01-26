@@ -5,13 +5,12 @@ using UnityEngine;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage
 {
-    public class GfzTrackEmbededProperty : MonoBehaviour
+    public abstract class GfzTrackEmbededProperty : MonoBehaviour
     {
-        // property type
+        // property type?
 
-        public SurfaceAttributeArea GetEmbededProperty()
-        {
-            throw new System.NotImplementedException();
-        }
+        public abstract SurfaceAttributeArea GetEmbededProperty();
+
+        public abstract Mesh GenerateMesh();
     }
 }

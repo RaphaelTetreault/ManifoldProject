@@ -5,15 +5,9 @@ using UnityEngine;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage
 {
-    [RequireComponent(typeof(GfzTrackCheckpoints))]
-    public abstract class GfzTrackSegment : MonoBehaviour
+    public abstract class GfzTrackSegment : MonoBehaviour,
+        IEditableComponent<GfzTrackSegment>
     {
-        // Define delegates
-        public delegate void OnEditCallback(GfzTrackSegment value);
-
-        // Events
-        public event OnEditCallback onEdit;
-
         // Fields
         [Header("Track Segment")]
         [SerializeField] protected GfzTrackSegment prev;
@@ -24,32 +18,37 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         [SerializeField] protected AnimationCurve3 rotation = new AnimationCurve3();
         [SerializeField] protected AnimationCurve3 scale = new AnimationCurve3();
 
+
+        public event IEditableComponent<GfzTrackSegment>.OnEditCallback OnEdited;
+
+
         // Properties
         public GfzTrackSegment PreviousSegment
         {
             get => prev;
             set => prev = value;
         }
-
         public GfzTrackSegment NextSegment
         {
             get => next;
             set => next = value;
         }
 
+        public AnimationCurve3 Position => position;
+        public AnimationCurve3 Rotation => rotation;
+        public AnimationCurve3 Scale => scale;
 
+        // init track segment
         protected TrackSegment trackSegment;
         public TrackSegment TrackSegment => trackSegment;
 
-        // Methods
-        public virtual void OnValidate()
-        {
-            onEdit?.Invoke(this);
-        }
+
 
         public abstract void InitTrackSegment();
 
         public abstract float GetSegmentLength();
+
+        public abstract Mesh[] GenerateMeshes();
 
         public SurfaceAttributeArea[] GetEmbededPropertyAreas()
         {
@@ -70,7 +69,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         public TrackCheckpoint[] GetCheckpoints()
         {
             // Collect all possible checkpoint scripts on object
-            var checkpointScripts = GetComponentsInChildren<GfzTrackCheckpoints>();
+            var checkpointScripts = GetComponents<GfzTrackCheckpoints>();
             // Make sure there is only one
             Assert.IsTrue(checkpointScripts.Length == 0);
             var checkpointScript = checkpointScripts[0];
@@ -78,6 +77,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             // Get the gfz value for it, return
             var checkpoints = checkpointScript.GetCheckpoints();
             return checkpoints;
+        }
+
+
+        public virtual void OnValidate()
+        {
+            // Once this has been edited, let listeners know
+            OnEdited?.Invoke(this);
         }
     }
 }

@@ -27,10 +27,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         public void InitTrackData()
         {
-            // Get all segments
-            //      Store root segments (used for TrackNode[])
-            //      Store all segments (that satisfies ArrayPointer serialization)
-
             // Track metadata
             var trackMinHeight = new TrackMinHeight();
             var trackLength = new TrackLength();

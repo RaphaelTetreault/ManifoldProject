@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Text.RegularExpressions;
+using Manifold;
 using Manifold.IO;
 
 namespace Nintendo64.FZX
