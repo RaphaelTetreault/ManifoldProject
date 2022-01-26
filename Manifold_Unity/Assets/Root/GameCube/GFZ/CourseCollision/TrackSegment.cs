@@ -1,5 +1,6 @@
 ﻿using Manifold.IO;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using Unity.Mathematics;
 
@@ -50,7 +51,6 @@ namespace GameCube.GFZ.CourseCollision
         public TrackCorner trackCorner;
         // HACK?
         public int[] childIndexes = new int[0];
-
 
         // PROPERTIES
         public AddressRange AddressRange
@@ -279,5 +279,35 @@ namespace GameCube.GFZ.CourseCollision
 
             return builder.ToString();
         }
+
+
+
+        // 2022/01/25: trying to work without Unity serialization messing things up
+        // this means we can store a recursive structure (while state is active).
+        public TrackSegment[] childSegments;
+
+        public TrackSegment[] GetChildrenArrayPointerOrdered()
+        {
+            var trackSegmentHierarchy = new List<TrackSegment>();
+            // Add root/parent as first element
+            trackSegmentHierarchy.Add(this);
+            // Kick off recursive collection of TrackSegments
+            GetChildrenRecursively(this, trackSegmentHierarchy);
+            // Return our list/array which is ready to be serialized to disk
+            return trackSegmentHierarchy.ToArray();
+        }
+
+        public static void GetChildrenRecursively(TrackSegment parent, List<TrackSegment> segments)
+        {
+            // Add children sequentially, needed to store ArrayPointer correctly
+            segments.AddRange(parent.childSegments);
+
+            // Then add each child's children sequentially, recursively
+            foreach (var childSegment in parent.childSegments)
+            {
+                GetChildrenRecursively(childSegment, segments);
+            }
+        }
+
     }
 }

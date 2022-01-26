@@ -9,7 +9,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
     public class GfzTrack : MonoBehaviour
     {
         [SerializeField] private GfzTrackSegment startSegment;
-        [SerializeField] private GfzTrackSegment[] segments;
+        [SerializeField] private GfzTrackSegment[] rootSegments;
 
 
         public GfzTrackSegment StartSegment
@@ -18,10 +18,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             set => startSegment = value;
         }
 
-        public GfzTrackSegment[] Segments
+        public GfzTrackSegment[] RootSegments
         {
-            get => segments;
-            set => segments = value;
+            get => rootSegments;
+            set => rootSegments = value;
         }
 
 
@@ -30,16 +30,73 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             // Get all segments
             //      Store root segments (used for TrackNode[])
             //      Store all segments (that satisfies ArrayPointer serialization)
-            // Calc the length of all segments
-            // FREE: TrackLength
-            // Get all checkpoints
-            // Using checkpoints, create TrackNode[], bind segment with checkpoints
-            // Calc matrix bounds for checkpoints
-            // Calc TrackMinHeight
-            // foreach (segment) get embedded property => array
 
+            // Track metadata
+            var trackMinHeight = new TrackMinHeight();
+            var trackLength = new TrackLength();
+            // Get all track segments as GFZ values
+            var rootSegments = new List<TrackSegment>();
+            // Get all of these segments in an order proper for serialization
+            var allSegments = new List<TrackSegment>();
+            //
+            var checkpoints = new List<TrackCheckpoint>();
+            var trackNodes = new List<TrackNode>();
+            //
+            var trackEmbededPropertyAreas = new List<SurfaceAttributeArea>();
+
+            //
+            foreach (var rootSegment in this.rootSegments)
+            {
+                // Init the GFZ data, add to list
+                rootSegment.InitTrackSegment();
+                var rootTrackSegment = rootSegment.TrackSegment;
+                rootSegments.Add(rootTrackSegment);
+
+                // Get segments in proper order for binary serialization
+                var segmentChildren = rootTrackSegment.GetChildrenArrayPointerOrdered();
+                allSegments.AddRange(segmentChildren);
+
+                // Get all checkpoints for this segment
+                var segmentCheckpoints = rootSegment.TrackCheckpoints.GetCheckpoints();
+                checkpoints.AddRange(segmentCheckpoints);
+
+                //
+                var embededPropertyAreas = rootSegment.GetEmbededPropertyAreas();
+                trackEmbededPropertyAreas.AddRange(embededPropertyAreas);
+
+                // Compute some metadata based on segments
+                trackLength.value += rootSegment.GetSegmentLength();
+
+                // Create TrackNodes
+                foreach (var segmentCheckpoint in segmentCheckpoints)
+                {
+                    var trackNode = new TrackNode()
+                    {
+                        // Add checkpoints. TODO: support branching
+                        checkpoints = new TrackCheckpoint[] { segmentCheckpoint },
+                        segment = rootTrackSegment,
+                    };
+
+                    // Add to master list
+                    trackNodes.Add(trackNode);
+                }
+            }
+
+            // TODO: name this something better
+            var temp = checkpoints.ToArray();
+
+            trackMinHeight.SetMinHeight(temp);
+
+            //
+            var checkpointMatrixBoundsXZ = TrackCheckpointMatrix.GetMatrixBoundsXZ(temp);
+            var trackCheckpointMatrix = new TrackCheckpointMatrix();
+            trackCheckpointMatrix.GenerateIndexes(checkpointMatrixBoundsXZ, temp);
+
+            // TODO: actually store the damn values!
             throw new NotImplementedException();
         }
+
+
 
         public TrackSegment[] GetRootSegments()
         {

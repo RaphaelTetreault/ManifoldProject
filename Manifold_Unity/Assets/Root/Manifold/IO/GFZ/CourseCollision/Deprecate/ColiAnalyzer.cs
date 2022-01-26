@@ -1075,7 +1075,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 // Structure
                 writer.WriteNextCol(nameof(ColiScene.trackCheckpointBoundsXZ) + "." + nameof(ColiScene.trackCheckpointBoundsXZ.left));
                 writer.WriteNextCol(nameof(ColiScene.trackCheckpointBoundsXZ) + "." + nameof(ColiScene.trackCheckpointBoundsXZ.top));
-                writer.WriteNextCol(nameof(ColiScene.trackCheckpointBoundsXZ) + "." + nameof(ColiScene.trackCheckpointBoundsXZ.subdivionWidth));
+                writer.WriteNextCol(nameof(ColiScene.trackCheckpointBoundsXZ) + "." + nameof(ColiScene.trackCheckpointBoundsXZ.subdivisionWidth));
                 writer.WriteNextCol(nameof(ColiScene.trackCheckpointBoundsXZ) + "." + nameof(ColiScene.trackCheckpointBoundsXZ.subdivisionLength));
                 writer.WriteNextCol(nameof(ColiScene.trackCheckpointBoundsXZ) + "." + nameof(ColiScene.trackCheckpointBoundsXZ.numSubdivisionsX));
                 writer.WriteNextCol(nameof(ColiScene.trackCheckpointBoundsXZ) + "." + nameof(ColiScene.trackCheckpointBoundsXZ.numSubdivisionsZ));
@@ -1144,7 +1144,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                     // Structure
                     writer.WriteNextCol(scene.trackCheckpointBoundsXZ.left);
                     writer.WriteNextCol(scene.trackCheckpointBoundsXZ.top);
-                    writer.WriteNextCol(scene.trackCheckpointBoundsXZ.subdivionWidth);
+                    writer.WriteNextCol(scene.trackCheckpointBoundsXZ.subdivisionWidth);
                     writer.WriteNextCol(scene.trackCheckpointBoundsXZ.subdivisionLength);
                     writer.WriteNextCol(scene.trackCheckpointBoundsXZ.numSubdivisionsX);
                     writer.WriteNextCol(scene.trackCheckpointBoundsXZ.numSubdivisionsZ);
@@ -1642,65 +1642,66 @@ namespace Manifold.IO.GFZ.CourseCollision
 
         public void AnalyzeTrackNodes(string fileName)
         {
-            using (var writer = AnalyzerUtility.OpenWriter(fileName))
-            {
-                // Write header
-                writer.WriteNextCol("File");
-                writer.WriteNextCol("Track Node");
-                writer.WriteNextCol("Track Point");
-                writer.WriteNextColNicify(nameof(TrackCheckpoint.curveTimeStart));
-                writer.WriteNextColNicify(nameof(TrackCheckpoint.curveTimeEnd));
-                writer.WriteNextColNicify(nameof(TrackCheckpoint.trackDistanceStart));
-                writer.WriteNextColNicify(nameof(TrackCheckpoint.tangentStart));
-                writer.WriteNextColNicify(nameof(TrackCheckpoint.positionStart));
-                writer.WriteNextColNicify(nameof(TrackCheckpoint.trackDistanceEnd));
-                writer.WriteNextColNicify(nameof(TrackCheckpoint.tangentEnd));
-                writer.WriteNextColNicify(nameof(TrackCheckpoint.positionEnd));
-                writer.WriteNextColNicify(nameof(TrackCheckpoint.transformDistanceEnd));
-                writer.WriteNextColNicify(nameof(TrackCheckpoint.transformDistanceStart));
-                writer.WriteNextColNicify(nameof(TrackCheckpoint.trackWidth));
-                writer.WriteNextColNicify(nameof(TrackCheckpoint.isTrackContinuousStart));
-                writer.WriteNextColNicify(nameof(TrackCheckpoint.isTrackContinuousEnd));
-                writer.WriteNextColNicify(nameof(TrackCheckpoint.zero_0x4E));
-                writer.WriteNextRow();
+            throw new System.NotImplementedException();
+            //using (var writer = AnalyzerUtility.OpenWriter(fileName))
+            //{
+            //    // Write header
+            //    writer.WriteNextCol("File");
+            //    writer.WriteNextCol("Track Node");
+            //    writer.WriteNextCol("Track Point");
+            //    writer.WriteNextColNicify(nameof(TrackCheckpoint.curveTimeStart));
+            //    writer.WriteNextColNicify(nameof(TrackCheckpoint.curveTimeEnd));
+            //    writer.WriteNextColNicify(nameof(TrackCheckpoint.s));
+            //    writer.WriteNextColNicify(nameof(TrackCheckpoint.tangentStart));
+            //    writer.WriteNextColNicify(nameof(TrackCheckpoint.positionStart));
+            //    writer.WriteNextColNicify(nameof(TrackCheckpoint.trackDistanceEnd));
+            //    writer.WriteNextColNicify(nameof(TrackCheckpoint.tangentEnd));
+            //    writer.WriteNextColNicify(nameof(TrackCheckpoint.positionEnd));
+            //    writer.WriteNextColNicify(nameof(TrackCheckpoint.transformDistanceEnd));
+            //    writer.WriteNextColNicify(nameof(TrackCheckpoint.transformDistanceStart));
+            //    writer.WriteNextColNicify(nameof(TrackCheckpoint.trackWidth));
+            //    writer.WriteNextColNicify(nameof(TrackCheckpoint.hasTrackIn));
+            //    writer.WriteNextColNicify(nameof(TrackCheckpoint.hasTrackOut));
+            //    writer.WriteNextColNicify(nameof(TrackCheckpoint.zero_0x4E));
+            //    writer.WriteNextRow();
 
-                foreach (var file in sceneSobjs)
-                {
-                    int nodeLength = file.Value.trackNodes.Length;
-                    int nodeIndex = 0;
-                    foreach (var trackNode in file.Value.trackNodes)
-                    {
-                        int pointLength = trackNode.checkpoints.Length;
-                        int pointIndex = 0;
-                        foreach (var trackPoint in trackNode.checkpoints)
-                        {
-                            writer.WriteNextCol(file.name);
-                            writer.WriteNextCol($"[{nodeIndex}/{nodeLength}]");
-                            writer.WriteNextCol($"[{pointIndex}/{pointLength}]");
+            //    foreach (var file in sceneSobjs)
+            //    {
+            //        int nodeLength = file.Value.trackNodes.Length;
+            //        int nodeIndex = 0;
+            //        foreach (var trackNode in file.Value.trackNodes)
+            //        {
+            //            int pointLength = trackNode.checkpoints.Length;
+            //            int pointIndex = 0;
+            //            foreach (var trackPoint in trackNode.checkpoints)
+            //            {
+            //                writer.WriteNextCol(file.name);
+            //                writer.WriteNextCol($"[{nodeIndex}/{nodeLength}]");
+            //                writer.WriteNextCol($"[{pointIndex}/{pointLength}]");
 
-                            writer.WriteNextCol(trackPoint.curveTimeStart);
-                            writer.WriteNextCol(trackPoint.curveTimeEnd);
-                            writer.WriteNextCol(trackPoint.trackDistanceStart);
-                            writer.WriteNextCol(trackPoint.tangentStart);
-                            writer.WriteNextCol(trackPoint.positionStart);
-                            writer.WriteNextCol(trackPoint.trackDistanceEnd);
-                            writer.WriteNextCol(trackPoint.tangentEnd);
-                            writer.WriteNextCol(trackPoint.positionEnd);
-                            writer.WriteNextCol(trackPoint.transformDistanceEnd);
-                            writer.WriteNextCol(trackPoint.transformDistanceStart);
-                            writer.WriteNextCol(trackPoint.trackWidth);
-                            writer.WriteNextCol(trackPoint.isTrackContinuousStart);
-                            writer.WriteNextCol(trackPoint.isTrackContinuousEnd);
-                            writer.WriteNextCol(trackPoint.zero_0x4E);
-                            writer.WriteNextRow();
+            //                writer.WriteNextCol(trackPoint.curveTimeStart);
+            //                writer.WriteNextCol(trackPoint.curveTimeEnd);
+            //                writer.WriteNextCol(trackPoint.trackDistanceStart);
+            //                writer.WriteNextCol(trackPoint.tangentStart);
+            //                writer.WriteNextCol(trackPoint.positionStart);
+            //                writer.WriteNextCol(trackPoint.trackDistanceEnd);
+            //                writer.WriteNextCol(trackPoint.tangentEnd);
+            //                writer.WriteNextCol(trackPoint.positionEnd);
+            //                writer.WriteNextCol(trackPoint.transformDistanceEnd);
+            //                writer.WriteNextCol(trackPoint.transformDistanceStart);
+            //                writer.WriteNextCol(trackPoint.trackWidth);
+            //                writer.WriteNextCol(trackPoint.hasTrackIn);
+            //                writer.WriteNextCol(trackPoint.hasTrackOut);
+            //                writer.WriteNextCol(trackPoint.zero_0x4E);
+            //                writer.WriteNextRow();
 
-                            pointIndex++;
-                        }
-                        nodeIndex++;
-                    }
-                }
-                writer.Flush();
-            }
+            //                pointIndex++;
+            //            }
+            //            nodeIndex++;
+            //        }
+            //    }
+            //    writer.Flush();
+            //}
         }
 
         public void AnalyzeSceneStaticCollider(string fileName)
@@ -1714,7 +1715,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextColNicify(nameof(StaticColliderMeshes.triMeshMatrixPtrs));
                 writer.WriteNextColNicify(nameof(GameCube.GFZ.CourseCollision.MatrixBoundsXZ.left));
                 writer.WriteNextColNicify(nameof(GameCube.GFZ.CourseCollision.MatrixBoundsXZ.top));
-                writer.WriteNextColNicify(nameof(GameCube.GFZ.CourseCollision.MatrixBoundsXZ.subdivionWidth));
+                writer.WriteNextColNicify(nameof(GameCube.GFZ.CourseCollision.MatrixBoundsXZ.subdivisionWidth));
                 writer.WriteNextColNicify(nameof(GameCube.GFZ.CourseCollision.MatrixBoundsXZ.subdivisionLength));
                 writer.WriteNextColNicify(nameof(GameCube.GFZ.CourseCollision.MatrixBoundsXZ.numSubdivisionsX));
                 writer.WriteNextColNicify(nameof(GameCube.GFZ.CourseCollision.MatrixBoundsXZ.numSubdivisionsZ));
@@ -1722,7 +1723,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextColNicify(nameof(StaticColliderMeshes.quadMeshMatrixPtrs));
                 writer.WriteNextColNicify(nameof(GameCube.GFZ.CourseCollision.MatrixBoundsXZ.left));
                 writer.WriteNextColNicify(nameof(GameCube.GFZ.CourseCollision.MatrixBoundsXZ.top));
-                writer.WriteNextColNicify(nameof(GameCube.GFZ.CourseCollision.MatrixBoundsXZ.subdivionWidth));
+                writer.WriteNextColNicify(nameof(GameCube.GFZ.CourseCollision.MatrixBoundsXZ.subdivisionWidth));
                 writer.WriteNextColNicify(nameof(GameCube.GFZ.CourseCollision.MatrixBoundsXZ.subdivisionLength));
                 writer.WriteNextColNicify(nameof(GameCube.GFZ.CourseCollision.MatrixBoundsXZ.numSubdivisionsX));
                 writer.WriteNextColNicify(nameof(GameCube.GFZ.CourseCollision.MatrixBoundsXZ.numSubdivisionsZ));
@@ -1743,7 +1744,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                     writer.WriteNextCol(table.triMeshMatrixPtrs.Length);
                     writer.WriteNextCol(table.meshBounds.left);
                     writer.WriteNextCol(table.meshBounds.top);
-                    writer.WriteNextCol(table.meshBounds.subdivionWidth);
+                    writer.WriteNextCol(table.meshBounds.subdivisionWidth);
                     writer.WriteNextCol(table.meshBounds.subdivisionLength);
                     writer.WriteNextCol(table.meshBounds.numSubdivisionsX);
                     writer.WriteNextCol(table.meshBounds.numSubdivisionsZ);

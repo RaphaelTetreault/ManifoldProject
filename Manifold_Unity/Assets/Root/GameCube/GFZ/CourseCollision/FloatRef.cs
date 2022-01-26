@@ -25,7 +25,6 @@ namespace GameCube.GFZ.CourseCollision
             return floatRef.value;
         }
 
-
         // PROPERTIES
         public AddressRange AddressRange
         {

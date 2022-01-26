@@ -793,7 +793,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
                     for (int j = 0; j < node.checkpoints.Length; j++)
                     {
-                        var position = node.checkpoints[j].positionStart;
+                        var position = node.checkpoints[j].start.position;
                         var instance = CreatePrimitive(PrimitiveType.Sphere, $"{index}.{j}", chain);
                         instance.transform.position = position;
                         instance.transform.localScale = Vector3.one * 5f;

@@ -19,8 +19,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         private readonly Vector3 gizmosScale = Vector3.one;
 
 
-
-
         private void OnDrawGizmos()
         {
             Gizmos.color = Color.red;
@@ -36,14 +34,15 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             }
         }
 
-        public override TrackSegment ExportGfz()
+        public override void InitTrackSegment()
         {
             throw new System.NotImplementedException();
         }
 
-        public override void ImportGfz(TrackSegment value)
+        public override float GetSegmentLength()
         {
             throw new System.NotImplementedException();
         }
+
     }
 }

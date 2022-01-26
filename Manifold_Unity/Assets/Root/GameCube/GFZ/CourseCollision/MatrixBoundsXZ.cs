@@ -46,7 +46,7 @@ namespace GameCube.GFZ.CourseCollision
         /// <summary>
         /// X-axis. Width of subdivision cell.
         /// </summary>
-        public float subdivionWidth;
+        public float subdivisionWidth;
         /// <summary>
         /// Z-axis. Length of subdivision cell.
         /// </summary>
@@ -71,7 +71,7 @@ namespace GameCube.GFZ.CourseCollision
         public (float2 center, float2 scale) GetCenterAndScale()
         {
             // Calculate full scale.
-            var fullWidth = subdivionWidth * numSubdivisionsX;
+            var fullWidth = subdivisionWidth * numSubdivisionsX;
             var fullLength = subdivisionLength * numSubdivisionsZ;
             float2 scale = new float2(fullWidth, fullLength);
             // Compute corner/origin of bounds
@@ -88,7 +88,7 @@ namespace GameCube.GFZ.CourseCollision
             {
                 reader.ReadX(ref left);
                 reader.ReadX(ref top);
-                reader.ReadX(ref subdivionWidth);
+                reader.ReadX(ref subdivisionWidth);
                 reader.ReadX(ref subdivisionLength);
                 reader.ReadX(ref numSubdivisionsX);
                 reader.ReadX(ref numSubdivisionsZ);
@@ -102,7 +102,7 @@ namespace GameCube.GFZ.CourseCollision
             {
                 writer.WriteX(left);
                 writer.WriteX(top);
-                writer.WriteX(subdivionWidth);
+                writer.WriteX(subdivisionWidth);
                 writer.WriteX(subdivisionLength);
                 writer.WriteX(numSubdivisionsX);
                 writer.WriteX(numSubdivisionsZ);
@@ -116,7 +116,7 @@ namespace GameCube.GFZ.CourseCollision
                 $"{nameof(MatrixBoundsXZ)}(" +
                 $"{nameof(top)}: {top}, " +
                 $"{nameof(left)}: {left}, " +
-                $"{nameof(subdivionWidth)}: {subdivionWidth}, " +
+                $"{nameof(subdivisionWidth)}: {subdivisionWidth}, " +
                 $"{nameof(subdivisionLength)}: {subdivisionLength}, " +
                 $"{nameof(numSubdivisionsX)}: {numSubdivisionsX}, " +
                 $"{nameof(numSubdivisionsZ)}: {numSubdivisionsZ}" +

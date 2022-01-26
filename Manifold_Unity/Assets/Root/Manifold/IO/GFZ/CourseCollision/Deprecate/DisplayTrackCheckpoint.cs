@@ -26,16 +26,16 @@ namespace Manifold.IO.GFZ.CourseCollision
                 for (int i = 0; i < node.checkpoints.Length; i++)
                 {
                     var point = node.checkpoints[i];
-                    var from = point.positionStart;
-                    var to = point.positionEnd;
+                    var from = point.start.position;
+                    var to = point.end.position;
                     var halfWidth = point.trackWidth / 2f;
                     var scaleFrom = new Vector3(halfWidth, halfWidth, 1f);
                     var scaleTo = 2f * debugSize * Vector3.one;
 
                     Gizmos.color = debugColor[i];
                     Gizmos.DrawLine(from, to);
-                    Gizmos.DrawMesh(mesh, 0, from, Quaternion.LookRotation(point.tangentStart), scaleFrom);
-                    Gizmos.DrawWireMesh(mesh, 0, to, Quaternion.LookRotation(point.tangentEnd), scaleTo);
+                    Gizmos.DrawMesh(mesh, 0, from, Quaternion.LookRotation(point.start.forward), scaleFrom);
+                    Gizmos.DrawWireMesh(mesh, 0, to, Quaternion.LookRotation(point.end.forward), scaleTo);
                 }
             }
         }

@@ -1111,7 +1111,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 // Structure
                 writer.WriteNextCol(nameof(ColiScene.trackCheckpointBoundsXZ) + "." + nameof(ColiScene.trackCheckpointBoundsXZ.left));
                 writer.WriteNextCol(nameof(ColiScene.trackCheckpointBoundsXZ) + "." + nameof(ColiScene.trackCheckpointBoundsXZ.top));
-                writer.WriteNextCol(nameof(ColiScene.trackCheckpointBoundsXZ) + "." + nameof(ColiScene.trackCheckpointBoundsXZ.subdivionWidth));
+                writer.WriteNextCol(nameof(ColiScene.trackCheckpointBoundsXZ) + "." + nameof(ColiScene.trackCheckpointBoundsXZ.subdivisionWidth));
                 writer.WriteNextCol(nameof(ColiScene.trackCheckpointBoundsXZ) + "." + nameof(ColiScene.trackCheckpointBoundsXZ.subdivisionLength));
                 writer.WriteNextCol(nameof(ColiScene.trackCheckpointBoundsXZ) + "." + nameof(ColiScene.trackCheckpointBoundsXZ.numSubdivisionsX));
                 writer.WriteNextCol(nameof(ColiScene.trackCheckpointBoundsXZ) + "." + nameof(ColiScene.trackCheckpointBoundsXZ.numSubdivisionsZ));
@@ -1178,7 +1178,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                     // Structure
                     writer.WriteNextCol(scene.trackCheckpointBoundsXZ.left);
                     writer.WriteNextCol(scene.trackCheckpointBoundsXZ.top);
-                    writer.WriteNextCol(scene.trackCheckpointBoundsXZ.subdivionWidth);
+                    writer.WriteNextCol(scene.trackCheckpointBoundsXZ.subdivisionWidth);
                     writer.WriteNextCol(scene.trackCheckpointBoundsXZ.subdivisionLength);
                     writer.WriteNextCol(scene.trackCheckpointBoundsXZ.numSubdivisionsX);
                     writer.WriteNextCol(scene.trackCheckpointBoundsXZ.numSubdivisionsZ);
@@ -1634,17 +1634,17 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol("Track Point");
                 writer.WriteNextColNicify(nameof(TrackCheckpoint.curveTimeStart));
                 writer.WriteNextColNicify(nameof(TrackCheckpoint.curveTimeEnd));
-                writer.WriteNextColNicify(nameof(TrackCheckpoint.trackDistanceStart));
-                writer.WriteNextColNicify(nameof(TrackCheckpoint.tangentStart));
-                writer.WriteNextColNicify(nameof(TrackCheckpoint.positionStart));
-                writer.WriteNextColNicify(nameof(TrackCheckpoint.trackDistanceEnd));
-                writer.WriteNextColNicify(nameof(TrackCheckpoint.tangentEnd));
-                writer.WriteNextColNicify(nameof(TrackCheckpoint.positionEnd));
+                writer.WriteNextColNicify(nameof(TrackCheckpoint.start.distanceFromStart));
+                writer.WriteNextColNicify(nameof(TrackCheckpoint.start.forward));
+                writer.WriteNextColNicify(nameof(TrackCheckpoint.start.position));
+                writer.WriteNextColNicify(nameof(TrackCheckpoint.end.distanceFromStart));
+                writer.WriteNextColNicify(nameof(TrackCheckpoint.end.forward));
+                writer.WriteNextColNicify(nameof(TrackCheckpoint.end.position));
                 writer.WriteNextColNicify(nameof(TrackCheckpoint.transformDistanceEnd));
                 writer.WriteNextColNicify(nameof(TrackCheckpoint.transformDistanceStart));
                 writer.WriteNextColNicify(nameof(TrackCheckpoint.trackWidth));
-                writer.WriteNextColNicify(nameof(TrackCheckpoint.isTrackContinuousStart));
-                writer.WriteNextColNicify(nameof(TrackCheckpoint.isTrackContinuousEnd));
+                writer.WriteNextColNicify(nameof(TrackCheckpoint.hasTrackIn));
+                writer.WriteNextColNicify(nameof(TrackCheckpoint.hasTrackOut));
                 writer.WriteNextColNicify(nameof(TrackCheckpoint.zero_0x4E));
                 writer.WriteNextRow();
 
@@ -1664,17 +1664,17 @@ namespace Manifold.IO.GFZ.CourseCollision
 
                             writer.WriteNextCol(trackPoint.curveTimeStart);
                             writer.WriteNextCol(trackPoint.curveTimeEnd);
-                            writer.WriteNextCol(trackPoint.trackDistanceStart);
-                            writer.WriteNextCol(trackPoint.tangentStart);
-                            writer.WriteNextCol(trackPoint.positionStart);
-                            writer.WriteNextCol(trackPoint.trackDistanceEnd);
-                            writer.WriteNextCol(trackPoint.tangentEnd);
-                            writer.WriteNextCol(trackPoint.positionEnd);
+                            writer.WriteNextCol(trackPoint.start.distanceFromStart);
+                            writer.WriteNextCol(trackPoint.start.forward);
+                            writer.WriteNextCol(trackPoint.start.position);
+                            writer.WriteNextCol(trackPoint.end.distanceFromStart);
+                            writer.WriteNextCol(trackPoint.end.forward);
+                            writer.WriteNextCol(trackPoint.end.position);
                             writer.WriteNextCol(trackPoint.transformDistanceEnd);
                             writer.WriteNextCol(trackPoint.transformDistanceStart);
                             writer.WriteNextCol(trackPoint.trackWidth);
-                            writer.WriteNextCol(trackPoint.isTrackContinuousStart);
-                            writer.WriteNextCol(trackPoint.isTrackContinuousEnd);
+                            writer.WriteNextCol(trackPoint.hasTrackIn);
+                            writer.WriteNextCol(trackPoint.hasTrackOut);
                             writer.WriteNextCol(trackPoint.zero_0x4E);
                             writer.WriteNextRow();
 
@@ -1698,7 +1698,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextColNicify(nameof(StaticColliderMeshes.triMeshMatrixPtrs));
                 writer.WriteNextColNicify(nameof(MatrixBoundsXZ.left));
                 writer.WriteNextColNicify(nameof(MatrixBoundsXZ.top));
-                writer.WriteNextColNicify(nameof(MatrixBoundsXZ.subdivionWidth));
+                writer.WriteNextColNicify(nameof(MatrixBoundsXZ.subdivisionWidth));
                 writer.WriteNextColNicify(nameof(MatrixBoundsXZ.subdivisionLength));
                 writer.WriteNextColNicify(nameof(MatrixBoundsXZ.numSubdivisionsX));
                 writer.WriteNextColNicify(nameof(MatrixBoundsXZ.numSubdivisionsZ));
@@ -1728,7 +1728,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                     writer.WriteNextCol(staticColliderMeshes.triMeshMatrixPtrs.Length);
                     writer.WriteNextCol(staticColliderMeshes.meshBounds.left);
                     writer.WriteNextCol(staticColliderMeshes.meshBounds.top);
-                    writer.WriteNextCol(staticColliderMeshes.meshBounds.subdivionWidth);
+                    writer.WriteNextCol(staticColliderMeshes.meshBounds.subdivisionWidth);
                     writer.WriteNextCol(staticColliderMeshes.meshBounds.subdivisionLength);
                     writer.WriteNextCol(staticColliderMeshes.meshBounds.numSubdivisionsX);
                     writer.WriteNextCol(staticColliderMeshes.meshBounds.numSubdivisionsZ);

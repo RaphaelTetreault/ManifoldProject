@@ -18,23 +18,42 @@ namespace GameCube.GFZ.CourseCollision
         // METADATA
         [UnityEngine.SerializeField] private AddressRange addressRange;
 
+
+        [Serializable]
+        public struct CheckpointRange :
+            IBinarySerializable
+            // addressable?
+        {
+            public float distanceFromStart;
+            public float3 forward;
+            public float3 position;
+
+            public void Deserialize(BinaryReader reader)
+            {
+                reader.ReadX(ref distanceFromStart);
+                reader.ReadX(ref forward);
+                reader.ReadX(ref position);
+            }
+
+            public void Serialize(BinaryWriter writer)
+            {
+                writer.WriteX(distanceFromStart);
+                writer.WriteX(forward);
+                writer.WriteX(position);
+            }
+        }
+
+
         // FIELDS
         public float curveTimeStart;
         public float curveTimeEnd;
-        // Make Struct?
-        public float trackDistanceStart;
-        public float3 tangentStart;
-        public float3 positionStart;
-        // Make Struct?
-        public float trackDistanceEnd;
-        public float3 tangentEnd;
-        public float3 positionEnd;
-        //
+        public CheckpointRange start;
+        public CheckpointRange end;
         public float transformDistanceEnd;
         public float transformDistanceStart;
         public float trackWidth;
-        public bool isTrackContinuousStart;
-        public bool isTrackContinuousEnd;
+        public bool hasTrackIn;
+        public bool hasTrackOut;
         public ushort zero_0x4E;
 
 
@@ -45,6 +64,41 @@ namespace GameCube.GFZ.CourseCollision
             set => addressRange = value;
         }
 
+        // track min height
+        public static float GetMinHeight(TrackCheckpoint[] checkpoints)
+        {
+            var min = float.PositiveInfinity;
+
+            // iterate over every position, mo
+            foreach (var checkpoint in checkpoints)
+            {
+                min = math.min(min, checkpoint.start.position.y);
+                min = math.min(min, checkpoint.end.position.y);
+            }
+
+            return min;
+        }
+
+        // track checkpoint matrix bounds
+        public float GetMinPositionX()
+        {
+            return math.min(start.position.x, end.position.x);
+        }
+        public float GetMinPositionZ()
+        {
+            return math.min(start.position.z, end.position.z);
+
+        }
+        public float GetMaxPositionX()
+        {
+            return math.max(start.position.x, end.position.x);
+        }
+        public float GetMaxPositionZ()
+        {
+            return math.max(start.position.z, end.position.z);
+
+        }
+
 
         // METHODS
         public void Deserialize(BinaryReader reader)
@@ -53,17 +107,13 @@ namespace GameCube.GFZ.CourseCollision
             {
                 reader.ReadX(ref curveTimeStart);
                 reader.ReadX(ref curveTimeEnd);
-                reader.ReadX(ref trackDistanceStart);
-                reader.ReadX(ref tangentStart);
-                reader.ReadX(ref positionStart);
-                reader.ReadX(ref trackDistanceEnd);
-                reader.ReadX(ref tangentEnd);
-                reader.ReadX(ref positionEnd);
+                reader.ReadX(ref start, true);
+                reader.ReadX(ref end, true);
                 reader.ReadX(ref transformDistanceEnd);
                 reader.ReadX(ref transformDistanceStart);
                 reader.ReadX(ref trackWidth);
-                reader.ReadX(ref isTrackContinuousStart);
-                reader.ReadX(ref isTrackContinuousEnd);
+                reader.ReadX(ref hasTrackIn);
+                reader.ReadX(ref hasTrackOut);
                 reader.ReadX(ref zero_0x4E);
             }
             this.RecordEndAddress(reader);
@@ -75,17 +125,13 @@ namespace GameCube.GFZ.CourseCollision
             {
                 writer.WriteX(curveTimeStart);
                 writer.WriteX(curveTimeEnd);
-                writer.WriteX(trackDistanceStart);
-                writer.WriteX(tangentStart);
-                writer.WriteX(positionStart);
-                writer.WriteX(trackDistanceEnd);
-                writer.WriteX(tangentEnd);
-                writer.WriteX(positionEnd);
+                writer.WriteX(start);
+                writer.WriteX(end);
                 writer.WriteX(transformDistanceEnd);
                 writer.WriteX(transformDistanceStart);
                 writer.WriteX(trackWidth);
-                writer.WriteX(isTrackContinuousStart);
-                writer.WriteX(isTrackContinuousEnd);
+                writer.WriteX(hasTrackIn);
+                writer.WriteX(hasTrackOut);
                 writer.WriteX(zero_0x4E);
             }
             this.RecordEndAddress(writer);
@@ -97,17 +143,17 @@ namespace GameCube.GFZ.CourseCollision
                 $"{nameof(TrackCheckpoint)}(" +
                 $"{nameof(curveTimeStart)}: {curveTimeStart:0.00}, " +
                 $"{nameof(curveTimeEnd)}: {curveTimeEnd:0.00}, " +
-                $"{nameof(trackDistanceStart)}: {trackDistanceStart:0.0}, " +
-                $"{nameof(trackDistanceEnd)}: {trackDistanceEnd:0.0}, " +
-                $"{nameof(tangentStart)}(x:{tangentStart.x:0.0}, y:{tangentStart.y:0.0}, z:{tangentStart.z:0.0}), " +
-                $"{nameof(tangentEnd)}(x:{tangentEnd.x:0.0}, y:{tangentEnd.y:0.0}, z:{tangentEnd.z:0.0}), " +
-                $"{nameof(positionStart)}(x:{positionStart.x:0.0}, y:{positionStart.y:0.0}, z:{positionStart.z:0.0}), " +
-                $"{nameof(positionEnd)}(x:{positionEnd.x:0.0}, y:{positionEnd.y:0.0}, z:{positionEnd.z:0.0}), " +
+                $"{nameof(start.distanceFromStart)}: {start.distanceFromStart:0.0}, " +
+                $"{nameof(end.distanceFromStart)}: {end.distanceFromStart:0.0}, " +
+                $"{nameof(start.forward)}(x:{start.forward.x:0.0}, y:{start.forward.y:0.0}, z:{start.forward.z:0.0}), " +
+                $"{nameof(end.forward)}(x:{end.forward.x:0.0}, y:{end.forward.y:0.0}, z:{end.forward.z:0.0}), " +
+                $"{nameof(start.position)}(x:{start.position.x:0.0}, y:{start.position.y:0.0}, z:{start.position.z:0.0}), " +
+                $"{nameof(end.position)}(x:{end.position.x:0.0}, y:{end.position.y:0.0}, z:{end.position.z:0.0}), " +
                 $"{nameof(transformDistanceStart)}: {transformDistanceStart:0.0}, " +
                 $"{nameof(transformDistanceEnd)}: {transformDistanceEnd:0.0}, " +
                 $"{nameof(trackWidth)}: {trackWidth:0.0}, " +
-                $"{nameof(isTrackContinuousStart)}: {isTrackContinuousStart}, " +
-                $"{nameof(isTrackContinuousEnd)}: {isTrackContinuousEnd}" +
+                $"{nameof(hasTrackIn)}: {hasTrackIn}, " +
+                $"{nameof(hasTrackOut)}: {hasTrackOut}" +
                 $")";
         }
 

@@ -16,12 +16,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             set => type = value;
         }
 
-        public override TrackSegment ExportGfz()
+        public override void InitTrackSegment()
         {
             throw new System.NotImplementedException();
         }
 
-        public override void ImportGfz(TrackSegment value)
+        public override float GetSegmentLength()
         {
             throw new System.NotImplementedException();
         }
