@@ -300,6 +300,9 @@ namespace GameCube.GFZ.CourseCollision
 
         public static void GetChildrenRecursively(TrackSegment parent, List<TrackSegment> segments)
         {
+            if (parent.childSegments == null)
+                return;
+
             // Add children sequentially, needed to store ArrayPointer correctly
             segments.AddRange(parent.childSegments);
 
@@ -309,6 +312,10 @@ namespace GameCube.GFZ.CourseCollision
                 GetChildrenRecursively(childSegment, segments);
             }
         }
+
+
+
+
 
     }
 }

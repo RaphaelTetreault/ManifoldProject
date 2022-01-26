@@ -21,7 +21,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             throw new System.NotImplementedException();
         }
 
-        public override void InitTrackSegment()
+        public override TrackSegment GenerateTrackSegment()
         {
             throw new System.NotImplementedException();
         }

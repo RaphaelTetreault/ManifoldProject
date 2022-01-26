@@ -38,6 +38,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         public void InitTrackData()
         {
+            if (this.rootSegments.Length == 0)
+                throw new MissingReferenceException($"No references to any {typeof(GfzTrackSegment).Name}! Make sure references existin in inspector.");
+
             // Track metadata
             var trackMinHeight = new TrackMinHeight();
             var trackLength = new TrackLength();
@@ -57,8 +60,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             foreach (var rootSegmentScript in rootSegmentScripts)
             {
                 // Init the GFZ data, add to list
-                rootSegmentScript.InitTrackSegment();
-                var rootSegment = rootSegmentScript.TrackSegment;
+                var rootSegment = rootSegmentScript.GenerateTrackSegment();
                 rootSegments.Add(rootSegment);
 
                 // Get segments in proper order for binary serialization

@@ -37,12 +37,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
 
         // init track segment
-        protected TrackSegment trackSegment;
-        public TrackSegment TrackSegment => trackSegment;
+        //protected TrackSegment trackSegment;
+        //public TrackSegment TrackSegment => trackSegment;
 
 
 
-        public abstract void InitTrackSegment();
+        public abstract TrackSegment GenerateTrackSegment();
 
         public virtual float GetSegmentLength()
         {
@@ -88,7 +88,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             // Collect all possible checkpoint scripts on object
             var checkpointScripts = GetComponents<GfzTrackCheckpoints>();
             // Make sure there is only one
-            Assert.IsTrue(checkpointScripts.Length == 0);
+            Assert.IsTrue(checkpointScripts.Length == 1);
             var checkpointScript = checkpointScripts[0];
 
             // Get the gfz value for it, return

@@ -47,5 +47,27 @@ namespace Manifold
             var allCurvesMaxTime = maxTimes.Count == 0 ? 0f : maxTimes[0];
             return allCurvesMaxTime;
         }
+
+
+        public GameCube.GFZ.CourseCollision.TrackCurves ToTrackCurves()
+        {
+            var trackCurves = new GameCube.GFZ.CourseCollision.TrackCurves();
+            trackCurves.animationCurves = new GameCube.GFZ.CourseCollision.AnimationCurve[9];
+            // SCALE
+            trackCurves.animationCurves[0] = Manifold.IO.GFZ.AnimationCurveConverter.ToGfz(scale.x);
+            trackCurves.animationCurves[1] = Manifold.IO.GFZ.AnimationCurveConverter.ToGfz(scale.y);
+            trackCurves.animationCurves[2] = Manifold.IO.GFZ.AnimationCurveConverter.ToGfz(scale.z);
+            // ROTATION
+            trackCurves.animationCurves[3] = Manifold.IO.GFZ.AnimationCurveConverter.ToGfz(rotation.x);
+            trackCurves.animationCurves[4] = Manifold.IO.GFZ.AnimationCurveConverter.ToGfz(rotation.y);
+            trackCurves.animationCurves[5] = Manifold.IO.GFZ.AnimationCurveConverter.ToGfz(rotation.z);
+            // POSITION
+            trackCurves.animationCurves[6] = Manifold.IO.GFZ.AnimationCurveConverter.ToGfz(position.x);
+            trackCurves.animationCurves[7] = Manifold.IO.GFZ.AnimationCurveConverter.ToGfz(position.y);
+            trackCurves.animationCurves[8] = Manifold.IO.GFZ.AnimationCurveConverter.ToGfz(position.z);
+
+            return trackCurves;
+        }
+
     }
 }

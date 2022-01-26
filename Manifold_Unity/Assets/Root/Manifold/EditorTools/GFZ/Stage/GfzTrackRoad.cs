@@ -38,9 +38,31 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             throw new System.NotImplementedException();
         }
 
-        public override void InitTrackSegment()
+        public override TrackSegment GenerateTrackSegment()
         {
-            throw new System.NotImplementedException();
+            // TODO: get components, build any children
+
+            var trackSegment = new TrackSegment();
+
+            trackSegment.localPosition = Vector3.zero;
+            trackSegment.localRotation = Vector3.zero;
+            trackSegment.localScale = Vector3.one;
+
+            // Rail height
+            trackSegment.railHeightLeft = railHeightLeft;
+            trackSegment.railHeightRight = railHeightRight;
+            // Falgs for rail height
+            if (railHeightLeft > 0f)
+                trackSegment.perimeterFlags |= TrackPerimeterFlags.hasRailHeightLeft;
+            if (railHeightRight > 0f)
+                trackSegment.perimeterFlags |= TrackPerimeterFlags.hasRailHeightRight;
+
+            // TODO: currently hardcoded
+            trackSegment.segmentType = TrackSegmentType.IsTransformLeaf;
+
+            trackSegment.trackCurves = animTransform.ToTrackCurves();
+
+            return trackSegment;
         }
 
     }
