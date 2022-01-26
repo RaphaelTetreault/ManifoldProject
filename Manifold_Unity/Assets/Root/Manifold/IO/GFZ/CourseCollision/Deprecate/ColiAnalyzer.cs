@@ -316,7 +316,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
                 writer.WriteNextCol(nameof(TrackSegment.segmentType));
                 writer.WriteNextCol(nameof(TrackSegment.embeddedPropertyType));
-                writer.WriteNextCol(nameof(TrackSegment.cornerFlags));
+                writer.WriteNextCol(nameof(TrackSegment.perimeterFlags));
                 writer.WriteNextCol(nameof(TrackSegment.pipeCylinderFlags));
                 writer.WriteNextCol(nameof(TrackSegment.unk_0x38));
                 writer.WriteNextCol(nameof(TrackSegment.unk_0x3A));
@@ -363,7 +363,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
                 writer.WriteNextCol(nameof(TrackSegment.segmentType));
                 writer.WriteNextCol(nameof(TrackSegment.embeddedPropertyType));
-                writer.WriteNextCol(nameof(TrackSegment.cornerFlags));
+                writer.WriteNextCol(nameof(TrackSegment.perimeterFlags));
                 writer.WriteNextCol(nameof(TrackSegment.pipeCylinderFlags));
                 writer.WriteNextCol(nameof(TrackSegment.unk_0x38));
                 writer.WriteNextCol(nameof(TrackSegment.unk_0x3A));
@@ -423,7 +423,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
             writer.WriteNextCol(tt.segmentType);
             writer.WriteNextCol(tt.embeddedPropertyType);
-            writer.WriteNextCol(tt.cornerFlags);
+            writer.WriteNextCol(tt.perimeterFlags);
             writer.WriteNextCol(tt.pipeCylinderFlags);
             writer.WriteNextCol(tt.unk_0x38);
             writer.WriteNextCol(tt.unk_0x3A);
@@ -457,7 +457,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol("Address");
                 writer.WriteNextCol(nameof(TrackSegment.segmentType));
                 writer.WriteNextCol(nameof(TrackSegment.embeddedPropertyType));
-                writer.WriteNextCol(nameof(TrackSegment.cornerFlags));
+                writer.WriteNextCol(nameof(TrackSegment.perimeterFlags));
                 writer.WriteNextCol(nameof(TrackSegment.pipeCylinderFlags));
                 writer.WriteNextCol(nameof(TrackSegment.trackCurvesPtr));
                 writer.WriteNextCol(nameof(TrackSegment.trackCornerPtr));
@@ -519,7 +519,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             writer.WriteNextCol(trackTransform.StartAddressHex());
             writer.WriteNextCol(trackTransform.segmentType);
             writer.WriteNextCol(trackTransform.embeddedPropertyType);
-            writer.WriteNextCol(trackTransform.cornerFlags);
+            writer.WriteNextCol(trackTransform.perimeterFlags);
             writer.WriteNextCol(trackTransform.pipeCylinderFlags);
             writer.WriteNextCol(trackTransform.trackCurvesPtr);
             writer.WriteNextCol(trackTransform.trackCornerPtr);

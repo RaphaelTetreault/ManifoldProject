@@ -23,7 +23,7 @@ namespace GameCube.GFZ.CourseCollision
         public float width;
         private byte const_0x34; // Const: 0x02
         private byte zero_0x35; // Const: 0x00
-        public TrackCornerFlags perimeterOptions;
+        public TrackPerimeterFlags perimeterOptions;
         private byte zero_0x37; // Const: 0x00
 
 

@@ -17,15 +17,15 @@ namespace GameCube.GFZ.CourseCollision
     {
         // METADATA
         [UnityEngine.SerializeField] private AddressRange addressRange;
-        public float4x4 localMatrix;
-        public float4x4 worldMatrix;
+        //public float4x4 localMatrix;
+        //public float4x4 worldMatrix;
         public int depth;
         public bool isRoot;
 
         // FIELDS
         public TrackSegmentType segmentType;
         public TrackEmbeddedPropertyType embeddedPropertyType;
-        public TrackCornerFlags cornerFlags;
+        public TrackPerimeterFlags perimeterFlags;
         public TrackPipeCylinderFlags pipeCylinderFlags;
         public Pointer trackCurvesPtr;
         public Pointer trackCornerPtr;
@@ -67,7 +67,7 @@ namespace GameCube.GFZ.CourseCollision
             {
                 reader.ReadX(ref segmentType);
                 reader.ReadX(ref embeddedPropertyType);
-                reader.ReadX(ref cornerFlags);
+                reader.ReadX(ref perimeterFlags);
                 reader.ReadX(ref pipeCylinderFlags);
                 reader.ReadX(ref trackCurvesPtr);
                 reader.ReadX(ref trackCornerPtr);
@@ -100,7 +100,7 @@ namespace GameCube.GFZ.CourseCollision
 
                 // TODO: make this functional
                 // Create a matrix for convenience
-                localMatrix = float4x4.TRS(localPosition, quaternion.EulerXYZ(localRotation), localScale);
+                //localMatrix = float4x4.TRS(localPosition, quaternion.EulerXYZ(localRotation), localScale);
                 // Update values based on children
                 //worldMatrix = localMatrix;
 
@@ -180,7 +180,7 @@ namespace GameCube.GFZ.CourseCollision
             {
                 writer.WriteX(segmentType);
                 writer.WriteX(embeddedPropertyType);
-                writer.WriteX(cornerFlags);
+                writer.WriteX(perimeterFlags);
                 writer.WriteX(pipeCylinderFlags);
                 writer.WriteX(trackCurvesPtr);
                 writer.WriteX(trackCornerPtr);
@@ -215,8 +215,8 @@ namespace GameCube.GFZ.CourseCollision
             // TODO: more edge cases to assert
 
             // Ensure rail flags AND height properties coincide
-            bool hasRailLeft = cornerFlags.HasFlag(TrackCornerFlags.hasRailHeightLeft);
-            bool hasRailRight = cornerFlags.HasFlag(TrackCornerFlags.hasRailHeightRight);
+            bool hasRailLeft = perimeterFlags.HasFlag(TrackPerimeterFlags.hasRailHeightLeft);
+            bool hasRailRight = perimeterFlags.HasFlag(TrackPerimeterFlags.hasRailHeightRight);
             // Both true or false, but not one of either.
             Assert.IsFalse(hasRailLeft ^ railHeightLeft > 0);
             Assert.IsFalse(hasRailRight ^ railHeightRight > 0);
@@ -224,8 +224,8 @@ namespace GameCube.GFZ.CourseCollision
             // Ensure that if there is a turn that one of the two flags for it are set
             if (trackCornerPtr.IsNotNullPointer)
             {
-                bool hasTurnLeft = cornerFlags.HasFlag(TrackCornerFlags.isLeftTurn);
-                bool hasTurnRight = cornerFlags.HasFlag(TrackCornerFlags.isRightTurn);
+                bool hasTurnLeft = perimeterFlags.HasFlag(TrackPerimeterFlags.isLeftTurn);
+                bool hasTurnRight = perimeterFlags.HasFlag(TrackPerimeterFlags.isRightTurn);
                 Assert.IsTrue(hasTurnLeft || hasTurnRight);
             } 
         }
@@ -254,7 +254,7 @@ namespace GameCube.GFZ.CourseCollision
             //
             builder.Append($"\n\t{nameof(segmentType)}: {segmentType}");
             builder.Append($"\n\t{nameof(embeddedPropertyType)}: {embeddedPropertyType}");
-            builder.Append($"\n\t{nameof(cornerFlags)}: {cornerFlags}");
+            builder.Append($"\n\t{nameof(perimeterFlags)}: {perimeterFlags}");
             builder.Append($"\n\t{nameof(segmentType)}: {segmentType}");
             //
             builder.Append($"\n\t{nameof(trackCurvesPtr)}: {trackCurvesPtr}");
