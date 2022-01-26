@@ -14,13 +14,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         // Fields
         [Header("Track Segment")]
-        [SerializeField] private GfzTrackSegment prev;
-        [SerializeField] private GfzTrackSegment next;
+        [SerializeField] protected GfzTrackSegment prev;
+        [SerializeField] protected GfzTrackSegment next;
 
         [Header("Track Curves")]
-        [SerializeField] private AnimationCurve3 position = new AnimationCurve3();
-        [SerializeField] private AnimationCurve3 rotation = new AnimationCurve3();
-        [SerializeField] private AnimationCurve3 scale = new AnimationCurve3();
+        [SerializeField] protected AnimationCurve3 position = new AnimationCurve3();
+        [SerializeField] protected AnimationCurve3 rotation = new AnimationCurve3();
+        [SerializeField] protected AnimationCurve3 scale = new AnimationCurve3();
 
         // Properties
         public GfzTrackSegment PreviousSegment
