@@ -6,7 +6,7 @@ namespace GameCube.GFZ.CourseCollision
 {
     /// <summary>
     /// Collider volume only available in Sand Ocean Lateral Shift. It is known to
-    /// be a collider since has a reference stored in ColliderMap.
+    /// be a collider since has a reference stored in StaticColliderMeshes.
     /// GX: 6 instances, AX: 9 instances
     /// </summary>
     [Serializable]

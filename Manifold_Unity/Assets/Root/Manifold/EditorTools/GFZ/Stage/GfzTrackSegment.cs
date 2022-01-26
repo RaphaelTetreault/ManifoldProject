@@ -1,10 +1,11 @@
-using System.Collections;
+using GameCube.GFZ.CourseCollision;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage
 {
-    public abstract class GfzTrackSegment : MonoBehaviour
+    public abstract class GfzTrackSegment : MonoBehaviour,
+        IGfzConvertable<TrackSegment>
     {
         // Define delegates
         public delegate void OnEditCallback(GfzTrackSegment value);
@@ -40,5 +41,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         {
             onEdit?.Invoke(this);
         }
+
+        public abstract TrackSegment ExportGfz();
+
+        public abstract void ImportGfz(TrackSegment value);
+
     }
 }

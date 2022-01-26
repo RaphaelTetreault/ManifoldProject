@@ -2,6 +2,7 @@
 using GameCube.GFZ.CourseCollision;
 using Manifold.IO;
 using Manifold.IO.GFZ;
+using Manifold.EditorTools.GC.GFZ.Stage;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -104,36 +105,36 @@ namespace Manifold.IO.GFZ.CourseCollision
             foreach (var mirroredObject in mirroredObjects)
                 mirroredObject.MirrorTransformZ();
 
-            // TEST
-            // Load the old stage to use it's data I don't know how to generate yet
-            //var oldScene = ColiCourseIO.LoadScene(settings.StageDir + scene.FileName);
+            //// TEST
+            //// Load the old stage to use it's data I don't know how to generate yet
+            ////var oldScene = ColiCourseIO.LoadScene(settings.StageDir + scene.FileName);
 
-            // TEST
-            // load in real, modify what you'd like
-            var scene = ColiCourseIO.LoadScene(settings.StageDir + sceneParams.GetGfzInternalName());
-            // Serialization settings
-            scene.Format = format;
-            scene.SerializeVerbose = verbose;
-            // Exported filename 'COLI_COURSE##'
-            //FileName = sceneParams.GetGfzInternalName();
-            // Data about the creator
-            scene.Author = sceneParams.author;
-            scene.Venue = sceneParams.venue;
-            scene.CourseName = sceneParams.courseName;
+            //// TEST
+            //// load in real, modify what you'd like
+            //var scene = ColiCourseIO.LoadScene(settings.StageDir + sceneParams.GetGfzInternalName());
+            //// Serialization settings
+            //scene.Format = format;
+            //scene.SerializeVerbose = verbose;
+            //// Exported filename 'COLI_COURSE##'
+            ////FileName = sceneParams.GetGfzInternalName();
+            //// Data about the creator
+            //scene.Author = sceneParams.author;
+            //scene.Venue = sceneParams.venue;
+            //scene.CourseName = sceneParams.courseName;
 
-            //// Build a new scene!
-            //var scene = new ColiScene()
-            //{
-            //    // Serialization settings
-            //    Format = format,
-            //    SerializeVerbose = verbose,
-            //    // Exported filename 'COLI_COURSE##'
-            //    FileName = sceneParams.GetGfzInternalName(),
-            //    // Data about the creator
-            //    Author = sceneParams.author,
-            //    Venue = sceneParams.venue,
-            //    CourseName = sceneParams.courseName,
-            //};
+            // Build a new scene!
+            var scene = new ColiScene()
+            {
+                // Serialization settings
+                Format = format,
+                SerializeVerbose = verbose,
+                // Exported filename 'COLI_COURSE##'
+                FileName = sceneParams.GetGfzInternalName(),
+                // Data about the creator
+                Author = sceneParams.author,
+                Venue = sceneParams.venue,
+                CourseName = sceneParams.courseName,
+            };
 
 
             // Get scene-wide parameters from SceneParameters
@@ -178,7 +179,6 @@ namespace Manifold.IO.GFZ.CourseCollision
 
             // Scene Objects
             {
-                // SCENE OBJECTs
                 var gfzDynamicSceneObjects = GameObject.FindObjectsOfType<GfzSceneObjectDynamic>(true).Reverse().ToArray();
                 var gfzStaticSceneObjects = GameObject.FindObjectsOfType<GfzSceneObjectStatic>(true).Reverse().ToArray();
                 var gfzSceneObjects = GameObject.FindObjectsOfType<GfzSceneObject>(true).Reverse().ToArray();
@@ -209,7 +209,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 {
                     //if (!sceneObjectNames.Contains(thing.name))
                     //{
-                        sceneObjectNames.Add(thing.name);
+                    sceneObjectNames.Add(thing.name);
                     //}
                 }
                 // alphabetize, store
@@ -231,7 +231,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 scene.staticColliderMeshes.staticSceneObjects = scene.staticSceneObjects;
                 //scene.staticColliderMeshes.ComputeMatrixBoundsXZ();
                 scene.staticColliderMeshes.meshBounds = new MatrixBoundsXZ();
-                
+
                 // Get data from scene
                 //scene.staticColliderMeshes = oldScene.staticColliderMeshes;
                 scene.staticColliderMeshes.SerializeFormat = format;
@@ -240,26 +240,30 @@ namespace Manifold.IO.GFZ.CourseCollision
                 scene.staticColliderMeshes.staticSceneObjects = scene.staticSceneObjects;
             }
 
-            //// Track Data
-            //{
-            //    // Actual track data
-            //    scene.allTrackSegments = oldScene.allTrackSegments;
-            //    scene.rootTrackSegments = oldScene.rootTrackSegments;
+            // TRACK
+            {
+                var track = GameObject.FindObjectOfType<GfzTrack>();
+                track.InitTrackData();
 
-            //    // Checkpoint data
-            //    scene.trackNodes = oldScene.trackNodes;
-            //    scene.trackCheckpointBoundsXZ = oldScene.trackCheckpointBoundsXZ;
-            //    scene.trackCheckpointMatrix = oldScene.trackCheckpointMatrix;
+                scene.rootTrackSegments = track.GetRootSegments();
+                scene.allTrackSegments = track.GetAllSegments();
 
-            //    // Track metadata
-            //    scene.trackMinHeight = oldScene.trackMinHeight;
-            //    scene.trackLength = oldScene.trackLength;
+                // Nodes (checkpoints-segment bound together)
+                scene.trackNodes = track.GetTrackNodes();
+                // Checkpoint matrix
+                scene.trackCheckpointMatrix = track.GetCheckpointMatrix();
+                scene.trackCheckpointBoundsXZ = track.GetCheckpointMatrixBoundsXZ();
 
-            //    //
-            //    scene.surfaceAttributeAreas = oldScene.surfaceAttributeAreas;
-            //}
+                // Track metadata
+                scene.trackLength = track.GetTrackLength();
+                scene.trackMinHeight = track.GetTrackMinHeight();
 
-            //
+                // AI data
+                // 2022/01/25: currently save out only the terminating element.
+                scene.surfaceAttributeAreas = track.GetEmbeddedPropertyAreas();
+            }
+
+            // TEMP until data is stored properly in GFZ unity components
             MakeTrueNulls(scene);
 
             // Save out file and LZ'ed file
