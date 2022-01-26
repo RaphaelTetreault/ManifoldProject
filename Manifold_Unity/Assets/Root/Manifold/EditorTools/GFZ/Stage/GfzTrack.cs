@@ -56,7 +56,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             throw new NotImplementedException();
         }
 
-        public TrackCheckpoint[] GetCheckpointMatrix()
+        public TrackCheckpointMatrix GetCheckpointMatrix()
         {
             throw new NotImplementedException();
         }
