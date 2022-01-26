@@ -12,17 +12,28 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         [SerializeField] private GfzTrackSegment[] rootSegments;
 
 
-        public GfzTrackSegment StartSegment
-        {
-            get => startSegment;
-            set => startSegment = value;
-        }
+        //public GfzTrackSegment StartSegment
+        //{
+        //    get => startSegment;
+        //    set => startSegment = value;
+        //}
 
-        public GfzTrackSegment[] RootSegments
-        {
-            get => rootSegments;
-            set => rootSegments = value;
-        }
+        //public GfzTrackSegment[] RootSegments
+        //{
+        //    get => rootSegments;
+        //    set => rootSegments = value;
+        //}
+
+
+        public TrackMinHeight TrackMinHeight { get; private set; }
+        public TrackLength TrackLength { get; private set; }
+        public TrackSegment[] RootSegments { get; private set; }
+        public TrackSegment[] AllSegments { get; private set; }
+        public TrackCheckpoint[] Checkpoints { get; private set; }
+        public TrackNode[] TrackNodes { get; private set; }
+        public SurfaceAttributeArea[] EmbededPropertyAreas { get; private set; }
+        public TrackCheckpointMatrix TrackCheckpointMatrix { get; private set; }
+        public MatrixBoundsXZ TrackCheckpointMatrixBoundsXZ { get; private set; }
 
 
         public void InitTrackData()
@@ -35,42 +46,45 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             // Get all of these segments in an order proper for serialization
             var allSegments = new List<TrackSegment>();
             //
+            var segmentCheckpoints = new List<TrackCheckpoint[]>();
             var checkpoints = new List<TrackCheckpoint>();
             var trackNodes = new List<TrackNode>();
             //
             var trackEmbededPropertyAreas = new List<SurfaceAttributeArea>();
 
             //
-            foreach (var rootSegment in this.rootSegments)
+            var rootSegmentScripts = this.rootSegments;
+            foreach (var rootSegmentScript in rootSegmentScripts)
             {
                 // Init the GFZ data, add to list
-                rootSegment.InitTrackSegment();
-                var rootTrackSegment = rootSegment.TrackSegment;
-                rootSegments.Add(rootTrackSegment);
+                rootSegmentScript.InitTrackSegment();
+                var rootSegment = rootSegmentScript.TrackSegment;
+                rootSegments.Add(rootSegment);
 
                 // Get segments in proper order for binary serialization
-                var segmentChildren = rootTrackSegment.GetChildrenArrayPointerOrdered();
+                var segmentChildren = rootSegment.GetChildrenArrayPointerOrdered();
                 allSegments.AddRange(segmentChildren);
 
                 // Get all checkpoints for this segment
-                var segmentCheckpoints = rootSegment.GetCheckpoints();
-                checkpoints.AddRange(segmentCheckpoints);
+                var x = rootSegmentScript.GetCheckpoints();
+                segmentCheckpoints.Add(x);
+                checkpoints.AddRange(x);
 
                 //
-                var embededPropertyAreas = rootSegment.GetEmbededPropertyAreas();
+                var embededPropertyAreas = rootSegmentScript.GetEmbededPropertyAreas();
                 trackEmbededPropertyAreas.AddRange(embededPropertyAreas);
 
                 // Compute some metadata based on segments
-                trackLength.value += rootSegment.GetSegmentLength();
+                trackLength.value += rootSegmentScript.GetSegmentLength();
 
                 // Create TrackNodes
-                foreach (var segmentCheckpoint in segmentCheckpoints)
+                foreach (var checkpoint in checkpoints)
                 {
                     var trackNode = new TrackNode()
                     {
                         // Add checkpoints. TODO: support branching
-                        checkpoints = new TrackCheckpoint[] { segmentCheckpoint },
-                        segment = rootTrackSegment,
+                        checkpoints = new TrackCheckpoint[] { checkpoint },
+                        segment = rootSegment,
                     };
 
                     // Add to master list
@@ -79,60 +93,69 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             }
 
             // TODO: name this something better
-            var temp = checkpoints.ToArray();
-
-            trackMinHeight.SetMinHeight(temp);
+            var checkpointsArray = checkpoints.ToArray();
+            trackMinHeight.SetMinHeight(checkpointsArray);
 
             //
-            var checkpointMatrixBoundsXZ = TrackCheckpointMatrix.GetMatrixBoundsXZ(temp);
+            var checkpointMatrixBoundsXZ = TrackCheckpointMatrix.GetMatrixBoundsXZ(checkpointsArray);
             var trackCheckpointMatrix = new TrackCheckpointMatrix();
-            trackCheckpointMatrix.GenerateIndexes(checkpointMatrixBoundsXZ, temp);
+            trackCheckpointMatrix.GenerateIndexes(checkpointMatrixBoundsXZ, checkpointsArray);
 
             // TODO: actually store the damn values!
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
+
+            //
+            TrackMinHeight = trackMinHeight;
+            TrackLength = trackLength;
+            RootSegments = rootSegments.ToArray();
+            AllSegments = allSegments.ToArray();
+            Checkpoints = checkpointsArray;
+            TrackNodes = trackNodes.ToArray();
+            EmbededPropertyAreas = trackEmbededPropertyAreas.ToArray();
+            TrackCheckpointMatrix = trackCheckpointMatrix;
+            TrackCheckpointMatrixBoundsXZ = checkpointMatrixBoundsXZ;
         }
 
 
 
         public TrackSegment[] GetRootSegments()
         {
-            throw new NotImplementedException();
+            return RootSegments;
         }
 
         public TrackSegment[] GetAllSegments()
         {
-            throw new NotImplementedException();
+            return AllSegments;
         }
 
         public TrackNode[] GetTrackNodes()
         {
-            throw new NotImplementedException();
+            return TrackNodes;
         }
 
         public TrackCheckpointMatrix GetCheckpointMatrix()
         {
-            throw new NotImplementedException();
+            return TrackCheckpointMatrix;
         }
 
         public MatrixBoundsXZ GetCheckpointMatrixBoundsXZ()
         {
-            throw new NotImplementedException();
+            return TrackCheckpointMatrixBoundsXZ;
         }
 
         public TrackMinHeight GetTrackMinHeight()
         {
-            throw new NotImplementedException();
+            return TrackMinHeight;
         }
 
         public TrackLength GetTrackLength()
         {
-            throw new NotImplementedException();
+            return TrackLength;
         }
 
         public SurfaceAttributeArea[] GetEmbeddedPropertyAreas()
         {
-            // TODO: actually collect the data! In the meantime, this will suffice.
-            return SurfaceAttributeArea.DefaultArray();
+            return EmbededPropertyAreas;
         }
     }
 }

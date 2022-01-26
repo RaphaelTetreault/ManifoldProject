@@ -74,12 +74,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
             // Iterate over collection
             var count = embededProperties.Length;
-            var embededPropertyAreas = new SurfaceAttributeArea[count];
+            var embededPropertyAreas = new SurfaceAttributeArea[count+1];
             for (int i = 0; i < count; i++)
             {
                 embededPropertyAreas[i] = embededProperties[i].GetEmbededProperty();
             }
-
+            embededPropertyAreas[count] = SurfaceAttributeArea.Terminator();
             return embededPropertyAreas;
         }
 
