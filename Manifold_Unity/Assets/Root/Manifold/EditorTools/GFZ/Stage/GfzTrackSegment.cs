@@ -1,4 +1,5 @@
 using GameCube.GFZ.CourseCollision;
+using Manifold.IO;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -17,8 +18,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         [Header("Track Segment")]
         [SerializeField] protected GfzTrackSegment prev;
         [SerializeField] protected GfzTrackSegment next;
-        [SerializeField, ReadOnly] protected GfzTrackCheckpoints checkpoints;
-        [SerializeField, ReadOnly] protected GfzTrackEmbededProperty[] embededProperties;
 
         [Header("Track Curves")]
         [SerializeField] protected AnimationCurve3 position = new AnimationCurve3();
@@ -38,11 +37,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             set => next = value;
         }
 
-        public GfzTrackCheckpoints TrackCheckpoints
-        {
-            get => checkpoints;
-            set => checkpoints = value;
-        }
 
         protected TrackSegment trackSegment;
         public TrackSegment TrackSegment => trackSegment;
@@ -50,10 +44,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         // Methods
         public virtual void OnValidate()
         {
-            // Get reference if null
-            if (checkpoints == null)
-                checkpoints = GetComponent<GfzTrackCheckpoints>();
-
             onEdit?.Invoke(this);
         }
 
@@ -63,14 +53,31 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         public SurfaceAttributeArea[] GetEmbededPropertyAreas()
         {
+            // Get all properties on self and children.
+            var embededProperties = GetComponentsInChildren<GfzTrackEmbededProperty>();
+
+            // Iterate over collection
             var count = embededProperties.Length;
             var embededPropertyAreas = new SurfaceAttributeArea[count];
             for (int i = 0; i < count; i++)
             {
                 embededPropertyAreas[i] = embededProperties[i].GetEmbededProperty();
             }
+
             return embededPropertyAreas;
         }
 
+        public TrackCheckpoint[] GetCheckpoints()
+        {
+            // Collect all possible checkpoint scripts on object
+            var checkpointScripts = GetComponentsInChildren<GfzTrackCheckpoints>();
+            // Make sure there is only one
+            Assert.IsTrue(checkpointScripts.Length == 0);
+            var checkpointScript = checkpointScripts[0];
+
+            // Get the gfz value for it, return
+            var checkpoints = checkpointScript.GetCheckpoints();
+            return checkpoints;
+        }
     }
 }
