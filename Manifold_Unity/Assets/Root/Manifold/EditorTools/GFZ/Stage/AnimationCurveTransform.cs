@@ -66,6 +66,13 @@ namespace Manifold
             trackCurves.animationCurves[7] = Manifold.IO.GFZ.AnimationCurveConverter.ToGfz(position.y);
             trackCurves.animationCurves[8] = Manifold.IO.GFZ.AnimationCurveConverter.ToGfz(position.z);
 
+            //foreach (var key in trackCurves.animationCurves[5].keyableAttributes)
+            //    key.value = -key.value;
+
+            // invert Z axis
+            foreach (var key in trackCurves.animationCurves[8].keyableAttributes)
+                key.value = -key.value;
+
             return trackCurves;
         }
 

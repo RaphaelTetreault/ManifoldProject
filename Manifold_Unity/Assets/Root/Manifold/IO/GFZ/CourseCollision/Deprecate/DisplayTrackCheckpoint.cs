@@ -34,8 +34,8 @@ namespace Manifold.IO.GFZ.CourseCollision
 
                     Gizmos.color = debugColor[i];
                     Gizmos.DrawLine(from, to);
-                    Gizmos.DrawMesh(mesh, 0, from, Quaternion.LookRotation(point.start.forward), scaleFrom);
-                    Gizmos.DrawWireMesh(mesh, 0, to, Quaternion.LookRotation(point.end.forward), scaleTo);
+                    Gizmos.DrawMesh(mesh, 0, from, Quaternion.LookRotation(point.start.tangent), scaleFrom);
+                    Gizmos.DrawWireMesh(mesh, 0, to, Quaternion.LookRotation(point.end.tangent), scaleTo);
                 }
             }
         }

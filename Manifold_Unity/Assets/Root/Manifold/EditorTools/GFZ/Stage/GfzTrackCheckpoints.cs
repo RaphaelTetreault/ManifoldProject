@@ -73,18 +73,18 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 var checkpoint = checkpoints[ic];
                 //
                 checkpoint.curveTimeStart = (float)currCheckpointTime;
-                checkpoint.transformDistanceStart = distanceStart;
-                checkpoint.transformDistanceEnd = distanceEnd;
+                checkpoint.startDistance = distanceStart;
+                checkpoint.endDistance = distanceEnd;
                 checkpoint.start.position = pos;
-                checkpoint.start.forward = Quaternion.Euler(rot) * Vector3.forward;
+                checkpoint.start.tangent = Quaternion.Euler(rot) * Vector3.forward;
                 {
-                    // NOTE to self: normally this needs to be inverted, but since
-                    // the space it's going to is mirrored, we don't need to.
-                    var fwd = checkpoint.start.forward;
+                    var tangent = checkpoint.start.tangent;
+                    tangent.z = -tangent.z;
+                    checkpoint.start.tangent = tangent;
                     checkpoint.start.projection =
-                        pos.x * fwd.x +
-                        pos.y * fwd.y +
-                        pos.z * fwd.z;
+                        pos.x * tangent.x +
+                        pos.y * tangent.y +
+                        pos.z * tangent.z;
                 }
 
                 //
@@ -102,6 +102,15 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 // Copy over values
                 prevCheckpoint.curveTimeEnd = currCheckpoint.curveTimeStart;
                 prevCheckpoint.end = currCheckpoint.start;
+                // Tangent of end point inwards towards the first
+                var pos = prevCheckpoint.end.position;
+                var tangent = prevCheckpoint.end.tangent;
+                tangent.z = -tangent.z;
+                prevCheckpoint.end.tangent = tangent;
+                prevCheckpoint.end.projection =
+                    pos.x * tangent.x +
+                    pos.y * tangent.y +
+                    pos.z * tangent.z;
             }
             //
             var firstCheckpoint = checkpoints[0];
@@ -138,8 +147,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 var scaleTo = 2f * (5f) * Vector3.one;
 
                 Gizmos.DrawLine(from, to);
-                Gizmos.DrawMesh(mesh, 0, from, Quaternion.LookRotation(checkpoint.start.forward), scaleFrom);
-                Gizmos.DrawWireMesh(mesh, 0, to, Quaternion.LookRotation(checkpoint.end.forward), scaleTo);
+                Gizmos.DrawMesh(mesh, 0, from, Quaternion.LookRotation(checkpoint.start.tangent), scaleFrom);
+                Gizmos.DrawWireMesh(mesh, 0, to, Quaternion.LookRotation(checkpoint.end.tangent), scaleTo);
             }
         }
 

@@ -25,20 +25,20 @@ namespace GameCube.GFZ.CourseCollision
             // addressable?
         {
             public float projection;
-            public float3 forward;
+            public float3 tangent;
             public float3 position;
 
             public void Deserialize(BinaryReader reader)
             {
                 reader.ReadX(ref projection);
-                reader.ReadX(ref forward);
+                reader.ReadX(ref tangent);
                 reader.ReadX(ref position);
             }
 
             public void Serialize(BinaryWriter writer)
             {
                 writer.WriteX(projection);
-                writer.WriteX(forward);
+                writer.WriteX(tangent);
                 writer.WriteX(position);
             }
         }
@@ -49,8 +49,8 @@ namespace GameCube.GFZ.CourseCollision
         public float curveTimeEnd;
         public CheckpointRange start;
         public CheckpointRange end;
-        public float transformDistanceEnd;
-        public float transformDistanceStart;
+        public float endDistance;
+        public float startDistance;
         public float trackWidth;
         public bool hasTrackIn;
         public bool hasTrackOut;
@@ -109,8 +109,8 @@ namespace GameCube.GFZ.CourseCollision
                 reader.ReadX(ref curveTimeEnd);
                 reader.ReadX(ref start, true);
                 reader.ReadX(ref end, true);
-                reader.ReadX(ref transformDistanceEnd);
-                reader.ReadX(ref transformDistanceStart);
+                reader.ReadX(ref endDistance);
+                reader.ReadX(ref startDistance);
                 reader.ReadX(ref trackWidth);
                 reader.ReadX(ref hasTrackIn);
                 reader.ReadX(ref hasTrackOut);
@@ -127,8 +127,8 @@ namespace GameCube.GFZ.CourseCollision
                 writer.WriteX(curveTimeEnd);
                 writer.WriteX(start);
                 writer.WriteX(end);
-                writer.WriteX(transformDistanceEnd);
-                writer.WriteX(transformDistanceStart);
+                writer.WriteX(endDistance);
+                writer.WriteX(startDistance);
                 writer.WriteX(trackWidth);
                 writer.WriteX(hasTrackIn);
                 writer.WriteX(hasTrackOut);
@@ -144,13 +144,13 @@ namespace GameCube.GFZ.CourseCollision
                 $"{nameof(curveTimeStart)}: {curveTimeStart:0.00}, " +
                 $"{nameof(curveTimeEnd)}: {curveTimeEnd:0.00}, " +
                 $"{nameof(start)}.{nameof(start.projection)}: {start.projection:0.0}, " +
-                $"{nameof(end)}.{nameof(end.projection)}: {end.projection:0.0}, " +
-                $"{nameof(start)}.{nameof(start.forward)}(x:{start.forward.x:0.0}, y:{start.forward.y:0.0}, z:{start.forward.z:0.0}), " +
-                $"{nameof(end)}.{nameof(end.forward)}(x:{end.forward.x:0.0}, y:{end.forward.y:0.0}, z:{end.forward.z:0.0}), " +
+                $"{nameof(start)}.{nameof(start.tangent)}(x:{start.tangent.x:0.0}, y:{start.tangent.y:0.0}, z:{start.tangent.z:0.0}), " +
                 $"{nameof(start)}.{nameof(start.position)}(x:{start.position.x:0.0}, y:{start.position.y:0.0}, z:{start.position.z:0.0}), " +
+                $"{nameof(end)}.{nameof(end.projection)}: {end.projection:0.0}, " +
+                $"{nameof(end)}.{nameof(end.tangent)}(x:{end.tangent.x:0.0}, y:{end.tangent.y:0.0}, z:{end.tangent.z:0.0}), " +
                 $"{nameof(end)}.{nameof(end.position)}(x:{end.position.x:0.0}, y:{end.position.y:0.0}, z:{end.position.z:0.0}), " +
-                $"{nameof(transformDistanceStart)}: {transformDistanceStart:0.0}, " +
-                $"{nameof(transformDistanceEnd)}: {transformDistanceEnd:0.0}, " +
+                $"{nameof(startDistance)}: {startDistance:0.0}, " +
+                $"{nameof(endDistance)}: {endDistance:0.0}, " +
                 $"{nameof(trackWidth)}: {trackWidth:0.0}, " +
                 $"{nameof(hasTrackIn)}: {hasTrackIn}, " +
                 $"{nameof(hasTrackOut)}: {hasTrackOut}" +
