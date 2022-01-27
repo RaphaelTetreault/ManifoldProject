@@ -10,8 +10,17 @@ namespace GameCube.GFZ.CourseCollision
         IBinarySerializable
         // Add IBinaryAddressable?
     {
+        /// <summary>
+        /// The dot product of this plane. 'dot(direction, position)'
+        /// </summary>
         public float dotProduct;
+        /// <summary>
+        /// The facing direction of this plane.
+        /// </summary>
         public float3 direction;
+        /// <summary>
+        /// The origin position of this plane.
+        /// </summary>
         public float3 position;
 
         public void Deserialize(BinaryReader reader)
@@ -26,6 +35,19 @@ namespace GameCube.GFZ.CourseCollision
             writer.WriteX(dotProduct);
             writer.WriteX(direction);
             writer.WriteX(position);
+        }
+
+        /// <summary>
+        /// Computes and stores the dotProduct of this Plane.
+        /// </summary>
+        public void ComputeDotProduct()
+        {
+            float dotProduct =
+                direction.x * position.x +
+                direction.y * position.y +
+                direction.z * position.z;
+
+            this.dotProduct = dotProduct;
         }
     }
 }
