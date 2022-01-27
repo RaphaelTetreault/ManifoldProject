@@ -32,7 +32,7 @@ namespace Manifold.IO.GFZ.CourseCollision
         private static readonly string tsvColliderGeometryTri = $"{nameof(SceneObjectDynamic)}-{nameof(ColliderMesh)}-Tris.tsv";
         private static readonly string tsvColliderGeometryQuad = $"{nameof(SceneObjectDynamic)}-{nameof(ColliderMesh)}-Quads.tsv";
         private static readonly string tsvTransform = $"{nameof(TransformPRXS)}.tsv";
-        private static readonly string tsvArcadeCheckpointTrigger = $"{nameof(ArcadeCheckpointTrigger)}.tsv";
+        private static readonly string tsvArcadeCheckpointTrigger = $"{nameof(TimeExtensionTrigger)}.tsv";
         private static readonly string tsvCourseMetadataTrigger = $"{nameof(CourseMetadataTrigger)}.tsv";
         private static readonly string tsvStoryObjectTrigger = $"{nameof(StoryObjectTrigger)}.tsv";
         private static readonly string tsvUnknownTrigger = $"{nameof(UnknownTrigger)}.tsv";
@@ -1209,11 +1209,11 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol("Course");
                 writer.WriteNextCol("AX/GX");
                 //
-                writer.WriteNextCol(nameof(ArcadeCheckpointTrigger.transform.Position));
-                writer.WriteNextCol(nameof(ArcadeCheckpointTrigger.transform.RotationEuler));
-                writer.WriteNextCol(nameof(ArcadeCheckpointTrigger.transform.Scale));
-                writer.WriteNextCol(nameof(ArcadeCheckpointTrigger.transform.UnknownOption));
-                writer.WriteNextCol(nameof(ArcadeCheckpointTrigger.type));
+                writer.WriteNextCol(nameof(TimeExtensionTrigger.transform.Position));
+                writer.WriteNextCol(nameof(TimeExtensionTrigger.transform.RotationEuler));
+                writer.WriteNextCol(nameof(TimeExtensionTrigger.transform.Scale));
+                writer.WriteNextCol(nameof(TimeExtensionTrigger.transform.UnknownOption));
+                writer.WriteNextCol(nameof(TimeExtensionTrigger.option));
                 //
                 writer.WriteNextRow();
 
@@ -1235,7 +1235,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                         writer.WriteNextCol(arcadeCheckpooint.transform.RotationEuler);
                         writer.WriteNextCol(arcadeCheckpooint.transform.Scale);
                         writer.WriteNextCol(arcadeCheckpooint.transform.UnknownOption);
-                        writer.WriteNextCol(arcadeCheckpooint.type);
+                        writer.WriteNextCol(arcadeCheckpooint.option);
                         //
                         writer.WriteNextRow();
                     }

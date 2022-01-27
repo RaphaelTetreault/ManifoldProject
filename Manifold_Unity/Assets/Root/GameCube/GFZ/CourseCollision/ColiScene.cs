@@ -112,7 +112,7 @@ namespace GameCube.GFZ.CourseCollision
         public UnknownTrigger[] unknownTriggers;
         public VisualEffectTrigger[] visualEffectTriggers;
         public CourseMetadataTrigger[] courseMetadataTriggers;
-        public ArcadeCheckpointTrigger[] arcadeCheckpointTriggers;
+        public TimeExtensionTrigger[] arcadeCheckpointTriggers;
         public StoryObjectTrigger[] storyObjectTriggers;
         public TrackCheckpointMatrix trackCheckpointMatrix;
         // FIELDS (that require extra processing)
@@ -220,7 +220,7 @@ namespace GameCube.GFZ.CourseCollision
             unknownTriggers = new UnknownTrigger[0];
             visualEffectTriggers = new VisualEffectTrigger[0];
             courseMetadataTriggers = new CourseMetadataTrigger[0];
-            arcadeCheckpointTriggers = new ArcadeCheckpointTrigger[0];
+            arcadeCheckpointTriggers = new TimeExtensionTrigger[0];
             storyObjectTriggers = new StoryObjectTrigger[0];
             trackCheckpointMatrix = new TrackCheckpointMatrix();
             // FIELDS (that require extra processing)

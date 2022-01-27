@@ -7,7 +7,7 @@ namespace Manifold.IO.GFZ.CourseCollision
     /// 
     /// </summary>
     public class GfzArcadeCheckpoint : MonoBehaviour,
-        IGfzConvertable<ArcadeCheckpointTrigger>
+        IGfzConvertable<TimeExtensionTrigger>
     {
         /// <summary>
         /// Arcade checkpoint trigger scale (when compared to default Unity cube).
@@ -15,36 +15,36 @@ namespace Manifold.IO.GFZ.CourseCollision
         public const float scale = 10f;
 
         // INSPECTOR FIELDS
-        [SerializeField] private ArcadeCheckpointType type;
+        [SerializeField] private TimeExtensionOption type;
 
         // PROPERTIES
-        public ArcadeCheckpointType Type
+        public TimeExtensionOption Type
         {
             get => type;
             set => type = value;
         }
 
         // METHODS
-        public ArcadeCheckpointTrigger ExportGfz()
+        public TimeExtensionTrigger ExportGfz()
         {
             // Convert unity transform to gfz transform
             var transform = TransformConverter.ToGfzTransformPRXS(this.transform);
             transform.Scale /= scale;
 
-            var value = new ArcadeCheckpointTrigger
+            var value = new TimeExtensionTrigger
             {
                 transform = transform,
-                type = type,
+                option = type,
             };
 
             return value;
         }
 
-        public void ImportGfz(ArcadeCheckpointTrigger value)
+        public void ImportGfz(TimeExtensionTrigger value)
         {
             transform.CopyGfzTransformPRXS(value.transform);
             transform.localScale *= scale;
-            type = value.type;
+            type = value.option;
         }
     }
 }

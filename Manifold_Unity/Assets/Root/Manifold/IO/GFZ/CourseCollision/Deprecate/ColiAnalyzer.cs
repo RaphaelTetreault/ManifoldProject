@@ -137,7 +137,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             {
                 // AX ARCADE CHECKPOINTS
                 {
-                    string fileName = $"{time} COLI {nameof(ArcadeCheckpointTrigger)}.tsv";
+                    string fileName = $"{time} COLI {nameof(TimeExtensionTrigger)}.tsv";
                     string filePath = Path.Combine(outputPath, fileName);
                     EditorUtility.DisplayProgressBar(ExecuteText, filePath, RandomTime);
                     AnalyzeArcadeCheckpointTriggers(filePath);
@@ -1171,11 +1171,11 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol("Course");
                 writer.WriteNextCol("AX/GX");
                 //
-                writer.WriteNextCol(nameof(ArcadeCheckpointTrigger.transform.Position));
-                writer.WriteNextCol(nameof(ArcadeCheckpointTrigger.transform.RotationEuler));
-                writer.WriteNextCol(nameof(ArcadeCheckpointTrigger.transform.Scale));
-                writer.WriteNextCol(nameof(ArcadeCheckpointTrigger.transform.UnknownOption));
-                writer.WriteNextCol(nameof(ArcadeCheckpointTrigger.type));
+                writer.WriteNextCol(nameof(TimeExtensionTrigger.transform.Position));
+                writer.WriteNextCol(nameof(TimeExtensionTrigger.transform.RotationEuler));
+                writer.WriteNextCol(nameof(TimeExtensionTrigger.transform.Scale));
+                writer.WriteNextCol(nameof(TimeExtensionTrigger.transform.UnknownOption));
+                writer.WriteNextCol(nameof(TimeExtensionTrigger.option));
                 //
                 writer.WriteNextRow();
 
@@ -1198,7 +1198,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                         writer.WriteNextCol(arcadeCheckpooint.transform.RotationEuler);
                         writer.WriteNextCol(arcadeCheckpooint.transform.Scale);
                         writer.WriteNextCol(arcadeCheckpooint.transform.UnknownOption);
-                        writer.WriteNextCol(arcadeCheckpooint.type);
+                        writer.WriteNextCol(arcadeCheckpooint.option);
                         //
                         writer.WriteNextRow();
                     }

@@ -4,6 +4,8 @@ using System.IO;
 
 namespace GameCube.GFZ.CourseCollision
 {
+    // 2022/01/27: previously ArcadeCheckpointTrigger
+
     /// <summary>
     /// A checkpoint used in the F-Zero AX style arcade mode. When passed through, the
     /// game will add extend the remaining race time. This is used in the AX cup courses
@@ -12,7 +14,7 @@ namespace GameCube.GFZ.CourseCollision
     /// TODO: it is unclear where the actual time is defined per checkpoint or course.
     /// </summary>
     [Serializable]
-    public class ArcadeCheckpointTrigger :
+    public class TimeExtensionTrigger :
         IBinaryAddressable,
         IBinarySerializable
     {
@@ -21,7 +23,7 @@ namespace GameCube.GFZ.CourseCollision
 
         // FIELDS
         public TransformPRXS transform;
-        public ArcadeCheckpointType type;
+        public TimeExtensionOption option;
 
 
         // PROPERTIES
@@ -38,7 +40,7 @@ namespace GameCube.GFZ.CourseCollision
             this.RecordStartAddress(reader);
             {
                 reader.ReadX(ref transform, true);
-                reader.ReadX(ref type);
+                reader.ReadX(ref option);
             }
             this.RecordEndAddress(reader);
         }
@@ -48,7 +50,7 @@ namespace GameCube.GFZ.CourseCollision
             this.RecordStartAddress(writer);
             {
                 writer.WriteX(transform);
-                writer.WriteX(type);
+                writer.WriteX(option);
             }
             this.RecordEndAddress(writer);
         }
@@ -56,8 +58,8 @@ namespace GameCube.GFZ.CourseCollision
         public override string ToString()
         {
             return
-                $"{nameof(ArcadeCheckpointTrigger)}(" +
-                $"{nameof(type)}: {type}, " +
+                $"{nameof(TimeExtensionTrigger)}(" +
+                $"{nameof(option)}: {option}, " +
                 $"{transform}" +
                 $")";
         }

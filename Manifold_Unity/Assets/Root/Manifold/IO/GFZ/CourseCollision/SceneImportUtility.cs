@@ -183,7 +183,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             if (!hasTriggers)
                 return null;
 
-            var typeName = nameof(ArcadeCheckpointTrigger);
+            var typeName = nameof(TimeExtensionTrigger);
             string title = $"Creating {typeName}s";
             string format = WidthFormat(arcadeCheckpointTriggers);
 

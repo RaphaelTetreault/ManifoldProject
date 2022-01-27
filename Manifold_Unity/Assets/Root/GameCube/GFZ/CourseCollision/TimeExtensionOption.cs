@@ -1,9 +1,9 @@
 namespace GameCube.GFZ.CourseCollision
 {
     /// <summary>
-    /// Denotes the style of checkpoint (presumably).
+    /// Denotes the kind of checkpoint (presumably).
     /// </summary>
-    public enum ArcadeCheckpointType
+    public enum TimeExtensionOption
     {
         /// <summary>
         /// Flag used for Lightning [Thunder Road] and Green Plant [Spiral] checkpoints.
