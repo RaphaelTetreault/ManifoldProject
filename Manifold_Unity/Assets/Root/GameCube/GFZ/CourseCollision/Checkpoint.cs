@@ -90,8 +90,8 @@ namespace GameCube.GFZ.CourseCollision
             // iterate over every position, mo
             foreach (var checkpoint in checkpoints)
             {
-                min = math.min(min, checkpoint.planeStart.position.y);
-                min = math.min(min, checkpoint.planeEnd.position.y);
+                min = math.min(min, checkpoint.planeStart.origin.y);
+                min = math.min(min, checkpoint.planeEnd.origin.y);
             }
 
             return min;
@@ -100,20 +100,20 @@ namespace GameCube.GFZ.CourseCollision
         // track checkpoint matrix bounds
         public float GetMinPositionX()
         {
-            return math.min(planeStart.position.x, planeEnd.position.x);
+            return math.min(planeStart.origin.x, planeEnd.origin.x);
         }
         public float GetMinPositionZ()
         {
-            return math.min(planeStart.position.z, planeEnd.position.z);
+            return math.min(planeStart.origin.z, planeEnd.origin.z);
 
         }
         public float GetMaxPositionX()
         {
-            return math.max(planeStart.position.x, planeEnd.position.x);
+            return math.max(planeStart.origin.x, planeEnd.origin.x);
         }
         public float GetMaxPositionZ()
         {
-            return math.max(planeStart.position.z, planeEnd.position.z);
+            return math.max(planeStart.origin.z, planeEnd.origin.z);
 
         }
 
@@ -165,11 +165,11 @@ namespace GameCube.GFZ.CourseCollision
                 $"{nameof(curveTimeStart)}: {curveTimeStart:0.00}, " +
                 $"{nameof(curveTimeEnd)}: {curveTimeEnd:0.00}, " +
                 $"{nameof(planeStart)}.{nameof(planeStart.dotProduct)}: {planeStart.dotProduct:0.0}, " +
-                $"{nameof(planeStart)}.{nameof(planeStart.direction)}(x:{planeStart.direction.x:0.0}, y:{planeStart.direction.y:0.0}, z:{planeStart.direction.z:0.0}), " +
-                $"{nameof(planeStart)}.{nameof(planeStart.position)}(x:{planeStart.position.x:0.0}, y:{planeStart.position.y:0.0}, z:{planeStart.position.z:0.0}), " +
+                $"{nameof(planeStart)}.{nameof(planeStart.normal)}(x:{planeStart.normal.x:0.0}, y:{planeStart.normal.y:0.0}, z:{planeStart.normal.z:0.0}), " +
+                $"{nameof(planeStart)}.{nameof(planeStart.origin)}(x:{planeStart.origin.x:0.0}, y:{planeStart.origin.y:0.0}, z:{planeStart.origin.z:0.0}), " +
                 $"{nameof(planeEnd)}.{nameof(planeEnd.dotProduct)}: {planeEnd.dotProduct:0.0}, " +
-                $"{nameof(planeEnd)}.{nameof(planeEnd.direction)}(x:{planeEnd.direction.x:0.0}, y:{planeEnd.direction.y:0.0}, z:{planeEnd.direction.z:0.0}), " +
-                $"{nameof(planeEnd)}.{nameof(planeEnd.position)}(x:{planeEnd.position.x:0.0}, y:{planeEnd.position.y:0.0}, z:{planeEnd.position.z:0.0}), " +
+                $"{nameof(planeEnd)}.{nameof(planeEnd.normal)}(x:{planeEnd.normal.x:0.0}, y:{planeEnd.normal.y:0.0}, z:{planeEnd.normal.z:0.0}), " +
+                $"{nameof(planeEnd)}.{nameof(planeEnd.origin)}(x:{planeEnd.origin.x:0.0}, y:{planeEnd.origin.y:0.0}, z:{planeEnd.origin.z:0.0}), " +
                 $"{nameof(startDistance)}: {startDistance:0.0}, " +
                 $"{nameof(endDistance)}: {endDistance:0.0}, " +
                 $"{nameof(trackWidth)}: {trackWidth:0.0}, " +

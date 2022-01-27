@@ -75,18 +75,18 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 checkpoint.curveTimeStart = (float)currCheckpointTime;
                 checkpoint.startDistance = distanceStart;
                 checkpoint.endDistance = distanceEnd;
-                checkpoint.planeStart.position = pos;
+                checkpoint.planeStart.origin = pos;
                 //checkpoint.start.tangent = Quaternion.Euler(rot) * Vector3.forward;
 
                 var from = position.EvaluateNormalized((float)currCheckpointTime);
                 var to = position.EvaluateNormalized((float)(currCheckpointTime + 0.0001));
                 var vector = to - from;
                 vector.Normalize();
-                checkpoint.planeStart.direction = vector;
+                checkpoint.planeStart.normal = vector;
                 {
-                    var tangent = checkpoint.planeStart.direction;
+                    var tangent = checkpoint.planeStart.normal;
                     tangent = -tangent;
-                    checkpoint.planeStart.direction = tangent;
+                    checkpoint.planeStart.normal = tangent;
                     checkpoint.planeStart.dotProduct =
                         pos.x * tangent.x +
                         pos.y * tangent.y +
@@ -109,10 +109,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 prev.curveTimeEnd = curr.curveTimeStart;
                 prev.planeEnd = curr.planeStart;
                 // Tangent of end point inwards towards the first
-                var pos = prev.planeEnd.position;
-                var tangent = prev.planeEnd.direction;
+                var pos = prev.planeEnd.origin;
+                var tangent = prev.planeEnd.normal;
                 tangent = -tangent;
-                prev.planeEnd.direction = tangent;
+                prev.planeEnd.normal = tangent;
                 prev.planeEnd.dotProduct =
                     pos.x * tangent.x +
                     pos.y * tangent.y +
@@ -151,15 +151,15 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             for (int i = 0; i < checkpoints.Length; i++)
             {
                 var checkpoint = checkpoints[i];
-                var from = checkpoint.planeStart.position;
-                var to = checkpoint.planeEnd.position;
+                var from = checkpoint.planeStart.origin;
+                var to = checkpoint.planeEnd.origin;
                 var halfWidth = checkpoint.trackWidth / 2f;
                 var scaleFrom = new Vector3(halfWidth, halfWidth, 1f);
                 var scaleTo = 2f * (5f) * Vector3.one;
 
                 Gizmos.DrawLine(from, to);
-                Gizmos.DrawMesh(mesh, 0, from, Quaternion.LookRotation(checkpoint.planeStart.direction), scaleFrom);
-                Gizmos.DrawWireMesh(mesh, 0, to, Quaternion.LookRotation(checkpoint.planeEnd.direction), scaleTo);
+                Gizmos.DrawMesh(mesh, 0, from, Quaternion.LookRotation(checkpoint.planeStart.normal), scaleFrom);
+                Gizmos.DrawWireMesh(mesh, 0, to, Quaternion.LookRotation(checkpoint.planeEnd.normal), scaleTo);
             }
         }
 

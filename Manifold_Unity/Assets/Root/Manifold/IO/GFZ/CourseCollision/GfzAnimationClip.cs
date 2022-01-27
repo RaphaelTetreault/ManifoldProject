@@ -85,7 +85,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             unk_layer_0x18 = animationClip.unk_layer_0x18;
 
             var curves = GetCurves;
-            for (int i = 0; i < GameCube.GFZ.CourseCollision.AnimationClip.kSizeCurvesPtrs; i++)
+            for (int i = 0; i < GameCube.GFZ.CourseCollision.AnimationClip.kAnimationCurvesCount; i++)
             {
                 curves[i].unk0x00 = animationClip.curves[i].unk_0x00;
                 curves[i].unk0x04 = animationClip.curves[i].unk_0x04;

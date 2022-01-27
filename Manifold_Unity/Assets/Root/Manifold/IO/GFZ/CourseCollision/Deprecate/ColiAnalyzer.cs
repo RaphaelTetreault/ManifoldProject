@@ -114,7 +114,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
                 // ANIMATIONS INDIVIDUALIZED
                 {
-                    var count = GameCube.GFZ.CourseCollision.AnimationClip.kSizeCurvesPtrs;
+                    var count = GameCube.GFZ.CourseCollision.AnimationClip.kAnimationCurvesCount;
                     for (int i = 0; i < count; i++)
                     {
                         var fileName = $"{time} COLI {nameof(GameCube.GFZ.CourseCollision.AnimationClip)} {i}.tsv";

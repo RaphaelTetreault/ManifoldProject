@@ -23,7 +23,7 @@ namespace GameCube.GFZ.CourseCollision
         /// <summary>
         /// Number of animation curves. Order: scale.xyz, rotation.xyz, position.xyz, unknown, texture alpha
         /// </summary>
-        public const int kSizeCurvesPtrs = 11;
+        public const int kAnimationCurvesCount = 11;
         const int kSizeZero_0x08 = 0x10;
 
         // METADATA
@@ -61,7 +61,7 @@ namespace GameCube.GFZ.CourseCollision
                 reader.ReadX(ref unk_0x04);
                 reader.ReadX(ref zeroes_0x08, kSizeZero_0x08);
                 reader.ReadX(ref unk_layer_0x18);
-                reader.ReadX(ref curves, kSizeCurvesPtrs, true);
+                reader.ReadX(ref curves, kAnimationCurvesCount, true);
             }
             this.RecordEndAddress(reader);
             {

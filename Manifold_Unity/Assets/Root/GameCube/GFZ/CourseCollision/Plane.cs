@@ -17,24 +17,24 @@ namespace GameCube.GFZ.CourseCollision
         /// <summary>
         /// The facing direction of this plane.
         /// </summary>
-        public float3 direction;
+        public float3 normal;
         /// <summary>
         /// The origin position of this plane.
         /// </summary>
-        public float3 position;
+        public float3 origin;
 
         public void Deserialize(BinaryReader reader)
         {
             reader.ReadX(ref dotProduct);
-            reader.ReadX(ref direction);
-            reader.ReadX(ref position);
+            reader.ReadX(ref normal);
+            reader.ReadX(ref origin);
         }
 
         public void Serialize(BinaryWriter writer)
         {
             writer.WriteX(dotProduct);
-            writer.WriteX(direction);
-            writer.WriteX(position);
+            writer.WriteX(normal);
+            writer.WriteX(origin);
         }
 
         /// <summary>
@@ -43,11 +43,12 @@ namespace GameCube.GFZ.CourseCollision
         public void ComputeDotProduct()
         {
             float dotProduct =
-                direction.x * position.x +
-                direction.y * position.y +
-                direction.z * position.z;
+                normal.x * origin.x +
+                normal.y * origin.y +
+                normal.z * origin.z;
 
             this.dotProduct = dotProduct;
         }
+
     }
 }

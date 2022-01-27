@@ -195,7 +195,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
             // ANIMATIONS INDIVIDUALIZED
             {
-                var count = AnimationClip.kSizeCurvesPtrs;
+                var count = AnimationClip.kAnimationCurvesCount;
                 for (int i = 0; i < count; i++)
                 {
                     var fileName = $"{nameof(SceneObjectDynamic)}-{nameof(AnimationClip)}[{i}].tsv";
@@ -1639,19 +1639,19 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextColNicify(nameof(Checkpoint.curveTimeStart));
                 writer.WriteNextColNicify(nameof(Checkpoint.curveTimeEnd));
                 writer.WriteNextColNicify(nameof(Checkpoint.planeStart.dotProduct));
-                writer.WriteNextColNicify(nameof(Checkpoint.planeStart.direction) + ".x");
-                writer.WriteNextColNicify(nameof(Checkpoint.planeStart.direction) + ".y");
-                writer.WriteNextColNicify(nameof(Checkpoint.planeStart.direction) + ".z");
-                writer.WriteNextColNicify(nameof(Checkpoint.planeStart.position) + ".x");
-                writer.WriteNextColNicify(nameof(Checkpoint.planeStart.position) + ".y");
-                writer.WriteNextColNicify(nameof(Checkpoint.planeStart.position) + ".z");
+                writer.WriteNextColNicify(nameof(Checkpoint.planeStart.normal) + ".x");
+                writer.WriteNextColNicify(nameof(Checkpoint.planeStart.normal) + ".y");
+                writer.WriteNextColNicify(nameof(Checkpoint.planeStart.normal) + ".z");
+                writer.WriteNextColNicify(nameof(Checkpoint.planeStart.origin) + ".x");
+                writer.WriteNextColNicify(nameof(Checkpoint.planeStart.origin) + ".y");
+                writer.WriteNextColNicify(nameof(Checkpoint.planeStart.origin) + ".z");
                 writer.WriteNextColNicify(nameof(Checkpoint.planeEnd.dotProduct));
-                writer.WriteNextColNicify(nameof(Checkpoint.planeEnd.direction) + ".x");
-                writer.WriteNextColNicify(nameof(Checkpoint.planeEnd.direction) + ".y");
-                writer.WriteNextColNicify(nameof(Checkpoint.planeEnd.direction) + ".z");
-                writer.WriteNextColNicify(nameof(Checkpoint.planeEnd.position) + ".x");
-                writer.WriteNextColNicify(nameof(Checkpoint.planeEnd.position) + ".y");
-                writer.WriteNextColNicify(nameof(Checkpoint.planeEnd.position) + ".z");
+                writer.WriteNextColNicify(nameof(Checkpoint.planeEnd.normal) + ".x");
+                writer.WriteNextColNicify(nameof(Checkpoint.planeEnd.normal) + ".y");
+                writer.WriteNextColNicify(nameof(Checkpoint.planeEnd.normal) + ".z");
+                writer.WriteNextColNicify(nameof(Checkpoint.planeEnd.origin) + ".x");
+                writer.WriteNextColNicify(nameof(Checkpoint.planeEnd.origin) + ".y");
+                writer.WriteNextColNicify(nameof(Checkpoint.planeEnd.origin) + ".z");
                 writer.WriteNextColNicify(nameof(Checkpoint.endDistance));
                 writer.WriteNextColNicify(nameof(Checkpoint.startDistance));
                 writer.WriteNextColNicify(nameof(Checkpoint.trackWidth));
@@ -1677,19 +1677,19 @@ namespace Manifold.IO.GFZ.CourseCollision
                             writer.WriteNextCol(trackPoint.curveTimeStart);
                             writer.WriteNextCol(trackPoint.curveTimeEnd);
                             writer.WriteNextCol(trackPoint.planeStart.dotProduct);
-                            writer.WriteNextCol(trackPoint.planeStart.direction.x);
-                            writer.WriteNextCol(trackPoint.planeStart.direction.y);
-                            writer.WriteNextCol(trackPoint.planeStart.direction.z);
-                            writer.WriteNextCol(trackPoint.planeStart.position.x);
-                            writer.WriteNextCol(trackPoint.planeStart.position.y);
-                            writer.WriteNextCol(trackPoint.planeStart.position.z);
+                            writer.WriteNextCol(trackPoint.planeStart.normal.x);
+                            writer.WriteNextCol(trackPoint.planeStart.normal.y);
+                            writer.WriteNextCol(trackPoint.planeStart.normal.z);
+                            writer.WriteNextCol(trackPoint.planeStart.origin.x);
+                            writer.WriteNextCol(trackPoint.planeStart.origin.y);
+                            writer.WriteNextCol(trackPoint.planeStart.origin.z);
                             writer.WriteNextCol(trackPoint.planeEnd.dotProduct);
-                            writer.WriteNextCol(trackPoint.planeEnd.direction.x);
-                            writer.WriteNextCol(trackPoint.planeEnd.direction.y);
-                            writer.WriteNextCol(trackPoint.planeEnd.direction.z);
-                            writer.WriteNextCol(trackPoint.planeEnd.position.x);
-                            writer.WriteNextCol(trackPoint.planeEnd.position.y);
-                            writer.WriteNextCol(trackPoint.planeEnd.position.z);
+                            writer.WriteNextCol(trackPoint.planeEnd.normal.x);
+                            writer.WriteNextCol(trackPoint.planeEnd.normal.y);
+                            writer.WriteNextCol(trackPoint.planeEnd.normal.z);
+                            writer.WriteNextCol(trackPoint.planeEnd.origin.x);
+                            writer.WriteNextCol(trackPoint.planeEnd.origin.y);
+                            writer.WriteNextCol(trackPoint.planeEnd.origin.z);
                             writer.WriteNextCol(trackPoint.endDistance);
                             writer.WriteNextCol(trackPoint.startDistance);
                             writer.WriteNextCol(trackPoint.trackWidth);

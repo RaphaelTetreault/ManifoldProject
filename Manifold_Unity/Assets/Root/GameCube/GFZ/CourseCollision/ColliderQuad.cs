@@ -42,6 +42,22 @@ namespace GameCube.GFZ.CourseCollision
 
 
         // METHODS
+
+        /// <summary>
+        /// Computes and stores the dotProduct of this quadrangle.
+        /// </summary>
+        public void ComputeDotProduct()
+        {
+            // NOTE you can dot any of the vertices you want with
+            //      the normal and will always get the same scalar.
+            float dotProduct =
+                normal.x * vertex0.x +
+                normal.y * vertex0.y +
+                normal.z * vertex0.z;
+
+            this.dotProduct = dotProduct;
+        }
+
         public float3[] GetVerts()
         {
             return new float3[] { vertex0, vertex1, vertex2, vertex3 };
