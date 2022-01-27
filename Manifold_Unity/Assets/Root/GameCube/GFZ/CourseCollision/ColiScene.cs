@@ -527,7 +527,7 @@ namespace GameCube.GFZ.CourseCollision
                         // NOTICE:
                         // Ensure sequential order in ROM for array pointer deserialization
 
-                        var all = new List<TrackCheckpoint>();
+                        var all = new List<Checkpoint>();
                         foreach (var trackNode in trackNodes)
                             foreach (var trackCheckpoint in trackNode.checkpoints)
                                 all.Add(trackCheckpoint);

@@ -28,7 +28,7 @@ namespace GameCube.GFZ.CourseCollision
         public ArrayPointer checkpointsPtr;
         public Pointer segmentPtr;
         // FIELDS (deserialized from pointers)
-        public TrackCheckpoint[] checkpoints;
+        public Checkpoint[] checkpoints;
         public TrackSegment segment;
 
 

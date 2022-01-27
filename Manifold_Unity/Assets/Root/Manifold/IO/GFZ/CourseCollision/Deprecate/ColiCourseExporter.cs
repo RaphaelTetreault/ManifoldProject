@@ -130,7 +130,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             log.WriteAddress(coliScene.trackCheckpointMatrix);
             log.WriteAddress(coliScene.trackNodes);
             {
-                var checkpoints = new List<TrackCheckpoint>();
+                var checkpoints = new List<Checkpoint>();
                 foreach (var trackNode in coliScene.trackNodes)
                     foreach (var checkpoint in trackNode.checkpoints)
                         checkpoints.Add(checkpoint);

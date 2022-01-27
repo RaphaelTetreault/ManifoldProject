@@ -83,7 +83,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             return embededPropertyAreas;
         }
 
-        public TrackCheckpoint[] GetCheckpoints()
+        public Checkpoint[] GetCheckpoints()
         {
             // Collect all possible checkpoint scripts on object
             var checkpointScripts = GetComponents<GfzTrackCheckpoints>();

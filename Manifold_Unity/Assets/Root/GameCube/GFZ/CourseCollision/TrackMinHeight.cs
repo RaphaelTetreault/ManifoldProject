@@ -26,7 +26,7 @@ namespace GameCube.GFZ.CourseCollision
         /// </summary>
         /// <param name="scene"></param>
         /// <returns></returns>
-        public static float GetTrackMinHeight(TrackCheckpoint[] checkpoints)
+        public static float GetTrackMinHeight(Checkpoint[] checkpoints)
         {
             float minY = float.PositiveInfinity;
 
@@ -41,7 +41,7 @@ namespace GameCube.GFZ.CourseCollision
         /// Set's this value to the minimum Y coordinate of the associated scene.
         /// </summary>
         /// <param name="scene">The scene to iterate over for a minumum Y coordinate.</param>
-        public void SetMinHeight(TrackCheckpoint[] checkpoints)
+        public void SetMinHeight(Checkpoint[] checkpoints)
         {
             value = GetTrackMinHeight(checkpoints);
         }

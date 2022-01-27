@@ -13,7 +13,7 @@ namespace GameCube.GFZ.CourseCollision
     /// When incorrect, many strange, buggy things happen.
     /// </summary>
     [Serializable]
-    public class TrackCheckpoint :
+    public class Checkpoint :
         IBinaryAddressable,
         IBinarySerializable
     {
@@ -83,7 +83,7 @@ namespace GameCube.GFZ.CourseCollision
         /// </summary>
         /// <param name="checkpoints"></param>
         /// <returns></returns>
-        public static float GetMinHeight(TrackCheckpoint[] checkpoints)
+        public static float GetMinHeight(Checkpoint[] checkpoints)
         {
             var min = float.PositiveInfinity;
 
@@ -161,7 +161,7 @@ namespace GameCube.GFZ.CourseCollision
         public override string ToString()
         {
             return
-                $"{nameof(TrackCheckpoint)}(" +
+                $"{nameof(Checkpoint)}(" +
                 $"{nameof(curveTimeStart)}: {curveTimeStart:0.00}, " +
                 $"{nameof(curveTimeEnd)}: {curveTimeEnd:0.00}, " +
                 $"{nameof(planeStart)}.{nameof(planeStart.dotProduct)}: {planeStart.dotProduct:0.0}, " +

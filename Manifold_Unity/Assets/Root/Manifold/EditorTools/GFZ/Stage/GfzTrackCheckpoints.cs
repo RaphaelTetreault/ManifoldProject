@@ -12,7 +12,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         public GfzTrackSegment Segment => segment;
 
-        public TrackCheckpoint[] GetCheckpoints()
+        public Checkpoint[] GetCheckpoints()
         {
             // Make 100% sure you feed checkpoints in order!
 
@@ -21,7 +21,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             var numCheckpoints = Mathf.CeilToInt(segmentLength / metersPerCheckpoint);
 
             // 
-            var checkpoints = new TrackCheckpoint[numCheckpoints];
+            var checkpoints = new Checkpoint[numCheckpoints];
             //var checkpointIncrement = 1f / numCheckpoints;
             //
             //var distanceIncrement = checkpointIncrement / 1000f; // 1000 iterations
@@ -69,7 +69,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
 
                 // CHECKPOINT
-                checkpoints[ic] = new TrackCheckpoint();
+                checkpoints[ic] = new Checkpoint();
                 var checkpoint = checkpoints[ic];
                 //
                 checkpoint.curveTimeStart = (float)currCheckpointTime;

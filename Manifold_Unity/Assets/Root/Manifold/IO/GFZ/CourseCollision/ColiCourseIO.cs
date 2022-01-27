@@ -468,7 +468,7 @@ namespace Manifold.IO.GFZ
                 }
                 log.WriteLine();
 
-                log.WriteLine($"{nameof(TrackCheckpoint)}");
+                log.WriteLine($"{nameof(Checkpoint)}");
                 for (int i = 0; i < coliScene.trackNodes.Length; i++)
                 {
                     var trackNode = coliScene.trackNodes[i];
@@ -729,7 +729,7 @@ namespace Manifold.IO.GFZ
             log.WriteAddress(coliScene.trackCheckpointMatrix);
             log.WriteAddress(coliScene.trackNodes);
             {
-                var checkpoints = new List<TrackCheckpoint>();
+                var checkpoints = new List<Checkpoint>();
                 foreach (var trackNode in coliScene.trackNodes)
                     foreach (var checkpoint in trackNode.checkpoints)
                         checkpoints.Add(checkpoint);

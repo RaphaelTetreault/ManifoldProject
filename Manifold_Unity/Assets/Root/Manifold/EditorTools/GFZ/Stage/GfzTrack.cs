@@ -29,7 +29,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         public TrackLength TrackLength { get; private set; }
         public TrackSegment[] RootSegments { get; private set; }
         public TrackSegment[] AllSegments { get; private set; }
-        public TrackCheckpoint[] Checkpoints { get; private set; }
+        public Checkpoint[] Checkpoints { get; private set; }
         public TrackNode[] TrackNodes { get; private set; }
         public SurfaceAttributeArea[] EmbeddedPropertyAreas { get; private set; }
         public TrackCheckpointMatrix TrackCheckpointMatrix { get; private set; }
@@ -50,8 +50,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             // Get all of these segments in an order proper for serialization
             var allSegments = new List<TrackSegment>();
             //
-            var segmentCheckpoints = new List<TrackCheckpoint[]>();
-            var checkpoints = new List<TrackCheckpoint>();
+            var segmentCheckpoints = new List<Checkpoint[]>();
+            var checkpoints = new List<Checkpoint>();
             var trackNodes = new List<TrackNode>();
             //
             var trackEmbeddedPropertyAreas = new List<SurfaceAttributeArea>();
@@ -86,7 +86,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                     var trackNode = new TrackNode()
                     {
                         // Add checkpoints. TODO: support branching
-                        checkpoints = new TrackCheckpoint[] { checkpoint },
+                        checkpoints = new Checkpoint[] { checkpoint },
                         segment = rootSegment,
                     };
 
