@@ -93,8 +93,8 @@ namespace GameCube.GFZ.CourseCollision
                     {
                         var checkpoint = checkpoints[i];
 
-                        var posX = checkpoint.start.position.x;
-                        var posZ = checkpoint.start.position.z;
+                        var posX = checkpoint.planeStart.position.x;
+                        var posZ = checkpoint.planeStart.position.z;
 
                         bool isBetweenX = IsBetween(posX, minX, maxX);
                         bool isBetweenZ = IsBetween(posZ, minZ, maxZ);

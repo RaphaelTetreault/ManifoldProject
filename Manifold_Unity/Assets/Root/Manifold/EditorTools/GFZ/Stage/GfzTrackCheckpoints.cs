@@ -75,19 +75,19 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 checkpoint.curveTimeStart = (float)currCheckpointTime;
                 checkpoint.startDistance = distanceStart;
                 checkpoint.endDistance = distanceEnd;
-                checkpoint.start.position = pos;
+                checkpoint.planeStart.position = pos;
                 //checkpoint.start.tangent = Quaternion.Euler(rot) * Vector3.forward;
 
                 var from = position.EvaluateNormalized((float)currCheckpointTime);
                 var to = position.EvaluateNormalized((float)(currCheckpointTime + 0.0001));
                 var vector = to - from;
                 vector.Normalize();
-                checkpoint.start.tangent = vector;
+                checkpoint.planeStart.direction = vector;
                 {
-                    var tangent = checkpoint.start.tangent;
+                    var tangent = checkpoint.planeStart.direction;
                     tangent = -tangent;
-                    checkpoint.start.tangent = tangent;
-                    checkpoint.start.projection =
+                    checkpoint.planeStart.direction = tangent;
+                    checkpoint.planeStart.dotProduct =
                         pos.x * tangent.x +
                         pos.y * tangent.y +
                         pos.z * tangent.z;
@@ -95,8 +95,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
                 //
                 checkpoint.trackWidth = scl.x;
-                checkpoint.hasTrackIn = true;
-                checkpoint.hasTrackOut = true;
+                checkpoint.connectToTrackIn = true;
+                checkpoint.connectToTrackOut = true;
             }
 
             // Copy values from one checkpoints to the previous ones
@@ -107,13 +107,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 var curr = checkpoints[i];
                 // Copy over values
                 prev.curveTimeEnd = curr.curveTimeStart;
-                prev.end = curr.start;
+                prev.planeEnd = curr.planeStart;
                 // Tangent of end point inwards towards the first
-                var pos = prev.end.position;
-                var tangent = prev.end.tangent;
+                var pos = prev.planeEnd.position;
+                var tangent = prev.planeEnd.direction;
                 tangent = -tangent;
-                prev.end.tangent = tangent;
-                prev.end.projection =
+                prev.planeEnd.direction = tangent;
+                prev.planeEnd.dotProduct =
                     pos.x * tangent.x +
                     pos.y * tangent.y +
                     pos.z * tangent.z;
@@ -121,7 +121,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             //
             var firstCheckpoint = checkpoints[0];
             var lastCheckpoint = checkpoints[checkpoints.Length - 1];
-            lastCheckpoint.end = firstCheckpoint.start;
+            lastCheckpoint.planeEnd = firstCheckpoint.planeStart;
 
             // trim off last checkpoint, it was generated to gather some data
             //var usedCheckpoints = new TrackCheckpoint[checkpoints.Length - 1];
@@ -151,15 +151,15 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             for (int i = 0; i < checkpoints.Length; i++)
             {
                 var checkpoint = checkpoints[i];
-                var from = checkpoint.start.position;
-                var to = checkpoint.end.position;
+                var from = checkpoint.planeStart.position;
+                var to = checkpoint.planeEnd.position;
                 var halfWidth = checkpoint.trackWidth / 2f;
                 var scaleFrom = new Vector3(halfWidth, halfWidth, 1f);
                 var scaleTo = 2f * (5f) * Vector3.one;
 
                 Gizmos.DrawLine(from, to);
-                Gizmos.DrawMesh(mesh, 0, from, Quaternion.LookRotation(checkpoint.start.tangent), scaleFrom);
-                Gizmos.DrawWireMesh(mesh, 0, to, Quaternion.LookRotation(checkpoint.end.tangent), scaleTo);
+                Gizmos.DrawMesh(mesh, 0, from, Quaternion.LookRotation(checkpoint.planeStart.direction), scaleFrom);
+                Gizmos.DrawWireMesh(mesh, 0, to, Quaternion.LookRotation(checkpoint.planeEnd.direction), scaleTo);
             }
         }
 
