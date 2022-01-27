@@ -24,20 +24,20 @@ namespace GameCube.GFZ.CourseCollision
             IBinarySerializable
             // addressable?
         {
-            public float distanceFromStart;
+            public float projection;
             public float3 forward;
             public float3 position;
 
             public void Deserialize(BinaryReader reader)
             {
-                reader.ReadX(ref distanceFromStart);
+                reader.ReadX(ref projection);
                 reader.ReadX(ref forward);
                 reader.ReadX(ref position);
             }
 
             public void Serialize(BinaryWriter writer)
             {
-                writer.WriteX(distanceFromStart);
+                writer.WriteX(projection);
                 writer.WriteX(forward);
                 writer.WriteX(position);
             }
@@ -143,12 +143,12 @@ namespace GameCube.GFZ.CourseCollision
                 $"{nameof(TrackCheckpoint)}(" +
                 $"{nameof(curveTimeStart)}: {curveTimeStart:0.00}, " +
                 $"{nameof(curveTimeEnd)}: {curveTimeEnd:0.00}, " +
-                $"{nameof(start.distanceFromStart)}: {start.distanceFromStart:0.0}, " +
-                $"{nameof(end.distanceFromStart)}: {end.distanceFromStart:0.0}, " +
-                $"{nameof(start.forward)}(x:{start.forward.x:0.0}, y:{start.forward.y:0.0}, z:{start.forward.z:0.0}), " +
-                $"{nameof(end.forward)}(x:{end.forward.x:0.0}, y:{end.forward.y:0.0}, z:{end.forward.z:0.0}), " +
-                $"{nameof(start.position)}(x:{start.position.x:0.0}, y:{start.position.y:0.0}, z:{start.position.z:0.0}), " +
-                $"{nameof(end.position)}(x:{end.position.x:0.0}, y:{end.position.y:0.0}, z:{end.position.z:0.0}), " +
+                $"{nameof(start)}.{nameof(start.projection)}: {start.projection:0.0}, " +
+                $"{nameof(end)}.{nameof(end.projection)}: {end.projection:0.0}, " +
+                $"{nameof(start)}.{nameof(start.forward)}(x:{start.forward.x:0.0}, y:{start.forward.y:0.0}, z:{start.forward.z:0.0}), " +
+                $"{nameof(end)}.{nameof(end.forward)}(x:{end.forward.x:0.0}, y:{end.forward.y:0.0}, z:{end.forward.z:0.0}), " +
+                $"{nameof(start)}.{nameof(start.position)}(x:{start.position.x:0.0}, y:{start.position.y:0.0}, z:{start.position.z:0.0}), " +
+                $"{nameof(end)}.{nameof(end.position)}(x:{end.position.x:0.0}, y:{end.position.y:0.0}, z:{end.position.z:0.0}), " +
                 $"{nameof(transformDistanceStart)}: {transformDistanceStart:0.0}, " +
                 $"{nameof(transformDistanceEnd)}: {transformDistanceEnd:0.0}, " +
                 $"{nameof(trackWidth)}: {trackWidth:0.0}, " +

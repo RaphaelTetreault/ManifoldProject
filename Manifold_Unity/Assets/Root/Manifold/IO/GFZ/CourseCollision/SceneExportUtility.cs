@@ -261,6 +261,8 @@ namespace Manifold.IO.GFZ.CourseCollision
                 // AI data
                 // 2022/01/25: currently save out only the terminating element.
                 scene.surfaceAttributeAreas = track.EmbeddedPropertyAreas;
+
+                scene.circuitType = track.CircuitType;
             }
 
             // TEMP until data is stored properly in GFZ unity components

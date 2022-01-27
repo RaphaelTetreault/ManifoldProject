@@ -46,6 +46,20 @@ namespace Manifold.IO.GFZ.CourseCollision
             AssetDatabase.Refresh();
         }
 
+        [MenuItem(Const.Menu.Manifold + "Scene Generation/Import Stage (Single, Select File)")]
+        public static void ImportSingleSelect()
+        {
+            var settings = GfzProjectWindow.GetSettings();
+            var filePath = EditorUtility.OpenFilePanel("Select Stage File", settings.StageDir, "");
+            if (string.IsNullOrEmpty(filePath))
+                return;
+            var outputPath = settings.UnityImportDir + "stage/";
+            var scene = ColiCourseIO.LoadScene(filePath);
+            Import(scene, outputPath);
+            EditorUtility.ClearProgressBar();
+            AssetDatabase.Refresh();
+        }
+
         public static void Import(ColiScene scene, string outputPath)
         {
             // Create new, empty scene

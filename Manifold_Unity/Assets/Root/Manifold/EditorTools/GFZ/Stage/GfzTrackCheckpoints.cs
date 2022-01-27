@@ -47,10 +47,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 // DISTANCE
                 // Compute distance between last checkpoint and next one.
                 // pd = percentage distance
+                var distanceStart = distanceOffset;
                 var distance = 0f;
-                
                 double checkpointTimeDelta = nextCheckpointDistance - currCheckpointTime;
-                
                 for (int id = 0; id < numDistanceIterations; id++)
                 {
                     var currDistance = currCheckpointTime + checkpointTimeDelta / numDistanceIterations * id;
@@ -65,6 +64,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 distance += distanceOffset;
                 // Set offset for next iteration
                 distanceOffset = distance;
+                //
+                var distanceEnd = distanceOffset;
 
 
                 // CHECKPOINT
@@ -72,10 +73,20 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 var checkpoint = checkpoints[ic];
                 //
                 checkpoint.curveTimeStart = (float)currCheckpointTime;
+                checkpoint.transformDistanceStart = distanceStart;
+                checkpoint.transformDistanceEnd = distanceEnd;
                 checkpoint.start.position = pos;
-                checkpoint.start.distanceFromStart = 0f;
                 checkpoint.start.forward = Quaternion.Euler(rot) * Vector3.forward;
-                checkpoint.transformDistanceStart = distance;
+                {
+                    // NOTE to self: normally this needs to be inverted, but since
+                    // the space it's going to is mirrored, we don't need to.
+                    var fwd = checkpoint.start.forward;
+                    checkpoint.start.projection =
+                        pos.x * fwd.x +
+                        pos.y * fwd.y +
+                        pos.z * fwd.z;
+                }
+
                 //
                 checkpoint.trackWidth = scl.x;
                 checkpoint.hasTrackIn = true;
@@ -92,27 +103,31 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 prevCheckpoint.curveTimeEnd = currCheckpoint.curveTimeStart;
                 prevCheckpoint.end = currCheckpoint.start;
             }
+            //
+            var firstCheckpoint = checkpoints[0];
+            var lastCheckpoint = checkpoints[checkpoints.Length - 1];
+            lastCheckpoint.end = firstCheckpoint.start;
 
             // trim off last checkpoint, it was generated to gather some data
-            var usedCheckpoints = new TrackCheckpoint[checkpoints.Length - 1];
-            for (int i = 0; i < usedCheckpoints.Length; i++)
-                usedCheckpoints[i] = checkpoints[i];
+            //var usedCheckpoints = new TrackCheckpoint[checkpoints.Length - 1];
+            //for (int i = 0; i < usedCheckpoints.Length; i++)
+            //    usedCheckpoints[i] = checkpoints[i];
 
             // TODO outside of this function
             // Set checkpoint[0].hasTrackIn based on previous segment
             // Set checkpoint[length-1].hasTrackOut based on next segment
 
-            return usedCheckpoints;
+            return checkpoints;
         }
 
         private void OnDrawGizmos()
         {
-             var checkpoints = GetCheckpoints();
+            var checkpoints = GetCheckpoints();
 
             //
             Gizmos.color = Color.green;
             var mesh = UnityEditor.AssetDatabase.LoadAssetAtPath<Mesh>("Assets/Root/Resources/normal-cylinder-16-hollowed.fbx");
-            
+
             for (int i = 0; i < checkpoints.Length; i++)
             {
                 var checkpoint = checkpoints[i];

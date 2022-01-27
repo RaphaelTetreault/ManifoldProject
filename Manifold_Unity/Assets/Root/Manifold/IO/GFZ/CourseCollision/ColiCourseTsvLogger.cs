@@ -305,6 +305,10 @@ namespace Manifold.IO.GFZ.CourseCollision
             AnalyzeTrackSegments(scenes, Path.Combine(destination, tsvTrackSegment));
             if (cancel) goto END;
 
+            cancel = EditorUtility.DisplayCancelableProgressBar(title, tsvTrackNode, progress);
+            AnalyzeTrackNodes(scenes, Path.Combine(destination, tsvTrackNode));
+            if (cancel) goto END;
+
             // STATIC COLLIDER MESHES
             cancel = EditorUtility.DisplayCancelableProgressBar(title, tsvStaticColliderMeshes, progress);
             AnalyzeStaticColliderMeshes(scenes, Path.Combine(destination, tsvStaticColliderMeshes));
@@ -1634,12 +1638,20 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol("Track Point");
                 writer.WriteNextColNicify(nameof(TrackCheckpoint.curveTimeStart));
                 writer.WriteNextColNicify(nameof(TrackCheckpoint.curveTimeEnd));
-                writer.WriteNextColNicify(nameof(TrackCheckpoint.start.distanceFromStart));
-                writer.WriteNextColNicify(nameof(TrackCheckpoint.start.forward));
-                writer.WriteNextColNicify(nameof(TrackCheckpoint.start.position));
-                writer.WriteNextColNicify(nameof(TrackCheckpoint.end.distanceFromStart));
-                writer.WriteNextColNicify(nameof(TrackCheckpoint.end.forward));
-                writer.WriteNextColNicify(nameof(TrackCheckpoint.end.position));
+                writer.WriteNextColNicify(nameof(TrackCheckpoint.start.projection));
+                writer.WriteNextColNicify(nameof(TrackCheckpoint.start.forward) + ".x");
+                writer.WriteNextColNicify(nameof(TrackCheckpoint.start.forward) + ".y");
+                writer.WriteNextColNicify(nameof(TrackCheckpoint.start.forward) + ".z");
+                writer.WriteNextColNicify(nameof(TrackCheckpoint.start.position) + ".x");
+                writer.WriteNextColNicify(nameof(TrackCheckpoint.start.position) + ".y");
+                writer.WriteNextColNicify(nameof(TrackCheckpoint.start.position) + ".z");
+                writer.WriteNextColNicify(nameof(TrackCheckpoint.end.projection));
+                writer.WriteNextColNicify(nameof(TrackCheckpoint.end.forward) + ".x");
+                writer.WriteNextColNicify(nameof(TrackCheckpoint.end.forward) + ".y");
+                writer.WriteNextColNicify(nameof(TrackCheckpoint.end.forward) + ".z");
+                writer.WriteNextColNicify(nameof(TrackCheckpoint.end.position) + ".x");
+                writer.WriteNextColNicify(nameof(TrackCheckpoint.end.position) + ".y");
+                writer.WriteNextColNicify(nameof(TrackCheckpoint.end.position) + ".z");
                 writer.WriteNextColNicify(nameof(TrackCheckpoint.transformDistanceEnd));
                 writer.WriteNextColNicify(nameof(TrackCheckpoint.transformDistanceStart));
                 writer.WriteNextColNicify(nameof(TrackCheckpoint.trackWidth));
@@ -1664,12 +1676,20 @@ namespace Manifold.IO.GFZ.CourseCollision
 
                             writer.WriteNextCol(trackPoint.curveTimeStart);
                             writer.WriteNextCol(trackPoint.curveTimeEnd);
-                            writer.WriteNextCol(trackPoint.start.distanceFromStart);
-                            writer.WriteNextCol(trackPoint.start.forward);
-                            writer.WriteNextCol(trackPoint.start.position);
-                            writer.WriteNextCol(trackPoint.end.distanceFromStart);
-                            writer.WriteNextCol(trackPoint.end.forward);
-                            writer.WriteNextCol(trackPoint.end.position);
+                            writer.WriteNextCol(trackPoint.start.projection);
+                            writer.WriteNextCol(trackPoint.start.forward.x);
+                            writer.WriteNextCol(trackPoint.start.forward.y);
+                            writer.WriteNextCol(trackPoint.start.forward.z);
+                            writer.WriteNextCol(trackPoint.start.position.x);
+                            writer.WriteNextCol(trackPoint.start.position.y);
+                            writer.WriteNextCol(trackPoint.start.position.z);
+                            writer.WriteNextCol(trackPoint.end.projection);
+                            writer.WriteNextCol(trackPoint.end.forward.x);
+                            writer.WriteNextCol(trackPoint.end.forward.y);
+                            writer.WriteNextCol(trackPoint.end.forward.z);
+                            writer.WriteNextCol(trackPoint.end.position.x);
+                            writer.WriteNextCol(trackPoint.end.position.y);
+                            writer.WriteNextCol(trackPoint.end.position.z);
                             writer.WriteNextCol(trackPoint.transformDistanceEnd);
                             writer.WriteNextCol(trackPoint.transformDistanceStart);
                             writer.WriteNextCol(trackPoint.trackWidth);

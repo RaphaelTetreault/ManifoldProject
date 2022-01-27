@@ -41,7 +41,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                         continue;
 
                     textureScrollFields[i] = new Vector2(field.x, field.y);
-                    DebugConsole.Log($"{textureScrollFields[i]}");
+                    //DebugConsole.Log($"{textureScrollFields[i]}");
                 }
             }
         }

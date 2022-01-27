@@ -34,6 +34,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         public SurfaceAttributeArea[] EmbeddedPropertyAreas { get; private set; }
         public TrackCheckpointMatrix TrackCheckpointMatrix { get; private set; }
         public MatrixBoundsXZ TrackCheckpointMatrixBoundsXZ { get; private set; }
+        public CircuitType CircuitType { get; private set; }
 
 
         public void InitTrackData()
@@ -105,6 +106,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
             // TODO: actually store the damn values!
             //throw new NotImplementedException();
+
+            // Set circuit type depending on if 
+            var lastSegmentIndex = rootSegmentScripts.Length - 1;
+            CircuitType = rootSegmentScripts[lastSegmentIndex].NextSegment != null
+                ? CircuitType.ClosedCircuit
+                : CircuitType.OpenCircuit;
 
             //
             TrackMinHeight = trackMinHeight;
