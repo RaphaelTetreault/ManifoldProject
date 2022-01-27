@@ -76,10 +76,16 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 checkpoint.startDistance = distanceStart;
                 checkpoint.endDistance = distanceEnd;
                 checkpoint.start.position = pos;
-                checkpoint.start.tangent = Quaternion.Euler(rot) * Vector3.forward;
+                //checkpoint.start.tangent = Quaternion.Euler(rot) * Vector3.forward;
+
+                var from = position.EvaluateNormalized((float)currCheckpointTime);
+                var to = position.EvaluateNormalized((float)(currCheckpointTime + 0.0001));
+                var vector = to - from;
+                vector.Normalize();
+                checkpoint.start.tangent = vector;
                 {
                     var tangent = checkpoint.start.tangent;
-                    tangent.z = -tangent.z;
+                    tangent = -tangent;
                     checkpoint.start.tangent = tangent;
                     checkpoint.start.projection =
                         pos.x * tangent.x +
@@ -97,17 +103,17 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             // NOTE: start at first index
             for (int i = 1; i < checkpoints.Length; i++)
             {
-                var prevCheckpoint = checkpoints[i - 1];
-                var currCheckpoint = checkpoints[i];
+                var prev = checkpoints[i - 1];
+                var curr = checkpoints[i];
                 // Copy over values
-                prevCheckpoint.curveTimeEnd = currCheckpoint.curveTimeStart;
-                prevCheckpoint.end = currCheckpoint.start;
+                prev.curveTimeEnd = curr.curveTimeStart;
+                prev.end = curr.start;
                 // Tangent of end point inwards towards the first
-                var pos = prevCheckpoint.end.position;
-                var tangent = prevCheckpoint.end.tangent;
-                tangent.z = -tangent.z;
-                prevCheckpoint.end.tangent = tangent;
-                prevCheckpoint.end.projection =
+                var pos = prev.end.position;
+                var tangent = prev.end.tangent;
+                tangent = -tangent;
+                prev.end.tangent = tangent;
+                prev.end.projection =
                     pos.x * tangent.x +
                     pos.y * tangent.y +
                     pos.z * tangent.z;
@@ -125,6 +131,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             // TODO outside of this function
             // Set checkpoint[0].hasTrackIn based on previous segment
             // Set checkpoint[length-1].hasTrackOut based on next segment
+
+            foreach (var c in checkpoints)
+            {
+                Debug.Log(c);
+            }
 
             return checkpoints;
         }

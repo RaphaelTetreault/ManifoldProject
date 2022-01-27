@@ -44,9 +44,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
             var trackSegment = new TrackSegment();
 
-            trackSegment.localPosition = Vector3.zero;
-            trackSegment.localRotation = Vector3.zero;
-            trackSegment.localScale = Vector3.one;
+            trackSegment.localPosition = transform.localPosition;
+            trackSegment.localRotation = transform.localRotation.eulerAngles;
+            trackSegment.localScale = transform.localScale;
 
             // Rail height
             trackSegment.railHeightLeft = railHeightLeft;

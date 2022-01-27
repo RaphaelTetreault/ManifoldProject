@@ -27,7 +27,7 @@ namespace GameCube.GFZ.CourseCollision
         [UnityEngine.SerializeField] private bool hasIndexes;
 
         // FIELDS
-        public Pointer[] indexListPtrs = new Pointer[0];
+        public Pointer[] indexListPtrs;
         // REFERENCE FIELDS
         public IndexList[] indexLists;
 
@@ -41,6 +41,8 @@ namespace GameCube.GFZ.CourseCollision
             {
                 indexLists[i] = new IndexList();
             }
+            //
+            //indexListPtrs = new Pointer[Count];
         }
 
 
@@ -150,7 +152,7 @@ namespace GameCube.GFZ.CourseCollision
             }
             this.RecordStartAddress(writer);
             {
-                ValidateReferences();
+                //ValidateReferences();
 
                 // Write all pointers
                 for (int ptrIndex = 0; ptrIndex < indexListPtrs.Length; ptrIndex++)

@@ -19,7 +19,7 @@ namespace GameCube.GFZ.CourseCollision
         {
             // Get min and max XZ values of any checkpoint
             float3 min = new float3(float.MaxValue, 0, float.MaxValue);
-            float3 max = new float3(float.MinValue, 0, float.MaxValue);
+            float3 max = new float3(float.MinValue, 0, float.MinValue);
 
             foreach (var checkpoint in checkpoints)
             {
@@ -49,22 +49,43 @@ namespace GameCube.GFZ.CourseCollision
             // Init. Value is from inherited structure.
             indexLists = new IndexList[kListCount];
 
+            // so if track has no width, we still pick up some points
+            //var widthX = math.max(matrixBoundsXZ.subdivisionWidth, 1f);
+            //var lengthZ = math.max(matrixBoundsXZ.subdivisionLength, 1f);
+
+            var widthX = matrixBoundsXZ.subdivisionWidth;
+            var lengthZ = matrixBoundsXZ.subdivisionLength;
+
+            // Condition where theere is no w/l and so no checkpoints are added
+            var hasNoWidthOrHeight = widthX == 0 || lengthZ == 0;
+            if (hasNoWidthOrHeight)
+            {
+                var list = new List<int>();
+                for (int i = 0; i < checkpoints.Length; i++)
+                    list.Add(i);
+
+                for (int i = 0; i < indexLists.Length; i++)
+                    indexLists[i] = IndexList.CreateIndexList(list);
+
+                return;
+            }
+
             // Iterate over each subdivision in the course
             for (int z = 0; z < SubdivisionsZ; z++)
             {
                 // Get the minimum and maximum Z coordinates allowed to exist this cell
                 var minZIndex = math.clamp(z - 2, 0, SubdivisionsZ - 1);
                 var maxZIndex = math.clamp(z + 2, 0, SubdivisionsZ - 1);
-                var minZ = matrixBoundsXZ.top - (matrixBoundsXZ.subdivisionLength * minZIndex);
-                var maxZ = matrixBoundsXZ.top - (matrixBoundsXZ.subdivisionLength * maxZIndex);
+                var minZ = matrixBoundsXZ.top - (lengthZ * minZIndex);
+                var maxZ = matrixBoundsXZ.top - (lengthZ * maxZIndex);
 
                 for (int x = 0; x < SubdivisionsX; x++)
                 {
                     // Get the minimum and maximum X coordinates allowed to exist this cell
                     var minXIndex = math.clamp(x - 2, 0, SubdivisionsX - 1);
                     var maxXIndex = math.clamp(x + 2, 0, SubdivisionsX - 1);
-                    var minX = matrixBoundsXZ.left - (matrixBoundsXZ.subdivisionLength * minXIndex);
-                    var maxX = matrixBoundsXZ.left - (matrixBoundsXZ.subdivisionLength * maxXIndex);
+                    var minX = matrixBoundsXZ.left - (widthX * minXIndex);
+                    var maxX = matrixBoundsXZ.left - (widthX * maxXIndex);
 
                     // Iterate over every checkpoint the course has
                     var indexes = new List<int>();
