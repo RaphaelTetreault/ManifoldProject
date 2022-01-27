@@ -743,10 +743,10 @@ namespace Manifold.IO.GFZ
             log.WriteLine(nameof(UnknownCollider) + "[]");
             log.WriteAddress(coliScene.unknownColliders);
             log.WriteLine();
-            log.WriteLine(nameof(UnknownStaticColliderMapData));
+            log.WriteLine(nameof(GameCube.GFZ.BoundingSphere));
             log.WriteLine("unk float: " + coliScene.staticColliderMeshes.unk_float);
-            log.WriteAddress(coliScene.staticColliderMeshes.unkData);
-            log.WriteLine(coliScene.staticColliderMeshes.unknownCollidersPtr);
+            log.WriteAddress(coliScene.staticColliderMeshes.boundingSphere);
+            log.WriteLine(coliScene.staticColliderMeshes.boundingSpherePtr);
             log.WriteLine(coliScene.staticColliderMeshes.staticSceneObjectsPtr);
             log.WriteLine();
             log.WriteLine("Mesh Bounds");

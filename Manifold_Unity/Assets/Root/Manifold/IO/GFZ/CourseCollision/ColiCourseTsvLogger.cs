@@ -1726,13 +1726,13 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextColNicify(nameof(StaticColliderMeshManager.quadMeshMatrixPtrs));
                 writer.WriteNextColNicify(nameof(StaticColliderMeshManager.unkDataPtr));
                 writer.WriteNextColNicify(nameof(StaticColliderMeshManager.staticSceneObjectsPtr));
-                writer.WriteNextColNicify(nameof(StaticColliderMeshManager.unknownCollidersPtr));
+                writer.WriteNextColNicify(nameof(StaticColliderMeshManager.boundingSpherePtr));
                 writer.WriteNextColNicify(nameof(StaticColliderMeshManager.unk_float));
                 writer.WriteNextCol();
-                writer.WriteNextColNicify(nameof(UnknownStaticColliderMapData.unk_0x00));
-                writer.WriteNextColNicify(nameof(UnknownStaticColliderMapData.unk_0x04));
-                writer.WriteNextColNicify(nameof(UnknownStaticColliderMapData.unk_0x08));
-                writer.WriteNextColNicify(nameof(UnknownStaticColliderMapData.unk_0x0C));
+                writer.WriteNextColNicify(nameof(BoundingSphere.origin) + ".x");
+                writer.WriteNextColNicify(nameof(BoundingSphere.origin) + ".x");
+                writer.WriteNextColNicify(nameof(BoundingSphere.origin) + ".x");
+                writer.WriteNextColNicify(nameof(BoundingSphere.radius));
                 writer.WriteNextRow();
 
 
@@ -1756,13 +1756,13 @@ namespace Manifold.IO.GFZ.CourseCollision
                     writer.WriteNextCol(staticColliderMeshes.quadMeshMatrixPtrs.Length);
                     writer.WriteNextCol(staticColliderMeshes.unkDataPtr.HexAddress);
                     writer.WriteNextCol(staticColliderMeshes.staticSceneObjectsPtr.HexAddress);
-                    writer.WriteNextCol(staticColliderMeshes.unknownCollidersPtr.HexAddress);
+                    writer.WriteNextCol(staticColliderMeshes.boundingSpherePtr.HexAddress);
                     writer.WriteNextCol(staticColliderMeshes.unk_float);
                     writer.WriteNextCol();
-                    writer.WriteNextCol(staticColliderMeshes.unkData.unk_0x00);
-                    writer.WriteNextCol(staticColliderMeshes.unkData.unk_0x04);
-                    writer.WriteNextCol(staticColliderMeshes.unkData.unk_0x08);
-                    writer.WriteNextCol(staticColliderMeshes.unkData.unk_0x0C);
+                    writer.WriteNextCol(staticColliderMeshes.boundingSphere.origin.x);
+                    writer.WriteNextCol(staticColliderMeshes.boundingSphere.origin.y);
+                    writer.WriteNextCol(staticColliderMeshes.boundingSphere.origin.z);
+                    writer.WriteNextCol(staticColliderMeshes.boundingSphere.radius);
                     writer.WriteNextRow();
                 }
                 writer.Flush();

@@ -100,7 +100,8 @@ namespace Manifold.IO.GFZ.CourseCollision
             CreateTrackTransformHierarchy(scene).SetParent(mirrorRoot);
             CreateTrackIndexChains(scene).SetParent(mirrorRoot);
             IncludeStaticMeshColliders(scene, stageFolder).SetParent(mirrorRoot);
-            CreateBoundsVisual(scene).SetParent(mirrorRoot);
+            CreateGridBoundsXZVisual(scene).SetParent(mirrorRoot);
+            CreateStaticMeshColliderManagerSphereBounds(scene).SetParent(mirrorRoot);
 
             // TRIGGERS
             {
@@ -754,7 +755,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             return gobj.transform;
         }
 
-        public static Transform CreateBoundsVisual(ColiScene scene)
+        public static Transform CreateGridBoundsXZVisual(ColiScene scene)
         {
             // Get all bounds
             var boundsTrack = scene.trackCheckpointBoundsXZ;
@@ -764,8 +765,8 @@ namespace Manifold.IO.GFZ.CourseCollision
 
             // Create objects
             var boundsRoot = new GameObject("Bounds").transform;
-            var boundsTrackNodes = CreateBoundsObject(boundsTrack, yHeight, "Track Nodes");
-            var boundsStaticColliders = CreateBoundsObject(boundsColliders, yHeight, $"Static Colliders");
+            var boundsTrackNodes = CreateGridBoundsXZ(boundsTrack, yHeight, "Track Nodes");
+            var boundsStaticColliders = CreateGridBoundsXZ(boundsColliders, yHeight, $"Static Colliders");
 
             // Set object parents
             boundsTrackNodes.transform.SetParent(boundsRoot);
@@ -775,7 +776,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             return boundsRoot;
         }
 
-        public static Transform CreateBoundsObject(MatrixBoundsXZ bounds, float yHeight, string name)
+        public static Transform CreateGridBoundsXZ(MatrixBoundsXZ bounds, float yHeight, string name)
         {
             var displayName = $"{name} ({bounds.numSubdivisionsX}x{bounds.numSubdivisionsZ})";
             var boundsObject = CreatePrimitive(PrimitiveType.Cube, displayName);
@@ -786,6 +787,16 @@ namespace Manifold.IO.GFZ.CourseCollision
             return boundsObject;
         }
 
+
+        public static Transform CreateStaticMeshColliderManagerSphereBounds(ColiScene scene)
+        {
+            var boundingSphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            boundingSphere.transform.localPosition = scene.staticColliderMeshes.boundingSphere.origin;
+            boundingSphere.transform.localScale = scene.staticColliderMeshes.boundingSphere.radius * 2f * Vector3.one;
+            boundingSphere.SetActive(false);
+            boundingSphere.name = $"{nameof(StaticColliderMeshManager)}.{nameof(GameCube.GFZ.BoundingSphere)}";
+            return boundingSphere.transform;
+        }
 
         public static Transform CreateTrackIndexChains(ColiScene scene)
         {

@@ -340,7 +340,7 @@ namespace GameCube.GFZ.CourseCollision
             // For some reason, this structure points back to these
             staticColliderMeshes.unknownColliders = unknownColliders;
             staticColliderMeshes.staticSceneObjects = staticSceneObjects;
-            Assert.IsTrue(staticColliderMeshes.unknownCollidersPtr == unknownCollidersPtr);
+            Assert.IsTrue(staticColliderMeshes.boundingSpherePtr == unknownCollidersPtr);
             Assert.IsTrue(staticColliderMeshes.staticSceneObjectsPtr == staticSceneObjectsPtr);
 
 
@@ -632,8 +632,8 @@ namespace GameCube.GFZ.CourseCollision
                 var scmPtr = staticColliderMeshes.GetPointer();
 
                 // Write collider bounds (applies to to non-tri/quad collision, too)
-                writer.InlineDesc(serializeVerbose, staticColliderMeshes.unkData);
-                writer.WriteX(staticColliderMeshes.unkData);
+                writer.InlineDesc(serializeVerbose, staticColliderMeshes.boundingSphere);
+                writer.WriteX(staticColliderMeshes.boundingSphere);
 
                 // COLLIDER TRIS
                 {
@@ -1137,7 +1137,7 @@ namespace GameCube.GFZ.CourseCollision
                 list.AddRange(matrix.indexLists);
             }
             list.Add(staticColliderMeshes.meshBounds);
-            list.Add(staticColliderMeshes.unkData);
+            list.Add(staticColliderMeshes.boundingSphere);
 
             list.Add(trackMinHeight);
 

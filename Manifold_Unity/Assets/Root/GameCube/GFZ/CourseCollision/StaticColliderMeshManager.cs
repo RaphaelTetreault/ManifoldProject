@@ -4,6 +4,26 @@ using System;
 using System.IO;
 using Unity.Mathematics;
 
+//if (unknownSolsTriggersPtr.IsNotNullPointer)
+//    DebugConsole.Log($"idx 8/9: {unknownSolsTriggersPtr.Length}, {unknownSolsTriggersPtr.HexAddress}");
+//if (unk_float != 0)
+//    DebugConsole.Log($"idx 22: {unk_float}");
+
+// Analysis: 2022-01-14
+
+// ALWAYS USED
+// idx: 10, 11, 16
+//
+// OPTIONAL
+// idx 22, 3 times
+// idx  8, 1 time
+// idx  9, 1 time
+//
+// ST16 CPSO  : 22 : 480f
+// ST25 SOLS  : 8,9: len:6, addr:00001730
+// ST29 CPDB  : 22 : 480f
+// ST41 Story5: 22 : 60f
+
 namespace GameCube.GFZ.CourseCollision
 {
     /// <summary>
@@ -42,7 +62,7 @@ namespace GameCube.GFZ.CourseCollision
         public Pointer staticColliderQuadsPtr;
         public Pointer[] quadMeshMatrixPtrs; // variable AX/GX
         public byte[] zeroes_group2;
-        public ArrayPointer unknownCollidersPtr;
+        public ArrayPointer boundingSpherePtr;
         public ArrayPointer staticSceneObjectsPtr;
         public byte[] zeroes_group3;
         public Pointer unkDataPtr;
@@ -54,7 +74,7 @@ namespace GameCube.GFZ.CourseCollision
         public ColliderQuad[] colliderQuads = new ColliderQuad[0];
         public StaticColliderMeshMatrix[] triMeshMatrices;
         public StaticColliderMeshMatrix[] quadMeshMatrices;
-        public UnknownStaticColliderMapData unkData = new UnknownStaticColliderMapData();
+        public BoundingSphere boundingSphere = new BoundingSphere();
         public UnknownCollider[] unknownColliders;
         public SceneObjectStatic[] staticSceneObjects; // Some of these used to be name-parsed colliders! (eg: *_CLASS2, etc)
 
@@ -131,7 +151,7 @@ namespace GameCube.GFZ.CourseCollision
                 reader.ReadX(ref staticColliderQuadsPtr);
                 reader.ReadX(ref quadMeshMatrixPtrs, countSurfaceTypes, true);
                 reader.ReadX(ref zeroes_group2, kZeroesGroup2);
-                reader.ReadX(ref unknownCollidersPtr);
+                reader.ReadX(ref boundingSpherePtr);
                 reader.ReadX(ref staticSceneObjectsPtr);
                 reader.ReadX(ref zeroes_group3, kZeroesGroup3);
                 reader.ReadX(ref unkDataPtr);
@@ -185,7 +205,7 @@ namespace GameCube.GFZ.CourseCollision
 
                 // NEWER STUFF
                 reader.JumpToAddress(unkDataPtr);
-                reader.ReadX(ref unkData, true);
+                reader.ReadX(ref boundingSphere, true);
                 // I don't read the SceneObjectTemplates and UnknownSolsTriggers
                 // since it's easier to patch that in ColiScene directly and saves
                 // some deserialization time
@@ -208,25 +228,7 @@ namespace GameCube.GFZ.CourseCollision
                 for (int i = 0; i < kZeroesGroup5; i++)
                     Assert.IsTrue(zeroes_group5[i] == 0, $"Index D {22+i} is {zeroes_group5[i]:x8}");
 
-                //if (unknownSolsTriggersPtr.IsNotNullPointer)
-                //    DebugConsole.Log($"idx 8/9: {unknownSolsTriggersPtr.Length}, {unknownSolsTriggersPtr.HexAddress}");
-                //if (unk_float != 0)
-                //    DebugConsole.Log($"idx 22: {unk_float}");
 
-                // Analysis: 2022-01-14
-
-                // ALWAYS USED
-                // idx: 10, 11, 16
-                //
-                // OPTIONAL
-                // idx 22, 3 times
-                // idx  8, 1 time
-                // idx  9, 1 time
-                //
-                // ST16 CPSO  : 22 : 480f
-                // ST25 SOLS  : 8,9: len:6, addr:00001730
-                // ST29 CPDB  : 22 : 480f
-                // ST41 Story5: 22 : 60f
             }
             this.SetReaderToEndAddress(reader);
         }
@@ -241,8 +243,8 @@ namespace GameCube.GFZ.CourseCollision
                 triMeshMatrixPtrs = triMeshMatrices.GetPointers();
                 quadMeshMatrixPtrs = quadMeshMatrices.GetPointers();
                 //
-                unkDataPtr = unkData.GetPointer();
-                unknownCollidersPtr = unknownColliders.GetArrayPointer();
+                unkDataPtr = boundingSphere.GetPointer();
+                boundingSpherePtr = unknownColliders.GetArrayPointer();
                 staticSceneObjectsPtr = staticSceneObjects.GetArrayPointer();
             }
             this.RecordStartAddress(writer);
@@ -255,7 +257,7 @@ namespace GameCube.GFZ.CourseCollision
                 writer.WriteX(staticColliderQuadsPtr);
                 writer.WriteX(quadMeshMatrixPtrs, false);
                 writer.WriteX(new byte[kZeroesGroup2], false);
-                writer.WriteX(unknownCollidersPtr);
+                writer.WriteX(boundingSpherePtr);
                 writer.WriteX(staticSceneObjectsPtr);
                 writer.WriteX(new byte[kZeroesGroup3], false);
                 writer.WriteX(unkDataPtr);
