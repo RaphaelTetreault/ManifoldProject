@@ -31,7 +31,9 @@ namespace Manifold.IO.GFZ.CourseCollision
             var sceneObject = scene.dynamicSceneObjects[objectIndex];
             var colliderGeo = sceneObject.sceneObject.colliderMesh;
 
-            index = Mathf.Clamp(index, 0, colliderGeo.triCount - 1);
+            //var count = colliderGeo.triCount;
+            var count = colliderGeo.quadCount;
+            index = Mathf.Clamp(index, 0, count- 1);
 
             //var tri = colliderGeo.tris[index];
             var tri = colliderGeo.quads[index];
@@ -96,6 +98,22 @@ namespace Manifold.IO.GFZ.CourseCollision
             //var b = ((Vector3)myVert1).magnitude / ((Vector3)precomputes[1]).magnitude;
             //var c = ((Vector3)myVert2).magnitude / ((Vector3)precomputes[2]).magnitude;
             //Debug.Log($"Ratio 0: {a}, 1: {b}, 2: {c}");
+
+            var precompScale = 1000f * Vector3.one;
+            var vertScale = 1f * Vector3.one;
+            Gizmos.color = Color.red;
+            Gizmos.DrawCube(precomputes[0], precompScale);
+            Gizmos.DrawCube(verts[0], vertScale);
+            Gizmos.color = Color.green;
+            Gizmos.DrawCube(precomputes[1], precompScale);
+            Gizmos.DrawCube(verts[1], vertScale);
+            Gizmos.color = Color.blue;
+            Gizmos.DrawCube(precomputes[2], precompScale);
+            Gizmos.DrawCube(verts[2], vertScale);
+            Gizmos.color = Color.white;
+            Gizmos.DrawCube(precomputes[3], precompScale);
+            Gizmos.DrawCube(verts[3], vertScale);
+
 
             int vertLength = verts.Length;
             for (int i = 0; i < vertLength; i++)

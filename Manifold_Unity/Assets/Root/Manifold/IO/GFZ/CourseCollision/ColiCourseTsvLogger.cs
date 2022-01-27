@@ -879,7 +879,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol("Tri Index");
                 writer.WriteNextCol("Addr");
 
-                writer.WriteNextColNicify(nameof(ColliderTriangle.unk_0x00));
+                writer.WriteNextColNicify(nameof(ColliderTriangle.dotProduct));
                 writer.WriteNextColNicify(nameof(ColliderTriangle.normal) + ".x");
                 writer.WriteNextColNicify(nameof(ColliderTriangle.normal) + ".y");
                 writer.WriteNextColNicify(nameof(ColliderTriangle.normal) + ".z");
@@ -924,7 +924,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                             writer.WriteNextCol(triIndex++);
                             writer.WriteStartAddress(tri);
 
-                            writer.WriteNextCol(tri.unk_0x00);
+                            writer.WriteNextCol(tri.dotProduct);
                             writer.WriteNextCol(tri.normal.x);
                             writer.WriteNextCol(tri.normal.y);
                             writer.WriteNextCol(tri.normal.z);
@@ -968,7 +968,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 writer.WriteNextCol("Quad Index");
                 writer.WriteNextCol("Addr");
 
-                writer.WriteNextColNicify(nameof(ColliderQuad.unk_0x00));
+                writer.WriteNextColNicify(nameof(ColliderQuad.dotProduct));
                 writer.WriteNextColNicify(nameof(ColliderQuad.normal) + ".x");
                 writer.WriteNextColNicify(nameof(ColliderQuad.normal) + ".y");
                 writer.WriteNextColNicify(nameof(ColliderQuad.normal) + ".z");
@@ -1019,7 +1019,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                             writer.WriteNextCol(quadIndex++);
                             writer.WriteStartAddress(quad);
 
-                            writer.WriteNextCol(quad.unk_0x00);
+                            writer.WriteNextCol(quad.dotProduct);
                             writer.WriteNextCol(quad.normal.x);
                             writer.WriteNextCol(quad.normal.y);
                             writer.WriteNextCol(quad.normal.z);

@@ -18,11 +18,10 @@ namespace GameCube.GFZ.CourseCollision
         private AddressRange addressRange;
 
         // FIELDS
-
-        // Normal's quaternion rotation theta? https://en.wikipedia.org/wiki/Quaternions_and_spatial_rotation#Using_quaternion_as_rotations
-        // Value range: -3613.961 through 3595.046, avg: -11 (basically 0)
-        // Could possibly be "bounding sphere" radius/diameter from avg of all positions?
-        public float unk_0x00;
+        /// <summary>
+        /// The dot product of dot(normal, vertex0/1/2/4). All result in the same scalar.
+        /// </summary>
+        public float dotProduct;
         public float3 normal;
         public float3 vertex0;
         public float3 vertex1;
@@ -72,7 +71,7 @@ namespace GameCube.GFZ.CourseCollision
         {
             this.RecordStartAddress(reader);
             {
-                reader.ReadX(ref unk_0x00);
+                reader.ReadX(ref dotProduct);
                 reader.ReadX(ref normal);
                 reader.ReadX(ref vertex0);
                 reader.ReadX(ref vertex1);
@@ -90,7 +89,7 @@ namespace GameCube.GFZ.CourseCollision
         {
             this.RecordStartAddress(writer);
             {
-                writer.WriteX(unk_0x00);
+                writer.WriteX(dotProduct);
                 writer.WriteX(normal);
                 writer.WriteX(vertex0);
                 writer.WriteX(vertex1);

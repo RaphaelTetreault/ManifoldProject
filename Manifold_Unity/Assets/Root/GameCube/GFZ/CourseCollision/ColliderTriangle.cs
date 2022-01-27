@@ -18,7 +18,10 @@ namespace GameCube.GFZ.CourseCollision
         private AddressRange addressRange;
 
         // FEILDS
-        public float unk_0x00;
+        /// <summary>
+        /// The dot product of dot(normal, vertex0/1/2). All result in the same scalar.
+        /// </summary>
+        public float dotProduct;
         public float3 normal;
         public float3 vertex0;
         public float3 vertex1;
@@ -65,7 +68,7 @@ namespace GameCube.GFZ.CourseCollision
         {
             this.RecordStartAddress(reader);
             {
-                reader.ReadX(ref unk_0x00);
+                reader.ReadX(ref dotProduct);
                 reader.ReadX(ref normal);
                 reader.ReadX(ref vertex0);
                 reader.ReadX(ref vertex1);
@@ -81,7 +84,7 @@ namespace GameCube.GFZ.CourseCollision
         {
             this.RecordStartAddress(writer);
             {
-                writer.WriteX(unk_0x00);
+                writer.WriteX(dotProduct);
                 writer.WriteX(normal);
                 writer.WriteX(vertex0);
                 writer.WriteX(vertex1);
