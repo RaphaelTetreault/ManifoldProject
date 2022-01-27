@@ -40,8 +40,11 @@ namespace Manifold.IO.GFZ.CourseCollision
             sceneObjectLODs = this.gameObject.AddComponent<GfzSceneObjectLODs>();
             sceneObjectLODs.ImportGfz(sceneObject.lods);
 
-            colliderMesh = this.gameObject.AddComponent<GfzColliderMesh>();
-            colliderMesh.ImportGfz(sceneObject.colliderMesh);
+            if (sceneObject.colliderMesh != null)
+            {
+                colliderMesh = this.gameObject.AddComponent<GfzColliderMesh>();
+                colliderMesh.ImportGfz(sceneObject.colliderMesh);
+            }
         }
 
         public bool Equals(GfzSceneObject other)

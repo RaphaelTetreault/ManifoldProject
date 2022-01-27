@@ -69,9 +69,9 @@ namespace Manifold
             //foreach (var key in trackCurves.animationCurves[5].keyableAttributes)
             //    key.value = -key.value;
 
-            // invert Z axis
-            foreach (var key in trackCurves.animationCurves[8].keyableAttributes)
-                key.value = -key.value;
+            //// invert Z axis
+            //foreach (var key in trackCurves.animationCurves[8].keyableAttributes)
+            //    key.value = -key.value;
 
             return trackCurves;
         }
