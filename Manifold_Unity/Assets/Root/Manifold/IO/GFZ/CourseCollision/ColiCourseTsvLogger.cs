@@ -39,7 +39,7 @@ namespace Manifold.IO.GFZ.CourseCollision
         private static readonly string tsvVisualEffectTrigger = $"{nameof(VisualEffectTrigger)}.tsv";
         private static readonly string tsvFog = $"{nameof(Fog)}.tsv";
         private static readonly string tsvFogCurves = $"{nameof(FogCurves)}.tsv";
-        private static readonly string tsvStaticColliderMeshes = $"{nameof(StaticColliderMeshes)}.tsv";
+        private static readonly string tsvStaticColliderMeshes = $"{nameof(StaticColliderMeshManager)}.tsv";
         private static readonly string tsvUnknownCollider = $"{nameof(UnknownCollider)}.tsv";
 
 
@@ -1714,20 +1714,20 @@ namespace Manifold.IO.GFZ.CourseCollision
                 // Write header
                 writer.WriteNextCol("File");
                 writer.WriteNextCol("Index");
-                writer.WriteNextColNicify(nameof(StaticColliderMeshes.staticColliderTrisPtr));
-                writer.WriteNextColNicify(nameof(StaticColliderMeshes.triMeshMatrixPtrs));
+                writer.WriteNextColNicify(nameof(StaticColliderMeshManager.staticColliderTrisPtr));
+                writer.WriteNextColNicify(nameof(StaticColliderMeshManager.triMeshMatrixPtrs));
                 writer.WriteNextColNicify(nameof(MatrixBoundsXZ.left));
                 writer.WriteNextColNicify(nameof(MatrixBoundsXZ.top));
                 writer.WriteNextColNicify(nameof(MatrixBoundsXZ.subdivisionWidth));
                 writer.WriteNextColNicify(nameof(MatrixBoundsXZ.subdivisionLength));
                 writer.WriteNextColNicify(nameof(MatrixBoundsXZ.numSubdivisionsX));
                 writer.WriteNextColNicify(nameof(MatrixBoundsXZ.numSubdivisionsZ));
-                writer.WriteNextColNicify(nameof(StaticColliderMeshes.staticColliderQuadsPtr));
-                writer.WriteNextColNicify(nameof(StaticColliderMeshes.quadMeshMatrixPtrs));
-                writer.WriteNextColNicify(nameof(StaticColliderMeshes.unkDataPtr));
-                writer.WriteNextColNicify(nameof(StaticColliderMeshes.staticSceneObjectsPtr));
-                writer.WriteNextColNicify(nameof(StaticColliderMeshes.unknownCollidersPtr));
-                writer.WriteNextColNicify(nameof(StaticColliderMeshes.unk_float));
+                writer.WriteNextColNicify(nameof(StaticColliderMeshManager.staticColliderQuadsPtr));
+                writer.WriteNextColNicify(nameof(StaticColliderMeshManager.quadMeshMatrixPtrs));
+                writer.WriteNextColNicify(nameof(StaticColliderMeshManager.unkDataPtr));
+                writer.WriteNextColNicify(nameof(StaticColliderMeshManager.staticSceneObjectsPtr));
+                writer.WriteNextColNicify(nameof(StaticColliderMeshManager.unknownCollidersPtr));
+                writer.WriteNextColNicify(nameof(StaticColliderMeshManager.unk_float));
                 writer.WriteNextCol();
                 writer.WriteNextColNicify(nameof(UnknownStaticColliderMapData.unk_0x00));
                 writer.WriteNextColNicify(nameof(UnknownStaticColliderMapData.unk_0x04));

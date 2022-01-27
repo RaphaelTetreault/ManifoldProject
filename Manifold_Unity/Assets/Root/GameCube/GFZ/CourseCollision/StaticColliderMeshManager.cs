@@ -7,7 +7,7 @@ using Unity.Mathematics;
 namespace GameCube.GFZ.CourseCollision
 {
     /// <summary>
-    /// Highest-level structure which consolidates all collider of a scene.
+    /// Highest-level structure which consolidates all static colliders of a scene.
     /// 
     /// Two tables store static triangles and quads proper. Many matrices index these triangles
     /// and quads (11 in AX, 14 in GX). Thus, a single tri/quad can technically have more
@@ -16,7 +16,7 @@ namespace GameCube.GFZ.CourseCollision
     /// It also points to some data which the ColiScene header points to. Notably, it points to 
     /// </summary>
     [Serializable]
-    public class StaticColliderMeshes :
+    public class StaticColliderMeshManager :
         IBinaryAddressable,
         IBinarySerializable,
         IHasReference
@@ -59,12 +59,12 @@ namespace GameCube.GFZ.CourseCollision
         public SceneObjectStatic[] staticSceneObjects; // Some of these used to be name-parsed colliders! (eg: *_CLASS2, etc)
 
 
-        public StaticColliderMeshes()
+        public StaticColliderMeshManager()
         {
             serializeFormat = ColiScene.SerializeFormat.InvalidFormat;
         }
 
-        public StaticColliderMeshes(ColiScene.SerializeFormat serializeFormat)
+        public StaticColliderMeshManager(ColiScene.SerializeFormat serializeFormat)
         {
             this.serializeFormat = serializeFormat;
             int count = SurfaceCount;

@@ -225,7 +225,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                 scene.unknownColliders = new UnknownCollider[0];
 
                 // Static Collider Matrix
-                scene.staticColliderMeshes = new StaticColliderMeshes(format);
+                scene.staticColliderMeshes = new StaticColliderMeshManager(format);
                 // Bind to other references
                 scene.staticColliderMeshes.unknownColliders = scene.unknownColliders;
                 scene.staticColliderMeshes.staticSceneObjects = scene.staticSceneObjects;

@@ -311,7 +311,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
                 // Static Collider Meshes
                 {
-                    coliScene.staticColliderMeshes = new StaticColliderMeshes(format);
+                    coliScene.staticColliderMeshes = new StaticColliderMeshManager(format);
                 }
 
                 // Triggers

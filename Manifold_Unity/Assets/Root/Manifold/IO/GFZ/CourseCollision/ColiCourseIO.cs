@@ -1106,7 +1106,7 @@ namespace Manifold.IO.GFZ
 
                 // Static Collider Meshes
                 {
-                    coliScene.staticColliderMeshes = new StaticColliderMeshes(format);
+                    coliScene.staticColliderMeshes = new StaticColliderMeshManager(format);
                 }
 
                 // Triggers
