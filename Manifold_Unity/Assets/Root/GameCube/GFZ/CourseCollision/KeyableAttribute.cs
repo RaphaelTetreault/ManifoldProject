@@ -1,4 +1,5 @@
-﻿using Manifold.IO;
+﻿using Manifold;
+using Manifold.IO;
 using System.IO;
 using System;
 
@@ -10,7 +11,8 @@ namespace GameCube.GFZ.CourseCollision
     [Serializable]
     public class KeyableAttribute :
         IBinaryAddressable,
-        IBinarySerializable
+        IBinarySerializable,
+        ITextPrintable
     {
         // METADATA
         [UnityEngine.SerializeField] private AddressRange addressRange;
@@ -60,14 +62,33 @@ namespace GameCube.GFZ.CourseCollision
 
         public override string ToString()
         {
+            return PrintSingleLine();
+        }
+
+        public string PrintSingleLine()
+        {
+            // Prints all values on single line, limits float precision
             return
                 $"{nameof(KeyableAttribute)}" +
                 $"({nameof(easeMode)}: {easeMode}," +
-                $" {nameof(time)}: {time:0.000}," +
-                $" {nameof(value)}: {value:0.000}," +
-                $" {nameof(zTangentIn)}: {zTangentIn:0.00}," +
-                $" {nameof(zTangentOut)}: {zTangentOut:0.00})";
+                $" {nameof(time)}: {time:0.###}," +
+                $" {nameof(value)}: {value:0.###}," +
+                $" {nameof(zTangentIn)}: {zTangentIn:0.##}," +
+                $" {nameof(zTangentOut)}: {zTangentOut:0.##})";
         }
 
+        public string PrintMultiLine(string indent = "\t", int indentLevel = 0)
+        {
+            var builder = new System.Text.StringBuilder();
+
+            builder.AppendLineIndented(indent, indentLevel, nameof(KeyableAttribute));
+            indentLevel++;
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(easeMode)}: {easeMode}");
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(time)}: {time}");
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(zTangentIn)}: {zTangentIn}");
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(zTangentOut)}: {zTangentOut}");
+
+            return builder.ToString();
+        }
     }
 }

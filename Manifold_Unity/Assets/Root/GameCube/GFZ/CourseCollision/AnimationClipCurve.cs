@@ -12,7 +12,8 @@ namespace GameCube.GFZ.CourseCollision
     public class AnimationClipCurve :
         IBinaryAddressable,
         IBinarySerializable,
-        IHasReference
+        IHasReference,
+        ITextPrintable
     {
         // METADATA
         [UnityEngine.SerializeField] private AddressRange addressRange;
@@ -92,7 +93,30 @@ namespace GameCube.GFZ.CourseCollision
 
         public override string ToString()
         {
-            return $"{unk_0x00}, {unk_0x04}, {unk_0x08}, {unk_0x0C}, {animationCurve}";
+            return PrintSingleLine();
         }
+
+        public string PrintSingleLine()
+        {
+            return
+                $"{nameof(AnimationClipCurve)}" +
+                $"({nameof(unk_0x00)}: {unk_0x00}," +
+                $" {nameof(unk_0x04)}: {unk_0x04}," +
+                $" {nameof(unk_0x08)}: {unk_0x08}," +
+                $" {nameof(unk_0x0C)}: {unk_0x0C}," +
+                $" Has {nameof(animationCurve)}: {animationCurve != null})";
+        }
+
+        public string PrintMultiLine(string indent = "\t", int indentLevel = 0)
+        {
+            var builder = new System.Text.StringBuilder();
+            // Write the main structure on one line
+            builder.AppendLineIndented(indent, indentLevel, PrintSingleLine());
+            indentLevel++;
+            builder.Append(animationCurve.PrintMultiLine(indent, indentLevel));
+
+            return builder.ToString();
+        }
+
     }
 }

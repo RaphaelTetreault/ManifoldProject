@@ -13,7 +13,8 @@ namespace GameCube.GFZ.CourseCollision
     [Serializable]
     public class AnimationCurve :
         IBinaryAddressable,
-        IBinarySerializable
+        IBinarySerializable,
+        ITextPrintable
     {
         // METADATA
         [UnityEngine.SerializeField] private AddressRange addressRange;
@@ -86,18 +87,29 @@ namespace GameCube.GFZ.CourseCollision
 
         public override string ToString()
         {
+            return PrintSingleLine();
+        }
+
+        public string PrintSingleLine()
+        {
+            // Print a summary of how many animation keys this curve has
+            return $"{nameof(AnimationCurve)}({nameof(KeyableAttribute)}s:[{keyableAttributes.Length}])";
+        }
+
+        public string PrintMultiLine(string indent = "\t", int indentLevel = 0)
+        {
             int lengthKeyables = keyableAttributes.Length;
             var stringBuilder = new System.Text.StringBuilder();
-            stringBuilder.Append($"Length[{lengthKeyables}]\t");
+
+            // Print overview of the animation curve
+            stringBuilder.AppendLineIndented(indent, indentLevel, PrintSingleLine());
+            indentLevel++;
+            // Then print each keyable (single line) on their own line
             for (int i = 0; i < lengthKeyables; i++)
             {
                 var keyable = keyableAttributes[i];
-                stringBuilder.Append($"[{i}]");
-                stringBuilder.Append(keyable.ToString());
-
-                // Add comma separator if another value to come
-                if (i < lengthKeyables - 1)
-                    stringBuilder.Append(", ");
+                var keyableText = keyable.PrintSingleLine();
+                stringBuilder.AppendLineIndented(indent, indentLevel, $"[{i}]\t {keyableText}");
             }
 
             return stringBuilder.ToString();

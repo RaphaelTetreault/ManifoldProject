@@ -211,77 +211,6 @@ namespace Manifold.IO.GFZ
 
         #endregion
 
-        #region Logs
-
-        /// <summary>
-        /// Writes simple log which enumerates all data with ToString() call.
-        /// </summary>
-        [MenuItem(Const.Menu.logs + "Log All Stages" + ActiveRoot)]
-        public static void ExportColiSceneLog()
-        {
-            var settings = GfzProjectWindow.GetSettings();
-
-            foreach (var coliScene in LoadAllStages(settings.StageDir, "Logging Stages..."))
-            {
-                var outputFile = $"{settings.LogOutput}/log-{coliScene.FileName}.txt";
-                var log = new TextLogger(outputFile);
-                LogSceneData(log, coliScene);
-                log.Flush();
-                log.Close();
-            }
-
-            OSUtility.OpenDirectory(settings.LogOutput);
-        }
-
-        [MenuItem(Const.Menu.logs + "Log Scene Objects" + ActiveRoot + " #F9")]
-        public static void LogColiSceneObjects()
-        {
-            var settings = GfzProjectWindow.GetSettings();
-            foreach (var coliScene in LoadAllStages(settings.StageDir, "Logging Stages..."))
-            {
-                //
-                var outputFile = $"{settings.LogOutput}/log-scene-objects-{coliScene.FileName}.txt";
-                var log = new TextLogger(outputFile);
-                //
-                log.WriteLine(coliScene.FileName);
-                log.WriteLine();
-                //log.WriteLine("TEMPS");
-                //log.WriteLine("Object Names");
-                //log.WriteAddress(coliScene.tempSoNames);
-                //log.WriteLine();
-                //log.WriteLine(nameof(SceneObject));
-                //log.WriteAddress(coliScene.tempSo);
-                //log.WriteLine();
-                //log.WriteLine(nameof(SceneObjectTemplate));
-                //log.WriteAddress(coliScene.tempSot);
-                //log.WriteLine("[END TEMPS]");
-                log.WriteLine();
-                log.WriteLine("Object Names");
-                log.WriteAddress(coliScene.sceneObjectNames);
-                log.WriteLine();
-                log.WriteLine(nameof(SceneObjectLOD));
-                log.WriteAddress(coliScene.sceneObjectLODs);
-                log.WriteLine();
-                log.WriteLine(nameof(SceneObject));
-                log.WriteAddress(coliScene.sceneObjects);
-                log.WriteLine();
-                log.WriteLine(nameof(SceneObjectStatic));
-                log.WriteAddress(coliScene.staticSceneObjects);
-                log.WriteLine();
-                log.WriteLine(nameof(SceneObjectDynamic));
-                log.WriteAddress(coliScene.dynamicSceneObjects);
-                log.WriteLine();
-                //
-                log.Flush();
-                log.Close();
-            }
-
-            EditorUtility.ClearProgressBar();
-            OSUtility.OpenDirectory(settings.LogOutput);
-        }
-
-
-        #endregion
 
         #region Roundtrip
 
@@ -1206,21 +1135,6 @@ namespace Manifold.IO.GFZ
             var exportedFiles = ExportUtility.ExportSerializable(coliScenes, exportTo, "", allowOverwritingFiles);
             OSUtility.OpenDirectory(openFolderAfterExport, exportedFiles);
         }
-
-        public static void ImportGfzScene()
-        {
-
-        }
-
-
-
-
-
-
-
-
-
-
 
 
     }

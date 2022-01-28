@@ -1,6 +1,6 @@
 ﻿namespace Manifold
 {
-    public interface ITextLoggable
+    public interface ITextPrintable
     {
         /// <summary>
         /// Prints this value without newlines.
@@ -12,6 +12,6 @@
         /// Prints this value, possibly including newlines.
         /// </summary>
         /// <returns></returns>
-        public string PrintMultiLine();
+        public string PrintMultiLine(string indent = "\t", int indentLevel = 0);
     }
 }

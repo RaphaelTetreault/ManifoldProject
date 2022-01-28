@@ -17,14 +17,15 @@ namespace GameCube.GFZ.CourseCollision
     public class AnimationClip :
         IBinaryAddressable,
         IBinarySerializable,
-        IHasReference
+        IHasReference, // The AnimationClipCurve has references
+        ITextPrintable
     {
         // CONSTANTS
         /// <summary>
         /// Number of animation curves. Order: scale.xyz, rotation.xyz, position.xyz, unknown, texture alpha
         /// </summary>
         public const int kAnimationCurvesCount = 11;
-        const int kSizeZero_0x08 = 0x10;
+        const int kZeroes0x08 = 0x10;
 
         // METADATA
         [UnityEngine.SerializeField] private AddressRange addressRange;
@@ -32,7 +33,7 @@ namespace GameCube.GFZ.CourseCollision
         // FIELDS
         public float unk_0x00;
         public float unk_0x04;
-        public byte[] zeroes_0x08 = new byte[kSizeZero_0x08];
+        public byte[] zeroes_0x08 = new byte[kZeroes0x08];
         public EnumFlags32 unk_layer_0x18;
         /// <summary>
         /// idx: 0,1,2: scale.xyz
@@ -41,7 +42,7 @@ namespace GameCube.GFZ.CourseCollision
         /// idx: 9: unused
         /// idx: 10: alpha channel
         /// </summary>
-        public AnimationClipCurve[] curves; // Written inline, not pointer refs
+        public AnimationClipCurve[] curves; // Written inline, no pointers
 
 
         // PROPERTIES
@@ -59,7 +60,7 @@ namespace GameCube.GFZ.CourseCollision
             {
                 reader.ReadX(ref unk_0x00);
                 reader.ReadX(ref unk_0x04);
-                reader.ReadX(ref zeroes_0x08, kSizeZero_0x08);
+                reader.ReadX(ref zeroes_0x08, kZeroes0x08);
                 reader.ReadX(ref unk_layer_0x18);
                 reader.ReadX(ref curves, kAnimationCurvesCount, true);
             }
@@ -67,12 +68,6 @@ namespace GameCube.GFZ.CourseCollision
             {
                 foreach (var zero in zeroes_0x08)
                     Assert.IsTrue(zero == 0);
-
-                //foreach (var curve in curves)
-                //{
-                //    Assert.IsTrue(curve != null);
-                //    Assert.ReferencePointer(curve.animationCurve, curve.animationCurvePtrs);
-                //}
             }
             // No jumping required
         }
@@ -87,7 +82,7 @@ namespace GameCube.GFZ.CourseCollision
             {
                 writer.WriteX(unk_0x00);
                 writer.WriteX(unk_0x04);
-                writer.WriteX(zeroes_0x08, false);
+                writer.WriteX(new byte[kZeroes0x08], false);
                 writer.WriteX(unk_layer_0x18);
                 writer.WriteX(curves, false);
             }
@@ -109,6 +104,11 @@ namespace GameCube.GFZ.CourseCollision
 
         public override string ToString()
         {
+            return PrintSingleLine();
+        }
+
+        public string PrintSingleLine()
+        {
             return
                 $"{nameof(AnimationClip)}(" +
                 $"{nameof(unk_0x00)}: {unk_0x00}, " +
@@ -117,6 +117,42 @@ namespace GameCube.GFZ.CourseCollision
                 $")";
         }
 
+        public string PrintMultiLine(string indent = "\t", int indentLevel = 0)
+        {
+            string[] labels = new string[] {
+                "Scale.X",
+                "Scale.Y",
+                "Scale.Z",
+                "Rotation.X",
+                "Rotation.Y",
+                "Rotation.Z",
+                "Position.X",
+                "Position.Y",
+                "Position.Z",
+                "(Unused - how'd this print?)",
+                "Alpha",
+            };
+
+            var builder = new System.Text.StringBuilder();
+            // Write the main structure on one line
+            builder.AppendLineIndented(indent, indentLevel, PrintSingleLine());
+            indentLevel++;
+
+            for (int i = 0; i < curves.Length; i++)
+            {
+                var animClipCurves = curves[i];
+                if (animClipCurves.animationCurve == null)
+                    continue;
+
+                var prefix = $"{labels[i]} [{i:00}/{curves.Length}]";
+                builder.AppendLineIndented(indent, indentLevel, prefix);
+
+                var multilineText = animClipCurves.PrintMultiLine(indent, indentLevel+1);
+                builder.Append(multilineText);
+            }
+
+            return builder.ToString();
+        }
 
     }
 }
