@@ -1,26 +1,22 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Text;
 
 namespace Manifold.IO
 {
     /// <summary>
-    /// Simple wrapper class for string to encode and decode a C-style null-terminated
-    /// string in SHIFT_JIS format.
+    /// Simple wrapper class for string to encode and decode a C-style null-terminated string.
+    /// The inheritor must define the encoding used by the string.
     /// </summary>
     [Serializable]
-    public class CString :
+    public abstract class CString :
         IBinaryAddressable,
         IBinarySerializable,
         IEquatable<CString>
     {
-        // CONSTANTS
-        public const int shift_jis = 932;
-
-
         // METADATA
-        [UnityEngine.SerializeField] private AddressRange addressRange;
-        public static readonly Encoding encoding = Encoding.GetEncoding(shift_jis);
+        private AddressRange addressRange;
+
 
         // FIELDS
         public string value = string.Empty;
@@ -32,9 +28,8 @@ namespace Manifold.IO
             get => addressRange;
             set => addressRange = value;
         }
-
         public int Length => value.Length;
-
+        public abstract Encoding Encoding { get; }
 
         // METHODS
         public static string ReadCString(BinaryReader reader, Encoding encoding)
@@ -67,7 +62,7 @@ namespace Manifold.IO
         {
             this.RecordStartAddress(reader);
             {
-                value = ReadCString(reader, encoding);
+                value = ReadCString(reader, Encoding);
             }
             this.RecordEndAddress(reader);
         }
@@ -76,30 +71,32 @@ namespace Manifold.IO
         {
             this.RecordStartAddress(writer);
             {
-                WriteCString(writer, value, encoding);
+                WriteCString(writer, value, Encoding);
             }
             this.RecordEndAddress(writer);
         }
 
 
-        public static implicit operator string(CString cString)
+        public static implicit operator string(CString str)
         {
-            return cString.value;
+            return str.value;
         }
 
         public static implicit operator CString(string str)
         {
-            return new CString() { value = str };
+            return str;
         }
 
-        public override string ToString()
+        public sealed override string ToString()
         {
             return value;
         }
 
         public bool Equals(CString other)
         {
-            return (value == other.value);
+            // Compares strings
+            bool isSameValue = value == other.value;
+            return isSameValue;
         }
     }
 }

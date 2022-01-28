@@ -39,7 +39,7 @@ namespace GameCube.GFZ.GMA
         /// </summary>
         [Header("GMA")]
         [SerializeField]
-        CString name;
+        ShiftJisCString name;
 
         [SerializeField, Hex("00", 8)]
         int gcmfCount;
@@ -101,7 +101,7 @@ namespace GameCube.GFZ.GMA
                 var jumpAddress = reader.BaseStream.Position;
 
                 // Load name of model
-                var modelName = new CString();
+                var modelName = new ShiftJisCString();
                 var modelNamePtr = GcmfNameBasePtr + gcmfPointerPairs[i].GcmfNameRelPtr;
                 reader.BaseStream.Seek(modelNamePtr, SeekOrigin.Begin);
                 reader.ReadX(ref modelName, true);

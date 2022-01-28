@@ -561,7 +561,7 @@ namespace Manifold.IO.GFZ
                 }
                 log.WriteLine();
 
-                log.WriteLine($"{nameof(CString)}");
+                log.WriteLine($"{nameof(ShiftJisCString)}");
                 for (int i = 0; i < coliScene.sceneObjectNames.Length; i++)
                 {
                     var objectName = coliScene.sceneObjectNames[i];

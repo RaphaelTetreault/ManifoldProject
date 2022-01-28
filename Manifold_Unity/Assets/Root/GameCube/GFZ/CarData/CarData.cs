@@ -23,9 +23,9 @@ namespace GameCube.GFZ.CarData
         public const int kMachineNameTable = 43;
         public const int kUnknownTable = 32;
 
-        public static CString[] GetUnknownNamesTable()
+        public static ShiftJisCString[] GetUnknownNamesTable()
         {
-            return new CString[]
+            return new ShiftJisCString[]
             {
                 "GC-D3",
                 "GC-E2",
@@ -60,9 +60,9 @@ namespace GameCube.GFZ.CarData
             };
         }
 
-        public static CString[] GetMachineNamesTable()
+        public static ShiftJisCString[] GetMachineNamesTable()
         {
-            return new CString[]
+            return new ShiftJisCString[]
             {
             "Rainbow Phoenix",
             "Rolling Turtle",
@@ -113,8 +113,8 @@ namespace GameCube.GFZ.CarData
 
         [Header("String Table")]
         public byte[] padding; // 12 bytes
-        public CString[] machineNames;
-        public CString[] unknownNames;
+        public ShiftJisCString[] machineNames;
+        public ShiftJisCString[] unknownNames;
 
         [Header("Vehicles")]
         public VehicleParameters DarkSchneider;
@@ -497,7 +497,7 @@ namespace GameCube.GFZ.CarData
                 System.Diagnostics.Debug.Assert(pad == 0);
 
             BinaryIoUtility.PushEndianess(kLittleEndian);
-            machineNames = new CString[kMachineNameTable];
+            machineNames = new ShiftJisCString[kMachineNameTable];
             for (int i = 0; i < machineNames.Length; i++)
             {
                 //reader.ReadXCString(ref machineNames[i], System.Text.Encoding.ASCII);
@@ -586,7 +586,7 @@ namespace GameCube.GFZ.CarData
             reader.ReadX(ref Triple_Z, true);
 
             BinaryIoUtility.PushEndianess(kLittleEndian);
-            unknownNames = new CString[kUnknownTable];
+            unknownNames = new ShiftJisCString[kUnknownTable];
             for (int i = 0; i < unknownNames.Length; i++)
             {
                 //reader.ReadXCString(ref unknownNames[i], System.Text.Encoding.ASCII);

@@ -15,7 +15,7 @@ namespace GameCube.GFZ.StaffGhost
         public MachineID machineID; // 0x00
         public CourseIndexGX courseID; // 0x01
         public byte[] unk_1;
-        public CString username; // 0x08
+        public ShiftJisCString username; // 0x08
         public byte timeMinutes; // 0x24
         public byte timeSeconds; // 0x25
         public short timeMilliseconds; // 0x26

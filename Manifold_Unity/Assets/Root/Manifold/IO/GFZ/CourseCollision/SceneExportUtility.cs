@@ -203,7 +203,7 @@ namespace Manifold.IO.GFZ.CourseCollision
 
                 // CString names
                 // TODO: share references
-                var sceneObjectNames = new List<CString>();
+                var sceneObjectNames = new List<ShiftJisCString>();
                 sceneObjectNames.Add("");
                 foreach (var thing in scene.sceneObjectLODs)
                 {

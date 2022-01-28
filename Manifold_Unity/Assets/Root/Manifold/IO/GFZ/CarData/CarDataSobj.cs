@@ -27,8 +27,8 @@ namespace Manifold.IO.GFZ.CarData
 
         [Header("String Table")]
         public byte[] padding; // 12 bytes
-        public CString[] machineNames;
-        public CString[] unknownNames;
+        public ShiftJisCString[] machineNames;
+        public ShiftJisCString[] unknownNames;
 
         #region VEHICLES
 
@@ -534,7 +534,7 @@ namespace Manifold.IO.GFZ.CarData
                 Assert.IsTrue(pad == 0);
 
             BinaryIoUtility.PushEndianess(kLittleEndian);
-            machineNames = new CString[kMachineNameTable];
+            machineNames = new ShiftJisCString[kMachineNameTable];
             for (int i = 0; i < machineNames.Length; i++)
             {
                 reader.ReadX(ref machineNames[i], true);
@@ -620,7 +620,7 @@ namespace Manifold.IO.GFZ.CarData
             reader.ReadX(ref Triple_Z, true);
 
             BinaryIoUtility.PushEndianess(kLittleEndian);
-            unknownNames = new CString[kUnknownTable];
+            unknownNames = new ShiftJisCString[kUnknownTable];
             for (int i = 0; i < unknownNames.Length; i++)
             {
                 reader.ReadX(ref unknownNames[i], true);

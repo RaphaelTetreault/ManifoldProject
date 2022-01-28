@@ -23,7 +23,7 @@ namespace GameCube.GFZ.CourseCollision
         public uint zero_0x08;
         public float lodDistance;
         // REFERENCE FIELDS
-        public CString name;
+        public ShiftJisCString name;
 
 
         // PROPERTIES

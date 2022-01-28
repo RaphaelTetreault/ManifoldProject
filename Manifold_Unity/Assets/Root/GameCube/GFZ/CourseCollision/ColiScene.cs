@@ -119,7 +119,7 @@ namespace GameCube.GFZ.CourseCollision
         // Shared references
         public TrackSegment[] allTrackSegments;
         public TrackSegment[] rootTrackSegments;
-        public CString[] sceneObjectNames;
+        public ShiftJisCString[] sceneObjectNames;
         public SceneObjectLOD[] sceneObjectLODs;
 
 
@@ -227,7 +227,7 @@ namespace GameCube.GFZ.CourseCollision
             // Shared references
             allTrackSegments = new TrackSegment[0];
             rootTrackSegments = new TrackSegment[0];
-            sceneObjectNames = new CString[0];
+            sceneObjectNames = new ShiftJisCString[0];
             sceneObjectLODs = new SceneObjectLOD[0];
         }
 
@@ -366,7 +366,7 @@ namespace GameCube.GFZ.CourseCollision
 
                 // Keep a dictionary of each shared reference type
                 var sceneObjectsDict = new Dictionary<Pointer, SceneObject>();
-                var sceneObjectNamesDict = new Dictionary<Pointer, CString>();
+                var sceneObjectNamesDict = new Dictionary<Pointer, ShiftJisCString>();
 
                 // Get all unique instances of SceneObjectTemplates
                 // NOTE: instances can share the same name/model but have different properties.

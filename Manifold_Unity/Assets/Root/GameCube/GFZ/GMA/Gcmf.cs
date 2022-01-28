@@ -19,7 +19,7 @@ namespace GameCube.GFZ.GMA
         [Header("GCMF")]
 
         // metadata
-        [SerializeField] CString name;
+        [SerializeField] ShiftJisCString name;
         [SerializeField] AddressRange addressRange;
         [SerializeField, Hex] int t1Count;
 
@@ -45,7 +45,7 @@ namespace GameCube.GFZ.GMA
             set => addressRange = value;
         }
 
-        public CString ModelName
+        public ShiftJisCString ModelName
         {
             get => name;
             set => name = value;
