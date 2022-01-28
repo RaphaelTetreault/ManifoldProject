@@ -1,8 +1,8 @@
-﻿using System.Collections;
+﻿using Manifold.EditorTools.GC.GFZ;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Manifold
+namespace Manifold.EditorTools.GC.GFZ.Stage
 {
     [System.Serializable]
     public class AnimationCurveTransform
@@ -54,17 +54,17 @@ namespace Manifold
             var trackCurves = new GameCube.GFZ.CourseCollision.TrackCurves();
             trackCurves.animationCurves = new GameCube.GFZ.CourseCollision.AnimationCurve[9];
             // SCALE
-            trackCurves.animationCurves[0] = Manifold.IO.GFZ.AnimationCurveConverter.ToGfz(scale.x);
-            trackCurves.animationCurves[1] = Manifold.IO.GFZ.AnimationCurveConverter.ToGfz(scale.y);
-            trackCurves.animationCurves[2] = Manifold.IO.GFZ.AnimationCurveConverter.ToGfz(scale.z);
+            trackCurves.animationCurves[0] = AnimationCurveConverter.ToGfz(scale.x);
+            trackCurves.animationCurves[1] = AnimationCurveConverter.ToGfz(scale.y);
+            trackCurves.animationCurves[2] = AnimationCurveConverter.ToGfz(scale.z);
             // ROTATION
-            trackCurves.animationCurves[3] = Manifold.IO.GFZ.AnimationCurveConverter.ToGfz(rotation.x);
-            trackCurves.animationCurves[4] = Manifold.IO.GFZ.AnimationCurveConverter.ToGfz(rotation.y);
-            trackCurves.animationCurves[5] = Manifold.IO.GFZ.AnimationCurveConverter.ToGfz(rotation.z);
+            trackCurves.animationCurves[3] = AnimationCurveConverter.ToGfz(rotation.x);
+            trackCurves.animationCurves[4] = AnimationCurveConverter.ToGfz(rotation.y);
+            trackCurves.animationCurves[5] = AnimationCurveConverter.ToGfz(rotation.z);
             // POSITION
-            trackCurves.animationCurves[6] = Manifold.IO.GFZ.AnimationCurveConverter.ToGfz(position.x);
-            trackCurves.animationCurves[7] = Manifold.IO.GFZ.AnimationCurveConverter.ToGfz(position.y);
-            trackCurves.animationCurves[8] = Manifold.IO.GFZ.AnimationCurveConverter.ToGfz(position.z);
+            trackCurves.animationCurves[6] = AnimationCurveConverter.ToGfz(position.x);
+            trackCurves.animationCurves[7] = AnimationCurveConverter.ToGfz(position.y);
+            trackCurves.animationCurves[8] = AnimationCurveConverter.ToGfz(position.z);
 
             //foreach (var key in trackCurves.animationCurves[5].keyableAttributes)
             //    key.value = -key.value;

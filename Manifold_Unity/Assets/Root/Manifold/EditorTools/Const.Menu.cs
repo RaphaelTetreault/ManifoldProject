@@ -1,4 +1,4 @@
-﻿namespace Manifold.IO
+﻿namespace Manifold.EditorTools
 {
     public static partial class Const
     {

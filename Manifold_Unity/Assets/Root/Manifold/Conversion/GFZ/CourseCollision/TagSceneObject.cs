@@ -1,4 +1,4 @@
-namespace Manifold.IO
+namespace Manifold.EditorTools
 {
     public class TagSceneObject : DataTag<GameCube.GFZ.CourseCollision.SceneObjectDynamic> { }
 }

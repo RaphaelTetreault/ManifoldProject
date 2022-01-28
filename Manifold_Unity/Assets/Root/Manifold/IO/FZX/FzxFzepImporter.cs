@@ -1,11 +1,11 @@
-using GameCube.GFZ.CourseCollision;
+using Manifold.IO;
 using Nintendo64.FZX;
 using System.IO;
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 
-namespace Manifold.IO.FZX
+namespace Manifold.EditorTools.N64.FZX
 {
     [CreateAssetMenu(menuName = Const.Menu.Fzx + "FZEP Track Importer")]
     public class FzxFzepImporter : ExecutableScriptableObject,

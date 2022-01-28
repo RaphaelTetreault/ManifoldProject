@@ -1,11 +1,9 @@
 ﻿using Manifold;
+using Manifold.EditorTools;
+using Manifold.EditorTools.GC.GFZ;
 using Manifold.IO;
-using Manifold.IO.GFZ;
 using System;
 using System.IO;
-
-// TODO: move Unity-specific functions to Manifold script!
-using UnityEngine;
 
 
 namespace GameCube.GFZ.CourseCollision

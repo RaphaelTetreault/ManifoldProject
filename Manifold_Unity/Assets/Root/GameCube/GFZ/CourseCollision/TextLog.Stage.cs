@@ -1,5 +1,5 @@
 ﻿using Manifold.IO;
-using Manifold.IO.GFZ;
+using Manifold.EditorTools.GC.GFZ.CourseCollision;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 

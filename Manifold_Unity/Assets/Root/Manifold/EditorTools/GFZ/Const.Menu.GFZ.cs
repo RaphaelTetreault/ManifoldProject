@@ -1,4 +1,4 @@
-﻿namespace Manifold.EditorTools.GFZ
+﻿namespace Manifold.EditorTools.GC.GFZ
 {
     public static partial class Const
     {
@@ -14,7 +14,7 @@
             public const string GfzStaffGhost = Gfz + "Staff Ghost/";
 
             // Create for menu item, up top
-            public const string Manifold = IO.Const.Menu.Manifold;
+            public const string Manifold = "Manifold/";
             //public const string gxJapanese = Manifold + "GX (Japan)/";
             //public const string gxEnglish = Manifold + "GX (English)/";
             //public const string gxEurope = Manifold + "GX (Europe)/";

@@ -1,7 +1,7 @@
 ﻿using Manifold.IO;
 using System;
 using System.IO;
-using UnityEngine;
+using Unity.Mathematics;
 
 namespace GameCube.GFZ.CarData
 {
@@ -38,11 +38,11 @@ namespace GameCube.GFZ.CarData
 
         #region FIELDS
 
-        [SerializeField]
+        //[SerializeField]
         private AddressRange addressRange;
 
-        [Space]
-        [Tooltip("Runtime variable")]
+        //[Space]
+        //[Tooltip("Runtime variable")]
         public uint namePointer;
         public float weight;
         public float acceleration;
@@ -61,21 +61,21 @@ namespace GameCube.GFZ.CarData
         public float turnDeceleration;
         public float drag;
         public float body;
-        [HexFlags(numDigits:2)]
+        //[HexFlags(numDigits:2)]
         public CarDataFlags0x48_U8 unk_0x48;
-        [HexFlags(numDigits: 2)]
+        //[HexFlags(numDigits: 2)]
         public CarDataFlags0x49_U8 unk_0x49;
         public ushort zero_0x4A;
         public float cameraReorientation;
         public float cameraRepositioning;
-        public Vector3 tiltFrontRight;
-        public Vector3 tiltFrontLeft;
-        public Vector3 tiltBackRight;
-        public Vector3 tiltBackLeft;
-        public Vector3 wallCollisionFrontRight;
-        public Vector3 wallCollisionFrontLeft;
-        public Vector3 wallCollisionBackRight;
-        public Vector3 wallCollisionBackLeft;
+        public float3 tiltFrontRight;
+        public float3 tiltFrontLeft;
+        public float3 tiltBackRight;
+        public float3 tiltBackLeft;
+        public float3 wallCollisionFrontRight;
+        public float3 wallCollisionFrontLeft;
+        public float3 wallCollisionBackRight;
+        public float3 wallCollisionBackLeft;
 
 
         #endregion

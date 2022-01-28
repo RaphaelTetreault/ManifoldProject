@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Manifold
+namespace Manifold.EditorTools.GC.GFZ.Stage
 {
     public class GfzTrackGap : MonoBehaviour
     {

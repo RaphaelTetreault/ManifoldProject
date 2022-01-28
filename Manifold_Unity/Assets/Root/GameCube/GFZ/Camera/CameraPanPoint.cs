@@ -1,8 +1,10 @@
 ﻿using Manifold;
+using Manifold.EditorTools;
 using Manifold.IO;
 using System;
 using System.IO;
 using UnityEngine;
+using Unity.Mathematics;
 
 namespace GameCube.GFZ.Camera
 {
@@ -10,7 +12,7 @@ namespace GameCube.GFZ.Camera
     public class CameraPanPoint : IBinarySerializable, IBinaryAddressable
     {
 
-        [SerializeField]
+        //[SerializeField]
         private AddressRange addressRange;
 
         public Vector3 cameraPosition;
