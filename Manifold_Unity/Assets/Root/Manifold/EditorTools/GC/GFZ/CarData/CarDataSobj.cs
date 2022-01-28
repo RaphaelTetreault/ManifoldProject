@@ -15,10 +15,10 @@ namespace Manifold.EditorTools.GC.GFZ.CarData
         public const int CockpitCount = GameCube.GFZ.CarData.CarData.CockpitCount;
         public const int BoosterCount = GameCube.GFZ.CarData.CarData.BoosterCount;
         public const int kPaddingSize = GameCube.GFZ.CarData.CarData.kPaddingSize;
-        public const bool kBigEndian = GameCube.GFZ.CarData.CarData.kBigEndian;
-        public const bool kLittleEndian = GameCube.GFZ.CarData.CarData.kLittleEndian;
+        //public const bool kBigEndian = GameCube.GFZ.CarData.CarData.kBigEndian;
+        //public const bool kLittleEndian = GameCube.GFZ.CarData.CarData.kLittleEndian;
         public const int kMachineNameTable = GameCube.GFZ.CarData.CarData.kMachineNameTable;
-        public const int kUnknownTable = GameCube.GFZ.CarData.CarData.kUnknownTable;
+        public const int kUnknownTable = GameCube.GFZ.CarData.CarData.kPartsInternalTable;
 
 
         [SerializeField] string fileName;
@@ -484,7 +484,7 @@ namespace Manifold.EditorTools.GC.GFZ.CarData
 
         public void Deserialize(BinaryReader reader)
         {
-            BinaryIoUtility.PushEndianess(kBigEndian);
+            BinaryIoUtility.PushEndianness(Endianness.BigEndian);
 
             reader.ReadX(ref RedGazelle, true);
             reader.ReadX(ref WhiteCat, true);
@@ -533,7 +533,7 @@ namespace Manifold.EditorTools.GC.GFZ.CarData
             foreach (var pad in padding)
                 Assert.IsTrue(pad == 0);
 
-            BinaryIoUtility.PushEndianess(kLittleEndian);
+            BinaryIoUtility.PushEndianness(Endianness.LittleEndian);
             machineNames = new ShiftJisCString[kMachineNameTable];
             for (int i = 0; i < machineNames.Length; i++)
             {
@@ -619,7 +619,7 @@ namespace Manifold.EditorTools.GC.GFZ.CarData
             reader.ReadX(ref Crown_77, true);
             reader.ReadX(ref Triple_Z, true);
 
-            BinaryIoUtility.PushEndianess(kLittleEndian);
+            BinaryIoUtility.PushEndianness(Endianness.LittleEndian);
             unknownNames = new ShiftJisCString[kUnknownTable];
             for (int i = 0; i < unknownNames.Length; i++)
             {
@@ -632,7 +632,7 @@ namespace Manifold.EditorTools.GC.GFZ.CarData
 
         public void Serialize(BinaryWriter writer)
         {
-            BinaryIoUtility.PushEndianess(kBigEndian);
+            BinaryIoUtility.PushEndianness(Endianness.BigEndian);
 
             writer.WriteX(RedGazelle);
             writer.WriteX(WhiteCat);
@@ -680,7 +680,7 @@ namespace Manifold.EditorTools.GC.GFZ.CarData
                 writer.WriteX((byte)0);
 
             BinaryIoUtility.PushEncoding(System.Text.Encoding.ASCII);
-            BinaryIoUtility.PushEndianess(kLittleEndian);
+            BinaryIoUtility.PushEndianness(Endianness.LittleEndian);
             foreach (var name in machineNames)
             {
                 writer.WriteX(name);
@@ -768,7 +768,7 @@ namespace Manifold.EditorTools.GC.GFZ.CarData
 
 
             BinaryIoUtility.PushEncoding(System.Text.Encoding.ASCII);
-            BinaryIoUtility.PushEndianess(kLittleEndian);
+            BinaryIoUtility.PushEndianness(Endianness.LittleEndian);
             foreach (var name in unknownNames)
             {
                 writer.WriteX(name);

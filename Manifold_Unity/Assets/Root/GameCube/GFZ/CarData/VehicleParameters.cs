@@ -8,97 +8,92 @@ namespace GameCube.GFZ.CarData
     // Structure
     // https://github.com/yoshifan/fzerogx-docs/blob/master/addresses/base_machine_stat_blocks.md
 
-    public enum CarDataFlags0x48_U8 : byte
-    {
-        UNK_FLAG_0 = 1 << 0,
-        UNK_FLAG_1 = 1 << 1,
-        UNK_FLAG_2 = 1 << 2,
-        UNK_FLAG_3 = 1 << 3,
-        UNK_FLAG_4 = 1 << 4,
-        UNK_FLAG_5 = 1 << 5,
-        UNK_FLAG_6 = 1 << 6,
-        UNK_FLAG_7 = 1 << 7,
-    }
-
-    public enum CarDataFlags0x49_U8 : byte
-    {
-        UNK_FLAG_0 = 1 << 0,
-        UNK_FLAG_1 = 1 << 1,
-        UNK_FLAG_2 = 1 << 2,
-        UNK_FLAG_3 = 1 << 3,
-        UNK_FLAG_4 = 1 << 4,
-        UNK_FLAG_5 = 1 << 5,
-        UNK_FLAG_6 = 1 << 6,
-        UNK_FLAG_7 = 1 << 7,
-    }
-
     [Serializable]
-    public struct VehicleParameters : IBinarySerializable, IBinaryAddressable
+    public struct VehicleParameters :
+        IBinarySerializable,
+        IBinaryAddressable
     {
-
-        #region FIELDS
-
-        //[SerializeField]
+        // METADATA
         private AddressRange addressRange;
 
-        //[Space]
-        //[Tooltip("Runtime variable")]
-        public uint namePointer;
-        public float weight;
-        public float acceleration;
-        public float maxSpeed;
-        public float grip1;
-        public float grip3;
-        public float turnTension;
-        public float driftAcceleration;
-        public float turnMovement;
-        public float strafeTurn;
-        public float strafe;
-        public float turnReaction;
-        public float grip2;
-        public float boostStrength;
-        public float boostDuration;
-        public float turnDeceleration;
-        public float drag;
-        public float body;
-        //[HexFlags(numDigits:2)]
-        public CarDataFlags0x48_U8 unk_0x48;
-        //[HexFlags(numDigits: 2)]
-        public CarDataFlags0x49_U8 unk_0x49;
-        public ushort zero_0x4A;
-        public float cameraReorientation;
-        public float cameraRepositioning;
-        public float3 tiltFrontRight;
-        public float3 tiltFrontLeft;
-        public float3 tiltBackRight;
-        public float3 tiltBackLeft;
-        public float3 wallCollisionFrontRight;
-        public float3 wallCollisionFrontLeft;
-        public float3 wallCollisionBackRight;
-        public float3 wallCollisionBackLeft;
+        // FIELDS
+        private Pointer namePtr;
+        private float weight;
+        private float acceleration;
+        private float maxSpeed;
+        private float grip1;
+        private float grip3;
+        private float turnTension;
+        private float driftAcceleration;
+        private float turnMovement;
+        private float strafeTurn;
+        private float strafe;
+        private float turnReaction;
+        private float grip2;
+        private float boostStrength;
+        private float boostDuration;
+        private float turnDeceleration;
+        private float drag;
+        private float body;
+        private CarDataFlags0x48 unk_0x48;
+        private CarDataFlags0x49 unk_0x49;
+        private ushort zero_0x4A;
+        private float cameraReorientation;
+        private float cameraRepositioning;
+        private float3 tiltFrontRight;
+        private float3 tiltFrontLeft;
+        private float3 tiltBackRight;
+        private float3 tiltBackLeft;
+        private float3 wallCollisionFrontRight;
+        private float3 wallCollisionFrontLeft;
+        private float3 wallCollisionBackRight;
+        private float3 wallCollisionBackLeft;
 
-
-        #endregion
-
-        #region PROPERTIES
-
-
+        // PROPERTIES
         public AddressRange AddressRange
         {
             get => addressRange;
             set => addressRange = value;
         }
+        public Pointer NamePtr { get => namePtr; set => namePtr = value; }
+        public float Weight { get => weight; set => weight = value; }
+        public float Acceleration { get => acceleration; set => acceleration = value; }
+        public float MaxSpeed { get => maxSpeed; set => maxSpeed = value; }
+        public float Grip1 { get => grip1; set => grip1 = value; }
+        public float Grip3 { get => grip3; set => grip3 = value; }
+        public float TurnTension { get => turnTension; set => turnTension = value; }
+        public float DriftAcceleration { get => driftAcceleration; set => driftAcceleration = value; }
+        public float TurnMovement { get => turnMovement; set => turnMovement = value; }
+        public float StrafeTurn { get => strafeTurn; set => strafeTurn = value; }
+        public float Strafe { get => strafe; set => strafe = value; }
+        public float TurnReaction { get => turnReaction; set => turnReaction = value; }
+        public float Grip2 { get => grip2; set => grip2 = value; }
+        public float BoostStrength { get => boostStrength; set => boostStrength = value; }
+        public float BoostDuration { get => boostDuration; set => boostDuration = value; }
+        public float TurnDeceleration { get => turnDeceleration; set => turnDeceleration = value; }
+        public float Drag { get => drag; set => drag = value; }
+        public float Body { get => body; set => body = value; }
+        public CarDataFlags0x48 Unk_0x48 { get => unk_0x48; set => unk_0x48 = value; }
+        public CarDataFlags0x49 Unk_0x49 { get => unk_0x49; set => unk_0x49 = value; }
+        public ushort Zero_0x4A { get => zero_0x4A; set => zero_0x4A = value; }
+        public float CameraReorientation { get => cameraReorientation; set => cameraReorientation = value; }
+        public float CameraRepositioning { get => cameraRepositioning; set => cameraRepositioning = value; }
+        public float3 TiltFrontRight { get => tiltFrontRight; set => tiltFrontRight = value; }
+        public float3 TiltFrontLeft { get => tiltFrontLeft; set => tiltFrontLeft = value; }
+        public float3 TiltBackRight { get => tiltBackRight; set => tiltBackRight = value; }
+        public float3 TiltBackLeft { get => tiltBackLeft; set => tiltBackLeft = value; }
+        public float3 WallCollisionFrontRight { get => wallCollisionFrontRight; set => wallCollisionFrontRight = value; }
+        public float3 WallCollisionFrontLeft { get => wallCollisionFrontLeft; set => wallCollisionFrontLeft = value; }
+        public float3 WallCollisionBackRight { get => wallCollisionBackRight; set => wallCollisionBackRight = value; }
+        public float3 WallCollisionBackLeft { get => wallCollisionBackLeft; set => wallCollisionBackLeft = value; }
 
 
-        #endregion
-
-        #region MEMBERS
-
+        // METHODS
         public void Deserialize(BinaryReader reader)
         {
             this.RecordStartAddress(reader);
             {
-                reader.ReadX(ref namePointer);
+                reader.ReadX(ref namePtr);
                 reader.ReadX(ref weight);
                 reader.ReadX(ref acceleration);
                 reader.ReadX(ref maxSpeed);
@@ -135,39 +130,42 @@ namespace GameCube.GFZ.CarData
 
         public void Serialize(BinaryWriter writer)
         {
-            writer.WriteX(namePointer);
-            writer.WriteX(weight);
-            writer.WriteX(acceleration);
-            writer.WriteX(maxSpeed);
-            writer.WriteX(grip1);
-            writer.WriteX(grip3);
-            writer.WriteX(turnTension);
-            writer.WriteX(driftAcceleration);
-            writer.WriteX(turnMovement);
-            writer.WriteX(strafeTurn);
-            writer.WriteX(strafe);
-            writer.WriteX(turnReaction);
-            writer.WriteX(grip2);
-            writer.WriteX(boostStrength);
-            writer.WriteX(boostDuration);
-            writer.WriteX(turnDeceleration);
-            writer.WriteX(drag);
-            writer.WriteX(body);
-            writer.WriteX(unk_0x48);
-            writer.WriteX(unk_0x49);
-            writer.WriteX(zero_0x4A);
-            writer.WriteX(cameraReorientation);
-            writer.WriteX(cameraRepositioning);
-            writer.WriteX(tiltFrontRight);
-            writer.WriteX(tiltFrontLeft);
-            writer.WriteX(tiltBackRight);
-            writer.WriteX(tiltBackLeft);
-            writer.WriteX(wallCollisionFrontRight);
-            writer.WriteX(wallCollisionFrontLeft);
-            writer.WriteX(wallCollisionBackRight);
-            writer.WriteX(wallCollisionBackLeft);
+            this.RecordStartAddress(writer);
+            {
+                writer.WriteX(namePtr);
+                writer.WriteX(weight);
+                writer.WriteX(acceleration);
+                writer.WriteX(maxSpeed);
+                writer.WriteX(grip1);
+                writer.WriteX(grip3);
+                writer.WriteX(turnTension);
+                writer.WriteX(driftAcceleration);
+                writer.WriteX(turnMovement);
+                writer.WriteX(strafeTurn);
+                writer.WriteX(strafe);
+                writer.WriteX(turnReaction);
+                writer.WriteX(grip2);
+                writer.WriteX(boostStrength);
+                writer.WriteX(boostDuration);
+                writer.WriteX(turnDeceleration);
+                writer.WriteX(drag);
+                writer.WriteX(body);
+                writer.WriteX(unk_0x48);
+                writer.WriteX(unk_0x49);
+                writer.WriteX(zero_0x4A);
+                writer.WriteX(cameraReorientation);
+                writer.WriteX(cameraRepositioning);
+                writer.WriteX(tiltFrontRight);
+                writer.WriteX(tiltFrontLeft);
+                writer.WriteX(tiltBackRight);
+                writer.WriteX(tiltBackLeft);
+                writer.WriteX(wallCollisionFrontRight);
+                writer.WriteX(wallCollisionFrontLeft);
+                writer.WriteX(wallCollisionBackRight);
+                writer.WriteX(wallCollisionBackLeft);
+            }
+            this.RecordEndAddress(writer);
         }
 
-        #endregion
     }
 }

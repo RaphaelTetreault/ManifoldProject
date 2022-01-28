@@ -1,122 +1,38 @@
-﻿using Manifold.IO;
+﻿using Manifold;
+using Manifold.IO;
 using System;
 using System.IO;
-using UnityEngine;
 
 namespace GameCube.GFZ.CarData
 {
     [Serializable]
-    public class CarData : IBinarySerializable, IBinaryAddressable, IFile
+    public class CarData :
+        IBinarySerializable,
+        IBinaryAddressable,
+        IFile
     {
-
-        #region FIELDS
-
-
+        // CONSTANTS
+        // Numbers of things
         public const int MachineCount = 41;
         public const int BodyCount = 25;
         public const int CockpitCount = 25;
         public const int BoosterCount = 25;
-
+        // Sizes of things
         public const int kPaddingSize = 12;
-        public const bool kBigEndian = true;
-        public const bool kLittleEndian = false;
         public const int kMachineNameTable = 43;
-        public const int kUnknownTable = 32;
+        public const int kPartsInternalTable = 32;
 
-        public static ShiftJisCString[] GetUnknownNamesTable()
-        {
-            return new ShiftJisCString[]
-            {
-                "GC-D3",
-                "GC-E2",
-                "AC-B2",
-                "AC-C1",
-                "GC-C1",
-                "GC-C2",
-                "GC-C4",
-                "GC-D2",
-                "AC-C2",
-                "AC-A2",
-                "GC-B2",
-                "GC-A2",
-                "GC-A1",
-                "AC-B3",
-                "AC-D2",
-                "GC-D1",
-                "GC-C3",
-                "AC-C3",
-                "GC-B1",
-                "AC-B4",
-                "AC-E1",
-                "AC-A1",
-                "AC-B1",
-                "GC-E1",
-                "AC-D1",
-                "AC-C4",
-                "GC-B3",
-                "AC-E2",
-                "GC-A3",
-                "AC-D3",
-            };
-        }
 
-        public static ShiftJisCString[] GetMachineNamesTable()
-        {
-            return new ShiftJisCString[]
-            {
-            "Rainbow Phoenix",
-            "Rolling Turtle",
-            "Groovy Taxi",
-            "Bunny Flash",
-            "Spark Moon",
-            "Silver Rat",
-            "Magic Seagull",
-            "Pink Spider",
-            "Cosmic Dolphin",
-            "Fat Shark",
-            "Dark Schneider",
-            "Black Bull",
-            "Crazy Bear",
-            "Mighty Hurricane",
-            "Mighty Typhoon",
-            "Wonder Wasp",
-            "Blood Hawk",
-            "Wild Boar",
-            "Night Thunder",
-            "Twin Noritta",
-            "Queen Meteor",
-            "King Meteor",
-            "Space Angler",
-            "Hyper Speeder",
-            "Green Panther",
-            "Sonic Phantom",
-            "Big Fang",
-            "Astro Robin",
-            "Death Anchor",
-            "Super Piranha",
-            "Mad Wolf",
-            "Little Wyvern",
-            "Great Star",
-            "Deep Claw",
-            "Blue Falcon",
-            "Wild Goose",
-            "Fire Stingray",
-            "Iron Tiger",
-            "Golden Fox",
-            "White Cat",
-            "Red Gazelle",
-            };
-        }
+        // METADATA
+        private string fileName;
+        private AddressRange addressRange;
 
-        [SerializeField] string fileName;
-        [SerializeField] AddressRange addressRange;
-
-        [Header("String Table")]
+        // FIELDS
+        // String table
         public byte[] padding; // 12 bytes
         public ShiftJisCString[] machineNames;
-        public ShiftJisCString[] unknownNames;
-
-        [Header("Vehicles")]
+        public ShiftJisCString[] partsInternalNames;
+        // Vehicles
         public VehicleParameters DarkSchneider;
         public VehicleParameters RedGazelle;
         public VehicleParameters WhiteCat;
@@ -158,8 +74,7 @@ namespace GameCube.GFZ.CarData
         public VehicleParameters GroovyTaxi;
         public VehicleParameters RollingTurtle;
         public VehicleParameters RainbowPhoenix;
-
-        [Header("Body")]
+        // Body Parts
         public VehicleParameters BraveEagle;
         public VehicleParameters GalaxyFalcon;
         public VehicleParameters GiantPlanet;
@@ -185,8 +100,7 @@ namespace GameCube.GFZ.CarData
         public VehicleParameters MetalShell;
         public VehicleParameters SpeedyDragon;
         public VehicleParameters LibertyManta;
-
-        [Header("Cockpit")]
+        // Cockpit parts
         public VehicleParameters WonderWorm;
         public VehicleParameters RushCyclone;
         public VehicleParameters CombatCannon;
@@ -212,8 +126,7 @@ namespace GameCube.GFZ.CarData
         public VehicleParameters ScudViper;
         public VehicleParameters RoundDisk;
         public VehicleParameters EnergyCrest;
-
-        [Header("Booster")]
+        // Booster parts
         public VehicleParameters Euros_01;
         public VehicleParameters Triangle_GT;
         public VehicleParameters Velocity_J;
@@ -241,25 +154,22 @@ namespace GameCube.GFZ.CarData
         public VehicleParameters Triple_Z;
 
 
-        #endregion
-
-        #region PROPERTIES
-
-
+        // Properties
         public AddressRange AddressRange
         {
             get => addressRange;
             set => addressRange = value;
         }
-
         public string FileName
         {
             get => fileName;
             set => fileName = value;
         }
 
-        public VehicleParameters[] Machines
-            => new VehicleParameters[]
+        /// <summary>
+        /// Returns all machines in internal strucuture order (X, GX, AX)
+        /// </summary>
+        public VehicleParameters[] MachinesInternalOrder => new VehicleParameters[]
         {
             RedGazelle,
             WhiteCat,
@@ -304,8 +214,10 @@ namespace GameCube.GFZ.CarData
             RainbowPhoenix,
         };
 
-        public VehicleParameters[] BodyParts
-            => new VehicleParameters[]
+        /// <summary>
+        /// Returns all body parts in internal order.
+        /// </summary>
+        public VehicleParameters[] BodyParts => new VehicleParameters[]
         {
             BraveEagle,
             GalaxyFalcon,
@@ -334,8 +246,10 @@ namespace GameCube.GFZ.CarData
             LibertyManta,
         };
 
-        public VehicleParameters[] CockpitParts
-            => new VehicleParameters[]
+        /// <summary>
+        /// Returns all cockpoit parts in internal order.
+        /// </summary>
+        public VehicleParameters[] CockpitParts => new VehicleParameters[]
         {
             WonderWorm,
             RushCyclone,
@@ -364,8 +278,10 @@ namespace GameCube.GFZ.CarData
             EnergyCrest,
         };
 
-        public VehicleParameters[] BoosterParts
-            => new VehicleParameters[]
+        /// <summary>
+        /// 
+        /// </summary>
+        public VehicleParameters[] BoosterParts => new VehicleParameters[]
         {
             Euros_01,
             Triangle_GT,
@@ -394,60 +310,95 @@ namespace GameCube.GFZ.CarData
             Triple_Z,
         };
 
-        //public readonly int[] MachineIndex = new int[]
-        //{
-        //    1,
-        //    2,
-        //    3,
-        //    4,
-        //    5,
-        //    6,
-        //    7,
-        //    8,
-        //    9,
-        //    10,
-        //    11,
-        //    12,
-        //    13,
-        //    14,
-        //    15,
-        //    16,
-        //    17,
-        //    18,
-        //    19,
-        //    20,
-        //    21,
-        //    22,
-        //    23,
-        //    24,
-        //    25,
-        //    26,
-        //    27,
-        //    28,
-        //    29,
-        //    30,
-        //    0,
-        //    31,
-        //    32,
-        //    33,
-        //    34,
-        //    35,
-        //    36,
-        //    37,
-        //    38,
-        //    39,
-        //    40,
-        //};
+        /// <summary>
+        /// 
+        /// </summary>
+        public static readonly ShiftJisCString[] InternalPartNamesTable = new ShiftJisCString[]
+        {
+            "GC-D3",
+            "GC-E2",
+            "AC-B2",
+            "AC-C1",
+            "GC-C1",
+            "GC-C2",
+            "GC-C4",
+            "GC-D2",
+            "AC-C2",
+            "AC-A2",
+            "GC-B2",
+            "GC-A2",
+            "GC-A1",
+            "AC-B3",
+            "AC-D2",
+            "GC-D1",
+            "GC-C3",
+            "AC-C3",
+            "GC-B1",
+            "AC-B4",
+            "AC-E1",
+            "AC-A1",
+            "AC-B1",
+            "GC-E1",
+            "AC-D1",
+            "AC-C4",
+            "GC-B3",
+            "AC-E2",
+            "GC-A3",
+            "AC-D3",
+        };
 
-
-        #endregion
-
-        #region METHODS
+        /// <summary>
+        /// Ordered as they are in the file
+        /// </summary>
+        public static ShiftJisCString[] MachineNamesTable = new ShiftJisCString[]
+        {
+            "Rainbow Phoenix",
+            "Rolling Turtle",
+            "Groovy Taxi",
+            "Bunny Flash",
+            "Spark Moon",
+            "Silver Rat",
+            "Magic Seagull",
+            "Pink Spider",
+            "Cosmic Dolphin",
+            "Fat Shark",
+            "Dark Schneider",
+            "Black Bull",
+            "Crazy Bear",
+            "Mighty Hurricane",
+            "Mighty Typhoon",
+            "Wonder Wasp",
+            "Blood Hawk",
+            "Wild Boar",
+            "Night Thunder",
+            "Twin Noritta",
+            "Queen Meteor",
+            "King Meteor",
+            "Space Angler",
+            "Hyper Speeder",
+            "Green Panther",
+            "Sonic Phantom",
+            "Big Fang",
+            "Astro Robin",
+            "Death Anchor",
+            "Super Piranha",
+            "Mad Wolf",
+            "Little Wyvern",
+            "Great Star",
+            "Deep Claw",
+            "Blue Falcon",
+            "Wild Goose",
+            "Fire Stingray",
+            "Iron Tiger",
+            "Golden Fox",
+            "White Cat",
+            "Red Gazelle",
+        };
 
 
         public void Deserialize(BinaryReader reader)
         {
-            BinaryIoUtility.PushEndianess(kBigEndian);
+            BinaryIoUtility.PushEndianness(Endianness.LittleEndian);
 
             reader.ReadX(ref RedGazelle, true);
             reader.ReadX(ref WhiteCat, true);
@@ -493,20 +444,18 @@ namespace GameCube.GFZ.CarData
 
             // Read some padding
             reader.ReadX(ref padding, kPaddingSize);
-            foreach (var pad in padding)
-                System.Diagnostics.Debug.Assert(pad == 0);
+            foreach (var @byte in padding)
+                Assert.IsTrue(@byte == 0);
 
-            BinaryIoUtility.PushEndianess(kLittleEndian);
-            machineNames = new ShiftJisCString[kMachineNameTable];
-            for (int i = 0; i < machineNames.Length; i++)
+            BinaryIoUtility.PushEndianness(Endianness.LittleEndian);
             {
-                //reader.ReadXCString(ref machineNames[i], System.Text.Encoding.ASCII);
-
-                // Does this serialize the new reference in the array?
-                reader.ReadX(ref machineNames[i], true);
+                // 2022/01/28: I may have broken this. Used to be for-loop
+                // manually assigning each value from length-init array.
+                reader.ReadX(ref machineNames, kMachineNameTable, true);
             }
             BinaryIoUtility.PopEndianess();
 
+            // Body parts
             reader.ReadX(ref BraveEagle, true);
             reader.ReadX(ref GalaxyFalcon, true);
             reader.ReadX(ref GiantPlanet, true);
@@ -533,6 +482,7 @@ namespace GameCube.GFZ.CarData
             reader.ReadX(ref SpeedyDragon, true);
             reader.ReadX(ref LibertyManta, true);
 
+            // Cockpit parts
             reader.ReadX(ref WonderWorm, true);
             reader.ReadX(ref RushCyclone, true);
             reader.ReadX(ref CombatCannon, true);
@@ -559,6 +509,7 @@ namespace GameCube.GFZ.CarData
             reader.ReadX(ref RoundDisk, true);
             reader.ReadX(ref EnergyCrest, true);
 
+            // Booster parts
             reader.ReadX(ref Euros_01, true);
             reader.ReadX(ref Triangle_GT, true);
             reader.ReadX(ref Velocity_J, true);
@@ -585,14 +536,11 @@ namespace GameCube.GFZ.CarData
             reader.ReadX(ref Crown_77, true);
             reader.ReadX(ref Triple_Z, true);
 
-            BinaryIoUtility.PushEndianess(kLittleEndian);
-            unknownNames = new ShiftJisCString[kUnknownTable];
-            for (int i = 0; i < unknownNames.Length; i++)
+            BinaryIoUtility.PushEndianness(Endianness.LittleEndian);
             {
-                //reader.ReadXCString(ref unknownNames[i], System.Text.Encoding.ASCII);
-
-                // Does this serialize the new reference in the array?
-                reader.ReadX(ref unknownNames[i], true);
+                // 2022/01/28: I may have broken this. Used to be for-loop
+                // manually assigning each value from length-init array.
+                reader.ReadX(ref partsInternalNames, kPartsInternalTable, true);
             }
             BinaryIoUtility.PopEndianess();
 
@@ -601,8 +549,9 @@ namespace GameCube.GFZ.CarData
 
         public void Serialize(BinaryWriter writer)
         {
-            BinaryIoUtility.PushEndianess(kBigEndian);
+            BinaryIoUtility.PushEndianness(Endianness.BigEndian);
 
+            // Machines
             writer.WriteX(RedGazelle);
             writer.WriteX(WhiteCat);
             writer.WriteX(GoldenFox);
@@ -648,15 +597,14 @@ namespace GameCube.GFZ.CarData
             for (int i = 0; i < kPaddingSize; i++)
                 writer.WriteX((byte)0);
 
-            //BinaryIoUtility.PushEncoding(System.Text.Encoding.ASCII);
-            BinaryIoUtility.PushEndianess(kLittleEndian);
-            foreach (var name in machineNames)
+            // Machine names
+            BinaryIoUtility.PushEndianness(Endianness.LittleEndian);
             {
-                writer.WriteX(name);
+                writer.WriteX(machineNames, false);
             }
             BinaryIoUtility.PopEndianess();
-            //BinaryIoUtility.PopEncoding();
 
+            // Body parts
             writer.WriteX(BraveEagle);
             writer.WriteX(GalaxyFalcon);
             writer.WriteX(GiantPlanet);
@@ -683,6 +631,7 @@ namespace GameCube.GFZ.CarData
             writer.WriteX(SpeedyDragon);
             writer.WriteX(LibertyManta);
 
+            // Cockpoit parts
             writer.WriteX(WonderWorm);
             writer.WriteX(RushCyclone);
             writer.WriteX(CombatCannon);
@@ -709,6 +658,7 @@ namespace GameCube.GFZ.CarData
             writer.WriteX(RoundDisk);
             writer.WriteX(EnergyCrest);
 
+            // Booster parts
             writer.WriteX(Euros_01);
             writer.WriteX(Triangle_GT);
             writer.WriteX(Velocity_J);
@@ -735,21 +685,15 @@ namespace GameCube.GFZ.CarData
             writer.WriteX(Crown_77);
             writer.WriteX(Triple_Z);
 
-
-            //BinaryIoUtility.PushEncoding(System.Text.Encoding.ASCII);
-            BinaryIoUtility.PushEndianess(kLittleEndian);
-            foreach (var name in unknownNames)
+            // Custom parts names
+            BinaryIoUtility.PushEndianness(Endianness.LittleEndian);
             {
-                writer.WriteX(name);
+                writer.WriteX(partsInternalNames, false);
             }
             BinaryIoUtility.PopEndianess();
-            //BinaryIoUtility.PopEncoding();
 
             BinaryIoUtility.PopEndianess();
         }
-
-
-        #endregion
 
     }
 }

@@ -1,12 +1,13 @@
-﻿using Manifold.IO;
+﻿using Manifold;
+using Manifold.IO;
 using System;
-using System.Diagnostics;
 using System.IO;
 
 namespace GameCube.GFZ.CarData
 {
     [Serializable]
-    public struct CarDataPadding : IBinarySerializable
+    public struct CarDataPadding :
+        IBinarySerializable
     {
         public const int PaddingCount = 0x26;
 
@@ -34,7 +35,7 @@ namespace GameCube.GFZ.CarData
             var expectedValue = Padding;
             for (int i = 0; i < PaddingCount; i++)
             {
-                Debug.Assert(buffer[i] == expectedValue[i]);
+                Assert.IsTrue(buffer[i] == expectedValue[i]);
             }
         }
 

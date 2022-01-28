@@ -90,6 +90,19 @@ namespace Manifold.IO
             IsLittleEndian = isLittleEndian;
         }
 
+        /// <summary>
+        /// Pushes an endianness to a private stack. Subsequent calls to read
+        /// or write will use this endianness.
+        /// </summary>
+        /// <param name="isLittleEndian"></param>
+        public static void PushEndianness(Endianness endianness)
+        {
+            _endianessStack.Push(IsLittleEndian);
+
+            var value = endianness == Endianness.LittleEndian;
+            IsLittleEndian = value;
+        }
+
         #endregion
 
         #region READ

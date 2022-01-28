@@ -74,7 +74,7 @@ namespace Manifold.EditorTools.GC.GFZ.CarData
                         int indexTotal = machineCount + bodyCount + cockpitCount + boosterCount;
 
                         // MACHINE
-                        var machines = carData.Machines;
+                        var machines = carData.MachinesInternalOrder;
                         for (int machineIndex = 0; machineIndex < machineCount; machineIndex++)
                         {
                             // Get machine name, display progress bar
@@ -147,7 +147,7 @@ namespace Manifold.EditorTools.GC.GFZ.CarData
                         // Apply other values
                         carDataSobj.padding = carData.padding;
                         carDataSobj.machineNames = carData.machineNames;
-                        carDataSobj.unknownNames = carData.unknownNames;
+                        carDataSobj.unknownNames = carData.partsInternalNames;
 
                         EditorUtility.SetDirty(carDataSobj);
                     }
