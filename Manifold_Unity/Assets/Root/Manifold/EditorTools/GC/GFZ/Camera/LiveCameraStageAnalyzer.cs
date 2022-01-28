@@ -52,17 +52,17 @@ namespace Manifold.EditorTools.GC.GFZ.Camera
                 writer.WriteNextCol("Venue");
                 writer.WriteNextCol("Stage");
                 writer.WriteNextCol("Pan Index");
-                writer.WriteNextColNicify(nameof(CameraPan.frameCount));
-                writer.WriteNextColNicify(nameof(CameraPan.lerpSpeed));
-                writer.WriteNextColNicify(nameof(CameraPan.zero_0x08));
+                writer.WriteNextColNicify(nameof(CameraPan.FrameCount));
+                writer.WriteNextColNicify(nameof(CameraPan.LerpSpeed));
+                writer.WriteNextColNicify(nameof(CameraPan.Zeroes0x08));
                 writer.WriteNextCol("Section");
-                writer.WriteNextColNicify(nameof(CameraPan.from.cameraPosition));
-                writer.WriteNextColNicify(nameof(CameraPan.from.lookatPosition));
-                writer.WriteNextColNicify(nameof(CameraPan.from.fov));
-                writer.WriteNextColNicify(nameof(CameraPan.from.rotationRoll.Value));
-                writer.WriteNextColNicify(nameof(CameraPan.from.zero_0x1E));
-                writer.WriteNextColNicify(nameof(CameraPan.from.interpolation));
-                writer.WriteNextColNicify(nameof(CameraPan.from.zero_0x22));
+                writer.WriteNextColNicify(nameof(CameraPan.From.CameraPosition));
+                writer.WriteNextColNicify(nameof(CameraPan.From.LookAtPosition));
+                writer.WriteNextColNicify(nameof(CameraPan.From.FieldOfView));
+                writer.WriteNextColNicify(nameof(CameraPan.From.RotationRoll.Value));
+                writer.WriteNextColNicify(nameof(CameraPan.From.Zero_0x1E));
+                writer.WriteNextColNicify(nameof(CameraPan.From.Interpolation));
+                writer.WriteNextColNicify(nameof(CameraPan.From.Zero_0x22));
                 writer.WriteNextRow();
 
                 foreach (var sobj in analysisSobjs)
@@ -77,7 +77,7 @@ namespace Manifold.EditorTools.GC.GFZ.Camera
                         var stageIndex = int.Parse(stageIndexText);
                         var stageInfo = CourseUtility.GetCourseInfo(stageIndex);
 
-                        var panArray = new CameraPanPoint[] { pan.from, pan.to };
+                        var panArray = new CameraPanTarget[] { pan.From, pan.To };
                         for (int i = 0; i < panArray.Length; i++)
                         {
                             writer.WriteNextCol(sobj.FileName);
@@ -85,9 +85,9 @@ namespace Manifold.EditorTools.GC.GFZ.Camera
                             writer.WriteNextCol(stageInfo.Item1.GetDescription());
                             writer.WriteNextCol(stageInfo.Item3.GetDescription());
                             writer.WriteNextCol(panIndex);
-                            writer.WriteNextCol(pan.frameCount);
-                            writer.WriteNextCol(pan.lerpSpeed);
-                            writer.WriteNextCol(pan.zero_0x08);
+                            writer.WriteNextCol(pan.FrameCount);
+                            writer.WriteNextCol(pan.LerpSpeed);
+                            writer.WriteNextCol(pan.Zeroes0x08);
 
                             if (i == 0)
                             {
@@ -98,13 +98,13 @@ namespace Manifold.EditorTools.GC.GFZ.Camera
                                 writer.WriteNextCol("TO");
                             }
 
-                            writer.WriteNextCol(panArray[i].cameraPosition);
-                            writer.WriteNextCol(panArray[i].lookatPosition);
-                            writer.WriteNextCol(panArray[i].fov);
-                            writer.WriteNextCol(panArray[i].rotationRoll);
-                            writer.WriteNextCol(panArray[i].zero_0x1E);
-                            writer.WriteNextCol(panArray[i].interpolation);
-                            writer.WriteNextCol(panArray[i].zero_0x22);
+                            writer.WriteNextCol(panArray[i].CameraPosition);
+                            writer.WriteNextCol(panArray[i].LookAtPosition);
+                            writer.WriteNextCol(panArray[i].FieldOfView);
+                            writer.WriteNextCol(panArray[i].RotationRoll);
+                            writer.WriteNextCol(panArray[i].Zero_0x1E);
+                            writer.WriteNextCol(panArray[i].Interpolation);
+                            writer.WriteNextCol(panArray[i].Zero_0x22);
                             writer.WriteNextRow();
                         }
                         panIndex++;

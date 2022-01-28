@@ -23,14 +23,14 @@ namespace Manifold.EditorTools.GC.GFZ.Camera
 
             foreach (var pan in liveCameraStage.Pans)
             {
-                var cameraPos = pan.from.cameraPosition;
-                var lookatPos = pan.from.lookatPosition;
-                var fov = pan.from.fov;
-                for (int frame = 0; frame < pan.frameCount; frame++)
+                var cameraPos = pan.From.CameraPosition;
+                var lookatPos = pan.From.LookAtPosition;
+                var fov = pan.From.FieldOfView;
+                for (int frame = 0; frame < pan.FrameCount; frame++)
                 {
-                    cameraPos = Vector3.Lerp(cameraPos, pan.to.cameraPosition, pan.lerpSpeed);
-                    lookatPos = Vector3.Lerp(lookatPos, pan.to.lookatPosition, pan.lerpSpeed);
-                    fov = Mathf.Lerp(fov, pan.to.fov, pan.lerpSpeed);
+                    cameraPos = Vector3.Lerp(cameraPos, pan.To.CameraPosition, pan.LerpSpeed);
+                    lookatPos = Vector3.Lerp(lookatPos, pan.To.LookAtPosition, pan.LerpSpeed);
+                    fov = Mathf.Lerp(fov, pan.To.FieldOfView, pan.LerpSpeed);
 
                     camera.transform.position = cameraPos;
                     camera.transform.LookAt(lookatPos, Vector3.up);
@@ -50,14 +50,14 @@ namespace Manifold.EditorTools.GC.GFZ.Camera
 
             foreach (var pan in liveCameraStage.Pans)
             {
-                var cameraPos = pan.from.cameraPosition;
-                var lookatPos = pan.from.lookatPosition;
-                var fov = pan.from.fov;
-                for (int frame = 0; frame < pan.frameCount; frame++)
+                var cameraPos = pan.From.CameraPosition;
+                var lookatPos = pan.From.LookAtPosition;
+                var fov = pan.From.FieldOfView;
+                for (int frame = 0; frame < pan.FrameCount; frame++)
                 {
-                    cameraPos = Vector3.Lerp(cameraPos, pan.to.cameraPosition, pan.lerpSpeed);
-                    lookatPos = Vector3.Lerp(lookatPos, pan.to.lookatPosition, pan.lerpSpeed);
-                    fov = Mathf.Lerp(fov, pan.to.fov, pan.lerpSpeed);
+                    cameraPos = Vector3.Lerp(cameraPos, pan.To.CameraPosition, pan.LerpSpeed);
+                    lookatPos = Vector3.Lerp(lookatPos, pan.To.LookAtPosition, pan.LerpSpeed);
+                    fov = Mathf.Lerp(fov, pan.To.FieldOfView, pan.LerpSpeed);
 
                     transform.position = cameraPos;
                     transform.LookAt(lookatPos, Vector3.up);
@@ -65,7 +65,7 @@ namespace Manifold.EditorTools.GC.GFZ.Camera
                     Gizmos.DrawLine(cameraPos, lookatPos);
                     Gizmos.DrawSphere(cameraPos, gizmosScale * 0.5f);
                     Gizmos.DrawWireSphere(lookatPos, gizmosScale * 0.5f);
-                    Gizmos.DrawLine(cameraPos, cameraPos + transform.up * gizmosScale);
+                    Gizmos.DrawLine(cameraPos, (Vector3)cameraPos + transform.up * gizmosScale);
                 }
             }
 

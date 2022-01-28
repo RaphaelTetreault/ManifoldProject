@@ -1,54 +1,53 @@
-﻿using Manifold.IO;
+﻿using Manifold;
+using Manifold.IO;
 using System;
 using System.IO;
-using UnityEngine;
 
 namespace GameCube.GFZ.Camera
 {
     [Serializable]
-    public class LiveCameraStage : IBinarySerializable, IFile
+    public class LiveCameraStage :
+        IBinarySerializable,
+        IFile
     {
-        #region MEMBERS
+        // METADATA
+        private string fileName;
 
-        /// <summary>
-        /// Filename. This variable is called name to enable Unity to
-        /// display this name in the Inspector.
-        /// </summary>
-        [Header("Livecam Stage")]
-        [SerializeField]
-        string name;
-
-        [SerializeField]
+        // FIELDS
         protected CameraPan[] pans;
 
-        #endregion
 
-        #region PROPERTIES
-
+        // PROPERTIES
         public string FileName
         {
-            get => name;
-            set => name = value;
+            get => fileName;
+            set => fileName = value;
         }
 
-        public CameraPan[] Pans => pans;
+        public CameraPan[] Pans
+        {
+            get => pans;
+            set => pans = value;
+        }
 
-        #endregion
 
-        #region METHODS
-
+        // METHODS
         public void Deserialize(BinaryReader reader)
         {
-            var nPans = (int)(reader.BaseStream.Length / CameraPan.kSizeBytes);
-
+            // Figure out how many camera pans are in this file
+            var nPans = (int)(reader.BaseStream.Length / CameraPan.kStructureSize);
+            
+            // Read that many structures out of the file
             reader.ReadX(ref pans, nPans, true);
+
+            // Sanity check. We should be at the end of the stream
+            Assert.IsTrue(reader.BaseStream.IsAtEndOfStream());
         }
 
         public void Serialize(BinaryWriter writer)
         {
-            throw new NotImplementedException();
+            writer.WriteX(pans, false);
         }
 
-        #endregion
     }
 }
