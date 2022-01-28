@@ -787,7 +787,7 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
             var sceneIndex = sceneIn.ID;
             var sceneHash = md5.ComputeHash(readerIn.BaseStream);
             var sceneHashStr = HashUtility.ByteArrayToString(sceneHash);
-            var romHashStr = HashLibrary.ColiCourseMD5_GFZJ01[sceneIndex];
+            var romHashStr = GfzAssetHashes.ColiCourseMD5_GFZJ01[sceneIndex];
             if (romHashStr == sceneHashStr)
             {
                 sceneIn.Venue = CourseUtility.GetVenue(sceneIndex);

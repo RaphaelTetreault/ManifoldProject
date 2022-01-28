@@ -3,10 +3,10 @@ using System.Collections.Generic;
 
 namespace GameCube.GFZ
 {
-    public static class HashLibrary
+    public static class GfzAssetHashes
     {
         /// <summary>
-        /// Readonly table of MD5 hashes for each stage (decompressed) in GFZJ01
+        /// Readonly table of MD5 hashes for each stage (decompressed) in GFZJ01.
         /// </summary>
         public static readonly Dictionary<int, string> ColiCourseMD5_GFZJ01 = new Dictionary<int, string>()
         {
@@ -57,7 +57,7 @@ namespace GameCube.GFZ
             { 01, "4178a91a2deff2069099719940eced75" },
             { 03, "8669ce6cbe7a06f8dbd9b61b53b7b087" },
             { 05, "4010769a44ce3c4f41b93179a43e580c" },
-            { 07, "a8da0bd6f68cd15af2157240f5321293" }, // changed vs jp
+            { 07, "a8da0bd6f68cd15af2157240f5321293" }, // PTAD changed vs jp version
             { 08, "23957fba9aa19e5f0e44e81bc97008bb" },
             { 09, "16474256fd7f6e9b8a5c7cb02b5f2fee" },
             { 10, "666a9209ccaff76310017a76c3081a38" },
@@ -69,7 +69,7 @@ namespace GameCube.GFZ
             { 17, "74703e3f71ad4d8874a3bae82c67c66e" },
             { 21, "68767b1daf72bc9d4149ace6d8680c31" },
             { 24, "14c7add4c079c735d73a0c3843e6e30f" },
-            { 25, "8d41b351da4d32e5578cf8b0c1a441fd" }, // changed vs jp
+            { 25, "8d41b351da4d32e5578cf8b0c1a441fd" }, // SOLS changed vs jp version
             { 26, "a06f5a1b52b3a0ffff8806c5cfe58fc0" },
             { 27, "36e302eaa978390c8e27f4eed97e9695" },
             { 28, "f924b48c7762e229cf3060f9b17160a4" },
