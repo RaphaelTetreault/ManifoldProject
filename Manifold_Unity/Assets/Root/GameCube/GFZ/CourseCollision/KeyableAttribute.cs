@@ -77,7 +77,7 @@ namespace GameCube.GFZ.CourseCollision
                 $" {nameof(zTangentOut)}: {zTangentOut:0.##})";
         }
 
-        public string PrintMultiLine(string indent = "\t", int indentLevel = 0)
+        public string PrintMultiLine(int indentLevel = 0, string indent = "\t")
         {
             var builder = new System.Text.StringBuilder();
 

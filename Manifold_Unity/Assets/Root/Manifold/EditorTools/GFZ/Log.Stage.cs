@@ -1,56 +1,22 @@
 ﻿using Manifold;
 using Manifold.IO;
 using Manifold.IO.GFZ;
-using Manifold.EditorTools;
+
 using GameCube.GFZ;
 using GameCube.GFZ.CourseCollision;
-using System;
+
 using System.Collections.Generic;
-using System.Linq;
 using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
-using UnityEditor;
+
 
 namespace Manifold.EditorTools.GFZ.Menu
 {
-    public static partial class Logs
+    public static partial class Log
     {
         public static class Stage
         {
-            public const string ActiveRoot = " (Active Root)";
-
-            #region MENU ITEM
-
-
-
-            #endregion
-
-
-
-            /// <summary>
-            /// Writes simple log which enumerates all data with ToString() call.
-            /// </summary>
-            [MenuItem(Const.Menu.logs + "Log All Stages" + ActiveRoot)]
-            public static void LogAllStage()
-            {
-                var settings = GfzProjectWindow.GetSettings();
-
-                foreach (var coliScene in ColiCourseIO.LoadAllStages(settings.StageDir, "Logging Stages..."))
-                {
-                    var outputFile = $"{settings.LogOutput}/log-{coliScene.FileName}.txt";
-                    var log = new TextLogger(outputFile);
-                    LogScene(log, coliScene);
-                    log.Flush();
-                    log.Close();
-                }
-
-                OSUtility.OpenDirectory(settings.LogOutput);
-            }
-
-
-            public static void LogAnimationClips(TextLogger log, ColiScene scene, string indent = "\t", int indentLevel = 0)
+    
+            public static void LogAnimationClips(TextLogger log, ColiScene scene, int indentLevel = 0, string indent = "\t")
             {
                 foreach (var dynamicSceneObject in scene.dynamicSceneObjects)
                 {
@@ -60,17 +26,35 @@ namespace Manifold.EditorTools.GFZ.Menu
                     if (animationClip == null)
                         continue;
 
-                    var printOut = animationClip.PrintMultiLine(indent, indentLevel);
+                    var printOut = animationClip.PrintMultiLine(indentLevel, indent);
                     log.Write(printOut);
                 }
             }
 
+            public static void LogSceneMetadata(TextLogger log, ColiScene scene, int indentLevel = 0, string indent = "\t")
+            {
+                log.WriteLine($"Venue: {scene.Venue}");
+                log.WriteLine($"Course: {scene.VenueName} [{scene.CourseName}]");
+                log.WriteLine($"Author: {scene.Author}");
+                log.WriteLine($"{nameof(CircuitType)}: {scene.circuitType}");
+                log.WriteLine($"{nameof(Bool32)}: {scene.unkBool32_0x58}");
+                log.WriteLine($"{nameof(scene.unkRange0x00)}: {scene.unkRange0x00}");
+            }
 
-            public static void LogScene(TextLogger log, ColiScene scene)
+            public static void LogScene(TextLogger log, ColiScene scene, int indentLevel = 0, string indent = "\t")
             {
                 // TODO: write header information
 
-                LogAnimationClips(log, scene);
+                LogSceneMetadata(log, scene, indentLevel, indent);
+                log.WriteLine();
+
+                foreach (var dynamicSceneObject in scene.dynamicSceneObjects)
+                {
+                    var animationClip = dynamicSceneObject.animationClip;
+                    if (animationClip != null)
+                        log.Write(animationClip.PrintMultiLine(indentLevel, indent));
+                }
+
             }
 
 
@@ -85,14 +69,7 @@ namespace Manifold.EditorTools.GFZ.Menu
                 log.WriteHeading("SERIALIZATION SUMMARY", padding, h1Width);
                 log.WriteLine();
 
-                log.WriteHeading("GENERAL", padding, h1Width);
-                log.WriteLine($"Venue: {coliScene.Venue}");
-                log.WriteLine($"Course: {coliScene.VenueName} [{coliScene.CourseName}]");
-                log.WriteLine($"Author: {coliScene.Author}");
-                log.WriteLine($"{nameof(CircuitType)}: {coliScene.circuitType}");
-                log.WriteLine($"{nameof(Bool32)}: {coliScene.staticColliderMeshesActive}");
-                log.WriteLine($"{nameof(Bool32)}: {coliScene.unkBool32_0x58}");
-                log.WriteLine($"{nameof(coliScene.unkRange0x00)}: {coliScene.unkRange0x00}");
+             
                 log.WriteLine(); //
                 log.WriteLine(); // yes, 2 WriteLines
 

@@ -6,7 +6,8 @@ namespace Manifold.IO
     /// <summary>
     /// 
     /// </summary>
-    public class TextLogger
+    public class TextLogger :
+        IDisposable
     {
         private StreamWriter streamWriter;
         public string Path { get; private set; }
@@ -150,6 +151,12 @@ namespace Manifold.IO
         public void Flush()
         {
             streamWriter.Flush();
+        }
+
+        public void Dispose()
+        {
+            Flush();
+            Close();
         }
     }
 }

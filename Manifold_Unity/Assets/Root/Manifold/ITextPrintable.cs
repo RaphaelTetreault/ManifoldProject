@@ -12,6 +12,6 @@
         /// Prints this value, possibly including newlines.
         /// </summary>
         /// <returns></returns>
-        public string PrintMultiLine(string indent = "\t", int indentLevel = 0);
+        public string PrintMultiLine(int indentLevel = 0, string indent = "\t");
     }
 }

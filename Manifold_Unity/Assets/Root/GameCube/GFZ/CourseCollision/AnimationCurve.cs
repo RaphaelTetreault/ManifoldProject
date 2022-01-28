@@ -96,7 +96,7 @@ namespace GameCube.GFZ.CourseCollision
             return $"{nameof(AnimationCurve)}({nameof(KeyableAttribute)}s:[{keyableAttributes.Length}])";
         }
 
-        public string PrintMultiLine(string indent = "\t", int indentLevel = 0)
+        public string PrintMultiLine(int indentLevel = 0, string indent = "\t")
         {
             int lengthKeyables = keyableAttributes.Length;
             var stringBuilder = new System.Text.StringBuilder();

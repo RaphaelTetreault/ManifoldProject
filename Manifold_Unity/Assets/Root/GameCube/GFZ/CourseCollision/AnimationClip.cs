@@ -117,7 +117,7 @@ namespace GameCube.GFZ.CourseCollision
                 $")";
         }
 
-        public string PrintMultiLine(string indent = "\t", int indentLevel = 0)
+        public string PrintMultiLine(int indentLevel = 0, string indent = "\t")
         {
             string[] labels = new string[] {
                 "Scale.X",
@@ -147,7 +147,7 @@ namespace GameCube.GFZ.CourseCollision
                 var prefix = $"{labels[i]} [{i:00}/{curves.Length}]";
                 builder.AppendLineIndented(indent, indentLevel, prefix);
 
-                var multilineText = animClipCurves.PrintMultiLine(indent, indentLevel+1);
+                var multilineText = animClipCurves.PrintMultiLine(indentLevel+1, indent);
                 builder.Append(multilineText);
             }
 
