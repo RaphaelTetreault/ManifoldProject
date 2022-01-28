@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using GameCube.GFZ;
+﻿using GameCube.GFZ;
 using GameCube.GFZ.CourseCollision;
 using Manifold.IO;
-using UnityEditor;
+using System.Collections.Generic;
 using System.IO;
+using UnityEditor;
 
 namespace Manifold.EditorTools.GFZ.Stage
 {

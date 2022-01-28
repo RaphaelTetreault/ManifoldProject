@@ -1,5 +1,4 @@
-﻿using Manifold;
-using Manifold.IO;
+﻿using Manifold.IO;
 using Manifold.IO.GFZ;
 using Manifold.EditorTools.GFZ.Stage;
 using GameCube.GFZ.CourseCollision;
@@ -8,10 +7,9 @@ using System.IO;
 using System.Linq;
 using UnityEditor;
 
-
 namespace Manifold.EditorTools.GFZ.UnityMenu
 {
-    public class TableLogStage
+    public class TableLogStageMenu
     {
         private const string menu = Const.Menu.Manifold + "Analysis/";
 

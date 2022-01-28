@@ -1,21 +1,10 @@
-﻿using Manifold;
-using Manifold.IO;
+﻿using Manifold.IO;
 using Manifold.IO.GFZ;
-using Manifold.EditorTools;
-using GameCube.GFZ;
-using GameCube.GFZ.CourseCollision;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
 using UnityEditor;
 
 namespace Manifold.EditorTools.GFZ.Menu
 {
-    public static class TextLogStage
+    public static class TextLogStageMenu
     {
         public const string ActiveRoot = " (Active Root)";
 
