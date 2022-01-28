@@ -530,7 +530,7 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
         {
             //
             var controlPoint = new GameObject();
-            var tag = controlPoint.AddComponent<TagTrackTransform>();
+            var tag = controlPoint.AddComponent<TagTrackSegment>();
             tag.Data = trackTransform;
             //
             controlPoint.name = $"{elementIndex++} {name}";

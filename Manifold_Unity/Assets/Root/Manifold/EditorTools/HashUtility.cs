@@ -4,7 +4,7 @@ using System.Text;
 using System.Security.Cryptography;
 using Manifold.IO;
 
-namespace Manifold.Conversion
+namespace Manifold.EditorTools
 {
     public static class HashUtility
     {
