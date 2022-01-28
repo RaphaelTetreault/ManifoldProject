@@ -1,5 +1,4 @@
 ﻿using Manifold.IO;
-using Manifold.EditorTools.GC.GFZ.CourseCollision;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 
@@ -91,8 +90,6 @@ namespace GameCube.GFZ.CourseCollision
             log.WriteAddress(coliScene.rootTrackSegments);
             log.WriteLine("ALL SEGMENTS");
             log.WriteAddress(coliScene.allTrackSegments);
-            log.WriteLine();
-            ColiCourseIO.TestHash(log, coliScene);
             log.WriteLine();
 
             // This block writes out the contents of each TrackSegments AnimationCurves

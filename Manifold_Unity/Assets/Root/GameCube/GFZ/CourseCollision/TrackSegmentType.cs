@@ -1,6 +1,3 @@
-// Legacy notes
-// 0, 1, 2, 4, 8
-
 namespace GameCube.GFZ.CourseCollision
 {
     /// <summary>

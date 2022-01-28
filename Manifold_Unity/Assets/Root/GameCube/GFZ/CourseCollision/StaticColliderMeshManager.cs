@@ -4,13 +4,9 @@ using System;
 using System.IO;
 using Unity.Mathematics;
 
-//if (unknownSolsTriggersPtr.IsNotNullPointer)
-//    DebugConsole.Log($"idx 8/9: {unknownSolsTriggersPtr.Length}, {unknownSolsTriggersPtr.HexAddress}");
-//if (unk_float != 0)
-//    DebugConsole.Log($"idx 22: {unk_float}");
-
-// Analysis: 2022-01-14
-
+//////////////////////////
+// Analysis: 2022-01-14 //
+//////////////////////////
 // ALWAYS USED
 // idx: 10, 11, 16
 //
