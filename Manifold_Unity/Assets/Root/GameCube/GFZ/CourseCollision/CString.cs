@@ -5,10 +5,8 @@ using System.Text;
 namespace Manifold.IO
 {
     /// <summary>
-    /// Simple wrapper class for string to encode and decode a null-terminated
-    /// string in ASCII format.
-    /// 
-    /// NOTE: may need to consider SHIFT-JIS uses.
+    /// Simple wrapper class for string to encode and decode a C-style null-terminated
+    /// string in SHIFT_JIS format.
     /// </summary>
     [Serializable]
     public class CString :
@@ -18,7 +16,7 @@ namespace Manifold.IO
     {
         // METADATA
         [UnityEngine.SerializeField] private AddressRange addressRange;
-        public Encoding encoding = Encoding.ASCII;
+        public Encoding encoding = Encoding.GetEncoding("shift_jis");
 
         // FIELDS
         public string value = string.Empty;
@@ -37,21 +35,23 @@ namespace Manifold.IO
         // METHODS
         public static string ReadCString(BinaryReader reader, Encoding encoding)
         {
-            var stringBuilder = new StringBuilder();
+            var bytes = new System.Collections.Generic.List<byte>();
 
-            // Continue while not at end of stream
-            //while (!reader.IsAtEndOfStream())
             while (true)
             {
-                var character = BinaryIoUtility.ReadChar(reader, encoding);
+                var @byte = reader.ReadByte();
+
                 // If a null character is read, stop
-                if (character == (char)0x00)
+                if (@byte == 0x00)
                     break;
-                stringBuilder.Append(character);
+
+                bytes.Add(@byte);
             }
 
-            return stringBuilder.ToString();
+            var str = encoding.GetString(bytes.ToArray());
+            return str;
         }
+
         public static void WriteCString(BinaryWriter writer, string value, Encoding encoding)
         {
             BinaryIoUtility.Write(writer, value, encoding, false);
