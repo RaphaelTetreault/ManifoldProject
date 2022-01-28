@@ -15,7 +15,7 @@ using UnityEditor;
 
 namespace Manifold.EditorTools.GFZ.Menu
 {
-    public static class LogStage
+    public static class TextLogStage
     {
         public const string ActiveRoot = " (Active Root)";
 
@@ -32,7 +32,7 @@ namespace Manifold.EditorTools.GFZ.Menu
                 var outputFile = $"{settings.LogOutput}/log-{coliScene.FileName}.txt";
                 using (var log = new TextLogger(outputFile))
                 {
-                    Log.Stage.LogScene(log, coliScene);
+                    TextLog.Stage.LogScene(log, coliScene);
                 }
             }
 

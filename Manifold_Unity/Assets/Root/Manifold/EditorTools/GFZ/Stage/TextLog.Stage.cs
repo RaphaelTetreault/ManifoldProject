@@ -11,7 +11,7 @@ using System.Security.Cryptography;
 
 namespace Manifold.EditorTools.GFZ.Menu
 {
-    public static partial class Log
+    public static partial class TextLog
     {
         public static class Stage
         {
