@@ -1,4 +1,5 @@
-﻿using Manifold.IO;
+﻿using GameCube.GFZ.CourseCollision;
+using Manifold.IO;
 using Manifold.IO.GFZ;
 using UnityEditor;
 
@@ -21,7 +22,7 @@ namespace Manifold.EditorTools.GFZ.Menu
                 var outputFile = $"{settings.LogOutput}/log-{coliScene.FileName}.txt";
                 using (var log = new TextLogger(outputFile))
                 {
-                    TextLog.Stage.LogScene(log, coliScene);
+                    StageTextLogger.LogScene(log, coliScene);
                 }
             }
 
