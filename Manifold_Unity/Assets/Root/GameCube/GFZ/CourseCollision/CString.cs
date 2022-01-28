@@ -14,9 +14,13 @@ namespace Manifold.IO
         IBinarySerializable,
         IEquatable<CString>
     {
+        // CONSTANTS
+        public const int shift_jis = 932;
+
+
         // METADATA
         [UnityEngine.SerializeField] private AddressRange addressRange;
-        public Encoding encoding = Encoding.GetEncoding("shift_jis");
+        public static readonly Encoding encoding = Encoding.GetEncoding(shift_jis);
 
         // FIELDS
         public string value = string.Empty;
