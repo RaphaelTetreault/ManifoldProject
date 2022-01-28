@@ -49,7 +49,7 @@ namespace GameCube.GFZ.CourseCollision
             }
             this.RecordEndAddress(reader);
             {
-                if (animationCurvePtrs.IsNotNullPointer)
+                if (animationCurvePtrs.IsNotNull)
                 {
                     reader.JumpToAddress(animationCurvePtrs);
                     animationCurve = new AnimationCurve(animationCurvePtrs.Length);

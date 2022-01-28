@@ -93,7 +93,7 @@ namespace GameCube.GFZ.CourseCollision
                 reader.ReadX(ref trackCurves, true);
 
                 // Read hairpin turn
-                if (trackCornerPtr.IsNotNullPointer)
+                if (trackCornerPtr.IsNotNull)
                 {
                     reader.JumpToAddress(trackCornerPtr);
                     reader.ReadX(ref trackCorner, true);
@@ -148,7 +148,7 @@ namespace GameCube.GFZ.CourseCollision
         {
             // Read children recusively
             var children = new TrackSegment[0];
-            if (childrenPtrs.IsNotNullPointer)
+            if (childrenPtrs.IsNotNull)
             {
                 // NOTE: children are always sequential (ArrayPointer)
                 reader.JumpToAddress(childrenPtrs);
@@ -223,7 +223,7 @@ namespace GameCube.GFZ.CourseCollision
             Assert.IsFalse(hasRailRight ^ railHeightRight > 0);
 
             // Ensure that if there is a turn that one of the two flags for it are set
-            if (trackCornerPtr.IsNotNullPointer)
+            if (trackCornerPtr.IsNotNull)
             {
                 bool hasTurnLeft = perimeterFlags.HasFlag(TrackPerimeterFlags.isLeftTurn);
                 bool hasTurnRight = perimeterFlags.HasFlag(TrackPerimeterFlags.isRightTurn);

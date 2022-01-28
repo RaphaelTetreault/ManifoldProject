@@ -65,19 +65,19 @@ namespace GameCube.GFZ.CourseCollision
                 reader.JumpToAddress(sceneObjectPtr);
                 reader.ReadX(ref sceneObject, true);
 
-                if (animationClipPtr.IsNotNullPointer)
+                if (animationClipPtr.IsNotNull)
                 {
                     reader.JumpToAddress(animationClipPtr);
                     reader.ReadX(ref animationClip, true);
                 }
 
-                if (textureScrollPtr.IsNotNullPointer)
+                if (textureScrollPtr.IsNotNull)
                 {
                     reader.JumpToAddress(textureScrollPtr);
                     reader.ReadX(ref textureScroll, true);
                 }
 
-                if (skeletalAnimatorPtr.IsNotNullPointer)
+                if (skeletalAnimatorPtr.IsNotNull)
                 {
                     reader.JumpToAddress(skeletalAnimatorPtr);
                     reader.ReadX(ref skeletalAnimator, true);
@@ -86,7 +86,7 @@ namespace GameCube.GFZ.CourseCollision
                 // 1518 objects without a transform
                 // They appear to use animation, so the matrix is null
                 // They do have a "normal" transform, though
-                if (transformMatrix3x4Ptr.IsNotNullPointer)
+                if (transformMatrix3x4Ptr.IsNotNull)
                 {
                     reader.JumpToAddress(transformMatrix3x4Ptr);
                     reader.ReadX(ref transformMatrix3x4, true);
@@ -128,7 +128,7 @@ namespace GameCube.GFZ.CourseCollision
         {
             // This pointer CANNOT be null and must refer to an object.
             Assert.IsTrue(sceneObject != null);
-            Assert.IsTrue(sceneObjectPtr.IsNotNullPointer);
+            Assert.IsTrue(sceneObjectPtr.IsNotNull);
             Assert.ReferencePointer(sceneObject, sceneObjectPtr);
             // This should always exist
             Assert.IsTrue(transformPRXS != null);

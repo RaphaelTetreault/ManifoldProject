@@ -43,7 +43,7 @@ namespace GameCube.GFZ.CourseCollision
             }
             this.RecordEndAddress(reader);
             {
-                Assert.IsTrue(sceneObjectPtr.IsNotNullPointer);
+                Assert.IsTrue(sceneObjectPtr.IsNotNull);
                 reader.JumpToAddress(sceneObjectPtr);
                 reader.ReadX(ref sceneObject, true);
             }
@@ -65,7 +65,7 @@ namespace GameCube.GFZ.CourseCollision
 
         public void ValidateReferences()
         {
-            Assert.IsTrue(sceneObjectPtr.IsNotNullPointer);
+            Assert.IsTrue(sceneObjectPtr.IsNotNull);
         }
 
 

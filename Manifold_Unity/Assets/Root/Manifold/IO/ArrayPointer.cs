@@ -34,7 +34,7 @@ namespace Manifold.IO
 
         public string HexAddress => $"0x{address:X8}";
 
-        public bool IsNotNullPointer => address != 0;
+        public bool IsNotNull => address != 0;
         public bool IsNull => address == 0;
 
 

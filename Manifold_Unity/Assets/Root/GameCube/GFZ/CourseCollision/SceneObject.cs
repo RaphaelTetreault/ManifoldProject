@@ -68,12 +68,12 @@ namespace GameCube.GFZ.CourseCollision
             }
             this.RecordEndAddress(reader);
             {
-                Assert.IsTrue(lodsPtr.IsNotNullPointer);
+                Assert.IsTrue(lodsPtr.IsNotNull);
                 reader.JumpToAddress(lodsPtr);
                 reader.ReadX(ref lods, lodsPtr.Length, true);
 
                 // Collision is not required, load only if pointer is not null
-                if (colliderGeometryPtr.IsNotNullPointer)
+                if (colliderGeometryPtr.IsNotNull)
                 {
                     reader.JumpToAddress(colliderGeometryPtr);
                     reader.ReadX(ref colliderMesh, true);
@@ -101,7 +101,7 @@ namespace GameCube.GFZ.CourseCollision
         {
             // This pointer CANNOT be null and must refer to an object.
             Assert.IsTrue(lods != null);
-            Assert.IsTrue(lodsPtr.IsNotNullPointer);
+            Assert.IsTrue(lodsPtr.IsNotNull);
             // Assert that instance/pointer is correct
             Assert.ReferencePointer(lods, lodsPtr);
             Assert.ReferencePointer(colliderMesh, colliderGeometryPtr);
@@ -113,7 +113,7 @@ namespace GameCube.GFZ.CourseCollision
                 $"{nameof(SceneObject)}(" +
                 $"{nameof(lodRenderFlags)}: {lodRenderFlags}, " +
                 $"LOD Count: {lodsPtr.Length}, " +
-                $"Has {nameof(ColliderMesh)}: {colliderGeometryPtr.IsNotNullPointer}" +
+                $"Has {nameof(ColliderMesh)}: {colliderGeometryPtr.IsNotNull}" +
                 $")";
         }
     }

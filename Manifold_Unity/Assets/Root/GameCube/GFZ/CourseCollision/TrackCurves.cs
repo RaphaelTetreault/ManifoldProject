@@ -61,7 +61,7 @@ namespace GameCube.GFZ.CourseCollision
                 for (int i = 0; i < animationCurves.Length; i++)
                 {
                     var arrayPointer = curvesPtr2D.ArrayPointers[i];
-                    if (arrayPointer.IsNotNullPointer)
+                    if (arrayPointer.IsNotNull)
                     {
                         // Deserialization is a bit different. Init array length here.
                         var animationCurve = new AnimationCurve(arrayPointer.Length);

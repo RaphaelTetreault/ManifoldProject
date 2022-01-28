@@ -76,7 +76,7 @@ namespace GameCube.GFZ.CourseCollision
             }
             this.RecordEndAddress(reader);
             {
-                if (storyObjectPathPtr.IsNotNullPointer)
+                if (storyObjectPathPtr.IsNotNull)
                 {
                     // Read array pointer
                     reader.JumpToAddress(storyObjectPathPtr);
@@ -117,7 +117,7 @@ namespace GameCube.GFZ.CourseCollision
                 $"{nameof(RockGroup)}: {RockGroup}, " +
                 $"{nameof(rockGroupOrderIndex)}: {rockGroupOrderIndex}, " +
                 $"{nameof(Difficulty)}: {Difficulty}, " +
-                $"Has {nameof(storyObjectPath)}: {storyObjectPathPtr.IsNotNullPointer}, " +
+                $"Has {nameof(storyObjectPath)}: {storyObjectPathPtr.IsNotNull}, " +
                 $"{nameof(position)}(x:{position.x:0.0}, y:{position.y:0.0}, z:{position.z:0.0}), " +
                 $"{nameof(rotation)}(x:{rotation.x:0.0}, y:{rotation.y:0.0}, z:{rotation.z:0.0}), " +
                 $"{nameof(scale)}(x:{scale.x:0.0}, y:{scale.y:0.0}, z:{scale.z:0.0})" +

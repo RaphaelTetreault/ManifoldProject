@@ -47,7 +47,7 @@ namespace GameCube.GFZ.CourseCollision
             this.RecordEndAddress(reader);
             {
                 // 2021/06/16: should ALWAYS exist
-                Assert.IsTrue(propertiesPtr.IsNotNullPointer);
+                Assert.IsTrue(propertiesPtr.IsNotNull);
                 reader.JumpToAddress(propertiesPtr);
                 reader.ReadX(ref properties, true);
             }

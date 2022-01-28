@@ -435,7 +435,7 @@ namespace GameCube.GFZ.CourseCollision
             writer.WriteNextCol(trackTransform.zero_0x48);
             writer.WriteNextCol(trackTransform.unk_0x4C);
             //
-            if (trackTransform.trackCornerPtr.IsNotNullPointer)
+            if (trackTransform.trackCornerPtr.IsNotNull)
             {
                 writer.WriteNextCol();
                 writer.WriteNextCol(trackTransform.trackCorner.width);
@@ -1469,7 +1469,7 @@ namespace GameCube.GFZ.CourseCollision
                     {
                         // Skip objects that don;'t have both matrix and decomposed rotation
                         // These are not helpful for comparision
-                        if (!sceneObject.transformMatrix3x4Ptr.IsNotNullPointer)
+                        if (!sceneObject.transformMatrix3x4Ptr.IsNotNull)
                             continue;
 
                         writer.WriteNextCol(scene.FileName);

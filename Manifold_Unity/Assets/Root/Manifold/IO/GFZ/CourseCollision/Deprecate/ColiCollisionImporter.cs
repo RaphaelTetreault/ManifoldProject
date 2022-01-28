@@ -72,7 +72,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                     {
                         count++;
 
-                        if (sceneObject.sceneObject.colliderGeometryPtr.IsNotNullPointer)
+                        if (sceneObject.sceneObject.colliderGeometryPtr.IsNotNull)
                         {
                             var meshName = sceneObject.Name;
                             ImportUtility.ProgressBar<SceneObject>(count, total, $"st{sceneSobj.Value.ID:00} {meshName}");

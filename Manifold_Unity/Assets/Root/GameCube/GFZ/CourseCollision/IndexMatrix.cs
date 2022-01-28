@@ -123,7 +123,7 @@ namespace GameCube.GFZ.CourseCollision
                     indexLists[i] = new IndexList();
 
                     var indexArrayPtr = indexListPtrs[i];
-                    if (indexArrayPtr.IsNotNullPointer)
+                    if (indexArrayPtr.IsNotNull)
                     {
                         var indexList = indexLists[i];
                         reader.JumpToAddress(indexArrayPtr);

@@ -55,7 +55,7 @@ namespace GameCube.GFZ.CourseCollision
                 for (int i = 0; i < kCount; i++)
                 {
                     var pointer = fieldPtrs[i];
-                    if (pointer.IsNotNullPointer)
+                    if (pointer.IsNotNull)
                     {
                         reader.JumpToAddress(pointer);
                         reader.ReadX(ref fields[i], true);

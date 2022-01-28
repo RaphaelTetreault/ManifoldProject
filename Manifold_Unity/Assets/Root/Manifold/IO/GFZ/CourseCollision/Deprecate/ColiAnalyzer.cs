@@ -537,7 +537,7 @@ namespace Manifold.IO.GFZ.CourseCollision
             writer.WriteNextCol(trackTransform.zero_0x48);
             writer.WriteNextCol(trackTransform.unk_0x4C);
             //
-            if (trackTransform.trackCornerPtr.IsNotNullPointer)
+            if (trackTransform.trackCornerPtr.IsNotNull)
             {
                 writer.WriteNextCol();
                 writer.WriteNextCol(trackTransform.trackCorner.width);
@@ -795,7 +795,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                     int gameObjectIndex = 0;
                     foreach (var sceneObject in file.Value.dynamicSceneObjects)
                     {
-                        if (!sceneObject.skeletalAnimator.propertiesPtr.IsNotNullPointer)
+                        if (!sceneObject.skeletalAnimator.propertiesPtr.IsNotNull)
                         {
                             continue;
                         }
@@ -1604,7 +1604,7 @@ namespace Manifold.IO.GFZ.CourseCollision
                     {
                         // Skip objects that don;'t have both matrix and decomposed rotation
                         // These are not helpful for comparision
-                        if (!sceneObject.transformMatrix3x4Ptr.IsNotNullPointer)
+                        if (!sceneObject.transformMatrix3x4Ptr.IsNotNull)
                             continue;
 
                         writer.WriteNextCol(file.FileName);

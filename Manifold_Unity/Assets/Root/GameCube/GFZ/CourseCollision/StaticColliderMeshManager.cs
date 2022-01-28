@@ -215,7 +215,7 @@ namespace GameCube.GFZ.CourseCollision
                 // 2022-01-24: disabled for testin export
                 //Assert.IsTrue(staticSceneObjectsPtr.Length != 0);
                 //Assert.IsTrue(staticSceneObjectsPtr.IsNotNullPointer);
-                Assert.IsTrue(unkDataPtr.IsNotNullPointer);
+                Assert.IsTrue(unkDataPtr.IsNotNull);
                 //DebugConsole.Log($"idx16: {unkBounds2DPtr.HexAddress}");
 
                 // Assert that all of this other junk is empty

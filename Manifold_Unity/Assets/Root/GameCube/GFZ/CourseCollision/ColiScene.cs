@@ -298,7 +298,7 @@ namespace GameCube.GFZ.CourseCollision
 
             // 0x80
             // Data is optional
-            if (fogCurvesPtr.IsNotNullPointer)
+            if (fogCurvesPtr.IsNotNull)
             {
                 reader.JumpToAddress(fogCurvesPtr);
                 reader.ReadX(ref fogCurves, true);
@@ -962,7 +962,7 @@ namespace GameCube.GFZ.CourseCollision
                 foreach (var hasReference in hasReferences)
                 {
                     var pointer = hasReference.GetPointer();
-                    if (pointer.IsNotNullPointer)
+                    if (pointer.IsNotNull)
                     {
                         writer.JumpToAddress(pointer);
                         hasReference.Serialize(writer);
@@ -1357,17 +1357,17 @@ namespace GameCube.GFZ.CourseCollision
                 Assert.IsTrue(zeroes0xD8[i] == 0);
 
             // Structures that always exist
-            Assert.IsTrue(trackNodesPtr.IsNotNullPointer);
-            Assert.IsTrue(surfaceAttributeAreasPtr.IsNotNullPointer);
-            Assert.IsTrue(trackMinHeightPtr.IsNotNullPointer);
-            Assert.IsTrue(staticColliderMeshesPtr.IsNotNullPointer);
-            Assert.IsTrue(zeroes0x20Ptr.IsNotNullPointer);
-            Assert.IsTrue(trackMinHeightPtr.IsNotNullPointer);
+            Assert.IsTrue(trackNodesPtr.IsNotNull);
+            Assert.IsTrue(surfaceAttributeAreasPtr.IsNotNull);
+            Assert.IsTrue(trackMinHeightPtr.IsNotNull);
+            Assert.IsTrue(staticColliderMeshesPtr.IsNotNull);
+            Assert.IsTrue(zeroes0x20Ptr.IsNotNull);
+            Assert.IsTrue(trackMinHeightPtr.IsNotNull);
             if (sceneObjects.Length > 0)
-                Assert.IsTrue(sceneObjectsPtr.IsNotNullPointer);
-            Assert.IsTrue(fogPtr.IsNotNullPointer);
-            Assert.IsTrue(trackLengthPtr.IsNotNullPointer);
-            Assert.IsTrue(trackCheckpointMatrixPtr.IsNotNullPointer);
+                Assert.IsTrue(sceneObjectsPtr.IsNotNull);
+            Assert.IsTrue(fogPtr.IsNotNull);
+            Assert.IsTrue(trackLengthPtr.IsNotNull);
+            Assert.IsTrue(trackCheckpointMatrixPtr.IsNotNull);
 
             // Ensure existing structures pointers were resolved correctly
             Assert.ReferencePointer(trackNodes, trackNodesPtr);
@@ -1407,7 +1407,7 @@ namespace GameCube.GFZ.CourseCollision
             where T : class, IBinarySerializable, new()
         {
             // If ptr is null, set reference to null, return
-            if (!ptr.IsNotNullPointer)
+            if (!ptr.IsNotNull)
             {
                 reference = null;
                 return;

@@ -60,7 +60,7 @@ namespace GameCube.GFZ.CourseCollision
                 if (tris.Length > 0)
                 {
                     Assert.IsTrue(triCount == tris.Length);
-                    Assert.IsTrue(trisPtr.IsNotNullPointer);
+                    Assert.IsTrue(trisPtr.IsNotNull);
 
                     foreach (var tri in tris)
                     {
@@ -74,7 +74,7 @@ namespace GameCube.GFZ.CourseCollision
                 if (quads.Length > 0)
                 {
                     Assert.IsTrue(quadCount == quads.Length);
-                    Assert.IsTrue(quadsPtr.IsNotNullPointer);
+                    Assert.IsTrue(quadsPtr.IsNotNull);
 
                     foreach (var quad in quads)
                     {
@@ -100,13 +100,13 @@ namespace GameCube.GFZ.CourseCollision
             }
             this.RecordEndAddress(reader);
             {
-                if (trisPtr.IsNotNullPointer)
+                if (trisPtr.IsNotNull)
                 {
                     reader.JumpToAddress(trisPtr);
                     reader.ReadX(ref tris, triCount, true);
                 }
 
-                if (quadsPtr.IsNotNullPointer)
+                if (quadsPtr.IsNotNull)
                 {
                     reader.JumpToAddress(quadsPtr);
                     reader.ReadX(ref quads, quadCount, true);

@@ -84,8 +84,8 @@ namespace GameCube.GFZ.CourseCollision
             Assert.ReferencePointer(segment, segmentPtr);
 
             // This type should never have any nulls
-            Assert.IsTrue(checkpointsPtr.IsNotNullPointer);
-            Assert.IsTrue(segmentPtr.IsNotNullPointer);
+            Assert.IsTrue(checkpointsPtr.IsNotNull);
+            Assert.IsTrue(segmentPtr.IsNotNull);
         }
 
         public override string ToString()

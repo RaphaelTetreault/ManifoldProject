@@ -40,7 +40,7 @@ namespace GameCube.GFZ.CourseCollision
             }
             this.RecordEndAddress(reader);
             {
-                if (animationCurvePtr.IsNotNullPointer)
+                if (animationCurvePtr.IsNotNull)
                 {
                     // Init anim curve, jump, read without creating new instance
                     animationCurve = new AnimationCurve(animationCurvePtr.Length);

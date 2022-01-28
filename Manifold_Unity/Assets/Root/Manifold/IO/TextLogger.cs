@@ -60,7 +60,7 @@ namespace Manifold.IO
             {
                 WriteLine($"Address: 0x{0:x8}{typeDesc}\tnull");
             }
-            else if (!value.GetPointer().IsNotNullPointer)
+            else if (!value.GetPointer().IsNotNull)
             {
                 WriteLine($"Address: 0x{0:x8}{typeDesc}\t(pointer is null, C# reference exists)");
             }
@@ -85,7 +85,7 @@ namespace Manifold.IO
                 var value = values[i];
 
                 // Do not write null entries if we don't want them
-                if (value == null || !value.GetPointer().IsNotNullPointer)
+                if (value == null || !value.GetPointer().IsNotNull)
                     if (!WriteNullInArray)
                         continue;
 
