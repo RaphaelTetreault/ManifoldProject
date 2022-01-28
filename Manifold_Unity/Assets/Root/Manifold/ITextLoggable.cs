@@ -6,12 +6,12 @@
         /// Prints this value without newlines.
         /// </summary>
         /// <returns></returns>
-        public string ToStringSingleLine();
+        public string PrintSingleLine();
 
         /// <summary>
         /// Prints this value, possibly including newlines.
         /// </summary>
         /// <returns></returns>
-        public string ToStringMultiLine();
+        public string PrintMultiLine();
     }
 }
