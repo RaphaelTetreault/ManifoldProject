@@ -287,21 +287,37 @@ namespace Manifold.IO
         public static TEnum ReadEnum<TEnum>(BinaryReader binaryReader) where TEnum : Enum
         {
             var type = Enum.GetUnderlyingType(typeof(TEnum));
-            switch (type.Name)
+            switch (type)
             {
                 // Signed backing type
-                case nameof(SByte): return (TEnum)(object)ReadInt8(binaryReader);
-                case nameof(Int16): return (TEnum)(object)ReadInt16(binaryReader);
-                case nameof(Int32): return (TEnum)(object)ReadInt32(binaryReader);
-                case nameof(Int64): return (TEnum)(object)ReadInt64(binaryReader);
+                case Type _ when type == typeof(sbyte):  return (TEnum)(object)ReadInt8(binaryReader);
+                case Type _ when type == typeof(short):  return (TEnum)(object)ReadInt16(binaryReader);
+                case Type _ when type == typeof(int):    return (TEnum)(object)ReadInt32(binaryReader);
+                case Type _ when type == typeof(long):   return (TEnum)(object)ReadInt64(binaryReader);
                 // Unsigned backing type
-                case nameof(Byte): return (TEnum)(object)ReadUInt8(binaryReader);
-                case nameof(UInt16): return (TEnum)(object)ReadUInt16(binaryReader);
-                case nameof(UInt32): return (TEnum)(object)ReadUInt32(binaryReader);
-                case nameof(UInt64): return (TEnum)(object)ReadUInt64(binaryReader);
+                case Type _ when type == typeof(byte):   return (TEnum)(object)ReadUInt8(binaryReader);
+                case Type _ when type == typeof(ushort): return (TEnum)(object)ReadUInt16(binaryReader);
+                case Type _ when type == typeof(uint):   return (TEnum)(object)ReadUInt32(binaryReader);
+                case Type _ when type == typeof(ulong):  return (TEnum)(object)ReadUInt64(binaryReader);
 
-                default: throw new NotImplementedException();
+                default: throw new NotImplementedException("Unsupported Enum backing type used!");
             }
+
+            //switch (type.Name)
+            //{
+            //    // Signed backing type
+            //    case nameof(SByte): return (TEnum)(object)ReadInt8(binaryReader);
+            //    case nameof(Int16): return (TEnum)(object)ReadInt16(binaryReader);
+            //    case nameof(Int32): return (TEnum)(object)ReadInt32(binaryReader);
+            //    case nameof(Int64): return (TEnum)(object)ReadInt64(binaryReader);
+            //    // Unsigned backing type
+            //    case nameof(Byte):   return (TEnum)(object)ReadUInt8(binaryReader);
+            //    case nameof(UInt16): return (TEnum)(object)ReadUInt16(binaryReader);
+            //    case nameof(UInt32): return (TEnum)(object)ReadUInt32(binaryReader);
+            //    case nameof(UInt64): return (TEnum)(object)ReadUInt64(binaryReader);
+
+            //    default: throw new NotImplementedException();
+            //}
         }
 
         #endregion
