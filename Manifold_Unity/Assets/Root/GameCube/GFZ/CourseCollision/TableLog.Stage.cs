@@ -779,8 +779,8 @@ namespace GameCube.GFZ.CourseCollision
                 writer.WriteNextCol("Course");
                 writer.WriteNextCol("AX/GX");
                 //
-                writer.WriteNextCol(nameof(ColiScene.unkRange0x00) + "." + nameof(Range.near));
-                writer.WriteNextCol(nameof(ColiScene.unkRange0x00) + "." + nameof(Range.far));
+                writer.WriteNextCol(nameof(ColiScene.unkRange0x00) + "." + nameof(ViewRange.near));
+                writer.WriteNextCol(nameof(ColiScene.unkRange0x00) + "." + nameof(ViewRange.far));
                 writer.WriteNextCol(nameof(ColiScene.trackNodesPtr));
                 writer.WriteNextCol(nameof(ColiScene.trackNodesPtr));
                 writer.WriteNextCol(nameof(ColiScene.surfaceAttributeAreasPtr));
@@ -1230,8 +1230,8 @@ namespace GameCube.GFZ.CourseCollision
                 writer.WriteNextCol("AX/GX");
                 //
                 writer.WriteNextCol(nameof(Fog.interpolation));
-                writer.WriteNextCol(nameof(Fog.fogRange) + "." + nameof(Range.near));
-                writer.WriteNextCol(nameof(Fog.fogRange) + "." + nameof(Range.far));
+                writer.WriteNextCol(nameof(Fog.fogRange) + "." + nameof(ViewRange.near));
+                writer.WriteNextCol(nameof(Fog.fogRange) + "." + nameof(ViewRange.far));
                 writer.WriteNextCol(nameof(Fog.colorRGBA) + ".R");
                 writer.WriteNextCol(nameof(Fog.colorRGBA) + ".G");
                 writer.WriteNextCol(nameof(Fog.colorRGBA) + ".B");
@@ -1673,8 +1673,8 @@ namespace GameCube.GFZ.CourseCollision
                 writer.WriteNextCol("Course");
                 writer.WriteNextCol("AX/GX");
                 //
-                writer.WriteNextCol(nameof(Range) + "." + nameof(Range.near));
-                writer.WriteNextCol(nameof(Range) + "." + nameof(Range.far));
+                writer.WriteNextCol(nameof(ViewRange) + "." + nameof(ViewRange.near));
+                writer.WriteNextCol(nameof(ViewRange) + "." + nameof(ViewRange.far));
                 writer.WriteNextCol(nameof(ColiScene.trackMinHeight));
                 writer.WriteNextCol(nameof(ColiScene.trackLength));
                 //

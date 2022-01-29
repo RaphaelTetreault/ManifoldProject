@@ -293,7 +293,7 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
                     coliScene.Venue = sceneParams.venue;
                     coliScene.Author = sceneParams.author;
                     // Construct range from 2 parameters
-                    coliScene.unkRange0x00 = new Range(sceneParams.rangeNear, sceneParams.rangeFar);
+                    coliScene.unkRange0x00 = new ViewRange(sceneParams.rangeNear, sceneParams.rangeFar);
                     // Use functions to get form parameters
                     coliScene.fog = sceneParams.ToGfzFog();
                     coliScene.fogCurves = sceneParams.ToGfzFogCurves();

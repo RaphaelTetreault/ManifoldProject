@@ -48,7 +48,7 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
         {
             // Create fog from parameters
             var fog = new Fog();
-            fog.fogRange = new Range(fogNear, fogFar);
+            fog.fogRange = new ViewRange(fogNear, fogFar);
             fog.colorRGBA = new float3(color.r, color.g, color.b);
             fog.zero0x18 = new float3();
             return fog;

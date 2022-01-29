@@ -140,7 +140,7 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
             // Get scene-wide parameters from SceneParameters
             {
                 // Construct range from 2 parameters
-                scene.unkRange0x00 = new Range(sceneParams.rangeNear, sceneParams.rangeFar);
+                scene.unkRange0x00 = new ViewRange(sceneParams.rangeNear, sceneParams.rangeFar);
                 // Use functions to get form parameters
                 scene.fog = sceneParams.ToGfzFog();
                 scene.fogCurves = sceneParams.ToGfzFogCurves();

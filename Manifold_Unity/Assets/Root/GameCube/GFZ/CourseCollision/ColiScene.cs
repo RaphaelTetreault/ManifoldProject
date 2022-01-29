@@ -61,7 +61,7 @@ namespace GameCube.GFZ.CourseCollision
 
         // FIELDS
         // Note: order of folowing structures is same as they appear in binary
-        public Range unkRange0x00;
+        public ViewRange unkRange0x00;
         public ArrayPointer trackNodesPtr;
         public ArrayPointer surfaceAttributeAreasPtr;
         // 2022-01-14: this is a bool, the game loads the following structure regardless

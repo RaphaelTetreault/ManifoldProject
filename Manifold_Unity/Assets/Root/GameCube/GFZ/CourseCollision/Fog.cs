@@ -21,7 +21,7 @@ namespace GameCube.GFZ.CourseCollision
         // FIELDS
         // Note that default values appear in AX tests and similar. A good default set.
         public FogType interpolation = FogType.Exponential;
-        public Range fogRange = new Range(20f, 100f); // Not confirmed, but suspected. Near/far for fog. Negative near = always affected.
+        public ViewRange fogRange = new ViewRange(20f, 100f); // Not confirmed, but suspected. Near/far for fog. Negative near = always affected.
         public float3 colorRGBA = float3.zero; // color as 3 floats in order RGB
         public float3 zero0x18 = float3.zero; // Always zero. Perhaps always black? The last 2 values are not used in anim curve, though.
 
@@ -90,7 +90,7 @@ namespace GameCube.GFZ.CourseCollision
             return new Fog()
             {
                 interpolation = FogType.Exponential,
-                fogRange = new Range(300f, 3500f),
+                fogRange = new ViewRange(300f, 3500f),
                 // #ffffec - soft yellow, almost beige
                 colorRGBA = new float3(1f, 1f, 0.924f),
             };
@@ -100,7 +100,7 @@ namespace GameCube.GFZ.CourseCollision
             return new Fog()
             {
                 interpolation = FogType.ExponentialSquared,
-                fogRange = new Range(500f, 4000f),
+                fogRange = new ViewRange(500f, 4000f),
                 // #afdcff - soft blue
                 colorRGBA = new float3(0.686f, 0.862f, 1f),
             };
@@ -110,7 +110,7 @@ namespace GameCube.GFZ.CourseCollision
             return new Fog()
             {
                 interpolation = FogType.Exponential,
-                fogRange = new Range(0f, 20000f),
+                fogRange = new ViewRange(0f, 20000f),
                 // #000000 - black
                 colorRGBA = new float3(0f, 0f, 0f),
             };
@@ -120,7 +120,7 @@ namespace GameCube.GFZ.CourseCollision
             return new Fog()
             {
                 interpolation = FogType.Exponential,
-                fogRange = new Range(4500f, 9000f),
+                fogRange = new ViewRange(4500f, 9000f),
                 // #000000 - black
                 colorRGBA = new float3(0f, 0f, 0f),
             };
@@ -130,7 +130,7 @@ namespace GameCube.GFZ.CourseCollision
             return new Fog()
             {
                 interpolation = FogType.Linear,
-                fogRange = new Range(0f, 5500f),
+                fogRange = new ViewRange(0f, 5500f),
                 // #c79064 - mid-tone brown
                 colorRGBA = new float3(0.78f, 0.566f, 0.391f),
             };
@@ -140,7 +140,7 @@ namespace GameCube.GFZ.CourseCollision
             return new Fog()
             {
                 interpolation = FogType.Exponential,
-                fogRange = new Range(0f, 12000f),
+                fogRange = new ViewRange(0f, 12000f),
                 // #2d3c50 - deep blue
                 colorRGBA = new float3(0.176f, 0.235f, 0.313f),
             };
@@ -151,7 +151,7 @@ namespace GameCube.GFZ.CourseCollision
             {
                 interpolation = FogType.ExponentialSquared,
                 // Intersection: -500, Mobius Ring: -250,
-                fogRange = new Range(-375f, 2400f),
+                fogRange = new ViewRange(-375f, 2400f),
                 // 0.701, 0.780, 0.898 - dull blue (like sky color)
                 colorRGBA = new float3(0.703f, 0.781f, 0.898f),
             };
@@ -161,7 +161,7 @@ namespace GameCube.GFZ.CourseCollision
             return new Fog()
             {
                 interpolation = FogType.ExponentialSquared,
-                fogRange = new Range(0f, 7500f),
+                fogRange = new ViewRange(0f, 7500f),
                 // #b3bd9f - dull green
                 colorRGBA = new float3(0.703f, 0.7422f, 0.625f),
             };
@@ -172,7 +172,7 @@ namespace GameCube.GFZ.CourseCollision
             {
                 interpolation = FogType.Exponential,
                 // Thunder Road: 3000f
-                fogRange = new Range(0f, 2400f),
+                fogRange = new ViewRange(0f, 2400f),
                 // #181a1e - very dark blue, almost black
                 colorRGBA = new float3(0.094f, 0.102f, 0.117f),
             };
@@ -182,7 +182,7 @@ namespace GameCube.GFZ.CourseCollision
             return new Fog()
             {
                 interpolation = FogType.Exponential,
-                fogRange = new Range(20f, 100f),
+                fogRange = new ViewRange(20f, 100f),
                 // #000000 - black
                 colorRGBA = new float3(0f, 0f, 0f),
             };
@@ -192,7 +192,7 @@ namespace GameCube.GFZ.CourseCollision
             return new Fog()
             {
                 interpolation = FogType.Exponential,
-                fogRange = new Range(0f, 12000f),
+                fogRange = new ViewRange(0f, 12000f),
                 // #2d3c50 - dark blue
                 colorRGBA = new float3(0.1765f, 0.2353f, 0.3137f),
             };
@@ -202,7 +202,7 @@ namespace GameCube.GFZ.CourseCollision
             return new Fog()
             {
                 interpolation = FogType.ExponentialSquared,
-                fogRange = new Range(2000f, 15000f),
+                fogRange = new ViewRange(2000f, 15000f),
                 // #000000 - black
                 colorRGBA = new float3(0f, 0f, 0f),
             };
@@ -212,7 +212,7 @@ namespace GameCube.GFZ.CourseCollision
             return new Fog()
             {
                 interpolation = FogType.Exponential,
-                fogRange = new Range(0f, 8000f),
+                fogRange = new ViewRange(0f, 8000f),
                 // #000000 - black
                 colorRGBA = new float3(0f, 0f, 0f),
             };
@@ -222,7 +222,7 @@ namespace GameCube.GFZ.CourseCollision
             return new Fog()
             {
                 interpolation = FogType.Exponential,
-                fogRange = new Range(0f, 16000f),
+                fogRange = new ViewRange(0f, 16000f),
                 // #000000 - very, very dark blue, consider black
                 colorRGBA = new float3(0f, 0f, 0.1f),
             };
@@ -232,7 +232,7 @@ namespace GameCube.GFZ.CourseCollision
             return new Fog()
             {
                 interpolation = FogType.Exponential,
-                fogRange = new Range(0f, 16000f),
+                fogRange = new ViewRange(0f, 16000f),
                 // #81634a - brown
                 colorRGBA = new float3(0.505f, 0.388f, 0.29f),
             };
@@ -242,7 +242,7 @@ namespace GameCube.GFZ.CourseCollision
             return new Fog()
             {
                 interpolation = FogType.ExponentialSquared,
-                fogRange = new Range(20f, 100f),
+                fogRange = new ViewRange(20f, 100f),
                 // #000000 - black
                 colorRGBA = new float3(0f, 0f, 0f),
             };
@@ -252,7 +252,7 @@ namespace GameCube.GFZ.CourseCollision
             return new Fog()
             {
                 interpolation = FogType.Exponential,
-                fogRange = new Range(0f, 12000f),
+                fogRange = new ViewRange(0f, 12000f),
                 // #2d3c50 - dark blue
                 colorRGBA = new float3(0.176f, 0.235f, 0.313f),
             };
@@ -263,7 +263,7 @@ namespace GameCube.GFZ.CourseCollision
             return new Fog()
             {
                 interpolation = FogType.ExponentialSquared,
-                fogRange = new Range(-3000f, 20000f),
+                fogRange = new ViewRange(-3000f, 20000f),
                 // #373250 - dark indigo
                 colorRGBA = new float3(0.2156f, 0.196f, 0.3137f),
             };
@@ -273,7 +273,7 @@ namespace GameCube.GFZ.CourseCollision
             return new Fog()
             {
                 interpolation = FogType.Linear,
-                fogRange = new Range(0f, 1500f),
+                fogRange = new ViewRange(0f, 1500f),
                 // #ff7832 - saturated orange
                 colorRGBA = new float3(1f, 0.469f, 0.1954f),
             };
@@ -283,7 +283,7 @@ namespace GameCube.GFZ.CourseCollision
             return new Fog()
             {
                 interpolation = FogType.Linear,
-                fogRange = new Range(200f, 1350f),
+                fogRange = new ViewRange(200f, 1350f),
                 // #db5528 - mid-tone red-orange
                 colorRGBA = new float3(0.8594f, 0.332f, 0.1563f),
             };
@@ -293,7 +293,7 @@ namespace GameCube.GFZ.CourseCollision
             return new Fog()
             {
                 interpolation = FogType.Exponential,
-                fogRange = new Range(600f, 7470f),
+                fogRange = new ViewRange(600f, 7470f),
                 // #00c864 - saturated green-teal
                 colorRGBA = new float3(0f, 0.7843f, 0.3922f),
             };
@@ -303,7 +303,7 @@ namespace GameCube.GFZ.CourseCollision
             return new Fog()
             {
                 interpolation = FogType.ExponentialSquared,
-                fogRange = new Range(0f, 20000f),
+                fogRange = new ViewRange(0f, 20000f),
                 // #000000 - black
                 colorRGBA = new float3(0f, 0f, 0f),
             };
@@ -313,7 +313,7 @@ namespace GameCube.GFZ.CourseCollision
             return new Fog()
             {
                 interpolation = FogType.Exponential,
-                fogRange = new Range(50f, 70000f),
+                fogRange = new ViewRange(50f, 70000f),
                 // #fffaf2 - light beige
                 colorRGBA = new float3(1f, 0.98f, 0.95f),
 

@@ -8,13 +8,13 @@ namespace GameCube.GFZ.CourseCollision
     /// Represents a near/far range. Used primarily for Fog range.
     /// </summary>
     [Serializable]
-    public struct Range :
+    public struct ViewRange :
         IBinarySerializable
     {
         public float near;
         public float far;
 
-        public Range(float near, float far)
+        public ViewRange(float near, float far)
         {
             this.near = near;
             this.far = far;
