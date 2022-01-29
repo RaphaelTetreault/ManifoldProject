@@ -216,7 +216,7 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
         [MenuItem(menu + "Track Keyables All")]
         public static void MenuAnalyzeTrackKeyablesAll() => MenuForward(AnalyzeTrackKeyablesAll, tsvTrackKeyablesAll);
 
-        [MenuItem(menu + "Track Transforms")]
+        [MenuItem(menu + "Track Segments")]
         public static void MenuAnalyzeTrackSegments() => MenuForward(AnalyzeTrackSegments, tsvTrackSegment);
 
         [MenuItem(menu + "Surface Attribute Areas")]

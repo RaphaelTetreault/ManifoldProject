@@ -66,16 +66,17 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             trackCurves.animationCurves[7] = AnimationCurveConverter.ToGfz(position.y);
             trackCurves.animationCurves[8] = AnimationCurveConverter.ToGfz(position.z);
 
-            // rotation Y is inverted
+            //// rotation Y is inverted
             //foreach (var key in trackCurves.animationCurves[4].keyableAttributes)
+            //{
             //    key.value = -key.value;
-
-            //foreach (var key in trackCurves.animationCurves[5].keyableAttributes)
-            //    key.value = -key.value;
-
+            //}
             //// invert Z axis
             //foreach (var key in trackCurves.animationCurves[8].keyableAttributes)
+            //{
             //    key.value = -key.value;
+            //    //key.zTangentIn = -key.value;
+            //}
 
             return trackCurves;
         }

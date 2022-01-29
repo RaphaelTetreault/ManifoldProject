@@ -154,6 +154,10 @@ namespace GameCube.GFZ.CourseCollision
                 reader.JumpToAddress(childrenPtrs);
                 reader.ReadX(ref children, childrenPtrs.Length, true);
             }
+
+            //
+            this.childSegments = children;
+
             return children;
         }
 

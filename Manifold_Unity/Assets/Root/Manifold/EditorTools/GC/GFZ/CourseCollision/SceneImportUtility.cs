@@ -620,56 +620,84 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
             //
             var increment = 1f / 1000f * scene.rootTrackSegments.Length;
             int count = 0;
-            foreach (var tt in scene.rootTrackSegments)
+            foreach (var trackSegment in scene.rootTrackSegments)
             {
                 var subgroup = new GameObject();
                 subgroup.name = $"Subgroup {++count}";
                 subgroup.transform.parent = root.transform;
 
-                var topology = tt.trackCurves;
-                float3 timeScale = new float3(
-                    GetCurveTime(topology.unityCurves[0]),
-                    GetCurveTime(topology.unityCurves[1]),
-                    GetCurveTime(topology.unityCurves[2]));
-                float3 timeRotation = new float3(
-                    GetCurveTime(topology.unityCurves[3]),
-                    GetCurveTime(topology.unityCurves[4]),
-                    GetCurveTime(topology.unityCurves[5]));
-                float3 timePosition = new float3(
-                    GetCurveTime(topology.unityCurves[6]),
-                    GetCurveTime(topology.unityCurves[7]),
-                    GetCurveTime(topology.unityCurves[8]));
-
                 for (float t = 0f; t < 1f; t += increment)
                 {
-                    float3 scale = new float3(
-                        topology.unityCurves[0].EvaluateDefault(t * timeScale.x, 1),
-                        topology.unityCurves[1].EvaluateDefault(t * timeScale.y, 1),
-                        topology.unityCurves[2].EvaluateDefault(t * timeScale.z, 1));
-                    float3 rotation = new float3(
-                        topology.unityCurves[3].EvaluateDefault(t * timeRotation.x, 0),
-                        topology.unityCurves[4].EvaluateDefault(t * timeRotation.y, 0),
-                        topology.unityCurves[5].EvaluateDefault(t * timeRotation.z, 0));
-                    float3 position = new float3(
-                        topology.unityCurves[6].EvaluateDefault(t * timePosition.x, 0),
-                        topology.unityCurves[7].EvaluateDefault(t * timePosition.y, 0),
-                        topology.unityCurves[8].EvaluateDefault(t * timePosition.z, 0));
-
                     var cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
                     cube.name = $"time {t:0.000}";
                     cube.transform.parent = subgroup.transform;
 
-                    //cube.transform.position = position + tt.localPosition;
-                    //cube.transform.rotation = Quaternion.Euler(rotation);// + tt.localRotation);
-                    //cube.transform.localScale = scale.Multiply(tt.localScale);
-                    cube.transform.position = position + tt.localPosition;
-                    cube.transform.rotation = Quaternion.Euler(rotation + tt.localRotation);// math.mul(quaternion.EulerXYZ(rotation), quaternion.EulerXYZ(tt.localRotation));
-                    cube.transform.localScale = scale * tt.localScale;
+                    var mtx = GetChildMatrix(trackSegment, t);
+                    cube.transform.localPosition = mtx.Position();
+                    cube.transform.localRotation = mtx.Rotation();
+                    cube.transform.localScale = mtx.Scale();
                 }
             }
 
             return root.transform;
         }
+
+        public static Matrix4x4 GetChildMatrix(TrackSegment trackSegment, float timeNormalized)
+        {
+            var transformMtx = Matrix4x4.TRS(
+                trackSegment.localPosition,
+                Quaternion.Euler(trackSegment.localRotation),
+                trackSegment.localScale);
+
+            // Get max times
+            var curves = trackSegment.trackCurves;
+            float3 maxTimeScale = new float3(
+                GetCurveTime(curves.unityCurves[0]),
+                GetCurveTime(curves.unityCurves[1]),
+                GetCurveTime(curves.unityCurves[2]));
+            float3 maxTimeRotation = new float3(
+                GetCurveTime(curves.unityCurves[3]),
+                GetCurveTime(curves.unityCurves[4]),
+                GetCurveTime(curves.unityCurves[5]));
+            float3 maxTimePosition = new float3(
+                GetCurveTime(curves.unityCurves[6]),
+                GetCurveTime(curves.unityCurves[7]),
+                GetCurveTime(curves.unityCurves[8]));
+
+
+            float3 scale = new float3(
+                curves.unityCurves[0].EvaluateDefault(timeNormalized * maxTimeScale.x, 1),
+                curves.unityCurves[1].EvaluateDefault(timeNormalized * maxTimeScale.y, 1),
+                curves.unityCurves[2].EvaluateDefault(timeNormalized * maxTimeScale.z, 1));
+            float3 rotation = new float3(
+                curves.unityCurves[3].EvaluateDefault(timeNormalized * maxTimeRotation.x, 0),
+                curves.unityCurves[4].EvaluateDefault(timeNormalized * maxTimeRotation.y, 0),
+                curves.unityCurves[5].EvaluateDefault(timeNormalized * maxTimeRotation.z, 0));
+            float3 position = new float3(
+                curves.unityCurves[6].EvaluateDefault(timeNormalized * maxTimePosition.x, 0),
+                curves.unityCurves[7].EvaluateDefault(timeNormalized * maxTimePosition.y, 0),
+                curves.unityCurves[8].EvaluateDefault(timeNormalized * maxTimePosition.z, 0));
+            var animationMtx = Matrix4x4.TRS(position, Quaternion.Euler(rotation), scale);
+
+            // indeed, the correct order
+            var mtx = animationMtx * transformMtx;
+
+
+            if (trackSegment.childSegments != null && trackSegment.childSegments.Length > 0)
+            {
+                var child = trackSegment.childSegments[0];
+                if (child.segmentType == TrackSegmentType.IsTransformParent ||
+                    child.segmentType == TrackSegmentType.IsTransformLeaf)
+                {
+                    var childMtx = GetChildMatrix(trackSegment.childSegments[0], timeNormalized);
+                    mtx = mtx * childMtx;
+                }
+            }
+
+            return mtx;
+        }
+
+
 
         public static float GetCurveTime(UnityEngine.AnimationCurve curve)
         {

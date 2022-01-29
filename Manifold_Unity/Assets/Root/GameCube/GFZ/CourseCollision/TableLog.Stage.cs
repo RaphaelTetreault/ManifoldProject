@@ -227,16 +227,19 @@ namespace GameCube.GFZ.CourseCollision
             }
         }
         // Writes self and children
-        public static void WriteTrackSegmentRecursive(StreamWriter writer, ColiScene scene, int depth, int index, int total, TrackSegment trackTransform)
+        public static void WriteTrackSegmentRecursive(StreamWriter writer, ColiScene scene, int depth, int index, int total, TrackSegment trackSegment)
         {
             // Write Parent
-            WriteTrackSegment(writer, scene, depth, index, total, trackTransform);
+            WriteTrackSegment(writer, scene, depth, index, total, trackSegment);
 
             // Write children
-            //foreach (var child in trackTransform.children)
-            //{
-            //    WriteTrackTransformRecursive(writer, sobj, depth + 1, index, total, child);
-            //}
+            if (trackSegment.childSegments == null)
+                return;
+
+            foreach (var child in trackSegment.childSegments)
+            {
+                WriteTrackSegmentRecursive(writer, scene, depth + 1, index, total, child);
+            }
         }
         // The actual writing to file
         public static void WriteTrackSegment(StreamWriter writer, ColiScene scene, int depth, int index, int total, TrackSegment trackTransform)
