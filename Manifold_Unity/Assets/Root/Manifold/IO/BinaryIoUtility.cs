@@ -7,8 +7,7 @@ namespace Manifold.IO
 {
     public static class BinaryIoUtility
     {
-        #region CONSTS
-
+        // CONSTANTS
         public const int SizeofBool = 1;
         public const int SizeofInt8 = 1;
         public const int SizeofInt16 = 2;
@@ -22,16 +21,12 @@ namespace Manifold.IO
         public const int SizeofDouble = 8;
         public const int SizeofDecimal = 16;
 
-        #endregion
+        // FIELDS
+        private static readonly Stack<Encoding> EncodingStack = new Stack<Encoding>();
+        private static readonly Stack<Endianness> EndianessStack = new Stack<Endianness>();
 
-        #region FIELDS
 
-        private static readonly Stack<Encoding> _encodingStack = new Stack<Encoding>();
-        private static readonly Stack<Endianness> _endianessStack = new Stack<Endianness>();
-
-        #endregion
-
-        #region PROPERTIES
+        // PROPERTIES
 
         /// <summary>
         /// The stride used to align the stream to when calling AlignTo method
@@ -53,16 +48,15 @@ namespace Manifold.IO
         /// </summary>
         public static Encoding Encoding { get; set; } = Encoding.Unicode;
 
-        #endregion
 
-        #region METHODS
+        // METHODS
 
         /// <summary>
         /// Pops the last pushed System.Text.Encoding
         /// </summary>
         public static void PopEncoding()
         {
-            Encoding = _encodingStack.Pop();
+            Encoding = EncodingStack.Pop();
         }
 
         /// <summary>
@@ -70,7 +64,7 @@ namespace Manifold.IO
         /// </summary>
         public static void PopEndianness()
         {
-            Endianness = _endianessStack.Pop();
+            Endianness = EndianessStack.Pop();
         }
 
         /// <summary>
@@ -80,7 +74,7 @@ namespace Manifold.IO
         /// <param name="encoding"></param>
         public static void PushEncoding(Encoding encoding)
         {
-            _encodingStack.Push(Encoding);
+            EncodingStack.Push(Encoding);
             Encoding = encoding;
         }
 
@@ -92,12 +86,11 @@ namespace Manifold.IO
         public static void PushEndianness(Endianness endianness)
         {
             // Push active state to stack
-            _endianessStack.Push(Endianness);
+            EndianessStack.Push(Endianness);
             // Set active state to call value
             Endianness = endianness;
         }
 
-        #endregion
 
         #region READ
 
@@ -285,18 +278,11 @@ namespace Manifold.IO
             return value;
         }
 
-        // NEW!
-        // EXCEPTION: non-destructive, load values from stream but doesn't make a new reference
-
         public static T ReadIBinarySerializable<T>(BinaryReader binaryReader, T value) where T : IBinarySerializable
         {
             value.Deserialize(binaryReader);
             return value;
         }
-
-        /// <summary>
-        /// TODO: Errors: InvalidCastError when enum doesn't use proper type (enum : ushort) uses EC.int
-        /// </summary>
 
         public static TEnum ReadEnum<TEnum>(BinaryReader binaryReader) where TEnum : Enum
         {
