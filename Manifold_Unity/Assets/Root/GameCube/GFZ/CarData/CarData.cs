@@ -453,7 +453,7 @@ namespace GameCube.GFZ.CarData
                 // manually assigning each value from length-init array.
                 reader.ReadX(ref machineNames, kMachineNameTable, true);
             }
-            BinaryIoUtility.PopEndianess();
+            BinaryIoUtility.PopEndianness();
 
             // Body parts
             reader.ReadX(ref BraveEagle, true);
@@ -542,9 +542,9 @@ namespace GameCube.GFZ.CarData
                 // manually assigning each value from length-init array.
                 reader.ReadX(ref partsInternalNames, kPartsInternalTable, true);
             }
-            BinaryIoUtility.PopEndianess();
+            BinaryIoUtility.PopEndianness();
 
-            BinaryIoUtility.PopEndianess();
+            BinaryIoUtility.PopEndianness();
         }
 
         public void Serialize(BinaryWriter writer)
@@ -602,7 +602,7 @@ namespace GameCube.GFZ.CarData
             {
                 writer.WriteX(machineNames, false);
             }
-            BinaryIoUtility.PopEndianess();
+            BinaryIoUtility.PopEndianness();
 
             // Body parts
             writer.WriteX(BraveEagle);
@@ -690,9 +690,9 @@ namespace GameCube.GFZ.CarData
             {
                 writer.WriteX(partsInternalNames, false);
             }
-            BinaryIoUtility.PopEndianess();
+            BinaryIoUtility.PopEndianness();
 
-            BinaryIoUtility.PopEndianess();
+            BinaryIoUtility.PopEndianness();
         }
 
     }

@@ -27,7 +27,7 @@ namespace Manifold.IO
         #region FIELDS
 
         private static readonly Stack<Encoding> _encodingStack = new Stack<Encoding>();
-        private static readonly Stack<bool> _endianessStack = new Stack<bool>();
+        private static readonly Stack<Endianness> _endianessStack = new Stack<Endianness>();
 
         #endregion
 
@@ -41,7 +41,12 @@ namespace Manifold.IO
         /// <summary>
         /// The current endianness used for read/write operations
         /// </summary>
-        public static bool IsLittleEndian { get; set; } = false;
+        public static Endianness Endianness { get; set; } = Endianness.BigEndian;
+
+        /// <summary>
+        /// The current endianness used for read/write operations
+        /// </summary>
+        public static bool IsLittleEndian { get => Endianness == Endianness.LittleEndian; }
 
         /// <summary>
         /// The current encoding used for read/write operations
@@ -63,9 +68,9 @@ namespace Manifold.IO
         /// <summary>
         /// Pops the last pushed endianness
         /// </summary>
-        public static void PopEndianess()
+        public static void PopEndianness()
         {
-            IsLittleEndian = _endianessStack.Pop();
+            Endianness = _endianessStack.Pop();
         }
 
         /// <summary>
@@ -84,23 +89,12 @@ namespace Manifold.IO
         /// or write will use this endianness.
         /// </summary>
         /// <param name="isLittleEndian"></param>
-        public static void PushEndianess(bool isLittleEndian)
-        {
-            _endianessStack.Push(IsLittleEndian);
-            IsLittleEndian = isLittleEndian;
-        }
-
-        /// <summary>
-        /// Pushes an endianness to a private stack. Subsequent calls to read
-        /// or write will use this endianness.
-        /// </summary>
-        /// <param name="isLittleEndian"></param>
         public static void PushEndianness(Endianness endianness)
         {
-            _endianessStack.Push(IsLittleEndian);
-
-            var value = endianness == Endianness.LittleEndian;
-            IsLittleEndian = value;
+            // Push active state to stack
+            _endianessStack.Push(Endianness);
+            // Set active state to call value
+            Endianness = endianness;
         }
 
         #endregion
@@ -220,6 +214,9 @@ namespace Manifold.IO
                 BitConverter.ToInt32(bytes, 8),
                 BitConverter.ToInt32(bytes, 12),
             });
+
+            // TODO: confirm this all works with any endianness.
+            throw new NotImplementedException();
         }
 
         public static char ReadChar(BinaryReader binaryReader, Encoding encoding)
@@ -279,17 +276,6 @@ namespace Manifold.IO
             return ReadString(binaryReader, length, Encoding);
         }
 
-        // TODO
-        //public static string ReadCString(BinaryReader binaryReader, Encoding encoding)
-        //{
-        //    var value = new StringBuilder();
-        //    char c;
-        //    while ((c = ReadChar(binaryReader, encoding)) != (char)0 && !binaryReader.IsAtEndOfStream())
-        //    {
-        //        value.Append(c);
-        //    }
-        //    return value.ToString();
-        //}
 
         public static T ReadNewIBinarySerializable<T>(BinaryReader binaryReader) where T : IBinarySerializable, new()
         {
@@ -1024,6 +1010,9 @@ namespace Manifold.IO
             writer.Write(isLittleEndian);
 
             writer.Write(value);
+
+            // TODO: confirm this all works with any endianness.
+            throw new NotImplementedException();
         }
 
         public static void Write(BinaryWriter writer, char value, Encoding encoding)

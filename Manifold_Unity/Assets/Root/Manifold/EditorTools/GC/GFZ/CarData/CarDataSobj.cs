@@ -539,7 +539,7 @@ namespace Manifold.EditorTools.GC.GFZ.CarData
             {
                 reader.ReadX(ref machineNames[i], true);
             }
-            BinaryIoUtility.PopEndianess();
+            BinaryIoUtility.PopEndianness();
 
             reader.ReadX(ref BraveEagle, true);
             reader.ReadX(ref GalaxyFalcon, true);
@@ -625,9 +625,9 @@ namespace Manifold.EditorTools.GC.GFZ.CarData
             {
                 reader.ReadX(ref unknownNames[i], true);
             }
-            BinaryIoUtility.PopEndianess();
+            BinaryIoUtility.PopEndianness();
 
-            BinaryIoUtility.PopEndianess();
+            BinaryIoUtility.PopEndianness();
         }
 
         public void Serialize(BinaryWriter writer)
@@ -685,7 +685,7 @@ namespace Manifold.EditorTools.GC.GFZ.CarData
             {
                 writer.WriteX(name);
             }
-            BinaryIoUtility.PopEndianess();
+            BinaryIoUtility.PopEndianness();
             BinaryIoUtility.PopEncoding();
 
             writer.WriteX(BraveEagle);
@@ -773,10 +773,10 @@ namespace Manifold.EditorTools.GC.GFZ.CarData
             {
                 writer.WriteX(name);
             }
-            BinaryIoUtility.PopEndianess();
+            BinaryIoUtility.PopEndianness();
             BinaryIoUtility.PopEncoding();
 
-            BinaryIoUtility.PopEndianess();
+            BinaryIoUtility.PopEndianness();
         }
 
         internal void SetMachine(int index, VehicleParametersSobj value)

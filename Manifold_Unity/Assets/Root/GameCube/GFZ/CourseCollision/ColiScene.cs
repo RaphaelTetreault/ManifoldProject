@@ -241,7 +241,7 @@ namespace GameCube.GFZ.CourseCollision
 
         public void Deserialize(BinaryReader reader)
         {
-            BinaryIoUtility.PushEndianess(false);
+            BinaryIoUtility.PushEndianness(Endianness.BigEndian);
 
             // CAPTURE METADATA
             fileSize = (int)reader.BaseStream.Length;
@@ -455,13 +455,13 @@ namespace GameCube.GFZ.CourseCollision
                 this.allTrackSegments = allTrackSegments.Values.ToArray();
             }
 
-            BinaryIoUtility.PopEndianess();
+            BinaryIoUtility.PopEndianness();
         }
 
 
         public void Serialize(BinaryWriter writer)
         {
-            BinaryIoUtility.PushEndianess(false);
+            BinaryIoUtility.PushEndianness(Endianness.BigEndian);
 
             // Write header. At first, pointers will be null or broken.
             SerializeHeader(writer);
@@ -982,7 +982,7 @@ namespace GameCube.GFZ.CourseCollision
             //
             fileSize = (int)writer.BaseStream.Length;
 
-            BinaryIoUtility.PopEndianess();
+            BinaryIoUtility.PopEndianness();
         }
 
         /// <summary>

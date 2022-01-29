@@ -2,7 +2,7 @@
 {
     public enum Endianness : byte
     {
-        LittleEndian,
-        BigEndian,
+        BigEndian = 0,
+        LittleEndian = 1,
     }
 }

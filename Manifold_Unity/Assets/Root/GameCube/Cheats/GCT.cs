@@ -15,7 +15,7 @@ namespace GameCube.Cheats
 
         public void Deserialize(BinaryReader reader)
         {
-            BinaryIoUtility.PushEndianess(false);
+            BinaryIoUtility.PushEndianness(Endianness.BigEndian);
 
             var fileSize = (int)(reader.BaseStream.Length / 4);
             var isValidFile = (fileSize % 8) == 0;
@@ -43,14 +43,16 @@ namespace GameCube.Cheats
             }
             this.codes = codes.ToArray();
 
-            BinaryIoUtility.PopEndianess();
+            BinaryIoUtility.PopEndianness();
         }
 
         public void Serialize(BinaryWriter writer)
         {
-            BinaryIoUtility.PushEndianess(false);
-            writer.WriteX(codes, false);
-            BinaryIoUtility.PopEndianess();
+            BinaryIoUtility.PushEndianness(Endianness.BigEndian);
+            {
+                writer.WriteX(codes, false);
+            }
+            BinaryIoUtility.PopEndianness();
         }
 
     }
