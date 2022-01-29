@@ -1,4 +1,5 @@
 using GameCube.GFZ.CourseCollision;
+using Manifold.EditorTools;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -21,15 +22,16 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         private void OnDrawGizmos()
         {
             Gizmos.color = Color.red;
+            var mesh = Resources.GetBuiltinResource<Mesh>(EditorTools.Const.Resources.Cube);
 
-            var increment = 1f / 500f;
+            var increment = 1f / 100f;
             for (float p = 0; p < 1f; p += increment)
             {
                 var pos = animTransform.Position.EvaluateNormalized(p);
                 var rot = animTransform.Rotation.EvaluateNormalized(p);
                 var scl = animTransform.Scale.EvaluateNormalized(p);
 
-                Gizmos.DrawCube(pos, scl);
+                Gizmos.DrawMesh(mesh, 0, pos, Quaternion.Euler(rot), scl);
             }
         }
 
@@ -61,6 +63,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             trackSegment.segmentType = TrackSegmentType.IsTransformLeaf;
 
             trackSegment.trackCurves = animTransform.ToTrackCurves();
+
+            // debugging in/out
+            var before = animTransform.Position.x;
+            var togfz = trackSegment.trackCurves.PositionX;
+            var after = AnimationCurveConverter.ToUnity(togfz);
 
             return trackSegment;
         }

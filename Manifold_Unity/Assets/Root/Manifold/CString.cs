@@ -22,6 +22,19 @@ namespace Manifold.IO
         public string value = string.Empty;
 
 
+        //
+        public CString()
+        {
+            value = string.Empty;
+        }
+
+        public CString(string value)
+        {
+            this.value = value;
+        }
+
+
+
         // PROPERTIES
         public AddressRange AddressRange
         {

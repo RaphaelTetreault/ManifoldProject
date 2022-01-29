@@ -24,7 +24,9 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
 
             reference.lodRenderFlags = lodRenderFlags;
             reference.lods = sceneObjectLODs.ExportGfz();
-            reference.colliderMesh = colliderMesh.ExportGfz();
+
+            if (colliderMesh != null)
+                reference.colliderMesh = colliderMesh.ExportGfz();
         }
 
         public SceneObject ExportGfz()
@@ -49,8 +51,8 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
 
         public bool Equals(GfzSceneObject other)
         {
-            var hasFlags    = other.lodRenderFlags == lodRenderFlags;
-            var hasLODs     = other.sceneObjectLODs.Equals(sceneObjectLODs);
+            var hasFlags = other.lodRenderFlags == lodRenderFlags;
+            var hasLODs = other.sceneObjectLODs.Equals(sceneObjectLODs);
             //var hasCollider = other.colliderMesh.Equals(colliderMesh);
 
             return hasFlags && hasLODs; //&& hasCollider;

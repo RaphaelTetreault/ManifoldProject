@@ -14,7 +14,11 @@ namespace Manifold.IO
         // CONSTANTS
         public const int shiftJisCodepage = 932;
         public static readonly Encoding shiftJis = Encoding.GetEncoding(shiftJisCodepage);
-        
+
+
+        public ShiftJisCString() : base() { }
+        public ShiftJisCString(string value) : base(value) { }
+
         public override Encoding Encoding => shiftJis;
 
 
@@ -25,7 +29,7 @@ namespace Manifold.IO
 
         public static implicit operator ShiftJisCString(string str)
         {
-            return str;
+            return new ShiftJisCString(str);
         }
 
     }
