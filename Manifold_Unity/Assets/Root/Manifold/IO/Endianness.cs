@@ -1,4 +1,7 @@
-﻿namespace Manifold.IO
+﻿// Resource for those new to endianness.
+// https://en.wikipedia.org/wiki/Endianness
+
+namespace Manifold.IO
 {
     public enum Endianness : byte
     {
