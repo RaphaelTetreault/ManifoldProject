@@ -9,6 +9,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
     {
         [SerializeField] private GfzTrackSegment segment;
         [SerializeField] private float metersPerCheckpoint = 10f;
+        [SerializeField] private bool viewDebug = true;
 
         public GfzTrackSegment Segment => segment;
 
@@ -142,6 +143,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         private void OnDrawGizmosSelected()
         {
+            if (!viewDebug)
+                return;
+
             var checkpoints = GetCheckpoints();
 
             //

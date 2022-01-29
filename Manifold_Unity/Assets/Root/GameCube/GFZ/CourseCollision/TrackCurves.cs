@@ -44,6 +44,55 @@ namespace GameCube.GFZ.CourseCollision
         }
 
 
+        public AnimationCurve ScaleX
+        {
+            get => animationCurves[0];
+            set => animationCurves[0] = value;
+        }
+        public AnimationCurve ScaleY
+        {
+            get => animationCurves[1];
+            set => animationCurves[1] = value;
+        }
+        public AnimationCurve ScaleZ
+        {
+            get => animationCurves[2];
+            set => animationCurves[2] = value;
+        }
+
+        public AnimationCurve RotationX
+        {
+            get => animationCurves[3];
+            set => animationCurves[3] = value;
+        }
+        public AnimationCurve RotationY
+        {
+            get => animationCurves[4];
+            set => animationCurves[4] = value;
+        }
+        public AnimationCurve RotationZ
+        {
+            get => animationCurves[5];
+            set => animationCurves[5] = value;
+        }
+
+        public AnimationCurve PositionX
+        {
+            get => animationCurves[6];
+            set => animationCurves[6] = value;
+        }
+        public AnimationCurve PositionY
+        {
+            get => animationCurves[7];
+            set => animationCurves[7] = value;
+        }
+        public AnimationCurve PositionZ
+        {
+            get => animationCurves[8];
+            set => animationCurves[8] = value;
+        }
+
+
         // METHODS
         public void Deserialize(BinaryReader reader)
         {
