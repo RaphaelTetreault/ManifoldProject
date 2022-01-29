@@ -140,7 +140,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             return checkpoints;
         }
 
-        private void OnDrawGizmos()
+        private void OnDrawGizmosSelected()
         {
             var checkpoints = GetCheckpoints();
 
