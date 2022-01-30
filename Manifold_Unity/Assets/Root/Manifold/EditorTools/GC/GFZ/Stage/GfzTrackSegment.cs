@@ -9,9 +9,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         IEditableComponent<GfzTrackSegment>
     {
         // Fields
-        [Header("Track Segment")]
+        [Header("Links")]
         [SerializeField] protected GfzTrackSegment prev;
         [SerializeField] protected GfzTrackSegment next;
+
+        [Header("Unknown properties")]
+        [SerializeField] protected byte unk0x3B;
+
 
         [Header("Track Curves")]
         [SerializeField] protected AnimationCurveTransform animTransform = new AnimationCurveTransform();

@@ -62,6 +62,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             // TODO: currently hardcoded
             trackSegment.segmentType = TrackSegmentType.IsTransformLeaf;
 
+            //
+            trackSegment.unk_0x3B = unk0x3B;
+
+            // Get animation data
             trackSegment.trackCurves = animTransform.ToTrackCurves();
 
             // debugging in/out

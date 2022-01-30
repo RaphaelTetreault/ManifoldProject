@@ -635,7 +635,7 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
                     var mtx = GetChildMatrix(trackSegment, t);
                     cube.transform.localPosition = mtx.Position();
                     cube.transform.localRotation = mtx.Rotation();
-                    // Override scale because some palces are wtf
+                    // Override scale because some places are wtf
                     var scale = mtx.Scale();
                     cube.transform.localScale = new Vector3(scale.x, scale.y / 100f, 1f);
                 }
