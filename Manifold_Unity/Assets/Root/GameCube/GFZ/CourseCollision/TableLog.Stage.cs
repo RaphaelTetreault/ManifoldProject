@@ -1363,8 +1363,8 @@ namespace GameCube.GFZ.CourseCollision
                 writer.WriteNextColNicify(nameof(Checkpoint.planeEnd.origin) + ".x");
                 writer.WriteNextColNicify(nameof(Checkpoint.planeEnd.origin) + ".y");
                 writer.WriteNextColNicify(nameof(Checkpoint.planeEnd.origin) + ".z");
-                writer.WriteNextColNicify(nameof(Checkpoint.endDistance));
                 writer.WriteNextColNicify(nameof(Checkpoint.startDistance));
+                writer.WriteNextColNicify(nameof(Checkpoint.endDistance));
                 writer.WriteNextColNicify(nameof(Checkpoint.trackWidth));
                 writer.WriteNextColNicify(nameof(Checkpoint.connectToTrackIn));
                 writer.WriteNextColNicify(nameof(Checkpoint.connectToTrackOut));
@@ -1401,8 +1401,8 @@ namespace GameCube.GFZ.CourseCollision
                             writer.WriteNextCol(trackPoint.planeEnd.origin.x);
                             writer.WriteNextCol(trackPoint.planeEnd.origin.y);
                             writer.WriteNextCol(trackPoint.planeEnd.origin.z);
-                            writer.WriteNextCol(trackPoint.endDistance);
                             writer.WriteNextCol(trackPoint.startDistance);
+                            writer.WriteNextCol(trackPoint.endDistance);
                             writer.WriteNextCol(trackPoint.trackWidth);
                             writer.WriteNextCol(trackPoint.connectToTrackIn);
                             writer.WriteNextCol(trackPoint.connectToTrackOut);

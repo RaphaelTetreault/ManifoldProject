@@ -42,15 +42,15 @@ namespace GameCube.GFZ.CourseCollision
         /// </summary>
         public Plane planeEnd;
         /// <summary>
-        /// Absolute distance marker indicating where the 'end' plane is for this checkpoint
-        /// along the track. Ex: 3500m/8000m
-        /// </summary>
-        public float endDistance;
-        /// <summary>
         /// Absolute distance marker indicating where the 'start' plane is for this checkpoint
         /// along the track. Ex: 3000m/8000m
         /// </summary>
         public float startDistance;
+        /// <summary>
+        /// Absolute distance marker indicating where the 'end' plane is for this checkpoint
+        /// along the track. Ex: 3500m/8000m
+        /// </summary>
+        public float endDistance;
         /// <summary>
         /// How wide the track is. TODO: confirm if width is for start point (assumed) or end point.
         /// </summary>
@@ -127,8 +127,8 @@ namespace GameCube.GFZ.CourseCollision
                 reader.ReadX(ref curveTimeEnd);
                 reader.ReadX(ref planeStart, true);
                 reader.ReadX(ref planeEnd, true);
-                reader.ReadX(ref endDistance);
                 reader.ReadX(ref startDistance);
+                reader.ReadX(ref endDistance);
                 reader.ReadX(ref trackWidth);
                 reader.ReadX(ref connectToTrackIn);
                 reader.ReadX(ref connectToTrackOut);
@@ -148,8 +148,8 @@ namespace GameCube.GFZ.CourseCollision
                 writer.WriteX(curveTimeEnd);
                 writer.WriteX(planeStart);
                 writer.WriteX(planeEnd);
-                writer.WriteX(endDistance);
                 writer.WriteX(startDistance);
+                writer.WriteX(endDistance);
                 writer.WriteX(trackWidth);
                 writer.WriteX(connectToTrackIn);
                 writer.WriteX(connectToTrackOut);
@@ -170,8 +170,8 @@ namespace GameCube.GFZ.CourseCollision
                 $"{nameof(planeEnd)}.{nameof(planeEnd.dotProduct)}: {planeEnd.dotProduct:0.0}, " +
                 $"{nameof(planeEnd)}.{nameof(planeEnd.normal)}(x:{planeEnd.normal.x:0.0}, y:{planeEnd.normal.y:0.0}, z:{planeEnd.normal.z:0.0}), " +
                 $"{nameof(planeEnd)}.{nameof(planeEnd.origin)}(x:{planeEnd.origin.x:0.0}, y:{planeEnd.origin.y:0.0}, z:{planeEnd.origin.z:0.0}), " +
-                $"{nameof(startDistance)}: {startDistance:0.0}, " +
                 $"{nameof(endDistance)}: {endDistance:0.0}, " +
+                $"{nameof(startDistance)}: {startDistance:0.0}, " +
                 $"{nameof(trackWidth)}: {trackWidth:0.0}, " +
                 $"{nameof(connectToTrackIn)}: {connectToTrackIn}, " +
                 $"{nameof(connectToTrackOut)}: {connectToTrackOut}" +
