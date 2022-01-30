@@ -71,8 +71,8 @@ namespace GameCube.GFZ.CourseCollision
             log.WriteLine();
 
             log.WriteHeading("TRIGGERS", padding, h1Width);
-            log.WriteAddress(coliScene.arcadeCheckpointTriggers);
-            log.WriteAddress(coliScene.courseMetadataTriggers);
+            log.WriteAddress(coliScene.timeExtensionTriggers);
+            log.WriteAddress(coliScene.miscellaneousTriggers);
             log.WriteAddress(coliScene.storyObjectTriggers);
             log.WriteAddress(coliScene.unknownTriggers);
             log.WriteAddress(coliScene.visualEffectTriggers);
@@ -84,7 +84,7 @@ namespace GameCube.GFZ.CourseCollision
             log.WriteAddress(coliScene.trackCheckpointBoundsXZ);
             log.WriteLine();
             // Writes track objects array
-            log.WriteAddress(coliScene.surfaceAttributeAreas);
+            log.WriteAddress(coliScene.embeddedPropertyAreas);
             // Writes track segments (root then all)
             log.WriteLine("ROOT SEGMENTS");
             log.WriteAddress(coliScene.rootTrackSegments);
@@ -125,7 +125,7 @@ namespace GameCube.GFZ.CourseCollision
             }
             log.WriteLine();
             //
-            log.WriteAddress(coliScene.trackCheckpointMatrix);
+            log.WriteAddress(coliScene.trackCheckpointGrid);
             log.WriteAddress(coliScene.trackNodes);
             {
                 var checkpoints = new List<Checkpoint>();
@@ -137,28 +137,28 @@ namespace GameCube.GFZ.CourseCollision
             log.WriteLine();
 
             log.WriteHeading("STATIC COLLISION", padding, h1Width);
-            log.WriteAddress(coliScene.staticColliderMeshes);
+            log.WriteAddress(coliScene.staticColliderMeshManager);
             log.WriteLine();
             log.WriteLine(nameof(UnknownCollider) + "[]");
             log.WriteAddress(coliScene.unknownColliders);
             log.WriteLine();
             log.WriteLine(nameof(GameCube.GFZ.BoundingSphere));
-            log.WriteLine("unk float: " + coliScene.staticColliderMeshes.unk_float);
-            log.WriteAddress(coliScene.staticColliderMeshes.boundingSphere);
-            log.WriteLine(coliScene.staticColliderMeshes.boundingSpherePtr);
-            log.WriteLine(coliScene.staticColliderMeshes.staticSceneObjectsPtr);
+            log.WriteLine("unk float: " + coliScene.staticColliderMeshManager.unk_float);
+            log.WriteAddress(coliScene.staticColliderMeshManager.boundingSphere);
+            log.WriteLine(coliScene.staticColliderMeshManager.boundingSpherePtr);
+            log.WriteLine(coliScene.staticColliderMeshManager.staticSceneObjectsPtr);
             log.WriteLine();
             log.WriteLine("Mesh Bounds");
-            log.WriteAddress(coliScene.staticColliderMeshes.meshBounds);
+            log.WriteAddress(coliScene.staticColliderMeshManager.meshBounds);
             log.WriteLine();
             log.WriteLine("TRIANGLES");
-            log.WriteAddress(coliScene.staticColliderMeshes.colliderTris);
-            log.WriteAddress(coliScene.staticColliderMeshes.triMeshMatrices);
+            log.WriteAddress(coliScene.staticColliderMeshManager.colliderTris);
+            log.WriteAddress(coliScene.staticColliderMeshManager.triMeshMatrices);
             // Write each index list
             log.WriteNullInArray = false;
-            for (int i = 0; i < coliScene.staticColliderMeshes.triMeshMatrices.Length; i++)
+            for (int i = 0; i < coliScene.staticColliderMeshManager.triMeshMatrices.Length; i++)
             {
-                var triIndexList = coliScene.staticColliderMeshes.triMeshMatrices[i];
+                var triIndexList = coliScene.staticColliderMeshManager.triMeshMatrices[i];
                 if (triIndexList != null)
                 {
                     log.WriteLine($"COLLIDER TYPE [{i}]: {(StaticColliderMeshProperty)i}");
@@ -167,13 +167,13 @@ namespace GameCube.GFZ.CourseCollision
             }
             log.WriteNullInArray = true;
             log.WriteLine("QUADS");
-            log.WriteAddress(coliScene.staticColliderMeshes.colliderQuads);
-            log.WriteAddress(coliScene.staticColliderMeshes.quadMeshMatrices);
+            log.WriteAddress(coliScene.staticColliderMeshManager.colliderQuads);
+            log.WriteAddress(coliScene.staticColliderMeshManager.quadMeshMatrices);
             // Write each index list
             log.WriteNullInArray = false;
-            for (int i = 0; i < coliScene.staticColliderMeshes.quadMeshMatrices.Length; i++)
+            for (int i = 0; i < coliScene.staticColliderMeshManager.quadMeshMatrices.Length; i++)
             {
-                var quadIndexList = coliScene.staticColliderMeshes.quadMeshMatrices[i];
+                var quadIndexList = coliScene.staticColliderMeshManager.quadMeshMatrices[i];
                 if (quadIndexList != null)
                 {
                     log.WriteLine($"COLLIDER TYPE [{i}]: {(StaticColliderMeshProperty)i}");
@@ -187,7 +187,7 @@ namespace GameCube.GFZ.CourseCollision
             log.WriteLine("Object Names");
             log.WriteAddress(coliScene.sceneObjectNames);
             log.WriteAddress(coliScene.sceneObjectLODs);
-            log.WriteAddress(coliScene.sceneObjects);
+            log.WriteAddress(coliScene.sceneObjectDefinitions);
             log.WriteAddress(coliScene.staticSceneObjects);
             log.WriteAddress(coliScene.dynamicSceneObjects);
             {

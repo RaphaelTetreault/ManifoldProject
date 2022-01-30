@@ -4,7 +4,7 @@ namespace GameCube.GFZ.CourseCollision
     /// Denotes what surface area type a SurfaceAttributeArea is. Presumably
     /// used for AI logic.
     /// </summary>
-    public enum SurfaceAttribute : byte
+    public enum EmbeddedTrackPropertyType : byte
     {
         /// <summary>
         /// 

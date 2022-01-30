@@ -76,7 +76,7 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
                         if (sceneObject.sceneObject.colliderGeometryPtr.IsNotNull)
                         {
                             var meshName = sceneObject.Name;
-                            ImportUtility.ProgressBar<SceneObject>(count, total, $"st{sceneSobj.Value.ID:00} {meshName}");
+                            ImportUtility.ProgressBar<SceneObjectDefinition>(count, total, $"st{sceneSobj.Value.ID:00} {meshName}");
 
                             // Create mesh
                             var mesh = CreateObjectColliderMesh(sceneObject, createBackfaces, usePrecomputes);
@@ -123,7 +123,7 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
 
                         count++;
                         var meshName = mesh.name;
-                        ImportUtility.ProgressBar<SceneObject>(count, total, $"st{sceneSobj.Value.ID:00} {meshName}");
+                        ImportUtility.ProgressBar<SceneObjectDefinition>(count, total, $"st{sceneSobj.Value.ID:00} {meshName}");
 
                         // Save mesh to Asset Database
                         var meshPath = $"Assets/{importTo}/st{sceneSobj.Value.ID:00}/coli_{meshName}.asset";
@@ -161,7 +161,7 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
 
                         count++;
                         var meshName = mesh.name;
-                        ImportUtility.ProgressBar<SceneObject>(count, total, $"st{sceneSobj.Value.ID:00} {meshName}");
+                        ImportUtility.ProgressBar<SceneObjectDefinition>(count, total, $"st{sceneSobj.Value.ID:00} {meshName}");
 
                         // Save mesh to Asset Database
                         var meshPath = $"Assets/{importTo}/st{sceneSobj.Value.ID:00}/coli_{meshName}.asset";
@@ -180,7 +180,7 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
                 }
             }
 
-            ImportUtility.ProgressBar<SceneObject>(1, 1, $"Saving assets...");
+            ImportUtility.ProgressBar<SceneObjectDefinition>(1, 1, $"Saving assets...");
             ImportUtility.FinalizeAssetImport();
         }
 
@@ -191,12 +191,12 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
             Assert.IsTrue(scene.IsValidFile);
 
             // Simplify access to tris/quads
-            var scm = scene.staticColliderMeshes;
+            var scm = scene.staticColliderMeshManager;
             var colliderTriangles = scm.colliderTris;
             var colliderQuads = scm.colliderQuads;
 
             //
-            const int nLists = StaticColliderMeshMatrix.kListCount;
+            const int nLists = StaticColliderMeshGrid.kListCount;
             var meshes = new Mesh[nLists];
 
             //
@@ -205,12 +205,12 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
             // Get triangle information for the current mesh type
             var triIndex16x16 = scm.triMeshMatrices[meshSurfaceTypeIndex];
             var triIndexLists = triIndex16x16.indexLists;
-            Assert.IsTrue(triIndexLists.Length == 0 || triIndexLists.Length == StaticColliderMeshMatrix.kListCount);
+            Assert.IsTrue(triIndexLists.Length == 0 || triIndexLists.Length == StaticColliderMeshGrid.kListCount);
 
             //
             var quadMeshIndexes = scm.quadMeshMatrices[meshSurfaceTypeIndex];
             var quadIndexLists = quadMeshIndexes.indexLists;
-            Assert.IsTrue(quadIndexLists.Length == 0 || quadIndexLists.Length == StaticColliderMeshMatrix.kListCount);
+            Assert.IsTrue(quadIndexLists.Length == 0 || quadIndexLists.Length == StaticColliderMeshGrid.kListCount);
 
             //
             for (int listIndex = 0; listIndex < nLists; listIndex++)
@@ -260,11 +260,11 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
             Assert.IsTrue(scene.IsValidFile);
 
             // Get number of mesh. AX and GX differ in count.
-            var meshCount = scene.staticColliderMeshes.SurfaceCount;
+            var meshCount = scene.staticColliderMeshManager.SurfaceCount;
             var meshes = new Mesh[meshCount];
 
             // Simplify access to tris/quads
-            var scm = scene.staticColliderMeshes;
+            var scm = scene.staticColliderMeshManager;
             var colliderTriangles = scm.colliderTris;
             var colliderQuads = scm.colliderQuads;
 

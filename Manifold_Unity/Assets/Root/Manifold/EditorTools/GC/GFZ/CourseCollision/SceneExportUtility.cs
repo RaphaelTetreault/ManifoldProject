@@ -149,7 +149,7 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
             // Triggers
             {
                 var arcadeCheckpointTriggers = GameObject.FindObjectsOfType<GfzArcadeCheckpoint>(findInactive);
-                scene.arcadeCheckpointTriggers = GetGfzValues(arcadeCheckpointTriggers);
+                scene.timeExtensionTriggers = GetGfzValues(arcadeCheckpointTriggers);
 
                 // This trigger type is a mess... Get all 3 representations, combine, assign.
                 // Collect all trigger types. They all get converted to the same GFZ base type.
@@ -157,12 +157,12 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
                 var storyCapsules = GameObject.FindObjectsOfType<GfzStoryCapsule>(findInactive);
                 var unknownMetadataTriggers = GameObject.FindObjectsOfType<GfzUnknownCourseMetadataTrigger>(findInactive);
                 // Make a list, add range for each type
-                var courseMetadataTriggers = new List<CourseMetadataTrigger>();
+                var courseMetadataTriggers = new List<MiscellaneousTrigger>();
                 courseMetadataTriggers.AddRange(GetGfzValues(objectPaths));
                 courseMetadataTriggers.AddRange(GetGfzValues(storyCapsules));
                 courseMetadataTriggers.AddRange(GetGfzValues(unknownMetadataTriggers));
                 // Convert list to array, assign to ColiScene
-                scene.courseMetadataTriggers = courseMetadataTriggers.ToArray();
+                scene.miscellaneousTriggers = courseMetadataTriggers.ToArray();
 
                 // This trigger type is a mess... Get all 3 representations, combine, assign.
                 var unknownTriggers = GameObject.FindObjectsOfType<GfzUnknownTrigger>(findInactive);
@@ -191,11 +191,11 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
                 // STATIC / DYNAMIC
                 scene.dynamicSceneObjects = GetGfzValues(gfzDynamicSceneObjects);
                 scene.staticSceneObjects = GetGfzValues(gfzStaticSceneObjects);
-                scene.sceneObjects = GetGfzValues(gfzSceneObjects);
+                scene.sceneObjectDefinitions = GetGfzValues(gfzSceneObjects);
 
                 // LODs
                 var sceneObjectLODs = new List<SceneObjectLOD>();
-                foreach (var sceneObject in scene.sceneObjects)
+                foreach (var sceneObject in scene.sceneObjectDefinitions)
                 {
                     sceneObjectLODs.AddRange(sceneObject.lods);
                 }
@@ -225,19 +225,19 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
                 scene.unknownColliders = new UnknownCollider[0];
 
                 // Static Collider Matrix
-                scene.staticColliderMeshes = new StaticColliderMeshManager(format);
+                scene.staticColliderMeshManager = new StaticColliderMeshManager(format);
                 // Bind to other references
-                scene.staticColliderMeshes.unknownColliders = scene.unknownColliders;
-                scene.staticColliderMeshes.staticSceneObjects = scene.staticSceneObjects;
+                scene.staticColliderMeshManager.unknownColliders = scene.unknownColliders;
+                scene.staticColliderMeshManager.staticSceneObjects = scene.staticSceneObjects;
                 //scene.staticColliderMeshes.ComputeMatrixBoundsXZ();
-                scene.staticColliderMeshes.meshBounds = new MatrixBoundsXZ();
+                scene.staticColliderMeshManager.meshBounds = new GridBoundsXZ();
 
                 // Get data from scene
                 //scene.staticColliderMeshes = oldScene.staticColliderMeshes;
-                scene.staticColliderMeshes.SerializeFormat = format;
+                scene.staticColliderMeshManager.SerializeFormat = format;
                 // Point to existing references
-                scene.staticColliderMeshes.unknownColliders = scene.unknownColliders;
-                scene.staticColliderMeshes.staticSceneObjects = scene.staticSceneObjects;
+                scene.staticColliderMeshManager.unknownColliders = scene.unknownColliders;
+                scene.staticColliderMeshManager.staticSceneObjects = scene.staticSceneObjects;
             }
 
             // TRACK
@@ -251,7 +251,7 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
                 // Nodes (checkpoints-segment bound together)
                 scene.trackNodes = track.TrackNodes;
                 // Checkpoint matrix
-                scene.trackCheckpointMatrix = track.TrackCheckpointMatrix;
+                scene.trackCheckpointGrid = track.TrackCheckpointMatrix;
                 scene.trackCheckpointBoundsXZ = track.TrackCheckpointMatrixBoundsXZ;
 
                 // Track metadata
@@ -260,7 +260,7 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
 
                 // AI data
                 // 2022/01/25: currently save out only the terminating element.
-                scene.surfaceAttributeAreas = track.EmbeddedPropertyAreas;
+                scene.embeddedPropertyAreas = track.EmbeddedPropertyAreas;
 
                 scene.circuitType = track.CircuitType;
             }
@@ -287,7 +287,7 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
         {
             // TEMP
             // This is because I must handle Unity serializing nulls with empty instances
-            foreach (var sceneObject in scene.sceneObjects)
+            foreach (var sceneObject in scene.sceneObjectDefinitions)
             {
                 var colliderGeo = sceneObject.colliderMesh;
                 if (colliderGeo != null)

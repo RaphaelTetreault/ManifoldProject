@@ -9,7 +9,7 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
     /// Outer Space's meteors.
     /// </summary>
     public class GfzObjectPath : MonoBehaviour,
-        IGfzConvertable<CourseMetadataTrigger>
+        IGfzConvertable<MiscellaneousTrigger>
     {
         public enum PathObjectVenue
         {
@@ -36,7 +36,7 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
         }
 
         // METHODS
-        public CourseMetadataTrigger ExportGfz()
+        public MiscellaneousTrigger ExportGfz()
         {
             //// Path object should only exist on Lightning or Outer Space
             //var isValidVenue = venue == Venue.Lightning || venue == Venue.OuterSpace;
@@ -58,7 +58,7 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
             transform.Scale = to.position;
 
 
-            var value = new CourseMetadataTrigger
+            var value = new MiscellaneousTrigger
             {
                 transform = transform,
                 metadataType = metadataType,
@@ -67,7 +67,7 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
             return value;
         }
 
-        public void ImportGfz(CourseMetadataTrigger value)
+        public void ImportGfz(MiscellaneousTrigger value)
         {
             throw new System.NotImplementedException();
         }

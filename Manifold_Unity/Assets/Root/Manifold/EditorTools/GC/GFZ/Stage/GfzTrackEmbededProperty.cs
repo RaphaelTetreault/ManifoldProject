@@ -9,7 +9,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
     {
         // property type?
 
-        public abstract SurfaceAttributeArea GetEmbededProperty();
+        public abstract EmbeddedTrackPropertyArea GetEmbededProperty();
 
         public abstract Mesh GenerateMesh();
     }

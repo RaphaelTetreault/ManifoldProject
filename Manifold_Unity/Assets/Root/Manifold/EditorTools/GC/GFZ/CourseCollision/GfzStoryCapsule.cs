@@ -9,7 +9,7 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
     /// 
     /// </summary>
     public class GfzStoryCapsule : MonoBehaviour,
-        IGfzConvertable<CourseMetadataTrigger>
+        IGfzConvertable<MiscellaneousTrigger>
     {
         /// <summary>
         /// Capsule trigger scale (when compared to default Unity sphere).
@@ -34,7 +34,7 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
         }
 
         // METHODS
-        public CourseMetadataTrigger ExportGfz()
+        public MiscellaneousTrigger ExportGfz()
         {
             // Convert unity transform to gfz transform
             var transform = TransformConverter.ToGfzTransformPRXS(this.transform);
@@ -56,7 +56,7 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
             }
 
             // Construct type
-            var value = new CourseMetadataTrigger
+            var value = new MiscellaneousTrigger
             {
                 transform = transform,
                 metadataType = metadataType,
@@ -65,7 +65,7 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
             return value;
         }
 
-        public void ImportGfz(CourseMetadataTrigger value)
+        public void ImportGfz(MiscellaneousTrigger value)
         {
             transform.CopyGfzTransformPRXS(value.transform);
             transform.localScale *= scale;

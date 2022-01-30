@@ -6,11 +6,11 @@ using System.IO;
 namespace GameCube.GFZ.CourseCollision
 {
     /// <summary>
-    /// A matrix of index lists. Matrix is used as base class for matrices used
+    /// A grid of index lists. Grid is used as base class for other *Grid types
     /// to index collider triangles/quads (static meshes) and checkpoint nodes.
     /// </summary>
     [Serializable]
-    public abstract class IndexMatrix :
+    public abstract class IndexGrid :
         IBinaryAddressable,
         IBinarySerializable,
         IHasReference
@@ -32,7 +32,7 @@ namespace GameCube.GFZ.CourseCollision
         public IndexList[] indexLists;
 
 
-        public IndexMatrix()
+        public IndexGrid()
         {
             // Initialize array to default/const size.
             // Requires inheriter to finalize count.

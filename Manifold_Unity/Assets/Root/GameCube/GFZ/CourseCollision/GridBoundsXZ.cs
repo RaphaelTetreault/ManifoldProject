@@ -22,11 +22,11 @@ namespace GameCube.GFZ.CourseCollision
     /// <summary>
     /// Defines an absolute, untransformed bounds along the X and Z axes. This is used as metadata to know
     /// the dimensions of the course as viewed from a top-down view. It is used to deconstruct the racing 
-    /// checkpoint matrix (8x8 overlapping grid inside bounds) and the triangle and quad collision matrix 
+    /// checkpoint grid (8x8 overlapping grid inside bounds) and the triangle and quad collision grid 
     /// (16x16 overlapping grid inside bounds).
     /// </summary>
     [Serializable]
-    public class MatrixBoundsXZ :
+    public class GridBoundsXZ :
         IBinaryAddressable,
         IBinarySerializable
     {
@@ -113,7 +113,7 @@ namespace GameCube.GFZ.CourseCollision
         public override string ToString()
         {
             return 
-                $"{nameof(MatrixBoundsXZ)}(" +
+                $"{nameof(GridBoundsXZ)}(" +
                 $"{nameof(top)}: {top}, " +
                 $"{nameof(left)}: {left}, " +
                 $"{nameof(subdivisionWidth)}: {subdivisionWidth}, " +

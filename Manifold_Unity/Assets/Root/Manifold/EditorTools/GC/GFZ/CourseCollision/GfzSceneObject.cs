@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Manifold.EditorTools.GC.GFZ.CourseCollision
 {
     public class GfzSceneObject : MonoBehaviour,
-        IGfzConvertable<SceneObject>,
+        IGfzConvertable<SceneObjectDefinition>,
         IEquatable<GfzSceneObject>
     {
         [SerializeField] private LodRenderFlags lodRenderFlags;
@@ -16,11 +16,11 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
         public GfzColliderMesh ColliderMesh => colliderMesh;
 
 
-        private SceneObject reference;
+        private SceneObjectDefinition reference;
 
         public void InitSharedReference()
         {
-            reference = new SceneObject();
+            reference = new SceneObjectDefinition();
 
             reference.lodRenderFlags = lodRenderFlags;
             reference.lods = sceneObjectLODs.ExportGfz();
@@ -29,13 +29,13 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
                 reference.colliderMesh = colliderMesh.ExportGfz();
         }
 
-        public SceneObject ExportGfz()
+        public SceneObjectDefinition ExportGfz()
         {
             // If null, you have not init the shared reference value
             return reference;
         }
 
-        public void ImportGfz(SceneObject sceneObject)
+        public void ImportGfz(SceneObjectDefinition sceneObject)
         {
             lodRenderFlags = sceneObject.lodRenderFlags;
 

@@ -10,7 +10,7 @@ namespace GameCube.GFZ.CourseCollision
     /// such as boost plates, jump plates, and heal strips. Likely for use by AI.
     /// </summary>
     [Serializable]
-    public class SurfaceAttributeArea :
+    public class EmbeddedTrackPropertyArea :
         IBinaryAddressable,
         IBinarySerializable
     {
@@ -23,7 +23,7 @@ namespace GameCube.GFZ.CourseCollision
         public float lengthTo = -1f;
         public float widthLeft = 0;
         public float widthRight = 0;
-        public SurfaceAttribute surfaceAttribute = SurfaceAttribute.TerminateCode;
+        public EmbeddedTrackPropertyType propertyType = EmbeddedTrackPropertyType.TerminateCode;
         public byte trackBranchID = 0;
         public ushort zero_0x12;
 
@@ -35,23 +35,23 @@ namespace GameCube.GFZ.CourseCollision
             set => addressRange = value;
         }
 
-        public static SurfaceAttributeArea Terminator()
+        public static EmbeddedTrackPropertyArea Terminator()
         {
-            return new SurfaceAttributeArea()
+            return new EmbeddedTrackPropertyArea()
             {
                 lengthFrom = -1f,
                 lengthTo = -1f,
                 widthLeft = 0,
                 widthRight = 0,
-                surfaceAttribute = SurfaceAttribute.TerminateCode,
+                propertyType = EmbeddedTrackPropertyType.TerminateCode,
                 trackBranchID = 0,
                 zero_0x12 = 0,
             };
         }
 
-        public static SurfaceAttributeArea[] DefaultArray()
+        public static EmbeddedTrackPropertyArea[] DefaultArray()
         {
-            return new SurfaceAttributeArea[]
+            return new EmbeddedTrackPropertyArea[]
             {
                 Terminator(),
             };
@@ -67,7 +67,7 @@ namespace GameCube.GFZ.CourseCollision
                 reader.ReadX(ref lengthTo);
                 reader.ReadX(ref widthLeft);
                 reader.ReadX(ref widthRight);
-                reader.ReadX(ref surfaceAttribute);
+                reader.ReadX(ref propertyType);
                 reader.ReadX(ref trackBranchID);
                 reader.ReadX(ref zero_0x12);
             }
@@ -88,7 +88,7 @@ namespace GameCube.GFZ.CourseCollision
                 writer.WriteX(lengthTo);
                 writer.WriteX(widthLeft);
                 writer.WriteX(widthRight);
-                writer.WriteX(surfaceAttribute);
+                writer.WriteX(propertyType);
                 writer.WriteX(trackBranchID);
                 writer.WriteX(zero_0x12);
             }
@@ -98,12 +98,12 @@ namespace GameCube.GFZ.CourseCollision
         public override string ToString()
         {
             return 
-                $"{nameof(SurfaceAttributeArea)}(" +
+                $"{nameof(EmbeddedTrackPropertyArea)}(" +
                 $"{nameof(lengthFrom)}: {lengthFrom}, " +
                 $"{nameof(lengthTo)}: {lengthTo}, " +
                 $"{nameof(widthLeft)}: {widthLeft}, " +
                 $"{nameof(widthRight)}: {widthRight}, " +
-                $"{nameof(surfaceAttribute)}: {surfaceAttribute}, " +
+                $"{nameof(propertyType)}: {propertyType}, " +
                 $"{nameof(trackBranchID)}: {trackBranchID}" +
                 $")";
         }

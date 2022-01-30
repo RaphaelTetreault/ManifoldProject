@@ -9,7 +9,7 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
     /// 
     /// </summary>
     public class GfzUnknownCourseMetadataTrigger : MonoBehaviour,
-        IGfzConvertable<CourseMetadataTrigger>
+        IGfzConvertable<MiscellaneousTrigger>
     {
         /// <summary>
         /// Big Blue Ordeal trigger type scale (when compared to default Unity cube).
@@ -17,13 +17,13 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
         public const float scale = 27.5f;
 
         // METHODS
-        public CourseMetadataTrigger ExportGfz()
+        public MiscellaneousTrigger ExportGfz()
         {
             // Convert unity transform to gfz transform
             var transform = TransformConverter.ToGfzTransformPRXS(this.transform);
             transform.Scale /= scale;
 
-            var value = new CourseMetadataTrigger
+            var value = new MiscellaneousTrigger
             {
                 transform = transform,
                 metadataType = CourseMetadataType.BigBlueOrdeal,
@@ -32,7 +32,7 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
             return value;
         }
 
-        public void ImportGfz(CourseMetadataTrigger value)
+        public void ImportGfz(MiscellaneousTrigger value)
         {
             transform.CopyGfzTransformPRXS(value.transform);
             transform.localScale *= scale;

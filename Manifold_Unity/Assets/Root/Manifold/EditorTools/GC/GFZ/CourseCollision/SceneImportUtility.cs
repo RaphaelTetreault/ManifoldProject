@@ -175,7 +175,7 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
         #region CREATE TRIGGERS
         private static Transform CreateArcadeCheckpointTriggers(ColiScene scene)
         {
-            var arcadeCheckpointTriggers = scene.arcadeCheckpointTriggers;
+            var arcadeCheckpointTriggers = scene.timeExtensionTriggers;
             int count = 0;
             int total = arcadeCheckpointTriggers.Length;
 
@@ -208,7 +208,7 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
 
         private static Transform CreateCourseMetadataTriggers(ColiScene scene)
         {
-            var courseMetadataTriggers = scene.courseMetadataTriggers;
+            var courseMetadataTriggers = scene.miscellaneousTriggers;
             int count = 0;
             int total = courseMetadataTriggers.Length;
 
@@ -218,7 +218,7 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
                 return null;
 
             // Create general data for progress bar, naming
-            var typeName = nameof(CourseMetadataTrigger);
+            var typeName = nameof(MiscellaneousTrigger);
             string title = $"Creating {typeName}s";
             string format = WidthFormat(courseMetadataTriggers);
 
@@ -288,7 +288,7 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
 
             return root;
         }
-        private static GfzObjectPath CreateMetadataPathObj(CourseMetadataTrigger data)
+        private static GfzObjectPath CreateMetadataPathObj(MiscellaneousTrigger data)
         {
             var pathObject = new GameObject();
             var root = pathObject.transform;
@@ -310,7 +310,7 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
             return objectPath;
         }
 
-        private static Transform CreateMetadataBboObj(CourseMetadataTrigger data)
+        private static Transform CreateMetadataBboObj(MiscellaneousTrigger data)
         {
             // Object named by caller
             var gobj = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -320,7 +320,7 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
             return gobj.transform;
         }
 
-        private static Transform CreateMetadataCapsuleObj(CourseMetadataTrigger data)
+        private static Transform CreateMetadataCapsuleObj(MiscellaneousTrigger data)
         {
             var gobj = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             var capsuleTrigger = gobj.gameObject.AddComponent<GfzStoryCapsule>();
@@ -588,7 +588,7 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
             // TODO: it would be wiser to tag the prefabs with some tag type so that
             // we need only pull in objects of that type. The string loading method
             // is bound to break at some point.
-            for (int i = 0; i < scene.staticColliderMeshes.SurfaceCount; i++)
+            for (int i = 0; i < scene.staticColliderMeshManager.SurfaceCount; i++)
             {
                 var property = (StaticColliderMeshProperty)i;
                 var meshName = $"st{scene.ID:00}_{i:00}_{property}";
@@ -725,7 +725,7 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
         {
             // Get all bounds
             var boundsTrack = scene.trackCheckpointBoundsXZ;
-            var boundsColliders = scene.staticColliderMeshes.meshBounds;
+            var boundsColliders = scene.staticColliderMeshManager.meshBounds;
             //
             float yHeight = scene.trackMinHeight;
 
@@ -742,7 +742,7 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
             return boundsRoot;
         }
 
-        public static Transform CreateGridBoundsXZ(MatrixBoundsXZ bounds, float yHeight, string name)
+        public static Transform CreateGridBoundsXZ(GridBoundsXZ bounds, float yHeight, string name)
         {
             var displayName = $"{name} ({bounds.numSubdivisionsX}x{bounds.numSubdivisionsZ})";
             var boundsObject = CreatePrimitive(PrimitiveType.Cube, displayName);
@@ -757,8 +757,8 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
         public static Transform CreateStaticMeshColliderManagerSphereBounds(ColiScene scene)
         {
             var boundingSphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            boundingSphere.transform.localPosition = scene.staticColliderMeshes.boundingSphere.origin;
-            boundingSphere.transform.localScale = scene.staticColliderMeshes.boundingSphere.radius * 2f * Vector3.one;
+            boundingSphere.transform.localPosition = scene.staticColliderMeshManager.boundingSphere.origin;
+            boundingSphere.transform.localScale = scene.staticColliderMeshManager.boundingSphere.radius * 2f * Vector3.one;
             boundingSphere.SetActive(false);
             boundingSphere.name = $"{nameof(StaticColliderMeshManager)}.{nameof(GameCube.GFZ.BoundingSphere)}";
             return boundingSphere.transform;
@@ -771,7 +771,7 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
 
             int chainIndex = 0;
             var trackNodes = scene.trackNodes;
-            foreach (var indexList in scene.trackCheckpointMatrix.indexLists)
+            foreach (var indexList in scene.trackCheckpointGrid.indexLists)
             {
                 var chain = new GameObject().transform;
                 chain.name = $"Chain {chainIndex++}";
@@ -845,10 +845,10 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
 
         public static Transform[] CreateAllSceneObjects(ColiScene scene, params string[] searchFolders)
         {
-            var sceneObjectRoot = new GameObject($"{nameof(SceneObject)}s");
-            var sceneObjectDict = new Dictionary<SceneObject, GfzSceneObject>();
+            var sceneObjectRoot = new GameObject($"{nameof(SceneObjectDefinition)}s");
+            var sceneObjectDict = new Dictionary<SceneObjectDefinition, GfzSceneObject>();
             int index = 0;
-            foreach (var sceneObject in scene.sceneObjects)
+            foreach (var sceneObject in scene.sceneObjectDefinitions)
             {
                 var gobj = new GameObject($"[{++index}] {sceneObject.Name}");
                 gobj.transform.SetParent(sceneObjectRoot.transform);
@@ -864,7 +864,7 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
             return new Transform[] { sceneObjectRoot.transform, rootStatics, rootDynamics };
         }
 
-        public static Transform CreateDynamicSceneObjects(ColiScene scene, Dictionary<SceneObject, GfzSceneObject> sceneObjectDict, params string[] searchFolders)
+        public static Transform CreateDynamicSceneObjects(ColiScene scene, Dictionary<SceneObjectDefinition, GfzSceneObject> sceneObjectDict, params string[] searchFolders)
         {
             // Get some metadata from the number of scene objects
             var dynamicSceneObjects = scene.dynamicSceneObjects;
@@ -913,7 +913,7 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
             return dynamicsRoot;
         }
 
-        public static Transform CreateStaticSceneObjects(ColiScene scene, Dictionary<SceneObject, GfzSceneObject> sceneObjectDict, params string[] searchFolders)
+        public static Transform CreateStaticSceneObjects(ColiScene scene, Dictionary<SceneObjectDefinition, GfzSceneObject> sceneObjectDict, params string[] searchFolders)
         {
             // Get some metadata from the number of scene objects
             var staticSceneObjects = scene.staticSceneObjects;

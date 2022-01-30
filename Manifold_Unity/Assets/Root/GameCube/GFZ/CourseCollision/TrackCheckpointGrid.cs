@@ -4,18 +4,18 @@ using Unity.Mathematics;
 namespace GameCube.GFZ.CourseCollision
 {
     /// <summary>
-    /// A matrix table for index lists specifically for track checkpoints.
+    /// A table for index lists specifically for track checkpoints.
     /// This class acts a wrapper to make serialization easy (in Unity).
     /// </summary>
     [System.Serializable]
-    public class TrackCheckpointMatrix : IndexMatrix
+    public class TrackCheckpointGrid : IndexGrid
     {
         public const int Subdivisions = 8;
         public const int kListCount = Subdivisions * Subdivisions;
         public override int SubdivisionsX => Subdivisions;
         public override int SubdivisionsZ => Subdivisions;
 
-        public static MatrixBoundsXZ GetMatrixBoundsXZ(Checkpoint[] checkpoints)
+        public static GridBoundsXZ GetMatrixBoundsXZ(Checkpoint[] checkpoints)
         {
             // Get min and max XZ values of any checkpoint
             float3 min = new float3(float.MaxValue, 0, float.MaxValue);
@@ -33,7 +33,7 @@ namespace GameCube.GFZ.CourseCollision
             }
 
             // Compute bounds
-            var bounds = new MatrixBoundsXZ();
+            var bounds = new GridBoundsXZ();
             bounds.numSubdivisionsX = Subdivisions;
             bounds.numSubdivisionsZ = Subdivisions;
             bounds.left = min.x;
@@ -44,7 +44,7 @@ namespace GameCube.GFZ.CourseCollision
             return bounds;
         }
 
-        public void GenerateIndexes(MatrixBoundsXZ matrixBoundsXZ, Checkpoint[] checkpoints)
+        public void GenerateIndexes(GridBoundsXZ matrixBoundsXZ, Checkpoint[] checkpoints)
         {
             // Init. Value is from inherited structure.
             indexLists = new IndexList[kListCount];

@@ -7,10 +7,10 @@ namespace GameCube.GFZ.CourseCollision
 {
     /// <summary>
     /// A trigger volume that has many different use cases depending on
-    /// which course it appears. Consule enum comments for more details.
+    /// which course it appears. Consult enum comments for more details.
     /// </summary>
     [Serializable]
-    public class CourseMetadataTrigger :
+    public class MiscellaneousTrigger :
         IBinaryAddressable,
         IBinarySerializable
     {
@@ -64,7 +64,7 @@ namespace GameCube.GFZ.CourseCollision
         public override string ToString()
         {
             return
-                $"{nameof(CourseMetadataTrigger)}(" +
+                $"{nameof(MiscellaneousTrigger)}(" +
                 $"{nameof(metadataType)}: {metadataType}, " +
                 $"{transform}" +
                 $")";

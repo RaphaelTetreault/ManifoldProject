@@ -71,19 +71,19 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         public abstract Mesh[] GenerateMeshes();
 
-        public SurfaceAttributeArea[] GetEmbededPropertyAreas()
+        public EmbeddedTrackPropertyArea[] GetEmbededPropertyAreas()
         {
             // Get all properties on self and children.
             var embededProperties = GetComponentsInChildren<GfzTrackEmbededProperty>();
 
             // Iterate over collection
             var count = embededProperties.Length;
-            var embededPropertyAreas = new SurfaceAttributeArea[count+1];
+            var embededPropertyAreas = new EmbeddedTrackPropertyArea[count+1];
             for (int i = 0; i < count; i++)
             {
                 embededPropertyAreas[i] = embededProperties[i].GetEmbededProperty();
             }
-            embededPropertyAreas[count] = SurfaceAttributeArea.Terminator();
+            embededPropertyAreas[count] = EmbeddedTrackPropertyArea.Terminator();
             return embededPropertyAreas;
         }
 

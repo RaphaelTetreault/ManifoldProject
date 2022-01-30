@@ -532,27 +532,27 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
 
             // Scene Object Dynamic Reference + internal data
             {
-                log.WriteLine($"{nameof(SceneObject)}");
-                for (int i = 0; i < coliScene.sceneObjects.Length; i++)
+                log.WriteLine($"{nameof(SceneObjectDefinition)}");
+                for (int i = 0; i < coliScene.sceneObjectDefinitions.Length; i++)
                 {
-                    var sceneInstance = coliScene.sceneObjects[i];
-                    log.Write(PrintIndex(i, coliScene.sceneObjects));
+                    var sceneInstance = coliScene.sceneObjectDefinitions[i];
+                    log.Write(PrintIndex(i, coliScene.sceneObjectDefinitions));
                     log.WriteLine(PrintData(functionIdx, sceneInstance));
                 }
                 log.WriteLine();
 
                 log.WriteLine($"{nameof(ColliderMesh)}");
-                for (int i = 0; i < coliScene.sceneObjects.Length; i++)
+                for (int i = 0; i < coliScene.sceneObjectDefinitions.Length; i++)
                 {
-                    var colliderGeometry = coliScene.sceneObjects[i].colliderMesh;
+                    var colliderGeometry = coliScene.sceneObjectDefinitions[i].colliderMesh;
                     if (colliderGeometry == null)
                         continue;
-                    log.Write(PrintIndex(i, coliScene.sceneObjects));
+                    log.Write(PrintIndex(i, coliScene.sceneObjectDefinitions));
                     log.WriteLine(PrintData(functionIdx, colliderGeometry));
                 }
                 log.WriteLine();
 
-                log.WriteLine($"{nameof(SceneObject)}");
+                log.WriteLine($"{nameof(SceneObjectDefinition)}");
                 for (int i = 0; i < coliScene.sceneObjectLODs.Length; i++)
                 {
                     var sceneObjectReference = coliScene.sceneObjectLODs[i];
@@ -599,8 +599,8 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
             log.WriteLine();
 
             log.WriteHeading("TRIGGERS", padding, h1Width);
-            log.WriteAddress(coliScene.arcadeCheckpointTriggers);
-            log.WriteAddress(coliScene.courseMetadataTriggers);
+            log.WriteAddress(coliScene.timeExtensionTriggers);
+            log.WriteAddress(coliScene.miscellaneousTriggers);
             log.WriteAddress(coliScene.storyObjectTriggers);
             log.WriteAddress(coliScene.unknownTriggers);
             log.WriteAddress(coliScene.visualEffectTriggers);
@@ -612,7 +612,7 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
             log.WriteAddress(coliScene.trackCheckpointBoundsXZ);
             log.WriteLine();
             // Writes track objects array
-            log.WriteAddress(coliScene.surfaceAttributeAreas);
+            log.WriteAddress(coliScene.embeddedPropertyAreas);
             // Writes track segments (root then all)
             log.WriteLine("ROOT SEGMENTS");
             log.WriteAddress(coliScene.rootTrackSegments);
@@ -655,7 +655,7 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
             }
             log.WriteLine();
             //
-            log.WriteAddress(coliScene.trackCheckpointMatrix);
+            log.WriteAddress(coliScene.trackCheckpointGrid);
             log.WriteAddress(coliScene.trackNodes);
             {
                 var checkpoints = new List<Checkpoint>();
@@ -667,28 +667,28 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
             log.WriteLine();
 
             log.WriteHeading("STATIC COLLISION", padding, h1Width);
-            log.WriteAddress(coliScene.staticColliderMeshes);
+            log.WriteAddress(coliScene.staticColliderMeshManager);
             log.WriteLine();
             log.WriteLine(nameof(UnknownCollider) + "[]");
             log.WriteAddress(coliScene.unknownColliders);
             log.WriteLine();
             log.WriteLine(nameof(GameCube.GFZ.BoundingSphere));
-            log.WriteLine("unk float: " + coliScene.staticColliderMeshes.unk_float);
-            log.WriteAddress(coliScene.staticColliderMeshes.boundingSphere);
-            log.WriteLine(coliScene.staticColliderMeshes.boundingSpherePtr);
-            log.WriteLine(coliScene.staticColliderMeshes.staticSceneObjectsPtr);
+            log.WriteLine("unk float: " + coliScene.staticColliderMeshManager.unk_float);
+            log.WriteAddress(coliScene.staticColliderMeshManager.boundingSphere);
+            log.WriteLine(coliScene.staticColliderMeshManager.boundingSpherePtr);
+            log.WriteLine(coliScene.staticColliderMeshManager.staticSceneObjectsPtr);
             log.WriteLine();
             log.WriteLine("Mesh Bounds");
-            log.WriteAddress(coliScene.staticColliderMeshes.meshBounds);
+            log.WriteAddress(coliScene.staticColliderMeshManager.meshBounds);
             log.WriteLine();
             log.WriteLine("TRIANGLES");
-            log.WriteAddress(coliScene.staticColliderMeshes.colliderTris);
-            log.WriteAddress(coliScene.staticColliderMeshes.triMeshMatrices);
+            log.WriteAddress(coliScene.staticColliderMeshManager.colliderTris);
+            log.WriteAddress(coliScene.staticColliderMeshManager.triMeshMatrices);
             // Write each index list
             log.WriteNullInArray = false;
-            for (int i = 0; i < coliScene.staticColliderMeshes.triMeshMatrices.Length; i++)
+            for (int i = 0; i < coliScene.staticColliderMeshManager.triMeshMatrices.Length; i++)
             {
-                var triIndexList = coliScene.staticColliderMeshes.triMeshMatrices[i];
+                var triIndexList = coliScene.staticColliderMeshManager.triMeshMatrices[i];
                 if (triIndexList != null)
                 {
                     log.WriteLine($"COLLIDER TYPE [{i}]: {(StaticColliderMeshProperty)i}");
@@ -697,13 +697,13 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
             }
             log.WriteNullInArray = true;
             log.WriteLine("QUADS");
-            log.WriteAddress(coliScene.staticColliderMeshes.colliderQuads);
-            log.WriteAddress(coliScene.staticColliderMeshes.quadMeshMatrices);
+            log.WriteAddress(coliScene.staticColliderMeshManager.colliderQuads);
+            log.WriteAddress(coliScene.staticColliderMeshManager.quadMeshMatrices);
             // Write each index list
             log.WriteNullInArray = false;
-            for (int i = 0; i < coliScene.staticColliderMeshes.quadMeshMatrices.Length; i++)
+            for (int i = 0; i < coliScene.staticColliderMeshManager.quadMeshMatrices.Length; i++)
             {
-                var quadIndexList = coliScene.staticColliderMeshes.quadMeshMatrices[i];
+                var quadIndexList = coliScene.staticColliderMeshManager.quadMeshMatrices[i];
                 if (quadIndexList != null)
                 {
                     log.WriteLine($"COLLIDER TYPE [{i}]: {(StaticColliderMeshProperty)i}");
@@ -717,7 +717,7 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
             log.WriteLine("Object Names");
             log.WriteAddress(coliScene.sceneObjectNames);
             log.WriteAddress(coliScene.sceneObjectLODs);
-            log.WriteAddress(coliScene.sceneObjects);
+            log.WriteAddress(coliScene.sceneObjectDefinitions);
             log.WriteAddress(coliScene.staticSceneObjects);
             log.WriteAddress(coliScene.dynamicSceneObjects);
             {
@@ -1035,13 +1035,13 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
 
                 // Static Collider Meshes
                 {
-                    coliScene.staticColliderMeshes = new StaticColliderMeshManager(format);
+                    coliScene.staticColliderMeshManager = new StaticColliderMeshManager(format);
                 }
 
                 // Triggers
                 {
                     var arcadeCheckpointTriggers = GameObject.FindObjectsOfType<GfzArcadeCheckpoint>(canFindInactive);
-                    coliScene.arcadeCheckpointTriggers = GetGfzValues(arcadeCheckpointTriggers);
+                    coliScene.timeExtensionTriggers = GetGfzValues(arcadeCheckpointTriggers);
 
                     // This trigger type is a mess... Get all 3 representations, combine, assign.
                     // Collect all trigger types. They all get converted to the same GFZ base type.
@@ -1049,12 +1049,12 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
                     var storyCapsules = GameObject.FindObjectsOfType<GfzStoryCapsule>(canFindInactive);
                     var unknownMetadataTriggers = GameObject.FindObjectsOfType<GfzUnknownCourseMetadataTrigger>(canFindInactive);
                     // Make a list, add range for each type
-                    var courseMetadataTriggers = new List<CourseMetadataTrigger>();
+                    var courseMetadataTriggers = new List<MiscellaneousTrigger>();
                     courseMetadataTriggers.AddRange(GetGfzValues(objectPaths));
                     courseMetadataTriggers.AddRange(GetGfzValues(storyCapsules));
                     courseMetadataTriggers.AddRange(GetGfzValues(unknownMetadataTriggers));
                     // Convert list to array, assign to ColiScene
-                    coliScene.courseMetadataTriggers = courseMetadataTriggers.ToArray();
+                    coliScene.miscellaneousTriggers = courseMetadataTriggers.ToArray();
 
                     // TODO:
                     // story object triggers
@@ -1071,9 +1071,9 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
 
 
                     log.WriteLine("TRIGGERS");
-                    log.WriteLineSummary(coliScene.arcadeCheckpointTriggers);
+                    log.WriteLineSummary(coliScene.timeExtensionTriggers);
                     // Log. TODO: more granularity in type.
-                    log.WriteLineSummary(coliScene.courseMetadataTriggers);
+                    log.WriteLineSummary(coliScene.miscellaneousTriggers);
                     log.WriteLineSummary(coliScene.unknownTriggers);
                     log.WriteLineSummary(coliScene.unknownColliders);
                     log.WriteLineSummary(coliScene.visualEffectTriggers);
@@ -1091,7 +1091,7 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
                     log.WriteLine("SCENE OBJECTS");
                     log.WriteLineSummary(coliScene.dynamicSceneObjects);
                     log.WriteLineSummary(coliScene.staticSceneObjects);
-                    log.WriteLineSummary(coliScene.sceneObjects);
+                    log.WriteLineSummary(coliScene.sceneObjectDefinitions);
                     log.WriteLineSummary(coliScene.sceneObjectLODs);
                     log.WriteLineSummary(coliScene.sceneObjectNames);
                     log.WriteLine();
@@ -1107,7 +1107,7 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
                     // Serialization could then run from root through chicldren, respecting array pointer seriialization.
 
                     //
-                    coliScene.trackCheckpointMatrix = new TrackCheckpointMatrix();
+                    coliScene.trackCheckpointGrid = new TrackCheckpointGrid();
 
                     // TODO: this is temp data
                     coliScene.trackLength = new TrackLength();

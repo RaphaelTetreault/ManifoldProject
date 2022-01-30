@@ -31,9 +31,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         public TrackSegment[] AllSegments { get; private set; }
         public Checkpoint[] Checkpoints { get; private set; }
         public TrackNode[] TrackNodes { get; private set; }
-        public SurfaceAttributeArea[] EmbeddedPropertyAreas { get; private set; }
-        public TrackCheckpointMatrix TrackCheckpointMatrix { get; private set; }
-        public MatrixBoundsXZ TrackCheckpointMatrixBoundsXZ { get; private set; }
+        public EmbeddedTrackPropertyArea[] EmbeddedPropertyAreas { get; private set; }
+        public TrackCheckpointGrid TrackCheckpointMatrix { get; private set; }
+        public GridBoundsXZ TrackCheckpointMatrixBoundsXZ { get; private set; }
         public CircuitType CircuitType { get; private set; }
 
 
@@ -54,7 +54,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             var checkpoints = new List<Checkpoint>();
             var trackNodes = new List<TrackNode>();
             //
-            var trackEmbeddedPropertyAreas = new List<SurfaceAttributeArea>();
+            var trackEmbeddedPropertyAreas = new List<EmbeddedTrackPropertyArea>();
 
             //
             var rootSegmentScripts = this.rootSegments;
@@ -100,8 +100,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             trackMinHeight.SetMinHeight(checkpointsArray);
 
             //
-            var checkpointMatrixBoundsXZ = TrackCheckpointMatrix.GetMatrixBoundsXZ(checkpointsArray);
-            var trackCheckpointMatrix = new TrackCheckpointMatrix();
+            var checkpointMatrixBoundsXZ = TrackCheckpointGrid.GetMatrixBoundsXZ(checkpointsArray);
+            var trackCheckpointMatrix = new TrackCheckpointGrid();
             trackCheckpointMatrix.GenerateIndexes(checkpointMatrixBoundsXZ, checkpointsArray);
 
             // TODO: actually store the damn values!

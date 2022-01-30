@@ -23,7 +23,7 @@ namespace GameCube.GFZ.CourseCollision
         public Pointer templateSceneObjectPtr;
         public TransformPRXS transform;
         //
-        public SceneObject sceneObject;
+        public SceneObjectDefinition sceneObject;
 
         // PROPERTIES
         public AddressRange AddressRange
