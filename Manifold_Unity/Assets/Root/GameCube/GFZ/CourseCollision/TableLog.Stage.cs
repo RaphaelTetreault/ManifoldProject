@@ -203,7 +203,7 @@ namespace GameCube.GFZ.CourseCollision
                 writer.WriteNextCol(nameof(TrackSegment.railHeightLeft));
                 writer.WriteNextCol(nameof(TrackSegment.zero_0x44));
                 writer.WriteNextCol(nameof(TrackSegment.zero_0x48));
-                writer.WriteNextCol(nameof(TrackSegment.unk_0x4C));
+                writer.WriteNextCol(nameof(TrackSegment.branchIndex));
                 writer.WriteNextCol();
                 writer.WriteNextColNicify(nameof(TrackCorner.width));
                 writer.WriteNextColNicify(nameof(TrackCorner.perimeterOptions));
@@ -267,7 +267,7 @@ namespace GameCube.GFZ.CourseCollision
             writer.WriteNextCol(trackTransform.railHeightLeft);
             writer.WriteNextCol(trackTransform.zero_0x44);
             writer.WriteNextCol(trackTransform.zero_0x48);
-            writer.WriteNextCol(trackTransform.unk_0x4C);
+            writer.WriteNextCol(trackTransform.branchIndex);
             //
             if (trackTransform.trackCornerPtr.IsNotNull)
             {

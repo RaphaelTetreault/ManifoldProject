@@ -46,7 +46,7 @@ namespace GameCube.GFZ.CourseCollision
         public float railHeightLeft;
         public uint zero_0x44; // zero confirmed
         public uint zero_0x48; // zero confirmed
-        public TrackUnkOption2 unk_0x4C; // 0, 1, 2, 3
+        public int branchIndex; // 0, 1, 2, 3
         // REFERENCE FIELDS
         public TrackCurves trackCurves;
         public TrackCorner trackCorner;
@@ -84,7 +84,7 @@ namespace GameCube.GFZ.CourseCollision
                 reader.ReadX(ref railHeightLeft);
                 reader.ReadX(ref zero_0x44);
                 reader.ReadX(ref zero_0x48);
-                reader.ReadX(ref unk_0x4C);
+                reader.ReadX(ref branchIndex);
             }
             this.RecordEndAddress(reader);
             {
@@ -201,7 +201,7 @@ namespace GameCube.GFZ.CourseCollision
                 writer.WriteX(railHeightLeft);
                 writer.WriteX(zero_0x44);
                 writer.WriteX(zero_0x48);
-                writer.WriteX(unk_0x4C);
+                writer.WriteX(branchIndex);
             }
             this.RecordEndAddress(writer);
         }
@@ -280,7 +280,7 @@ namespace GameCube.GFZ.CourseCollision
             //
             builder.Append($"\n\t{nameof(railHeightRight)}: {railHeightRight}");
             builder.Append($"\n\t{nameof(railHeightLeft)}: {railHeightLeft}");
-            builder.Append($"\n\t{nameof(unk_0x4C)}: {unk_0x4C}");
+            builder.Append($"\n\t{nameof(branchIndex)}: {branchIndex}");
 
             return builder.ToString();
         }
