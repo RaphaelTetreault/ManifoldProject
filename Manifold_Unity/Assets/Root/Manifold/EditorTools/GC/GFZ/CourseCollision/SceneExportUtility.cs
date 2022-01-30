@@ -191,11 +191,11 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
                 // STATIC / DYNAMIC
                 scene.dynamicSceneObjects = GetGfzValues(gfzDynamicSceneObjects);
                 scene.staticSceneObjects = GetGfzValues(gfzStaticSceneObjects);
-                scene.sceneObjectDefinitions = GetGfzValues(gfzSceneObjects);
+                scene.sceneObjects = GetGfzValues(gfzSceneObjects);
 
                 // LODs
                 var sceneObjectLODs = new List<SceneObjectLOD>();
-                foreach (var sceneObject in scene.sceneObjectDefinitions)
+                foreach (var sceneObject in scene.sceneObjects)
                 {
                     sceneObjectLODs.AddRange(sceneObject.lods);
                 }
@@ -230,7 +230,7 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
                 scene.staticColliderMeshManager.unknownColliders = scene.unknownColliders;
                 scene.staticColliderMeshManager.staticSceneObjects = scene.staticSceneObjects;
                 //scene.staticColliderMeshes.ComputeMatrixBoundsXZ();
-                scene.staticColliderMeshManager.meshBounds = new GridBoundsXZ();
+                scene.staticColliderMeshManager.meshGridXZ = new GridXZ();
 
                 // Get data from scene
                 //scene.staticColliderMeshes = oldScene.staticColliderMeshes;
@@ -252,7 +252,7 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
                 scene.trackNodes = track.TrackNodes;
                 // Checkpoint matrix
                 scene.trackCheckpointGrid = track.TrackCheckpointMatrix;
-                scene.trackCheckpointBoundsXZ = track.TrackCheckpointMatrixBoundsXZ;
+                scene.checkpointGridXZ = track.TrackCheckpointMatrixBoundsXZ;
 
                 // Track metadata
                 scene.trackLength = track.TrackLength;
@@ -287,7 +287,7 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
         {
             // TEMP
             // This is because I must handle Unity serializing nulls with empty instances
-            foreach (var sceneObject in scene.sceneObjectDefinitions)
+            foreach (var sceneObject in scene.sceneObjects)
             {
                 var colliderGeo = sceneObject.colliderMesh;
                 if (colliderGeo != null)

@@ -26,13 +26,12 @@ namespace GameCube.GFZ.CourseCollision
     /// (16x16 overlapping grid inside bounds).
     /// </summary>
     [Serializable]
-    public class GridBoundsXZ :
+    public class GridXZ :
         IBinaryAddressable,
         IBinarySerializable
     {
         // METADATA
         [UnityEngine.SerializeField] private AddressRange addressRange;
-        //[UnityEngine.SerializeField] private float3 center;
 
         // FIELDS
         /// <summary>
@@ -113,7 +112,7 @@ namespace GameCube.GFZ.CourseCollision
         public override string ToString()
         {
             return 
-                $"{nameof(GridBoundsXZ)}(" +
+                $"{nameof(GridXZ)}(" +
                 $"{nameof(top)}: {top}, " +
                 $"{nameof(left)}: {left}, " +
                 $"{nameof(subdivisionWidth)}: {subdivisionWidth}, " +

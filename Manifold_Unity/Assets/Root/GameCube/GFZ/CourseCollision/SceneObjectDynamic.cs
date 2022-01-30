@@ -28,7 +28,7 @@ namespace GameCube.GFZ.CourseCollision
         public Pointer skeletalAnimatorPtr;
         public Pointer transformMatrix3x4Ptr;
         // FIELDS (deserialized from pointers)
-        public SceneObjectDefinition sceneObject;
+        public SceneObject sceneObject;
         public AnimationClip animationClip;
         public TextureScroll textureScroll;
         public SkeletalAnimator skeletalAnimator;

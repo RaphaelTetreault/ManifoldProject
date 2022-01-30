@@ -724,8 +724,8 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
         public static Transform CreateGridBoundsXZVisual(ColiScene scene)
         {
             // Get all bounds
-            var boundsTrack = scene.trackCheckpointBoundsXZ;
-            var boundsColliders = scene.staticColliderMeshManager.meshBounds;
+            var boundsTrack = scene.checkpointGridXZ;
+            var boundsColliders = scene.staticColliderMeshManager.meshGridXZ;
             //
             float yHeight = scene.trackMinHeight;
 
@@ -742,7 +742,7 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
             return boundsRoot;
         }
 
-        public static Transform CreateGridBoundsXZ(GridBoundsXZ bounds, float yHeight, string name)
+        public static Transform CreateGridBoundsXZ(GridXZ bounds, float yHeight, string name)
         {
             var displayName = $"{name} ({bounds.numSubdivisionsX}x{bounds.numSubdivisionsZ})";
             var boundsObject = CreatePrimitive(PrimitiveType.Cube, displayName);
@@ -845,10 +845,10 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
 
         public static Transform[] CreateAllSceneObjects(ColiScene scene, params string[] searchFolders)
         {
-            var sceneObjectRoot = new GameObject($"{nameof(SceneObjectDefinition)}s");
-            var sceneObjectDict = new Dictionary<SceneObjectDefinition, GfzSceneObject>();
+            var sceneObjectRoot = new GameObject($"{nameof(SceneObject)}s");
+            var sceneObjectDict = new Dictionary<SceneObject, GfzSceneObject>();
             int index = 0;
-            foreach (var sceneObject in scene.sceneObjectDefinitions)
+            foreach (var sceneObject in scene.sceneObjects)
             {
                 var gobj = new GameObject($"[{++index}] {sceneObject.Name}");
                 gobj.transform.SetParent(sceneObjectRoot.transform);
@@ -864,7 +864,7 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
             return new Transform[] { sceneObjectRoot.transform, rootStatics, rootDynamics };
         }
 
-        public static Transform CreateDynamicSceneObjects(ColiScene scene, Dictionary<SceneObjectDefinition, GfzSceneObject> sceneObjectDict, params string[] searchFolders)
+        public static Transform CreateDynamicSceneObjects(ColiScene scene, Dictionary<SceneObject, GfzSceneObject> sceneObjectDict, params string[] searchFolders)
         {
             // Get some metadata from the number of scene objects
             var dynamicSceneObjects = scene.dynamicSceneObjects;
@@ -913,7 +913,7 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
             return dynamicsRoot;
         }
 
-        public static Transform CreateStaticSceneObjects(ColiScene scene, Dictionary<SceneObjectDefinition, GfzSceneObject> sceneObjectDict, params string[] searchFolders)
+        public static Transform CreateStaticSceneObjects(ColiScene scene, Dictionary<SceneObject, GfzSceneObject> sceneObjectDict, params string[] searchFolders)
         {
             // Get some metadata from the number of scene objects
             var staticSceneObjects = scene.staticSceneObjects;
@@ -970,7 +970,7 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
             sceneParams.courseIndex = scene.ID;
             sceneParams.author = "Amusement Vision";
             // Other data
-            sceneParams.staticColliderMeshesActive = scene.staticColliderMeshesActive;
+            sceneParams.staticColliderMeshesActive = scene.staticColliderMeshManagerActive;
             sceneParams.circuitType = scene.circuitType;
 
             // Copy fog parameters over

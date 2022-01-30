@@ -15,7 +15,7 @@ namespace GameCube.GFZ.CourseCollision
         public override int SubdivisionsX => Subdivisions;
         public override int SubdivisionsZ => Subdivisions;
 
-        public static GridBoundsXZ GetMatrixBoundsXZ(Checkpoint[] checkpoints)
+        public static GridXZ GetMatrixBoundsXZ(Checkpoint[] checkpoints)
         {
             // Get min and max XZ values of any checkpoint
             float3 min = new float3(float.MaxValue, 0, float.MaxValue);
@@ -33,7 +33,7 @@ namespace GameCube.GFZ.CourseCollision
             }
 
             // Compute bounds
-            var bounds = new GridBoundsXZ();
+            var bounds = new GridXZ();
             bounds.numSubdivisionsX = Subdivisions;
             bounds.numSubdivisionsZ = Subdivisions;
             bounds.left = min.x;
@@ -44,7 +44,7 @@ namespace GameCube.GFZ.CourseCollision
             return bounds;
         }
 
-        public void GenerateIndexes(GridBoundsXZ matrixBoundsXZ, Checkpoint[] checkpoints)
+        public void GenerateIndexes(GridXZ matrixBoundsXZ, Checkpoint[] checkpoints)
         {
             // Init. Value is from inherited structure.
             indexLists = new IndexList[kListCount];

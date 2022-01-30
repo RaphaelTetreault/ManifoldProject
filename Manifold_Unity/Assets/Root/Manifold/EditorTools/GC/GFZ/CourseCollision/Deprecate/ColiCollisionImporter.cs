@@ -76,7 +76,7 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
                         if (sceneObject.sceneObject.colliderGeometryPtr.IsNotNull)
                         {
                             var meshName = sceneObject.Name;
-                            ImportUtility.ProgressBar<SceneObjectDefinition>(count, total, $"st{sceneSobj.Value.ID:00} {meshName}");
+                            ImportUtility.ProgressBar<SceneObject>(count, total, $"st{sceneSobj.Value.ID:00} {meshName}");
 
                             // Create mesh
                             var mesh = CreateObjectColliderMesh(sceneObject, createBackfaces, usePrecomputes);
@@ -123,7 +123,7 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
 
                         count++;
                         var meshName = mesh.name;
-                        ImportUtility.ProgressBar<SceneObjectDefinition>(count, total, $"st{sceneSobj.Value.ID:00} {meshName}");
+                        ImportUtility.ProgressBar<SceneObject>(count, total, $"st{sceneSobj.Value.ID:00} {meshName}");
 
                         // Save mesh to Asset Database
                         var meshPath = $"Assets/{importTo}/st{sceneSobj.Value.ID:00}/coli_{meshName}.asset";
@@ -161,7 +161,7 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
 
                         count++;
                         var meshName = mesh.name;
-                        ImportUtility.ProgressBar<SceneObjectDefinition>(count, total, $"st{sceneSobj.Value.ID:00} {meshName}");
+                        ImportUtility.ProgressBar<SceneObject>(count, total, $"st{sceneSobj.Value.ID:00} {meshName}");
 
                         // Save mesh to Asset Database
                         var meshPath = $"Assets/{importTo}/st{sceneSobj.Value.ID:00}/coli_{meshName}.asset";
@@ -180,7 +180,7 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
                 }
             }
 
-            ImportUtility.ProgressBar<SceneObjectDefinition>(1, 1, $"Saving assets...");
+            ImportUtility.ProgressBar<SceneObject>(1, 1, $"Saving assets...");
             ImportUtility.FinalizeAssetImport();
         }
 
@@ -203,12 +203,12 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
             int meshSurfaceTypeIndex = (int)meshSurfaceType;
 
             // Get triangle information for the current mesh type
-            var triIndex16x16 = scm.triMeshMatrices[meshSurfaceTypeIndex];
+            var triIndex16x16 = scm.triMeshGrids[meshSurfaceTypeIndex];
             var triIndexLists = triIndex16x16.indexLists;
             Assert.IsTrue(triIndexLists.Length == 0 || triIndexLists.Length == StaticColliderMeshGrid.kListCount);
 
             //
-            var quadMeshIndexes = scm.quadMeshMatrices[meshSurfaceTypeIndex];
+            var quadMeshIndexes = scm.quadMeshGrids[meshSurfaceTypeIndex];
             var quadIndexLists = quadMeshIndexes.indexLists;
             Assert.IsTrue(quadIndexLists.Length == 0 || quadIndexLists.Length == StaticColliderMeshGrid.kListCount);
 
@@ -284,14 +284,14 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
                 var submeshes = new SubMeshDescriptor[2];
 
                 // Create triangle mesh from unique triangles
-                var triIndexLists = scm.triMeshMatrices[meshSurfaceType].indexLists;
+                var triIndexLists = scm.triMeshGrids[meshSurfaceType].indexLists;
                 var triUniqueIndexes = GetUniqueIndexes(triIndexLists);
                 var colliderTrianglesSubset = GetIndexes(colliderTriangles, triUniqueIndexes);
                 var trianglesSubmesh = CreateTriSubmeshForMesh(mesh, colliderTrianglesSubset, createBackfaces);
                 submeshes[triSubmeshIndex] = trianglesSubmesh;
 
                 // Create triangle mesh from unique quads (quads are interpreted as triangles)
-                var quadIndexLists = scm.quadMeshMatrices[meshSurfaceType].indexLists;
+                var quadIndexLists = scm.quadMeshGrids[meshSurfaceType].indexLists;
                 var quadUniqueIndexes = GetUniqueIndexes(quadIndexLists);
                 var colliderQuadsSubset = GetIndexes(colliderQuads, quadUniqueIndexes);
                 var quadSubmesh = CreateQuadSubmeshForMesh(mesh, colliderQuadsSubset, createBackfaces);

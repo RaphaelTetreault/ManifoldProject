@@ -33,7 +33,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         public TrackNode[] TrackNodes { get; private set; }
         public EmbeddedTrackPropertyArea[] EmbeddedPropertyAreas { get; private set; }
         public TrackCheckpointGrid TrackCheckpointMatrix { get; private set; }
-        public GridBoundsXZ TrackCheckpointMatrixBoundsXZ { get; private set; }
+        public GridXZ TrackCheckpointMatrixBoundsXZ { get; private set; }
         public CircuitType CircuitType { get; private set; }
 
 

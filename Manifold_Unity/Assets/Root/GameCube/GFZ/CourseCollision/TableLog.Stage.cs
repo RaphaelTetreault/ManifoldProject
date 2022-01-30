@@ -13,7 +13,7 @@ namespace GameCube.GFZ.CourseCollision
         public static readonly string tsvTrackSegment = $"{nameof(TrackSegment)}.tsv";
         public static readonly string tsvSurfaceAttributeArea = $"{nameof(EmbeddedTrackPropertyArea)}.tsv";
         public static readonly string tsvTrackNode = $"{nameof(TrackNode)}.tsv";
-        public static readonly string tsvSceneObject = $"{nameof(SceneObjectDefinition)}.tsv";
+        public static readonly string tsvSceneObject = $"{nameof(SceneObject)}.tsv";
         public static readonly string tsvSceneObjectLod = $"{nameof(SceneObjectLOD)}.tsv";
         public static readonly string tsvSceneObjectsAndLod = $"{nameof(SceneObjectLOD)}.tsv";
         public static readonly string tsvSceneObjectDynamic = $"{nameof(SceneObjectDynamic)}.tsv";
@@ -786,10 +786,10 @@ namespace GameCube.GFZ.CourseCollision
                 writer.WriteNextCol(nameof(ColiScene.unkRange0x00) + "." + nameof(ViewRange.far));
                 writer.WriteNextCol(nameof(ColiScene.trackNodesPtr));
                 writer.WriteNextCol(nameof(ColiScene.trackNodesPtr));
-                writer.WriteNextCol(nameof(ColiScene.surfaceAttributeAreasPtr));
-                writer.WriteNextCol(nameof(ColiScene.surfaceAttributeAreasPtr));
-                writer.WriteNextCol(nameof(ColiScene.staticColliderMeshesActive));
-                writer.WriteNextCol(nameof(ColiScene.surfaceAttributeAreasPtr));
+                writer.WriteNextCol(nameof(ColiScene.embeddedTrackPropertyAreasPtr));
+                writer.WriteNextCol(nameof(ColiScene.embeddedTrackPropertyAreasPtr));
+                writer.WriteNextCol(nameof(ColiScene.staticColliderMeshManagerActive));
+                writer.WriteNextCol(nameof(ColiScene.embeddedTrackPropertyAreasPtr));
                 writer.WriteNextCol(nameof(ColiScene.zeroes0x20Ptr));
                 writer.WriteNextCol(nameof(ColiScene.trackMinHeightPtr));
                 writer.WriteNextCol(nameof(ColiScene.zeroes0x28));
@@ -816,20 +816,20 @@ namespace GameCube.GFZ.CourseCollision
                 writer.WriteNextCol(nameof(ColiScene.unknownTriggersPtr)); // adr
                 writer.WriteNextCol(nameof(ColiScene.visualEffectTriggersPtr)); // len
                 writer.WriteNextCol(nameof(ColiScene.visualEffectTriggersPtr)); // adr
-                writer.WriteNextCol(nameof(ColiScene.courseMetadataTriggersPtr)); // len
-                writer.WriteNextCol(nameof(ColiScene.courseMetadataTriggersPtr)); // adr
-                writer.WriteNextCol(nameof(ColiScene.arcadeCheckpointTriggersPtr)); // len
-                writer.WriteNextCol(nameof(ColiScene.arcadeCheckpointTriggersPtr)); // adr
+                writer.WriteNextCol(nameof(ColiScene.miscellaneousTriggersPtr)); // len
+                writer.WriteNextCol(nameof(ColiScene.miscellaneousTriggersPtr)); // adr
+                writer.WriteNextCol(nameof(ColiScene.timeExtensionTriggersPtr)); // len
+                writer.WriteNextCol(nameof(ColiScene.timeExtensionTriggersPtr)); // adr
                 writer.WriteNextCol(nameof(ColiScene.storyObjectTriggersPtr)); // len
                 writer.WriteNextCol(nameof(ColiScene.storyObjectTriggersPtr)); // adr
-                writer.WriteNextCol(nameof(ColiScene.trackCheckpointMatrixPtr));
+                writer.WriteNextCol(nameof(ColiScene.checkpointGridPtr));
                 // Structure
-                writer.WriteNextCol(nameof(ColiScene.trackCheckpointBoundsXZ) + "." + nameof(ColiScene.trackCheckpointBoundsXZ.left));
-                writer.WriteNextCol(nameof(ColiScene.trackCheckpointBoundsXZ) + "." + nameof(ColiScene.trackCheckpointBoundsXZ.top));
-                writer.WriteNextCol(nameof(ColiScene.trackCheckpointBoundsXZ) + "." + nameof(ColiScene.trackCheckpointBoundsXZ.subdivisionWidth));
-                writer.WriteNextCol(nameof(ColiScene.trackCheckpointBoundsXZ) + "." + nameof(ColiScene.trackCheckpointBoundsXZ.subdivisionLength));
-                writer.WriteNextCol(nameof(ColiScene.trackCheckpointBoundsXZ) + "." + nameof(ColiScene.trackCheckpointBoundsXZ.numSubdivisionsX));
-                writer.WriteNextCol(nameof(ColiScene.trackCheckpointBoundsXZ) + "." + nameof(ColiScene.trackCheckpointBoundsXZ.numSubdivisionsZ));
+                writer.WriteNextCol(nameof(ColiScene.checkpointGridXZ) + "." + nameof(ColiScene.checkpointGridXZ.left));
+                writer.WriteNextCol(nameof(ColiScene.checkpointGridXZ) + "." + nameof(ColiScene.checkpointGridXZ.top));
+                writer.WriteNextCol(nameof(ColiScene.checkpointGridXZ) + "." + nameof(ColiScene.checkpointGridXZ.subdivisionWidth));
+                writer.WriteNextCol(nameof(ColiScene.checkpointGridXZ) + "." + nameof(ColiScene.checkpointGridXZ.subdivisionLength));
+                writer.WriteNextCol(nameof(ColiScene.checkpointGridXZ) + "." + nameof(ColiScene.checkpointGridXZ.numSubdivisionsX));
+                writer.WriteNextCol(nameof(ColiScene.checkpointGridXZ) + "." + nameof(ColiScene.checkpointGridXZ.numSubdivisionsZ));
                 // 
                 writer.WriteNextCol(nameof(ColiScene.zeroes0xD8));
                 writer.WriteNextRow();
@@ -846,10 +846,10 @@ namespace GameCube.GFZ.CourseCollision
                     writer.WriteNextCol(scene.unkRange0x00.far);
                     writer.WriteNextCol(scene.trackNodesPtr.Length);
                     writer.WriteNextCol(scene.trackNodesPtr.HexAddress);
-                    writer.WriteNextCol(scene.surfaceAttributeAreasPtr.Length);
-                    writer.WriteNextCol(scene.surfaceAttributeAreasPtr.HexAddress);
-                    writer.WriteNextCol(scene.staticColliderMeshesActive);
-                    writer.WriteNextCol(scene.staticColliderMeshesPtr.HexAddress);
+                    writer.WriteNextCol(scene.embeddedTrackPropertyAreasPtr.Length);
+                    writer.WriteNextCol(scene.embeddedTrackPropertyAreasPtr.HexAddress);
+                    writer.WriteNextCol(scene.staticColliderMeshManagerActive);
+                    writer.WriteNextCol(scene.staticColliderMeshManagerPtr.HexAddress);
                     writer.WriteNextCol(scene.zeroes0x20Ptr.HexAddress);
                     writer.WriteNextCol(scene.trackMinHeightPtr.HexAddress);
                     writer.WriteNextCol(0);// coliHeader.zero_0x28);
@@ -883,20 +883,20 @@ namespace GameCube.GFZ.CourseCollision
                     writer.WriteNextCol(scene.unknownTriggersPtr.HexAddress);
                     writer.WriteNextCol(scene.visualEffectTriggersPtr.Length);
                     writer.WriteNextCol(scene.visualEffectTriggersPtr.HexAddress);
-                    writer.WriteNextCol(scene.courseMetadataTriggersPtr.Length);
-                    writer.WriteNextCol(scene.courseMetadataTriggersPtr.HexAddress);
-                    writer.WriteNextCol(scene.arcadeCheckpointTriggersPtr.Length);
-                    writer.WriteNextCol(scene.arcadeCheckpointTriggersPtr.HexAddress);
+                    writer.WriteNextCol(scene.miscellaneousTriggersPtr.Length);
+                    writer.WriteNextCol(scene.miscellaneousTriggersPtr.HexAddress);
+                    writer.WriteNextCol(scene.timeExtensionTriggersPtr.Length);
+                    writer.WriteNextCol(scene.timeExtensionTriggersPtr.HexAddress);
                     writer.WriteNextCol(scene.storyObjectTriggersPtr.Length);
                     writer.WriteNextCol(scene.storyObjectTriggersPtr.HexAddress);
-                    writer.WriteNextCol(scene.trackCheckpointMatrixPtr.HexAddress);
+                    writer.WriteNextCol(scene.checkpointGridPtr.HexAddress);
                     // Structure
-                    writer.WriteNextCol(scene.trackCheckpointBoundsXZ.left);
-                    writer.WriteNextCol(scene.trackCheckpointBoundsXZ.top);
-                    writer.WriteNextCol(scene.trackCheckpointBoundsXZ.subdivisionWidth);
-                    writer.WriteNextCol(scene.trackCheckpointBoundsXZ.subdivisionLength);
-                    writer.WriteNextCol(scene.trackCheckpointBoundsXZ.numSubdivisionsX);
-                    writer.WriteNextCol(scene.trackCheckpointBoundsXZ.numSubdivisionsZ);
+                    writer.WriteNextCol(scene.checkpointGridXZ.left);
+                    writer.WriteNextCol(scene.checkpointGridXZ.top);
+                    writer.WriteNextCol(scene.checkpointGridXZ.subdivisionWidth);
+                    writer.WriteNextCol(scene.checkpointGridXZ.subdivisionLength);
+                    writer.WriteNextCol(scene.checkpointGridXZ.numSubdivisionsX);
+                    writer.WriteNextCol(scene.checkpointGridXZ.numSubdivisionsZ);
                     //
                     writer.WriteNextCol(0);// coliHeader.zero_0xD8);
                     writer.WriteNextCol(scene.trackMinHeight.value);
@@ -1426,15 +1426,15 @@ namespace GameCube.GFZ.CourseCollision
                 writer.WriteNextCol("File");
                 writer.WriteNextCol("Index");
                 writer.WriteNextColNicify(nameof(StaticColliderMeshManager.staticColliderTrisPtr));
-                writer.WriteNextColNicify(nameof(StaticColliderMeshManager.triMeshMatrixPtrs));
-                writer.WriteNextColNicify(nameof(GridBoundsXZ.left));
-                writer.WriteNextColNicify(nameof(GridBoundsXZ.top));
-                writer.WriteNextColNicify(nameof(GridBoundsXZ.subdivisionWidth));
-                writer.WriteNextColNicify(nameof(GridBoundsXZ.subdivisionLength));
-                writer.WriteNextColNicify(nameof(GridBoundsXZ.numSubdivisionsX));
-                writer.WriteNextColNicify(nameof(GridBoundsXZ.numSubdivisionsZ));
+                writer.WriteNextColNicify(nameof(StaticColliderMeshManager.triMeshGridPtrs));
+                writer.WriteNextColNicify(nameof(GridXZ.left));
+                writer.WriteNextColNicify(nameof(GridXZ.top));
+                writer.WriteNextColNicify(nameof(GridXZ.subdivisionWidth));
+                writer.WriteNextColNicify(nameof(GridXZ.subdivisionLength));
+                writer.WriteNextColNicify(nameof(GridXZ.numSubdivisionsX));
+                writer.WriteNextColNicify(nameof(GridXZ.numSubdivisionsZ));
                 writer.WriteNextColNicify(nameof(StaticColliderMeshManager.staticColliderQuadsPtr));
-                writer.WriteNextColNicify(nameof(StaticColliderMeshManager.quadMeshMatrixPtrs));
+                writer.WriteNextColNicify(nameof(StaticColliderMeshManager.quadMeshGridPtrs));
                 writer.WriteNextColNicify(nameof(StaticColliderMeshManager.unkDataPtr));
                 writer.WriteNextColNicify(nameof(StaticColliderMeshManager.staticSceneObjectsPtr));
                 writer.WriteNextColNicify(nameof(StaticColliderMeshManager.boundingSpherePtr));
@@ -1456,15 +1456,15 @@ namespace GameCube.GFZ.CourseCollision
                     writer.WriteNextCol($"COLI_COURSE{scene.ID:d2}");
                     writer.WriteNextCol(index++);
                     writer.WriteNextCol(staticColliderMeshes.staticColliderTrisPtr.HexAddress);
-                    writer.WriteNextCol(staticColliderMeshes.triMeshMatrixPtrs.Length);
-                    writer.WriteNextCol(staticColliderMeshes.meshBounds.left);
-                    writer.WriteNextCol(staticColliderMeshes.meshBounds.top);
-                    writer.WriteNextCol(staticColliderMeshes.meshBounds.subdivisionWidth);
-                    writer.WriteNextCol(staticColliderMeshes.meshBounds.subdivisionLength);
-                    writer.WriteNextCol(staticColliderMeshes.meshBounds.numSubdivisionsX);
-                    writer.WriteNextCol(staticColliderMeshes.meshBounds.numSubdivisionsZ);
+                    writer.WriteNextCol(staticColliderMeshes.triMeshGridPtrs.Length);
+                    writer.WriteNextCol(staticColliderMeshes.meshGridXZ.left);
+                    writer.WriteNextCol(staticColliderMeshes.meshGridXZ.top);
+                    writer.WriteNextCol(staticColliderMeshes.meshGridXZ.subdivisionWidth);
+                    writer.WriteNextCol(staticColliderMeshes.meshGridXZ.subdivisionLength);
+                    writer.WriteNextCol(staticColliderMeshes.meshGridXZ.numSubdivisionsX);
+                    writer.WriteNextCol(staticColliderMeshes.meshGridXZ.numSubdivisionsZ);
                     writer.WriteNextCol(staticColliderMeshes.staticColliderQuadsPtr.HexAddress);
-                    writer.WriteNextCol(staticColliderMeshes.quadMeshMatrixPtrs.Length);
+                    writer.WriteNextCol(staticColliderMeshes.quadMeshGridPtrs.Length);
                     writer.WriteNextCol(staticColliderMeshes.unkDataPtr.HexAddress);
                     writer.WriteNextCol(staticColliderMeshes.staticSceneObjectsPtr.HexAddress);
                     writer.WriteNextCol(staticColliderMeshes.boundingSpherePtr.HexAddress);
@@ -1508,7 +1508,7 @@ namespace GameCube.GFZ.CourseCollision
 
                     // Get all the scene object references
                     var objectsList = new List<SceneObjectLOD>();
-                    foreach (var templateSceneObject in scene.sceneObjectDefinitions)
+                    foreach (var templateSceneObject in scene.sceneObjects)
                     {
                         var sceneObjects = templateSceneObject.lods;
                         foreach (var sceneObject in sceneObjects)
@@ -1556,9 +1556,9 @@ namespace GameCube.GFZ.CourseCollision
                 //
                 writer.WriteNextCol("name");
                 writer.WriteNextCol("Object Type");
-                writer.WriteNextCol(nameof(SceneObjectDefinition.lodRenderFlags));
-                writer.WriteNextCol(nameof(SceneObjectDefinition.lodsPtr));
-                writer.WriteNextCol(nameof(SceneObjectDefinition.colliderGeometryPtr));
+                writer.WriteNextCol(nameof(SceneObject.lodRenderFlags));
+                writer.WriteNextCol(nameof(SceneObject.lodsPtr));
+                writer.WriteNextCol(nameof(SceneObject.colliderGeometryPtr));
                 //
                 writer.WriteNextRow();
 
@@ -1569,8 +1569,8 @@ namespace GameCube.GFZ.CourseCollision
                     var isAxGx = scene.IsFileGX ? "GX" : "AX";
 
                     // Get all the scene object references
-                    var sceneObjectsList = new List<(SceneObjectDefinition sir, string category)>();
-                    foreach (var sceneInstance in scene.sceneObjectDefinitions)
+                    var sceneObjectsList = new List<(SceneObject sir, string category)>();
+                    foreach (var sceneInstance in scene.sceneObjects)
                     {
                         sceneObjectsList.Add((sceneInstance, "Instance"));
                     }
@@ -1614,10 +1614,10 @@ namespace GameCube.GFZ.CourseCollision
                 writer.WriteNextCol("AX/GX");
                 //
                 writer.WriteNextCol("name");
-                writer.WriteNextCol(nameof(SceneObjectDefinition.lodRenderFlags));
-                writer.WriteNextCol(nameof(SceneObjectDefinition.lodsPtr) + " Len");
-                writer.WriteNextCol(nameof(SceneObjectDefinition.lodsPtr) + " Adr");
-                writer.WriteNextCol(nameof(SceneObjectDefinition.colliderGeometryPtr));
+                writer.WriteNextCol(nameof(SceneObject.lodRenderFlags));
+                writer.WriteNextCol(nameof(SceneObject.lodsPtr) + " Len");
+                writer.WriteNextCol(nameof(SceneObject.lodsPtr) + " Adr");
+                writer.WriteNextCol(nameof(SceneObject.colliderGeometryPtr));
                 writer.WriteNextCol(nameof(SceneObjectLOD) + " IDX");
                 writer.WriteNextCol(nameof(SceneObjectLOD.zero_0x00));
                 writer.WriteNextCol(nameof(SceneObjectLOD.lodNamePtr));
@@ -1633,7 +1633,7 @@ namespace GameCube.GFZ.CourseCollision
                     var courseID = ((CourseIndexAX)scene.ID).GetDescription();
                     var isAxGx = scene.IsFileGX ? "GX" : "AX";
 
-                    foreach (var template in scene.sceneObjectDefinitions)
+                    foreach (var template in scene.sceneObjects)
                     {
                         var index = 0;
                         var length = template.lods.Length;

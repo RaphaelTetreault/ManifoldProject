@@ -53,10 +53,10 @@ namespace GameCube.GFZ.CourseCollision
         // FIELDS
         public byte[] zeroes_group1;
         public Pointer staticColliderTrisPtr;
-        public Pointer[] triMeshMatrixPtrs; // variable AX/GX
-        public GridBoundsXZ meshBounds;
+        public Pointer[] triMeshGridPtrs; // variable AX/GX
+        public GridXZ meshGridXZ;
         public Pointer staticColliderQuadsPtr;
-        public Pointer[] quadMeshMatrixPtrs; // variable AX/GX
+        public Pointer[] quadMeshGridPtrs; // variable AX/GX
         public byte[] zeroes_group2;
         public ArrayPointer boundingSpherePtr;
         public ArrayPointer staticSceneObjectsPtr;
@@ -68,8 +68,8 @@ namespace GameCube.GFZ.CourseCollision
         // REFERENCE FIELDS
         public ColliderTriangle[] colliderTris = new ColliderTriangle[0];
         public ColliderQuad[] colliderQuads = new ColliderQuad[0];
-        public StaticColliderMeshGrid[] triMeshMatrices;
-        public StaticColliderMeshGrid[] quadMeshMatrices;
+        public StaticColliderMeshGrid[] triMeshGrids;
+        public StaticColliderMeshGrid[] quadMeshGrids;
         public BoundingSphere boundingSphere = new BoundingSphere();
         public UnknownCollider[] unknownColliders;
         public SceneObjectStatic[] staticSceneObjects; // Some of these used to be name-parsed colliders! (eg: *_CLASS2, etc)
@@ -84,14 +84,14 @@ namespace GameCube.GFZ.CourseCollision
         {
             this.serializeFormat = serializeFormat;
             int count = SurfaceCount;
-            triMeshMatrices = new StaticColliderMeshGrid[count];
-            quadMeshMatrices = new StaticColliderMeshGrid[count];
+            triMeshGrids = new StaticColliderMeshGrid[count];
+            quadMeshGrids = new StaticColliderMeshGrid[count];
 
             // initialize arrays
             for (int i = 0; i < count; i++)
             {
-                triMeshMatrices[i] = new StaticColliderMeshGrid();
-                quadMeshMatrices[i] = new StaticColliderMeshGrid();
+                triMeshGrids[i] = new StaticColliderMeshGrid();
+                quadMeshGrids[i] = new StaticColliderMeshGrid();
             }
         }
 
@@ -128,7 +128,7 @@ namespace GameCube.GFZ.CourseCollision
             }
         }
 
-        public void ComputeMatrixBoundsXZ()
+        public void ComputeMeshGridXZ()
         {
             throw new NotImplementedException();
         }
@@ -142,10 +142,10 @@ namespace GameCube.GFZ.CourseCollision
             {
                 reader.ReadX(ref zeroes_group1, kZeroesGroup1);
                 reader.ReadX(ref staticColliderTrisPtr);
-                reader.ReadX(ref triMeshMatrixPtrs, countSurfaceTypes, true);
-                reader.ReadX(ref meshBounds, true);
+                reader.ReadX(ref triMeshGridPtrs, countSurfaceTypes, true);
+                reader.ReadX(ref meshGridXZ, true);
                 reader.ReadX(ref staticColliderQuadsPtr);
-                reader.ReadX(ref quadMeshMatrixPtrs, countSurfaceTypes, true);
+                reader.ReadX(ref quadMeshGridPtrs, countSurfaceTypes, true);
                 reader.ReadX(ref zeroes_group2, kZeroesGroup2);
                 reader.ReadX(ref boundingSpherePtr);
                 reader.ReadX(ref staticSceneObjectsPtr);
@@ -163,25 +163,25 @@ namespace GameCube.GFZ.CourseCollision
 
                 /////////////////
                 // Initialize arrays
-                triMeshMatrices = new StaticColliderMeshGrid[countSurfaceTypes];
-                quadMeshMatrices = new StaticColliderMeshGrid[countSurfaceTypes];
+                triMeshGrids = new StaticColliderMeshGrid[countSurfaceTypes];
+                quadMeshGrids = new StaticColliderMeshGrid[countSurfaceTypes];
 
                 // Read mesh data
                 for (int i = 0; i < countSurfaceTypes; i++)
                 {
                     // Triangles
-                    var triIndexesPointer = triMeshMatrixPtrs[i];
-                    triMeshMatrices[i] = new StaticColliderMeshGrid();
+                    var triIndexesPointer = triMeshGridPtrs[i];
+                    triMeshGrids[i] = new StaticColliderMeshGrid();
                     //DebugConsole.Log($"tri{i+1}:{triPointer.HexAddress}");
                     reader.JumpToAddress(triIndexesPointer);
-                    reader.ReadX(ref triMeshMatrices[i], false);
+                    reader.ReadX(ref triMeshGrids[i], false);
 
                     // Quads
-                    var quadPointer = quadMeshMatrixPtrs[i];
-                    quadMeshMatrices[i] = new StaticColliderMeshGrid();
+                    var quadPointer = quadMeshGridPtrs[i];
+                    quadMeshGrids[i] = new StaticColliderMeshGrid();
                     //DebugConsole.Log($"quad{i+1}:{quadPointer.HexAddress}");
                     reader.JumpToAddress(quadPointer);
-                    reader.ReadX(ref quadMeshMatrices[i], false);
+                    reader.ReadX(ref quadMeshGrids[i], false);
                 }
 
                 //
@@ -189,8 +189,8 @@ namespace GameCube.GFZ.CourseCollision
                 int numQuadVerts = 0;
                 for (int i = 0; i < countSurfaceTypes; i++)
                 {
-                    numTriVerts = math.max(triMeshMatrices[i].IndexesLength, numTriVerts);
-                    numQuadVerts = math.max(quadMeshMatrices[i].IndexesLength, numQuadVerts);
+                    numTriVerts = math.max(triMeshGrids[i].IndexesLength, numTriVerts);
+                    numQuadVerts = math.max(quadMeshGrids[i].IndexesLength, numQuadVerts);
                 }
 
                 reader.JumpToAddress(staticColliderTrisPtr);
@@ -236,8 +236,8 @@ namespace GameCube.GFZ.CourseCollision
                 // The game kinda just figures it out on pointer alone.
                 staticColliderTrisPtr = colliderTris.GetBasePointer();
                 staticColliderQuadsPtr = colliderQuads.GetBasePointer();
-                triMeshMatrixPtrs = triMeshMatrices.GetPointers();
-                quadMeshMatrixPtrs = quadMeshMatrices.GetPointers();
+                triMeshGridPtrs = triMeshGrids.GetPointers();
+                quadMeshGridPtrs = quadMeshGrids.GetPointers();
                 //
                 unkDataPtr = boundingSphere.GetPointer();
                 boundingSpherePtr = unknownColliders.GetArrayPointer();
@@ -248,10 +248,10 @@ namespace GameCube.GFZ.CourseCollision
                 // Write empty int array for unknown
                 writer.WriteX(new byte[kZeroesGroup1], false);
                 writer.WriteX(staticColliderTrisPtr);
-                writer.WriteX(triMeshMatrixPtrs, false);
-                writer.WriteX(meshBounds);
+                writer.WriteX(triMeshGridPtrs, false);
+                writer.WriteX(meshGridXZ);
                 writer.WriteX(staticColliderQuadsPtr);
-                writer.WriteX(quadMeshMatrixPtrs, false);
+                writer.WriteX(quadMeshGridPtrs, false);
                 writer.WriteX(new byte[kZeroesGroup2], false);
                 writer.WriteX(boundingSpherePtr);
                 writer.WriteX(staticSceneObjectsPtr);
@@ -275,7 +275,7 @@ namespace GameCube.GFZ.CourseCollision
 
                 // Ensure that we have at least a list to point to tris
                 int listCount = 0;
-                foreach (var list in triMeshMatrices)
+                foreach (var list in triMeshGrids)
                     listCount += list.IndexesLength;
                 Assert.IsTrue(listCount > 0);
             }
@@ -286,7 +286,7 @@ namespace GameCube.GFZ.CourseCollision
 
                 // Ensure that we have at least a list to point to quads
                 int listCount = 0;
-                foreach (var list in quadMeshMatrices)
+                foreach (var list in quadMeshGrids)
                     listCount += list.IndexesLength;
                 Assert.IsTrue(listCount > 0);
             }
@@ -294,8 +294,8 @@ namespace GameCube.GFZ.CourseCollision
             // Matrices
             for (int i = 0; i < SurfaceCount; i++)
             {
-                Assert.ReferencePointer(triMeshMatrices[i], triMeshMatrixPtrs[i]);
-                Assert.ReferencePointer(quadMeshMatrices[i], quadMeshMatrixPtrs[i]);
+                Assert.ReferencePointer(triMeshGrids[i], triMeshGridPtrs[i]);
+                Assert.ReferencePointer(quadMeshGrids[i], quadMeshGridPtrs[i]);
             }
         }
 

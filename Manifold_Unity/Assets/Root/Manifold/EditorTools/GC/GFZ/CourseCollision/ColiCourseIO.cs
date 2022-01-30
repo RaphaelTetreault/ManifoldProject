@@ -532,27 +532,27 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
 
             // Scene Object Dynamic Reference + internal data
             {
-                log.WriteLine($"{nameof(SceneObjectDefinition)}");
-                for (int i = 0; i < coliScene.sceneObjectDefinitions.Length; i++)
+                log.WriteLine($"{nameof(SceneObject)}");
+                for (int i = 0; i < coliScene.sceneObjects.Length; i++)
                 {
-                    var sceneInstance = coliScene.sceneObjectDefinitions[i];
-                    log.Write(PrintIndex(i, coliScene.sceneObjectDefinitions));
+                    var sceneInstance = coliScene.sceneObjects[i];
+                    log.Write(PrintIndex(i, coliScene.sceneObjects));
                     log.WriteLine(PrintData(functionIdx, sceneInstance));
                 }
                 log.WriteLine();
 
                 log.WriteLine($"{nameof(ColliderMesh)}");
-                for (int i = 0; i < coliScene.sceneObjectDefinitions.Length; i++)
+                for (int i = 0; i < coliScene.sceneObjects.Length; i++)
                 {
-                    var colliderGeometry = coliScene.sceneObjectDefinitions[i].colliderMesh;
+                    var colliderGeometry = coliScene.sceneObjects[i].colliderMesh;
                     if (colliderGeometry == null)
                         continue;
-                    log.Write(PrintIndex(i, coliScene.sceneObjectDefinitions));
+                    log.Write(PrintIndex(i, coliScene.sceneObjects));
                     log.WriteLine(PrintData(functionIdx, colliderGeometry));
                 }
                 log.WriteLine();
 
-                log.WriteLine($"{nameof(SceneObjectDefinition)}");
+                log.WriteLine($"{nameof(SceneObject)}");
                 for (int i = 0; i < coliScene.sceneObjectLODs.Length; i++)
                 {
                     var sceneObjectReference = coliScene.sceneObjectLODs[i];
@@ -587,7 +587,7 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
             log.WriteLine($"Course: {coliScene.VenueName} [{coliScene.CourseName}]");
             log.WriteLine($"Author: {coliScene.Author}");
             log.WriteLine($"{nameof(CircuitType)}: {coliScene.circuitType}");
-            log.WriteLine($"{nameof(Bool32)}: {coliScene.staticColliderMeshesActive}");
+            log.WriteLine($"{nameof(Bool32)}: {coliScene.staticColliderMeshManagerActive}");
             log.WriteLine($"{nameof(Bool32)}: {coliScene.unkBool32_0x58}");
             log.WriteLine($"{nameof(coliScene.unkRange0x00)}: {coliScene.unkRange0x00}");
             log.WriteLine(); //
@@ -609,7 +609,7 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
             log.WriteHeading("TRACK DATA", padding, h1Width);
             log.WriteAddress(coliScene.trackLength);
             log.WriteAddress(coliScene.trackMinHeight);
-            log.WriteAddress(coliScene.trackCheckpointBoundsXZ);
+            log.WriteAddress(coliScene.checkpointGridXZ);
             log.WriteLine();
             // Writes track objects array
             log.WriteAddress(coliScene.embeddedPropertyAreas);
@@ -679,16 +679,16 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
             log.WriteLine(coliScene.staticColliderMeshManager.staticSceneObjectsPtr);
             log.WriteLine();
             log.WriteLine("Mesh Bounds");
-            log.WriteAddress(coliScene.staticColliderMeshManager.meshBounds);
+            log.WriteAddress(coliScene.staticColliderMeshManager.meshGridXZ);
             log.WriteLine();
             log.WriteLine("TRIANGLES");
             log.WriteAddress(coliScene.staticColliderMeshManager.colliderTris);
-            log.WriteAddress(coliScene.staticColliderMeshManager.triMeshMatrices);
+            log.WriteAddress(coliScene.staticColliderMeshManager.triMeshGrids);
             // Write each index list
             log.WriteNullInArray = false;
-            for (int i = 0; i < coliScene.staticColliderMeshManager.triMeshMatrices.Length; i++)
+            for (int i = 0; i < coliScene.staticColliderMeshManager.triMeshGrids.Length; i++)
             {
-                var triIndexList = coliScene.staticColliderMeshManager.triMeshMatrices[i];
+                var triIndexList = coliScene.staticColliderMeshManager.triMeshGrids[i];
                 if (triIndexList != null)
                 {
                     log.WriteLine($"COLLIDER TYPE [{i}]: {(StaticColliderMeshProperty)i}");
@@ -698,12 +698,12 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
             log.WriteNullInArray = true;
             log.WriteLine("QUADS");
             log.WriteAddress(coliScene.staticColliderMeshManager.colliderQuads);
-            log.WriteAddress(coliScene.staticColliderMeshManager.quadMeshMatrices);
+            log.WriteAddress(coliScene.staticColliderMeshManager.quadMeshGrids);
             // Write each index list
             log.WriteNullInArray = false;
-            for (int i = 0; i < coliScene.staticColliderMeshManager.quadMeshMatrices.Length; i++)
+            for (int i = 0; i < coliScene.staticColliderMeshManager.quadMeshGrids.Length; i++)
             {
-                var quadIndexList = coliScene.staticColliderMeshManager.quadMeshMatrices[i];
+                var quadIndexList = coliScene.staticColliderMeshManager.quadMeshGrids[i];
                 if (quadIndexList != null)
                 {
                     log.WriteLine($"COLLIDER TYPE [{i}]: {(StaticColliderMeshProperty)i}");
@@ -717,7 +717,7 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
             log.WriteLine("Object Names");
             log.WriteAddress(coliScene.sceneObjectNames);
             log.WriteAddress(coliScene.sceneObjectLODs);
-            log.WriteAddress(coliScene.sceneObjectDefinitions);
+            log.WriteAddress(coliScene.sceneObjects);
             log.WriteAddress(coliScene.staticSceneObjects);
             log.WriteAddress(coliScene.dynamicSceneObjects);
             {
@@ -1091,7 +1091,7 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
                     log.WriteLine("SCENE OBJECTS");
                     log.WriteLineSummary(coliScene.dynamicSceneObjects);
                     log.WriteLineSummary(coliScene.staticSceneObjects);
-                    log.WriteLineSummary(coliScene.sceneObjectDefinitions);
+                    log.WriteLineSummary(coliScene.sceneObjects);
                     log.WriteLineSummary(coliScene.sceneObjectLODs);
                     log.WriteLineSummary(coliScene.sceneObjectNames);
                     log.WriteLine();

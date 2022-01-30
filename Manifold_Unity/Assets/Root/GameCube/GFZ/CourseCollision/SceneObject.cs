@@ -26,7 +26,7 @@ namespace GameCube.GFZ.CourseCollision
     /// An object to display in a scene. Refers to LODs.
     /// </summary>
     [Serializable]
-    public class SceneObjectDefinition :
+    public class SceneObject :
         IBinaryAddressable,
         IBinarySerializable,
         IHasReference
@@ -110,7 +110,7 @@ namespace GameCube.GFZ.CourseCollision
         public override string ToString()
         {
             return 
-                $"{nameof(SceneObjectDefinition)}(" +
+                $"{nameof(SceneObject)}(" +
                 $"{nameof(lodRenderFlags)}: {lodRenderFlags}, " +
                 $"LOD Count: {lodsPtr.Length}, " +
                 $"Has {nameof(ColliderMesh)}: {colliderGeometryPtr.IsNotNull}" +

@@ -63,11 +63,11 @@ namespace GameCube.GFZ.CourseCollision
         // Note: order of folowing structures is same as they appear in binary
         public ViewRange unkRange0x00;
         public ArrayPointer trackNodesPtr;
-        public ArrayPointer surfaceAttributeAreasPtr;
+        public ArrayPointer embeddedTrackPropertyAreasPtr;
         // 2022-01-14: this is a bool, the game loads the following structure regardless
         // (because it'd crash anways because of it when unloading)
-        public Bool32 staticColliderMeshesActive = Bool32.True;
-        public Pointer staticColliderMeshesPtr;
+        public Bool32 staticColliderMeshManagerActive = Bool32.True;
+        public Pointer staticColliderMeshManagerPtr;
         public Pointer zeroes0x20Ptr; // GX: 0xE8, AX: 0xE4
         public Pointer trackMinHeightPtr; // GX: 0xFC, AX: 0xF8
         public byte[] zeroes0x28 = new byte[kSizeOfZeroes0x28];
@@ -89,11 +89,11 @@ namespace GameCube.GFZ.CourseCollision
         public Pointer trackLengthPtr;
         public ArrayPointer unknownTriggersPtr;
         public ArrayPointer visualEffectTriggersPtr;
-        public ArrayPointer courseMetadataTriggersPtr;
-        public ArrayPointer arcadeCheckpointTriggersPtr;
+        public ArrayPointer miscellaneousTriggersPtr;
+        public ArrayPointer timeExtensionTriggersPtr;
         public ArrayPointer storyObjectTriggersPtr;
-        public Pointer trackCheckpointMatrixPtr;
-        public GridBoundsXZ trackCheckpointBoundsXZ;
+        public Pointer checkpointGridPtr;
+        public GridXZ checkpointGridXZ;
         public byte[] zeroes0xD8 = new byte[kSizeOfZeroes0xD8];
 
         // REFERENCE FIELDS
@@ -103,7 +103,7 @@ namespace GameCube.GFZ.CourseCollision
         public byte[] zeroes0x20 = new byte[kSizeOfZeroes0x20];
         public TrackMinHeight trackMinHeight;
         public SceneObjectDynamic[] dynamicSceneObjects;
-        public SceneObjectDefinition[] sceneObjectDefinitions;
+        public SceneObject[] sceneObjects;
         public SceneObjectStatic[] staticSceneObjects;
         public UnknownCollider[] unknownColliders;
         public FogCurves fogCurves;
@@ -202,7 +202,7 @@ namespace GameCube.GFZ.CourseCollision
 
         public void InitAllTypes()
         {
-            trackCheckpointBoundsXZ = new GridBoundsXZ();
+            checkpointGridXZ = new GridXZ();
 
             // REFERENCE FIELDS
             trackNodes = new TrackNode[0];
@@ -211,7 +211,7 @@ namespace GameCube.GFZ.CourseCollision
 
             trackMinHeight = new TrackMinHeight(); // has default constructor
             dynamicSceneObjects = new SceneObjectDynamic[0];
-            sceneObjectDefinitions = new SceneObjectDefinition[0];
+            sceneObjects = new SceneObject[0];
             staticSceneObjects = new SceneObjectStatic[0];
             unknownColliders = new UnknownCollider[0];
             fogCurves = new FogCurves();
@@ -262,14 +262,14 @@ namespace GameCube.GFZ.CourseCollision
             reader.ReadX(ref trackNodes, trackNodesPtr.Length, true);
 
             // 0x10 and 0x14: Track Effect Attribute Areas
-            reader.JumpToAddress(surfaceAttributeAreasPtr);
-            reader.ReadX(ref embeddedPropertyAreas, surfaceAttributeAreasPtr.Length, true);
+            reader.JumpToAddress(embeddedTrackPropertyAreasPtr);
+            reader.ReadX(ref embeddedPropertyAreas, embeddedTrackPropertyAreasPtr.Length, true);
 
             // 0x1C 
             // Format is deserialized in DeserializeSelf(reader);
             // The structure's size differs between AX and GX. Format defines which it uses.
             staticColliderMeshManager = new StaticColliderMeshManager(Format);
-            reader.JumpToAddress(staticColliderMeshesPtr);
+            reader.JumpToAddress(staticColliderMeshManagerPtr);
             reader.ReadX(ref staticColliderMeshManager, false);
 
             // 0x20
@@ -290,7 +290,7 @@ namespace GameCube.GFZ.CourseCollision
 
             // 0x64 and 0x68
             reader.JumpToAddress(sceneObjectsPtr);
-            reader.ReadX(ref sceneObjectDefinitions, sceneObjectsPtr.Length, true);
+            reader.ReadX(ref sceneObjects, sceneObjectsPtr.Length, true);
 
             // 0x6C and 0x70
             reader.JumpToAddress(staticSceneObjectsPtr);
@@ -321,19 +321,19 @@ namespace GameCube.GFZ.CourseCollision
             reader.ReadX(ref visualEffectTriggers, visualEffectTriggersPtr.Length, true);
 
             // 0xA4 and 0xA8
-            reader.JumpToAddress(courseMetadataTriggersPtr);
-            reader.ReadX(ref miscellaneousTriggers, courseMetadataTriggersPtr.Length, true);
+            reader.JumpToAddress(miscellaneousTriggersPtr);
+            reader.ReadX(ref miscellaneousTriggers, miscellaneousTriggersPtr.Length, true);
 
             // 0xAC and 0xB0
-            reader.JumpToAddress(arcadeCheckpointTriggersPtr);
-            reader.ReadX(ref timeExtensionTriggers, arcadeCheckpointTriggersPtr.Length, true);
+            reader.JumpToAddress(timeExtensionTriggersPtr);
+            reader.ReadX(ref timeExtensionTriggers, timeExtensionTriggersPtr.Length, true);
 
             // 0xB4 and 0xB8
             reader.JumpToAddress(storyObjectTriggersPtr);
             reader.ReadX(ref storyObjectTriggers, storyObjectTriggersPtr.Length, true);
 
             // 0xBC and 0xC0
-            reader.JumpToAddress(trackCheckpointMatrixPtr);
+            reader.JumpToAddress(checkpointGridPtr);
             reader.ReadX(ref trackCheckpointGrid, true);
 
             // TEMP
@@ -365,7 +365,7 @@ namespace GameCube.GFZ.CourseCollision
                 /*/
 
                 // Keep a dictionary of each shared reference type
-                var sceneObjectsDict = new Dictionary<Pointer, SceneObjectDefinition>();
+                var sceneObjectsDict = new Dictionary<Pointer, SceneObject>();
                 var sceneObjectNamesDict = new Dictionary<Pointer, ShiftJisCString>();
 
                 // Get all unique instances of SceneObjectTemplates
@@ -383,14 +383,14 @@ namespace GameCube.GFZ.CourseCollision
                     GetSerializable(reader, unknownCollider.templateSceneObjectPtr, ref unknownCollider.sceneObject, sceneObjectsDict);
                 }
                 // Save, order by address
-                sceneObjectDefinitions = sceneObjectsDict.Values.ToArray();
-                sceneObjectDefinitions = sceneObjectDefinitions.OrderBy(x => x.AddressRange.startAddress).ToArray();
+                sceneObjects = sceneObjectsDict.Values.ToArray();
+                sceneObjects = sceneObjects.OrderBy(x => x.AddressRange.startAddress).ToArray();
 
                 // Copy over the instances into it's own array
                 var sceneObjectLODs = new List<SceneObjectLOD>();
-                for (int i = 0; i < this.sceneObjectDefinitions.Length; i++)
+                for (int i = 0; i < this.sceneObjects.Length; i++)
                 {
-                    var template = this.sceneObjectDefinitions[i];
+                    var template = this.sceneObjects[i];
                     for (int j = 0; j < template.lods.Length; j++)
                     {
                         sceneObjectLODs.Add(template.lods[j]);
@@ -400,7 +400,7 @@ namespace GameCube.GFZ.CourseCollision
 
                 // Get all unique instances of SceneObjectTemplates' names
                 // NOTE: since SceneObjectTemplates instances can use the same name/model, there is occasionally a few duplicate names.
-                foreach (var templateSceneObject in this.sceneObjectDefinitions)
+                foreach (var templateSceneObject in this.sceneObjects)
                 {
                     foreach (var so in templateSceneObject.lods)
                     {
@@ -642,7 +642,7 @@ namespace GameCube.GFZ.CourseCollision
                     if (!colliderTris.IsNullOrEmpty())
                         writer.InlineDesc(serializeVerbose, scmPtr, colliderTris);
                     writer.WriteX(colliderTris, false);
-                    WriteStaticColliderMeshMatrices(writer, scmPtr, "ColiTri", staticColliderMeshManager.triMeshMatrices);
+                    WriteStaticColliderMeshMatrices(writer, scmPtr, "ColiTri", staticColliderMeshManager.triMeshGrids);
                 }
 
                 // COLLIDER QUADS
@@ -652,7 +652,7 @@ namespace GameCube.GFZ.CourseCollision
                     if (!colliderQuads.IsNullOrEmpty())
                         writer.InlineDesc(serializeVerbose, scmPtr, colliderQuads);
                     writer.WriteX(colliderQuads, false);
-                    WriteStaticColliderMeshMatrices(writer, scmPtr, "ColiQuad", staticColliderMeshManager.quadMeshMatrices);
+                    WriteStaticColliderMeshMatrices(writer, scmPtr, "ColiQuad", staticColliderMeshManager.quadMeshGrids);
                 }
             }
 
@@ -697,8 +697,8 @@ namespace GameCube.GFZ.CourseCollision
             writer.WriteX(sceneObjectLODs, false);
 
             // SCENE OBJECT TEMPLATES
-            writer.InlineDesc(serializeVerbose, 0x68 + offset, sceneObjectDefinitions); // <<<<
-            writer.WriteX(sceneObjectDefinitions, false);
+            writer.InlineDesc(serializeVerbose, 0x68 + offset, sceneObjects); // <<<<
+            writer.WriteX(sceneObjects, false);
 
             // STATIC SCENE OBJECTS
             if (!staticSceneObjects.IsNullOrEmpty())
@@ -717,7 +717,7 @@ namespace GameCube.GFZ.CourseCollision
             var colliderGeometries = new List<ColliderMesh>();
             var colliderGeoTris = new List<ColliderTriangle>();
             var colliderGeoQuads = new List<ColliderQuad>();
-            foreach (var sceneObject in sceneObjectDefinitions)
+            foreach (var sceneObject in sceneObjects)
             {
                 var colliderGeo = sceneObject.colliderMesh;
                 if (colliderGeo != null)
@@ -927,14 +927,14 @@ namespace GameCube.GFZ.CourseCollision
 
                 // Static Collider Meshes and dependencies
                 hasReferences.Add(staticColliderMeshManager);
-                hasReferences.AddRange(staticColliderMeshManager.triMeshMatrices);
-                hasReferences.AddRange(staticColliderMeshManager.quadMeshMatrices);
+                hasReferences.AddRange(staticColliderMeshManager.triMeshGrids);
+                hasReferences.AddRange(staticColliderMeshManager.quadMeshGrids);
                 hasReferences.AddRange(unknownColliders);
 
                 // OBJECTS
                 // Scene Objects
                 hasReferences.AddRange(sceneObjectLODs);
-                hasReferences.AddRange(sceneObjectDefinitions);
+                hasReferences.AddRange(sceneObjects);
                 hasReferences.AddRange(colliderGeometries);
                 // Scene Object Statics
                 if (staticSceneObjects != null)
@@ -1126,17 +1126,17 @@ namespace GameCube.GFZ.CourseCollision
             list.Add(staticColliderMeshManager);
             list.AddRange(staticColliderMeshManager.colliderTris);
             list.AddRange(staticColliderMeshManager.colliderQuads);
-            foreach (var matrix in staticColliderMeshManager.triMeshMatrices)
+            foreach (var matrix in staticColliderMeshManager.triMeshGrids)
             {
                 list.Add(matrix);
                 list.AddRange(matrix.indexLists);
             }
-            foreach (var matrix in staticColliderMeshManager.quadMeshMatrices)
+            foreach (var matrix in staticColliderMeshManager.quadMeshGrids)
             {
                 list.Add(matrix);
                 list.AddRange(matrix.indexLists);
             }
-            list.Add(staticColliderMeshManager.meshBounds);
+            list.Add(staticColliderMeshManager.meshGridXZ);
             list.Add(staticColliderMeshManager.boundingSphere);
 
             list.Add(trackMinHeight);
@@ -1167,7 +1167,7 @@ namespace GameCube.GFZ.CourseCollision
 
             list.AddRange(unknownColliders);
 
-            foreach (var template in sceneObjectDefinitions)
+            foreach (var template in sceneObjects)
             {
                 list.Add(template);
                 list.Add(template.colliderMesh);
@@ -1217,9 +1217,9 @@ namespace GameCube.GFZ.CourseCollision
                 // Deserialize main structure
                 reader.ReadX(ref unkRange0x00, true);
                 reader.ReadX(ref trackNodesPtr);
-                reader.ReadX(ref surfaceAttributeAreasPtr);
-                reader.ReadX(ref staticColliderMeshesActive);
-                reader.ReadX(ref staticColliderMeshesPtr);
+                reader.ReadX(ref embeddedTrackPropertyAreasPtr);
+                reader.ReadX(ref staticColliderMeshManagerActive);
+                reader.ReadX(ref staticColliderMeshManagerPtr);
                 reader.ReadX(ref zeroes0x20Ptr);
                 reader.ReadX(ref trackMinHeightPtr);
                 ValidateFileFormatPointers(); // VALIDATE
@@ -1242,11 +1242,11 @@ namespace GameCube.GFZ.CourseCollision
                 reader.ReadX(ref trackLengthPtr);
                 reader.ReadX(ref unknownTriggersPtr);
                 reader.ReadX(ref visualEffectTriggersPtr);
-                reader.ReadX(ref courseMetadataTriggersPtr);
-                reader.ReadX(ref arcadeCheckpointTriggersPtr);
+                reader.ReadX(ref miscellaneousTriggersPtr);
+                reader.ReadX(ref timeExtensionTriggersPtr);
                 reader.ReadX(ref storyObjectTriggersPtr);
-                reader.ReadX(ref trackCheckpointMatrixPtr);
-                reader.ReadX(ref trackCheckpointBoundsXZ, true);
+                reader.ReadX(ref checkpointGridPtr);
+                reader.ReadX(ref checkpointGridXZ, true);
                 reader.ReadX(ref zeroes0xD8, kSizeOfZeroes0xD8);
             }
             this.RecordEndAddress(reader);
@@ -1277,24 +1277,24 @@ namespace GameCube.GFZ.CourseCollision
 
                 // UPDATE POINTERS AND COUNTS
                 // Track and stage data
-                staticColliderMeshesPtr = staticColliderMeshManager.GetPointer();
-                surfaceAttributeAreasPtr = embeddedPropertyAreas.GetArrayPointer();
-                trackCheckpointMatrixPtr = trackCheckpointGrid.GetPointer();
+                staticColliderMeshManagerPtr = staticColliderMeshManager.GetPointer();
+                embeddedTrackPropertyAreasPtr = embeddedPropertyAreas.GetArrayPointer();
+                checkpointGridPtr = trackCheckpointGrid.GetPointer();
                 trackLengthPtr = trackLength.GetPointer();
                 trackMinHeightPtr = trackMinHeight.GetPointer();
                 trackNodesPtr = trackNodes.GetArrayPointer();
                 fogPtr = fog.GetPointer();
                 fogCurvesPtr = fogCurves.GetPointer();
                 // TRIGGERS
-                arcadeCheckpointTriggersPtr = timeExtensionTriggers.GetArrayPointer();
-                courseMetadataTriggersPtr = miscellaneousTriggers.GetArrayPointer();
+                timeExtensionTriggersPtr = timeExtensionTriggers.GetArrayPointer();
+                miscellaneousTriggersPtr = miscellaneousTriggers.GetArrayPointer();
                 storyObjectTriggersPtr = storyObjectTriggers.GetArrayPointer();
                 unknownCollidersPtr = unknownColliders.GetArrayPointer();
                 unknownTriggersPtr = unknownTriggers.GetArrayPointer();
                 visualEffectTriggersPtr = visualEffectTriggers.GetArrayPointer();
                 // SCENE OBJECTS
                 // References
-                sceneObjectsPtr = sceneObjectDefinitions.GetArrayPointer();
+                sceneObjectsPtr = sceneObjects.GetArrayPointer();
                 staticSceneObjectsPtr = staticSceneObjects.GetArrayPointer();
                 // Main list
                 dynamicSceneObjectCount = dynamicSceneObjects.Length;
@@ -1308,9 +1308,9 @@ namespace GameCube.GFZ.CourseCollision
             {
                 writer.WriteX(unkRange0x00);
                 writer.WriteX(trackNodesPtr);
-                writer.WriteX(surfaceAttributeAreasPtr);
-                writer.WriteX(staticColliderMeshesActive);
-                writer.WriteX(staticColliderMeshesPtr);
+                writer.WriteX(embeddedTrackPropertyAreasPtr);
+                writer.WriteX(staticColliderMeshManagerActive);
+                writer.WriteX(staticColliderMeshManagerPtr);
                 writer.WriteX(zeroes0x20Ptr);
                 writer.WriteX(trackMinHeightPtr);
                 writer.WriteX(new byte[kSizeOfZeroes0x28], false); // write const zeros
@@ -1331,11 +1331,11 @@ namespace GameCube.GFZ.CourseCollision
                 writer.WriteX(trackLengthPtr);
                 writer.WriteX(unknownTriggersPtr);
                 writer.WriteX(visualEffectTriggersPtr);
-                writer.WriteX(courseMetadataTriggersPtr);
-                writer.WriteX(arcadeCheckpointTriggersPtr);
+                writer.WriteX(miscellaneousTriggersPtr);
+                writer.WriteX(timeExtensionTriggersPtr);
                 writer.WriteX(storyObjectTriggersPtr);
-                writer.WriteX(trackCheckpointMatrixPtr);
-                writer.WriteX(trackCheckpointBoundsXZ);
+                writer.WriteX(checkpointGridPtr);
+                writer.WriteX(checkpointGridXZ);
                 writer.WriteX(new byte[kSizeOfZeroes0xD8], false); // write const zeros
             }
             this.RecordEndAddress(writer);
@@ -1358,25 +1358,25 @@ namespace GameCube.GFZ.CourseCollision
 
             // Structures that always exist
             Assert.IsTrue(trackNodesPtr.IsNotNull);
-            Assert.IsTrue(surfaceAttributeAreasPtr.IsNotNull);
+            Assert.IsTrue(embeddedTrackPropertyAreasPtr.IsNotNull);
             Assert.IsTrue(trackMinHeightPtr.IsNotNull);
-            Assert.IsTrue(staticColliderMeshesPtr.IsNotNull);
+            Assert.IsTrue(staticColliderMeshManagerPtr.IsNotNull);
             Assert.IsTrue(zeroes0x20Ptr.IsNotNull);
             Assert.IsTrue(trackMinHeightPtr.IsNotNull);
-            if (sceneObjectDefinitions.Length > 0)
+            if (sceneObjects.Length > 0)
                 Assert.IsTrue(sceneObjectsPtr.IsNotNull);
             Assert.IsTrue(fogPtr.IsNotNull);
             Assert.IsTrue(trackLengthPtr.IsNotNull);
-            Assert.IsTrue(trackCheckpointMatrixPtr.IsNotNull);
+            Assert.IsTrue(checkpointGridPtr.IsNotNull);
 
             // Ensure existing structures pointers were resolved correctly
             Assert.ReferencePointer(trackNodes, trackNodesPtr);
-            Assert.ReferencePointer(embeddedPropertyAreas, surfaceAttributeAreasPtr);
+            Assert.ReferencePointer(embeddedPropertyAreas, embeddedTrackPropertyAreasPtr);
             Assert.ReferencePointer(trackMinHeight, trackMinHeightPtr);
             if (dynamicSceneObjects.Length > 0)
                 Assert.ReferencePointer(dynamicSceneObjects, new ArrayPointer(dynamicSceneObjectCount, dynamicSceneObjectsPtr));
-            if (sceneObjectDefinitions.Length > 0)
-                Assert.ReferencePointer(sceneObjectDefinitions, sceneObjectsPtr);
+            if (sceneObjects.Length > 0)
+                Assert.ReferencePointer(sceneObjects, sceneObjectsPtr);
             Assert.ReferencePointer(staticSceneObjects, staticSceneObjectsPtr);
             if (unknownColliders.Length > 0)
                 Assert.ReferencePointer(unknownColliders, unknownCollidersPtr);
@@ -1386,12 +1386,12 @@ namespace GameCube.GFZ.CourseCollision
             if (unknownTriggers.Length > 0)
                 Assert.ReferencePointer(unknownTriggers, unknownTriggersPtr);
             if (miscellaneousTriggers.Length > 0)
-                Assert.ReferencePointer(miscellaneousTriggers, courseMetadataTriggersPtr);
+                Assert.ReferencePointer(miscellaneousTriggers, miscellaneousTriggersPtr);
             if (timeExtensionTriggers.Length > 0)
-                Assert.ReferencePointer(timeExtensionTriggers, arcadeCheckpointTriggersPtr);
+                Assert.ReferencePointer(timeExtensionTriggers, timeExtensionTriggersPtr);
             if (storyObjectTriggers.Length > 0)
                 Assert.ReferencePointer(storyObjectTriggers, storyObjectTriggersPtr);
-            Assert.ReferencePointer(trackCheckpointGrid, trackCheckpointMatrixPtr);
+            Assert.ReferencePointer(trackCheckpointGrid, checkpointGridPtr);
         }
 
         /// <summary>

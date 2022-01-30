@@ -23,7 +23,7 @@ namespace GameCube.GFZ.CourseCollision
         // FIELDS
         public Pointer sceneObjectPtr;
         // REFERENCE FIELDS
-        public SceneObjectDefinition sceneObject;
+        public SceneObject sceneObject;
 
         // PROPERTIES
         public AddressRange AddressRange
