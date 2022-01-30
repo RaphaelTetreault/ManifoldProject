@@ -23,7 +23,8 @@
             if (!isNormalized)
             {
                 var msg = $"Argument {nameof(normalizedTime)} is not within 0 and 1 (both inclusive)! {nameof(normalizedTime)} = {normalizedTime}";
-                throw new System.ArgumentException(msg);
+                //throw new System.ArgumentException(msg);
+                DebugConsole.Log(msg);
             }
 
             var hasKeys = curve.keys.Length > 0;

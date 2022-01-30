@@ -18,6 +18,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
 
         [Header("Track Curves")]
+        [SerializeField] protected bool genRotationXY;
         [SerializeField] protected AnimationCurveTransform animTransform = new AnimationCurveTransform();
 
 
@@ -105,6 +106,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         {
             // Once this has been edited, let listeners know
             OnEdited?.Invoke(this);
+
+            if (genRotationXY)
+            {
+                animTransform.ComputerRotationXY();
+                genRotationXY = false;
+            }
         }
     }
 }

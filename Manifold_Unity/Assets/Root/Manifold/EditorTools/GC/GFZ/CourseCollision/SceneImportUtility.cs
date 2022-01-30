@@ -100,7 +100,7 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
             CreateTrackTransformHierarchy(scene).SetParent(mirrorRoot);
             CreateTrackIndexChains(scene).SetParent(mirrorRoot);
             IncludeStaticMeshColliders(scene, stageFolder).SetParent(mirrorRoot);
-            CreateGridBoundsXZVisual(scene).SetParent(mirrorRoot);
+            CreateGridXZVisual(scene).SetParent(mirrorRoot);
             CreateStaticMeshColliderManagerSphereBounds(scene).SetParent(mirrorRoot);
 
             // TRIGGERS
@@ -721,7 +721,7 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
             return gobj.transform;
         }
 
-        public static Transform CreateGridBoundsXZVisual(ColiScene scene)
+        public static Transform CreateGridXZVisual(ColiScene scene)
         {
             // Get all bounds
             var boundsTrack = scene.checkpointGridXZ;
@@ -742,26 +742,54 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
             return boundsRoot;
         }
 
-        public static Transform CreateGridBoundsXZ(GridXZ bounds, float yHeight, string name)
+        public static Transform CreateGridBoundsXZ(GridXZ grid, float yHeight, string name)
         {
-            var displayName = $"{name} ({bounds.numSubdivisionsX}x{bounds.numSubdivisionsZ})";
-            var boundsObject = CreatePrimitive(PrimitiveType.Cube, displayName);
-            (var center, var scale) = bounds.GetCenterAndScale();
-            boundsObject.position = new float3(center.x, yHeight, center.y);
-            boundsObject.localScale = new float3(scale.x, 1f, scale.y);
+            var displayName = $"{name} ({grid.numSubdivisionsX}x{grid.numSubdivisionsZ})";
 
-            return boundsObject;
+            var gridObject = CreatePrimitive(PrimitiveType.Cube, displayName);
+            (var center, var scale) = grid.GetCenterAndScale();
+            gridObject.position = new float3(center.x, yHeight, center.y);
+            gridObject.localScale = new float3(scale.x, 1f, scale.y);
+
+            //
+            int largest = math.max(grid.numSubdivisionsX, grid.numSubdivisionsZ);
+            int format = largest.ToString().Length;
+
+            //
+            for (int z = 0; z < grid.numSubdivisionsX; z++)
+            {
+                var centerZ = grid.top + (grid.subdivisionLength * (z + 0.5f));
+
+                for (int x = 0; x < grid.numSubdivisionsZ; x++)
+                {
+                    var centerX = grid.left + (grid.subdivisionWidth * (x + 0.5f));
+
+                    //
+                    var textX = x.ToString().PadLeft(format);
+                    var textZ = z.ToString().PadLeft(format);
+                    var cellName = $"{name} [{textX},{textZ}]";
+                    var cell = CreatePrimitive(PrimitiveType.Cube, cellName);
+                    cell.position = new float3(centerX, yHeight, centerZ);
+                    cell.localScale = new float3(grid.subdivisionWidth, 1f, grid.subdivisionLength);
+                    cell.parent = gridObject;
+                }
+            }
+
+
+            return gridObject;
         }
 
 
         public static Transform CreateStaticMeshColliderManagerSphereBounds(ColiScene scene)
         {
+            var root = new GameObject($"{nameof(GameCube.GFZ.BoundingSphere)}s");
             var boundingSphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             boundingSphere.transform.localPosition = scene.staticColliderMeshManager.boundingSphere.origin;
             boundingSphere.transform.localScale = scene.staticColliderMeshManager.boundingSphere.radius * 2f * Vector3.one;
             boundingSphere.SetActive(false);
             boundingSphere.name = $"{nameof(StaticColliderMeshManager)}.{nameof(GameCube.GFZ.BoundingSphere)}";
-            return boundingSphere.transform;
+            boundingSphere.transform.parent = root.transform;
+            return root.transform;
         }
 
         public static Transform CreateTrackIndexChains(ColiScene scene)

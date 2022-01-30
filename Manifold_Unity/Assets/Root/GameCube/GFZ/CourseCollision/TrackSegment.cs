@@ -163,7 +163,7 @@ namespace GameCube.GFZ.CourseCollision
 
         public TrackSegment[] GetChildren(TrackSegment[] allTrackSegments)
         {
-            var children = new System.Collections.Generic.List<TrackSegment>();
+            var children = new List<TrackSegment>();
             foreach (var index in childIndexes)
             {
                 children.Add(allTrackSegments[index]);

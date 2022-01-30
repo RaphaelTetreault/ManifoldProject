@@ -81,5 +81,28 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             return trackCurves;
         }
 
+        public void ComputerRotationXY()
+        {
+            rotation.x = new AnimationCurve();
+            rotation.y = new AnimationCurve();
+
+            int interations = 100;
+            for (int i = 0; i < interations; i++)
+            {
+                var time = (float)((double)i / interations);
+                var p0 = Position.EvaluateNormalized(time);
+                var p1 = Position.EvaluateNormalized(time + 0.00001f);
+                var forward = (p1 - p0).normalized;
+
+                var zUp = rotation.z.EvaluateNormalized(time);
+                var up = Quaternion.Euler(0, 0, zUp) * Vector3.up;
+                var orientation = Quaternion.LookRotation(forward, up);
+                var eulers = orientation.eulerAngles;
+
+                rotation.x.AddKey(time, eulers.x);
+                rotation.y.AddKey(time, eulers.y);
+            }
+        }
+
     }
 }

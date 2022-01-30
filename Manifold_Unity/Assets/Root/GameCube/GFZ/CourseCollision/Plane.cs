@@ -47,7 +47,8 @@ namespace GameCube.GFZ.CourseCollision
                 normal.y * origin.y +
                 normal.z * origin.z;
 
-            this.dotProduct = dotProduct;
+            // dot product is inverted
+            this.dotProduct = -dotProduct;
         }
 
     }

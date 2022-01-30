@@ -10,7 +10,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         [SerializeField] private GfzTrackSegment segment;
         [Delayed]
         [SerializeField] private float metersPerCheckpoint = 10f;
-        [SerializeField] private bool viewDebug = true;
+        [SerializeField] private bool genCheckpoints = true;
 
         public GfzTrackSegment Segment => segment;
 
@@ -77,24 +77,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 checkpoint.curveTimeStart = (float)currCheckpointTime;
                 checkpoint.startDistance = distanceStart;
                 checkpoint.endDistance = distanceEnd;
+                // Set plane
                 checkpoint.planeStart.origin = pos;
-                //checkpoint.start.tangent = Quaternion.Euler(rot) * Vector3.forward;
-
                 var from = position.EvaluateNormalized((float)currCheckpointTime);
                 var to = position.EvaluateNormalized((float)(currCheckpointTime + 0.0001));
-                var vector = to - from;
-                vector.Normalize();
-                checkpoint.planeStart.normal = vector;
-                {
-                    var tangent = checkpoint.planeStart.normal;
-                    //tangent = -tangent; // axis conversion
-                    checkpoint.planeStart.normal = tangent;
-                    checkpoint.planeStart.dotProduct =
-                        pos.x * tangent.x +
-                        pos.y * tangent.y +
-                        pos.z * tangent.z;
-                }
-
+                var direction = to - from;
+                checkpoint.planeStart.normal = direction.normalized;
+                checkpoint.planeStart.ComputeDotProduct();
                 //
                 checkpoint.trackWidth = scl.x;
                 checkpoint.connectToTrackIn = true;
@@ -102,23 +91,18 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             }
 
             // Copy values from one checkpoints to the previous ones
-            // NOTE: start at first index
+            // NOTE: start at second index '1'
             for (int i = 1; i < checkpoints.Length; i++)
             {
                 var prev = checkpoints[i - 1];
                 var curr = checkpoints[i];
                 // Copy over values
                 prev.curveTimeEnd = curr.curveTimeStart;
-                prev.planeEnd = curr.planeStart;
+                // Plane
                 // Tangent of end point inwards towards the first
-                var pos = prev.planeEnd.origin;
-                var tangent = prev.planeEnd.normal;
-                tangent = -tangent; // opposite normal
-                prev.planeEnd.normal = tangent;
-                prev.planeEnd.dotProduct =
-                    pos.x * tangent.x +
-                    pos.y * tangent.y +
-                    pos.z * tangent.z;
+                prev.planeEnd.origin = curr.planeStart.origin;
+                prev.planeEnd.normal = -curr.planeStart.normal;
+                prev.planeEnd.dotProduct = -curr.planeStart.dotProduct;
             }
             //
             var firstCheckpoint = checkpoints[0];
@@ -148,34 +132,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             return checkpoints;
         }
 
-        private void OnDrawGizmosSelected()
-        {
-            if (!viewDebug)
-                return;
-
-            var checkpoints = GetCheckpoints();
-
-            //
-            var mesh = UnityEditor.AssetDatabase.LoadAssetAtPath<Mesh>("Assets/Root/Resources/normal-cylinder-16-hollowed.fbx");
-
-            for (int i = 0; i < checkpoints.Length; i++)
-            {
-                var checkpoint = checkpoints[i];
-                var from = checkpoint.planeStart.origin;
-                var to = checkpoint.planeEnd.origin;
-                var halfWidth = checkpoint.trackWidth / 2f;
-                var scaleFrom = new Vector3(halfWidth, halfWidth, 1f);
-                var scaleTo = scaleFrom * .9f;
-
-                Gizmos.color = Color.green;
-                Gizmos.DrawLine(from, from + checkpoint.planeStart.normal * 15f);
-                Gizmos.DrawMesh(mesh, 0, from, Quaternion.LookRotation(checkpoint.planeStart.normal), scaleFrom);
-                Gizmos.color = Color.white;
-                Gizmos.DrawLine(to, to + checkpoint.planeEnd.normal * 15f);
-                Gizmos.DrawWireMesh(mesh, 0, to, Quaternion.LookRotation(checkpoint.planeEnd.normal), scaleTo);
-            }
-        }
-
         private void Reset()
         {
             OnValidate();
@@ -186,6 +142,26 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             if (segment == null)
             {
                 segment = GetComponent<GfzTrackSegment>();
+            }
+
+            if (genCheckpoints)
+            {
+                var checkpoints = GetCheckpoints();
+
+                foreach (var child in transform.GetChildren())
+                {
+                    GameObject.Destroy(child.gameObject);
+                }
+
+                int index = 0;
+                foreach (var checkpoint in checkpoints)
+                {
+                    var gobj = new GameObject($"Checkpoint[{index++}]");
+                    gobj.transform.parent = this.transform;
+                    var script = gobj.AddComponent<GfzCheckpoint>();
+                    script.Init(checkpoint);
+                }
+                genCheckpoints = false;
             }
         }
 
