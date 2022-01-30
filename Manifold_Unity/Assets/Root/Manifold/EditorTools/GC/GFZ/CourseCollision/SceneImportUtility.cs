@@ -635,7 +635,9 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
                     var mtx = GetChildMatrix(trackSegment, t);
                     cube.transform.localPosition = mtx.Position();
                     cube.transform.localRotation = mtx.Rotation();
-                    cube.transform.localScale = mtx.Scale();
+                    // Override scale because some palces are wtf
+                    var scale = mtx.Scale();
+                    cube.transform.localScale = new Vector3(scale.x, scale.y / 100f, 1f);
                 }
             }
 
@@ -697,8 +699,6 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
             return mtx;
         }
 
-
-
         public static float GetCurveTime(UnityEngine.AnimationCurve curve)
         {
             if (curve.length == 0)
@@ -706,68 +706,6 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
 
             return curve.keys[curve.length - 1].time;
         }
-
-        public static Matrix4x4 GetTransformMatrix(TrackSegment trackTransform, float increment)
-        {
-            var transformMatrix = new Matrix4x4();
-            transformMatrix.SetTRS(
-                trackTransform.localPosition,
-                Quaternion.Euler(trackTransform.localRotation),
-                trackTransform.localScale);
-
-            // get child matrix
-            //if (trackTransform.topologyMetadata == TrackTopologyMetadata.IsTransformParent)
-            //{
-            //    var childMatrix = GetTransformMatrix(trackTransform.children[0], increment);
-            //    return transformMatrix * childMatrix;
-            //}
-
-            return transformMatrix;
-        }
-
-        public static Matrix4x4 GetAnimMatrix(TrackSegment trackTransform, float time)
-        {
-            var topology = trackTransform.trackCurves;
-            float3 timeScale = new float3(
-                GetCurveTime(topology.unityCurves[0]),
-                GetCurveTime(topology.unityCurves[1]),
-                GetCurveTime(topology.unityCurves[2]));
-            float3 timeRotation = new float3(
-                GetCurveTime(topology.unityCurves[3]),
-                GetCurveTime(topology.unityCurves[4]),
-                GetCurveTime(topology.unityCurves[5]));
-            float3 timePosition = new float3(
-                GetCurveTime(topology.unityCurves[6]),
-                GetCurveTime(topology.unityCurves[7]),
-                GetCurveTime(topology.unityCurves[8]));
-
-            float3 scale = new float3(
-                topology.unityCurves[0].EvaluateDefault(time * timeScale.x, 1),
-                topology.unityCurves[1].EvaluateDefault(time * timeScale.y, 1),
-                topology.unityCurves[2].EvaluateDefault(time * timeScale.z, 1));
-            float3 rotation = new float3(
-                topology.unityCurves[3].EvaluateDefault(time * timeRotation.x, 0),
-                topology.unityCurves[4].EvaluateDefault(time * timeRotation.y, 0),
-                topology.unityCurves[5].EvaluateDefault(time * timeRotation.z, 0));
-            float3 position = new float3(
-                topology.unityCurves[6].EvaluateDefault(time * timePosition.x, 0),
-                topology.unityCurves[7].EvaluateDefault(time * timePosition.y, 0),
-                topology.unityCurves[8].EvaluateDefault(time * timePosition.z, 0));
-
-            var animationMatrix = new Matrix4x4();
-            animationMatrix.SetTRS(position, Quaternion.Euler(rotation), scale);
-
-            // get child matrix
-            //if (trackTransform.topologyMetadata == TrackTopologyMetadata.IsTransformParent)
-            //{
-            //    var childMatrix = GetAnimMatrix(trackTransform.children[0], time);
-            //
-            //    return animationMatrix * childMatrix;
-            //}
-
-            return animationMatrix;
-        }
-
 
         public static Transform CreatePrimitive(PrimitiveType primitiveType, string name = null, Transform parent = null)
         {
