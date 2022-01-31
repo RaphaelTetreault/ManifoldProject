@@ -35,7 +35,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 double checkpointTimeStart = (double)(i + 0) / numCheckpoints;
                 double checkpointTimeEnd   = (double)(i + 1) / numCheckpoints;
 
-                // PLANE
                 // Get origin of start plane, track width at start sampling point
                 var origin = position.EvaluateNormalized(checkpointTimeStart);
                 var trackWidth = scale.x.EvaluateNormalized((float)checkpointTimeStart);
@@ -58,10 +57,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 checkpoint.trackWidth = trackWidth;
                 checkpoint.connectToTrackIn = true;
                 checkpoint.connectToTrackOut = true;
-                // PLANE (start oplane only, we copy mirrored start planes for end planes later
                 checkpoint.planeStart.origin = origin;
                 // Manually construct normal by sampling position + barely forward along segment
-                // TODO: make function!
                 var to = position.EvaluateNormalized(checkpointTimeStart + 0.000001);
                 var direction = to - origin;
                 checkpoint.planeStart.normal = direction.normalized;
@@ -79,14 +76,15 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 prevCheckpoint.planeEnd = currCheckpoint.planeStart.GetMirror();
             }
 
-            // 
+            // Complete missing information in last checkpoint of segment
             {
                 var lastCheckpoint = checkpoints[checkpoints.Length - 1];
                 lastCheckpoint.curveTimeEnd = curveMaxTime;
                 var origin = position.EvaluateNormalized(curveMaxTime);
+                // Manually construct normal by sampling position + barely behind along segment (can't use forward here!)
                 var from = position.EvaluateNormalized(curveMaxTime - 0.000001);
-                var dirInverse = origin - from;
-                lastCheckpoint.planeEnd.normal = dirInverse.normalized;
+                var direction = from - origin;
+                lastCheckpoint.planeEnd.normal = direction.normalized;
                 lastCheckpoint.planeEnd.origin = position.EvaluateNormalized(curveMaxTime);
                 lastCheckpoint.planeEnd.ComputeDotProduct();
             }
