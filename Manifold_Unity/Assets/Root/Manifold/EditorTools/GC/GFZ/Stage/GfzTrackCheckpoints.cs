@@ -16,59 +16,35 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         public Checkpoint[] GetCheckpoints()
         {
-            // Make 100% sure you feed checkpoints in order!
-
             //
             var segmentLength = segment.GetSegmentLength();
             var numCheckpoints = Mathf.CeilToInt(segmentLength / metersPerCheckpoint);
-
-            // 
             var checkpoints = new Checkpoint[numCheckpoints];
-            //var checkpointIncrement = 1f / numCheckpoints;
-            //
-            //var distanceIncrement = checkpointIncrement / 1000f; // 1000 iterations
-            const int numDistanceIterations = 1000;
-            var distanceOffset = 0f;
-            //
-            var curveMaxTime = segment.AnimTransform.GetMaxTime();
-            var position = segment.AnimTransform.Position;
-            var rotation = segment.AnimTransform.Rotation;
-            var scale = segment.AnimTransform.Scale;
 
+            var distanceOffset = 0f;
+
+            //
+            var animTransform = segment.AnimTransform;
+            var curveMaxTime = animTransform.GetMaxTime();
+            var position = animTransform.Position;
+            //var rotation = segment.AnimTransform.Rotation;
+            var scale = animTransform.Scale;
+
+            // ic = iteration: checkpoints
             for (int ic = 0; ic < numCheckpoints; ic++)
             {
-                double currCheckpointTime = (double)ic / numCheckpoints;
-                double nextCheckpointDistance = (double)(ic + 1) / numCheckpoints;
+                double currCheckpointTime       = (double)(ic + 0) / numCheckpoints;
+                double nextCheckpointDistance   = (double)(ic + 1) / numCheckpoints;
 
-                // TRANSFORM
-                // Compute transform values
-                var pos = position.EvaluateNormalized((float)currCheckpointTime);
-                var rot = rotation.EvaluateNormalized((float)currCheckpointTime);
-                var scl = scale.EvaluateNormalized((float)currCheckpointTime);
+                // PLANE
+                var origin = position.EvaluateNormalized((float)currCheckpointTime);
+                var trackWidth = scale.x.EvaluateNormalized((float)currCheckpointTime);
 
-                // DISTANCE
-                // Compute distance between last checkpoint and next one.
-                // pd = percentage distance
+                //// DISTANCE
+                var distanceBetween = animTransform.GetDistanceBetweenRepeated(currCheckpointTime, nextCheckpointDistance, 2);
                 var distanceStart = distanceOffset;
-                var distance = 0f;
-                double checkpointTimeDelta = nextCheckpointDistance - currCheckpointTime;
-                for (int id = 0; id < numDistanceIterations; id++)
-                {
-                    var currDistance = currCheckpointTime + checkpointTimeDelta / numDistanceIterations * id;
-                    var nextDistance = currCheckpointTime + checkpointTimeDelta / numDistanceIterations * (id + 1);
-
-                    var currPosition = position.EvaluateNormalized((float)currDistance);
-                    var nextPosition = position.EvaluateNormalized((float)nextDistance);
-                    var delta = Vector3.Distance(currPosition, nextPosition);
-                    distance += delta;
-                }
-                // Append how far we have already traveled to distance
-                distance += distanceOffset;
-                // Set offset for next iteration
-                distanceOffset = distance;
-                //
-                var distanceEnd = distanceOffset;
-
+                var distanceEnd = distanceOffset + distanceBetween;
+                distanceOffset = distanceEnd;
 
                 // CHECKPOINT
                 checkpoints[ic] = new Checkpoint();
@@ -78,14 +54,14 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 checkpoint.startDistance = distanceStart;
                 checkpoint.endDistance = distanceEnd;
                 // Set plane
-                checkpoint.planeStart.origin = pos;
+                checkpoint.planeStart.origin = origin;
                 var from = position.EvaluateNormalized((float)currCheckpointTime);
                 var to = position.EvaluateNormalized((float)(currCheckpointTime + 0.0001));
                 var direction = to - from;
                 checkpoint.planeStart.normal = direction.normalized;
                 checkpoint.planeStart.ComputeDotProduct();
                 //
-                checkpoint.trackWidth = scl.x;
+                checkpoint.trackWidth = trackWidth;
                 checkpoint.connectToTrackIn = true;
                 checkpoint.connectToTrackOut = true;
             }
@@ -136,6 +112,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             return checkpoints;
         }
 
+
+
         private void Reset()
         {
             OnValidate();
@@ -151,11 +129,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             if (genCheckpoints)
             {
                 var checkpoints = GetCheckpoints();
-
-                foreach (var child in transform.GetChildren())
-                {
-                    GameObject.Destroy(child.gameObject);
-                }
 
                 int index = 0;
                 foreach (var checkpoint in checkpoints)

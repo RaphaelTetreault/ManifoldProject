@@ -70,12 +70,16 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             //foreach (var key in trackCurves.animationCurves[4].keyableAttributes)
             //{
             //    key.value = -key.value;
+            //    key.zTangentIn = -key.zTangentIn;
+            //    key.zTangentOut = -key.zTangentOut;
             //}
+
             //// invert Z axis
             //foreach (var key in trackCurves.animationCurves[8].keyableAttributes)
             //{
             //    key.value = -key.value;
-            //    //key.zTangentIn = -key.value;
+            //    key.zTangentIn = -key.zTangentIn;
+            //    key.zTangentOut = -key.zTangentOut;
             //}
 
             return trackCurves;
@@ -107,6 +111,71 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
             return temp;
         }
+
+
+
+
+
+        public float GetDistanceBetweenRepeated(double timeStart, double timeEnd, int baseIterations)
+        {
+            int loopCount = 0;
+            const int maxIterations = 1_000_000;
+            const float minDiff = 0.01f; // 1cm
+
+            float delta;
+            float distance;
+            float prevDistance = 0f;
+            do
+            {
+                loopCount++;
+                int power = loopCount;
+                int iterations = (int)Mathf.Pow(baseIterations, power);
+                Debug.Log($"Base: {baseIterations}, Power: {power}, Iterations: {iterations}");
+
+                distance = GetDistanceBetween(timeStart, timeEnd, iterations);
+                delta = Mathf.Abs(distance - prevDistance);
+                prevDistance = distance;
+
+                if (iterations >= maxIterations)
+                {
+                    Debug.LogError($"Max iterations hit. Delta: {delta}");
+                    break;
+                }
+            }
+            while (delta >= minDiff);
+
+            return distance;
+        }
+
+
+        // (curveTimeOffset + checkpointTimeDelta) = curveTimeOffset
+        public float GetDistanceBetween(double timeStart, double timeEnd, int nIterations)
+        {
+            // If we start at, say, 0.3 and end at 0.45, get the difference or total "step"
+            var timeDelta = timeEnd - timeStart;
+
+            var distance = 0f;
+            for (int i = 0; i <= nIterations; i++)
+            {
+                // Get the curve times for current + increment towards next checkpoint
+                // Each sampling begins at 'timeStart' (for example, 0.3 / 1.0)
+                // Each sampling ends at 'timeEnd' (for example, 0.45 / 1.0)
+                // We sample from that start to the next iteration. For instance, if we
+                // iterate 100 times, and the start is from 0.3000 to 0.3015 since we
+                // will travel 0.15s through time from start to end, and each iteration
+                // is 1/100.
+                var currDistance = timeStart + (timeDelta / nIterations * (i + 0));
+                var nextDistance = timeStart + (timeDelta / nIterations * (i + 1));
+                // Compute the distance between these 2 points
+                var currPosition = position.EvaluateNormalized(currDistance);
+                var nextPosition = position.EvaluateNormalized(nextDistance);
+                // Get distance between 2 points, store delta
+                var delta = Vector3.Distance(currPosition, nextPosition);
+                distance += delta;
+            }
+            return distance;
+        }
+
 
     }
 }

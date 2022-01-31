@@ -51,21 +51,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         public virtual float GetSegmentLength()
         {
-            var distance = 0f;
-            const float increment = 1f / 1000f;
+            // TODO: iterate mutiple times until length gets less than 1cm more length
+            // per 10^x iterations?
 
-            var position = animTransform.Position;
-            var currPosition = position.EvaluateNormalized(0f);
-
-            //
-            for (float time = 0f; time < 1f; time = Mathf.Clamp01(time + increment))
-            {
-                time = Mathf.Clamp01(time);
-                var nextPosition = position.EvaluateNormalized(time);
-                var delta = Vector3.Distance(currPosition, nextPosition);
-                distance += delta;
-                currPosition = nextPosition;
-            }
+            var maxTime = animTransform.GetMaxTime();
+            var distance = animTransform.GetDistanceBetweenRepeated(0, maxTime, 2);
 
             return distance;
         }
@@ -115,6 +105,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 //animTransform.Rotation.z = anims.z;
                 genRotationXY = false;
             }
+
         }
     }
 }

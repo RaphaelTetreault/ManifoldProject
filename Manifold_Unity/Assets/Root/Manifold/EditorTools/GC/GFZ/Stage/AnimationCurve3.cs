@@ -22,11 +22,15 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             return point;
         }
 
+        public Vector3 EvaluateNormalized(double timeNormalized)
+        {
+            return EvaluateNormalized((float)timeNormalized);
+        }
+
         public AnimationCurve[] GetCurves()
         {
             return new AnimationCurve[] {x, y, z };
         }
-
     }
 
 }

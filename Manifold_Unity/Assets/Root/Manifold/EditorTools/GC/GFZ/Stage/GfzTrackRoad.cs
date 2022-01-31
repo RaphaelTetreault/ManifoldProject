@@ -68,11 +68,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             // Get animation data
             trackSegment.trackCurves = animTransform.ToTrackCurves();
 
-            // debugging in/out
-            var before = animTransform.Position.x;
-            var togfz = trackSegment.trackCurves.PositionX;
-            var after = AnimationCurveConverter.ToUnity(togfz);
-
             return trackSegment;
         }
 
