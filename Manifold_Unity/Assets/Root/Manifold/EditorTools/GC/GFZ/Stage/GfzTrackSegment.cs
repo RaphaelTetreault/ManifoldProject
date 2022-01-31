@@ -86,7 +86,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             var checkpointScript = checkpointScripts[0];
 
             // Get the gfz value for it, return
-            var checkpoints = checkpointScript.GetCheckpoints();
+            var checkpoints = checkpointScript.GetCheckpoints(true);
             return checkpoints;
         }
 

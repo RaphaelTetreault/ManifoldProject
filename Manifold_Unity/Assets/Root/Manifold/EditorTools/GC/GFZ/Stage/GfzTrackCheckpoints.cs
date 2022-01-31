@@ -14,7 +14,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         public GfzTrackSegment Segment => segment;
 
-        public Checkpoint[] GetCheckpoints()
+        public Checkpoint[] GetCheckpoints(bool convertCoordinateSpace)
         {
             //
             var segmentLength = segment.GetSegmentLength();
@@ -23,8 +23,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
             var distanceOffset = 0f;
 
-            //
-            var animTransform = segment.AnimTransform.GetGfzCoordSpaceAnimTransform();
+            // Get the AnimationCurveTransform appropriate for requester.
+            // Use GFZ space (game) if 'true'
+            // Use Unity space if 'false'
+            var animTransform = convertCoordinateSpace
+                ? segment.AnimTransform.GetGfzCoordSpaceAnimTransform()
+                : segment.AnimTransform;
+
             var curveMaxTime = animTransform.GetMaxTime();
             var pos = animTransform.Position;
             var rot = animTransform.Rotation;
@@ -49,10 +54,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 distanceOffset = distanceEnd;
 
                 // CHECKPOINT
-                // Construct start portion of checkpoint
                 checkpoints[i] = new Checkpoint();
                 var checkpoint = checkpoints[i];
-                //
                 checkpoint.curveTimeStart = (float)checkpointTimeStart;
                 checkpoint.startDistance = distanceStart;
                 checkpoint.endDistance = distanceEnd;
@@ -60,15 +63,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 checkpoint.connectToTrackIn = true;
                 checkpoint.connectToTrackOut = true;
                 checkpoint.planeStart.origin = origin;
-                // Manually construct normal by sampling position + barely forward along segment
-                //var to = pos.Evaluate(checkpointTimeStart + 0.000001);
-                //var direction = to - origin;
-                //checkpoint.planeStart.normal = direction.normalized;
                 checkpoint.planeStart.normal = normal;
                 checkpoint.planeStart.ComputeDotProduct();
+                // We construct (copy) the checkpoint.planeEnd later
             }
 
-            // Copy values from one checkpoints to the previous ones
+            // Copy values from one checkpoint to the previous one
             // NOTE: start at second index '1' since we refer to the previous checkpoint (i-1)
             for (int i = 1; i < checkpoints.Length; i++)
             {
@@ -109,7 +109,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
             if (genCheckpoints)
             {
-                var checkpoints = GetCheckpoints();
+                var checkpoints = GetCheckpoints(false);
 
                 int index = 0;
                 foreach (var checkpoint in checkpoints)
