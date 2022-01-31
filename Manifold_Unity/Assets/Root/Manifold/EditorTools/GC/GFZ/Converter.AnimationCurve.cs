@@ -119,20 +119,20 @@ namespace Manifold.EditorTools.GC.GFZ
         {
             for (int i = 0; i < keyables.Length; i++)
             {
-                UnityEditor.AnimationUtility.TangentMode mode;
+                AnimationUtility.TangentMode mode;
 
                 switch (keyables[i].easeMode)
                 {
                     case InterpolationMode.Constant:
-                        mode = UnityEditor.AnimationUtility.TangentMode.Constant;
-                        UnityEditor.AnimationUtility.SetKeyLeftTangentMode(curve, i, mode);
-                        UnityEditor.AnimationUtility.SetKeyRightTangentMode(curve, i, mode);
+                        mode = AnimationUtility.TangentMode.Constant;
+                        AnimationUtility.SetKeyLeftTangentMode(curve, i, mode);
+                        AnimationUtility.SetKeyRightTangentMode(curve, i, mode);
                         break;
 
                     case InterpolationMode.Linear:
-                        mode = UnityEditor.AnimationUtility.TangentMode.Linear;
-                        UnityEditor.AnimationUtility.SetKeyLeftTangentMode(curve, i, mode);
-                        UnityEditor.AnimationUtility.SetKeyRightTangentMode(curve, i, mode);
+                        mode = AnimationUtility.TangentMode.Linear;
+                        AnimationUtility.SetKeyLeftTangentMode(curve, i, mode);
+                        AnimationUtility.SetKeyRightTangentMode(curve, i, mode);
                         break;
 
                     case InterpolationMode.unknown1:
@@ -150,12 +150,8 @@ namespace Manifold.EditorTools.GC.GFZ
                     //    break;
 
                     default:
-                        throw new System.NotImplementedException($"New value {(int)keyables[i].easeMode}");
+                        throw new NotImplementedException($"New value {(int)keyables[i].easeMode}");
                 }
-
-                //// Set tangent type in Unity's format
-                //UnityEditor.AnimationUtility.SetKeyLeftTangentMode(curve, i, mode);
-                //UnityEditor.AnimationUtility.SetKeyRightTangentMode(curve, i, mode);
             }
         }
 
@@ -179,63 +175,6 @@ namespace Manifold.EditorTools.GC.GFZ
                     throw new NotImplementedException();
             }
         }
-
-        //public static Vector3 EvaluateScale( float t)
-        //{
-        //    const float defaultValue = 1f;
-
-        //    var curveX = unityCurves[0];
-        //    var curveY = unityCurves[1];
-        //    var curveZ = unityCurves[2];
-
-        //    var scale = new Vector3(
-        //        EvaluateDefault(curveX, t, defaultValue),
-        //        EvaluateDefault(curveY, t, defaultValue),
-        //        EvaluateDefault(curveZ, t, defaultValue)
-        //        );
-
-        //    return scale;
-        //}
-
-        //public static Vector3 EvaluateRotationEuler(float t)
-        //{
-        //    const float defaultValue = 0f;
-
-        //    var curveX = unityCurves[3];
-        //    var curveY = unityCurves[4];
-        //    var curveZ = unityCurves[5];
-
-        //    var rotationEuler = new Vector3(
-        //        EvaluateDefault(curveX, t, defaultValue),
-        //        EvaluateDefault(curveY, t, defaultValue),
-        //        EvaluateDefault(curveZ, t, defaultValue)
-        //        );
-
-        //    return rotationEuler;
-        //}
-
-        //public static Quaternion EvaluateRotation(float t)
-        //{
-        //    var quaternion = Quaternion.Euler(EvaluateRotationEuler(t));
-        //    return quaternion;
-        //}
-
-        //public static Vector3 EvaluatePosition(float t)
-        //{
-        //    const float defaultValue = 0f;
-
-        //    var curveX = unityCurves[6];
-        //    var curveY = unityCurves[7];
-        //    var curveZ = unityCurves[8];
-
-        //    var scale = new Vector3(
-        //        EvaluateDefault(curveX, t, defaultValue),
-        //        EvaluateDefault(curveY, t, defaultValue),
-        //        EvaluateDefault(curveZ, t, defaultValue)
-        //        );
-
-        //    return scale;
-        //}
 
         public static float EvaluateDefault(UnityEngine.AnimationCurve curve, float time, float @default)
         {
