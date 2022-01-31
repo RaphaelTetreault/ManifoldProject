@@ -51,12 +51,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         public virtual float GetSegmentLength()
         {
-            // TODO: iterate mutiple times until length gets less than 1cm more length
-            // per 10^x iterations?
-
+            // 2022/01/31: current work assumes min and max of 0 and 1
             var maxTime = animTransform.GetMaxTime();
-            var distance = animTransform.GetDistanceBetweenRepeated(0, maxTime, 2);
+            Assert.IsTrue(maxTime == 1);
 
+            var distance = animTransform.GetDistanceBetweenRepeated(0, 1);
             return distance;
         }
 

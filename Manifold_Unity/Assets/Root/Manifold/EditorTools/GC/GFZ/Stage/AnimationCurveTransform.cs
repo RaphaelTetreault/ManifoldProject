@@ -92,7 +92,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             var temp = new AnimationCurve3();
 
             int interations = 100;
-            for (int i = 0; i < interations; i++)
+            for (int i = 0; i <= interations; i++)
             {
                 var time = (float)((double)i / interations);
                 var p0 = Position.Evaluate(time);
@@ -115,40 +115,52 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
 
 
-
-        public float GetDistanceBetweenRepeated(double timeStart, double timeEnd, int baseIterations)
+        /// <summary>
+        /// Continually increases sampling precision until distance gained is less than <paramref name="minDelta"/>
+        /// </summary>
+        /// <param name="timeStart"></param>
+        /// <param name="timeEnd"></param>
+        /// <param name="minDelta"></param>
+        /// <param name="powerBase"></param>
+        /// <param name="powerExp"></param>
+        /// <returns></returns>
+        public float GetDistanceBetweenRepeated(double timeStart, double timeEnd, float minDelta = 0.01f, int powerBase = 2, int powerExp = 1)
         {
-            int loopCount = 0;
-            const int maxIterations = 1_000_000;
-            const float minDiff = 0.01f; // 1cm
+            // Limit on how many cycles we can do
+            const int maxIterations = 1 << 20; // 2^20 = 1,048,576
 
-            float delta;
-            float distance;
+            // Values to store distance state between sampling points
+            float delta = 0f;
+            float currDistance = 0f;
             float prevDistance = 0f;
+
             do
             {
-                loopCount++;
-                int power = loopCount;
-                int iterations = (int)Mathf.Pow(baseIterations, power);
-                Debug.Log($"Base: {baseIterations}, Power: {power}, Iterations: {iterations}");
+                // Compute how many samplings to do in this loop iteration
+                int iterations = (int)Mathf.Pow(powerBase, powerExp);
+                powerExp++;
 
-                distance = GetDistanceBetween(timeStart, timeEnd, iterations);
-                delta = Mathf.Abs(distance - prevDistance);
-                prevDistance = distance;
-
+                // Break if the next iteration goes above max.
+                // Since we calculate iteratively, this means we already did this many iterations minus 1.
                 if (iterations >= maxIterations)
                 {
-                    Debug.LogError($"Max iterations hit. Delta: {delta}");
+                    Debug.LogWarning($"Max iterations hit. Delta: {delta}");
                     break;
                 }
-            }
-            while (delta >= minDiff);
 
-            return distance;
+                // Compute distance between the 2 sampled points on the curve 'iterations' times
+                currDistance = GetDistanceBetween(timeStart, timeEnd, iterations);
+                delta = Mathf.Abs(currDistance - prevDistance);
+                prevDistance = currDistance;
+            }
+            // Continue this process so long as the distance gained from more precise sampling is more than 'minDelta'
+            while (delta >= minDelta);
+
+            // If we stop, 'currDistance' holds the most precise distance value
+            return currDistance;
         }
 
 
-        // (curveTimeOffset + checkpointTimeDelta) = curveTimeOffset
         public float GetDistanceBetween(double timeStart, double timeEnd, int nIterations)
         {
             // If we start at, say, 0.3 and end at 0.45, get the difference or total "step"

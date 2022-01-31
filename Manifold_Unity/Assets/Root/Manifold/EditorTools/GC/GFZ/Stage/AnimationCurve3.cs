@@ -12,7 +12,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         [SerializeField] public AnimationCurve y = new AnimationCurve();
         [SerializeField] public AnimationCurve z = new AnimationCurve();
 
-        // TODO: make a faster version of this? Store max value?
+
         public Vector3 Evaluate(float time)
         {
             var px = x.Evaluate(time);
@@ -33,6 +33,22 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         {
             return new AnimationCurve[] {x, y, z };
         }
+
+        public float GetMaxTime()
+        {
+            var xMaxTime = x.GetMaxTime();
+            var yMaxTime = y.GetMaxTime();
+            var zMaxTime = z.GetMaxTime();
+
+            bool isValid =
+                xMaxTime == yMaxTime &&
+                yMaxTime == zMaxTime;
+
+            Assert.IsTrue(isValid, "Max times for each curve do not match!");
+
+            return xMaxTime;
+        }
+
     }
 
 }

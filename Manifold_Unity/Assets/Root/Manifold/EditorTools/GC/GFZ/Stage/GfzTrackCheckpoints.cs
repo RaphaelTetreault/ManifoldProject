@@ -41,7 +41,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
                 // DISTANCE
                 // Compute the distance between these 2 points, keep track of total distance travelled along segment
-                var distanceBetween = animTransform.GetDistanceBetweenRepeated(checkpointTimeStart, checkpointTimeEnd, 2);
+                var distanceBetween = animTransform.GetDistanceBetweenRepeated(checkpointTimeStart, checkpointTimeEnd);
                 var distanceStart = distanceOffset;
                 var distanceEnd = distanceOffset + distanceBetween;
                 distanceOffset = distanceEnd;
