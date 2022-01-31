@@ -36,7 +36,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 double checkpointTimeEnd   = (double)(i + 1) / numCheckpoints;
 
                 // Get origin of start plane, track width at start sampling point
-                var origin = position.EvaluateNormalized(checkpointTimeStart);
+                var origin = position.Evaluate(checkpointTimeStart);
                 var trackWidth = scale.x.EvaluateNormalized((float)checkpointTimeStart);
 
                 // DISTANCE
@@ -59,7 +59,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 checkpoint.connectToTrackOut = true;
                 checkpoint.planeStart.origin = origin;
                 // Manually construct normal by sampling position + barely forward along segment
-                var to = position.EvaluateNormalized(checkpointTimeStart + 0.000001);
+                var to = position.Evaluate(checkpointTimeStart + 0.000001);
                 var direction = to - origin;
                 checkpoint.planeStart.normal = direction.normalized;
                 checkpoint.planeStart.ComputeDotProduct();
@@ -80,12 +80,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             {
                 var lastCheckpoint = checkpoints[checkpoints.Length - 1];
                 lastCheckpoint.curveTimeEnd = curveMaxTime;
-                var origin = position.EvaluateNormalized(curveMaxTime);
+                var origin = position.Evaluate(curveMaxTime);
                 // Manually construct normal by sampling position + barely behind along segment (can't use forward here!)
-                var from = position.EvaluateNormalized(curveMaxTime - 0.000001);
+                var from = position.Evaluate(curveMaxTime - 0.000001);
                 var direction = from - origin;
                 lastCheckpoint.planeEnd.normal = direction.normalized;
-                lastCheckpoint.planeEnd.origin = position.EvaluateNormalized(curveMaxTime);
+                lastCheckpoint.planeEnd.origin = position.Evaluate(curveMaxTime);
                 lastCheckpoint.planeEnd.ComputeDotProduct();
             }
 

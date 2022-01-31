@@ -49,7 +49,17 @@
         }
 
 
-        public static float GetMaxTime(this UnityEngine.AnimationCurve curve)
+        public static float FastEvaluateNormalized(this UnityEngine.AnimationCurve curve, float normalizedTime)
+        {
+            // Assumes a min time of 0f
+            var maxTime = GetMaxTime(curve);
+            var time = maxTime * normalizedTime;
+            var value = curve.Evaluate(time);
+            return value;
+        }
+
+
+        public static float SafeGetMaxTime(this UnityEngine.AnimationCurve curve)
         {
             var hasKeys = curve.keys.Length > 0;
             if (!hasKeys)
@@ -59,12 +69,10 @@
             }
 
             // Get max time value, normalize input time
-            var lastIndex = curve.keys.Length - 1;
-            var maxTime = curve.keys[lastIndex].time;
-            return maxTime;
+            return GetMaxTime(curve);
         }
 
-        public static float GetMinTime(this UnityEngine.AnimationCurve curve)
+        public static float SafeGetMinTime(this UnityEngine.AnimationCurve curve)
         {
             var hasKeys = curve.keys.Length > 0;
             if (!hasKeys)
@@ -73,9 +81,30 @@
                 throw new System.ArgumentException(msg);
             }
 
+            return GetMinTime(curve);
+        }
+
+
+
+        public static float GetMinTime(this UnityEngine.AnimationCurve curve)
+        {
+            // Can error if keys.length is [0]
+
             var minTime = curve.keys[0].time;
             return minTime;
         }
+
+        public static float GetMaxTime(this UnityEngine.AnimationCurve curve)
+        {
+            // Can error if keys.length is [0]
+
+            // Get max time value, normalize input time
+            var lastIndex = curve.keys.Length - 1;
+            var maxTime = curve.keys[lastIndex].time;
+            return maxTime;
+        }
+
+
 
     }
 }

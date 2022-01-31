@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage
@@ -12,19 +13,20 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         [SerializeField] public AnimationCurve z = new AnimationCurve();
 
         // TODO: make a faster version of this? Store max value?
-        public Vector3 EvaluateNormalized(float timeNormalized)
+        public Vector3 Evaluate(float time)
         {
-            var px = x.EvaluateNormalized(timeNormalized);
-            var py = y.EvaluateNormalized(timeNormalized);
-            var pz = z.EvaluateNormalized(timeNormalized);
+            var px = x.Evaluate(time);
+            var py = y.Evaluate(time);
+            var pz = z.Evaluate(time);
             var point = new Vector3(px, py, pz);
 
             return point;
         }
 
-        public Vector3 EvaluateNormalized(double timeNormalized)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public Vector3 Evaluate(double time)
         {
-            return EvaluateNormalized((float)timeNormalized);
+            return Evaluate((float)time);
         }
 
         public AnimationCurve[] GetCurves()

@@ -95,8 +95,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             for (int i = 0; i < interations; i++)
             {
                 var time = (float)((double)i / interations);
-                var p0 = Position.EvaluateNormalized(time);
-                var p1 = Position.EvaluateNormalized(time + 0.00001f);
+                var p0 = Position.Evaluate(time);
+                var p1 = Position.Evaluate(time + 0.00001f);
                 var forward = (p1 - p0).normalized;
 
                 var zUp = rotation.z.EvaluateNormalized(time);
@@ -167,8 +167,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 var currDistance = timeStart + (timeDelta / nIterations * (i + 0));
                 var nextDistance = timeStart + (timeDelta / nIterations * (i + 1));
                 // Compute the distance between these 2 points
-                var currPosition = position.EvaluateNormalized(currDistance);
-                var nextPosition = position.EvaluateNormalized(nextDistance);
+                var currPosition = position.Evaluate(currDistance);
+                var nextPosition = position.Evaluate(nextDistance);
                 // Get distance between 2 points, store delta
                 var delta = Vector3.Distance(currPosition, nextPosition);
                 distance += delta;
