@@ -1,3 +1,4 @@
+using Manifold.IO;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -6,12 +7,21 @@ using UnityEngine;
 namespace Manifold.EditorTools.GC.GFZ.Stage
 {
     [System.Serializable]
-    public class AnimationCurve3
+    public class AnimationCurve3 :
+        IDeepCopyable<AnimationCurve3>
     {
         [SerializeField] public AnimationCurve x = new AnimationCurve();
         [SerializeField] public AnimationCurve y = new AnimationCurve();
         [SerializeField] public AnimationCurve z = new AnimationCurve();
 
+        public AnimationCurve3 CreateDeepCopy()
+        {
+            var copy = new AnimationCurve3();
+            copy.x = x.GetCopy();
+            copy.y = y.GetCopy();
+            copy.z = z.GetCopy();
+            return copy;
+        }
 
         public Vector3 Evaluate(float time)
         {

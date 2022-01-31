@@ -24,7 +24,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             var distanceOffset = 0f;
 
             //
-            var animTransform = segment.AnimTransform;
+            var animTransform = segment.AnimTransform.GetGfzCoordSpaceAnimTransform();
             var curveMaxTime = animTransform.GetMaxTime();
             var position = animTransform.Position;
             var scale = animTransform.Scale;
@@ -37,7 +37,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
                 // Get origin of start plane, track width at start sampling point
                 var origin = position.Evaluate(checkpointTimeStart);
-                var trackWidth = scale.x.EvaluateNormalized((float)checkpointTimeStart);
+                var trackWidth = scale.x.Evaluate((float)checkpointTimeStart);
 
                 // DISTANCE
                 // Compute the distance between these 2 points, keep track of total distance travelled along segment
@@ -88,16 +88,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 lastCheckpoint.planeEnd.origin = position.Evaluate(curveMaxTime);
                 lastCheckpoint.planeEnd.ComputeDotProduct();
             }
-
-            //// REQUIRE TO FEED TO GAME COORD-SPACE
-            //foreach (var checkpoint in checkpoints)
-            //{
-            //    checkpoint.planeStart.normal.z = -checkpoint.planeStart.normal.z;
-            //    checkpoint.planeStart.origin.z = -checkpoint.planeStart.origin.z;
-            //    //
-            //    checkpoint.planeEnd.normal.z = -checkpoint.planeEnd.normal.z;
-            //    checkpoint.planeEnd.origin.z = -checkpoint.planeEnd.origin.z;
-            //}
 
             return checkpoints;
         }

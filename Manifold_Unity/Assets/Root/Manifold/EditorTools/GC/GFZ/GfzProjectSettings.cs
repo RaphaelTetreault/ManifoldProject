@@ -21,6 +21,7 @@ namespace Manifold.EditorTools.GC.GFZ
         [SerializeField] string unityImportDir = "GFZ/";
         [SerializeField] int sceneOfInterestID = 1;
         [SerializeField] string sceneExportPath = string.Empty;
+        [SerializeField] bool convertCoordSpace = true;
 
         public ColiScene.SerializeFormat SerializeFormat => serializeFormat;
         public string RootFolder => rootFolder;
@@ -30,6 +31,10 @@ namespace Manifold.EditorTools.GC.GFZ
         public string UnityImportDir => unityImportDir;
         public int SceneOfInterestID => sceneOfInterestID;
         public string SceneExportPath => sceneExportPath;
+
+
+        public bool ConvertCoordSpace => convertCoordSpace;
+
 
         // Easy accessors for common places
         public string StageDir => $"{rootFolder}stage/";
@@ -84,6 +89,8 @@ namespace Manifold.EditorTools.GC.GFZ
             GuiSimple.Label("Scene Single", EditorStyles.boldLabel);
             sceneOfInterestID = GuiSimple.Int("Scene Of Interest", sceneOfInterestID);
             sceneExportPath = GuiSimple.BrowseFolder(sceneExportPath, "Scene Export Path", "Open Scene Export Directory", sceneExportPath, "");
+            convertCoordSpace = GuiSimple.Bool(nameof(convertCoordSpace), convertCoordSpace);
+
         }
 
 

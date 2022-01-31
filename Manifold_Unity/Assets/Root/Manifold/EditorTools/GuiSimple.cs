@@ -22,6 +22,12 @@ namespace Manifold.EditorTools
             EditorGUILayout.LabelField(Labelize(label), style);
         }
 
+        public static bool Bool(string name, bool value)
+        {
+            var label = ObjectNames.NicifyVariableName(name);
+            return EditorGUILayout.Toggle(label, value);
+        }
+
 
         public static int Int(string name, int value)
         {

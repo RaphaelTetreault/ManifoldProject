@@ -102,24 +102,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 : CircuitType.OpenCircuit;
 
 
-            //for (int segIndex = 1; segIndex < allCheckpointsSegmented.Count; segIndex++)
-            //{
-            //    var prevSegs = allCheckpointsSegmented[segIndex - 1];
-            //    var prevLast = prevSegs[prevSegs.Length - 1];
-            //    //
-            //    var currSegs = allCheckpointsSegmented[segIndex];
-            //    var currFirst = currSegs[0];
-            //    // HACK WILL NOT WORK FOR GAPS
-            //    prevLast.planeEnd = currFirst.planeStart;
-            //}
-
-            var first = allCheckpoints[0];
-            var last = allCheckpoints[allCheckpoints.Count - 1];
-            //last.planeEnd = first.planeStart;
-            //
-            last.planeEnd.origin = first.planeStart.origin;
-            last.planeEnd.normal = -first.planeStart.normal;
-            last.planeEnd.dotProduct = -first.planeStart.dotProduct;
+            //var first = allCheckpoints[0];
+            //var last = allCheckpoints[allCheckpoints.Count - 1];
+            ////
+            //last.planeEnd.origin = first.planeStart.origin;
+            //last.planeEnd.normal = -first.planeStart.normal;
+            //last.planeEnd.dotProduct = -first.planeStart.dotProduct;
 
             // TODO: name this something better
             var checkpointsArray = allCheckpoints.ToArray();

@@ -1,8 +1,10 @@
-﻿namespace Manifold
+﻿using UnityEngine;
+
+namespace Manifold
 {
     public static class AnimationCurveExtensions
     {
-        public static float EvaluateDefault(this UnityEngine.AnimationCurve curve, float time, float @default)
+        public static float EvaluateDefault(this AnimationCurve curve, float time, float @default)
         {
             if (time == 0f)
                 return @default;
@@ -17,7 +19,7 @@
         /// <param name="normalizedTime"></param>
         /// <returns></returns>
         /// <exception cref="System.ArgumentException"></exception>
-        public static float EvaluateNormalized(this UnityEngine.AnimationCurve curve, float normalizedTime)
+        public static float EvaluateNormalized(this AnimationCurve curve, float normalizedTime)
         {
             var isNormalized = normalizedTime >= 0f && normalizedTime <= 1f;
             if (!isNormalized)
@@ -49,7 +51,7 @@
         }
 
 
-        public static float FastEvaluateNormalized(this UnityEngine.AnimationCurve curve, float normalizedTime)
+        public static float FastEvaluateNormalized(this AnimationCurve curve, float normalizedTime)
         {
             // Assumes a min time of 0f
             var maxTime = GetMaxTime(curve);
@@ -59,7 +61,7 @@
         }
 
 
-        public static float SafeGetMaxTime(this UnityEngine.AnimationCurve curve)
+        public static float SafeGetMaxTime(this AnimationCurve curve)
         {
             var hasKeys = curve.keys.Length > 0;
             if (!hasKeys)
@@ -72,7 +74,7 @@
             return GetMaxTime(curve);
         }
 
-        public static float SafeGetMinTime(this UnityEngine.AnimationCurve curve)
+        public static float SafeGetMinTime(this AnimationCurve curve)
         {
             var hasKeys = curve.keys.Length > 0;
             if (!hasKeys)
@@ -86,7 +88,7 @@
 
 
 
-        public static float GetMinTime(this UnityEngine.AnimationCurve curve)
+        public static float GetMinTime(this AnimationCurve curve)
         {
             // Can error if keys.length is [0]
 
@@ -94,7 +96,7 @@
             return minTime;
         }
 
-        public static float GetMaxTime(this UnityEngine.AnimationCurve curve)
+        public static float GetMaxTime(this AnimationCurve curve)
         {
             // Can error if keys.length is [0]
 
@@ -106,5 +108,29 @@
 
 
 
+
+        public static AnimationCurve GetCopy(this AnimationCurve curve)
+        {
+            return new AnimationCurve(curve.keys);
+        }
+
+
+        public static AnimationCurve GetInverted(this AnimationCurve curve)
+        {
+            var keys = curve.keys;
+            var invertedKeys = new Keyframe[keys.Length];
+
+            for (int i = 0; i < keys.Length; i++)
+            {
+                // copy all misc data
+                invertedKeys[i] = keys[i];
+                // Invert values
+                invertedKeys[i].value = -keys[i].value;
+                invertedKeys[i].inTangent = -keys[i].inTangent;
+                invertedKeys[i].outTangent = -keys[i].outTangent;
+            }
+
+            return new AnimationCurve(invertedKeys);
+        }
     }
 }

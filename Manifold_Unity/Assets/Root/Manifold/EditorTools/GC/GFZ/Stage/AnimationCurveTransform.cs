@@ -7,13 +7,14 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
     [System.Serializable]
     public class AnimationCurveTransform
     {
-        [SerializeField] protected AnimationCurve3 position = new AnimationCurve3();
-        [SerializeField] protected AnimationCurve3 rotation = new AnimationCurve3();
-        [SerializeField] protected AnimationCurve3 scale = new AnimationCurve3();
+        [SerializeField] protected AnimationCurve3 position = new();
+        [SerializeField] protected AnimationCurve3 rotation = new();
+        [SerializeField] protected AnimationCurve3 scale = new();
 
         public AnimationCurve3 Position => position;
         public AnimationCurve3 Rotation => rotation;
         public AnimationCurve3 Scale => scale;
+
 
         public float GetMaxTime()
         {
@@ -48,42 +49,53 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             return allCurvesMaxTime;
         }
 
-
         public GameCube.GFZ.CourseCollision.TrackCurves ToTrackCurves()
         {
             var trackCurves = new GameCube.GFZ.CourseCollision.TrackCurves();
             trackCurves.animationCurves = new GameCube.GFZ.CourseCollision.AnimationCurve[9];
-            // SCALE
-            trackCurves.animationCurves[0] = AnimationCurveConverter.ToGfz(scale.x);
-            trackCurves.animationCurves[1] = AnimationCurveConverter.ToGfz(scale.y);
-            trackCurves.animationCurves[2] = AnimationCurveConverter.ToGfz(scale.z);
-            // ROTATION
-            trackCurves.animationCurves[3] = AnimationCurveConverter.ToGfz(rotation.x);
-            trackCurves.animationCurves[4] = AnimationCurveConverter.ToGfz(rotation.y);
-            trackCurves.animationCurves[5] = AnimationCurveConverter.ToGfz(rotation.z);
-            // POSITION
-            trackCurves.animationCurves[6] = AnimationCurveConverter.ToGfz(position.x);
-            trackCurves.animationCurves[7] = AnimationCurveConverter.ToGfz(position.y);
-            trackCurves.animationCurves[8] = AnimationCurveConverter.ToGfz(position.z);
 
-            //// rotation Y is inverted
-            //foreach (var key in trackCurves.animationCurves[4].keyableAttributes)
-            //{
-            //    key.value = -key.value;
-            //    key.zTangentIn = -key.zTangentIn;
-            //    key.zTangentOut = -key.zTangentOut;
-            //}
+            var corrected = GetGfzCoordSpaceAnimTransform();
 
-            //// invert Z axis
-            //foreach (var key in trackCurves.animationCurves[8].keyableAttributes)
-            //{
-            //    key.value = -key.value;
-            //    key.zTangentIn = -key.zTangentIn;
-            //    key.zTangentOut = -key.zTangentOut;
-            //}
+            trackCurves.PositionX = AnimationCurveConverter.ToGfz(corrected.position.x);
+            trackCurves.PositionY = AnimationCurveConverter.ToGfz(corrected.position.y);
+            trackCurves.PositionZ = AnimationCurveConverter.ToGfz(corrected.position.z);
+
+            trackCurves.RotationX = AnimationCurveConverter.ToGfz(corrected.rotation.x);
+            trackCurves.RotationY = AnimationCurveConverter.ToGfz(corrected.rotation.y);
+            trackCurves.RotationZ = AnimationCurveConverter.ToGfz(corrected.rotation.z);
+
+            trackCurves.ScaleX = AnimationCurveConverter.ToGfz(corrected.scale.x);
+            trackCurves.ScaleY = AnimationCurveConverter.ToGfz(corrected.scale.y);
+            trackCurves.ScaleZ = AnimationCurveConverter.ToGfz(corrected.scale.z);
 
             return trackCurves;
         }
+
+        public AnimationCurveTransform GetGfzCoordSpaceAnimTransform()
+        {
+            var p = position.CreateDeepCopy();
+            var r = rotation.CreateDeepCopy();
+            var s = scale.CreateDeepCopy();
+
+            var exportInvert = GfzProjectWindow.GetSettings().ConvertCoordSpace;
+            if (exportInvert)
+            {
+                // Position X is inverted compared to Unity
+                p.x = p.x.GetInverted();
+
+                // As a result of X's inversion:
+                // Rotation Y is inverted compared to Unity
+                r.y = r.y.GetInverted();
+            }
+
+            return new AnimationCurveTransform()
+            {
+                position = p,
+                rotation = r,
+                scale = s,
+            };
+        }
+
 
         public AnimationCurve3 ComputerRotationXY()
         {
@@ -111,9 +123,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
             return temp;
         }
-
-
-
 
         /// <summary>
         /// Continually increases sampling precision until distance gained is less than <paramref name="minDelta"/>
@@ -160,7 +169,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             return currDistance;
         }
 
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="timeStart"></param>
+        /// <param name="timeEnd"></param>
+        /// <param name="nIterations"></param>
+        /// <returns></returns>
         public float GetDistanceBetween(double timeStart, double timeEnd, int nIterations)
         {
             // If we start at, say, 0.3 and end at 0.45, get the difference or total "step"
