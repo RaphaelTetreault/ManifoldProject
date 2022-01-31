@@ -21,8 +21,8 @@ namespace GameCube.GFZ.CourseCollision
         public InterpolationMode easeMode;
         public float time;
         public float value;
-        public float zTangentIn;
-        public float zTangentOut;
+        public float tangentIn;
+        public float tangentOut;
 
 
         // PROPERTIES
@@ -41,8 +41,8 @@ namespace GameCube.GFZ.CourseCollision
                 reader.ReadX(ref easeMode);
                 reader.ReadX(ref time);
                 reader.ReadX(ref value);
-                reader.ReadX(ref zTangentIn);
-                reader.ReadX(ref zTangentOut);
+                reader.ReadX(ref tangentIn);
+                reader.ReadX(ref tangentOut);
             }
             this.RecordEndAddress(reader);
         }
@@ -54,8 +54,8 @@ namespace GameCube.GFZ.CourseCollision
                 writer.WriteX(easeMode);
                 writer.WriteX(time);
                 writer.WriteX(value);
-                writer.WriteX(zTangentIn);
-                writer.WriteX(zTangentOut);
+                writer.WriteX(tangentIn);
+                writer.WriteX(tangentOut);
             }
             this.RecordEndAddress(writer);
         }
@@ -73,8 +73,8 @@ namespace GameCube.GFZ.CourseCollision
                 $"({nameof(easeMode)}: {easeMode}," +
                 $" {nameof(time)}: {time:0.###}," +
                 $" {nameof(value)}: {value:0.###}," +
-                $" {nameof(zTangentIn)}: {zTangentIn:0.##}," +
-                $" {nameof(zTangentOut)}: {zTangentOut:0.##})";
+                $" {nameof(tangentIn)}: {tangentIn:0.##}," +
+                $" {nameof(tangentOut)}: {tangentOut:0.##})";
         }
 
         public string PrintMultiLine(int indentLevel = 0, string indent = "\t")
@@ -85,8 +85,8 @@ namespace GameCube.GFZ.CourseCollision
             indentLevel++;
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(easeMode)}: {easeMode}");
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(time)}: {time}");
-            builder.AppendLineIndented(indent, indentLevel, $"{nameof(zTangentIn)}: {zTangentIn}");
-            builder.AppendLineIndented(indent, indentLevel, $"{nameof(zTangentOut)}: {zTangentOut}");
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(tangentIn)}: {tangentIn}");
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(tangentOut)}: {tangentOut}");
 
             return builder.ToString();
         }

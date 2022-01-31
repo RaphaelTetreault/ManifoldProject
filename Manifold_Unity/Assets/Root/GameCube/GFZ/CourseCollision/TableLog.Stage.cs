@@ -61,8 +61,8 @@ namespace GameCube.GFZ.CourseCollision
                 writer.WriteNextCol(nameof(KeyableAttribute.easeMode));
                 writer.WriteNextCol(nameof(KeyableAttribute.time));
                 writer.WriteNextCol(nameof(KeyableAttribute.value));
-                writer.WriteNextCol(nameof(KeyableAttribute.zTangentIn));
-                writer.WriteNextCol(nameof(KeyableAttribute.zTangentOut));
+                writer.WriteNextCol(nameof(KeyableAttribute.tangentIn));
+                writer.WriteNextCol(nameof(KeyableAttribute.tangentOut));
                 writer.WriteNextRow();
 
                 // foreach File
@@ -108,8 +108,8 @@ namespace GameCube.GFZ.CourseCollision
                 writer.WriteNextCol(nameof(KeyableAttribute.easeMode));
                 writer.WriteNextCol(nameof(KeyableAttribute.time));
                 writer.WriteNextCol(nameof(KeyableAttribute.value));
-                writer.WriteNextCol(nameof(KeyableAttribute.zTangentIn));
-                writer.WriteNextCol(nameof(KeyableAttribute.zTangentOut));
+                writer.WriteNextCol(nameof(KeyableAttribute.tangentIn));
+                writer.WriteNextCol(nameof(KeyableAttribute.tangentOut));
                 writer.WriteNextRow();
 
                 // foreach File
@@ -168,8 +168,8 @@ namespace GameCube.GFZ.CourseCollision
             writer.WriteNextCol((int)param.easeMode);
             writer.WriteNextCol(param.time);
             writer.WriteNextCol(param.value);
-            writer.WriteNextCol(param.zTangentIn);
-            writer.WriteNextCol(param.zTangentOut);
+            writer.WriteNextCol(param.tangentIn);
+            writer.WriteNextCol(param.tangentOut);
             writer.WriteNextRow();
         }
 
@@ -329,8 +329,8 @@ namespace GameCube.GFZ.CourseCollision
                                 writer.WriteNextCol(keyable.easeMode);
                                 writer.WriteNextCol(keyable.time);
                                 writer.WriteNextCol(keyable.value);
-                                writer.WriteNextCol(keyable.zTangentIn);
-                                writer.WriteNextCol(keyable.zTangentOut);
+                                writer.WriteNextCol(keyable.tangentIn);
+                                writer.WriteNextCol(keyable.tangentOut);
                                 writer.WriteNextRow();
                             }
                             animIndex++;
@@ -363,8 +363,8 @@ namespace GameCube.GFZ.CourseCollision
                 writer.WriteNextColNicify(nameof(KeyableAttribute.easeMode));
                 writer.WriteNextColNicify(nameof(KeyableAttribute.time));
                 writer.WriteNextColNicify(nameof(KeyableAttribute.value));
-                writer.WriteNextColNicify(nameof(KeyableAttribute.zTangentIn));
-                writer.WriteNextColNicify(nameof(KeyableAttribute.zTangentOut));
+                writer.WriteNextColNicify(nameof(KeyableAttribute.tangentIn));
+                writer.WriteNextColNicify(nameof(KeyableAttribute.tangentOut));
                 writer.WriteNextRow();
 
                 foreach (var scene in scenes)
@@ -403,8 +403,8 @@ namespace GameCube.GFZ.CourseCollision
                                 writer.WriteNextCol(keyable.easeMode);
                                 writer.WriteNextCol(keyable.time);
                                 writer.WriteNextCol(keyable.value);
-                                writer.WriteNextCol(keyable.zTangentIn);
-                                writer.WriteNextCol(keyable.zTangentOut);
+                                writer.WriteNextCol(keyable.tangentIn);
+                                writer.WriteNextCol(keyable.tangentOut);
                                 writer.WriteNextRow();
                             }
                             animIndex++;
@@ -1178,8 +1178,8 @@ namespace GameCube.GFZ.CourseCollision
                 writer.WriteNextCol(nameof(KeyableAttribute.easeMode));
                 writer.WriteNextCol(nameof(KeyableAttribute.time));
                 writer.WriteNextCol(nameof(KeyableAttribute.value));
-                writer.WriteNextCol(nameof(KeyableAttribute.zTangentIn));
-                writer.WriteNextCol(nameof(KeyableAttribute.zTangentOut));
+                writer.WriteNextCol(nameof(KeyableAttribute.tangentIn));
+                writer.WriteNextCol(nameof(KeyableAttribute.tangentOut));
                 //
                 writer.WriteNextRow();
 
@@ -1210,8 +1210,8 @@ namespace GameCube.GFZ.CourseCollision
                             writer.WriteNextCol(keyableAttribute.easeMode);
                             writer.WriteNextCol(keyableAttribute.time);
                             writer.WriteNextCol(keyableAttribute.value);
-                            writer.WriteNextCol(keyableAttribute.zTangentIn);
-                            writer.WriteNextCol(keyableAttribute.zTangentOut);
+                            writer.WriteNextCol(keyableAttribute.tangentIn);
+                            writer.WriteNextCol(keyableAttribute.tangentOut);
                             //
                             writer.WriteNextRow();
                         }

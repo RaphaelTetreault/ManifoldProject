@@ -368,8 +368,8 @@ namespace GameCube.GFZ.CourseCollision
                         easeMode = InterpolationMode.unknown1,
                         time = 0f,
                         value = value,
-                        zTangentIn = 0f,
-                        zTangentOut = 0f,
+                        tangentIn = 0f,
+                        tangentOut = 0f,
                     }
                 }
             };

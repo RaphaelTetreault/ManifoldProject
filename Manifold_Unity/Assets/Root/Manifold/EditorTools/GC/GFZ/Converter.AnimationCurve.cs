@@ -79,7 +79,7 @@ namespace Manifold.EditorTools.GC.GFZ
             for (int i = 0; i < keyframes.Length; i++)
             {
                 var keyable = keyables[i];
-                var keyframe = new Keyframe(keyable.time, keyable.value, keyable.zTangentIn, keyable.zTangentOut);
+                var keyframe = new Keyframe(keyable.time, keyable.value, keyable.tangentIn, keyable.tangentOut);
                 keyframes[i] = keyframe;
             }
 
@@ -106,8 +106,8 @@ namespace Manifold.EditorTools.GC.GFZ
                     time = keyframe.time,
                     value = keyframe.value,
                     easeMode = UnityToGfzTangentMode(modeL),
-                    zTangentIn = keyframe.inTangent,
-                    zTangentOut = keyframe.outTangent,
+                    tangentIn = keyframe.inTangent,
+                    tangentOut = keyframe.outTangent,
                 };
                 keyables[i] = keyable;
             }
