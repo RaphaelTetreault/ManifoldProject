@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage
 {
+    /// <summary>
+    /// Three AnimationCurve3s combined to represent position, rotation, and scale; a transform.
+    /// </summary>
     [System.Serializable]
     public class AnimationCurveTransform
     {
@@ -77,10 +80,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             var r = rotation.CreateDeepCopy();
             var s = scale.CreateDeepCopy();
 
-            var exportInvert = GfzProjectWindow.GetSettings().ConvertCoordSpace;
-            if (exportInvert)
+            var convertCoordinateSpace = GfzProjectWindow.GetSettings().ConvertCoordSpace;
+            if (convertCoordinateSpace)
             {
                 // Position X is inverted compared to Unity
+                // 2022/01/31: This does not work with inverting Z axis!
                 p.x = p.x.GetInverted();
 
                 // As a result of X's inversion:

@@ -26,8 +26,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             //
             var animTransform = segment.AnimTransform.GetGfzCoordSpaceAnimTransform();
             var curveMaxTime = animTransform.GetMaxTime();
-            var position = animTransform.Position;
-            var scale = animTransform.Scale;
+            var pos = animTransform.Position;
+            var rot = animTransform.Rotation;
+            var scl = animTransform.Scale;
 
             for (int i = 0; i < numCheckpoints; i++)
             {
@@ -36,8 +37,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 double checkpointTimeEnd   = (double)(i + 1) / numCheckpoints;
 
                 // Get origin of start plane, track width at start sampling point
-                var origin = position.Evaluate(checkpointTimeStart);
-                var trackWidth = scale.x.Evaluate((float)checkpointTimeStart);
+                var origin = pos.Evaluate(checkpointTimeStart);
+                var normal = Quaternion.Euler(rot.Evaluate(checkpointTimeStart)) * Vector3.back;
+                var trackWidth = scl.x.Evaluate((float)checkpointTimeStart);
 
                 // DISTANCE
                 // Compute the distance between these 2 points, keep track of total distance travelled along segment
@@ -59,9 +61,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 checkpoint.connectToTrackOut = true;
                 checkpoint.planeStart.origin = origin;
                 // Manually construct normal by sampling position + barely forward along segment
-                var to = position.Evaluate(checkpointTimeStart + 0.000001);
-                var direction = to - origin;
-                checkpoint.planeStart.normal = direction.normalized;
+                //var to = pos.Evaluate(checkpointTimeStart + 0.000001);
+                //var direction = to - origin;
+                //checkpoint.planeStart.normal = direction.normalized;
+                checkpoint.planeStart.normal = normal;
                 checkpoint.planeStart.ComputeDotProduct();
             }
 
@@ -80,12 +83,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             {
                 var lastCheckpoint = checkpoints[checkpoints.Length - 1];
                 lastCheckpoint.curveTimeEnd = curveMaxTime;
-                var origin = position.Evaluate(curveMaxTime);
-                // Manually construct normal by sampling position + barely behind along segment (can't use forward here!)
-                var from = position.Evaluate(curveMaxTime - 0.000001);
-                var direction = from - origin;
-                lastCheckpoint.planeEnd.normal = direction.normalized;
-                lastCheckpoint.planeEnd.origin = position.Evaluate(curveMaxTime);
+                var origin = pos.Evaluate(curveMaxTime);
+                var normal = Quaternion.Euler(rot.Evaluate(curveMaxTime)) * Vector3.forward;
+                lastCheckpoint.planeEnd.origin = origin;
+                lastCheckpoint.planeEnd.normal = normal;
                 lastCheckpoint.planeEnd.ComputeDotProduct();
             }
 
