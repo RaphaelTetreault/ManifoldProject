@@ -89,7 +89,7 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
             CreateGlobalParams(scene);
 
             // Everything with a coordinate goes in here
-            var mirrorRoot = new GameObject("Scene Root (Mirror Z)").transform;
+            var mirrorRoot = new GameObject("Scene Root (Mirror X)").transform;
 
             // Create scene objects, static objects, and dynamic objects
             var rootTransforms = CreateAllSceneObjects(scene, searchFolders);
@@ -127,13 +127,13 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
             }
 
             // Mirror all objects
-            mirrorRoot.transform.localScale = new Vector3(1f, 1f, -1f);
             // Now that everything is placed right, get rid of mirror root
             var mirrorRootChildren = mirrorRoot.GetChildren();
             foreach (var child in mirrorRootChildren)
             {
-                child.gameObject.AddComponent<GfzMirroredObject>();
+                var script = child.gameObject.AddComponent<GfzMirroredObject>();
                 child.SetParent(null);
+                script.MirrorTransform();
             }
             GameObject.DestroyImmediate(mirrorRoot.gameObject);
 

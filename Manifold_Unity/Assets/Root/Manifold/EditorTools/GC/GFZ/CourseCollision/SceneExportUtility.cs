@@ -103,7 +103,7 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
 
             var mirroredObjects = GameObject.FindObjectsOfType<GfzMirroredObject>();
             foreach (var mirroredObject in mirroredObjects)
-                mirroredObject.MirrorTransformZ();
+                mirroredObject.MirrorTransform();
 
             //// TEST
             //// Load the old stage to use it's data I don't know how to generate yet
@@ -279,7 +279,7 @@ namespace Manifold.EditorTools.GC.GFZ.CourseCollision
             OSUtility.OpenDirectory(outputPath);
 
             foreach (var mirroredObject in mirroredObjects)
-                mirroredObject.MirrorTransformZ();
+                mirroredObject.MirrorTransform();
         }
 
 

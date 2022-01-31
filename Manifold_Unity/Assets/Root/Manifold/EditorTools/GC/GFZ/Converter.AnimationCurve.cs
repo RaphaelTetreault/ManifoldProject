@@ -95,6 +95,7 @@ namespace Manifold.EditorTools.GC.GFZ
                 var keyframe = keyframes[i];
 
                 // Must be the same for GFZ!
+                // 2022/01/31: might just be that prev.out and curr.in must be same.
                 var modeL = AnimationUtility.GetKeyLeftTangentMode(animationCurve, i);
                 var modeR = AnimationUtility.GetKeyRightTangentMode(animationCurve, i);
                 if (modeL != modeR)
