@@ -50,8 +50,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             // Get all of these segments in an order proper for serialization
             var allSegments = new List<TrackSegment>();
             //
-            var segmentCheckpoints = new List<Checkpoint[]>();
-            var checkpoints = new List<Checkpoint>();
+            var allCheckpointsSegmented = new List<Checkpoint[]>();
+            var allCheckpoints = new List<Checkpoint>();
             var trackNodes = new List<TrackNode>();
             //
             var trackEmbeddedPropertyAreas = new List<EmbeddedTrackPropertyArea>();
@@ -61,17 +61,17 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             foreach (var rootSegmentScript in rootSegmentScripts)
             {
                 // Init the GFZ data, add to list
-                var rootSegment = rootSegmentScript.GenerateTrackSegment();
-                rootSegments.Add(rootSegment);
+                var currRootSegment = rootSegmentScript.GenerateTrackSegment();
+                rootSegments.Add(currRootSegment);
 
                 // Get segments in proper order for binary serialization
-                var segmentChildren = rootSegment.GetChildrenArrayPointerOrdered();
+                var segmentChildren = currRootSegment.GetChildrenArrayPointerOrdered();
                 allSegments.AddRange(segmentChildren);
 
                 // Get all checkpoints for this segment
-                var x = rootSegmentScript.GetCheckpoints();
-                segmentCheckpoints.Add(x);
-                checkpoints.AddRange(x);
+                var currCheckpoints = rootSegmentScript.GetCheckpoints();
+                allCheckpointsSegmented.Add(currCheckpoints); // checkpoints[]
+                allCheckpoints.AddRange(currCheckpoints); // checkpoints flat
 
                 //
                 var embededPropertyAreas = rootSegmentScript.GetEmbededPropertyAreas();
@@ -81,13 +81,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 trackLength.value += rootSegmentScript.GetSegmentLength();
 
                 // Create TrackNodes
-                foreach (var checkpoint in checkpoints)
+                foreach (var checkpoint in currCheckpoints)
                 {
                     var trackNode = new TrackNode()
                     {
                         // Add checkpoints. TODO: support branching
                         checkpoints = new Checkpoint[] { checkpoint },
-                        segment = rootSegment,
+                        segment = currRootSegment,
                     };
 
                     // Add to master list
@@ -95,8 +95,34 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 }
             }
 
+            // Set circuit type depending on if 
+            var lastSegmentIndex = rootSegmentScripts.Length - 1;
+            CircuitType = rootSegmentScripts[lastSegmentIndex].NextSegment != null
+                ? CircuitType.ClosedCircuit
+                : CircuitType.OpenCircuit;
+
+
+            //for (int segIndex = 1; segIndex < allCheckpointsSegmented.Count; segIndex++)
+            //{
+            //    var prevSegs = allCheckpointsSegmented[segIndex - 1];
+            //    var prevLast = prevSegs[prevSegs.Length - 1];
+            //    //
+            //    var currSegs = allCheckpointsSegmented[segIndex];
+            //    var currFirst = currSegs[0];
+            //    // HACK WILL NOT WORK FOR GAPS
+            //    prevLast.planeEnd = currFirst.planeStart;
+            //}
+
+            var first = allCheckpoints[0];
+            var last = allCheckpoints[allCheckpoints.Count - 1];
+            //last.planeEnd = first.planeStart;
+            //
+            last.planeEnd.origin = first.planeStart.origin;
+            last.planeEnd.normal = -first.planeStart.normal;
+            last.planeEnd.dotProduct = -first.planeStart.dotProduct;
+
             // TODO: name this something better
-            var checkpointsArray = checkpoints.ToArray();
+            var checkpointsArray = allCheckpoints.ToArray();
             trackMinHeight.SetMinHeight(checkpointsArray);
 
             //
@@ -106,12 +132,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
             // TODO: actually store the damn values!
             //throw new NotImplementedException();
-
-            // Set circuit type depending on if 
-            var lastSegmentIndex = rootSegmentScripts.Length - 1;
-            CircuitType = rootSegmentScripts[lastSegmentIndex].NextSegment != null
-                ? CircuitType.ClosedCircuit
-                : CircuitType.OpenCircuit;
 
             //
             TrackMinHeight = trackMinHeight;

@@ -81,10 +81,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             return trackCurves;
         }
 
-        public void ComputerRotationXY()
+        public AnimationCurve3 ComputerRotationXY()
         {
-            rotation.x = new AnimationCurve();
-            rotation.y = new AnimationCurve();
+            //rotation.x = new AnimationCurve();
+            //rotation.y = new AnimationCurve();
+            var temp = new AnimationCurve3();
 
             int interations = 100;
             for (int i = 0; i < interations; i++)
@@ -99,9 +100,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 var orientation = Quaternion.LookRotation(forward, up);
                 var eulers = orientation.eulerAngles;
 
-                rotation.x.AddKey(time, eulers.x);
-                rotation.y.AddKey(time, eulers.y);
+                temp.x.AddKey(time, eulers.x);
+                temp.y.AddKey(time, eulers.y);
+                temp.z.AddKey(time, eulers.z);
             }
+
+            return temp;
         }
 
     }

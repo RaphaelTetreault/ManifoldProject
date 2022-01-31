@@ -104,10 +104,14 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 prev.planeEnd.normal = -curr.planeStart.normal;
                 prev.planeEnd.dotProduct = -curr.planeStart.dotProduct;
             }
-            //
-            var firstCheckpoint = checkpoints[0];
+
+            // HACK! For single-segment only
+            //var firstCheckpoint = checkpoints[0];
             var lastCheckpoint = checkpoints[checkpoints.Length - 1];
-            lastCheckpoint.planeEnd = firstCheckpoint.planeStart;
+            //lastCheckpoint.planeEnd = firstCheckpoint.planeStart;
+            lastCheckpoint.curveTimeEnd = curveMaxTime;
+            //lastCheckpoint.planeEnd.origin += new Unity.Mathematics.float3(0, 100, 0);
+            //lastCheckpoint.connectToTrackOut = false;
 
             // trim off last checkpoint, it was generated to gather some data
             //var usedCheckpoints = new TrackCheckpoint[checkpoints.Length - 1];

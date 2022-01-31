@@ -109,7 +109,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
             if (genRotationXY)
             {
-                animTransform.ComputerRotationXY();
+                var anims = animTransform.ComputerRotationXY();
+                animTransform.Rotation.x = anims.x;
+                animTransform.Rotation.y = anims.y;
+                //animTransform.Rotation.z = anims.z;
                 genRotationXY = false;
             }
         }
