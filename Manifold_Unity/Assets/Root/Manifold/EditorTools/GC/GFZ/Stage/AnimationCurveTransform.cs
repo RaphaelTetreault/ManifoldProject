@@ -100,7 +100,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             };
         }
 
-
         public AnimationCurve3 ComputerRotationXY()
         {
             //rotation.x = new AnimationCurve();
@@ -207,6 +206,14 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             return distance;
         }
 
-
+        public Matrix4x4 EvaluateMatrix(float time)
+        {
+            var matrix = new Matrix4x4();
+            var p = position.Evaluate(time);
+            var r = rotation.Evaluate(time);
+            var s = scale.Evaluate(time);
+            matrix.SetTRS(p, Quaternion.Euler(r), s);
+            return matrix;
+        }
     }
 }
