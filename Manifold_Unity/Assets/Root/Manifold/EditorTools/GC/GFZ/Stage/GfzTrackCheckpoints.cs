@@ -27,76 +27,69 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             var animTransform = segment.AnimTransform;
             var curveMaxTime = animTransform.GetMaxTime();
             var position = animTransform.Position;
-            //var rotation = segment.AnimTransform.Rotation;
             var scale = animTransform.Scale;
 
-            // ic = iteration: checkpoints
-            for (int ic = 0; ic < numCheckpoints; ic++)
+            for (int i = 0; i < numCheckpoints; i++)
             {
-                double currCheckpointTime       = (double)(ic + 0) / numCheckpoints;
-                double nextCheckpointDistance   = (double)(ic + 1) / numCheckpoints;
+                // Curve-sampling start and end times.
+                double checkpointTimeStart = (double)(i + 0) / numCheckpoints;
+                double checkpointTimeEnd   = (double)(i + 1) / numCheckpoints;
 
                 // PLANE
-                var origin = position.EvaluateNormalized((float)currCheckpointTime);
-                var trackWidth = scale.x.EvaluateNormalized((float)currCheckpointTime);
+                // Get origin of start plane, track width at start sampling point
+                var origin = position.EvaluateNormalized(checkpointTimeStart);
+                var trackWidth = scale.x.EvaluateNormalized((float)checkpointTimeStart);
 
-                //// DISTANCE
-                var distanceBetween = animTransform.GetDistanceBetweenRepeated(currCheckpointTime, nextCheckpointDistance, 2);
+                // DISTANCE
+                // Compute the distance between these 2 points, keep track of total distance travelled along segment
+                var distanceBetween = animTransform.GetDistanceBetweenRepeated(checkpointTimeStart, checkpointTimeEnd, 2);
                 var distanceStart = distanceOffset;
                 var distanceEnd = distanceOffset + distanceBetween;
                 distanceOffset = distanceEnd;
 
                 // CHECKPOINT
-                checkpoints[ic] = new Checkpoint();
-                var checkpoint = checkpoints[ic];
+                // Construct start portion of checkpoint
+                checkpoints[i] = new Checkpoint();
+                var checkpoint = checkpoints[i];
                 //
-                checkpoint.curveTimeStart = (float)currCheckpointTime;
+                checkpoint.curveTimeStart = (float)checkpointTimeStart;
                 checkpoint.startDistance = distanceStart;
                 checkpoint.endDistance = distanceEnd;
-                // Set plane
-                checkpoint.planeStart.origin = origin;
-                var from = position.EvaluateNormalized((float)currCheckpointTime);
-                var to = position.EvaluateNormalized((float)(currCheckpointTime + 0.0001));
-                var direction = to - from;
-                checkpoint.planeStart.normal = direction.normalized;
-                checkpoint.planeStart.ComputeDotProduct();
-                //
                 checkpoint.trackWidth = trackWidth;
                 checkpoint.connectToTrackIn = true;
                 checkpoint.connectToTrackOut = true;
+                // PLANE (start oplane only, we copy mirrored start planes for end planes later
+                checkpoint.planeStart.origin = origin;
+                // Manually construct normal by sampling position + barely forward along segment
+                // TODO: make function!
+                var to = position.EvaluateNormalized(checkpointTimeStart + 0.000001);
+                var direction = to - origin;
+                checkpoint.planeStart.normal = direction.normalized;
+                checkpoint.planeStart.ComputeDotProduct();
             }
 
             // Copy values from one checkpoints to the previous ones
-            // NOTE: start at second index '1'
+            // NOTE: start at second index '1' since we refer to the previous checkpoint (i-1)
             for (int i = 1; i < checkpoints.Length; i++)
             {
-                var prev = checkpoints[i - 1];
-                var curr = checkpoints[i];
+                var prevCheckpoint = checkpoints[i - 1];
+                var currCheckpoint = checkpoints[i];
                 // Copy over values
-                prev.curveTimeEnd = curr.curveTimeStart;
-                // Plane
-                // Tangent of end point inwards towards the first
-                prev.planeEnd.origin = curr.planeStart.origin;
-                prev.planeEnd.normal = -curr.planeStart.normal;
-                prev.planeEnd.dotProduct = -curr.planeStart.dotProduct;
+                prevCheckpoint.curveTimeEnd = currCheckpoint.curveTimeStart;
+                prevCheckpoint.planeEnd = currCheckpoint.planeStart.GetMirror();
             }
 
-            // HACK! For single-segment only
-            //var firstCheckpoint = checkpoints[0];
-            var lastCheckpoint = checkpoints[checkpoints.Length - 1];
-            //lastCheckpoint.planeEnd = firstCheckpoint.planeStart;
-            lastCheckpoint.curveTimeEnd = curveMaxTime;
-            //lastCheckpoint.planeEnd.origin += new Unity.Mathematics.float3(0, 100, 0);
-            //lastCheckpoint.connectToTrackOut = false;
-
-            // trim off last checkpoint, it was generated to gather some data
-            //var usedCheckpoints = new TrackCheckpoint[checkpoints.Length - 1];
-            //for (int i = 0; i < usedCheckpoints.Length; i++)
-            //    usedCheckpoints[i] = checkpoints[i];
-
-            // TODO outside of this function
-            // Set checkpoint[0].hasTrackIn based on previous segment
-            // Set checkpoint[length-1].hasTrackOut based on next segment
+            // 
+            {
+                var lastCheckpoint = checkpoints[checkpoints.Length - 1];
+                lastCheckpoint.curveTimeEnd = curveMaxTime;
+                var origin = position.EvaluateNormalized(curveMaxTime);
+                var from = position.EvaluateNormalized(curveMaxTime - 0.000001);
+                var dirInverse = origin - from;
+                lastCheckpoint.planeEnd.normal = dirInverse.normalized;
+                lastCheckpoint.planeEnd.origin = position.EvaluateNormalized(curveMaxTime);
+                lastCheckpoint.planeEnd.ComputeDotProduct();
+            }
 
             //// REQUIRE TO FEED TO GAME COORD-SPACE
             //foreach (var checkpoint in checkpoints)
@@ -107,7 +100,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             //    checkpoint.planeEnd.normal.z = -checkpoint.planeEnd.normal.z;
             //    checkpoint.planeEnd.origin.z = -checkpoint.planeEnd.origin.z;
             //}
-
 
             return checkpoints;
         }

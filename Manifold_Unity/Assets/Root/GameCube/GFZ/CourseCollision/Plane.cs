@@ -51,6 +51,11 @@ namespace GameCube.GFZ.CourseCollision
             this.dotProduct = -dotProduct;
         }
 
+        public Plane GetMirror()
+        {
+            return GetPlaneMirrored(this);
+        }
+
         public static Plane GetPlaneMirrored(Plane plane)
         {
             var mirroredPlane = new Plane();
