@@ -340,7 +340,7 @@ namespace GameCube.GFZ.CourseCollision
             // For some reason, this structure points back to these
             staticColliderMeshManager.unknownColliders = unknownColliders;
             staticColliderMeshManager.staticSceneObjects = staticSceneObjects;
-            Assert.IsTrue(staticColliderMeshManager.boundingSpherePtr == unknownCollidersPtr);
+            Assert.IsTrue(staticColliderMeshManager.unknownCollidersPtr == unknownCollidersPtr);
             Assert.IsTrue(staticColliderMeshManager.staticSceneObjectsPtr == staticSceneObjectsPtr);
 
 

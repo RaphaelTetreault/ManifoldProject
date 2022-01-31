@@ -145,7 +145,7 @@ namespace GameCube.GFZ.CourseCollision
             log.WriteLine(nameof(GameCube.GFZ.BoundingSphere));
             log.WriteLine("unk float: " + coliScene.staticColliderMeshManager.unk_float);
             log.WriteAddress(coliScene.staticColliderMeshManager.boundingSphere);
-            log.WriteLine(coliScene.staticColliderMeshManager.boundingSpherePtr);
+            log.WriteLine(coliScene.staticColliderMeshManager.unknownCollidersPtr);
             log.WriteLine(coliScene.staticColliderMeshManager.staticSceneObjectsPtr);
             log.WriteLine();
             log.WriteLine("Mesh Bounds");

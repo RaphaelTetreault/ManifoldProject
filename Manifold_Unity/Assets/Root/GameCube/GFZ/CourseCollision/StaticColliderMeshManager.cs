@@ -58,10 +58,10 @@ namespace GameCube.GFZ.CourseCollision
         public Pointer staticColliderQuadsPtr;
         public Pointer[] quadMeshGridPtrs; // variable AX/GX
         public byte[] zeroes_group2;
-        public ArrayPointer boundingSpherePtr;
+        public ArrayPointer unknownCollidersPtr;
         public ArrayPointer staticSceneObjectsPtr;
         public byte[] zeroes_group3;
-        public Pointer unkDataPtr;
+        public Pointer boundingSpherePtr;
         public byte[] zeroes_group4;
         public float unk_float;
         public byte[] zeroes_group5;
@@ -147,10 +147,10 @@ namespace GameCube.GFZ.CourseCollision
                 reader.ReadX(ref staticColliderQuadsPtr);
                 reader.ReadX(ref quadMeshGridPtrs, countSurfaceTypes, true);
                 reader.ReadX(ref zeroes_group2, kZeroesGroup2);
-                reader.ReadX(ref boundingSpherePtr);
+                reader.ReadX(ref unknownCollidersPtr);
                 reader.ReadX(ref staticSceneObjectsPtr);
                 reader.ReadX(ref zeroes_group3, kZeroesGroup3);
-                reader.ReadX(ref unkDataPtr);
+                reader.ReadX(ref boundingSpherePtr);
                 reader.ReadX(ref zeroes_group4, kZeroesGroup4);
                 reader.ReadX(ref unk_float);
                 reader.ReadX(ref zeroes_group5, kZeroesGroup5);
@@ -200,7 +200,7 @@ namespace GameCube.GFZ.CourseCollision
                 reader.ReadX(ref colliderQuads, numQuadVerts, true);
 
                 // NEWER STUFF
-                reader.JumpToAddress(unkDataPtr);
+                reader.JumpToAddress(boundingSpherePtr);
                 reader.ReadX(ref boundingSphere, true);
                 // I don't read the SceneObjectTemplates and UnknownSolsTriggers
                 // since it's easier to patch that in ColiScene directly and saves
@@ -211,7 +211,7 @@ namespace GameCube.GFZ.CourseCollision
                 // 2022-01-24: disabled for testin export
                 //Assert.IsTrue(staticSceneObjectsPtr.Length != 0);
                 //Assert.IsTrue(staticSceneObjectsPtr.IsNotNullPointer);
-                Assert.IsTrue(unkDataPtr.IsNotNull);
+                Assert.IsTrue(boundingSpherePtr.IsNotNull);
                 //DebugConsole.Log($"idx16: {unkBounds2DPtr.HexAddress}");
 
                 // Assert that all of this other junk is empty
@@ -239,8 +239,8 @@ namespace GameCube.GFZ.CourseCollision
                 triMeshGridPtrs = triMeshGrids.GetPointers();
                 quadMeshGridPtrs = quadMeshGrids.GetPointers();
                 //
-                unkDataPtr = boundingSphere.GetPointer();
-                boundingSpherePtr = unknownColliders.GetArrayPointer();
+                boundingSpherePtr = boundingSphere.GetPointer();
+                unknownCollidersPtr = unknownColliders.GetArrayPointer();
                 staticSceneObjectsPtr = staticSceneObjects.GetArrayPointer();
             }
             this.RecordStartAddress(writer);
@@ -253,10 +253,10 @@ namespace GameCube.GFZ.CourseCollision
                 writer.WriteX(staticColliderQuadsPtr);
                 writer.WriteX(quadMeshGridPtrs, false);
                 writer.WriteX(new byte[kZeroesGroup2], false);
-                writer.WriteX(boundingSpherePtr);
+                writer.WriteX(unknownCollidersPtr);
                 writer.WriteX(staticSceneObjectsPtr);
                 writer.WriteX(new byte[kZeroesGroup3], false);
-                writer.WriteX(unkDataPtr);
+                writer.WriteX(boundingSpherePtr);
                 writer.WriteX(new byte[kZeroesGroup4], false);
                 writer.WriteX(unk_float);
                 writer.WriteX(new byte[kZeroesGroup5], false);

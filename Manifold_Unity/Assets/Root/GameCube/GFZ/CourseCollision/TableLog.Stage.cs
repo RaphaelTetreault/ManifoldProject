@@ -1435,9 +1435,9 @@ namespace GameCube.GFZ.CourseCollision
                 writer.WriteNextColNicify(nameof(GridXZ.numSubdivisionsZ));
                 writer.WriteNextColNicify(nameof(StaticColliderMeshManager.staticColliderQuadsPtr));
                 writer.WriteNextColNicify(nameof(StaticColliderMeshManager.quadMeshGridPtrs));
-                writer.WriteNextColNicify(nameof(StaticColliderMeshManager.unkDataPtr));
-                writer.WriteNextColNicify(nameof(StaticColliderMeshManager.staticSceneObjectsPtr));
                 writer.WriteNextColNicify(nameof(StaticColliderMeshManager.boundingSpherePtr));
+                writer.WriteNextColNicify(nameof(StaticColliderMeshManager.staticSceneObjectsPtr));
+                writer.WriteNextColNicify(nameof(StaticColliderMeshManager.unknownCollidersPtr));
                 writer.WriteNextColNicify(nameof(StaticColliderMeshManager.unk_float));
                 writer.WriteNextCol();
                 writer.WriteNextColNicify(nameof(BoundingSphere.origin) + ".x");
@@ -1465,9 +1465,9 @@ namespace GameCube.GFZ.CourseCollision
                     writer.WriteNextCol(staticColliderMeshes.meshGridXZ.numSubdivisionsZ);
                     writer.WriteNextCol(staticColliderMeshes.staticColliderQuadsPtr.HexAddress);
                     writer.WriteNextCol(staticColliderMeshes.quadMeshGridPtrs.Length);
-                    writer.WriteNextCol(staticColliderMeshes.unkDataPtr.HexAddress);
-                    writer.WriteNextCol(staticColliderMeshes.staticSceneObjectsPtr.HexAddress);
                     writer.WriteNextCol(staticColliderMeshes.boundingSpherePtr.HexAddress);
+                    writer.WriteNextCol(staticColliderMeshes.staticSceneObjectsPtr.HexAddress);
+                    writer.WriteNextCol(staticColliderMeshes.unknownCollidersPtr.HexAddress);
                     writer.WriteNextCol(staticColliderMeshes.unk_float);
                     writer.WriteNextCol();
                     writer.WriteNextCol(staticColliderMeshes.boundingSphere.origin.x);
