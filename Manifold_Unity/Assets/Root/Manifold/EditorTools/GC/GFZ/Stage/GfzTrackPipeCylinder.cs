@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage
 {
-    public class GfzTrackPipeCylinder : GfzTrackSegment
+    public class GfzTrackPipeCylinder : GfzSegmentShape
     {
         [Header("Pipe/Cylinder")]
         [SerializeField] private PipeCylinderType type = PipeCylinderType.Pipe;
@@ -23,11 +23,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         }
 
         public override TrackSegment GenerateTrackSegment()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public override float GetSegmentLength()
         {
             throw new System.NotImplementedException();
         }

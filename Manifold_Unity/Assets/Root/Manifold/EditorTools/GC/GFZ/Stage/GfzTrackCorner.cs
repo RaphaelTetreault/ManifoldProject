@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage
 {
-    public class GfzTrackCorner : GfzTrackSegment
+    public class GfzTrackCorner : GfzSegmentShape
     {
         public enum CornerTurnDirection
         {
@@ -35,11 +35,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         }
 
         public override TrackSegment GenerateTrackSegment()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public override float GetSegmentLength()
         {
             throw new System.NotImplementedException();
         }

@@ -6,7 +6,8 @@ using UnityEngine;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage
 {
-    public class GfzTrackRoad : GfzTrackSegment
+
+    public class GfzTrackRoad : GfzSegmentShape
     {
         [Header("Road Properties")]
         [Min(0f)]
@@ -17,7 +18,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         [SerializeField]
         private float railHeightRight = 5f;
 
-        //private readonly Vector3 gizmosScale = Vector3.one;
 
         private void OnDrawGizmos()
         {
@@ -27,9 +27,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             var increment = 1f / 100f;
             for (float p = 0; p < 1f; p += increment)
             {
-                var pos = animTransform.Position.Evaluate(p);
-                var rot = animTransform.Rotation.Evaluate(p);
-                var scl = animTransform.Scale.Evaluate(p);
+                var pos = AnimationCurveTransform.Position.Evaluate(p);
+                var rot = AnimationCurveTransform.Rotation.Evaluate(p);
+                var scl = AnimationCurveTransform.Scale.Evaluate(p);
 
                 Gizmos.DrawMesh(mesh, 0, pos, Quaternion.Euler(rot), scl);
             }
@@ -42,13 +42,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         public override TrackSegment GenerateTrackSegment()
         {
-            // TODO: get components, build any children
+            var trackSegment = segment.GetSegment();
 
-            var trackSegment = new TrackSegment();
-
-            trackSegment.localPosition = transform.localPosition;
-            trackSegment.localRotation = transform.localRotation.eulerAngles;
-            trackSegment.localScale = transform.localScale;
+            // Override the rail properies
+            Assert.IsTrue(trackSegment.segmentType == TrackSegmentType.IsTransformLeaf);
 
             // Rail height
             trackSegment.railHeightLeft = railHeightLeft;
@@ -59,15 +56,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             if (railHeightRight > 0f)
                 trackSegment.perimeterFlags |= TrackPerimeterFlags.hasRailHeightRight;
 
-            // TODO: currently hardcoded
-            trackSegment.segmentType = TrackSegmentType.IsTransformLeaf;
-
             //
-            trackSegment.unk_0x3B = unk0x3B;
-
-            // Get animation data
-            trackSegment.trackCurves = animTransform.ToTrackCurves();
-
             return trackSegment;
         }
 
