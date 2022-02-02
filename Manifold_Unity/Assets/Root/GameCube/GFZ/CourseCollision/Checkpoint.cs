@@ -170,8 +170,8 @@ namespace GameCube.GFZ.CourseCollision
                 $"{nameof(planeEnd)}.{nameof(planeEnd.dotProduct)}: {planeEnd.dotProduct:0.0}, " +
                 $"{nameof(planeEnd)}.{nameof(planeEnd.normal)}(x:{planeEnd.normal.x:0.0}, y:{planeEnd.normal.y:0.0}, z:{planeEnd.normal.z:0.0}), " +
                 $"{nameof(planeEnd)}.{nameof(planeEnd.origin)}(x:{planeEnd.origin.x:0.0}, y:{planeEnd.origin.y:0.0}, z:{planeEnd.origin.z:0.0}), " +
-                $"{nameof(endDistance)}: {endDistance:0.0}, " +
                 $"{nameof(startDistance)}: {startDistance:0.0}, " +
+                $"{nameof(endDistance)}: {endDistance:0.0}, " +
                 $"{nameof(trackWidth)}: {trackWidth:0.0}, " +
                 $"{nameof(connectToTrackIn)}: {connectToTrackIn}, " +
                 $"{nameof(connectToTrackOut)}: {connectToTrackOut}" +

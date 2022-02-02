@@ -5,26 +5,29 @@ using UnityEngine;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage
 {
-    public abstract class GfzTrackSegment : MonoBehaviour,
+    public sealed class GfzTrackSegment : MonoBehaviour,
         IEditableComponent<GfzTrackSegment>
     {
         // Fields
-        [Header("Links")]
-        [SerializeField] protected GfzTrackSegment prev;
-        [SerializeField] protected GfzTrackSegment next;
-        [SerializeField] protected int metersPerCheckpoint = 100;
+        [Header("Checkpoints")]
+        [SerializeField] private GfzTrackSegment prev;
+        [SerializeField] private GfzTrackSegment next;
+        [SerializeField] private float metersPerCheckpoint = 100;
 
 
         [Header("Unknown properties")]
-        [SerializeField] protected byte unk0x3B;
-
+        [SerializeField] private byte unk0x3B;
 
         [Header("Track Curves")]
-        [SerializeField] protected bool genCheckpoints;
-        [SerializeField] protected bool genRotationXY;
-        [SerializeField] protected AnimationCurveTransform animTransform = new AnimationCurveTransform();
+        [SerializeField] private bool genCheckpoints;
+        [SerializeField] private bool invertCheckpoints;
+        [SerializeField] private AnimationCurveTransform animTransform = new AnimationCurveTransform();
+        [SerializeField] private bool genRotationXY;
+
 
         public event IEditableComponent<GfzTrackSegment>.OnEditCallback OnEdited;
+
+
 
 
         // Properties
@@ -41,19 +44,16 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         public AnimationCurveTransform AnimTransform => animTransform;
 
 
-        public abstract TrackSegment GenerateTrackSegment();
-
-        public virtual float GetSegmentLength()
+        public float GetSegmentLength()
         {
             // 2022/01/31: current work assumes min and max of 0 and 1
             var maxTime = animTransform.GetMaxTime();
             Assert.IsTrue(maxTime == 1);
+            // tODO: get min time, assert
 
             var distance = animTransform.GetDistanceBetweenRepeated(0, 1);
             return distance;
         }
-
-        public abstract Mesh[] GenerateMeshes();
 
         public EmbeddedTrackPropertyArea[] GetEmbededPropertyAreas()
         {
@@ -71,7 +71,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             return embededPropertyAreas;
         }
 
-        public Checkpoint[] GetCheckpoints(bool convertCoordinateSpace)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="convertCoordinateSpace"></param>
+        /// <returns></returns>
+        public Checkpoint[] CreateCheckpoints(bool convertCoordinateSpace)
         {
             //
             var segmentLength = GetSegmentLength();
@@ -136,9 +141,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 prevCheckpoint.planeEnd = currCheckpoint.planeStart.GetMirror();
             }
 
+            // Index for last checkpoint
+            var lastIndex = checkpoints.Length - 1;
+
             // Complete missing information in last checkpoint of segment
             {
-                var lastCheckpoint = checkpoints[checkpoints.Length - 1];
+                var lastCheckpoint = checkpoints[lastIndex];
                 lastCheckpoint.curveTimeEnd = curveMaxTime;
                 var origin = pos.Evaluate(curveMaxTime);
                 var normal = Quaternion.Euler(rot.Evaluate(curveMaxTime)) * Vector3.forward;
@@ -147,11 +155,38 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 lastCheckpoint.planeEnd.ComputeDotProduct();
             }
 
+            // Set segment in/out connections
+            var connectToTrackIn = prev != null;
+            var connectToTrackOut = next != null;
+            checkpoints[0].connectToTrackIn = connectToTrackIn;
+            checkpoints[lastIndex].connectToTrackOut = connectToTrackOut;
+
+            // That's all!
             return checkpoints;
         }
 
+        public TrackSegment GetSegment()
+        {
+            var trackSegment = new TrackSegment();
 
-        public virtual void OnValidate()
+            trackSegment.localPosition = transform.localPosition;
+            trackSegment.localRotation = transform.localRotation.eulerAngles;
+            trackSegment.localScale = transform.localScale;
+
+            // TODO: currently hardcoded
+            trackSegment.segmentType = TrackSegmentType.IsTransformLeaf;
+
+            //
+            trackSegment.unk_0x3B = unk0x3B;
+
+            // Get animation data
+            trackSegment.trackCurves = animTransform.ToTrackCurves();
+
+            //
+            return trackSegment;
+        }
+
+        private void OnValidate()
         {
             // Once this has been edited, let listeners know
             OnEdited?.Invoke(this);
@@ -161,13 +196,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 var anims = animTransform.ComputerRotationXY();
                 animTransform.Rotation.x = anims.x;
                 animTransform.Rotation.y = anims.y;
-                //animTransform.Rotation.z = anims.z;
                 genRotationXY = false;
             }
 
             if (genCheckpoints)
             {
-                var checkpoints = GetCheckpoints(false);
+                var checkpoints = CreateCheckpoints(invertCheckpoints);
 
                 int index = 0;
                 foreach (var checkpoint in checkpoints)
