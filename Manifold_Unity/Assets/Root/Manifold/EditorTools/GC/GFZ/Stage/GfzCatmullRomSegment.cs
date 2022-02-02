@@ -60,11 +60,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 for (int n = 0; n <= iters; n++)
                 {
                     float t = (float)(n) / iters;
-                    (float3 position, float3 tangent) = CatmullRomSpline.GetPositionDirectionHack(p0, p1, p2, p3, a, t);
+                    (double3 position, double3 tangent) = CatmullRomSpline.GetPositionDirectionHack(p0, p1, p2, p3, a, t);
                     var point = new Point()
                     {
-                        position = position,
-                        tangent = tangent,
+                        position = (float3)position,
+                        tangent = (float3)tangent,
                     };
                     crs.Add(point);
                 }
@@ -87,8 +87,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 Debug.DrawLine(point.position, point.position + up, Color.green);
                 Debug.DrawLine(point.position, point.position + right, Color.red);
                 Debug.DrawLine(point.position, point.position + fwd, Color.blue);
-                //Debug.DrawLine(point.position, point.position + tangent, Color.white);
-                //Debug.DrawLine(point.position, point.position + normal, Color.black);
             }
 
         }

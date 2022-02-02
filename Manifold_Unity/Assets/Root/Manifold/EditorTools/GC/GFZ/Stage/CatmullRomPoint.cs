@@ -88,6 +88,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             }
             else
             {
+                Gizmos.color = new Color32(255, 255, 255, 64);
                 Gizmos.DrawMesh(mesh, 0, transform.position, transform.rotation, Vector3.one * 5f);
             }
         }
