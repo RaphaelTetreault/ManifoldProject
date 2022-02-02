@@ -17,7 +17,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         [SerializeField]
         private float railHeightRight = 5f;
 
-        //private readonly Vector3 gizmosScale = Vector3.one;
 
         private void OnDrawGizmos()
         {

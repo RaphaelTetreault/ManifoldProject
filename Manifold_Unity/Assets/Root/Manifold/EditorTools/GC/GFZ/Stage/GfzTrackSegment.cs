@@ -20,13 +20,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
 
         [Header("Track Curves")]
+        [SerializeField] protected bool genCheckpoints;
         [SerializeField] protected bool genRotationXY;
         [SerializeField] protected AnimationCurveTransform animTransform = new AnimationCurveTransform();
 
-
         public event IEditableComponent<GfzTrackSegment>.OnEditCallback OnEdited;
-
-
 
 
         // Properties
@@ -41,12 +39,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             set => next = value;
         }
         public AnimationCurveTransform AnimTransform => animTransform;
-
-
-        // init track segment
-        //protected TrackSegment trackSegment;
-        //public TrackSegment TrackSegment => trackSegment;
-
 
 
         public abstract TrackSegment GenerateTrackSegment();
@@ -173,6 +165,20 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 genRotationXY = false;
             }
 
+            if (genCheckpoints)
+            {
+                var checkpoints = GetCheckpoints(false);
+
+                int index = 0;
+                foreach (var checkpoint in checkpoints)
+                {
+                    var gobj = new GameObject($"Checkpoint[{index++}]");
+                    gobj.transform.parent = this.transform;
+                    var script = gobj.AddComponent<GfzCheckpoint>();
+                    script.Init(checkpoint);
+                }
+                genCheckpoints = false;
+            }
         }
     }
 }
