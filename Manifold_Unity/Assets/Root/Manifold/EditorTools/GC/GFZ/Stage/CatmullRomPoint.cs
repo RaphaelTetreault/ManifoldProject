@@ -12,7 +12,27 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
     [ExecuteInEditMode]
     public class CatmullRomPoint : MonoBehaviour
     {
+        internal static class Tooltips
+        {
+            public const string samplesSizeInBytes =
+                "The amount of disk space the amount of samples for this curve will take. " +
+                "Includes animation data for Position.XYZ and Rotation.XY. Scale.XYZ and " +
+                "Rotation.Z are independent of this data.";
+        }
+
+
         [SerializeField] private Mesh mesh;
+
+        [Min(1)]
+        [SerializeField]
+        private int samples = 32;
+
+        [Tooltip(Tooltips.samplesSizeInBytes)]
+        [ReadOnly]
+        [SerializeField]
+        private string samplesSizeInBytes;
+
+        public int Samples => samples;
 
         private void OnEnable()
         {
@@ -55,6 +75,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             {
                 mesh = Resources.GetBuiltinResource<Mesh>(EditorTools.Const.Resources.Cube);
             }
+
+            const int sizeofKeyableAttributes = 0x20;
+            const int numKeyableAttributeCurves = 5; // Pos.XYZ, Rot.XY
+            int size = samples * sizeofKeyableAttributes * numKeyableAttributeCurves;
+            samplesSizeInBytes = size.ToString("n0");
         }
 
         private void OnDrawGizmos()

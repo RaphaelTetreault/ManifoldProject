@@ -16,8 +16,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         public float testRotation = 0f;
         [Range(0f, 1f)]
         public float alpha = 0.5f;
-        [Min(0)]
-        public int gizmosIterations = 256;
         public CatmullRomPoint[] points;
 
         public struct Point
@@ -43,7 +41,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 return;
 
             var a = alpha;
-            var iters = gizmosIterations;
 
             // catmull-rom spline
             var crs = new List<Point>();
@@ -57,10 +54,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 float3 p3 = points[i + 2].transform.position;
 
                 //
+                int iters = points[i].Samples;
                 for (int n = 0; n <= iters; n++)
                 {
                     float t = (float)(n) / iters;
-                    (double3 position, double3 tangent) = CatmullRomSpline.GetPositionDirectionHack(p0, p1, p2, p3, a, t);
+                    (double3 position, double3 tangent) = CatmullRomSpline.HackGetPpsitionDirection(p0, p1, p2, p3, a, t);
                     var point = new Point()
                     {
                         position = (float3)position,

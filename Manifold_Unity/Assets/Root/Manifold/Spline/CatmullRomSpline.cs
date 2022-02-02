@@ -152,18 +152,19 @@ namespace Manifold
 
 
 
-        public static (double3 position, double3 tangent) GetPositionDirectionHack(double3 p0, double3 p1, double3 p2, double3 p3, double alpha, double t)
+        public static (double3 position, double3 direction) HackGetPpsitionDirection(double3 p0, double3 p1, double3 p2, double3 p3, double alpha, double t)
         {
             // Get times for these points (unpacking tuple)
             (double t0, double t1, double t2, double t3) = GetPointTime(p0, p1, p2, p3, alpha);
-
             double catmullRomTime = math.lerp(t1, t2, t);
-
+            // Sample point at this time
             double3 point = BarryGoldmanPyramidalFormulation(p0, p1, p2, p3, t0, t1, t2, t3, catmullRomTime);
-            double3 pointNext = BarryGoldmanPyramidalFormulation(p0, p1, p2, p3, t0, t1, t2, t3, catmullRomTime + 0.00001);
-            double3 tangent = pointNext - point;
 
-            return (point, tangent);
+            // This is the hack piece: sample curve very slightly ahead, get delta
+            double3 pointNext = BarryGoldmanPyramidalFormulation(p0, p1, p2, p3, t0, t1, t2, t3, catmullRomTime + 0.00001);
+            double3 direction = pointNext - point;
+
+            return (point, direction);
         }
 
     }
