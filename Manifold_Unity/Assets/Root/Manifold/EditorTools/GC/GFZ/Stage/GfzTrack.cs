@@ -69,7 +69,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 allSegments.AddRange(segmentChildren);
 
                 // Get all checkpoints for this segment
-                var currCheckpoints = rootSegmentScript.GetCheckpoints();
+                var currCheckpoints = rootSegmentScript.GetCheckpoints(true);
                 allCheckpointsSegmented.Add(currCheckpoints); // checkpoints[]
                 allCheckpoints.AddRange(currCheckpoints); // checkpoints flat
 
