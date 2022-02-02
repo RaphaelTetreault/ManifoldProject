@@ -96,11 +96,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 }
             }
 
-            // Set circuit type depending on if 
-            var lastSegmentIndex = this.rootSegments.Length - 1;
-            CircuitType = this.rootSegments[lastSegmentIndex].Segment.NextSegment == null
-                ? CircuitType.ClosedCircuit
-                : CircuitType.OpenCircuit;
+            //// Set circuit type depending on if 
+            //var lastSegmentIndex = this.rootSegments.Length - 1;
+            //CircuitType = this.rootSegments[lastSegmentIndex].Segment.NextSegment != null
+            //    ? CircuitType.OpenCircuit
+            //    : CircuitType.ClosedCircuit;
 
             // TODO: name this something better
             var checkpointsArray = allCheckpoints.ToArray();
@@ -121,6 +121,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             EmbeddedPropertyAreas = trackEmbeddedPropertyAreas.ToArray();
             TrackCheckpointMatrix = trackCheckpointMatrix;
             TrackCheckpointMatrixBoundsXZ = checkpointMatrixBoundsXZ;
+            // TEMP: because it caused me so much strife hunting a bug before...
+            CircuitType = CircuitType.ClosedCircuit;
         }
 
     }

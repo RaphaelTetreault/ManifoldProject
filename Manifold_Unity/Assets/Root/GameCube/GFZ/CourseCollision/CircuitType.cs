@@ -6,7 +6,7 @@ namespace GameCube.GFZ.CourseCollision
     /// </summary>
     public enum CircuitType : int
     {
-        OpenCircuit     = 0x00000000,
-        ClosedCircuit   = 0x00010000,
+        OpenCircuit     = 0x00010000,
+        ClosedCircuit   = 0x00000000,
     }
 }
