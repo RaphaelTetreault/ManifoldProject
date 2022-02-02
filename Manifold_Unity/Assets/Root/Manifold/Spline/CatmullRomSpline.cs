@@ -152,7 +152,7 @@ namespace Manifold
 
 
 
-        public static (double3 position, double3 direction) HackGetPpsitionDirection(double3 p0, double3 p1, double3 p2, double3 p3, double alpha, double t)
+        public static (double3 position, double3 direction) HackGetPositionDirection(double3 p0, double3 p1, double3 p2, double3 p3, double alpha, double t)
         {
             // Get times for these points (unpacking tuple)
             (double t0, double t1, double t2, double t3) = GetPointTime(p0, p1, p2, p3, alpha);

@@ -32,7 +32,28 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         [SerializeField]
         private string samplesSizeInBytes;
 
+        [SerializeField]
+        private bool ignoreWidth = false;
+
+        [Min(1)]
+        [SerializeField]
+        private float width = 64;
+
+
+        [SerializeField]
+        private bool ignoreRoll = false;
+
+        [SerializeField]
+        private float roll = 0f;
+
+
+
+
         public int Samples => samples;
+        public float Width => width;
+        public float Roll => roll;
+        public bool IgnoreWidth => ignoreWidth;
+        public bool IgnoreRoll => ignoreRoll;
 
         private void OnEnable()
         {
@@ -87,33 +108,33 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             bool isActive = Selection.Contains(gameObject);
             if (isActive)
             {
-                // Get edges of dimensions from centerpoint
-                var left = -transform.right * transform.localScale.x / 2f;
-                var right = transform.right * transform.localScale.x / 2f;
-                var up = transform.up * transform.localScale.y / 2f;
-                var down = -transform.up * transform.localScale.y / 2f;
-                var forward = transform.forward * transform.localScale.z / 2f;
-                var backward = -transform.forward * transform.localScale.z / 2f;
+                //// Get edges of dimensions from centerpoint
+                //var left = -transform.right * width / 2f;
+                //var right = transform.right * width / 2f;
+                //var up = transform.up * transform.localScale.y / 2f;
+                //var down = -transform.up * transform.localScale.y / 2f;
+                //var forward = transform.forward * transform.localScale.z / 2f;
+                //var backward = -transform.forward * transform.localScale.z / 2f;
 
-                // Translate edges to global position
-                left += transform.position;
-                right += transform.position;
-                up += transform.position;
-                down += transform.position;
-                forward += transform.position;
-                backward += transform.position;
+                //// Translate edges to global position
+                //left += transform.position;
+                //right += transform.position;
+                //up += transform.position;
+                //down += transform.position;
+                //forward += transform.position;
+                //backward += transform.position;
 
-                // Draw lines
-                Gizmos.color = Color.red;
-                Gizmos.DrawLine(left, right);
-                Gizmos.color = Color.green;
-                Gizmos.DrawLine(up, down);
-                Gizmos.color = Color.blue;
-                Gizmos.DrawLine(forward, backward);
+                //// Draw lines
+                //Gizmos.color = Color.red;
+                //Gizmos.DrawLine(left, right);
+                //Gizmos.color = Color.green;
+                //Gizmos.DrawLine(up, down);
+                //Gizmos.color = Color.blue;
+                //Gizmos.DrawLine(forward, backward);
             }
             else
             {
-                Gizmos.color = new Color32(255, 255, 255, 64);
+                Gizmos.color = new Color32(255, 255, 255, 128);
                 Gizmos.DrawMesh(mesh, 0, transform.position, transform.rotation, Vector3.one * 5f);
             }
         }
