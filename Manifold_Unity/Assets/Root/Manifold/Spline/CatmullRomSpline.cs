@@ -99,15 +99,15 @@ namespace Manifold
         /// <returns></returns>
         public static float3 Evaluate(float3 p0, float3 p1, float3 p2, float3 p3, float alpha, float t)
         {
-            float t0 = 0f;
-            float t1 = GetTime(p0, p1, alpha); // + t0;
-            float t2 = GetTime(p1, p2, alpha) + t1;
-            float t3 = GetTime(p2, p3, alpha) + t2;
+            // Get times for these points (unpacking tuple)
+            (float t0, float t1, float t2, float t3) = GetPointTime(p0, p1, p2, p3, alpha);
+
             float catmullRomTime = math.lerp(t1, t2, t);
 
             float3 point = BarryGoldmanPyramidalFormulation(p0, p1, p2, p3, t0, t1, t2, t3, catmullRomTime);
             return point;
         }
+
 
         /// <summary>
         /// Sample the Catmull-Rom spline <paramref name="nIterations"/> times
@@ -123,11 +123,8 @@ namespace Manifold
         {
             float3[] points = new float3[nIterations];
 
-            // Get times for these points
-            float t0 = 0f;
-            float t1 = GetTime(p0, p1, alpha);
-            float t2 = GetTime(p1, p2, alpha) + t1;
-            float t3 = GetTime(p2, p3, alpha) + t2;
+            // Get times for these points (unpacking tuple)
+            (float t0, float t1, float t2, float t3) = GetPointTime(p0, p1, p2, p3, alpha);
 
             // 
             var timeMax = nIterations - 1;
@@ -140,6 +137,34 @@ namespace Manifold
             }
 
             return points;
+        }
+
+
+        public static (float t0, float t1, float t2, float t3) GetPointTime(float3 p0, float3 p1, float3 p2, float3 p3, float alpha)
+        {
+            // Get the times for the 4 points priovided
+            float t0 = 0f;
+            float t1 = GetTime(p0, p1, alpha);
+            float t2 = GetTime(p1, p2, alpha) + t1;
+            float t3 = GetTime(p2, p3, alpha) + t2;
+            return (t0, t1, t2, t3);
+        }
+
+
+
+
+        public static (float3 position, float3 tangent) GetPositionDirectionHack(float3 p0, float3 p1, float3 p2, float3 p3, float alpha, float t)
+        {
+            // Get times for these points (unpacking tuple)
+            (float t0, float t1, float t2, float t3) = GetPointTime(p0, p1, p2, p3, alpha);
+
+            float catmullRomTime = math.lerp(t1, t2, t);
+
+            float3 point = BarryGoldmanPyramidalFormulation(p0, p1, p2, p3, t0, t1, t2, t3, catmullRomTime);
+            float3 pointNext = BarryGoldmanPyramidalFormulation(p0, p1, p2, p3, t0, t1, t2, t3, catmullRomTime + 0.0001f);
+            float3 tangent = pointNext - point;
+
+            return (point, tangent);
         }
 
     }

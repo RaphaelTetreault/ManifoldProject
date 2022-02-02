@@ -5,11 +5,11 @@ using UnityEngine;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage
 {
-
     public class GfzTrack : MonoBehaviour
     {
         [SerializeField] private GfzSegmentShape startSegment;
         [SerializeField] private GfzSegmentShape[] rootSegments;
+
 
 
         //public GfzTrackSegment StartSegment

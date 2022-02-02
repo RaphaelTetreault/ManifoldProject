@@ -10,8 +10,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
     {
         // Fields
         [Header("Checkpoints")]
-        [SerializeField] private GfzTrackSegment prev;
-        [SerializeField] private GfzTrackSegment next;
+        [SerializeField] private GfzTrackSegment start;
+        [SerializeField] private GfzTrackSegment end;
         [SerializeField] private float metersPerCheckpoint = 100;
 
 
@@ -19,10 +19,15 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         [SerializeField] private byte unk0x3B;
 
         [Header("Track Curves")]
+        [SerializeField] private bool collectRefs;
         [SerializeField] private bool genCheckpoints;
         [SerializeField] private bool invertCheckpoints;
         [SerializeField] private AnimationCurveTransform animTransform = new AnimationCurveTransform();
         [SerializeField] private bool genRotationXY;
+
+
+        [SerializeField] private CatmullRomPoint[] points;
+
 
 
         public event IEditableComponent<GfzTrackSegment>.OnEditCallback OnEdited;
@@ -33,13 +38,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         // Properties
         public GfzTrackSegment PreviousSegment
         {
-            get => prev;
-            set => prev = value;
+            get => start;
+            set => start = value;
         }
         public GfzTrackSegment NextSegment
         {
-            get => next;
-            set => next = value;
+            get => end;
+            set => end = value;
         }
         public AnimationCurveTransform AnimTransform => animTransform;
 
@@ -62,7 +67,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
             // Iterate over collection
             var count = embededProperties.Length;
-            var embededPropertyAreas = new EmbeddedTrackPropertyArea[count+1];
+            var embededPropertyAreas = new EmbeddedTrackPropertyArea[count + 1];
             for (int i = 0; i < count; i++)
             {
                 embededPropertyAreas[i] = embededProperties[i].GetEmbededProperty();
@@ -156,8 +161,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             }
 
             // Set segment in/out connections
-            var connectToTrackIn = prev != null;
-            var connectToTrackOut = next != null;
+            var connectToTrackIn = start != null;
+            var connectToTrackOut = end != null;
             checkpoints[0].connectToTrackIn = connectToTrackIn;
             checkpoints[lastIndex].connectToTrackOut = connectToTrackOut;
 
@@ -213,6 +218,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 }
                 genCheckpoints = false;
             }
+
+            if (collectRefs)
+            {
+                points = GetComponentsInChildren<CatmullRomPoint>();
+                collectRefs = false;
+            }
+
         }
     }
 }
