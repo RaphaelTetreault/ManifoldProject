@@ -8,8 +8,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
     public class GfzTrack : MonoBehaviour
     {
-        [SerializeField] private GfzSegmentShape startSegment;
-        [SerializeField] private GfzSegmentShape[] rootSegments;
+        [SerializeField] private GfzTrackSegment startSegment;
+        [SerializeField] private GfzTrackSegment[] rootSegments;
 
 
         //public GfzTrackSegment StartSegment
@@ -45,22 +45,20 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             // Track metadata
             var trackMinHeight = new TrackMinHeight();
             var trackLength = new TrackLength();
-
-            // Track Animation Data
             // Get all track segments as GFZ values
             var rootSegments = new List<TrackSegment>();
             // Get all of these segments in an order proper for serialization
             var allSegments = new List<TrackSegment>();
-
-            // TrackNodes, Checkpoints
+            //
+            var allCheckpointsSegmented = new List<Checkpoint[]>();
             var allCheckpoints = new List<Checkpoint>();
             var trackNodes = new List<TrackNode>();
-
-            // AI data
+            //
             var trackEmbeddedPropertyAreas = new List<EmbeddedTrackPropertyArea>();
 
-
-            foreach (var rootSegmentScript in this.rootSegments)
+            //
+            var rootSegmentScripts = this.rootSegments;
+            foreach (var rootSegmentScript in rootSegmentScripts)
             {
                 // Init the GFZ data, add to list
                 var currRootSegment = rootSegmentScript.GenerateTrackSegment();
@@ -71,18 +69,19 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 allSegments.AddRange(segmentChildren);
 
                 // Get all checkpoints for this segment
-                var checkpoints = rootSegmentScript.Segment.CreateCheckpoints(true);
-                allCheckpoints.AddRange(checkpoints); // checkpoints flat
+                var currCheckpoints = rootSegmentScript.GetCheckpoints();
+                allCheckpointsSegmented.Add(currCheckpoints); // checkpoints[]
+                allCheckpoints.AddRange(currCheckpoints); // checkpoints flat
 
                 //
-                var embededPropertyAreas = rootSegmentScript.Segment.GetEmbededPropertyAreas();
+                var embededPropertyAreas = rootSegmentScript.GetEmbededPropertyAreas();
                 trackEmbeddedPropertyAreas.AddRange(embededPropertyAreas);
 
                 // Compute some metadata based on segments
-                trackLength.value += rootSegmentScript.Segment.GetSegmentLength();
+                trackLength.value += rootSegmentScript.GetSegmentLength();
 
                 // Create TrackNodes
-                foreach (var checkpoint in checkpoints)
+                foreach (var checkpoint in currCheckpoints)
                 {
                     var trackNode = new TrackNode()
                     {
@@ -97,10 +96,18 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             }
 
             // Set circuit type depending on if 
-            var lastSegmentIndex = this.rootSegments.Length - 1;
-            CircuitType = this.rootSegments[lastSegmentIndex].Segment.NextSegment != null
+            var lastSegmentIndex = rootSegmentScripts.Length - 1;
+            CircuitType = rootSegmentScripts[lastSegmentIndex].NextSegment != null
                 ? CircuitType.ClosedCircuit
                 : CircuitType.OpenCircuit;
+
+
+            //var first = allCheckpoints[0];
+            //var last = allCheckpoints[allCheckpoints.Count - 1];
+            ////
+            //last.planeEnd.origin = first.planeStart.origin;
+            //last.planeEnd.normal = -first.planeStart.normal;
+            //last.planeEnd.dotProduct = -first.planeStart.dotProduct;
 
             // TODO: name this something better
             var checkpointsArray = allCheckpoints.ToArray();
@@ -110,6 +117,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             var checkpointMatrixBoundsXZ = TrackCheckpointGrid.GetMatrixBoundsXZ(checkpointsArray);
             var trackCheckpointMatrix = new TrackCheckpointGrid();
             trackCheckpointMatrix.GenerateIndexes(checkpointMatrixBoundsXZ, checkpointsArray);
+
+            // TODO: actually store the damn values!
+            //throw new NotImplementedException();
 
             //
             TrackMinHeight = trackMinHeight;
