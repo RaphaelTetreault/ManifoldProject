@@ -4,7 +4,7 @@ using GameCube.GFZ.CourseCollision;
 using Unity.Mathematics;
 using UnityEngine;
 
-namespace Manifold.EditorTools.GC.GFZ.CourseCollision
+namespace Manifold.EditorTools.GC.GFZ.Stage
 {
     /// <summary>
     /// Component class which stores general information regarding the scene.

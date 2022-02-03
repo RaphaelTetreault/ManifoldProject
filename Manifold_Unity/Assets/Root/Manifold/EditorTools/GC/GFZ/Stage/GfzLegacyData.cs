@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using GameCube.GFZ.CourseCollision;
 
-namespace Manifold.EditorTools.GC.GFZ.CourseCollision
+namespace Manifold.EditorTools.GC.GFZ.Stage
 {
     public class GfzLegacyData : MonoBehaviour
     {

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Manifold.EditorTools.GC.GFZ.CourseCollision
+namespace Manifold.EditorTools.GC.GFZ.Stage
 {
     /// <summary>
     /// A script attached to objects with transforms that need to be inverted along

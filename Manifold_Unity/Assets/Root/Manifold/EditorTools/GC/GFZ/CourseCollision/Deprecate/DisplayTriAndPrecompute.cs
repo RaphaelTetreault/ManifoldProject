@@ -2,7 +2,7 @@ using Manifold.IO;
 using UnityEngine;
 using static Unity.Mathematics.math;
 
-namespace Manifold.EditorTools.GC.GFZ.CourseCollision
+namespace Manifold.EditorTools.GC.GFZ.Stage
 {
     using Unity.Mathematics;
 

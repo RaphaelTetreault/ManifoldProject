@@ -2,7 +2,7 @@ using GameCube.GFZ;
 using GameCube.GFZ.CourseCollision;
 using UnityEngine;
 
-namespace Manifold.EditorTools.GC.GFZ.CourseCollision
+namespace Manifold.EditorTools.GC.GFZ.Stage
 {
     /// <summary>
     /// Component class for Object Paths. Uses cases are: Lightning's lightning,

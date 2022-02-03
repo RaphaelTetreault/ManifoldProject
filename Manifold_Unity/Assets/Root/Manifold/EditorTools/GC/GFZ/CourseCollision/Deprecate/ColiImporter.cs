@@ -4,7 +4,7 @@ using System.IO;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace Manifold.EditorTools.GC.GFZ.CourseCollision
+namespace Manifold.EditorTools.GC.GFZ.Stage
 {
     [CreateAssetMenu(menuName = Const.Menu.GfzCourseCollision + "COLI Importer")]
     public class ColiImporter : ExecutableScriptableObject,

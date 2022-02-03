@@ -7,7 +7,7 @@ using System.Linq;
 using UnityEditor;
 
 
-namespace Manifold.EditorTools.GC.GFZ.CourseCollision
+namespace Manifold.EditorTools.GC.GFZ.Stage
 {
     public class StageTableLoggerUnityMenu
     {

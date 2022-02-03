@@ -1,14 +1,21 @@
 using GameCube.GFZ.CourseCollision;
 using UnityEngine;
 
-namespace Manifold.EditorTools.GC.GFZ.CourseCollision
+namespace Manifold.EditorTools.GC.GFZ.Stage
 {
     /// <summary>
     /// 
     /// </summary>
-    public class GfzObjectColliderMesh : MonoBehaviour
+    public class GfzStaticColliderMesh : MonoBehaviour
     {
+        [SerializeField] private StaticColliderMeshProperty property;
         [SerializeField] private MeshFilter colliderMesh;
+
+        public StaticColliderMeshProperty Property
+        {
+            get => property;
+            set => property = value;
+        }
 
         public MeshFilter ColliderMesh
         {

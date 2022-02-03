@@ -1,7 +1,7 @@
 ﻿using GameCube.GFZ.CourseCollision;
 using UnityEngine;
 
-namespace Manifold.EditorTools.GC.GFZ.CourseCollision
+namespace Manifold.EditorTools.GC.GFZ.Stage
 {
     [CreateAssetMenu(menuName = Const.Menu.GfzCourseCollision + "COLI Scene")]
     public sealed class ColiSceneSobj : FileAssetWrapper<ColiScene>

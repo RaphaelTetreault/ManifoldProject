@@ -1,4 +1,4 @@
-namespace Manifold.EditorTools.GC.GFZ.CourseCollision
+namespace Manifold.EditorTools.GC.GFZ.Stage
 {
     public interface IColiCourseDisplayable
     {

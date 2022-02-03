@@ -12,7 +12,7 @@ using UnityEngine;
 using Unity.Mathematics;
 using System.Linq;
 
-namespace Manifold.EditorTools.GC.GFZ.CourseCollision
+namespace Manifold.EditorTools.GC.GFZ.Stage
 {
     public static class SceneExportUtility
     {

@@ -1,7 +1,7 @@
 ﻿using Manifold.IO;
 using UnityEngine;
 
-namespace Manifold.EditorTools.GC.GFZ.CourseCollision
+namespace Manifold.EditorTools.GC.GFZ.Stage
 {
     public class DisplayTrackCheckpoint : MonoBehaviour, IColiCourseDisplayable
     {

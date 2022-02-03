@@ -11,7 +11,7 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 
 
-namespace Manifold.EditorTools.GC.GFZ.CourseCollision
+namespace Manifold.EditorTools.GC.GFZ.Stage
 {
     public static class ColiCourseIO
     {

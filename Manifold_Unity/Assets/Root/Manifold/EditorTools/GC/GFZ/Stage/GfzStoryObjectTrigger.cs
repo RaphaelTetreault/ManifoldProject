@@ -1,7 +1,7 @@
 using GameCube.GFZ.CourseCollision;
 using UnityEngine;
 
-namespace Manifold.EditorTools.GC.GFZ.CourseCollision
+namespace Manifold.EditorTools.GC.GFZ.Stage
 {
     public class GfzStoryObjectTrigger : MonoBehaviour,
         IGfzConvertable<StoryObjectTrigger>

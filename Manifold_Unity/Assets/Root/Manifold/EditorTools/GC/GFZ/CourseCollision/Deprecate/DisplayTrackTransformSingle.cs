@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using GameCube.GFZ.CourseCollision;
 
-namespace Manifold.EditorTools.GC.GFZ.CourseCollision
+namespace Manifold.EditorTools.GC.GFZ.Stage
 {
     public class DisplayTrackTransformSingle : MonoBehaviour
     {

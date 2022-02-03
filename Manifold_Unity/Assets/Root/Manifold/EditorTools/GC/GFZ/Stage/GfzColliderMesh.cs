@@ -2,7 +2,7 @@
 using System;
 using UnityEngine;
 
-namespace Manifold.EditorTools.GC.GFZ.CourseCollision
+namespace Manifold.EditorTools.GC.GFZ.Stage
 {
     public class GfzColliderMesh : MonoBehaviour,
         IGfzConvertable<ColliderMesh>
