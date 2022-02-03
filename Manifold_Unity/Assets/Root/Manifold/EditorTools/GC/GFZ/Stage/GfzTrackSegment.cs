@@ -14,25 +14,17 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         [SerializeField] private GfzTrackSegment end;
         [SerializeField] private float metersPerCheckpoint = 100;
 
-
         [Header("Unknown properties")]
         [SerializeField] private byte unk0x3B;
 
         [Header("Track Curves")]
-        [SerializeField] private bool collectRefs;
         [SerializeField] private bool genCheckpoints;
+        [SerializeField] private SegmentGenerator animGen;
         [SerializeField] private bool invertCheckpoints;
         [SerializeField] private AnimationCurveTransform animTransform = new AnimationCurveTransform();
         [SerializeField] private bool genRotationXY;
 
-
-        [SerializeField] private CatmullRomPoint[] points;
-
-
-
         public event IEditableComponent<GfzTrackSegment>.OnEditCallback OnEdited;
-
-
 
 
         // Properties
@@ -110,7 +102,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
                 // Get origin of start plane, track width at start sampling point
                 var origin = pos.Evaluate(checkpointTimeStart);
-                var normal = Quaternion.Euler(rot.Evaluate(checkpointTimeStart)) * Vector3.back;
+                var normal = Quaternion.Euler(rot.Evaluate(checkpointTimeStart)) * Vector3.forward;
                 var trackWidth = scl.x.Evaluate((float)checkpointTimeStart);
 
                 // DISTANCE
@@ -154,7 +146,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 var lastCheckpoint = checkpoints[lastIndex];
                 lastCheckpoint.curveTimeEnd = curveMaxTime;
                 var origin = pos.Evaluate(curveMaxTime);
-                var normal = Quaternion.Euler(rot.Evaluate(curveMaxTime)) * Vector3.forward;
+                var normal = Quaternion.Euler(rot.Evaluate(curveMaxTime)) * Vector3.back;
                 lastCheckpoint.planeEnd.origin = origin;
                 lastCheckpoint.planeEnd.normal = normal;
                 lastCheckpoint.planeEnd.ComputeDotProduct();
@@ -196,11 +188,15 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             // Once this has been edited, let listeners know
             OnEdited?.Invoke(this);
 
+
+
             if (genRotationXY)
             {
-                var anims = animTransform.ComputerRotationXY();
-                animTransform.Rotation.x = anims.x;
-                animTransform.Rotation.y = anims.y;
+                this.animTransform = animGen.GetAnimationCurveTransform();
+
+                //var anims = animTransform.ComputerRotationXY();
+                //animTransform.Rotation.x = anims.x;
+                //animTransform.Rotation.y = anims.y;
                 genRotationXY = false;
             }
 
@@ -219,11 +215,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 genCheckpoints = false;
             }
 
-            if (collectRefs)
-            {
-                points = GetComponentsInChildren<CatmullRomPoint>();
-                collectRefs = false;
-            }
+
 
         }
     }

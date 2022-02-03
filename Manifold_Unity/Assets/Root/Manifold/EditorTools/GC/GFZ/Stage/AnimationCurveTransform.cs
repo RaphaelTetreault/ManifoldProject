@@ -18,6 +18,15 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         public AnimationCurve3 Rotation => rotation;
         public AnimationCurve3 Scale => scale;
 
+        public AnimationCurve[] AnimationCurves
+        {
+            get => new AnimationCurve[]
+            {
+                position.x, position.y, position.z,
+                rotation.x, rotation.y, rotation.z,
+                scale.x, scale.y, scale.z,
+            };
+        }
 
         public float GetMaxTime()
         {

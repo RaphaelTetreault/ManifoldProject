@@ -10,6 +10,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 {
     public class GfzCheckpoint : MonoBehaviour
     {
+        [SerializeField] private float gizmosSize = 25f;
         [SerializeField] private Checkpoint checkpoint;
 
         public void Init(Checkpoint checkpoint)
@@ -31,10 +32,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             var scaleTo = scaleFrom * .9f;
 
             Gizmos.color = Color.green;
-            Gizmos.DrawLine(from, from + checkpoint.planeStart.normal * 15f);
+            Gizmos.DrawLine(from, from + checkpoint.planeStart.normal * gizmosSize);
             Gizmos.DrawMesh(mesh, 0, from, Quaternion.LookRotation(checkpoint.planeStart.normal), scaleFrom);
             Gizmos.color = Color.white;
-            Gizmos.DrawLine(to, to + checkpoint.planeEnd.normal * 15f);
+            Gizmos.DrawLine(to, to + checkpoint.planeEnd.normal * gizmosSize);
             Gizmos.DrawWireMesh(mesh, 0, to, Quaternion.LookRotation(checkpoint.planeEnd.normal), scaleTo);
         }
     }

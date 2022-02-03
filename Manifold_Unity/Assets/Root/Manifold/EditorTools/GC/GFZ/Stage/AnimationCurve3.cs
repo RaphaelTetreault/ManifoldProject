@@ -65,6 +65,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             return xMaxTime;
         }
 
+        public void AddKeys(float time, Vector3 value)
+        {
+            x.AddKey(time, value.x);
+            y.AddKey(time, value.y);
+            z.AddKey(time, value.z);
+        }
+
     }
 
 }
