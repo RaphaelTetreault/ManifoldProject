@@ -20,9 +20,15 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             }
 
             public Vector3 position;
+
+            public void SetPosition(Vector3 position)
+            {
+                this.position = position;
+            }
         }
 
         public Point p0;
         public Point p1;
+
     }
 }
