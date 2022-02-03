@@ -102,7 +102,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
                 // Get origin of start plane, track width at start sampling point
                 var origin = pos.Evaluate(checkpointTimeStart);
-                var normal = Quaternion.Euler(rot.Evaluate(checkpointTimeStart)) * Vector3.forward;
+                var normal = Quaternion.Euler(rot.Evaluate(checkpointTimeStart)) * Vector3.back;
                 var trackWidth = scl.x.Evaluate((float)checkpointTimeStart);
 
                 // DISTANCE
@@ -146,7 +146,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 var lastCheckpoint = checkpoints[lastIndex];
                 lastCheckpoint.curveTimeEnd = curveMaxTime;
                 var origin = pos.Evaluate(curveMaxTime);
-                var normal = Quaternion.Euler(rot.Evaluate(curveMaxTime)) * Vector3.back;
+                var normal = Quaternion.Euler(rot.Evaluate(curveMaxTime)) * Vector3.forward;
                 lastCheckpoint.planeEnd.origin = origin;
                 lastCheckpoint.planeEnd.normal = normal;
                 lastCheckpoint.planeEnd.ComputeDotProduct();
