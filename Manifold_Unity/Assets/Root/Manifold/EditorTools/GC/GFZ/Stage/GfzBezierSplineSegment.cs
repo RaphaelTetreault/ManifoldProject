@@ -29,7 +29,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         public void SetControlPoint(int index, BezierPoint point)
         {
             points[index] = point;
-            EnforceMode(index);
         }
 
         public BezierControlPointMode GetControlPointMode(int index)
@@ -42,30 +41,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             var point = GetBezierPoint(index);
             point.mode = mode;
             SetControlPoint(index, point);
-            EnforceMode(index);
         }
 
-        private void EnforceMode(int index)
-        {
-            //// Only enforce mode if we need to
-            //var mode = points[index].mode;
-            //// TODO: parse this, make named bools
-            //// In free or has no other control to enforce, stop
-            //if (mode == BezierControlPointMode.Free || index == 0 || index == points.Length - 1)
-            //{
-            //    return;
-            //}
-
-            //Vector3 middle = points[index].point;
-            //Vector3 enforcedTangent = middle - points[fixedIndex];
-            //if (mode == BezierControlPointMode.Aligned)
-            //{
-            //    float magnitude = Vector3.Distance(middle, points[enforcedIndex]);
-            //    enforcedTangent = enforcedTangent.normalized * magnitude;
-            //}
-
-            //points[enforcedIndex] = middle + enforcedTangent;
-        }
 
 
         public (float time, int index) NormalizedTimeToTimeAndIndex(float t)
@@ -155,9 +132,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             newCurve.point      = prevBezier.point + direction * 100f;
             //
             points[points.Length - 1] = newCurve;
-
-            //
-            EnforceMode(points.Length - 1);
         }
 
 
@@ -186,5 +160,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 },
             };
         }
+
     }
 }
