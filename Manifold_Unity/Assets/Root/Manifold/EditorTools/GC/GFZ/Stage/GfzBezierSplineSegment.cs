@@ -186,31 +186,40 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         public void AddPointAtEnd()
         {
-            // Get the direction of the final spline curve point, point position
-            var direction = GetDirection(1f);
             var lastIndex = points.Count - 1;
-            var bezier = points[lastIndex];
+            var lastBezier = points[lastIndex];
+            var length = (lastBezier.outTangent - lastBezier.position).magnitude;
+            // Get the direction of the final spline curve point
+            var direction = GetDirection(1f);
 
             //
             var newBezier = new BezierPoint();
-            newBezier.inTangent = bezier.position - direction * 25f;
-            newBezier.outTangent = bezier.position + direction * 50f;
-            newBezier.position = bezier.position - direction * 100f;
+            newBezier.position = lastBezier.position + direction * length * 1.5f;
+            newBezier.tangentMode = BezierControlPointMode.Mirrored;
+            newBezier.inTangent = newBezier.position - direction * length / 4f;
+            // outTangent is previous inverse inTangent
+            //newBezier.outTangent = newBezier.position - direction * 100f;
+            newBezier.width = lastBezier.width;
+            newBezier.roll = lastBezier.roll;
 
-            points.Insert(lastIndex, newBezier);
+            points.Insert(lastIndex+1, newBezier);
         }
 
         public void AddPointAtStart()
         {
+            var firstBezier = points[0];
+            var length = (firstBezier.outTangent - firstBezier.position).magnitude;
             // Get the direction of the final spline curve point, point position
             var direction = GetDirection(0f);
-            var bezier = points[0];
 
             //
             var newBezier = new BezierPoint();
-            newBezier.position = bezier.position - direction * 200f;
-            newBezier.inTangent = newBezier.position + direction * 50f;
-            newBezier.outTangent = newBezier.position - direction * 50f;
+            newBezier.position = firstBezier.position - direction * length * 1.5f;
+            newBezier.tangentMode = BezierControlPointMode.Mirrored;
+            // inTangent is previous inverse outTangent
+            newBezier.outTangent = newBezier.position + direction * length / 4f;
+            newBezier.width = firstBezier.width;
+            newBezier.roll = firstBezier.roll;
 
             points.Insert(0, newBezier);
         }
