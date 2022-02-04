@@ -4,7 +4,9 @@ using UnityEditor;
 
 namespace Manifold.EditorTools
 {
-
+    /// <summary>
+    /// A helper class to make drawing GUI Layout easier
+    /// </summary>
     public static class GuiSimple
     {
         public static string Labelize(string name)
@@ -41,9 +43,15 @@ namespace Manifold.EditorTools
             return EditorGUILayout.FloatField(label, value);
         }
 
-        public static string String(string label, string value)
+        public static string String(string name, string value)
         {
-            return EditorGUILayout.TextField(Labelize(label), value);
+            return EditorGUILayout.TextField(Labelize(name), value);
+        }
+
+        public static Vector3 Vector3(string name, Vector3 value)
+        {
+            var label = ObjectNames.NicifyVariableName(name);
+            return EditorGUILayout.Vector3Field(label, value);
         }
 
 
@@ -103,6 +111,20 @@ namespace Manifold.EditorTools
             value = EditorGUILayout.TextField(value);
             EditorGUILayout.EndHorizontal();
             return value;
+        }
+
+
+        public static void DefaultScript<T>(string label, T behaviour) where T: MonoBehaviour
+        {
+            MonoScript script = MonoScript.FromMonoBehaviour(behaviour);
+            GUI.enabled = script == null;
+            EditorGUILayout.ObjectField(Labelize(label), script, typeof(T), false);
+            GUI.enabled = true;
+        }
+
+        public static void DefaultScript<T>(T behaviour) where T : MonoBehaviour
+        {
+            DefaultScript("Script", behaviour);
         }
 
     }

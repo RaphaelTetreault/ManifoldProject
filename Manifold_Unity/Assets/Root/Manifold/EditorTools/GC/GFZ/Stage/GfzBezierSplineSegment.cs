@@ -16,6 +16,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         [SerializeField]
         private BezierPoint[] points;
 
+        // TODO
+        //      add widths => animation curve
+        //      add rolls  => animation curve
+        //      add option for loop? Extend array by 1, copy first into last, last into first
+
+
         public int ControlPointCount
         {
             get => points.Length;
@@ -26,23 +32,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             return points[index];
         }
 
-        public void SetControlPoint(int index, BezierPoint point)
+        public void SetBezierPoint(int index, BezierPoint point)
         {
             points[index] = point;
         }
-
-        public BezierControlPointMode GetControlPointMode(int index)
-        {
-            return GetBezierPoint(index).mode;
-        }
-
-        public void SetControlPointMode(int index, BezierControlPointMode mode)
-        {
-            var point = GetBezierPoint(index);
-            point.mode = mode;
-            SetControlPoint(index, point);
-        }
-
 
 
         public (float time, int index) NormalizedTimeToTimeAndIndex(float t)

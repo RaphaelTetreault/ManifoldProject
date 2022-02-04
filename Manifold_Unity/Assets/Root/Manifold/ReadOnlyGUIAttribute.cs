@@ -5,13 +5,13 @@ using UnityEditor;
 
 namespace Manifold
 {
-    public class ReadOnlyAttribute : PropertyAttribute
+    public class ReadOnlyGUIAttribute : PropertyAttribute
     {
 
     }
 
-    [CustomPropertyDrawer(typeof(ReadOnlyAttribute))]
-    public class ReadOnlyDrawer : PropertyDrawer
+    [CustomPropertyDrawer(typeof(ReadOnlyGUIAttribute))]
+    public class ReadOnlyGUIDrawer : PropertyDrawer
     {
         public override float GetPropertyHeight(SerializedProperty property,
                                                 GUIContent label)

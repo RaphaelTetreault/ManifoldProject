@@ -28,7 +28,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         private int samples = 32;
 
         [Tooltip(Tooltips.samplesSizeInBytes)]
-        [ReadOnly]
+        [ReadOnlyGUI]
         [SerializeField]
         private string samplesSizeInBytes;
 

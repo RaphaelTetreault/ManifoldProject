@@ -12,6 +12,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
     [CustomEditor(typeof(GfzBezierSplineSegment))]
     public class GfzBezierSplineSegmentInspector : Editor
     {
+        [SerializeField]
+        private bool viewDefaultValues = false;
+
+
         private const int stepsPerCurve = 10;
         private const float directionScale = 0.5f;
         private const float handleSize = 0.05f;
@@ -66,49 +70,107 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         {
             spline = target as GfzBezierSplineSegment;
 
-            //if (selectedIndex >= 0 && selectedIndex < spline.ControlPointCount)
-            //{
-            //    DrawSelectedPointInspector();
-            //    //Repaint();
-            //}
+            GuiSimple.DefaultScript(spline);
 
-            if (GUILayout.Button("Add Curve"))
+            // TODO: display the currently active bezier point
+            //       allow editing array, but leave it separate
+
+
+            if (GUILayout.Button("Add Bézier Point"))
             {
-                Undo.RecordObject(spline, $"Add curve to {nameof(GfzBezierSplineSegment)}");
+                Undo.RecordObject(spline, $"Add bézier point to {nameof(GfzBezierSplineSegment)}");
                 spline.AddCurve();
                 EditorUtility.SetDirty(spline);
             }
 
+            int rows = spline.CurveCount / 10;
+            for (int r = 0; r <= rows; r++)
+            {
+                int rowBaseCurr = (r+0) * 10;
+                int rowBaseNext = (r+1) * 10;
+
+                // Generate a label for each toolbar cell
+                List<string> labels = new List<string>();
+                for (int c = rowBaseCurr; c < rowBaseNext; c++)
+                {
+                    if (c <= spline.CurveCount)
+                    {
+                        labels.Add(c.ToString());
+                    }
+                    else
+                    {
+                        labels.Add(string.Empty);
+                    }
+                }
+
+                // See if selected index applies to this row
+                bool withinRowLower = selectedIndex >= rowBaseCurr;
+                bool withinRowUpper = selectedIndex < rowBaseNext;
+                // Get index, -1 if not for this row
+                int index = withinRowLower && withinRowUpper ? selectedIndex : -1;
+                // Display toolbar, get index returned (-1 if non-applicable row)
+                int result = GUILayout.Toolbar(index, labels.ToArray());
+                result += rowBaseCurr;
+
+                // Set index if valid. If invalid row, we have result = -1, so this doesn't run.
+                bool isValidIndex = result >= 0 && result <= spline.CurveCount;
+                if (isValidIndex)
+                {
+                    selectedIndex = result;
+                }
+            }
+
+            EditorGUILayout.Space();
+            
+
+
+            bool isIndexSelectable = selectedIndex >= 0 && selectedIndex < spline.ControlPointCount;
+            if (isIndexSelectable)
+            {
+                EditorGUI.indentLevel++;
+                DrawSelectedPointInspector(selectedIndex);
+                EditorGUI.indentLevel--;
+                //Repaint();
+            }
+            else
+            {
+                const string msg = "No bézier control point selected.";
+                EditorGUILayout.HelpBox(msg, MessageType.Info);
+            }
+
+
+            EditorGUILayout.Space();
+            viewDefaultValues = EditorGUILayout.Foldout(viewDefaultValues, "View Reorderable Array", EditorStyles.foldoutHeader);
+            if (viewDefaultValues)
+            {
+                const string msg = "This view is meant for re-order bézier points only! Modify other data at your own risk.";
+                EditorGUILayout.HelpBox(msg, MessageType.Warning);
+                DrawDefaultInspector();
+            }
+
             //
-            DrawDefaultInspector();
             Repaint();
         }
-        private void DrawSelectedPointInspector(Vector3 point)
+        private void DrawSelectedPointInspector(int index)
         {
-            //GUILayout.Label("Selected Point");
+            GUILayout.Label($"Bézier Point [{index}]", EditorStyles.boldLabel);
 
-            //EditorGUI.BeginChangeCheck();
-            ////
-            //var point = spline.GetControlPoint(selectedIndex);
-            //Vector3 position = EditorGUILayout.Vector3Field("Position", point);
-            ////
-            //if (EditorGUI.EndChangeCheck())
-            //{
-            //    Undo.RecordObject(spline, "Move Point");
-            //    EditorUtility.SetDirty(spline);
-            //    spline.SetControlPoint(selectedIndex, position);
-            //}
+            EditorGUI.BeginChangeCheck();
 
-            //// Let user change bezier mode between curves
-            //EditorGUI.BeginChangeCheck();
-            //BezierControlPointMode mode = (BezierControlPointMode)
-            //    EditorGUILayout.EnumPopup("Mode", spline.GetControlPointMode(selectedIndex));
-            //if (EditorGUI.EndChangeCheck())
-            //{
-            //    Undo.RecordObject(spline, "Change Point Mode");
-            //    spline.SetControlPointMode(selectedIndex, mode);
-            //    EditorUtility.SetDirty(spline);
-            //}
+            var bezier = spline.GetBezierPoint(index);
+            bezier.mode = GuiSimple.EnumPopup(nameof(bezier.point), bezier.mode);
+            bezier.point = GuiSimple.Vector3(nameof(bezier.point), bezier.point);
+            bezier.inTangent = GuiSimple.Vector3(nameof(bezier.inTangent), bezier.inTangent);
+            bezier.outTangent = GuiSimple.Vector3(nameof(bezier.outTangent), bezier.outTangent);
+            bezier.width = GuiSimple.Float(nameof(bezier.width), bezier.width);
+            bezier.roll = GuiSimple.Float(nameof(bezier.roll), bezier.roll);
+
+            if (EditorGUI.EndChangeCheck())
+            {
+                Undo.RecordObject(spline, "Move Point");
+                EditorUtility.SetDirty(spline);
+                spline.SetBezierPoint(index, bezier);
+            }
         }
 
         private enum SelectedPart
@@ -157,7 +219,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                     bezierPoint.point = handleTransform.InverseTransformPoint(pointPosition);
                     bezierPoint.inTangent = handleTransform.InverseTransformPoint(inTangentPosition + delta);
                     bezierPoint.outTangent = handleTransform.InverseTransformPoint(outTangentPosition + delta);
-                    spline.SetControlPoint(index, bezierPoint);
+                    spline.SetBezierPoint(index, bezierPoint);
                     EditorUtility.SetDirty(spline);
                 }
             }
@@ -172,7 +234,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                     Undo.RecordObject(spline, undoMessage);
                     bezierPoint.inTangent = handleTransform.InverseTransformPoint(inTangentPosition);
                     bezierPoint.outTangent = GetTangentFromMode(bezierPoint, bezierPoint.inTangent, bezierPoint.outTangent);
-                    spline.SetControlPoint(index, bezierPoint);
+                    spline.SetBezierPoint(index, bezierPoint);
                     EditorUtility.SetDirty(spline);
                 }
             }
@@ -187,7 +249,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                     Undo.RecordObject(spline, undoMessage);
                     bezierPoint.outTangent = handleTransform.InverseTransformPoint(outTangentPosition);
                     bezierPoint.inTangent = GetTangentFromMode(bezierPoint, bezierPoint.outTangent, bezierPoint.inTangent);
-                    spline.SetControlPoint(index, bezierPoint);
+                    spline.SetBezierPoint(index, bezierPoint);
                     EditorUtility.SetDirty(spline);
                 }
             }

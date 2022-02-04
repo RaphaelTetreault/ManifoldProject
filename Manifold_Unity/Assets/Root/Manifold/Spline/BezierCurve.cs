@@ -6,12 +6,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
     [System.Serializable]
     public struct BezierPoint
     {
-        public BezierControlPointMode mode;
-        public Vector3 point;
-        public Vector3 inTangent;
-        public Vector3 outTangent;
-        public float width;
-        public float roll;
+        [ReadOnlyGUI] public BezierControlPointMode mode;
+        [ReadOnlyGUI] public Vector3 point;
+        [ReadOnlyGUI] public Vector3 inTangent;
+        [ReadOnlyGUI] public Vector3 outTangent;
+        [ReadOnlyGUI] public float width;
+        [ReadOnlyGUI] public float roll;
     }
 
 }
