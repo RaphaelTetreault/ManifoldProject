@@ -13,7 +13,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
     public class GfzBezierSplineSegment : MonoBehaviour
     {
         [SerializeField]
-        private Line.Point[] points;
+        private Vector3[] points;
 
         [SerializeField]
         private BezierControlPointMode[] modes;
@@ -24,13 +24,25 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             get => points.Length;
         }
 
-        public Line.Point GetControlPoint(int index)
+        public Vector3 GetControlPoint(int index)
         {
             return points[index];
         }
 
-        public void SetControlPoint(int index, Line.Point point)
+        public void SetControlPoint(int index, Vector3 point)
         {
+            if (index % 3 == 0)
+            {
+                Vector3 delta = point - points[index];
+                if (index > 0)
+                {
+                    points[index - 1] += delta;
+                }
+                if (index + 1 < points.Length)
+                {
+                    points[index + 1] += delta;
+                }
+            }
             points[index] = point;
             EnforceMode(index);
         }
@@ -70,16 +82,15 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 enforcedIndex = middleIndex - 1;
             }
 
-            Vector3 middle = points[middleIndex].position;
-            Vector3 enforcedTangent = middle - points[fixedIndex].position;
+            Vector3 middle = points[middleIndex];
+            Vector3 enforcedTangent = middle - points[fixedIndex];
             if (mode == BezierControlPointMode.Aligned)
             {
-                float magnitude = Vector3.Distance(middle, points[enforcedIndex].position);
+                float magnitude = Vector3.Distance(middle, points[enforcedIndex]);
                 enforcedTangent = enforcedTangent.normalized * magnitude;
             }
-            // TODO: width, roll
-            points[enforcedIndex].SetPosition(middle + enforcedTangent);
 
+            points[enforcedIndex] = middle + enforcedTangent;
         }
 
 
@@ -106,10 +117,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         {
             var spline = GetSplineTimeIndex(t);
 
-            var p0 = points[spline.index + 0].position;
-            var p1 = points[spline.index + 1].position;
-            var p2 = points[spline.index + 2].position;
-            var p3 = points[spline.index + 3].position;
+            var p0 = points[spline.index + 0];
+            var p1 = points[spline.index + 1];
+            var p2 = points[spline.index + 2];
+            var p3 = points[spline.index + 3];
 
             var p = transform.TransformPoint(BezierSpline.GetPoint(p0, p1, p2, p3, spline.time));
             return p;
@@ -119,10 +130,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         {
             var spline = GetSplineTimeIndex(t);
 
-            var p0 = points[spline.index + 0].position;
-            var p1 = points[spline.index + 1].position;
-            var p2 = points[spline.index + 2].position;
-            var p3 = points[spline.index + 3].position;
+            var p0 = points[spline.index + 0];
+            var p1 = points[spline.index + 1];
+            var p2 = points[spline.index + 2];
+            var p3 = points[spline.index + 3];
 
             var firstDerivitive = BezierSpline.GetFirstDerivative(p0, p1, p2, p3, spline.time);
 
@@ -147,27 +158,30 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
             var point = points[points.Length - 1];
             Array.Resize(ref points, points.Length + 3);
-            point.position.x += 10f;
+            point.x += 10f;
             points[points.Length - 3] = point;
-            point.position.x += 10f;
+            point.x += 10f;
             points[points.Length - 2] = point;
-            point.position.x += 10f;
+            point.x += 10f;
             points[points.Length - 1] = point;
 
             // Resize modes between curves
             Array.Resize(ref modes, modes.Length + 1);
             modes[modes.Length - 1] = modes[modes.Length - 2];
+
+            //
+            EnforceMode(points.Length - 4);
         }
 
 
         public void Reset()
         {
-            points = new Line.Point[]
+            points = new Vector3[]
             {
-                new Line.Point(new Vector3(10f, 0f, 0f)),
-                new Line.Point(new Vector3(20f, 0f, 0f)),
-                new Line.Point(new Vector3(30f, 0f, 0f)),
-                new Line.Point(new Vector3(40f, 0f, 0f)),
+                new Vector3(10f, 0f, 0f),
+                new Vector3(20f, 0f, 0f),
+                new Vector3(30f, 0f, 0f),
+                new Vector3(40f, 0f, 0f),
             };
 
             modes = new BezierControlPointMode[]

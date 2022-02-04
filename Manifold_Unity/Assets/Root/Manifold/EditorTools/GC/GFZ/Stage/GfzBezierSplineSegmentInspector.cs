@@ -81,13 +81,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             // Let use change Vector3 position of node
             EditorGUI.BeginChangeCheck();
             var point = spline.GetControlPoint(selectedIndex);
-            Vector3 position = EditorGUILayout.Vector3Field("Position", point.position);
+            Vector3 position = EditorGUILayout.Vector3Field("Position", point);
             if (EditorGUI.EndChangeCheck())
             {
                 Undo.RecordObject(spline, "Move Point");
                 EditorUtility.SetDirty(spline);
-                point.SetPosition(position);
-                spline.SetControlPoint(selectedIndex, point);
+                spline.SetControlPoint(selectedIndex, position);
             }
 
             // Let user change bezier mode between curves
@@ -106,7 +105,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         private Vector3 ShowPoint(int index)
         {
             var point = spline.GetControlPoint(index);
-            var p = handleTransform.TransformPoint(point.position);
+            var p = handleTransform.TransformPoint(point);
 
             //
             var modeIndex = spline.GetControlPointMode(index);
@@ -126,9 +125,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 {
                     Undo.RecordObject(spline, $"Move {nameof(GfzBezierSplineSegment)} point");
                     var position = handleTransform.InverseTransformPoint(p);
-                    var changedPoint = point;
-                    changedPoint.position = position;
-                    spline.SetControlPoint(index, changedPoint);
+                    spline.SetControlPoint(index, position);
                     EditorUtility.SetDirty(spline);
                 }
             }
