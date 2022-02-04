@@ -29,6 +29,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             Color.cyan
         };
 
+        private enum SelectedPart
+        {
+            none, point, inTangent, outTangent
+        }
+
+        private int selectedIndex = -1;
+        private SelectedPart selectedPart = SelectedPart.none;
         private GfzBezierSplineSegment spline;
         private Transform root;
         private Quaternion handleRotation;
@@ -134,83 +141,38 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             EditorGUILayout.Space();
             GuiSimple.Label("Bézier Points", EditorStyles.boldLabel);
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button("Prepend"))
+            bool isValid = selectedIndex >= 0 && selectedIndex < spline.PointsCount;
+            GUI.enabled = isValid;
+
+            if (GUILayout.Button($"Insert Before [{selectedIndex}]"))
             {
-                Undo.RecordObject(spline, $"Add bézier point at [0]");
-                spline.AddPointAtStart();
+                Undo.RecordObject(spline, $"Add bézier point at {selectedIndex}");
+                spline.InsertBefore(selectedIndex);
                 EditorUtility.SetDirty(spline);
             }
 
-            bool isValid = selectedIndex >= 0 && selectedIndex < spline.CurveCount;
-            GUI.enabled = isValid;
-            if (GUILayout.Button("Insert"))
+            if (GUILayout.Button($"Insert After [{selectedIndex}]"))
             {
-                Undo.RecordObject(spline, $"Add bézier point at {selectedIndex+1}");
-                spline.InsertPoint(selectedIndex);
+                Undo.RecordObject(spline, $"Add bézier point at {spline.PointsCount}");
+                spline.InsertAfter(selectedIndex+1);
                 EditorUtility.SetDirty(spline);
                 selectedIndex++;
             }
-            GUI.enabled = true;
 
-            if (GUILayout.Button("Append"))
-            {
-                Undo.RecordObject(spline, $"Add bézier point at {spline.PointsCount}");
-                spline.AddPointAtEnd();
-                EditorUtility.SetDirty(spline);
-            }
-            GUI.enabled = spline.IsValidIndex(selectedIndex);
-
-            isValid = selectedIndex >= 0 && selectedIndex < spline.PointsCount;
-            GUI.enabled = isValid;
             GUI.color = new Color32(255, 160, 160, 255);
-            if (GUILayout.Button("Delete"))
+            if (GUILayout.Button($"Delete [{selectedIndex}]"))
             {
-                Undo.RecordObject(spline, $"Delte bézier point {selectedIndex}");
+                Undo.RecordObject(spline, $"Delete bézier point {selectedIndex}");
                 spline.RemovePoint(selectedIndex);
                 EditorUtility.SetDirty(spline);
                 selectedIndex--;
             }
             GUI.color = Color.white;
             GUI.enabled = true;
-
             GUILayout.EndHorizontal();
 
-            int rows = spline.CurveCount / 10;
-            for (int r = 0; r <= rows; r++)
-            {
-                int rowBaseCurr = (r + 0) * 10;
-                int rowBaseNext = (r + 1) * 10;
-
-                // Generate a label for each toolbar cell
-                List<string> labels = new List<string>();
-                for (int c = rowBaseCurr; c < rowBaseNext; c++)
-                {
-                    if (c <= spline.CurveCount)
-                    {
-                        labels.Add(c.ToString());
-                    }
-                    else
-                    {
-                        labels.Add(string.Empty);
-                    }
-                }
-
-                // See if selected index applies to this row
-                bool withinRowLower = selectedIndex >= rowBaseCurr;
-                bool withinRowUpper = selectedIndex < rowBaseNext;
-                // Get index, -1 if not for this row
-                int index = withinRowLower && withinRowUpper ? selectedIndex : -1;
-                // Display toolbar, get index returned (-1 if non-applicable row)
-                int result = GUILayout.Toolbar(index, labels.ToArray());
-                result += rowBaseCurr;
-
-                // Set index if valid. If invalid row, we have result = -1, so this doesn't run.
-                bool isValidIndex = result >= 0 && result <= spline.CurveCount;
-                if (isValidIndex)
-                {
-                    selectedIndex = result;
-                }
-            }
+            //
+            DrawIndexToolbar();
 
             // SHOW bezier point preview/editor
             EditorGUILayout.Space();
@@ -240,6 +202,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             //
             Repaint();
         }
+
         private void DrawSelectedPointInspector(int index)
         {
             GUILayout.Label($"Bézier Point [{index}]", EditorStyles.boldLabel);
@@ -302,13 +265,47 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             }
         }
 
-        private enum SelectedPart
+        private void DrawIndexToolbar()
         {
-            none, point, inTangent, outTangent
+            int rows = spline.CurveCount / 10;
+            for (int r = 0; r <= rows; r++)
+            {
+                int rowBaseCurr = (r + 0) * 10;
+                int rowBaseNext = (r + 1) * 10;
+
+                // Generate a label for each toolbar cell
+                List<string> labels = new List<string>();
+                for (int c = rowBaseCurr; c < rowBaseNext; c++)
+                {
+                    if (c <= spline.CurveCount)
+                    {
+                        labels.Add(c.ToString());
+                    }
+                    else
+                    {
+                        labels.Add(string.Empty);
+                    }
+                }
+
+                // See if selected index applies to this row
+                bool withinRowLower = selectedIndex >= rowBaseCurr;
+                bool withinRowUpper = selectedIndex < rowBaseNext;
+                // Get index, -1 if not for this row
+                int index = withinRowLower && withinRowUpper ? selectedIndex : -1;
+                // Display toolbar, get index returned (-1 if non-applicable row)
+                int result = GUILayout.Toolbar(index, labels.ToArray());
+                result += rowBaseCurr;
+
+                // Set index if valid. If invalid row, we have result = -1, so this doesn't run.
+                bool isValidIndex = result >= 0 && result <= spline.CurveCount;
+                if (isValidIndex)
+                {
+                    selectedIndex = result;
+                    EditorUtility.SetDirty(target);
+                }
+            }
         }
 
-        private int selectedIndex = -1;
-        private SelectedPart selectedPart = SelectedPart.none;
 
         public void EditPointPosition(int index, Vector3 localPosition)
         {

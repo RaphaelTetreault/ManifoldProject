@@ -194,11 +194,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
             //
             var newBezier = new BezierPoint();
-            newBezier.position = lastBezier.position + direction * length * 1.5f;
+            newBezier.position = lastBezier.position + direction * length * 2f;
             newBezier.tangentMode = BezierControlPointMode.Mirrored;
             newBezier.inTangent = newBezier.position - direction * length / 4f;
-            // outTangent is previous inverse inTangent
-            //newBezier.outTangent = newBezier.position - direction * 100f;
+            newBezier.outTangent = newBezier.position + direction * length / 4f;
             newBezier.width = lastBezier.width;
             newBezier.roll = lastBezier.roll;
 
@@ -214,9 +213,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
             //
             var newBezier = new BezierPoint();
-            newBezier.position = firstBezier.position - direction * length * 1.5f;
+            newBezier.position = firstBezier.position - direction * length * 2f;
             newBezier.tangentMode = BezierControlPointMode.Mirrored;
-            // inTangent is previous inverse outTangent
+            newBezier.inTangent = newBezier.position - direction * length / 4f;
             newBezier.outTangent = newBezier.position + direction * length / 4f;
             newBezier.width = firstBezier.width;
             newBezier.roll = firstBezier.roll;
@@ -251,6 +250,30 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             bezier.roll = (bezier0.roll + bezier1.roll) / 2f;
 
             points.Insert(index+1, bezier);
+        }
+
+        public void InsertBefore(int index)
+        {
+            if (index == 0)
+            {
+                AddPointAtStart();
+            }
+            else
+            {
+                InsertPoint(index-1);
+            }
+        }
+
+        public void InsertAfter(int index)
+        {
+            if (index >= points.Count -1)
+            {
+                AddPointAtEnd();
+            }
+            else
+            {
+                InsertPoint(index);
+            }
         }
 
 
