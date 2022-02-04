@@ -49,7 +49,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             //spline.SetControlPoint(0, bezier0);
             //DisplayBezierPoint(0);
 
-            for (int i = 1; i <= spline.CurveCount; i++)
+            for (int i = 1; i <= spline.PointCount; i++)
             {
                 BezierPoint bezier1 = DisplayEditableBezierPoint(i);
                 //spline.SetControlPoint(i, bezier1);
@@ -87,7 +87,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 EditorUtility.SetDirty(spline);
             }
 
-            int rows = spline.CurveCount / 10;
+            int rows = spline.PointCount / 10;
             for (int r = 0; r <= rows; r++)
             {
                 int rowBaseCurr = (r + 0) * 10;
@@ -97,7 +97,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 List<string> labels = new List<string>();
                 for (int c = rowBaseCurr; c < rowBaseNext; c++)
                 {
-                    if (c <= spline.CurveCount)
+                    if (c <= spline.PointCount)
                     {
                         labels.Add(c.ToString());
                     }
@@ -117,7 +117,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 result += rowBaseCurr;
 
                 // Set index if valid. If invalid row, we have result = -1, so this doesn't run.
-                bool isValidIndex = result >= 0 && result <= spline.CurveCount;
+                bool isValidIndex = result >= 0 && result <= spline.PointCount;
                 if (isValidIndex)
                 {
                     selectedIndex = result;
@@ -289,10 +289,14 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             var outTangentPosition = root.TransformPoint(bezierPoint.outTangent);
             var color = modeColors[(int)mode];
 
+            bool isFirstPoint = index == 0;
+            bool isLastPoint = index == spline.PointCount;
+
             Handles.color = color;
             bool pointSelected = DoBezierHandle(pointPosition);
-            bool inTangentSelected = DoBezierHandle(inTangentPosition);
-            bool outTangentSelected = DoBezierHandle(outTangentPosition);
+            // Only visualize/edit in-tangent if not first, out-tangent if not last
+            bool inTangentSelected = !isFirstPoint ? DoBezierHandle(inTangentPosition) : false;
+            bool outTangentSelected = !isLastPoint ? DoBezierHandle(outTangentPosition) : false;
             bool bezierSelected = index == selectedIndex;
 
             if (pointSelected || inTangentSelected || outTangentSelected)
@@ -315,7 +319,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 }
             }
 
-            if (bezierSelected && selectedPart == SelectedPart.inTangent)
+            if (bezierSelected && selectedPart == SelectedPart.inTangent)// && !isFirstPoint)
             {
                 EditorGUI.BeginChangeCheck();
                 inTangentPosition = Handles.DoPositionHandle(inTangentPosition, handleRotation);
@@ -325,7 +329,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 }
             }
 
-            if (bezierSelected && selectedPart == SelectedPart.outTangent)
+            if (bezierSelected && selectedPart == SelectedPart.outTangent)// && !isLastPoint)
             {
                 EditorGUI.BeginChangeCheck();
                 outTangentPosition = Handles.DoPositionHandle(outTangentPosition, handleRotation);
@@ -389,7 +393,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             Vector3 point = spline.GetPoint(0f);
             Vector3 direction = spline.GetDirection(0f) * directionScale;
             Handles.DrawLine(point, point + direction);
-            int steps = stepsPerCurve * spline.CurveCount;
+            int steps = stepsPerCurve * spline.PointCount;
             for (int i = 1; i <= steps; i++)
             {
                 var time = i / (float)steps;

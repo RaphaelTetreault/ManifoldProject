@@ -53,7 +53,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             else
             {
                 // Clamp time, convert normalized time into curve segment index
-                t = Mathf.Clamp01(t) * CurveCount;
+                t = Mathf.Clamp01(t) * PointCount;
                 // Cast time to int, turns time into curve index
                 index = (int)t;
                 // Place T back into 0-1 range
@@ -103,7 +103,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             return GetVelocity(t).normalized;
         }
 
-        public int CurveCount
+        public int PointCount
         {
             get => points.Length - 1;
         }
