@@ -189,15 +189,15 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 EditorGUILayout.HelpBox(msg, MessageType.Info);
             }
 
-            // OPTIONAL show raw data, allow re-ordering array data
-            EditorGUILayout.Space();
-            viewDefaultValues = EditorGUILayout.Foldout(viewDefaultValues, "View Reorderable Array", EditorStyles.foldoutHeader);
-            if (viewDefaultValues)
-            {
-                const string msg = "This view is meant for re-ordering bézier points only! Modify data at your own risk.";
-                EditorGUILayout.HelpBox(msg, MessageType.Warning);
-                DrawDefaultInspector();
-            }
+            //// OPTIONAL show raw data, allow re-ordering array data
+            //EditorGUILayout.Space();
+            //viewDefaultValues = EditorGUILayout.Foldout(viewDefaultValues, "View Reorderable Array", EditorStyles.foldoutHeader);
+            //if (viewDefaultValues)
+            //{
+            //    const string msg = "This view is meant for re-ordering bézier points only! Modify data at your own risk.";
+            //    EditorGUILayout.HelpBox(msg, MessageType.Warning);
+            //    DrawDefaultInspector();
+            //}
 
             //
             Repaint();
@@ -217,8 +217,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 var position = root.TransformPoint(bezier.position);
                 EditPointPosition(index, position);
             }
-
-            EditorGUILayout.Space();
 
             // MODE
             EditorGUI.BeginChangeCheck();
@@ -245,8 +243,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 var outTangent = root.TransformPoint(bezier.outTangent);
                 EditOutTangent(index, outTangent);
             }
-
-            EditorGUILayout.Space();
 
             // WIDTH
             EditorGUI.BeginChangeCheck();
