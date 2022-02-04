@@ -70,6 +70,38 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         }
 
 
+        public AnimationCurve WidthsToCurve()
+        {
+            var curve = new AnimationCurve();
+            for (int i = 0; i < points.Length; i++)
+            {
+                var key = new Keyframe()
+                {
+                    time = i,
+                    value = points[i].width,
+                };
+                curve.AddKey(key);
+            }
+            return curve;
+        }
+
+        public AnimationCurve RollsToCurve()
+        {
+            var curve = new AnimationCurve();
+            for (int i = 0; i < points.Length; i++)
+            {
+                var key = new Keyframe()
+                {
+                    time = i,
+                    value = points[i].roll,
+                };
+                curve.AddKey(key);
+            }
+            return curve;
+        }
+
+
+
         public (float time, int index) NormalizedTimeToTimeAndIndex(float t)
         {
             int index;
@@ -137,7 +169,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
 
 
-        public void AddCurve()
+        public void AddPoint()
         {
             // Get the direction of the final spline curve point
             var direction = GetDirection(1f);

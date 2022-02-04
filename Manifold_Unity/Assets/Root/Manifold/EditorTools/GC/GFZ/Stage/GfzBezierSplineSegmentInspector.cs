@@ -33,6 +33,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         private Transform root;
         private Quaternion handleRotation;
 
+
         private void OnSceneGUI()
         {
             // Set up editor variables
@@ -67,6 +68,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         public override void OnInspectorGUI()
         {
             spline = target as GfzBezierSplineSegment;
+            var undoPrefix = $"'{target.name}'({nameof(GfzBezierSplineSegment)}):";
 
             // Default Script field for MonoBehaviour components
             GuiSimple.DefaultScript(spline);
@@ -80,37 +82,51 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                     EditorGUI.BeginChangeCheck();
                     EditorGUILayout.BeginHorizontal();
                     var editedCurve = EditorGUILayout.CurveField("Width", spline.WidthCurve);
-                    if (GUILayout.Button("Copy Bézier Widths", buttonWidth))
-                    {
-                        // do copy operation
-                    }
-                    EditorGUILayout.EndHorizontal();
                     if (EditorGUI.EndChangeCheck())
                     {
-                        string undoMessage = $"Edit '{target.name}' {nameof(GfzBezierSplineSegment)} Width Curve";
+                        string undoMessage = $"Edited {nameof(spline.WidthCurve)} manually.";
                         Undo.RegisterCompleteObjectUndo(spline, undoMessage);
                         spline.WidthCurve = editedCurve;
                         EditorUtility.SetDirty(spline);
                     }
-                }
-
-                // Widths Curves
-                {
+                    //
                     EditorGUI.BeginChangeCheck();
-                    EditorGUILayout.BeginHorizontal();
-                    var editedCurve = EditorGUILayout.CurveField("Roll", spline.RollCurve);
-                    if (GUILayout.Button("Copy Bézier Rolls", buttonWidth))
-                    {
-                        // do copy operation
-                    }
-                    EditorGUILayout.EndHorizontal();
+                    _ = GUILayout.Button("Copy Bézier Widths", buttonWidth);
                     if (EditorGUI.EndChangeCheck())
                     {
-                        string undoMessage = $"Edit '{target.name}' {nameof(GfzBezierSplineSegment)} Roll Curve";
+                        string undoMessage = $"Generate {nameof(spline.WidthCurve)} from data.";
+                        Undo.RecordObject(spline, undoMessage);
+                        spline.WidthCurve = spline.WidthsToCurve();
+                        EditorUtility.SetDirty(spline);
+                    }
+                    EditorGUILayout.EndHorizontal();
+                }
+
+                // Rolls Curves
+                {
+                    EditorGUI.BeginChangeCheck();
+                    //
+                    EditorGUILayout.BeginHorizontal();
+                    var editedCurve = EditorGUILayout.CurveField("Roll", spline.RollCurve);
+                    if (EditorGUI.EndChangeCheck())
+                    {
+                        string undoMessage = $"Edited {nameof(spline.RollCurve)} manually.";
                         Undo.RegisterCompleteObjectUndo(spline, undoMessage);
                         spline.RollCurve = editedCurve;
                         EditorUtility.SetDirty(spline);
                     }
+                    //
+                    EditorGUI.BeginChangeCheck();
+                    _ = GUILayout.Button("Copy Bézier Rolls", buttonWidth);
+                    if (EditorGUI.EndChangeCheck())
+                    {
+                        string undoMessage = $"Generate {nameof(spline.RollCurve)} from data.";
+                        Undo.RecordObject(spline, undoMessage);
+                        spline.RollCurve = spline.RollsToCurve();
+                        EditorUtility.SetDirty(spline);
+                    }
+                    //
+                    EditorGUILayout.EndHorizontal();
                 }
             }
 
@@ -120,7 +136,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             if (GUILayout.Button("Add Bézier Point"))
             {
                 Undo.RecordObject(spline, $"Add bézier point to {nameof(GfzBezierSplineSegment)}");
-                spline.AddCurve();
+                spline.AddPoint();
                 EditorUtility.SetDirty(spline);
             }
             int rows = spline.CurveCount / 10;
