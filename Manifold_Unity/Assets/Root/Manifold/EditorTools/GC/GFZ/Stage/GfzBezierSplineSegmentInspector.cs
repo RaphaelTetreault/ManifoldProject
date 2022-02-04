@@ -133,12 +133,48 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             // SHOW Array data and toolbar
             EditorGUILayout.Space();
             GuiSimple.Label("Bézier Points", EditorStyles.boldLabel);
-            if (GUILayout.Button("Add Bézier Point"))
+            GUILayout.BeginHorizontal();
+            if (GUILayout.Button("Prepend"))
             {
-                Undo.RecordObject(spline, $"Add bézier point to {nameof(GfzBezierSplineSegment)}");
-                spline.AddPoint();
+                Undo.RecordObject(spline, $"Add bézier point at [0]");
+                spline.AddPointAtStart();
                 EditorUtility.SetDirty(spline);
             }
+
+            bool isValid = selectedIndex >= 0 && selectedIndex < spline.CurveCount;
+            GUI.enabled = isValid;
+            if (GUILayout.Button("Insert"))
+            {
+                Undo.RecordObject(spline, $"Add bézier point at {selectedIndex+1}");
+                spline.InsertPoint(selectedIndex);
+                EditorUtility.SetDirty(spline);
+                selectedIndex++;
+            }
+            GUI.enabled = true;
+
+            if (GUILayout.Button("Append"))
+            {
+                Undo.RecordObject(spline, $"Add bézier point at {spline.PointsCount}");
+                spline.AddPointAtEnd();
+                EditorUtility.SetDirty(spline);
+            }
+            GUI.enabled = spline.IsValidIndex(selectedIndex);
+
+            isValid = selectedIndex >= 0 && selectedIndex < spline.PointsCount;
+            GUI.enabled = isValid;
+            GUI.color = new Color32(255, 160, 160, 255);
+            if (GUILayout.Button("Delete"))
+            {
+                Undo.RecordObject(spline, $"Delte bézier point {selectedIndex}");
+                spline.RemovePoint(selectedIndex);
+                EditorUtility.SetDirty(spline);
+                selectedIndex--;
+            }
+            GUI.color = Color.white;
+            GUI.enabled = true;
+
+            GUILayout.EndHorizontal();
+
             int rows = spline.CurveCount / 10;
             for (int r = 0; r <= rows; r++)
             {
@@ -341,8 +377,14 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             bool isFirstPoint = index == 0;
             bool isLastPoint = index == spline.CurveCount;
 
+            bool isSelected = index == selectedIndex;
+            if (!isSelected)
+            {
+                color *= 0.5f;
+            }
+
             Handles.color = color;
-            bool pointSelected = DoBezierHandle(pointPosition);
+            bool pointSelected = DoBezierHandle(pointPosition, 1.75f);
             // Only visualize/edit in-tangent if not first, out-tangent if not last
             bool inTangentSelected = !isFirstPoint ? DoBezierHandle(inTangentPosition) : false;
             bool outTangentSelected = !isLastPoint ? DoBezierHandle(outTangentPosition) : false;
@@ -440,19 +482,19 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             }
         }
 
-        private bool DoBezierHandle(Vector3 position)
+        private bool DoBezierHandle(Vector3 position, float scaleMultiplier = 1f)
         {
             var size = HandleUtility.GetHandleSize(position);
-            float viewSize = handleSize * size;
+            float viewSize = handleSize * size * scaleMultiplier;
             float pickSize = handleSize + 3; // +3 px
-            var isSelected = Handles.Button(position, handleRotation, viewSize, pickSize, Handles.DotHandleCap);
+            var isSelected = Handles.Button(position, Quaternion.identity, viewSize, pickSize, Handles.DotHandleCap);
             return isSelected;
         }
 
         private void ShowDirections()
         {
             Handles.color = Color.green;
-            Vector3 point = spline.GetPoint(0f);
+            Vector3 point = spline.GetPosition(0f);
             Vector3 direction = spline.GetDirection(0f) * directionScale;
             Handles.DrawLine(point, point + direction);
 
@@ -460,7 +502,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             for (int i = 0; i <= numIters; i++)
             {
                 float time = (float)i / numIters;
-                point = spline.GetPoint(time);
+                point = spline.GetPosition(time);
                 direction = spline.GetDirection(time);
                 Handles.DrawLine(point, point + direction * directionScale);
             }

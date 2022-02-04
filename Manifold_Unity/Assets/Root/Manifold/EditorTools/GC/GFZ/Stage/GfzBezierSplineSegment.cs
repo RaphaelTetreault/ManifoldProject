@@ -14,7 +14,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
     public class GfzBezierSplineSegment : MonoBehaviour
     {
         [SerializeField]
-        private BezierPoint[] points;
+        //private BezierPoint[] points;
+        private List<BezierPoint> points;
+
 
         [SerializeField, HideInInspector]
         private bool isLoop = false;
@@ -51,12 +53,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         public int PointsCount
         {
-            get => points.Length;
+            get => points.Count;
         }
 
         public int CurveCount
         {
-            get => points.Length - 1;
+            get => points.Count - 1;
         }
 
         public BezierPoint GetBezierPoint(int index)
@@ -73,7 +75,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         public AnimationCurve WidthsToCurve()
         {
             var curve = new AnimationCurve();
-            for (int i = 0; i < points.Length; i++)
+            for (int i = 0; i < points.Count; i++)
             {
                 var key = new Keyframe()
                 {
@@ -88,7 +90,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         public AnimationCurve RollsToCurve()
         {
             var curve = new AnimationCurve();
-            for (int i = 0; i < points.Length; i++)
+            for (int i = 0; i < points.Count; i++)
             {
                 var key = new Keyframe()
                 {
@@ -112,7 +114,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 // clamp time
                 t = 1f;
                 // get final index
-                index = points.Length - 2;
+                index = points.Count - 2;
             }
             else
             {
@@ -127,78 +129,133 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             return (t, index);
         }
 
-        public Vector3 GetPoint(float time)
+        public Vector3 GetPosition(float time01)
         {
-            (float t, int i) = NormalizedTimeToTimeAndIndex(time);
+            (float t, int i) = NormalizedTimeToTimeAndIndex(time01);
+            var point = GetPosition(t, i);
+            return point;
+        }
 
-            var bezier0 = points[i+0]; 
-            var bezier1 = points[i+1];
+        public Vector3 GetPosition(float time, int index)
+        {
+            var bezier0 = points[index + 0];
+            var bezier1 = points[index + 1];
             var p0 = bezier0.position;
             var p1 = bezier0.outTangent;
             var p2 = bezier1.inTangent;
             var p3 = bezier1.position;
 
-            var point = Bezier.GetPoint(p0, p1, p2, p3, t);
+            var point = Bezier.GetPoint(p0, p1, p2, p3, time);
             var p = transform.TransformPoint(point);
 
             return p;
         }
 
-        public Vector3 GetVelocity(float time)
+        public Vector3 GetVelocity(float time01)
         {
-            (float t, int i) = NormalizedTimeToTimeAndIndex(time);
+            (float t, int i) = NormalizedTimeToTimeAndIndex(time01);
+            var velocity = GetVelocity(t, i);
+            return velocity;
+        }
 
-            var bezier0 = points[i + 0];
-            var bezier1 = points[i + 1];
+        public Vector3 GetVelocity(float time, int index)
+        {
+            var bezier0 = points[index + 0];
+            var bezier1 = points[index + 1];
             var p0 = bezier0.position;
             var p1 = bezier0.outTangent;
             var p2 = bezier1.inTangent;
             var p3 = bezier1.position;
 
-            var firstDerivitive = Bezier.GetFirstDerivative(p0, p1, p2, p3, t);
+            var firstDerivitive = Bezier.GetFirstDerivative(p0, p1, p2, p3, time);
 
             var origin = transform.position;
             var velocity = transform.TransformPoint(firstDerivitive) - origin;
             return velocity;
         }
 
-        public Vector3 GetDirection(float t)
+        public Vector3 GetDirection(float time01)
         {
-            return GetVelocity(t).normalized;
+            return GetVelocity(time01).normalized;
+        }
+        public Vector3 GetDirection(float time, int index)
+        {
+            return GetVelocity(time, index).normalized;
         }
 
 
-
-        public void AddPoint()
+        public void AddPointAtEnd()
         {
-            // Get the direction of the final spline curve point
+            // Get the direction of the final spline curve point, point position
             var direction = GetDirection(1f);
-
-            // Get last point
-            var prevBezier = points[points.Length - 1];
-            // Add 1 to list
-            Array.Resize(ref points, points.Length + 1);
+            var lastIndex = points.Count - 1;
+            var bezier = points[lastIndex];
 
             //
-            var newCurve = new BezierPoint();
-            newCurve.inTangent  = prevBezier.position + direction * 25f;// prevBezier.point - direction * 50f;
-            newCurve.outTangent = prevBezier.position - direction * 50f;
-            newCurve.position      = prevBezier.position + direction * 100f;
+            var newBezier = new BezierPoint();
+            newBezier.inTangent = bezier.position - direction * 25f;
+            newBezier.outTangent = bezier.position + direction * 50f;
+            newBezier.position = bezier.position - direction * 100f;
+
+            points.Insert(lastIndex, newBezier);
+        }
+
+        public void AddPointAtStart()
+        {
+            // Get the direction of the final spline curve point, point position
+            var direction = GetDirection(0f);
+            var bezier = points[0];
+
             //
-            points[points.Length - 1] = newCurve;
+            var newBezier = new BezierPoint();
+            newBezier.position = bezier.position - direction * 200f;
+            newBezier.inTangent = newBezier.position + direction * 50f;
+            newBezier.outTangent = newBezier.position - direction * 50f;
+
+            points.Insert(0, newBezier);
+        }
+
+
+        public bool IsValidIndex(int index)
+        {
+            bool isValid = index > 0 && index < points.Count - 1;
+            return isValid;
+        }
+
+        public void RemovePoint(int index)
+        {
+            points.RemoveAt(index);
+        }
+
+        public void InsertPoint(int index)
+        {
+            var bezier0 = points[index + 0];
+            var bezier1 = points[index + 1];
+            var bezier = new BezierPoint();
+
+            var direction = GetDirection(0.5f, index) * 50f;
+            bezier.position = GetPosition(0.5f, index);
+            bezier.inTangent = bezier.position - direction;
+            bezier.outTangent = bezier.position + direction;
+            bezier.tangentMode = BezierControlPointMode.Mirrored;
+            bezier.width = (bezier0.width + bezier1.width) / 2f;
+            bezier.roll = (bezier0.roll + bezier1.roll) / 2f;
+
+            points.Insert(index+1, bezier);
         }
 
 
         public void Reset()
         {
-            points = new BezierPoint[]
+            points = new List<BezierPoint>()
             {
                 // Mandatory first node
                 new BezierPoint()
                 {
                     tangentMode = BezierControlPointMode.Mirrored,
                     position = new Vector3(0f, 0f, 0f),
-                    inTangent = new Vector3(0f, 0f, -100f),
+                    inTangent = new Vector3(0f, 0f, 100f),
+                    outTangent = new Vector3(0f, 0f, -100f),
                     width = 64f,
                     roll = 0f,
                 },
@@ -207,8 +264,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 new BezierPoint()
                 {
                     tangentMode = BezierControlPointMode.Mirrored,
-                    position = new Vector3(0f, 0f, -300f),
-                    inTangent = new Vector3(0f, 0f, -200f),
+                    position = new Vector3(0f, 0f, -400f),
+                    inTangent = new Vector3(0f, 0f, -300f),
+                    outTangent = new Vector3(0f, 0f, -500f),
                     width = 64f,
                     roll = 0f,
                 },
