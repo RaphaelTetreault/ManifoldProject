@@ -21,6 +21,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         private const float handleSize = 0.05f;
         private const float pickSize = handleSize * 1.5f;
 
+        private const float splineThickness = lineThickness * 1.5f;
+        private const float lineThickness = 2f;
+
         private static Color[] modeColors = {
             Color.white,
             Color.yellow,
@@ -28,38 +31,39 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         };
 
         private GfzBezierSplineSegment spline;
-        private Transform handleTransform;
+        private Transform root;
         private Quaternion handleRotation;
 
         private void OnSceneGUI()
         {
             // Set up editor variables
             spline = target as GfzBezierSplineSegment;
-            handleTransform = spline.transform;
+            root = spline.transform;
             handleRotation = Tools.pivotRotation == PivotRotation.Local
-                ? handleTransform.rotation
+                ? root.rotation
                 : Quaternion.identity;
 
             // Displays the bezier in Scene view
             // TODO: new version of ShowPoint
-            BezierPoint bezier0 = DisplayBezierPoint(0);
+            BezierPoint bezier0 = DisplayEditableBezierPoint(0);
             //spline.SetControlPoint(0, bezier0);
             //DisplayBezierPoint(0);
 
             for (int i = 1; i <= spline.CurveCount; i++)
             {
-                BezierPoint bezier1 = DisplayBezierPoint(i);
+                BezierPoint bezier1 = DisplayEditableBezierPoint(i);
                 //spline.SetControlPoint(i, bezier1);
 
-                var p0 = handleTransform.TransformPoint(bezier0.point);
-                var p1 = handleTransform.TransformPoint(bezier0.outTangent);
-                var p2 = handleTransform.TransformPoint(bezier1.inTangent);
-                var p3 = handleTransform.TransformPoint(bezier1.point);
+                var p0 = root.TransformPoint(bezier0.position);
+                var p1 = root.TransformPoint(bezier0.outTangent);
+                var p2 = root.TransformPoint(bezier1.inTangent);
+                var p3 = root.TransformPoint(bezier1.position);
 
                 Handles.color = Color.grey;
-                Handles.DrawLine(p0, p1);
-                Handles.DrawLine(p2, p3);
-                Handles.DrawBezier(p0, p3, p1, p2, Color.white, null, 2f);
+                Handles.DrawLine(p0, p1, lineThickness);
+                Handles.DrawDottedLine(p1, p2, 5f);
+                Handles.DrawLine(p2, p3, lineThickness);
+                Handles.DrawBezier(p0, p3, p1, p2, Color.white, null, splineThickness);
 
                 bezier0 = bezier1;
             }
@@ -86,8 +90,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             int rows = spline.CurveCount / 10;
             for (int r = 0; r <= rows; r++)
             {
-                int rowBaseCurr = (r+0) * 10;
-                int rowBaseNext = (r+1) * 10;
+                int rowBaseCurr = (r + 0) * 10;
+                int rowBaseNext = (r + 1) * 10;
 
                 // Generate a label for each toolbar cell
                 List<string> labels = new List<string>();
@@ -121,7 +125,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             }
 
             EditorGUILayout.Space();
-            
+
 
 
             bool isIndexSelectable = selectedIndex >= 0 && selectedIndex < spline.ControlPointCount;
@@ -134,7 +138,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             }
             else
             {
-                const string msg = "No bézier control point selected.";
+                const string msg = "No bézier control point selected. Select a control point in the Scene view or via the toolbar above.";
                 EditorGUILayout.HelpBox(msg, MessageType.Info);
             }
 
@@ -155,20 +159,60 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         {
             GUILayout.Label($"Bézier Point [{index}]", EditorStyles.boldLabel);
 
-            EditorGUI.BeginChangeCheck();
-
             var bezier = spline.GetBezierPoint(index);
-            bezier.mode = GuiSimple.EnumPopup(nameof(bezier.point), bezier.mode);
-            bezier.point = GuiSimple.Vector3(nameof(bezier.point), bezier.point);
-            bezier.inTangent = GuiSimple.Vector3(nameof(bezier.inTangent), bezier.inTangent);
-            bezier.outTangent = GuiSimple.Vector3(nameof(bezier.outTangent), bezier.outTangent);
-            bezier.width = GuiSimple.Float(nameof(bezier.width), bezier.width);
-            bezier.roll = GuiSimple.Float(nameof(bezier.roll), bezier.roll);
 
+            // POSITION
+            EditorGUI.BeginChangeCheck();
+            bezier.position = GuiSimple.Vector3(nameof(bezier.position), bezier.position);
             if (EditorGUI.EndChangeCheck())
             {
-                Undo.RecordObject(spline, "Move Point");
-                EditorUtility.SetDirty(spline);
+                var position = root.TransformPoint(bezier.position);
+                EditPointPosition(index, position);
+            }
+
+            EditorGUILayout.Space();
+
+            // MODE
+            EditorGUI.BeginChangeCheck();
+            bezier.tangentMode = GuiSimple.EnumPopup(nameof(bezier.tangentMode), bezier.tangentMode);
+            if (EditorGUI.EndChangeCheck())
+            {
+                spline.SetBezierPoint(index, bezier);
+            }
+
+            // IN TANGENT
+            EditorGUI.BeginChangeCheck();
+            bezier.inTangent = GuiSimple.Vector3(nameof(bezier.inTangent), bezier.inTangent);
+            if (EditorGUI.EndChangeCheck())
+            {
+                var inTangent = root.TransformPoint(bezier.inTangent);
+                EditInTangent(index, inTangent);
+            }
+
+            // OUT TANGENT
+            EditorGUI.BeginChangeCheck();
+            bezier.outTangent = GuiSimple.Vector3(nameof(bezier.outTangent), bezier.outTangent);
+            if (EditorGUI.EndChangeCheck())
+            {
+                var outTangent = root.TransformPoint(bezier.outTangent);
+                EditOutTangent(index, outTangent);
+            }
+
+            EditorGUILayout.Space();
+
+            // WIDTH
+            EditorGUI.BeginChangeCheck();
+            bezier.width = GuiSimple.Float(nameof(bezier.width), bezier.width);
+            if (EditorGUI.EndChangeCheck())
+            {
+                spline.SetBezierPoint(index, bezier);
+            }
+
+            // ROLL
+            EditorGUI.BeginChangeCheck();
+            bezier.roll = GuiSimple.Float(nameof(bezier.roll), bezier.roll);
+            if (EditorGUI.EndChangeCheck())
+            {
                 spline.SetBezierPoint(index, bezier);
             }
         }
@@ -181,13 +225,68 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         private int selectedIndex = -1;
         private SelectedPart selectedPart = SelectedPart.none;
 
-        private BezierPoint DisplayBezierPoint(int index)
+        public void EditPointPosition(int index, Vector3 localPosition)
         {
             BezierPoint bezierPoint = spline.GetBezierPoint(index);
-            var mode = bezierPoint.mode;
-            var pointPosition = handleTransform.TransformPoint(bezierPoint.point);
-            var inTangentPosition = handleTransform.TransformPoint(bezierPoint.inTangent);
-            var outTangentPosition = handleTransform.TransformPoint(bezierPoint.outTangent);
+
+            // Compute new position relative to transform, get delta between positions
+            var newPosition = localPosition; // pre-transformed
+            var oldPosition = root.TransformPoint(bezierPoint.position);
+            var positionDelta = newPosition - oldPosition;
+
+            // Get tangents
+            var inTangentPosition = root.TransformPoint(bezierPoint.inTangent);
+            var outTangentPosition = root.TransformPoint(bezierPoint.outTangent);
+
+            //
+            string undoMessage = $"Move '{target.name}' {nameof(GfzBezierSplineSegment)}[{index}] point";
+            Undo.RecordObject(spline, undoMessage);
+            bezierPoint.position = root.InverseTransformPoint(newPosition);
+            bezierPoint.inTangent = root.InverseTransformPoint(inTangentPosition + positionDelta);
+            bezierPoint.outTangent = root.InverseTransformPoint(outTangentPosition + positionDelta);
+            spline.SetBezierPoint(index, bezierPoint);
+            EditorUtility.SetDirty(spline);
+        }
+
+        public void EditInTangent(int index, Vector3 localPosition)
+        {
+            BezierPoint bezierPoint = spline.GetBezierPoint(index);
+
+            // 
+            var inTangentPosition = localPosition;
+
+            //
+            string undoMessage = $"Move '{target.name}' {nameof(GfzBezierSplineSegment)}[{index}] point";
+            Undo.RecordObject(spline, undoMessage);
+            bezierPoint.inTangent = root.InverseTransformPoint(inTangentPosition);
+            bezierPoint.outTangent = GetTangentFromMode(bezierPoint, bezierPoint.inTangent, bezierPoint.outTangent);
+            spline.SetBezierPoint(index, bezierPoint);
+            EditorUtility.SetDirty(spline);
+        }
+
+        public void EditOutTangent(int index, Vector3 localPosition)
+        {
+            BezierPoint bezierPoint = spline.GetBezierPoint(index);
+
+            // 
+            var outTangentPosition = localPosition;
+
+            //
+            string undoMessage = $"Move '{target.name}' {nameof(GfzBezierSplineSegment)}[{index}] point";
+            Undo.RecordObject(spline, undoMessage);
+            bezierPoint.outTangent = root.InverseTransformPoint(outTangentPosition);
+            bezierPoint.inTangent = GetTangentFromMode(bezierPoint, bezierPoint.outTangent, bezierPoint.inTangent);
+            spline.SetBezierPoint(index, bezierPoint);
+            EditorUtility.SetDirty(spline);
+        }
+
+        private BezierPoint DisplayEditableBezierPoint(int index)
+        {
+            BezierPoint bezierPoint = spline.GetBezierPoint(index);
+            var mode = bezierPoint.tangentMode;
+            var pointPosition = root.TransformPoint(bezierPoint.position);
+            var inTangentPosition = root.TransformPoint(bezierPoint.inTangent);
+            var outTangentPosition = root.TransformPoint(bezierPoint.outTangent);
             var color = modeColors[(int)mode];
 
             Handles.color = color;
@@ -210,17 +309,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             {
                 EditorGUI.BeginChangeCheck();
                 var result = Handles.DoPositionHandle(pointPosition, handleRotation);
-                var delta = result - pointPosition;
-                pointPosition = result;
                 if (EditorGUI.EndChangeCheck())
                 {
-                    string undoMessage = $"Move '{target.name}' {nameof(GfzBezierSplineSegment)}[{index}] point";
-                    Undo.RecordObject(spline, undoMessage);
-                    bezierPoint.point = handleTransform.InverseTransformPoint(pointPosition);
-                    bezierPoint.inTangent = handleTransform.InverseTransformPoint(inTangentPosition + delta);
-                    bezierPoint.outTangent = handleTransform.InverseTransformPoint(outTangentPosition + delta);
-                    spline.SetBezierPoint(index, bezierPoint);
-                    EditorUtility.SetDirty(spline);
+                    EditPointPosition(index, result);
                 }
             }
 
@@ -230,12 +321,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 inTangentPosition = Handles.DoPositionHandle(inTangentPosition, handleRotation);
                 if (EditorGUI.EndChangeCheck())
                 {
-                    string undoMessage = $"Move '{target.name}' {nameof(GfzBezierSplineSegment)}[{index}] point";
-                    Undo.RecordObject(spline, undoMessage);
-                    bezierPoint.inTangent = handleTransform.InverseTransformPoint(inTangentPosition);
-                    bezierPoint.outTangent = GetTangentFromMode(bezierPoint, bezierPoint.inTangent, bezierPoint.outTangent);
-                    spline.SetBezierPoint(index, bezierPoint);
-                    EditorUtility.SetDirty(spline);
+                    EditInTangent(index, inTangentPosition);
                 }
             }
 
@@ -245,23 +331,17 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 outTangentPosition = Handles.DoPositionHandle(outTangentPosition, handleRotation);
                 if (EditorGUI.EndChangeCheck())
                 {
-                    string undoMessage = $"Move '{target.name}' {nameof(GfzBezierSplineSegment)}[{index}] point";
-                    Undo.RecordObject(spline, undoMessage);
-                    bezierPoint.outTangent = handleTransform.InverseTransformPoint(outTangentPosition);
-                    bezierPoint.inTangent = GetTangentFromMode(bezierPoint, bezierPoint.outTangent, bezierPoint.inTangent);
-                    spline.SetBezierPoint(index, bezierPoint);
-                    EditorUtility.SetDirty(spline);
+                    EditOutTangent(index, outTangentPosition);
                 }
             }
 
             return bezierPoint;
         }
 
-
         private Vector3 GetTangentFromMode(BezierPoint bezierPoint, Vector3 at, Vector3 bt)
         {
-            BezierControlPointMode mode = bezierPoint.mode;
-            Vector3 point = bezierPoint.point;
+            BezierControlPointMode mode = bezierPoint.tangentMode;
+            Vector3 point = bezierPoint.position;
 
             switch (mode)
             {
@@ -294,39 +374,14 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 default:
                     throw new NotImplementedException();
             }
-
-
-            if (bezierPoint.mode == BezierControlPointMode.Mirrored)
-            {
-                // Direction from inTangent to point
-                var direction = bezierPoint.point - bezierPoint.inTangent;
-                // Direction added to point = outTangent
-                bezierPoint.outTangent = direction + bezierPoint.point;
-            }
         }
-
 
         private bool DoBezierHandle(Vector3 position)
         {
             var size = HandleUtility.GetHandleSize(position);
             var isSelected = Handles.Button(position, handleRotation, handleSize * size, pickSize * size, Handles.DotHandleCap);
-
-            //if (isSelected)
-            //{
-            //    //
-            //    EditorGUI.BeginChangeCheck();
-            //    position = Handles.DoPositionHandle(position, handleRotation);
-            //    if (EditorGUI.EndChangeCheck())
-            //    {
-            //        Undo.RecordObject(spline, $"Move {nameof(GfzBezierSplineSegment)} point");
-            //        position = handleTransform.InverseTransformPoint(position);
-            //        EditorUtility.SetDirty(spline);
-            //    }
-            //}
-
             return isSelected;
         }
-
 
         private void ShowDirections()
         {

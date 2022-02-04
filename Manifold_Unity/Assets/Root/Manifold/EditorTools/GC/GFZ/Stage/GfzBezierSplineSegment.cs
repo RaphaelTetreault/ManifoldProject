@@ -69,10 +69,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
             var bezier0 = points[i+0]; 
             var bezier1 = points[i+1];
-            var p0 = bezier0.point;
+            var p0 = bezier0.position;
             var p1 = bezier0.inTangent;
             var p2 = bezier1.inTangent;
-            var p3 = bezier1.point;
+            var p3 = bezier1.position;
 
             var point = Bezier.GetPoint(p0, p1, p2, p3, t);
             var p = transform.TransformPoint(point);
@@ -86,10 +86,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
             var bezier0 = points[i - 1];
             var bezier1 = points[i + 0];
-            var p0 = bezier0.point;
+            var p0 = bezier0.position;
             var p1 = bezier0.inTangent;
             var p2 = bezier1.inTangent;
-            var p3 = bezier1.point;
+            var p3 = bezier1.position;
 
             var firstDerivitive = Bezier.GetFirstDerivative(p0, p1, p2, p3, t);
 
@@ -120,9 +120,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
             //
             var newCurve = new BezierPoint();
-            newCurve.inTangent  = prevBezier.point + direction * 25f;// prevBezier.point - direction * 50f;
-            newCurve.outTangent = prevBezier.point - direction * 50f;
-            newCurve.point      = prevBezier.point + direction * 100f;
+            newCurve.inTangent  = prevBezier.position + direction * 25f;// prevBezier.point - direction * 50f;
+            newCurve.outTangent = prevBezier.position - direction * 50f;
+            newCurve.position      = prevBezier.position + direction * 100f;
             //
             points[points.Length - 1] = newCurve;
         }
@@ -135,8 +135,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 // Mandatory first node
                 new BezierPoint()
                 {
-                    mode = BezierControlPointMode.Mirrored,
-                    point = new Vector3(0f, 0f, 0f),
+                    tangentMode = BezierControlPointMode.Mirrored,
+                    position = new Vector3(0f, 0f, 0f),
                     inTangent = new Vector3(0f, 0f, -100f),
                     width = 64f,
                     roll = 0f,
@@ -145,8 +145,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 // Firs point which can form a curve with the start
                 new BezierPoint()
                 {
-                    mode = BezierControlPointMode.Mirrored,
-                    point = new Vector3(0f, 0f, -300f),
+                    tangentMode = BezierControlPointMode.Mirrored,
+                    position = new Vector3(0f, 0f, -300f),
                     inTangent = new Vector3(0f, 0f, -200f),
                     width = 64f,
                     roll = 0f,
