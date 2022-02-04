@@ -10,7 +10,7 @@ using Manifold.Spline;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage
 {
-    public class GfzBezierSplineSegment : MonoBehaviour
+    public class BezierSpline : MonoBehaviour
     {
         [SerializeField]
         private Vector3[] points;

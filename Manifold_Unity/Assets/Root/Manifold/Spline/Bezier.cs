@@ -7,7 +7,7 @@ using Unity.Mathematics;
 
 namespace Manifold.Spline
 {
-    public static class BezierSpline
+    public static class Bezier
     {
 
         public static float3 GetPoint(float3 p0, float3 p1, float3 p2, float3 p3, float t)
