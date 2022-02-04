@@ -17,7 +17,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
 
         private const int stepsPerCurve = 10;
-        private const float directionScale = 0.5f;
+        private const float directionScale = 50f;
         private const float handleSize = 0.05f;
         private const float pickSize = handleSize * 1.5f;
 
@@ -49,7 +49,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             //spline.SetControlPoint(0, bezier0);
             //DisplayBezierPoint(0);
 
-            for (int i = 1; i <= spline.PointCount; i++)
+            for (int i = 1; i <= spline.CurveCount; i++)
             {
                 BezierPoint bezier1 = DisplayEditableBezierPoint(i);
                 //spline.SetControlPoint(i, bezier1);
@@ -67,7 +67,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
                 bezier0 = bezier1;
             }
-            //ShowDirections();
+            ShowDirections();
         }
 
         public override void OnInspectorGUI()
@@ -87,7 +87,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 EditorUtility.SetDirty(spline);
             }
 
-            int rows = spline.PointCount / 10;
+            int rows = spline.CurveCount / 10;
             for (int r = 0; r <= rows; r++)
             {
                 int rowBaseCurr = (r + 0) * 10;
@@ -97,7 +97,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 List<string> labels = new List<string>();
                 for (int c = rowBaseCurr; c < rowBaseNext; c++)
                 {
-                    if (c <= spline.PointCount)
+                    if (c <= spline.CurveCount)
                     {
                         labels.Add(c.ToString());
                     }
@@ -117,7 +117,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 result += rowBaseCurr;
 
                 // Set index if valid. If invalid row, we have result = -1, so this doesn't run.
-                bool isValidIndex = result >= 0 && result <= spline.PointCount;
+                bool isValidIndex = result >= 0 && result <= spline.CurveCount;
                 if (isValidIndex)
                 {
                     selectedIndex = result;
@@ -128,7 +128,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
 
 
-            bool isIndexSelectable = selectedIndex >= 0 && selectedIndex < spline.ControlPointCount;
+            bool isIndexSelectable = selectedIndex >= 0 && selectedIndex <= spline.CurveCount;
             if (isIndexSelectable)
             {
                 EditorGUI.indentLevel++;
@@ -290,7 +290,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             var color = modeColors[(int)mode];
 
             bool isFirstPoint = index == 0;
-            bool isLastPoint = index == spline.PointCount;
+            bool isLastPoint = index == spline.CurveCount;
 
             Handles.color = color;
             bool pointSelected = DoBezierHandle(pointPosition);
@@ -337,6 +337,18 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 {
                     EditOutTangent(index, outTangentPosition);
                 }
+            }
+
+            // For all points except the last
+            if (index < spline.CurveCount)
+            {
+                float time = (index + 0.5f) / spline.CurveCount;
+                var pos = spline.GetPoint(time);
+
+                var basepos = root.TransformPoint(bezierPoint.position);
+
+                Handles.Label(pos, index.ToString());
+                Handles.DrawLine(basepos, pos);
             }
 
             return bezierPoint;
@@ -393,13 +405,14 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             Vector3 point = spline.GetPoint(0f);
             Vector3 direction = spline.GetDirection(0f) * directionScale;
             Handles.DrawLine(point, point + direction);
-            int steps = stepsPerCurve * spline.PointCount;
-            for (int i = 1; i <= steps; i++)
+
+            int numIters = stepsPerCurve * spline.CurveCount; 
+            for (int i = 0; i <= numIters; i++)
             {
-                var time = i / (float)steps;
-                direction = spline.GetDirection(time) * directionScale;
+                float time = (float)i / numIters;
                 point = spline.GetPoint(time);
-                Handles.DrawLine(point, point + direction);
+                direction = spline.GetDirection(time);
+                Handles.DrawLine(point, point + direction * directionScale);
             }
         }
 

@@ -22,9 +22,19 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         //      add option for loop? Extend array by 1, copy first into last, last into first
 
 
-        public int ControlPointCount
+        //public int ControlPointsLength
+        //{
+        //    get => points.Length;
+        //}
+
+        public int PointsCount
         {
             get => points.Length;
+        }
+
+        public int CurveCount
+        {
+            get => points.Length - 1;
         }
 
         public BezierPoint GetBezierPoint(int index)
@@ -48,12 +58,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 // clamp time
                 t = 1f;
                 // get final index
-                index = points.Length - 1;
+                index = points.Length - 2;
             }
             else
             {
                 // Clamp time, convert normalized time into curve segment index
-                t = Mathf.Clamp01(t) * PointCount;
+                t = Mathf.Clamp01(t) * CurveCount;
                 // Cast time to int, turns time into curve index
                 index = (int)t;
                 // Place T back into 0-1 range
@@ -70,7 +80,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             var bezier0 = points[i+0]; 
             var bezier1 = points[i+1];
             var p0 = bezier0.position;
-            var p1 = bezier0.inTangent;
+            var p1 = bezier0.outTangent;
             var p2 = bezier1.inTangent;
             var p3 = bezier1.position;
 
@@ -84,10 +94,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         {
             (float t, int i) = NormalizedTimeToTimeAndIndex(time);
 
-            var bezier0 = points[i - 1];
-            var bezier1 = points[i + 0];
+            var bezier0 = points[i + 0];
+            var bezier1 = points[i + 1];
             var p0 = bezier0.position;
-            var p1 = bezier0.inTangent;
+            var p1 = bezier0.outTangent;
             var p2 = bezier1.inTangent;
             var p3 = bezier1.position;
 
@@ -103,10 +113,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             return GetVelocity(t).normalized;
         }
 
-        public int PointCount
-        {
-            get => points.Length - 1;
-        }
+
 
         public void AddCurve()
         {
