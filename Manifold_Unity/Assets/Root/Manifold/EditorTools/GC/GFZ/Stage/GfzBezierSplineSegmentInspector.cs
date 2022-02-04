@@ -39,11 +39,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             // Displays the bezier in Scene view
             // TODO: new version of ShowPoint
             BezierPoint bezier0 = DisplayBezierPoint(0);
+            //spline.SetControlPoint(0, bezier0);
             //DisplayBezierPoint(0);
 
             for (int i = 1; i <= spline.CurveCount; i++)
             {
                 BezierPoint bezier1 = DisplayBezierPoint(i);
+                //spline.SetControlPoint(i, bezier1);
 
                 var p0 = handleTransform.TransformPoint(bezier0.point);
                 var p1 = handleTransform.TransformPoint(bezier0.outTangent);
@@ -127,53 +129,138 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             var color = modeColors[(int)mode];
 
             Handles.color = color;
-            if(DoBezierHandle(ref pointPosition))
-            {
-                selectedIndex = index;
-                selectedPart = SelectedPart.point;
-                bezierPoint.point = pointPosition;
-            }
+            bool pointSelected = DoBezierHandle(pointPosition);
+            bool inTangentSelected = DoBezierHandle(inTangentPosition);
+            bool outTangentSelected = DoBezierHandle(outTangentPosition);
+            bool bezierSelected = index == selectedIndex;
 
-            if (DoBezierHandle(ref inTangentPosition))
-            {
+            if (pointSelected || inTangentSelected || outTangentSelected)
                 selectedIndex = index;
+
+            if (pointSelected)
                 selectedPart = SelectedPart.point;
-                bezierPoint.inTangent = inTangentPosition;
-                if (index != 0)
+            if (inTangentSelected)
+                selectedPart = SelectedPart.inTangent;
+            if (outTangentSelected)
+                selectedPart = SelectedPart.outTangent;
+
+            if (bezierSelected && selectedPart == SelectedPart.point)
+            {
+                EditorGUI.BeginChangeCheck();
+                var result = Handles.DoPositionHandle(pointPosition, handleRotation);
+                var delta = result - pointPosition;
+                pointPosition = result;
+                if (EditorGUI.EndChangeCheck())
                 {
-                    //var prevBezier = spline.GetBezierPoint(index - 1);
-                    //prevBezier.
+                    string undoMessage = $"Move '{target.name}' {nameof(GfzBezierSplineSegment)}[{index}] point";
+                    Undo.RecordObject(spline, undoMessage);
+                    bezierPoint.point = handleTransform.InverseTransformPoint(pointPosition);
+                    bezierPoint.inTangent = handleTransform.InverseTransformPoint(inTangentPosition + delta);
+                    bezierPoint.outTangent = handleTransform.InverseTransformPoint(outTangentPosition + delta);
+                    spline.SetControlPoint(index, bezierPoint);
+                    EditorUtility.SetDirty(spline);
                 }
             }
 
-            if (DoBezierHandle(ref outTangentPosition))
+            if (bezierSelected && selectedPart == SelectedPart.inTangent)
             {
-                selectedIndex = index;
-                selectedPart = SelectedPart.point;
-                bezierPoint.outTangent = outTangentPosition;
+                EditorGUI.BeginChangeCheck();
+                inTangentPosition = Handles.DoPositionHandle(inTangentPosition, handleRotation);
+                if (EditorGUI.EndChangeCheck())
+                {
+                    string undoMessage = $"Move '{target.name}' {nameof(GfzBezierSplineSegment)}[{index}] point";
+                    Undo.RecordObject(spline, undoMessage);
+                    bezierPoint.inTangent = handleTransform.InverseTransformPoint(inTangentPosition);
+                    bezierPoint.outTangent = GetTangentFromMode(bezierPoint, bezierPoint.inTangent, bezierPoint.outTangent);
+                    spline.SetControlPoint(index, bezierPoint);
+                    EditorUtility.SetDirty(spline);
+                }
+            }
 
+            if (bezierSelected && selectedPart == SelectedPart.outTangent)
+            {
+                EditorGUI.BeginChangeCheck();
+                outTangentPosition = Handles.DoPositionHandle(outTangentPosition, handleRotation);
+                if (EditorGUI.EndChangeCheck())
+                {
+                    string undoMessage = $"Move '{target.name}' {nameof(GfzBezierSplineSegment)}[{index}] point";
+                    Undo.RecordObject(spline, undoMessage);
+                    bezierPoint.outTangent = handleTransform.InverseTransformPoint(outTangentPosition);
+                    bezierPoint.inTangent = GetTangentFromMode(bezierPoint, bezierPoint.outTangent, bezierPoint.inTangent);
+                    spline.SetControlPoint(index, bezierPoint);
+                    EditorUtility.SetDirty(spline);
+                }
             }
 
             return bezierPoint;
         }
 
-        private bool DoBezierHandle(ref Vector3 position)
+
+        private Vector3 GetTangentFromMode(BezierPoint bezierPoint, Vector3 at, Vector3 bt)
+        {
+            BezierControlPointMode mode = bezierPoint.mode;
+            Vector3 point = bezierPoint.point;
+
+            switch (mode)
+            {
+                case BezierControlPointMode.Mirrored:
+                    {
+                        // Direction from tangent to point
+                        var direction = point - at;
+                        // Direction added to point, mirror
+                        var tangent = direction + point;
+                        return tangent;
+                    }
+
+                case BezierControlPointMode.Aligned:
+                    {
+                        // Direction from tangent to point
+                        var direction = point - at;
+                        //
+                        var magnitude = (point - bt).magnitude;
+                        // Direction added to point, mirror
+                        var tangent = direction.normalized * magnitude + point;
+                        return tangent;
+                    }
+
+                case BezierControlPointMode.Free:
+                    {
+                        // Do nothing
+                        return bt;
+                    }
+
+                default:
+                    throw new NotImplementedException();
+            }
+
+
+            if (bezierPoint.mode == BezierControlPointMode.Mirrored)
+            {
+                // Direction from inTangent to point
+                var direction = bezierPoint.point - bezierPoint.inTangent;
+                // Direction added to point = outTangent
+                bezierPoint.outTangent = direction + bezierPoint.point;
+            }
+        }
+
+
+        private bool DoBezierHandle(Vector3 position)
         {
             var size = HandleUtility.GetHandleSize(position);
             var isSelected = Handles.Button(position, handleRotation, handleSize * size, pickSize * size, Handles.DotHandleCap);
 
-            if (isSelected)
-            {
-                //
-                EditorGUI.BeginChangeCheck();
-                position = Handles.DoPositionHandle(position, handleRotation);
-                if (EditorGUI.EndChangeCheck())
-                {
-                    Undo.RecordObject(spline, $"Move {nameof(GfzBezierSplineSegment)} point");
-                    position = handleTransform.InverseTransformPoint(position);
-                    EditorUtility.SetDirty(spline);
-                }
-            }
+            //if (isSelected)
+            //{
+            //    //
+            //    EditorGUI.BeginChangeCheck();
+            //    position = Handles.DoPositionHandle(position, handleRotation);
+            //    if (EditorGUI.EndChangeCheck())
+            //    {
+            //        Undo.RecordObject(spline, $"Move {nameof(GfzBezierSplineSegment)} point");
+            //        position = handleTransform.InverseTransformPoint(position);
+            //        EditorUtility.SetDirty(spline);
+            //    }
+            //}
 
             return isSelected;
         }
