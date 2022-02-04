@@ -16,16 +16,38 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         [SerializeField]
         private BezierPoint[] points;
 
+        [SerializeField, HideInInspector]
+        private bool isLoop = false;
+
+        [SerializeField, HideInInspector]
+        private AnimationCurve widthCurve = new();
+
+        [SerializeField, HideInInspector]
+        private AnimationCurve rollCurve = new();
+
         // TODO
         //      add widths => animation curve
         //      add rolls  => animation curve
         //      add option for loop? Extend array by 1, copy first into last, last into first
 
+        public bool IsLoop
+        {
+            get => isLoop;
+            set => isLoop = value;
+        }
 
-        //public int ControlPointsLength
-        //{
-        //    get => points.Length;
-        //}
+        public AnimationCurve WidthCurve
+        {
+            get => widthCurve;
+            set => widthCurve = value;
+        }
+
+        public AnimationCurve RollCurve
+        {
+            get => rollCurve;
+            set => rollCurve = value;
+        }
+
 
         public int PointsCount
         {

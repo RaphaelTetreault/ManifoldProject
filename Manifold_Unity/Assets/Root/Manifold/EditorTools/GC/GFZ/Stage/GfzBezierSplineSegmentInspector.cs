@@ -15,11 +15,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         [SerializeField]
         private bool viewDefaultValues = false;
 
-
+        // CONSIDER: make these public params on editor?
         private const int stepsPerCurve = 10;
         private const float directionScale = 50f;
-        private const float handleSize = 0.05f;
-        private const float pickSize = handleSize * 1.5f;
+        private const float handleSize = 0.06f;
 
         private const float splineThickness = lineThickness * 1.5f;
         private const float lineThickness = 2f;
@@ -44,15 +43,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 : Quaternion.identity;
 
             // Displays the bezier in Scene view
-            // TODO: new version of ShowPoint
             BezierPoint bezier0 = DisplayEditableBezierPoint(0);
-            //spline.SetControlPoint(0, bezier0);
-            //DisplayBezierPoint(0);
-
             for (int i = 1; i <= spline.CurveCount; i++)
             {
                 BezierPoint bezier1 = DisplayEditableBezierPoint(i);
-                //spline.SetControlPoint(i, bezier1);
 
                 var p0 = root.TransformPoint(bezier0.position);
                 var p1 = root.TransformPoint(bezier0.outTangent);
@@ -74,19 +68,61 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         {
             spline = target as GfzBezierSplineSegment;
 
+            // Default Script field for MonoBehaviour components
             GuiSimple.DefaultScript(spline);
 
-            // TODO: display the currently active bezier point
-            //       allow editing array, but leave it separate
+            //
+            GuiSimple.Label("Global Fields", EditorStyles.boldLabel);
+            {
+                var buttonWidth = GUILayout.Width(128);
+                // Widths Curves
+                {
+                    EditorGUI.BeginChangeCheck();
+                    EditorGUILayout.BeginHorizontal();
+                    var editedCurve = EditorGUILayout.CurveField("Width", spline.WidthCurve);
+                    if (GUILayout.Button("Copy Bézier Widths", buttonWidth))
+                    {
+                        // do copy operation
+                    }
+                    EditorGUILayout.EndHorizontal();
+                    if (EditorGUI.EndChangeCheck())
+                    {
+                        string undoMessage = $"Edit '{target.name}' {nameof(GfzBezierSplineSegment)} Width Curve";
+                        Undo.RegisterCompleteObjectUndo(spline, undoMessage);
+                        spline.WidthCurve = editedCurve;
+                        EditorUtility.SetDirty(spline);
+                    }
+                }
 
+                // Widths Curves
+                {
+                    EditorGUI.BeginChangeCheck();
+                    EditorGUILayout.BeginHorizontal();
+                    var editedCurve = EditorGUILayout.CurveField("Roll", spline.RollCurve);
+                    if (GUILayout.Button("Copy Bézier Rolls", buttonWidth))
+                    {
+                        // do copy operation
+                    }
+                    EditorGUILayout.EndHorizontal();
+                    if (EditorGUI.EndChangeCheck())
+                    {
+                        string undoMessage = $"Edit '{target.name}' {nameof(GfzBezierSplineSegment)} Roll Curve";
+                        Undo.RegisterCompleteObjectUndo(spline, undoMessage);
+                        spline.RollCurve = editedCurve;
+                        EditorUtility.SetDirty(spline);
+                    }
+                }
+            }
 
+            // SHOW Array data and toolbar
+            EditorGUILayout.Space();
+            GuiSimple.Label("Bézier Points", EditorStyles.boldLabel);
             if (GUILayout.Button("Add Bézier Point"))
             {
                 Undo.RecordObject(spline, $"Add bézier point to {nameof(GfzBezierSplineSegment)}");
                 spline.AddCurve();
                 EditorUtility.SetDirty(spline);
             }
-
             int rows = spline.CurveCount / 10;
             for (int r = 0; r <= rows; r++)
             {
@@ -124,17 +160,14 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 }
             }
 
+            // SHOW bezier point preview/editor
             EditorGUILayout.Space();
-
-
-
             bool isIndexSelectable = selectedIndex >= 0 && selectedIndex <= spline.CurveCount;
             if (isIndexSelectable)
             {
                 EditorGUI.indentLevel++;
                 DrawSelectedPointInspector(selectedIndex);
                 EditorGUI.indentLevel--;
-                //Repaint();
             }
             else
             {
@@ -142,12 +175,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 EditorGUILayout.HelpBox(msg, MessageType.Info);
             }
 
-
+            // OPTIONAL show raw data, allow re-ordering array data
             EditorGUILayout.Space();
             viewDefaultValues = EditorGUILayout.Foldout(viewDefaultValues, "View Reorderable Array", EditorStyles.foldoutHeader);
             if (viewDefaultValues)
             {
-                const string msg = "This view is meant for re-order bézier points only! Modify other data at your own risk.";
+                const string msg = "This view is meant for re-ordering bézier points only! Modify data at your own risk.";
                 EditorGUILayout.HelpBox(msg, MessageType.Warning);
                 DrawDefaultInspector();
             }
@@ -282,11 +315,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         private BezierPoint DisplayEditableBezierPoint(int index)
         {
-            BezierPoint bezierPoint = spline.GetBezierPoint(index);
-            var mode = bezierPoint.tangentMode;
-            var pointPosition = root.TransformPoint(bezierPoint.position);
-            var inTangentPosition = root.TransformPoint(bezierPoint.inTangent);
-            var outTangentPosition = root.TransformPoint(bezierPoint.outTangent);
+            BezierPoint bezier = spline.GetBezierPoint(index);
+            var mode = bezier.tangentMode;
+            var pointPosition = root.TransformPoint(bezier.position);
+            var inTangentPosition = root.TransformPoint(bezier.inTangent);
+            var outTangentPosition = root.TransformPoint(bezier.outTangent);
             var color = modeColors[(int)mode];
 
             bool isFirstPoint = index == 0;
@@ -339,19 +372,18 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 }
             }
 
-            // For all points except the last
-            if (index < spline.CurveCount)
-            {
-                float time = (index + 0.5f) / spline.CurveCount;
-                var pos = spline.GetPoint(time);
+            //// For all points except the last
+            //if (index <= spline.CurveCount)
+            //{
+            //    var sceneCamera = SceneView.currentDrawingSceneView.camera;
+            //    var size = HandleUtility.GetHandleSize(bezier.position);
+            //    var labelPosition = bezier.position + sceneCamera.transform.right * size / 5;
+            //    var label = $"{index}";
+            //    Handles.color = Color.white;
+            //    Handles.Label(labelPosition, label, EditorStyles.boldLabel);
+            //}
 
-                var basepos = root.TransformPoint(bezierPoint.position);
-
-                Handles.Label(pos, index.ToString());
-                Handles.DrawLine(basepos, pos);
-            }
-
-            return bezierPoint;
+            return bezier;
         }
 
         private Vector3 GetTangentFromMode(BezierPoint bezierPoint, Vector3 at, Vector3 bt)
@@ -395,7 +427,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         private bool DoBezierHandle(Vector3 position)
         {
             var size = HandleUtility.GetHandleSize(position);
-            var isSelected = Handles.Button(position, handleRotation, handleSize * size, pickSize * size, Handles.DotHandleCap);
+            float viewSize = handleSize * size;
+            float pickSize = handleSize + 3; // +3 px
+            var isSelected = Handles.Button(position, handleRotation, viewSize, pickSize, Handles.DotHandleCap);
             return isSelected;
         }
 
