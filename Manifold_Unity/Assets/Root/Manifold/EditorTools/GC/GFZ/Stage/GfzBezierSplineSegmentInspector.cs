@@ -36,34 +36,39 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 ? handleTransform.rotation
                 : Quaternion.identity;
 
-            //
-            Vector3 p0 = ShowPoint(0);
-            for (int i = 1; i < spline.ControlPointCount; i += 3)
-            {
-                Vector3 p1 = ShowPoint(i);
-                Vector3 p2 = ShowPoint(i + 1);
-                Vector3 p3 = ShowPoint(i + 2);
+            // Displays the bezier in Scene view
+            // TODO: new version of ShowPoint
+            BezierPoint bezier0 = DisplayBezierPoint(0);
+            //DisplayBezierPoint(0);
 
-                Handles.color = Color.gray;
+            for (int i = 1; i <= spline.CurveCount; i++)
+            {
+                BezierPoint bezier1 = DisplayBezierPoint(i);
+
+                var p0 = handleTransform.TransformPoint(bezier0.point);
+                var p1 = handleTransform.TransformPoint(bezier0.outTangent);
+                var p2 = handleTransform.TransformPoint(bezier1.inTangent);
+                var p3 = handleTransform.TransformPoint(bezier1.point);
+
+                Handles.color = Color.grey;
                 Handles.DrawLine(p0, p1);
                 Handles.DrawLine(p2, p3);
-
                 Handles.DrawBezier(p0, p3, p1, p2, Color.white, null, 2f);
-                p0 = p3;
+
+                bezier0 = bezier1;
             }
-            ShowDirections();
+            //ShowDirections();
         }
 
         public override void OnInspectorGUI()
         {
-            //DrawDefaultInspector();
             spline = target as GfzBezierSplineSegment;
 
-            if (selectedIndex >= 0 && selectedIndex < spline.ControlPointCount)
-            {
-                DrawSelectedPointInspector();
-                //Repaint();
-            }
+            //if (selectedIndex >= 0 && selectedIndex < spline.ControlPointCount)
+            //{
+            //    DrawSelectedPointInspector();
+            //    //Repaint();
+            //}
 
             if (GUILayout.Button("Add Curve"))
             {
@@ -72,66 +77,107 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 EditorUtility.SetDirty(spline);
             }
 
+            //
+            DrawDefaultInspector();
             Repaint();
         }
-        private void DrawSelectedPointInspector()
+        private void DrawSelectedPointInspector(Vector3 point)
         {
-            GUILayout.Label("Selected Point");
+            //GUILayout.Label("Selected Point");
 
-            // Let use change Vector3 position of node
-            EditorGUI.BeginChangeCheck();
-            var point = spline.GetControlPoint(selectedIndex);
-            Vector3 position = EditorGUILayout.Vector3Field("Position", point);
-            if (EditorGUI.EndChangeCheck())
-            {
-                Undo.RecordObject(spline, "Move Point");
-                EditorUtility.SetDirty(spline);
-                spline.SetControlPoint(selectedIndex, position);
-            }
+            //EditorGUI.BeginChangeCheck();
+            ////
+            //var point = spline.GetControlPoint(selectedIndex);
+            //Vector3 position = EditorGUILayout.Vector3Field("Position", point);
+            ////
+            //if (EditorGUI.EndChangeCheck())
+            //{
+            //    Undo.RecordObject(spline, "Move Point");
+            //    EditorUtility.SetDirty(spline);
+            //    spline.SetControlPoint(selectedIndex, position);
+            //}
 
-            // Let user change bezier mode between curves
-            EditorGUI.BeginChangeCheck();
-            BezierControlPointMode mode = (BezierControlPointMode)
-                EditorGUILayout.EnumPopup("Mode", spline.GetControlPointMode(selectedIndex));
-            if (EditorGUI.EndChangeCheck())
-            {
-                Undo.RecordObject(spline, "Change Point Mode");
-                spline.SetControlPointMode(selectedIndex, mode);
-                EditorUtility.SetDirty(spline);
-            }
+            //// Let user change bezier mode between curves
+            //EditorGUI.BeginChangeCheck();
+            //BezierControlPointMode mode = (BezierControlPointMode)
+            //    EditorGUILayout.EnumPopup("Mode", spline.GetControlPointMode(selectedIndex));
+            //if (EditorGUI.EndChangeCheck())
+            //{
+            //    Undo.RecordObject(spline, "Change Point Mode");
+            //    spline.SetControlPointMode(selectedIndex, mode);
+            //    EditorUtility.SetDirty(spline);
+            //}
+        }
+
+        private enum SelectedPart
+        {
+            none, point, inTangent, outTangent
         }
 
         private int selectedIndex = -1;
-        private Vector3 ShowPoint(int index)
-        {
-            var point = spline.GetControlPoint(index);
-            var p = handleTransform.TransformPoint(point);
+        private SelectedPart selectedPart = SelectedPart.none;
 
-            //
-            var modeIndex = spline.GetControlPointMode(index);
-            Handles.color = modeColors[(int)modeIndex];
-            var size = HandleUtility.GetHandleSize(p);
-            if (Handles.Button(p, handleRotation, handleSize * size, pickSize * size, Handles.DotHandleCap))
+        private BezierPoint DisplayBezierPoint(int index)
+        {
+            BezierPoint bezierPoint = spline.GetBezierPoint(index);
+            var mode = bezierPoint.mode;
+            var pointPosition = handleTransform.TransformPoint(bezierPoint.point);
+            var inTangentPosition = handleTransform.TransformPoint(bezierPoint.inTangent);
+            var outTangentPosition = handleTransform.TransformPoint(bezierPoint.outTangent);
+            var color = modeColors[(int)mode];
+
+            Handles.color = color;
+            if(DoBezierHandle(ref pointPosition))
             {
                 selectedIndex = index;
+                selectedPart = SelectedPart.point;
+                bezierPoint.point = pointPosition;
             }
 
-            //
-            if (selectedIndex == index)
+            if (DoBezierHandle(ref inTangentPosition))
             {
+                selectedIndex = index;
+                selectedPart = SelectedPart.point;
+                bezierPoint.inTangent = inTangentPosition;
+                if (index != 0)
+                {
+                    //var prevBezier = spline.GetBezierPoint(index - 1);
+                    //prevBezier.
+                }
+            }
+
+            if (DoBezierHandle(ref outTangentPosition))
+            {
+                selectedIndex = index;
+                selectedPart = SelectedPart.point;
+                bezierPoint.outTangent = outTangentPosition;
+
+            }
+
+            return bezierPoint;
+        }
+
+        private bool DoBezierHandle(ref Vector3 position)
+        {
+            var size = HandleUtility.GetHandleSize(position);
+            var isSelected = Handles.Button(position, handleRotation, handleSize * size, pickSize * size, Handles.DotHandleCap);
+
+            if (isSelected)
+            {
+                //
                 EditorGUI.BeginChangeCheck();
-                p = Handles.DoPositionHandle(p, handleRotation);
+                position = Handles.DoPositionHandle(position, handleRotation);
                 if (EditorGUI.EndChangeCheck())
                 {
                     Undo.RecordObject(spline, $"Move {nameof(GfzBezierSplineSegment)} point");
-                    var position = handleTransform.InverseTransformPoint(p);
-                    spline.SetControlPoint(index, position);
+                    position = handleTransform.InverseTransformPoint(position);
                     EditorUtility.SetDirty(spline);
                 }
             }
 
-            return p;
+            return isSelected;
         }
+
 
         private void ShowDirections()
         {

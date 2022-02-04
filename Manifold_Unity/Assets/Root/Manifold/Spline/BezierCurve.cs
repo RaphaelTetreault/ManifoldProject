@@ -1,18 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Unity.Mathematics;
+﻿using UnityEngine;
+using Manifold.Spline;
 
-namespace Manifold.Spline
+namespace Manifold.EditorTools.GC.GFZ.Stage
 {
-
+    [System.Serializable]
     public struct BezierPoint
     {
         public BezierControlPointMode mode;
-        public float3 point;
-        public float3 control;
+        public Vector3 point;
+        public Vector3 inTangent;
+        public Vector3 outTangent;
         public float width;
         public float roll;
     }
