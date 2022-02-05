@@ -58,6 +58,31 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 var p2 = root.TransformPoint(bezier1.inTangent);
                 var p3 = root.TransformPoint(bezier1.position);
 
+                for (int p = 0; p < 100; p++)
+                {
+                    var time0 = (float)(p+0) / 100;
+                    var time1 = (float)(p+1) / 100;
+                    var px0 = spline.GetPosition(time0, i-1);
+                    var px1 = spline.GetPosition(time1, i-1);
+
+                    var rotZ = Quaternion.Euler(0, 0, Mathf.Lerp(bezier0.roll, bezier1.roll, time0));
+                    var rot0 = Quaternion.LookRotation(spline.GetDirection(time0, i - 1)) * rotZ;
+                    var rot1 = Quaternion.LookRotation(spline.GetDirection(time1, i - 1)) * rotZ;
+
+                    // TODO: sample anim curve
+                    var w = Mathf.Lerp(bezier0.width, bezier1.width, time0) / 2f;
+
+                    var l0 = px0 + rot0 * Vector3.left * w;
+                    var l1 = px1 + rot1 * Vector3.left * w;
+                    var r0 = px0 + rot0 * Vector3.right * w;
+                    var r1 = px1 + rot1 * Vector3.right * w;
+
+                    Handles.color = Color.green;
+                    Handles.DrawLine(l0, l1);
+                    Handles.color = Color.red;
+                    Handles.DrawLine(r0, r1);
+                }
+                
                 Handles.color = new Color32(100, 140, 255, 255);
                 Handles.DrawLine(p0, p1, lineThickness);
                 Handles.color = Color.grey;
