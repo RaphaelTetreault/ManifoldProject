@@ -388,8 +388,16 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             var outTangentPosition = root.TransformPoint(bezier.outTangent);
             var color = modeColors[(int)mode];
 
-            bool isFirstPoint = index == 0;
-            bool isLastPoint = index == spline.CurveCount;
+            // Draw position handle for all elements except the last point in a loop
+            bool doPosition = !spline.IsLoop || index < spline.CurveCount;
+            // Draw the first intangent if:
+            // We are not the first point when not a loop OR
+            // We are any index other than the final one when in a loop
+            bool doFirstInTangent =
+                (index > 0 && !spline.IsLoop) ||
+                (spline.IsLoop && index < spline.CurveCount);
+            // Draw the last outTangent if not last point
+            bool doLastOutTangent = (index < spline.CurveCount);
 
             bool isSelected = index == selectedIndex;
             if (!isSelected)
@@ -398,10 +406,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             }
 
             Handles.color = color;
-            bool pointSelected = DoBezierHandle(pointPosition, 1.75f);
+            bool pointSelected = doPosition ? DoBezierHandle(pointPosition, 1.75f) : false;
             // Only visualize/edit in-tangent if not first, out-tangent if not last
-            bool inTangentSelected = !isFirstPoint ? DoBezierHandle(inTangentPosition) : false;
-            bool outTangentSelected = !isLastPoint ? DoBezierHandle(outTangentPosition) : false;
+            bool inTangentSelected = doFirstInTangent ? DoBezierHandle(inTangentPosition) : false;
+            bool outTangentSelected = doLastOutTangent ? DoBezierHandle(outTangentPosition) : false;
             bool bezierSelected = index == selectedIndex;
 
             if (pointSelected || inTangentSelected || outTangentSelected)
