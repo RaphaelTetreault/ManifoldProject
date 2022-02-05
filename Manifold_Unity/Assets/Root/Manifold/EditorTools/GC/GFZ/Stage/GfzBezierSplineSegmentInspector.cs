@@ -58,8 +58,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 var p2 = root.TransformPoint(bezier1.inTangent);
                 var p3 = root.TransformPoint(bezier1.position);
 
-                Handles.color = Color.grey;
+                Handles.color = new Color32(100, 140, 255, 255);
                 Handles.DrawLine(p0, p1, lineThickness);
+                Handles.color = Color.grey;
                 Handles.DrawDottedLine(p1, p2, 5f);
                 Handles.DrawLine(p2, p3, lineThickness);
                 Handles.DrawBezier(p0, p3, p1, p2, Color.white, null, splineThickness);
@@ -189,7 +190,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             if (isIndexSelectable)
             {
                 EditorGUI.indentLevel++;
-                DrawSelectedPointInspector(selectedIndex);
+                DrawSelectedBezierPointInspector(selectedIndex);
                 EditorGUI.indentLevel--;
             }
             else
@@ -204,7 +205,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             Repaint();
         }
 
-        private void DrawSelectedPointInspector(int index)
+        private void DrawSelectedBezierPointInspector(int index)
         {
             GUILayout.Label($"Bézier Point [{index}]", EditorStyles.boldLabel);
 
@@ -216,7 +217,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             if (EditorGUI.EndChangeCheck())
             {
                 var position = root.TransformPoint(bezier.position);
-                EditPointPosition(index, position);
+                EditBezierPointPosition(index, position);
             }
 
             // MODE
@@ -310,7 +311,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         }
 
 
-        public void EditPointPosition(int index, Vector3 localPosition)
+        public void EditBezierPointPosition(int index, Vector3 localPosition)
         {
             BezierPoint bezierPoint = spline.GetBezierPoint(index);
 
@@ -436,7 +437,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 var result = Handles.DoPositionHandle(pointPosition, handleRotation);
                 if (EditorGUI.EndChangeCheck())
                 {
-                    EditPointPosition(index, result);
+                    EditBezierPointPosition(index, result);
                 }
             }
 
