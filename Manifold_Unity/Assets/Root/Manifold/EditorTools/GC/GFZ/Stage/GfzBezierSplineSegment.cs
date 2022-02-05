@@ -52,9 +52,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         public int PointsCount
         {
-            get => isLoop 
-                ? points.Count - 1
-                : points.Count;
+            get => points.Count;
         }
 
         public int CurveCount

@@ -198,6 +198,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 EditorGUILayout.HelpBox(msg, MessageType.Info);
             }
 
+            //DrawDefaultInspector();
+
             //
             Repaint();
         }
@@ -365,7 +367,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             if (spline.IsLoop)
             {
                 bool isFirstPoint = index == 0;
-                bool isLastPoint = index >= spline.LoopLastIndex;
+                bool isLastPoint = index == spline.CurveCount;
                 if (isFirstPoint)
                 {
                     spline.SetBezierPoint(spline.CurveCount, bezierPoint);
