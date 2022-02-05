@@ -14,18 +14,41 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
     public class GfzBezierSplineSegment : MonoBehaviour
     {
         [SerializeField]
-        //private BezierPoint[] points;
         private List<BezierPoint> points;
-
 
         [SerializeField, HideInInspector]
         private bool isLoop = false;
 
         [SerializeField, HideInInspector]
-        private AnimationCurve widthCurve = new();
+        private AnimationCurve widthsCurve = new();
 
         [SerializeField, HideInInspector]
-        private AnimationCurve rollCurve = new();
+        private AnimationCurve rollsCurve = new();
+
+        //
+        [SerializeField]
+        private bool viewDirection = true;
+
+        [Min(1)]
+        [SerializeField]
+        private int viewDirectionArrowsPerCurve = 1;
+
+        [Min(10f)]
+        [SerializeField]
+        private float viewDirectionScale = 50f;
+
+        [Range(0.02f, 0.1f)]
+        [SerializeField]
+        private float bezierHandleSize = 0.06f;
+
+        [Range(1f, 5f)]
+        [SerializeField]
+        private float splineThickness = 3f;
+
+        [Range(1f, 3f)]
+        [SerializeField]
+        private float outterLineThickness = 2f;
+
 
         // TODO
         //      add widths => animation curve
@@ -37,16 +60,22 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             get => isLoop;
         }
 
+        public bool ViewDirection
+        {
+            get => viewDirection;
+            set => viewDirection = value;
+        }
+
         public AnimationCurve WidthCurve
         {
-            get => widthCurve;
-            set => widthCurve = value;
+            get => widthsCurve;
+            set => widthsCurve = value;
         }
 
         public AnimationCurve RollCurve
         {
-            get => rollCurve;
-            set => rollCurve = value;
+            get => rollsCurve;
+            set => rollsCurve = value;
         }
 
 
@@ -66,6 +95,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 ? CurveCount - 1
                 : CurveCount;
         }
+        public int ViewDirectionArrowsPerCurve { get => viewDirectionArrowsPerCurve; set => viewDirectionArrowsPerCurve = value; }
+        public float ViewDirectionScale { get => viewDirectionScale; set => viewDirectionScale = value; }
+        public float BezierHandleSize { get => bezierHandleSize; set => bezierHandleSize = value; }
+        public float SplineThickness { get => splineThickness; set => splineThickness = value; }
+        public float OutterLineThickness { get => outterLineThickness; set => outterLineThickness = value; }
 
         public BezierPoint GetBezierPoint(int index)
         {
