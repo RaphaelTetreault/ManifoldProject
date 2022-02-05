@@ -263,17 +263,30 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             {
                 InsertPoint(index-1);
             }
+
+            if (IsLoop)
+            {
+                // Conform to loop, make last point same as first
+                points[points.Count - 1] = points[0];
+            }
         }
 
         public void InsertAfter(int index)
         {
-            if (index >= points.Count -1)
+            bool isLastIndex = (index >= points.Count - 1);
+            if (isLastIndex && !IsLoop)
             {
                 AddPointAtEnd();
             }
             else
             {
-                InsertPoint(index);
+                InsertPoint(index - 1);
+            }
+
+            if (IsLoop)
+            {
+                // Conform to loop, make first point same as last
+                points[0] = points[points.Count - 1];
             }
         }
 

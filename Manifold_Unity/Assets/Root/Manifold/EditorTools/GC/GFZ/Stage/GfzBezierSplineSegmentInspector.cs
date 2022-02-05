@@ -432,7 +432,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 }
             }
 
-            if (bezierSelected && selectedPart == SelectedPart.inTangent)// && !isFirstPoint)
+            if (bezierSelected && selectedPart == SelectedPart.inTangent)
             {
                 EditorGUI.BeginChangeCheck();
                 inTangentPosition = Handles.DoPositionHandle(inTangentPosition, handleRotation);
@@ -442,7 +442,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 }
             }
 
-            if (bezierSelected && selectedPart == SelectedPart.outTangent)// && !isLastPoint)
+            if (bezierSelected && selectedPart == SelectedPart.outTangent)
             {
                 EditorGUI.BeginChangeCheck();
                 outTangentPosition = Handles.DoPositionHandle(outTangentPosition, handleRotation);
@@ -451,17 +451,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                     EditOutTangent(index, outTangentPosition);
                 }
             }
-
-            //// For all points except the last
-            //if (index <= spline.CurveCount)
-            //{
-            //    var sceneCamera = SceneView.currentDrawingSceneView.camera;
-            //    var size = HandleUtility.GetHandleSize(bezier.position);
-            //    var labelPosition = bezier.position + sceneCamera.transform.right * size / 5;
-            //    var label = $"{index}";
-            //    Handles.color = Color.white;
-            //    Handles.Label(labelPosition, label, EditorStyles.boldLabel);
-            //}
 
             return bezier;
         }
@@ -508,8 +497,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         {
             var size = HandleUtility.GetHandleSize(position);
             float viewSize = handleSize * size * scaleMultiplier;
-            float pickSize = handleSize + 3; // +3 px
-            var isSelected = Handles.Button(position, Quaternion.identity, viewSize, pickSize, Handles.DotHandleCap);
+            float pickSize = viewSize;
+            var isSelected = Handles.Button(position, handleRotation, viewSize, pickSize, Handles.DotHandleCap);
             return isSelected;
         }
 
