@@ -224,7 +224,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             bezier.tangentMode = GuiSimple.EnumPopup(nameof(bezier.tangentMode), bezier.tangentMode);
             if (EditorGUI.EndChangeCheck())
             {
+                Undo.RecordObject(spline, $"Set bézier point [{selectedIndex}] mode");
                 spline.SetBezierPoint(index, bezier);
+                EditorUtility.SetDirty(spline);
             }
 
             // IN TANGENT
@@ -250,7 +252,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             bezier.width = GuiSimple.Float(nameof(bezier.width), bezier.width);
             if (EditorGUI.EndChangeCheck())
             {
+                Undo.RecordObject(spline, $"Set bézier point [{selectedIndex}] width");
                 spline.SetBezierPoint(index, bezier);
+                EditorUtility.SetDirty(spline);
             }
 
             // ROLL
@@ -258,7 +262,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             bezier.roll = GuiSimple.Float(nameof(bezier.roll), bezier.roll);
             if (EditorGUI.EndChangeCheck())
             {
+                Undo.RecordObject(spline, $"Set bézier point [{selectedIndex}] roll");
                 spline.SetBezierPoint(index, bezier);
+                EditorUtility.SetDirty(spline);
             }
         }
 
@@ -318,7 +324,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             var outTangentPosition = root.TransformPoint(bezierPoint.outTangent);
 
             //
-            string undoMessage = $"Move '{target.name}' {nameof(GfzBezierSplineSegment)}[{index}] point";
+            string undoMessage = $"Move bézier point [{index}] position";
             Undo.RecordObject(spline, undoMessage);
             bezierPoint.position = root.InverseTransformPoint(newPosition);
             bezierPoint.inTangent = root.InverseTransformPoint(inTangentPosition + positionDelta);
@@ -336,7 +342,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             var inTangentPosition = localPosition;
 
             //
-            string undoMessage = $"Move '{target.name}' {nameof(GfzBezierSplineSegment)}[{index}] point";
+            string undoMessage = $"Move bézier point [{index}] in-tangent";
             Undo.RecordObject(spline, undoMessage);
             bezierPoint.inTangent = root.InverseTransformPoint(inTangentPosition);
             bezierPoint.outTangent = GetTangentFromMode(bezierPoint, bezierPoint.inTangent, bezierPoint.outTangent);
@@ -353,7 +359,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             var outTangentPosition = localPosition;
 
             //
-            string undoMessage = $"Move '{target.name}' {nameof(GfzBezierSplineSegment)}[{index}] point";
+            string undoMessage = $"Move bézier point [{index}] out-tangent";
             Undo.RecordObject(spline, undoMessage);
             bezierPoint.outTangent = root.InverseTransformPoint(outTangentPosition);
             bezierPoint.inTangent = GetTangentFromMode(bezierPoint, bezierPoint.outTangent, bezierPoint.inTangent);
