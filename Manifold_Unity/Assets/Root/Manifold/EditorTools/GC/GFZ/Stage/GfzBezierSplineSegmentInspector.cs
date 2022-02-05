@@ -12,9 +12,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
     [CustomEditor(typeof(GfzBezierSplineSegment))]
     public class GfzBezierSplineSegmentInspector : Editor
     {
-        [SerializeField]
-        private bool viewDefaultValues = false;
-
         // CONSIDER: make these public params on editor?
         private const int stepsPerCurve = 10;
         private const float directionScale = 50f;
@@ -84,6 +81,18 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             GuiSimple.Label("Global Fields", EditorStyles.boldLabel);
             {
                 var buttonWidth = GUILayout.Width(128);
+
+                // Loop
+                EditorGUI.BeginChangeCheck();
+                bool isLoop = GuiSimple.Bool(nameof(spline.IsLoop), spline.IsLoop);
+                if (EditorGUI.EndChangeCheck())
+                {
+                    string undoMessage = $"Set spline.IsLoop to '{isLoop}'.";
+                    Undo.RegisterCompleteObjectUndo(spline, undoMessage);
+                    spline.SetLoop(isLoop);
+                    EditorUtility.SetDirty(spline);
+                }
+
                 // Widths Curves
                 {
                     EditorGUI.BeginChangeCheck();
@@ -137,7 +146,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 }
             }
 
-            // SHOW Array data and toolbar
+            //
             EditorGUILayout.Space();
             GuiSimple.Label("Bézier Points", EditorStyles.boldLabel);
             GUILayout.BeginHorizontal();
@@ -188,16 +197,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 const string msg = "No bézier control point selected. Select a control point in the Scene view or via the toolbar above.";
                 EditorGUILayout.HelpBox(msg, MessageType.Info);
             }
-
-            //// OPTIONAL show raw data, allow re-ordering array data
-            //EditorGUILayout.Space();
-            //viewDefaultValues = EditorGUILayout.Foldout(viewDefaultValues, "View Reorderable Array", EditorStyles.foldoutHeader);
-            //if (viewDefaultValues)
-            //{
-            //    const string msg = "This view is meant for re-ordering bézier points only! Modify data at your own risk.";
-            //    EditorGUILayout.HelpBox(msg, MessageType.Warning);
-            //    DrawDefaultInspector();
-            //}
 
             //
             Repaint();
@@ -273,7 +272,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 List<string> labels = new List<string>();
                 for (int c = rowBaseCurr; c < rowBaseNext; c++)
                 {
-                    if (c <= spline.CurveCount)
+                    if (c <= spline.LoopLastIndex)
                     {
                         labels.Add(c.ToString());
                     }
@@ -293,7 +292,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 result += rowBaseCurr;
 
                 // Set index if valid. If invalid row, we have result = -1, so this doesn't run.
-                bool isValidIndex = result >= 0 && result <= spline.CurveCount;
+                bool isValidIndex = result >= 0 && result <= spline.LoopLastIndex;
                 if (isValidIndex)
                 {
                     selectedIndex = result;
@@ -323,6 +322,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             bezierPoint.inTangent = root.InverseTransformPoint(inTangentPosition + positionDelta);
             bezierPoint.outTangent = root.InverseTransformPoint(outTangentPosition + positionDelta);
             spline.SetBezierPoint(index, bezierPoint);
+            ConnectEndsIfLoop(index, bezierPoint);
             EditorUtility.SetDirty(spline);
         }
 
@@ -339,6 +339,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             bezierPoint.inTangent = root.InverseTransformPoint(inTangentPosition);
             bezierPoint.outTangent = GetTangentFromMode(bezierPoint, bezierPoint.inTangent, bezierPoint.outTangent);
             spline.SetBezierPoint(index, bezierPoint);
+            ConnectEndsIfLoop(index, bezierPoint);
             EditorUtility.SetDirty(spline);
         }
 
@@ -355,8 +356,28 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             bezierPoint.outTangent = root.InverseTransformPoint(outTangentPosition);
             bezierPoint.inTangent = GetTangentFromMode(bezierPoint, bezierPoint.outTangent, bezierPoint.inTangent);
             spline.SetBezierPoint(index, bezierPoint);
+            ConnectEndsIfLoop(index, bezierPoint);
             EditorUtility.SetDirty(spline);
         }
+
+        public void ConnectEndsIfLoop(int index, BezierPoint bezierPoint)
+        {
+            if (spline.IsLoop)
+            {
+                bool isFirstPoint = index == 0;
+                bool isLastPoint = index >= spline.LoopLastIndex;
+                if (isFirstPoint)
+                {
+                    spline.SetBezierPoint(spline.CurveCount, bezierPoint);
+                }
+                else if (isLastPoint)
+                {
+                    spline.SetBezierPoint(0, bezierPoint);
+                }
+            }
+        }
+
+
 
         private BezierPoint DisplayEditableBezierPoint(int index)
         {

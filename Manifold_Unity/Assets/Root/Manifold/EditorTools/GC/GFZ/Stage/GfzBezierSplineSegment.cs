@@ -35,7 +35,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         public bool IsLoop
         {
             get => isLoop;
-            set => isLoop = value;
         }
 
         public AnimationCurve WidthCurve
@@ -59,6 +58,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         public int CurveCount
         {
             get => points.Count - 1;
+        }
+
+        public int LoopLastIndex
+        {
+            get => isLoop
+                ? CurveCount - 1
+                : CurveCount;
         }
 
         public BezierPoint GetBezierPoint(int index)
@@ -223,13 +229,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             points.Insert(0, newBezier);
         }
 
-
-        public bool IsValidIndex(int index)
-        {
-            bool isValid = index > 0 && index < points.Count - 1;
-            return isValid;
-        }
-
         public void RemovePoint(int index)
         {
             points.RemoveAt(index);
@@ -276,6 +275,25 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             }
         }
 
+
+        public void SetLoop(bool isLoop)
+        {
+            if (this.isLoop == isLoop)
+                return;
+
+            if (isLoop)
+            {
+                var firstBezierPoint = points[0];
+                points.Add(firstBezierPoint);
+            }
+            else
+            {
+                int lastIndex = points.Count - 1;
+                points.RemoveAt(lastIndex);
+            }
+
+            this.isLoop = isLoop;
+        }
 
         public void Reset()
         {
