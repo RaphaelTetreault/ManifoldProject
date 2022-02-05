@@ -19,7 +19,7 @@ namespace GameCube.GFZ.CourseCollision
 
         // FIELDS
         public int unk0x00; // rendering? 
-        public int unk0x04; // rendering?-- 2x 16bit values? Start/end?
+        public int unk0x04; // LOD Flags? -1 = no LOD/no-disable, otherwise flags.
         public Pointer sceneObjectPtr;
         public TransformPRXS transformPRXS = new TransformPRXS();
         public int zero_0x2C; // null ptr?

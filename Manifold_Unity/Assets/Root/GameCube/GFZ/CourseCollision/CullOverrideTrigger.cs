@@ -9,7 +9,7 @@ namespace GameCube.GFZ.CourseCollision
     /// some courses have few if not none at all.
     /// </summary>
     [Serializable]
-    public class UnknownTrigger :
+    public class CullOverrideTrigger :
         IBinaryAddressable,
         IBinarySerializable
     {
@@ -19,8 +19,8 @@ namespace GameCube.GFZ.CourseCollision
 
         // FIELDS
         public TransformPRXS transform;
-        public EnumFlags16 unk_0x20;
-        public EnumFlags16 unk_0x22;
+        public EnumFlags32 unk_0x20;
+        //public EnumFlags16 unk_0x22;
 
 
         // PROPERTIES
@@ -38,7 +38,7 @@ namespace GameCube.GFZ.CourseCollision
             {
                 reader.ReadX(ref transform, true);
                 reader.ReadX(ref unk_0x20);
-                reader.ReadX(ref unk_0x22);
+                //reader.ReadX(ref unk_0x22);
             }
             this.RecordEndAddress(reader);
         }
@@ -53,7 +53,7 @@ namespace GameCube.GFZ.CourseCollision
             {
                writer.WriteX(transform);
                writer.WriteX(unk_0x20);
-               writer.WriteX(unk_0x22);
+               //writer.WriteX(unk_0x22);
             }
             this.RecordEndAddress(writer);
         }
@@ -61,9 +61,9 @@ namespace GameCube.GFZ.CourseCollision
         public override string ToString()
         {
             return
-                $"{nameof(UnknownTrigger)}(" +
+                $"{nameof(CullOverrideTrigger)}(" +
                 $"{nameof(unk_0x20)}: {unk_0x20}, " +
-                $"{nameof(unk_0x22)}: {unk_0x22}, " +
+                //$"{nameof(unk_0x22)}: {unk_0x22}, " +
                 $"{transform}, " +
                 $")";
         }

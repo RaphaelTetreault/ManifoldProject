@@ -109,7 +109,7 @@ namespace GameCube.GFZ.CourseCollision
         public FogCurves fogCurves;
         public Fog fog;
         public TrackLength trackLength;
-        public UnknownTrigger[] unknownTriggers;
+        public CullOverrideTrigger[] unknownTriggers;
         public VisualEffectTrigger[] visualEffectTriggers;
         public MiscellaneousTrigger[] miscellaneousTriggers;
         public TimeExtensionTrigger[] timeExtensionTriggers;
@@ -217,7 +217,7 @@ namespace GameCube.GFZ.CourseCollision
             fogCurves = new FogCurves();
             fog = new Fog();
             trackLength = new TrackLength();
-            unknownTriggers = new UnknownTrigger[0];
+            unknownTriggers = new CullOverrideTrigger[0];
             visualEffectTriggers = new VisualEffectTrigger[0];
             miscellaneousTriggers = new MiscellaneousTrigger[0];
             timeExtensionTriggers = new TimeExtensionTrigger[0];

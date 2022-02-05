@@ -26,7 +26,7 @@ namespace GameCube.GFZ.CourseCollision
         public static readonly string tsvArcadeCheckpointTrigger = $"{nameof(TimeExtensionTrigger)}.tsv";
         public static readonly string tsvCourseMetadataTrigger = $"{nameof(MiscellaneousTrigger)}.tsv";
         public static readonly string tsvStoryObjectTrigger = $"{nameof(StoryObjectTrigger)}.tsv";
-        public static readonly string tsvUnknownTrigger = $"{nameof(UnknownTrigger)}.tsv";
+        public static readonly string tsvUnknownTrigger = $"{nameof(CullOverrideTrigger)}.tsv";
         public static readonly string tsvVisualEffectTrigger = $"{nameof(VisualEffectTrigger)}.tsv";
         public static readonly string tsvFog = $"{nameof(Fog)}.tsv";
         public static readonly string tsvFogCurves = $"{nameof(FogCurves)}.tsv";
@@ -1069,8 +1069,8 @@ namespace GameCube.GFZ.CourseCollision
                 writer.WriteNextCol("Start");
                 writer.WriteNextCol("End");
                 //
-                writer.WriteNextCol(nameof(UnknownTrigger.unk_0x20));
-                writer.WriteNextCol(nameof(UnknownTrigger.unk_0x20));
+                writer.WriteNextCol(nameof(CullOverrideTrigger.unk_0x20));
+                writer.WriteNextCol(nameof(CullOverrideTrigger.unk_0x20));
                 //
                 writer.WriteNextCol("Order");
                 writer.WriteNextCol("Index");

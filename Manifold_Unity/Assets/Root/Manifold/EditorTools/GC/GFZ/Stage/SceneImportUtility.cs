@@ -410,7 +410,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             if (!hasTriggers)
                 return null;
 
-            var typeName = nameof(UnknownTrigger);
+            var typeName = nameof(CullOverrideTrigger);
             string title = $"Creating {typeName}s";
             string format = WidthFormat(unknownTriggers);
 
