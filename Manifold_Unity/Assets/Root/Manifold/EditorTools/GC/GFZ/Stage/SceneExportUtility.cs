@@ -52,8 +52,16 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
             // Get scene parameters for general info
             var gfzSceneParameters = GameObject.FindObjectsOfType<GfzSceneParameters>();
-            var assertMsg = $"More than one {nameof(GfzSceneParameters)} found in scene! There can only be one per scene.";
-            Assert.IsTrue(gfzSceneParameters.Length == 1, assertMsg);
+            if (gfzSceneParameters.Length == 0)
+            {
+                var errorMsg = $"No {nameof(GfzSceneParameters)} found in scene! There must be one per scene.";
+                throw new ArgumentException(errorMsg);
+            }
+            else if (gfzSceneParameters.Length > 1)
+            {
+                var errorMsg = $"More than one {nameof(GfzSceneParameters)} found in scene! There can only be one per scene.";
+                throw new ArgumentException(errorMsg);
+            }
             var sceneParams = gfzSceneParameters[0];
 
             // This object contains the original scene deserialized. Use it in the meantime to get
