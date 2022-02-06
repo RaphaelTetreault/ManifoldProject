@@ -195,11 +195,25 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return (t, index);
         }
 
+        public Vector3 GetPositionRelative(float time01)
+        {
+            (float t, int i) = NormalizedTimeToTimeAndIndex(time01);
+            var positionRelative = GetPositionRelative(t, i);
+            return positionRelative;
+        }
+
+        public Vector3 GetPositionRelative(float time, int index)
+        {
+            var position = GetPosition(time, index);
+            var positionRelative = transform.TransformPoint(position);
+            return positionRelative;
+        }
+
         public Vector3 GetPosition(float time01)
         {
             (float t, int i) = NormalizedTimeToTimeAndIndex(time01);
-            var point = GetPosition(t, i);
-            return point;
+            var position = GetPosition(t, i);
+            return position;
         }
 
         public Vector3 GetPosition(float time, int index)
@@ -211,11 +225,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             var p2 = bezier1.inTangent;
             var p3 = bezier1.position;
 
-            var point = Bezier.GetPoint(p0, p1, p2, p3, time);
-            var p = transform.TransformPoint(point);
-
-            return p;
+            var position = Bezier.GetPoint(p0, p1, p2, p3, time);
+            return position;
         }
+
 
         public Vector3 GetVelocity(float time01)
         {
@@ -244,7 +257,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         {
             return GetVelocity(time01).normalized;
         }
-        
+
         public Vector3 GetDirection(float time, int index)
         {
             return GetVelocity(time, index).normalized;
@@ -300,7 +313,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             newBezier.width = lastBezier.width;
             newBezier.roll = lastBezier.roll;
 
-            points.Insert(lastIndex+1, newBezier);
+            points.Insert(lastIndex + 1, newBezier);
         }
 
         public void AddPointAtStart()
@@ -334,14 +347,14 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             var bezier = new BezierPoint();
 
             var direction = GetDirection(0.5f, index) * 50f;
-            bezier.position = GetPosition(0.5f, index);
+            bezier.position = GetPositionRelative(0.5f, index);
             bezier.inTangent = bezier.position - direction;
             bezier.outTangent = bezier.position + direction;
             bezier.tangentMode = BezierControlPointMode.Mirrored;
             bezier.width = (bezier0.width + bezier1.width) / 2f;
             bezier.roll = (bezier0.roll + bezier1.roll) / 2f;
 
-            points.Insert(index+1, bezier);
+            points.Insert(index + 1, bezier);
         }
 
         public void InsertBefore(int index)
@@ -352,7 +365,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
             else
             {
-                InsertPoint(index-1);
+                InsertPoint(index - 1);
             }
 
             if (IsLoop)
@@ -441,8 +454,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             double totalDistance = 0;
             for (int i = 0; i < distances.Length; i++)
             {
-                double timeStart = (double)(i+0) / numSegments;
-                double timeEnd = (double)(i+1) / numSegments;
+                double timeStart = (double)(i + 0) / numSegments;
+                double timeEnd = (double)(i + 1) / numSegments;
                 double distance = CurveLengthUtility.GetDistanceBetweenRepeated(this, timeStart, timeEnd);
                 distances[i] = distance;
                 totalDistance += distance;
@@ -451,15 +464,72 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
             Debug.Log("Total distance: " + totalDistance);
 
-            //
-            trs.Scale.x = new AnimationCurve(new Keyframe(1, 100));
+            var lastRotation = GetOrientation(0, 0).eulerAngles;
+            double currDistance = 0;
+            for (int i = 0; i < numSegments; i++)
+            {
+                float currLength = (float)distances[i];
+
+                // TODO: add and use samples per curve in bezier point
+                for (int s = 0; s < 32; s++)
+                {
+                    var t = (float)(s + 0) / 32;
+                    var position = GetPosition(t, i);
+                    var scale = GetScale(t, i);
+                    var rotation = GetOrientation(t, i).eulerAngles;
+                    rotation = CleanRotation(lastRotation, rotation);
+                    lastRotation = rotation;
+
+                    var timeNormalized = (currDistance + (t * currLength)) / totalDistance;
+                    trs.AddKeys((float)timeNormalized, position, rotation, scale);
+                }
+
+                currDistance += distances[i];
+            }
+
+            // Ad last key at time = 1f
+            {
+                float t = 1;
+                int i = numSegments - 1;
+                var position = GetPosition(t, i);
+                var scale = GetScale(t, i);
+                var rotation = GetOrientation(t, i).eulerAngles;
+                rotation = CleanRotation(lastRotation, rotation);
+                trs.AddKeys(1, position, rotation, scale);
+            }
 
             return trs;
         }
 
-        public float3 GetPosition(double time)
+        public float3 EvaluatePosition(double time)
         {
-            return GetPosition((float)time);
+            return GetPositionRelative((float)time);
         }
+
+        public Vector3 CleanRotation(Vector3 lastEulers, Vector3 currEulers)
+        {
+            var x = CleanRotation(lastEulers.x, currEulers.x);
+            var y = CleanRotation(lastEulers.y, currEulers.y);
+            var z = CleanRotation(lastEulers.z, currEulers.z);
+            return new Vector3(x, y, z);
+        }
+
+        public float CleanRotation(float lastAngle, float currAngle)
+        {
+            float delta = currAngle - lastAngle;
+
+            if (delta > 45)
+            {
+                currAngle -= 360f;
+            }
+            else if (delta < -45f)
+            {
+                currAngle += 360;
+            }
+
+            return currAngle;
+        }
+
+
     }
 }

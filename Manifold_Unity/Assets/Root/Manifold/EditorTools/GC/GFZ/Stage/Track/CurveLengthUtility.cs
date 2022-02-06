@@ -80,8 +80,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 double currDistance = timeStart + (timeDelta / nIterations * (i + 0));
                 double nextDistance = timeStart + (timeDelta / nIterations * (i + 1));
                 // Compute the distance between these 2 points
-                float3 currPosition = evaluable.GetPosition(currDistance);
-                float3 nextPosition = evaluable.GetPosition(nextDistance);
+                float3 currPosition = evaluable.EvaluatePosition(currDistance);
+                float3 nextPosition = evaluable.EvaluatePosition(nextDistance);
                 // Get distance between 2 points, store delta
                 double delta = math.distance(currPosition, nextPosition);
                 distance += delta;

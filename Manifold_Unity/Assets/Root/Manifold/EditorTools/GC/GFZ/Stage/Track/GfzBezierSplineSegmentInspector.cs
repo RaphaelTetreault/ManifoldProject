@@ -88,8 +88,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     int i0 = i - 1;
                     var time0 = (float)(p + 0) / iters;
                     var time1 = (float)(p + 1) / iters;
-                    var px0 = spline.GetPosition(time0, i0);
-                    var px1 = spline.GetPosition(time1, i0);
+                    var px0 = spline.GetPositionRelative(time0, i0);
+                    var px1 = spline.GetPositionRelative(time1, i0);
 
                     var rot0 = spline.GetOrientation(time0, i0);
                     var rot1 = spline.GetOrientation(time1, i0);
@@ -586,7 +586,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 for (int j = 1; j < steps; j++)
                 {
                     var t = (float)j / steps; 
-                    var point = spline.GetPosition(t, i);
+                    var point = spline.GetPositionRelative(t, i);
                     var direction = spline.GetDirection(t, i);
                     var orientation = Quaternion.LookRotation(direction);
                     var size = spline.ViewDirectionScale;

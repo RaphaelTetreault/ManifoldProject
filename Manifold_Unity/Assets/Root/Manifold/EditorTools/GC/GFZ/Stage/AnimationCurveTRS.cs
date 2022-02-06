@@ -224,5 +224,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             matrix.SetTRS(p, Quaternion.Euler(r), s);
             return matrix;
         }
+
+        public void AddKeys(float time, Vector3 position, Vector3 rotation, Vector3 scale)
+        {
+            Position.AddKeys(time, position);
+            Rotation.AddKeys(time, rotation);
+            Scale.AddKeys(time, scale);
+        }
     }
 }

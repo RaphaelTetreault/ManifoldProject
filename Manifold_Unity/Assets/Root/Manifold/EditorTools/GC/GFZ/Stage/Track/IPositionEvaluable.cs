@@ -9,6 +9,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
     public interface IPositionEvaluable
     {
-        public float3 GetPosition(double time);
+        public float3 EvaluatePosition(double time);
     }
 }
