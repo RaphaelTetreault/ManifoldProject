@@ -405,7 +405,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         public override AnimationCurveTRS GetAnimationCurveTRS()
         {
-            throw new NotImplementedException();
+            var trs = new AnimationCurveTRS();
+
+
+
+            return trs;
         }
     }
 }

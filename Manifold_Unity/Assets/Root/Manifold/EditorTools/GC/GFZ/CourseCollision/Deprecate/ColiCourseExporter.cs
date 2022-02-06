@@ -317,14 +317,14 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
                 // Triggers
                 {
-                    var arcadeCheckpointTriggers = FindObjectsOfType<GfzArcadeCheckpoint>(findInactive);
+                    var arcadeCheckpointTriggers = FindObjectsOfType<GfzTimeExtensionTrigger>(findInactive);
                     coliScene.timeExtensionTriggers = GetGfzValues(arcadeCheckpointTriggers);
 
                     // This trigger type is a mess... Get all 3 representations, combine, assign.
                     // Collect all trigger types. They all get converted to the same GFZ base type.
                     var objectPaths = FindObjectsOfType<GfzObjectPath>(findInactive);
                     var storyCapsules = FindObjectsOfType<GfzStoryCapsule>(findInactive);
-                    var unknownMetadataTriggers = FindObjectsOfType<GfzUnknownCourseMetadataTrigger>(findInactive);
+                    var unknownMetadataTriggers = FindObjectsOfType<GfzUnknownMiscellaneousTrigger>(findInactive);
                     // Make a list, add range for each type
                     var courseMetadataTriggers = new List<MiscellaneousTrigger>();
                     courseMetadataTriggers.AddRange(GetGfzValues(objectPaths));
@@ -337,7 +337,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                     // story object triggers
 
                     // This trigger type is a mess... Get all 3 representations, combine, assign.
-                    var unknownTriggers = FindObjectsOfType<GfzUnknownTrigger>(findInactive);
+                    var unknownTriggers = FindObjectsOfType<GfzCullOverrideTrigger>(findInactive);
                     coliScene.unknownTriggers = GetGfzValues(unknownTriggers);
 
                     var unknownSolsTriggers = FindObjectsOfType<GfzUnknownCollider>(findInactive);

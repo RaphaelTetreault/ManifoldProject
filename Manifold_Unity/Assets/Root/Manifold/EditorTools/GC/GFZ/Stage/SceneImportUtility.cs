@@ -199,7 +199,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 // Represent trigger as cube
                 var gobj = CreatePrimitive(PrimitiveType.Cube, name, root).gameObject;
                 // Add script to trigger, se values
-                var script = gobj.AddComponent<GfzArcadeCheckpoint>();
+                var script = gobj.AddComponent<GfzTimeExtensionTrigger>();
                 script.ImportGfz(arcadeCheckpointTrigger);
             }
 
@@ -314,7 +314,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         {
             // Object named by caller
             var gobj = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            var bboTrigger = gobj.AddComponent<GfzUnknownCourseMetadataTrigger>();
+            var bboTrigger = gobj.AddComponent<GfzUnknownMiscellaneousTrigger>();
             bboTrigger.ImportGfz(data);
 
             return gobj.transform;
@@ -425,7 +425,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 //
                 var gobj = CreatePrimitive(PrimitiveType.Cube, name, root).gameObject;
                 //
-                var script = gobj.AddComponent<GfzUnknownTrigger>();
+                var script = gobj.AddComponent<GfzCullOverrideTrigger>();
                 script.ImportGfz(unknownTrigger);
             }
 

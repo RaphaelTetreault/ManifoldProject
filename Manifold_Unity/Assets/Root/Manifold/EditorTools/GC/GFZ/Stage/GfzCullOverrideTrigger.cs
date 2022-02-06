@@ -6,7 +6,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
     /// <summary>
     /// 
     /// </summary>
-    public class GfzUnknownTrigger : MonoBehaviour,
+    public class GfzCullOverrideTrigger : MonoBehaviour,
         IGfzConvertable<CullOverrideTrigger>
     {
         /// <summary>

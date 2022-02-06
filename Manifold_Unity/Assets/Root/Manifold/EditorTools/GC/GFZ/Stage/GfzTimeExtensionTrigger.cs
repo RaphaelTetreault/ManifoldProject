@@ -6,7 +6,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
     /// <summary>
     /// 
     /// </summary>
-    public class GfzArcadeCheckpoint : MonoBehaviour,
+    public class GfzTimeExtensionTrigger : MonoBehaviour,
         IGfzConvertable<TimeExtensionTrigger>
     {
         /// <summary>

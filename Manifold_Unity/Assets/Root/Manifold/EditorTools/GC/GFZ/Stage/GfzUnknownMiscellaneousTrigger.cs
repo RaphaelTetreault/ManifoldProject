@@ -8,11 +8,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
     /// <summary>
     /// 
     /// </summary>
-    public class GfzUnknownCourseMetadataTrigger : MonoBehaviour,
+    public class GfzUnknownMiscellaneousTrigger : MonoBehaviour,
         IGfzConvertable<MiscellaneousTrigger>
     {
         /// <summary>
-        /// Big Blue Ordeal trigger type scale (when compared to default Unity cube).
+        /// Big Blue Ordeal trigger type scale (when compared to default Unity unit cube).
         /// </summary>
         public const float scale = 27.5f;
 
