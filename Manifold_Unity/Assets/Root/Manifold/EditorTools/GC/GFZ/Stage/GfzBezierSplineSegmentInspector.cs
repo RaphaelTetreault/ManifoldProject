@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEditor;
 using Manifold.Spline;
@@ -44,18 +41,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         SerializedProperty splineThickness;
         SerializedProperty outterLineThickness;
 
-
-        public bool IsSelected(int index)
-        {
-            return selectedIndex == index;
-        }
-
-        public Color32 GetBezierColor(BezierPoint bezier, bool isSelected)
-        {
-            var c = modeColors[(int)bezier.tangentMode];
-            return isSelected ? c : new Color(c.r, c.g, c.b, 0.4f);
-        }
-
         void OnEnable()
         {
             widthsCurve = serializedObject.FindProperty(nameof(widthsCurve));
@@ -95,32 +80,29 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 var p2 = root.TransformPoint(bezier1.inTangent);
                 var p3 = root.TransformPoint(bezier1.position);
 
-                for (int p = 0; p < 100; p++)
+                const int iters = 64;
+                for (int p = 0; p < iters; p++)
                 {
-                    var time0 = (float)(p + 0) / 100;
-                    var time1 = (float)(p + 1) / 100;
-                    var px0 = spline.GetPosition(time0, i - 1);
-                    var px1 = spline.GetPosition(time1, i - 1);
+                    int i0 = i - 1;
+                    var time0 = (float)(p + 0) / iters;
+                    var time1 = (float)(p + 1) / iters;
+                    var px0 = spline.GetPosition(time0, i0);
+                    var px1 = spline.GetPosition(time1, i0);
 
-                    // TODO: sample anim curve
-                    var rotZ = Quaternion.Euler(0, 0, Mathf.Lerp(bezier0.roll, bezier1.roll, time0));
-                    var rot0 = Quaternion.LookRotation(spline.GetDirection(time0, i - 1)) * rotZ;
-                    var rot1 = Quaternion.LookRotation(spline.GetDirection(time1, i - 1)) * rotZ;
+                    var rot0 = spline.GetOrientation(time0, i0);
+                    var rot1 = spline.GetOrientation(time1, i0);
+                    var w = spline.GetWidth(time0, i0) / 2f;
 
-                    // TODO: sample anim curve
-                    var w = Mathf.Lerp(bezier0.width, bezier1.width, time0) / 2f;
-
-                    var l0 = px0 + rot0 * Vector3.left * w;
-                    var l1 = px1 + rot1 * Vector3.left * w;
-                    var r0 = px0 + rot0 * Vector3.right * w;
-                    var r1 = px1 + rot1 * Vector3.right * w;
+                    var l0 = px0 + root.TransformPoint(rot0 * Vector3.left * w);
+                    var l1 = px1 + root.TransformPoint(rot1 * Vector3.left * w);
+                    var r0 = px0 + root.TransformPoint(rot0 * Vector3.right * w);
+                    var r1 = px1 + root.TransformPoint(rot1 * Vector3.right * w);
 
                     Handles.color = splineColor;
                     Handles.DrawLine(l0, l1, spline.OutterLineThickness);
                     Handles.color = Color.red;
                     Handles.DrawLine(r0, r1, spline.OutterLineThickness);
                 }
-
 
                 //
                 Handles.DrawBezier(p0, p3, p1, p2, splineColor, null, spline.SplineThickness);
@@ -136,11 +118,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
                 bezier0 = bezier1;
             }
-
-
         }
-
-
 
         public override void OnInspectorGUI()
         {
@@ -194,9 +172,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                     // Button & undo handling
                     if (GUILayout.Button("Reset Widths", buttonWidth))
                     {
-                        string undoMessage = $"Reset {nameof(spline.WidthCurve)} to bezier curve values.";
+                        string undoMessage = $"Reset {nameof(spline.WidthsCurve)} to bezier curve values.";
                         Undo.RecordObject(spline, undoMessage);
-                        spline.WidthCurve = spline.WidthsToCurve();
+                        spline.WidthsCurve = spline.WidthsToCurve();
                         EditorUtility.SetDirty(spline);
                     }
                 }
@@ -210,9 +188,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                     // Button & undo handling
                     if (GUILayout.Button("Reset Rolls", buttonWidth))
                     {
-                        string undoMessage = $"Reset {nameof(spline.WidthCurve)} to bezier curve values.";
+                        string undoMessage = $"Reset {nameof(spline.RollsCurve)} to bezier curve values.";
                         Undo.RecordObject(spline, undoMessage);
-                        spline.RollCurve = spline.RollsToCurve();
+                        spline.RollsCurve = spline.RollsToCurve();
                         EditorUtility.SetDirty(spline);
                     }
                 }
@@ -359,7 +337,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 List<string> labels = new List<string>();
                 for (int c = rowBaseCurr; c < rowBaseNext; c++)
                 {
-                    if (c <= spline.LoopLastIndex)
+                    if (c <= spline.LoopCurveCount)
                     {
                         labels.Add(c.ToString());
                     }
@@ -379,7 +357,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 result += rowBaseCurr;
 
                 // Set index if valid. If invalid row, we have result = -1, so this doesn't run.
-                bool isValidIndex = result >= 0 && result <= spline.LoopLastIndex;
+                bool isValidIndex = result >= 0 && result <= spline.LoopCurveCount;
                 if (isValidIndex)
                 {
                     selectedIndex = result;
@@ -462,8 +440,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 }
             }
         }
-
-
 
         private BezierPoint DisplayEditableBezierPoint(int index)
         {
@@ -583,21 +559,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         private void ShowDirections()
         {
-            //Handles.color = ForwardColor;
-            //Vector3 point = spline.GetPosition(0f);
-            //Vector3 direction = spline.GetDirection(0f) * directionScale;
-            //Handles.DrawLine(point, point + direction);
-
-            //int numIters = stepsPerCurve * spline.CurveCount; 
-            //for (int i = 0; i <= numIters; i++)
-            //{
-            //    float time = (float)i / numIters;
-            //    point = spline.GetPosition(time);
-            //    direction = spline.GetDirection(time);
-            //    //Handles.DrawLine(point, point + direction * directionScale);
-            //    Handles.ArrowHandleCap(-1, point, Quaternion.LookRotation(direction), directionScale, EventType.Repaint);
-            //}
-
             Handles.color = splineColor;
             int curves = spline.CurveCount;
             int steps = spline.ViewDirectionArrowsPerCurve + 1;
@@ -616,6 +577,18 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             }
 
         }
+
+        public bool IsSelected(int index)
+        {
+            return selectedIndex == index;
+        }
+
+        public Color32 GetBezierColor(BezierPoint bezier, bool isSelected)
+        {
+            var c = modeColors[(int)bezier.tangentMode];
+            return isSelected ? c : new Color(c.r, c.g, c.b, 0.4f);
+        }
+
 
     }
 }

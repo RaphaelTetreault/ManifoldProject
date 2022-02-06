@@ -11,7 +11,7 @@ using Manifold.Spline;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage
 {
-    public class GfzBezierSplineSegment : MonoBehaviour
+    public class GfzBezierSplineSegment : SegmentGenerator
     {
         [SerializeField]
         private List<BezierPoint> points;
@@ -66,13 +66,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             set => viewDirection = value;
         }
 
-        public AnimationCurve WidthCurve
+        public AnimationCurve WidthsCurve
         {
             get => widthsCurve;
             set => widthsCurve = value;
         }
 
-        public AnimationCurve RollCurve
+        public AnimationCurve RollsCurve
         {
             get => rollsCurve;
             set => rollsCurve = value;
@@ -89,12 +89,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             get => points.Count - 1;
         }
 
-        public int LoopLastIndex
+        public int LoopCurveCount
         {
             get => isLoop
                 ? CurveCount - 1
                 : CurveCount;
         }
+
         public int ViewDirectionArrowsPerCurve { get => viewDirectionArrowsPerCurve; set => viewDirectionArrowsPerCurve = value; }
         public float ViewDirectionScale { get => viewDirectionScale; set => viewDirectionScale = value; }
         public float BezierHandleSize { get => bezierHandleSize; set => bezierHandleSize = value; }
@@ -218,11 +219,42 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         {
             return GetVelocity(time01).normalized;
         }
+        
         public Vector3 GetDirection(float time, int index)
         {
             return GetVelocity(time, index).normalized;
         }
 
+
+        public Quaternion GetOrientation(float time, int index)
+        {
+            var xy = Quaternion.LookRotation(GetDirection(time, index));
+            var z = Quaternion.Euler(0, 0, rollsCurve.Evaluate(index + time));
+            var orientation = xy * z;
+            // Re-orient as per transform orientation
+            orientation = orientation * transform.rotation;
+            return orientation;
+        }
+
+        public Quaternion GetOrientation(float time01)
+        {
+            (float t, int i) = NormalizedTimeToTimeAndIndex(time01);
+            var orientation = GetOrientation(t, i);
+            return orientation;
+        }
+
+        public float GetWidth(float time, int index)
+        {
+            var width = widthsCurve.Evaluate(index + time);
+            return width;
+        }
+
+        public float GetWidth(float time01)
+        {
+            (float t, int i) = NormalizedTimeToTimeAndIndex(time01);
+            var width = GetWidth(t, i);
+            return width;
+        }
 
         public void AddPointAtEnd()
         {
@@ -370,5 +402,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             };
         }
 
+
+        public override AnimationCurveTransform GetAnimationCurveTransform()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

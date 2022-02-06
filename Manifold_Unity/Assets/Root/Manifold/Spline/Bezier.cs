@@ -9,6 +9,7 @@ namespace Manifold.Spline
 {
     public static class Bezier
     {
+        // Cubic Bezier, ^3
 
         public static float3 GetPoint(float3 p0, float3 p1, float3 p2, float3 p3, float t)
         {
@@ -32,34 +33,29 @@ namespace Manifold.Spline
         }
 
 
+        // Quadratic Bezier, ^2
 
+        public static float3 GetPoint(float3 p0, float3 p1, float3 p2, float t)
+        {
+            t = math.clamp(t, 0f, 1f);
+            float invT = 1f - t;
 
-        //public static float3 GetPoint(float3 p0, float3 p1, float3 p2, float t)
-        //{
-        //    t = math.clamp(t, 0f, 1f);
-        //    float invT = 1f - t;
+            float3 quadraticBezierPoint =
+                invT * invT * p0 +
+                2f * invT * t * p1 +
+                t * t * p2;
 
-        //    float3 quadraticBezierPoint =
-        //        invT * invT * p0 +
-        //        2f * invT * t * p1 +
-        //        t * t * p2;
+            return quadraticBezierPoint;
+        }
 
-        //    return quadraticBezierPoint;
+        public static float3 GetFirstDerivative(float3 p0, float3 p1, float3 p2, float t)
+        {
+            float3 firstDerivitive =
+                2f * (1f - t) * (p1 - p0) +
+                2f * t * (p2 - p1);
 
-        //    //var a = math.lerp(p0, p1, t);
-        //    //var b = math.lerp(p1, p2, t);
-        //    //var p = math.lerp(a, b, t);
-        //    //return p;
-        //}
-
-        //public static float3 GetFirstDerivative(float3 p0, float3 p1, float3 p2, float t)
-        //{
-        //    float3 firstDerivitive =
-        //        2f * (1f - t) * (p1 - p0) +
-        //        2f * t * (p2 - p1);
-
-        //    return firstDerivitive;
-        //}
+            return firstDerivitive;
+        }
 
 
     }
