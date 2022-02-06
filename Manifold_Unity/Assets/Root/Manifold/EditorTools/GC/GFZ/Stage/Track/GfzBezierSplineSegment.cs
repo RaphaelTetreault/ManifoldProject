@@ -23,6 +23,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         private AnimationCurve widthsCurve = new();
 
         [SerializeField, HideInInspector]
+        private AnimationCurve heightsCurve = new();
+
+        [SerializeField, HideInInspector]
         private AnimationCurve rollsCurve = new();
 
         //
@@ -72,6 +75,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             set => widthsCurve = value;
         }
 
+        public AnimationCurve HeightsCurve
+        {
+            get => heightsCurve;
+            set => heightsCurve = value;
+        }
+
         public AnimationCurve RollsCurve
         {
             get => rollsCurve;
@@ -113,7 +122,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         }
 
 
-        public AnimationCurve WidthsToCurve()
+        public AnimationCurve CreateWidthsCurve()
         {
             var curve = new AnimationCurve();
             for (int i = 0; i < points.Count; i++)
@@ -128,7 +137,22 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             return curve;
         }
 
-        public AnimationCurve RollsToCurve()
+        public AnimationCurve CreateHeightsCurve()
+        {
+            var curve = new AnimationCurve();
+            for (int i = 0; i < points.Count; i++)
+            {
+                var key = new Keyframe()
+                {
+                    time = i,
+                    value = points[i].height,
+                };
+                curve.AddKey(key);
+            }
+            return curve;
+        }
+
+        public AnimationCurve CreateRollsCurve()
         {
             var curve = new AnimationCurve();
             for (int i = 0; i < points.Count; i++)
@@ -243,17 +267,19 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             return orientation;
         }
 
-        public float GetWidth(float time, int index)
+        public Vector3 GetScale(float time, int index)
         {
             var width = widthsCurve.Evaluate(index + time);
-            return width;
+            var height = heightsCurve.Evaluate(index + time);
+            var scale = new Vector3(width, height, 1f);
+            return scale;
         }
 
-        public float GetWidth(float time01)
+        public Vector3 GetScale(float time01)
         {
             (float t, int i) = NormalizedTimeToTimeAndIndex(time01);
-            var width = GetWidth(t, i);
-            return width;
+            var scale = GetScale(t, i);
+            return scale;
         }
 
         public void AddPointAtEnd()
@@ -386,10 +412,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                     inTangent = new Vector3(0f, 0f, 100f),
                     outTangent = new Vector3(0f, 0f, -100f),
                     width = 64f,
+                    height = 1f,
                     roll = 0f,
                 },
 
-                // Firs point which can form a curve with the start
+                // First point which can form a curve with the start
                 new BezierPoint()
                 {
                     tangentMode = BezierControlPointMode.Mirrored,
@@ -397,6 +424,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                     inTangent = new Vector3(0f, 0f, -300f),
                     outTangent = new Vector3(0f, 0f, -500f),
                     width = 64f,
+                    height = 1f,
                     roll = 0f,
                 },
             };

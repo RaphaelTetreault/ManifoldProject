@@ -33,6 +33,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         private bool settingsTabFoldout = false;
 
         SerializedProperty widthsCurve;
+        SerializedProperty heightsCurve;
         SerializedProperty rollsCurve;
         SerializedProperty viewDirection;
         SerializedProperty viewDirectionArrowsPerCurve;
@@ -44,6 +45,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         void OnEnable()
         {
             widthsCurve = serializedObject.FindProperty(nameof(widthsCurve));
+            heightsCurve = serializedObject.FindProperty(nameof(heightsCurve));
             rollsCurve = serializedObject.FindProperty(nameof(rollsCurve));
 
             viewDirection = serializedObject.FindProperty(nameof(viewDirection));
@@ -91,7 +93,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
                     var rot0 = spline.GetOrientation(time0, i0);
                     var rot1 = spline.GetOrientation(time1, i0);
-                    var w = spline.GetWidth(time0, i0) / 2f;
+                    var scale = spline.GetScale(time0, i0) / 2f;
+                    var w = scale.x;
 
                     var l0 = px0 + root.TransformPoint(rot0 * Vector3.left * w);
                     var l1 = px1 + root.TransformPoint(rot1 * Vector3.left * w);
@@ -174,12 +177,28 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                     {
                         string undoMessage = $"Reset {nameof(spline.WidthsCurve)} to bezier curve values.";
                         Undo.RecordObject(spline, undoMessage);
-                        spline.WidthsCurve = spline.WidthsToCurve();
+                        spline.WidthsCurve = spline.CreateWidthsCurve();
                         EditorUtility.SetDirty(spline);
                     }
                 }
                 GUILayout.EndHorizontal();
-                
+
+                // HEIGHT
+                GUILayout.BeginHorizontal();
+                {
+                    // Animation curve
+                    EditorGUILayout.PropertyField(heightsCurve);
+                    // Button & undo handling
+                    if (GUILayout.Button("Reset Heights", buttonWidth))
+                    {
+                        string undoMessage = $"Reset {nameof(spline.HeightsCurve)} to bezier curve values.";
+                        Undo.RecordObject(spline, undoMessage);
+                        spline.HeightsCurve = spline.CreateHeightsCurve();
+                        EditorUtility.SetDirty(spline);
+                    }
+                }
+                GUILayout.EndHorizontal();
+
                 // ROLL
                 GUILayout.BeginHorizontal();
                 {
@@ -190,7 +209,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                     {
                         string undoMessage = $"Reset {nameof(spline.RollsCurve)} to bezier curve values.";
                         Undo.RecordObject(spline, undoMessage);
-                        spline.RollsCurve = spline.RollsToCurve();
+                        spline.RollsCurve = spline.CreateRollsCurve();
                         EditorUtility.SetDirty(spline);
                     }
                 }
