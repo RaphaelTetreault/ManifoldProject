@@ -20,7 +20,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             set => segment = value;
         }
 
-        public AnimationCurveTransform AnimationCurveTransform
+        public AnimationCurveTRS AnimationCurveTransform
         {
             get => segment.AnimTransform;
         }

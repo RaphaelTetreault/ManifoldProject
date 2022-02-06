@@ -8,7 +8,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
     /// Three AnimationCurve3s combined to represent position, rotation, and scale; a transform.
     /// </summary>
     [System.Serializable]
-    public class AnimationCurveTransform
+    public class AnimationCurveTRS
     {
         [SerializeField] protected AnimationCurve3 position = new();
         [SerializeField] protected AnimationCurve3 rotation = new();
@@ -83,7 +83,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             return trackCurves;
         }
 
-        public AnimationCurveTransform GetGfzCoordSpaceAnimTransform()
+        public AnimationCurveTRS GetGfzCoordSpaceAnimTransform()
         {
             var p = position.CreateDeepCopy();
             var r = rotation.CreateDeepCopy();
@@ -101,7 +101,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 r.y = r.y.GetInverted();
             }
 
-            return new AnimationCurveTransform()
+            return new AnimationCurveTRS()
             {
                 position = p,
                 rotation = r,

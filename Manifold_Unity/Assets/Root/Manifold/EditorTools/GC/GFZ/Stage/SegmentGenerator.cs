@@ -6,6 +6,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 {
     public abstract class SegmentGenerator : MonoBehaviour
     {
-        public abstract AnimationCurveTransform GetAnimationCurveTransform();
+        public abstract AnimationCurveTRS GetAnimationCurveTRS();
     }
 }

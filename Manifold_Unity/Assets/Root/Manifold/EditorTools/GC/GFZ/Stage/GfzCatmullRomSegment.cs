@@ -137,9 +137,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
      
 
-        public override AnimationCurveTransform GetAnimationCurveTransform()
+        public override AnimationCurveTRS GetAnimationCurveTRS()
         {
-            var animationCurveTRS = new AnimationCurveTransform();
+            var animationCurveTRS = new AnimationCurveTRS();
 
             // TODO:
             /* For each p1-p2:
@@ -151,7 +151,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
             // Bring in scope optimization
             var a = alpha;
-            var animTRS = new AnimationCurveTransform();
+            var animTRS = new AnimationCurveTRS();
             var distances = new float[points.Length-3];
             var totalDistance = 0f;
 
@@ -168,7 +168,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 int index = pi - 1;
                 int iters = points[pi].Samples;
                 var trsPoint = new Point[iters+1];
-                var temp = new AnimationCurveTransform();
+                var temp = new AnimationCurveTRS();
 
                 //
                 for (int si = 0; si <= iters; si++)

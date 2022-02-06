@@ -403,7 +403,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         }
 
 
-        public override AnimationCurveTransform GetAnimationCurveTransform()
+        public override AnimationCurveTRS GetAnimationCurveTRS()
         {
             throw new NotImplementedException();
         }

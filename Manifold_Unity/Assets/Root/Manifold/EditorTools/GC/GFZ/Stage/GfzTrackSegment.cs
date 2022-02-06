@@ -21,7 +21,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         [SerializeField] private bool genCheckpoints;
         [SerializeField] private SegmentGenerator animGen;
         [SerializeField] private bool invertCheckpoints;
-        [SerializeField] private AnimationCurveTransform animTransform = new AnimationCurveTransform();
+        [SerializeField] private AnimationCurveTRS animTransform = new AnimationCurveTRS();
         [SerializeField] private bool genRotationXY;
 
         public event IEditableComponent<GfzTrackSegment>.OnEditCallback OnEdited;
@@ -38,7 +38,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             get => end;
             set => end = value;
         }
-        public AnimationCurveTransform AnimTransform => animTransform;
+        public AnimationCurveTRS AnimTransform => animTransform;
 
 
         public float GetSegmentLength()
@@ -192,7 +192,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
             if (genRotationXY)
             {
-                this.animTransform = animGen.GetAnimationCurveTransform();
+                this.animTransform = animGen.GetAnimationCurveTRS();
 
                 //var anims = animTransform.ComputerRotationXY();
                 //animTransform.Rotation.x = anims.x;
