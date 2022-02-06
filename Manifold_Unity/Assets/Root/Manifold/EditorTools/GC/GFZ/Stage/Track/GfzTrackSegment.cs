@@ -18,11 +18,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         [SerializeField] private byte unk0x3B;
 
         [Header("Track Curves")]
-        [SerializeField] private bool genCheckpoints;
-        [SerializeField] private SegmentGenerator animGen;
         [SerializeField] private bool invertCheckpoints;
-        [SerializeField] private AnimationCurveTRS animTransform = new AnimationCurveTRS();
-        [SerializeField] private bool genRotationXY;
+        [SerializeField] private bool genCheckpoints;
+        [SerializeField] private bool genAnimCurves;
+        [SerializeField] private SegmentGenerator segmentGenerator;
+        [SerializeField] private AnimationCurveTRS animationCurveTRS = new AnimationCurveTRS();
 
         public event IEditableComponent<GfzTrackSegment>.OnEditCallback OnEdited;
 
@@ -38,17 +38,17 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             get => end;
             set => end = value;
         }
-        public AnimationCurveTRS AnimTransform => animTransform;
+        public AnimationCurveTRS AnimationCurveTRS => animationCurveTRS;
 
 
         public float GetSegmentLength()
         {
             // 2022/01/31: current work assumes min and max of 0 and 1
-            var maxTime = animTransform.GetMaxTime();
+            var maxTime = animationCurveTRS.GetMaxTime();
             Assert.IsTrue(maxTime == 1);
             // tODO: get min time, assert
 
-            var distance = animTransform.GetDistanceBetweenRepeated(0, 1);
+            var distance = animationCurveTRS.GetDistanceBetweenRepeated(0, 1);
             return distance;
         }
 
@@ -86,8 +86,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             // Use GFZ space (game) if 'true'
             // Use Unity space if 'false'
             var animTransform = convertCoordinateSpace
-                ? AnimTransform.GetGfzCoordSpaceAnimTransform()
-                : AnimTransform;
+                ? AnimationCurveTRS.GetGfzCoordSpaceTRS()
+                : AnimationCurveTRS;
 
             var curveMaxTime = animTransform.GetMaxTime();
             var pos = animTransform.Position;
@@ -177,7 +177,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             trackSegment.unk_0x3B = unk0x3B;
 
             // Get animation data
-            trackSegment.trackCurves = animTransform.ToTrackCurves();
+            trackSegment.trackCurves = animationCurveTRS.ToTrackSegment();
 
             //
             return trackSegment;
@@ -190,15 +190,15 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
 
 
-            if (genRotationXY)
-            {
-                this.animTransform = animGen.GetAnimationCurveTRS();
+            //if (genRotationXY)
+            //{
+            //    this.animationCurveTRS = segmentGenerator.GetAnimationCurveTRS();
 
-                //var anims = animTransform.ComputerRotationXY();
-                //animTransform.Rotation.x = anims.x;
-                //animTransform.Rotation.y = anims.y;
-                genRotationXY = false;
-            }
+            //    //var anims = animTransform.ComputerRotationXY();
+            //    //animTransform.Rotation.x = anims.x;
+            //    //animTransform.Rotation.y = anims.y;
+            //    genRotationXY = false;
+            //}
 
             if (genCheckpoints)
             {
@@ -215,7 +215,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 genCheckpoints = false;
             }
 
-
+            if (genAnimCurves)
+            {
+                this.animationCurveTRS = segmentGenerator.GetAnimationCurveTRS();
+                genAnimCurves = false;
+            }
 
         }
     }

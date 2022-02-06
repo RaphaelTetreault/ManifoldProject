@@ -27,9 +27,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             var increment = 1f / 100f;
             for (float p = 0; p < 1f; p += increment)
             {
-                var pos = AnimationCurveTransform.Position.Evaluate(p);
-                var rot = AnimationCurveTransform.Rotation.Evaluate(p);
-                var scl = AnimationCurveTransform.Scale.Evaluate(p);
+                var pos = AnimationCurveTRS.Position.Evaluate(p);
+                var rot = AnimationCurveTRS.Rotation.Evaluate(p);
+                var scl = AnimationCurveTRS.Scale.Evaluate(p);
 
                 Gizmos.DrawMesh(mesh, 0, pos, Quaternion.Euler(rot), scl);
             }

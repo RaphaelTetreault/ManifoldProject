@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEditor;
 using Manifold.Spline;
 
-namespace Manifold.EditorTools.GC.GFZ.Stage
+namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
     [CustomEditor(typeof(GfzBezierSplineSegment))]
     public class GfzBezierSplineSegmentInspector : Editor

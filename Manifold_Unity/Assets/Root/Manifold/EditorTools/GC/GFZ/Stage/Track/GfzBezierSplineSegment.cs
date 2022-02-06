@@ -9,9 +9,10 @@ using Unity.Mathematics;
 
 using Manifold.Spline;
 
-namespace Manifold.EditorTools.GC.GFZ.Stage
+namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
-    public class GfzBezierSplineSegment : SegmentGenerator
+    public class GfzBezierSplineSegment : SegmentGenerator,
+        IPositionEvaluable
     {
         [SerializeField]
         private List<BezierPoint> points;
@@ -435,9 +436,30 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         {
             var trs = new AnimationCurveTRS();
 
+            int numSegments = points.Count - 1;
+            double[] distances = new double[numSegments];
+            double totalDistance = 0;
+            for (int i = 0; i < distances.Length; i++)
+            {
+                double timeStart = (double)(i+0) / numSegments;
+                double timeEnd = (double)(i+1) / numSegments;
+                double distance = CurveLengthUtility.GetDistanceBetweenRepeated(this, timeStart, timeEnd);
+                distances[i] = distance;
+                totalDistance += distance;
+                Debug.Log($"Distance {i}: {distance}");
+            }
 
+            Debug.Log("Total distance: " + totalDistance);
+
+            //
+            trs.Scale.x = new AnimationCurve(new Keyframe(1, 100));
 
             return trs;
+        }
+
+        public float3 GetPosition(double time)
+        {
+            return GetPosition((float)time);
         }
     }
 }

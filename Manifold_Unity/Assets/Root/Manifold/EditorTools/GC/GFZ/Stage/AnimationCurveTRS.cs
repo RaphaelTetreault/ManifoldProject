@@ -61,12 +61,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             return allCurvesMaxTime;
         }
 
-        public GameCube.GFZ.CourseCollision.TrackCurves ToTrackCurves()
+        public GameCube.GFZ.CourseCollision.TrackCurves ToTrackSegment()
         {
             var trackCurves = new GameCube.GFZ.CourseCollision.TrackCurves();
             trackCurves.animationCurves = new GameCube.GFZ.CourseCollision.AnimationCurve[9];
 
-            var corrected = GetGfzCoordSpaceAnimTransform();
+            var corrected = GetGfzCoordSpaceTRS();
 
             trackCurves.PositionX = AnimationCurveConverter.ToGfz(corrected.position.x);
             trackCurves.PositionY = AnimationCurveConverter.ToGfz(corrected.position.y);
@@ -83,7 +83,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             return trackCurves;
         }
 
-        public AnimationCurveTRS GetGfzCoordSpaceAnimTransform()
+        public AnimationCurveTRS GetGfzCoordSpaceTRS()
         {
             var p = position.CreateDeepCopy();
             var r = rotation.CreateDeepCopy();

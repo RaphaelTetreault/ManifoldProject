@@ -1,9 +1,4 @@
 ﻿using GameCube.GFZ.CourseCollision;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage
@@ -20,9 +15,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             set => segment = value;
         }
 
-        public AnimationCurveTRS AnimationCurveTransform
+        public AnimationCurveTRS AnimationCurveTRS
         {
-            get => segment.AnimTransform;
+            get => segment.AnimationCurveTRS;
         }
 
 

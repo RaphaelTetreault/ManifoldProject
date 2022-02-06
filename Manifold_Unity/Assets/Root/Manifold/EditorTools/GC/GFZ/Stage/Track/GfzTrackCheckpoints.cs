@@ -27,8 +27,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             // Use GFZ space (game) if 'true'
             // Use Unity space if 'false'
             var animTransform = convertCoordinateSpace
-                ? segment.AnimTransform.GetGfzCoordSpaceAnimTransform()
-                : segment.AnimTransform;
+                ? segment.AnimationCurveTRS.GetGfzCoordSpaceTRS()
+                : segment.AnimationCurveTRS;
 
             var curveMaxTime = animTransform.GetMaxTime();
             var pos = animTransform.Position;
