@@ -23,8 +23,8 @@ namespace GameCube.GFZ.CourseCollision
         public static readonly string tsvColliderGeometryTri = $"{nameof(SceneObjectDynamic)}-{nameof(ColliderMesh)}-Tris.tsv";
         public static readonly string tsvColliderGeometryQuad = $"{nameof(SceneObjectDynamic)}-{nameof(ColliderMesh)}-Quads.tsv";
         public static readonly string tsvTransform = $"{nameof(TransformPRXS)}.tsv";
-        public static readonly string tsvArcadeCheckpointTrigger = $"{nameof(TimeExtensionTrigger)}.tsv";
-        public static readonly string tsvCourseMetadataTrigger = $"{nameof(MiscellaneousTrigger)}.tsv";
+        public static readonly string tsvTimeExtensionTrigger = $"{nameof(TimeExtensionTrigger)}.tsv";
+        public static readonly string tsvMiscellaneousTrigger = $"{nameof(MiscellaneousTrigger)}.tsv";
         public static readonly string tsvStoryObjectTrigger = $"{nameof(StoryObjectTrigger)}.tsv";
         public static readonly string tsvUnknownTrigger = $"{nameof(CullOverrideTrigger)}.tsv";
         public static readonly string tsvVisualEffectTrigger = $"{nameof(VisualEffectTrigger)}.tsv";

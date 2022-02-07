@@ -83,13 +83,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             if (cancel) return;
 
             // ARCADE CHECKPOINT TRIGGERS (AX)
-            cancel = EditorUtility.DisplayCancelableProgressBar(title, tsvArcadeCheckpointTrigger, progress);
-            AnalyzeArcadeCheckpointTriggers(scenes, Path.Combine(destination, tsvArcadeCheckpointTrigger));
+            cancel = EditorUtility.DisplayCancelableProgressBar(title, tsvTimeExtensionTrigger, progress);
+            AnalyzeArcadeCheckpointTriggers(scenes, Path.Combine(destination, tsvTimeExtensionTrigger));
             if (cancel) return;
 
             // COURSE METADATA TRIGGERS
-            cancel = EditorUtility.DisplayCancelableProgressBar(title, tsvCourseMetadataTrigger, progress);
-            AnalyzeCourseMetadataTriggers(scenes, Path.Combine(destination, tsvCourseMetadataTrigger));
+            cancel = EditorUtility.DisplayCancelableProgressBar(title, tsvMiscellaneousTrigger, progress);
+            AnalyzeCourseMetadataTriggers(scenes, Path.Combine(destination, tsvMiscellaneousTrigger));
             if (cancel) return;
 
             // STORY OBJECT TRIGGERS
@@ -259,10 +259,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
 
         [MenuItem(menu + "Trigger - Arcade Checkpoints")]
-        public static void MenuAnalyzeArcadeCheckpointTriggers() => MenuForward(AnalyzeArcadeCheckpointTriggers, tsvArcadeCheckpointTrigger);
+        public static void MenuAnalyzeArcadeCheckpointTriggers() => MenuForward(AnalyzeArcadeCheckpointTriggers, tsvTimeExtensionTrigger);
 
         [MenuItem(menu + "Trigger - Course Metadata")]
-        public static void MenuAnalyzeCourseMetadataTriggers() => MenuForward(AnalyzeCourseMetadataTriggers, tsvCourseMetadataTrigger);
+        public static void MenuAnalyzeCourseMetadataTriggers() => MenuForward(AnalyzeCourseMetadataTriggers, tsvMiscellaneousTrigger);
 
         [MenuItem(menu + "Trigger - Story Object")]
         public static void MenuAnalyzeStoryObjectTrigger() => MenuForward(AnalyzeStoryObjectTrigger, tsvStoryObjectTrigger);

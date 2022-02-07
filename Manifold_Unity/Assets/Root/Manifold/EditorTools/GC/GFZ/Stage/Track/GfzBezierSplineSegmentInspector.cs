@@ -96,10 +96,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     var scale = spline.GetScale(time0, i0) / 2f;
                     var w = scale.x;
 
-                    var l0 = px0 + root.TransformPoint(rot0 * Vector3.left * w);
-                    var l1 = px1 + root.TransformPoint(rot1 * Vector3.left * w);
-                    var r0 = px0 + root.TransformPoint(rot0 * Vector3.right * w);
-                    var r1 = px1 + root.TransformPoint(rot1 * Vector3.right * w);
+                    var l0 = px0 + rot0 * Vector3.left * w;
+                    var l1 = px1 + rot1 * Vector3.left * w;
+                    var r0 = px0 + rot0 * Vector3.right * w;
+                    var r1 = px1 + rot1 * Vector3.right * w;
 
                     Handles.color = splineColor;
                     Handles.DrawLine(l0, l1, spline.OutterLineThickness);

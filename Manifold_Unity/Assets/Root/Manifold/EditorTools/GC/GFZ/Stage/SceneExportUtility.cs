@@ -17,25 +17,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
     public static class SceneExportUtility
     {
 
-        public static void Temp()
-        {
-            //// 
-            //coliScenes[sceneIndex] = new ColiScene();
-
-            //// Breakout value
-            //var scene = scenes[sceneIndex];
-            //var coliScene = coliScenes[sceneIndex];
-
-            //// Set serialization format
-            //coliScene.Format = format;
-
-            //// Get path to scene object
-            //var scenePath = AssetDatabase.GetAssetPath(scene);
-            //// Open scene in Unity...
-            //EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Single);
-            //// ... so we can start doing the usual Unity methods to find stuff
-        }
-
         [MenuItem(Const.Menu.Manifold + "Scene Generation/Export (Active Scene)")]
         public static void ExportSceneActive()
         {

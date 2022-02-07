@@ -80,6 +80,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             var numCheckpoints = Mathf.CeilToInt(segmentLength / metersPerCheckpoint);
             var checkpoints = new Checkpoint[numCheckpoints];
 
+
+            Vector3 forward = convertCoordinateSpace ? Vector3.back : Vector3.forward;
+            Vector3 backward = convertCoordinateSpace ? Vector3.forward : Vector3.back;
+
+
             var distanceOffset = 0f;
 
             // Get the AnimationCurveTransform appropriate for requester.
@@ -101,9 +106,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 double checkpointTimeEnd = (double)(i + 1) / numCheckpoints;
 
                 // Get origin of start plane, track width at start sampling point
-                var origin = pos.Evaluate(checkpointTimeStart);
-                var normal = Quaternion.Euler(rot.Evaluate(checkpointTimeStart)) * Vector3.back;
+                var origin = pos.Evaluate(checkpointTimeStart);// + transform.position;
                 var trackWidth = scl.x.Evaluate((float)checkpointTimeStart);
+                var orientation = Quaternion.Euler(rot.Evaluate(checkpointTimeStart));// * transform.rotation;
+                var normal = orientation * forward;
+
 
                 // DISTANCE
                 // Compute the distance between these 2 points, keep track of total distance travelled along segment
@@ -145,8 +152,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             {
                 var lastCheckpoint = checkpoints[lastIndex];
                 lastCheckpoint.curveTimeEnd = curveMaxTime;
-                var origin = pos.Evaluate(curveMaxTime);
-                var normal = Quaternion.Euler(rot.Evaluate(curveMaxTime)) * Vector3.forward;
+                var origin = pos.Evaluate(curveMaxTime);// + transform.position;
+                var orientation = Quaternion.Euler(rot.Evaluate(curveMaxTime));// * transform.rotation;
+                var normal = orientation * backward;
                 lastCheckpoint.planeEnd.origin = origin;
                 lastCheckpoint.planeEnd.normal = normal;
                 lastCheckpoint.planeEnd.ComputeDotProduct();

@@ -423,8 +423,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 {
                     tangentMode = BezierControlPointMode.Mirrored,
                     position = new Vector3(0f, 0f, 0f),
-                    inTangent = new Vector3(0f, 0f, 100f),
-                    outTangent = new Vector3(0f, 0f, -100f),
+                    inTangent = new Vector3(0f, 0f, -100f),
+                    outTangent = new Vector3(0f, 0f, 100f),
                     width = 64f,
                     height = 1f,
                     roll = 0f,
@@ -434,9 +434,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 new BezierPoint()
                 {
                     tangentMode = BezierControlPointMode.Mirrored,
-                    position = new Vector3(0f, 0f, -400f),
-                    inTangent = new Vector3(0f, 0f, -300f),
-                    outTangent = new Vector3(0f, 0f, -500f),
+                    position = new Vector3(0f, 0f, 400f),
+                    inTangent = new Vector3(0f, 0f, 300f),
+                    outTangent = new Vector3(0f, 0f, 500f),
                     width = 64f,
                     height = 1f,
                     roll = 0f,
@@ -456,7 +456,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             {
                 double timeStart = (double)(i + 0) / numSegments;
                 double timeEnd = (double)(i + 1) / numSegments;
-                double distance = CurveLengthUtility.GetDistanceBetweenRepeated(this, timeStart, timeEnd);
+                double distance = CurveLengthUtility.GetDistanceBetweenRepeated(this, timeStart, timeEnd); // consider raising powerExp to 4?
                 distances[i] = distance;
                 totalDistance += distance;
                 Debug.Log($"Distance {i}: {distance}");
@@ -487,15 +487,15 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 currDistance += distances[i];
             }
 
-            // Ad last key at time = 1f
+            // Add last key at time = 1f
             {
-                float t = 1;
+                float t = 1f;
                 int i = numSegments - 1;
                 var position = GetPosition(t, i);
                 var scale = GetScale(t, i);
                 var rotation = GetOrientation(t, i).eulerAngles;
                 rotation = CleanRotation(lastRotation, rotation);
-                trs.AddKeys(1, position, rotation, scale);
+                trs.AddKeys(t, position, rotation, scale);
             }
 
             return trs;

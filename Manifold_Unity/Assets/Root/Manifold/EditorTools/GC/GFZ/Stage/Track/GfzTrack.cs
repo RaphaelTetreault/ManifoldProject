@@ -42,6 +42,19 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             if (this.rootSegments.Length == 0)
                 throw new MissingReferenceException($"No references to any {typeof(GfzTrackSegment).Name}! Make sure references existin in inspector.");
 
+            foreach (var seg in this.rootSegments)
+            {
+                if (seg == null)
+                {
+                    throw new Exception($"Segment in {name} is null! Cannot export null segments.");
+                }
+
+                if (!seg.isActiveAndEnabled)
+                {
+                    throw new Exception($"Segment {seg.name} is disabled! Can only export active segments.");
+                }
+            }
+
             // Track metadata
             var trackMinHeight = new TrackMinHeight();
             var trackLength = new TrackLength();
