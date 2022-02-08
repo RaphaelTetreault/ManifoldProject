@@ -234,6 +234,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             return matrix;
         }
 
+        public Matrix4x4 EvaluateMatrix(double time)
+        {
+            return EvaluateMatrix((float)time);
+        }
+
         public void AddKeys(float time, Vector3 position, Vector3 rotation, Vector3 scale)
         {
             Position.AddKeys(time, position);

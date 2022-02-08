@@ -9,6 +9,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
     public class GfzTrackRoad : GfzSegmentShape
     {
+        [Header("Gizmos")]
+        [SerializeField]
+        private bool doGizmos = true;
+
         [Header("Road Properties")]
         [Min(0f)]
         [SerializeField]
@@ -21,17 +25,22 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         private void OnDrawGizmos()
         {
+            if (!doGizmos)
+                return;
+
             Gizmos.color = Color.red;
             var mesh = Resources.GetBuiltinResource<Mesh>(EditorTools.Const.Resources.Cube);
 
+            var baseMtx = transform.localToWorldMatrix;
             var increment = 1f / 512f;
-            for (float p = 0; p < 1f; p += increment)
+            for (float t = 0; t < 1f; t += increment)
             {
-                var pos = AnimationCurveTRS.Position.Evaluate(p);
-                var rot = AnimationCurveTRS.Rotation.Evaluate(p);
-                var scl = AnimationCurveTRS.Scale.Evaluate(p);
-
-                Gizmos.DrawMesh(mesh, 0, pos, Quaternion.Euler(rot), scl);
+                var animMtx = AnimationCurveTRS.EvaluateMatrix(t);
+                var mtx = baseMtx * animMtx;
+                var p = mtx.GetPosition();
+                var r = mtx.rotation;
+                var s = mtx.lossyScale;
+                Gizmos.DrawMesh(mesh, 0, p, r, s);
             }
         }
 

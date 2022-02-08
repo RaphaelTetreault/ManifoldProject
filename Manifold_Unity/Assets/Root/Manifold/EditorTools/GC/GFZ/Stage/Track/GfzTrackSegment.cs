@@ -90,19 +90,14 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 ? AnimationCurveTRS.GetGfzCoordSpaceTRS()
                 : AnimationCurveTRS;
 
-            //var initRotation = animationTRS.Rotation.Evaluate(0);
-            //var facing = Quaternion.Euler(initRotation);
-            //var facing = animationTRS.Rotation.Evaluate(0);
-            //Vector3 forward = Quaternion.Euler(facing) * Vector3.forward;
-            //Vector3 backward = -forward;
             Vector3 forward = Vector3.forward;
-            Vector3 backward = Vector3.back;
-
+            Vector3 backward = -forward;
 
             var curveMaxTime = animationTRS.GetMaxTime();
-            var pos = animationTRS.Position;
-            var rot = animationTRS.Rotation;
-            var scl = animationTRS.Scale;
+            var baseMtx = segmentGenerator.transform.localToWorldMatrix;
+            //var pos = animationTRS.Position;
+            //var rot = animationTRS.Rotation;
+            //var scl = animationTRS.Scale;
 
             for (int i = 0; i < numCheckpoints; i++)
             {
@@ -110,11 +105,18 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 double checkpointTimeStart = (double)(i + 0) / numCheckpoints;
                 double checkpointTimeEnd = (double)(i + 1) / numCheckpoints;
 
+                //
+                var animMtx = animationTRS.EvaluateMatrix(checkpointTimeStart);
+                var mtx = baseMtx * animMtx;
+                var position = mtx.GetPosition();
+                var rotation = mtx.rotation;
+                //var scale = mtx.lossyScale;
+                var scale = animationTRS.Scale.Evaluate(checkpointTimeStart);
+
                 // Get origin of start plane, track width at start sampling point
-                var origin = pos.Evaluate(checkpointTimeStart);// + transform.position;
-                var trackWidth = scl.x.Evaluate((float)checkpointTimeStart);
-                var orientation = Quaternion.Euler(rot.Evaluate(checkpointTimeStart));// * transform.rotation;
-                var normal = orientation * forward;
+                var origin = position;// + transform.position;
+                var trackWidth = scale.x;
+                var normal = rotation * forward;
 
 
                 // DISTANCE
@@ -157,9 +159,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             {
                 var lastCheckpoint = checkpoints[lastIndex];
                 lastCheckpoint.curveTimeEnd = curveMaxTime;
-                var origin = pos.Evaluate(curveMaxTime);// + transform.position;
-                var orientation = Quaternion.Euler(rot.Evaluate(curveMaxTime));// * transform.rotation;
-                var normal = orientation * backward;
+                
+                var animMtx = animationTRS.EvaluateMatrix(curveMaxTime);
+                var mtx = baseMtx * animMtx;
+
+                var origin = mtx.GetPosition();
+                var rotation = mtx.rotation;
+                var normal = rotation * backward;
                 lastCheckpoint.planeEnd.origin = origin;
                 lastCheckpoint.planeEnd.normal = normal;
                 lastCheckpoint.planeEnd.ComputeDotProduct();
