@@ -132,5 +132,22 @@ namespace Manifold
 
             return new AnimationCurve(invertedKeys);
         }
+
+        public static AnimationCurve GetOffset(this AnimationCurve curve, float valueOffset)
+        {
+            var keys = curve.keys;
+            var invertedKeys = new Keyframe[keys.Length];
+
+            for (int i = 0; i < keys.Length; i++)
+            {
+                // copy all misc data
+                invertedKeys[i] = keys[i];
+                // Invert values
+                invertedKeys[i].value += valueOffset;
+            }
+
+            return new AnimationCurve(invertedKeys);
+        }
+
     }
 }

@@ -18,6 +18,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         [SerializeField] private byte unk0x3B;
 
         [Header("Track Curves")]
+        [SerializeField] private bool flipAnim;
         [SerializeField] private bool invertCheckpoints;
         [SerializeField] private bool genCheckpoints;
         [SerializeField] private bool genAnimCurves;
@@ -80,24 +81,28 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             var numCheckpoints = Mathf.CeilToInt(segmentLength / metersPerCheckpoint);
             var checkpoints = new Checkpoint[numCheckpoints];
 
-
-            Vector3 forward = convertCoordinateSpace ? Vector3.back : Vector3.forward;
-            Vector3 backward = convertCoordinateSpace ? Vector3.forward : Vector3.back;
-
-
             var distanceOffset = 0f;
 
             // Get the AnimationCurveTransform appropriate for requester.
             // Use GFZ space (game) if 'true'
             // Use Unity space if 'false'
-            var animTransform = convertCoordinateSpace
+            var animationTRS = convertCoordinateSpace
                 ? AnimationCurveTRS.GetGfzCoordSpaceTRS()
                 : AnimationCurveTRS;
 
-            var curveMaxTime = animTransform.GetMaxTime();
-            var pos = animTransform.Position;
-            var rot = animTransform.Rotation;
-            var scl = animTransform.Scale;
+            //var initRotation = animationTRS.Rotation.Evaluate(0);
+            //var facing = Quaternion.Euler(initRotation);
+            //var facing = animationTRS.Rotation.Evaluate(0);
+            //Vector3 forward = Quaternion.Euler(facing) * Vector3.forward;
+            //Vector3 backward = -forward;
+            Vector3 forward = Vector3.forward;
+            Vector3 backward = Vector3.back;
+
+
+            var curveMaxTime = animationTRS.GetMaxTime();
+            var pos = animationTRS.Position;
+            var rot = animationTRS.Rotation;
+            var scl = animationTRS.Scale;
 
             for (int i = 0; i < numCheckpoints; i++)
             {
@@ -114,7 +119,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
                 // DISTANCE
                 // Compute the distance between these 2 points, keep track of total distance travelled along segment
-                var distanceBetween = animTransform.GetDistanceBetweenRepeated(checkpointTimeStart, checkpointTimeEnd);
+                var distanceBetween = animationTRS.GetDistanceBetweenRepeated(checkpointTimeStart, checkpointTimeEnd);
                 var distanceStart = distanceOffset;
                 var distanceEnd = distanceOffset + distanceBetween;
                 distanceOffset = distanceEnd;
@@ -227,6 +232,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             {
                 this.animationCurveTRS = segmentGenerator.GetAnimationCurveTRS();
                 genAnimCurves = false;
+            }
+
+            if (flipAnim)
+            {
+                animationCurveTRS = animationCurveTRS.GetGfzCoordSpaceTRS();
+                flipAnim = false;
             }
 
         }

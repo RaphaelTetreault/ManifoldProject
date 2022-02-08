@@ -333,6 +333,16 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 EditorUtility.SetDirty(spline);
             }
 
+            // HEIGHT
+            EditorGUI.BeginChangeCheck();
+            bezier.height = GuiSimple.Float(nameof(bezier.height), bezier.height);
+            if (EditorGUI.EndChangeCheck())
+            {
+                Undo.RecordObject(spline, $"Set bézier point [{selectedIndex}] height");
+                spline.SetBezierPoint(index, bezier);
+                EditorUtility.SetDirty(spline);
+            }
+
             // ROLL
             EditorGUI.BeginChangeCheck();
             bezier.roll = GuiSimple.Float(nameof(bezier.roll), bezier.roll);

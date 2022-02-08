@@ -94,14 +94,20 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             {
                 // Position X is inverted compared to Unity
                 // 2022/01/31: This does not work with inverting Z axis!
-                //p.x = p.x.GetInverted();
+                p.x = p.x.GetInverted();
 
                 //
-                p.z = p.z.GetInverted();
+                //p.z = p.z.GetInverted();
 
                 // As a result of X's inversion:
                 // Rotation Y is inverted compared to Unity
                 r.y = r.y.GetInverted();
+                //
+
+                //r.z = r.z.GetInverted();
+
+                // Conform Y rotation to -Z forward
+                //r.y = r.y.GetOffset(180f);
             }
 
             return new AnimationCurveTRS()

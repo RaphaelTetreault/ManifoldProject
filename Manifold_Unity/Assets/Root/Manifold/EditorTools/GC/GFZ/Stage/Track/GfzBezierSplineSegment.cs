@@ -471,9 +471,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 float currLength = (float)distances[i];
 
                 // TODO: add and use samples per curve in bezier point
-                for (int s = 0; s < 32; s++)
+                const int samples = 16;
+                for (int s = 0; s < samples; s++)
                 {
-                    var t = (float)(s + 0) / 32;
+                    var t = (float)(s + 0) / samples;
                     var position = GetPosition(t, i);
                     var scale = GetScale(t, i);
                     var rotation = GetOrientation(t, i).eulerAngles;
@@ -516,13 +517,14 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public float CleanRotation(float lastAngle, float currAngle)
         {
+            const float minDelta = 45f;
             float delta = currAngle - lastAngle;
 
-            if (delta > 45)
+            if (delta > minDelta)
             {
                 currAngle -= 360f;
             }
-            else if (delta < -45f)
+            else if (delta < -minDelta)
             {
                 currAngle += 360;
             }

@@ -24,7 +24,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             Gizmos.color = Color.red;
             var mesh = Resources.GetBuiltinResource<Mesh>(EditorTools.Const.Resources.Cube);
 
-            var increment = 1f / 100f;
+            var increment = 1f / 512f;
             for (float p = 0; p < 1f; p += increment)
             {
                 var pos = AnimationCurveTRS.Position.Evaluate(p);
