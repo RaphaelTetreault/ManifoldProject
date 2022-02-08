@@ -82,24 +82,18 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 var p2 = root.TransformPoint(bezier1.inTangent);
                 var p3 = root.TransformPoint(bezier1.position);
 
+                var baseMtx = root.localToWorldMatrix;
                 const int iters = 64;
                 for (int p = 0; p < iters; p++)
                 {
-                    int i0 = i - 1;
                     var time0 = (float)(p + 0) / iters;
                     var time1 = (float)(p + 1) / iters;
-                    var px0 = spline.GetPositionRelative(time0, i0);
-                    var px1 = spline.GetPositionRelative(time1, i0);
-
-                    var rot0 = spline.GetOrientation(time0, i0);
-                    var rot1 = spline.GetOrientation(time1, i0);
-                    var scale = spline.GetScale(time0, i0) / 2f;
-                    var w = scale.x;
-
-                    var l0 = px0 + rot0 * Vector3.left * w;
-                    var l1 = px1 + rot1 * Vector3.left * w;
-                    var r0 = px0 + rot0 * Vector3.right * w;
-                    var r1 = px1 + rot1 * Vector3.right * w;
+                    var mtx0 = baseMtx * spline.GetMatrix(time0);
+                    var mtx1 = baseMtx * spline.GetMatrix(time1);
+                    var l0 = mtx0.MultiplyPoint(Vector3.left / 2f);
+                    var l1 = mtx1.MultiplyPoint(Vector3.left / 2f);
+                    var r0 = mtx0.MultiplyPoint(Vector3.right / 2f);
+                    var r1 = mtx1.MultiplyPoint(Vector3.right / 2f);
 
                     Handles.color = splineColor;
                     Handles.DrawLine(l0, l1, spline.OutterLineThickness);

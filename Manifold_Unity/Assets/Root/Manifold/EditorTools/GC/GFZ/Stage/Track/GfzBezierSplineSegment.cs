@@ -296,6 +296,24 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return scale;
         }
 
+
+        public Matrix4x4 GetMatrix(float time, int index)
+        {
+            var position = GetPosition(time, index);
+            var rotation = GetOrientation(time, index);
+            var scale = GetScale(time, index);
+            var matrix = new Matrix4x4();
+            matrix.SetTRS(position, rotation, scale);
+            return matrix;
+        }
+
+        public Matrix4x4 GetMatrix(float time01)
+        {
+            (float t, int i) = NormalizedTimeToTimeAndIndex(time01);
+            var matrix = GetMatrix(t, i);
+            return matrix;
+        }
+
         public void AddPointAtEnd()
         {
             var lastIndex = points.Count - 1;

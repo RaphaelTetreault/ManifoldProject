@@ -90,7 +90,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 ? AnimationCurveTRS.GetGfzCoordSpaceTRS()
                 : AnimationCurveTRS;
 
-            Vector3 forward = Vector3.forward;
+            Vector3 forward = -segmentGenerator.transform.forward;
             Vector3 backward = -forward;
 
             var curveMaxTime = animationTRS.GetMaxTime();
