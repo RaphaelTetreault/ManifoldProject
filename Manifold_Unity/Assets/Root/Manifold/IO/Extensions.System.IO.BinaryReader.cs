@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Text;
+using System.Runtime.CompilerServices;
 
 namespace Manifold.IO
 {
@@ -80,36 +81,47 @@ namespace Manifold.IO
 
         #region ReadX_Value
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool ReadX_Bool(this BinaryReader reader)
             => BinaryIoUtility.ReadBool(reader);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static byte ReadX_UInt8(this BinaryReader reader)
             => BinaryIoUtility.ReadUInt8(reader);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static sbyte ReadX_Int8(this BinaryReader reader)
             => BinaryIoUtility.ReadInt8(reader);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ushort ReadX_UInt16(this BinaryReader reader)
             => BinaryIoUtility.ReadUInt16(reader);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static short ReadX_Int16(this BinaryReader reader)
             => BinaryIoUtility.ReadInt16(reader);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static uint ReadX_UInt32(this BinaryReader reader)
             => BinaryIoUtility.ReadUInt32(reader);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int ReadX_Int32(this BinaryReader reader)
             => BinaryIoUtility.ReadInt32(reader);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ulong ReadX_UInt64(this BinaryReader reader)
             => BinaryIoUtility.ReadUInt64(reader);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static long ReadX_Int64(this BinaryReader reader)
             => BinaryIoUtility.ReadInt64(reader);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float ReadX_Float(this BinaryReader reader)
             => BinaryIoUtility.ReadFloat(reader);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double ReadX_Double(this BinaryReader reader)
             => BinaryIoUtility.ReadDouble(reader);
 

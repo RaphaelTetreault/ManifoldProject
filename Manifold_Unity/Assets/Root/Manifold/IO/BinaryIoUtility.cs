@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Runtime.CompilerServices;
 
 namespace Manifold.IO
 {
@@ -25,8 +26,54 @@ namespace Manifold.IO
         private static readonly Stack<Encoding> EncodingStack = new Stack<Encoding>();
         private static readonly Stack<Endianness> EndianessStack = new Stack<Endianness>();
 
+        //private static Func<BinaryReader, bool> fReadBool = ReadBool; //
+        //private static Func<BinaryReader, byte> fReadUint8 = ReadUInt8; //
+        //private static Func<BinaryReader, sbyte> fReadInt8 = ReadInt8; // 
+        private static Func<BinaryReader, ushort> fReadUInt16 = RequiresSwapEndianness ? ReadUInt16SwapEndianness : ReadUInt16SameEndianness;
+        private static Func<BinaryReader, uint> fReadUInt32 = RequiresSwapEndianness ? ReadUInt32Swap : ReadUInt32Same;
+        private static Func<BinaryReader, ulong> fReadUInt64 = RequiresSwapEndianness ? ReadUInt64Swap : ReadUInt64Same;
+        private static Func<BinaryReader, short> fReadInt16 = RequiresSwapEndianness ? ReadInt16SwapEndianness : ReadInt16SameEndianness;
+        private static Func<BinaryReader, int> fReadInt32 = RequiresSwapEndianness ? ReadInt32Swap : ReadInt32Same;
+        private static Func<BinaryReader, long> fReadInt64 = RequiresSwapEndianness ? ReadInt64Swap : ReadInt64Same;
+        private static Func<BinaryReader, float> fReadFloat = RequiresSwapEndianness ? ReadFloatSwap : ReadFloatSame;
+        private static Func<BinaryReader, double> fReadDouble = RequiresSwapEndianness ? ReadDoubleSwap : ReadDoubleSame;
+
+
+
+        private static void SetFunctionEndianness()
+        {
+            bool swapByteOrder = BitConverter.IsLittleEndian ^ IsLittleEndian;
+            if (swapByteOrder)
+            {
+                fReadInt16 = ReadInt16SwapEndianness;
+                fReadInt32 = ReadInt32Swap;
+                fReadInt64 = ReadInt64Swap;
+                fReadUInt16 = ReadUInt16SwapEndianness;
+                fReadUInt32 = ReadUInt32Swap;
+                fReadUInt64 = ReadUInt64Swap;
+                fReadFloat = ReadFloatSwap;
+                fReadDouble = ReadDoubleSwap;
+            }
+            else
+            {
+                fReadInt16 = ReadInt16SameEndianness;
+                fReadInt32 = ReadInt32Same;
+                fReadInt64 = ReadInt64Same;
+                fReadUInt16 = ReadUInt16SameEndianness;
+                fReadUInt32 = ReadUInt32Same;
+                fReadUInt64 = ReadUInt64Same;
+                fReadFloat = ReadFloatSame;
+                fReadDouble = ReadDoubleSame;
+            }
+        }
+
 
         // PROPERTIES
+
+        private static bool RequiresSwapEndianness
+        {
+            get => BitConverter.IsLittleEndian ^ IsLittleEndian;
+        }
 
         /// <summary>
         /// The stride used to align the stream to when calling AlignTo method
@@ -85,10 +132,19 @@ namespace Manifold.IO
         /// <param name="isLittleEndian"></param>
         public static void PushEndianness(Endianness endianness)
         {
+            // Figure out if we need to change the function pointers
+            bool requiresFunctionChange = endianness != Endianness;
+
             // Push active state to stack
             EndianessStack.Push(Endianness);
             // Set active state to call value
             Endianness = endianness;
+
+            // If we need to change functions, change them
+            if (requiresFunctionChange)
+            {
+                SetFunctionEndianness();
+            }
         }
 
 
@@ -96,100 +152,171 @@ namespace Manifold.IO
 
         #region Read Value
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool ReadBool(BinaryReader binaryReader)
         {
             return binaryReader.ReadBoolean();
         }
 
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static byte ReadUInt8(BinaryReader binaryReader)
         {
             return binaryReader.ReadByte();
         }
 
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static sbyte ReadInt8(BinaryReader binaryReader)
         {
             return binaryReader.ReadSByte();
         }
 
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static short ReadInt16(BinaryReader binaryReader)
         {
+            return fReadInt16.Invoke(binaryReader);
+        }
+        private static short ReadInt16SameEndianness(BinaryReader binaryReader)
+        {
             byte[] bytes = binaryReader.ReadBytes(SizeofInt16);
-
-            if (BitConverter.IsLittleEndian ^ IsLittleEndian)
-                Array.Reverse(bytes);
-
+            return BitConverter.ToInt16(bytes, 0);
+        }
+        private static short ReadInt16SwapEndianness(BinaryReader binaryReader)
+        {
+            byte[] bytes = binaryReader.ReadBytes(SizeofInt16);
+            Array.Reverse(bytes);
             return BitConverter.ToInt16(bytes, 0);
         }
 
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ushort ReadUInt16(BinaryReader binaryReader)
         {
+            return fReadUInt16.Invoke(binaryReader);
+        }
+        public static ushort ReadUInt16SameEndianness(BinaryReader binaryReader)
+        {
             byte[] bytes = binaryReader.ReadBytes(SizeofUint16);
-
-            if (BitConverter.IsLittleEndian ^ IsLittleEndian)
-                Array.Reverse(bytes);
-
+            return BitConverter.ToUInt16(bytes, 0);
+        }
+        public static ushort ReadUInt16SwapEndianness(BinaryReader binaryReader)
+        {
+            byte[] bytes = binaryReader.ReadBytes(SizeofUint16);
+            Array.Reverse(bytes);
             return BitConverter.ToUInt16(bytes, 0);
         }
 
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int ReadInt32(BinaryReader binaryReader)
         {
+            return fReadInt32.Invoke(binaryReader);
+        }
+        public static int ReadInt32Same(BinaryReader binaryReader)
+        {
             byte[] bytes = binaryReader.ReadBytes(SizeofInt32);
-
-            if (BitConverter.IsLittleEndian ^ IsLittleEndian)
-                Array.Reverse(bytes);
-
+            return BitConverter.ToInt32(bytes, 0);
+        }
+        public static int ReadInt32Swap(BinaryReader binaryReader)
+        {
+            byte[] bytes = binaryReader.ReadBytes(SizeofInt32);
+            Array.Reverse(bytes);
             return BitConverter.ToInt32(bytes, 0);
         }
 
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static uint ReadUInt32(BinaryReader binaryReader)
         {
+            return fReadUInt32.Invoke(binaryReader);
+        }
+        public static uint ReadUInt32Same(BinaryReader binaryReader)
+        {
             byte[] bytes = binaryReader.ReadBytes(SizeofUint32);
-
-            if (BitConverter.IsLittleEndian ^ IsLittleEndian)
-                Array.Reverse(bytes);
-
+            return BitConverter.ToUInt32(bytes, 0);
+        }
+        public static uint ReadUInt32Swap(BinaryReader binaryReader)
+        {
+            byte[] bytes = binaryReader.ReadBytes(SizeofUint32);
+            Array.Reverse(bytes);
             return BitConverter.ToUInt32(bytes, 0);
         }
 
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static long ReadInt64(BinaryReader binaryReader)
         {
+            return fReadInt64.Invoke(binaryReader);
+        }
+        public static long ReadInt64Same(BinaryReader binaryReader)
+        {
             byte[] bytes = binaryReader.ReadBytes(SizeofInt64);
-
-            if (BitConverter.IsLittleEndian ^ IsLittleEndian)
-                Array.Reverse(bytes);
-
+            Array.Reverse(bytes);
+            return BitConverter.ToInt64(bytes, 0);
+        }
+        public static long ReadInt64Swap(BinaryReader binaryReader)
+        {
+            byte[] bytes = binaryReader.ReadBytes(SizeofInt64);
+            Array.Reverse(bytes);
             return BitConverter.ToInt64(bytes, 0);
         }
 
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ulong ReadUInt64(BinaryReader binaryReader)
         {
+            return fReadUInt64.Invoke(binaryReader);
+        }
+        public static ulong ReadUInt64Same(BinaryReader binaryReader)
+        {
             byte[] bytes = binaryReader.ReadBytes(SizeofUint64);
-
-            if (BitConverter.IsLittleEndian ^ IsLittleEndian)
-                Array.Reverse(bytes);
-
+            return BitConverter.ToUInt64(bytes, 0);
+        }
+        public static ulong ReadUInt64Swap(BinaryReader binaryReader)
+        {
+            byte[] bytes = binaryReader.ReadBytes(SizeofUint64);
+            Array.Reverse(bytes);
             return BitConverter.ToUInt64(bytes, 0);
         }
 
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float ReadFloat(BinaryReader binaryReader)
         {
+            return fReadFloat.Invoke(binaryReader);
+        }
+        public static float ReadFloatSame(BinaryReader binaryReader)
+        {
             byte[] bytes = binaryReader.ReadBytes(SizeofFloat);
-
-            if (BitConverter.IsLittleEndian ^ IsLittleEndian)
-                Array.Reverse(bytes);
-
+            return BitConverter.ToSingle(bytes, 0);
+        }
+        public static float ReadFloatSwap(BinaryReader binaryReader)
+        {
+            byte[] bytes = binaryReader.ReadBytes(SizeofFloat);
+            Array.Reverse(bytes);
             return BitConverter.ToSingle(bytes, 0);
         }
 
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double ReadDouble(BinaryReader binaryReader)
         {
+            return fReadDouble.Invoke(binaryReader);
+        }
+        public static double ReadDoubleSame(BinaryReader binaryReader)
+        {
             byte[] bytes = binaryReader.ReadBytes(SizeofDouble);
-
-            if (BitConverter.IsLittleEndian ^ IsLittleEndian)
-                Array.Reverse(bytes);
-
             return BitConverter.ToDouble(bytes, 0);
         }
+        public static double ReadDoubleSwap(BinaryReader binaryReader)
+        {
+            byte[] bytes = binaryReader.ReadBytes(SizeofDouble);
+            Array.Reverse(bytes);
+            return BitConverter.ToDouble(bytes, 0);
+        }
+
 
         public static decimal ReadDecimal(BinaryReader binaryReader)
         {
@@ -211,6 +338,7 @@ namespace Manifold.IO
             // TODO: confirm this all works with any endianness.
             throw new NotImplementedException();
         }
+
 
         public static char ReadChar(BinaryReader binaryReader, Encoding encoding)
         {
@@ -269,12 +397,10 @@ namespace Manifold.IO
             return ReadString(binaryReader, length, Encoding);
         }
 
-
         public static T ReadNewIBinarySerializable<T>(BinaryReader binaryReader) where T : IBinarySerializable, new()
         {
             T value = new T();
             value.Deserialize(binaryReader);
-
             return value;
         }
 
@@ -289,35 +415,23 @@ namespace Manifold.IO
             var type = Enum.GetUnderlyingType(typeof(TEnum));
             switch (type)
             {
-                // Signed backing type
-                case Type _ when type == typeof(sbyte):  return (TEnum)(object)ReadInt8(binaryReader);
-                case Type _ when type == typeof(short):  return (TEnum)(object)ReadInt16(binaryReader);
-                case Type _ when type == typeof(int):    return (TEnum)(object)ReadInt32(binaryReader);
-                case Type _ when type == typeof(long):   return (TEnum)(object)ReadInt64(binaryReader);
-                // Unsigned backing type
-                case Type _ when type == typeof(byte):   return (TEnum)(object)ReadUInt8(binaryReader);
+                // Ordered by my best guess as to which is most common
+                // int is the default backing type
+                case Type _ when type == typeof(int): return (TEnum)(object)ReadInt32(binaryReader);
+                // I often override the backing type to not have negatives
+                case Type _ when type == typeof(uint): return (TEnum)(object)ReadUInt32(binaryReader);
+                // byte and ushort are smaller/compress enums (also no negatives
+                case Type _ when type == typeof(byte): return (TEnum)(object)ReadUInt8(binaryReader);
                 case Type _ when type == typeof(ushort): return (TEnum)(object)ReadUInt16(binaryReader);
-                case Type _ when type == typeof(uint):   return (TEnum)(object)ReadUInt32(binaryReader);
-                case Type _ when type == typeof(ulong):  return (TEnum)(object)ReadUInt64(binaryReader);
+                // Unlikely but perhaps userful to have 64 bits to work with
+                case Type _ when type == typeof(ulong): return (TEnum)(object)ReadUInt64(binaryReader);
+                // These are unordered: I know I don't use them as backing types
+                case Type _ when type == typeof(sbyte): return (TEnum)(object)ReadInt8(binaryReader);
+                case Type _ when type == typeof(short): return (TEnum)(object)ReadInt16(binaryReader);
+                case Type _ when type == typeof(long): return (TEnum)(object)ReadInt64(binaryReader);
 
                 default: throw new NotImplementedException("Unsupported Enum backing type used!");
             }
-
-            //switch (type.Name)
-            //{
-            //    // Signed backing type
-            //    case nameof(SByte): return (TEnum)(object)ReadInt8(binaryReader);
-            //    case nameof(Int16): return (TEnum)(object)ReadInt16(binaryReader);
-            //    case nameof(Int32): return (TEnum)(object)ReadInt32(binaryReader);
-            //    case nameof(Int64): return (TEnum)(object)ReadInt64(binaryReader);
-            //    // Unsigned backing type
-            //    case nameof(Byte):   return (TEnum)(object)ReadUInt8(binaryReader);
-            //    case nameof(UInt16): return (TEnum)(object)ReadUInt16(binaryReader);
-            //    case nameof(UInt32): return (TEnum)(object)ReadUInt32(binaryReader);
-            //    case nameof(UInt64): return (TEnum)(object)ReadUInt64(binaryReader);
-
-            //    default: throw new NotImplementedException();
-            //}
         }
 
         #endregion
