@@ -81,47 +81,36 @@ namespace Manifold.IO
 
         #region ReadX_Value
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool ReadX_Bool(this BinaryReader reader)
-            => BinaryIoUtility.ReadBool(reader);
+            => reader.ReadBoolean();
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static byte ReadX_UInt8(this BinaryReader reader)
-            => BinaryIoUtility.ReadUInt8(reader);
+            => reader.ReadByte();
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static sbyte ReadX_Int8(this BinaryReader reader)
-            => BinaryIoUtility.ReadInt8(reader);
+            => reader.ReadSByte();
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ushort ReadX_UInt16(this BinaryReader reader)
             => BinaryIoUtility.ReadUInt16(reader);
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static short ReadX_Int16(this BinaryReader reader)
             => BinaryIoUtility.ReadInt16(reader);
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static uint ReadX_UInt32(this BinaryReader reader)
             => BinaryIoUtility.ReadUInt32(reader);
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int ReadX_Int32(this BinaryReader reader)
             => BinaryIoUtility.ReadInt32(reader);
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ulong ReadX_UInt64(this BinaryReader reader)
             => BinaryIoUtility.ReadUInt64(reader);
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static long ReadX_Int64(this BinaryReader reader)
             => BinaryIoUtility.ReadInt64(reader);
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float ReadX_Float(this BinaryReader reader)
             => BinaryIoUtility.ReadFloat(reader);
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double ReadX_Double(this BinaryReader reader)
             => BinaryIoUtility.ReadDouble(reader);
 
@@ -146,22 +135,16 @@ namespace Manifold.IO
         public static string ReadX_String(this BinaryReader reader, Encoding encoding)
             => BinaryIoUtility.ReadString(reader, encoding);
 
-        // TODO
-        //public static string ReadCString(this BinaryReader reader, Encoding encoding)
-        //    => BinaryIoUtility.ReadCString(reader, encoding);
-
         public static T ReadX_NewIBinarySerializable<T>(this BinaryReader reader) where T : IBinarySerializable, new()
-        {
-            return BinaryIoUtility.ReadNewIBinarySerializable<T>(reader);
-        }
-
+            => BinaryIoUtility.ReadNewIBinarySerializable<T>(reader);
+        
         public static TEnum ReadX_Enum<TEnum>(this BinaryReader reader) where TEnum : System.Enum
-        {
-            return BinaryIoUtility.ReadEnum<TEnum>(reader);
-        }
+            => BinaryIoUtility.ReadEnum<TEnum>(reader);
 
         #endregion
 
+
+        #region UNUSED
         #region ReadX_ValueArray
 
         public static bool[] ReadX_BoolArray(this BinaryReader reader)
@@ -207,14 +190,11 @@ namespace Manifold.IO
             => BinaryIoUtility.ReadStringArray(reader, encoding);
 
         public static T[] ReadX_NewIBinarySerializableArray<T>(this BinaryReader reader) where T : IBinarySerializable, new()
-        {
-            return BinaryIoUtility.ReadNewIBinarySerializableArray<T>(reader);
-        }
+            => BinaryIoUtility.ReadNewIBinarySerializableArray<T>(reader);
 
         public static TEnum[] ReadX_EnumArray<TEnum>(this BinaryReader reader) where TEnum : System.Enum
-        {
-            return BinaryIoUtility.ReadEnumArray<TEnum>(reader);
-        }
+            => BinaryIoUtility.ReadEnumArray<TEnum>(reader);
+        
 
         #endregion
 
@@ -263,201 +243,233 @@ namespace Manifold.IO
             => BinaryIoUtility.ReadStringArray(reader, length, encoding);
 
         public static T[] ReadX_NewIBinarySerializable<T>(this BinaryReader reader, int length) where T : IBinarySerializable, new()
-        {
-            return BinaryIoUtility.ReadNewIBinarySerializableArray<T>(reader, length);
-        }
+            => BinaryIoUtility.ReadNewIBinarySerializableArray<T>(reader, length);
 
         public static TEnum[] ReadX_EnumArray<TEnum>(this BinaryReader reader, int length) where TEnum : System.Enum
-        {
-            return BinaryIoUtility.ReadEnumArray<TEnum>(reader, length);
-        }
+            => BinaryIoUtility.ReadEnumArray<TEnum>(reader, length);
 
         #endregion
+        #endregion
+
 
         #region ReadX(ref value)
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool ReadX(this BinaryReader reader, ref bool value)
             => BinaryIoUtility.Read(reader, ref value);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static byte ReadX(this BinaryReader reader, ref byte value)
             => BinaryIoUtility.Read(reader, ref value);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static sbyte ReadX(this BinaryReader reader, ref sbyte value)
             => BinaryIoUtility.Read(reader, ref value);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ushort ReadX(this BinaryReader reader, ref ushort value)
             => BinaryIoUtility.Read(reader, ref value);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static short ReadX(this BinaryReader reader, ref short value)
             => BinaryIoUtility.Read(reader, ref value);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static uint ReadX(this BinaryReader reader, ref uint value)
             => BinaryIoUtility.Read(reader, ref value);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int ReadX(this BinaryReader reader, ref int value)
             => BinaryIoUtility.Read(reader, ref value);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ulong ReadX(this BinaryReader reader, ref ulong value)
             => BinaryIoUtility.Read(reader, ref value);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static long ReadX(this BinaryReader reader, ref long value)
             => BinaryIoUtility.Read(reader, ref value);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float ReadX(this BinaryReader reader, ref float value)
             => BinaryIoUtility.Read(reader, ref value);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double ReadX(this BinaryReader reader, ref double value)
             => BinaryIoUtility.Read(reader, ref value);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static decimal ReadX(this BinaryReader reader, ref decimal value)
             => BinaryIoUtility.Read(reader, ref value);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static char ReadX(this BinaryReader reader, ref char value)
             => BinaryIoUtility.Read(reader, ref value, BinaryIoUtility.Encoding);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static char ReadX(this BinaryReader reader, ref char value, Encoding encoding)
             => BinaryIoUtility.Read(reader, ref value, encoding);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string ReadX(this BinaryReader reader, ref string value)
             => BinaryIoUtility.Read(reader, ref value, BinaryIoUtility.Encoding);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string ReadX(this BinaryReader reader, ref string value, Encoding encoding)
             => BinaryIoUtility.Read(reader, ref value, encoding);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string ReadX(this BinaryReader reader, int length, ref string value)
             => BinaryIoUtility.Read(reader, ref value, BinaryIoUtility.Encoding);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string ReadX(this BinaryReader reader, int length, ref string value, Encoding encoding) 
            => BinaryIoUtility.Read(reader, ref value, encoding);
 
-        // todo
-        //public static string ReadXCString(this BinaryReader reader, ref string value, Encoding encoding)
-        //{
-        //    return value = BinaryIoUtility.ReadCString(reader, encoding);
-        //}
-
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T ReadX<T>(this BinaryReader reader, ref T value, bool createNewInstance) where T : IBinarySerializable, new()
-        {
-            return value = BinaryIoUtility.Read(reader, ref value, createNewInstance);
-        }
+            => BinaryIoUtility.Read(reader, ref value, createNewInstance);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static TEnum ReadX<TEnum>(this BinaryReader reader, ref TEnum value) where TEnum : struct, System.Enum
-        {
-            return value = BinaryIoUtility.Read(reader, ref value);
-        }
+            =>  BinaryIoUtility.Read(reader, ref value);
 
         #endregion
 
         #region ReadX(ref value[])
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool[] ReadX(this BinaryReader reader, ref bool[] value) 
            => BinaryIoUtility.Read(reader, ref value);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static byte[] ReadX(this BinaryReader reader, ref byte[] value) 
            => BinaryIoUtility.Read(reader, ref value);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static sbyte[] ReadX(this BinaryReader reader, ref sbyte[] value)
             => BinaryIoUtility.Read(reader, ref value);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ushort[] ReadX(this BinaryReader reader, ref ushort[] value)
             => BinaryIoUtility.Read(reader, ref value);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static short[] ReadX(this BinaryReader reader, ref short[] value)
             => BinaryIoUtility.Read(reader, ref value);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static uint[] ReadX(this BinaryReader reader, ref uint[] value)
             => BinaryIoUtility.Read(reader, ref value);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int[] ReadX(this BinaryReader reader, ref int[] value)
             => BinaryIoUtility.Read(reader, ref value);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ulong[] ReadX(this BinaryReader reader, ref ulong[] value)
             => BinaryIoUtility.Read(reader, ref value);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static long[] ReadX(this BinaryReader reader, ref long[] value)
             => BinaryIoUtility.Read(reader, ref value);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float[] ReadX(this BinaryReader reader, ref float[] value)
             => BinaryIoUtility.Read(reader, ref value);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double[] ReadX(this BinaryReader reader, ref double[] value) 
            => BinaryIoUtility.Read(reader, ref value);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static decimal[] ReadX(this BinaryReader reader, ref decimal[] value)
             => BinaryIoUtility.Read(reader, ref value);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string[] ReadX(this BinaryReader reader, ref string[] value)
             => BinaryIoUtility.Read(reader, ref value, BinaryIoUtility.Encoding);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string[] ReadX(this BinaryReader reader, ref string[] value, Encoding encoding)
             => BinaryIoUtility.Read(reader, ref value, encoding);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T[] ReadX<T>(this BinaryReader reader, ref T[] value, bool createNewInstances) where T : IBinarySerializable, new()
-        {
-            return BinaryIoUtility.Read(reader, ref value, createNewInstances);
-        }
+            => BinaryIoUtility.Read(reader, ref value, createNewInstances);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static TEnum[] ReadX<TEnum>(this BinaryReader reader, ref TEnum[] value) where TEnum : struct, System.Enum
-        {
-            return value = BinaryIoUtility.ReadEnum(reader, ref value);
-        }
+            => BinaryIoUtility.ReadEnum(reader, ref value);
 
         #endregion
 
         #region ReadX(ref value[], int length)
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool[] ReadX(this BinaryReader reader, ref bool[] value, int length)
             => BinaryIoUtility.Read(reader, length, ref value);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static byte[] ReadX(this BinaryReader reader, ref byte[] value, int length)
             => BinaryIoUtility.Read(reader, length, ref value);
 
         public static sbyte[] ReadX(this BinaryReader reader, ref sbyte[] value, int length)
             => BinaryIoUtility.Read(reader, length, ref value);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ushort[] ReadX(this BinaryReader reader, ref ushort[] value, int length)
             => BinaryIoUtility.Read(reader, length, ref value);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static short[] ReadX(this BinaryReader reader, ref short[] value, int length)
             => BinaryIoUtility.Read(reader, length, ref value);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static uint[] ReadX(this BinaryReader reader, ref uint[] value, int length) 
            => BinaryIoUtility.Read(reader, length, ref value);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int[] ReadX(this BinaryReader reader, ref int[] value, int length)
             => BinaryIoUtility.Read(reader, length, ref value);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ulong[] ReadX(this BinaryReader reader, ref ulong[] value, int length)
             => BinaryIoUtility.Read(reader, length, ref value);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static long[] ReadX(this BinaryReader reader, ref long[] value, int length)
             => BinaryIoUtility.Read(reader, length, ref value);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float[] ReadX(this BinaryReader reader, ref float[] value, int length)
             => BinaryIoUtility.Read(reader, length, ref value);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double[] ReadX(this BinaryReader reader, ref double[] value, int length)
             => BinaryIoUtility.Read(reader, length, ref value);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static decimal[] ReadX(this BinaryReader reader, ref decimal[] value, int length)
             => BinaryIoUtility.Read(reader, length, ref value);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string[] ReadX(this BinaryReader reader, ref string[] value, int length)
             => BinaryIoUtility.Read(reader, ref value, BinaryIoUtility.Encoding);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string[] ReadX(this BinaryReader reader, ref string[] value, int length, Encoding encoding)
             => BinaryIoUtility.Read(reader, ref value, encoding);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T[] ReadX<T>(this BinaryReader reader, ref T[] value, int length, bool createNewInstances) where T : IBinarySerializable, new()
-        {
-            return BinaryIoUtility.Read(reader, length, ref value, createNewInstances);
-        }
+            => BinaryIoUtility.Read(reader, length, ref value, createNewInstances);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static TEnum[] ReadX<TEnum>(this BinaryReader reader, int length, ref TEnum[] value) where TEnum : struct, System.Enum
-        {
-            return value = BinaryIoUtility.Read(reader, length, ref value);
-        }
+            =>  BinaryIoUtility.Read(reader, length, ref value);
 
         #endregion
+
     }
 }

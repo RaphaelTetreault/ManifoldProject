@@ -30,13 +30,13 @@ namespace Manifold.IO
         //private static Func<BinaryReader, byte> fReadUint8 = ReadUInt8; //
         //private static Func<BinaryReader, sbyte> fReadInt8 = ReadInt8; // 
         private static Func<BinaryReader, ushort> fReadUInt16 = RequiresSwapEndianness ? ReadUInt16SwapEndianness : ReadUInt16SameEndianness;
-        private static Func<BinaryReader, uint> fReadUInt32 = RequiresSwapEndianness ? ReadUInt32Swap : ReadUInt32Same;
-        private static Func<BinaryReader, ulong> fReadUInt64 = RequiresSwapEndianness ? ReadUInt64Swap : ReadUInt64Same;
+        private static Func<BinaryReader, uint> fReadUInt32 = RequiresSwapEndianness ? ReadUInt32SwapEndianness : ReadUInt32SameEndianness;
+        private static Func<BinaryReader, ulong> fReadUInt64 = RequiresSwapEndianness ? ReadUInt64SwapEndianness : ReadUInt64SameEndianness;
         private static Func<BinaryReader, short> fReadInt16 = RequiresSwapEndianness ? ReadInt16SwapEndianness : ReadInt16SameEndianness;
-        private static Func<BinaryReader, int> fReadInt32 = RequiresSwapEndianness ? ReadInt32Swap : ReadInt32Same;
-        private static Func<BinaryReader, long> fReadInt64 = RequiresSwapEndianness ? ReadInt64Swap : ReadInt64Same;
-        private static Func<BinaryReader, float> fReadFloat = RequiresSwapEndianness ? ReadFloatSwap : ReadFloatSame;
-        private static Func<BinaryReader, double> fReadDouble = RequiresSwapEndianness ? ReadDoubleSwap : ReadDoubleSame;
+        private static Func<BinaryReader, int> fReadInt32 = RequiresSwapEndianness ? ReadInt32SwapEndianness : ReadInt32SameEndianness;
+        private static Func<BinaryReader, long> fReadInt64 = RequiresSwapEndianness ? ReadInt64SwapEndianness : ReadInt64SameEndianness;
+        private static Func<BinaryReader, float> fReadFloat = RequiresSwapEndianness ? ReadFloatSwapEndianness : ReadFloatSameEndianness;
+        private static Func<BinaryReader, double> fReadDouble = RequiresSwapEndianness ? ReadDoubleSwapEndianness : ReadDoubleSameEndianness;
 
 
 
@@ -46,24 +46,24 @@ namespace Manifold.IO
             if (swapByteOrder)
             {
                 fReadInt16 = ReadInt16SwapEndianness;
-                fReadInt32 = ReadInt32Swap;
-                fReadInt64 = ReadInt64Swap;
+                fReadInt32 = ReadInt32SwapEndianness;
+                fReadInt64 = ReadInt64SwapEndianness;
                 fReadUInt16 = ReadUInt16SwapEndianness;
-                fReadUInt32 = ReadUInt32Swap;
-                fReadUInt64 = ReadUInt64Swap;
-                fReadFloat = ReadFloatSwap;
-                fReadDouble = ReadDoubleSwap;
+                fReadUInt32 = ReadUInt32SwapEndianness;
+                fReadUInt64 = ReadUInt64SwapEndianness;
+                fReadFloat = ReadFloatSwapEndianness;
+                fReadDouble = ReadDoubleSwapEndianness;
             }
             else
             {
                 fReadInt16 = ReadInt16SameEndianness;
-                fReadInt32 = ReadInt32Same;
-                fReadInt64 = ReadInt64Same;
+                fReadInt32 = ReadInt32SameEndianness;
+                fReadInt64 = ReadInt64SameEndianness;
                 fReadUInt16 = ReadUInt16SameEndianness;
-                fReadUInt32 = ReadUInt32Same;
-                fReadUInt64 = ReadUInt64Same;
-                fReadFloat = ReadFloatSame;
-                fReadDouble = ReadDoubleSame;
+                fReadUInt32 = ReadUInt32SameEndianness;
+                fReadUInt64 = ReadUInt64SameEndianness;
+                fReadFloat = ReadFloatSameEndianness;
+                fReadDouble = ReadDoubleSameEndianness;
             }
         }
 
@@ -196,12 +196,12 @@ namespace Manifold.IO
         {
             return fReadUInt16.Invoke(binaryReader);
         }
-        public static ushort ReadUInt16SameEndianness(BinaryReader binaryReader)
+        private static ushort ReadUInt16SameEndianness(BinaryReader binaryReader)
         {
             byte[] bytes = binaryReader.ReadBytes(SizeofUint16);
             return BitConverter.ToUInt16(bytes, 0);
         }
-        public static ushort ReadUInt16SwapEndianness(BinaryReader binaryReader)
+        private static ushort ReadUInt16SwapEndianness(BinaryReader binaryReader)
         {
             byte[] bytes = binaryReader.ReadBytes(SizeofUint16);
             Array.Reverse(bytes);
@@ -214,12 +214,12 @@ namespace Manifold.IO
         {
             return fReadInt32.Invoke(binaryReader);
         }
-        public static int ReadInt32Same(BinaryReader binaryReader)
+        private static int ReadInt32SameEndianness(BinaryReader binaryReader)
         {
             byte[] bytes = binaryReader.ReadBytes(SizeofInt32);
             return BitConverter.ToInt32(bytes, 0);
         }
-        public static int ReadInt32Swap(BinaryReader binaryReader)
+        private static int ReadInt32SwapEndianness(BinaryReader binaryReader)
         {
             byte[] bytes = binaryReader.ReadBytes(SizeofInt32);
             Array.Reverse(bytes);
@@ -232,12 +232,12 @@ namespace Manifold.IO
         {
             return fReadUInt32.Invoke(binaryReader);
         }
-        public static uint ReadUInt32Same(BinaryReader binaryReader)
+        private static uint ReadUInt32SameEndianness(BinaryReader binaryReader)
         {
             byte[] bytes = binaryReader.ReadBytes(SizeofUint32);
             return BitConverter.ToUInt32(bytes, 0);
         }
-        public static uint ReadUInt32Swap(BinaryReader binaryReader)
+        private static uint ReadUInt32SwapEndianness(BinaryReader binaryReader)
         {
             byte[] bytes = binaryReader.ReadBytes(SizeofUint32);
             Array.Reverse(bytes);
@@ -250,13 +250,13 @@ namespace Manifold.IO
         {
             return fReadInt64.Invoke(binaryReader);
         }
-        public static long ReadInt64Same(BinaryReader binaryReader)
+        private static long ReadInt64SameEndianness(BinaryReader binaryReader)
         {
             byte[] bytes = binaryReader.ReadBytes(SizeofInt64);
             Array.Reverse(bytes);
             return BitConverter.ToInt64(bytes, 0);
         }
-        public static long ReadInt64Swap(BinaryReader binaryReader)
+        private static long ReadInt64SwapEndianness(BinaryReader binaryReader)
         {
             byte[] bytes = binaryReader.ReadBytes(SizeofInt64);
             Array.Reverse(bytes);
@@ -269,12 +269,12 @@ namespace Manifold.IO
         {
             return fReadUInt64.Invoke(binaryReader);
         }
-        public static ulong ReadUInt64Same(BinaryReader binaryReader)
+        private static ulong ReadUInt64SameEndianness(BinaryReader binaryReader)
         {
             byte[] bytes = binaryReader.ReadBytes(SizeofUint64);
             return BitConverter.ToUInt64(bytes, 0);
         }
-        public static ulong ReadUInt64Swap(BinaryReader binaryReader)
+        private static ulong ReadUInt64SwapEndianness(BinaryReader binaryReader)
         {
             byte[] bytes = binaryReader.ReadBytes(SizeofUint64);
             Array.Reverse(bytes);
@@ -287,12 +287,12 @@ namespace Manifold.IO
         {
             return fReadFloat.Invoke(binaryReader);
         }
-        public static float ReadFloatSame(BinaryReader binaryReader)
+        private static float ReadFloatSameEndianness(BinaryReader binaryReader)
         {
             byte[] bytes = binaryReader.ReadBytes(SizeofFloat);
             return BitConverter.ToSingle(bytes, 0);
         }
-        public static float ReadFloatSwap(BinaryReader binaryReader)
+        private static float ReadFloatSwapEndianness(BinaryReader binaryReader)
         {
             byte[] bytes = binaryReader.ReadBytes(SizeofFloat);
             Array.Reverse(bytes);
@@ -305,12 +305,12 @@ namespace Manifold.IO
         {
             return fReadDouble.Invoke(binaryReader);
         }
-        public static double ReadDoubleSame(BinaryReader binaryReader)
+        private static double ReadDoubleSameEndianness(BinaryReader binaryReader)
         {
             byte[] bytes = binaryReader.ReadBytes(SizeofDouble);
             return BitConverter.ToDouble(bytes, 0);
         }
-        public static double ReadDoubleSwap(BinaryReader binaryReader)
+        private static double ReadDoubleSwapEndianness(BinaryReader binaryReader)
         {
             byte[] bytes = binaryReader.ReadBytes(SizeofDouble);
             Array.Reverse(bytes);
@@ -438,21 +438,20 @@ namespace Manifold.IO
 
         #region Read Ref
 
+        // 2022/02/15: fastest is to have internal methods inlined, these methods not inlined.
+
         public static bool Read(BinaryReader binaryReader, ref bool value)
         {
-            // Not referencing own code for performance
             return value = binaryReader.ReadBoolean();
         }
 
         public static byte Read(BinaryReader binaryReader, ref byte value)
         {
-            // Optimized
-            return value = ReadUInt8(binaryReader);
+            return value = binaryReader.ReadByte();
         }
 
         public static sbyte Read(BinaryReader binaryReader, ref sbyte value)
         {
-            // Optimized
             return value = binaryReader.ReadSByte();
         }
 
