@@ -1,26 +1,25 @@
 ﻿using Manifold;
 using Manifold.IO;
 using System.IO;
+using Unity.Mathematics;
+using LibGxFormat;
 
 namespace GameCube.GFZ.Gma2
 {
-    internal class TransformMatrixIndexes8 :
+    public class UnkVertexType2 :
         IBinaryAddressable,
         IBinarySerializable
     {
-        // CONSTANTS
-        private const int kIndexCount = 8;
-
-        //
-        public TransformMatrixIndexes8()
-        {
-            indexes = new byte[kIndexCount];
-            for (int i = 0; i < indexes.Length; i++)
-                indexes[i] = 0xFF;
-        }
-
         // FIELDS
-        private byte[] indexes;
+        private float3 position;
+        private float3 normal;
+        private float2 textureUV0;
+        private float2 textureUV1;
+        private float2 textureUV2;
+        private uint color;
+        private uint unk0x34; // TODO: confirm this and next 2 values are not zero / FIFO padding.
+        private uint unk0x38;
+        private uint unk0x3C;
 
         // PROPERTIES
         public AddressRange AddressRange { get; set; }
@@ -31,18 +30,16 @@ namespace GameCube.GFZ.Gma2
         {
             this.RecordStartAddress(reader);
             {
-                reader.ReadX(ref indexes, kIndexCount);
+                //reader.ReadX(ref );
             }
             this.RecordEndAddress(reader);
         }
 
         public void Serialize(BinaryWriter writer)
         {
-            Assert.IsTrue(indexes.Length == kIndexCount);
-
             this.RecordStartAddress(writer);
             {
-                writer.WriteX(indexes, false);
+                //writer.WriteX();
             }
             this.RecordEndAddress(writer);
         }

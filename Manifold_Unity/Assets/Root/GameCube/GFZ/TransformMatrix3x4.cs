@@ -3,7 +3,7 @@ using System;
 using System.IO;
 using Unity.Mathematics;
 
-namespace GameCube.GFZ.CourseCollision
+namespace GameCube.GFZ
 {
     /// <summary>
     /// Column-major transform matrix with 3 rows and 4 columns.
@@ -13,23 +13,14 @@ namespace GameCube.GFZ.CourseCollision
         IBinaryAddressable,
         IBinarySerializable
     {
-        // METADATA
-        [UnityEngine.SerializeField] private AddressRange addressRange;
-
         // "FIELDS" as reconstructed for ease of use
-        [UnityEngine.SerializeField] private float4x4 matrix;
-
+        private float4x4 matrix;
 
         // PROPERTIES
-        public AddressRange AddressRange
-        {
-            get => addressRange;
-            set => addressRange = value;
-        }
-
+        public AddressRange AddressRange { get; set; }
         public float3 Position => matrix.Position();
-        public quaternion Rotation => matrix.RotationBad();
-        public float3 rotationEuler => matrix.RotationEuler();
+        public quaternion QRotation => matrix.RotationBad();
+        public float3 Rotation => matrix.RotationEuler();
         public float3 Scale => matrix.Scale();
 
         public float4x4 Matrix
@@ -86,13 +77,13 @@ namespace GameCube.GFZ.CourseCollision
         public override string ToString()
         {
             var position = Position;
-            var euler = rotationEuler;
+            var euler = Rotation;
             var scale = Scale;
 
             return
-                $"{nameof(TransformPRXS)}(" +
+                $"{nameof(TransformMatrix3x4)}(" +
                 $"{nameof(Position)}(x:{position.x:0.0}, y:{position.y:0.0}, z:{position.z:0.0}), " +
-                $"RotationEuler(x:{euler.x:0.0}, y:{euler.y:0.0}, z:{euler.z:0.0}), " +
+                $"{nameof(QRotation)}(x:{euler.x:0.0}, y:{euler.y:0.0}, z:{euler.z:0.0}), " +
                 $"{nameof(Scale)}(x:{scale.x:0.0}, y:{scale.y:0.0}, z:{scale.z:0.0})" +
                 $")";
         }

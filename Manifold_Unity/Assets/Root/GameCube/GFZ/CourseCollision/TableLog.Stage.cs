@@ -1311,7 +1311,7 @@ namespace GameCube.GFZ.CourseCollision
                         writer.WriteNextCol(sceneObject.Name);
 
                         // Rotation values from clean, uncompressed matrix
-                        var matrix = sceneObject.transformMatrix3x4.rotationEuler;
+                        var matrix = sceneObject.transformMatrix3x4.Rotation;
                         writer.WriteNextCol(matrix.x);
                         writer.WriteNextCol(matrix.y);
                         writer.WriteNextCol(matrix.z);

@@ -32,11 +32,31 @@ namespace GameCube.GFZ.Gma2
         private uint gcmfTexturesSize;
         private byte[] zeroes0x24;
         private TransformMatrixIndexes8 transformMatrixIndexes8;
-
+        // Must enforce GX FIFO. TODO: get specifics for each
+        private TextureConfig[] textureConfigs;
+        private TransformMatrix3x4[] bones; // no fifo between
+        private VertexController vertexController;
+        private int submesh;
+        private UnkVertexType1 unkVertexType1;
+        private UnkVertexType2 unkVertexType2;
+        private UnkVertexType3 unkVertexType3;
+        private UnkVertexType4 unkVertexType4;
 
         // PROPERTIES
         public AddressRange AddressRange { get; set; }
-
+        public bool IsSkinOrEffective
+        {
+            get
+            {
+                bool isSkin = attributes.HasFlag(GcmfAttributes.isSkinModel);
+                bool isEffective = attributes.HasFlag(GcmfAttributes.isEffectiveModel);
+                return isSkin || isEffective;
+            }
+        }
+        public int TotalSubmeshCount
+        {
+            get => materialCount + translucidMaterialCount;
+        }
 
         // METHODS
         public void Deserialize(BinaryReader reader)
@@ -62,6 +82,21 @@ namespace GameCube.GFZ.Gma2
                 foreach (var zero in zeroes0x24)
                     Assert.IsTrue(zero == 0);
             }
+            //
+            {
+                reader.ReadX(ref textureConfigs, textureCount, true);
+                reader.ReadX(ref bones, transformMatrixCount, true);
+                reader.AlignTo(GX.GXUtility.GX_FIFO_ALIGN);
+
+                if (IsSkinOrEffective)
+                {
+                    reader.ReadX(ref vertexController, true);
+                    reader.AlignTo(GX.GXUtility.GX_FIFO_ALIGN);
+                }
+
+                //reader.ReadX(ref submesh, TotalSubmeshCount, true);
+            }
+            reader.AlignTo(GX.GXUtility.GX_FIFO_ALIGN);
         }
 
         public void Serialize(BinaryWriter writer)
@@ -72,6 +107,7 @@ namespace GameCube.GFZ.Gma2
                 //writer.WriteX();
             }
             this.RecordEndAddress(writer);
+            writer.AlignTo(GX.GXUtility.GX_FIFO_ALIGN);
         }
 
     }

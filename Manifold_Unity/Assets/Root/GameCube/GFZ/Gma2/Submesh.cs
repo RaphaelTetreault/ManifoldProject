@@ -1,26 +1,23 @@
-﻿using Manifold;
+﻿using GameCube.GX;
+using Manifold;
 using Manifold.IO;
 using System.IO;
 
+
 namespace GameCube.GFZ.Gma2
 {
-    internal class TransformMatrixIndexes8 :
+    internal class Submesh :
         IBinaryAddressable,
         IBinarySerializable
     {
-        // CONSTANTS
-        private const int kIndexCount = 8;
-
-        //
-        public TransformMatrixIndexes8()
-        {
-            indexes = new byte[kIndexCount];
-            for (int i = 0; i < indexes.Length; i++)
-                indexes[i] = 0xFF;
-        }
-
         // FIELDS
-        private byte[] indexes;
+        private Material material;
+        private DisplayList displayListCW;
+        private DisplayList displayListCCW;
+        private SkinnedMeshDescriptor skinnedMeshDescriptor;
+        private DisplayList skinnedDisplayListCW;
+        private DisplayList skinnedDisplayListCCW;
+
 
         // PROPERTIES
         public AddressRange AddressRange { get; set; }
@@ -31,18 +28,17 @@ namespace GameCube.GFZ.Gma2
         {
             this.RecordStartAddress(reader);
             {
-                reader.ReadX(ref indexes, kIndexCount);
+                reader.ReadX(ref material, true);
+
             }
             this.RecordEndAddress(reader);
         }
 
         public void Serialize(BinaryWriter writer)
         {
-            Assert.IsTrue(indexes.Length == kIndexCount);
-
             this.RecordStartAddress(writer);
             {
-                writer.WriteX(indexes, false);
+                //writer.WriteX();
             }
             this.RecordEndAddress(writer);
         }

@@ -1,26 +1,20 @@
 ﻿using Manifold;
 using Manifold.IO;
+using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace GameCube.GFZ.Gma2
 {
-    internal class TransformMatrixIndexes8 :
+    internal class TextureConfig :
         IBinaryAddressable,
         IBinarySerializable
     {
-        // CONSTANTS
-        private const int kIndexCount = 8;
-
-        //
-        public TransformMatrixIndexes8()
-        {
-            indexes = new byte[kIndexCount];
-            for (int i = 0; i < indexes.Length; i++)
-                indexes[i] = 0xFF;
-        }
-
         // FIELDS
-        private byte[] indexes;
+
 
         // PROPERTIES
         public AddressRange AddressRange { get; set; }
@@ -31,18 +25,16 @@ namespace GameCube.GFZ.Gma2
         {
             this.RecordStartAddress(reader);
             {
-                reader.ReadX(ref indexes, kIndexCount);
+                //reader.ReadX(ref );
             }
             this.RecordEndAddress(reader);
         }
 
         public void Serialize(BinaryWriter writer)
         {
-            Assert.IsTrue(indexes.Length == kIndexCount);
-
             this.RecordStartAddress(writer);
             {
-                writer.WriteX(indexes, false);
+                //writer.WriteX();
             }
             this.RecordEndAddress(writer);
         }

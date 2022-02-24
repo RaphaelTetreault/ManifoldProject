@@ -15,6 +15,9 @@ namespace GameCube.GFZ.Gma2
         IHasReference,
         IFile
     {
+        // 
+        internal static int FileOffset { get; private set; }
+
         // METADATA
         public AddressRange AddressRange { get; set; }
         public string FileName { get; set; }
@@ -70,7 +73,7 @@ namespace GameCube.GFZ.Gma2
             }
             this.RecordEndAddress(writer);
             {
-
+                throw new NotImplementedException();
             }
         }
 

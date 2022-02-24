@@ -1,3 +1,4 @@
+using GameCube.GFZ;
 using GameCube.GFZ.CourseCollision;
 using Manifold.IO;
 using UnityEngine;
