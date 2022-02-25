@@ -65,38 +65,40 @@ namespace GameCube.GFZ.GMA
 
         public void Deserialize(BinaryReader reader)
         {
-            if (size <= 0)
-            {
-                // Init as empty
-                gxDisplayLists = new DisplayList[0];
-                return;
-            }
+            throw new NotImplementedException();
 
-            this.RecordStartAddress(reader);
-            {
-                // Read real
-                reader.ReadX(ref gxBegin);
-                Assert.IsTrue(gxBegin == 0x00, $"{addressRange.startAddress:X8} {attrFlags}");
+            //if (size <= 0)
+            //{
+            //    // Init as empty
+            //    gxDisplayLists = new DisplayList[0];
+            //    return;
+            //}
 
-                var gxDisplayList = new List<DisplayList>();
+            //this.RecordStartAddress(reader);
+            //{
+            //    // Read real
+            //    reader.ReadX(ref gxBegin);
+            //    Assert.IsTrue(gxBegin == 0x00, $"{addressRange.startAddress:X8} {attrFlags}");
 
-                // I'm sure this is going to break.
-                // Perhaps use size in this equation? 
-                while (!reader.IsAtEndOfStream()
-                    && reader.BaseStream.Position < (addressRange.startAddress + size)
-                    && reader.PeekByte() != 0x00)
-                {
-                    DisplayList vtx = new DisplayList(attrFlags, vat);
-                    vtx.Deserialize(reader);
-                    gxDisplayList.Add(vtx);
-                }
-                gxDisplayLists = gxDisplayList.ToArray();
-            }
-            this.RecordEndAddress(reader);
+            //    var gxDisplayList = new List<DisplayList>();
 
-            // Apply padding if necessary
-            var fifoPadding = (32 - reader.BaseStream.Position % 32) % 32;
-            reader.BaseStream.Position += fifoPadding;
+            //    // I'm sure this is going to break.
+            //    // Perhaps use size in this equation? 
+            //    while (!reader.IsAtEndOfStream()
+            //        && reader.BaseStream.Position < (addressRange.startAddress + size)
+            //        && reader.PeekByte() != 0x00)
+            //    {
+            //        DisplayList vtx = new DisplayList(attrFlags, vat);
+            //        vtx.Deserialize(reader);
+            //        gxDisplayList.Add(vtx);
+            //    }
+            //    gxDisplayLists = gxDisplayList.ToArray();
+            //}
+            //this.RecordEndAddress(reader);
+
+            //// Apply padding if necessary
+            //var fifoPadding = (32 - reader.BaseStream.Position % 32) % 32;
+            //reader.BaseStream.Position += fifoPadding;
         }
 
         public void Serialize(BinaryWriter writer)
