@@ -31,7 +31,7 @@ namespace GameCube.GFZ.Gma2
             reader.JumpToAddress(NamePtr);
             reader.ReadX(ref name, true);
 
-            UnityEngine.Debug.Log(name);
+            UnityEngine.Debug.Log($"{name} @ {GcmfPtr}");
             reader.JumpToAddress(GcmfPtr);
             reader.ReadX(ref gcmf, true);
         }

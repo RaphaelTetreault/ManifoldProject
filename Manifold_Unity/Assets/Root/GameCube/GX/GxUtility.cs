@@ -35,16 +35,13 @@ namespace GameCube.GX
 
         public static float3 ReadNormal(BinaryReader reader, ComponentCount nElements, ComponentType componentType, int nFracs)
         {
-            if (nElements == ComponentCount.GX_NRM_XYZ)
+            // For NBT, the caller of this function should call it 3 times, each for N, B, and T
+            if (nElements == ComponentCount.GX_NRM_XYZ || nElements == ComponentCount.GX_NRM_NBT)
             {
                 return new float3(
                     ReadNumber(reader, componentType, nFracs),
                     ReadNumber(reader, componentType, nFracs),
                     ReadNumber(reader, componentType, nFracs));
-            }
-            else if (nElements == ComponentCount.GX_NRM_NBT)
-            {
-                throw new NotImplementedException();
             }
             else
             {

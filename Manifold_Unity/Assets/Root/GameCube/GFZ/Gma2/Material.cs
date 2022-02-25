@@ -26,15 +26,7 @@ namespace GameCube.GFZ.Gma2
         private short textureIndex0 = -1; // 0xFFFF
         private short textureIndex1 = -1; // 0xFFFF
         private short textureIndex2 = -1; // 0xFFFF
-        private GXAttributes gxAttributes;
-        private TransformMatrixIndexes8 transformMatrixIndexes;
-        // this onwards feels like it's own things
-        private int materialDisplayListSize;
-        private int translucidMaterialDisplayListSize;
-        private float3 origin;
-        private uint unk0x3C;
-        private MatFlags0x40 unk0x40;
-
+        private GXAttributes vertexAttributes;
 
         // PROPERTIES
         public AddressRange AddressRange { get; set; }
@@ -52,14 +44,7 @@ namespace GameCube.GFZ.Gma2
         public short TextureIndex0 { get => textureIndex0; set => textureIndex0 = value; }
         public short TextureIndex1 { get => textureIndex1; set => textureIndex1 = value; }
         public short TextureIndex2 { get => textureIndex2; set => textureIndex2 = value; }
-        public GXAttributes GxAttributes { get => gxAttributes; set => gxAttributes = value; }
-        public TransformMatrixIndexes8 TransformMatrixIndexes { get => transformMatrixIndexes; set => transformMatrixIndexes = value; }
-        public int MaterialDisplayListSize { get => materialDisplayListSize; set => materialDisplayListSize = value; }
-        public int TranslucidMaterialDisplayListSize { get => translucidMaterialDisplayListSize; set => translucidMaterialDisplayListSize = value; }
-        public float3 Origin { get => origin; set => origin = value; }
-        public uint Unk0x3C { get => unk0x3C; set => unk0x3C = value; }
-        public MatFlags0x40 Unk0x40 { get => unk0x40; set => unk0x40 = value; }
-
+        public GXAttributes VertexAttributes { get => vertexAttributes; set => vertexAttributes = value; }
 
 
         // METHODS
@@ -82,13 +67,7 @@ namespace GameCube.GFZ.Gma2
                 reader.ReadX(ref textureIndex0);
                 reader.ReadX(ref textureIndex1);
                 reader.ReadX(ref textureIndex2);
-                reader.ReadX(ref gxAttributes);
-                reader.ReadX(ref transformMatrixIndexes, true);
-                reader.ReadX(ref materialDisplayListSize);
-                reader.ReadX(ref translucidMaterialDisplayListSize);
-                reader.ReadX(ref origin);
-                reader.ReadX(ref unk0x3C);
-                reader.ReadX(ref unk0x40);
+                reader.ReadX(ref vertexAttributes);
             }
             this.RecordEndAddress(reader);
             {
@@ -118,13 +97,7 @@ namespace GameCube.GFZ.Gma2
                 writer.WriteX(textureIndex0);
                 writer.WriteX(textureIndex1);
                 writer.WriteX(textureIndex2);
-                writer.WriteX(gxAttributes);
-                writer.WriteX(transformMatrixIndexes);
-                writer.WriteX(materialDisplayListSize);
-                writer.WriteX(translucidMaterialDisplayListSize);
-                writer.WriteX(origin);
-                writer.WriteX(unk0x3C);
-                writer.WriteX(unk0x40);
+                writer.WriteX(vertexAttributes);
             }
             this.RecordEndAddress(writer);
         }

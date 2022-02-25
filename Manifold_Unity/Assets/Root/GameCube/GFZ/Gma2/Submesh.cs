@@ -14,22 +14,25 @@ namespace GameCube.GFZ.Gma2
     {
         // FIELDS
         private Material material;
+        private DisplayListDescriptor displayListDescriptor;
+        private UnkSubmeshType unknown;
         private DisplayList[] displayListCW;
         private DisplayList[] displayListCCW;
-        private SkinnedMeshDescriptor skinnedMeshDescriptor;
-        private DisplayList[] skinnedDisplayListCW;
-        private DisplayList[] skinnedDisplayListCCW;
+        private DisplayListDescriptor secondaryDisplayListDescriptor;
+        private DisplayList[] secondaryDisplayListCW;
+        private DisplayList[] secondaryDisplayListCCW;
 
 
         // PROPERTIES
         public AddressRange AddressRange { get; set; }
         public bool IsSkinOrEffective { get; set; }
         public Material Material { get => material; set => material = value; }
+        internal DisplayListDescriptor DisplayListDescriptor { get => displayListDescriptor; set => displayListDescriptor = value; }
         public DisplayList[] DisplayListCW { get => displayListCW; set => displayListCW = value; }
         public DisplayList[] DisplayListCCW { get => displayListCCW; set => displayListCCW = value; }
-        public DisplayList[] SkinnedDisplayListCW { get => skinnedDisplayListCW; set => skinnedDisplayListCW = value; }
-        public DisplayList[] SkinnedDisplayListCCW { get => skinnedDisplayListCCW; set => skinnedDisplayListCCW = value; }
-        internal SkinnedMeshDescriptor SkinnedMeshDescriptor { get => skinnedMeshDescriptor; set => skinnedMeshDescriptor = value; }
+        public DisplayListDescriptor SecondaryMeshDescriptor { get => secondaryDisplayListDescriptor; set => secondaryDisplayListDescriptor = value; }
+        public DisplayList[] SecondaryDisplayListCW { get => secondaryDisplayListCW; set => secondaryDisplayListCW = value; }
+        public DisplayList[] SecondaryDisplayListCCW { get => secondaryDisplayListCCW; set => secondaryDisplayListCCW = value; }
 
         private DisplayList[] ReadDisplayLists(BinaryReader reader, int endAddress)
         {
@@ -43,11 +46,11 @@ namespace GameCube.GFZ.Gma2
                 // Reasons to stop reading display list data
                 bool isAtEnd = reader.BaseStream.Position >= endAddress;
                 bool isEndOfFile = reader.IsAtEndOfStream();
-                bool isFifoPadding = reader.PeekUint16() == 0;
-                if (isAtEnd || isEndOfFile || isFifoPadding)
+                //bool isFifoPadding = reader.PeekUint8() == 0;
+                if (isAtEnd || isEndOfFile || reader.PeekUint8() == 0)
                     break;
 
-                var displayList = new DisplayList(material.GxAttributes, VertexAttributeTable.GfzVat);
+                var displayList = new DisplayList(material.VertexAttributes, VertexAttributeTable.GfzVat);
                 displayList.Deserialize(reader);
                 displayLists.Add(displayList);
             }
@@ -62,73 +65,53 @@ namespace GameCube.GFZ.Gma2
         {
             this.RecordStartAddress(reader);
             {
-                // Read material. It has important properties to resolve some of the next values.
+                //
                 reader.ReadX(ref material, true);
+                reader.ReadX(ref displayListDescriptor, true);
+                reader.ReadX(ref unknown, true);
                 reader.AlignTo(GXUtility.GX_FIFO_ALIGN);
+
+                int endAddress = new Pointer(reader.BaseStream.Position).address;
 
                 // TODO: re-implement this stuff
                 if (IsSkinOrEffective)
                 {
-                    throw new NotImplementedException();
+                    UnityEngine.Debug.LogWarning("Skipping IsSkin/IsEffective");
+                    return;
+                    //throw new NotImplementedException();
                 }
-
-
-                int endAddress = new Pointer(reader.BaseStream.Position).address;
 
                 if (material.DisplayListRenderFlags.HasFlag(DisplayListRenderFlags.renderCW))
                 {
-                    endAddress += material.MaterialDisplayListSize;
+                    endAddress += displayListDescriptor.MaterialSize;
                     displayListCW = ReadDisplayLists(reader, endAddress);
                 }
 
                 if (material.DisplayListRenderFlags.HasFlag(DisplayListRenderFlags.renderCCW))
                 {
-                    endAddress += material.TranslucidMaterialDisplayListSize;
+                    endAddress += displayListDescriptor.TranslucidMaterialSize;
                     displayListCCW = ReadDisplayLists(reader, endAddress);
                 }
 
+                if (material.DisplayListRenderFlags.HasFlag(DisplayListRenderFlags.renderSecondaryCW) ||
+                    material.DisplayListRenderFlags.HasFlag(DisplayListRenderFlags.renderSecondaryCCW))
+                {
+                    reader.ReadX(ref secondaryDisplayListDescriptor, true);
+                    reader.AlignTo(GXUtility.GX_FIFO_ALIGN);
+                    endAddress = new Pointer(reader.BaseStream.Position).address;
 
-                ////
-                //if (material.DisplayListRenderFlags.HasFlag(DisplayListRenderFlags.renderCW))
-                //    displayListCW = displayLists.ToArray();
-                //if (material.DisplayListRenderFlags.HasFlag(DisplayListRenderFlags.renderCCW))
-                //    displayListCCW = displayLists.ToArray();
+                    if (material.DisplayListRenderFlags.HasFlag(DisplayListRenderFlags.renderSecondaryCW))
+                    {
+                        endAddress += secondaryDisplayListDescriptor.MaterialSize;
+                        displayListCCW = ReadDisplayLists(reader, endAddress);
+                    }
 
-                //// Read display lists if present
-                //if (material.DisplayListRenderFlags.HasFlag(DisplayListRenderFlags.renderCW))
-                //{
-                //    displayListCW = new DisplayList(material.GxAttributes, VertexAttributeTable.GfzVat);
-                //    displayListCW.Deserialize(reader);
-                //    reader.AlignTo(GXUtility.GX_FIFO_ALIGN);
-                //}
-
-                //if (material.DisplayListRenderFlags.HasFlag(DisplayListRenderFlags.renderCCW))
-                //{
-                //    displayListCCW = new DisplayList(material.GxAttributes, VertexAttributeTable.GfzVat);
-                //    displayListCCW.Deserialize(reader);
-                //    reader.AlignTo(GXUtility.GX_FIFO_ALIGN);
-                //}
-
-                //// Read skin descriptor and display lists if present
-                //if (IsSkinOrEffective)
-                //{
-                //    reader.ReadX(ref skinnedMeshDescriptor, true);
-                //    reader.AlignTo(GXUtility.GX_FIFO_ALIGN);
-
-                //    if (material.DisplayListRenderFlags.HasFlag(DisplayListRenderFlags.renderSkinnedCW))
-                //    {
-                //        skinnedDisplayListCW = new DisplayList(material.GxAttributes, VertexAttributeTable.GfzVat);
-                //        skinnedDisplayListCW.Deserialize(reader);
-                //        reader.AlignTo(GXUtility.GX_FIFO_ALIGN);
-                //    }
-
-                //    if (material.DisplayListRenderFlags.HasFlag(DisplayListRenderFlags.renderSkinnedCCW))
-                //    {
-                //        skinnedDisplayListCCW = new DisplayList(material.GxAttributes, VertexAttributeTable.GfzVat);
-                //        skinnedDisplayListCCW.Deserialize(reader);
-                //        reader.AlignTo(GXUtility.GX_FIFO_ALIGN);
-                //    }
-                //}
+                    if (material.DisplayListRenderFlags.HasFlag(DisplayListRenderFlags.renderSecondaryCCW))
+                    {
+                        endAddress += secondaryDisplayListDescriptor.TranslucidMaterialSize;
+                        displayListCCW = ReadDisplayLists(reader, endAddress);
+                    }
+                }
             }
             this.RecordEndAddress(reader);
         }

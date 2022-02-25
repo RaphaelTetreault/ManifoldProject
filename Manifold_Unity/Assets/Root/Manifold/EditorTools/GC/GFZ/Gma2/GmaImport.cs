@@ -280,9 +280,9 @@ namespace Manifold.EditorTools.GC.GFZ.Gma2
                     numSubmeshes++;
                 if (submesh.DisplayListCCW is not null)
                     numSubmeshes++;
-                if (submesh.SkinnedDisplayListCW is not null)
+                if (submesh.SecondaryDisplayListCW is not null)
                     numSubmeshes++;
-                if (submesh.SkinnedDisplayListCCW is not null)
+                if (submesh.SecondaryDisplayListCCW is not null)
                     numSubmeshes++;
             }
 

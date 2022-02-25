@@ -10,7 +10,7 @@ namespace GameCube.GFZ.Gma2
     {
         renderCW = 1 << 0,
         renderCCW = 1 << 1,
-        renderSkinnedCW = 1 << 2,
-        renderSkinnedCCW = 1 << 3,
+        renderSecondaryCW = 1 << 2,
+        renderSecondaryCCW = 1 << 3,
     }
 }
