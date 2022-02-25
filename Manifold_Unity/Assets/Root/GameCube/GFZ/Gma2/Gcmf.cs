@@ -36,7 +36,7 @@ namespace GameCube.GFZ.Gma2
         private TextureConfig[] textureConfigs;
         private TransformMatrix3x4[] bones; // no fifo between
         private VertexController vertexController;
-        private int submesh;
+        private Submesh[] submeshes;
         private UnkVertexType1 unkVertexType1;
         private UnkVertexType2 unkVertexType2;
         private UnkVertexType3 unkVertexType3;
@@ -94,7 +94,14 @@ namespace GameCube.GFZ.Gma2
                     reader.AlignTo(GX.GXUtility.GX_FIFO_ALIGN);
                 }
 
-                //reader.ReadX(ref submesh, TotalSubmeshCount, true);
+                submeshes = new Submesh[TotalSubmeshCount];
+                for (int i = 0; i < submeshes.Length; i++)
+                {
+                    submeshes[i] = new Submesh();
+                    submeshes[i].IsSkinOrEffective = IsSkinOrEffective;
+                    reader.ReadX(ref submeshes[i], false);
+                }
+
             }
             reader.AlignTo(GX.GXUtility.GX_FIFO_ALIGN);
         }

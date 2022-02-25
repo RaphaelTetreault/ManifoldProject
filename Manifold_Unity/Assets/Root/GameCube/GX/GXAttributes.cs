@@ -1,6 +1,4 @@
-using GameCube.GX;
-
-namespace GameCube.GFZ.Gma2
+namespace GameCube.GX
 {
     /// <summary>
     /// Flag form of Gx.GXAttr

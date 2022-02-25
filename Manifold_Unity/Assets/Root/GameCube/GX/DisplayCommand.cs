@@ -1,18 +1,21 @@
 ﻿using Manifold.IO;
 using System;
 using System.IO;
-using UnityEngine;
 
 namespace GameCube.GX
 {
     [Serializable]
-    public struct DisplayCommand : IBinarySerializable
+    public struct DisplayCommand :
+        IBinarySerializable
     {
-        [SerializeField] Primitive primitive;
-        [SerializeField] VertexFormat vertexFormat;
-        [SerializeField] byte command;
+        // FIELDS
+        private ushort command;
+        private Primitive primitive;
+        private VertexFormat vertexFormat;
 
-        public byte Command
+
+        // PROPERTIES
+        public ushort Command
         {
             get
             {
@@ -25,25 +28,12 @@ namespace GameCube.GX
                 UpdateBitFields();
             }
         }
+        public Primitive Primitive => primitive;
+        public VertexFormat VertexFormat => vertexFormat;
+        public byte VertexFormatIndex => (byte)VertexFormat;
 
-        public Primitive Primitive
-        {
-            get
-            {
-                // 5 highest bits
-                return (Primitive)(command & 0b11111000);
-            }
-        }
 
-        public VertexFormat VertexFormat
-        {
-            get
-            {
-                // 3 lowest bits
-                return (VertexFormat)(command & 0b00000111);
-            }
-        } 
-
+        // METHODS
         public void Deserialize(BinaryReader reader)
         {
             reader.ReadX(ref command);
@@ -60,5 +50,6 @@ namespace GameCube.GX
             primitive = (Primitive)(command & 0b_00000000_11111000); // 5 highest bits
             vertexFormat = (VertexFormat)(command & 0b_00000000_00000111); // 3 lowest bits
         }
+
     }
 }

@@ -1,13 +1,13 @@
 using System;
-using UnityEngine;
+using Unity.Mathematics;
 
 namespace GameCube.GX
 {
     [Serializable]
     public struct NormalBinormalTangent
     {
-        public Vector3 normal;
-        public Vector3 binormal;
-        public Vector3 tangent;
+        public float3 normal;
+        public float3 binormal;
+        public float3 tangent;
     }
 }

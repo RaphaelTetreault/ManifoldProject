@@ -10,15 +10,15 @@ namespace GameCube.GFZ.Gma2
         // FIELDS
         private uint unk0x00;
         private uint unk0x04;
-        private uint unk0x08; // skinned display list 0 CW count
-        private uint unk0x0C; // skinned display list 1 CCW count
+        private uint vertexCount0; // skinned display list 0 CW count
+        private uint vertexCount1; // skinned display list 1 CCW count
 
         // PROPERTIES
         public AddressRange AddressRange { get; set; }
         public uint Unk0x00 { get => unk0x00; set => unk0x00 = value; }
         public uint Unk0x04 { get => unk0x04; set => unk0x04 = value; }
-        public uint Unk0x08 { get => unk0x08; set => unk0x08 = value; }
-        public uint Unk0x0C { get => unk0x0C; set => unk0x0C = value; }
+        public uint VertexCount0 { get => vertexCount0; set => vertexCount0 = value; }
+        public uint VertexCount1 { get => vertexCount1; set => vertexCount1 = value; }
 
 
         // METHODS
@@ -28,8 +28,8 @@ namespace GameCube.GFZ.Gma2
             {
                 reader.ReadX(ref unk0x00);
                 reader.ReadX(ref unk0x04);
-                reader.ReadX(ref unk0x08);
-                reader.ReadX(ref unk0x0C);
+                reader.ReadX(ref vertexCount0);
+                reader.ReadX(ref vertexCount1);
             }
             this.RecordEndAddress(reader);
         }
@@ -40,8 +40,8 @@ namespace GameCube.GFZ.Gma2
             {
                 writer.WriteX(unk0x00);
                 writer.WriteX(unk0x04);
-                writer.WriteX(unk0x08);
-                writer.WriteX(unk0x0C);
+                writer.WriteX(vertexCount0);
+                writer.WriteX(vertexCount1);
             }
             this.RecordEndAddress(writer);
         }

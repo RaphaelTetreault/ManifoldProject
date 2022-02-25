@@ -1,8 +1,9 @@
-﻿using Manifold.IO;
+﻿using GameCube.GFZ.GMA;
+using Manifold.IO;
 using System;
 using System.IO;
 using UnityEngine;
-using GameCube.GFZ.GMA;
+using Unity.Mathematics;
 
 namespace GameCube.GX
 {
@@ -10,55 +11,40 @@ namespace GameCube.GX
     {
         public const int GX_FIFO_ALIGN = 32;
 
-        public static Vector3 ReadPos(BinaryReader reader, ComponentCount nElements, ComponentType componentType, int nFracs)
+        public static float3 ReadPos(BinaryReader reader, ComponentCount nElements, ComponentType componentType, int nFracs)
         {
-            if (nElements == ComponentCount.GX_POS_XY)
+            if (nElements == ComponentCount.GX_POS_XYZ)
             {
-                return new Vector2(
-                    ReadNumericComponent(reader, componentType, nFracs),
-                    ReadNumericComponent(reader, componentType, nFracs));
+                return new float3(
+                    ReadNumber(reader, componentType, nFracs),
+                    ReadNumber(reader, componentType, nFracs),
+                    ReadNumber(reader, componentType, nFracs));
             }
-            else if (nElements == ComponentCount.GX_POS_XYZ)
+            else if (nElements == ComponentCount.GX_POS_XY)
             {
-                return new Vector3(
-                    ReadNumericComponent(reader, componentType, nFracs),
-                    ReadNumericComponent(reader, componentType, nFracs),
-                    ReadNumericComponent(reader, componentType, nFracs));
-            }
-            else
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        public static Vector3 ReadNormal(BinaryReader reader, ComponentCount nElements, ComponentType componentType, int nFracs)
-        {
-            if (nElements == ComponentCount.GX_NRM_XYZ || nElements == ComponentCount.GX_NRM_NBT)
-            {
-                return new Vector3(
-                    ReadNumericComponent(reader, componentType, nFracs),
-                    ReadNumericComponent(reader, componentType, nFracs),
-                    ReadNumericComponent(reader, componentType, nFracs));
-            }
-            else
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        public static Vector2 ReadGxTextureST(BinaryReader reader, ComponentCount nElements, ComponentType componentType, int nFracs)
-        {
-            if (nElements == ComponentCount.GX_TEX_S)
-            {
-                return new Vector2(
-                    ReadNumericComponent(reader, componentType, nFracs),
+                return new float3(
+                    ReadNumber(reader, componentType, nFracs),
+                    ReadNumber(reader, componentType, nFracs),
                     0f);
             }
-            else if (nElements == ComponentCount.GX_TEX_ST)
+            else
             {
-                return new Vector2(
-                    ReadNumericComponent(reader, componentType, nFracs),
-                    ReadNumericComponent(reader, componentType, nFracs));
+                throw new NotImplementedException();
+            }
+        }
+
+        public static float3 ReadNormal(BinaryReader reader, ComponentCount nElements, ComponentType componentType, int nFracs)
+        {
+            if (nElements == ComponentCount.GX_NRM_XYZ)
+            {
+                return new float3(
+                    ReadNumber(reader, componentType, nFracs),
+                    ReadNumber(reader, componentType, nFracs),
+                    ReadNumber(reader, componentType, nFracs));
+            }
+            else if (nElements == ComponentCount.GX_NRM_NBT)
+            {
+                throw new NotImplementedException();
             }
             else
             {
@@ -66,7 +52,27 @@ namespace GameCube.GX
             }
         }
 
-        public static Color32 ReadColorComponent(BinaryReader reader, ComponentType type)
+        public static float2 ReadUV(BinaryReader reader, ComponentCount nElements, ComponentType componentType, int nFracs)
+        {
+            if (nElements == ComponentCount.GX_TEX_ST)
+            {
+                return new float2(
+                    ReadNumber(reader, componentType, nFracs),
+                    ReadNumber(reader, componentType, nFracs));
+            }
+            else if (nElements == ComponentCount.GX_TEX_S)
+            {
+                return new float2(
+                    ReadNumber(reader, componentType, nFracs),
+                    0f);
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public static Color32 ReadColor(BinaryReader reader, ComponentType type)
         {
             switch (type)
             {
@@ -124,7 +130,7 @@ namespace GameCube.GX
                         var r = BinaryIoUtility.ReadUInt8(reader);
                         var g = BinaryIoUtility.ReadUInt8(reader);
                         var b = BinaryIoUtility.ReadUInt8(reader);
-                        var x = BinaryIoUtility.ReadUInt8(reader); // discarded
+                        var _ = BinaryIoUtility.ReadUInt8(reader); // discarded
                         return new Color32(r, g, b, byte.MaxValue);
                     }
 
@@ -133,7 +139,7 @@ namespace GameCube.GX
             }
         }
 
-        public static float ReadNumericComponent(BinaryReader reader, ComponentType type, int nFracBits)
+        public static float ReadNumber(BinaryReader reader, ComponentType type, int nFracBits)
         {
             switch (type)
             {
@@ -210,35 +216,35 @@ namespace GameCube.GX
 
 
             if (fmt.pos != null && (attrFlag & GXAttributes.GX_VA_POS) != 0)
-                size += CompSizeColor(fmt.pos.componentFormat);
+                size += CompSizeColor(fmt.pos.ComponentFormat);
 
             if (fmt.nrm != null && (attrFlag & GXAttributes.GX_VA_NRM) != 0)
-                size += CompSizeNumber(fmt.nrm.componentFormat);
+                size += CompSizeNumber(fmt.nrm.ComponentFormat);
             if (fmt.nbt != null && (attrFlag & GXAttributes.GX_VA_NBT) != 0)
-                size += CompSizeNumber(fmt.nbt.componentFormat);
+                size += CompSizeNumber(fmt.nbt.ComponentFormat);
 
             // Get size of colors
             if (fmt.clr0 != null && (attrFlag & GXAttributes.GX_VA_CLR0) != 0)
-                size += CompSizeColor(fmt.clr0.componentFormat);
+                size += CompSizeColor(fmt.clr0.ComponentFormat);
             if (fmt.clr1 != null && (attrFlag & GXAttributes.GX_VA_CLR1) != 0)
-                size += CompSizeColor(fmt.clr1.componentFormat);
+                size += CompSizeColor(fmt.clr1.ComponentFormat);
 
             if (fmt.tex0 != null && (attrFlag & GXAttributes.GX_VA_TEX0) != 0)
-                size += CompSizeNumber(fmt.tex0.componentFormat);
+                size += CompSizeNumber(fmt.tex0.ComponentFormat);
             if (fmt.tex1 != null && (attrFlag & GXAttributes.GX_VA_TEX1) != 0)
-                size += CompSizeNumber(fmt.tex1.componentFormat);
+                size += CompSizeNumber(fmt.tex1.ComponentFormat);
             if (fmt.tex2 != null && (attrFlag & GXAttributes.GX_VA_TEX2) != 0)
-                size += CompSizeNumber(fmt.tex2.componentFormat);
+                size += CompSizeNumber(fmt.tex2.ComponentFormat);
             if (fmt.tex3 != null && (attrFlag & GXAttributes.GX_VA_TEX3) != 0)
-                size += CompSizeNumber(fmt.tex3.componentFormat);
+                size += CompSizeNumber(fmt.tex3.ComponentFormat);
             if (fmt.tex4 != null && (attrFlag & GXAttributes.GX_VA_TEX4) != 0)
-                size += CompSizeNumber(fmt.tex4.componentFormat);
+                size += CompSizeNumber(fmt.tex4.ComponentFormat);
             if (fmt.tex5 != null && (attrFlag & GXAttributes.GX_VA_TEX5) != 0)
-                size += CompSizeNumber(fmt.tex5.componentFormat);
+                size += CompSizeNumber(fmt.tex5.ComponentFormat);
             if (fmt.tex6 != null && (attrFlag & GXAttributes.GX_VA_TEX6) != 0)
-                size += CompSizeNumber(fmt.tex6.componentFormat);
+                size += CompSizeNumber(fmt.tex6.ComponentFormat);
             if (fmt.tex7 != null && (attrFlag & GXAttributes.GX_VA_TEX7) != 0)
-                size += CompSizeNumber(fmt.tex7.componentFormat);
+                size += CompSizeNumber(fmt.tex7.ComponentFormat);
 
             return size;
         }

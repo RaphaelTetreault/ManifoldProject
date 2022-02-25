@@ -86,7 +86,7 @@ namespace GameCube.GFZ.GMA
                     && reader.BaseStream.Position < (addressRange.startAddress + size)
                     && reader.PeekByte() != 0x00)
                 {
-                    DisplayList vtx = new DisplayList(attrFlags);
+                    DisplayList vtx = new DisplayList(attrFlags, vat);
                     vtx.Deserialize(reader);
                     gxDisplayList.Add(vtx);
                 }

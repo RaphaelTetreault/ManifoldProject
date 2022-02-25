@@ -1,11 +1,7 @@
-﻿using Manifold;
+﻿using GameCube.GX;
+using Manifold;
 using Manifold.IO;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Unity.Mathematics;
 
 namespace GameCube.GFZ.Gma2
@@ -27,9 +23,9 @@ namespace GameCube.GFZ.Gma2
         private DisplayListRenderFlags displayListRenderFlags;
         private byte unk0x14;
         private MatFlags0x15 unk0x15;
-        private short textureIndex0 = -1;
-        private short textureIndex1 = -1;
-        private short textureIndex2 = -1;
+        private short textureIndex0 = -1; // 0xFFFF
+        private short textureIndex1 = -1; // 0xFFFF
+        private short textureIndex2 = -1; // 0xFFFF
         private GXAttributes gxAttributes;
         private TransformMatrixIndexes8 transformMatrixIndexes;
         // this onwards feels like it's own things
@@ -42,6 +38,27 @@ namespace GameCube.GFZ.Gma2
 
         // PROPERTIES
         public AddressRange AddressRange { get; set; }
+        public MatFlags0x02 Unk0x02 { get => unk0x02; set => unk0x02 = value; }
+        public MatFlags0x03 Unk0x03 { get => unk0x03; set => unk0x03 = value; }
+        public uint Color0 { get => color0; set => color0 = value; }
+        public uint Color1 { get => color1; set => color1 = value; }
+        public uint Color2 { get => color2; set => color2 = value; }
+        public MatFlags0x10 Unk0x10 { get => unk0x10; set => unk0x10 = value; }
+        public MatFlags0x11 Unk0x11 { get => unk0x11; set => unk0x11 = value; }
+        public byte TextureCount { get => textureCount; set => textureCount = value; }
+        public DisplayListRenderFlags DisplayListRenderFlags { get => displayListRenderFlags; set => displayListRenderFlags = value; }
+        public byte Unk0x14 { get => unk0x14; set => unk0x14 = value; }
+        public MatFlags0x15 Unk0x15 { get => unk0x15; set => unk0x15 = value; }
+        public short TextureIndex0 { get => textureIndex0; set => textureIndex0 = value; }
+        public short TextureIndex1 { get => textureIndex1; set => textureIndex1 = value; }
+        public short TextureIndex2 { get => textureIndex2; set => textureIndex2 = value; }
+        public GXAttributes GxAttributes { get => gxAttributes; set => gxAttributes = value; }
+        public TransformMatrixIndexes8 TransformMatrixIndexes { get => transformMatrixIndexes; set => transformMatrixIndexes = value; }
+        public int MaterialDisplayListSize { get => materialDisplayListSize; set => materialDisplayListSize = value; }
+        public int TranslucidMaterialDisplayListSize { get => translucidMaterialDisplayListSize; set => translucidMaterialDisplayListSize = value; }
+        public float3 Origin { get => origin; set => origin = value; }
+        public uint Unk0x3C { get => unk0x3C; set => unk0x3C = value; }
+        public MatFlags0x40 Unk0x40 { get => unk0x40; set => unk0x40 = value; }
 
 
 
