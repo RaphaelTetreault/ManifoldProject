@@ -3,9 +3,6 @@ using Manifold.IO;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GameCube.GFZ.Gma2
 {
@@ -16,7 +13,7 @@ namespace GameCube.GFZ.Gma2
         IFile
     {
         // 
-        internal static int FileOffset { get; private set; }
+        internal static int FilePointersOffset { get; private set; }
 
         // METADATA
         public AddressRange AddressRange { get; set; }
@@ -40,6 +37,7 @@ namespace GameCube.GFZ.Gma2
             this.RecordEndAddress(reader);
             {
                 Pointer nameBasePtr = AddressRange.endAddress;
+                FilePointersOffset = modelBasePtr;
                 var modelList = new List<Model>();
 
                 // Add offsets necessary for pointers to be correct

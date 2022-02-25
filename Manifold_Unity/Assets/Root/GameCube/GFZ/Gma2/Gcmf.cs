@@ -1,11 +1,7 @@
 ﻿using Manifold;
 using Manifold.IO;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GameCube.GFZ.Gma2
 {
@@ -42,6 +38,7 @@ namespace GameCube.GFZ.Gma2
         private UnkVertexType3 unkVertexType3;
         private UnkVertexType4 unkVertexType4;
 
+
         // PROPERTIES
         public AddressRange AddressRange { get; set; }
         public bool IsSkinOrEffective
@@ -57,6 +54,7 @@ namespace GameCube.GFZ.Gma2
         {
             get => materialCount + translucidMaterialCount;
         }
+
 
         // METHODS
         public void Deserialize(BinaryReader reader)
@@ -101,6 +99,8 @@ namespace GameCube.GFZ.Gma2
                     submeshes[i].IsSkinOrEffective = IsSkinOrEffective;
                     reader.ReadX(ref submeshes[i], false);
                 }
+
+                // TODO: other vertex data
 
             }
             reader.AlignTo(GX.GXUtility.GX_FIFO_ALIGN);
