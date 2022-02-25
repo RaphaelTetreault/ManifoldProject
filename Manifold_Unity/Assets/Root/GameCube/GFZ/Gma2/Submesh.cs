@@ -22,6 +22,12 @@ namespace GameCube.GFZ.Gma2
         // PROPERTIES
         public AddressRange AddressRange { get; set; }
         public bool IsSkinOrEffective { get; set; }
+        public Material Material { get => material; set => material = value; }
+        public DisplayList DisplayListCW { get => displayListCW; set => displayListCW = value; }
+        public DisplayList DisplayListCCW { get => displayListCCW; set => displayListCCW = value; }
+        public DisplayList SkinnedDisplayListCW { get => skinnedDisplayListCW; set => skinnedDisplayListCW = value; }
+        public DisplayList SkinnedDisplayListCCW { get => skinnedDisplayListCCW; set => skinnedDisplayListCCW = value; }
+        internal SkinnedMeshDescriptor SkinnedMeshDescriptor { get => skinnedMeshDescriptor; set => skinnedMeshDescriptor = value; }
 
         // METHODS
         public void Deserialize(BinaryReader reader)

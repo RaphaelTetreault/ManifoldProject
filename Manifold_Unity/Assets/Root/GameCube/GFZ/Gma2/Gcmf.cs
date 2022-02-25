@@ -54,6 +54,19 @@ namespace GameCube.GFZ.Gma2
         {
             get => materialCount + translucidMaterialCount;
         }
+        public GcmfAttributes Attributes { get => attributes; set => attributes = value; }
+        public BoundingSphere BoundingSphere { get => boundingSphere; set => boundingSphere = value; }
+        public ushort TextureCount { get => textureCount; set => textureCount = value; }
+        public ushort MaterialCount { get => materialCount; set => materialCount = value; }
+        public ushort TranslucidMaterialCount { get => translucidMaterialCount; set => translucidMaterialCount = value; }
+        public byte TransformMatrixCount { get => transformMatrixCount; set => transformMatrixCount = value; }
+        public byte Zero0x1F { get => zero0x1F; set => zero0x1F = value; }
+        public uint GcmfTexturesSize { get => gcmfTexturesSize; set => gcmfTexturesSize = value; }
+        public TransformMatrixIndexes8 TransformMatrixIndexes8 { get => transformMatrixIndexes8; set => transformMatrixIndexes8 = value; }
+        public TransformMatrix3x4[] Bones { get => bones; set => bones = value; }
+        internal TextureConfig[] TextureConfigs { get => textureConfigs; set => textureConfigs = value; }
+        internal VertexController VertexController { get => vertexController; set => vertexController = value; }
+        internal Submesh[] Submeshes { get => submeshes; set => submeshes = value; }
 
 
         // METHODS
