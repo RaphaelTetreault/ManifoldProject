@@ -14,7 +14,7 @@ namespace GameCube.GFZ.Gma2
         private ushort zeroes0x00; //2
         private MatFlags0x02 unk0x02; // <- COLOR blending stuff?
         private MatFlags0x03 unk0x03; // <- cont
-        private uint color0;
+        private uint color0; // RGBA
         private uint color1;
         private uint color2;
         private MatFlags0x10 unk0x10;

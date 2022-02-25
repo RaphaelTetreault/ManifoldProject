@@ -3,7 +3,7 @@ using System.IO;
 
 namespace GameCube.GFZ.Gma2
 {
-    internal class DisplayListDescriptor :
+    public class DisplayListDescriptor :
         IBinaryAddressable,
         IBinarySerializable
     {

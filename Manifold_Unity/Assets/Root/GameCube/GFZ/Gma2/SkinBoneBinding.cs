@@ -9,15 +9,18 @@ using System.Threading.Tasks;
 
 namespace GameCube.GFZ.Gma2
 {
-    internal class UnkVertexType3 :
+    internal class SkinBoneBinding :
         IBinaryAddressable,
         IBinarySerializable
     {
         // FIELDS
-
+        private int count;
+        private Pointer[] verticePtrs;
 
         // PROPERTIES
         public AddressRange AddressRange { get; set; }
+        public int Count { get => count; set => count = value; }
+        public Pointer[] VerticePtrs { get => verticePtrs; set => verticePtrs = value; }
 
 
         // METHODS
@@ -25,7 +28,8 @@ namespace GameCube.GFZ.Gma2
         {
             this.RecordStartAddress(reader);
             {
-                //reader.ReadX(ref );
+                reader.ReadX(ref count);
+                reader.ReadX(ref verticePtrs, count, true);
             }
             this.RecordEndAddress(reader);
         }
@@ -37,6 +41,8 @@ namespace GameCube.GFZ.Gma2
                 //writer.WriteX();
             }
             this.RecordEndAddress(writer);
+
+            throw new NotImplementedException();
         }
 
     }

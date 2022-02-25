@@ -9,26 +9,24 @@ using System.Threading.Tasks;
 
 namespace GameCube.GFZ.Gma2
 {
-    internal class VertexController :
+    public class SkinnedVertexDescriptor :
         IBinaryAddressable,
         IBinarySerializable
     {
         // FIELDS
         private int vertexCount;
-        private Pointer unkType1RelPtr;
-        private Pointer unkType2RelPtr;
+        private Pointer unkType1RelPtr; // ARRAY PTR
+        private Pointer unkType2RelPtr; // STRUCTS BEGIN 
         private Pointer unkType3RelPtr;
         private Pointer unkType4RelPtr;
 
         // PROPERTIES
         public AddressRange AddressRange { get; set; }
-        public int Unk1Count
-        {
-            get
-            {
-                return (unkType4RelPtr - unkType1RelPtr) / 0x20;
-            }
-        }
+        public int VertexCount { get => vertexCount; set => vertexCount = value; }
+        public Pointer UnkType1RelPtr { get => unkType1RelPtr; set => unkType1RelPtr = value; }
+        public Pointer UnkType2RelPtr { get => unkType2RelPtr; set => unkType2RelPtr = value; }
+        public Pointer UnkType3RelPtr { get => unkType3RelPtr; set => unkType3RelPtr = value; }
+        public Pointer UnkType4RelPtr { get => unkType4RelPtr; set => unkType4RelPtr = value; }
 
         // METHODS
         public void Deserialize(BinaryReader reader)
@@ -42,7 +40,6 @@ namespace GameCube.GFZ.Gma2
                 reader.ReadX(ref unkType4RelPtr);
             }
             this.RecordEndAddress(reader);
-            reader.AlignTo(GX.GXUtility.GX_FIFO_ALIGN);
         }
 
         public void Serialize(BinaryWriter writer)

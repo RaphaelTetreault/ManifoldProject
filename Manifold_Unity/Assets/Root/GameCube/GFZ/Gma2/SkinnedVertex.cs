@@ -2,11 +2,10 @@
 using Manifold.IO;
 using System.IO;
 using Unity.Mathematics;
-using LibGxFormat;
 
 namespace GameCube.GFZ.Gma2
 {
-    public class UnkVertexType2 :
+    public class SkinnedVertex :
         IBinaryAddressable,
         IBinarySerializable
     {
@@ -30,9 +29,22 @@ namespace GameCube.GFZ.Gma2
         {
             this.RecordStartAddress(reader);
             {
-                //reader.ReadX(ref );
+                reader.ReadX(ref position);
+                reader.ReadX(ref normal);
+                reader.ReadX(ref textureUV0);
+                reader.ReadX(ref textureUV1);
+                reader.ReadX(ref textureUV2);
+                reader.ReadX(ref color);
+                reader.ReadX(ref unk0x34);
+                reader.ReadX(ref unk0x38);
+                reader.ReadX(ref unk0x3C);
             }
             this.RecordEndAddress(reader);
+            {
+                UnityEngine.Debug.Log($"{nameof(unk0x34)}: {unk0x34 }");
+                Assert.IsTrue(unk0x38 == 0);
+                Assert.IsTrue(unk0x3C == 0);
+            }
         }
 
         public void Serialize(BinaryWriter writer)
@@ -42,6 +54,8 @@ namespace GameCube.GFZ.Gma2
                 //writer.WriteX();
             }
             this.RecordEndAddress(writer);
+
+            throw new System.NotImplementedException();
         }
 
     }

@@ -1,6 +1,7 @@
 ﻿using Manifold;
 using Manifold.IO;
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace GameCube.GFZ.Gma2
@@ -31,16 +32,24 @@ namespace GameCube.GFZ.Gma2
         // Must enforce GX FIFO. TODO: get specifics for each
         private TextureConfig[] textureConfigs;
         private TransformMatrix3x4[] bones; // no fifo between
-        private VertexController vertexController;
+        private SkinnedVertexDescriptor skinnedVertexDescriptor;
         private Submesh[] submeshes;
         private UnkVertexType1 unkVertexType1;
-        private UnkVertexType2 unkVertexType2;
-        private UnkVertexType3 unkVertexType3;
+        private SkinnedVertex[] skinnedVertices;
+        private SkinBoneBinding[] skinBoneBindings;
         private UnkVertexType4 unkVertexType4;
 
 
         // PROPERTIES
         public AddressRange AddressRange { get; set; }
+        public bool IsSkinnedModel
+        {
+            get => attributes.HasFlag(GcmfAttributes.isSkinModel);
+        }
+        public bool IsPhysicsModel
+        {
+            get => attributes.HasFlag(GcmfAttributes.isEffectiveModel);
+        }
         public bool IsSkinOrEffective
         {
             get
@@ -50,10 +59,13 @@ namespace GameCube.GFZ.Gma2
                 return isSkin || isEffective;
             }
         }
+
         public int TotalSubmeshCount
         {
             get => materialCount + translucidMaterialCount;
         }
+        public int SkinnedVertexBasePtr;
+
         public GcmfAttributes Attributes { get => attributes; set => attributes = value; }
         public BoundingSphere BoundingSphere { get => boundingSphere; set => boundingSphere = value; }
         public ushort TextureCount { get => textureCount; set => textureCount = value; }
@@ -64,9 +76,9 @@ namespace GameCube.GFZ.Gma2
         public uint GcmfTexturesSize { get => gcmfTexturesSize; set => gcmfTexturesSize = value; }
         public TransformMatrixIndexes8 TransformMatrixIndexes8 { get => transformMatrixIndexes8; set => transformMatrixIndexes8 = value; }
         public TransformMatrix3x4[] Bones { get => bones; set => bones = value; }
-        internal TextureConfig[] TextureConfigs { get => textureConfigs; set => textureConfigs = value; }
-        internal VertexController VertexController { get => vertexController; set => vertexController = value; }
-        internal Submesh[] Submeshes { get => submeshes; set => submeshes = value; }
+        public TextureConfig[] TextureConfigs { get => textureConfigs; set => textureConfigs = value; }
+        public SkinnedVertexDescriptor VertexController { get => skinnedVertexDescriptor; set => skinnedVertexDescriptor = value; }
+        public Submesh[] Submeshes { get => submeshes; set => submeshes = value; }
 
 
         // METHODS
@@ -109,7 +121,8 @@ namespace GameCube.GFZ.Gma2
 
                 if (IsSkinOrEffective)
                 {
-                    reader.ReadX(ref vertexController, true);
+                    SkinnedVertexBasePtr = (int)reader.BaseStream.Position;
+                    reader.ReadX(ref skinnedVertexDescriptor, true);
                     reader.AlignTo(GX.GXUtility.GX_FIFO_ALIGN);
                 }
 
@@ -121,8 +134,32 @@ namespace GameCube.GFZ.Gma2
                     submeshes[i].Deserialize(reader);
                 }
 
-                // TODO: other vertex data
 
+                if (IsSkinOrEffective)
+                {
+                    var address = SkinnedVertexBasePtr + skinnedVertexDescriptor.UnkType2RelPtr;
+                    Assert.IsTrue(reader.BaseStream.Position == address);
+                    reader.ReadX(ref skinnedVertices, skinnedVertexDescriptor.VertexCount, true);
+                    reader.AlignTo(GX.GXUtility.GX_FIFO_ALIGN);
+                    
+                    address = SkinnedVertexBasePtr + skinnedVertexDescriptor.UnkType1RelPtr;
+                    Assert.IsTrue(reader.BaseStream.Position == address);
+                    
+                    // HACKKKKK
+                    var bindings = new List<SkinBoneBinding>();
+                    while (reader.PeekInt() > 0)
+                    {
+                        var skinBoneBinding = new SkinBoneBinding();
+                        skinBoneBinding.Deserialize(reader);
+                        bindings.Add(skinBoneBinding);
+                    }
+                    skinBoneBindings = bindings.ToArray();
+                }
+
+                if (IsSkinnedModel)
+                {
+                    throw new NotImplementedException();
+                }
             }
             reader.AlignTo(GX.GXUtility.GX_FIFO_ALIGN);
         }

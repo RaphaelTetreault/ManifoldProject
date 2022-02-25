@@ -8,7 +8,7 @@ using System.IO;
 
 namespace GameCube.GFZ.Gma2
 {
-    internal class Submesh :
+    public class Submesh :
         IBinaryAddressable,
         IBinarySerializable
     {
@@ -27,7 +27,7 @@ namespace GameCube.GFZ.Gma2
         public AddressRange AddressRange { get; set; }
         public bool IsSkinOrEffective { get; set; }
         public Material Material { get => material; set => material = value; }
-        internal DisplayListDescriptor DisplayListDescriptor { get => displayListDescriptor; set => displayListDescriptor = value; }
+        public DisplayListDescriptor DisplayListDescriptor { get => displayListDescriptor; set => displayListDescriptor = value; }
         public DisplayList[] DisplayListCW { get => displayListCW; set => displayListCW = value; }
         public DisplayList[] DisplayListCCW { get => displayListCCW; set => displayListCCW = value; }
         public DisplayListDescriptor SecondaryMeshDescriptor { get => secondaryDisplayListDescriptor; set => secondaryDisplayListDescriptor = value; }
@@ -76,9 +76,7 @@ namespace GameCube.GFZ.Gma2
                 // TODO: re-implement this stuff
                 if (IsSkinOrEffective)
                 {
-                    UnityEngine.Debug.LogWarning("Skipping IsSkin/IsEffective");
-                    return;
-                    //throw new NotImplementedException();
+                    return; //??
                 }
 
                 if (material.DisplayListRenderFlags.HasFlag(DisplayListRenderFlags.renderCW))

@@ -4,7 +4,7 @@ using System.IO;
 
 namespace GameCube.GFZ.Gma2
 {
-    internal class TextureConfig :
+    public class TextureConfig :
         IBinaryAddressable,
         IBinarySerializable
     {
