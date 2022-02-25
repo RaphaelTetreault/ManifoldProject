@@ -96,33 +96,35 @@ namespace Manifold.EditorTools.GC.GFZ.Gma2
             {
                 ImportUtility.ProgressBar<Gcmf>(submeshIndex, numSubmeshes, $"{path}{model.Name}");
 
-                if (submesh.DisplayListCW is not null)
-                {
-                    var submeshDescriptor = CreateSubMesh(submesh.DisplayListCW, ref mesh, true);
-                    submeshDescriptors[submeshIndex] = submeshDescriptor;
-                    submeshIndex++;
-                }
+                throw new NotImplementedException();
 
-                if (submesh.DisplayListCCW is not null)
-                {
-                    var submeshDescriptor = CreateSubMesh(submesh.DisplayListCCW, ref mesh, true);
-                    submeshDescriptors[submeshIndex] = submeshDescriptor;
-                    submeshIndex++;
-                }
+                //if (submesh.DisplayListCW is not null)
+                //{
+                //    var submeshDescriptor = CreateSubMesh(submesh.DisplayListCW, ref mesh, true);
+                //    submeshDescriptors[submeshIndex] = submeshDescriptor;
+                //    submeshIndex++;
+                //}
 
-                if (submesh.SkinnedDisplayListCW is not null)
-                {
-                    var submeshDescriptor = CreateSubMesh(submesh.SkinnedDisplayListCW, ref mesh, true);
-                    submeshDescriptors[submeshIndex] = submeshDescriptor;
-                    submeshIndex++;
-                }
+                //if (submesh.DisplayListCCW is not null)
+                //{
+                //    var submeshDescriptor = CreateSubMesh(submesh.DisplayListCCW, ref mesh, true);
+                //    submeshDescriptors[submeshIndex] = submeshDescriptor;
+                //    submeshIndex++;
+                //}
 
-                if (submesh.SkinnedDisplayListCCW is not null)
-                {
-                    var submeshDescriptor = CreateSubMesh(submesh.SkinnedDisplayListCCW, ref mesh, true);
-                    submeshDescriptors[submeshIndex] = submeshDescriptor;
-                    submeshIndex++;
-                }
+                //if (submesh.SkinnedDisplayListCW is not null)
+                //{
+                //    var submeshDescriptor = CreateSubMesh(submesh.SkinnedDisplayListCW, ref mesh, true);
+                //    submeshDescriptors[submeshIndex] = submeshDescriptor;
+                //    submeshIndex++;
+                //}
+
+                //if (submesh.SkinnedDisplayListCCW is not null)
+                //{
+                //    var submeshDescriptor = CreateSubMesh(submesh.SkinnedDisplayListCCW, ref mesh, true);
+                //    submeshDescriptors[submeshIndex] = submeshDescriptor;
+                //    submeshIndex++;
+                //}
             }
 
             // Set each submesh in the mesh

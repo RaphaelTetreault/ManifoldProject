@@ -60,7 +60,7 @@ namespace GameCube.GFZ.Gma2
                     var model = new Model()
                     {
                         GcmfPtr = modelEntry.GcmfPtr,
-                        NamePtr = nameBasePtr,
+                        NamePtr = modelEntry.NamePtr,
                     };
                     model.Deserialize(reader);
                     modelList.Add(model);

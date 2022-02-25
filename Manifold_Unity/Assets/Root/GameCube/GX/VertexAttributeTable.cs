@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 using UnityEngine.Assertions;
 using GameCube.GFZ.GMA;
 
@@ -9,10 +8,23 @@ namespace GameCube.GX
     [Serializable]
     public class VertexAttributeTable
     {
-        [SerializeField] VertexAttributeFormat[] gxVertexAttributeFormats = new VertexAttributeFormat[8];
+        // FIELDS
+        private VertexAttributeFormat[] gxVertexAttributeFormats = new VertexAttributeFormat[8];
 
-        public VertexAttributeFormat[] GxVtxAttrFmts
-            => gxVertexAttributeFormats;
+        // INDEXERS
+        public VertexAttributeFormat this[int i]
+        {
+            get => gxVertexAttributeFormats[i];
+        }
+        public VertexAttributeFormat this[VertexFormat vertexFormat]
+        {
+            get => gxVertexAttributeFormats[(byte)vertexFormat];
+        }
+        public VertexAttributeFormat this[DisplayCommand displayCommand]
+        {
+            get => gxVertexAttributeFormats[displayCommand.VertexFormatIndex];
+        }
+
 
         public VertexAttributeTable(params VertexAttributeFormat[] formats)
         {
@@ -21,11 +33,11 @@ namespace GameCube.GX
 
             // Update formats
             for (int i = 0; i < formats.Length; i++)
-                GxVtxAttrFmts[i] = formats[i];
+                gxVertexAttributeFormats[i] = formats[i];
 
             // Clear old refs
-            for (int i = formats.Length; i < GxVtxAttrFmts.Length; i++)
-                GxVtxAttrFmts[i] = null;
+            for (int i = formats.Length; i < gxVertexAttributeFormats.Length; i++)
+                gxVertexAttributeFormats[i] = null;
         }
 
         public bool VatHasAttr(DisplayCommand gxCmd, Attribute attribute)

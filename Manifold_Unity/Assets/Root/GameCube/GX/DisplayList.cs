@@ -1,4 +1,5 @@
-﻿using Manifold.IO;
+﻿using Manifold;
+using Manifold.IO;
 using System;
 using System.IO;
 using Unity.Mathematics;
@@ -62,6 +63,7 @@ namespace GameCube.GX
         public DisplayList(GXAttributes attr, VertexAttributeTable vat)
         {
             this.attributes = attr;
+            this.vat = vat;
         }
 
 
@@ -74,8 +76,7 @@ namespace GameCube.GX
                 reader.ReadX(ref count);
 
                 // Load vertex attribute format (VAF) from vertex attribute table (VAT)
-                var vatIndex = gxCommand.VertexFormatIndex;
-                var vaf = vat.GxVtxAttrFmts[vatIndex];
+                var vaf = vat[gxCommand];
 
                 //mtx
                 pn_mtx_idx = (attributes & GXAttributes.GX_VA_PNMTXIDX) != 0

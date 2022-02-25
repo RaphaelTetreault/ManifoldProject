@@ -95,7 +95,15 @@ namespace GameCube.GFZ.Gma2
             }
             //
             {
-                reader.ReadX(ref textureConfigs, textureCount, true);
+                //
+                textureConfigs = new TextureConfig[textureCount];
+                for (int i = 0; i < textureConfigs.Length; i++)
+                {
+                    textureConfigs[i] = new TextureConfig();
+                    textureConfigs[i].Deserialize(reader);
+                    reader.AlignTo(GX.GXUtility.GX_FIFO_ALIGN);
+                }
+
                 reader.ReadX(ref bones, transformMatrixCount, true);
                 reader.AlignTo(GX.GXUtility.GX_FIFO_ALIGN);
 
@@ -110,7 +118,7 @@ namespace GameCube.GFZ.Gma2
                 {
                     submeshes[i] = new Submesh();
                     submeshes[i].IsSkinOrEffective = IsSkinOrEffective;
-                    reader.ReadX(ref submeshes[i], false);
+                    submeshes[i].Deserialize(reader);
                 }
 
                 // TODO: other vertex data

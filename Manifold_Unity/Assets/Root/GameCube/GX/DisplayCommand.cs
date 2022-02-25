@@ -9,13 +9,13 @@ namespace GameCube.GX
         IBinarySerializable
     {
         // FIELDS
-        private ushort command;
+        private byte command;
         private Primitive primitive;
         private VertexFormat vertexFormat;
 
 
         // PROPERTIES
-        public ushort Command
+        public byte Command
         {
             get
             {
@@ -47,8 +47,8 @@ namespace GameCube.GX
 
         private void UpdateBitFields()
         {
-            primitive = (Primitive)(command & 0b_00000000_11111000); // 5 highest bits
-            vertexFormat = (VertexFormat)(command & 0b_00000000_00000111); // 3 lowest bits
+            primitive = (Primitive)(command & 0b11111000); // 5 highest bits
+            vertexFormat = (VertexFormat)(command & 0b00000111); // 3 lowest bits
         }
 
     }

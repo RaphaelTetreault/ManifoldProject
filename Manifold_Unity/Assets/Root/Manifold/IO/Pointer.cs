@@ -17,6 +17,10 @@ namespace Manifold.IO
         {
             this.address = address;
         }
+        public Pointer(long address)
+        {
+            this.address = (int)address;
+        }
 
         // PROPERTIES
         public int Address => address;
