@@ -16,8 +16,8 @@ namespace GameCube.GFZ.Gma2
         private float2 textureUV1;
         private float2 textureUV2;
         private uint color;
-        private uint unk0x34; // TODO: confirm this and next 2 values are not zero / FIFO padding.
-        private uint unk0x38;
+        private uint unk0x34; // Is some kind of flag
+        private uint unk0x38; 
         private uint unk0x3C;
 
         // PROPERTIES
@@ -40,11 +40,6 @@ namespace GameCube.GFZ.Gma2
                 reader.ReadX(ref unk0x3C);
             }
             this.RecordEndAddress(reader);
-            {
-                UnityEngine.Debug.Log($"{nameof(unk0x34)}: {unk0x34 }");
-                Assert.IsTrue(unk0x38 == 0);
-                Assert.IsTrue(unk0x3C == 0);
-            }
         }
 
         public void Serialize(BinaryWriter writer)

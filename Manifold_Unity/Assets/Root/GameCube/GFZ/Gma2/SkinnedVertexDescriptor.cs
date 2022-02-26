@@ -15,17 +15,17 @@ namespace GameCube.GFZ.Gma2
     {
         // FIELDS
         private int vertexCount;
-        private Pointer unkType1RelPtr; // ARRAY PTR
-        private Pointer unkType2RelPtr; // STRUCTS BEGIN 
-        private Pointer unkType3RelPtr;
+        private Pointer unkType1RelPtr;
+        private Pointer skinnedVerticesRelPtr;
+        private Pointer skinBoneBindingsRelPtr;
         private Pointer unkType4RelPtr;
 
         // PROPERTIES
         public AddressRange AddressRange { get; set; }
         public int VertexCount { get => vertexCount; set => vertexCount = value; }
         public Pointer UnkType1RelPtr { get => unkType1RelPtr; set => unkType1RelPtr = value; }
-        public Pointer UnkType2RelPtr { get => unkType2RelPtr; set => unkType2RelPtr = value; }
-        public Pointer UnkType3RelPtr { get => unkType3RelPtr; set => unkType3RelPtr = value; }
+        public Pointer SkinnedVerticesRelPtr { get => skinnedVerticesRelPtr; set => skinnedVerticesRelPtr = value; }
+        public Pointer SkinBoneBindingsRelPtr { get => skinBoneBindingsRelPtr; set => skinBoneBindingsRelPtr = value; }
         public Pointer UnkType4RelPtr { get => unkType4RelPtr; set => unkType4RelPtr = value; }
 
         // METHODS
@@ -35,8 +35,8 @@ namespace GameCube.GFZ.Gma2
             {
                 reader.ReadX(ref vertexCount);
                 reader.ReadX(ref unkType1RelPtr);
-                reader.ReadX(ref unkType2RelPtr);
-                reader.ReadX(ref unkType3RelPtr);
+                reader.ReadX(ref skinnedVerticesRelPtr);
+                reader.ReadX(ref skinBoneBindingsRelPtr);
                 reader.ReadX(ref unkType4RelPtr);
             }
             this.RecordEndAddress(reader);

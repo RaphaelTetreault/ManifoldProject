@@ -34,7 +34,7 @@ namespace GameCube.GFZ.Gma2
         private TransformMatrix3x4[] bones; // no fifo between
         private SkinnedVertexDescriptor skinnedVertexDescriptor;
         private Submesh[] submeshes;
-        private UnkVertexType1 unkVertexType1;
+        private UnkVertexType1[] unkVertexType1;
         private SkinnedVertex[] skinnedVertices;
         private SkinBoneBinding[] skinBoneBindings;
         private UnkVertexType4 unkVertexType4;
@@ -119,6 +119,9 @@ namespace GameCube.GFZ.Gma2
                 reader.ReadX(ref bones, transformMatrixCount, true);
                 reader.AlignTo(GX.GXUtility.GX_FIFO_ALIGN);
 
+                // Hmm...
+                //SkinnedVertexBasePtr = (int)reader.BaseStream.Position;
+
                 if (IsSkinOrEffective)
                 {
                     SkinnedVertexBasePtr = (int)reader.BaseStream.Position;
@@ -135,30 +138,41 @@ namespace GameCube.GFZ.Gma2
                 }
 
 
-                if (IsSkinOrEffective)
-                {
-                    var address = SkinnedVertexBasePtr + skinnedVertexDescriptor.UnkType2RelPtr;
-                    Assert.IsTrue(reader.BaseStream.Position == address);
-                    reader.ReadX(ref skinnedVertices, skinnedVertexDescriptor.VertexCount, true);
-                    reader.AlignTo(GX.GXUtility.GX_FIFO_ALIGN);
-                    
-                    address = SkinnedVertexBasePtr + skinnedVertexDescriptor.UnkType1RelPtr;
-                    Assert.IsTrue(reader.BaseStream.Position == address);
-                    
-                    // HACKKKKK
-                    var bindings = new List<SkinBoneBinding>();
-                    while (reader.PeekInt() > 0)
-                    {
-                        var skinBoneBinding = new SkinBoneBinding();
-                        skinBoneBinding.Deserialize(reader);
-                        bindings.Add(skinBoneBinding);
-                    }
-                    skinBoneBindings = bindings.ToArray();
-                }
-
                 if (IsSkinnedModel)
                 {
-                    throw new NotImplementedException();
+                    var bytesSize = skinnedVertexDescriptor.SkinBoneBindingsRelPtr - skinnedVertexDescriptor.UnkType1RelPtr;
+                    var count = bytesSize / 0x20;
+                    var address = SkinnedVertexBasePtr + skinnedVertexDescriptor.UnkType1RelPtr;
+                    reader.JumpToAddress(address);
+                    reader.ReadX(ref unkVertexType1, count, true);
+                    //reader.AlignTo(GX.GXUtility.GX_FIFO_ALIGN);
+                }
+
+                if (IsSkinnedModel || IsPhysicsModel)
+                {
+
+                    // Skinned Vertices
+                    {
+                        var address = SkinnedVertexBasePtr + skinnedVertexDescriptor.SkinnedVerticesRelPtr;
+                        reader.JumpToAddress(address);
+                        reader.ReadX(ref skinnedVertices, skinnedVertexDescriptor.VertexCount, true);
+                        reader.AlignTo(GX.GXUtility.GX_FIFO_ALIGN);
+                    }
+
+                    // Skin Bone Binding
+                    {
+                        var address = SkinnedVertexBasePtr + skinnedVertexDescriptor.SkinBoneBindingsRelPtr;
+                        reader.JumpToAddress(address);
+
+                        var bindings = new List<SkinBoneBinding>();
+                        while (reader.PeekInt() > 0 && reader.PeekInt() <= byte.MaxValue)
+                        {
+                            var skinBoneBinding = new SkinBoneBinding();
+                            skinBoneBinding.Deserialize(reader);
+                            bindings.Add(skinBoneBinding);
+                        }
+                        skinBoneBindings = bindings.ToArray();
+                    }
                 }
             }
             reader.AlignTo(GX.GXUtility.GX_FIFO_ALIGN);
