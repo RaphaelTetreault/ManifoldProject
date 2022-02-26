@@ -129,6 +129,8 @@ namespace GameCube.GFZ.Gma2
                     reader.AlignTo(GX.GXUtility.GX_FIFO_ALIGN);
                 }
 
+                //Assert.IsTrue();
+
                 submeshes = new Submesh[TotalSubmeshCount];
                 for (int i = 0; i < submeshes.Length; i++)
                 {
