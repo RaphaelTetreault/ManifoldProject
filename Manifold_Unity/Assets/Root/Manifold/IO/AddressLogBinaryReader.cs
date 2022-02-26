@@ -65,13 +65,13 @@ namespace Manifold.IO
         public override int Read(byte[] buffer, int index, int count)
         {
             throw new NotImplementedException();
-            return base.Read(buffer, index, count);
+            //return base.Read(buffer, index, count);
         }
 
         public override int Read(char[] buffer, int index, int count)
         {
             throw new NotImplementedException();
-            return base.Read(buffer, index, count);
+            //return base.Read(buffer, index, count);
         }
 
 
@@ -96,20 +96,20 @@ namespace Manifold.IO
         public override char ReadChar()
         {
             throw new NotImplementedException();
-            return base.ReadChar();
+            //return base.ReadChar();
         }
 
         public override char[] ReadChars(int count)
         {
             throw new NotImplementedException();
             //LogAddress(count);
-            return base.ReadChars(count);
+            //return base.ReadChars(count);
         }
 
         public override decimal ReadDecimal()
         {
             throw new NotImplementedException();
-            return base.ReadDecimal();
+            //return base.ReadDecimal();
         }
 
         public override double ReadDouble()
@@ -151,7 +151,7 @@ namespace Manifold.IO
         public override string ReadString()
         {
             throw new NotImplementedException();
-            return base.ReadString();
+            //return base.ReadString();
         }
 
         public override ushort ReadUInt16()
@@ -242,5 +242,63 @@ namespace Manifold.IO
 
 
         }
+
+        public void AssertUnreadIsZero()
+        {
+            List<AddressRange> rangesRead;
+            List<AddressRange> rangesUnread;
+            GetRanges(out rangesRead, out rangesUnread);
+
+            foreach (var rangeUnread in rangesUnread)
+            {
+                BaseStream.Seek(rangeUnread.startAddress, SeekOrigin.Begin);
+                for (int i = (int)rangeUnread.startAddress; i < (int)rangeUnread.endAddress; i++)
+                {
+                    bool isEmpty = ReadByte() == 0;
+                    if (!isEmpty)
+                    {
+                        var msg = $"Missed byte in range {rangeUnread} starting at {BaseStream.Position:x8}";
+                        UnityEngine.Debug.LogWarning(msg);
+                        break;
+                    }
+                }
+            }
+        }
+
+        public void GetRanges(out List<AddressRange> rangesRead, out List<AddressRange> rangesUnread)
+        {
+            rangesRead = new List<AddressRange>();
+            rangesUnread = new List<AddressRange>();
+            AddressRange range = new AddressRange();
+            bool activeType = true;
+
+            for (int i = 0; i < addrLog.Length; i++)
+            {
+                var addressRead = addrLog[i];
+                if (activeType == addressRead)
+                {
+                    //
+                }
+                else
+                {
+                    // capture where this ends
+                    range.endAddress = i;
+                    //
+                    if (activeType)
+                    {
+                        rangesRead.Add(range);
+                    }
+                    else
+                    {
+                        rangesUnread.Add(range);
+                    }
+                    // flips active type
+                    activeType = addressRead;
+                    // Start next range from current address
+                    range.startAddress = i;
+                }
+            }
+        }
+
     }
 }

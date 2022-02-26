@@ -14,7 +14,7 @@ namespace GameCube.GFZ.Gma2
         IBinarySerializable
     {
         // FIELDS
-        private int vertexCount;
+        private int skinnedVertexCount;
         private Pointer unkType1RelPtr;
         private Pointer skinnedVerticesRelPtr;
         private Pointer skinBoneBindingsRelPtr;
@@ -22,18 +22,25 @@ namespace GameCube.GFZ.Gma2
 
         // PROPERTIES
         public AddressRange AddressRange { get; set; }
-        public int VertexCount { get => vertexCount; set => vertexCount = value; }
+        public int SkinnedVertexCount { get => skinnedVertexCount; set => skinnedVertexCount = value; }
         public Pointer UnkType1RelPtr { get => unkType1RelPtr; set => unkType1RelPtr = value; }
         public Pointer SkinnedVerticesRelPtr { get => skinnedVerticesRelPtr; set => skinnedVerticesRelPtr = value; }
         public Pointer SkinBoneBindingsRelPtr { get => skinBoneBindingsRelPtr; set => skinBoneBindingsRelPtr = value; }
         public Pointer UnkType4RelPtr { get => unkType4RelPtr; set => unkType4RelPtr = value; }
+
+        public int UnkType1Count
+        {
+            get => (UnkType4RelPtr - UnkType1RelPtr) / 0x20;
+        }
+
+
 
         // METHODS
         public void Deserialize(BinaryReader reader)
         {
             this.RecordStartAddress(reader);
             {
-                reader.ReadX(ref vertexCount);
+                reader.ReadX(ref skinnedVertexCount);
                 reader.ReadX(ref unkType1RelPtr);
                 reader.ReadX(ref skinnedVerticesRelPtr);
                 reader.ReadX(ref skinBoneBindingsRelPtr);

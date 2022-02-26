@@ -37,7 +37,7 @@ namespace GameCube.GFZ.Gma2
         private UnkVertexType1[] unkVertexType1;
         private SkinnedVertex[] skinnedVertices;
         private SkinBoneBinding[] skinBoneBindings;
-        private UnkVertexType4 unkVertexType4;
+        private ushort[] unkMatrixIndices;
 
 
         // PROPERTIES
@@ -107,6 +107,9 @@ namespace GameCube.GFZ.Gma2
             }
             //
             {
+                // Align from after main deserialization
+                reader.AlignTo(GX.GXUtility.GX_FIFO_ALIGN);
+
                 //
                 textureConfigs = new TextureConfig[textureCount];
                 for (int i = 0; i < textureConfigs.Length; i++)
@@ -129,7 +132,6 @@ namespace GameCube.GFZ.Gma2
                     reader.AlignTo(GX.GXUtility.GX_FIFO_ALIGN);
                 }
 
-                //Assert.IsTrue();
 
                 submeshes = new Submesh[TotalSubmeshCount];
                 for (int i = 0; i < submeshes.Length; i++)
@@ -142,12 +144,21 @@ namespace GameCube.GFZ.Gma2
 
                 if (IsSkinnedModel)
                 {
-                    var bytesSize = skinnedVertexDescriptor.SkinBoneBindingsRelPtr - skinnedVertexDescriptor.UnkType1RelPtr;
-                    var count = bytesSize / 0x20;
-                    var address = SkinnedVertexBasePtr + skinnedVertexDescriptor.UnkType1RelPtr;
-                    reader.JumpToAddress(address);
-                    reader.ReadX(ref unkVertexType1, count, true);
-                    //reader.AlignTo(GX.GXUtility.GX_FIFO_ALIGN);
+                    //
+                    {
+                        var address = SkinnedVertexBasePtr + skinnedVertexDescriptor.UnkType1RelPtr;
+                        reader.JumpToAddress(address);
+                        reader.ReadX(ref unkVertexType1, skinnedVertexDescriptor.UnkType1Count, true);
+                        //reader.AlignTo(GX.GXUtility.GX_FIFO_ALIGN);
+                    }
+
+                    //
+                    {
+                        var address = SkinnedVertexBasePtr + skinnedVertexDescriptor.UnkType4RelPtr;
+                        reader.JumpToAddress(address);
+                        reader.ReadX(ref unkMatrixIndices, TransformMatrixCount);
+                        reader.AlignTo(GX.GXUtility.GX_FIFO_ALIGN);
+                    }
                 }
 
                 if (IsSkinnedModel || IsPhysicsModel)
@@ -157,7 +168,7 @@ namespace GameCube.GFZ.Gma2
                     {
                         var address = SkinnedVertexBasePtr + skinnedVertexDescriptor.SkinnedVerticesRelPtr;
                         reader.JumpToAddress(address);
-                        reader.ReadX(ref skinnedVertices, skinnedVertexDescriptor.VertexCount, true);
+                        reader.ReadX(ref skinnedVertices, skinnedVertexDescriptor.SkinnedVertexCount, true);
                         reader.AlignTo(GX.GXUtility.GX_FIFO_ALIGN);
                     }
 

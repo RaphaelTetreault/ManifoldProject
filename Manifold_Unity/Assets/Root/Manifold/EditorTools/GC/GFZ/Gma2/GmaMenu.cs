@@ -49,9 +49,11 @@ namespace Manifold.EditorTools.GC.GFZ.Gma2
 
         public static void TestImportGma(string filepath)
         {
-            using (var reader = new BinaryReader(File.OpenRead(filepath)))
+            using (var reader = new AddressLogBinaryReader(File.OpenRead(filepath)))
             {
                 var gma = new Gma();
+                gma.FileName = Path.GetFileName(filepath);
+                Debug.Log(gma.FileName);
                 gma.Deserialize(reader);
 
                 // 
@@ -60,6 +62,8 @@ namespace Manifold.EditorTools.GC.GFZ.Gma2
                 {
                     Debug.Log($"[{++index}] {model.Name}");
                 }
+
+                reader.AssertUnreadIsZero();
             }
         }
 
