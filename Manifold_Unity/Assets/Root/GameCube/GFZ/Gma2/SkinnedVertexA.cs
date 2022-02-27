@@ -3,24 +3,35 @@ using Manifold.IO;
 using System.IO;
 using Unity.Mathematics;
 
+
+
+
 namespace GameCube.GFZ.Gma2
 {
-    public class UnkVertexType1 :
+    /// <summary>
+    /// Appears to be a GX vertex meant for skinning. It is not part of a formal
+    /// display list. The GXAttributes properly describe this as having position,
+    /// normal, and texture0.
+    /// </summary>
+    /// <remarks>
+    /// Notes: regarding textureUV0: it is indeed stored as TEX0 in the GXAttributes.
+    /// However, the data does not need to be for texturing. TEX0.u stores some 
+    /// "magic bits" while TEX0.v stores a (normalized?) float, perhaps for weighting.
+    /// </remarks>
+    public class SkinnedVertexA :
         IBinaryAddressable,
         IBinarySerializable
     {
         // FIELDS
         private float3 position;
         private float3 normal;
-        private uint unk0x18;
-        private float unk0x1C;
+        private float2 textureUV0;
 
         // PROPERTIES
         public AddressRange AddressRange { get; set; }
         public float3 Position { get => position; set => position = value; }
         public float3 Normal { get => normal; set => normal = value; }
-        public uint Unk0x18 { get => unk0x18; set => unk0x18 = value; }
-        public float Unk0x1C { get => unk0x1C; set => unk0x1C = value; }
+        public float2 TextureUV0 { get => textureUV0; set => textureUV0 = value; }
 
 
         // METHODS
@@ -30,8 +41,7 @@ namespace GameCube.GFZ.Gma2
             {
                 reader.ReadX(ref position);
                 reader.ReadX(ref normal);
-                reader.ReadX(ref unk0x18);
-                reader.ReadX(ref unk0x1C);
+                reader.ReadX(ref textureUV0);
             }
             this.RecordEndAddress(reader);
         }
@@ -42,8 +52,7 @@ namespace GameCube.GFZ.Gma2
             {
                 writer.WriteX(position);
                 writer.WriteX(normal);
-                writer.WriteX(unk0x18);
-                writer.WriteX(unk0x1C);
+                writer.WriteX(textureUV0);
             }
             this.RecordEndAddress(writer);
         }

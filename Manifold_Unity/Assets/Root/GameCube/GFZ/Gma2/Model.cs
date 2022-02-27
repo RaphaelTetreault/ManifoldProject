@@ -24,7 +24,7 @@ namespace GameCube.GFZ.Gma2
         public void Deserialize(BinaryReader reader)
         {
             // Pointers are assigned from outside the class.
-            // If not set, Deserialization is not expected to be called.
+            // If not set, Deserialize() is not expected to be called.
             Assert.IsTrue(GcmfPtr.IsNotNull);
             Assert.IsTrue(NamePtr.IsNotNull);
 

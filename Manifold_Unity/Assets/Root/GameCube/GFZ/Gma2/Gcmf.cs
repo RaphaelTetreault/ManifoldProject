@@ -34,10 +34,10 @@ namespace GameCube.GFZ.Gma2
         private TransformMatrix3x4[] bones; // no fifo between
         private SkinnedVertexDescriptor skinnedVertexDescriptor;
         private Submesh[] submeshes;
-        private UnkVertexType1[] unkVertexType1;
-        private SkinnedVertex[] skinnedVertices;
+        private SkinnedVertexA[] skinnedVerticesA;
+        private SkinnedVertexB[] skinnedVerticesB;
         private SkinBoneBinding[] skinBoneBindings;
-        private ushort[] unkMatrixIndices;
+        private ushort[] unkBoneMatrixIndices;
 
 
         // PROPERTIES
@@ -46,25 +46,24 @@ namespace GameCube.GFZ.Gma2
         {
             get => attributes.HasFlag(GcmfAttributes.isSkinModel);
         }
-        public bool IsPhysicsModel
+        public bool IsPhysicsDrivenModel
         {
             get => attributes.HasFlag(GcmfAttributes.isEffectiveModel);
         }
-        public bool IsSkinOrEffective
+        public bool IsStitchingModel
         {
-            get
-            {
-                bool isSkin = attributes.HasFlag(GcmfAttributes.isSkinModel);
-                bool isEffective = attributes.HasFlag(GcmfAttributes.isEffectiveModel);
-                return isSkin || isEffective;
-            }
+            get => attributes.HasFlag(GcmfAttributes.isStitchingModel);
+        }
+        public bool Is16bitModel
+        {
+            get => attributes.HasFlag(GcmfAttributes.is16Bit);
         }
 
         public int TotalSubmeshCount
         {
             get => materialCount + translucidMaterialCount;
         }
-        public int SkinnedVertexBasePtr;
+        public Pointer SkinnedDataBasePtr { get; private set; }
 
         public GcmfAttributes Attributes { get => attributes; set => attributes = value; }
         public BoundingSphere BoundingSphere { get => boundingSphere; set => boundingSphere = value; }
@@ -100,106 +99,118 @@ namespace GameCube.GFZ.Gma2
             }
             this.RecordEndAddress(reader);
             {
+                // Align from after main deserialization
+                reader.AlignTo(GX.GXUtility.GX_FIFO_ALIGN);
+
+                // Assert some of the data
                 Assert.IsTrue(magic == kMagic);
                 Assert.IsTrue(zero0x1F == 0);
                 foreach (var zero in zeroes0x24)
                     Assert.IsTrue(zero == 0);
             }
-            //
+            // Deserialize other structures
             {
-                // Align from after main deserialization
-                reader.AlignTo(GX.GXUtility.GX_FIFO_ALIGN);
-
-                //
+                // Read in texture configs. Between each, align for GX FIFO
                 textureConfigs = new TextureConfig[textureCount];
                 for (int i = 0; i < textureConfigs.Length; i++)
                 {
-                    textureConfigs[i] = new TextureConfig();
-                    textureConfigs[i].Deserialize(reader);
+                    reader.ReadX(ref textureConfigs[i], true);
                     reader.AlignTo(GX.GXUtility.GX_FIFO_ALIGN);
                 }
 
+                // Read in bones. If 'transformMatrixCount' is 0, nothing happens
                 reader.ReadX(ref bones, transformMatrixCount, true);
                 reader.AlignTo(GX.GXUtility.GX_FIFO_ALIGN);
 
-                // Hmm...
-                //SkinnedVertexBasePtr = (int)reader.BaseStream.Position;
-
-                if (IsSkinOrEffective)
+                // Check GCMF attributes; some types has special data embedded
+                if (IsSkinnedModel || IsPhysicsDrivenModel)
                 {
-                    SkinnedVertexBasePtr = (int)reader.BaseStream.Position;
                     reader.ReadX(ref skinnedVertexDescriptor, true);
                     reader.AlignTo(GX.GXUtility.GX_FIFO_ALIGN);
+
+                    //
+                    SkinnedDataBasePtr = skinnedVertexDescriptor.AddressRange.startAddress;
                 }
 
-
+                // Read in submeshes. Each submesh contains a single material to be applied
+                // to one or more triangle strips. If some special data, may not have any
+                // vertices, though.
                 submeshes = new Submesh[TotalSubmeshCount];
                 for (int i = 0; i < submeshes.Length; i++)
                 {
                     submeshes[i] = new Submesh();
-                    submeshes[i].IsSkinOrEffective = IsSkinOrEffective;
+                    submeshes[i].Attributes = attributes;
                     submeshes[i].Deserialize(reader);
                 }
 
-
+                // If GCMF is a skinned, we contain the following data.
                 if (IsSkinnedModel)
                 {
                     //
                     {
-                        var address = SkinnedVertexBasePtr + skinnedVertexDescriptor.UnkType1RelPtr;
+                        var address = SkinnedDataBasePtr + skinnedVertexDescriptor.SkinnedVerticesARelPtr;
                         reader.JumpToAddress(address);
-                        reader.ReadX(ref unkVertexType1, skinnedVertexDescriptor.UnkType1Count, true);
+                        reader.ReadX(ref skinnedVerticesA, skinnedVertexDescriptor.SkinnedVerticesACount, true);
+                        // Redundant since the FIFO alignment is the same size as the structure (0x20)
                         //reader.AlignTo(GX.GXUtility.GX_FIFO_ALIGN);
                     }
 
-                    //
+                    // 
                     {
-                        var address = SkinnedVertexBasePtr + skinnedVertexDescriptor.UnkType4RelPtr;
+                        var address = SkinnedDataBasePtr + skinnedVertexDescriptor.UnkBoneMatrixIndicesRelPtr;
                         reader.JumpToAddress(address);
-                        reader.ReadX(ref unkMatrixIndices, TransformMatrixCount);
+                        reader.ReadX(ref unkBoneMatrixIndices, TransformMatrixCount);
                         reader.AlignTo(GX.GXUtility.GX_FIFO_ALIGN);
                     }
                 }
 
-                if (IsSkinnedModel || IsPhysicsModel)
+                // If GCMF is skinned or physics-driven, we contain the following data.
+                if (IsSkinnedModel || IsPhysicsDrivenModel)
                 {
-
                     // Skinned Vertices
                     {
-                        var address = SkinnedVertexBasePtr + skinnedVertexDescriptor.SkinnedVerticesRelPtr;
+                        var address = SkinnedDataBasePtr + skinnedVertexDescriptor.SkinnedVerticesBRelPtr;
                         reader.JumpToAddress(address);
-                        reader.ReadX(ref skinnedVertices, skinnedVertexDescriptor.SkinnedVertexCount, true);
+                        reader.ReadX(ref skinnedVerticesB, skinnedVertexDescriptor.SkinnedVertexCount, true);
                         reader.AlignTo(GX.GXUtility.GX_FIFO_ALIGN);
                     }
 
                     // Skin Bone Binding
                     {
-                        var address = SkinnedVertexBasePtr + skinnedVertexDescriptor.SkinBoneBindingsRelPtr;
+                        var address = SkinnedDataBasePtr + skinnedVertexDescriptor.SkinBoneBindingsRelPtr;
                         reader.JumpToAddress(address);
-
                         var bindings = new List<SkinBoneBinding>();
-                        while (reader.PeekInt() > 0 && reader.PeekInt() <= byte.MaxValue)
+
+                        // Kinda hacky, but it works. Read so long as the first int of the type is 
+                        // non-zero AND fits in a byte (matrix indexes are a single byte). This has been 
+                        // checked to work (no non-zero data unread from any file) since that first int of
+                        // the type (which is the count) must be none zero to declare the array's size.
+                        //
+                        // To do this with a single Peek call, we have to handle the case of 0 correctly.
+                        // If we subtract by 1, 0 underflows and becomes an invalid index. To check if a max
+                        // index of 255 is valid (which is now 254 due to the -1), we check for less than 255.
+                        while (unchecked(reader.PeekUint()-1) < byte.MaxValue)
                         {
                             var skinBoneBinding = new SkinBoneBinding();
                             skinBoneBinding.Deserialize(reader);
                             bindings.Add(skinBoneBinding);
                         }
                         skinBoneBindings = bindings.ToArray();
+                        reader.AlignTo(GX.GXUtility.GX_FIFO_ALIGN);
                     }
                 }
             }
-            reader.AlignTo(GX.GXUtility.GX_FIFO_ALIGN);
         }
 
         public void Serialize(BinaryWriter writer)
         {
             this.RecordStartAddress(writer);
             {
-                throw new NotFiniteNumberException();
                 //writer.WriteX();
             }
             this.RecordEndAddress(writer);
             writer.AlignTo(GX.GXUtility.GX_FIFO_ALIGN);
+            throw new System.NotImplementedException();
         }
 
     }

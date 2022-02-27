@@ -8,9 +8,9 @@ namespace GameCube.GFZ.Gma2
     [Flags]
     public enum DisplayListRenderFlags : byte
     {
-        renderCW = 1 << 0,
-        renderCCW = 1 << 1,
-        renderSecondaryCW = 1 << 2,
-        renderSecondaryCCW = 1 << 3,
+        renderPrimaryOpaque = 1 << 0,
+        renderPrimaryTranslucid = 1 << 1,
+        renderSecondaryOpaque = 1 << 2,
+        renderSecondaryTranslucid = 1 << 3,
     }
 }

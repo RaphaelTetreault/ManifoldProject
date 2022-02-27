@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Manifold.IO
 {
@@ -245,9 +242,8 @@ namespace Manifold.IO
 
         public void AssertUnreadIsZero()
         {
-            List<AddressRange> rangesRead;
             List<AddressRange> rangesUnread;
-            GetRanges(out rangesRead, out rangesUnread);
+            GetRanges(out _, out rangesUnread);
 
             foreach (var rangeUnread in rangesUnread)
             {
@@ -258,8 +254,7 @@ namespace Manifold.IO
                     if (!isEmpty)
                     {
                         var msg = $"Missed byte in range {rangeUnread} starting at {BaseStream.Position:x8}";
-                        UnityEngine.Debug.LogWarning(msg);
-                        break;
+                        throw new Exception(msg);
                     }
                 }
             }

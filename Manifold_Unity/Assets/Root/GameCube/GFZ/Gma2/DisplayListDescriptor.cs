@@ -3,19 +3,24 @@ using System.IO;
 
 namespace GameCube.GFZ.Gma2
 {
+    /// <summary>
+    /// Defines the size of opaque and translucide display lists.
+    /// The matrix indexes associate with the serialized display list.
+    /// (TODO: find out exactly how. Theory: # mtx indexes = # display lists?
+    /// </summary>
     public class DisplayListDescriptor :
         IBinaryAddressable,
         IBinarySerializable
     {
         // FIELDS
         private TransformMatrixIndexes8 transformMatrixIndexes;
-        private int materialDisplayListSize;
+        private int opaqueMaterialDisplayListSize;
         private int translucidMaterialDisplayListSize;
 
         // PROPERTIES
         public AddressRange AddressRange { get; set; }
         public TransformMatrixIndexes8 TransformMatrixIndexes { get => transformMatrixIndexes; set => transformMatrixIndexes = value; }
-        public int MaterialSize { get => materialDisplayListSize; set => materialDisplayListSize = value; }
+        public int OpaqueMaterialSize { get => opaqueMaterialDisplayListSize; set => opaqueMaterialDisplayListSize = value; }
         public int TranslucidMaterialSize { get => translucidMaterialDisplayListSize; set => translucidMaterialDisplayListSize = value; }
 
 
@@ -25,7 +30,7 @@ namespace GameCube.GFZ.Gma2
             this.RecordStartAddress(reader);
             {
                 reader.ReadX(ref transformMatrixIndexes, true);
-                reader.ReadX(ref materialDisplayListSize);
+                reader.ReadX(ref opaqueMaterialDisplayListSize);
                 reader.ReadX(ref translucidMaterialDisplayListSize);
             }
             this.RecordEndAddress(reader);
@@ -36,7 +41,7 @@ namespace GameCube.GFZ.Gma2
             this.RecordStartAddress(writer);
             {
                 writer.WriteX(transformMatrixIndexes);
-                writer.WriteX(materialDisplayListSize);
+                writer.WriteX(opaqueMaterialDisplayListSize);
                 writer.WriteX(translucidMaterialDisplayListSize);
             }
             this.RecordEndAddress(writer);
