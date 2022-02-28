@@ -10,23 +10,23 @@ namespace GameCube.GFZ.Gma2
     {
         // FIELDS
         private int skinnedVertexBCount;
-        private Offset skinnedVerticesARelPtr;
-        private Offset skinnedVerticesBRelPtr;
-        private Offset skinBoneBindingsRelPtr;
-        private Offset unkBoneMatrixIndicesRelPtr;
+        private Offset skinnedVerticesAPtrOffset;
+        private Offset skinnedVerticesBPtrOffset;
+        private Offset skinBoneBindingsPtrOffset;
+        private Offset unkBoneIndicesPtrOffset;
 
 
         // PROPERTIES
         public AddressRange AddressRange { get; set; }
         public int SkinnedVerticesACount
         {
-            get => (UnkBoneMatrixIndicesRelPtr - SkinnedVerticesARelPtr) / 0x20;
+            get => (UnkBoneIndicesPtrOffset - SkinnedVerticesAPtrOffset) / 0x20;
         }
         public int SkinnedVerticesBCount { get => skinnedVertexBCount; set => skinnedVertexBCount = value; }
-        public Offset SkinnedVerticesARelPtr { get => skinnedVerticesARelPtr; set => skinnedVerticesARelPtr = value; }
-        public Offset SkinnedVerticesBRelPtr { get => skinnedVerticesBRelPtr; set => skinnedVerticesBRelPtr = value; }
-        public Offset SkinBoneBindingsRelPtr { get => skinBoneBindingsRelPtr; set => skinBoneBindingsRelPtr = value; }
-        public Offset UnkBoneMatrixIndicesRelPtr { get => unkBoneMatrixIndicesRelPtr; set => unkBoneMatrixIndicesRelPtr = value; }
+        public Offset SkinnedVerticesAPtrOffset { get => skinnedVerticesAPtrOffset; set => skinnedVerticesAPtrOffset = value; }
+        public Offset SkinnedVerticesBPtrOffset { get => skinnedVerticesBPtrOffset; set => skinnedVerticesBPtrOffset = value; }
+        public Offset SkinBoneBindingsPtrOffset { get => skinBoneBindingsPtrOffset; set => skinBoneBindingsPtrOffset = value; }
+        public Offset UnkBoneIndicesPtrOffset { get => unkBoneIndicesPtrOffset; set => unkBoneIndicesPtrOffset = value; }
 
 
         // METHODS
@@ -35,10 +35,10 @@ namespace GameCube.GFZ.Gma2
             this.RecordStartAddress(reader);
             {
                 reader.ReadX(ref skinnedVertexBCount);
-                reader.ReadX(ref skinnedVerticesARelPtr);
-                reader.ReadX(ref skinnedVerticesBRelPtr);
-                reader.ReadX(ref skinBoneBindingsRelPtr);
-                reader.ReadX(ref unkBoneMatrixIndicesRelPtr);
+                reader.ReadX(ref skinnedVerticesAPtrOffset);
+                reader.ReadX(ref skinnedVerticesBPtrOffset);
+                reader.ReadX(ref skinBoneBindingsPtrOffset);
+                reader.ReadX(ref unkBoneIndicesPtrOffset);
             }
             this.RecordEndAddress(reader);
         }
@@ -47,11 +47,13 @@ namespace GameCube.GFZ.Gma2
         {
             this.RecordStartAddress(writer);
             {
-                //writer.WriteX();
+                writer.WriteX(skinnedVertexBCount);
+                writer.WriteX(skinnedVerticesAPtrOffset);
+                writer.WriteX(skinnedVerticesBPtrOffset);
+                writer.WriteX(skinBoneBindingsPtrOffset);
+                writer.WriteX(unkBoneIndicesPtrOffset);
             }
             this.RecordEndAddress(writer);
-
-            throw new NotImplementedException();
         }
 
     }

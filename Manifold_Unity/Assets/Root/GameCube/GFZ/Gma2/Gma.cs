@@ -18,7 +18,7 @@ namespace GameCube.GFZ.Gma2
         private int modelsCount;
         private Offset modelBasePtrOffset;
         private ModelEntry[] modelEntries;
-        //
+        // Pseudo-fields.
         private Model[] models;
 
 
@@ -69,6 +69,49 @@ namespace GameCube.GFZ.Gma2
 
         public void Serialize(BinaryWriter writer)
         {
+            //
+            var modelNames = new List<ShiftJisCString>();
+            var modelGCMFs = new List<Gcmf>();
+            foreach (var model in models)
+            {
+                if (model is null)
+                    continue;
+
+                modelNames.Add(model.Name);
+                modelGCMFs.Add(model.Gcmf);
+            }
+
+            // Write GCMFs to a memory stream, collect their pointer
+            var gcmfOffsets = new Offset[modelGCMFs.Count];
+            var gcmfWriter = new BinaryWriter(new MemoryStream());
+            for (int i = 0; i < modelGCMFs.Count; i++)
+            {
+                var gcmf = modelGCMFs[i];
+                gcmfWriter.WriteX(gcmf);
+                gcmfOffsets[i] = gcmf.GetPointer().address;
+            }
+
+            // Write names to memory stream, collet their pointers
+            var nameOffsets = new Offset[modelGCMFs.Count];
+            var nameWriter = new BinaryWriter(new MemoryStream());
+            for (int i = 0; i < modelGCMFs.Count; i++)
+            {
+                var name = modelNames[i];
+                nameWriter.WriteX(name);
+                nameOffsets[i] = name.GetPointer().address;
+            }
+
+            // Construct model entries
+            modelEntries = new ModelEntry[modelGCMFs.Count];
+            for (int i = 0; i < modelGCMFs.Count; i++)
+            {
+                modelEntries[i] = new ModelEntry()
+                {
+                    GcmfBasePtrOffset = gcmfOffsets[i],
+                    NameBasePtrOffset = nameOffsets[i],
+                };
+            }
+
             this.RecordStartAddress(writer);
             {
                 writer.WriteX(modelsCount);
@@ -76,7 +119,14 @@ namespace GameCube.GFZ.Gma2
             }
             this.RecordEndAddress(writer);
             {
-                throw new NotImplementedException();
+                // Write entries (offsets)
+                foreach (var modelEntry in modelEntries)
+                    writer.WriteX(modelEntry);
+
+                // Copy written memory stream data over to file stream
+                nameWriter.BaseStream.CopyTo(writer.BaseStream);
+                writer.AlignTo(GX.GXUtility.GX_FIFO_ALIGN);
+                gcmfWriter.BaseStream.CopyTo(writer.BaseStream);
             }
         }
 
