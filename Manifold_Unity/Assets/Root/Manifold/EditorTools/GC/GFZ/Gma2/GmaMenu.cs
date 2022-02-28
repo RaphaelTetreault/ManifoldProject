@@ -12,7 +12,7 @@ namespace Manifold.EditorTools.GC.GFZ.Gma2
     public static class GmaMenu
     {
         [MenuItem(Const.Menu.Manifold + "GMA/Import All TEST")]
-        public static void TextImportAllGma()
+        public static void TestImportAllGma()
         {
             var settings = GfzProjectWindow.GetSettings();
             var folder = settings.RootFolder;
@@ -30,46 +30,39 @@ namespace Manifold.EditorTools.GC.GFZ.Gma2
                 if (cancel)
                     break;
 
-                TestImportGma(filePath);
+                ImportGma(filePath);
             }
             EditorUtility.ClearProgressBar();
         }
 
         [MenuItem(Const.Menu.Manifold + "GMA/Import Single TEST")]
-        public static void TextImportGmaFixed()
+        public static void TestImportGmaFixed()
         {
             var settings = GfzProjectWindow.GetSettings();
             var folder = settings.StageDir;
             var path = Path.Combine(folder, "st01.gma");
-            TestImportGma(path);
+            ImportGma(path);
         }
 
-        public static void TestImportGma(string filepath)
+
+
+
+
+
+
+
+
+        public static void ImportGma(string filePath)
         {
-            //using (var reader = new AddressLogBinaryReader(File.OpenRead(filepath)))
-            using (var reader = new BinaryReader(File.OpenRead(filepath)))
-            {
-                var gma = new Gma();
-                gma.FileName = Path.GetFileName(filepath);
-                Debug.Log(gma.FileName);
-                gma.Deserialize(reader);
-
-                // 
-                int index = 0;
-                foreach (var model in gma.Models)
-                {
-                    //Debug.Log($"[{++index}] {model.Name}");
-                }
-
-                //reader.AssertUnreadIsZero();
-            }
+            GmaIO.LoadGMA(filePath);
+            Debug.Log(filePath);
         }
 
         public static void TestImportAllGma(params string[] filePaths)
         {
             foreach (var filePath in filePaths)
             {
-                TestImportGma(filePath);
+                ImportGma(filePath);
             }
         }
 
