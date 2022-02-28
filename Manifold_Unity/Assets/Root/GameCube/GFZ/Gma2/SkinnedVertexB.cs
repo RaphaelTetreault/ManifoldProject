@@ -23,7 +23,7 @@ namespace GameCube.GFZ.Gma2
         private uint zero0x28;
         private uint zero0x2C;
         private uint color1; // RGBA. Appears to truly be a color.
-        private uint unk0x34; // Magic bits: 00000000, 00010100, 02000002, 01000001, 03000003
+        private uint unk0x34; // Magic bits. Variations: 00000000, 00010100, 02000002, 01000001, 03000003
         private uint color2; // RGBA. Color-looking, but does use alpha channel.
         private uint color3; // RGBA. Color-looking, but does use alpha channel. 00000004 is the only magic-bit looking value.
 
@@ -51,22 +51,30 @@ namespace GameCube.GFZ.Gma2
             {
                 Assert.IsTrue(zero0x28 == 0);
                 Assert.IsTrue(zero0x2C == 0);
-
-                UnityEngine.Debug.LogError($"{nameof(color1)} {color1:x8}");
             }
         }
 
         public void Serialize(BinaryWriter writer)
         {
+            {
+                Assert.IsTrue(zero0x28 == 0);
+                Assert.IsTrue(zero0x2C == 0);
+            }
             this.RecordStartAddress(writer);
             {
-                //writer.WriteX();
+                writer.WriteX(position);
+                writer.WriteX(normal);
+                writer.WriteX(textureUV0);
+                writer.WriteX(textureUV1);
+                writer.WriteX(zero0x28);
+                writer.WriteX(zero0x2C);
+                writer.WriteX(color1);
+                writer.WriteX(unk0x34);
+                writer.WriteX(color2);
+                writer.WriteX(color3);
             }
             this.RecordEndAddress(writer);
-
-            throw new System.NotImplementedException();
         }
 
     }
-
 }

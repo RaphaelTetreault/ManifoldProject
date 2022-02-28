@@ -1,23 +1,22 @@
-﻿using Manifold;
-using Manifold.IO;
+﻿using Manifold.IO;
 using System;
 using System.Collections.Generic;
 using System.IO;
 
 namespace GameCube.GFZ.Gma2
 {
+    /// <summary>
+    /// Represents a GMA file.
+    /// </summary>
     public class Gma :
         IBinaryAddressable,
         IBinarySerializable,
         IHasReference,
         IFile
     {
-        // 
-        internal static int FilePointersOffset { get; private set; }
-
         // FIELDS
         private int modelsCount;
-        private Pointer modelBasePtr;
+        private Offset modelBasePtrOffset;
         private ModelEntry[] modelEntries;
         //
         private Model[] models;
@@ -27,32 +26,31 @@ namespace GameCube.GFZ.Gma2
         public AddressRange AddressRange { get; set; }
         public string FileName { get; set; }
         public int ModelsCount { get => modelsCount; set => modelsCount = value; }
-        public Pointer ModelBasePtr { get => modelBasePtr; set => modelBasePtr = value; }
+        public Offset ModelBasePtr { get => modelBasePtrOffset; set => modelBasePtrOffset = value; }
         public ModelEntry[] ModelEntries { get => modelEntries; set => modelEntries = value; }
         public Model[] Models { get => models; set => models = value; }
 
 
-
+        // METHODS
         public void Deserialize(BinaryReader reader)
         {
             this.RecordStartAddress(reader);
             {
                 reader.ReadX(ref modelsCount);
-                reader.ReadX(ref modelBasePtr);
+                reader.ReadX(ref modelBasePtrOffset);
                 reader.ReadX(ref modelEntries, modelsCount, true);
             }
             this.RecordEndAddress(reader);
             {
-                Pointer nameBasePtr = AddressRange.endAddress;
-                FilePointersOffset = modelBasePtr;
+                Offset nameBasePtrOffset = AddressRange.endAddress;
                 var modelList = new List<Model>();
 
                 // Add offsets necessary for pointers to be correct
                 for (int i = 0; i < modelsCount; i++)
                 {
                     var modelEntry = modelEntries[i];
-                    modelEntry.GcmfBasePtr = modelBasePtr;
-                    modelEntry.NameBasePtr = nameBasePtr;
+                    modelEntry.GcmfBasePtrOffset = modelBasePtrOffset;
+                    modelEntry.NameBasePtrOffset = nameBasePtrOffset;
 
                     if (modelEntry.IsNull)
                         continue;
@@ -74,7 +72,7 @@ namespace GameCube.GFZ.Gma2
             this.RecordStartAddress(writer);
             {
                 writer.WriteX(modelsCount);
-                writer.WriteX(modelBasePtr);
+                writer.WriteX(modelBasePtrOffset);
             }
             this.RecordEndAddress(writer);
             {

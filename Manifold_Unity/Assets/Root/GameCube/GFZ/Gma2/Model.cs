@@ -5,16 +5,16 @@ using System.IO;
 
 namespace GameCube.GFZ.Gma2
 {
-    public class Model :
-        IBinaryAddressable,
-        IBinarySerializable
+    /// <summary>
+    /// A model comprised of a mesh (many display lists) and materials.
+    /// </summary>
+    public class Model
     {
         // FIELDS
         private ShiftJisCString name;
         private Gcmf gcmf;
         
         // PROPERTIES
-        public AddressRange AddressRange { get; set; }
         public Pointer GcmfPtr { get; set; }
         public Pointer NamePtr { get; set; }
         public ShiftJisCString Name { get => name; set => name = value; }
@@ -31,14 +31,8 @@ namespace GameCube.GFZ.Gma2
             reader.JumpToAddress(NamePtr);
             reader.ReadX(ref name, true);
 
-            //UnityEngine.Debug.Log($"{name} @ {GcmfPtr}");
             reader.JumpToAddress(GcmfPtr);
             reader.ReadX(ref gcmf, true);
-        }
-
-        public void Serialize(BinaryWriter writer)
-        {
-            throw new NotImplementedException();
         }
 
     }

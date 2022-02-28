@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-
 namespace GameCube.GFZ.Gma2
 {
     public class Submesh :
@@ -65,7 +64,6 @@ namespace GameCube.GFZ.Gma2
         {
             get => material.DisplayListRenderFlags.HasFlag(DisplayListRenderFlags.renderSecondaryTranslucid);
         }
-
 
         public Material Material { get => material; set => material = value; }
         public DisplayListDescriptor DisplayListDescriptor { get => displayListDescriptor; set => displayListDescriptor = value; }
@@ -141,15 +139,17 @@ namespace GameCube.GFZ.Gma2
                 //writer.WriteX();
             }
             this.RecordEndAddress(writer);
+            {
+                throw new NotImplementedException();
+            }
         }
-
 
         private DisplayList[] ReadDisplayLists(BinaryReader reader, int endAddress)
         {
             var displayLists = new List<DisplayList>();
 
-            var gxBegin = reader.ReadByte();
-            Assert.IsTrue(gxBegin == 0);
+            var gxNOP = reader.ReadByte();
+            Assert.IsTrue(gxNOP == 0);
 
             while (!reader.IsAtEndOfStream())
             {

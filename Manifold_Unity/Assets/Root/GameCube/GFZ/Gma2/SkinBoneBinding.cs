@@ -1,22 +1,25 @@
-﻿using Manifold;
-using Manifold.IO;
+﻿using Manifold.IO;
 using System;
 using System.IO;
 
 namespace GameCube.GFZ.Gma2
 {
-    internal class SkinBoneBinding :
+    /// <summary>
+    /// Conjecture: appears to 
+    /// </summary>
+    public class SkinBoneBinding :
         IBinaryAddressable,
-        IBinarySerializable
+        IBinarySerializable,
+        IHasReference
     {
         // FIELDS
         private int count;
-        private Pointer[] verticePtrs;
+        private Offset[] verticePtrOffsets;
 
         // PROPERTIES
         public AddressRange AddressRange { get; set; }
-        public int Count { get => count; set => count = value; }
-        public Pointer[] VerticePtrs { get => verticePtrs; set => verticePtrs = value; }
+        public int Count { get => verticePtrOffsets.Length; }
+        public Offset[] VerticePtrOffsets { get => verticePtrOffsets; set => verticePtrOffsets = value; }
 
 
         // METHODS
@@ -25,22 +28,31 @@ namespace GameCube.GFZ.Gma2
             this.RecordStartAddress(reader);
             {
                 reader.ReadX(ref count);
-                reader.ReadX(ref verticePtrs, count, true);
+                reader.ReadX(ref verticePtrOffsets, count, true);
             }
             this.RecordEndAddress(reader);
         }
 
         public void Serialize(BinaryWriter writer)
         {
+            {
+                // TODO: assign offsets here? (similar to getting pointers)
+            }
             this.RecordStartAddress(writer);
             {
-                //writer.WriteX();
+                writer.WriteX(Count);
+                writer.WriteX(verticePtrOffsets, false);
             }
             this.RecordEndAddress(writer);
-
-            throw new NotImplementedException();
+            {
+                throw new NotImplementedException();
+            }
         }
 
+        public void ValidateReferences()
+        {
+            throw new NotImplementedException();
+        }
     }
 
 }

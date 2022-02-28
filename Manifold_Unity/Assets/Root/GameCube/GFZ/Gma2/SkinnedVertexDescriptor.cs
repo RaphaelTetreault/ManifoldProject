@@ -1,5 +1,4 @@
-﻿using Manifold;
-using Manifold.IO;
+﻿using Manifold.IO;
 using System;
 using System.IO;
 
@@ -10,25 +9,24 @@ namespace GameCube.GFZ.Gma2
         IBinarySerializable
     {
         // FIELDS
-        private int skinnedVertexCount;
-        private Pointer skinnedVerticesARelPtr;
-        private Pointer skinnedVerticesBRelPtr;
-        private Pointer skinBoneBindingsRelPtr;
-        private Pointer unkBoneMatrixIndicesRelPtr;
+        private int skinnedVertexBCount;
+        private Offset skinnedVerticesARelPtr;
+        private Offset skinnedVerticesBRelPtr;
+        private Offset skinBoneBindingsRelPtr;
+        private Offset unkBoneMatrixIndicesRelPtr;
+
 
         // PROPERTIES
         public AddressRange AddressRange { get; set; }
-        public int SkinnedVertexCount { get => skinnedVertexCount; set => skinnedVertexCount = value; }
-        public Pointer SkinnedVerticesARelPtr { get => skinnedVerticesARelPtr; set => skinnedVerticesARelPtr = value; }
-        public Pointer SkinnedVerticesBRelPtr { get => skinnedVerticesBRelPtr; set => skinnedVerticesBRelPtr = value; }
-        public Pointer SkinBoneBindingsRelPtr { get => skinBoneBindingsRelPtr; set => skinBoneBindingsRelPtr = value; }
-        public Pointer UnkBoneMatrixIndicesRelPtr { get => unkBoneMatrixIndicesRelPtr; set => unkBoneMatrixIndicesRelPtr = value; }
-
         public int SkinnedVerticesACount
         {
             get => (UnkBoneMatrixIndicesRelPtr - SkinnedVerticesARelPtr) / 0x20;
         }
-
+        public int SkinnedVerticesBCount { get => skinnedVertexBCount; set => skinnedVertexBCount = value; }
+        public Offset SkinnedVerticesARelPtr { get => skinnedVerticesARelPtr; set => skinnedVerticesARelPtr = value; }
+        public Offset SkinnedVerticesBRelPtr { get => skinnedVerticesBRelPtr; set => skinnedVerticesBRelPtr = value; }
+        public Offset SkinBoneBindingsRelPtr { get => skinBoneBindingsRelPtr; set => skinBoneBindingsRelPtr = value; }
+        public Offset UnkBoneMatrixIndicesRelPtr { get => unkBoneMatrixIndicesRelPtr; set => unkBoneMatrixIndicesRelPtr = value; }
 
 
         // METHODS
@@ -36,7 +34,7 @@ namespace GameCube.GFZ.Gma2
         {
             this.RecordStartAddress(reader);
             {
-                reader.ReadX(ref skinnedVertexCount);
+                reader.ReadX(ref skinnedVertexBCount);
                 reader.ReadX(ref skinnedVerticesARelPtr);
                 reader.ReadX(ref skinnedVerticesBRelPtr);
                 reader.ReadX(ref skinBoneBindingsRelPtr);

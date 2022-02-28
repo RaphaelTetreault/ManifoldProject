@@ -4,6 +4,12 @@ using System.IO;
 
 namespace GameCube.GFZ.Gma2
 {
+    /// <summary>
+    /// A set of 8 matrix indexes. Null indexes read as 0xFF.
+    /// </summary>
+    /// <remarks>
+    /// Consider making the backing a uint64, contruct array on demand.
+    /// </remarks>
     public class TransformMatrixIndexes8 :
         IBinaryAddressable,
         IBinarySerializable
@@ -11,16 +17,19 @@ namespace GameCube.GFZ.Gma2
         // CONSTANTS
         private const int kIndexCount = 8;
 
-        //
+
+        // CONSTRUCTORS
         public TransformMatrixIndexes8()
         {
-            indexes = new byte[kIndexCount];
+            indexes = new sbyte[kIndexCount];
             for (int i = 0; i < indexes.Length; i++)
-                indexes[i] = 0xFF;
+                indexes[i] = -1;
         }
 
+
         // FIELDS
-        private byte[] indexes;
+        private sbyte[] indexes;
+
 
         // PROPERTIES
         public AddressRange AddressRange { get; set; }
@@ -38,8 +47,9 @@ namespace GameCube.GFZ.Gma2
 
         public void Serialize(BinaryWriter writer)
         {
-            Assert.IsTrue(indexes.Length == kIndexCount);
-
+            {
+                Assert.IsTrue(indexes.Length == kIndexCount);
+            }
             this.RecordStartAddress(writer);
             {
                 writer.WriteX(indexes, false);

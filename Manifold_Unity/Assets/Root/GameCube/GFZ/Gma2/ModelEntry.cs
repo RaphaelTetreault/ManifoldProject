@@ -1,40 +1,40 @@
-﻿using Manifold;
-using Manifold.IO;
-using System;
-using System.Collections.Generic;
+﻿using Manifold.IO;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GameCube.GFZ.Gma2
 {
+    /// <summary>
+    /// Defines offsets to a model's name and GCMF data.
+    /// </summary>
     public class ModelEntry :
         IBinaryAddressable,
-        IBinarySerializable
+        IBinarySerializable,
+        IHasReference
     {
-        //
-        private Pointer gcmfRelPtr;
-        private Pointer nameRelPtr;
+        // FIELDS
+        private Offset gcmfPtrOffset;
+        private Offset namePtrOffset;
 
-        //
+
+        // PROPERTIES
         public AddressRange AddressRange { get; set; }
-        public Pointer GcmfPtr { get => new Pointer(GcmfBasePtr + GcmfRelPtr); }
-        public Pointer NamePtr { get => new Pointer(NameBasePtr + NameRelPtr); }
-        public Pointer GcmfRelPtr { get => gcmfRelPtr; set => gcmfRelPtr = value; }
-        public Pointer NameRelPtr { get => nameRelPtr; set => nameRelPtr = value; }
-        public Pointer GcmfBasePtr { get; set; }
-        public Pointer NameBasePtr { get; set; }
-        public bool IsNull { get => gcmfRelPtr == -1 && NameRelPtr == 0; }
+        public Pointer GcmfPtr { get => new Pointer(GcmfBasePtrOffset + GcmfRelPtr); }
+        public Pointer NamePtr { get => new Pointer(NameBasePtrOffset + NameRelPtr); }
+        public Offset GcmfRelPtr { get => gcmfPtrOffset; set => gcmfPtrOffset = value; }
+        public Offset NameRelPtr { get => namePtrOffset; set => namePtrOffset = value; }
+        public Offset GcmfBasePtrOffset { get; set; }
+        public Offset NameBasePtrOffset { get; set; }
+        public bool IsNull { get => gcmfPtrOffset == -1 && NameRelPtr == 0; }
         public bool IsNotNull { get => !IsNull; }
 
-        //
+
+        // METHODS
         public void Deserialize(BinaryReader reader)
         {
             this.RecordStartAddress(reader);
             {
-                reader.ReadX(ref gcmfRelPtr);
-                reader.ReadX(ref nameRelPtr);
+                reader.ReadX(ref gcmfPtrOffset);
+                reader.ReadX(ref namePtrOffset);
             }
             this.RecordEndAddress(reader);
         }
@@ -49,5 +49,9 @@ namespace GameCube.GFZ.Gma2
             this.RecordEndAddress(writer);
         }
 
+        public void ValidateReferences()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

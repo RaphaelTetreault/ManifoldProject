@@ -1,5 +1,8 @@
 namespace GameCube.GFZ.Gma2
 {
+    /// <summary>
+    /// Anisotropic filtering levels.
+    /// </summary>
     public enum GXAnisotropy : byte
     {
         GX_ANISO_1,

@@ -1,10 +1,6 @@
-﻿using Manifold;
-using Manifold.IO;
+﻿using Manifold.IO;
 using System.IO;
 using Unity.Mathematics;
-
-
-
 
 namespace GameCube.GFZ.Gma2
 {
@@ -58,5 +54,4 @@ namespace GameCube.GFZ.Gma2
         }
 
     }
-
 }

@@ -5,6 +5,9 @@ namespace GameCube.GFZ.Gma2
     /// MIPMAP Settings
     /// Look at: GXTexFilter
     /// </summary>
+    /// <remarks>
+    /// 
+    /// </remarks>
     [System.Flags]
     public enum MipmapSetting : byte
     {
@@ -34,9 +37,9 @@ namespace GameCube.GFZ.Gma2
         /// </summary>
         UNK_FLAG_5 = 1 << 5,
         /// <summary>
-        /// Total occurences = 3. Only MCSO, on a single geometry set. Perhaps error from devs?
+        /// Total occurences = 3. Only MCSO, on a single geometry set.
         /// </summary>
-        UNK_FLAG_6 = 1 << 6, // only on 3?
+        UNK_FLAG_6 = 1 << 6,
         /// <summary>
         /// On many vehicles
         /// </summary>

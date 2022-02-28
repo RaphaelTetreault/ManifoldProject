@@ -4,10 +4,12 @@ using System.IO;
 namespace GameCube.GFZ.Gma2
 {
     /// <summary>
-    /// Defines the size of opaque and translucide display lists.
-    /// The matrix indexes associate with the serialized display list.
-    /// (TODO: find out exactly how. Theory: # mtx indexes = # display lists?
+    /// Defines the size of opaque and translucide display lists and (presumably)
+    /// the matrix indexes associate with it.
     /// </summary>
+    /// <remarks>
+    /// (TODO: find out exactly how. Theory: # mtx indexes = # display lists?
+    /// </remarks>
     public class DisplayListDescriptor :
         IBinaryAddressable,
         IBinarySerializable
@@ -17,10 +19,11 @@ namespace GameCube.GFZ.Gma2
         private int opaqueMaterialDisplayListSize;
         private int translucidMaterialDisplayListSize;
 
+
         // PROPERTIES
         public AddressRange AddressRange { get; set; }
-        public TransformMatrixIndexes8 TransformMatrixIndexes { get => transformMatrixIndexes; set => transformMatrixIndexes = value; }
         public int OpaqueMaterialSize { get => opaqueMaterialDisplayListSize; set => opaqueMaterialDisplayListSize = value; }
+        public TransformMatrixIndexes8 TransformMatrixIndexes { get => transformMatrixIndexes; set => transformMatrixIndexes = value; }
         public int TranslucidMaterialSize { get => translucidMaterialDisplayListSize; set => translucidMaterialDisplayListSize = value; }
 
 
@@ -48,5 +51,4 @@ namespace GameCube.GFZ.Gma2
         }
 
     }
-
 }

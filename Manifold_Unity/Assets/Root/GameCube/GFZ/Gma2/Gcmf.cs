@@ -6,6 +6,9 @@ using System.IO;
 
 namespace GameCube.GFZ.Gma2
 {
+    /// <summary>
+    /// The structure representing the model mesh, submeshes, and materials.
+    /// </summary>
     public class Gcmf :
         IBinaryAddressable,
         IBinarySerializable
@@ -15,7 +18,7 @@ namespace GameCube.GFZ.Gma2
         /// Equivilent to ASCII/Shift-JIS "GCMF"
         /// </summary>
         public const uint kMagic = 0x47434D46;
-        public const int kZeroes0x24 = 4;
+
 
         // FIELDS
         private uint magic;
@@ -27,17 +30,16 @@ namespace GameCube.GFZ.Gma2
         private byte transformMatrixCount;
         private byte zero0x1F;
         private uint gcmfTexturesSize;
-        private byte[] zeroes0x24;
+        private uint zero0x24;
         private TransformMatrixIndexes8 transformMatrixIndexes8;
-        // Must enforce GX FIFO. TODO: get specifics for each
         private TextureConfig[] textureConfigs;
-        private TransformMatrix3x4[] bones; // no fifo between
+        private TransformMatrix3x4[] bones;
         private SkinnedVertexDescriptor skinnedVertexDescriptor;
         private Submesh[] submeshes;
         private SkinnedVertexA[] skinnedVerticesA;
         private SkinnedVertexB[] skinnedVerticesB;
         private SkinBoneBinding[] skinBoneBindings;
-        private ushort[] unkBoneMatrixIndices;
+        private short[] unkBoneIndices;
 
 
         // PROPERTIES
@@ -71,13 +73,16 @@ namespace GameCube.GFZ.Gma2
         public ushort MaterialCount { get => materialCount; set => materialCount = value; }
         public ushort TranslucidMaterialCount { get => translucidMaterialCount; set => translucidMaterialCount = value; }
         public byte TransformMatrixCount { get => transformMatrixCount; set => transformMatrixCount = value; }
-        public byte Zero0x1F { get => zero0x1F; set => zero0x1F = value; }
         public uint GcmfTexturesSize { get => gcmfTexturesSize; set => gcmfTexturesSize = value; }
         public TransformMatrixIndexes8 TransformMatrixIndexes8 { get => transformMatrixIndexes8; set => transformMatrixIndexes8 = value; }
         public TransformMatrix3x4[] Bones { get => bones; set => bones = value; }
         public TextureConfig[] TextureConfigs { get => textureConfigs; set => textureConfigs = value; }
         public SkinnedVertexDescriptor VertexController { get => skinnedVertexDescriptor; set => skinnedVertexDescriptor = value; }
         public Submesh[] Submeshes { get => submeshes; set => submeshes = value; }
+        public SkinnedVertexA[] SkinnedVerticesA { get => skinnedVerticesA; set => skinnedVerticesA = value; }
+        public SkinnedVertexB[] SkinnedVerticesB { get => skinnedVerticesB; set => skinnedVerticesB = value; }
+        public SkinBoneBinding[] SkinBoneBindings { get => skinBoneBindings; set => skinBoneBindings = value; }
+        public short[] UnkBoneIndices { get => unkBoneIndices; set => unkBoneIndices = value; }
 
 
         // METHODS
@@ -94,7 +99,7 @@ namespace GameCube.GFZ.Gma2
                 reader.ReadX(ref transformMatrixCount);
                 reader.ReadX(ref zero0x1F);
                 reader.ReadX(ref gcmfTexturesSize);
-                reader.ReadX(ref zeroes0x24, kZeroes0x24);
+                reader.ReadX(ref zero0x24);
                 reader.ReadX(ref transformMatrixIndexes8, true);
             }
             this.RecordEndAddress(reader);
@@ -105,8 +110,7 @@ namespace GameCube.GFZ.Gma2
                 // Assert some of the data
                 Assert.IsTrue(magic == kMagic);
                 Assert.IsTrue(zero0x1F == 0);
-                foreach (var zero in zeroes0x24)
-                    Assert.IsTrue(zero == 0);
+                Assert.IsTrue(zero0x24 == 0);
             }
             // Deserialize other structures
             {
@@ -128,7 +132,7 @@ namespace GameCube.GFZ.Gma2
                     reader.ReadX(ref skinnedVertexDescriptor, true);
                     reader.AlignTo(GX.GXUtility.GX_FIFO_ALIGN);
 
-                    //
+                    // Get base pointer for skinned data offsets
                     SkinnedDataBasePtr = skinnedVertexDescriptor.AddressRange.startAddress;
                 }
 
@@ -159,7 +163,7 @@ namespace GameCube.GFZ.Gma2
                     {
                         var address = SkinnedDataBasePtr + skinnedVertexDescriptor.UnkBoneMatrixIndicesRelPtr;
                         reader.JumpToAddress(address);
-                        reader.ReadX(ref unkBoneMatrixIndices, TransformMatrixCount);
+                        reader.ReadX(ref unkBoneIndices, TransformMatrixCount);
                         reader.AlignTo(GX.GXUtility.GX_FIFO_ALIGN);
                     }
                 }
@@ -171,7 +175,7 @@ namespace GameCube.GFZ.Gma2
                     {
                         var address = SkinnedDataBasePtr + skinnedVertexDescriptor.SkinnedVerticesBRelPtr;
                         reader.JumpToAddress(address);
-                        reader.ReadX(ref skinnedVerticesB, skinnedVertexDescriptor.SkinnedVertexCount, true);
+                        reader.ReadX(ref skinnedVerticesB, skinnedVertexDescriptor.SkinnedVerticesBCount, true);
                         reader.AlignTo(GX.GXUtility.GX_FIFO_ALIGN);
                     }
 
@@ -210,9 +214,9 @@ namespace GameCube.GFZ.Gma2
             }
             this.RecordEndAddress(writer);
             writer.AlignTo(GX.GXUtility.GX_FIFO_ALIGN);
-            throw new System.NotImplementedException();
+
+            throw new NotImplementedException();
         }
 
     }
-
 }

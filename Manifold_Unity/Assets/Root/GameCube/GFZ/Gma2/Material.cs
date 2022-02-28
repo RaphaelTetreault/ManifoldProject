@@ -2,16 +2,18 @@
 using Manifold;
 using Manifold.IO;
 using System.IO;
-using Unity.Mathematics;
 
 namespace GameCube.GFZ.Gma2
 {
+    /// <summary>
+    /// The material properties applied to a GCMF's display lists.
+    /// </summary>
     public class Material :
         IBinaryAddressable,
         IBinarySerializable
     {
         // FIELDS
-        private ushort zeroes0x00; //2
+        private ushort zero0x00; //2
         private MatFlags0x02 unk0x02; // <- COLOR blending stuff?
         private MatFlags0x03 unk0x03; // <- cont
         private uint color0; // RGBA
@@ -27,6 +29,7 @@ namespace GameCube.GFZ.Gma2
         private short textureIndex1 = -1; // 0xFFFF
         private short textureIndex2 = -1; // 0xFFFF
         private GXAttributes vertexAttributes;
+
 
         // PROPERTIES
         public AddressRange AddressRange { get; set; }
@@ -52,7 +55,7 @@ namespace GameCube.GFZ.Gma2
         {
             this.RecordStartAddress(reader);
             {
-                reader.ReadX(ref zeroes0x00);
+                reader.ReadX(ref zero0x00);
                 reader.ReadX(ref unk0x02);
                 reader.ReadX(ref unk0x03);
                 reader.ReadX(ref color0);
@@ -71,18 +74,18 @@ namespace GameCube.GFZ.Gma2
             }
             this.RecordEndAddress(reader);
             {
-                Assert.IsTrue(zeroes0x00 == 0);
+                Assert.IsTrue(zero0x00 == 0);
             }
         }
 
         public void Serialize(BinaryWriter writer)
         {
             {
-                Assert.IsTrue(zeroes0x00 == 0);
+                Assert.IsTrue(zero0x00 == 0);
             }
             this.RecordStartAddress(writer);
             {
-                writer.WriteX(zeroes0x00);
+                writer.WriteX(zero0x00);
                 writer.WriteX(unk0x02);
                 writer.WriteX(unk0x03);
                 writer.WriteX(color0);
@@ -103,5 +106,4 @@ namespace GameCube.GFZ.Gma2
         }
 
     }
-
 }
