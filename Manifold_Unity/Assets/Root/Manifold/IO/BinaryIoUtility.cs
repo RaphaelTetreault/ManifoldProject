@@ -23,7 +23,7 @@ namespace Manifold.IO
         public const int SizeofDecimal = 16;
 
         // FIELDS
-        private static readonly Stack<Encoding> EncodingStack = new Stack<Encoding>();
+        //private static readonly Stack<Encoding> EncodingStack = new Stack<Encoding>();
         private static readonly Stack<Endianness> EndianessStack = new Stack<Endianness>();
 
         //private static Func<BinaryReader, bool> fReadBool = ReadBool; //
@@ -38,7 +38,16 @@ namespace Manifold.IO
         private static Func<BinaryReader, float> fReadFloat = RequiresSwapEndianness ? ReadFloatSwapEndianness : ReadFloatSameEndianness;
         private static Func<BinaryReader, double> fReadDouble = RequiresSwapEndianness ? ReadDoubleSwapEndianness : ReadDoubleSameEndianness;
 
-
+        private static Action<BinaryWriter, ushort> fWriteUInt16 = RequiresSwapEndianness ? WriteUInt16SwapEndianness : WriteUInt16SameEndianness;
+        private static Action<BinaryWriter, uint> fWriteUInt32 = RequiresSwapEndianness ? WriteUInt32SwapEndianness : WriteUInt32SameEndianness;
+        private static Action<BinaryWriter, ulong> fWriteUInt64 = RequiresSwapEndianness ? WriteUInt64SwapEndianness : WriteUInt64SameEndianness;
+        private static Action<BinaryWriter, short> fWriteInt16 = RequiresSwapEndianness ? WriteInt16SwapEndianness : WriteInt16SameEndianness;
+        private static Action<BinaryWriter, int> fWriteInt32 = RequiresSwapEndianness ? WriteInt32SwapEndianness : WriteInt32SameEndianness;
+        private static Action<BinaryWriter, long> fWriteInt64 = RequiresSwapEndianness ? WriteInt64SwapEndianness : WriteInt64SameEndianness;
+        private static Action<BinaryWriter, float> fWriteFloat = RequiresSwapEndianness ? WriteFloatSwapEndianness : WriteFloatSameEndianness;
+        private static Action<BinaryWriter, double> fWriteDouble = RequiresSwapEndianness ? WriteDoubleSwapEndianness : WriteDoubleSameEndianness;
+        private static Action<BinaryWriter, char, Encoding> fWriteChar = RequiresSwapEndianness ? WriteCharSwapEndianness : WriteCharSameEndianness;
+        //private static Action<BinaryWriter, string, Encoding> fWriteString = RequiresSwapEndianness ? WriteStringSwapEndianness : WriteStringSameEndianness;
 
         private static void SetFunctionEndianness()
         {
@@ -90,21 +99,8 @@ namespace Manifold.IO
         /// </summary>
         public static bool IsLittleEndian { get => Endianness == Endianness.LittleEndian; }
 
-        /// <summary>
-        /// The current encoding used for read/write operations
-        /// </summary>
-        public static Encoding Encoding { get; set; } = Encoding.Unicode;
-
 
         // METHODS
-
-        /// <summary>
-        /// Pops the last pushed System.Text.Encoding
-        /// </summary>
-        public static void PopEncoding()
-        {
-            Encoding = EncodingStack.Pop();
-        }
 
         /// <summary>
         /// Pops the last pushed endianness
@@ -112,17 +108,6 @@ namespace Manifold.IO
         public static void PopEndianness()
         {
             Endianness = EndianessStack.Pop();
-        }
-
-        /// <summary>
-        /// Pushes a System.Text.Encoding to a private stack. Subsequent calls to read
-        /// or write strings will use this encoding.
-        /// </summary>
-        /// <param name="encoding"></param>
-        public static void PushEncoding(Encoding encoding)
-        {
-            EncodingStack.Push(Encoding);
-            Encoding = encoding;
         }
 
         /// <summary>
@@ -147,10 +132,6 @@ namespace Manifold.IO
             }
         }
 
-
-        #region READ
-
-        #region Read Value
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool ReadBool(BinaryReader binaryReader)
@@ -318,94 +299,16 @@ namespace Manifold.IO
         }
 
 
-        public static decimal ReadDecimal(BinaryReader binaryReader)
+        public static string ReadString(BinaryReader binaryReader, int lengthBytes, Encoding encoding)
         {
-            bool isLittleEndian = binaryReader.ReadBoolean();
-            byte[] bytes = binaryReader.ReadBytes(SizeofDecimal);
-
-            if (BitConverter.IsLittleEndian ^ isLittleEndian)
-                Array.Reverse(bytes);
-
-            // Merge 4 bytes into 1 int, then 4 ints into 1 decimal
-            return new decimal(new int[]
-            {
-                BitConverter.ToInt32(bytes, 0),
-                BitConverter.ToInt32(bytes, 4),
-                BitConverter.ToInt32(bytes, 8),
-                BitConverter.ToInt32(bytes, 12),
-            });
-
-            // TODO: confirm this all works with any endianness.
-            throw new NotImplementedException();
-        }
-
-
-        public static char ReadChar(BinaryReader binaryReader, Encoding encoding)
-        {
-            int lengthOfChar = encoding.IsSingleByte ? 1 : 2;
-            byte[] bytes = binaryReader.ReadBytes(lengthOfChar);
-
-            if (lengthOfChar > 1)
-            {
-                // 2 bytes
-                if (BitConverter.IsLittleEndian ^ IsLittleEndian)
-                    Array.Reverse(bytes);
-            }
-            else
-            {
-                // Create LittleEndian array as char is 2 bytes in C#
-                bytes = new byte[] { 0, bytes[0] };
-
-                if (BitConverter.IsLittleEndian ^ IsLittleEndian)
-                    Array.Reverse(bytes);
-            }
-
-            return BitConverter.ToChar(bytes, 0);
-        }
-
-        public static char ReadChar(BinaryReader binaryReader)
-        {
-            return ReadChar(binaryReader, Encoding);
-        }
-
-        public static string ReadString(BinaryReader binaryReader, int length, Encoding encoding)
-        {
-            char[] value = new char[length];
-
-            for (int i = 0; i < length; i++)
-            {
-                value[i] = ReadChar(binaryReader, encoding);
-            }
-
-            return new string(value);
-        }
-
-        public static string ReadString(BinaryReader binaryReader, int length)
-        {
-            return ReadString(binaryReader, length, Encoding);
-        }
-
-        public static string ReadString(BinaryReader binaryReader, Encoding encoding)
-        {
-            int length = ReadInt32(binaryReader);
-            return ReadString(binaryReader, length, encoding);
-        }
-
-        public static string ReadString(BinaryReader binaryReader)
-        {
-            int length = ReadInt32(binaryReader);
-            return ReadString(binaryReader, length, Encoding);
-        }
-
-        public static T ReadNewIBinarySerializable<T>(BinaryReader binaryReader) where T : IBinarySerializable, new()
-        {
-            T value = new T();
-            value.Deserialize(binaryReader);
+            byte[] bytes = ReadUInt8Array(binaryReader, lengthBytes);
+            string value = encoding.GetString(bytes);
             return value;
         }
 
-        public static T ReadIBinarySerializable<T>(BinaryReader binaryReader, T value) where T : IBinarySerializable
+        public static T ReadBinarySerializable<T>(BinaryReader binaryReader) where T : IBinarySerializable, new()
         {
+            T value = new T();
             value.Deserialize(binaryReader);
             return value;
         }
@@ -434,9 +337,7 @@ namespace Manifold.IO
             }
         }
 
-        #endregion
 
-        #region Read Ref
 
         // 2022/02/15: fastest is to have internal methods inlined, these methods not inlined.
 
@@ -495,165 +396,91 @@ namespace Manifold.IO
             return value = ReadDouble(binaryReader);
         }
 
-        public static decimal Read(BinaryReader binaryReader, ref decimal value)
+        public static string Read(BinaryReader binaryReader, ref string value, int lengthBytes, Encoding encoding)
         {
-            return value = ReadDecimal(binaryReader);
+            return value = ReadString(binaryReader, lengthBytes, encoding);
         }
 
-        public static char Read(BinaryReader binaryReader, ref char value, Encoding encoding)
+        public static TBinarySerializable ReadBinarySerializable<TBinarySerializable>(BinaryReader binaryReader, ref TBinarySerializable value) where TBinarySerializable : IBinarySerializable, new()
         {
-            return value = ReadChar(binaryReader, encoding);
+            return value = ReadBinarySerializable<TBinarySerializable>(binaryReader);
         }
 
-        public static char Read(BinaryReader binaryReader, ref char value)
-        {
-            return value = ReadChar(binaryReader, Encoding);
-        }
-
-        public static string Read(BinaryReader binaryReader, ref string value, int length, Encoding encoding)
-        {
-            return value = ReadString(binaryReader, length, encoding);
-        }
-
-        public static string Read(BinaryReader binaryReader, ref string value, int length)
-        {
-            return value = ReadString(binaryReader, length, Encoding);
-        }
-
-        public static string Read(BinaryReader binaryReader, ref string value, Encoding encoding)
-        {
-            int length = ReadInt32(binaryReader);
-            return value = ReadString(binaryReader, length, encoding);
-        }
-
-        public static string Read(BinaryReader binaryReader, ref string value)
-        {
-            int length = ReadInt32(binaryReader);
-            return value = ReadString(binaryReader, length, Encoding);
-        }
-
-        // TODO
-        public static T Read<T>(BinaryReader binaryReader, ref T value, bool createNewInstance) where T : IBinarySerializable, new()
-        {
-            if (createNewInstance)
-                return value = ReadNewIBinarySerializable<T>(binaryReader);
-            else
-                return value = ReadIBinarySerializable<T>(binaryReader, value);
-        }
-
-        public static TEnum Read<TEnum>(BinaryReader binaryReader, ref TEnum value) where TEnum : Enum
+        public static TEnum Read<TEnum>(BinaryReader binaryReader, ref TEnum value, byte _ = 0) where TEnum : Enum
         {
             return value = ReadEnum<TEnum>(binaryReader);
         }
 
-        #endregion
 
-        public static T[] ReadNewArray<T>(BinaryReader binaryReader, int length, Func<BinaryReader, T> method)
+
+        public static T[] ReadArray<T>(BinaryReader binaryReader, int length, Func<BinaryReader, T> deserializeMethod)
         {
             T[] array = new T[length];
-
             for (int i = 0; i < array.Length; ++i)
-                array[i] = method(binaryReader);
-
+            {
+                array[i] = deserializeMethod(binaryReader);
+            }
             return array;
         }
-
-        public static T[] ReadArray<T>(BinaryReader binaryReader, Func<BinaryReader, T, T> method, T[] array)
-        {
-            for (int i = 0; i < array.Length; ++i)
-                array[i] = method(binaryReader, array[i]);
-
-            return array;
-        }
-
-        #region Read Array Length
 
         public static bool[] ReadBoolArray(BinaryReader binaryReader, int length)
         {
-            return ReadNewArray(binaryReader, length, ReadBool);
+            return ReadArray(binaryReader, length, ReadBool);
         }
 
-        public static byte[] ReadUint8Array(BinaryReader binaryReader, int length)
+        public static byte[] ReadUInt8Array(BinaryReader binaryReader, int length)
         {
             return binaryReader.ReadBytes(length);
         }
 
         public static sbyte[] ReadInt8Array(BinaryReader binaryReader, int length)
         {
-            return ReadNewArray(binaryReader, length, ReadInt8);
+            return ReadArray(binaryReader, length, ReadInt8);
         }
 
         public static short[] ReadInt16Array(BinaryReader binaryReader, int length)
         {
-            return ReadNewArray(binaryReader, length, ReadInt16);
+            return ReadArray(binaryReader, length, ReadInt16);
         }
 
-        public static ushort[] ReadUint16Array(BinaryReader binaryReader, int length)
+        public static ushort[] ReadUInt16Array(BinaryReader binaryReader, int length)
         {
-            return ReadNewArray(binaryReader, length, ReadUInt16);
+            return ReadArray(binaryReader, length, ReadUInt16);
         }
 
         public static int[] ReadInt32Array(BinaryReader binaryReader, int length)
         {
-            return ReadNewArray(binaryReader, length, ReadInt32);
+            return ReadArray(binaryReader, length, ReadInt32);
         }
 
-        public static uint[] ReadUint32Array(BinaryReader binaryReader, int length)
+        public static uint[] ReadUInt32Array(BinaryReader binaryReader, int length)
         {
-            return ReadNewArray(binaryReader, length, ReadUInt32);
+            return ReadArray(binaryReader, length, ReadUInt32);
         }
 
         public static long[] ReadInt64Array(BinaryReader binaryReader, int length)
         {
-            return ReadNewArray(binaryReader, length, ReadInt64);
+            return ReadArray(binaryReader, length, ReadInt64);
         }
 
-        public static ulong[] ReadUint64Array(BinaryReader binaryReader, int length)
+        public static ulong[] ReadUInt64Array(BinaryReader binaryReader, int length)
         {
-            return ReadNewArray(binaryReader, length, ReadUInt64);
+            return ReadArray(binaryReader, length, ReadUInt64);
         }
 
         public static float[] ReadFloatArray(BinaryReader binaryReader, int length)
         {
-            return ReadNewArray(binaryReader, length, ReadFloat);
+            return ReadArray(binaryReader, length, ReadFloat);
         }
 
         public static double[] ReadDoubleArray(BinaryReader binaryReader, int length)
         {
-            return ReadNewArray(binaryReader, length, ReadDouble);
+            return ReadArray(binaryReader, length, ReadDouble);
         }
 
-        public static decimal[] ReadDecimalArray(BinaryReader binaryReader, int length)
+        public static TBinarySerializable[] ReadBinarySerializableArray<TBinarySerializable>(BinaryReader binaryReader, int length) where TBinarySerializable : IBinarySerializable, new()
         {
-            return ReadNewArray(binaryReader, length, ReadDecimal);
-        }
-
-        public static string[] ReadStringArray(BinaryReader binaryReader, int length, Encoding encoding)
-        {
-            string[] array = new string[length];
-            int entryLength;
-            for (int i = 0; i < array.Length; ++i)
-            {
-                entryLength = ReadInt32(binaryReader);
-                array[i] = ReadString(binaryReader, entryLength, encoding);
-            }
-            return array;
-        }
-
-        public static string[] ReadStringArray(BinaryReader binaryReader, int length)
-        {
-            return ReadStringArray(binaryReader, length, Encoding);
-        }
-
-        public static T[] ReadNewIBinarySerializableArray<T>(BinaryReader binaryReader, int length) where T : IBinarySerializable, new()
-        {
-            return ReadNewArray(binaryReader, length, ReadNewIBinarySerializable<T>);
-        }
-
-        // TODO
-        public static T[] ReadIBinarySerializableArray<T>(BinaryReader binaryReader, T[] array) where T : IBinarySerializable, new()
-        {
-            return ReadArray(binaryReader, ReadIBinarySerializable, array);
+            return ReadArray(binaryReader, length, ReadBinarySerializable<TBinarySerializable>);
         }
 
         public static TEnum[] ReadEnumArray<TEnum>(BinaryReader binaryReader, int length) where TEnum : Enum
@@ -666,115 +493,11 @@ namespace Manifold.IO
             return array;
         }
 
-        #endregion
 
-        #region Read Array
-
-        public static bool[] ReadBoolArray(BinaryReader binaryReader)
-        {
-            int length = ReadInt32(binaryReader);
-            return ReadNewArray(binaryReader, length, ReadBool);
-        }
-
-        public static byte[] ReadUint8Array(BinaryReader binaryReader)
-        {
-            int length = ReadInt32(binaryReader);
-            return binaryReader.ReadBytes(length);
-        }
-
-        public static sbyte[] ReadInt8Array(BinaryReader binaryReader)
-        {
-            int length = ReadInt32(binaryReader);
-            return ReadNewArray(binaryReader, length, ReadInt8);
-        }
-
-        public static short[] ReadInt16Array(BinaryReader binaryReader)
-        {
-            int length = ReadInt32(binaryReader);
-            return ReadNewArray(binaryReader, length, ReadInt16);
-        }
-
-        public static ushort[] ReadUint16Array(BinaryReader binaryReader)
-        {
-            int length = ReadInt32(binaryReader);
-            return ReadNewArray(binaryReader, length, ReadUInt16);
-
-        }
-
-        public static int[] ReadInt32Array(BinaryReader binaryReader)
-        {
-            int length = ReadInt32(binaryReader);
-            return ReadNewArray(binaryReader, length, ReadInt32);
-        }
-
-        public static uint[] ReadUint32Array(BinaryReader binaryReader)
-        {
-            int length = ReadInt32(binaryReader);
-            return ReadNewArray(binaryReader, length, ReadUInt32);
-        }
-
-        public static long[] ReadInt64Array(BinaryReader binaryReader)
-        {
-            int length = ReadInt32(binaryReader);
-            return ReadNewArray(binaryReader, length, ReadInt64);
-        }
-
-        public static ulong[] ReadUint64Array(BinaryReader binaryReader)
-        {
-            int length = ReadInt32(binaryReader);
-            return ReadNewArray(binaryReader, length, ReadUInt64);
-        }
-
-        public static float[] ReadFloatArray(BinaryReader binaryReader)
-        {
-            int length = ReadInt32(binaryReader);
-            return ReadNewArray(binaryReader, length, ReadFloat);
-        }
-
-        public static double[] ReadDoubleArray(BinaryReader binaryReader)
-        {
-            int length = ReadInt32(binaryReader);
-            return ReadNewArray(binaryReader, length, ReadDouble);
-        }
-
-        public static decimal[] ReadDecimalArray(BinaryReader binaryReader)
-        {
-            int length = ReadInt32(binaryReader);
-            return ReadNewArray(binaryReader, length, ReadDecimal);
-        }
-
-        public static string[] ReadStringArray(BinaryReader binaryReader, Encoding encoding)
-        {
-            int length = ReadInt32(binaryReader);
-            return ReadStringArray(binaryReader, length, Encoding);
-        }
-
-        public static string[] ReadStringArray(BinaryReader binaryReader)
-        {
-            int length = ReadInt32(binaryReader);
-            return ReadStringArray(binaryReader, length, Encoding);
-        }
-
-        public static T[] ReadNewIBinarySerializableArray<T>(BinaryReader binaryReader) where T : IBinarySerializable, new()
-        {
-            int length = ReadInt32(binaryReader);
-            return ReadNewArray(binaryReader, length, ReadNewIBinarySerializable<T>);
-        }
-
-
-        public static TEnum[] ReadEnumArray<TEnum>(BinaryReader binaryReader) where TEnum : Enum
-        {
-            int length = ReadInt32(binaryReader);
-            return ReadEnumArray<TEnum>(binaryReader, length);
-        }
-
-        #endregion
-
-        #region Read Array Ref Length
 
         public static bool[] Read(BinaryReader binaryReader, int length, ref bool[] value)
         {
-            return value = ReadNewArray(binaryReader, length, ReadBool);
+            return value = ReadBoolArray(binaryReader, length);
         }
 
         public static byte[] Read(BinaryReader binaryReader, int length, ref byte[] value)
@@ -784,196 +507,61 @@ namespace Manifold.IO
 
         public static sbyte[] Read(BinaryReader binaryReader, int length, ref sbyte[] value)
         {
-            return value = ReadNewArray(binaryReader, length, ReadInt8);
+            return value = ReadInt8Array(binaryReader, length);
         }
 
         public static short[] Read(BinaryReader binaryReader, int length, ref short[] value)
         {
-            return value = ReadNewArray(binaryReader, length, ReadInt16);
+            return value = ReadInt16Array(binaryReader, length);
         }
 
         public static ushort[] Read(BinaryReader binaryReader, int length, ref ushort[] value)
         {
-            return value = ReadNewArray(binaryReader, length, ReadUInt16);
+            return value = ReadUInt16Array(binaryReader, length);
         }
 
         public static int[] Read(BinaryReader binaryReader, int length, ref int[] value)
         {
-            return value = ReadNewArray(binaryReader, length, ReadInt32);
+            return value = ReadInt32Array(binaryReader, length);
         }
 
         public static uint[] Read(BinaryReader binaryReader, int length, ref uint[] value)
         {
-            return value = ReadNewArray(binaryReader, length, ReadUInt32);
+            return value = ReadUInt32Array(binaryReader, length);
         }
 
         public static long[] Read(BinaryReader binaryReader, int length, ref long[] value)
         {
-            return value = ReadNewArray(binaryReader, length, ReadInt64);
+            return value = ReadInt64Array(binaryReader, length);
         }
 
         public static ulong[] Read(BinaryReader binaryReader, int length, ref ulong[] value)
         {
-            return value = ReadNewArray(binaryReader, length, ReadUInt64);
+            return value = ReadUInt64Array(binaryReader, length);
         }
 
         public static float[] Read(BinaryReader binaryReader, int length, ref float[] value)
         {
-            return value = ReadNewArray(binaryReader, length, ReadFloat);
+            return value = ReadFloatArray(binaryReader, length);
         }
 
         public static double[] Read(BinaryReader binaryReader, int length, ref double[] value)
         {
-            return value = ReadNewArray(binaryReader, length, ReadDouble);
+            return value = ReadDoubleArray(binaryReader, length);
         }
 
-        public static decimal[] Read(BinaryReader binaryReader, int length, ref decimal[] value)
+        public static TBinarySerializable[] Read<TBinarySerializable>(BinaryReader binaryReader, int length, ref TBinarySerializable[] value) where TBinarySerializable : IBinarySerializable, new()
         {
-            return value = ReadNewArray(binaryReader, length, ReadDecimal);
+            return value = ReadArray(binaryReader, length, ReadBinarySerializable<TBinarySerializable>);
         }
 
-        public static string[] Read(BinaryReader binaryReader, int length, ref string[] value, Encoding encoding)
-        {
-            return value = ReadStringArray(binaryReader, length, encoding);
-        }
-
-        public static string[] Read(BinaryReader binaryReader, int length, ref string[] value)
-        {
-            return value = ReadStringArray(binaryReader, length, Encoding);
-        }
-
-        // TODO
-        public static T[] Read<T>(BinaryReader binaryReader, int length, ref T[] value, bool createNew) where T : IBinarySerializable, new()
-        {
-            if (createNew)
-                return value = ReadNewArray(binaryReader, length, ReadNewIBinarySerializable<T>);
-            else
-                return ReadArray(binaryReader, ReadIBinarySerializable<T>, value);
-        }
-
-        public static TEnum[] Read<TEnum>(BinaryReader binaryReader, int length, ref TEnum[] value) where TEnum : Enum
+        public static TEnum[] Read<TEnum>(BinaryReader binaryReader, int length, ref TEnum[] value, byte _ = 0) where TEnum : Enum
         {
             return value = ReadEnumArray<TEnum>(binaryReader, length);
         }
 
-        #endregion
 
-        #region Read Array Ref
 
-        public static bool[] Read(BinaryReader binaryReader, ref bool[] value)
-        {
-            int length = ReadInt32(binaryReader);
-            return value = ReadNewArray(binaryReader, length, ReadBool);
-        }
-
-        public static byte[] Read(BinaryReader binaryReader, ref byte[] value)
-        {
-            int length = ReadInt32(binaryReader);
-            return value = binaryReader.ReadBytes(length);
-        }
-
-        public static sbyte[] Read(BinaryReader binaryReader, ref sbyte[] value)
-        {
-            int length = ReadInt32(binaryReader);
-            return value = ReadNewArray(binaryReader, length, ReadInt8);
-        }
-
-        public static short[] Read(BinaryReader binaryReader, ref short[] value)
-        {
-            int length = ReadInt32(binaryReader);
-            return value = ReadNewArray(binaryReader, length, ReadInt16);
-        }
-
-        public static ushort[] Read(BinaryReader binaryReader, ref ushort[] value)
-        {
-            int length = ReadInt32(binaryReader);
-            return value = ReadNewArray(binaryReader, length, ReadUInt16);
-        }
-
-        public static int[] Read(BinaryReader binaryReader, ref int[] value)
-        {
-            int length = ReadInt32(binaryReader);
-            return value = ReadNewArray(binaryReader, length, ReadInt32);
-        }
-
-        public static uint[] Read(BinaryReader binaryReader, ref uint[] value)
-        {
-            int length = ReadInt32(binaryReader);
-            return value = ReadNewArray(binaryReader, length, ReadUInt32);
-        }
-
-        public static long[] Read(BinaryReader binaryReader, ref long[] value)
-        {
-            int length = ReadInt32(binaryReader);
-            return value = ReadNewArray(binaryReader, length, ReadInt64);
-        }
-
-        public static ulong[] Read(BinaryReader binaryReader, ref ulong[] value)
-        {
-            int length = ReadInt32(binaryReader);
-            return value = ReadNewArray(binaryReader, length, ReadUInt64);
-        }
-
-        public static float[] Read(BinaryReader binaryReader, ref float[] value)
-        {
-            int length = ReadInt32(binaryReader);
-            return value = ReadNewArray(binaryReader, length, ReadFloat);
-        }
-
-        public static double[] Read(BinaryReader binaryReader, ref double[] value)
-        {
-            int length = ReadInt32(binaryReader);
-            return value = ReadNewArray(binaryReader, length, ReadDouble);
-        }
-
-        public static decimal[] Read(BinaryReader binaryReader, ref decimal[] value)
-        {
-            int length = ReadInt32(binaryReader);
-            return value = ReadNewArray(binaryReader, length, ReadDecimal);
-        }
-
-        public static string[] Read(BinaryReader binaryReader, ref string[] value, Encoding encoding)
-        {
-            int length = ReadInt32(binaryReader);
-            return value = ReadStringArray(binaryReader, length, encoding);
-        }
-
-        public static string[] Read(BinaryReader binaryReader, ref string[] value)
-        {
-            int length = ReadInt32(binaryReader);
-            return value = ReadStringArray(binaryReader, length, Encoding);
-        }
-
-        public static T[] Read<T>(BinaryReader binaryReader, ref T[] value) where T : IBinarySerializable, new()
-        {
-            int length = ReadInt32(binaryReader);
-            return value = ReadNewArray(binaryReader, length, ReadNewIBinarySerializable<T>);
-        }
-
-        // TODO
-        public static T[] Read<T>(BinaryReader binaryReader, ref T[] value, bool createNewInstances) where T : IBinarySerializable, new()
-        {
-            int length = ReadInt32(binaryReader);
-
-            if (createNewInstances)
-                return value = ReadNewArray(binaryReader, length, ReadNewIBinarySerializable<T>);
-            else
-                return ReadArray(binaryReader, ReadIBinarySerializable<T>, value);
-        }
-
-        public static TEnum[] ReadEnum<TEnum>(BinaryReader binaryReader, ref TEnum[] value) where TEnum : Enum
-        {
-            int length = ReadInt32(binaryReader);
-            return value = ReadEnumArray<TEnum>(binaryReader, length);
-        }
-
-        #endregion
-
-        #endregion
-
-        #region WRITE
-
-        #region Write Value
 
         public static void Write(BinaryWriter writer, bool value)
         {
@@ -992,344 +580,249 @@ namespace Manifold.IO
 
         public static void Write(BinaryWriter writer, ushort value)
         {
+            fWriteUInt16.Invoke(writer, value);
+        }
+        public static void WriteUInt16SameEndianness(BinaryWriter writer, ushort value)
+        {
             byte[] bytes = BitConverter.GetBytes(value);
-
-            if (BitConverter.IsLittleEndian ^ IsLittleEndian)
-                Array.Reverse(bytes);
-
+            writer.Write(bytes);
+        }
+        public static void WriteUInt16SwapEndianness(BinaryWriter writer, ushort value)
+        {
+            byte[] bytes = BitConverter.GetBytes(value);
+            Array.Reverse(bytes);
             writer.Write(bytes);
         }
 
         public static void Write(BinaryWriter writer, short value)
         {
+            fWriteInt16.Invoke(writer, value);
+        }
+        public static void WriteInt16SameEndianness(BinaryWriter writer, short value)
+        {
             byte[] bytes = BitConverter.GetBytes(value);
-
-            if (BitConverter.IsLittleEndian ^ IsLittleEndian)
-                Array.Reverse(bytes);
-
+            writer.Write(bytes);
+        }
+        public static void WriteInt16SwapEndianness(BinaryWriter writer, short value)
+        {
+            byte[] bytes = BitConverter.GetBytes(value);
+            Array.Reverse(bytes);
             writer.Write(bytes);
         }
 
         public static void Write(BinaryWriter writer, uint value)
         {
+            fWriteUInt32.Invoke(writer, value);
+        }
+        public static void WriteUInt32SameEndianness(BinaryWriter writer, uint value)
+        {
             byte[] bytes = BitConverter.GetBytes(value);
-
-            if (BitConverter.IsLittleEndian ^ IsLittleEndian)
-                Array.Reverse(bytes);
-
+            writer.Write(bytes);
+        }
+        public static void WriteUInt32SwapEndianness(BinaryWriter writer, uint value)
+        {
+            byte[] bytes = BitConverter.GetBytes(value);
+            Array.Reverse(bytes);
             writer.Write(bytes);
         }
 
         public static void Write(BinaryWriter writer, int value)
         {
+            fWriteInt32.Invoke(writer, value);
+        }
+        public static void WriteInt32SameEndianness(BinaryWriter writer, int value)
+        {
             byte[] bytes = BitConverter.GetBytes(value);
-
-            if (BitConverter.IsLittleEndian ^ IsLittleEndian)
-                Array.Reverse(bytes);
-
+            writer.Write(bytes);
+        }
+        public static void WriteInt32SwapEndianness(BinaryWriter writer, int value)
+        {
+            byte[] bytes = BitConverter.GetBytes(value);
+            Array.Reverse(bytes);
             writer.Write(bytes);
         }
 
         public static void Write(BinaryWriter writer, ulong value)
         {
+            fWriteUInt64.Invoke(writer, value);
+        }
+        public static void WriteUInt64SameEndianness(BinaryWriter writer, ulong value)
+        {
             byte[] bytes = BitConverter.GetBytes(value);
-
-            if (BitConverter.IsLittleEndian ^ IsLittleEndian)
-                Array.Reverse(bytes);
-
+            writer.Write(bytes);
+        }
+        public static void WriteUInt64SwapEndianness(BinaryWriter writer, ulong value)
+        {
+            byte[] bytes = BitConverter.GetBytes(value);
+            Array.Reverse(bytes);
             writer.Write(bytes);
         }
 
         public static void Write(BinaryWriter writer, long value)
         {
+            fWriteInt64.Invoke(writer, value);
+        }
+        public static void WriteInt64SameEndianness(BinaryWriter writer, long value)
+        {
             byte[] bytes = BitConverter.GetBytes(value);
-
-            if (BitConverter.IsLittleEndian ^ IsLittleEndian)
-                Array.Reverse(bytes);
-
+            writer.Write(bytes);
+        }
+        public static void WriteInt64SwapEndianness(BinaryWriter writer, long value)
+        {
+            byte[] bytes = BitConverter.GetBytes(value);
+            Array.Reverse(bytes);
             writer.Write(bytes);
         }
 
         public static void Write(BinaryWriter writer, float value)
         {
+            fWriteFloat.Invoke(writer, value);
+        }
+        public static void WriteFloatSameEndianness(BinaryWriter writer, float value)
+        {
             byte[] bytes = BitConverter.GetBytes(value);
-
-            if (BitConverter.IsLittleEndian ^ IsLittleEndian)
-                Array.Reverse(bytes);
-
+            writer.Write(bytes);
+        }
+        public static void WriteFloatSwapEndianness(BinaryWriter writer, float value)
+        {
+            byte[] bytes = BitConverter.GetBytes(value);
+            Array.Reverse(bytes);
             writer.Write(bytes);
         }
 
         public static void Write(BinaryWriter writer, double value)
         {
+            fWriteDouble.Invoke(writer, value);
+        }
+        public static void WriteDoubleSameEndianness(BinaryWriter writer, double value)
+        {
             byte[] bytes = BitConverter.GetBytes(value);
-
-            if (BitConverter.IsLittleEndian ^ IsLittleEndian)
-                Array.Reverse(bytes);
-
+            writer.Write(bytes);
+        }
+        public static void WriteDoubleSwapEndianness(BinaryWriter writer, double value)
+        {
+            byte[] bytes = BitConverter.GetBytes(value);
+            Array.Reverse(bytes);
             writer.Write(bytes);
         }
 
-        public static void Write(BinaryWriter writer, decimal value)
+        private static void Write(BinaryWriter writer, char value, Encoding encoding)
         {
-            // Since we can't do BitConverter.GetBytes(decimal), we save the endianess
-            // to disk so we can recover it ourselves
-            bool isLittleEndian = BitConverter.IsLittleEndian ^ IsLittleEndian;
-            writer.Write(isLittleEndian);
-
-            writer.Write(value);
-
-            // TODO: confirm this all works with any endianness.
-            throw new NotImplementedException();
+            fWriteChar.Invoke(writer, value, encoding);
         }
-
-        public static void Write(BinaryWriter writer, char value, Encoding encoding)
+        private static void WriteCharSameEndianness(BinaryWriter writer, char value, Encoding encoding)
         {
             byte[] bytes = encoding.GetBytes(new char[] { value }, 0, 1);
-
-            if (BitConverter.IsLittleEndian ^ IsLittleEndian)
-                Array.Reverse(bytes);
-
+            writer.Write(bytes);
+        }
+        private static void WriteCharSwapEndianness(BinaryWriter writer, char value, Encoding encoding)
+        {
+            byte[] bytes = encoding.GetBytes(new char[]{ value });
+            Array.Reverse(bytes);
             writer.Write(bytes);
         }
 
-        public static void Write<T>(BinaryWriter writer, T value) where T : IBinarySerializable
+        public static void Write(BinaryWriter writer, string value, Encoding encoding)
+        {
+            foreach (char character in value)
+            {
+                Write(writer, character, encoding);
+            }
+        }
+
+        public static void Write<TBinarySerializable>(BinaryWriter writer, TBinarySerializable value) where TBinarySerializable : IBinarySerializable
         {
             value.Serialize(writer);
         }
 
-        public static void WriteEnum<TEnum>(BinaryWriter writer, TEnum value) where TEnum : Enum
+        public static void Write<TEnum>(BinaryWriter writer, TEnum value, byte _ = 0) where TEnum : Enum
         {
             var type = Enum.GetUnderlyingType(typeof(TEnum));
+            switch (type)
+            {
+                // Ordered by my best guess as to which is most common
+                // int is the default backing type
+                case Type _ when type == typeof(int): Write(writer, (int)(object)value); break;
+                // I often override the backing type to not have negatives
+                case Type _ when type == typeof(uint): Write(writer, (uint)(object)value); break;
+                // byte and ushort are smaller/compressed enums (also no negatives)
+                case Type _ when type == typeof(byte): Write(writer, (byte)(object)value); break;
+                case Type _ when type == typeof(ushort): Write(writer, (ushort)(object)value); break;
+                // Unlikely but perhaps userful to have 64 bits to work with
+                case Type _ when type == typeof(ulong): Write(writer, (ulong)(object)value); break;
+                // These are unordered: I know I don't use them as backing types
+                case Type _ when type == typeof(sbyte): Write(writer, (sbyte)(object)value); break;
+                case Type _ when type == typeof(short): Write(writer, (short)(object)value); break;
+                case Type _ when type == typeof(long): Write(writer, (long)(object)value); break;
 
-            if (type == typeof(int))
-            {
-                int writeValue = (int)(object)value;
-                writer.WriteX(writeValue);
-            }
-            else if (type == typeof(uint))
-            {
-                uint writeValue = (uint)(object)value;
-                writer.WriteX(writeValue);
-            }
-            else if (type == typeof(short))
-            {
-                short writeValue = (short)(object)value;
-                writer.WriteX(writeValue);
-            }
-            else if (type == typeof(ushort))
-            {
-                ushort writeValue = (ushort)(object)value;
-                writer.WriteX(writeValue);
-            }
-            else if (type == typeof(sbyte))
-            {
-                sbyte writeValue = (sbyte)(object)value;
-                writer.WriteX(writeValue);
-            }
-            else if (type == typeof(byte))
-            {
-                byte writeValue = (byte)(object)value;
-                writer.WriteX(writeValue);
-            }
-            else if (type == typeof(long))
-            {
-                long writeValue = (long)(object)value;
-                writer.WriteX(writeValue);
-            }
-            else if (type == typeof(ulong))
-            {
-                ulong writeValue = (ulong)(object)value;
-                writer.WriteX(writeValue);
-            }
-            else
-            {
-                throw new NotImplementedException();
+                default: throw new NotImplementedException("Unsupported Enum backing type used!");
             }
         }
 
-        #endregion
-
-        #region Write Array
-
-        public static void WriteArray<T>(BinaryWriter writer, T[] value, Action<BinaryWriter, T> method)
+        public static void WriteArray<T>(BinaryWriter writer, T[] value, Action<BinaryWriter, T> serializeMethod)
         {
-            T[] array = new T[value.Length];
-
-            for (int i = 0; i < array.Length; ++i)
-                method(writer, value[i]);
-        }
-
-        public static void Write(BinaryWriter writer, bool[] value, bool writeLengthHeader)
-        {
-            if (writeLengthHeader)
-                Write(writer, value.Length);
-
-            WriteArray(writer, value, Write);
-        }
-
-        public static void Write(BinaryWriter writer, byte[] value, bool writeLengthHeader)
-        {
-            if (writeLengthHeader)
-                Write(writer, value.Length);
-
-            writer.Write(value);
-        }
-
-        public static void Write(BinaryWriter writer, sbyte[] value, bool writeLengthHeader)
-        {
-            if (writeLengthHeader)
-                Write(writer, value.Length);
-
-            WriteArray(writer, value, Write);
-        }
-
-        public static void Write(BinaryWriter writer, ushort[] value, bool writeLengthHeader)
-        {
-            if (writeLengthHeader)
-                Write(writer, value.Length);
-
-            WriteArray(writer, value, Write);
-        }
-
-        public static void Write(BinaryWriter writer, short[] value, bool writeLengthHeader)
-        {
-            if (writeLengthHeader)
-                Write(writer, value.Length);
-
-            WriteArray(writer, value, Write);
-        }
-
-        public static void Write(BinaryWriter writer, uint[] value, bool writeLengthHeader)
-        {
-            if (writeLengthHeader)
-                Write(writer, value.Length);
-
-            WriteArray(writer, value, Write);
-        }
-
-        public static void Write(BinaryWriter writer, int[] value, bool writeLengthHeader)
-        {
-            if (writeLengthHeader)
-                Write(writer, value.Length);
-
-            WriteArray(writer, value, Write);
-        }
-
-        public static void Write(BinaryWriter writer, ulong[] value, bool writeLengthHeader)
-        {
-            if (writeLengthHeader)
-                Write(writer, value.Length);
-
-            WriteArray(writer, value, Write);
-        }
-
-        public static void Write(BinaryWriter writer, long[] value, bool writeLengthHeader)
-        {
-            if (writeLengthHeader)
-                Write(writer, value.Length);
-
-            WriteArray(writer, value, Write);
-        }
-
-        public static void Write(BinaryWriter writer, float[] value, bool writeLengthHeader)
-        {
-            if (writeLengthHeader)
-                Write(writer, value.Length);
-
-            WriteArray(writer, value, Write);
-        }
-
-        public static void Write(BinaryWriter writer, double[] value, bool writeLengthHeader)
-        {
-            if (writeLengthHeader)
-                Write(writer, value.Length);
-
-            WriteArray(writer, value, Write);
-        }
-
-        public static void Write(BinaryWriter writer, decimal[] value, bool writeLengthHeader)
-        {
-            // Since Write(Decimal) stores an extra byte for endianness, this method
-            // could be optimized to store that endianness only once. This would save
-            // n-1 bytes. However, Decimal[] use is very uncommon and so isn't priority.
-
-            if (writeLengthHeader)
-                Write(writer, value.Length);
-
-            WriteArray(writer, value, Write);
-        }
-
-        public static void Write(BinaryWriter writer, string value, Encoding encoding, bool writeLengthHeader)
-        {
-            // I can use value.Length to calc the length of UTF7 strings
-            // But probably just best to avoid saving in this format anyway
-            if (encoding == Encoding.UTF7)
-                throw new NotImplementedException();
-
-            if (writeLengthHeader)
-                Write(writer, value.Length);
-
-            var chars = value.ToCharArray();
-            foreach (var character in chars)
+            foreach (var item in value)
             {
-                writer.WriteX(character, encoding);
-            }
-
-            //byte[] bytes = encoding.GetBytes(value.ToCharArray());
-            //writer.Write(bytes);
-        }
-
-        //// TODO
-        //public static void WriteCString(BinaryWriter writer, string value, Encoding encoding)
-        //{
-        //    Write(writer, value, encoding, false);
-        //    Write(writer, (byte)0x00);
-        //}
-
-        //// TODO
-        //public static void WriteCString(BinaryWriter writer, string value)
-        //{
-        //    Write(writer, value, Encoding, false);
-        //    Write(writer, (byte)0x00);
-        //}
-
-        public static void Write(BinaryWriter writer, string[] value, Encoding encoding, bool writeLengthHeader)
-        {
-            if (writeLengthHeader)
-                Write(writer, value.Length);
-
-            for (int i = 0; i < value.Length; ++i)
-            {
-                Write(writer, value[i], encoding, writeLengthHeader);
+                serializeMethod(writer, item);
             }
         }
 
-        public static void Write(BinaryWriter writer, string[] value, bool writeLengthHeader)
+        public static void Write(BinaryWriter writer, bool[] value)
+            => WriteArray(writer, value, Write);
+
+        public static void Write(BinaryWriter writer, byte[] value)
+            => writer.Write(value);
+
+        public static void Write(BinaryWriter writer, sbyte[] value)
+            => WriteArray(writer, value, Write);
+
+        public static void Write(BinaryWriter writer, ushort[] value)
+            => WriteArray(writer, value, Write);
+
+        public static void Write(BinaryWriter writer, short[] value)
+            => WriteArray(writer, value, Write);
+
+        public static void Write(BinaryWriter writer, uint[] value)
+            => WriteArray(writer, value, Write);
+
+        public static void Write(BinaryWriter writer, int[] value)
+            => WriteArray(writer, value, Write);
+
+        public static void Write(BinaryWriter writer, ulong[] value)
+            => WriteArray(writer, value, Write);
+
+        public static void Write(BinaryWriter writer, long[] value)
+            => WriteArray(writer, value, Write);
+
+        public static void Write(BinaryWriter writer, float[] value)
+            => WriteArray(writer, value, Write);
+
+        public static void Write(BinaryWriter writer, double[] value)
+            => WriteArray(writer, value, Write);
+
+        public static void Write(BinaryWriter writer, string[] value, Encoding encoding)
         {
-            Write(writer, value, Encoding, writeLengthHeader);
+            foreach (string str in value)
+            {
+                Write(writer, str, encoding);
+            }
         }
 
-        public static void Write<T>(BinaryWriter writer, T[] value, bool writeLengthHeader) where T : IBinarySerializable
+        public static void Write<TBinarySerializable>(BinaryWriter writer, TBinarySerializable[] value) where TBinarySerializable : IBinarySerializable
         {
-            if (writeLengthHeader)
-                Write(writer, value.Length);
-
-            for (int i = 0; i < value.Length; ++i)
-                value[i].Serialize(writer);
+            foreach (var binarySerializable in value)
+            {
+                Write(writer, binarySerializable);
+            }
         }
 
-        public static void WriteEnum<TEnum>(BinaryWriter writer, TEnum[] value, bool writeLengthHeader) where TEnum : Enum
+        public static void Write<TEnum>(BinaryWriter writer, TEnum[] values, byte _ = 0) where TEnum : Enum
         {
-            if (writeLengthHeader)
-                Write(writer, value.Length);
-
-            for (int i = 0; i < value.Length; ++i)
-                WriteEnum(writer, value[i]);
+            foreach (var @enum in values)
+            {
+                Write(writer, @enum);
+            }
         }
 
-        #endregion
-
-        #endregion
     }
 }

@@ -191,7 +191,7 @@ namespace Manifold.IO
 
         public static Pointer GetPositionAsPointer(this BinaryWriter writer)
         {
-            return new Pointer((int)writer.BaseStream.Position);
+            return new Pointer(writer.BaseStream.Position);
         }
     }
 }

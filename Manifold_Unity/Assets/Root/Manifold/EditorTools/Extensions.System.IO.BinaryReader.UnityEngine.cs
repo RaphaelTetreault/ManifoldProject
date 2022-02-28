@@ -105,22 +105,22 @@ namespace Manifold.EditorTools
             => value = reader.ReadTransform(ref value, space);
 
         public static Vector2[] ReadX(this BinaryReader reader, ref Vector2[] value, int length)
-            => value = BinaryIoUtility.ReadNewArray(reader, length, ReadVector2);
+            => value = BinaryIoUtility.ReadArray(reader, length, ReadVector2);
         
         public static Vector3[] ReadX(this BinaryReader reader, ref Vector3[] value, int length)
-            => value = BinaryIoUtility.ReadNewArray(reader, length, ReadVector3);
+            => value = BinaryIoUtility.ReadArray(reader, length, ReadVector3);
         
         public static Vector4[] ReadX(this BinaryReader reader, ref Vector4[] value, int length)
-            => value = BinaryIoUtility.ReadNewArray(reader, length, ReadVector4);
+            => value = BinaryIoUtility.ReadArray(reader, length, ReadVector4);
         
         public static Quaternion[] ReadX(this BinaryReader reader, ref Quaternion[] value, int length)
-            => value = BinaryIoUtility.ReadNewArray(reader, length, ReadQuaternion);
+            => value = BinaryIoUtility.ReadArray(reader, length, ReadQuaternion);
         
         public static Color32[] ReadX(this BinaryReader reader, ref Color32[] value, int length)
-            => value = BinaryIoUtility.ReadNewArray(reader, length, ReadColor32);
+            => value = BinaryIoUtility.ReadArray(reader, length, ReadColor32);
         
         public static Color[] ReadX(this BinaryReader reader, ref Color[] value, int length)
-            => value = BinaryIoUtility.ReadNewArray(reader, length, ReadColor);
+            => value = BinaryIoUtility.ReadArray(reader, length, ReadColor);
 
     }
 }

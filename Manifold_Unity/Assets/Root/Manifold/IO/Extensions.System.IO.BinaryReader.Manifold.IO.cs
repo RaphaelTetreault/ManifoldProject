@@ -35,5 +35,10 @@ namespace Manifold.IO
         {
             offset = BinaryIoUtility.ReadIBinarySerializable(reader, offset);
         }
+
+        public static Pointer GetPositionAsPointer(this BinaryReader reader)
+        {
+            return new Pointer(reader.BaseStream.Position);
+        }
     }
 }
