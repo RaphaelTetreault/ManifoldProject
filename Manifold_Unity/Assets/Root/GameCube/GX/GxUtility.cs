@@ -65,72 +65,6 @@ namespace GameCube.GX
                 throw new NotImplementedException();
             }
         }
-        public static Color32 ReadColor(BinaryReader reader, ComponentType type)
-        {
-            switch (type)
-            {
-                case ComponentType.GX_RGB565:
-                    {
-                        var rgb565 = BinaryIoUtility.ReadUInt16(reader);
-                        var r = (byte)(((rgb565 >> 11) & (0b_0001_1111)) * (1 << 3));
-                        var g = (byte)(((rgb565 >> 05) & (0b_0011_1111)) * (1 << 2));
-                        var b = (byte)(((rgb565 >> 00) & (0b_0001_1111)) * (1 << 3));
-                        return new Color32(r, g, b, byte.MaxValue);
-                    }
-
-                case ComponentType.GX_RGB8:
-                    {
-                        var r = BinaryIoUtility.ReadUInt8(reader);
-                        var g = BinaryIoUtility.ReadUInt8(reader);
-                        var b = BinaryIoUtility.ReadUInt8(reader);
-                        return new Color32(r, g, b, byte.MaxValue);
-                    }
-
-                case ComponentType.GX_RGBA4:
-                    {
-                        var rgba4 = BinaryIoUtility.ReadUInt16(reader);
-                        var r = (byte)(((rgba4 >> 12) & (0b_0000_1111)) * (1 << 4));
-                        var g = (byte)(((rgba4 >> 08) & (0b_0000_1111)) * (1 << 4));
-                        var b = (byte)(((rgba4 >> 04) & (0b_0000_1111)) * (1 << 4));
-                        var a = (byte)(((rgba4 >> 00) & (0b_0000_1111)) * (1 << 4));
-                        return new Color32(r, g, b, a);
-                    }
-
-                case ComponentType.GX_RGBA6:
-                    {
-                        var upper16 = BinaryIoUtility.ReadUInt16(reader);
-                        var lower8 = BinaryIoUtility.ReadUInt8(reader);
-                        var rgba6 = (upper16 << 8) | (lower8);
-
-                        var r = (byte)(((rgba6 >> 16) & (0b_0011_1111)) * (1 << 2));
-                        var g = (byte)(((rgba6 >> 12) & (0b_0011_1111)) * (1 << 2));
-                        var b = (byte)(((rgba6 >> 06) & (0b_0011_1111)) * (1 << 2));
-                        var a = (byte)(((rgba6 >> 00) & (0b_0011_1111)) * (1 << 2));
-                        return new Color32(r, g, b, a);
-                    }
-
-                case ComponentType.GX_RGBA8:
-                    {
-                        var r = BinaryIoUtility.ReadUInt8(reader);
-                        var g = BinaryIoUtility.ReadUInt8(reader);
-                        var b = BinaryIoUtility.ReadUInt8(reader);
-                        var a = BinaryIoUtility.ReadUInt8(reader);
-                        return new Color32(r, g, b, a);
-                    }
-
-                case ComponentType.GX_RGBX8:
-                    {
-                        var r = BinaryIoUtility.ReadUInt8(reader);
-                        var g = BinaryIoUtility.ReadUInt8(reader);
-                        var b = BinaryIoUtility.ReadUInt8(reader);
-                        var _ = BinaryIoUtility.ReadUInt8(reader); // discarded
-                        return new Color32(r, g, b, byte.MaxValue);
-                    }
-
-                default:
-                    throw new NotImplementedException();
-            }
-        }
         public static float ReadNumber(BinaryReader reader, ComponentType type, int nFracBits)
         {
             switch (type)
@@ -243,44 +177,7 @@ namespace GameCube.GX
                 throw new ArgumentException();
             }
         }
-        public static void WriteColor(BinaryWriter writer, Color32 color, ComponentType type)
-        {
-            switch (type)
-            {
-                //case ComponentType.GX_RGB565:
-                //    {
-
-                //    }
-
-                //case ComponentType.GX_RGB8:
-                //    {
-
-                //    }
-
-                //case ComponentType.GX_RGBA4:
-                //    {
-
-                //    }
-
-                //case ComponentType.GX_RGBA6:
-                //    {
-
-                //    }
-
-                //case ComponentType.GX_RGBA8:
-                //    {
-
-                //    }
-
-                //case ComponentType.GX_RGBX8:
-                //    {
-
-                //    }
-
-                default:
-                    throw new ArgumentException();
-            }
-        }
+      
         public static void WriteNumber(BinaryWriter writer, float value, ComponentType componentType, int nFracs)
         {
             switch (componentType)

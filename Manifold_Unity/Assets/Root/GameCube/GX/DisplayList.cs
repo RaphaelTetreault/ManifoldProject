@@ -6,54 +6,9 @@ using System.Collections.Generic;
 using System.IO;
 using Unity.Mathematics;
 
-// temp for Color32
-using UnityEngine;
-
 
 namespace GameCube.GX
 {
-    public struct GXVertex :
-        IBinarySerializable
-    {
-        public GXAttributes attributes;
-
-        public byte pn_mtx_idx;
-        public byte tex0_mtx_idx;
-        public byte tex1_mtx_idx;
-        public byte tex2_mtx_idx;
-        public byte tex3_mtx_idx;
-        public byte tex4_mtx_idx;
-        public byte tex5_mtx_idx;
-        public byte tex6_mtx_idx;
-        public byte tex7_mtx_idx;
-        // Standard vertex data
-        public float3 pos;
-        public float3 nrm;
-        public NormalBinormalTangent nbt;
-        public Color32 clr0;
-        public Color32 clr1;
-        public float2 tex0;
-        public float2 tex1;
-        public float2 tex2;
-        public float2 tex3;
-        public float2 tex4;
-        public float2 tex5;
-        public float2 tex6;
-        public float2 tex7;
-
-        public void Deserialize(BinaryReader reader)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Serialize(BinaryWriter writer)
-        {
-            if (attributes.HasFlag(GXAttributes.GX_VA_PNMTXIDX))
-                writer.WriteX(pn_mtx_idx);
-        }
-    }
-
-
     [Serializable]
     public class DisplayList :
         IBinaryAddressable,
@@ -82,8 +37,8 @@ namespace GameCube.GX
         public float3[] pos;
         public float3[] nrm;
         public NormalBinormalTangent[] nbt;
-        public Color32[] clr0;
-        public Color32[] clr1;
+        public GXColor[] clr0;
+        public GXColor[] clr1;
         public float2[] tex0;
         public float2[] tex1;
         public float2[] tex2;
@@ -128,9 +83,12 @@ namespace GameCube.GX
             nbt[i].binormal = GXUtility.ReadNormal(reader, fmt.nbt.NElements, fmt.nbt.ComponentFormat, fmt.nbt.NFracBits);
             nbt[i].tangent = GXUtility.ReadNormal(reader, fmt.nbt.NElements, fmt.nbt.ComponentFormat, fmt.nbt.NFracBits);
         }
-        private void ReadCLR(BinaryReader reader, VertexAttribute fmt_clr, int i, Color32[] clr)
+        private void ReadCLR(BinaryReader reader, VertexAttribute fmt_clr, int i, GXColor[] clr)
         {
-            clr[i] = GXUtility.ReadColor(reader, fmt_clr.ComponentFormat);
+            var color = new GXColor(fmt_clr.ComponentFormat);
+            color.Deserialize(reader);
+            clr[i] =  color;
+            // GXUtility.ReadColor(reader, fmt_clr.ComponentFormat);
         }
         private void ReadTEX(BinaryReader reader, VertexAttribute fmt_tex, int i, float2[] tex)
         {
@@ -192,8 +150,8 @@ namespace GameCube.GX
                 pos = hasPOS ? new float3[count] : new float3[0];
                 nrm = hasNRM ? new float3[count] : new float3[0];
                 nbt = hasNBT ? new NormalBinormalTangent[count] : new NormalBinormalTangent[0];
-                clr0 = hasCLR0 ? new Color32[count] : new Color32[0];
-                clr1 = hasCLR1 ? new Color32[count] : new Color32[0];
+                clr0 = hasCLR0 ? new GXColor[count] : new GXColor[0];
+                clr1 = hasCLR1 ? new GXColor[count] : new GXColor[0];
                 tex0 = hasTEX0 ? new float2[count] : new float2[0];
                 tex1 = hasTEX1 ? new float2[count] : new float2[0];
                 tex2 = hasTEX2 ? new float2[count] : new float2[0];

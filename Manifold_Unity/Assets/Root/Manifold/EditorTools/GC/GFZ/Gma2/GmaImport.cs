@@ -191,21 +191,21 @@ namespace Manifold.EditorTools.GC.GFZ.Gma2
             }
         }
 
-        public static Color32[] HackColors(Color32[] colors, int vertCount)
+        public static Color32[] HackColors(GXColor[] gxColors, int vertCount)
         {
             // Looks like white, but is 0xFEFDFCFF, but becomes "magic"
             // value you can parse out since it likely* isn't used.
             // *TODO: confirm this colour is not used in the game.
             var defaultColor = new Color32(254, 253, 252, 255);
+            var colors = new Color32[vertCount];
 
-            if (colors.Length == 0)
+            for (int i = 0; i < colors.Length; i++)
             {
-                colors = new Color32[vertCount];
-                for (int i = 0; i < colors.Length; i++)
-                {
-                    colors[i] = defaultColor;
-                }
+                colors[i] = (colors.Length > 0)
+                    ? new Color32(gxColors[i].R, gxColors[i].G, gxColors[i].B, gxColors[i].A)
+                    : defaultColor;
             }
+
             return colors;
         }
 
