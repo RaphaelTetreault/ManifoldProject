@@ -45,7 +45,7 @@ namespace GameCube.GFZ.Gma2
             }
             this.RecordEndAddress(writer);
             {
-                throw new NotImplementedException();
+                //throw new NotImplementedException();
             }
         }
 

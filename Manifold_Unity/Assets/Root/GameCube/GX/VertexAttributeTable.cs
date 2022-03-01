@@ -57,7 +57,7 @@ namespace GameCube.GX
 
         public bool HasAttr(DisplayCommand gxCmd, GXAttributes attribute)
         {
-            Assert.IsTrue((byte)gxCmd.VertexFormat < 8);
+            Assert.IsTrue(gxCmd.VertexFormatIndex < 8);
 
             if (attribute == 0)
             {
@@ -66,8 +66,8 @@ namespace GameCube.GX
             else
             {
                 var vatIndex = (int)gxCmd.VertexFormat;
-                var attr = gxVertexAttributeFormats[vatIndex].GetAttr(attribute);
-                return attr != null;
+                var vertexAttribute = gxVertexAttributeFormats[vatIndex].GetAttr(attribute);
+                return vertexAttribute != null;
             }
         }
 

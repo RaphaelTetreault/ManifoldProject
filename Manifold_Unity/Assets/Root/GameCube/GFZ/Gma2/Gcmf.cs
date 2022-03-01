@@ -272,13 +272,19 @@ namespace GameCube.GFZ.Gma2
                     // (#2) This data will be empty / [0] when 'IsPhysicsDrivenModel'
                     // However, that's a good thing (we still want this address/offset).
                     Pointer SkinnedVerticesAPtr = writer.GetPositionAsPointer();
-                    writer.WriteX(skinnedVerticesA);
-                    writer.AlignTo(GX.GXUtility.GX_FIFO_ALIGN); // redundant due to type size, but looks good.
+                    if (skinnedVerticesA is not null)
+                    {
+                        writer.WriteX(skinnedVerticesA);
+                        writer.AlignTo(GX.GXUtility.GX_FIFO_ALIGN); // redundant due to type size, but looks good.
+                    }
 
                     // (#3) Like the previous type, this too will be null when 'IsPhysicsDrivenModel'
                     Pointer unkBoneIndicesPtr = writer.GetPositionAsPointer();
-                    writer.WriteX(UnkBoneIndices);
-                    writer.AlignTo(GX.GXUtility.GX_FIFO_ALIGN);
+                    if (UnkBoneIndices is not null)
+                    {
+                        writer.WriteX(UnkBoneIndices);
+                        writer.AlignTo(GX.GXUtility.GX_FIFO_ALIGN);
+                    }
 
                     // (#4) Lastly, write the skin-bone bindings
                     Pointer SkinBoneBindingsPtr = writer.GetPositionAsPointer();

@@ -18,10 +18,24 @@ namespace Manifold.IO
             startAddress = stream.Position;
         }
 
+        public void RecordStartAddress(BinaryReader reader)
+            => RecordStartAddress(reader.BaseStream);
+
+        public void RecordStartAddress(BinaryWriter writer)
+            => RecordStartAddress(writer.BaseStream);
+
+
         public void RecordEndAddress(Stream stream)
         {
             endAddress = stream.Position;
         }
+
+        public void RecordEndAddress(BinaryReader reader)
+            => RecordEndAddress(reader.BaseStream);
+
+        public void RecordEndAddress(BinaryWriter writer)
+            => RecordEndAddress(writer.BaseStream);
+
 
         public Pointer GetPointer()
         {

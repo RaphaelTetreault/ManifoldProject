@@ -31,7 +31,6 @@ namespace GameCube.GX
                 throw new NotImplementedException();
             }
         }
-
         public static float3 ReadNormal(BinaryReader reader, ComponentCount nElements, ComponentType componentType, int nFracs)
         {
             // For NBT, the caller of this function should call it 3 times, each for N, B, and T
@@ -47,7 +46,6 @@ namespace GameCube.GX
                 throw new NotImplementedException();
             }
         }
-
         public static float2 ReadUV(BinaryReader reader, ComponentCount nElements, ComponentType componentType, int nFracs)
         {
             if (nElements == ComponentCount.GX_TEX_ST)
@@ -67,7 +65,6 @@ namespace GameCube.GX
                 throw new NotImplementedException();
             }
         }
-
         public static Color32 ReadColor(BinaryReader reader, ComponentType type)
         {
             switch (type)
@@ -134,7 +131,6 @@ namespace GameCube.GX
                     throw new NotImplementedException();
             }
         }
-
         public static float ReadNumber(BinaryReader reader, ComponentType type, int nFracBits)
         {
             switch (type)
@@ -176,73 +172,228 @@ namespace GameCube.GX
             return (float)value / (1 << nFracBits);
         }
 
-        public static int CalcGxVtxStride(GXAttributes attrFlag, VertexAttributeFormat fmt)
+
+        public static byte FloatToFixedU8(float value, int nFracBits)
         {
-            int size = 0;
+            return (byte)(value * (1 << nFracBits));
+        }
+        public static sbyte FloatToFixedS8(float value, int nFracBits)
+        {
+            return (sbyte)(value * (1 << nFracBits));
+        }
+        public static ushort FloatToFixedU16(float value, int nFracBits)
+        {
+            return (ushort)(value * (1 << nFracBits));
+        }
+        public static short FloatToFixedS16(float value, int nFracBits)
+        {
+            return (short)(value * (1 << nFracBits));
+        }
+
+
+
+
+        public static void WritePosition(BinaryWriter writer, float3 position, ComponentCount nElements, ComponentType componentType, int nFracs)
+        {
+            if (nElements == ComponentCount.GX_POS_XYZ)
+            {
+                WriteNumber(writer, position.x, componentType, nFracs);
+                WriteNumber(writer, position.y, componentType, nFracs);
+                WriteNumber(writer, position.z, componentType, nFracs);
+            }
+            else if (nElements == ComponentCount.GX_POS_XY)
+            {
+                WriteNumber(writer, position.x, componentType, nFracs);
+                WriteNumber(writer, position.y, componentType, nFracs);
+            }
+            else
+            {
+                throw new ArgumentException();
+            }
+        }
+
+        public static void WriteNormal(BinaryWriter writer, float3 normal, ComponentCount nElements, ComponentType componentType, int nFracs)
+        {
+            // For NBT, the caller of this function should call it 3 times, each for N, B, and T
+            if (nElements == ComponentCount.GX_NRM_XYZ || nElements == ComponentCount.GX_NRM_NBT)
+            {
+                WriteNumber(writer, normal.x, componentType, nFracs);
+                WriteNumber(writer, normal.y, componentType, nFracs);
+                WriteNumber(writer, normal.z, componentType, nFracs);
+            }
+            else
+            {
+                throw new ArgumentException();
+            }
+        }
+
+        public static void WriteUV(BinaryWriter writer, float2 textureUV, ComponentCount nElements, ComponentType componentType, int nFracs)
+        {
+            if (nElements == ComponentCount.GX_TEX_ST)
+            {
+                WriteNumber(writer, textureUV.x, componentType, nFracs);
+                WriteNumber(writer, textureUV.y, componentType, nFracs);
+            }
+            else if (nElements == ComponentCount.GX_TEX_S)
+            {
+                WriteNumber(writer, textureUV.x, componentType, nFracs);
+            }
+            else
+            {
+                throw new ArgumentException();
+            }
+        }
+        public static void WriteColor(BinaryWriter writer, Color32 color, ComponentType type)
+        {
+            switch (type)
+            {
+                //case ComponentType.GX_RGB565:
+                //    {
+
+                //    }
+
+                //case ComponentType.GX_RGB8:
+                //    {
+
+                //    }
+
+                //case ComponentType.GX_RGBA4:
+                //    {
+
+                //    }
+
+                //case ComponentType.GX_RGBA6:
+                //    {
+
+                //    }
+
+                //case ComponentType.GX_RGBA8:
+                //    {
+
+                //    }
+
+                //case ComponentType.GX_RGBX8:
+                //    {
+
+                //    }
+
+                default:
+                    throw new ArgumentException();
+            }
+        }
+        public static void WriteNumber(BinaryWriter writer, float value, ComponentType componentType, int nFracs)
+        {
+            switch (componentType)
+            {
+                case ComponentType.GX_F32: writer.WriteX(value); return;
+                case ComponentType.GX_S16: writer.WriteX(FloatToFixedS16(value, nFracs)); return;
+                case ComponentType.GX_U16: writer.WriteX(FloatToFixedU16(value, nFracs)); return;
+                case ComponentType.GX_S8: writer.WriteX(FloatToFixedS8(value, nFracs)); return;
+                case ComponentType.GX_U8: writer.WriteX(FloatToFixedU8(value, nFracs)); return;
+
+                default:
+                    throw new ArgumentException();
+            };
+        }
+
+
+        public static int GetGxVertexSize(GXAttributes attributes, VertexAttributeFormat fmt)
+        {
+            // Check each component type, see if it is used
+            bool hasPNMTXIDX = attributes.HasFlag(GXAttributes.GX_VA_PNMTXIDX);
+            bool hasTEX0MTXIDX = attributes.HasFlag(GXAttributes.GX_VA_TEX0MTXIDX);
+            bool hasTEX1MTXIDX = attributes.HasFlag(GXAttributes.GX_VA_TEX1MTXIDX);
+            bool hasTEX2MTXIDX = attributes.HasFlag(GXAttributes.GX_VA_TEX2MTXIDX);
+            bool hasTEX3MTXIDX = attributes.HasFlag(GXAttributes.GX_VA_TEX3MTXIDX);
+            bool hasTEX4MTXIDX = attributes.HasFlag(GXAttributes.GX_VA_TEX4MTXIDX);
+            bool hasTEX5MTXIDX = attributes.HasFlag(GXAttributes.GX_VA_TEX5MTXIDX);
+            bool hasTEX6MTXIDX = attributes.HasFlag(GXAttributes.GX_VA_TEX6MTXIDX);
+            bool hasTEX7MTXIDX = attributes.HasFlag(GXAttributes.GX_VA_TEX7MTXIDX);
+            bool hasPOS_MTX_ARRAY = attributes.HasFlag(GXAttributes.GX_VA_POS_MTX_ARRAY);
+            bool hasNRM_MTX_ARRAY = attributes.HasFlag(GXAttributes.GX_VA_NRM_MTX_ARRAY);
+            bool hasTEX_MTX_ARRAY = attributes.HasFlag(GXAttributes.GX_VA_TEX_MTX_ARRAY);
+            bool hasLIGHT_ARRAY = attributes.HasFlag(GXAttributes.GX_VA_LIGHT_ARRAY);
+            bool hasPOS = attributes.HasFlag(GXAttributes.GX_VA_POS);
+            bool hasNRM = attributes.HasFlag(GXAttributes.GX_VA_NRM);
+            bool hasNBT = attributes.HasFlag(GXAttributes.GX_VA_NBT);
+            bool hasCLR0 = attributes.HasFlag(GXAttributes.GX_VA_CLR0);
+            bool hasCLR1 = attributes.HasFlag(GXAttributes.GX_VA_CLR1);
+            bool hasTEX0 = attributes.HasFlag(GXAttributes.GX_VA_TEX0);
+            bool hasTEX1 = attributes.HasFlag(GXAttributes.GX_VA_TEX1);
+            bool hasTEX2 = attributes.HasFlag(GXAttributes.GX_VA_TEX2);
+            bool hasTEX3 = attributes.HasFlag(GXAttributes.GX_VA_TEX3);
+            bool hasTEX4 = attributes.HasFlag(GXAttributes.GX_VA_TEX4);
+            bool hasTEX5 = attributes.HasFlag(GXAttributes.GX_VA_TEX5);
+            bool hasTEX6 = attributes.HasFlag(GXAttributes.GX_VA_TEX6);
+            bool hasTEX7 = attributes.HasFlag(GXAttributes.GX_VA_TEX7);
+
+            // Don't know what these look like
+            if (hasPOS_MTX_ARRAY || hasNRM_MTX_ARRAY || hasTEX_MTX_ARRAY || hasLIGHT_ARRAY)
+                throw new NotImplementedException("Unsupported GXAttributes flag");
+            
             const int mtxIdxSize = 1;
-
-            if ((attrFlag & GXAttributes.GX_VA_PNMTXIDX) != 0)
-                size += mtxIdxSize;
-
-            if ((attrFlag & GXAttributes.GX_VA_TEX0MTXIDX) != 0)
-                throw new NotImplementedException();
-            if ((attrFlag & GXAttributes.GX_VA_TEX1MTXIDX) != 0)
-                throw new NotImplementedException();
-            if ((attrFlag & GXAttributes.GX_VA_TEX2MTXIDX) != 0)
-                throw new NotImplementedException();
-            if ((attrFlag & GXAttributes.GX_VA_TEX3MTXIDX) != 0)
-                throw new NotImplementedException();
-            if ((attrFlag & GXAttributes.GX_VA_TEX4MTXIDX) != 0)
-                throw new NotImplementedException();
-            if ((attrFlag & GXAttributes.GX_VA_TEX5MTXIDX) != 0)
-                throw new NotImplementedException();
-            if ((attrFlag & GXAttributes.GX_VA_TEX6MTXIDX) != 0)
-                throw new NotImplementedException();
-            if ((attrFlag & GXAttributes.GX_VA_TEX7MTXIDX) != 0)
-                throw new NotImplementedException();
-
-            if ((attrFlag & GXAttributes.GX_VA_POS_MTX_ARRAY) != 0)
-                throw new NotImplementedException();
-            if ((attrFlag & GXAttributes.GX_VA_NRM_MTX_ARRAY) != 0)
-                throw new NotImplementedException();
-            if ((attrFlag & GXAttributes.GX_VA_TEX_MTX_ARRAY) != 0)
-                throw new NotImplementedException();
-            if ((attrFlag & GXAttributes.GX_VA_LIGHT_ARRAY) != 0)
-                throw new NotImplementedException();
-
-
-            if (fmt.pos != null && (attrFlag & GXAttributes.GX_VA_POS) != 0)
-                size += CompSizeColor(fmt.pos.ComponentFormat);
-
-            if (fmt.nrm != null && (attrFlag & GXAttributes.GX_VA_NRM) != 0)
-                size += CompSizeNumber(fmt.nrm.ComponentFormat);
-            if (fmt.nbt != null && (attrFlag & GXAttributes.GX_VA_NBT) != 0)
-                size += CompSizeNumber(fmt.nbt.ComponentFormat);
-
-            // Get size of colors
-            if (fmt.clr0 != null && (attrFlag & GXAttributes.GX_VA_CLR0) != 0)
-                size += CompSizeColor(fmt.clr0.ComponentFormat);
-            if (fmt.clr1 != null && (attrFlag & GXAttributes.GX_VA_CLR1) != 0)
-                size += CompSizeColor(fmt.clr1.ComponentFormat);
-
-            if (fmt.tex0 != null && (attrFlag & GXAttributes.GX_VA_TEX0) != 0)
-                size += CompSizeNumber(fmt.tex0.ComponentFormat);
-            if (fmt.tex1 != null && (attrFlag & GXAttributes.GX_VA_TEX1) != 0)
-                size += CompSizeNumber(fmt.tex1.ComponentFormat);
-            if (fmt.tex2 != null && (attrFlag & GXAttributes.GX_VA_TEX2) != 0)
-                size += CompSizeNumber(fmt.tex2.ComponentFormat);
-            if (fmt.tex3 != null && (attrFlag & GXAttributes.GX_VA_TEX3) != 0)
-                size += CompSizeNumber(fmt.tex3.ComponentFormat);
-            if (fmt.tex4 != null && (attrFlag & GXAttributes.GX_VA_TEX4) != 0)
-                size += CompSizeNumber(fmt.tex4.ComponentFormat);
-            if (fmt.tex5 != null && (attrFlag & GXAttributes.GX_VA_TEX5) != 0)
-                size += CompSizeNumber(fmt.tex5.ComponentFormat);
-            if (fmt.tex6 != null && (attrFlag & GXAttributes.GX_VA_TEX6) != 0)
-                size += CompSizeNumber(fmt.tex6.ComponentFormat);
-            if (fmt.tex7 != null && (attrFlag & GXAttributes.GX_VA_TEX7) != 0)
-                size += CompSizeNumber(fmt.tex7.ComponentFormat);
+            int size = 0;
+            size += hasPNMTXIDX ? mtxIdxSize : 0;
+            size += hasTEX0MTXIDX ? mtxIdxSize : 0;
+            size += hasTEX1MTXIDX ? mtxIdxSize : 0;
+            size += hasTEX2MTXIDX ? mtxIdxSize : 0;
+            size += hasTEX3MTXIDX ? mtxIdxSize : 0;
+            size += hasTEX4MTXIDX ? mtxIdxSize : 0;
+            size += hasTEX5MTXIDX ? mtxIdxSize : 0;
+            size += hasTEX6MTXIDX ? mtxIdxSize : 0;
+            size += hasTEX7MTXIDX ? mtxIdxSize : 0;
+            size += hasPOS ? CompSizeNumber(fmt.pos.ComponentFormat) * GetPosCompCount(fmt.tex0.NElements) : 0;
+            size += hasNRM ? CompSizeNumber(fmt.nrm.ComponentFormat) * GetNrmCompCount(fmt.tex0.NElements) : 0;
+            size += hasNBT ? CompSizeNumber(fmt.nbt.ComponentFormat) * GetNrmCompCount(fmt.tex0.NElements) : 0;
+            size += hasCLR0 ? CompSizeColor(fmt.clr0.ComponentFormat) * GetTexCompCount(fmt.tex0.NElements) : 0;
+            size += hasCLR1 ? CompSizeColor(fmt.clr1.ComponentFormat) * GetTexCompCount(fmt.tex0.NElements) : 0;
+            size += hasTEX0 ? CompSizeNumber(fmt.tex0.ComponentFormat) * GetTexCompCount(fmt.tex0.NElements) : 0;
+            size += hasTEX1 ? CompSizeNumber(fmt.tex1.ComponentFormat) * GetTexCompCount(fmt.tex1.NElements) : 0;
+            size += hasTEX2 ? CompSizeNumber(fmt.tex2.ComponentFormat) * GetTexCompCount(fmt.tex2.NElements) : 0;
+            size += hasTEX3 ? CompSizeNumber(fmt.tex3.ComponentFormat) * GetTexCompCount(fmt.tex3.NElements) : 0;
+            size += hasTEX4 ? CompSizeNumber(fmt.tex4.ComponentFormat) * GetTexCompCount(fmt.tex4.NElements) : 0;
+            size += hasTEX5 ? CompSizeNumber(fmt.tex5.ComponentFormat) * GetTexCompCount(fmt.tex5.NElements) : 0;
+            size += hasTEX6 ? CompSizeNumber(fmt.tex6.ComponentFormat) * GetTexCompCount(fmt.tex6.NElements) : 0;
+            size += hasTEX7 ? CompSizeNumber(fmt.tex7.ComponentFormat) * GetTexCompCount(fmt.tex7.NElements) : 0;
 
             return size;
+        }
+
+        private static int GetTexCompCount(ComponentCount componentCount)
+        {
+            switch (componentCount)
+            {
+                case ComponentCount.GX_TEX_S: return 1;
+                case ComponentCount.GX_TEX_ST: return 2;
+
+                default:
+                    throw new ArgumentException();
+            }
+        }
+
+        private static int GetPosCompCount(ComponentCount componentCount)
+        {
+            switch (componentCount)
+            {
+                case ComponentCount.GX_POS_XY: return 2;
+                case ComponentCount.GX_POS_XYZ: return 3;
+
+                default:
+                    throw new ArgumentException();
+            }
+        }
+
+        private static int GetNrmCompCount(ComponentCount componentCount)
+        {
+            switch (componentCount)
+            {
+                case ComponentCount.GX_NRM_XYZ: return 3;
+                case ComponentCount.GX_NRM_NBT: return 9;
+                case ComponentCount.GX_NRM_NBT3: throw new NotImplementedException();
+
+                default:
+                    throw new ArgumentException();
+            }
         }
 
         private static int CompSizeNumber(ComponentType compType)
@@ -256,7 +407,7 @@ namespace GameCube.GX
                 case ComponentType.GX_F32: return 4;
 
                 default:
-                    throw new NotImplementedException();
+                    throw new ArgumentException();
             }
         }
 
@@ -272,7 +423,7 @@ namespace GameCube.GX
                 case ComponentType.GX_RGBA8: return 4;
 
                 default:
-                    throw new NotImplementedException();
+                    throw new ArgumentException();
             }
         }
 

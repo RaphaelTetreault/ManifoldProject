@@ -11,8 +11,12 @@ namespace GameCube.GFZ.Gma2
         IBinaryAddressable,
         IBinarySerializable
     {
+        // CONSTANTS
+        public const byte GX_NOP = 0x00;
+
         // METADATA
         private GcmfAttributes attributes;
+        private AddressRange displayListAddressRange;
 
         // FIELDS
         private Material material;
@@ -55,6 +59,10 @@ namespace GameCube.GFZ.Gma2
         public bool RenderPrimaryTranslucid
         {
             get => material.DisplayListRenderFlags.HasFlag(DisplayListRenderFlags.renderPrimaryTranslucid);
+        }
+        public bool RenderSecondary
+        {
+            get => RenderSecondaryOpaque || RenderSecondaryTranslucid;
         }
         public bool RenderSecondaryOpaque
         {
@@ -110,13 +118,13 @@ namespace GameCube.GFZ.Gma2
                     primaryDisplayListTranslucid = ReadDisplayLists(reader, endAddress);
                 }
 
-                if (RenderSecondaryOpaque || RenderSecondaryTranslucid)
+                if (RenderSecondary)
                 {
                     reader.ReadX(ref secondaryDisplayListDescriptor);
                     reader.AlignTo(GXUtility.GX_FIFO_ALIGN);
                     endAddress = new Pointer(reader.BaseStream.Position).address;
 
-                    if (RenderPrimaryOpaque)
+                    if (RenderSecondaryOpaque)
                     {
                         endAddress += secondaryDisplayListDescriptor.OpaqueMaterialSize;
                         secondaryDisplayListOpaque = ReadDisplayLists(reader, endAddress);
@@ -141,7 +149,15 @@ namespace GameCube.GFZ.Gma2
                     (primaryDisplayListTranslucid is null ? 0 : DisplayListRenderFlags.renderPrimaryTranslucid) |
                     (secondaryDisplayListOpaque is null ? 0 : DisplayListRenderFlags.renderSecondaryOpaque) |
                     (secondaryDisplayListTranslucid is null ? 0 : DisplayListRenderFlags.renderSecondaryTranslucid);
-                
+
+                // Compute and store sizes
+                displayListDescriptor.OpaqueMaterialSize = DisplayListSizeOnDisk(primaryDisplayListOpaque);
+                displayListDescriptor.TranslucidMaterialSize = DisplayListSizeOnDisk(primaryDisplayListTranslucid);
+                if (RenderSecondary)
+                {
+                    secondaryDisplayListDescriptor.OpaqueMaterialSize = DisplayListSizeOnDisk(secondaryDisplayListOpaque);
+                    secondaryDisplayListDescriptor.TranslucidMaterialSize = DisplayListSizeOnDisk(secondaryDisplayListTranslucid);
+                }
             }
             this.RecordStartAddress(writer);
             {
@@ -150,15 +166,37 @@ namespace GameCube.GFZ.Gma2
                 writer.WriteX(unknown);
                 writer.AlignTo(GXUtility.GX_FIFO_ALIGN);
 
-                // When writing the display lists below:
-                // 1) Assert that render flag and instance indicate the same thing
-                // 2) 
+                if (RenderPrimaryOpaque)
+                {
+                    WriteDisplayLists(writer, primaryDisplayListOpaque, out displayListAddressRange);
+                    Assert.IsTrue(displayListAddressRange.Size == displayListDescriptor.OpaqueMaterialSize, $"Serialized: {displayListAddressRange.Size},  {displayListDescriptor.TranslucidMaterialSize}");
+                }
 
-                Assert.IsFalse(RenderPrimaryOpaque ^ primaryDisplayListOpaque is null);
-                writer.WriteX(primaryDisplayListOpaque);
-                writer.AlignTo(GXUtility.GX_FIFO_ALIGN);
+                if (RenderPrimaryTranslucid)
+                {
+                    WriteDisplayLists(writer, primaryDisplayListTranslucid, out displayListAddressRange);
+                    Assert.IsTrue(displayListAddressRange.Size == displayListDescriptor.TranslucidMaterialSize, $"Serialized: {displayListAddressRange.Size},  {displayListDescriptor.TranslucidMaterialSize}");
+                }
 
-                throw new NotImplementedException();
+
+                if (RenderSecondary)
+                {
+                    writer.WriteX(secondaryDisplayListDescriptor);
+                    writer.AlignTo(GXUtility.GX_FIFO_ALIGN);
+
+                    if (RenderSecondaryOpaque)
+                    {
+                        WriteDisplayLists(writer, secondaryDisplayListOpaque, out displayListAddressRange);
+                        Assert.IsTrue(displayListAddressRange.Size == secondaryDisplayListDescriptor.OpaqueMaterialSize);
+                    }
+
+                    if (RenderSecondaryTranslucid)
+                    {
+                        WriteDisplayLists(writer, secondaryDisplayListTranslucid, out displayListAddressRange);
+                        Assert.IsTrue(displayListAddressRange.Size == secondaryDisplayListDescriptor.TranslucidMaterialSize);
+                    }
+                }
+
             }
             this.RecordEndAddress(writer);
         }
@@ -168,7 +206,7 @@ namespace GameCube.GFZ.Gma2
             var displayLists = new List<DisplayList>();
 
             var gxNOP = reader.ReadByte();
-            Assert.IsTrue(gxNOP == 0);
+            Assert.IsTrue(gxNOP == GX_NOP);
 
             while (!reader.IsAtEndOfStream())
             {
@@ -185,6 +223,53 @@ namespace GameCube.GFZ.Gma2
             reader.AlignTo(GXUtility.GX_FIFO_ALIGN);
 
             return displayLists.ToArray();
+        }
+
+        private void WriteDisplayLists(BinaryWriter writer, DisplayList[] displayLists, out AddressRange addressRange)
+        {
+            addressRange = new AddressRange();
+            addressRange.RecordStartAddress(writer);
+            {
+                writer.WriteX(GX_NOP);
+                writer.WriteX(displayLists);
+                writer.AlignTo(GXUtility.GX_FIFO_ALIGN);
+            }
+            addressRange.RecordEndAddress(writer);
+        }
+
+        private int DisplayListSizeOnDisk(DisplayList[] displayLists)
+        {
+            int size = 0;
+
+            if (displayLists is null || displayLists.Length > 0)
+                return size;
+
+            // Get GX properties about display list
+            var gxAttributes = displayLists[0].Attributes;
+            var formatIndex = displayLists[0].GxCommand.VertexFormatIndex;
+            var format = displayLists[0].Vat[formatIndex];
+
+            // Compute size of all display lists
+            int sizeOfVertex = GXUtility.GetGxVertexSize(gxAttributes, format);
+            foreach (var displayList in displayLists)
+            {
+                // Every display list should have the same properties
+                Assert.IsTrue(gxAttributes == displayList.Attributes);
+                Assert.IsTrue(formatIndex == displayList.GxCommand.VertexFormatIndex);
+
+                size += sizeOfVertex * displayList.VertexCount;
+            }
+
+            // Add +1 for size of GX_NOP
+            size++;
+
+            // Add padding size if necessary
+            var remainder = size % GXUtility.GX_FIFO_ALIGN;
+            if (remainder > 0)
+                size += remainder;
+
+
+            return size;
         }
 
     }

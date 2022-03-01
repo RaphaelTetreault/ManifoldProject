@@ -7,7 +7,7 @@ namespace GameCube.GFZ.Gma2
     /// <summary>
     /// Appears to be a GX vertex meant for skinning. It is not part of a formal
     /// display list. The GXAttributes properly describe this as having position,
-    /// normal, and texture0.
+    /// normal, and texture0. May have something to do with GXAttributes.GX_VA_PNMTXIDX.
     /// </summary>
     /// <remarks>
     /// Notes: regarding textureUV0: it is indeed stored as TEX0 in the GXAttributes.
