@@ -45,7 +45,7 @@ namespace GameCube.GFZ.CourseCollision
             {
                 Assert.IsTrue(sceneObjectPtr.IsNotNull);
                 reader.JumpToAddress(sceneObjectPtr);
-                reader.ReadX(ref sceneObject, true);
+                reader.ReadX(ref sceneObject);
             }
             this.SetReaderToEndAddress(reader);
         }

@@ -70,13 +70,13 @@ namespace GameCube.GFZ.CourseCollision
             {
                 Assert.IsTrue(lodsPtr.IsNotNull);
                 reader.JumpToAddress(lodsPtr);
-                reader.ReadX(ref lods, lodsPtr.Length, true);
+                reader.ReadX(ref lods, lodsPtr.Length);
 
                 // Collision is not required, load only if pointer is not null
                 if (colliderGeometryPtr.IsNotNull)
                 {
                     reader.JumpToAddress(colliderGeometryPtr);
-                    reader.ReadX(ref colliderMesh, true);
+                    reader.ReadX(ref colliderMesh);
                 }
             }
             this.SetReaderToEndAddress(reader);

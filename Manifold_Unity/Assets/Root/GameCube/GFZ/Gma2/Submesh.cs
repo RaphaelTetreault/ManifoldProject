@@ -80,12 +80,12 @@ namespace GameCube.GFZ.Gma2
             this.RecordStartAddress(reader);
             {
                 //
-                reader.ReadX(ref material, true);
-                reader.ReadX(ref displayListDescriptor, true);
-                reader.ReadX(ref unknown, true);
+                reader.ReadX(ref material);
+                reader.ReadX(ref displayListDescriptor);
+                reader.ReadX(ref unknown);
                 reader.AlignTo(GXUtility.GX_FIFO_ALIGN);
 
-                int endAddress = new Pointer(reader.BaseStream.Position).address;
+                int endAddress = reader.GetPositionAsPointer().Address;
 
                 // If the GCMF this submesh is a part of has either of these attributes,
                 // then it does not actually store any display lists (at least, not in
@@ -112,7 +112,7 @@ namespace GameCube.GFZ.Gma2
 
                 if (RenderSecondaryOpaque || RenderSecondaryTranslucid)
                 {
-                    reader.ReadX(ref secondaryDisplayListDescriptor, true);
+                    reader.ReadX(ref secondaryDisplayListDescriptor);
                     reader.AlignTo(GXUtility.GX_FIFO_ALIGN);
                     endAddress = new Pointer(reader.BaseStream.Position).address;
 
@@ -134,14 +134,33 @@ namespace GameCube.GFZ.Gma2
 
         public void Serialize(BinaryWriter writer)
         {
+            {
+                // Reset the render flags based on instance data
+                material.DisplayListRenderFlags =
+                    (primaryDisplayListOpaque is null ? 0 : DisplayListRenderFlags.renderPrimaryOpaque) |
+                    (primaryDisplayListTranslucid is null ? 0 : DisplayListRenderFlags.renderPrimaryTranslucid) |
+                    (secondaryDisplayListOpaque is null ? 0 : DisplayListRenderFlags.renderSecondaryOpaque) |
+                    (secondaryDisplayListTranslucid is null ? 0 : DisplayListRenderFlags.renderSecondaryTranslucid);
+                
+            }
             this.RecordStartAddress(writer);
             {
-                //writer.WriteX();
-            }
-            this.RecordEndAddress(writer);
-            {
+                writer.WriteX(material);
+                writer.WriteX(displayListDescriptor);
+                writer.WriteX(unknown);
+                writer.AlignTo(GXUtility.GX_FIFO_ALIGN);
+
+                // When writing the display lists below:
+                // 1) Assert that render flag and instance indicate the same thing
+                // 2) 
+
+                Assert.IsFalse(RenderPrimaryOpaque ^ primaryDisplayListOpaque is null);
+                writer.WriteX(primaryDisplayListOpaque);
+                writer.AlignTo(GXUtility.GX_FIFO_ALIGN);
+
                 throw new NotImplementedException();
             }
+            this.RecordEndAddress(writer);
         }
 
         private DisplayList[] ReadDisplayLists(BinaryReader reader, int endAddress)
@@ -155,7 +174,7 @@ namespace GameCube.GFZ.Gma2
             {
                 // Reasons to stop reading display list data
                 bool isAtEnd = reader.BaseStream.Position >= endAddress;
-                bool isFifoPadding = reader.PeekUint8() == 0;
+                bool isFifoPadding = reader.PeekUInt8() == 0;
                 if (isAtEnd || isFifoPadding)
                     break;
 

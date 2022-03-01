@@ -14,6 +14,9 @@ namespace Manifold.IO
         IBinarySerializable,
         IEquatable<CString>
     {
+        // CONSTANTS
+        public const byte nullTerminator = 0x00;
+
         // METADATA
         private AddressRange addressRange;
 
@@ -54,7 +57,7 @@ namespace Manifold.IO
                 var @byte = reader.ReadByte();
 
                 // If a null character is read, stop
-                if (@byte == 0x00)
+                if (@byte is nullTerminator)
                     break;
 
                 bytes.Add(@byte);
@@ -66,8 +69,8 @@ namespace Manifold.IO
 
         public static void WriteCString(BinaryWriter writer, string value, Encoding encoding)
         {
-            BinaryIoUtility.Write(writer, value, encoding, false);
-            BinaryIoUtility.Write(writer, (byte)0x00);
+            writer.WriteX(value, encoding);
+            writer.WriteX(nullTerminator);
         }
 
 

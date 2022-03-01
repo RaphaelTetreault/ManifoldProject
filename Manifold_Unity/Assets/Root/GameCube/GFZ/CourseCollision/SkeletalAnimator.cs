@@ -49,7 +49,7 @@ namespace GameCube.GFZ.CourseCollision
                 // 2021/06/16: should ALWAYS exist
                 Assert.IsTrue(propertiesPtr.IsNotNull);
                 reader.JumpToAddress(propertiesPtr);
-                reader.ReadX(ref properties, true);
+                reader.ReadX(ref properties);
             }
             this.SetReaderToEndAddress(reader);
         }

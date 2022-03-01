@@ -62,7 +62,7 @@ namespace GameCube.GFZ.CourseCollision
                 reader.ReadX(ref unk_0x04);
                 reader.ReadX(ref zeroes_0x08, kZeroes0x08);
                 reader.ReadX(ref unk_layer_0x18);
-                reader.ReadX(ref curves, kAnimationCurvesCount, true);
+                reader.ReadX(ref curves, kAnimationCurvesCount);
             }
             this.RecordEndAddress(reader);
             {
@@ -82,9 +82,9 @@ namespace GameCube.GFZ.CourseCollision
             {
                 writer.WriteX(unk_0x00);
                 writer.WriteX(unk_0x04);
-                writer.WriteX(new byte[kZeroes0x08], false);
+                writer.WriteX(new byte[kZeroes0x08]);
                 writer.WriteX(unk_layer_0x18);
-                writer.WriteX(curves, false);
+                writer.WriteX(curves);
             }
             this.RecordEndAddress(writer);
         }

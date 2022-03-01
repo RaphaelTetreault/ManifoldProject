@@ -30,7 +30,7 @@ namespace Manifold.EditorTools.GC.GFZ.Gma2
                 if (cancel)
                     break;
 
-                ImportGma(filePath);
+                GmaTests.TestLoadSaveGma(filePath);
             }
             EditorUtility.ClearProgressBar();
         }
@@ -41,7 +41,7 @@ namespace Manifold.EditorTools.GC.GFZ.Gma2
             var settings = GfzProjectWindow.GetSettings();
             var folder = settings.StageDir;
             var path = Path.Combine(folder, "st01.gma");
-            ImportGma(path);
+            LoadGma(path);
         }
 
 
@@ -52,17 +52,18 @@ namespace Manifold.EditorTools.GC.GFZ.Gma2
 
 
 
-        public static void ImportGma(string filePath)
+        public static void LoadGma(string filePath)
         {
             GmaIO.LoadGMA(filePath);
             Debug.Log(filePath);
         }
 
-        public static void TestImportAllGma(params string[] filePaths)
+
+        public static void TestLoadAllGma(params string[] filePaths)
         {
             foreach (var filePath in filePaths)
             {
-                ImportGma(filePath);
+                LoadGma(filePath);
             }
         }
 

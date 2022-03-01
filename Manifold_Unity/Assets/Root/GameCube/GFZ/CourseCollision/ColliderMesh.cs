@@ -103,13 +103,13 @@ namespace GameCube.GFZ.CourseCollision
                 if (trisPtr.IsNotNull)
                 {
                     reader.JumpToAddress(trisPtr);
-                    reader.ReadX(ref tris, triCount, true);
+                    reader.ReadX(ref tris, triCount);
                 }
 
                 if (quadsPtr.IsNotNull)
                 {
                     reader.JumpToAddress(quadsPtr);
-                    reader.ReadX(ref quads, quadCount, true);
+                    reader.ReadX(ref quads, quadCount);
                 }
             }
             this.SetReaderToEndAddress(reader);

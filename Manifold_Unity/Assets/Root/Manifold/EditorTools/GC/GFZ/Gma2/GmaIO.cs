@@ -78,8 +78,6 @@ namespace Manifold.EditorTools.GC.GFZ.Gma2
                     var msg = $"Cannot serialize GMA without a filename! (Assign name to {nameof(gma)}.{nameof(gma.FileName)})";
                     throw new IOException(msg);
                 }
-
-                Assert.IsTrue(gma != null);
             }
 
             foreach (var gma in gmas)

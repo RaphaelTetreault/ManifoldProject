@@ -28,7 +28,7 @@ namespace GameCube.GFZ.Gma2
             this.RecordStartAddress(reader);
             {
                 reader.ReadX(ref count);
-                reader.ReadX(ref verticePtrOffsets, count, true);
+                reader.ReadX(ref verticePtrOffsets, count);
             }
             this.RecordEndAddress(reader);
         }
@@ -41,7 +41,7 @@ namespace GameCube.GFZ.Gma2
             this.RecordStartAddress(writer);
             {
                 writer.WriteX(Count);
-                writer.WriteX(verticePtrOffsets, false);
+                writer.WriteX(verticePtrOffsets);
             }
             this.RecordEndAddress(writer);
             {

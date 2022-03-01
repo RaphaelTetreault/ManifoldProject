@@ -1,6 +1,5 @@
 ﻿using System;
 using UnityEngine;
-using GameCube.GFZ.GMA;
 
 namespace GameCube.GX
 {

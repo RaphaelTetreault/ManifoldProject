@@ -53,15 +53,15 @@ namespace Manifold.IO
             => value = reader.ReadMathQuaternion();
 
         public static float2[] ReadX(this BinaryReader reader, ref float2[] value, int length)
-            => value = BinaryIoUtility.ReadNewArray(reader, length, ReadFloat2);
+            => value = BinaryIoUtility.ReadArray(reader, length, ReadFloat2);
 
         public static float3[] ReadX(this BinaryReader reader, ref float3[] value, int length)
-            => value = BinaryIoUtility.ReadNewArray(reader, length, ReadFloat3);
+            => value = BinaryIoUtility.ReadArray(reader, length, ReadFloat3);
 
         public static float4[] ReadX(this BinaryReader reader, ref float4[] value, int length)
-            => value = BinaryIoUtility.ReadNewArray(reader, length, ReadFloat4);
+            => value = BinaryIoUtility.ReadArray(reader, length, ReadFloat4);
 
         public static quaternion[] ReadX(this BinaryReader reader, ref quaternion[] value, int length)
-            => value = BinaryIoUtility.ReadNewArray(reader, length, ReadMathQuaternion);
+            => value = BinaryIoUtility.ReadArray(reader, length, ReadMathQuaternion);
     }
 }

@@ -382,7 +382,7 @@ namespace GameCube.GFZ.CourseCollision
             this.RecordStartAddress(reader);
             {
                 reader.ReadX(ref interpolation);
-                reader.ReadX(ref fogRange, true);
+                reader.ReadX(ref fogRange);
                 reader.ReadX(ref colorRGBA);
                 reader.ReadX(ref zero0x18);
             }

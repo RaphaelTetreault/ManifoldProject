@@ -93,7 +93,7 @@ namespace GameCube.GFZ.CourseCollision
             this.RecordStartAddress(reader);
             {
                 reader.ReadX(ref position);
-                reader.ReadX(ref decomposedRotation, true);
+                reader.ReadX(ref decomposedRotation);
                 reader.ReadX(ref unknownOption);
                 reader.ReadX(ref objectActiveOverride);
                 reader.ReadX(ref scale);
