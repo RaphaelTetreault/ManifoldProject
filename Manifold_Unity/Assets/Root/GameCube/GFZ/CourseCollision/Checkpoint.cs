@@ -125,8 +125,8 @@ namespace GameCube.GFZ.CourseCollision
             {
                 reader.ReadX(ref curveTimeStart);
                 reader.ReadX(ref curveTimeEnd);
-                reader.ReadX(ref planeStart, true);
-                reader.ReadX(ref planeEnd, true);
+                reader.ReadX(ref planeStart);
+                reader.ReadX(ref planeEnd);
                 reader.ReadX(ref startDistance);
                 reader.ReadX(ref endDistance);
                 reader.ReadX(ref trackWidth);

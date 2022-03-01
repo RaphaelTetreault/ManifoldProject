@@ -43,9 +43,9 @@ namespace GameCube.GFZ.CourseCollision
                 if (animationCurvePtr.IsNotNull)
                 {
                     // Init anim curve, jump, read without creating new instance
-                    animationCurve = new AnimationCurve(animationCurvePtr.Length);
                     reader.JumpToAddress(animationCurvePtr);
-                    reader.ReadX(ref animationCurve, false);
+                    animationCurve = new AnimationCurve(animationCurvePtr.Length);
+                    animationCurve.Deserialize(reader);
                 }
             }
             this.SetReaderToEndAddress(reader);

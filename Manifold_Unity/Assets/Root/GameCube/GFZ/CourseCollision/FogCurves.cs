@@ -101,7 +101,7 @@ namespace GameCube.GFZ.CourseCollision
             this.RecordStartAddress(reader);
             {
                 // read 6 array pointers
-                reader.ReadX(ref animationCurvesPtrs, kCurveCount, true);
+                reader.ReadX(ref animationCurvesPtrs, kCurveCount);
             }
             this.RecordEndAddress(reader);
             {
@@ -112,7 +112,7 @@ namespace GameCube.GFZ.CourseCollision
                     var animationCurve = new AnimationCurve(arrayPointer.Length);
 
                     reader.JumpToAddress(arrayPointer);
-                    reader.ReadX(ref animationCurve, false);
+                    animationCurve.Deserialize(reader);
 
                     animationCurves[i] = animationCurve;
                 }
@@ -132,7 +132,7 @@ namespace GameCube.GFZ.CourseCollision
             }
             this.RecordStartAddress(writer);
             {
-                writer.WriteX(animationCurvesPtrs, false);
+                writer.WriteX(animationCurvesPtrs);
             }
             this.RecordEndAddress(writer);
         }

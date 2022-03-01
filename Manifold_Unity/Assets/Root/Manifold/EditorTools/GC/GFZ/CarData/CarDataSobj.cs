@@ -486,47 +486,47 @@ namespace Manifold.EditorTools.GC.GFZ.CarData
         {
             BinaryIoUtility.PushEndianness(Endianness.BigEndian);
 
-            reader.ReadX(ref RedGazelle, true);
-            reader.ReadX(ref WhiteCat, true);
-            reader.ReadX(ref GoldenFox, true);
-            reader.ReadX(ref IronTiger, true);
-            reader.ReadX(ref FireStingray, true);
-            reader.ReadX(ref WildGoose, true);
-            reader.ReadX(ref BlueFalcon, true);
-            reader.ReadX(ref DeepClaw, true);
-            reader.ReadX(ref GreatStar, true);
-            reader.ReadX(ref LittleWyvern, true);
-            reader.ReadX(ref MadWolf, true);
-            reader.ReadX(ref SuperPiranha, true);
-            reader.ReadX(ref DeathAnchor, true);
-            reader.ReadX(ref AstroRobin, true);
-            reader.ReadX(ref BigFang, true);
-            reader.ReadX(ref SonicPhantom, true);
-            reader.ReadX(ref GreenPanther, true);
-            reader.ReadX(ref HyperSpeeder, true);
-            reader.ReadX(ref SpaceAngler, true);
-            reader.ReadX(ref KingMeteor, true);
-            reader.ReadX(ref QueenMeteor, true);
-            reader.ReadX(ref TwinNoritta, true);
-            reader.ReadX(ref NightThunder, true);
-            reader.ReadX(ref WildBoar, true);
-            reader.ReadX(ref BloodHawk, true);
-            reader.ReadX(ref WonderWasp, true);
-            reader.ReadX(ref MightyTyphoon, true);
-            reader.ReadX(ref MightyHurricane, true);
-            reader.ReadX(ref CrazyBear, true);
-            reader.ReadX(ref BlackBull, true);
-            reader.ReadX(ref DarkSchneider, true);
-            reader.ReadX(ref FatShark, true);
-            reader.ReadX(ref CosmicDolphin, true);
-            reader.ReadX(ref PinkSpider, true);
-            reader.ReadX(ref MagicSeagull, true);
-            reader.ReadX(ref SilverRat, true);
-            reader.ReadX(ref SparkMoon, true);
-            reader.ReadX(ref BunnyFlash, true);
-            reader.ReadX(ref GroovyTaxi, true);
-            reader.ReadX(ref RollingTurtle, true);
-            reader.ReadX(ref RainbowPhoenix, true);
+            reader.ReadX(ref RedGazelle);
+            reader.ReadX(ref WhiteCat);
+            reader.ReadX(ref GoldenFox);
+            reader.ReadX(ref IronTiger);
+            reader.ReadX(ref FireStingray);
+            reader.ReadX(ref WildGoose);
+            reader.ReadX(ref BlueFalcon);
+            reader.ReadX(ref DeepClaw);
+            reader.ReadX(ref GreatStar);
+            reader.ReadX(ref LittleWyvern);
+            reader.ReadX(ref MadWolf);
+            reader.ReadX(ref SuperPiranha);
+            reader.ReadX(ref DeathAnchor);
+            reader.ReadX(ref AstroRobin);
+            reader.ReadX(ref BigFang);
+            reader.ReadX(ref SonicPhantom);
+            reader.ReadX(ref GreenPanther);
+            reader.ReadX(ref HyperSpeeder);
+            reader.ReadX(ref SpaceAngler);
+            reader.ReadX(ref KingMeteor);
+            reader.ReadX(ref QueenMeteor);
+            reader.ReadX(ref TwinNoritta);
+            reader.ReadX(ref NightThunder);
+            reader.ReadX(ref WildBoar);
+            reader.ReadX(ref BloodHawk);
+            reader.ReadX(ref WonderWasp);
+            reader.ReadX(ref MightyTyphoon);
+            reader.ReadX(ref MightyHurricane);
+            reader.ReadX(ref CrazyBear);
+            reader.ReadX(ref BlackBull);
+            reader.ReadX(ref DarkSchneider);
+            reader.ReadX(ref FatShark);
+            reader.ReadX(ref CosmicDolphin);
+            reader.ReadX(ref PinkSpider);
+            reader.ReadX(ref MagicSeagull);
+            reader.ReadX(ref SilverRat);
+            reader.ReadX(ref SparkMoon);
+            reader.ReadX(ref BunnyFlash);
+            reader.ReadX(ref GroovyTaxi);
+            reader.ReadX(ref RollingTurtle);
+            reader.ReadX(ref RainbowPhoenix);
 
             // Read some padding
             reader.ReadX(ref padding, kPaddingSize);
@@ -537,93 +537,93 @@ namespace Manifold.EditorTools.GC.GFZ.CarData
             machineNames = new ShiftJisCString[kMachineNameTable];
             for (int i = 0; i < machineNames.Length; i++)
             {
-                reader.ReadX(ref machineNames[i], true);
+                reader.ReadX(ref machineNames[i]);
             }
             BinaryIoUtility.PopEndianness();
 
-            reader.ReadX(ref BraveEagle, true);
-            reader.ReadX(ref GalaxyFalcon, true);
-            reader.ReadX(ref GiantPlanet, true);
-            reader.ReadX(ref MegaloCruiser, true);
-            reader.ReadX(ref SplashWhale, true);
-            reader.ReadX(ref WildChariot, true);
-            reader.ReadX(ref ValiantJaguar, true);
-            reader.ReadX(ref HolySpider, true);
-            reader.ReadX(ref BloodRaven, true);
-            reader.ReadX(ref FunnySwallow, true);
-            reader.ReadX(ref OpticalWing, true);
-            reader.ReadX(ref MadBull, true);
-            reader.ReadX(ref BigTyrant, true);
-            reader.ReadX(ref GrandBase, true);
-            reader.ReadX(ref FireWolf, true);
-            reader.ReadX(ref DreadHammer, true);
-            reader.ReadX(ref SilverSword, true);
-            reader.ReadX(ref RageKnight, true);
-            reader.ReadX(ref RapidBarrel, true);
-            reader.ReadX(ref SkyHorse, true);
-            reader.ReadX(ref AquaGoose, true);
-            reader.ReadX(ref SpaceCancer, true);
-            reader.ReadX(ref MetalShell, true);
-            reader.ReadX(ref SpeedyDragon, true);
-            reader.ReadX(ref LibertyManta, true);
+            reader.ReadX(ref BraveEagle);
+            reader.ReadX(ref GalaxyFalcon);
+            reader.ReadX(ref GiantPlanet);
+            reader.ReadX(ref MegaloCruiser);
+            reader.ReadX(ref SplashWhale);
+            reader.ReadX(ref WildChariot);
+            reader.ReadX(ref ValiantJaguar);
+            reader.ReadX(ref HolySpider);
+            reader.ReadX(ref BloodRaven);
+            reader.ReadX(ref FunnySwallow);
+            reader.ReadX(ref OpticalWing);
+            reader.ReadX(ref MadBull);
+            reader.ReadX(ref BigTyrant);
+            reader.ReadX(ref GrandBase);
+            reader.ReadX(ref FireWolf);
+            reader.ReadX(ref DreadHammer);
+            reader.ReadX(ref SilverSword);
+            reader.ReadX(ref RageKnight);
+            reader.ReadX(ref RapidBarrel);
+            reader.ReadX(ref SkyHorse);
+            reader.ReadX(ref AquaGoose);
+            reader.ReadX(ref SpaceCancer);
+            reader.ReadX(ref MetalShell);
+            reader.ReadX(ref SpeedyDragon);
+            reader.ReadX(ref LibertyManta);
 
-            reader.ReadX(ref WonderWorm, true);
-            reader.ReadX(ref RushCyclone, true);
-            reader.ReadX(ref CombatCannon, true);
-            reader.ReadX(ref MuscleGorilla, true);
-            reader.ReadX(ref CyberFox, true);
-            reader.ReadX(ref HeatSnake, true);
-            reader.ReadX(ref RaveDrifter, true);
-            reader.ReadX(ref AerialBullet, true);
-            reader.ReadX(ref SparkBird, true);
-            reader.ReadX(ref BlastCamel, true);
-            reader.ReadX(ref DarkChaser, true);
-            reader.ReadX(ref GarnetPhantom, true);
-            reader.ReadX(ref BrightSpear, true);
-            reader.ReadX(ref HyperStream, true);
-            reader.ReadX(ref SuperLynx, true);
-            reader.ReadX(ref CrystalEgg, true);
-            reader.ReadX(ref WindyShark, true);
-            reader.ReadX(ref RedRex, true);
-            reader.ReadX(ref SonicSoldier, true);
-            reader.ReadX(ref MaximumStar, true);
-            reader.ReadX(ref MoonSnail, true);
-            reader.ReadX(ref CrazyBuffalo, true);
-            reader.ReadX(ref ScudViper, true);
-            reader.ReadX(ref RoundDisk, true);
-            reader.ReadX(ref EnergyCrest, true);
+            reader.ReadX(ref WonderWorm);
+            reader.ReadX(ref RushCyclone);
+            reader.ReadX(ref CombatCannon);
+            reader.ReadX(ref MuscleGorilla);
+            reader.ReadX(ref CyberFox);
+            reader.ReadX(ref HeatSnake);
+            reader.ReadX(ref RaveDrifter);
+            reader.ReadX(ref AerialBullet);
+            reader.ReadX(ref SparkBird);
+            reader.ReadX(ref BlastCamel);
+            reader.ReadX(ref DarkChaser);
+            reader.ReadX(ref GarnetPhantom);
+            reader.ReadX(ref BrightSpear);
+            reader.ReadX(ref HyperStream);
+            reader.ReadX(ref SuperLynx);
+            reader.ReadX(ref CrystalEgg);
+            reader.ReadX(ref WindyShark);
+            reader.ReadX(ref RedRex);
+            reader.ReadX(ref SonicSoldier);
+            reader.ReadX(ref MaximumStar);
+            reader.ReadX(ref MoonSnail);
+            reader.ReadX(ref CrazyBuffalo);
+            reader.ReadX(ref ScudViper);
+            reader.ReadX(ref RoundDisk);
+            reader.ReadX(ref EnergyCrest);
 
-            reader.ReadX(ref Euros_01, true);
-            reader.ReadX(ref Triangle_GT, true);
-            reader.ReadX(ref Velocity_J, true);
-            reader.ReadX(ref Sunrise140, true);
-            reader.ReadX(ref Saturn_SG, true);
-            reader.ReadX(ref Bluster_X, true);
-            reader.ReadX(ref Devilfish_RX, true);
-            reader.ReadX(ref Mars_EX, true);
-            reader.ReadX(ref Titan_G4, true);
-            reader.ReadX(ref Extreme_ZZ, true);
-            reader.ReadX(ref Thunderbolt_V2, true);
-            reader.ReadX(ref Boxer_2C, true);
-            reader.ReadX(ref Shuttle_M2, true);
-            reader.ReadX(ref Punisher_4X, true);
-            reader.ReadX(ref Scorpion_R, true);
-            reader.ReadX(ref Raiden_88, true);
-            reader.ReadX(ref Impulse220, true);
-            reader.ReadX(ref Bazooka_YS, true);
-            reader.ReadX(ref Meteor_RR, true);
-            reader.ReadX(ref Tiger_RZ, true);
-            reader.ReadX(ref Hornet_FX, true);
-            reader.ReadX(ref Jupiter_Q, true);
-            reader.ReadX(ref Comet_V, true);
-            reader.ReadX(ref Crown_77, true);
-            reader.ReadX(ref Triple_Z, true);
+            reader.ReadX(ref Euros_01);
+            reader.ReadX(ref Triangle_GT);
+            reader.ReadX(ref Velocity_J);
+            reader.ReadX(ref Sunrise140);
+            reader.ReadX(ref Saturn_SG);
+            reader.ReadX(ref Bluster_X);
+            reader.ReadX(ref Devilfish_RX);
+            reader.ReadX(ref Mars_EX);
+            reader.ReadX(ref Titan_G4);
+            reader.ReadX(ref Extreme_ZZ);
+            reader.ReadX(ref Thunderbolt_V2);
+            reader.ReadX(ref Boxer_2C);
+            reader.ReadX(ref Shuttle_M2);
+            reader.ReadX(ref Punisher_4X);
+            reader.ReadX(ref Scorpion_R);
+            reader.ReadX(ref Raiden_88);
+            reader.ReadX(ref Impulse220);
+            reader.ReadX(ref Bazooka_YS);
+            reader.ReadX(ref Meteor_RR);
+            reader.ReadX(ref Tiger_RZ);
+            reader.ReadX(ref Hornet_FX);
+            reader.ReadX(ref Jupiter_Q);
+            reader.ReadX(ref Comet_V);
+            reader.ReadX(ref Crown_77);
+            reader.ReadX(ref Triple_Z);
 
             BinaryIoUtility.PushEndianness(Endianness.LittleEndian);
             unknownNames = new ShiftJisCString[kUnknownTable];
             for (int i = 0; i < unknownNames.Length; i++)
             {
-                reader.ReadX(ref unknownNames[i], true);
+                reader.ReadX(ref unknownNames[i]);
             }
             BinaryIoUtility.PopEndianness();
 
@@ -679,14 +679,8 @@ namespace Manifold.EditorTools.GC.GFZ.CarData
             for (int i = 0; i < kPaddingSize; i++)
                 writer.WriteX((byte)0);
 
-            BinaryIoUtility.PushEncoding(System.Text.Encoding.ASCII);
-            BinaryIoUtility.PushEndianness(Endianness.LittleEndian);
             foreach (var name in machineNames)
-            {
                 writer.WriteX(name);
-            }
-            BinaryIoUtility.PopEndianness();
-            BinaryIoUtility.PopEncoding();
 
             writer.WriteX(BraveEagle);
             writer.WriteX(GalaxyFalcon);
@@ -766,15 +760,8 @@ namespace Manifold.EditorTools.GC.GFZ.CarData
             writer.WriteX(Crown_77);
             writer.WriteX(Triple_Z);
 
-
-            BinaryIoUtility.PushEncoding(System.Text.Encoding.ASCII);
-            BinaryIoUtility.PushEndianness(Endianness.LittleEndian);
             foreach (var name in unknownNames)
-            {
                 writer.WriteX(name);
-            }
-            BinaryIoUtility.PopEndianness();
-            BinaryIoUtility.PopEncoding();
 
             BinaryIoUtility.PopEndianness();
         }

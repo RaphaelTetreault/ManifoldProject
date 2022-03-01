@@ -52,7 +52,7 @@ namespace GameCube.GFZ.CourseCollision
         {
             this.RecordStartAddress(reader);
             {
-                reader.ReadX(ref keyableAttributes, keyableAttributes.Length, true);
+                reader.ReadX(ref keyableAttributes, keyableAttributes.Length);
             }
             this.RecordEndAddress(reader);
         }

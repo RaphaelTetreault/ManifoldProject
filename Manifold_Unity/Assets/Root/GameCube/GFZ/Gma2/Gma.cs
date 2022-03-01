@@ -38,7 +38,7 @@ namespace GameCube.GFZ.Gma2
             {
                 reader.ReadX(ref modelsCount);
                 reader.ReadX(ref modelBasePtrOffset);
-                reader.ReadX(ref modelEntries, modelsCount, true);
+                reader.ReadX(ref modelEntries, modelsCount);
             }
             this.RecordEndAddress(reader);
             {

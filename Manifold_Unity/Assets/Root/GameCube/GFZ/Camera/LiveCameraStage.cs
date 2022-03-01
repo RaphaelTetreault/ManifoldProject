@@ -38,7 +38,7 @@ namespace GameCube.GFZ.Camera
             var nPans = (int)(reader.BaseStream.Length / CameraPan.kStructureSize);
             
             // Read that many structures out of the file
-            reader.ReadX(ref pans, nPans, true);
+            reader.ReadX(ref pans, nPans);
 
             // Sanity check. We should be at the end of the stream
             Assert.IsTrue(reader.BaseStream.IsAtEndOfStream());
@@ -46,7 +46,7 @@ namespace GameCube.GFZ.Camera
 
         public void Serialize(BinaryWriter writer)
         {
-            writer.WriteX(pans, false);
+            writer.WriteX(pans);
         }
 
     }

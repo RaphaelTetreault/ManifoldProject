@@ -53,7 +53,7 @@ namespace GameCube.GFZ.CourseCollision
                 {
                     reader.JumpToAddress(animationCurvePtrs);
                     animationCurve = new AnimationCurve(animationCurvePtrs.Length);
-                    reader.ReadX(ref animationCurve, false);
+                    animationCurve.Deserialize(reader);
                 }
             }
             this.SetReaderToEndAddress(reader);

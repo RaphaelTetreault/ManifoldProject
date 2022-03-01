@@ -29,10 +29,10 @@ namespace GameCube.GFZ.Gma2
             Assert.IsTrue(NamePtr.IsNotNull);
 
             reader.JumpToAddress(NamePtr);
-            reader.ReadX(ref name, true);
+            reader.ReadX(ref name);
 
             reader.JumpToAddress(GcmfPtr);
-            reader.ReadX(ref gcmf, true);
+            reader.ReadX(ref gcmf);
         }
 
     }

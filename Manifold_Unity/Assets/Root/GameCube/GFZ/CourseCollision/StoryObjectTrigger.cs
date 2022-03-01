@@ -80,7 +80,7 @@ namespace GameCube.GFZ.CourseCollision
                 {
                     // Read array pointer
                     reader.JumpToAddress(storyObjectPathPtr);
-                    reader.ReadX(ref storyObjectPath, true);
+                    reader.ReadX(ref storyObjectPath);
                 }
             }
             this.SetReaderToEndAddress(reader);

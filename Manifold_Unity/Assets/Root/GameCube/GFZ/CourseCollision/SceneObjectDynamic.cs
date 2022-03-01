@@ -52,7 +52,7 @@ namespace GameCube.GFZ.CourseCollision
                 reader.ReadX(ref unk0x00);
                 reader.ReadX(ref unk0x04);
                 reader.ReadX(ref sceneObjectPtr);
-                reader.ReadX(ref transformPRXS, true);
+                reader.ReadX(ref transformPRXS);
                 reader.ReadX(ref zero_0x2C);
                 reader.ReadX(ref animationClipPtr);
                 reader.ReadX(ref textureScrollPtr);
@@ -63,24 +63,24 @@ namespace GameCube.GFZ.CourseCollision
             {
                 //
                 reader.JumpToAddress(sceneObjectPtr);
-                reader.ReadX(ref sceneObject, true);
+                reader.ReadX(ref sceneObject);
 
                 if (animationClipPtr.IsNotNull)
                 {
                     reader.JumpToAddress(animationClipPtr);
-                    reader.ReadX(ref animationClip, true);
+                    reader.ReadX(ref animationClip);
                 }
 
                 if (textureScrollPtr.IsNotNull)
                 {
                     reader.JumpToAddress(textureScrollPtr);
-                    reader.ReadX(ref textureScroll, true);
+                    reader.ReadX(ref textureScroll);
                 }
 
                 if (skeletalAnimatorPtr.IsNotNull)
                 {
                     reader.JumpToAddress(skeletalAnimatorPtr);
-                    reader.ReadX(ref skeletalAnimator, true);
+                    reader.ReadX(ref skeletalAnimator);
                 }
 
                 // 1518 objects without a transform
@@ -89,7 +89,7 @@ namespace GameCube.GFZ.CourseCollision
                 if (transformMatrix3x4Ptr.IsNotNull)
                 {
                     reader.JumpToAddress(transformMatrix3x4Ptr);
-                    reader.ReadX(ref transformMatrix3x4, true);
+                    reader.ReadX(ref transformMatrix3x4);
                 }
 
                 // Assert pointer and the like

@@ -115,7 +115,7 @@ namespace GameCube.GFZ.CourseCollision
 
                         // Read values
                         reader.JumpToAddress(arrayPointer);
-                        reader.ReadX(ref animationCurve, false); // do not create new instance
+                        animationCurve.Deserialize(reader);
 
                         // Assign curve to array
                         animationCurves[i] = animationCurve;

@@ -59,7 +59,7 @@ namespace Manifold.IO
         public static void WriteX(this BinaryWriter writer, double value)
         => BinaryIoUtility.Write(writer, value);
 
-        public static void WriteX<T>(this BinaryWriter writer, T value) where T : IBinarySerializable, new()
+        public static void WriteX<TBinarySerializable>(this BinaryWriter writer, TBinarySerializable value) where TBinarySerializable : IBinarySerializable
         => BinaryIoUtility.Write(writer, value);
 
         // HACK: discard lets us use the name WriteX without conflicting with the above method
@@ -104,10 +104,10 @@ namespace Manifold.IO
         public static void WriteX(this BinaryWriter writer, string value, Encoding encoding)
         => BinaryIoUtility.Write(writer, value, encoding);
 
-        public static void WriteX<T>(this BinaryWriter writer, T[] value) where T : IBinarySerializable, new()
+        public static void WriteX<TBinarySerializable>(this BinaryWriter writer, TBinarySerializable[] value) where TBinarySerializable : IBinarySerializable
         => BinaryIoUtility.Write(writer, value);
         
-        public static void WriteE<TEnum>(this BinaryWriter writer, TEnum[] value, byte _ = 0) where TEnum : Enum
+        public static void WriteX<TEnum>(this BinaryWriter writer, TEnum[] value, byte _ = 0) where TEnum : Enum
         => BinaryIoUtility.Write(writer, value);
 
     }

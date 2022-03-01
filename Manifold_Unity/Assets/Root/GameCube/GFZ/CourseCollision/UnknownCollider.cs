@@ -39,14 +39,14 @@ namespace GameCube.GFZ.CourseCollision
             this.RecordStartAddress(reader);
             {
                 reader.ReadX(ref templateSceneObjectPtr);
-                reader.ReadX(ref transform, true);
+                reader.ReadX(ref transform);
             }
             this.RecordEndAddress(reader);
             {
                 if (templateSceneObjectPtr.IsNotNull)
                 {
                     reader.JumpToAddress(templateSceneObjectPtr);
-                    reader.ReadX(ref sceneObject, true);
+                    reader.ReadX(ref sceneObject);
                 }
             }
             this.SetReaderToEndAddress(reader);

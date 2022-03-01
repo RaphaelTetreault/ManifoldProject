@@ -72,7 +72,7 @@ namespace GameCube.GX
             this.RecordStartAddress(reader);
             {
                 // Read primitive Data
-                reader.ReadX(ref gxCommand, true);
+                reader.ReadX(ref gxCommand);
                 reader.ReadX(ref count);
 
                 // Load vertex attribute format (VAF) from vertex attribute table (VAT)

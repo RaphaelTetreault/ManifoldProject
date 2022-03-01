@@ -79,10 +79,10 @@ namespace GameCube.GFZ.FMI
             this.RecordEndAddress(reader);
             {
                 reader.BaseStream.Seek(kParticlesAbsPtr, SeekOrigin.Begin);
-                reader.ReadX(ref particles, animationCount, true);
+                reader.ReadX(ref particles, animationCount);
 
                 reader.BaseStream.Seek(kAnimationAbsPtr, SeekOrigin.Begin);
-                reader.ReadX(ref animations, exhaustCount, true);
+                reader.ReadX(ref animations, exhaustCount);
 
                 // TODO: read names
             }

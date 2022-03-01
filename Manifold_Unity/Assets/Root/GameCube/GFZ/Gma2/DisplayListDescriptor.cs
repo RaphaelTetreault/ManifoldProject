@@ -32,7 +32,7 @@ namespace GameCube.GFZ.Gma2
         {
             this.RecordStartAddress(reader);
             {
-                reader.ReadX(ref transformMatrixIndexes, true);
+                reader.ReadX(ref transformMatrixIndexes);
                 reader.ReadX(ref opaqueMaterialDisplayListSize);
                 reader.ReadX(ref translucidMaterialDisplayListSize);
             }

@@ -52,7 +52,7 @@ namespace GameCube.GFZ.Gma2
             }
             this.RecordStartAddress(writer);
             {
-                writer.WriteX(indexes, false);
+                writer.WriteX(indexes);
             }
             this.RecordEndAddress(writer);
         }

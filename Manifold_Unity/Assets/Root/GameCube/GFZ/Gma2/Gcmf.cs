@@ -93,7 +93,7 @@ namespace GameCube.GFZ.Gma2
             {
                 reader.ReadX(ref magic);
                 reader.ReadX(ref attributes);
-                reader.ReadX(ref boundingSphere, true);
+                reader.ReadX(ref boundingSphere);
                 reader.ReadX(ref textureCount);
                 reader.ReadX(ref opaqueMaterialCount);
                 reader.ReadX(ref translucidMaterialCount);
@@ -101,7 +101,7 @@ namespace GameCube.GFZ.Gma2
                 reader.ReadX(ref zero0x1F);
                 reader.ReadX(ref gcmfTexturesSize);
                 reader.ReadX(ref zero0x24);
-                reader.ReadX(ref transformMatrixIndexes8, true);
+                reader.ReadX(ref transformMatrixIndexes8);
             }
             this.RecordEndAddress(reader);
             {
@@ -119,18 +119,18 @@ namespace GameCube.GFZ.Gma2
                 textureConfigs = new TextureConfig[textureCount];
                 for (int i = 0; i < textureConfigs.Length; i++)
                 {
-                    reader.ReadX(ref textureConfigs[i], true);
+                    reader.ReadX(ref textureConfigs[i]);
                     reader.AlignTo(GX.GXUtility.GX_FIFO_ALIGN);
                 }
 
                 // Read in bones. If 'transformMatrixCount' is 0, nothing happens
-                reader.ReadX(ref bones, boneCount, true);
+                reader.ReadX(ref bones, boneCount);
                 reader.AlignTo(GX.GXUtility.GX_FIFO_ALIGN);
 
                 // Check GCMF attributes; some types has special data embedded
                 if (IsSkinnedModel || IsPhysicsDrivenModel)
                 {
-                    reader.ReadX(ref skinnedVertexDescriptor, true);
+                    reader.ReadX(ref skinnedVertexDescriptor);
                     reader.AlignTo(GX.GXUtility.GX_FIFO_ALIGN);
 
                     // Get base pointer for skinned data offsets
@@ -156,7 +156,7 @@ namespace GameCube.GFZ.Gma2
                     {
                         var address = SkinnedDataBaseAddress + skinnedVertexDescriptor.SkinnedVerticesAPtrOffset;
                         reader.JumpToAddress(address);
-                        reader.ReadX(ref skinnedVerticesA, skinnedVertexDescriptor.SkinnedVerticesACount, true);
+                        reader.ReadX(ref skinnedVerticesA, skinnedVertexDescriptor.SkinnedVerticesACount);
                         // Redundant since the FIFO alignment is the same size as the structure (0x20)
                         //reader.AlignTo(GX.GXUtility.GX_FIFO_ALIGN);
                     }
@@ -177,7 +177,7 @@ namespace GameCube.GFZ.Gma2
                     {
                         var address = SkinnedDataBaseAddress + skinnedVertexDescriptor.SkinnedVerticesBPtrOffset;
                         reader.JumpToAddress(address);
-                        reader.ReadX(ref skinnedVerticesB, skinnedVertexDescriptor.SkinnedVerticesBCount, true);
+                        reader.ReadX(ref skinnedVerticesB, skinnedVertexDescriptor.SkinnedVerticesBCount);
                         reader.AlignTo(GX.GXUtility.GX_FIFO_ALIGN);
                     }
 
@@ -195,7 +195,7 @@ namespace GameCube.GFZ.Gma2
                         // To do this with a single Peek call, we have to handle the case of 0 correctly.
                         // If we subtract by 1, 0 underflows and becomes an invalid index. To check if a max
                         // index of 255 is valid (which is now 254 due to the -1), we check for less than 255.
-                        while (unchecked(reader.PeekUint() - 1) < byte.MaxValue)
+                        while (unchecked(reader.PeekUInt() - 1) < byte.MaxValue)
                         {
                             var skinBoneBinding = new SkinBoneBinding();
                             skinBoneBinding.Deserialize(reader);
@@ -240,7 +240,7 @@ namespace GameCube.GFZ.Gma2
                 }
 
                 //
-                writer.WriteX(bones, false);
+                writer.WriteX(bones);
                 writer.AlignTo(GX.GXUtility.GX_FIFO_ALIGN);
 
                 // Write garbage/blank on first pass
@@ -251,7 +251,7 @@ namespace GameCube.GFZ.Gma2
                 }
 
                 //
-                writer.WriteX(submeshes, false);
+                writer.WriteX(submeshes);
                 writer.AlignTo(GX.GXUtility.GX_FIFO_ALIGN);
 
 
@@ -266,23 +266,23 @@ namespace GameCube.GFZ.Gma2
 
                     // (#1) Write this data first (always has lowest offset)
                     Pointer SkinnedVerticesBPtr = writer.GetPositionAsPointer();
-                    writer.WriteX(skinnedVerticesB, false);
+                    writer.WriteX(skinnedVerticesB);
                     writer.AlignTo(GX.GXUtility.GX_FIFO_ALIGN);
 
                     // (#2) This data will be empty / [0] when 'IsPhysicsDrivenModel'
                     // However, that's a good thing (we still want this address/offset).
                     Pointer SkinnedVerticesAPtr = writer.GetPositionAsPointer();
-                    writer.WriteX(skinnedVerticesA, false);
+                    writer.WriteX(skinnedVerticesA);
                     writer.AlignTo(GX.GXUtility.GX_FIFO_ALIGN); // redundant due to type size, but looks good.
 
                     // (#3) Like the previous type, this too will be null when 'IsPhysicsDrivenModel'
                     Pointer unkBoneIndicesPtr = writer.GetPositionAsPointer();
-                    writer.WriteX(UnkBoneIndices, false);
+                    writer.WriteX(UnkBoneIndices);
                     writer.AlignTo(GX.GXUtility.GX_FIFO_ALIGN);
 
                     // (#4) Lastly, write the skin-bone bindings
                     Pointer SkinBoneBindingsPtr = writer.GetPositionAsPointer();
-                    writer.WriteX(skinBoneBindings, false);
+                    writer.WriteX(skinBoneBindings);
                     writer.AlignTo(GX.GXUtility.GX_FIFO_ALIGN);
 
                     // Second pass: rewrite data, getting correct count and offsets

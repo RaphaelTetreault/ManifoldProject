@@ -45,7 +45,7 @@ namespace Manifold.IO
             byte padByte = (byte)padding;
 
             writer.AlignTo(alignment, padByte);
-            writer.WriteX(bytes, false);
+            writer.WriteX(bytes);
             writer.AlignTo(alignment, padByte);
         }
         public static void CommentType<T>(this BinaryWriter writer, bool doWrite, char padding = ' ', int alignment = 16)
@@ -174,7 +174,7 @@ namespace Manifold.IO
             writer.CommentNewLine(true);
             writer.Comment("Manifold", true);
             writer.Comment("created by:", true);
-            writer.WriteX(new byte[] { 0x52, 0x61, 0x70, 0x68, 0x61, 0xeb, 0x6c, 0x54, 0xe9, 0x74, 0x72, 0x65, 0x61, 0x75, 0x6c, 0x74 }, false); // RaphaëlTétreault
+            writer.WriteX(new byte[] { 0x52, 0x61, 0x70, 0x68, 0x61, 0xeb, 0x6c, 0x54, 0xe9, 0x74, 0x72, 0x65, 0x61, 0x75, 0x6c, 0x74 } ); // RaphaëlTétreault
             writer.Comment("aka StarkNebula", true);
             writer.CommentNewLine(true, '-');
             //writer.CommentNewLine(true);

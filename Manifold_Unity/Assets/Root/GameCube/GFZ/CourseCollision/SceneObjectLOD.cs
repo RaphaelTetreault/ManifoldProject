@@ -50,7 +50,7 @@ namespace GameCube.GFZ.CourseCollision
                 Assert.IsTrue(zero_0x08 == 0);
 
                 reader.JumpToAddress(lodNamePtr);
-                reader.ReadX(ref name, true);
+                reader.ReadX(ref name);
             }
             this.SetReaderToEndAddress(reader);
         }

@@ -107,7 +107,7 @@ namespace GameCube.GFZ.CourseCollision
             // Read index arrays
             this.RecordStartAddress(reader);
             {
-                reader.ReadX(ref indexListPtrs, Count, true);
+                reader.ReadX(ref indexListPtrs, Count);
             }
             this.RecordEndAddress(reader);
             {
@@ -125,9 +125,8 @@ namespace GameCube.GFZ.CourseCollision
                     var indexArrayPtr = indexListPtrs[i];
                     if (indexArrayPtr.IsNotNull)
                     {
-                        var indexList = indexLists[i];
                         reader.JumpToAddress(indexArrayPtr);
-                        reader.ReadX(ref indexList, false);
+                        indexLists[i].Deserialize(reader);
                     }
                 }
 

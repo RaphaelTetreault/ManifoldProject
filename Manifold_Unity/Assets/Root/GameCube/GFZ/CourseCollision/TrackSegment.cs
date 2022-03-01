@@ -90,13 +90,13 @@ namespace GameCube.GFZ.CourseCollision
             {
                 // Read Topology
                 reader.JumpToAddress(trackCurvesPtr);
-                reader.ReadX(ref trackCurves, true);
+                reader.ReadX(ref trackCurves);
 
                 // Read hairpin turn
                 if (trackCornerPtr.IsNotNull)
                 {
                     reader.JumpToAddress(trackCornerPtr);
-                    reader.ReadX(ref trackCorner, true);
+                    reader.ReadX(ref trackCorner);
                 }
 
                 // TODO: make this functional
@@ -152,7 +152,7 @@ namespace GameCube.GFZ.CourseCollision
             {
                 // NOTE: children are always sequential (ArrayPointer)
                 reader.JumpToAddress(childrenPtrs);
-                reader.ReadX(ref children, childrenPtrs.Length, true);
+                reader.ReadX(ref children, childrenPtrs.Length);
             }
 
             //

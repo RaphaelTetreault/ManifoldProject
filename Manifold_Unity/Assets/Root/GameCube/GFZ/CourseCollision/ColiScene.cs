@@ -207,7 +207,7 @@ namespace GameCube.GFZ.CourseCollision
             // REFERENCE FIELDS
             trackNodes = new TrackNode[0];
             embeddedPropertyAreas = EmbeddedTrackPropertyArea.DefaultArray();
-            staticColliderMeshManager = new StaticColliderMeshManager();
+            staticColliderMeshManager = new StaticColliderMeshManager(SerializeFormat.InvalidFormat);
 
             trackMinHeight = new TrackMinHeight(); // has default constructor
             dynamicSceneObjects = new SceneObjectDynamic[0];
@@ -259,18 +259,17 @@ namespace GameCube.GFZ.CourseCollision
 
             // 0x08 and 0x0C: Track Nodes
             reader.JumpToAddress(trackNodesPtr);
-            reader.ReadX(ref trackNodes, trackNodesPtr.Length, true);
+            reader.ReadX(ref trackNodes, trackNodesPtr.Length);
 
             // 0x10 and 0x14: Track Effect Attribute Areas
             reader.JumpToAddress(embeddedTrackPropertyAreasPtr);
-            reader.ReadX(ref embeddedPropertyAreas, embeddedTrackPropertyAreasPtr.Length, true);
+            reader.ReadX(ref embeddedPropertyAreas, embeddedTrackPropertyAreasPtr.Length);
 
             // 0x1C 
-            // Format is deserialized in DeserializeSelf(reader);
+            reader.JumpToAddress(staticColliderMeshManagerPtr);
             // The structure's size differs between AX and GX. Format defines which it uses.
             staticColliderMeshManager = new StaticColliderMeshManager(Format);
-            reader.JumpToAddress(staticColliderMeshManagerPtr);
-            reader.ReadX(ref staticColliderMeshManager, false);
+            staticColliderMeshManager.Deserialize(reader);
 
             // 0x20
             reader.JumpToAddress(zeroes0x20Ptr);
@@ -278,63 +277,63 @@ namespace GameCube.GFZ.CourseCollision
 
             // 0x24
             reader.JumpToAddress(trackMinHeightPtr);
-            reader.ReadX(ref trackMinHeight, true);
+            reader.ReadX(ref trackMinHeight);
 
             // 0x48 (count total), 0x4C, 0x50, 0x54 (pointer address)
             reader.JumpToAddress(dynamicSceneObjectsPtr);
-            reader.ReadX(ref dynamicSceneObjects, dynamicSceneObjectCount, true);
+            reader.ReadX(ref dynamicSceneObjects, dynamicSceneObjectCount);
 
             // 0x5C and 0x60 SOLS values
             reader.JumpToAddress(unknownCollidersPtr);
-            reader.ReadX(ref unknownColliders, unknownCollidersPtr.Length, true);
+            reader.ReadX(ref unknownColliders, unknownCollidersPtr.Length);
 
             // 0x64 and 0x68
             reader.JumpToAddress(sceneObjectsPtr);
-            reader.ReadX(ref sceneObjects, sceneObjectsPtr.Length, true);
+            reader.ReadX(ref sceneObjects, sceneObjectsPtr.Length);
 
             // 0x6C and 0x70
             reader.JumpToAddress(staticSceneObjectsPtr);
-            reader.ReadX(ref staticSceneObjects, staticSceneObjectsPtr.Length, true);
+            reader.ReadX(ref staticSceneObjects, staticSceneObjectsPtr.Length);
 
             // 0x80
             // Data is optional
             if (fogCurvesPtr.IsNotNull)
             {
                 reader.JumpToAddress(fogCurvesPtr);
-                reader.ReadX(ref fogCurves, true);
+                reader.ReadX(ref fogCurves);
             }
 
             // 0x84
             reader.JumpToAddress(fogPtr);
-            reader.ReadX(ref fog, true);
+            reader.ReadX(ref fog);
 
             // 0x90 
             reader.JumpToAddress(trackLengthPtr);
-            reader.ReadX(ref trackLength, true);
+            reader.ReadX(ref trackLength);
 
             // 0x94 and 0x98
             reader.JumpToAddress(unknownTriggersPtr);
-            reader.ReadX(ref unknownTriggers, unknownTriggersPtr.Length, true);
+            reader.ReadX(ref unknownTriggers, unknownTriggersPtr.Length);
 
             // 0x9C and 0xA0
             reader.JumpToAddress(visualEffectTriggersPtr);
-            reader.ReadX(ref visualEffectTriggers, visualEffectTriggersPtr.Length, true);
+            reader.ReadX(ref visualEffectTriggers, visualEffectTriggersPtr.Length);
 
             // 0xA4 and 0xA8
             reader.JumpToAddress(miscellaneousTriggersPtr);
-            reader.ReadX(ref miscellaneousTriggers, miscellaneousTriggersPtr.Length, true);
+            reader.ReadX(ref miscellaneousTriggers, miscellaneousTriggersPtr.Length);
 
             // 0xAC and 0xB0
             reader.JumpToAddress(timeExtensionTriggersPtr);
-            reader.ReadX(ref timeExtensionTriggers, timeExtensionTriggersPtr.Length, true);
+            reader.ReadX(ref timeExtensionTriggers, timeExtensionTriggersPtr.Length);
 
             // 0xB4 and 0xB8
             reader.JumpToAddress(storyObjectTriggersPtr);
-            reader.ReadX(ref storyObjectTriggers, storyObjectTriggersPtr.Length, true);
+            reader.ReadX(ref storyObjectTriggers, storyObjectTriggersPtr.Length);
 
             // 0xBC and 0xC0
             reader.JumpToAddress(checkpointGridPtr);
-            reader.ReadX(ref trackCheckpointGrid, true);
+            reader.ReadX(ref trackCheckpointGrid);
 
             // TEMP
             // For some reason, this structure points back to these
@@ -472,7 +471,7 @@ namespace GameCube.GFZ.CourseCollision
                 // Resulting pointer should be 0xE4 or 0xE8 for AX or GX, respectively.
                 zeroes0x20 = new byte[kSizeOfZeroes0x20];
                 zeroes0x20Ptr = writer.GetPositionAsPointer();
-                writer.WriteX(zeroes0x20, false); // TODO: HARD-CODED
+                writer.WriteX(zeroes0x20); // TODO: HARD-CODED
 
                 // 0x24
                 // Resulting pointer should be 0xF8 or 0xFC for AX or GX, respectively.
@@ -519,7 +518,7 @@ namespace GameCube.GFZ.CourseCollision
                 {
                     // Write each tracknode - stitch of trackpoint and tracksegment
                     writer.InlineDesc(serializeVerbose, 0x0C, trackNodes);
-                    writer.WriteX(trackNodes, false);
+                    writer.WriteX(trackNodes);
                     var trackNodesPtr = trackNodes.GetBasePointer();
 
                     // TRACK CHECKPOINTS
@@ -534,7 +533,7 @@ namespace GameCube.GFZ.CourseCollision
                         var array = all.ToArray();
 
                         writer.InlineDesc(serializeVerbose, trackNodesPtr, array);
-                        writer.WriteX(array, false);
+                        writer.WriteX(array);
                     }
 
                     // TRACK SEGMENTS
@@ -581,7 +580,7 @@ namespace GameCube.GFZ.CourseCollision
                         var allTrackCurves = listTrackCurves.ToArray();
                         // Write anim curve ptrs
                         writer.InlineDesc(serializeVerbose, allTrackSegments.GetBasePointer(), allTrackCurves);
-                        writer.WriteX(allTrackCurves, false);
+                        writer.WriteX(allTrackCurves);
 
                         // Construct list of all /animation curves/ (breakout from track structure)
                         var listAnimationCurves = new List<AnimationCurve>();
@@ -591,7 +590,7 @@ namespace GameCube.GFZ.CourseCollision
                         var allAnimationCurves = listAnimationCurves.ToArray();
                         //
                         writer.InlineDesc(serializeVerbose, allTrackCurves.GetBasePointer(), allAnimationCurves);
-                        writer.WriteX(allAnimationCurves, false);
+                        writer.WriteX(allAnimationCurves);
                     }
 
                     // TODO: better type comment
@@ -620,7 +619,7 @@ namespace GameCube.GFZ.CourseCollision
 
                 //
                 writer.InlineDesc(serializeVerbose, 0x14, embeddedPropertyAreas);
-                writer.WriteX(embeddedPropertyAreas, false);
+                writer.WriteX(embeddedPropertyAreas);
             }
 
             // STATIC COLLIDER MESHES
@@ -641,7 +640,7 @@ namespace GameCube.GFZ.CourseCollision
                     // Write tri data and comment
                     if (!colliderTris.IsNullOrEmpty())
                         writer.InlineDesc(serializeVerbose, scmPtr, colliderTris);
-                    writer.WriteX(colliderTris, false);
+                    writer.WriteX(colliderTris);
                     WriteStaticColliderMeshMatrices(writer, scmPtr, "ColiTri", staticColliderMeshManager.triMeshGrids);
                 }
 
@@ -651,7 +650,7 @@ namespace GameCube.GFZ.CourseCollision
                     // Write quad data and comment
                     if (!colliderQuads.IsNullOrEmpty())
                         writer.InlineDesc(serializeVerbose, scmPtr, colliderQuads);
-                    writer.WriteX(colliderQuads, false);
+                    writer.WriteX(colliderQuads);
                     WriteStaticColliderMeshMatrices(writer, scmPtr, "ColiQuad", staticColliderMeshManager.quadMeshGrids);
                 }
             }
@@ -694,22 +693,22 @@ namespace GameCube.GFZ.CourseCollision
 
             // SCENE OBJECTS
             writer.InlineComment(serializeVerbose, nameof(SceneObjectLOD));
-            writer.WriteX(sceneObjectLODs, false);
+            writer.WriteX(sceneObjectLODs);
 
             // SCENE OBJECT TEMPLATES
             writer.InlineDesc(serializeVerbose, 0x68 + offset, sceneObjects); // <<<<
-            writer.WriteX(sceneObjects, false);
+            writer.WriteX(sceneObjects);
 
             // STATIC SCENE OBJECTS
             if (!staticSceneObjects.IsNullOrEmpty())
             {
                 writer.InlineDesc(serializeVerbose, 0x70 + offset, staticSceneObjects); // <<<<
-                writer.WriteX(staticSceneObjects, false);
+                writer.WriteX(staticSceneObjects);
             }
 
             // DYNAMIC SCENE OBJECTS
             writer.InlineDesc(serializeVerbose, 0x54 + offset, dynamicSceneObjects);
-            writer.WriteX(dynamicSceneObjects, false);
+            writer.WriteX(dynamicSceneObjects);
 
             // Scene Object Collider Geo
             //{
@@ -837,17 +836,17 @@ namespace GameCube.GFZ.CourseCollision
                 // ARCADE CHECKPOINT TRIGGERS
                 if (!timeExtensionTriggers.IsNullOrEmpty())
                     writer.InlineDesc(serializeVerbose, 0xB0 + offset, timeExtensionTriggers);
-                writer.WriteX(timeExtensionTriggers, false);
+                writer.WriteX(timeExtensionTriggers);
 
                 // COURSE METADATA TRIGGERS
                 if (!miscellaneousTriggers.IsNullOrEmpty())
                     writer.InlineDesc(serializeVerbose, 0xA8 + offset, miscellaneousTriggers);
-                writer.WriteX(miscellaneousTriggers, false);
+                writer.WriteX(miscellaneousTriggers);
 
                 // STORY OBJECT TRIGGERS
                 if (!storyObjectTriggers.IsNullOrEmpty())
                     writer.InlineDesc(serializeVerbose, 0xB8 + offset, storyObjectTriggers);
-                writer.WriteX(storyObjectTriggers, false);
+                writer.WriteX(storyObjectTriggers);
                 //
                 // Get better comment? Get proper pointers?
                 if (!storyObjectTriggers.IsNullOrEmpty())
@@ -873,21 +872,21 @@ namespace GameCube.GFZ.CourseCollision
                 if (!unknownTriggers.IsNullOrEmpty())
                 {
                     writer.InlineDesc(serializeVerbose, 0x94 + offset, unknownTriggers);
-                    writer.WriteX(unknownTriggers, false);
+                    writer.WriteX(unknownTriggers);
                 }
 
                 // VISUAL EFFECT TRIGGERS
                 if (!visualEffectTriggers.IsNullOrEmpty())
                 {
                     writer.InlineDesc(serializeVerbose, 0x9C + offset, visualEffectTriggers);
-                    writer.WriteX(visualEffectTriggers, false);
+                    writer.WriteX(visualEffectTriggers);
                 }
 
                 // UNKNOWN COLLIDERS (SOLS ONLY)
                 if (!unknownColliders.IsNullOrEmpty())
                 {
                     writer.InlineDesc(serializeVerbose, 0x60 + offset, unknownColliders);
-                    writer.WriteX(unknownColliders, false);
+                    writer.WriteX(unknownColliders);
                 }
             }
 
@@ -1215,7 +1214,7 @@ namespace GameCube.GFZ.CourseCollision
             this.RecordStartAddress(reader);
             {
                 // Deserialize main structure
-                reader.ReadX(ref unkRange0x00, true);
+                reader.ReadX(ref unkRange0x00);
                 reader.ReadX(ref trackNodesPtr);
                 reader.ReadX(ref embeddedTrackPropertyAreasPtr);
                 reader.ReadX(ref staticColliderMeshManagerActive);
@@ -1246,7 +1245,7 @@ namespace GameCube.GFZ.CourseCollision
                 reader.ReadX(ref timeExtensionTriggersPtr);
                 reader.ReadX(ref storyObjectTriggersPtr);
                 reader.ReadX(ref checkpointGridPtr);
-                reader.ReadX(ref checkpointGridXZ, true);
+                reader.ReadX(ref checkpointGridXZ);
                 reader.ReadX(ref zeroes0xD8, kSizeOfZeroes0xD8);
             }
             this.RecordEndAddress(reader);
@@ -1313,7 +1312,7 @@ namespace GameCube.GFZ.CourseCollision
                 writer.WriteX(staticColliderMeshManagerPtr);
                 writer.WriteX(zeroes0x20Ptr);
                 writer.WriteX(trackMinHeightPtr);
-                writer.WriteX(new byte[kSizeOfZeroes0x28], false); // write const zeros
+                writer.WriteX(new byte[kSizeOfZeroes0x28]); // write const zeros
                 writer.WriteX(dynamicSceneObjectCount);
                 writer.WriteX(unk_sceneObjectCount1);
                 if (Format == SerializeFormat.GX)
@@ -1336,7 +1335,7 @@ namespace GameCube.GFZ.CourseCollision
                 writer.WriteX(storyObjectTriggersPtr);
                 writer.WriteX(checkpointGridPtr);
                 writer.WriteX(checkpointGridXZ);
-                writer.WriteX(new byte[kSizeOfZeroes0xD8], false); // write const zeros
+                writer.WriteX(new byte[kSizeOfZeroes0xD8]); // write const zeros
             }
             this.RecordEndAddress(writer);
         }
@@ -1425,7 +1424,7 @@ namespace GameCube.GFZ.CourseCollision
             else
             {
                 reader.JumpToAddress(ptr);
-                reader.ReadX(ref reference, true);
+                reader.ReadX(ref reference);
                 dict.Add(ptr, reference);
             }
         }
