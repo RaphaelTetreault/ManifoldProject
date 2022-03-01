@@ -98,7 +98,7 @@ namespace GameCube.GFZ.CourseCollision
         {
             this.RecordStartAddress(reader);
             {
-                reader.ReadX(ref curvesPtr2D);
+                curvesPtr2D.Deserialize(reader);
             }
             this.RecordEndAddress(reader);
             {
@@ -110,11 +110,9 @@ namespace GameCube.GFZ.CourseCollision
                     var arrayPointer = curvesPtr2D.ArrayPointers[i];
                     if (arrayPointer.IsNotNull)
                     {
-                        // Deserialization is a bit different. Init array length here.
-                        var animationCurve = new AnimationCurve(arrayPointer.Length);
-
-                        // Read values
+                        // Deserialization is done to instance with properties set through constructor.
                         reader.JumpToAddress(arrayPointer);
+                        var animationCurve = new AnimationCurve(arrayPointer.Length);
                         animationCurve.Deserialize(reader);
 
                         // Assign curve to array
