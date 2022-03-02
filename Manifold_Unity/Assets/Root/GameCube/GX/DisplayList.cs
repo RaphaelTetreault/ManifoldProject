@@ -21,9 +21,6 @@ namespace GameCube.GX
         //
         private DisplayCommand gxCommand;
         private ushort count;
-
-        // Matrix index
-        // TODO: confirm byte. Could be u16?
         public byte[] pn_mtx_idx;
         public byte[] tex0_mtx_idx;
         public byte[] tex1_mtx_idx;
@@ -33,7 +30,6 @@ namespace GameCube.GX
         public byte[] tex5_mtx_idx;
         public byte[] tex6_mtx_idx;
         public byte[] tex7_mtx_idx;
-        // Standard vertex data
         public float3[] pos;
         public float3[] nrm; // normal
         public float3[] bnm; // binormal
@@ -48,7 +44,6 @@ namespace GameCube.GX
         public float2[] tex5;
         public float2[] tex6;
         public float2[] tex7;
-
         // TODO
         // pos mtx array
         // nrm mtx array
@@ -58,7 +53,7 @@ namespace GameCube.GX
 
         public AddressRange AddressRange { get; set; }
         public VertexAttributeTable Vat { get => vat; set => vat = value; }
-        public GXAttributes Attributes { get => attributes; }
+        public GXAttributes Attributes { get => attributes; set => attributes = value; }
         public DisplayCommand GxCommand { get => gxCommand; set => gxCommand = value; }
         public ushort VertexCount { get => count; set => count = value; }
 
@@ -199,7 +194,7 @@ namespace GameCube.GX
                 tex7 = hasTEX7 ? new float2[count] : new float2[0];
 
                 // For each existing component, add a delegate of their function to a list, called in order
-                var deserializeComponents = new List<Action<int>>();
+                var deserializeComponents = new List<Action<int>>(32);
                 if (hasPNMTXIDX) deserializeComponents.Add((int i) => { ReadMTXIDX(reader, i, pn_mtx_idx); });
                 if (hasTEX0MTXIDX) deserializeComponents.Add((int i) => { ReadMTXIDX(reader, i, tex0_mtx_idx); });
                 if (hasTEX1MTXIDX) deserializeComponents.Add((int i) => { ReadMTXIDX(reader, i, tex1_mtx_idx); });
@@ -237,6 +232,9 @@ namespace GameCube.GX
 
         public void Serialize(BinaryWriter writer)
         {
+            // Build a GXAttributes based on the component arrays that are non-zero length
+            attributes = ComponentsToGXAttributes();
+
             // Check each component type, see if it is used
             bool hasPNMTXIDX = attributes.HasFlag(GXAttributes.GX_VA_PNMTXIDX);
             bool hasTEX0MTXIDX = attributes.HasFlag(GXAttributes.GX_VA_TEX0MTXIDX);
@@ -268,7 +266,7 @@ namespace GameCube.GX
             var fmt = vat[gxCommand];
 
             // For each existing component, add a delegate of their function to a list, called in order
-            var serializeComponents = new List<Action<int>>();
+            var serializeComponents = new List<Action<int>>(32);
             if (hasPNMTXIDX) serializeComponents.Add((int i) => { WriteMTXIDX(writer, i, pn_mtx_idx); });
             if (hasTEX0MTXIDX) serializeComponents.Add((int i) => { WriteMTXIDX(writer, i, tex0_mtx_idx); });
             if (hasTEX1MTXIDX) serializeComponents.Add((int i) => { WriteMTXIDX(writer, i, tex1_mtx_idx); });
@@ -305,5 +303,38 @@ namespace GameCube.GX
             this.RecordEndAddress(writer);
         }
 
+
+        public GXAttributes ComponentsToGXAttributes()
+        {
+            GXAttributes attributes = 0;
+            if (pn_mtx_idx.Length > 0) attributes |= GXAttributes.GX_VA_PNMTXIDX;
+            if (tex0_mtx_idx.Length > 0) attributes |= GXAttributes.GX_VA_TEX0MTXIDX;
+            if (tex1_mtx_idx.Length > 0) attributes |= GXAttributes.GX_VA_TEX1MTXIDX;
+            if (tex2_mtx_idx.Length > 0) attributes |= GXAttributes.GX_VA_TEX2MTXIDX;
+            if (tex3_mtx_idx.Length > 0) attributes |= GXAttributes.GX_VA_TEX3MTXIDX;
+            if (tex4_mtx_idx.Length > 0) attributes |= GXAttributes.GX_VA_TEX4MTXIDX;
+            if (tex5_mtx_idx.Length > 0) attributes |= GXAttributes.GX_VA_TEX5MTXIDX;
+            if (tex6_mtx_idx.Length > 0) attributes |= GXAttributes.GX_VA_TEX6MTXIDX;
+            if (tex7_mtx_idx.Length > 0) attributes |= GXAttributes.GX_VA_TEX7MTXIDX;
+            //if (.Length > 0) attributes |= GXAttributes.GX_VA_POS_MTX_ARRAY;
+            //if (.Length > 0) attributes |= GXAttributes.GX_VA_NRM_MTX_ARRAY;
+            //if (.Length > 0) attributes |= GXAttributes.GX_VA_TEX_MTX_ARRAY;
+            //if (.Length > 0) attributes |= GXAttributes.GX_VA_LIGHT_ARRAY;
+            if (pos.Length > 0) attributes |= GXAttributes.GX_VA_POS;
+            /**/ if (bnm.Length > 0) attributes |= GXAttributes.GX_VA_NBT; // NBT if bnm or tan are non-zero length
+            else if (nrm.Length > 0) attributes |= GXAttributes.GX_VA_NRM; // Otherwise, check if nrm is non-zero length
+            if (clr0.Length > 0) attributes |= GXAttributes.GX_VA_CLR0;
+            if (clr1.Length > 0) attributes |= GXAttributes.GX_VA_CLR1;
+            if (tex0.Length > 0) attributes |= GXAttributes.GX_VA_TEX0;
+            if (tex1.Length > 0) attributes |= GXAttributes.GX_VA_TEX1;
+            if (tex2.Length > 0) attributes |= GXAttributes.GX_VA_TEX2;
+            if (tex3.Length > 0) attributes |= GXAttributes.GX_VA_TEX3;
+            if (tex4.Length > 0) attributes |= GXAttributes.GX_VA_TEX4;
+            if (tex5.Length > 0) attributes |= GXAttributes.GX_VA_TEX5;
+            if (tex6.Length > 0) attributes |= GXAttributes.GX_VA_TEX6;
+            if (tex7.Length > 0) attributes |= GXAttributes.GX_VA_TEX7;
+
+            return attributes;
+        }
     }
 }
