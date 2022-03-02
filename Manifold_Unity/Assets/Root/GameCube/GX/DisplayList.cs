@@ -307,32 +307,32 @@ namespace GameCube.GX
         public GXAttributes ComponentsToGXAttributes()
         {
             GXAttributes attributes = 0;
-            if (pn_mtx_idx.Length > 0) attributes |= GXAttributes.GX_VA_PNMTXIDX;
-            if (tex0_mtx_idx.Length > 0) attributes |= GXAttributes.GX_VA_TEX0MTXIDX;
-            if (tex1_mtx_idx.Length > 0) attributes |= GXAttributes.GX_VA_TEX1MTXIDX;
-            if (tex2_mtx_idx.Length > 0) attributes |= GXAttributes.GX_VA_TEX2MTXIDX;
-            if (tex3_mtx_idx.Length > 0) attributes |= GXAttributes.GX_VA_TEX3MTXIDX;
-            if (tex4_mtx_idx.Length > 0) attributes |= GXAttributes.GX_VA_TEX4MTXIDX;
-            if (tex5_mtx_idx.Length > 0) attributes |= GXAttributes.GX_VA_TEX5MTXIDX;
-            if (tex6_mtx_idx.Length > 0) attributes |= GXAttributes.GX_VA_TEX6MTXIDX;
-            if (tex7_mtx_idx.Length > 0) attributes |= GXAttributes.GX_VA_TEX7MTXIDX;
-            //if (.Length > 0) attributes |= GXAttributes.GX_VA_POS_MTX_ARRAY;
-            //if (.Length > 0) attributes |= GXAttributes.GX_VA_NRM_MTX_ARRAY;
-            //if (.Length > 0) attributes |= GXAttributes.GX_VA_TEX_MTX_ARRAY;
-            //if (.Length > 0) attributes |= GXAttributes.GX_VA_LIGHT_ARRAY;
-            if (pos.Length > 0) attributes |= GXAttributes.GX_VA_POS;
-            /**/ if (bnm.Length > 0) attributes |= GXAttributes.GX_VA_NBT; // NBT if bnm or tan are non-zero length
-            else if (nrm.Length > 0) attributes |= GXAttributes.GX_VA_NRM; // Otherwise, check if nrm is non-zero length
-            if (clr0.Length > 0) attributes |= GXAttributes.GX_VA_CLR0;
-            if (clr1.Length > 0) attributes |= GXAttributes.GX_VA_CLR1;
-            if (tex0.Length > 0) attributes |= GXAttributes.GX_VA_TEX0;
-            if (tex1.Length > 0) attributes |= GXAttributes.GX_VA_TEX1;
-            if (tex2.Length > 0) attributes |= GXAttributes.GX_VA_TEX2;
-            if (tex3.Length > 0) attributes |= GXAttributes.GX_VA_TEX3;
-            if (tex4.Length > 0) attributes |= GXAttributes.GX_VA_TEX4;
-            if (tex5.Length > 0) attributes |= GXAttributes.GX_VA_TEX5;
-            if (tex6.Length > 0) attributes |= GXAttributes.GX_VA_TEX6;
-            if (tex7.Length > 0) attributes |= GXAttributes.GX_VA_TEX7;
+            if (!pn_mtx_idx.IsNullOrEmpty()) attributes |= GXAttributes.GX_VA_PNMTXIDX;
+            if (!tex0_mtx_idx.IsNullOrEmpty()) attributes |= GXAttributes.GX_VA_TEX0MTXIDX;
+            if (!tex1_mtx_idx.IsNullOrEmpty()) attributes |= GXAttributes.GX_VA_TEX1MTXIDX;
+            if (!tex2_mtx_idx.IsNullOrEmpty()) attributes |= GXAttributes.GX_VA_TEX2MTXIDX;
+            if (!tex3_mtx_idx.IsNullOrEmpty()) attributes |= GXAttributes.GX_VA_TEX3MTXIDX;
+            if (!tex4_mtx_idx.IsNullOrEmpty()) attributes |= GXAttributes.GX_VA_TEX4MTXIDX;
+            if (!tex5_mtx_idx.IsNullOrEmpty()) attributes |= GXAttributes.GX_VA_TEX5MTXIDX;
+            if (!tex6_mtx_idx.IsNullOrEmpty()) attributes |= GXAttributes.GX_VA_TEX6MTXIDX;
+            if (!tex7_mtx_idx.IsNullOrEmpty()) attributes |= GXAttributes.GX_VA_TEX7MTXIDX;
+            //if ( .IsNullOrEmpty()) attributes |= GXAttributes.GX_VA_POS_MTX_ARRAY;
+            //if ( .IsNullOrEmpty()) attributes |= GXAttributes.GX_VA_NRM_MTX_ARRAY;
+            //if ( .IsNullOrEmpty()) attributes |= GXAttributes.GX_VA_TEX_MTX_ARRAY;
+            //if ( .IsNullOrEmpty()) attributes |= GXAttributes.GX_VA_LIGHT_ARRAY;
+            if (!pos.IsNullOrEmpty()) attributes |= GXAttributes.GX_VA_POS;
+            /**/ if (!bnm.IsNullOrEmpty()) attributes |= GXAttributes.GX_VA_NBT; // NBT if bnm or tan are non-zero length
+            else if (!nrm.IsNullOrEmpty()) attributes |= GXAttributes.GX_VA_NRM; // Otherwise, check if nrm is non-zero length
+            if (!clr0.IsNullOrEmpty()) attributes |= GXAttributes.GX_VA_CLR0;
+            if (!clr1.IsNullOrEmpty()) attributes |= GXAttributes.GX_VA_CLR1;
+            if (!tex0.IsNullOrEmpty()) attributes |= GXAttributes.GX_VA_TEX0;
+            if (!tex1.IsNullOrEmpty()) attributes |= GXAttributes.GX_VA_TEX1;
+            if (!tex2.IsNullOrEmpty()) attributes |= GXAttributes.GX_VA_TEX2;
+            if (!tex3.IsNullOrEmpty()) attributes |= GXAttributes.GX_VA_TEX3;
+            if (!tex4.IsNullOrEmpty()) attributes |= GXAttributes.GX_VA_TEX4;
+            if (!tex5.IsNullOrEmpty()) attributes |= GXAttributes.GX_VA_TEX5;
+            if (!tex6.IsNullOrEmpty()) attributes |= GXAttributes.GX_VA_TEX6;
+            if (!tex7.IsNullOrEmpty()) attributes |= GXAttributes.GX_VA_TEX7;
 
             return attributes;
         }

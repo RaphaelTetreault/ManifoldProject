@@ -47,5 +47,34 @@ namespace Manifold.EditorTools.GC.GFZ.Gma2
             }
         }
 
+        public static void TestGmaRoundtripByteForByte(string filePath)
+        {
+            var reader = new BinaryReader(File.OpenRead(filePath));
+            var gma = new Gma();
+            gma.FileName = Path.GetFileName(filePath);
+            gma.Deserialize(reader);
+
+            var writer = new BinaryWriter(new MemoryStream());
+            writer.WriteX(gma);
+            writer.Flush();
+
+            bool isSameLength = reader.BaseStream.Length == writer.BaseStream.Length;
+            Assert.IsTrue(isSameLength, $"Lengths r({reader.BaseStream.Length}), w({writer.BaseStream.Length})");
+            var length = reader.BaseStream.Length;
+
+            var readerStream = new MemoryStream();
+            reader.BaseStream.Position = 0;
+            reader.BaseStream.CopyTo(readerStream);
+            var readerBytes = readerStream.ToArray();
+            var writerBytes = (writer.BaseStream as MemoryStream).ToArray();
+
+            int missCount = 0;
+            for (int i = 0; i < length; i++)
+            {
+                missCount += readerBytes[i] == writerBytes[i] ? 1 : 0;
+            }
+            Assert.IsTrue(missCount == 0, $"Miss count: {missCount}/{length}");
+        }
+
     }
 }

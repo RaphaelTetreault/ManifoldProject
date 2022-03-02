@@ -45,9 +45,9 @@ namespace Manifold.EditorTools.GC.GFZ.Gma2
         /// </summary>
         /// <param name="filePath"></param>
         /// <param name="gma"></param>
-        public static void SaveGMA(string filePath, Gma gma)
+        public static void SaveGMA(Gma gma, string filePath)
         {
-            using (var writer = new BinaryWriter(File.OpenRead(filePath)))
+            using (var writer = new BinaryWriter(File.OpenWrite(filePath)))
             {
                 gma.FileName = Path.GetFileName(filePath);
                 gma.Serialize(writer);
@@ -83,7 +83,7 @@ namespace Manifold.EditorTools.GC.GFZ.Gma2
             foreach (var gma in gmas)
             {
                 var filePath = Path.Combine(rootPath, gma.FileName);
-                SaveGMA(filePath, gma);
+                SaveGMA(gma, filePath);
                 yield return null;
             }
         }

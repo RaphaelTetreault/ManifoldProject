@@ -90,6 +90,7 @@ namespace GameCube.GFZ.Gma2
                 gcmfWriter.WriteX(gcmf);
                 gcmfOffsets[i] = gcmf.GetPointer().address;
             }
+            gcmfWriter.SeekBegin();
 
             // Write names to memory stream, collet their pointers
             var nameOffsets = new Offset[modelGCMFs.Count];
@@ -100,6 +101,7 @@ namespace GameCube.GFZ.Gma2
                 nameWriter.WriteX(name);
                 nameOffsets[i] = name.GetPointer().address;
             }
+            nameWriter.SeekBegin();
 
             // Construct model entries
             modelEntries = new ModelEntry[modelGCMFs.Count];
