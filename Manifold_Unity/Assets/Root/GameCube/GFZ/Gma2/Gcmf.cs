@@ -255,7 +255,6 @@ namespace GameCube.GFZ.Gma2
                 writer.AlignTo(GX.GXUtility.GX_FIFO_ALIGN);
 
 
-                // If GCMF is a skinned, we contain the following data.
                 if (IsSkinnedModel || IsPhysicsDrivenModel)
                 {
                     // Order here matters since current code uses pointers to solve for many of these
@@ -275,7 +274,7 @@ namespace GameCube.GFZ.Gma2
                     if (skinnedVerticesA is not null)
                     {
                         writer.WriteX(skinnedVerticesA);
-                        writer.AlignTo(GX.GXUtility.GX_FIFO_ALIGN); // redundant due to type size, but looks good.
+                        writer.AlignTo(GX.GXUtility.GX_FIFO_ALIGN); // redundant
                     }
 
                     // (#3) Like the previous type, this too will be null when 'IsPhysicsDrivenModel'

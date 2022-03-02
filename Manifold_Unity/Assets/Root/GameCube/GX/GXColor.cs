@@ -45,7 +45,7 @@ namespace GameCube.GX
                 case ComponentType.GX_RGBX8: ReadRGBX8(reader); break;
 
                 default:
-                    throw new ArgumentException("Invalid Color type");
+                    throw new ArgumentException("Invalid GXColor type");
             }
         }
 
@@ -61,7 +61,7 @@ namespace GameCube.GX
                 case ComponentType.GX_RGBX8: WriteRGBX8(writer); break;
 
                 default:
-                    throw new ArgumentException("Invalid Color type");
+                    throw new ArgumentException("Invalid GXColor type");
             }
         }
 

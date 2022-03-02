@@ -35,8 +35,9 @@ namespace GameCube.GX
         public byte[] tex7_mtx_idx;
         // Standard vertex data
         public float3[] pos;
-        public float3[] nrm;
-        public NormalBinormalTangent[] nbt;
+        public float3[] nrm; // normal
+        public float3[] bnm; // binormal
+        public float3[] tan; // tangent
         public GXColor[] clr0;
         public GXColor[] clr1;
         public float2[] tex0;
@@ -70,34 +71,65 @@ namespace GameCube.GX
 
         private void ReadPOS(BinaryReader reader, VertexAttributeFormat fmt, int i)
         {
-            pos[i] = GXUtility.ReadPos(reader, fmt.pos.NElements, fmt.pos.ComponentFormat, fmt.pos.NFracBits);
+            pos[i] = GXUtility.ReadPos(reader, fmt.pos.NElements, fmt.pos.ComponentType, fmt.pos.NFracBits);
         }
         private void ReadNRM(BinaryReader reader, VertexAttributeFormat fmt, int i)
         {
-            nrm[i] = GXUtility.ReadNormal(reader, fmt.nrm.NElements, fmt.nrm.ComponentFormat, fmt.nrm.NFracBits);
+            nrm[i] = GXUtility.ReadNormal(reader, fmt.nrm.NElements, fmt.nrm.ComponentType, fmt.nrm.NFracBits);
         }
         private void ReadNBT(BinaryReader reader, VertexAttributeFormat fmt, int i)
         {
-            nbt[i] = new NormalBinormalTangent();
-            nbt[i].normal = GXUtility.ReadNormal(reader, fmt.nbt.NElements, fmt.nbt.ComponentFormat, fmt.nbt.NFracBits);
-            nbt[i].binormal = GXUtility.ReadNormal(reader, fmt.nbt.NElements, fmt.nbt.ComponentFormat, fmt.nbt.NFracBits);
-            nbt[i].tangent = GXUtility.ReadNormal(reader, fmt.nbt.NElements, fmt.nbt.ComponentFormat, fmt.nbt.NFracBits);
+            nrm[i] = GXUtility.ReadNormal(reader, fmt.nbt.NElements, fmt.nbt.ComponentType, fmt.nbt.NFracBits);
+            bnm[i] = GXUtility.ReadNormal(reader, fmt.nbt.NElements, fmt.nbt.ComponentType, fmt.nbt.NFracBits);
+            tan[i] = GXUtility.ReadNormal(reader, fmt.nbt.NElements, fmt.nbt.ComponentType, fmt.nbt.NFracBits);
         }
-        private void ReadCLR(BinaryReader reader, VertexAttribute fmt_clr, int i, GXColor[] clr)
+        private void ReadCLR(BinaryReader reader, VertexAttribute va, int i, GXColor[] clr)
         {
-            var color = new GXColor(fmt_clr.ComponentFormat);
+            var color = new GXColor(va.ComponentType);
             color.Deserialize(reader);
-            clr[i] =  color;
-            // GXUtility.ReadColor(reader, fmt_clr.ComponentFormat);
+            clr[i] = color;
         }
-        private void ReadTEX(BinaryReader reader, VertexAttribute fmt_tex, int i, float2[] tex)
+        private void ReadTEX(BinaryReader reader, VertexAttribute va, int i, float2[] tex)
         {
-            tex[i] = GXUtility.ReadUV(reader, fmt_tex.NElements, fmt_tex.ComponentFormat, fmt_tex.NFracBits);
+            tex[i] = GXUtility.ReadUV(reader, va.NElements, va.ComponentType, va.NFracBits);
         }
         private void ReadMTXIDX(BinaryReader reader, int i, byte[] mtx_idx)
         {
-            mtx_idx[i] = reader.ReadByte();
+            reader.ReadX(ref mtx_idx[i]);
         }
+
+
+        private void WritePOS(BinaryWriter writer, VertexAttributeFormat fmt, int i)
+        {
+            var va = fmt.pos;
+            GXUtility.WritePosition(writer, pos[i], va.NElements, va.ComponentType, va.NFracBits);
+        }
+        private void WriteNRM(BinaryWriter writer, VertexAttributeFormat fmt, int i)
+        {
+            var va = fmt.nrm;
+            GXUtility.WriteNormal(writer, nrm[i], va.NElements, va.ComponentType, va.NFracBits);
+        }
+        private void WriteNBT(BinaryWriter writer, VertexAttributeFormat fmt, int i)
+        {
+            var va = fmt.nbt;
+            GXUtility.WriteNormal(writer, nrm[i], va.NElements, va.ComponentType, va.NFracBits);
+            GXUtility.WriteNormal(writer, bnm[i], va.NElements, va.ComponentType, va.NFracBits);
+            GXUtility.WriteNormal(writer, tan[i], va.NElements, va.ComponentType, va.NFracBits);
+        }
+        private void WriteCLR(BinaryWriter writer, VertexAttribute va, int i, GXColor[] clr)
+        {
+            clr[i].ComponentType = va.ComponentType;
+            clr[i].Serialize(writer);
+        }
+        private void WriteTEX(BinaryWriter writer, VertexAttribute va, int i, float2[] tex)
+        {
+            GXUtility.WriteUV(writer, tex[i], va.NElements, va.ComponentType, va.NFracBits);
+        }
+        private void WriteMTXIDX(BinaryWriter writer, int i, byte[] mtx_idx)
+        {
+            writer.WriteX(mtx_idx[i]);
+        }
+
 
 
         public void Deserialize(BinaryReader reader)
@@ -140,16 +172,21 @@ namespace GameCube.GX
                 bool hasTEX7 = attributes.HasFlag(GXAttributes.GX_VA_TEX7);
 
                 // INITIALIZE ARRAYS
-                // Currently unsupported
+                // Currently unsupported. TEX#MTXIDX should work but is untested.
                 if (hasTEX0MTXIDX || hasTEX1MTXIDX || hasTEX2MTXIDX || hasTEX3MTXIDX ||
                     hasTEX4MTXIDX || hasTEX5MTXIDX || hasTEX6MTXIDX || hasTEX7MTXIDX ||
                     hasPOS_MTX_ARRAY || hasNRM_MTX_ARRAY || hasTEX_MTX_ARRAY || hasLIGHT_ARRAY)
                     throw new NotImplementedException("Unsupported GXAttributes flag");
+
+                //
+                Assert.IsTrue(hasNRM ^ hasNBT, "Data has both NRM and NBT. NRM data will be overwritten by NBT.NRM");
+
                 //
                 pn_mtx_idx = hasPNMTXIDX ? new byte[count] : new byte[0];
                 pos = hasPOS ? new float3[count] : new float3[0];
-                nrm = hasNRM ? new float3[count] : new float3[0];
-                nbt = hasNBT ? new NormalBinormalTangent[count] : new NormalBinormalTangent[0];
+                nrm = hasNRM || hasNBT ? new float3[count] : new float3[0];
+                bnm = hasNBT ? new float3[count] : new float3[0];
+                tan = hasNBT ? new float3[count] : new float3[0];
                 clr0 = hasCLR0 ? new GXColor[count] : new GXColor[0];
                 clr1 = hasCLR1 ? new GXColor[count] : new GXColor[0];
                 tex0 = hasTEX0 ? new float2[count] : new float2[0];
@@ -162,36 +199,36 @@ namespace GameCube.GX
                 tex7 = hasTEX7 ? new float2[count] : new float2[0];
 
                 // For each existing component, add a delegate of their function to a list, called in order
-                var actions = new List<Action<int>>();
-                if (hasPNMTXIDX) actions.Add((int i) => { ReadMTXIDX(reader, i, pn_mtx_idx); });
-                if (hasTEX0MTXIDX) actions.Add((int i) => { ReadMTXIDX(reader, i, tex0_mtx_idx); });
-                if (hasTEX1MTXIDX) actions.Add((int i) => { ReadMTXIDX(reader, i, tex1_mtx_idx); });
-                if (hasTEX2MTXIDX) actions.Add((int i) => { ReadMTXIDX(reader, i, tex2_mtx_idx); });
-                if (hasTEX3MTXIDX) actions.Add((int i) => { ReadMTXIDX(reader, i, tex3_mtx_idx); });
-                if (hasTEX4MTXIDX) actions.Add((int i) => { ReadMTXIDX(reader, i, tex4_mtx_idx); });
-                if (hasTEX5MTXIDX) actions.Add((int i) => { ReadMTXIDX(reader, i, tex5_mtx_idx); });
-                if (hasTEX6MTXIDX) actions.Add((int i) => { ReadMTXIDX(reader, i, tex6_mtx_idx); });
-                if (hasTEX7MTXIDX) actions.Add((int i) => { ReadMTXIDX(reader, i, tex7_mtx_idx); });
-                if (hasPOS) actions.Add((int i) => { ReadPOS(reader, fmt, i); });
-                if (hasNRM) actions.Add((int i) => { ReadNRM(reader, fmt, i); });
-                if (hasNBT) actions.Add((int i) => { ReadNBT(reader, fmt, i); });
-                if (hasCLR0) actions.Add((int i) => { ReadCLR(reader, fmt.clr0, i, clr0); });
-                if (hasCLR1) actions.Add((int i) => { ReadCLR(reader, fmt.clr1, i, clr1); });
-                if (hasTEX0) actions.Add((int i) => { ReadTEX(reader, fmt.tex0, i, tex0); });
-                if (hasTEX1) actions.Add((int i) => { ReadTEX(reader, fmt.tex1, i, tex1); });
-                if (hasTEX2) actions.Add((int i) => { ReadTEX(reader, fmt.tex2, i, tex2); });
-                if (hasTEX3) actions.Add((int i) => { ReadTEX(reader, fmt.tex3, i, tex3); });
-                if (hasTEX4) actions.Add((int i) => { ReadTEX(reader, fmt.tex4, i, tex4); });
-                if (hasTEX5) actions.Add((int i) => { ReadTEX(reader, fmt.tex5, i, tex5); });
-                if (hasTEX6) actions.Add((int i) => { ReadTEX(reader, fmt.tex6, i, tex6); });
-                if (hasTEX7) actions.Add((int i) => { ReadTEX(reader, fmt.tex7, i, tex7); });
+                var deserializeComponents = new List<Action<int>>();
+                if (hasPNMTXIDX) deserializeComponents.Add((int i) => { ReadMTXIDX(reader, i, pn_mtx_idx); });
+                if (hasTEX0MTXIDX) deserializeComponents.Add((int i) => { ReadMTXIDX(reader, i, tex0_mtx_idx); });
+                if (hasTEX1MTXIDX) deserializeComponents.Add((int i) => { ReadMTXIDX(reader, i, tex1_mtx_idx); });
+                if (hasTEX2MTXIDX) deserializeComponents.Add((int i) => { ReadMTXIDX(reader, i, tex2_mtx_idx); });
+                if (hasTEX3MTXIDX) deserializeComponents.Add((int i) => { ReadMTXIDX(reader, i, tex3_mtx_idx); });
+                if (hasTEX4MTXIDX) deserializeComponents.Add((int i) => { ReadMTXIDX(reader, i, tex4_mtx_idx); });
+                if (hasTEX5MTXIDX) deserializeComponents.Add((int i) => { ReadMTXIDX(reader, i, tex5_mtx_idx); });
+                if (hasTEX6MTXIDX) deserializeComponents.Add((int i) => { ReadMTXIDX(reader, i, tex6_mtx_idx); });
+                if (hasTEX7MTXIDX) deserializeComponents.Add((int i) => { ReadMTXIDX(reader, i, tex7_mtx_idx); });
+                if (hasPOS) deserializeComponents.Add((int i) => { ReadPOS(reader, fmt, i); });
+                if (hasNRM) deserializeComponents.Add((int i) => { ReadNRM(reader, fmt, i); });
+                if (hasNBT) deserializeComponents.Add((int i) => { ReadNBT(reader, fmt, i); });
+                if (hasCLR0) deserializeComponents.Add((int i) => { ReadCLR(reader, fmt.clr0, i, clr0); });
+                if (hasCLR1) deserializeComponents.Add((int i) => { ReadCLR(reader, fmt.clr1, i, clr1); });
+                if (hasTEX0) deserializeComponents.Add((int i) => { ReadTEX(reader, fmt.tex0, i, tex0); });
+                if (hasTEX1) deserializeComponents.Add((int i) => { ReadTEX(reader, fmt.tex1, i, tex1); });
+                if (hasTEX2) deserializeComponents.Add((int i) => { ReadTEX(reader, fmt.tex2, i, tex2); });
+                if (hasTEX3) deserializeComponents.Add((int i) => { ReadTEX(reader, fmt.tex3, i, tex3); });
+                if (hasTEX4) deserializeComponents.Add((int i) => { ReadTEX(reader, fmt.tex4, i, tex4); });
+                if (hasTEX5) deserializeComponents.Add((int i) => { ReadTEX(reader, fmt.tex5, i, tex5); });
+                if (hasTEX6) deserializeComponents.Add((int i) => { ReadTEX(reader, fmt.tex6, i, tex6); });
+                if (hasTEX7) deserializeComponents.Add((int i) => { ReadTEX(reader, fmt.tex7, i, tex7); });
 
                 // READ IN DATA
                 for (int i = 0; i < count; i++)
                 {
-                    foreach (var action in actions)
+                    foreach (var deserializeComponent in deserializeComponents)
                     {
-                        action.Invoke(i);
+                        deserializeComponent.Invoke(i);
                     }
                 }
             }
@@ -228,32 +265,41 @@ namespace GameCube.GX
             bool hasTEX6 = attributes.HasFlag(GXAttributes.GX_VA_TEX6);
             bool hasTEX7 = attributes.HasFlag(GXAttributes.GX_VA_TEX7);
 
+            var fmt = vat[gxCommand];
+
+            // For each existing component, add a delegate of their function to a list, called in order
+            var serializeComponents = new List<Action<int>>();
+            if (hasPNMTXIDX) serializeComponents.Add((int i) => { WriteMTXIDX(writer, i, pn_mtx_idx); });
+            if (hasTEX0MTXIDX) serializeComponents.Add((int i) => { WriteMTXIDX(writer, i, tex0_mtx_idx); });
+            if (hasTEX1MTXIDX) serializeComponents.Add((int i) => { WriteMTXIDX(writer, i, tex1_mtx_idx); });
+            if (hasTEX2MTXIDX) serializeComponents.Add((int i) => { WriteMTXIDX(writer, i, tex2_mtx_idx); });
+            if (hasTEX3MTXIDX) serializeComponents.Add((int i) => { WriteMTXIDX(writer, i, tex3_mtx_idx); });
+            if (hasTEX4MTXIDX) serializeComponents.Add((int i) => { WriteMTXIDX(writer, i, tex4_mtx_idx); });
+            if (hasTEX5MTXIDX) serializeComponents.Add((int i) => { WriteMTXIDX(writer, i, tex5_mtx_idx); });
+            if (hasTEX6MTXIDX) serializeComponents.Add((int i) => { WriteMTXIDX(writer, i, tex6_mtx_idx); });
+            if (hasTEX7MTXIDX) serializeComponents.Add((int i) => { WriteMTXIDX(writer, i, tex7_mtx_idx); });
+            if (hasPOS) serializeComponents.Add((int i) => { WritePOS(writer, fmt, i); });
+            if (hasNRM) serializeComponents.Add((int i) => { WriteNRM(writer, fmt, i); });
+            if (hasNBT) serializeComponents.Add((int i) => { WriteNBT(writer, fmt, i); });
+            if (hasCLR0) serializeComponents.Add((int i) => { WriteCLR(writer, fmt.clr0, i, clr0); });
+            if (hasCLR1) serializeComponents.Add((int i) => { WriteCLR(writer, fmt.clr1, i, clr1); });
+            if (hasTEX0) serializeComponents.Add((int i) => { WriteTEX(writer, fmt.tex0, i, tex0); });
+            if (hasTEX1) serializeComponents.Add((int i) => { WriteTEX(writer, fmt.tex1, i, tex1); });
+            if (hasTEX2) serializeComponents.Add((int i) => { WriteTEX(writer, fmt.tex2, i, tex2); });
+            if (hasTEX3) serializeComponents.Add((int i) => { WriteTEX(writer, fmt.tex3, i, tex3); });
+            if (hasTEX4) serializeComponents.Add((int i) => { WriteTEX(writer, fmt.tex4, i, tex4); });
+            if (hasTEX5) serializeComponents.Add((int i) => { WriteTEX(writer, fmt.tex5, i, tex5); });
+            if (hasTEX6) serializeComponents.Add((int i) => { WriteTEX(writer, fmt.tex6, i, tex6); });
+            if (hasTEX7) serializeComponents.Add((int i) => { WriteTEX(writer, fmt.tex7, i, tex7); });
+
             this.RecordStartAddress(writer);
             {
                 for (int i = 0; i < count; i++)
                 {
-                    if (hasPNMTXIDX) writer.WriteX(pn_mtx_idx[i]);
-                    if (hasTEX0MTXIDX) writer.WriteX(tex0_mtx_idx[i]);
-                    if (hasTEX1MTXIDX) writer.WriteX(tex1_mtx_idx[i]);
-                    if (hasTEX2MTXIDX) writer.WriteX(tex2_mtx_idx[i]);
-                    if (hasTEX3MTXIDX) writer.WriteX(tex3_mtx_idx[i]);
-                    if (hasTEX4MTXIDX) writer.WriteX(tex4_mtx_idx[i]);
-                    if (hasTEX5MTXIDX) writer.WriteX(tex5_mtx_idx[i]);
-                    if (hasTEX6MTXIDX) writer.WriteX(tex6_mtx_idx[i]);
-                    if (hasTEX7MTXIDX) writer.WriteX(tex7_mtx_idx[i]);
-                    if (hasPOS) writer.WriteX(pos[i]);
-                    if (hasNRM) writer.WriteX(nrm[i]);
-                    if (hasNBT) writer.WriteX(nbt[i]);
-                    if (hasCLR0) writer.WriteX(clr0[i]);
-                    if (hasCLR1) writer.WriteX(clr1[i]);
-                    if (hasTEX0) writer.WriteX(tex0[i]);
-                    if (hasTEX1) writer.WriteX(tex1[i]);
-                    if (hasTEX2) writer.WriteX(tex2[i]);
-                    if (hasTEX3) writer.WriteX(tex3[i]);
-                    if (hasTEX4) writer.WriteX(tex4[i]);
-                    if (hasTEX5) writer.WriteX(tex5[i]);
-                    if (hasTEX6) writer.WriteX(tex6[i]);
-                    if (hasTEX7) writer.WriteX(tex7[i]);
+                    foreach (var serializeComponent in serializeComponents)
+                    {
+                        serializeComponent.Invoke(i);
+                    }
                 }
             }
             this.RecordEndAddress(writer);

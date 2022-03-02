@@ -13,7 +13,7 @@ namespace GameCube.GX
 
         public bool Enabled { get => enabled; set => enabled = value; }
         public ComponentCount NElements { get => nElements; set => nElements = value; }
-        public ComponentType ComponentFormat { get => componentFormat; set => componentFormat = value; }
+        public ComponentType ComponentType { get => componentFormat; set => componentFormat = value; }
         public int NFracBits { get => nFracBits; set => nFracBits = value; }
 
         public VertexAttribute(ComponentCount nElements, ComponentType format, int nFracBits = 0)

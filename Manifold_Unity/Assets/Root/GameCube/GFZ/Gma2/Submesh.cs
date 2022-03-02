@@ -151,12 +151,12 @@ namespace GameCube.GFZ.Gma2
                     (secondaryDisplayListTranslucid is null ? 0 : DisplayListRenderFlags.renderSecondaryTranslucid);
 
                 // Compute and store sizes
-                displayListDescriptor.OpaqueMaterialSize = DisplayListSizeOnDisk(primaryDisplayListOpaque);
-                displayListDescriptor.TranslucidMaterialSize = DisplayListSizeOnDisk(primaryDisplayListTranslucid);
+                displayListDescriptor.OpaqueMaterialSize = DisplayListsSizeOnDisk(primaryDisplayListOpaque);
+                displayListDescriptor.TranslucidMaterialSize = DisplayListsSizeOnDisk(primaryDisplayListTranslucid);
                 if (RenderSecondary)
                 {
-                    secondaryDisplayListDescriptor.OpaqueMaterialSize = DisplayListSizeOnDisk(secondaryDisplayListOpaque);
-                    secondaryDisplayListDescriptor.TranslucidMaterialSize = DisplayListSizeOnDisk(secondaryDisplayListTranslucid);
+                    secondaryDisplayListDescriptor.OpaqueMaterialSize = DisplayListsSizeOnDisk(secondaryDisplayListOpaque);
+                    secondaryDisplayListDescriptor.TranslucidMaterialSize = DisplayListsSizeOnDisk(secondaryDisplayListTranslucid);
                 }
             }
             this.RecordStartAddress(writer);
@@ -169,7 +169,7 @@ namespace GameCube.GFZ.Gma2
                 if (RenderPrimaryOpaque)
                 {
                     WriteDisplayLists(writer, primaryDisplayListOpaque, out displayListAddressRange);
-                    Assert.IsTrue(displayListAddressRange.Size == displayListDescriptor.OpaqueMaterialSize, $"Serialized: {displayListAddressRange.Size},  {displayListDescriptor.TranslucidMaterialSize}");
+                    Assert.IsTrue(displayListAddressRange.Size == displayListDescriptor.OpaqueMaterialSize, $"Serialized: {displayListAddressRange.Size},  {displayListDescriptor.OpaqueMaterialSize}");
                 }
 
                 if (RenderPrimaryTranslucid)
@@ -237,11 +237,11 @@ namespace GameCube.GFZ.Gma2
             addressRange.RecordEndAddress(writer);
         }
 
-        private int DisplayListSizeOnDisk(DisplayList[] displayLists)
+        private int DisplayListsSizeOnDisk(DisplayList[] displayLists)
         {
             int size = 0;
 
-            if (displayLists is null || displayLists.Length > 0)
+            if (displayLists is null || displayLists.Length == 0)
                 return size;
 
             // Get GX properties about display list
@@ -266,7 +266,7 @@ namespace GameCube.GFZ.Gma2
             // Add padding size if necessary
             var remainder = size % GXUtility.GX_FIFO_ALIGN;
             if (remainder > 0)
-                size += remainder;
+                size += GXUtility.GX_FIFO_ALIGN - remainder;
 
 
             return size;

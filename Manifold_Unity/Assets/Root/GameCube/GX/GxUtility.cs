@@ -1,7 +1,6 @@
 ﻿using Manifold.IO;
 using System;
 using System.IO;
-using UnityEngine;
 using Unity.Mathematics;
 
 namespace GameCube.GX
@@ -107,25 +106,6 @@ namespace GameCube.GX
         }
 
 
-        public static byte FloatToFixedU8(float value, int nFracBits)
-        {
-            return (byte)(value * (1 << nFracBits));
-        }
-        public static sbyte FloatToFixedS8(float value, int nFracBits)
-        {
-            return (sbyte)(value * (1 << nFracBits));
-        }
-        public static ushort FloatToFixedU16(float value, int nFracBits)
-        {
-            return (ushort)(value * (1 << nFracBits));
-        }
-        public static short FloatToFixedS16(float value, int nFracBits)
-        {
-            return (short)(value * (1 << nFracBits));
-        }
-
-
-
 
         public static void WritePosition(BinaryWriter writer, float3 position, ComponentCount nElements, ComponentType componentType, int nFracs)
         {
@@ -145,7 +125,6 @@ namespace GameCube.GX
                 throw new ArgumentException();
             }
         }
-
         public static void WriteNormal(BinaryWriter writer, float3 normal, ComponentCount nElements, ComponentType componentType, int nFracs)
         {
             // For NBT, the caller of this function should call it 3 times, each for N, B, and T
@@ -160,7 +139,6 @@ namespace GameCube.GX
                 throw new ArgumentException();
             }
         }
-
         public static void WriteUV(BinaryWriter writer, float2 textureUV, ComponentCount nElements, ComponentType componentType, int nFracs)
         {
             if (nElements == ComponentCount.GX_TEX_ST)
@@ -177,7 +155,6 @@ namespace GameCube.GX
                 throw new ArgumentException();
             }
         }
-      
         public static void WriteNumber(BinaryWriter writer, float value, ComponentType componentType, int nFracs)
         {
             switch (componentType)
@@ -192,6 +169,24 @@ namespace GameCube.GX
                     throw new ArgumentException();
             };
         }
+
+        public static byte FloatToFixedU8(float value, int nFracBits)
+        {
+            return (byte)(value * (1 << nFracBits));
+        }
+        public static sbyte FloatToFixedS8(float value, int nFracBits)
+        {
+            return (sbyte)(value * (1 << nFracBits));
+        }
+        public static ushort FloatToFixedU16(float value, int nFracBits)
+        {
+            return (ushort)(value * (1 << nFracBits));
+        }
+        public static short FloatToFixedS16(float value, int nFracBits)
+        {
+            return (short)(value * (1 << nFracBits));
+        }
+
 
 
         public static int GetGxVertexSize(GXAttributes attributes, VertexAttributeFormat fmt)
@@ -239,19 +234,19 @@ namespace GameCube.GX
             size += hasTEX5MTXIDX ? mtxIdxSize : 0;
             size += hasTEX6MTXIDX ? mtxIdxSize : 0;
             size += hasTEX7MTXIDX ? mtxIdxSize : 0;
-            size += hasPOS ? CompSizeNumber(fmt.pos.ComponentFormat) * GetPosCompCount(fmt.tex0.NElements) : 0;
-            size += hasNRM ? CompSizeNumber(fmt.nrm.ComponentFormat) * GetNrmCompCount(fmt.tex0.NElements) : 0;
-            size += hasNBT ? CompSizeNumber(fmt.nbt.ComponentFormat) * GetNrmCompCount(fmt.tex0.NElements) : 0;
-            size += hasCLR0 ? CompSizeColor(fmt.clr0.ComponentFormat) * GetTexCompCount(fmt.tex0.NElements) : 0;
-            size += hasCLR1 ? CompSizeColor(fmt.clr1.ComponentFormat) * GetTexCompCount(fmt.tex0.NElements) : 0;
-            size += hasTEX0 ? CompSizeNumber(fmt.tex0.ComponentFormat) * GetTexCompCount(fmt.tex0.NElements) : 0;
-            size += hasTEX1 ? CompSizeNumber(fmt.tex1.ComponentFormat) * GetTexCompCount(fmt.tex1.NElements) : 0;
-            size += hasTEX2 ? CompSizeNumber(fmt.tex2.ComponentFormat) * GetTexCompCount(fmt.tex2.NElements) : 0;
-            size += hasTEX3 ? CompSizeNumber(fmt.tex3.ComponentFormat) * GetTexCompCount(fmt.tex3.NElements) : 0;
-            size += hasTEX4 ? CompSizeNumber(fmt.tex4.ComponentFormat) * GetTexCompCount(fmt.tex4.NElements) : 0;
-            size += hasTEX5 ? CompSizeNumber(fmt.tex5.ComponentFormat) * GetTexCompCount(fmt.tex5.NElements) : 0;
-            size += hasTEX6 ? CompSizeNumber(fmt.tex6.ComponentFormat) * GetTexCompCount(fmt.tex6.NElements) : 0;
-            size += hasTEX7 ? CompSizeNumber(fmt.tex7.ComponentFormat) * GetTexCompCount(fmt.tex7.NElements) : 0;
+            size += hasPOS ? CompSizeNumber(fmt.pos.ComponentType) * GetPosCompCount(fmt.pos.NElements) : 0;
+            size += hasNRM ? CompSizeNumber(fmt.nrm.ComponentType) * GetNrmCompCount(fmt.nrm.NElements) : 0;
+            size += hasNBT ? CompSizeNumber(fmt.nbt.ComponentType) * GetNrmCompCount(fmt.nbt.NElements) : 0;
+            size += hasCLR0 ? CompSizeColor(fmt.clr0.ComponentType) : 0;
+            size += hasCLR1 ? CompSizeColor(fmt.clr1.ComponentType) : 0;
+            size += hasTEX0 ? CompSizeNumber(fmt.tex0.ComponentType) * GetTexCompCount(fmt.tex0.NElements) : 0;
+            size += hasTEX1 ? CompSizeNumber(fmt.tex1.ComponentType) * GetTexCompCount(fmt.tex1.NElements) : 0;
+            size += hasTEX2 ? CompSizeNumber(fmt.tex2.ComponentType) * GetTexCompCount(fmt.tex2.NElements) : 0;
+            size += hasTEX3 ? CompSizeNumber(fmt.tex3.ComponentType) * GetTexCompCount(fmt.tex3.NElements) : 0;
+            size += hasTEX4 ? CompSizeNumber(fmt.tex4.ComponentType) * GetTexCompCount(fmt.tex4.NElements) : 0;
+            size += hasTEX5 ? CompSizeNumber(fmt.tex5.ComponentType) * GetTexCompCount(fmt.tex5.NElements) : 0;
+            size += hasTEX6 ? CompSizeNumber(fmt.tex6.ComponentType) * GetTexCompCount(fmt.tex6.NElements) : 0;
+            size += hasTEX7 ? CompSizeNumber(fmt.tex7.ComponentType) * GetTexCompCount(fmt.tex7.NElements) : 0;
 
             return size;
         }
@@ -292,6 +287,7 @@ namespace GameCube.GX
                     throw new ArgumentException();
             }
         }
+
 
         private static int CompSizeNumber(ComponentType compType)
         {
