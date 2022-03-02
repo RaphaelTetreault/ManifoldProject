@@ -19,7 +19,7 @@ namespace Manifold.EditorTools.GC.GFZ.Gma2
         {
             foreach (var filePath in filePaths)
             {
-                var gma = GmaIO.LoadGMA(filePath);
+                var gma = BinarySerializableIO.LoadFile<Gma>(filePath);
                 TestSaveGma(gma);
                 yield return null;
             }
@@ -31,7 +31,7 @@ namespace Manifold.EditorTools.GC.GFZ.Gma2
         /// <param name="filePath"></param>
         public static void TestLoadSaveGma(string filePath)
         {
-            var gma = GmaIO.LoadGMA(filePath);
+            var gma = BinarySerializableIO.LoadFile<Gma>(filePath);
             TestSaveGma(gma);
         }
 
