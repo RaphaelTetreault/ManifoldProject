@@ -96,35 +96,45 @@ namespace Manifold.EditorTools.GC.GFZ.Gma2
             {
                 ImportUtility.ProgressBar<Gcmf>(submeshIndex, numSubmeshes, $"{path}{model.Name}");
 
-                throw new NotImplementedException();
+                if (submesh.PrimaryDisplayListsOpaque is not null)
+                {
+                    foreach (var displayList in submesh.PrimaryDisplayListsOpaque)
+                    {
+                        var submeshDescriptor = CreateSubMesh(displayList, ref mesh, true);
+                        submeshDescriptors[submeshIndex] = submeshDescriptor;
+                        submeshIndex++;
+                    }
+                }
 
-                //if (submesh.DisplayListCW is not null)
-                //{
-                //    var submeshDescriptor = CreateSubMesh(submesh.DisplayListCW, ref mesh, true);
-                //    submeshDescriptors[submeshIndex] = submeshDescriptor;
-                //    submeshIndex++;
-                //}
+                if (submesh.PrimaryDisplayListsTranslucid is not null)
+                {
+                    foreach (var displayList in submesh.PrimaryDisplayListsTranslucid)
+                    {
+                        var submeshDescriptor = CreateSubMesh(displayList, ref mesh, true);
+                        submeshDescriptors[submeshIndex] = submeshDescriptor;
+                        submeshIndex++;
+                    }
+                }
 
-                //if (submesh.DisplayListCCW is not null)
-                //{
-                //    var submeshDescriptor = CreateSubMesh(submesh.DisplayListCCW, ref mesh, true);
-                //    submeshDescriptors[submeshIndex] = submeshDescriptor;
-                //    submeshIndex++;
-                //}
+                if (submesh.SecondaryDisplayListsOpaque is not null)
+                {
+                    foreach (var displayList in submesh.SecondaryDisplayListsOpaque)
+                    {
+                        var submeshDescriptor = CreateSubMesh(displayList, ref mesh, true);
+                        submeshDescriptors[submeshIndex] = submeshDescriptor;
+                        submeshIndex++;
+                    }
+                }
 
-                //if (submesh.SkinnedDisplayListCW is not null)
-                //{
-                //    var submeshDescriptor = CreateSubMesh(submesh.SkinnedDisplayListCW, ref mesh, true);
-                //    submeshDescriptors[submeshIndex] = submeshDescriptor;
-                //    submeshIndex++;
-                //}
-
-                //if (submesh.SkinnedDisplayListCCW is not null)
-                //{
-                //    var submeshDescriptor = CreateSubMesh(submesh.SkinnedDisplayListCCW, ref mesh, true);
-                //    submeshDescriptors[submeshIndex] = submeshDescriptor;
-                //    submeshIndex++;
-                //}
+                if (submesh.SecondaryDisplayListsTranslucid is not null)
+                {
+                    foreach (var displayList in submesh.SecondaryDisplayListsTranslucid)
+                    {
+                        var submeshDescriptor = CreateSubMesh(displayList, ref mesh, true);
+                        submeshDescriptors[submeshIndex] = submeshDescriptor;
+                        submeshIndex++;
+                    }
+                }
             }
 
             // Set each submesh in the mesh
@@ -154,7 +164,7 @@ namespace Manifold.EditorTools.GC.GFZ.Gma2
             return _pos;
         }
 
-        public static Vector2[] HackUVs(float2[] uvs, int vertCount)
+        public static Vector2[] GetUVs(float2[] uvs, int vertCount)
         {
             if (uvs.Length > 0)
             {
@@ -174,7 +184,7 @@ namespace Manifold.EditorTools.GC.GFZ.Gma2
             }
         }
 
-        public static Vector3[] HackNormals(float3[] normals, int vertCount)
+        public static Vector3[] GetNormals(float3[] normals, int vertCount)
         {
             // Normals will get recalculated based on polygon
             if (normals.Length > 0)
@@ -191,7 +201,7 @@ namespace Manifold.EditorTools.GC.GFZ.Gma2
             }
         }
 
-        public static Color32[] HackColors(GXColor[] gxColors, int vertCount)
+        public static Color32[] GetColors(GXColor[] gxColors, int vertCount)
         {
             // Looks like white, but is 0xFEFDFCFF, but becomes "magic"
             // value you can parse out since it likely* isn't used.
@@ -216,11 +226,11 @@ namespace Manifold.EditorTools.GC.GFZ.Gma2
 
             // New from this list/submesh
             var vertices = GetPositions(displayList.pos);
-            var normals = HackNormals(displayList.nrm, nVerts);
-            var uv1 = HackUVs(displayList.tex0, nVerts);
-            var uv2 = HackUVs(displayList.tex1, nVerts);
-            var uv3 = HackUVs(displayList.tex2, nVerts);
-            var colors = HackColors(displayList.clr0, nVerts);
+            var normals = GetNormals(displayList.nrm, nVerts);
+            var uv1 = GetUVs(displayList.tex0, nVerts);
+            var uv2 = GetUVs(displayList.tex1, nVerts);
+            var uv3 = GetUVs(displayList.tex2, nVerts);
+            var colors = GetColors(displayList.clr0, nVerts);
             var triangles = GetTrianglesFromTriangleStrip(vertices.Length, isCCW);
 
             // Build submesh
@@ -276,14 +286,14 @@ namespace Manifold.EditorTools.GC.GFZ.Gma2
 
             foreach (var submesh in model.Gcmf.Submeshes)
             {
-                if (submesh.DisplayListCW is not null)
-                    numSubmeshes++;
-                if (submesh.DisplayListCCW is not null)
-                    numSubmeshes++;
-                if (submesh.SecondaryDisplayListCW is not null)
-                    numSubmeshes++;
-                if (submesh.SecondaryDisplayListCCW is not null)
-                    numSubmeshes++;
+                if (submesh.PrimaryDisplayListsOpaque is not null)
+                    numSubmeshes += submesh.PrimaryDisplayListsOpaque.Length;
+                if (submesh.PrimaryDisplayListsTranslucid is not null)
+                    numSubmeshes += submesh.PrimaryDisplayListsTranslucid.Length;
+                if (submesh.SecondaryDisplayListsOpaque is not null)
+                    numSubmeshes += submesh.SecondaryDisplayListsOpaque.Length;
+                if (submesh.SecondaryDisplayListsTranslucid is not null)
+                    numSubmeshes += submesh.SecondaryDisplayListsTranslucid.Length;
             }
 
             return numSubmeshes;
