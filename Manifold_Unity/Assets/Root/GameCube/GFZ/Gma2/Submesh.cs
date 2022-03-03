@@ -257,11 +257,14 @@ namespace GameCube.GFZ.Gma2
                 Assert.IsTrue(gxAttributes == displayList.Attributes);
                 Assert.IsTrue(formatIndex == displayList.GxCommand.VertexFormatIndex);
 
+                // Add +1 for size of GXCommand
+                // Add +2 for size of count (uint16)
+                size += 3;
                 size += sizeOfVertex * displayList.VertexCount;
             }
 
             // Add +1 for size of GX_NOP
-            size++;
+            size += 1;
 
             // Add padding size if necessary
             var remainder = size % GXUtility.GX_FIFO_ALIGN;

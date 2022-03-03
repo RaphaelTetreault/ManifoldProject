@@ -109,8 +109,8 @@ namespace GameCube.GFZ.Gma2
             {
                 modelEntries[i] = new ModelEntry()
                 {
-                    GcmfBasePtrOffset = gcmfOffsets[i],
-                    NameBasePtrOffset = nameOffsets[i],
+                    GcmfRelPtr = gcmfOffsets[i],
+                    NameRelPtr = nameOffsets[i],
                 };
             }
 

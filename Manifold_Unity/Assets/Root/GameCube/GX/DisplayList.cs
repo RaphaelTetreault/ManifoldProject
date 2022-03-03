@@ -292,6 +292,8 @@ namespace GameCube.GX
 
             this.RecordStartAddress(writer);
             {
+                writer.WriteX(gxCommand);
+                writer.WriteX(count);
                 for (int i = 0; i < count; i++)
                 {
                     foreach (var serializeComponent in serializeComponents)
