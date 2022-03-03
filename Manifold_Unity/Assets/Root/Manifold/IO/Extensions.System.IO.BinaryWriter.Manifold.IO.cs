@@ -180,13 +180,21 @@ namespace Manifold.IO
             //writer.CommentNewLine(true);
         }
 
-        public static void JumpToAddress(this BinaryWriter writer, Pointer pointer, SeekOrigin seekOrigin = SeekOrigin.Begin)
+        public static void JumpToAddress(this BinaryWriter writer, Pointer pointer)
         {
-            writer.BaseStream.Seek(pointer.address, seekOrigin);
+            writer.BaseStream.Seek(pointer.address, SeekOrigin.Begin);
         }
-        public static void JumpToAddress(this BinaryWriter writer, ArrayPointer arrayPointer, SeekOrigin seekOrigin = SeekOrigin.Begin)
+        public static void JumpToAddress(this BinaryWriter writer, ArrayPointer arrayPointer)
         {
-            writer.BaseStream.Seek(arrayPointer.Address, seekOrigin);
+            writer.BaseStream.Seek(arrayPointer.Address, SeekOrigin.Begin);
+        }
+        public static void JumpToAddress(this BinaryWriter writer, AddressRange addressRange)
+        {
+            writer.BaseStream.Seek(addressRange.startAddress, SeekOrigin.Begin);
+        }
+        public static void JumpToAddress(this BinaryWriter writer, IBinaryAddressable binaryAddressable)
+        {
+            writer.BaseStream.Seek(binaryAddressable.AddressRange.startAddress, SeekOrigin.Begin);
         }
 
         public static Pointer GetPositionAsPointer(this BinaryWriter writer)

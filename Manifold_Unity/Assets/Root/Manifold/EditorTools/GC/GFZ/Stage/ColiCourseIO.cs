@@ -171,7 +171,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 log.Close();
 
                 // Compress and make an LZed copy
-                GfzUtility.CompressAvLzToDisk(outputFile, LibGxFormat.AvGame.FZeroGX);
+                LzUtility.CompressAvLzToDisk(outputFile, LibGxFormat.AvGame.FZeroGX, true);
             }
             OSUtility.OpenDirectory(dest);
         }

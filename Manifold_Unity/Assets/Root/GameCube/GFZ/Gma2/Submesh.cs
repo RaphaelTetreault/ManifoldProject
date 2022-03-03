@@ -16,11 +16,10 @@ namespace GameCube.GFZ.Gma2
 
         // METADATA
         private GcmfAttributes attributes;
-        private AddressRange displayListAddressRange;
 
         // FIELDS
         private Material material;
-        private DisplayListDescriptor displayListDescriptor;
+        private DisplayListDescriptor primaryDisplayListDescriptor;
         private UnkSubmeshType unknown;
         private DisplayList[] primaryDisplayListsOpaque;
         private DisplayList[] primaryDisplayListsTranslucid;
@@ -74,7 +73,7 @@ namespace GameCube.GFZ.Gma2
         }
 
         public Material Material { get => material; set => material = value; }
-        public DisplayListDescriptor DisplayListDescriptor { get => displayListDescriptor; set => displayListDescriptor = value; }
+        public DisplayListDescriptor DisplayListDescriptor { get => primaryDisplayListDescriptor; set => primaryDisplayListDescriptor = value; }
         public DisplayList[] PrimaryDisplayListsOpaque { get => primaryDisplayListsOpaque; set => primaryDisplayListsOpaque = value; }
         public DisplayList[] PrimaryDisplayListsTranslucid { get => primaryDisplayListsTranslucid; set => primaryDisplayListsTranslucid = value; }
         public DisplayListDescriptor SecondaryMeshDescriptor { get => secondaryDisplayListDescriptor; set => secondaryDisplayListDescriptor = value; }
@@ -89,7 +88,7 @@ namespace GameCube.GFZ.Gma2
             {
                 //
                 reader.ReadX(ref material);
-                reader.ReadX(ref displayListDescriptor);
+                reader.ReadX(ref primaryDisplayListDescriptor);
                 reader.ReadX(ref unknown);
                 reader.AlignTo(GXUtility.GX_FIFO_ALIGN);
 
@@ -108,13 +107,13 @@ namespace GameCube.GFZ.Gma2
 
                 if (RenderPrimaryOpaque)
                 {
-                    endAddress += displayListDescriptor.OpaqueMaterialSize;
+                    endAddress += primaryDisplayListDescriptor.OpaqueMaterialSize;
                     primaryDisplayListsOpaque = ReadDisplayLists(reader, endAddress);
                 }
 
                 if (RenderPrimaryTranslucid)
                 {
-                    endAddress += displayListDescriptor.TranslucidMaterialSize;
+                    endAddress += primaryDisplayListDescriptor.TranslucidMaterialSize;
                     primaryDisplayListsTranslucid = ReadDisplayLists(reader, endAddress);
                 }
 
@@ -142,41 +141,31 @@ namespace GameCube.GFZ.Gma2
 
         public void Serialize(BinaryWriter writer)
         {
-            {
-                // Reset the render flags based on instance data
-                material.DisplayListRenderFlags =
-                    (primaryDisplayListsOpaque is null ? 0 : DisplayListRenderFlags.renderPrimaryOpaque) |
-                    (primaryDisplayListsTranslucid is null ? 0 : DisplayListRenderFlags.renderPrimaryTranslucid) |
-                    (secondaryDisplayListsOpaque is null ? 0 : DisplayListRenderFlags.renderSecondaryOpaque) |
-                    (secondaryDisplayListsTranslucid is null ? 0 : DisplayListRenderFlags.renderSecondaryTranslucid);
+            // Reset the render flags based on instance data
+            material.DisplayListRenderFlags =
+                (primaryDisplayListsOpaque is null ? 0 : DisplayListRenderFlags.renderPrimaryOpaque) |
+                (primaryDisplayListsTranslucid is null ? 0 : DisplayListRenderFlags.renderPrimaryTranslucid) |
+                (secondaryDisplayListsOpaque is null ? 0 : DisplayListRenderFlags.renderSecondaryOpaque) |
+                (secondaryDisplayListsTranslucid is null ? 0 : DisplayListRenderFlags.renderSecondaryTranslucid);
 
-                // Compute and store sizes
-                displayListDescriptor.OpaqueMaterialSize = DisplayListsSizeOnDisk(primaryDisplayListsOpaque);
-                displayListDescriptor.TranslucidMaterialSize = DisplayListsSizeOnDisk(primaryDisplayListsTranslucid);
-                if (RenderSecondary)
-                {
-                    secondaryDisplayListDescriptor.OpaqueMaterialSize = DisplayListsSizeOnDisk(secondaryDisplayListsOpaque);
-                    secondaryDisplayListDescriptor.TranslucidMaterialSize = DisplayListsSizeOnDisk(secondaryDisplayListsTranslucid);
-                }
-            }
+            // Temp variables to store ranges that display lists are serialized at, used to get size on disk
+            var pdlOpaque = new AddressRange();
+            var pdlTranslucid = new AddressRange();
+            var sdlOpaque = new AddressRange();
+            var sdlTranslucid = new AddressRange();
+
             this.RecordStartAddress(writer);
             {
                 writer.WriteX(material);
-                writer.WriteX(displayListDescriptor);
+                writer.WriteX(primaryDisplayListDescriptor);
                 writer.WriteX(unknown);
                 writer.AlignTo(GXUtility.GX_FIFO_ALIGN);
 
                 if (RenderPrimaryOpaque)
-                {
-                    WriteDisplayLists(writer, primaryDisplayListsOpaque, out displayListAddressRange);
-                    Assert.IsTrue(displayListAddressRange.Size == displayListDescriptor.OpaqueMaterialSize, $"Serialized: {displayListAddressRange.Size},  {displayListDescriptor.OpaqueMaterialSize}");
-                }
+                    WriteDisplayLists(writer, primaryDisplayListsOpaque, out pdlOpaque);
 
                 if (RenderPrimaryTranslucid)
-                {
-                    WriteDisplayLists(writer, primaryDisplayListsTranslucid, out displayListAddressRange);
-                    Assert.IsTrue(displayListAddressRange.Size == displayListDescriptor.TranslucidMaterialSize, $"Serialized: {displayListAddressRange.Size},  {displayListDescriptor.TranslucidMaterialSize}");
-                }
+                    WriteDisplayLists(writer, primaryDisplayListsTranslucid, out pdlTranslucid);
 
 
                 if (RenderSecondary)
@@ -185,20 +174,29 @@ namespace GameCube.GFZ.Gma2
                     writer.AlignTo(GXUtility.GX_FIFO_ALIGN);
 
                     if (RenderSecondaryOpaque)
-                    {
-                        WriteDisplayLists(writer, secondaryDisplayListsOpaque, out displayListAddressRange);
-                        Assert.IsTrue(displayListAddressRange.Size == secondaryDisplayListDescriptor.OpaqueMaterialSize);
-                    }
+                        WriteDisplayLists(writer, secondaryDisplayListsOpaque, out sdlOpaque);
 
                     if (RenderSecondaryTranslucid)
-                    {
-                        WriteDisplayLists(writer, secondaryDisplayListsTranslucid, out displayListAddressRange);
-                        Assert.IsTrue(displayListAddressRange.Size == secondaryDisplayListDescriptor.TranslucidMaterialSize);
-                    }
+                        WriteDisplayLists(writer, secondaryDisplayListsTranslucid, out sdlTranslucid);
                 }
 
             }
             this.RecordEndAddress(writer);
+            {
+                // Now that we know the size of the display lists, update values and reserialize
+                primaryDisplayListDescriptor.OpaqueMaterialSize = pdlOpaque.Size;
+                primaryDisplayListDescriptor.TranslucidMaterialSize = pdlTranslucid.Size;
+                writer.JumpToAddress(primaryDisplayListDescriptor);
+                writer.WriteX(primaryDisplayListDescriptor);
+
+                if (RenderSecondary)
+                {
+                    secondaryDisplayListDescriptor.OpaqueMaterialSize = sdlOpaque.Size;
+                    secondaryDisplayListDescriptor.TranslucidMaterialSize = sdlTranslucid.Size;
+                    writer.JumpToAddress(secondaryDisplayListDescriptor);
+                    writer.WriteX(secondaryDisplayListDescriptor);
+                }
+            }
         }
 
         private DisplayList[] ReadDisplayLists(BinaryReader reader, int endAddress)

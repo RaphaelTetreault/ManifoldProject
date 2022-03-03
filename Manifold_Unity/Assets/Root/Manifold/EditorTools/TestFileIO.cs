@@ -47,7 +47,8 @@ namespace Manifold.EditorTools
         /// <param name="outputPath">The output directory for files.</param>
         /// <param name="load">The function which loads and returns the structure.</param>
         /// <param name="save">The action that saves the structure to disk.</param>
-        public static void LoadSaveToDisk<T>(string filePath, string rootPath, string outputPath, LoadFile<T> load, SaveFile<T> save)
+        /// <param name="saveCopy"></param>
+        public static void LoadSaveToDisk<T>(string filePath, string rootPath, string outputPath, LoadFile<T> load, SaveFile<T> save, bool saveCopy = true)
         {
             // Get directory to file relative to rootFolder
             var folderPath = Path.GetDirectoryName(filePath);
@@ -63,12 +64,18 @@ namespace Manifold.EditorTools
             if (!Directory.Exists(outputDirectory))
                 Directory.CreateDirectory(outputDirectory);
 
-            //
+            // Save
             var value = load(filePath);
-            save(value, outputFilePath);
+            var saveName = saveCopy ? outputFilePath : inputFilePath;
+            save(value, saveName);
+            
+            // TODO: means to LZ compress files without making things a huge mess
 
             // Make copy of file
-            File.Copy(filePath, inputFilePath, true);
+            if (saveCopy)
+            {
+                File.Copy(filePath, inputFilePath, true);
+            }
 
             Debug.Log($"Read '{filePath}', Wrote '{outputFilePath}'");
         }

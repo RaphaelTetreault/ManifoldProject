@@ -34,7 +34,7 @@ namespace Manifold.EditorTools.GC.GFZ.Gma2
             var settings = GfzProjectWindow.GetSettings();
             var rootPath = settings.RootFolder;
             var outputPath = settings.FileOutput + "/gma";
-            TestFileIO.LoadSaveToDisk(filePath, rootPath, outputPath, BinarySerializableIO.LoadFile<Gma>, BinarySerializableIO.SaveFile);
+            TestFileIO.LoadSaveToDisk(filePath, rootPath, outputPath, BinarySerializableIO.LoadFile<Gma>, BinarySerializableIO.SaveFile, false);
         }
 
 

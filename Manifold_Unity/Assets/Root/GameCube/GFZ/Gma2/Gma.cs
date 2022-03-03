@@ -69,7 +69,7 @@ namespace GameCube.GFZ.Gma2
 
         public void Serialize(BinaryWriter writer)
         {
-            //
+            // Collect all names and GCMF values from Models
             var modelNames = new List<ShiftJisCString>();
             var modelGCMFs = new List<Gcmf>();
             foreach (var model in models)
