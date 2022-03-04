@@ -16,7 +16,7 @@ namespace Manifold.EditorTools.GC.GFZ
         /// <summary>
         /// Decompresses all F-Zero GX LZ files in selected folder and subfolders
         /// </summary>
-        [MenuItem(GfzMenu + "Decompress LZ in All Directories")]
+        [MenuItem(GfzMenu + "Decompress All LZ Files in Subdirectories")]
         public static void DecompressAllAvLz()
         {
             var rootPath = EditorUtility.OpenFolderPanel("Select GFZ Root Folder", "", "");
@@ -24,20 +24,19 @@ namespace Manifold.EditorTools.GC.GFZ
             var title = "Decompressing LZ Files...";
             var filePaths = Directory.GetFiles(rootPath, "*.lz", SearchOption.AllDirectories);
             // Wrap the decompress function into something that comforms to the file action format
-            var @delegate = (TestFileIO.FileAction)((string filePath) => { LzUtility.DecompressAvLzToDisk(filePath, true); });
-            TestFileIO.FileActionLoop(title, filePaths, @delegate);
+            var decompressFile = (TestFileIO.FileAction)((string filePath) => { LzUtility.DecompressAvLzToDisk(filePath, true); });
+            TestFileIO.FileActionLoop(title, filePaths, decompressFile);
         }
+
 
 
         [MenuItem(GfzMenu + "Compress single AV LZ (GX)")]
         public static void CompressSingleFileGX()
             => CompressSingleFile("Open File to Compress to LZ (F-Zero GX)", AvGame.FZeroGX);
 
-
         [MenuItem(GfzMenu + "Compress single AV LZ (AX)")]
         public static void CompressSingleFileAX()
             => CompressSingleFile("Open File to Compress to LZ (F-Zero AX)", AvGame.FZeroAX);
-
 
         public static void CompressSingleFile(string title, AvGame game)
         {

@@ -48,7 +48,7 @@ namespace Manifold.EditorTools
         /// <param name="load">The function which loads and returns the structure.</param>
         /// <param name="save">The action that saves the structure to disk.</param>
         /// <param name="saveCopy"></param>
-        public static void LoadSaveToDisk<T>(string filePath, string rootPath, string outputPath, LoadFile<T> load, SaveFile<T> save, bool saveCopy = true)
+        public static string LoadSaveToDisk<T>(string filePath, string rootPath, string outputPath, LoadFile<T> load, SaveFile<T> save, bool saveCopy = true)
         {
             // Get directory to file relative to rootFolder
             var folderPath = Path.GetDirectoryName(filePath);
@@ -57,27 +57,26 @@ namespace Manifold.EditorTools
             var name = Path.GetFileNameWithoutExtension(filePath);
             var ext = Path.GetExtension(filePath);
             // Create path to loaded file, saved file
-            var inputFilePath = Path.Combine(outputPath, folderPath, $"{name}{ext}");
-            var outputFilePath = Path.Combine(outputPath, folderPath, $"{name}.export{ext}");
+            var copyFilePath = Path.Combine(outputPath, folderPath, $"{name}.copy{ext}");
+            var saveFilePath = Path.Combine(outputPath, folderPath, $"{name}{ext}");
             // Make sure the directory exists for the output files
-            var outputDirectory = Path.GetDirectoryName(inputFilePath);
+            var outputDirectory = Path.GetDirectoryName(copyFilePath);
             if (!Directory.Exists(outputDirectory))
                 Directory.CreateDirectory(outputDirectory);
 
             // Save
             var value = load(filePath);
-            var saveName = saveCopy ? outputFilePath : inputFilePath;
-            save(value, saveName);
+            save(value, saveFilePath);
             
-            // TODO: means to LZ compress files without making things a huge mess
-
             // Make copy of file
             if (saveCopy)
             {
-                File.Copy(filePath, inputFilePath, true);
+                File.Copy(filePath, copyFilePath, true);
             }
 
-            Debug.Log($"Read '{filePath}', Wrote '{outputFilePath}'");
+            Debug.Log($"Read '{filePath}', Wrote '{saveFilePath}'");
+            
+            return saveFilePath;
         }
 
     }

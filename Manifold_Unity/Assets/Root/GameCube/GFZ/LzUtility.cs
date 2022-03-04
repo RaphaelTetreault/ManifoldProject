@@ -6,6 +6,9 @@ using System.IO;
 
 namespace GameCube.GFZ
 {
+    /// <summary>
+    /// Static methods to compress and decompress GFZ LZ archives.
+    /// </summary>
     public static class LzUtility
     {
         public struct FileStatus
@@ -13,10 +16,10 @@ namespace GameCube.GFZ
             public bool success;
             public string filePath;
 
-            public FileStatus(bool success, string fileName)
+            public FileStatus(bool success, string filePath)
             {
                 this.success = success;
-                this.filePath = fileName;
+                this.filePath = filePath;
             }
         }
 
@@ -72,18 +75,18 @@ namespace GameCube.GFZ
         }
 
 
-        public static IEnumerable<(bool, string)> CompressAvLzToDisk(string[] filePaths, AvGame game, bool overwriteFiles)
+        public static IEnumerable<FileStatus> CompressAvLzToDisk(string[] filePaths, AvGame game, bool overwriteFiles)
         {
             for (int i = 0; i < filePaths.Length; i++)
             {
                 var filePath = filePaths[i];
                 bool success = CompressAvLzToDisk(filePath, game, overwriteFiles);
-                yield return (success, filePath);
+                yield return new FileStatus(success, filePath);
             }
         }
 
 
-        public static IEnumerable<(bool, string)> CompressAvLzDirectoryToDisk(string rootPath, AvGame game, bool overwriteFiles, SearchOption searchOption, string searchPattern)
+        public static IEnumerable<FileStatus> CompressAvLzDirectoryToDisk(string rootPath, AvGame game, bool overwriteFiles, SearchOption searchOption, string searchPattern)
         {
             var filePaths = Directory.GetFiles(rootPath, searchPattern, searchOption);
             return CompressAvLzToDisk(filePaths, game, overwriteFiles);
