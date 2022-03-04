@@ -98,7 +98,7 @@ namespace Manifold.IO
         public static void SaveFile<TBinarySerializable>(TBinarySerializable binarySerializable, string filePath)
             where TBinarySerializable : IBinarySerializable, IFile
         {
-            using (var writer = new BinaryWriter(File.OpenWrite(filePath)))
+            using (var writer = new BinaryWriter(File.Create(filePath)))
             {
                 binarySerializable.FileName = Path.GetFileName(filePath);
                 binarySerializable.Serialize(writer);
