@@ -1,1 +1,0 @@
-Gma2 is a re-write of the my original GMA implementation which uses new code structure and interfaces developed for COLI_COURSE files which vastly simplifies the structure.
