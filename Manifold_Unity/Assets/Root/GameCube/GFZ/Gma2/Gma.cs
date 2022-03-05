@@ -127,7 +127,7 @@ namespace GameCube.GFZ.Gma2
 
                 // Copy written memory stream data over to file stream
                 nameWriter.BaseStream.CopyTo(writer.BaseStream);
-                writer.AlignTo(GX.GXUtility.GX_FIFO_ALIGN);
+                writer.WriteAlignment(GX.GXUtility.GX_FIFO_ALIGN);
                 gcmfWriter.BaseStream.CopyTo(writer.BaseStream);
             }
         }

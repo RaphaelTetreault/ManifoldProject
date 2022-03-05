@@ -6,7 +6,7 @@ namespace Manifold.IO
 {
     public static partial class BinaryWriterExtensions
     {
-        public static long AlignTo(this BinaryWriter writer, long alignment, byte paddingValue = 0x00)
+        public static long WriteAlignment(this BinaryWriter writer, long alignment, byte paddingValue = 0x00)
         {
             var bytesToAlign = StreamExtensions.GetLengthOffAlignment(writer.BaseStream, alignment);
             for (int i = 0; i < bytesToAlign; i++)

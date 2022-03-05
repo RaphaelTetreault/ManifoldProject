@@ -159,7 +159,7 @@ namespace GameCube.GFZ.Gma2
                 writer.WriteX(material);
                 writer.WriteX(primaryDisplayListDescriptor);
                 writer.WriteX(unknown);
-                writer.AlignTo(GXUtility.GX_FIFO_ALIGN);
+                writer.WriteAlignment(GXUtility.GX_FIFO_ALIGN);
 
                 if (RenderPrimaryOpaque)
                     WriteDisplayLists(writer, primaryDisplayListsOpaque, out pdlOpaque);
@@ -171,7 +171,7 @@ namespace GameCube.GFZ.Gma2
                 if (RenderSecondary)
                 {
                     writer.WriteX(secondaryDisplayListDescriptor);
-                    writer.AlignTo(GXUtility.GX_FIFO_ALIGN);
+                    writer.WriteAlignment(GXUtility.GX_FIFO_ALIGN);
 
                     if (RenderSecondaryOpaque)
                         WriteDisplayLists(writer, secondaryDisplayListsOpaque, out sdlOpaque);
@@ -231,7 +231,7 @@ namespace GameCube.GFZ.Gma2
             {
                 writer.WriteX(GX_NOP);
                 writer.WriteX(displayLists);
-                writer.AlignTo(GXUtility.GX_FIFO_ALIGN);
+                writer.WriteAlignment(GXUtility.GX_FIFO_ALIGN);
             }
             addressRange.RecordEndAddress(writer);
         }
