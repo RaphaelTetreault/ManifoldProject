@@ -8,7 +8,6 @@ namespace GameCube.GFZ.CarData
     [Serializable]
     public class CarData :
         IBinarySerializable,
-        IBinaryAddressable,
         IFile
     {
         // CONSTANTS
@@ -23,13 +22,9 @@ namespace GameCube.GFZ.CarData
         public const int kPartsInternalTable = 32;
 
 
-        // METADATA
-        private string fileName;
-        private AddressRange addressRange;
-
         // FIELDS
         // String table
-        public byte[] padding; // 12 bytes
+        private byte[] padding; // 12 bytes
         public ShiftJisCString[] machineNames;
         public ShiftJisCString[] partsInternalNames;
         // Vehicles
@@ -155,16 +150,7 @@ namespace GameCube.GFZ.CarData
 
 
         // Properties
-        public AddressRange AddressRange
-        {
-            get => addressRange;
-            set => addressRange = value;
-        }
-        public string FileName
-        {
-            get => fileName;
-            set => fileName = value;
-        }
+        public string FileName { get; set; }
 
         /// <summary>
         /// Returns all machines in internal strucuture order (X, GX, AX)

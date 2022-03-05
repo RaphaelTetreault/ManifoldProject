@@ -13,9 +13,6 @@ namespace GameCube.GFZ.CarData
         IBinarySerializable,
         IBinaryAddressable
     {
-        // METADATA
-        private AddressRange addressRange;
-
         // FIELDS
         private Pointer namePtr;
         private float weight;
@@ -48,13 +45,12 @@ namespace GameCube.GFZ.CarData
         private float3 wallCollisionFrontLeft;
         private float3 wallCollisionBackRight;
         private float3 wallCollisionBackLeft;
+        // REFERENCES
+        private ShiftJisCString name;
+
 
         // PROPERTIES
-        public AddressRange AddressRange
-        {
-            get => addressRange;
-            set => addressRange = value;
-        }
+        public AddressRange AddressRange { get; set; }
         public Pointer NamePtr { get => namePtr; set => namePtr = value; }
         public float Weight { get => weight; set => weight = value; }
         public float Acceleration { get => acceleration; set => acceleration = value; }
@@ -86,6 +82,7 @@ namespace GameCube.GFZ.CarData
         public float3 WallCollisionFrontLeft { get => wallCollisionFrontLeft; set => wallCollisionFrontLeft = value; }
         public float3 WallCollisionBackRight { get => wallCollisionBackRight; set => wallCollisionBackRight = value; }
         public float3 WallCollisionBackLeft { get => wallCollisionBackLeft; set => wallCollisionBackLeft = value; }
+        public ShiftJisCString Name { get => name; set => name = value; }
 
 
         // METHODS
