@@ -79,9 +79,15 @@ namespace Manifold.EditorTools
             return saveFilePath;
         }
 
-
+        /// <summary>
+        /// Displays a cancealable progress bar for each iteration, returning a final array once complete or iterrupted.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="iterator">The iterator to iterate through.</param>
+        /// <param name="count">How many items are in the iterator.</param>
+        /// <returns></returns>
         public static T[] IteratorCanceableProgressBar<T>(IEnumerable<T> iterator, int count)
-            where T : IFile, new()
+            where T : IFile
         {
             T[] values = new T[count];
             int index = 0;

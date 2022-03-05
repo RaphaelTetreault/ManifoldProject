@@ -1,13 +1,7 @@
 ﻿using GameCube.GFZ.Gma2;
-using Manifold;
 using Manifold.IO;
 using System;
 using System.IO;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
 using UnityEditor;
 
 using static GameCube.GFZ.Gma2.GmaTableLogger;
@@ -21,7 +15,7 @@ namespace Manifold.EditorTools.GC.GFZ.Gma2
 
 
         /// <summary>
-        /// Forwards most analysis functions 
+        /// 
         /// </summary>
         /// <param name="action"></param>
         /// <param name="outputFileName"></param>
@@ -40,20 +34,17 @@ namespace Manifold.EditorTools.GC.GFZ.Gma2
         }
 
 
-
-        [MenuItem(menu + "All GMA Log Outputs")]
+        [MenuItem(menu + "GMA - All Log Outputs")]
         public static void MenuPrintGmaAll() => MenuForward(PrintGmaAll, "");
 
-        [MenuItem(menu + "Analyze GMA.GCMF")]
+        [MenuItem(menu + "GMA.GCMF")]
         public static void MenuPrintGcmf() => MenuForward(PrintGcmf, tsvGcmf);
 
-        [MenuItem(menu + "Analyze GMA.TextureConfigs")]
+        [MenuItem(menu + "GMA.TextureConfigs")]
         public static void MenuPrintTextureConfig() => MenuForward(PrintTextureConfigs, tsvTextureConfigs);
 
-        [MenuItem(menu + "Analyze GMA.Submesh.Materials")]
+        [MenuItem(menu + "GMA.Submesh.Materials")]
         public static void MenuPrintMaterials() => MenuForward(PrintMaterials, tsvMaterials);
-
-
 
     }
 }
