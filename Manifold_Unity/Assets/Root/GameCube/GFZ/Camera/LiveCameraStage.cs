@@ -6,24 +6,16 @@ using System.IO;
 namespace GameCube.GFZ.Camera
 {
     [Serializable]
-    public class LiveCameraStage :
+    public sealed class LiveCameraStage :
         IBinarySerializable,
         IFile
     {
-        // METADATA
-        private string fileName;
-
         // FIELDS
-        protected CameraPan[] pans;
+        private CameraPan[] pans;
 
 
         // PROPERTIES
-        public string FileName
-        {
-            get => fileName;
-            set => fileName = value;
-        }
-
+        public string FileName { get; set; }
         public CameraPan[] Pans
         {
             get => pans;

@@ -6,10 +6,12 @@
         /// Used for shots where there is no lerping of any kind.
         /// </summary>
         Linear = 0,
+
         /// <summary>
         /// 
         /// </summary>
         EaseOut = 2,
+
         /// <summary>
         /// 
         /// </summary>

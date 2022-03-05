@@ -6,23 +6,23 @@ using System.IO;
 namespace GameCube.GFZ.Camera
 {
     [Serializable]
-    public class CameraPan :
+    public sealed class CameraPan :
         IBinarySerializable,
         IBinaryAddressable
     {
         // CONSTANTS
         public const int kStructureSize = 0x54;
-        public const int kZeroes0x08 = 4;
+        private const int kZeroes0x08 = 4;
 
         // METADATA
         private AddressRange addressRange;
 
         // FIELDS
-        public int frameCount;
-        public float lerpSpeed;
-        public byte[] zeroes0x08;
-        public CameraPanTarget from;
-        public CameraPanTarget to;
+        private int frameCount;
+        private float lerpSpeed;
+        private byte[] zeroes0x08;
+        private CameraPanTarget from;
+        private CameraPanTarget to;
 
 
         // PROPERTIES
@@ -37,25 +37,16 @@ namespace GameCube.GFZ.Camera
             get => frameCount;
             set => frameCount = value;
         }
-
         public float LerpSpeed
         {
             get => LerpSpeed;
             set => LerpSpeed = value;
         }
-
-        public byte[] Zeroes0x08
-        {
-            get => Zeroes0x08;
-            set => Zeroes0x08 = value;
-        }
-
         public CameraPanTarget From
         {
             get => From;
             set => From = value;
         }
-
         public CameraPanTarget To
         {
             get => To;
@@ -77,7 +68,7 @@ namespace GameCube.GFZ.Camera
             this.RecordEndAddress(reader);
 
             // Assertions
-            foreach (var @byte in Zeroes0x08)
+            foreach (var @byte in zeroes0x08)
                 Assert.IsTrue(@byte == 0);
         }
 

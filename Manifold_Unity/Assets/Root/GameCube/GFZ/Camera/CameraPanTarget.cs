@@ -8,66 +8,53 @@ using Unity.Mathematics;
 namespace GameCube.GFZ.Camera
 {
     [Serializable]
-    public class CameraPanTarget :
+    public sealed class CameraPanTarget :
         IBinarySerializable,
         IBinaryAddressable
     {
-        // METADATA
-        private AddressRange addressRange;
-
         // FIELDS
-        public float3 cameraPosition;
-        public float3 lookAtPosition;
-        public float fieldOfView;
-        public Int16Rotation rotationRoll;
-        public ushort zero_0x1E;
-        public CameraPanInterpolation interpolation;
-        public ushort zero_0x22;
+        private float3 cameraPosition;
+        private float3 lookAtPosition;
+        private float fieldOfView;
+        private Int16Rotation rotationRoll;
+        private ushort zero_0x1E;
+        private CameraPanInterpolation interpolation;
+        private ushort zero_0x22;
 
 
         // PROPERTIES
-        public AddressRange AddressRange
-        {
-            get => addressRange;
-            set => addressRange = value;
-        }
+        public AddressRange AddressRange { get; set; }
 
         public float3 CameraPosition
         {
             get => cameraPosition;
             set => cameraPosition = value;
         }
-
         public float3 LookAtPosition
         {
             get => lookAtPosition;
             set => lookAtPosition = value;
         }
-
         public float FieldOfView
         {
             get => fieldOfView;
             set => fieldOfView = value;
         }
-
         public Int16Rotation RotationRoll
         {
             get => rotationRoll;
             set => rotationRoll = value;
         }
-
         public ushort Zero_0x1E
         {
             get => zero_0x1E;
             set => zero_0x1E = value;
         }
-
         public CameraPanInterpolation Interpolation
         {
             get => interpolation;
             set => interpolation = value;
         }
-
         public ushort Zero_0x22
         {
             get => zero_0x22;
