@@ -182,7 +182,7 @@ namespace GameCube.GFZ.CourseCollision
             for (int i = 0; i < kCurveCount; i++)
             {
                 var animCurve = animationCurves[i];
-                var pointer = curvesPtr2D.arrayPointers[i];
+                var pointer = curvesPtr2D.ArrayPointers[i];
                 
                 // Only assert if there are keyables
                 if (animCurve.Length != 0)
