@@ -7,15 +7,14 @@ namespace GameCube.GFZ
     // https://nghiaho.com/?page_id=846
 
     [System.Serializable]
-    public struct Int16Rotation3 : IBinarySerializable
+    public struct Int16Rotation3 :
+        IBinarySerializable
     {
         public Int16Rotation phi;
         public Int16Rotation theta;
         public Int16Rotation psi;
 
-        [SerializeField]
         private Quaternion rotation;
-        [SerializeField]
         private Vector3 eulerAngles;
 
         public Vector3 EulerAngles => eulerAngles;

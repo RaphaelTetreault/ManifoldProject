@@ -8,20 +8,13 @@ namespace GameCube.GFZ
         IBinarySerializable,
         IBinaryAddressable
     {
-        // METADATA
-        [UnityEngine.SerializeField] private AddressRange addressRange;
-
         // FIELDS
         public float3 origin;
         public float radius;
 
 
         // PROPERTIES
-        public AddressRange AddressRange
-        {
-            get => addressRange;
-            set => addressRange = value;
-        }
+        public AddressRange AddressRange { get; set; }
 
 
         // METHODS

@@ -2,6 +2,9 @@
 
 namespace GameCube.GFZ
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public enum CourseIndexGX
     {
         [Description("---")]

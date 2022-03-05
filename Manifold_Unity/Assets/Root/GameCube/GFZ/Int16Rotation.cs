@@ -1,31 +1,35 @@
 using Manifold;
 using Manifold.IO;
 using System.IO;
-using UnityEngine;
 
 namespace GameCube.GFZ
 {
     [System.Serializable]
     public struct Int16Rotation : IBinarySerializable
     {
+        // CONSTANTS
         public const float shortMax = short.MaxValue + 1;
-        // TODO: should you use the constant or hard-code for ease of reading?
-        public const float angleMax = 180f;
+        public const float angleMax = 180f; // TODO: should you use the constant or hard-code for ease of reading?
 
-        [SerializeField]
+        // FIELDS
         private float value;
-        [SerializeField]
         private short binary;
 
-        public float Value => value;
-        public short Binary => binary;
 
+        // PROPERTIES
+        public float Value { get => value; set => this.value = value; }
+        public short Binary { get => binary; set => binary = value; }
+
+
+        // CONSTRUCTORS
         public Int16Rotation(float value)
         {
             this.value = value;
             this.binary = FloatToShortRange180(value);
         }
 
+
+        // OPERATIONS
         public static implicit operator float(Int16Rotation shortRotation)
         {
             return shortRotation.value;
@@ -35,6 +39,9 @@ namespace GameCube.GFZ
         {
             return new Int16Rotation(value);
         }
+
+
+        // METHODS
 
         /// <summary>
         /// Returns a normalized short representing the rotation range -180f to +180f.
@@ -89,7 +96,7 @@ namespace GameCube.GFZ
             // Normalize short from (-32768 to +32767) to (-1f to +1f)
             // Multiply by max rotation value to set range (-180f inclusive to +180f exclusive)
             // I use 180f here, but this is conceptually -pi to +pi.
-            float result = value / shortMax * angleMax;
+            float result = value / shortMax * 180f;
             return result;
         }
 
