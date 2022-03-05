@@ -70,9 +70,9 @@ namespace GameCube.GFZ.Camera
             {
                 reader.ReadX(ref frameCount);
                 reader.ReadX(ref lerpSpeed);
-                reader.ReadX(ref zeroes0x08);
-                reader.ReadX(ref from, true);
-                reader.ReadX(ref to, true);
+                reader.ReadX(ref zeroes0x08, kZeroes0x08);
+                reader.ReadX(ref from);
+                reader.ReadX(ref to);
             }
             this.RecordEndAddress(reader);
 
@@ -87,7 +87,7 @@ namespace GameCube.GFZ.Camera
             {
                 writer.WriteX(frameCount);
                 writer.WriteX(lerpSpeed);
-                writer.WriteX(new byte[kZeroes0x08], false);
+                writer.WriteX(new byte[kZeroes0x08]);
                 writer.WriteX(from);
                 writer.WriteX(to);
             }

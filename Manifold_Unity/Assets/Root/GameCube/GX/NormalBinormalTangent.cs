@@ -1,13 +1,31 @@
+using Manifold;
+using Manifold.IO;
 using System;
-using UnityEngine;
+using System.IO;
+using Unity.Mathematics;
 
 namespace GameCube.GX
 {
     [Serializable]
-    public struct NormalBinormalTangent
+    public struct NormalBinormalTangent :
+        IBinarySerializable
     {
-        public Vector3 normal;
-        public Vector3 binormal;
-        public Vector3 tangent;
+        public float3 normal;
+        public float3 binormal;
+        public float3 tangent;
+
+        public void Deserialize(BinaryReader reader)
+        {
+            reader.ReadX(ref normal);
+            reader.ReadX(ref binormal);
+            reader.ReadX(ref tangent);
+        }
+
+        public void Serialize(BinaryWriter writer)
+        {
+            writer.WriteX(normal);
+            writer.WriteX(binormal);
+            writer.WriteX(tangent);
+        }
     }
 }

@@ -47,7 +47,7 @@ namespace GameCube.GFZ.CourseCollision
         {
             this.RecordStartAddress(reader);
             {
-                reader.ReadX(ref fieldPtrs, kCount, true);
+                reader.ReadX(ref fieldPtrs, kCount);
             }
             this.RecordEndAddress(reader);
             {
@@ -58,7 +58,7 @@ namespace GameCube.GFZ.CourseCollision
                     if (pointer.IsNotNull)
                     {
                         reader.JumpToAddress(pointer);
-                        reader.ReadX(ref fields[i], true);
+                        reader.ReadX(ref fields[i]);
                     }
                 }
             }
@@ -72,7 +72,7 @@ namespace GameCube.GFZ.CourseCollision
             }
             this.RecordStartAddress(writer);
             {
-                writer.WriteX(fieldPtrs, false);
+                writer.WriteX(fieldPtrs);
             }
             this.RecordEndAddress(writer);
         }

@@ -15,25 +15,9 @@ namespace Manifold.IO
             reader.BaseStream.Seek(arrayPointer.Address, seekOrigin);
         }
 
-
-        public static void ReadX(this BinaryReader reader, ref ArrayPointer2D arrayPointer2D)
+        public static Pointer GetPositionAsPointer(this BinaryReader reader)
         {
-            arrayPointer2D = BinaryIoUtility.ReadIBinarySerializable(reader, arrayPointer2D);
-        }
-
-        public static void ReadX(this BinaryReader reader, ref ArrayPointer arrayPointer)
-        {
-            arrayPointer = BinaryIoUtility.ReadIBinarySerializable(reader, arrayPointer);
-        }
-
-        public static void ReadX(this BinaryReader reader, ref Pointer pointer)
-        {
-            pointer = BinaryIoUtility.ReadIBinarySerializable(reader, pointer);
-        }
-
-        public static void ReadX(this BinaryReader reader, ref Offset offset)
-        {
-            offset = BinaryIoUtility.ReadIBinarySerializable(reader, offset);
+            return new Pointer(reader.BaseStream.Position);
         }
     }
 }

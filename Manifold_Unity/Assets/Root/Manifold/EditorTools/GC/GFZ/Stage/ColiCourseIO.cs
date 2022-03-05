@@ -10,6 +10,8 @@ using UnityEngine;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 
+using System.Diagnostics;
+
 
 namespace Manifold.EditorTools.GC.GFZ.Stage
 {
@@ -88,9 +90,15 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             // TODO: should use AddressLogBinaryReader. Complications with
             // the iterator and making it generic.
 
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+
             // This loads all stages but does nothing with them
             foreach (var _ in LoadAllStages(path, title))
             { }
+
+            stopwatch.Stop();
+            UnityEngine.Debug.Log(stopwatch.ElapsedMilliseconds / 1000.0);
         }
 
         [MenuItem(Const.Menu.tests + "Load Stage (Single)")]
@@ -163,7 +171,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 log.Close();
 
                 // Compress and make an LZed copy
-                GfzUtility.CompressAvLzToDisk(outputFile, LibGxFormat.AvGame.FZeroGX);
+                LzUtility.CompressAvLzToDisk(outputFile, LibGxFormat.AvGame.FZeroGX, true);
             }
             OSUtility.OpenDirectory(dest);
         }
@@ -259,7 +267,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                     sceneRead.FileName = sceneWrite.FileName;
                     // Read buffer, think of it like File.Open
                     var reader = new BinaryReader(buffer);
-                    reader.ReadX(ref sceneRead, false);
+                    sceneRead.Deserialize(reader);
                     buffer.Seek(0, SeekOrigin.Begin);
                     //
                     var fsr = File.Create(logRead.Path + ".bin");
@@ -318,7 +326,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             var sceneIn = new ColiScene();
             sceneIn.FileName = Path.GetFileName(filePath);
             sceneIn.SerializeVerbose = serializeVerbose;
-            readerIn.ReadX(ref sceneIn, false);
+            sceneIn.Deserialize(readerIn);
             // Log true file
             {
                 var logPath = Path.Combine(exportTo, $"{timestamp} - COLI_COURSE{sceneIn.ID:d2} IN.txt");
@@ -340,7 +348,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             var sceneOut = new ColiScene();
             sceneOut.SerializeVerbose = serializeVerbose;
             sceneOut.FileName = sceneIn.FileName;
-            readerOut.ReadX(ref sceneOut, false);
+            sceneOut.Deserialize(readerOut);
             // Log intermediary
             {
                 var logPath = Path.Combine(exportTo, $"{timestamp} - COLI_COURSE{sceneIn.ID:d2} OUT.txt");
@@ -780,7 +788,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             var sceneIn = new ColiScene();
             sceneIn.FileName = Path.GetFileName(filePath);
             sceneIn.SerializeVerbose = serializeVerbose;
-            readerIn.ReadX(ref sceneIn, false);
+            sceneIn.Deserialize(readerIn);
             // Check to see if file is from ROM. Add correct metadata.
             // TODO: remove hardcoded match and use dynamic JP/EN/PAL
             readerIn.SeekBegin();
@@ -820,7 +828,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             var sceneOut = new ColiScene();
             sceneOut.SerializeVerbose = serializeVerbose;
             sceneOut.FileName = sceneIn.FileName;
-            readerOut.ReadX(ref sceneOut, false);
+            sceneOut.Deserialize(readerOut);
             // Log intermediary
             {
                 //WriteTrackDataHashReport(log, sceneIn);
@@ -866,7 +874,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 var sceneIn = new ColiScene();
                 sceneIn.FileName = filename;
                 sceneIn.SerializeVerbose = serializeVerbose;
-                readerIn.ReadX(ref sceneIn, false);
+                sceneIn.Deserialize(readerIn);
 
                 // WRITE INTERMEDIARY
                 // Write scene out to memory stream...
@@ -1113,7 +1121,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                     coliScene.trackLength = new TrackLength();
                     coliScene.trackMinHeight = new TrackMinHeight();
                 }
-                Debug.LogWarning("TODO: define bounds");
+                //Debug.LogWarning("TODO: define bounds");
 
                 // Export the file
                 var exported = ExportUtility.ExportSerializable(coliScene, exportTo, "", allowOverwritingFiles);

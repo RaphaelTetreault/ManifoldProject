@@ -47,12 +47,21 @@ namespace Manifold.IO
             return new Offset(addressOffset);
         }
 
-        // METHODS
 
-        public Pointer CreatePointer(Pointer basePointer)
+        //METHODS
+        public static Pointer CreatePointer(Offset lhs, Offset rhs)
         {
-            return new Pointer(basePointer + addressOffset);
+            return new Pointer(lhs.addressOffset + rhs.addressOffset);
         }
+        public static Pointer CreatePointer(Pointer lhs, Offset rhs)
+        {
+            return new Pointer(lhs.address + rhs.addressOffset);
+        }
+        public static Pointer CreatePointer(Offset lhs, Pointer rhs)
+        {
+            return new Pointer(lhs.addressOffset + rhs.address);
+        }
+
 
         public void Deserialize(BinaryReader reader)
         {

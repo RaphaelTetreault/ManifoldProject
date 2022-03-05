@@ -40,7 +40,9 @@ namespace Manifold.EditorTools.GC.GFZ.CarData
         {
             importFiles = Directory.GetFiles(importFrom, searchPattern, fileSearchOption);
             importFiles = UnityPathUtility.EnforceUnitySeparators(importFiles);
-            importFiles = GfzUtility.DecompressEachLZ(importFiles);
+            //importFiles = GfzUtility.DecompressEachLZ(importFiles);
+            // Due to line above commented out, decommission this function
+            throw new System.NotImplementedException("API change broke this function");
 
             var count = 0;
             foreach (var importFile in importFiles)

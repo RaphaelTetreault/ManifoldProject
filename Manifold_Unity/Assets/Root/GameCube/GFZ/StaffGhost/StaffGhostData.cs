@@ -37,7 +37,7 @@ namespace GameCube.GFZ.StaffGhost
             courseID = (CourseIndexGX)temp;
 
             reader.ReadX(ref unk_1, 6);
-            reader.ReadX(ref username, true);
+            reader.ReadX(ref username);
 
             reader.BaseStream.Seek(0x24, SeekOrigin.Begin);
             reader.ReadX(ref timeMinutes);

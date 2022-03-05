@@ -32,13 +32,13 @@ namespace GameCube.Cheats
             {
                 // If end of file, break.
                 // Do this first in case empty GCT
-                var nextLine = reader.PeekUint64();
+                var nextLine = reader.PeekUInt64();
                 if (nextLine == fileTerminator)
                     break;
 
                 // Instance code, deserialize, add to list of codes
                 var code = new GctCode();
-                reader.ReadX(ref code, false);
+                reader.ReadX(ref code);
                 codes.Add(code);
             }
             this.codes = codes.ToArray();
@@ -50,7 +50,7 @@ namespace GameCube.Cheats
         {
             BinaryIoUtility.PushEndianness(Endianness.BigEndian);
             {
-                writer.WriteX(codes, false);
+                writer.WriteX(codes);
             }
             BinaryIoUtility.PopEndianness();
         }
@@ -82,7 +82,7 @@ namespace GameCube.Cheats
 
         public void Serialize(BinaryWriter writer)
         {
-            writer.WriteX(payload, false);
+            writer.WriteX(payload);
         }
 
     }

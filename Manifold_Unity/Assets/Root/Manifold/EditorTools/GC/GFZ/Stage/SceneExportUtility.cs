@@ -264,7 +264,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 writer.WriteX(scene);
                 writer.Flush();
             }
-            GfzUtility.CompressAvLzToDisk(outputFile, compressFormat);
+            LzUtility.CompressAvLzToDisk(outputFile, compressFormat, true);
             OSUtility.OpenDirectory(outputPath);
 
             foreach (var mirroredObject in mirroredObjects)

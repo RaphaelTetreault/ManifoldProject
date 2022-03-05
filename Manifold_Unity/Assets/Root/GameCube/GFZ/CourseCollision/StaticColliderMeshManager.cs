@@ -75,11 +75,6 @@ namespace GameCube.GFZ.CourseCollision
         public SceneObjectStatic[] staticSceneObjects; // Some of these used to be name-parsed colliders! (eg: *_CLASS2, etc)
 
 
-        public StaticColliderMeshManager()
-        {
-            serializeFormat = ColiScene.SerializeFormat.InvalidFormat;
-        }
-
         public StaticColliderMeshManager(ColiScene.SerializeFormat serializeFormat)
         {
             this.serializeFormat = serializeFormat;
@@ -142,10 +137,10 @@ namespace GameCube.GFZ.CourseCollision
             {
                 reader.ReadX(ref zeroes_group1, kZeroesGroup1);
                 reader.ReadX(ref staticColliderTrisPtr);
-                reader.ReadX(ref triMeshGridPtrs, countSurfaceTypes, true);
-                reader.ReadX(ref meshGridXZ, true);
+                reader.ReadX(ref triMeshGridPtrs, countSurfaceTypes);
+                reader.ReadX(ref meshGridXZ);
                 reader.ReadX(ref staticColliderQuadsPtr);
-                reader.ReadX(ref quadMeshGridPtrs, countSurfaceTypes, true);
+                reader.ReadX(ref quadMeshGridPtrs, countSurfaceTypes);
                 reader.ReadX(ref zeroes_group2, kZeroesGroup2);
                 reader.ReadX(ref unknownCollidersPtr);
                 reader.ReadX(ref staticSceneObjectsPtr);
@@ -171,17 +166,15 @@ namespace GameCube.GFZ.CourseCollision
                 {
                     // Triangles
                     var triIndexesPointer = triMeshGridPtrs[i];
-                    triMeshGrids[i] = new StaticColliderMeshGrid();
-                    //DebugConsole.Log($"tri{i+1}:{triPointer.HexAddress}");
                     reader.JumpToAddress(triIndexesPointer);
-                    reader.ReadX(ref triMeshGrids[i], false);
+                    triMeshGrids[i] = new StaticColliderMeshGrid();
+                    triMeshGrids[i].Deserialize(reader);
 
                     // Quads
                     var quadPointer = quadMeshGridPtrs[i];
-                    quadMeshGrids[i] = new StaticColliderMeshGrid();
-                    //DebugConsole.Log($"quad{i+1}:{quadPointer.HexAddress}");
                     reader.JumpToAddress(quadPointer);
-                    reader.ReadX(ref quadMeshGrids[i], false);
+                    quadMeshGrids[i] = new StaticColliderMeshGrid();
+                    quadMeshGrids[i].Deserialize(reader);
                 }
 
                 //
@@ -194,14 +187,14 @@ namespace GameCube.GFZ.CourseCollision
                 }
 
                 reader.JumpToAddress(staticColliderTrisPtr);
-                reader.ReadX(ref colliderTris, numTriVerts, true);
+                reader.ReadX(ref colliderTris, numTriVerts);
 
                 reader.JumpToAddress(staticColliderQuadsPtr);
-                reader.ReadX(ref colliderQuads, numQuadVerts, true);
+                reader.ReadX(ref colliderQuads, numQuadVerts);
 
                 // NEWER STUFF
                 reader.JumpToAddress(boundingSpherePtr);
-                reader.ReadX(ref boundingSphere, true);
+                reader.ReadX(ref boundingSphere);
                 // I don't read the SceneObjectTemplates and UnknownSolsTriggers
                 // since it's easier to patch that in ColiScene directly and saves
                 // some deserialization time
@@ -246,20 +239,20 @@ namespace GameCube.GFZ.CourseCollision
             this.RecordStartAddress(writer);
             {
                 // Write empty int array for unknown
-                writer.WriteX(new byte[kZeroesGroup1], false);
+                writer.WriteX(new byte[kZeroesGroup1]);
                 writer.WriteX(staticColliderTrisPtr);
-                writer.WriteX(triMeshGridPtrs, false);
+                writer.WriteX(triMeshGridPtrs);
                 writer.WriteX(meshGridXZ);
                 writer.WriteX(staticColliderQuadsPtr);
-                writer.WriteX(quadMeshGridPtrs, false);
-                writer.WriteX(new byte[kZeroesGroup2], false);
+                writer.WriteX(quadMeshGridPtrs);
+                writer.WriteX(new byte[kZeroesGroup2]);
                 writer.WriteX(unknownCollidersPtr);
                 writer.WriteX(staticSceneObjectsPtr);
-                writer.WriteX(new byte[kZeroesGroup3], false);
+                writer.WriteX(new byte[kZeroesGroup3]);
                 writer.WriteX(boundingSpherePtr);
-                writer.WriteX(new byte[kZeroesGroup4], false);
+                writer.WriteX(new byte[kZeroesGroup4]);
                 writer.WriteX(unk_float);
-                writer.WriteX(new byte[kZeroesGroup5], false);
+                writer.WriteX(new byte[kZeroesGroup5]);
             }
             this.RecordEndAddress(writer);
         }

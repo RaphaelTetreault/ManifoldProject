@@ -52,7 +52,7 @@ namespace GameCube.GFZ.CourseCollision
             {
                 // Get point
                 reader.JumpToAddress(checkpointsPtr);
-                reader.ReadX(ref checkpoints, checkpointsPtr.Length, true);
+                reader.ReadX(ref checkpoints, checkpointsPtr.Length);
 
                 // Get transform
                 // NOTE: since this data is referenced many times, I instead

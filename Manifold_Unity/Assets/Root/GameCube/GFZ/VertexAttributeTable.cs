@@ -4,7 +4,7 @@ namespace GameCube.GFZ
 {
     public static class VertexAttributeTable
     {
-        public static readonly GX.VertexAttributeTable GfzVat = new GX.VertexAttributeTable(
+        public static readonly GX.VertexAttributeTable GfzVat = new(
             new VertexAttributeFormat[2]
             {
                 // VAT 0

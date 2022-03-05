@@ -6,36 +6,54 @@ namespace Manifold.IO
     [Serializable]
     public struct AddressRange
     {
-        [Hex(8)]
-        public long startAddress;
-
-        [Hex(8)]
-        public long endAddress;
+        // FIELDS
+        private long startAddress;
+        private long endAddress;
 
 
-        public void RecordStartAddress(Stream stream)
-        {
-            startAddress = stream.Position;
-        }
-
-        public void RecordEndAddress(Stream stream)
-        {
-            endAddress = stream.Position;
-        }
-
+        // PROPERTIES
         public Pointer GetPointer()
         {
             return new Pointer()
             {
-                address = (int)startAddress
+                address = (int)StartAddress
             };
         }
 
-        public int Size => (int)(endAddress - startAddress);
+        public long StartAddress { get => startAddress; set => startAddress = value; }
+        public long EndAddress { get => endAddress; set => endAddress = value; }
+        public int Size => (int)(EndAddress - StartAddress);
+
+
+        // METHODS
+        public void RecordStartAddress(Stream stream)
+        {
+            StartAddress = stream.Position;
+        }
+
+        public void RecordStartAddress(BinaryReader reader)
+            => RecordStartAddress(reader.BaseStream);
+
+        public void RecordStartAddress(BinaryWriter writer)
+            => RecordStartAddress(writer.BaseStream);
+
+
+        public void RecordEndAddress(Stream stream)
+        {
+            EndAddress = stream.Position;
+        }
+
+        public void RecordEndAddress(BinaryReader reader)
+            => RecordEndAddress(reader.BaseStream);
+
+        public void RecordEndAddress(BinaryWriter writer)
+            => RecordEndAddress(writer.BaseStream);
+
+
 
         public override string ToString()
         {
-            return $"Start: {startAddress:x8}, End: {endAddress:x8}, Size: {Size} ({Size:x})";
+            return $"Start: {StartAddress:x8}, End: {EndAddress:x8}, Size: {Size} ({Size:x})";
         }
     }
 }

@@ -83,7 +83,7 @@ namespace GameCube.GFZ.Camera
                 reader.ReadX(ref cameraPosition);
                 reader.ReadX(ref lookAtPosition);
                 reader.ReadX(ref fieldOfView);
-                reader.ReadX(ref rotationRoll, false);
+                reader.ReadX(ref rotationRoll);
                 reader.ReadX(ref zero_0x1E);
                 reader.ReadX(ref interpolation);
                 reader.ReadX(ref zero_0x22);

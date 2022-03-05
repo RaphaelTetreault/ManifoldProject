@@ -1,33 +1,31 @@
 ﻿using System;
-using UnityEngine;
-using GameCube.GFZ.GMA;
 
 namespace GameCube.GX
 {
 
     /// <summary>
-    /// What would compromise a column in GX VAT - Vertex Attribute Table:::
+    /// What would comprise a column in GX VAT - Vertex Attribute Table
     /// 
     /// GX Vertex Attribute Format
     /// </summary>
     [Serializable]
     public class VertexAttributeFormat
     {
-        // 2020-05-04 Raph: I worry this can have errors when if someone
+        // 2020-05-04 Raph: I worry this can have errors when/if someone
         // accidentally modifies a value
-        [SerializeField] public VertexAttribute pos;
-        [SerializeField] public VertexAttribute nrm;
-        [SerializeField] public VertexAttribute nbt;
-        [SerializeField] public VertexAttribute clr0;
-        [SerializeField] public VertexAttribute clr1;
-        [SerializeField] public VertexAttribute tex0;
-        [SerializeField] public VertexAttribute tex1;
-        [SerializeField] public VertexAttribute tex2;
-        [SerializeField] public VertexAttribute tex3;
-        [SerializeField] public VertexAttribute tex4;
-        [SerializeField] public VertexAttribute tex5;
-        [SerializeField] public VertexAttribute tex6;
-        [SerializeField] public VertexAttribute tex7;
+        public VertexAttribute pos;
+        public VertexAttribute nrm;
+        public VertexAttribute nbt;
+        public VertexAttribute clr0;
+        public VertexAttribute clr1;
+        public VertexAttribute tex0;
+        public VertexAttribute tex1;
+        public VertexAttribute tex2;
+        public VertexAttribute tex3;
+        public VertexAttribute tex4;
+        public VertexAttribute tex5;
+        public VertexAttribute tex6;
+        public VertexAttribute tex7;
 
         public VertexAttribute GetAttr(Attribute attribute)
         {
@@ -48,7 +46,7 @@ namespace GameCube.GX
                 case Attribute.GX_VA_TEX7: return tex7;
 
                 default:
-                    throw new NotImplementedException();
+                    throw new ArgumentException();
             }
         }
 
@@ -71,7 +69,7 @@ namespace GameCube.GX
                 case GXAttributes.GX_VA_TEX7: return tex7;
 
                 default:
-                    throw new NotImplementedException();
+                    throw new ArgumentException();
             }
         }
 
@@ -94,7 +92,7 @@ namespace GameCube.GX
                 case Attribute.GX_VA_TEX7: tex7 = vertexAttribute; break;
 
                 default:
-                    throw new NotImplementedException();
+                    throw new ArgumentException();
             }
         }
     }

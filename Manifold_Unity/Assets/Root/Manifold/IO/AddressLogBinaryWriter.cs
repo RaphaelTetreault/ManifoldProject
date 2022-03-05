@@ -52,11 +52,11 @@ namespace Manifold.IO
             {
                 AddressRange addressRange = new AddressRange()
                 {
-                    startAddress = (int)BaseStream.Position,
-                    endAddress = (int)BaseStream.Position + buffer.Length,
+                    StartAddress = (int)BaseStream.Position,
+                    EndAddress = (int)BaseStream.Position + buffer.Length,
                 };
 
-                bool isLesserThan = addrBuffer.Length < addressRange.endAddress;
+                bool isLesserThan = addrBuffer.Length < addressRange.EndAddress;
                 if (isLesserThan)
                 {
                     // double the buffer size
@@ -66,7 +66,7 @@ namespace Manifold.IO
                 }
 
                 // Loop from start address to end address -1
-                for (int addr = (int)addressRange.startAddress; addr < (int)addressRange.endAddress; addr++)
+                for (int addr = (int)addressRange.StartAddress; addr < (int)addressRange.EndAddress; addr++)
                 {
                     bool addressWrittenTo = addrBuffer[addr];
                     if (addressWrittenTo)

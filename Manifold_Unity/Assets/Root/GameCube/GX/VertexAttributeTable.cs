@@ -1,7 +1,5 @@
-﻿using System;
-using UnityEngine;
-using UnityEngine.Assertions;
-using GameCube.GFZ.GMA;
+﻿using Manifold;
+using System;
 
 namespace GameCube.GX
 {
@@ -9,10 +7,23 @@ namespace GameCube.GX
     [Serializable]
     public class VertexAttributeTable
     {
-        [SerializeField] VertexAttributeFormat[] gxVertexAttributeFormats = new VertexAttributeFormat[8];
+        // FIELDS
+        private VertexAttributeFormat[] gxVertexAttributeFormats = new VertexAttributeFormat[8];
 
-        public VertexAttributeFormat[] GxVtxAttrFmts
-            => gxVertexAttributeFormats;
+        // INDEXERS
+        public VertexAttributeFormat this[int i]
+        {
+            get => gxVertexAttributeFormats[i];
+        }
+        public VertexAttributeFormat this[VertexFormat vertexFormat]
+        {
+            get => gxVertexAttributeFormats[(byte)vertexFormat];
+        }
+        public VertexAttributeFormat this[DisplayCommand displayCommand]
+        {
+            get => gxVertexAttributeFormats[displayCommand.VertexFormatIndex];
+        }
+
 
         public VertexAttributeTable(params VertexAttributeFormat[] formats)
         {
@@ -21,11 +32,11 @@ namespace GameCube.GX
 
             // Update formats
             for (int i = 0; i < formats.Length; i++)
-                GxVtxAttrFmts[i] = formats[i];
+                gxVertexAttributeFormats[i] = formats[i];
 
             // Clear old refs
-            for (int i = formats.Length; i < GxVtxAttrFmts.Length; i++)
-                GxVtxAttrFmts[i] = null;
+            for (int i = formats.Length; i < gxVertexAttributeFormats.Length; i++)
+                gxVertexAttributeFormats[i] = null;
         }
 
         public bool VatHasAttr(DisplayCommand gxCmd, Attribute attribute)
@@ -46,7 +57,7 @@ namespace GameCube.GX
 
         public bool HasAttr(DisplayCommand gxCmd, GXAttributes attribute)
         {
-            Assert.IsTrue((byte)gxCmd.VertexFormat < 8);
+            Assert.IsTrue(gxCmd.VertexFormatIndex < 8);
 
             if (attribute == 0)
             {
@@ -55,8 +66,8 @@ namespace GameCube.GX
             else
             {
                 var vatIndex = (int)gxCmd.VertexFormat;
-                var attr = gxVertexAttributeFormats[vatIndex].GetAttr(attribute);
-                return attr != null;
+                var vertexAttribute = gxVertexAttributeFormats[vatIndex].GetAttr(attribute);
+                return vertexAttribute != null;
             }
         }
 

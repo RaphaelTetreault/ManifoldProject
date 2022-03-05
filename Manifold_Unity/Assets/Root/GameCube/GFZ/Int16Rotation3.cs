@@ -114,9 +114,9 @@ namespace GameCube.GFZ
         public void Deserialize(BinaryReader reader)
         {
             {
-                reader.ReadX(ref phi, false);
-                reader.ReadX(ref theta, false);
-                reader.ReadX(ref psi, false);
+                reader.ReadX(ref phi);
+                reader.ReadX(ref theta);
+                reader.ReadX(ref psi);
             }
             //
             {

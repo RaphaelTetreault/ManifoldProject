@@ -39,7 +39,7 @@ namespace GameCube.GFZ.CourseCollision
         {
             this.RecordStartAddress(reader);
             {
-                reader.ReadX(ref transform, true);
+                reader.ReadX(ref transform);
                 reader.ReadX(ref option);
             }
             this.RecordEndAddress(reader);
