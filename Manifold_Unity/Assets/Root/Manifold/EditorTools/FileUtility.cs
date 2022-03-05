@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using Manifold.IO;
+using System.IO;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
@@ -77,5 +79,27 @@ namespace Manifold.EditorTools
             return saveFilePath;
         }
 
+
+        public static T[] IteratorCanceableProgressBar<T>(IEnumerable<T> iterator, int count)
+            where T : IFile, new()
+        {
+            T[] values = new T[count];
+            int index = 0;
+            int countFormat = count.ToString().Length;
+            foreach (var item in iterator)
+            {
+                // Copy value in
+                values[index] = item;
+
+                index++;
+                string info = $"[{index.ToString().PadLeft(countFormat)}/{count}] {item.FileName}";
+                float progress = (float)index / count;
+                bool cancel = EditorUtility.DisplayCancelableProgressBar("Loading GMA Files", info, progress);
+                if (cancel)
+                    break;
+            }
+            EditorUtility.ClearProgressBar();
+            return values;
+        }
     }
 }

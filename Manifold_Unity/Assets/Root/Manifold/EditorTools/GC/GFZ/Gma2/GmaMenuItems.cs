@@ -13,7 +13,7 @@ namespace Manifold.EditorTools.GC.GFZ.Gma2
     /// <summary>
     /// Class meant for exposing GMA related tests in the Unity Editor.
     /// </summary>
-    public static class GmaMenu
+    public static class GmaMenuItems
     {
         public static void ForeachGma(string title, FileUtility.FileAction fileAction)
         {

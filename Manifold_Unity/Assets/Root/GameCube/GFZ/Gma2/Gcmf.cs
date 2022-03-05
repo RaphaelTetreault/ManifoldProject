@@ -32,14 +32,14 @@ namespace GameCube.GFZ.Gma2
         private uint gcmfTexturesSize;
         private uint zero0x24;
         private BoneIndexes8 boneIndices;
-        private TextureConfig[] textureConfigs;
-        private TransformMatrix3x4[] bones;
+        private TextureConfig[] textureConfigs = new TextureConfig[0];
+        private TransformMatrix3x4[] bones = new TransformMatrix3x4[0];
         private SkinnedVertexDescriptor skinnedVertexDescriptor;
-        private Submesh[] submeshes;
-        private SkinnedVertexA[] skinnedVerticesA;
-        private SkinnedVertexB[] skinnedVerticesB;
-        private SkinBoneBinding[] skinBoneBindings;
-        private short[] unkBoneIndices;
+        private Submesh[] submeshes = new Submesh[0];
+        private SkinnedVertexA[] skinnedVerticesA = new SkinnedVertexA[0];
+        private SkinnedVertexB[] skinnedVerticesB = new SkinnedVertexB[0];
+        private SkinBoneBinding[] skinBoneBindings = new SkinBoneBinding[0];
+        private short[] unkBoneIndices = new short[0];
 
 
         // PROPERTIES
@@ -71,14 +71,14 @@ namespace GameCube.GFZ.Gma2
         public GcmfAttributes Attributes { get => attributes; set => attributes = value; }
         public BoundingSphere BoundingSphere { get => boundingSphere; set => boundingSphere = value; }
         public ushort TextureCount { get => textureCount; set => textureCount = value; }
-        public ushort MaterialCount { get => opaqueMaterialCount; set => opaqueMaterialCount = value; }
+        public ushort OpaqueMaterialCount { get => opaqueMaterialCount; set => opaqueMaterialCount = value; }
         public ushort TranslucidMaterialCount { get => translucidMaterialCount; set => translucidMaterialCount = value; }
-        public byte TransformMatrixCount { get => boneCount; set => boneCount = value; }
+        public byte BoneCount { get => boneCount; set => boneCount = value; }
         public uint GcmfTexturesSize { get => gcmfTexturesSize; set => gcmfTexturesSize = value; }
         public BoneIndexes8 BoneIndices { get => boneIndices; set => boneIndices = value; }
         public TransformMatrix3x4[] Bones { get => bones; set => bones = value; }
         public TextureConfig[] TextureConfigs { get => textureConfigs; set => textureConfigs = value; }
-        public SkinnedVertexDescriptor VertexController { get => skinnedVertexDescriptor; set => skinnedVertexDescriptor = value; }
+        public SkinnedVertexDescriptor SkinnedVertexDescriptor { get => skinnedVertexDescriptor; set => skinnedVertexDescriptor = value; }
         public Submesh[] Submeshes { get => submeshes; set => submeshes = value; }
         public SkinnedVertexA[] SkinnedVerticesA { get => skinnedVerticesA; set => skinnedVerticesA = value; }
         public SkinnedVertexB[] SkinnedVerticesB { get => skinnedVerticesB; set => skinnedVerticesB = value; }
@@ -165,7 +165,7 @@ namespace GameCube.GFZ.Gma2
                     {
                         var address = SkinnedDataBaseAddress + skinnedVertexDescriptor.UnkBoneIndicesPtrOffset;
                         reader.JumpToAddress(address);
-                        reader.ReadX(ref unkBoneIndices, TransformMatrixCount);
+                        reader.ReadX(ref unkBoneIndices, BoneCount);
                         reader.AlignTo(GX.GXUtility.GX_FIFO_ALIGN);
                     }
                 }

@@ -23,10 +23,10 @@ namespace GameCube.GFZ.Gma2
         private float2 textureUV1;
         private uint zero0x28;
         private uint zero0x2C;
-        private GXColor color0; // RGBA. Appears to truly be a color.
-        private GXColor color1; // Magic bits. Variations: 00000000, 00010100, 02000002, 01000001, 03000003
-        private GXColor color2; // RGBA. Color-looking, but does use alpha channel.
-        private GXColor color3; // RGBA. Color-looking, but does use alpha channel. 00000004 is the only magic-bit looking value.
+        private GXColor color0 = new GXColor(ComponentType.GX_RGBA8); // RGBA. Appears to truly be a color.
+        private GXColor color1 = new GXColor(ComponentType.GX_RGBA8); // Magic bits. Variations: 00000000, 00010100, 02000002, 01000001, 03000003
+        private GXColor color2 = new GXColor(ComponentType.GX_RGBA8); // RGBA. Color-looking, but does use alpha channel.
+        private GXColor color3 = new GXColor(ComponentType.GX_RGBA8); // RGBA. Color-looking, but does use alpha channel. 00000004 is the only magic-bit looking value.
 
         // PROPERTIES
         public AddressRange AddressRange { get; set; }
@@ -43,10 +43,10 @@ namespace GameCube.GFZ.Gma2
                 reader.ReadX(ref textureUV1);
                 reader.ReadX(ref zero0x28);
                 reader.ReadX(ref zero0x2C);
-                reader.ReadX(ref color0);
-                reader.ReadX(ref color1);
-                reader.ReadX(ref color2);
-                reader.ReadX(ref color3);
+                color0.Deserialize(reader);
+                color1.Deserialize(reader);
+                color2.Deserialize(reader);
+                color3.Deserialize(reader);
             }
             this.RecordEndAddress(reader);
             {
