@@ -16,9 +16,9 @@ namespace GameCube.GFZ.Gma2
         private ushort zero0x00; //2
         private MatFlags0x02 unk0x02; // <- COLOR blending stuff?
         private MatFlags0x03 unk0x03; // <- cont
-        private uint color0; // RGBA
-        private uint color1;
-        private uint color2;
+        private GXColor color0 = new GXColor(ComponentType.GX_RGBA8);
+        private GXColor color1 = new GXColor(ComponentType.GX_RGBA8);
+        private GXColor color2 = new GXColor(ComponentType.GX_RGBA8);
         private MatFlags0x10 unk0x10;
         private MatFlags0x11 unk0x11;
         private byte textureCount;
@@ -35,9 +35,9 @@ namespace GameCube.GFZ.Gma2
         public AddressRange AddressRange { get; set; }
         public MatFlags0x02 Unk0x02 { get => unk0x02; set => unk0x02 = value; }
         public MatFlags0x03 Unk0x03 { get => unk0x03; set => unk0x03 = value; }
-        public uint Color0 { get => color0; set => color0 = value; }
-        public uint Color1 { get => color1; set => color1 = value; }
-        public uint Color2 { get => color2; set => color2 = value; }
+        public GXColor Color0 { get => color0; set => color0 = value; }
+        public GXColor Color1 { get => color1; set => color1 = value; }
+        public GXColor Color2 { get => color2; set => color2 = value; }
         public MatFlags0x10 Unk0x10 { get => unk0x10; set => unk0x10 = value; }
         public MatFlags0x11 Unk0x11 { get => unk0x11; set => unk0x11 = value; }
         public byte TextureCount { get => textureCount; set => textureCount = value; }
@@ -58,9 +58,9 @@ namespace GameCube.GFZ.Gma2
                 reader.ReadX(ref zero0x00);
                 reader.ReadX(ref unk0x02);
                 reader.ReadX(ref unk0x03);
-                reader.ReadX(ref color0);
-                reader.ReadX(ref color1);
-                reader.ReadX(ref color2);
+                color0.Deserialize(reader);
+                color1.Deserialize(reader);
+                color2.Deserialize(reader);
                 reader.ReadX(ref unk0x10);
                 reader.ReadX(ref unk0x11);
                 reader.ReadX(ref textureCount);
@@ -82,6 +82,9 @@ namespace GameCube.GFZ.Gma2
         {
             {
                 Assert.IsTrue(zero0x00 == 0);
+                Assert.IsTrue(color0.ComponentType == ComponentType.GX_RGBA8);
+                Assert.IsTrue(color1.ComponentType == ComponentType.GX_RGBA8);
+                Assert.IsTrue(color2.ComponentType == ComponentType.GX_RGBA8);
             }
             this.RecordStartAddress(writer);
             {

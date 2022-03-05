@@ -23,8 +23,8 @@ namespace GameCube.GFZ.Gma2
         private float2 textureUV1;
         private uint zero0x28;
         private uint zero0x2C;
-        private GXColor color1; // RGBA. Appears to truly be a color.
-        private GXColor unk0x34; // Magic bits. Variations: 00000000, 00010100, 02000002, 01000001, 03000003
+        private GXColor color0; // RGBA. Appears to truly be a color.
+        private GXColor color1; // Magic bits. Variations: 00000000, 00010100, 02000002, 01000001, 03000003
         private GXColor color2; // RGBA. Color-looking, but does use alpha channel.
         private GXColor color3; // RGBA. Color-looking, but does use alpha channel. 00000004 is the only magic-bit looking value.
 
@@ -43,8 +43,8 @@ namespace GameCube.GFZ.Gma2
                 reader.ReadX(ref textureUV1);
                 reader.ReadX(ref zero0x28);
                 reader.ReadX(ref zero0x2C);
+                reader.ReadX(ref color0);
                 reader.ReadX(ref color1);
-                reader.ReadX(ref unk0x34);
                 reader.ReadX(ref color2);
                 reader.ReadX(ref color3);
             }
@@ -69,8 +69,8 @@ namespace GameCube.GFZ.Gma2
                 writer.WriteX(textureUV1);
                 writer.WriteX(zero0x28);
                 writer.WriteX(zero0x2C);
+                writer.WriteX(color0);
                 writer.WriteX(color1);
-                writer.WriteX(unk0x34);
                 writer.WriteX(color2);
                 writer.WriteX(color3);
             }

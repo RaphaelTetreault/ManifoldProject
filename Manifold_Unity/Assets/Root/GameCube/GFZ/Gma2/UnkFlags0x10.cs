@@ -1,11 +1,9 @@
-using System;
-
 namespace GameCube.GFZ.Gma2
 {
     /// <summary>
     /// 2019/04/23 - All values 0, 17, 18, 20, 36, 48
     /// </summary>
-    [Flags]
+    [System.Flags]
     public enum UnkFlags0x10 : uint
     {
         /// <summary>

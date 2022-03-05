@@ -11,6 +11,9 @@ namespace GameCube.GFZ.Gma2
         IBinarySerializable
     {
         // CONSTANTS
+        /// <summary>
+        /// GameCube GPU No Operation opcode
+        /// </summary>
         public const byte GX_NOP = 0x00;
 
         // METADATA
