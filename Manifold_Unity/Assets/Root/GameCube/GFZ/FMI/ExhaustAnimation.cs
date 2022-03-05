@@ -2,43 +2,26 @@
 using Manifold.IO;
 using System;
 using System.IO;
-using UnityEngine;
+using Unity.Mathematics;
 
 namespace GameCube.GFZ.FMI
 {
     [Serializable]
-    public class ExhaustAnimation : IBinarySerializable, IBinaryAddressable
+    public class ExhaustAnimation :
+        IBinarySerializable,
+        IBinaryAddressable
     {
-
-        #region FIELDS
-
-        [SerializeField, HideInInspector]
-        private AddressRange addressRange;
-        public string name;
-
-        // structure
-        public Vector3 position;
+        // FIELDS
+        public float3 position;
         public int unk_0x0C;
         public int animType;
 
 
-        #endregion
-
-        #region PROPERTIES
-
-
-        public AddressRange AddressRange
-        {
-            get => addressRange;
-            set => addressRange = value;
-        }
+        // PROEPRTIES
+        public AddressRange AddressRange { get; set; }
 
 
-        #endregion
-
-        #region METHODS
-
-        
+        // METHODS
         public void Deserialize(BinaryReader reader)
         {
             this.RecordStartAddress(reader);
@@ -52,11 +35,14 @@ namespace GameCube.GFZ.FMI
 
         public void Serialize(BinaryWriter writer)
         {
-            throw new NotImplementedException();
+            this.RecordStartAddress(writer);
+            {
+                writer.WriteX(position);
+                writer.WriteX(unk_0x0C);
+                writer.WriteX(animType);
+            }
+            this.RecordEndAddress(writer);
         }
-
-
-        #endregion
 
     }
 }

@@ -1,29 +1,21 @@
 ﻿using Manifold.IO;
 using System;
 using System.IO;
-using UnityEngine;
 
 namespace GameCube.GFZ.FMI
 {
     [Serializable]
-    public class Fmi : IBinarySerializable, IBinaryAddressable, IFile
+    public class Fmi :
+        IBinaryAddressable,
+        IBinarySerializable,
+        IFile
     {
-
-        #region FIELDS
-
-
-        // consts
+        // CONSTANTS
         private const long kParticlesAbsPtr = 0x0044;
         private const long kAnimationAbsPtr = 0x0208;
         private const long kNameAbsPtr = 0x02A0;
 
-        // metadata
-        [SerializeField]
-        private string fileName;
-        [SerializeField]
-        private AddressRange addressRange;
-
-        // structure
+        // FIELDS
         public byte unk_0x00;
         public byte unk_0x01;
         public byte animationCount;
@@ -33,35 +25,17 @@ namespace GameCube.GFZ.FMI
         public byte unk_0x06;
         public float unk_0x07;
         public ushort unk_0x08;
-
-        // sub-structures
+        // REFERENCES
         public ExhaustParticle[] particles;
         public ExhaustAnimation[] animations;
 
 
-        #endregion
-
-        #region PROPERTIES
-
-
-        public AddressRange AddressRange
-        {
-            get => addressRange;
-            set => addressRange = value;
-        }
-
-        public string FileName
-        {
-            get => fileName;
-            set => fileName = value;
-        }
+        // PROPERTIES
+        public AddressRange AddressRange { get; set; }
+        public string FileName { get; set; }
 
 
-        #endregion
-
-        #region METHODS
-
-
+        // METHODS
         public void Deserialize(BinaryReader reader)
         {
             this.RecordStartAddress(reader);
@@ -94,8 +68,6 @@ namespace GameCube.GFZ.FMI
             throw new NotImplementedException();
         }
 
-
-        #endregion
 
     }
 }

@@ -1,51 +1,34 @@
-﻿using Manifold.EditorTools;
+﻿using GameCube.GX;
+using Manifold.EditorTools;
 using Manifold.IO;
 using System;
 using System.IO;
-using UnityEngine;
+using Unity.Mathematics;
 
 namespace GameCube.GFZ.FMI
 {
     [Serializable]
-    public class ExhaustParticle : IBinarySerializable, IBinaryAddressable
+    public class ExhaustParticle :
+        IBinarySerializable,
+        IBinaryAddressable
     {
-
-        #region MEMBERS
-
-
-        // metadata
-        [SerializeField]
-        private AddressRange addressRange;
-
-        //structure
-        public Vector3 position;
+        // FIELDS
+        public float3 position;
         public uint unk_0x0C;
         public uint unk_0x10;
         public float scaleMin;
         public float scaleMax;
-        [Tooltip("Engine Color of Normal Acceleration")]
-        public Color32 colorMin;
-        [Tooltip("Engine Color of Strong Acceleration")]
-        public Color32 colorMax;
+        // Engine Color of Normal Acceleration
+        public GXColor colorMin;
+        // Engine Color of Strong Acceleration
+        public GXColor colorMax;
 
 
-        #endregion
-
-        #region PROPERTIES
-
-
-        public AddressRange AddressRange
-        {
-            get => addressRange;
-            set => addressRange = value;
-        }
+        // PROPERTIES
+        public AddressRange AddressRange { get; set; }
 
 
-        #endregion
-
-        #region METHODS
-
-
+        // METHODS
         public void Deserialize(BinaryReader reader)
         {
             this.RecordStartAddress(reader);
@@ -63,11 +46,18 @@ namespace GameCube.GFZ.FMI
 
         public void Serialize(BinaryWriter writer)
         {
-            throw new System.NotImplementedException();
+            this.RecordStartAddress(writer);
+            {
+                writer.WriteX(position);
+                writer.WriteX(unk_0x0C);
+                writer.WriteX(unk_0x10);
+                writer.WriteX(scaleMin);
+                writer.WriteX(scaleMax);
+                writer.WriteX(colorMin);
+                writer.WriteX(colorMax);
+            }
+            this.RecordEndAddress(writer);
         }
-
-
-        #endregion
 
     }
 }

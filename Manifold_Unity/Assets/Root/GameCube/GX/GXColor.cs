@@ -5,7 +5,7 @@ using System.IO;
 
 namespace GameCube.GX
 {
-    public class GXColor :
+    public struct GXColor :
         IBinarySerializable
     {
         private ComponentType componentType = ComponentType.GX_RGBA8;
@@ -24,11 +24,12 @@ namespace GameCube.GX
 
         public GXColor()
         {
-
+            r = g = b = a = 0;
         }
 
         public GXColor(ComponentType componentType)
         {
+            r = g = b = a = 0;
             this.componentType = componentType;
         }
 
