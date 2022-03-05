@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using UnityEditor;
 using UnityEngine;
 
 namespace Manifold.EditorTools
 {
-    public static class TestFileIO
+    public static class FileUtility
     {
         public delegate void FileAction(string filePath);
         public delegate TValue LoadFile<TValue>(string filePath);
