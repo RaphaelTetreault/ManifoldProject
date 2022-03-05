@@ -31,7 +31,7 @@ namespace GameCube.GFZ.Gma2
         private byte zero0x1F;
         private uint gcmfTexturesSize;
         private uint zero0x24;
-        private TransformMatrixIndexes8 transformMatrixIndexes8;
+        private BoneIndexes8 boneIndices;
         private TextureConfig[] textureConfigs;
         private TransformMatrix3x4[] bones;
         private SkinnedVertexDescriptor skinnedVertexDescriptor;
@@ -75,7 +75,7 @@ namespace GameCube.GFZ.Gma2
         public ushort TranslucidMaterialCount { get => translucidMaterialCount; set => translucidMaterialCount = value; }
         public byte TransformMatrixCount { get => boneCount; set => boneCount = value; }
         public uint GcmfTexturesSize { get => gcmfTexturesSize; set => gcmfTexturesSize = value; }
-        public TransformMatrixIndexes8 TransformMatrixIndexes8 { get => transformMatrixIndexes8; set => transformMatrixIndexes8 = value; }
+        public BoneIndexes8 BoneIndices { get => boneIndices; set => boneIndices = value; }
         public TransformMatrix3x4[] Bones { get => bones; set => bones = value; }
         public TextureConfig[] TextureConfigs { get => textureConfigs; set => textureConfigs = value; }
         public SkinnedVertexDescriptor VertexController { get => skinnedVertexDescriptor; set => skinnedVertexDescriptor = value; }
@@ -101,7 +101,7 @@ namespace GameCube.GFZ.Gma2
                 reader.ReadX(ref zero0x1F);
                 reader.ReadX(ref gcmfTexturesSize);
                 reader.ReadX(ref zero0x24);
-                reader.ReadX(ref transformMatrixIndexes8);
+                reader.ReadX(ref boneIndices);
             }
             this.RecordEndAddress(reader);
             {
@@ -226,7 +226,7 @@ namespace GameCube.GFZ.Gma2
                 writer.WriteX(zero0x1F);
                 writer.WriteX(gcmfTexturesSize);
                 writer.WriteX(zero0x24);
-                writer.WriteX(transformMatrixIndexes8);
+                writer.WriteX(boneIndices);
             }
             this.RecordEndAddress(writer);
             {

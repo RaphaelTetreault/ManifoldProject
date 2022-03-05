@@ -15,7 +15,7 @@ namespace GameCube.GFZ.Gma2
         IBinarySerializable
     {
         // FIELDS
-        private TransformMatrixIndexes8 transformMatrixIndexes;
+        private BoneIndexes8 boneIndices;
         private int opaqueMaterialDisplayListSize;
         private int translucidMaterialDisplayListSize;
 
@@ -23,7 +23,7 @@ namespace GameCube.GFZ.Gma2
         // PROPERTIES
         public AddressRange AddressRange { get; set; }
         public int OpaqueMaterialSize { get => opaqueMaterialDisplayListSize; set => opaqueMaterialDisplayListSize = value; }
-        public TransformMatrixIndexes8 TransformMatrixIndexes { get => transformMatrixIndexes; set => transformMatrixIndexes = value; }
+        public BoneIndexes8 BoneIndices { get => boneIndices; set => boneIndices = value; }
         public int TranslucidMaterialSize { get => translucidMaterialDisplayListSize; set => translucidMaterialDisplayListSize = value; }
 
 
@@ -32,7 +32,7 @@ namespace GameCube.GFZ.Gma2
         {
             this.RecordStartAddress(reader);
             {
-                reader.ReadX(ref transformMatrixIndexes);
+                reader.ReadX(ref boneIndices);
                 reader.ReadX(ref opaqueMaterialDisplayListSize);
                 reader.ReadX(ref translucidMaterialDisplayListSize);
             }
@@ -43,7 +43,7 @@ namespace GameCube.GFZ.Gma2
         {
             this.RecordStartAddress(writer);
             {
-                writer.WriteX(transformMatrixIndexes);
+                writer.WriteX(boneIndices);
                 writer.WriteX(opaqueMaterialDisplayListSize);
                 writer.WriteX(translucidMaterialDisplayListSize);
             }

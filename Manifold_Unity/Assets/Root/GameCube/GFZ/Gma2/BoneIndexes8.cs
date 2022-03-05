@@ -10,7 +10,7 @@ namespace GameCube.GFZ.Gma2
     /// <remarks>
     /// Consider making the backing a uint64, contruct array on demand.
     /// </remarks>
-    public class TransformMatrixIndexes8 :
+    public class BoneIndexes8 :
         IBinaryAddressable,
         IBinarySerializable
     {
@@ -19,7 +19,7 @@ namespace GameCube.GFZ.Gma2
 
 
         // CONSTRUCTORS
-        public TransformMatrixIndexes8()
+        public BoneIndexes8()
         {
             indexes = new sbyte[kIndexCount];
             for (int i = 0; i < indexes.Length; i++)
@@ -28,7 +28,7 @@ namespace GameCube.GFZ.Gma2
 
 
         // FIELDS
-        private sbyte[] indexes;
+        private sbyte[] indexes; // look into 'fixed' arrays
 
 
         // PROPERTIES
