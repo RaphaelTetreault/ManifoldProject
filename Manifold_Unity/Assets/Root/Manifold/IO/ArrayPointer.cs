@@ -4,23 +4,27 @@ using System.IO;
 namespace Manifold.IO
 {
     [Serializable]
-    public struct ArrayPointer : IBinarySerializable, IPointer
+    public struct ArrayPointer :
+        IBinarySerializable,
+        IPointer
     {
-        [UnityEngine.SerializeField] private int length;
-        [UnityEngine.SerializeField] private int address;
+        // FIELDS
+        private int length;
+        private int address;
 
+        // CONSTRUCTORS
         public ArrayPointer(int length = 0, int address = 0)
         {
             this.length = length;
             this.address = address;
         }
 
+        // PROPERTIES
         public int Length
         {
             get => length;
             set => length = value;
         }
-
         public int Address
         {
             get => address;
@@ -32,8 +36,7 @@ namespace Manifold.IO
             get => new Pointer() { Address = address };
         }
 
-        public string HexAddress => $"0x{address:X8}";
-
+        public string PrintAddress => $"{address:x8}";
         public bool IsNotNull => address != 0;
         public bool IsNull => address == 0;
 
@@ -51,7 +54,7 @@ namespace Manifold.IO
         }
         public override string ToString()
         {
-            return $"Length: {Length}, Address: {HexAddress}";
+            return $"Length: {Length}, Address: {PrintAddress}";
         }
 
         public static bool operator ==(ArrayPointer lhs, ArrayPointer rhs)

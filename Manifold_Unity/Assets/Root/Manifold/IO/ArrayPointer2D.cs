@@ -8,18 +8,11 @@ namespace Manifold.IO
         IBinaryAddressable,
         IBinarySerializable
     {
-        // METADATA
-        [UnityEngine.SerializeField] private AddressRange addressRange;
-
         // FIELDS
-        public ArrayPointer[] arrayPointers;
+        private ArrayPointer[] arrayPointers;
 
         // PROPERTIES
-        public AddressRange AddressRange
-        {
-            get => addressRange;
-            set => addressRange = value;
-        }
+        public AddressRange AddressRange { get; set; }
         public ArrayPointer[] ArrayPointers
         {
             get => arrayPointers;
@@ -31,12 +24,12 @@ namespace Manifold.IO
         // CONSTRUCTORS
         public ArrayPointer2D(int length = 0)
         {
-            addressRange = new AddressRange();
+            AddressRange = new AddressRange();
             arrayPointers = new ArrayPointer[length];
         }
         public ArrayPointer2D(ArrayPointer[] arrayPointers)
         {
-            addressRange = new AddressRange();
+            AddressRange = new AddressRange();
             this.arrayPointers = arrayPointers;
         }
 

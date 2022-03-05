@@ -24,7 +24,7 @@ namespace Manifold.IO
 
         // PROPERTIES
         public int Address { get => address; set => address = value; }
-        public string HexAddress => $"{Address:x8}";
+        public string PrintAddress => $"{Address:x8}";
         public bool IsNotNull => Address != 0;
         public bool IsNull => Address == 0;
 
@@ -54,12 +54,12 @@ namespace Manifold.IO
 
         public void Serialize(BinaryWriter writer)
         {
-            writer.WriteX(Address);
+            writer.WriteX(address);
         }
 
         public override string ToString()
         {
-            return HexAddress;
+            return PrintAddress;
         }
 
         public override bool Equals(object obj)
