@@ -1,9 +1,6 @@
 ﻿using GameCube.GFZ;
 using LibGxFormat;
-using LibGxFormat.Lz;
-using System.Collections.Generic;
 using System.IO;
-using UnityEngine;
 using UnityEditor;
 
 
@@ -24,8 +21,8 @@ namespace Manifold.EditorTools.GC.GFZ
             var title = "Decompressing LZ Files...";
             var filePaths = Directory.GetFiles(rootPath, "*.lz", SearchOption.AllDirectories);
             // Wrap the decompress function into something that comforms to the file action format
-            var decompressFile = (TestFileIO.FileAction)((string filePath) => { LzUtility.DecompressAvLzToDisk(filePath, true); });
-            TestFileIO.FileActionLoop(title, filePaths, decompressFile);
+            var decompressFile = (FileUtility.FileAction)((string filePath) => { LzUtility.DecompressAvLzToDisk(filePath, true); });
+            FileUtility.FileActionLoop(title, filePaths, decompressFile);
         }
 
 

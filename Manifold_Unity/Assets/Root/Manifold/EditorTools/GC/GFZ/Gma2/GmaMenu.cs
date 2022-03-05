@@ -15,12 +15,12 @@ namespace Manifold.EditorTools.GC.GFZ.Gma2
     /// </summary>
     public static class GmaMenu
     {
-        public static void ForeachGma(string title, TestFileIO.FileAction fileAction)
+        public static void ForeachGma(string title, FileUtility.FileAction fileAction)
         {
             var settings = GfzProjectWindow.GetSettings();
             var rootFolder = settings.RootFolder;
             var filePaths = Directory.GetFiles(rootFolder, "*.gma", SearchOption.AllDirectories);
-            TestFileIO.FileActionLoop(title, filePaths, fileAction);
+            FileUtility.FileActionLoop(title, filePaths, fileAction);
         }
 
 
@@ -35,7 +35,7 @@ namespace Manifold.EditorTools.GC.GFZ.Gma2
             var settings = GfzProjectWindow.GetSettings();
             var rootPath = settings.RootFolder;
             var outputPath = settings.FileOutput + "/gma";
-            var outputFilePath = TestFileIO.LoadSaveToDisk(filePath, rootPath, outputPath, BinarySerializableIO.LoadFile<Gma>, BinarySerializableIO.SaveFile, true);
+            var outputFilePath = FileUtility.LoadSaveToDisk(filePath, rootPath, outputPath, BinarySerializableIO.LoadFile<Gma>, BinarySerializableIO.SaveFile, true);
             LzUtility.CompressAvLzToDisk(outputFilePath, LibGxFormat.AvGame.FZeroGX, true);
         }
 

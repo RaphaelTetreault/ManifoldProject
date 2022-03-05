@@ -1,6 +1,5 @@
 ﻿using LibGxFormat;
 using LibGxFormat.Lz;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 
