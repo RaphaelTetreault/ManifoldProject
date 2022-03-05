@@ -1,11 +1,9 @@
-using System;
-
 namespace GameCube.GFZ.Gma2
 {
     /// <summary>
     /// 2019/04/23 - looks like flags - 14 combinations
     /// </summary>
-    [Flags]
+    [System.Flags]
     public enum MatFlags0x10 : byte
     {
         /// <summary>

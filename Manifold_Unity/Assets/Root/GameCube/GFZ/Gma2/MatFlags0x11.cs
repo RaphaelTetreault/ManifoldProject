@@ -1,11 +1,9 @@
-using System;
-
 namespace GameCube.GFZ.Gma2
 {
     /// <summary>
     /// 2019/04/23 - Could be flags, but lots of 0xFF suggest it isn't
     /// </summary>
-    [Flags]
+    [System.Flags]
     public enum MatFlags0x11 : byte
     {
         /// <summary>

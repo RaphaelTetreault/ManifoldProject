@@ -108,14 +108,14 @@ namespace Manifold.EditorTools.GC.GFZ.FMI
                         writer.WriteNextCol(particle.unk_0x10);
                         writer.WriteNextCol(particle.scaleMin);
                         writer.WriteNextCol(particle.scaleMax);
-                        writer.WriteNextCol(particle.colorMin.r);
-                        writer.WriteNextCol(particle.colorMin.g);
-                        writer.WriteNextCol(particle.colorMin.b);
-                        writer.WriteNextCol(particle.colorMin.a);
-                        writer.WriteNextCol(particle.colorMax.r);
-                        writer.WriteNextCol(particle.colorMax.g);
-                        writer.WriteNextCol(particle.colorMax.b);
-                        writer.WriteNextCol(particle.colorMax.a);
+                        writer.WriteNextCol(particle.colorMin.R);
+                        writer.WriteNextCol(particle.colorMin.G);
+                        writer.WriteNextCol(particle.colorMin.B);
+                        writer.WriteNextCol(particle.colorMin.A);
+                        writer.WriteNextCol(particle.colorMax.R);
+                        writer.WriteNextCol(particle.colorMax.G);
+                        writer.WriteNextCol(particle.colorMax.B);
+                        writer.WriteNextCol(particle.colorMax.A);
                         writer.WriteNextRow();
                     }
                 }

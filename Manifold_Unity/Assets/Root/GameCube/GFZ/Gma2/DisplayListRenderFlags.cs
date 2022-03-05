@@ -1,11 +1,9 @@
-using System;
-
 namespace GameCube.GFZ.Gma2
 {
     /// <summary>
     /// Flags indicating which display list(s) are serialized.
     /// </summary>
-    [Flags]
+    [System.Flags]
     public enum DisplayListRenderFlags : byte
     {
         /// <summary>

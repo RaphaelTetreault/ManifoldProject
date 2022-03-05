@@ -54,7 +54,6 @@ namespace Manifold.EditorTools.GC.GFZ.Camera
                 writer.WriteNextCol("Pan Index");
                 writer.WriteNextColNicify(nameof(CameraPan.FrameCount));
                 writer.WriteNextColNicify(nameof(CameraPan.LerpSpeed));
-                writer.WriteNextColNicify(nameof(CameraPan.Zeroes0x08));
                 writer.WriteNextCol("Section");
                 writer.WriteNextColNicify(nameof(CameraPan.From.CameraPosition));
                 writer.WriteNextColNicify(nameof(CameraPan.From.LookAtPosition));
@@ -87,7 +86,6 @@ namespace Manifold.EditorTools.GC.GFZ.Camera
                             writer.WriteNextCol(panIndex);
                             writer.WriteNextCol(pan.FrameCount);
                             writer.WriteNextCol(pan.LerpSpeed);
-                            writer.WriteNextCol(pan.Zeroes0x08);
 
                             if (i == 0)
                             {

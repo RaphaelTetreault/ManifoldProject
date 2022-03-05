@@ -2,37 +2,59 @@
 using Manifold.IO;
 using System;
 using System.IO;
+using System.Runtime.InteropServices;
 
 namespace GameCube.GX
 {
+    [StructLayout(LayoutKind.Explicit)]
     public struct GXColor :
         IBinarySerializable
     {
-        private ComponentType componentType = ComponentType.GX_RGBA8;
-
-        private byte r;
-        private byte g;
-        private byte b;
-        private byte a;
-
+        [FieldOffset(0)] private uint raw;
+        [FieldOffset(0)] private byte r;
+        [FieldOffset(1)] private byte g;
+        [FieldOffset(2)] private byte b;
+        [FieldOffset(3)] private byte a;
+        [FieldOffset(4)] private ComponentType componentType;
+ 
         public byte R { get => r; set => r = value; }
         public byte G { get => g; set => g = value; }
         public byte B { get => b; set => b = value; }
         public byte A { get => a; set => a = value; }
+        public uint Raw { get => raw; set => raw = value; }
         public ComponentType ComponentType { get => componentType; set => componentType = value; }
 
 
-        public GXColor()
-        {
-            r = g = b = a = 0;
-        }
+        //public GXColor()
+        //{
+        //    raw = 0;
+        //    r = g = b = a = 0;
+        //    componentType = ComponentType.GX_RGBA8;
+        //}
 
         public GXColor(ComponentType componentType)
         {
+            raw = 0;
             r = g = b = a = 0;
             this.componentType = componentType;
         }
 
+        public GXColor(uint raw)
+        {
+            this.raw = raw;
+            r = g = b = a = 0;
+            componentType = ComponentType.GX_RGBA8;
+        }
+
+        public GXColor(byte r, byte g, byte b, byte a = 255)
+        {
+            raw = 0;
+            this.r = r;
+            this.g = g;
+            this.b = b;
+            this.a = a;
+            componentType = ComponentType.GX_RGBA8;
+        }
 
         public void Deserialize(BinaryReader reader)
         {

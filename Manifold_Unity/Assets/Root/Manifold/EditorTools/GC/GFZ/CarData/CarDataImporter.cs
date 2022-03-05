@@ -147,7 +147,7 @@ namespace Manifold.EditorTools.GC.GFZ.CarData
                         }
 
                         // Apply other values
-                        carDataSobj.padding = carData.padding;
+                        //carDataSobj.padding = carData.Padding;
                         carDataSobj.machineNames = carData.machineNames;
                         carDataSobj.unknownNames = carData.partsInternalNames;
 

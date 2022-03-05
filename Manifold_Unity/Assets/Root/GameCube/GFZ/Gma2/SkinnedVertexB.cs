@@ -1,4 +1,5 @@
-﻿using Manifold;
+﻿using GameCube.GX;
+using Manifold;
 using Manifold.IO;
 using System.IO;
 using Unity.Mathematics;
@@ -22,10 +23,10 @@ namespace GameCube.GFZ.Gma2
         private float2 textureUV1;
         private uint zero0x28;
         private uint zero0x2C;
-        private uint color1; // RGBA. Appears to truly be a color.
-        private uint unk0x34; // Magic bits. Variations: 00000000, 00010100, 02000002, 01000001, 03000003
-        private uint color2; // RGBA. Color-looking, but does use alpha channel.
-        private uint color3; // RGBA. Color-looking, but does use alpha channel. 00000004 is the only magic-bit looking value.
+        private GXColor color1; // RGBA. Appears to truly be a color.
+        private GXColor unk0x34; // Magic bits. Variations: 00000000, 00010100, 02000002, 01000001, 03000003
+        private GXColor color2; // RGBA. Color-looking, but does use alpha channel.
+        private GXColor color3; // RGBA. Color-looking, but does use alpha channel. 00000004 is the only magic-bit looking value.
 
         // PROPERTIES
         public AddressRange AddressRange { get; set; }

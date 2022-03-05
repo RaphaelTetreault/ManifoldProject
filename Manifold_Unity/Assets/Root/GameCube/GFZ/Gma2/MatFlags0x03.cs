@@ -1,11 +1,9 @@
-using System;
-
 namespace GameCube.GFZ.Gma2
 {
     /// <summary>
     /// 
     /// </summary>
-    [Flags]
+    [System.Flags]
     public enum MatFlags0x03 : byte
     {
         /// <summary>
