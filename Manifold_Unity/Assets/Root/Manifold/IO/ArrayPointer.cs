@@ -29,7 +29,7 @@ namespace Manifold.IO
 
         public Pointer Pointer
         {
-            get => new Pointer() { address = address };
+            get => new Pointer() { Address = address };
         }
 
         public string HexAddress => $"0x{address:X8}";

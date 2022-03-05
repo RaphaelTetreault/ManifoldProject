@@ -55,11 +55,11 @@ namespace Manifold.IO
         }
         public static Pointer CreatePointer(Pointer lhs, Offset rhs)
         {
-            return new Pointer(lhs.address + rhs.addressOffset);
+            return new Pointer(lhs.Address + rhs.addressOffset);
         }
         public static Pointer CreatePointer(Offset lhs, Pointer rhs)
         {
-            return new Pointer(lhs.addressOffset + rhs.address);
+            return new Pointer(lhs.addressOffset + rhs.Address);
         }
 
 

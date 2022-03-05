@@ -121,7 +121,7 @@ namespace GameCube.GFZ.Gma2
                 {
                     reader.ReadX(ref secondaryDisplayListDescriptor);
                     reader.AlignTo(GXUtility.GX_FIFO_ALIGN);
-                    endAddress = new Pointer(reader.BaseStream.Position).address;
+                    endAddress = new Pointer(reader.BaseStream.Position).Address;
 
                     if (RenderSecondaryOpaque)
                     {

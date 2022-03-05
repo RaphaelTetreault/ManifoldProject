@@ -186,16 +186,16 @@ namespace GameCube.GFZ.CourseCollision
 
         public static bool IsAX(Pointer ptr0x20, Pointer ptr0x24)
         {
-            bool isAx0x20 = ptr0x20.address == kAxConstPtr0x20;
-            bool isAx0x24 = ptr0x24.address == kAxConstPtr0x24;
+            bool isAx0x20 = ptr0x20.Address == kAxConstPtr0x20;
+            bool isAx0x24 = ptr0x24.Address == kAxConstPtr0x24;
             bool isAX = isAx0x20 & isAx0x24;
             return isAX;
         }
 
         public static bool IsGX(Pointer ptr0x20, Pointer ptr0x24)
         {
-            bool isGx0x20 = ptr0x20.address == kGxConstPtr0x20;
-            bool isGx0x24 = ptr0x24.address == kGxConstPtr0x24;
+            bool isGx0x20 = ptr0x20.Address == kGxConstPtr0x20;
+            bool isGx0x24 = ptr0x24.Address == kGxConstPtr0x24;
             bool isGX = isGx0x20 & isGx0x24;
             return isGX;
         }

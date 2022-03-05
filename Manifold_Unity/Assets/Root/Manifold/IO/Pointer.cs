@@ -10,7 +10,7 @@ namespace Manifold.IO
         IPointer
     {
         // FIELDS
-        public int address;
+        private int address;
 
         // CONSTRUCTORS
         public Pointer(int address)
@@ -23,16 +23,17 @@ namespace Manifold.IO
         }
 
         // PROPERTIES
-        public int Address => address;
-        public string HexAddress => $"0x{address:X8}";
-        public bool IsNotNull => address != 0;
-        public bool IsNull => address == 0;
+        public int Address { get => address; set => address = value; }
+        public string HexAddress => $"{Address:x8}";
+        public bool IsNotNull => Address != 0;
+        public bool IsNull => Address == 0;
+
 
 
         // OPERATORS
         public static implicit operator int(Pointer pointer)
         {
-            return pointer.address;
+            return pointer.Address;
         }
 
         public static implicit operator Pointer(int address)
@@ -53,7 +54,7 @@ namespace Manifold.IO
 
         public void Serialize(BinaryWriter writer)
         {
-            writer.WriteX(address);
+            writer.WriteX(Address);
         }
 
         public override string ToString()
@@ -68,7 +69,7 @@ namespace Manifold.IO
 
         public bool Equals(Pointer obj)
         {
-            return obj.address == this.address;
+            return obj.Address == Address;
         }
 
         public override int GetHashCode()

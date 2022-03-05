@@ -88,7 +88,7 @@ namespace GameCube.GFZ.Gma2
             {
                 var gcmf = modelGCMFs[i];
                 gcmfWriter.WriteX(gcmf);
-                gcmfOffsets[i] = gcmf.GetPointer().address;
+                gcmfOffsets[i] = gcmf.GetPointer().Address;
             }
             gcmfWriter.SeekBegin();
 
@@ -99,7 +99,7 @@ namespace GameCube.GFZ.Gma2
             {
                 var name = modelNames[i];
                 nameWriter.WriteX(name);
-                nameOffsets[i] = name.GetPointer().address;
+                nameOffsets[i] = name.GetPointer().Address;
             }
             nameWriter.SeekBegin();
 

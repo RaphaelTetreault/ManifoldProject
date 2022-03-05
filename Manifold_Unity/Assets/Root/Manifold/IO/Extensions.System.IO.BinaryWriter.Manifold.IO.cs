@@ -122,7 +122,7 @@ namespace Manifold.IO
             if (typeof(T).IsArray)
             {
                 var length = (type as Array).Length;
-                writer.CommentPtr(new ArrayPointer(length, pointer.address), true, padding, alignment);
+                writer.CommentPtr(new ArrayPointer(length, pointer.Address), true, padding, alignment);
             }
             else
             {
@@ -182,7 +182,7 @@ namespace Manifold.IO
 
         public static void JumpToAddress(this BinaryWriter writer, Pointer pointer)
         {
-            writer.BaseStream.Seek(pointer.address, SeekOrigin.Begin);
+            writer.BaseStream.Seek(pointer.Address, SeekOrigin.Begin);
         }
         public static void JumpToAddress(this BinaryWriter writer, ArrayPointer arrayPointer)
         {

@@ -16,7 +16,7 @@ namespace Manifold.IO
         {
             return new Pointer()
             {
-                address = (int)StartAddress
+                Address = (int)StartAddress
             };
         }
 
