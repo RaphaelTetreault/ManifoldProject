@@ -8,7 +8,7 @@ namespace Manifold.IO
     {
         public static long WriteAlignment(this BinaryWriter writer, long alignment, byte paddingValue = 0x00)
         {
-            var bytesToAlign = StreamExtensions.GetLengthOffAlignment(writer.BaseStream, alignment);
+            var bytesToAlign = StreamExtensions.GetLengthOfAlignment(writer.BaseStream, alignment);
             for (int i = 0; i < bytesToAlign; i++)
                 writer.Write(paddingValue);
 

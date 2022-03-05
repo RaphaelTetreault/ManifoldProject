@@ -4,7 +4,7 @@ namespace Manifold.IO
 {
     public static partial class StreamExtensions
     {
-        public static long GetLengthOffAlignment(this Stream stream, long alignment)
+        public static long GetLengthOfAlignment(this Stream stream, long alignment)
         {
             // Get number of bytes needed to aligment
             var lengthOfAlignment = alignment - (stream.Position % alignment);

@@ -17,7 +17,7 @@ namespace Manifold.IO
 
         public static long AlignTo(this BinaryReader reader, long alignment)
         {
-            var bytesToAlign = StreamExtensions.GetLengthOffAlignment(reader.BaseStream, alignment);
+            var bytesToAlign = StreamExtensions.GetLengthOfAlignment(reader.BaseStream, alignment);
             reader.BaseStream.Seek(bytesToAlign, SeekOrigin.Current);
             return bytesToAlign;
         }
