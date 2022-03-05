@@ -50,11 +50,30 @@ namespace Manifold.Assets.Root.GameCube.GFZ
         }
 
 
-        [MenuItem("Manifold/Test Hash")]
+        [MenuItem("Manifold/Hashing/Test Hash")]
         public static void TryHash()
         {
             var settings = GfzProjectWindow.GetSettings();
             var inputPath = settings.RootFolder;
+            var outputPath = settings.FileOutput;
+            var outputFile = outputPath + "md5-hashes.txt";
+
+            var builder = MakeHashes(inputPath, MD5.Create());
+
+            using (var writer = new StreamWriter(File.Create(outputFile)))
+            {
+                writer.Write(builder.ToString());
+            }
+
+            OSUtility.OpenDirectory(outputPath);
+        }
+
+
+        [MenuItem("Manifold/Hashing/Hash Coli Course")]
+        public static void HashColiCourse()
+        {
+            var settings = GfzProjectWindow.GetSettings();
+            var inputPath = settings.StageDir;
             var outputPath = settings.FileOutput;
             var outputFile = outputPath + "md5-hashes.txt";
 
