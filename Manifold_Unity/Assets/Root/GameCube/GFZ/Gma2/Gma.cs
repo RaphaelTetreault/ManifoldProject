@@ -42,7 +42,7 @@ namespace GameCube.GFZ.Gma2
             }
             this.RecordEndAddress(reader);
             {
-                Offset nameBasePtrOffset = AddressRange.endAddress;
+                Offset nameBasePtrOffset = AddressRange.EndAddress;
                 var modelList = new List<Model>();
 
                 // Add offsets necessary for pointers to be correct

@@ -122,8 +122,8 @@ namespace GameCube.GFZ.CourseCollision
                 var curr = children[i + 0];
                 var next = children[i + 1];
                 // The end address of the current child must be the same as the next child
-                var currAddress = curr.AddressRange.endAddress;
-                var nextAddress = next.AddressRange.startAddress;
+                var currAddress = curr.AddressRange.EndAddress;
+                var nextAddress = next.AddressRange.StartAddress;
                 
                 // TODO: not true for final entry...
                 //Assert.IsTrue(currAddress == nextAddress, $"Curr[{i}]:{currAddress}, Next[{i+1}]:{nextAddress}");

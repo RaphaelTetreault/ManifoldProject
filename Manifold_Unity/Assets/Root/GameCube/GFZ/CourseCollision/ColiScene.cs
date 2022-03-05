@@ -383,7 +383,7 @@ namespace GameCube.GFZ.CourseCollision
                 }
                 // Save, order by address
                 sceneObjects = sceneObjectsDict.Values.ToArray();
-                sceneObjects = sceneObjects.OrderBy(x => x.AddressRange.startAddress).ToArray();
+                sceneObjects = sceneObjects.OrderBy(x => x.AddressRange.StartAddress).ToArray();
 
                 // Copy over the instances into it's own array
                 var sceneObjectLODs = new List<SceneObjectLOD>();
@@ -395,7 +395,7 @@ namespace GameCube.GFZ.CourseCollision
                         sceneObjectLODs.Add(template.lods[j]);
                     }
                 }
-                this.sceneObjectLODs = sceneObjectLODs.OrderBy(x => x.AddressRange.startAddress).ToArray();
+                this.sceneObjectLODs = sceneObjectLODs.OrderBy(x => x.AddressRange.StartAddress).ToArray();
 
                 // Get all unique instances of SceneObjectTemplates' names
                 // NOTE: since SceneObjectTemplates instances can use the same name/model, there is occasionally a few duplicate names.

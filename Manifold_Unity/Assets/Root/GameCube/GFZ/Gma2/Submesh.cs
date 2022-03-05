@@ -197,7 +197,7 @@ namespace GameCube.GFZ.Gma2
                     writer.WriteX(secondaryDisplayListDescriptor);
                 }
             }
-            writer.JumpToAddress(AddressRange.endAddress);
+            this.SetWriterToEndAddress(writer);
         }
 
         private DisplayList[] ReadDisplayLists(BinaryReader reader, int endAddress)

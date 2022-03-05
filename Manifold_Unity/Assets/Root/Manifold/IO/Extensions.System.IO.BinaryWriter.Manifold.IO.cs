@@ -97,7 +97,7 @@ namespace Manifold.IO
         //    => CommentPtr(writer, pointer.Address, doWrite, padding, alignment);
 
         public static void CommentPtr(this BinaryWriter writer, AddressRange addresRange, bool doWrite, char padding = ' ', int alignment = 16)
-            => CommentPtr(writer, (int)addresRange.startAddress, doWrite, padding, alignment);
+            => CommentPtr(writer, (int)addresRange.StartAddress, doWrite, padding, alignment);
 
         public static void CommentPtr(this BinaryWriter writer, ArrayPointer pointer, bool doWrite, char padding = ' ', int alignment = 16)
         {
@@ -190,11 +190,11 @@ namespace Manifold.IO
         }
         public static void JumpToAddress(this BinaryWriter writer, AddressRange addressRange)
         {
-            writer.BaseStream.Seek(addressRange.startAddress, SeekOrigin.Begin);
+            writer.BaseStream.Seek(addressRange.StartAddress, SeekOrigin.Begin);
         }
         public static void JumpToAddress(this BinaryWriter writer, IBinaryAddressable binaryAddressable)
         {
-            writer.BaseStream.Seek(binaryAddressable.AddressRange.startAddress, SeekOrigin.Begin);
+            writer.BaseStream.Seek(binaryAddressable.AddressRange.StartAddress, SeekOrigin.Begin);
         }
 
         public static Pointer GetPositionAsPointer(this BinaryWriter writer)

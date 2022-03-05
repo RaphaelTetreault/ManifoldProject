@@ -163,7 +163,7 @@ namespace GameCube.GFZ.CourseCollision
             writer.WriteNextCol(keyableIndex);
             writer.WriteNextCol($"[{keyableIndex}/{keyableTotal}]");
             writer.WriteNextCol($"{nestedDepth}");
-            writer.WriteNextCol(param.StartAddressHex());
+            writer.WriteNextCol(param.PrintStartAddress());
             writer.WriteNextCol(param.easeMode);
             writer.WriteNextCol((int)param.easeMode);
             writer.WriteNextCol(param.time);
@@ -248,7 +248,7 @@ namespace GameCube.GFZ.CourseCollision
             writer.WriteNextCol($"{s_order++}");
             writer.WriteNextCol($"[{index}/{total}]");
             writer.WriteNextCol($"{depth}");
-            writer.WriteNextCol(trackTransform.StartAddressHex());
+            writer.WriteNextCol(trackTransform.PrintStartAddress());
             writer.WriteNextCol(trackTransform.segmentType);
             writer.WriteNextCol(trackTransform.embeddedPropertyType);
             writer.WriteNextCol(trackTransform.perimeterFlags);
@@ -323,8 +323,8 @@ namespace GameCube.GFZ.CourseCollision
                                 writer.WriteNextCol(scene.FileName);
                                 writer.WriteNextCol(gameObjectIndex);
                                 writer.WriteNextCol(gameObject.Name);
-                                writer.WriteNextCol(animationClipCurve.StartAddressHex());
-                                writer.WriteNextCol(keyable.StartAddressHex());
+                                writer.WriteNextCol(animationClipCurve.PrintStartAddress());
+                                writer.WriteNextCol(keyable.PrintStartAddress());
                                 writer.WriteNextCol(animIndex);
                                 writer.WriteNextCol(keyable.easeMode);
                                 writer.WriteNextCol(keyable.time);
@@ -393,8 +393,8 @@ namespace GameCube.GFZ.CourseCollision
                                 writer.WriteNextCol(scene.FileName);
                                 writer.WriteNextCol(objIndex);
                                 writer.WriteNextCol(dynamicSceneObject.Name);
-                                writer.WriteNextCol(animationClipCurve.StartAddressHex());
-                                writer.WriteNextCol(keyable.StartAddressHex());
+                                writer.WriteNextCol(animationClipCurve.PrintStartAddress());
+                                writer.WriteNextCol(keyable.PrintStartAddress());
                                 writer.WriteNextCol(animationClipCurve.unk_0x00);
                                 writer.WriteNextCol(animationClipCurve.unk_0x04);
                                 writer.WriteNextCol(animationClipCurve.unk_0x08);
@@ -1094,8 +1094,8 @@ namespace GameCube.GFZ.CourseCollision
                         writer.WriteNextCol(courseID);
                         writer.WriteNextCol(isAxGx);
 
-                        writer.WriteNextCol(item.StartAddressHex());
-                        writer.WriteNextCol(item.EndAddressHex());
+                        writer.WriteNextCol(item.PrintStartAddress());
+                        writer.WriteNextCol(item.PrintEndAddress());
 
                         writer.WriteNextCol(item.unk_0x20);
                         writer.WriteNextCol($"0x{(int)item.unk_0x20:X8}");

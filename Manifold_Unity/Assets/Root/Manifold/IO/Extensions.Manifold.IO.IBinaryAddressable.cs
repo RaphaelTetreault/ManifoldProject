@@ -4,91 +4,91 @@ namespace Manifold.IO
 {
     public static class IBinaryAddressableExtensions
     {
-        public static void RecordStartAddress<T>(this T binaryAddressable, Stream stream)
-            where T : IBinaryAddressable
+
+        public static void RecordStartAddress<TBinaryAddressable>(this TBinaryAddressable binaryAddressable, Stream stream)
+            where TBinaryAddressable : IBinaryAddressable
         {
             var addressRange = binaryAddressable.AddressRange;
-            addressRange.startAddress = stream.Position;
+            addressRange.StartAddress = stream.Position;
             binaryAddressable.AddressRange = addressRange;
         }
 
-        public static void RecordStartAddress<T>(this T binaryAddressable, BinaryReader reader)
-            where T : IBinaryAddressable
-        {
-            RecordStartAddress(binaryAddressable, reader.BaseStream);
-        }
+        public static void RecordStartAddress<TBinaryAddressable>(this TBinaryAddressable binaryAddressable, BinaryReader reader)
+            where TBinaryAddressable : IBinaryAddressable
+            => RecordStartAddress(binaryAddressable, reader.BaseStream);
 
-        public static void RecordStartAddress<T>(this T binaryAddressable, BinaryWriter writer)
-            where T : IBinaryAddressable
-        {
-            RecordStartAddress(binaryAddressable, writer.BaseStream);
-        }
+        public static void RecordStartAddress<TBinaryAddressable>(this TBinaryAddressable binaryAddressable, BinaryWriter writer)
+            where TBinaryAddressable : IBinaryAddressable
+            => RecordStartAddress(binaryAddressable, writer.BaseStream);
 
 
-        public static void RecordEndAddress<T>(this T binaryAddressable, Stream stream)
-            where T : IBinaryAddressable
+        public static void RecordEndAddress<TBinaryAddressable>(this TBinaryAddressable binaryAddressable, Stream stream)
+            where TBinaryAddressable : IBinaryAddressable
         {
             var addressRange = binaryAddressable.AddressRange;
-            addressRange.endAddress = stream.Position;
+            addressRange.EndAddress = stream.Position;
             binaryAddressable.AddressRange = addressRange;
         }
-        public static void RecordEndAddress<T>(this T binaryAddressable, BinaryReader reader)
-            where T : IBinaryAddressable
-        {
-            RecordEndAddress(binaryAddressable, reader.BaseStream);
-        }
+        public static void RecordEndAddress<TBinaryAddressable>(this TBinaryAddressable binaryAddressable, BinaryReader reader)
+            where TBinaryAddressable : IBinaryAddressable
+            => RecordEndAddress(binaryAddressable, reader.BaseStream);
 
-        public static void RecordEndAddress<T>(this T binaryAddressable, BinaryWriter writer)
-            where T : IBinaryAddressable
-        {
-            RecordEndAddress(binaryAddressable, writer.BaseStream);
-        }
+        public static void RecordEndAddress<TBinaryAddressable>(this TBinaryAddressable binaryAddressable, BinaryWriter writer)
+            where TBinaryAddressable : IBinaryAddressable
+            => RecordEndAddress(binaryAddressable, writer.BaseStream);
 
-        public static void SetReaderToStartAddress<T>(this T binaryAddressable, BinaryReader reader)
-            where T : IBinaryAddressable
+
+        public static void SetReaderToStartAddress<TBinaryAddressable>(this TBinaryAddressable binaryAddressable, BinaryReader reader)
+            where TBinaryAddressable : IBinaryAddressable
         {
-            var address = binaryAddressable.AddressRange.startAddress;
+            var address = binaryAddressable.AddressRange.StartAddress;
             reader.BaseStream.Seek(address, SeekOrigin.Begin);
         }
 
-        public static void SetReaderToEndAddress<T>(this T binaryAddressable, BinaryReader reader)
-            where T : IBinaryAddressable
+        public static void SetWriterToStartAddress<TBinaryAddressable>(this TBinaryAddressable binaryAddressable, BinaryWriter writer)
+            where TBinaryAddressable : IBinaryAddressable
         {
-            var address = binaryAddressable.AddressRange.endAddress;
+            var address = binaryAddressable.AddressRange.StartAddress;
+            writer.BaseStream.Seek(address, SeekOrigin.Begin);
+        }
+
+
+        public static void SetReaderToEndAddress<TBinaryAddressable>(this TBinaryAddressable binaryAddressable, BinaryReader reader)
+            where TBinaryAddressable : IBinaryAddressable
+        {
+            var address = binaryAddressable.AddressRange.EndAddress;
             reader.BaseStream.Seek(address, SeekOrigin.Begin);
         }
 
-        public static long GetBinarySize<T>(this T binaryAddressable)
-            where T : IBinaryAddressable
+        public static void SetWriterToEndAddress<TBinaryAddressable>(this TBinaryAddressable binaryAddressable, BinaryWriter writer)
+            where TBinaryAddressable : IBinaryAddressable
         {
-            var startAddress = binaryAddressable.AddressRange.startAddress;
-            var endAddress = binaryAddressable.AddressRange.endAddress;
-            var size = endAddress - startAddress;
-            return size;
+            var address = binaryAddressable.AddressRange.EndAddress;
+            writer.BaseStream.Seek(address, SeekOrigin.Begin);
         }
 
 
-        public static string StartAddressHex<T>(this T binaryAddressable, string prefix = "0x", string format = "X8")
-            where T : IBinaryAddressable
+        public static string PrintStartAddress<TBinaryAddressable>(this TBinaryAddressable binaryAddressable, string prefix = "0x", string format = "X8")
+            where TBinaryAddressable : IBinaryAddressable
         {
-            var startAddress = binaryAddressable.AddressRange.startAddress;
+            var startAddress = binaryAddressable.AddressRange.StartAddress;
             return $"{prefix}{startAddress.ToString(format)}";
         }
 
-        public static string EndAddressHex<T>(this T binaryAddressable, string prefix = "0x", string format = "X8")
-            where T : IBinaryAddressable
+        public static string PrintEndAddress<TBinaryAddressable>(this TBinaryAddressable binaryAddressable, string prefix = "0x", string format = "X8")
+            where TBinaryAddressable : IBinaryAddressable
         {
-            var endAddress = binaryAddressable.AddressRange.endAddress;
+            var endAddress = binaryAddressable.AddressRange.EndAddress;
             return $"{prefix}{endAddress.ToString(format)}";
         }
 
-        public static string PrintAddressRange<T>(this T binaryAddressable, string format = "x8")
-            where T : IBinaryAddressable
+        public static string PrintAddressRange<TBinaryAddressable>(this TBinaryAddressable binaryAddressable, string format = "x8")
+            where TBinaryAddressable : IBinaryAddressable
         {
             var addressRange = binaryAddressable.AddressRange;
             var size = addressRange.Size;
 
-            return $"Address: 0x{addressRange.startAddress:x8} to 0x{addressRange.endAddress:x8} (hex:{size:x}, dec:{size})";
+            return $"Address: 0x{addressRange.StartAddress.ToString(format)} to 0x{addressRange.EndAddress.ToString(format)} (hex:{size:x}, dec:{size})";
         }
 
         /// <summary>
@@ -97,8 +97,8 @@ namespace Manifold.IO
         /// </summary>
         /// <param name="value">The value to get the pointer from.</param>
         /// <returns></returns>
-        public static Pointer GetPointer<T>(this T value)
-            where T : IBinaryAddressable
+        public static Pointer GetPointer<TBinaryAddressable>(this TBinaryAddressable value)
+            where TBinaryAddressable : IBinaryAddressable
         {
             if (value is null)
                 return 0;
@@ -112,8 +112,8 @@ namespace Manifold.IO
         /// </summary>
         /// <param name="values">The values to get the pointer base from.</param>
         /// <returns></returns>
-        public static Pointer GetBasePointer<T>(this T[] values)
-            where T : IBinaryAddressable
+        public static Pointer GetBasePointer<TBinaryAddressable>(this TBinaryAddressable[] values)
+            where TBinaryAddressable : IBinaryAddressable
         {
             // Return null pointer if null OR if array empty. Perfect!
             if (values == null || values.Length == 0)
@@ -135,8 +135,8 @@ namespace Manifold.IO
         /// </summary>
         /// <param name="values">The values to get pointers from.</param>
         /// <returns></returns>
-        public static Pointer[] GetPointers<T>(this T[] values)
-            where T : IBinaryAddressable
+        public static Pointer[] GetPointers<TBinaryAddressable>(this TBinaryAddressable[] values)
+            where TBinaryAddressable : IBinaryAddressable
         {
             // Since we want a pointer for each thing, throw an error since
             // we would be returning 0 pointers. AFAIK this is not wanted behaviour.
@@ -164,8 +164,8 @@ namespace Manifold.IO
         /// </summary>
         /// <param name="values">The array to get the array pointer from.</param>
         /// <returns></returns>
-        public static ArrayPointer GetArrayPointer<T>(this T[] values)
-            where T : IBinaryAddressable
+        public static ArrayPointer GetArrayPointer<TBinaryAddressable>(this TBinaryAddressable[] values)
+            where TBinaryAddressable : IBinaryAddressable
         {
             if (values == null || values.Length == 0)
                 return new ArrayPointer();
@@ -179,24 +179,6 @@ namespace Manifold.IO
 
             return arrayPointer;
         }
-
-        ///// <summary>
-        ///// Get the length address of the value. Address is relative to last (de)serialization stream.
-        ///// </summary>
-        ///// <param name="values">The array to get the array pointer from.</param>
-        ///// <returns></returns>
-        //public static ArrayPointer2D GetArrayPointer2D(this IBinaryAddressable[] values)
-        //{
-        //    // TODO: consider null checks.
-
-        //    var arrayPointer = new ArrayPointer()
-        //    {
-        //        Length = values.Length,
-        //        // Address is 0 if no length, is address of first item otherwise
-        //        Address = values.Length == 0 ? 0 : values[0].AddressRange.GetPointer().address,
-        //    };
-        //    return arrayPointer;
-        //}
 
     }
 }

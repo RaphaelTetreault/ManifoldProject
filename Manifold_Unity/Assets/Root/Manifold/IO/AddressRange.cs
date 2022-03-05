@@ -6,16 +6,29 @@ namespace Manifold.IO
     [Serializable]
     public struct AddressRange
     {
-        [Hex(8)]
-        public long startAddress;
-
-        [Hex(8)]
-        public long endAddress;
+        // FIELDS
+        private long startAddress;
+        private long endAddress;
 
 
+        // PROPERTIES
+        public Pointer GetPointer()
+        {
+            return new Pointer()
+            {
+                address = (int)StartAddress
+            };
+        }
+
+        public long StartAddress { get => startAddress; set => startAddress = value; }
+        public long EndAddress { get => endAddress; set => endAddress = value; }
+        public int Size => (int)(EndAddress - StartAddress);
+
+
+        // METHODS
         public void RecordStartAddress(Stream stream)
         {
-            startAddress = stream.Position;
+            StartAddress = stream.Position;
         }
 
         public void RecordStartAddress(BinaryReader reader)
@@ -27,7 +40,7 @@ namespace Manifold.IO
 
         public void RecordEndAddress(Stream stream)
         {
-            endAddress = stream.Position;
+            EndAddress = stream.Position;
         }
 
         public void RecordEndAddress(BinaryReader reader)
@@ -37,19 +50,10 @@ namespace Manifold.IO
             => RecordEndAddress(writer.BaseStream);
 
 
-        public Pointer GetPointer()
-        {
-            return new Pointer()
-            {
-                address = (int)startAddress
-            };
-        }
-
-        public int Size => (int)(endAddress - startAddress);
 
         public override string ToString()
         {
-            return $"Start: {startAddress:x8}, End: {endAddress:x8}, Size: {Size} ({Size:x})";
+            return $"Start: {StartAddress:x8}, End: {EndAddress:x8}, Size: {Size} ({Size:x})";
         }
     }
 }
