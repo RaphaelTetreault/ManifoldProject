@@ -17,9 +17,6 @@ namespace GameCube.GFZ.CourseCollision
         IBinaryAddressable,
         IBinarySerializable
     {
-        // METADATA
-        [UnityEngine.SerializeField] private AddressRange addressRange;
-
         // FIELDS
         /// <summary>
         /// Where along the track's Position.XYZ animation curve 'start' elements were sampled.
@@ -71,11 +68,7 @@ namespace GameCube.GFZ.CourseCollision
 
 
         // PROPERTIES
-        public AddressRange AddressRange
-        {
-            get => addressRange;
-            set => addressRange = value;
-        }
+        public AddressRange AddressRange { get; set; }
 
         /// <summary>
         /// Returns the minimum Y component (height) of any of the checkpoints'

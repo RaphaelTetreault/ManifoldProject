@@ -23,8 +23,6 @@ namespace GameCube.GFZ.CourseCollision
         // CONSTANTS
         public const int kCurveCount = 9;
 
-        // METADATA
-        [UnityEngine.SerializeField] private AddressRange addressRange;
 
         // FIELDS
         public ArrayPointer2D curvesPtr2D = new ArrayPointer2D(kCurveCount);
@@ -37,11 +35,7 @@ namespace GameCube.GFZ.CourseCollision
 
 
         // PROPERTIES
-        public AddressRange AddressRange
-        {
-            get => addressRange;
-            set => addressRange = value;
-        }
+        public AddressRange AddressRange { get; set; }
 
 
         public AnimationCurve ScaleX

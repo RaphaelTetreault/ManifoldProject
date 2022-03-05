@@ -25,8 +25,6 @@ namespace GameCube.GFZ.CourseCollision
         // CONSTANTS
         public const int kCount = 12;
 
-        // METADATA
-        [UnityEngine.SerializeField] private AddressRange addressRange;
 
         // FIELDS
         public Pointer[] fieldPtrs;
@@ -35,11 +33,7 @@ namespace GameCube.GFZ.CourseCollision
 
 
         // PROPERTIES
-        public AddressRange AddressRange
-        {
-            get => addressRange;
-            set => addressRange = value;
-        }
+        public AddressRange AddressRange { get; set; }
 
 
         // METHODS

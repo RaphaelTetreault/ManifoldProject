@@ -14,9 +14,6 @@ namespace GameCube.GFZ.CourseCollision
         IBinarySerializable,
         ITextPrintable
     {
-        // METADATA
-        [UnityEngine.SerializeField] private AddressRange addressRange;
-
         // FEILDS
         public InterpolationMode easeMode;
         public float time;
@@ -26,11 +23,7 @@ namespace GameCube.GFZ.CourseCollision
 
 
         // PROPERTIES
-        public AddressRange AddressRange
-        {
-            get => addressRange;
-            set => addressRange = value;
-        }
+        public AddressRange AddressRange { get; set; }
 
 
         // METHODS

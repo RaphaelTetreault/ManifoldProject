@@ -18,9 +18,6 @@ namespace GameCube.GFZ.CourseCollision
         IBinarySerializable,
         IHasReference
     {
-        // METADATA
-        [UnityEngine.SerializeField] private AddressRange addressRange;
-
         // FIELDS
         public ushort zero_0x00;
         public byte rockGroupOrderIndex;
@@ -35,11 +32,7 @@ namespace GameCube.GFZ.CourseCollision
 
 
         // PROPERTIES
-        public AddressRange AddressRange
-        {
-            get => addressRange;
-            set => addressRange = value;
-        }
+        public AddressRange AddressRange { get; set; }
 
         public byte Difficulty
         {

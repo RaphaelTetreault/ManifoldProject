@@ -40,12 +40,10 @@ namespace GameCube.GFZ.CourseCollision
         public const int kCurveCount = 6;
 
         // FIELDS
-        [UnityEngine.SerializeField] private AddressRange addressRange;
-
-        // FIELDS
         public ArrayPointer[] animationCurvesPtrs;
         // REFERENCE FIELDS
         public AnimationCurve[] animationCurves = new AnimationCurve[kCurveCount];
+
 
         // CONSTRUCTORS
         public FogCurves()
@@ -57,11 +55,7 @@ namespace GameCube.GFZ.CourseCollision
 
 
         // PROPERTIES
-        public AddressRange AddressRange
-        {
-            get => addressRange;
-            set => addressRange = value;
-        }
+        public AddressRange AddressRange { get; set; }
 
         public AnimationCurve FogCurveNear
         {

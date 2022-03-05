@@ -13,22 +13,13 @@ namespace GameCube.GFZ.CourseCollision
         IBinaryAddressable,
         IBinarySerializable
     {
-        // METADATA
-        [UnityEngine.SerializeField]
-        private AddressRange addressRange;
-
         // FIELDS
         public TransformPRXS transform;
         public EnumFlags32 unk_0x20;
-        //public EnumFlags16 unk_0x22;
 
 
         // PROPERTIES
-        public AddressRange AddressRange
-        {
-            get => addressRange;
-            set => addressRange = value;
-        }
+        public AddressRange AddressRange { get; set; }
 
 
         // METHODS
@@ -38,7 +29,6 @@ namespace GameCube.GFZ.CourseCollision
             {
                 reader.ReadX(ref transform);
                 reader.ReadX(ref unk_0x20);
-                //reader.ReadX(ref unk_0x22);
             }
             this.RecordEndAddress(reader);
         }
@@ -53,7 +43,6 @@ namespace GameCube.GFZ.CourseCollision
             {
                writer.WriteX(transform);
                writer.WriteX(unk_0x20);
-               //writer.WriteX(unk_0x22);
             }
             this.RecordEndAddress(writer);
         }
@@ -63,7 +52,6 @@ namespace GameCube.GFZ.CourseCollision
             return
                 $"{nameof(CullOverrideTrigger)}(" +
                 $"{nameof(unk_0x20)}: {unk_0x20}, " +
-                //$"{nameof(unk_0x22)}: {unk_0x22}, " +
                 $"{transform}, " +
                 $")";
         }

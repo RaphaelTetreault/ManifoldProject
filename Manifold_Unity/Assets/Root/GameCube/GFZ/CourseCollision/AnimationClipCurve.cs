@@ -15,9 +15,6 @@ namespace GameCube.GFZ.CourseCollision
         IHasReference,
         ITextPrintable
     {
-        // METADATA
-        [UnityEngine.SerializeField] private AddressRange addressRange;
-
         // FIELDS
         public uint unk_0x00;
         public uint unk_0x04;
@@ -29,11 +26,7 @@ namespace GameCube.GFZ.CourseCollision
 
 
         // PROPERTIES
-        public AddressRange AddressRange
-        {
-            get => addressRange;
-            set => addressRange = value;
-        }
+        public AddressRange AddressRange { get; set; }
 
 
         // METHODS

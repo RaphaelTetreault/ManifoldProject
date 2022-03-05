@@ -14,9 +14,6 @@ namespace GameCube.GFZ.CourseCollision
         IBinarySerializable,
         IHasReference
     {
-        // METADATA
-        [UnityEngine.SerializeField] private AddressRange addressRange;
-
         // FIELDS
         public int unk0x00; // rendering? 
         public int unk0x04; // LOD Flags? -1 = no LOD/no-disable, otherwise flags.
@@ -36,13 +33,9 @@ namespace GameCube.GFZ.CourseCollision
 
 
         // PROPERTIES
-        public AddressRange AddressRange
-        {
-            get => addressRange;
-            set => addressRange = value;
-        }
-
+        public AddressRange AddressRange { get; set; }
         public string Name => sceneObject.Name;
+
 
         // METHODS
         public void Deserialize(BinaryReader reader)

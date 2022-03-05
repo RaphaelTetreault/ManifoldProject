@@ -15,9 +15,6 @@ namespace GameCube.GFZ.CourseCollision
         IBinarySerializable,
         IDeepCopyable<Fog>
     {
-        // METADATA
-        [UnityEngine.SerializeField] private AddressRange addressRange;
-
         // FIELDS
         // Note that default values appear in AX tests and similar. A good default set.
         public FogType interpolation = FogType.Exponential;

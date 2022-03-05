@@ -30,9 +30,6 @@ namespace GameCube.GFZ.CourseCollision
         IBinaryAddressable,
         IBinarySerializable
     {
-        // METADATA
-        [UnityEngine.SerializeField] private AddressRange addressRange;
-
         // FIELDS
         /// <summary>
         /// Bounds -X. Denotes left-most edge of bounds. Negative in GX space.
@@ -61,11 +58,8 @@ namespace GameCube.GFZ.CourseCollision
 
 
         // PROPERTIES
-        public AddressRange AddressRange
-        {
-            get => addressRange;
-            set => addressRange = value;
-        }
+        public AddressRange AddressRange { get; set; }
+
 
         public (float2 center, float2 scale) GetCenterAndScale()
         {

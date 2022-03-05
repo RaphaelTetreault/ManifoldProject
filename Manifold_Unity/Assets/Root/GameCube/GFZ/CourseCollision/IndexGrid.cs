@@ -21,11 +21,6 @@ namespace GameCube.GFZ.CourseCollision
         public abstract int SubdivisionsZ { get; }
 
 
-        // METADATA
-        [UnityEngine.SerializeField] private AddressRange addressRange;
-        [UnityEngine.SerializeField] private ushort largestIndex;
-        [UnityEngine.SerializeField] private bool hasIndexes;
-
         // FIELDS
         public Pointer[] indexListPtrs;
         // REFERENCE FIELDS
@@ -47,21 +42,16 @@ namespace GameCube.GFZ.CourseCollision
 
 
         // PROPERTIES
-        public AddressRange AddressRange
-        {
-            get => addressRange;
-            set => addressRange = value;
-        }
-
-        public bool HasIndexes => hasIndexes;
-        public ushort LargestIndex => largestIndex;
+        public AddressRange AddressRange { get; set; }
+        public ushort LargestIndex { get; set; }
+        public bool HasIndexes { get; set; }
         public ushort IndexesLength
         {
             get
             {
                 // Returns index length based on metadata
-                return hasIndexes
-                    ? (ushort)(largestIndex + 1)
+                return HasIndexes
+                    ? (ushort)(LargestIndex + 1)
                     : (ushort)(0);
             }
         }
@@ -131,8 +121,8 @@ namespace GameCube.GFZ.CourseCollision
                 }
 
                 // Calculate metadata
-                largestIndex = GetLargestIndex(indexLists);
-                hasIndexes = HasAnyIndexes(indexLists);
+                LargestIndex = GetLargestIndex(indexLists);
+                HasIndexes = HasAnyIndexes(indexLists);
             }
             this.SetReaderToEndAddress(reader);
         }

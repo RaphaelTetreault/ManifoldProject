@@ -1589,7 +1589,7 @@ namespace GameCube.GFZ.CourseCollision
                         writer.WriteNextCol(courseID);
                         writer.WriteNextCol(isAxGx);
                         //
-                        writer.WriteNextCol(sceneObject.sir.PrimarySceneObject.name);
+                        writer.WriteNextCol(sceneObject.sir.PrimaryLOD.name);
                         writer.WriteNextCol(sceneObject.category);
                         writer.WriteNextCol(sceneObject.sir.lodRenderFlags);
                         writer.WriteNextCol(sceneObject.sir.lodsPtr);

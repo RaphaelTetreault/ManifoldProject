@@ -22,7 +22,6 @@ namespace GameCube.GFZ.CourseCollision
         IFile,
         IHasReference
     {
-
         // To find
         // * minimap rotation
         // OF NOTE:
@@ -46,17 +45,17 @@ namespace GameCube.GFZ.CourseCollision
         public const int kGxConstPtr0x24 = 0xFC;
 
         // METADATA
-        [UnityEngine.SerializeField] private bool isFileAX;
-        [UnityEngine.SerializeField] private bool isFileGX;
-        [UnityEngine.SerializeField] private AddressRange addressRange;
-        [UnityEngine.SerializeField] private int id;
-        [UnityEngine.SerializeField] private string fileName;
-        [UnityEngine.SerializeField] private int fileSize;
-        [UnityEngine.SerializeField] private Venue venue;
-        [UnityEngine.SerializeField] private string courseName;
-        [UnityEngine.SerializeField] private string author;
-        [UnityEngine.SerializeField] private bool serializeVerbose = true;
-        [UnityEngine.SerializeField] private SerializeFormat format;
+        private bool isFileAX;
+        private bool isFileGX;
+        private AddressRange addressRange;
+        private int id;
+        private string fileName;
+        private int fileSize;
+        private Venue venue;
+        private string courseName;
+        private string author;
+        private bool serializeVerbose = true;
+        private SerializeFormat format;
 
 
         // FIELDS
@@ -124,6 +123,8 @@ namespace GameCube.GFZ.CourseCollision
 
 
         // PROPERTIES
+        public AddressRange AddressRange { get; set; }
+
         public bool IsFileAX => isFileAX;
         public bool IsFileGX => isFileGX;
         /// <summary>
@@ -140,11 +141,6 @@ namespace GameCube.GFZ.CourseCollision
         {
             get => serializeVerbose;
             set => serializeVerbose = value;
-        }
-        public AddressRange AddressRange
-        {
-            get => addressRange;
-            set => addressRange = value;
         }
 
         public string FileName
@@ -1171,7 +1167,7 @@ namespace GameCube.GFZ.CourseCollision
                 list.Add(template);
                 list.Add(template.colliderMesh);
                 list.AddRange(template.lods);
-                list.Add(template.PrimarySceneObject.name);
+                list.Add(template.PrimaryLOD.name);
             }
 
             list.Add(fog);

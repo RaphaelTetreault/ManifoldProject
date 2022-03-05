@@ -18,9 +18,6 @@ namespace GameCube.GFZ.CourseCollision
         IBinarySerializable,
         IHasReference
     {
-        // METADATA
-        [UnityEngine.SerializeField] private AddressRange addressRange;
-
         // FIELDS
         public uint unk_0x00;
         public uint unk_0x04;
@@ -38,14 +35,10 @@ namespace GameCube.GFZ.CourseCollision
 
 
         // PROPERTIES
-        public AddressRange AddressRange
-        {
-            get => addressRange;
-            set => addressRange = value;
-        }
-
+        public AddressRange AddressRange { get; set; }
         public ArrayPointer TrisArrayPtr => new ArrayPointer(triCount, trisPtr);
         public ArrayPointer QuadsArrayPtr => new ArrayPointer(quadCount, quadsPtr);
+
 
         // METHODS
         public void ValidateReferences()

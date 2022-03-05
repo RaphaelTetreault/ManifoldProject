@@ -16,26 +16,17 @@ namespace GameCube.GFZ.CourseCollision
         // CONSTANTS
         public const ushort kUshortArrayTerminator = 0xFFFF;
 
-        // METADATA
-        [UnityEngine.SerializeField] private AddressRange addressRange;
-
         // FIELDS
-        [UnityEngine.SerializeField] private ushort[] indexes = new ushort[0];
+        private ushort[] indexes = new ushort[0];
 
 
         // PROPERTIES
-        public AddressRange AddressRange
-        {
-            get => addressRange;
-            set => addressRange = value;
-        }
-
+        public AddressRange AddressRange { get; set; }
         public ushort[] Indexes
         {
             get => indexes;
             set => indexes = value;
         }
-
         public int Length => indexes.Length;
 
 

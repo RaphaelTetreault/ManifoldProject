@@ -201,7 +201,7 @@ namespace GameCube.GFZ.CourseCollision
                     log.WriteAddress(sceneObject);
                     log.WriteAddress(sceneObject.sceneObject);
                     log.WriteAddress(sceneObject.sceneObject.lods);
-                    log.WriteAddress(sceneObject.sceneObject.PrimarySceneObject.name);
+                    log.WriteAddress(sceneObject.sceneObject.PrimaryLOD.name);
                     log.WriteAddress(sceneObject.transformMatrix3x4);
 
                     log.WriteAddress(sceneObject.skeletalAnimator);

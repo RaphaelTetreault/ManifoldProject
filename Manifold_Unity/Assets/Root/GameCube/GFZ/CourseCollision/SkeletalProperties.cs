@@ -12,10 +12,6 @@ namespace GameCube.GFZ.CourseCollision
         IBinaryAddressable,
         IBinarySerializable
     {
-        // METADATA
-        [UnityEngine.SerializeField]
-        private AddressRange addressRange;
-
         // FIELDS
         /// <summary>
         /// Values: 0, 3, 7, 10, 15, 20, 50, 60
@@ -30,11 +26,7 @@ namespace GameCube.GFZ.CourseCollision
 
 
         // PROPERTIES
-        public AddressRange AddressRange
-        {
-            get => addressRange;
-            set => addressRange = value;
-        }
+        public AddressRange AddressRange { get; set; }
 
 
         // METHODS

@@ -8,7 +8,6 @@ namespace GameCube.GFZ.CourseCollision
     [Serializable]
     public struct Plane : 
         IBinarySerializable
-        // Add IBinaryAddressable?
     {
         /// <summary>
         /// The dot product of this plane. 'dot(direction, position)'

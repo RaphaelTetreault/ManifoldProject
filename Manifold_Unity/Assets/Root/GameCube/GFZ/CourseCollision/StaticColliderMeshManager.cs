@@ -46,9 +46,6 @@ namespace GameCube.GFZ.CourseCollision
         public const int kZeroesGroup4 = 0x14; // 20 bytes
         public const int kZeroesGroup5 = 0x3A0; // 926 bytes
 
-        // METADATA
-        [UnityEngine.SerializeField] private AddressRange addressRange;
-        [UnityEngine.SerializeField] private ColiScene.SerializeFormat serializeFormat;
 
         // FIELDS
         public byte[] zeroes_group1;
@@ -77,7 +74,7 @@ namespace GameCube.GFZ.CourseCollision
 
         public StaticColliderMeshManager(ColiScene.SerializeFormat serializeFormat)
         {
-            this.serializeFormat = serializeFormat;
+            SerializeFormat = serializeFormat;
             int count = SurfaceCount;
             triMeshGrids = new StaticColliderMeshGrid[count];
             quadMeshGrids = new StaticColliderMeshGrid[count];
@@ -90,23 +87,14 @@ namespace GameCube.GFZ.CourseCollision
             }
         }
 
-        public AddressRange AddressRange
-        {
-            get => addressRange;
-            set => addressRange = value;
-        }
-
-        public ColiScene.SerializeFormat SerializeFormat
-        {
-            get => serializeFormat;
-            set => serializeFormat = value;
-        }
+        public AddressRange AddressRange { get; set; }
+        public ColiScene.SerializeFormat SerializeFormat { get; set; } = ColiScene.SerializeFormat.InvalidFormat;
 
         public int SurfaceCount
         {
             get
             {
-                switch (serializeFormat)
+                switch (SerializeFormat)
                 {
                     case ColiScene.SerializeFormat.AX:
                         return kCountAxSurfaceTypes;

@@ -3,6 +3,7 @@ namespace GameCube.GFZ.CourseCollision
     /// <summary>
     /// Flag used to denote the purpose of the associated transform values.
     /// </summary>
+    [System.Flags]
     public enum CourseMetadataType : int
     {
         /// <summary>

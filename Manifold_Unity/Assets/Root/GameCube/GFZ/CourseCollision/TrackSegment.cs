@@ -17,9 +17,6 @@ namespace GameCube.GFZ.CourseCollision
         IHasReference
     {
         // METADATA
-        [UnityEngine.SerializeField] private AddressRange addressRange;
-        //public float4x4 localMatrix;
-        //public float4x4 worldMatrix;
         public int depth;
         public bool isRoot;
 
@@ -53,12 +50,9 @@ namespace GameCube.GFZ.CourseCollision
         // HACK?
         public int[] childIndexes = new int[0];
 
+
         // PROPERTIES
-        public AddressRange AddressRange
-        {
-            get => addressRange;
-            set => addressRange = value;
-        }
+        public AddressRange AddressRange { get; set; }
 
 
         // METHODS

@@ -15,23 +15,16 @@ namespace GameCube.GFZ.CourseCollision
         IBinaryAddressable,
         IDeepCopyable<TransformPRXS>
     {
-        // METADATA
-        [UnityEngine.SerializeField] private AddressRange addressRange;
-
         // FIELDS
-        [UnityEngine.SerializeField] private float3 position;
-        [UnityEngine.SerializeField] private Int16Rotation3 decomposedRotation;
-        [UnityEngine.SerializeField] private UnknownTransformOption unknownOption;
-        [UnityEngine.SerializeField] private ObjectActiveOverride objectActiveOverride;
-        [UnityEngine.SerializeField] private float3 scale;
+         private float3 position;
+         private Int16Rotation3 decomposedRotation;
+         private UnknownTransformOption unknownOption;
+         private ObjectActiveOverride objectActiveOverride;
+         private float3 scale;
 
 
         // PROPERTIES
-        public AddressRange AddressRange
-        {
-            get => addressRange;
-            set => addressRange = value;
-        }
+        public AddressRange AddressRange { get; set; }
 
         public float3 Position
         {

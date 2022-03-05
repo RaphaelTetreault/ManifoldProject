@@ -12,21 +12,13 @@ namespace GameCube.GFZ.CourseCollision
         IBinaryAddressable,
         IBinarySerializable
     {
-        // METADATA
-        [UnityEngine.SerializeField]
-        private AddressRange addressRange;
-
         // FIELDS
         public float x; // range -3 to 6, indexes: 0-3
         public float y; // range -10 to 30, indexes: 0-3
 
 
         // PROPERTIES
-        public AddressRange AddressRange
-        {
-            get => addressRange;
-            set => addressRange = value;
-        }
+        public AddressRange AddressRange { get; set; }
 
 
         // METHODS

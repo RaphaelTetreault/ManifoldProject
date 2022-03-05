@@ -31,9 +31,6 @@ namespace GameCube.GFZ.CourseCollision
         IBinarySerializable,
         IHasReference
     {
-        // METADATA
-        [UnityEngine.SerializeField] private AddressRange addressRange;
-
         // STRUCTURE
         public LodRenderFlags lodRenderFlags;
         public ArrayPointer lodsPtr;
@@ -43,19 +40,14 @@ namespace GameCube.GFZ.CourseCollision
         public ColliderMesh colliderMesh;
 
 
-        public SceneObjectLOD[] LODs => lods;
 
 
         // PROPERTIES
-        public AddressRange AddressRange
-        {
-            get => addressRange;
-            set => addressRange = value;
-        }
-
+        public AddressRange AddressRange { get; set; }
         public string Name => lods[0].name;
+        public SceneObjectLOD PrimaryLOD => lods[0];
+        public SceneObjectLOD[] LODs => lods;
 
-        public SceneObjectLOD PrimarySceneObject => lods[0];
 
         // METHODS
         public void Deserialize(BinaryReader reader)

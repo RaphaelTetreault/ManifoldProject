@@ -27,8 +27,6 @@ namespace GameCube.GFZ.CourseCollision
         public const int kAnimationCurvesCount = 11;
         const int kZeroes0x08 = 0x10;
 
-        // METADATA
-        [UnityEngine.SerializeField] private AddressRange addressRange;
 
         // FIELDS
         public float unk_0x00;
@@ -46,11 +44,7 @@ namespace GameCube.GFZ.CourseCollision
 
 
         // PROPERTIES
-        public AddressRange AddressRange
-        {
-            get => addressRange;
-            set => addressRange = value;
-        }
+        public AddressRange AddressRange { get; set; }
 
 
         // METHODS

@@ -16,9 +16,6 @@ namespace GameCube.GFZ.CourseCollision
         IBinarySerializable,
         ITextPrintable
     {
-        // METADATA
-        [UnityEngine.SerializeField] private AddressRange addressRange;
-
         // FIELDS
         public KeyableAttribute[] keyableAttributes;
 
@@ -37,12 +34,9 @@ namespace GameCube.GFZ.CourseCollision
             keyableAttributes = keyables;
         }
 
+
         // PROPERTIES
-        public AddressRange AddressRange
-        {
-            get => addressRange;
-            set => addressRange = value;
-        }
+        public AddressRange AddressRange { get; set; }
 
         public int Length => keyableAttributes.Length;
 

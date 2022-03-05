@@ -17,22 +17,16 @@ namespace GameCube.GFZ.CourseCollision
         IBinarySerializable,
         IHasReference
     {
-        // METADATA
-        [UnityEngine.SerializeField] private AddressRange addressRange;
-
         // FIELDS
         public Pointer sceneObjectPtr;
         // REFERENCE FIELDS
         public SceneObject sceneObject;
 
-        // PROPERTIES
-        public AddressRange AddressRange
-        {
-            get => addressRange;
-            set => addressRange = value;
-        }
 
+        // PROPERTIES
+        public AddressRange AddressRange { get; set; }
         public string Name => sceneObject.Name;
+
 
         // METHODS
         public void Deserialize(BinaryReader reader)

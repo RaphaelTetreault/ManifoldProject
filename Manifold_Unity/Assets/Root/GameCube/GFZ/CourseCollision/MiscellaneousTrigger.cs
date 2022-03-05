@@ -14,20 +14,13 @@ namespace GameCube.GFZ.CourseCollision
         IBinaryAddressable,
         IBinarySerializable
     {
-        // METADATA
-        [UnityEngine.SerializeField] private AddressRange addressRange;
-
         // FIELDS
         public TransformPRXS transform;
         public CourseMetadataType metadataType;
 
 
         // PROPERTIES
-        public AddressRange AddressRange
-        {
-            get => addressRange;
-            set => addressRange = value;
-        }
+        public AddressRange AddressRange { get; set; }
 
         // PROPERTIES USED TO MAKE SENSE OF THIS NONSENSE
         public float3 Position => transform.Position;
