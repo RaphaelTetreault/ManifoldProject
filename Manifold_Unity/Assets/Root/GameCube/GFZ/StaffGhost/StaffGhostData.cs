@@ -4,28 +4,26 @@ using System.IO;
 namespace GameCube.GFZ.StaffGhost
 {
     [System.Serializable]
-    public struct StaffGhostData : IBinarySerializable, IFile
+    public struct StaffGhostData :
+        IBinarySerializable,
+        IFile
     {
         // METADATA
-        [UnityEngine.SerializeField] private string name;
-        public string timeDisplay;
+        private string timeDisplay;
 
 
         // FIELDS
         public MachineID machineID; // 0x00
         public CourseIndexGX courseID; // 0x01
-        public byte[] unk_1;
+        public byte[] unk_1; // size: 6
         public ShiftJisCString username; // 0x08
         public byte timeMinutes; // 0x24
         public byte timeSeconds; // 0x25
         public short timeMilliseconds; // 0x26
 
 
-        public string FileName
-        {
-            get => name;
-            set => name = value;
-        }
+        public string FileName { get; set; }
+        public string TimeDisplay { get => timeDisplay; set => timeDisplay = value; }
 
         public void Deserialize(BinaryReader reader)
         {
