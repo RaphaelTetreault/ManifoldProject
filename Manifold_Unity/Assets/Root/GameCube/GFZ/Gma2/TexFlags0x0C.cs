@@ -1,5 +1,8 @@
 namespace GameCube.GFZ.Gma2
 {
+    /// <summary>
+    /// 
+    /// </summary>
     [System.Flags]
     public enum TexFlags0x0C : byte
     {
