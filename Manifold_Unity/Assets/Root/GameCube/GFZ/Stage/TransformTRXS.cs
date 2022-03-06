@@ -26,45 +26,38 @@ namespace GameCube.GFZ.Stage
 
         // PROPERTIES
         public AddressRange AddressRange { get; set; }
-
-        public float3 Position
-        {
-            get => position;
-            set => position = value;
-        }
-
-        public float3 RotationEuler
-        {
-            get => compressedRotation.Eulers;
-        }
-
-        public quaternion Rotation
-        {
-            get => compressedRotation.Quaternion;
-        }
-
-        public float3 Scale
-        {
-            get => scale;
-            set => scale = value;
-        }
-
         public CompressedRotation CompressedRotation
         {
             get => compressedRotation;
             set => compressedRotation = value;
         }
-
-        public UnknownTransformOption UnknownOption
-        {
-            get => unknownOption;
-            set => unknownOption = value;
-        }
-
         public ObjectActiveOverride ObjectActiveOverride
         {
             get => objectActiveOverride;
             set => objectActiveOverride = value;
+        }
+        public float3 Position
+        {
+            get => position;
+            set => position = value;
+        }
+        public quaternion Rotation
+        {
+            get => compressedRotation.Quaternion;
+        }
+        public float3 RotationEuler
+        {
+            get => compressedRotation.Eulers;
+        }
+        public float3 Scale
+        {
+            get => scale;
+            set => scale = value;
+        }
+        public UnknownTransformOption UnknownOption
+        {
+            get => unknownOption;
+            set => unknownOption = value;
         }
 
 
