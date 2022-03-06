@@ -17,7 +17,7 @@ namespace GameCube.GFZ.Stage
     {
         // FIELDS
          private float3 position;
-         private Int16Rotation3 decomposedRotation;
+         private CompressedRotation compressedRotation;
          private UnknownTransformOption unknownOption;
          private ObjectActiveOverride objectActiveOverride;
          private float3 scale;
@@ -34,12 +34,12 @@ namespace GameCube.GFZ.Stage
 
         public float3 RotationEuler
         {
-            get => decomposedRotation.EulerAngles;
+            get => compressedRotation.Eulers;
         }
 
         public quaternion Rotation
         {
-            get => decomposedRotation.Rotation;
+            get => compressedRotation.Quaternion;
         }
 
         public float3 Scale
@@ -48,10 +48,10 @@ namespace GameCube.GFZ.Stage
             set => scale = value;
         }
 
-        public Int16Rotation3 DecomposedRotation
+        public CompressedRotation CompressedRotation
         {
-            get => decomposedRotation;
-            set => decomposedRotation = value;
+            get => compressedRotation;
+            set => compressedRotation = value;
         }
 
         public UnknownTransformOption UnknownOption
@@ -73,7 +73,7 @@ namespace GameCube.GFZ.Stage
             var newInstance = new TransformPRXS()
             {
                 position = position,
-                decomposedRotation = decomposedRotation,
+                compressedRotation = compressedRotation,
                 scale = scale,
                 unknownOption = unknownOption,
                 objectActiveOverride = objectActiveOverride,
@@ -86,7 +86,7 @@ namespace GameCube.GFZ.Stage
             this.RecordStartAddress(reader);
             {
                 reader.ReadX(ref position);
-                reader.ReadX(ref decomposedRotation);
+                reader.ReadX(ref compressedRotation);
                 reader.ReadX(ref unknownOption);
                 reader.ReadX(ref objectActiveOverride);
                 reader.ReadX(ref scale);
@@ -99,7 +99,7 @@ namespace GameCube.GFZ.Stage
             this.RecordStartAddress(writer);
             {
                 writer.WriteX(position);
-                writer.WriteX(decomposedRotation);
+                writer.WriteX(compressedRotation);
                 writer.WriteX(unknownOption);
                 writer.WriteX(objectActiveOverride);
                 writer.WriteX(scale);

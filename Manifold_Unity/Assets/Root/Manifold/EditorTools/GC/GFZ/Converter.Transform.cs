@@ -68,7 +68,7 @@ namespace Manifold.EditorTools.GC.GFZ
             // Copy over GLOBAL position.
             // The game does uses "TransformMatrix3x4" for LOCAL coordinates.
             gfzPRXS.Position = unity.position;
-            gfzPRXS.DecomposedRotation = unity.rotation.eulerAngles;
+            gfzPRXS.CompressedRotation = new CompressedRotation() { Eulers = unity.rotation.eulerAngles };
             gfzPRXS.Scale = unity.lossyScale;
         }
 

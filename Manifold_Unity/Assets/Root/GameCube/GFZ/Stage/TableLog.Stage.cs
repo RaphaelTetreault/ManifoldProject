@@ -1317,16 +1317,16 @@ namespace GameCube.GFZ.Stage
                         writer.WriteNextCol(matrix.z);
 
                         // Rotation values as reconstructed
-                        var euler = sceneObject.transformPRXS.DecomposedRotation.EulerAngles;
+                        var euler = sceneObject.transformPRXS.CompressedRotation.Eulers;
                         writer.WriteNextCol(euler.x);
                         writer.WriteNextCol(euler.y);
                         writer.WriteNextCol(euler.z);
 
                         // Decomposed rotation values, raw, requires processing to be used
-                        var decomposed = sceneObject.transformPRXS.DecomposedRotation;
-                        writer.WriteNextCol(decomposed.phi);
-                        writer.WriteNextCol(decomposed.theta);
-                        writer.WriteNextCol(decomposed.psi);
+                        var decomposed = sceneObject.transformPRXS.CompressedRotation;
+                        writer.WriteNextCol(decomposed.X);
+                        writer.WriteNextCol(decomposed.Y);
+                        writer.WriteNextCol(decomposed.Z);
                         // The other parameters that go with the structure
                         writer.WriteNextCol(sceneObject.transformPRXS.UnknownOption);
                         writer.WriteNextCol(sceneObject.transformPRXS.ObjectActiveOverride);
