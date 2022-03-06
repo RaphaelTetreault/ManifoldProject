@@ -1,87 +1,19 @@
-﻿using Manifold.IO;
+﻿using GameCube.Cheats;
+using Manifold.IO;
 using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace GameCube.Cheats
+namespace GameCube.GFZ.Cheats
 {
-    public sealed class GCT :
-        IBinarySerializable
-    {
-        public const ulong magic = 0x00D0C0DE_00D0C0DE;
-        public const ulong fileTerminator = 0xF0000000_00000000;
-
-        public string gameCode;
-        public GctCode[] codes;
-
-        public void Deserialize(BinaryReader reader)
-        {
-            BinaryIoUtility.PushEndianness(Endianness.BigEndian);
-
-            var fileSize = (int)(reader.BaseStream.Length / 4);
-            var isValidFile = (fileSize % 8) == 0;
-
-            if (!isValidFile)
-                throw new FileLoadException($"Not a valid GCT file (size not multiple of 8)");
-
-            var header = reader.ReadX_UInt64();
-            if (header != magic)
-                throw new FileLoadException($"Not a valid GCT file (header is not {magic:x16})");
-
-            var codes = new List<GctCode>();
-            while (true)
-            {
-                // If end of file, break.
-                // Do this first in case empty GCT
-                var nextLine = reader.PeekUInt64();
-                if (nextLine == fileTerminator)
-                    break;
-
-                // Instance code, deserialize, add to list of codes
-                var code = new GctCode();
-                reader.ReadX(ref code);
-                codes.Add(code);
-            }
-            this.codes = codes.ToArray();
-
-            BinaryIoUtility.PopEndianness();
-        }
-
-        public void Serialize(BinaryWriter writer)
-        {
-            BinaryIoUtility.PushEndianness(Endianness.BigEndian);
-            {
-                writer.WriteX(codes);
-            }
-            BinaryIoUtility.PopEndianness();
-        }
-
-    }
-
-    public class GfzCupGctGen
+    public class CupGctGenerator
     {
         // Reference:
         // https://pastebin.com/4W2uLHSY
+        // 
 
         const ulong CodeConst = 0x401A9B84_00000000;
 
-        public struct TrackList
-        {
-            public TrackList(byte track1, byte track2, byte track3, byte track4, byte track5)
-            {
-                this.track1 = track1;
-                this.track2 = track2;
-                this.track3 = track3;
-                this.track4 = track4;
-                this.track5 = track5;
-            }
-
-            public ulong track1;
-            public ulong track2;
-            public ulong track3;
-            public ulong track4;
-            public ulong track5;
-        }
         public class CupList
         {
             public TrackList rubyCup;
