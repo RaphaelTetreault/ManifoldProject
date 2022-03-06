@@ -1,8 +1,5 @@
 ﻿using GameCube.Cheats;
-using Manifold.IO;
 using System;
-using System.Collections.Generic;
-using System.IO;
 
 namespace GameCube.GFZ.Cheats
 {
@@ -10,18 +7,12 @@ namespace GameCube.GFZ.Cheats
     {
         // Reference:
         // https://pastebin.com/4W2uLHSY
-        // 
+        // JP: http://www.gc-forever.com/forums/viewtopic.php?f=38&t=2242&p=49095&hilit=f+zero#p49095
+        // EN: http://www.gc-forever.com/forums/viewtopic.php?f=38&t=2241&p=49097&hilit=f+zero#p49097
+        // EU: http://www.gc-forever.com/forums/viewtopic.php?f=38&t=2240&p=49099&hilit=f+zero#p49099
+
 
         const ulong CodeConst = 0x401A9B84_00000000;
-
-        public class CupList
-        {
-            public TrackList rubyCup;
-            public TrackList sapphireCup;
-            public TrackList emeraldCup;
-            public TrackList diamondCup;
-            public TrackList axCup;
-        };
 
         public GCT GetCustomCups(ulong[][] gameCups, CupList cupList)
         {
