@@ -13,7 +13,7 @@ using UnityEngine;
 using UnityEditor;
 
 
-namespace Manifold.Assets.Root.GameCube.GFZ
+namespace Manifold.EditorTools.GC.GFZ
 {
     public static class FileHasher
     {
