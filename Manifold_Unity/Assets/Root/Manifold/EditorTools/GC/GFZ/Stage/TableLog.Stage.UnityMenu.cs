@@ -19,7 +19,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         /// </summary>
         /// <param name="action"></param>
         /// <param name="fileName"></param>
-        public static void MenuForward(Action<ColiScene[], string> action, string fileName)
+        public static void MenuForward(Action<Scene[], string> action, string fileName)
         {
             var settings = GfzProjectWindow.GetSettings();
             var sceneIterator = ColiCourseIO.LoadAllStages(settings.StageDir, "Loading Stages...");
@@ -29,7 +29,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             OSUtility.OpenDirectory(settings.AnalysisOutput);
         }
 
-        public static void Analyze(ColiScene[] scenes, string outputPath)
+        public static void Analyze(Scene[] scenes, string outputPath)
         {
             var progress = 1f;
             var title = "Analysing All ColiScene Files...";

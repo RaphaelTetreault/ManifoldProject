@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Manifold.EditorTools.GC.GFZ.Stage
 {
     [CreateAssetMenu(menuName = Const.Menu.GfzCourseCollision + "COLI Scene")]
-    public sealed class ColiSceneSobj : FileAssetWrapper<ColiScene>
+    public sealed class ColiSceneSobj : FileAssetWrapper<Scene>
     {
         [SerializeField]
         private string filePath;

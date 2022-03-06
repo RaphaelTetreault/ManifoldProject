@@ -72,7 +72,7 @@ namespace GameCube.GFZ.Stage
         public SceneObjectStatic[] staticSceneObjects; // Some of these used to be name-parsed colliders! (eg: *_CLASS2, etc)
 
 
-        public StaticColliderMeshManager(ColiScene.SerializeFormat serializeFormat)
+        public StaticColliderMeshManager(Scene.SerializeFormat serializeFormat)
         {
             SerializeFormat = serializeFormat;
             int count = SurfaceCount;
@@ -88,7 +88,7 @@ namespace GameCube.GFZ.Stage
         }
 
         public AddressRange AddressRange { get; set; }
-        public ColiScene.SerializeFormat SerializeFormat { get; set; } = ColiScene.SerializeFormat.InvalidFormat;
+        public Scene.SerializeFormat SerializeFormat { get; set; } = Scene.SerializeFormat.InvalidFormat;
 
         public int SurfaceCount
         {
@@ -96,13 +96,13 @@ namespace GameCube.GFZ.Stage
             {
                 switch (SerializeFormat)
                 {
-                    case ColiScene.SerializeFormat.AX:
+                    case Scene.SerializeFormat.AX:
                         return kCountAxSurfaceTypes;
 
-                    case ColiScene.SerializeFormat.GX:
+                    case Scene.SerializeFormat.GX:
                         return kCountGxSurfaceTypes;
 
-                    case ColiScene.SerializeFormat.InvalidFormat:
+                    case Scene.SerializeFormat.InvalidFormat:
                         throw new ArgumentException("Invalid serialization format!");
 
                     default:

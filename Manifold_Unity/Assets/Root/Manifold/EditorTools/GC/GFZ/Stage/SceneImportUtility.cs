@@ -60,7 +60,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             AssetDatabase.Refresh();
         }
 
-        public static void Import(ColiScene scene, string outputPath)
+        public static void Import(Scene scene, string outputPath)
         {
             // Create new, empty scene
             var scenePath = $"Assets/{outputPath}{scene.FileName}.unity";
@@ -173,7 +173,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
 
         #region CREATE TRIGGERS
-        private static Transform CreateArcadeCheckpointTriggers(ColiScene scene)
+        private static Transform CreateArcadeCheckpointTriggers(Scene scene)
         {
             var arcadeCheckpointTriggers = scene.timeExtensionTriggers;
             int count = 0;
@@ -206,7 +206,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             return root;
         }
 
-        private static Transform CreateCourseMetadataTriggers(ColiScene scene)
+        private static Transform CreateCourseMetadataTriggers(Scene scene)
         {
             var courseMetadataTriggers = scene.miscellaneousTriggers;
             int count = 0;
@@ -329,7 +329,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             return gobj.transform;
         }
 
-        private static Transform CreateStoryObjectTriggers(ColiScene scene)
+        private static Transform CreateStoryObjectTriggers(Scene scene)
         {
             // TODO: add animation paths.
 
@@ -365,7 +365,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             return root;
         }
 
-        private static Transform CreateUnknownSolsTriggers(ColiScene scene)
+        private static Transform CreateUnknownSolsTriggers(Scene scene)
         {
             var unknownSolsTriggers = scene.unknownColliders;
             int count = 0;
@@ -399,7 +399,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             return root;
         }
 
-        private static Transform CreateUnknownTriggers(ColiScene scene)
+        private static Transform CreateUnknownTriggers(Scene scene)
         {
             var unknownTriggers = scene.unknownTriggers;
             int count = 0;
@@ -432,7 +432,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             return root;
         }
 
-        private static Transform CreateVisualEffectTriggers(ColiScene scene)
+        private static Transform CreateVisualEffectTriggers(Scene scene)
         {
             var vfxTriggers = scene.visualEffectTriggers;
             int count = 0;
@@ -469,7 +469,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         #region Track Transform Hierarchies
 
         private static int elementIndex = 0;
-        public static Transform CreateTrackTransformHierarchy(ColiScene scene)
+        public static Transform CreateTrackTransformHierarchy(Scene scene)
         {
             elementIndex = 0;
 
@@ -497,7 +497,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             return root.transform;
         }
 
-        public static void CreateTrackTransformSet(ColiScene scene)
+        public static void CreateTrackTransformSet(Scene scene)
         {
             // Get mesh for debugging
             var mesh = Resources.GetBuiltinResource<Mesh>("Cube.fbx");
@@ -526,7 +526,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             }
         }
 
-        public static void CreateControlPointRecursive(ColiScene scene, TrackSegment trackTransform, GameObject parent, Mesh mesh, string name, int depth)
+        public static void CreateControlPointRecursive(Scene scene, TrackSegment trackTransform, GameObject parent, Mesh mesh, string name, int depth)
         {
             //
             var controlPoint = new GameObject();
@@ -555,7 +555,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             }
         }
 
-        public static void CreateControlPointSequential(ColiScene scene, TrackSegment trackTransform, GameObject parent, Mesh mesh, string name, int depth, int index)
+        public static void CreateControlPointSequential(Scene scene, TrackSegment trackTransform, GameObject parent, Mesh mesh, string name, int depth, int index)
         {
             //Create new control point
             var controlPoint = new GameObject();
@@ -580,7 +580,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         #endregion
 
         // COLLIDER OBJECTS
-        public static Transform IncludeStaticMeshColliders(ColiScene scene, string stageFolder)
+        public static Transform IncludeStaticMeshColliders(Scene scene, string stageFolder)
         {
             var root = new GameObject();
             root.name = $"Static Mesh Colliders";
@@ -612,7 +612,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             return root.transform;
         }
 
-        public static Transform TestTransformHeirarchy(ColiScene scene)
+        public static Transform TestTransformHeirarchy(Scene scene)
         {
             var root = new GameObject();
             root.name = $"Track Curves (Test)";
@@ -721,7 +721,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             return gobj.transform;
         }
 
-        public static Transform CreateGridXZVisual(ColiScene scene)
+        public static Transform CreateGridXZVisual(Scene scene)
         {
             // Get all bounds
             var boundsTrack = scene.checkpointGridXZ;
@@ -780,7 +780,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         }
 
 
-        public static Transform CreateStaticMeshColliderManagerSphereBounds(ColiScene scene)
+        public static Transform CreateStaticMeshColliderManagerSphereBounds(Scene scene)
         {
             var root = new GameObject($"{nameof(GameCube.GFZ.BoundingSphere)}s");
             var boundingSphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
@@ -792,7 +792,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             return root.transform;
         }
 
-        public static Transform CreateTrackIndexChains(ColiScene scene)
+        public static Transform CreateTrackIndexChains(Scene scene)
         {
             var root = new GameObject();
             root.name = $"Track Index Chains";
@@ -871,7 +871,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         }
 
 
-        public static Transform[] CreateAllSceneObjects(ColiScene scene, params string[] searchFolders)
+        public static Transform[] CreateAllSceneObjects(Scene scene, params string[] searchFolders)
         {
             var sceneObjectRoot = new GameObject($"{nameof(SceneObject)}s");
             var sceneObjectDict = new Dictionary<SceneObject, GfzSceneObject>();
@@ -892,7 +892,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             return new Transform[] { sceneObjectRoot.transform, rootStatics, rootDynamics };
         }
 
-        public static Transform CreateDynamicSceneObjects(ColiScene scene, Dictionary<SceneObject, GfzSceneObject> sceneObjectDict, params string[] searchFolders)
+        public static Transform CreateDynamicSceneObjects(Scene scene, Dictionary<SceneObject, GfzSceneObject> sceneObjectDict, params string[] searchFolders)
         {
             // Get some metadata from the number of scene objects
             var dynamicSceneObjects = scene.dynamicSceneObjects;
@@ -941,7 +941,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             return dynamicsRoot;
         }
 
-        public static Transform CreateStaticSceneObjects(ColiScene scene, Dictionary<SceneObject, GfzSceneObject> sceneObjectDict, params string[] searchFolders)
+        public static Transform CreateStaticSceneObjects(Scene scene, Dictionary<SceneObject, GfzSceneObject> sceneObjectDict, params string[] searchFolders)
         {
             // Get some metadata from the number of scene objects
             var staticSceneObjects = scene.staticSceneObjects;
@@ -988,7 +988,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             return root;
         }
 
-        public static Transform CreateGlobalParams(ColiScene scene)
+        public static Transform CreateGlobalParams(Scene scene)
         {
             var sceneParamsObj = new GameObject("Scene Parameters");
             var sceneParams = sceneParamsObj.AddComponent<GfzSceneParameters>();

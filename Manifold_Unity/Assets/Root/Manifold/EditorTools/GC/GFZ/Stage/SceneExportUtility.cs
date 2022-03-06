@@ -20,11 +20,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         [MenuItem(Const.Menu.Manifold + "Scene Generation/Export (Active Scene)")]
         public static void ExportSceneActive()
         {
-            var format = ColiScene.SerializeFormat.GX;
+            var format = Scene.SerializeFormat.GX;
             ExportScene(format, true, true);
         }
 
-        public static void ExportScene(ColiScene.SerializeFormat format, bool verbose, bool findInactive)
+        public static void ExportScene(Scene.SerializeFormat format, bool verbose, bool findInactive)
         {
             var settings = GfzProjectWindow.GetSettings();
             var outputPath = settings.SceneExportPath;
@@ -75,15 +75,15 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             LibGxFormat.AvGame compressFormat;
             switch (format)
             {
-                case ColiScene.SerializeFormat.AX:
+                case Scene.SerializeFormat.AX:
                     compressFormat = LibGxFormat.AvGame.FZeroAX;
                     break;
 
-                case ColiScene.SerializeFormat.GX:
+                case Scene.SerializeFormat.GX:
                     compressFormat = LibGxFormat.AvGame.FZeroGX;
                     break;
 
-                case ColiScene.SerializeFormat.InvalidFormat:
+                case Scene.SerializeFormat.InvalidFormat:
                     throw new ArgumentException("No format specified for serialization!");
 
                 default:
@@ -112,7 +112,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             //scene.CourseName = sceneParams.courseName;
 
             // Build a new scene!
-            var scene = new ColiScene()
+            var scene = new Scene()
             {
                 // Serialization settings
                 Format = format,
@@ -272,7 +272,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         }
 
 
-        public static void MakeTrueNulls(ColiScene scene)
+        public static void MakeTrueNulls(Scene scene)
         {
             // TEMP
             // This is because I must handle Unity serializing nulls with empty instances

@@ -30,7 +30,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         /// <param name="path">Path to load all stages from.</param>
         /// <param name="processTitle">Title of the dialog window.</param>
         /// <returns>ColiScene one at a time during iteration.</returns>
-        public static IEnumerable<ColiScene> LoadAllStages(string path, string processTitle)
+        public static IEnumerable<Scene> LoadAllStages(string path, string processTitle)
         {
             // Get record of all available files
             var filePaths = new List<string>();
@@ -69,10 +69,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         }
 
 
-        public static ColiScene LoadScene(string filePath)
+        public static Scene LoadScene(string filePath)
         {
             var reader = new BinaryReader(File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read));
-            var scene = new ColiScene();
+            var scene = new Scene();
             var fileName = Path.GetFileName(filePath);
             scene.FileName = fileName;
             scene.Deserialize(reader);
@@ -182,7 +182,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             var settings = GfzProjectWindow.GetSettings();
             var inputPath = settings.StageDir;
             var outputPath = settings.FileOutput;
-            var title = $"Writing {nameof(ColiScene)} to disk...";
+            var title = $"Writing {nameof(Scene)} to disk...";
             TestSaveAllStagesDisk(title, inputPath, outputPath);
         }
 
@@ -228,7 +228,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             var settings = GfzProjectWindow.GetSettings();
             var path = settings.StageDir;
             var title = "Roundtrip Test";
-            ColiScene sceneWrite;
+            Scene sceneWrite;
             var logPath = settings.LogOutput;
 
             // This loads all stages but does nothing with them
@@ -262,7 +262,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                     // Reset buffer address
                     buffer.Seek(0, SeekOrigin.Begin);
                     // Create new scene to read buffer into
-                    var sceneRead = new ColiScene();
+                    var sceneRead = new Scene();
                     sceneRead.SerializeVerbose = true;
                     sceneRead.FileName = sceneWrite.FileName;
                     // Read buffer, think of it like File.Open
@@ -323,7 +323,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
             // LOAD FRESH FILE IN
             var readerIn = new BinaryReader(File.OpenRead(filePath));
-            var sceneIn = new ColiScene();
+            var sceneIn = new Scene();
             sceneIn.FileName = Path.GetFileName(filePath);
             sceneIn.SerializeVerbose = serializeVerbose;
             sceneIn.Deserialize(readerIn);
@@ -345,7 +345,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             // LOAD INTERMEDIARY
             // Load memory stream back in
             var readerOut = new BinaryReader(writer.BaseStream);
-            var sceneOut = new ColiScene();
+            var sceneOut = new Scene();
             sceneOut.SerializeVerbose = serializeVerbose;
             sceneOut.FileName = sceneIn.FileName;
             sceneOut.Deserialize(readerOut);
@@ -383,7 +383,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             return gfz;
         }
 
-        public static void LogColiScene(ColiScene coliScene, TextLogger log, int functionIdx)
+        public static void LogColiScene(Scene coliScene, TextLogger log, int functionIdx)
         {
             // Write some metadata
             var venueName = CourseUtility.GetVenueName(coliScene.ID);
@@ -579,7 +579,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 log.WriteLine();
             }
         }
-        public static void LogSceneData(TextLogger log, ColiScene coliScene)
+        public static void LogSceneData(TextLogger log, Scene coliScene)
         {
             var md5 = MD5.Create();
 
@@ -785,7 +785,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             // LOAD FRESH FILE IN
             var readerIn = new BinaryReader(File.OpenRead(filePath));
             // Set scene instance, deserialize data
-            var sceneIn = new ColiScene();
+            var sceneIn = new Scene();
             sceneIn.FileName = Path.GetFileName(filePath);
             sceneIn.SerializeVerbose = serializeVerbose;
             sceneIn.Deserialize(readerIn);
@@ -825,7 +825,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             // LOAD INTERMEDIARY
             // Load memory stream back in
             var readerOut = new BinaryReader(writer.BaseStream);
-            var sceneOut = new ColiScene();
+            var sceneOut = new Scene();
             sceneOut.SerializeVerbose = serializeVerbose;
             sceneOut.FileName = sceneIn.FileName;
             sceneOut.Deserialize(readerOut);
@@ -871,7 +871,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
                 // LOAD FRESH FILE IN
                 var readerIn = new BinaryReader(stream);
-                var sceneIn = new ColiScene();
+                var sceneIn = new Scene();
                 sceneIn.FileName = filename;
                 sceneIn.SerializeVerbose = serializeVerbose;
                 sceneIn.Deserialize(readerIn);
@@ -937,7 +937,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             return $"[{iFormat}]\t";
         }
         //
-        public static void TestHash(TextLogger log, ColiScene coliScene)
+        public static void TestHash(TextLogger log, Scene coliScene)
         {
             var md5 = MD5.Create();
             foreach (var trackSegment in coliScene.allTrackSegments)
@@ -950,7 +950,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
 
 
-        public static void ExportUnityScenes(ColiScene.SerializeFormat format, bool serializeVerbose, params SceneAsset[] scenes)
+        public static void ExportUnityScenes(Scene.SerializeFormat format, bool serializeVerbose, params SceneAsset[] scenes)
         {
             // TEMP from previous function
             //var serializeVerbose = true;
@@ -962,7 +962,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             //ColiCourseUtility.SerializeVerbose = serializeVerbose;
 
             // Construct ColiScene from Unity Scene "scenes"
-            var coliScenes = new ColiScene[scenes.Length];
+            var coliScenes = new Scene[scenes.Length];
 
             // Iterate over each scene asset
             for (int sceneIndex = 0; sceneIndex < coliScenes.Length; sceneIndex++)
@@ -974,7 +974,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 const string padding = "-";
 
                 // Initialize new instance
-                coliScenes[sceneIndex] = new ColiScene();
+                coliScenes[sceneIndex] = new Scene();
 
                 // Breakout values
                 var scene = scenes[sceneIndex];

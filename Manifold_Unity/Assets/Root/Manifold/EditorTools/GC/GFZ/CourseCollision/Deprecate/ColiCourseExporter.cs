@@ -20,7 +20,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         protected IOOption exportOptions = IOOption.selectedFiles;
 
         [SerializeField]
-        protected ColiScene.SerializeFormat format = ColiScene.SerializeFormat.GX;
+        protected Scene.SerializeFormat format = Scene.SerializeFormat.GX;
 
         [SerializeField, BrowseFolderField, Tooltip("Used for ExportOptions.ExportAllOfTypeInFolder")]
         protected string exportFrom = string.Empty;
@@ -88,7 +88,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         }
 
 
-        public static void WriteFullReport(TextLogger log, ColiScene coliScene)
+        public static void WriteFullReport(TextLogger log, Scene coliScene)
         {
             const int h1Width = 96;
             const string padding = "-";
@@ -233,7 +233,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             var scenes = new int[0];
 
             // Construct ColiScene from Unity Scene "scenes"
-            var coliScenes = new ColiScene[scenes.Length];
+            var coliScenes = new Scene[scenes.Length];
 
             for (int sceneIndex = 0; sceneIndex < coliScenes.Length; sceneIndex++)
             {
@@ -244,7 +244,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 const string padding = "-";
 
                 // 
-                coliScenes[sceneIndex] = new ColiScene();
+                coliScenes[sceneIndex] = new Scene();
 
                 // Breakout value
                 var scene = scenes[sceneIndex];

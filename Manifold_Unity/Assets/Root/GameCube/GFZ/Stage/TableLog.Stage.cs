@@ -7,7 +7,7 @@ namespace GameCube.GFZ.Stage
     public static class StageTableLogger
     {
         // Names of files generated
-        public static readonly string tsvHeader = $"{nameof(ColiScene)}-Header.tsv";
+        public static readonly string tsvHeader = $"{nameof(Scene)}-Header.tsv";
         public static readonly string tsvGeneralData = $"General Data.tsv";
         public static readonly string tsvTrackKeyablesAll = $"Track Keyables All.tsv";
         public static readonly string tsvTrackSegment = $"{nameof(TrackSegment)}.tsv";
@@ -36,7 +36,7 @@ namespace GameCube.GFZ.Stage
 
         #region Track Data / Transforms
 
-        public static void AnalyzeTrackKeyablesAll(ColiScene[] scenes, string filename)
+        public static void AnalyzeTrackKeyablesAll(Scene[] scenes, string filename)
         {
             using (var writer = AnalyzerUtility.OpenWriter(filename))
             {
@@ -83,7 +83,7 @@ namespace GameCube.GFZ.Stage
             }
         }
 
-        public static void AnalyzeTrackKeyables(ColiScene[] scenes, string filename, int keyablesSet)
+        public static void AnalyzeTrackKeyables(Scene[] scenes, string filename, int keyablesSet)
         {
             using (var writer = AnalyzerUtility.OpenWriter(filename))
             {
@@ -126,7 +126,7 @@ namespace GameCube.GFZ.Stage
                 writer.Flush();
             }
         }
-        public static void WriteTrackKeyableAttributeRecursive(StreamWriter writer, ColiScene scene, int nestedDepth, int animationCurveIndex, int trackTransformIndex, TrackSegment trackTransform)
+        public static void WriteTrackKeyableAttributeRecursive(StreamWriter writer, Scene scene, int nestedDepth, int animationCurveIndex, int trackTransformIndex, TrackSegment trackTransform)
         {
             var animationCurves = trackTransform.trackCurves.animationCurves;
             var keyableIndex = 1; // 0-n, depends on number of keyables in array
@@ -144,7 +144,7 @@ namespace GameCube.GFZ.Stage
             //foreach (var child in trackTransform.children)
             //    WriteTrackKeyableAttributeRecursive(writer, sobj, nestedDepth + 1, animationCurveIndex, trackTransformIndex, child);
         }
-        public static void WriteKeyableAttribute(StreamWriter writer, ColiScene scene, int nestedDepth, int keyableIndex, int keyableTotal, int keyablesSet, int trackTransformIndex, KeyableAttribute param, TrackSegment tt)
+        public static void WriteKeyableAttribute(StreamWriter writer, Scene scene, int nestedDepth, int keyableIndex, int keyableTotal, int keyablesSet, int trackTransformIndex, KeyableAttribute param, TrackSegment tt)
         {
             string gameId = scene.IsFileGX ? "GX" : "AX";
 
@@ -176,7 +176,7 @@ namespace GameCube.GFZ.Stage
 
         // Kicks off recursive write
         private static int s_order;
-        public static void AnalyzeTrackSegments(ColiScene[] scenes, string filename)
+        public static void AnalyzeTrackSegments(Scene[] scenes, string filename)
         {
             using (var writer = AnalyzerUtility.OpenWriter(filename))
             {
@@ -227,7 +227,7 @@ namespace GameCube.GFZ.Stage
             }
         }
         // Writes self and children
-        public static void WriteTrackSegmentRecursive(StreamWriter writer, ColiScene scene, int depth, int index, int total, TrackSegment trackSegment)
+        public static void WriteTrackSegmentRecursive(StreamWriter writer, Scene scene, int depth, int index, int total, TrackSegment trackSegment)
         {
             // Write Parent
             WriteTrackSegment(writer, scene, depth, index, total, trackSegment);
@@ -242,7 +242,7 @@ namespace GameCube.GFZ.Stage
             }
         }
         // The actual writing to file
-        public static void WriteTrackSegment(StreamWriter writer, ColiScene scene, int depth, int index, int total, TrackSegment trackTransform)
+        public static void WriteTrackSegment(StreamWriter writer, Scene scene, int depth, int index, int total, TrackSegment trackTransform)
         {
             writer.WriteNextCol(scene.FileName);
             writer.WriteNextCol($"{s_order++}");
@@ -284,7 +284,7 @@ namespace GameCube.GFZ.Stage
 
         #region Scene Objects' Animation Clips
 
-        public static void AnalyzeAnimationClips(ColiScene[] scenes, string filename)
+        public static void AnalyzeAnimationClips(Scene[] scenes, string filename)
         {
             using (var writer = AnalyzerUtility.OpenWriter(filename))
             {
@@ -342,7 +342,7 @@ namespace GameCube.GFZ.Stage
             }
         }
 
-        public static void AnalyzeGameObjectAnimationClipIndex(ColiScene[] scenes, string filename, int index)
+        public static void AnalyzeGameObjectAnimationClipIndex(Scene[] scenes, string filename, int index)
         {
             using (var writer = AnalyzerUtility.OpenWriter(filename))
             {
@@ -420,7 +420,7 @@ namespace GameCube.GFZ.Stage
 
         #region Scene Objects
 
-        public static void AnalyzeSceneObjectDynamic(ColiScene[] scenes, string fileName)
+        public static void AnalyzeSceneObjectDynamic(Scene[] scenes, string fileName)
         {
             using (var writer = AnalyzerUtility.OpenWriter(fileName))
             {
@@ -473,7 +473,7 @@ namespace GameCube.GFZ.Stage
             }
         }
 
-        public static void AnalyzeTextureMetadata(ColiScene[] scenes, string fileName)
+        public static void AnalyzeTextureMetadata(Scene[] scenes, string fileName)
         {
             using (var writer = AnalyzerUtility.OpenWriter(fileName))
             {
@@ -516,7 +516,7 @@ namespace GameCube.GFZ.Stage
             }
         }
 
-        public static void AnalyzeSkeletalAnimator(ColiScene[] scenes, string fileName)
+        public static void AnalyzeSkeletalAnimator(Scene[] scenes, string fileName)
         {
             using (var writer = AnalyzerUtility.OpenWriter(fileName))
             {
@@ -578,7 +578,7 @@ namespace GameCube.GFZ.Stage
             }
         }
 
-        public static void AnalyzeColliderGeometryTri(ColiScene[] scenes, string fileName)
+        public static void AnalyzeColliderGeometryTri(Scene[] scenes, string fileName)
         {
             using (var writer = AnalyzerUtility.OpenWriter(fileName))
             {
@@ -667,7 +667,7 @@ namespace GameCube.GFZ.Stage
             }
         }
 
-        public static void AnalyzeColliderGeometryQuad(ColiScene[] scenes, string fileName)
+        public static void AnalyzeColliderGeometryQuad(Scene[] scenes, string fileName)
         {
             using (var writer = AnalyzerUtility.OpenWriter(fileName))
             {
@@ -771,7 +771,7 @@ namespace GameCube.GFZ.Stage
         #endregion
 
 
-        public static void AnalyzeHeaders(ColiScene[] scenes, string fileName)
+        public static void AnalyzeHeaders(Scene[] scenes, string fileName)
         {
             using (var writer = AnalyzerUtility.OpenWriter(fileName))
             {
@@ -782,56 +782,56 @@ namespace GameCube.GFZ.Stage
                 writer.WriteNextCol("Course");
                 writer.WriteNextCol("AX/GX");
                 //
-                writer.WriteNextCol(nameof(ColiScene.unkRange0x00) + "." + nameof(ViewRange.near));
-                writer.WriteNextCol(nameof(ColiScene.unkRange0x00) + "." + nameof(ViewRange.far));
-                writer.WriteNextCol(nameof(ColiScene.trackNodesPtr));
-                writer.WriteNextCol(nameof(ColiScene.trackNodesPtr));
-                writer.WriteNextCol(nameof(ColiScene.embeddedTrackPropertyAreasPtr));
-                writer.WriteNextCol(nameof(ColiScene.embeddedTrackPropertyAreasPtr));
-                writer.WriteNextCol(nameof(ColiScene.staticColliderMeshManagerActive));
-                writer.WriteNextCol(nameof(ColiScene.embeddedTrackPropertyAreasPtr));
-                writer.WriteNextCol(nameof(ColiScene.zeroes0x20Ptr));
-                writer.WriteNextCol(nameof(ColiScene.trackMinHeightPtr));
-                writer.WriteNextCol(nameof(ColiScene.zeroes0x28));
-                writer.WriteNextCol(nameof(ColiScene.dynamicSceneObjectCount));
-                writer.WriteNextCol(nameof(ColiScene.unk_sceneObjectCount1));
-                writer.WriteNextCol(nameof(ColiScene.unk_sceneObjectCount2));
-                writer.WriteNextCol(nameof(ColiScene.dynamicSceneObjectsPtr));
-                writer.WriteNextCol(nameof(ColiScene.unkBool32_0x58));
-                writer.WriteNextCol(nameof(ColiScene.unknownCollidersPtr));
-                writer.WriteNextCol(nameof(ColiScene.unknownCollidersPtr));
-                writer.WriteNextCol(nameof(ColiScene.sceneObjectsPtr));
-                writer.WriteNextCol(nameof(ColiScene.sceneObjectsPtr));
-                writer.WriteNextCol(nameof(ColiScene.staticSceneObjectsPtr));
-                writer.WriteNextCol(nameof(ColiScene.staticSceneObjectsPtr));
-                writer.WriteNextCol(nameof(ColiScene.zero0x74));
-                writer.WriteNextCol(nameof(ColiScene.zero0x78));
-                writer.WriteNextCol(nameof(ColiScene.circuitType));
-                writer.WriteNextCol(nameof(ColiScene.fogCurvesPtr));
-                writer.WriteNextCol(nameof(ColiScene.fogPtr));
-                writer.WriteNextCol(nameof(ColiScene.zero0x88));
-                writer.WriteNextCol(nameof(ColiScene.zero0x8C));
-                writer.WriteNextCol(nameof(ColiScene.trackLengthPtr));
-                writer.WriteNextCol(nameof(ColiScene.unknownTriggersPtr)); // len
-                writer.WriteNextCol(nameof(ColiScene.unknownTriggersPtr)); // adr
-                writer.WriteNextCol(nameof(ColiScene.visualEffectTriggersPtr)); // len
-                writer.WriteNextCol(nameof(ColiScene.visualEffectTriggersPtr)); // adr
-                writer.WriteNextCol(nameof(ColiScene.miscellaneousTriggersPtr)); // len
-                writer.WriteNextCol(nameof(ColiScene.miscellaneousTriggersPtr)); // adr
-                writer.WriteNextCol(nameof(ColiScene.timeExtensionTriggersPtr)); // len
-                writer.WriteNextCol(nameof(ColiScene.timeExtensionTriggersPtr)); // adr
-                writer.WriteNextCol(nameof(ColiScene.storyObjectTriggersPtr)); // len
-                writer.WriteNextCol(nameof(ColiScene.storyObjectTriggersPtr)); // adr
-                writer.WriteNextCol(nameof(ColiScene.checkpointGridPtr));
+                writer.WriteNextCol(nameof(Scene.unkRange0x00) + "." + nameof(ViewRange.near));
+                writer.WriteNextCol(nameof(Scene.unkRange0x00) + "." + nameof(ViewRange.far));
+                writer.WriteNextCol(nameof(Scene.trackNodesPtr));
+                writer.WriteNextCol(nameof(Scene.trackNodesPtr));
+                writer.WriteNextCol(nameof(Scene.embeddedTrackPropertyAreasPtr));
+                writer.WriteNextCol(nameof(Scene.embeddedTrackPropertyAreasPtr));
+                writer.WriteNextCol(nameof(Scene.staticColliderMeshManagerActive));
+                writer.WriteNextCol(nameof(Scene.embeddedTrackPropertyAreasPtr));
+                writer.WriteNextCol(nameof(Scene.zeroes0x20Ptr));
+                writer.WriteNextCol(nameof(Scene.trackMinHeightPtr));
+                writer.WriteNextCol(nameof(Scene.zeroes0x28));
+                writer.WriteNextCol(nameof(Scene.dynamicSceneObjectCount));
+                writer.WriteNextCol(nameof(Scene.unk_sceneObjectCount1));
+                writer.WriteNextCol(nameof(Scene.unk_sceneObjectCount2));
+                writer.WriteNextCol(nameof(Scene.dynamicSceneObjectsPtr));
+                writer.WriteNextCol(nameof(Scene.unkBool32_0x58));
+                writer.WriteNextCol(nameof(Scene.unknownCollidersPtr));
+                writer.WriteNextCol(nameof(Scene.unknownCollidersPtr));
+                writer.WriteNextCol(nameof(Scene.sceneObjectsPtr));
+                writer.WriteNextCol(nameof(Scene.sceneObjectsPtr));
+                writer.WriteNextCol(nameof(Scene.staticSceneObjectsPtr));
+                writer.WriteNextCol(nameof(Scene.staticSceneObjectsPtr));
+                writer.WriteNextCol(nameof(Scene.zero0x74));
+                writer.WriteNextCol(nameof(Scene.zero0x78));
+                writer.WriteNextCol(nameof(Scene.circuitType));
+                writer.WriteNextCol(nameof(Scene.fogCurvesPtr));
+                writer.WriteNextCol(nameof(Scene.fogPtr));
+                writer.WriteNextCol(nameof(Scene.zero0x88));
+                writer.WriteNextCol(nameof(Scene.zero0x8C));
+                writer.WriteNextCol(nameof(Scene.trackLengthPtr));
+                writer.WriteNextCol(nameof(Scene.unknownTriggersPtr)); // len
+                writer.WriteNextCol(nameof(Scene.unknownTriggersPtr)); // adr
+                writer.WriteNextCol(nameof(Scene.visualEffectTriggersPtr)); // len
+                writer.WriteNextCol(nameof(Scene.visualEffectTriggersPtr)); // adr
+                writer.WriteNextCol(nameof(Scene.miscellaneousTriggersPtr)); // len
+                writer.WriteNextCol(nameof(Scene.miscellaneousTriggersPtr)); // adr
+                writer.WriteNextCol(nameof(Scene.timeExtensionTriggersPtr)); // len
+                writer.WriteNextCol(nameof(Scene.timeExtensionTriggersPtr)); // adr
+                writer.WriteNextCol(nameof(Scene.storyObjectTriggersPtr)); // len
+                writer.WriteNextCol(nameof(Scene.storyObjectTriggersPtr)); // adr
+                writer.WriteNextCol(nameof(Scene.checkpointGridPtr));
                 // Structure
-                writer.WriteNextCol(nameof(ColiScene.checkpointGridXZ) + "." + nameof(ColiScene.checkpointGridXZ.left));
-                writer.WriteNextCol(nameof(ColiScene.checkpointGridXZ) + "." + nameof(ColiScene.checkpointGridXZ.top));
-                writer.WriteNextCol(nameof(ColiScene.checkpointGridXZ) + "." + nameof(ColiScene.checkpointGridXZ.subdivisionWidth));
-                writer.WriteNextCol(nameof(ColiScene.checkpointGridXZ) + "." + nameof(ColiScene.checkpointGridXZ.subdivisionLength));
-                writer.WriteNextCol(nameof(ColiScene.checkpointGridXZ) + "." + nameof(ColiScene.checkpointGridXZ.numSubdivisionsX));
-                writer.WriteNextCol(nameof(ColiScene.checkpointGridXZ) + "." + nameof(ColiScene.checkpointGridXZ.numSubdivisionsZ));
+                writer.WriteNextCol(nameof(Scene.checkpointGridXZ) + "." + nameof(Scene.checkpointGridXZ.left));
+                writer.WriteNextCol(nameof(Scene.checkpointGridXZ) + "." + nameof(Scene.checkpointGridXZ.top));
+                writer.WriteNextCol(nameof(Scene.checkpointGridXZ) + "." + nameof(Scene.checkpointGridXZ.subdivisionWidth));
+                writer.WriteNextCol(nameof(Scene.checkpointGridXZ) + "." + nameof(Scene.checkpointGridXZ.subdivisionLength));
+                writer.WriteNextCol(nameof(Scene.checkpointGridXZ) + "." + nameof(Scene.checkpointGridXZ.numSubdivisionsX));
+                writer.WriteNextCol(nameof(Scene.checkpointGridXZ) + "." + nameof(Scene.checkpointGridXZ.numSubdivisionsZ));
                 // 
-                writer.WriteNextCol(nameof(ColiScene.zeroes0xD8));
+                writer.WriteNextCol(nameof(Scene.zeroes0xD8));
                 writer.WriteNextRow();
 
                 foreach (var scene in scenes)
@@ -909,7 +909,7 @@ namespace GameCube.GFZ.Stage
 
         #region TRIGGERS
 
-        public static void AnalyzeArcadeCheckpointTriggers(ColiScene[] scenes, string fileName)
+        public static void AnalyzeArcadeCheckpointTriggers(Scene[] scenes, string fileName)
         {
             using (var writer = AnalyzerUtility.OpenWriter(fileName))
             {
@@ -955,7 +955,7 @@ namespace GameCube.GFZ.Stage
             }
         }
 
-        public static void AnalyzeCourseMetadataTriggers(ColiScene[] scenes, string fileName)
+        public static void AnalyzeCourseMetadataTriggers(Scene[] scenes, string fileName)
         {
             using (var writer = AnalyzerUtility.OpenWriter(fileName))
             {
@@ -1001,7 +1001,7 @@ namespace GameCube.GFZ.Stage
             }
         }
 
-        public static void AnalyzeStoryObjectTrigger(ColiScene[] scenes, string fileName)
+        public static void AnalyzeStoryObjectTrigger(Scene[] scenes, string fileName)
         {
             using (var writer = AnalyzerUtility.OpenWriter(fileName))
             {
@@ -1055,7 +1055,7 @@ namespace GameCube.GFZ.Stage
             }
         }
 
-        public static void AnalyzeUnknownTrigger(ColiScene[] scenes, string fileName)
+        public static void AnalyzeUnknownTrigger(Scene[] scenes, string fileName)
         {
             using (var writer = AnalyzerUtility.OpenWriter(fileName))
             {
@@ -1110,7 +1110,7 @@ namespace GameCube.GFZ.Stage
             }
         }
 
-        public static void AnalyzeVisualEffectTriggers(ColiScene[] scenes, string fileName)
+        public static void AnalyzeVisualEffectTriggers(Scene[] scenes, string fileName)
         {
             using (var writer = AnalyzerUtility.OpenWriter(fileName))
             {
@@ -1162,7 +1162,7 @@ namespace GameCube.GFZ.Stage
 
         #region FOG
 
-        public static void AnalyzeFogCurves(ColiScene[] scenes, string fileName)
+        public static void AnalyzeFogCurves(Scene[] scenes, string fileName)
         {
             using (var writer = AnalyzerUtility.OpenWriter(fileName))
             {
@@ -1221,7 +1221,7 @@ namespace GameCube.GFZ.Stage
             }
         }
 
-        public static void AnalyzeFog(ColiScene[] scenes, string fileName)
+        public static void AnalyzeFog(Scene[] scenes, string fileName)
         {
             using (var writer = AnalyzerUtility.OpenWriter(fileName))
             {
@@ -1275,7 +1275,7 @@ namespace GameCube.GFZ.Stage
         #endregion
 
 
-        public static void AnalyzeSceneObjectTransforms(ColiScene[] scenes, string fileName)
+        public static void AnalyzeSceneObjectTransforms(Scene[] scenes, string fileName)
         {
             using (var writer = AnalyzerUtility.OpenWriter(fileName))
             {
@@ -1339,7 +1339,7 @@ namespace GameCube.GFZ.Stage
             }
         }
 
-        public static void AnalyzeTrackNodes(ColiScene[] scenes, string fileName)
+        public static void AnalyzeTrackNodes(Scene[] scenes, string fileName)
         {
             using (var writer = AnalyzerUtility.OpenWriter(fileName))
             {
@@ -1418,7 +1418,7 @@ namespace GameCube.GFZ.Stage
             }
         }
 
-        public static void AnalyzeStaticColliderMeshes(ColiScene[] scenes, string fileName)
+        public static void AnalyzeStaticColliderMeshes(Scene[] scenes, string fileName)
         {
             using (var writer = AnalyzerUtility.OpenWriter(fileName))
             {
@@ -1480,7 +1480,7 @@ namespace GameCube.GFZ.Stage
             }
         }
 
-        public static void AnalyzeSceneObjectLODs(ColiScene[] scenes, string fileName)
+        public static void AnalyzeSceneObjectLODs(Scene[] scenes, string fileName)
         {
             using (var writer = AnalyzerUtility.OpenWriter(fileName))
             {
@@ -1543,7 +1543,7 @@ namespace GameCube.GFZ.Stage
             }
         }
 
-        public static void AnalyzeSceneObjects(ColiScene[] scenes, string fileName)
+        public static void AnalyzeSceneObjects(Scene[] scenes, string fileName)
         {
             using (var writer = AnalyzerUtility.OpenWriter(fileName))
             {
@@ -1602,7 +1602,7 @@ namespace GameCube.GFZ.Stage
             }
         }
 
-        public static void AnalyzeSceneObjectsAndLODs(ColiScene[] scenes, string fileName)
+        public static void AnalyzeSceneObjectsAndLODs(Scene[] scenes, string fileName)
         {
             using (var writer = AnalyzerUtility.OpenWriter(fileName))
             {
@@ -1665,7 +1665,7 @@ namespace GameCube.GFZ.Stage
         }
 
 
-        public static void AnalyzeGeneralData(ColiScene[] scenes, string fileName)
+        public static void AnalyzeGeneralData(Scene[] scenes, string fileName)
         {
             using (var writer = AnalyzerUtility.OpenWriter(fileName))
             {
@@ -1678,8 +1678,8 @@ namespace GameCube.GFZ.Stage
                 //
                 writer.WriteNextCol(nameof(ViewRange) + "." + nameof(ViewRange.near));
                 writer.WriteNextCol(nameof(ViewRange) + "." + nameof(ViewRange.far));
-                writer.WriteNextCol(nameof(ColiScene.trackMinHeight));
-                writer.WriteNextCol(nameof(ColiScene.trackLength));
+                writer.WriteNextCol(nameof(Scene.trackMinHeight));
+                writer.WriteNextCol(nameof(Scene.trackLength));
                 //
                 writer.WriteNextRow();
 
@@ -1705,7 +1705,7 @@ namespace GameCube.GFZ.Stage
             }
         }
 
-        public static void AnalyzeSurfaceAttributeAreas(ColiScene[] scenes, string fileName)
+        public static void AnalyzeSurfaceAttributeAreas(Scene[] scenes, string fileName)
         {
             using (var writer = AnalyzerUtility.OpenWriter(fileName))
             {
@@ -1756,7 +1756,7 @@ namespace GameCube.GFZ.Stage
         }
 
 
-        public static void AnalyzeUnknownCollider(ColiScene[] scenes, string fileName)
+        public static void AnalyzeUnknownCollider(Scene[] scenes, string fileName)
         {
             using (var writer = AnalyzerUtility.OpenWriter(fileName))
             {

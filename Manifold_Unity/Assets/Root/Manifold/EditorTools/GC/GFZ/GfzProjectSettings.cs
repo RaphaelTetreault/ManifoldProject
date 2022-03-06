@@ -8,7 +8,7 @@ namespace Manifold.EditorTools.GC.GFZ
     [Serializable]
     public class GfzProjectSettings
     {
-        [SerializeField] ColiScene.SerializeFormat serializeFormat = ColiScene.SerializeFormat.GX;
+        [SerializeField] Scene.SerializeFormat serializeFormat = Scene.SerializeFormat.GX;
         [SerializeField] string rootFolder = string.Empty;
         [SerializeField] string testGfzj01 = string.Empty;
         [SerializeField] string testGfze01 = string.Empty;
@@ -23,7 +23,7 @@ namespace Manifold.EditorTools.GC.GFZ
         [SerializeField] string sceneExportPath = string.Empty;
         [SerializeField] bool convertCoordSpace = true;
 
-        public ColiScene.SerializeFormat SerializeFormat => serializeFormat;
+        public Scene.SerializeFormat SerializeFormat => serializeFormat;
         public string RootFolder => rootFolder;
         public string LogOutput => logOutput;
         public string AnalysisOutput => analysisOutput;

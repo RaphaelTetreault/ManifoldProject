@@ -8,7 +8,7 @@ namespace GameCube.GFZ.Stage
     public static class StageTextLogger
     {
 
-        public static void LogAnimationClips(TextLogger log, ColiScene scene, int indentLevel = 0, string indent = "\t")
+        public static void LogAnimationClips(TextLogger log, Scene scene, int indentLevel = 0, string indent = "\t")
         {
             foreach (var dynamicSceneObject in scene.dynamicSceneObjects)
             {
@@ -23,7 +23,7 @@ namespace GameCube.GFZ.Stage
             }
         }
 
-        public static void LogSceneMetadata(TextLogger log, ColiScene scene, int indentLevel = 0, string indent = "\t")
+        public static void LogSceneMetadata(TextLogger log, Scene scene, int indentLevel = 0, string indent = "\t")
         {
             log.WriteLine($"Venue: {scene.Venue}");
             log.WriteLine($"Course: {scene.VenueName} [{scene.CourseName}]");
@@ -33,7 +33,7 @@ namespace GameCube.GFZ.Stage
             log.WriteLine($"{nameof(scene.unkRange0x00)}: {scene.unkRange0x00}");
         }
 
-        public static void LogScene(TextLogger log, ColiScene scene, int indentLevel = 0, string indent = "\t")
+        public static void LogScene(TextLogger log, Scene scene, int indentLevel = 0, string indent = "\t")
         {
             // TODO: write header information
 
@@ -50,7 +50,7 @@ namespace GameCube.GFZ.Stage
         }
 
 
-        public static void LogSceneData(TextLogger log, ColiScene coliScene)
+        public static void LogSceneData(TextLogger log, Scene coliScene)
         {
             var md5 = MD5.Create();
 

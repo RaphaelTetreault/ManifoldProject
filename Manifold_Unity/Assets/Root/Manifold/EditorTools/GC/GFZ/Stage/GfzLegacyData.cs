@@ -11,8 +11,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
     public class GfzLegacyData : MonoBehaviour
     {
         [SerializeField, HideInInspector]
-        private ColiScene scene;
+        private Scene scene;
 
-        public ColiScene Scene => scene;
+        public Scene Scene => scene;
     }
 }
