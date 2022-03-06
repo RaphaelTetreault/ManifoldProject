@@ -66,7 +66,7 @@ namespace GameCube.GFZ.CourseCollision
             {
                 // If nothing to serialize, zero out address as
                 // it will be used to get ptr
-                addressRange = new AddressRange();
+                AddressRange = new AddressRange();
             }
         }
 

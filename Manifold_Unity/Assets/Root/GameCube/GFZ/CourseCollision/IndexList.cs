@@ -77,7 +77,7 @@ namespace GameCube.GFZ.CourseCollision
                 {
                     // Reset AddressRange as it WILL be converted
                     // to pointer. Since we are "null", reset = null ptr.
-                    addressRange = new AddressRange();
+                    AddressRange = new AddressRange();
                 }
             }
         }
