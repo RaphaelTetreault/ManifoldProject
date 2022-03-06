@@ -6,14 +6,15 @@ using Unity.Mathematics;
 namespace GameCube.GFZ.Stage
 {
     /// <summary>
-    /// Represents a transformation. This is used on scene objects specifically (where
-    /// hierarchy is not important - flat structures, no trees).
+    /// Represents a transformation. This is used on scene objects specifically. TRXS is 
+    /// indicative of the values stored. T:translation, R:rotation, X:extra, S: scale.
+    /// As noted, it contains "extra" bits.
     /// </summary>
     [Serializable]
-    public class TransformPRXS :
+    public class TransformTRXS :
         IBinarySerializable,
         IBinaryAddressable,
-        IDeepCopyable<TransformPRXS>
+        IDeepCopyable<TransformTRXS>
     {
         // FIELDS
          private float3 position;
@@ -68,9 +69,9 @@ namespace GameCube.GFZ.Stage
 
 
         // METHODS
-        public TransformPRXS CreateDeepCopy()
+        public TransformTRXS CreateDeepCopy()
         {
-            var newInstance = new TransformPRXS()
+            var newInstance = new TransformTRXS()
             {
                 position = position,
                 compressedRotation = compressedRotation,
@@ -111,7 +112,7 @@ namespace GameCube.GFZ.Stage
         {
             var euler = RotationEuler;
             return
-                $"{nameof(TransformPRXS)}(" +
+                $"{nameof(TransformTRXS)}(" +
                 $"{nameof(Position)}(x:{position.x:0.0}, y:{position.y:0.0}, z:{position.z:0.0}), " +
                 $"{nameof(RotationEuler)}(x:{euler.x:0.0}, y:{euler.y:0.0}, z:{euler.z:0.0}), " +
                 $"{nameof(Scale)}(x:{scale.x:0.0}, y:{scale.y:0.0}, z:{scale.z:0.0}), " +

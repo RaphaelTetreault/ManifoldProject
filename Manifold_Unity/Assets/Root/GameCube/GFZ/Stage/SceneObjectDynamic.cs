@@ -18,7 +18,7 @@ namespace GameCube.GFZ.Stage
         public int unk0x00; // rendering? 
         public int unk0x04; // LOD Flags? -1 = no LOD/no-disable, otherwise flags.
         public Pointer sceneObjectPtr;
-        public TransformPRXS transformPRXS = new TransformPRXS();
+        public TransformTRXS transformPRXS = new TransformTRXS();
         public int zero_0x2C; // null ptr?
         public Pointer animationClipPtr;
         public Pointer textureScrollPtr;

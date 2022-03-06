@@ -15,7 +15,7 @@ namespace GameCube.GFZ.Stage
         IBinarySerializable
     {
         // FIELDS
-        public TransformPRXS transform;
+        public TransformTRXS transform;
         public CourseMetadataType metadataType;
 
 

@@ -9,7 +9,7 @@ namespace Manifold.EditorTools.GC.GFZ
     public static class TransformConverter
     {
         // EXTENSIONS
-        public static void CopyGfzTransformPRXS(this Transform unityTransform, TransformPRXS gfzTransform)
+        public static void CopyGfzTransformPRXS(this Transform unityTransform, TransformTRXS gfzTransform)
         {
             CopyToUnityTransform(gfzTransform, unityTransform);
         }
@@ -18,7 +18,7 @@ namespace Manifold.EditorTools.GC.GFZ
             CopyToUnityTransform(gfzTransform, unityTransform);
         }
 
-        public static void CopyUnityTransform(this TransformPRXS gfzTransform, Transform unityTransform)
+        public static void CopyUnityTransform(this TransformTRXS gfzTransform, Transform unityTransform)
         {
             CopyToGfzTransformPRXS(unityTransform, gfzTransform);
         }
@@ -35,7 +35,7 @@ namespace Manifold.EditorTools.GC.GFZ
         /// </summary>
         /// <param name="from"></param>
         /// <param name="to"></param>
-        public static void CopyToUnityTransform(TransformPRXS from, Transform to)
+        public static void CopyToUnityTransform(TransformTRXS from, Transform to)
         {
             // Apply transform values to target
             to.localPosition = from.Position;
@@ -63,7 +63,7 @@ namespace Manifold.EditorTools.GC.GFZ
         /// </summary>
         /// <param name="unity">The transform to copy global TRS from.</param>
         /// <param name="gfzPRXS">The transform to apply global TRS to.</param>
-        public static void CopyToGfzTransformPRXS(Transform unity, TransformPRXS gfzPRXS)
+        public static void CopyToGfzTransformPRXS(Transform unity, TransformTRXS gfzPRXS)
         {
             // Copy over GLOBAL position.
             // The game does uses "TransformMatrix3x4" for LOCAL coordinates.
@@ -96,9 +96,9 @@ namespace Manifold.EditorTools.GC.GFZ
         /// </summary>
         /// <param name="unityTransform">The transform to copy global TRS from.</param>
         /// <returns></returns>
-        public static TransformPRXS ToGfzTransformPRXS(Transform unityTransform)
+        public static TransformTRXS ToGfzTransformPRXS(Transform unityTransform)
         {
-            var value = new TransformPRXS();
+            var value = new TransformTRXS();
             value.CopyUnityTransform(unityTransform);
 
             return value;

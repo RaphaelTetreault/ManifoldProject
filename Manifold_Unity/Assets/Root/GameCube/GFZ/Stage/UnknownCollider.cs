@@ -18,7 +18,7 @@ namespace GameCube.GFZ.Stage
     {
         // FIELDS
         public Pointer templateSceneObjectPtr;
-        public TransformPRXS transform;
+        public TransformTRXS transform;
         //
         public SceneObject sceneObject;
 
