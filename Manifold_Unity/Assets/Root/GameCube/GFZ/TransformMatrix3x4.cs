@@ -5,6 +5,8 @@ using Unity.Mathematics;
 
 namespace GameCube.GFZ
 {
+    // TODO: this might be a built-in GameCube.GX type.
+
     /// <summary>
     /// Column-major transform matrix with 3 rows and 4 columns.
     /// </summary>

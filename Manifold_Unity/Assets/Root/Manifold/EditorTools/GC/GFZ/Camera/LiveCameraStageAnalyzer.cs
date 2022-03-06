@@ -58,7 +58,7 @@ namespace Manifold.EditorTools.GC.GFZ.Camera
                 writer.WriteNextColNicify(nameof(CameraPan.From.CameraPosition));
                 writer.WriteNextColNicify(nameof(CameraPan.From.LookAtPosition));
                 writer.WriteNextColNicify(nameof(CameraPan.From.FieldOfView));
-                writer.WriteNextColNicify(nameof(CameraPan.From.RotationRoll.Value));
+                writer.WriteNextColNicify(nameof(CameraPan.From.RotationRoll.Degrees));
                 writer.WriteNextColNicify(nameof(CameraPan.From.Zero_0x1E));
                 writer.WriteNextColNicify(nameof(CameraPan.From.Interpolation));
                 writer.WriteNextColNicify(nameof(CameraPan.From.Zero_0x22));
