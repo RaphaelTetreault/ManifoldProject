@@ -6,8 +6,8 @@ using System.IO;
 namespace GameCube.GFZ.Stage
 {
     /// <summary>
-    /// Expresses an animation with associated metadata. Animation can set positional data,
-    /// rotational data, or affect the alpha channel of certain textures.
+    /// Expresses an animation with associated metadata. Animation can set position,
+    /// rotation, scale, and/or affect the alpha channel of certain textures.
     /// 
     /// There appears to be some matrix math involved. Animation values are transformed by
     /// associated Transform on the same object. In that sense, they are local, or child of
@@ -33,18 +33,23 @@ namespace GameCube.GFZ.Stage
         public float unk_0x04;
         public byte[] zeroes_0x08 = new byte[kZeroes0x08];
         public EnumFlags32 unk_layer_0x18;
-        /// <summary>
-        /// idx: 0,1,2: scale.xyz
-        /// idx: 3,4,5: rotation.xyz
-        /// idx: 6,7,8: position.xyz
-        /// idx: 9: unused
-        /// idx: 10: alpha channel
-        /// </summary>
-        public AnimationClipCurve[] curves; // Written inline, no pointers
+        public AnimationClipCurve[] curves; // field, NOT reference field
 
 
         // PROPERTIES
         public AddressRange AddressRange { get; set; }
+        public AnimationClipCurve Alpha => curves[10];
+        public AnimationClipCurve PositionX => curves[6];
+        public AnimationClipCurve PositionY => curves[7];
+        public AnimationClipCurve PositionZ => curves[8];
+        public AnimationClipCurve RotationX => curves[3];
+        public AnimationClipCurve RotationY => curves[4];
+        public AnimationClipCurve RotationZ => curves[5];
+        public AnimationClipCurve ScaleX => curves[0];
+        public AnimationClipCurve ScaleY => curves[1];
+        public AnimationClipCurve ScaleZ => curves[2];
+        public AnimationClipCurve Unused => curves[9];
+
 
 
         // METHODS
@@ -63,7 +68,6 @@ namespace GameCube.GFZ.Stage
                 foreach (var zero in zeroes_0x08)
                     Assert.IsTrue(zero == 0);
             }
-            // No jumping required
         }
 
         public void Serialize(BinaryWriter writer)
@@ -86,6 +90,7 @@ namespace GameCube.GFZ.Stage
         public void ValidateReferences()
         {
             // TRICKY! The inlined classes make it look not like a referer
+
             foreach (var zero in zeroes_0x08)
                 Assert.IsTrue(zero == 0);
 
