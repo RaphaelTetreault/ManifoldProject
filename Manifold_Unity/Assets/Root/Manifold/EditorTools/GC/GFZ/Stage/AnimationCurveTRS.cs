@@ -61,10 +61,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             return allCurvesMaxTime;
         }
 
-        public GameCube.GFZ.CourseCollision.TrackCurves ToTrackSegment()
+        public GameCube.GFZ.Stage.TrackCurves ToTrackSegment()
         {
-            var trackCurves = new GameCube.GFZ.CourseCollision.TrackCurves();
-            trackCurves.animationCurves = new GameCube.GFZ.CourseCollision.AnimationCurve[9];
+            var trackCurves = new GameCube.GFZ.Stage.TrackCurves();
+            trackCurves.animationCurves = new GameCube.GFZ.Stage.AnimationCurve[9];
 
             var corrected = GetGfzCoordSpaceTRS();
 

@@ -1,10 +1,10 @@
-﻿using GameCube.GFZ.CourseCollision;
+﻿using GameCube.GFZ.Stage;
 using UnityEngine;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage
 {
     public class GfzAnimationClip : MonoBehaviour,
-        IGfzConvertable<GameCube.GFZ.CourseCollision.AnimationClip>
+        IGfzConvertable<GameCube.GFZ.Stage.AnimationClip>
     {
         [SerializeField] private float unk_0x00;
         [SerializeField] private float unk_0x04;
@@ -43,9 +43,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         }
 
 
-        public GameCube.GFZ.CourseCollision.AnimationClip ExportGfz()
+        public GameCube.GFZ.Stage.AnimationClip ExportGfz()
         {
-            var animationClip = new GameCube.GFZ.CourseCollision.AnimationClip();
+            var animationClip = new GameCube.GFZ.Stage.AnimationClip();
             animationClip.unk_0x00 = unk_0x00;
             animationClip.unk_0x04 = unk_0x04;
             animationClip.unk_layer_0x18 = unk_layer_0x18;
@@ -78,14 +78,14 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             return animationClip;
         }
 
-        public void ImportGfz(GameCube.GFZ.CourseCollision.AnimationClip animationClip)
+        public void ImportGfz(GameCube.GFZ.Stage.AnimationClip animationClip)
         {
             unk_0x00 = animationClip.unk_0x00;
             unk_0x04 = animationClip.unk_0x04;
             unk_layer_0x18 = animationClip.unk_layer_0x18;
 
             var curves = GetCurves;
-            for (int i = 0; i < GameCube.GFZ.CourseCollision.AnimationClip.kAnimationCurvesCount; i++)
+            for (int i = 0; i < GameCube.GFZ.Stage.AnimationClip.kAnimationCurvesCount; i++)
             {
                 curves[i].unk0x00 = animationClip.curves[i].unk_0x00;
                 curves[i].unk0x04 = animationClip.curves[i].unk_0x04;

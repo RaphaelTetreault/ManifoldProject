@@ -1,4 +1,4 @@
-using GameCube.GFZ.CourseCollision;
+using GameCube.GFZ.Stage;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,7 +8,7 @@ namespace Manifold.EditorTools.GC.GFZ
 {
     public static class AnimationCurveConverter
     {
-        public static UnityEngine.AnimationCurve ToUnity(this GameCube.GFZ.CourseCollision.AnimationCurve curve)
+        public static UnityEngine.AnimationCurve ToUnity(this GameCube.GFZ.Stage.AnimationCurve curve)
         {
             if (curve == null)
                 return null;
@@ -17,13 +17,13 @@ namespace Manifold.EditorTools.GC.GFZ
             return new UnityEngine.AnimationCurve(keyframes);
         }
 
-        public static GameCube.GFZ.CourseCollision.AnimationCurve ToGfz(this UnityEngine.AnimationCurve curve)
+        public static GameCube.GFZ.Stage.AnimationCurve ToGfz(this UnityEngine.AnimationCurve curve)
         {
             if (curve == null)
                 return null;
 
             var keyables = UnityAnimationCurveToKeyables(curve);
-            var gfzCurve = new GameCube.GFZ.CourseCollision.AnimationCurve(keyables);
+            var gfzCurve = new GameCube.GFZ.Stage.AnimationCurve(keyables);
             return gfzCurve;
         }
 

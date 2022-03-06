@@ -1,6 +1,6 @@
 using Manifold.IO;
 using GameCube.GFZ;
-using GameCube.GFZ.CourseCollision;
+using GameCube.GFZ.Stage;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -65,7 +65,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             fogCurves.FogCurveB = fogCurveB.ToGfz();
             // Create empty curve with 1 keyable
             var keyables5 = new KeyableAttribute[] { new KeyableAttribute() };
-            fogCurves.FogCurveUnk = new GameCube.GFZ.CourseCollision.AnimationCurve(keyables5);
+            fogCurves.FogCurveUnk = new GameCube.GFZ.Stage.AnimationCurve(keyables5);
 
             return fogCurves;
         }

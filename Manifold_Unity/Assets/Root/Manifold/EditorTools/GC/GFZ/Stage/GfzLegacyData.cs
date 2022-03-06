@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
-using GameCube.GFZ.CourseCollision;
+using GameCube.GFZ.Stage;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage
 {

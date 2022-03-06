@@ -1,6 +1,6 @@
 ﻿using Manifold.IO;
-using GameCube.GFZ.CourseCollision;
-using static GameCube.GFZ.CourseCollision.StageTableLogger;
+using GameCube.GFZ.Stage;
+using static GameCube.GFZ.Stage.StageTableLogger;
 using System;
 using System.IO;
 using System.Linq;

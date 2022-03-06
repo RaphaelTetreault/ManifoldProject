@@ -2,13 +2,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using GameCube.GFZ.CourseCollision;
+using GameCube.GFZ.Stage;
 
 namespace Manifold.Conversion.GFZ.CourseCollision
 {
     public static class AnimationClipConverter
     {
-        public static UnityEngine.AnimationClip GfzToUnity(GameCube.GFZ.CourseCollision.AnimationClip animationClip)
+        public static UnityEngine.AnimationClip GfzToUnity(GameCube.GFZ.Stage.AnimationClip animationClip)
         {
             var unityAnimClip = new UnityEngine.AnimationClip();
 

@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using GameCube.GFZ.CourseCollision;
+using GameCube.GFZ.Stage;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage
 {

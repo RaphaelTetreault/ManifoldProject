@@ -1,5 +1,5 @@
 using GameCube.GFZ;
-using GameCube.GFZ.CourseCollision;
+using GameCube.GFZ.Stage;
 using Manifold.IO;
 using System;
 using System.Collections.Generic;

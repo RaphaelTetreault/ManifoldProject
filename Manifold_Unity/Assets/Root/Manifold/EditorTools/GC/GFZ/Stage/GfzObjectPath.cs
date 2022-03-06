@@ -1,5 +1,5 @@
 using GameCube.GFZ;
-using GameCube.GFZ.CourseCollision;
+using GameCube.GFZ.Stage;
 using UnityEngine;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage
