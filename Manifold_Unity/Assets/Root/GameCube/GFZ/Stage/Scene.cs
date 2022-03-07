@@ -346,17 +346,17 @@ namespace GameCube.GFZ.Stage
                     
                     Due to how the scene data is configured, there are a few data types which share
                     references. This is smart and efficient for memory, but it means simple/traditional
-                    deserialization fails. The way most all data types are deserializedd in this project
-                    is in linear fashion. X1 deserializes itself. If X1 references Y, it deserializes Y.
+                    deserialization fails. The way most all data types are deserialized in this project
+                    is done in linear fashion. X1 deserializes itself. If X1 references Y, it deserializes Y.
                     The issue is that if we have an X2 and it also references Y, what happens is that both
                     X1 and X2 create their own instance of Y. The issue surfaces once the data goes to
-                    serialize and X1 and X2 seriaslize their own version of the data.
+                    serialize and X1 and X2 serialize their own version of the data.
 
                     The solution here is to let X1 and X2 deserialize separate instances of Y. We can then
                     use the pointer address of those references and create a dictionary indexed by the pointer
                     address of the data. If we come across another structure that has the same pointer as
                     a previous structure, we can assign the same reference to it. This relinks shared data
-                    types in memory.
+                    types in memory here in C# land.
                 /*/
 
                 // Keep a dictionary of each shared reference type
@@ -400,9 +400,7 @@ namespace GameCube.GFZ.Stage
                     foreach (var so in templateSceneObject.lods)
                     {
                         GetSerializable(reader, so.lodNamePtr, ref so.name, sceneObjectNamesDict);
-
                     }
-                    //GetSerializable(reader, templateSceneObject.PrimarySceneObject.namePtr, ref templateSceneObject.PrimarySceneObject.name, sceneObjectNamesDict);
                 }
                 // Save, order by name (alphabetical)
                 sceneObjectNames = sceneObjectNamesDict.Values.ToArray();
@@ -413,7 +411,7 @@ namespace GameCube.GFZ.Stage
             {
                 /*/
                 Unlike any other data type in the scene structure, TrackSegments are referenced
-                by many other isntances. A single track can have about a dozen track segments
+                by many other instances. A single track can have about a dozen track segments
                 total, with perhaps a single root segment, referenced by hundreds TrackNodes.
                 If we were to let each TrackNode deserialize it's own recursive tree, it would
                 take quite a long time for redundant data.
@@ -424,28 +422,23 @@ namespace GameCube.GFZ.Stage
                 deserialize them only once, sharing the C# reference afterwards.
                 /*/
 
-                // Read all ROOT track segments
+                // ROOT TRACK SEGMENTS
                 // These root segments are the ones pointed at by all nodes.
                 var rootTrackSegmentDict = new Dictionary<Pointer, TrackSegment>();
                 foreach (var trackNode in trackNodes)
-                {
                     GetSerializable(reader, trackNode.segmentPtr, ref trackNode.segment, rootTrackSegmentDict);
-                }
                 rootTrackSegments = rootTrackSegmentDict.Values.ToArray();
 
                 // 2021/09/22: test tagging for serialization order
                 foreach (var rootTrackSegment in rootTrackSegments)
                     rootTrackSegment.isRoot = true;
 
-                // Read ALL track segments
-                // We want to have all segments. We must recursively follow the hierarchy tree.
-                var allTrackSegments = new Dictionary<Pointer, TrackSegment>();
-                // Start by iterating over each root node in graph
+                // ALL TRACK SEGMENTS
+                // Use helper function to collect all TrackSegments
+                var allTrackSegmentsList = new List<TrackSegment>();
                 foreach (var rootSegment in rootTrackSegments)
-                {
-                    rootSegment.DeserializeChildren(reader);
-                }
-                this.allTrackSegments = allTrackSegments.Values.ToArray();
+                    allTrackSegmentsList.AddRange(rootSegment.GetGraphSerializableOrder());
+                allTrackSegments = allTrackSegmentsList.ToArray();
             }
 
             BinaryIoUtility.PopEndianness();
@@ -502,6 +495,7 @@ namespace GameCube.GFZ.Stage
             // TRACK DATA
             {
                 // TODO: consider re-serializing min height
+
                 // Print track length
                 writer.InlineDesc(serializeVerbose, 0x90 + offset, trackLength);
                 writer.CommentLineWide("Length:", trackLength.value.ToString("0.00"), serializeVerbose);
@@ -1002,55 +996,6 @@ namespace GameCube.GFZ.Stage
                         writer.WriteX(quadIndexList);
                     }
                 }
-            }
-        }
-
-
-        public void ReadTrackSegmentsRecursive(BinaryReader reader, Dictionary<Pointer, TrackSegment> allTrackSegments, TrackSegment parent, bool isFirstCall = true)
-        {
-            // Add parent node to master list
-            var parentPtr = parent.GetPointer();
-            if (!allTrackSegments.ContainsKey(parentPtr))
-                allTrackSegments.Add(parentPtr, parent);
-
-            // Deserialize children (if any)
-            var children = parent.DeserializeChildren(reader);
-            var requiresDeserialization = new List<TrackSegment>();
-
-            // Get the index of where these children WILL be in list
-            var childIndexes = new int[children.Length];
-            for (int i = 0; i < childIndexes.Length; i++)
-            {
-                var child = children[i];
-                var childPtr = child.GetPointer();
-
-                var listContainsChild = allTrackSegments.ContainsKey(childPtr);
-                if (listContainsChild)
-                {
-                    // Child is in master list, get index
-                    for (int j = 0; j < allTrackSegments.Count; j++)
-                    {
-                        if (allTrackSegments[j].GetPointer() == childPtr)
-                        {
-                            childIndexes[i] = j;
-                            break;
-                        }
-                    }
-                }
-                else
-                {
-                    // Add child to master list
-                    // child index is COUNT (oob), add to list (is now in array bounds)
-                    childIndexes[i] = allTrackSegments.Count;
-                    allTrackSegments.Add(childPtr, child);
-                    requiresDeserialization.Add(child);
-                }
-            }
-
-            // Read children recursively (if any).
-            foreach (var child in requiresDeserialization)
-            {
-                ReadTrackSegmentsRecursive(reader, allTrackSegments, child, false);
             }
         }
 

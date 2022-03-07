@@ -93,6 +93,8 @@ namespace GameCube.GFZ.Stage
                 // Assertions
                 Assert.IsTrue(zero_0x44 == 0);
                 Assert.IsTrue(zero_0x48 == 0);
+
+                DeserializeChildrenRecursive(reader);
             }
             this.SetReaderToEndAddress(reader);
         }
@@ -103,9 +105,8 @@ namespace GameCube.GFZ.Stage
         /// </summary>
         /// <param name="reader">The reader to deserialize children from. Must be same used to deserialize this instance.</param>
         /// <returns>All children of this instance. Result can be of size 0. Result will not be null.</returns>
-        public TrackSegment[] DeserializeChildren(BinaryReader reader)
+        public void DeserializeChildrenRecursive(BinaryReader reader)
         {
-            // Read children recusively
             var children = new TrackSegment[0];
             if (childrenPtr.IsNotNull)
             {
@@ -114,12 +115,13 @@ namespace GameCube.GFZ.Stage
                 reader.ReadX(ref children, childrenPtr.Length);
             }
 
-            // Set useful property for naviagting tree/hierarchy
-            foreach (var child in children)
-                child.Parent = this;
-
             this.children = children;
-            return children;
+
+            foreach (var child in children)
+            {
+                child.Parent = this;
+                child.DeserializeChildrenRecursive(reader);
+            }
         }
 
         public void Serialize(BinaryWriter writer)
