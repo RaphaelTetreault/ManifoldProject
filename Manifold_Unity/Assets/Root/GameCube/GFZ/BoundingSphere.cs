@@ -21,24 +21,24 @@ namespace GameCube.GFZ
         public void Deserialize(BinaryReader reader)
         {
             var addressRange = new AddressRange();
-            addressRange.StartAddress = reader.GetPositionAsPointer();
+            addressRange.RecordStartAddress(reader);
             {
                 reader.ReadX(ref origin);
                 reader.ReadX(ref radius);
             }
-            addressRange.EndAddress = reader.GetPositionAsPointer();
+            addressRange.RecordEndAddress(reader);
             AddressRange = addressRange;
         }
 
         public void Serialize(BinaryWriter writer)
         {
             var addressRange = new AddressRange();
-            addressRange.StartAddress = writer.GetPositionAsPointer();
+            addressRange.RecordStartAddress(writer);
             {
                 writer.WriteX(origin);
                 writer.WriteX(radius);
             }
-            addressRange.EndAddress = writer.GetPositionAsPointer();
+            addressRange.RecordEndAddress(writer);
             AddressRange = addressRange;
         }
 
