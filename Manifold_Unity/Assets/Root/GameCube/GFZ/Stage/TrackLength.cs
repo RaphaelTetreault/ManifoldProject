@@ -8,12 +8,12 @@ namespace GameCube.GFZ.Stage
     {
         public TrackLength()
         {
-            value = 0f;
+            Value = 0f;
         }
 
         public TrackLength(float length)
         {
-            value = length;
+            Value = length;
         }
     }
 }

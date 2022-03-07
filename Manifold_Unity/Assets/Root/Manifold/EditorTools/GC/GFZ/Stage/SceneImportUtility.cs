@@ -1006,10 +1006,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             // Copy fog parameters over
             var fog = scene.fog;
             sceneParams.exportCustomFog = true; // whatever we import, use that
-            sceneParams.fogInterpolation = fog.interpolation;
-            sceneParams.fogNear = fog.fogRange.near;
-            sceneParams.fogFar = fog.fogRange.far;
-            var color = fog.colorRGBA;
+            sceneParams.fogInterpolation = fog.Interpolation;
+            sceneParams.fogNear = fog.FogRange.near;
+            sceneParams.fogFar = fog.FogRange.far;
+            var color = fog.ColorRGB;
             sceneParams.color = new Color(color.x, color.y, color.z);
 
             if (scene.fogCurves != null)

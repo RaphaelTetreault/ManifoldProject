@@ -900,7 +900,7 @@ namespace GameCube.GFZ.Stage
                     writer.WriteNextCol(scene.checkpointGridXZ.numSubdivisionsZ);
                     //
                     writer.WriteNextCol(0);// coliHeader.zero_0xD8);
-                    writer.WriteNextCol(scene.trackMinHeight.value);
+                    writer.WriteNextCol(scene.trackMinHeight.Value);
                     writer.WriteNextRow();
                 }
                 writer.Flush();
@@ -1233,12 +1233,12 @@ namespace GameCube.GFZ.Stage
                 writer.WriteNextCol("Course");
                 writer.WriteNextCol("AX/GX");
                 //
-                writer.WriteNextCol(nameof(Fog.interpolation));
-                writer.WriteNextCol(nameof(Fog.fogRange) + "." + nameof(ViewRange.near));
-                writer.WriteNextCol(nameof(Fog.fogRange) + "." + nameof(ViewRange.far));
-                writer.WriteNextCol(nameof(Fog.colorRGBA) + ".R");
-                writer.WriteNextCol(nameof(Fog.colorRGBA) + ".G");
-                writer.WriteNextCol(nameof(Fog.colorRGBA) + ".B");
+                writer.WriteNextCol(nameof(Fog.Interpolation));
+                writer.WriteNextCol(nameof(Fog.FogRange) + "." + nameof(ViewRange.near));
+                writer.WriteNextCol(nameof(Fog.FogRange) + "." + nameof(ViewRange.far));
+                writer.WriteNextCol(nameof(Fog.ColorRGB) + ".R");
+                writer.WriteNextCol(nameof(Fog.ColorRGB) + ".G");
+                writer.WriteNextCol(nameof(Fog.ColorRGB) + ".B");
                 writer.WriteNextCol(nameof(Fog.zero0x18) + ".x");
                 writer.WriteNextCol(nameof(Fog.zero0x18) + ".y");
                 writer.WriteNextCol(nameof(Fog.zero0x18) + ".z");
@@ -1257,12 +1257,12 @@ namespace GameCube.GFZ.Stage
                     writer.WriteNextCol(courseID);
                     writer.WriteNextCol(isAxGx);
                     //
-                    writer.WriteNextCol(scene.fog.interpolation);
-                    writer.WriteNextCol(scene.fog.fogRange.near);
-                    writer.WriteNextCol(scene.fog.fogRange.far);
-                    writer.WriteNextCol(scene.fog.colorRGBA.x);
-                    writer.WriteNextCol(scene.fog.colorRGBA.y);
-                    writer.WriteNextCol(scene.fog.colorRGBA.z);
+                    writer.WriteNextCol(scene.fog.Interpolation);
+                    writer.WriteNextCol(scene.fog.FogRange.near);
+                    writer.WriteNextCol(scene.fog.FogRange.far);
+                    writer.WriteNextCol(scene.fog.ColorRGB.x);
+                    writer.WriteNextCol(scene.fog.ColorRGB.y);
+                    writer.WriteNextCol(scene.fog.ColorRGB.z);
                     writer.WriteNextCol(scene.fog.zero0x18.x);
                     writer.WriteNextCol(scene.fog.zero0x18.y);
                     writer.WriteNextCol(scene.fog.zero0x18.z);
@@ -1698,8 +1698,8 @@ namespace GameCube.GFZ.Stage
                     //
                     writer.WriteNextCol(scene.unkRange0x00.near);
                     writer.WriteNextCol(scene.unkRange0x00.far);
-                    writer.WriteNextCol(scene.trackMinHeight.value);
-                    writer.WriteNextCol(scene.trackLength.value);
+                    writer.WriteNextCol(scene.trackMinHeight.Value);
+                    writer.WriteNextCol(scene.trackLength.Value);
                     writer.WriteNextRow();
                 }
                 writer.Flush();

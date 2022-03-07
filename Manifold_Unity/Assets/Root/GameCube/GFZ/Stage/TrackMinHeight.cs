@@ -11,12 +11,12 @@ namespace GameCube.GFZ.Stage
         public TrackMinHeight()
         {
             // Default value as seen in AX test files.
-            value = -10000f;
+            Value = -10000f;
         }
 
         public TrackMinHeight(float minHeight)
         {
-            value = minHeight;
+            Value = minHeight;
         }
 
         // METHODS
@@ -43,7 +43,7 @@ namespace GameCube.GFZ.Stage
         /// <param name="scene">The scene to iterate over for a minumum Y coordinate.</param>
         public void SetMinHeight(Checkpoint[] checkpoints)
         {
-            value = GetTrackMinHeight(checkpoints);
+            Value = GetTrackMinHeight(checkpoints);
         }
     }
 }

@@ -5,7 +5,7 @@ using System.IO;
 
 // NOTES
 // Uses single animation key with values from UnkStageRanges
-// GX: this data does not exist on Mute City or Sand Ocean for ? reasons.
+// GX: this data does not exist on Mute City or Sand Ocean
 // AX: this data does not exist on Mute City, Sand Ocean, NULL, Phantom Road, and Big Blue (Story)
 // In both cases, Mute City (COM) _does_ have this data, including COM story.
 //
@@ -34,7 +34,8 @@ namespace GameCube.GFZ.Stage
     public class FogCurves :
         IBinaryAddressable,
         IBinarySerializable,
-        IHasReference
+        IHasReference,
+        ITextPrintable
     {
         // CONSTANTS
         public const int kCurveCount = 6;
@@ -54,39 +55,17 @@ namespace GameCube.GFZ.Stage
         }
 
 
+        // INDEXERS
+        public AnimationCurve this[int index] { get => animationCurves[index]; set => animationCurves[index] = value; }
+
         // PROPERTIES
         public AddressRange AddressRange { get; set; }
-
-        public AnimationCurve FogCurveNear
-        {
-            get => animationCurves[0];
-            set => animationCurves[0] = value;
-        }
-        public AnimationCurve FogCurveFar
-        {
-            get => animationCurves[1];
-            set => animationCurves[1] = value;
-        }
-        public AnimationCurve FogCurveR
-        {
-            get => animationCurves[2];
-            set => animationCurves[2] = value;
-        }
-        public AnimationCurve FogCurveG
-        {
-            get => animationCurves[3];
-            set => animationCurves[3] = value;
-        }
-        public AnimationCurve FogCurveB
-        {
-            get => animationCurves[4];
-            set => animationCurves[4] = value;
-        }
-        public AnimationCurve FogCurveUnk
-        {
-            get => animationCurves[5];
-            set => animationCurves[5] = value;
-        }
+        public AnimationCurve FogCurveNear { get => animationCurves[0]; set => animationCurves[0] = value; }
+        public AnimationCurve FogCurveFar { get => animationCurves[1]; set => animationCurves[1] = value; }
+        public AnimationCurve FogCurveR { get => animationCurves[2]; set => animationCurves[2] = value; }
+        public AnimationCurve FogCurveG { get => animationCurves[3]; set => animationCurves[3] = value; }
+        public AnimationCurve FogCurveB { get => animationCurves[4]; set => animationCurves[4] = value; }
+        public AnimationCurve FogCurveUnk { get => animationCurves[5]; set => animationCurves[5] = value; }
 
 
         // METHODS
@@ -152,5 +131,46 @@ namespace GameCube.GFZ.Stage
             //    //Assert.IsTrue(animationCurve.Length > 0);
             //}
         }
+
+        public string PrintMultiLine(int indentLevel = 0, string indent = "\t")
+        {
+            // StringBuilder is still used because of the indent levels
+            var builder = new System.Text.StringBuilder();
+
+            builder.AppendLineIndented(indent, indentLevel, nameof(FogCurves));
+            indentLevel++;
+            {
+                // NEAR / FAR
+                builder.AppendLineIndented(indent, indentLevel, nameof(FogCurveNear));
+                builder.Append(FogCurveNear.PrintMultiLine(indentLevel + 1, indent));
+
+                builder.AppendLineIndented(indent, indentLevel, nameof(FogCurveFar));
+                builder.Append(FogCurveFar.PrintMultiLine(indentLevel + 1, indent));
+
+                // RGB
+                builder.AppendLineIndented(indent, indentLevel, nameof(FogCurveR));
+                builder.Append(FogCurveR.PrintMultiLine(indentLevel + 1, indent));
+
+                builder.AppendLineIndented(indent, indentLevel, nameof(FogCurveG));
+                builder.Append(FogCurveG.PrintMultiLine(indentLevel + 1, indent));
+
+                builder.AppendLineIndented(indent, indentLevel, nameof(FogCurveB));
+                builder.Append(FogCurveB.PrintMultiLine(indentLevel + 1, indent));
+
+                // UNUSED / UNKNOWN
+                builder.AppendLineIndented(indent, indentLevel, nameof(FogCurveUnk));
+                builder.Append(FogCurveUnk.PrintMultiLine(indentLevel, indent));
+            }
+
+            return builder.ToString();
+        }
+
+        public string PrintSingleLine()
+        {
+            return $"{nameof(FogCurves)}";
+        }
+
+        public override string ToString() => PrintSingleLine();
+
     }
 }

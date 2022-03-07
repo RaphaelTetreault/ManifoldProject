@@ -498,7 +498,7 @@ namespace GameCube.GFZ.Stage
 
                 // Print track length
                 writer.InlineDesc(serializeVerbose, 0x90 + offset, trackLength);
-                writer.CommentLineWide("Length:", trackLength.value.ToString("0.00"), serializeVerbose);
+                writer.CommentLineWide("Length:", trackLength.Value.ToString("0.00"), serializeVerbose);
                 writer.CommentNewLine(serializeVerbose, '-');
                 writer.WriteX(trackLength);
 

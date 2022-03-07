@@ -92,7 +92,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 trackEmbeddedPropertyAreas.AddRange(embededPropertyAreas);
 
                 // Compute some metadata based on segments
-                trackLength.value += rootSegmentScript.Segment.GetSegmentLength();
+                trackLength.Value += rootSegmentScript.Segment.GetSegmentLength();
 
                 // Create TrackNodes
                 foreach (var checkpoint in checkpoints)

@@ -7,12 +7,12 @@ namespace GameCube.GFZ.Stage
     public enum EmbeddedTrackPropertyType : byte
     {
         /// <summary>
-        /// 
+        /// Indicates this is a terminating node (signifies end of array).
         /// </summary>
         TerminateCode,
 
         /// <summary>
-        /// Recharge areas collision type.
+        /// Indicates area is a energy pit.
         /// </summary>
         Recover = 1,
 
@@ -22,12 +22,12 @@ namespace GameCube.GFZ.Stage
         //idx2,
 
         /// <summary>
-        /// 
+        /// Indicates area is a boost pad.
         /// </summary>
         BoostPad = 3,
 
         /// <summary>
-        /// Boost pad collision type.
+        /// Indicates area is a jump pad.
         /// </summary>
         JumpPad = 4,
 
