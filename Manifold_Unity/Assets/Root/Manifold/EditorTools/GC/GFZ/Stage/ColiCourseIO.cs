@@ -309,7 +309,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         {
             // TEMP from previous function
             var openFolderAfterExport = true;
-            var allowOverwritingFiles = true;
+            //var allowOverwritingFiles = true;
             var exportTo = "W:/Windows Directories/Desktop/test";
             /////////////////////////////////////////////////////
 
