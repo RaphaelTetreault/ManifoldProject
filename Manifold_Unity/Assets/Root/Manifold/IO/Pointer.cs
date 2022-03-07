@@ -59,7 +59,7 @@ namespace Manifold.IO
 
         public override string ToString()
         {
-            return PrintAddress;
+            return $"Pointer({PrintAddress})";
         }
 
         public override bool Equals(object obj)

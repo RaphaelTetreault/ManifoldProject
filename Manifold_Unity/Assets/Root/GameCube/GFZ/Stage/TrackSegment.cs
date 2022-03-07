@@ -14,45 +14,60 @@ namespace GameCube.GFZ.Stage
     public class TrackSegment :
         IBinaryAddressable,
         IBinarySerializable,
-        IHasReference
+        IHasReference,
+        ITextPrintable
     {
-        // METADATA
-        public int depth;
-        public bool isRoot;
-
         // FIELDS
-        public TrackSegmentType segmentType;
-        public TrackEmbeddedPropertyType embeddedPropertyType;
-        public TrackPerimeterFlags perimeterFlags;
-        public TrackPipeCylinderFlags pipeCylinderFlags;
-        public Pointer trackCurvesPtr;
-        public Pointer trackCornerPtr;
-        public ArrayPointer childrenPtrs;
-        public float3 localScale;
-        public float3 localRotation;
-        public float3 localPosition;
-        [NumFormat(format0: "{0}", numDigits: 8, numBase: 2)]
-        public byte unk_0x38; // mixed flags
-        [NumFormat(format0: "{0}", numDigits: 8, numBase: 2)]
-        public byte unk_0x39; // exclusive flags
-        [NumFormat(format0: "{0}", numDigits: 8, numBase: 2)]
-        public byte unk_0x3A; // mixed flags
-        [NumFormat(format0: "{0}", numDigits: 8, numBase: 2)]
-        public byte unk_0x3B; // mixed flags
-        public float railHeightRight;
-        public float railHeightLeft;
-        public uint zero_0x44; // zero confirmed
-        public uint zero_0x48; // zero confirmed
-        public int branchIndex; // 0, 1, 2, 3
+        private TrackSegmentType segmentType;
+        private TrackEmbeddedPropertyType embeddedPropertyType;
+        private TrackPerimeterFlags perimeterFlags;
+        private TrackPipeCylinderFlags pipeCylinderFlags;
+        private Pointer animationCurvesTrsPtr;
+        private Pointer trackCornerPtr;
+        private ArrayPointer childrenPtr;
+        private float3 localScale;
+        private float3 localRotation;
+        private float3 localPosition;
+        private byte unk_0x38; // mixed flags
+        private byte unk_0x39; // exclusive flags
+        private byte unk_0x3A; // mixed flags
+        private byte unk_0x3B; // mixed flags
+        private float railHeightRight;
+        private float railHeightLeft;
+        private uint zero_0x44; // zero confirmed
+        private uint zero_0x48; // zero confirmed
+        private int branchIndex; // 0, 1, 2, 3
         // REFERENCE FIELDS
-        public TrackCurves trackCurves;
-        public TrackCorner trackCorner;
-        // HACK?
-        public int[] childIndexes = new int[0];
+        private AnimationCurveTRS animationCurveTRS;
+        private TrackCorner trackCorner;
+        private TrackSegment[] children;
 
 
         // PROPERTIES
         public AddressRange AddressRange { get; set; }
+        public int Depth { get; set; }
+        public bool IsRoot { get; set; }
+        public TrackSegment Parent { get; set; }
+        public TrackSegmentType SegmentType { get => segmentType; set => segmentType = value; }
+        public TrackEmbeddedPropertyType EmbeddedPropertyType { get => embeddedPropertyType; set => embeddedPropertyType = value; }
+        public TrackPerimeterFlags PerimeterFlags { get => perimeterFlags; set => perimeterFlags = value; }
+        public TrackPipeCylinderFlags PipeCylinderFlags { get => pipeCylinderFlags; set => pipeCylinderFlags = value; }
+        public Pointer AnimationCurvesTrsPtr { get => animationCurvesTrsPtr; set => animationCurvesTrsPtr = value; }
+        public Pointer TrackCornerPtr { get => trackCornerPtr; set => trackCornerPtr = value; }
+        public ArrayPointer ChildrenPtr { get => childrenPtr; set => childrenPtr = value; }
+        public float3 LocalScale { get => localScale; set => localScale = value; }
+        public float3 LocalRotation { get => localRotation; set => localRotation = value; }
+        public float3 LocalPosition { get => localPosition; set => localPosition = value; }
+        public byte Unk_0x38 { get => unk_0x38; set => unk_0x38 = value; }
+        public byte Unk_0x39 { get => unk_0x39; set => unk_0x39 = value; }
+        public byte Unk_0x3A { get => unk_0x3A; set => unk_0x3A = value; }
+        public byte Unk_0x3B { get => unk_0x3B; set => unk_0x3B = value; }
+        public float RailHeightRight { get => railHeightRight; set => railHeightRight = value; }
+        public float RailHeightLeft { get => railHeightLeft; set => railHeightLeft = value; }
+        public int BranchIndex { get => branchIndex; set => branchIndex = value; }
+        public AnimationCurveTRS AnimationCurveTRS { get => animationCurveTRS; set => animationCurveTRS = value; }
+        public TrackCorner TrackCorner { get => trackCorner; set => trackCorner = value; }
+        public TrackSegment[] Children { get => children; set => children = value; }
 
 
         // METHODS
@@ -64,9 +79,9 @@ namespace GameCube.GFZ.Stage
                 reader.ReadX(ref embeddedPropertyType);
                 reader.ReadX(ref perimeterFlags);
                 reader.ReadX(ref pipeCylinderFlags);
-                reader.ReadX(ref trackCurvesPtr);
+                reader.ReadX(ref animationCurvesTrsPtr);
                 reader.ReadX(ref trackCornerPtr);
-                reader.ReadX(ref childrenPtrs);
+                reader.ReadX(ref childrenPtr);
                 reader.ReadX(ref localScale);
                 reader.ReadX(ref localRotation);
                 reader.ReadX(ref localPosition);
@@ -82,98 +97,57 @@ namespace GameCube.GFZ.Stage
             }
             this.RecordEndAddress(reader);
             {
-                // Read Topology
-                reader.JumpToAddress(trackCurvesPtr);
-                reader.ReadX(ref trackCurves);
+                // Read animation curves
+                reader.JumpToAddress(animationCurvesTrsPtr);
+                reader.ReadX(ref animationCurveTRS);
 
-                // Read hairpin turn
+                // Read corner transform
                 if (trackCornerPtr.IsNotNull)
                 {
                     reader.JumpToAddress(trackCornerPtr);
                     reader.ReadX(ref trackCorner);
                 }
 
-                // TODO: make this functional
-                // Create a matrix for convenience
-                //localMatrix = float4x4.TRS(localPosition, quaternion.EulerXYZ(localRotation), localScale);
-                // Update values based on children
-                //worldMatrix = localMatrix;
-
                 // Assertions
                 Assert.IsTrue(zero_0x44 == 0);
                 Assert.IsTrue(zero_0x48 == 0);
+
+                DeserializeChildrenRecursively(reader);
             }
             this.SetReaderToEndAddress(reader);
         }
 
-        public void SetChildPointers(TrackSegment[] children)
+        /// <summary>
+        /// Deserializes children using the supplied <paramref name="reader"/>. This method assigns
+        /// the deserialized children to this instance.
+        /// </summary>
+        /// <param name="reader">The reader to deserialize children from. Must be same used to deserialize this instance.</param>
+        /// <returns>All children of this instance. Result can be of size 0. Result will not be null.</returns>
+        private void DeserializeChildrenRecursively(BinaryReader reader)
         {
-            // Assert that children are truly sequential.
-            // This is a HARD requirement of ArrayPointer.
-            // Iterate from 0 to (n-1). If length == 1, no looping.
-            for (int i = 0; i < children.Length - 1; i++)
-            {
-                var curr = children[i + 0];
-                var next = children[i + 1];
-                // The end address of the current child must be the same as the next child
-                var currAddress = curr.AddressRange.EndAddress;
-                var nextAddress = next.AddressRange.StartAddress;
-                
-                // TODO: not true for final entry...
-                //Assert.IsTrue(currAddress == nextAddress, $"Curr[{i}]:{currAddress}, Next[{i+1}]:{nextAddress}");
-            }
-
-            // Create a pointer given the children
-            if (childIndexes.Length > 0)
-            {
-                var index0 = childIndexes[0];
-                var arrayBaseChild = children[index0];
-                childrenPtrs = new ArrayPointer(
-                    childIndexes.Length,
-                    arrayBaseChild.GetPointer());
-            }
-            else
-            {
-                childrenPtrs = new ArrayPointer();
-            }
-        }
-
-        public TrackSegment[] GetChildren(BinaryReader reader)
-        {
-            // Read children recusively
             var children = new TrackSegment[0];
-            if (childrenPtrs.IsNotNull)
+            if (childrenPtr.IsNotNull)
             {
                 // NOTE: children are always sequential (ArrayPointer)
-                reader.JumpToAddress(childrenPtrs);
-                reader.ReadX(ref children, childrenPtrs.Length);
+                reader.JumpToAddress(childrenPtr);
+                reader.ReadX(ref children, childrenPtr.Length);
             }
 
-            //
-            this.childSegments = children;
+            this.children = children;
 
-            return children;
-        }
-
-        public TrackSegment[] GetChildren(TrackSegment[] allTrackSegments)
-        {
-            var children = new List<TrackSegment>();
-            foreach (var index in childIndexes)
+            foreach (var child in children)
             {
-                children.Add(allTrackSegments[index]);
+                child.Parent = this;
+                child.DeserializeChildrenRecursively(reader);
             }
-            return children.ToArray();
         }
 
         public void Serialize(BinaryWriter writer)
         {
             {
-                // Child pointers are handled by ColiScene due to the
-                // recursive nature of this type.
-                // See "SetChildPointers(TrackSegment[] children)"
-
-                trackCurvesPtr = trackCurves.GetPointer();
+                animationCurvesTrsPtr = animationCurveTRS.GetPointer();
                 trackCornerPtr = trackCorner.GetPointer();
+                childrenPtr = children.GetArrayPointer();
             }
             this.RecordStartAddress(writer);
             {
@@ -181,9 +155,9 @@ namespace GameCube.GFZ.Stage
                 writer.WriteX(embeddedPropertyType);
                 writer.WriteX(perimeterFlags);
                 writer.WriteX(pipeCylinderFlags);
-                writer.WriteX(trackCurvesPtr);
+                writer.WriteX(animationCurvesTrsPtr);
                 writer.WriteX(trackCornerPtr);
-                writer.WriteX(childrenPtrs);
+                writer.WriteX(childrenPtr);
                 writer.WriteX(localScale);
                 writer.WriteX(localRotation);
                 writer.WriteX(localPosition);
@@ -202,8 +176,24 @@ namespace GameCube.GFZ.Stage
 
         public void ValidateReferences()
         {
+            // Assert that children are truly sequential.
+            // This is a HARD requirement of ArrayPointer.
+            // Iterate from 0 to (n-1). If length == 1, no looping.
+            for (int i = 0; i < children.Length - 1; i++)
+            {
+                var curr = children[i + 0];
+                var next = children[i + 1];
+                // The end address of the current child must be the same as the next child
+                var currAddress = curr.AddressRange.EndAddress;
+                var nextAddress = next.AddressRange.StartAddress;
+
+                // TODO: not true for final entry...
+                // 2022/03/06: if this fails, you have to look into it. I uncommented this in the refactoring process.
+                Assert.IsTrue(currAddress == nextAddress, $"Curr[{i}]:{currAddress}, Next[{i+1}]:{nextAddress}");
+            }
+
             // Make sure references and pointers line up right
-            Assert.ReferencePointer(trackCurves, trackCurvesPtr);
+            Assert.ReferencePointer(animationCurveTRS, animationCurvesTrsPtr);
             Assert.ReferencePointer(trackCorner, trackCornerPtr);
 
             // 2021/12/21: NOT SURE ABOUT THIS, FAILS ON ST43
@@ -229,91 +219,96 @@ namespace GameCube.GFZ.Stage
             } 
         }
 
-        public override string ToString()
-        {
-            var builder = new System.Text.StringBuilder();
-            builder.Append(nameof(TrackSegment));
-            builder.Append("(Children [");
-            builder.Append(childIndexes.Length);
-            builder.Append("]");
-            foreach (var childIndex in childIndexes)
-            {
-                builder.Append(", ");
-                builder.Append(childIndex);
-            }
-            builder.Append(")");
-
-            return builder.ToString();
-        }
-
-        public string ToString2()
-        {
-            var builder = new System.Text.StringBuilder();
-            builder.Append($"{nameof(TrackSegment)}");
-            //
-            builder.Append($"\n\t{nameof(segmentType)}: {segmentType}");
-            builder.Append($"\n\t{nameof(embeddedPropertyType)}: {embeddedPropertyType}");
-            builder.Append($"\n\t{nameof(perimeterFlags)}: {perimeterFlags}");
-            builder.Append($"\n\t{nameof(segmentType)}: {segmentType}");
-            //
-            builder.Append($"\n\t{nameof(trackCurvesPtr)}: {trackCurvesPtr}");
-            builder.Append($"\n\t{nameof(trackCornerPtr)}: {trackCornerPtr}");
-            builder.Append($"\n\t{nameof(childrenPtrs)}: {childrenPtrs}");
-            //
-            builder.Append($"\n\t{nameof(localScale)}: {localScale}");
-            builder.Append($"\n\t{nameof(localRotation)}: {localRotation}");
-            builder.Append($"\n\t{nameof(localPosition)}: {localPosition}");
-            //
-            builder.Append($"\n\t{nameof(unk_0x38)}: {unk_0x38}");
-            builder.Append($"\n\t{nameof(unk_0x39)}: {unk_0x39}");
-            builder.Append($"\n\t{nameof(unk_0x3A)}: {unk_0x3A}");
-            builder.Append($"\n\t{nameof(unk_0x3B)}: {unk_0x3B}");
-            //
-            builder.Append($"\n\t{nameof(zero_0x44)}: {zero_0x44}");
-            builder.Append($"\n\t{nameof(zero_0x48)}: {zero_0x48}");
-            //
-            builder.Append($"\n\t{nameof(railHeightRight)}: {railHeightRight}");
-            builder.Append($"\n\t{nameof(railHeightLeft)}: {railHeightLeft}");
-            builder.Append($"\n\t{nameof(branchIndex)}: {branchIndex}");
-
-            return builder.ToString();
-        }
-
-
-
-        // 2022/01/25: trying to work without Unity serialization messing things up
-        // this means we can store a recursive structure (while state is active).
-        public TrackSegment[] childSegments;
-
-        public TrackSegment[] GetChildrenArrayPointerOrdered()
+        /// <summary>
+        /// Gets an directed acyclic graph of this object and it's children in an order
+        /// appropriate for serialization (satisfies the ArrayPointer ordering constraint).
+        /// </summary>
+        /// <returns>
+        /// Returns all track segments from root (this) downwards. The resulting graph
+        /// is ordered as: parent (0), parent's children (1), parent's grand-children (2), 
+        /// and so-on. Each group is sequential with any given 'children' field being
+        /// serialized together, resulting in a valid ArrayPointer for their location
+        /// in the file binary.
+        /// </returns>
+        public TrackSegment[] GetGraphSerializableOrder()
         {
             var trackSegmentHierarchy = new List<TrackSegment>();
+
             // Add root/parent as first element
             trackSegmentHierarchy.Add(this);
+
             // Kick off recursive collection of TrackSegments
             GetChildrenRecursively(this, trackSegmentHierarchy);
+
             // Return our list/array which is ready to be serialized to disk
             return trackSegmentHierarchy.ToArray();
         }
 
-        public static void GetChildrenRecursively(TrackSegment parent, List<TrackSegment> segments)
+        /// <summary>
+        /// Gets all children of <paramref name="parent"/> and adds it to the list <paramref name="segmentGraph"/>.
+        /// After collecting children, the function recursively adds each child's children to the graph.
+        /// </summary>
+        /// <param name="parent">The graph element to collect children from.</param>
+        /// <param name="segmentGraph">The graph to assign children to.</param>
+        private static void GetChildrenRecursively(TrackSegment parent, List<TrackSegment> segmentGraph)
         {
-            if (parent.childSegments == null)
+            // If null or empth, nothing left to do.
+            if (parent.children.IsNullOrEmpty())
                 return;
 
             // Add children sequentially, needed to store ArrayPointer correctly
-            segments.AddRange(parent.childSegments);
+            segmentGraph.AddRange(parent.children);
 
             // Then add each child's children sequentially, recursively
-            foreach (var childSegment in parent.childSegments)
+            foreach (var child in parent.children)
             {
-                GetChildrenRecursively(childSegment, segments);
+                GetChildrenRecursively(child, segmentGraph);
             }
         }
 
+        public override string ToString()
+        {
+            return PrintSingleLine();
+        }
 
+        public string PrintSingleLine()
+        {
+            return $"{nameof(TrackSegment)}(Children [{Children.Length}])";
+        }
 
+        public string PrintMultiLine(int indentLevel = 0, string indent = "\t")
+        {
+            var builder = new System.Text.StringBuilder();
+            
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(TrackSegment)}");
+            indentLevel++;
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(segmentType)}: {segmentType}");
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(embeddedPropertyType)}: {embeddedPropertyType}");
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(perimeterFlags)}: {perimeterFlags}");
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(segmentType)}: {segmentType}");
+            //
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(animationCurvesTrsPtr)}: {animationCurvesTrsPtr}");
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(trackCornerPtr)}: {trackCornerPtr}");
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(childrenPtr)}: {childrenPtr}");
+            //
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(localScale)}: {localScale}");
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(localRotation)}: {localRotation}");
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(localPosition)}: {localPosition}");
+            //
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(unk_0x38)}: {unk_0x38}");
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(unk_0x39)}: {unk_0x39}");
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(unk_0x3A)}: {unk_0x3A}");
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(unk_0x3B)}: {unk_0x3B}");
+            //
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(zero_0x44)}: {zero_0x44}");
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(zero_0x48)}: {zero_0x48}");
+            //
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(railHeightRight)}: {railHeightRight}");
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(railHeightLeft)}: {railHeightLeft}");
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(branchIndex)}: {branchIndex}");
 
+            return builder.ToString();
+        }
 
     }
 }

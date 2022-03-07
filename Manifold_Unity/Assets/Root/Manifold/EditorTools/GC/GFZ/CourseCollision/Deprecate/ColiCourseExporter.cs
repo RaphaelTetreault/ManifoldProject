@@ -211,7 +211,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
                     log.WriteAddress(sceneObject.animationClip);
                     if (sceneObject.animationClip != null)
-                        log.WriteAddress(sceneObject.animationClip.curves);
+                        log.WriteAddress(sceneObject.animationClip.Curves);
                     // TODO: other sub classes?
 
                     log.WriteAddress(sceneObject.textureScroll);

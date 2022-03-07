@@ -94,7 +94,7 @@ namespace GameCube.GFZ.Stage
 
             // This block writes out the contents of each TrackSegments AnimationCurves
             log.WriteLine("TRACK SEGMENT ANIMATION CURVES");
-            log.WriteLine($"{nameof(TrackSegment)}.{nameof(TrackSegment.trackCurves)}");
+            log.WriteLine($"{nameof(TrackSegment)}.{nameof(TrackSegment.AnimationCurveTRS)}");
             string[] labelSRP = new string[] { "Sca", "Rot", "Pos" };
             string[] labelXYZ = new string[] { "x", "y", "z" };
             for (int segmentIndex = 0; segmentIndex < coliScene.allTrackSegments.Length; segmentIndex++)
@@ -102,13 +102,13 @@ namespace GameCube.GFZ.Stage
                 var trackSegment = coliScene.allTrackSegments[segmentIndex];
                 log.WriteLine($"{nameof(TrackSegment)}[{segmentIndex}]\t{trackSegment}");
 
-                for (int animIndex = 0; animIndex < trackSegment.trackCurves.animationCurves.Length; animIndex++)
+                for (int animIndex = 0; animIndex < trackSegment.AnimationCurveTRS.AnimationCurves.Length; animIndex++)
                 {
-                    var animCurve = trackSegment.trackCurves.animationCurves[animIndex];
+                    var animCurve = trackSegment.AnimationCurveTRS.AnimationCurves[animIndex];
                     var currLabelSRP = labelSRP[animIndex / 3];
                     var currLabelXYZ = labelXYZ[animIndex % 3];
                     log.WriteLine($"{currLabelSRP}.{currLabelXYZ} [{animIndex}] ");
-                    log.WriteArrayToString(animCurve.keyableAttributes);
+                    log.WriteArrayToString(animCurve.KeyableAttributes);
                     //log.WriteLine(HashSerializables.Hash(md5, animCurve));
                     log.WriteLine();
                 }
@@ -119,9 +119,9 @@ namespace GameCube.GFZ.Stage
             {
                 var segment = coliScene.allTrackSegments[i];
                 log.WriteLine($"{nameof(TrackSegment)} Transform Coords [{i}]");
-                log.WriteLine($"\tPosition: {segment.localPosition}");
-                log.WriteLine($"\tRotation: {segment.localRotation}");
-                log.WriteLine($"\tScale...: {segment.localScale}");
+                log.WriteLine($"\tPosition: {segment.LocalPosition}");
+                log.WriteLine($"\tRotation: {segment.LocalRotation}");
+                log.WriteLine($"\tScale...: {segment.LocalScale}");
             }
             log.WriteLine();
             //
@@ -144,7 +144,7 @@ namespace GameCube.GFZ.Stage
             log.WriteLine();
             log.WriteLine(nameof(GameCube.GFZ.BoundingSphere));
             log.WriteLine("unk float: " + coliScene.staticColliderMeshManager.unk_float);
-            log.WriteAddress(coliScene.staticColliderMeshManager.boundingSphere);
+            log.WriteAddress(coliScene.staticColliderMeshManager.BoundingSphere);
             log.WriteLine(coliScene.staticColliderMeshManager.unknownCollidersPtr);
             log.WriteLine(coliScene.staticColliderMeshManager.staticSceneObjectsPtr);
             log.WriteLine();
@@ -210,7 +210,7 @@ namespace GameCube.GFZ.Stage
 
                     log.WriteAddress(sceneObject.animationClip);
                     if (sceneObject.animationClip != null)
-                        log.WriteAddress(sceneObject.animationClip.curves);
+                        log.WriteAddress(sceneObject.animationClip.Curves);
                     // TODO: other sub classes?
 
                     log.WriteAddress(sceneObject.textureScroll);

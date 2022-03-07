@@ -28,6 +28,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             get => cornerDirection;
             set => cornerDirection = value;
         }
+        public float RailHeight { get => railHeight; set => railHeight = value; }
+
 
         public override Mesh[] GenerateMeshes()
         {

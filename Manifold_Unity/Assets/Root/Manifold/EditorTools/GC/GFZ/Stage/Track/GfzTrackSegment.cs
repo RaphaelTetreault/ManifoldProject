@@ -117,7 +117,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 var origin = position;// + transform.position;
                 var trackWidth = scale.x;
                 var normal = rotation * forward;
-
+                //
+                var planeStart = new GameCube.GFZ.Stage.Plane() { origin = origin, normal = normal };
+                planeStart.ComputeDotProduct();
 
                 // DISTANCE
                 // Compute the distance between these 2 points, keep track of total distance travelled along segment
@@ -129,15 +131,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 // CHECKPOINT
                 checkpoints[i] = new Checkpoint();
                 var checkpoint = checkpoints[i];
-                checkpoint.curveTimeStart = (float)checkpointTimeStart;
-                checkpoint.startDistance = distanceStart;
-                checkpoint.endDistance = distanceEnd;
-                checkpoint.trackWidth = trackWidth;
-                checkpoint.connectToTrackIn = true;
-                checkpoint.connectToTrackOut = true;
-                checkpoint.planeStart.origin = origin;
-                checkpoint.planeStart.normal = normal;
-                checkpoint.planeStart.ComputeDotProduct();
+                checkpoint.CurveTimeStart = (float)checkpointTimeStart;
+                checkpoint.StartDistance = distanceStart;
+                checkpoint.EndDistance = distanceEnd;
+                checkpoint.TrackWidth = trackWidth;
+                checkpoint.ConnectToTrackIn = true;
+                checkpoint.ConnectToTrackOut = true;
+                checkpoint.PlaneStart = planeStart;
                 // We construct (copy) the checkpoint.planeEnd later
             }
 
@@ -148,8 +148,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 var prevCheckpoint = checkpoints[i - 1];
                 var currCheckpoint = checkpoints[i];
                 // Copy over values
-                prevCheckpoint.curveTimeEnd = currCheckpoint.curveTimeStart;
-                prevCheckpoint.planeEnd = currCheckpoint.planeStart.GetMirror();
+                prevCheckpoint.CurveTimeEnd = currCheckpoint.CurveTimeStart;
+                prevCheckpoint.PlaneEnd = currCheckpoint.PlaneStart.GetMirror();
             }
 
             // Index for last checkpoint
@@ -158,7 +158,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             // Complete missing information in last checkpoint of segment
             {
                 var lastCheckpoint = checkpoints[lastIndex];
-                lastCheckpoint.curveTimeEnd = curveMaxTime;
+                lastCheckpoint.CurveTimeEnd = curveMaxTime;
                 
                 var animMtx = animationTRS.EvaluateMatrix(curveMaxTime);
                 var mtx = baseMtx * animMtx;
@@ -166,16 +166,18 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 var origin = mtx.GetPosition();
                 var rotation = mtx.rotation;
                 var normal = rotation * backward;
-                lastCheckpoint.planeEnd.origin = origin;
-                lastCheckpoint.planeEnd.normal = normal;
-                lastCheckpoint.planeEnd.ComputeDotProduct();
+
+                var endPlane = new GameCube.GFZ.Stage.Plane() { origin = origin, normal = normal };
+                endPlane.ComputeDotProduct();
+
+                lastCheckpoint.PlaneEnd = endPlane;
             }
 
             // Set segment in/out connections
             var connectToTrackIn = start != null;
             var connectToTrackOut = end != null;
-            checkpoints[0].connectToTrackIn = connectToTrackIn;
-            checkpoints[lastIndex].connectToTrackOut = connectToTrackOut;
+            checkpoints[0].ConnectToTrackIn = connectToTrackIn;
+            checkpoints[lastIndex].ConnectToTrackOut = connectToTrackOut;
 
             // That's all!
             return checkpoints;
@@ -185,18 +187,18 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         {
             var trackSegment = new TrackSegment();
 
-            trackSegment.localPosition = transform.localPosition;
-            trackSegment.localRotation = transform.localRotation.eulerAngles;
-            trackSegment.localScale = transform.localScale;
+            trackSegment.LocalPosition = transform.localPosition;
+            trackSegment.LocalRotation = transform.localRotation.eulerAngles;
+            trackSegment.LocalScale = transform.localScale;
 
             // TODO: currently hardcoded
-            trackSegment.segmentType = TrackSegmentType.IsTransformLeaf;
+            trackSegment.SegmentType = TrackSegmentType.IsTransformLeaf;
 
             //
-            trackSegment.unk_0x3B = unk0x3B;
+            trackSegment.Unk_0x3B = unk0x3B;
 
             // Get animation data
-            trackSegment.trackCurves = animationCurveTRS.ToTrackSegment();
+            trackSegment.AnimationCurveTRS = animationCurveTRS.ToTrackSegment();
 
             //
             return trackSegment;

@@ -466,8 +466,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             var mesh = new Mesh();
             mesh.name = sceneObject.Name;
 
-            var trisSubmesh = CreateTriSubmeshForMesh(mesh, colliderGeo.tris, createBackfaces, usePrecomputes);
-            var quadsSubmesh = CreateQuadSubmeshForMesh(mesh, colliderGeo.quads, createBackfaces, usePrecomputes);
+            var trisSubmesh = CreateTriSubmeshForMesh(mesh, colliderGeo.Tris, createBackfaces, usePrecomputes);
+            var quadsSubmesh = CreateQuadSubmeshForMesh(mesh, colliderGeo.Quads, createBackfaces, usePrecomputes);
             var submeshes = new SubMeshDescriptor[]
             {
                 trisSubmesh,

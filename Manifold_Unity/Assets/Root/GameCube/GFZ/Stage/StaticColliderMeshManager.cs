@@ -67,7 +67,7 @@ namespace GameCube.GFZ.Stage
         public ColliderQuad[] colliderQuads = new ColliderQuad[0];
         public StaticColliderMeshGrid[] triMeshGrids;
         public StaticColliderMeshGrid[] quadMeshGrids;
-        public BoundingSphere boundingSphere = new BoundingSphere();
+        private BoundingSphere boundingSphere = new BoundingSphere();
         public UnknownCollider[] unknownColliders;
         public SceneObjectStatic[] staticSceneObjects; // Some of these used to be name-parsed colliders! (eg: *_CLASS2, etc)
 
@@ -110,6 +110,9 @@ namespace GameCube.GFZ.Stage
                 }
             }
         }
+
+        public BoundingSphere BoundingSphere { get => boundingSphere; set => boundingSphere = value; }
+
 
         public void ComputeMeshGridXZ()
         {
@@ -192,7 +195,7 @@ namespace GameCube.GFZ.Stage
                 // 2022-01-24: disabled for testin export
                 //Assert.IsTrue(staticSceneObjectsPtr.Length != 0);
                 //Assert.IsTrue(staticSceneObjectsPtr.IsNotNullPointer);
-                Assert.IsTrue(boundingSpherePtr.IsNotNull);
+                Assert.IsTrue(boundingSpherePtr.IsNotNull, $"{boundingSpherePtr}");
                 //DebugConsole.Log($"idx16: {unkBounds2DPtr.HexAddress}");
 
                 // Assert that all of this other junk is empty

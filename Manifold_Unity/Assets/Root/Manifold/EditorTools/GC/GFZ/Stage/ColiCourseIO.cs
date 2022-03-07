@@ -309,7 +309,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         {
             // TEMP from previous function
             var openFolderAfterExport = true;
-            var allowOverwritingFiles = true;
+            //var allowOverwritingFiles = true;
             var exportTo = "W:/Windows Directories/Desktop/test";
             /////////////////////////////////////////////////////
 
@@ -433,7 +433,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 log.WriteLine();
 
                 //
-                log.WriteLine($"{nameof(TrackSegment)}.{nameof(TrackSegment.trackCurves)}");
+                log.WriteLine($"{nameof(TrackSegment)}.{nameof(TrackSegment.AnimationCurveTRS)}");
                 string[] labelSRP = new string[] { "Sca", "Rot", "Pos" }; // scale, rotation, position
                 string[] labelXYZ = new string[] { "x", "y", "z" };
                 for (int segmentIndex = 0; segmentIndex < coliScene.allTrackSegments.Length; segmentIndex++)
@@ -442,9 +442,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                     var segmentIndexFormat = segmentIndex.ArrayFormat(coliScene.allTrackSegments);
                     log.WriteLine($"[{segmentIndex}]\t");
 
-                    for (int animIndex = 0; animIndex < trackSegment.trackCurves.animationCurves.Length; animIndex++)
+                    for (int animIndex = 0; animIndex < trackSegment.AnimationCurveTRS.AnimationCurves.Length; animIndex++)
                     {
-                        var animCurve = trackSegment.trackCurves.animationCurves[animIndex];
+                        var animCurve = trackSegment.AnimationCurveTRS.AnimationCurves[animIndex];
                         // NOTE: delete. At most 4, so no 2 digit indexes
                         //var animCurveFormat = segmentIndex.ArrayFormat(coliScene.trackNodes);
                         var currLabelSRP = labelSRP[animIndex / 3];
@@ -460,7 +460,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 log.WriteLine($"{nameof(TrackSegment)}.{nameof(TrackCorner)}");
                 for (int i = 0; i < coliScene.allTrackSegments.Length; i++)
                 {
-                    var cornerTopology = coliScene.allTrackSegments[i].trackCorner;
+                    var cornerTopology = coliScene.allTrackSegments[i].TrackCorner;
                     var iFormat = i.ArrayFormat(coliScene.trackNodes);
                     log.Write($"[{iFormat}]\t");
                     if (cornerTopology != null)
@@ -494,9 +494,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                     var iFormat = i.ArrayFormat(coliScene.dynamicSceneObjects);
                     log.WriteLine($"[{iFormat}]\t");
 
-                    for (int j = 0; j < animClip.curves.Length; j++)
+                    for (int j = 0; j < animClip.Curves.Length; j++)
                     {
-                        var animCurvesPlus = animClip.curves[j];
+                        var animCurvesPlus = animClip.Curves[j];
                         //log.Write(PrintIndex(i, coliScene.sceneObjects));
                         log.WriteLine(PrintData(functionIdx, animCurvesPlus));
                     }
@@ -632,7 +632,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
             // This block writes out the contents of each TrackSegments AnimationCurves
             log.WriteLine("TRACK SEGMENT ANIMATION CURVES");
-            log.WriteLine($"{nameof(TrackSegment)}.{nameof(TrackSegment.trackCurves)}");
+            log.WriteLine($"{nameof(TrackSegment)}.{nameof(TrackSegment.AnimationCurveTRS)}");
             string[] labelSRP = new string[] { "Sca", "Rot", "Pos" };
             string[] labelXYZ = new string[] { "x", "y", "z" };
             for (int segmentIndex = 0; segmentIndex < coliScene.allTrackSegments.Length; segmentIndex++)
@@ -640,13 +640,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 var trackSegment = coliScene.allTrackSegments[segmentIndex];
                 log.WriteLine($"{nameof(TrackSegment)}[{segmentIndex}]\t{trackSegment}");
 
-                for (int animIndex = 0; animIndex < trackSegment.trackCurves.animationCurves.Length; animIndex++)
+                for (int animIndex = 0; animIndex < trackSegment.AnimationCurveTRS.AnimationCurves.Length; animIndex++)
                 {
-                    var animCurve = trackSegment.trackCurves.animationCurves[animIndex];
+                    var animCurve = trackSegment.AnimationCurveTRS.AnimationCurves[animIndex];
                     var currLabelSRP = labelSRP[animIndex / 3];
                     var currLabelXYZ = labelXYZ[animIndex % 3];
                     log.WriteLine($"{currLabelSRP}.{currLabelXYZ} [{animIndex}] ");
-                    log.WriteArrayToString(animCurve.keyableAttributes);
+                    log.WriteArrayToString(animCurve.KeyableAttributes);
                     //log.WriteLine(HashSerializables.Hash(md5, animCurve));
                     log.WriteLine();
                 }
@@ -657,9 +657,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             {
                 var segment = coliScene.allTrackSegments[i];
                 log.WriteLine($"{nameof(TrackSegment)} Transform Coords [{i}]");
-                log.WriteLine($"\tPosition: {segment.localPosition}");
-                log.WriteLine($"\tRotation: {segment.localRotation}");
-                log.WriteLine($"\tScale...: {segment.localScale}");
+                log.WriteLine($"\tPosition: {segment.LocalPosition}");
+                log.WriteLine($"\tRotation: {segment.LocalRotation}");
+                log.WriteLine($"\tScale...: {segment.LocalScale}");
             }
             log.WriteLine();
             //
@@ -682,7 +682,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             log.WriteLine();
             log.WriteLine(nameof(GameCube.GFZ.BoundingSphere));
             log.WriteLine("unk float: " + coliScene.staticColliderMeshManager.unk_float);
-            log.WriteAddress(coliScene.staticColliderMeshManager.boundingSphere);
+            log.WriteAddress(coliScene.staticColliderMeshManager.BoundingSphere);
             log.WriteLine(coliScene.staticColliderMeshManager.unknownCollidersPtr);
             log.WriteLine(coliScene.staticColliderMeshManager.staticSceneObjectsPtr);
             log.WriteLine();
@@ -748,7 +748,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
                     log.WriteAddress(sceneObject.animationClip);
                     if (sceneObject.animationClip != null)
-                        log.WriteAddress(sceneObject.animationClip.curves);
+                        log.WriteAddress(sceneObject.animationClip.Curves);
                     // TODO: other sub classes?
 
                     log.WriteAddress(sceneObject.textureScroll);

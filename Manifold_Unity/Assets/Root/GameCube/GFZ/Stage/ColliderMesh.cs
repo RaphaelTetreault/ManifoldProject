@@ -9,67 +9,78 @@ namespace GameCube.GFZ.Stage
     /// Represent a "dynamic" collider object. Static collision is stored in a
     /// separate table, while colliders attached to object (which may animate)
     /// is stored in this structure.
-    /// 
-    /// Example: rotary collider in Port Town [Long Pipe]
     /// </summary>
+    /// <remarks>
+    /// Example: rotary collider in Port Town [Long Pipe]
+    /// </remarks>
     [Serializable]
     public class ColliderMesh :
         IBinaryAddressable,
         IBinarySerializable,
-        IHasReference
+        IHasReference,
+        ITextPrintable
     {
+        // CONSTANTS
+        public const int kTriIndex = 0;
+        public const int kQuadIndex = 1;
+        public const int kTotalIndices = 2;
+
         // FIELDS
-        public uint unk_0x00;
-        public uint unk_0x04;
-        public uint unk_0x08;
-        public uint unk_0x0C;
-        public uint unk_0x10;
-        // this is a ArrayPointer2D, consider refactor
-        public int triCount;
-        public int quadCount;
-        public Pointer trisPtr;
-        public Pointer quadsPtr;
+        private uint unk_0x00;
+        private uint unk_0x04;
+        private uint unk_0x08;
+        private uint unk_0x0C;
+        private uint unk_0x10;
+        private ArrayPointer2D collisionArrayPtr2D;
         // REFERENCE FIELDS
-        public ColliderTriangle[] tris;// = new ColliderTriangle[0];
-        public ColliderQuad[] quads;// = new ColliderQuad[0];
+        private ColliderTriangle[] tris;
+        private ColliderQuad[] quads;
 
 
         // PROPERTIES
         public AddressRange AddressRange { get; set; }
-        public ArrayPointer TrisArrayPtr => new ArrayPointer(triCount, trisPtr);
-        public ArrayPointer QuadsArrayPtr => new ArrayPointer(quadCount, quadsPtr);
+        public ArrayPointer2D CollisionArrayPtr2D { get => collisionArrayPtr2D; set => collisionArrayPtr2D = value; }
+        public ColliderTriangle[] Tris { get => tris; set => tris = value; }
+        public ArrayPointer TrisPtr { get => collisionArrayPtr2D[kTriIndex]; set => collisionArrayPtr2D[kTriIndex] = value; }
+        public ColliderQuad[] Quads { get => quads; set => quads = value; }
+        public ArrayPointer QuadsPtr { get => collisionArrayPtr2D[kQuadIndex]; set => collisionArrayPtr2D[kQuadIndex] = value; }
+        public uint Unk_0x00 { get => unk_0x00; set => unk_0x00 = value; }
+        public uint Unk_0x04 { get => unk_0x04; set => unk_0x04 = value; }
+        public uint Unk_0x08 { get => unk_0x08; set => unk_0x08 = value; }
+        public uint Unk_0x0C { get => unk_0x0C; set => unk_0x0C = value; }
+        public uint Unk_0x10 { get => unk_0x10; set => unk_0x10 = value; }
 
 
         // METHODS
         public void ValidateReferences()
         {
-            Assert.ReferencePointer(tris, TrisArrayPtr);
-            Assert.ReferencePointer(quads, QuadsArrayPtr);
+            Assert.ReferencePointer(Tris, TrisPtr);
+            Assert.ReferencePointer(Quads, QuadsPtr);
 
             // SANITY CHECK
             // Make sure counts line up
-            if (tris != null)
+            if (Tris != null)
             {
-                if (tris.Length > 0)
+                if (Tris.Length > 0)
                 {
-                    Assert.IsTrue(triCount == tris.Length);
-                    Assert.IsTrue(trisPtr.IsNotNull);
+                    Assert.IsTrue(TrisPtr.Length == Tris.Length);
+                    Assert.IsTrue(TrisPtr.IsNotNull);
 
-                    foreach (var tri in tris)
+                    foreach (var tri in Tris)
                     {
                         Assert.IsTrue(tri != null);
                     }
                 }
             }
 
-            if (quads != null)
+            if (Quads != null)
             {
-                if (quads.Length > 0)
+                if (Quads.Length > 0)
                 {
-                    Assert.IsTrue(quadCount == quads.Length);
-                    Assert.IsTrue(quadsPtr.IsNotNull);
+                    Assert.IsTrue(QuadsPtr.Length == Quads.Length);
+                    Assert.IsTrue(QuadsPtr.IsNotNull);
 
-                    foreach (var quad in quads)
+                    foreach (var quad in Quads)
                     {
                         Assert.IsTrue(quad != null);
                     }
@@ -79,6 +90,10 @@ namespace GameCube.GFZ.Stage
 
         public void Deserialize(BinaryReader reader)
         {
+            {
+                // Initialize ArrayPointer2D with constant size, manually deserialized later
+                collisionArrayPtr2D = new ArrayPointer2D(kTotalIndices);
+            }
             this.RecordStartAddress(reader);
             {
                 reader.ReadX(ref unk_0x00);
@@ -86,23 +101,20 @@ namespace GameCube.GFZ.Stage
                 reader.ReadX(ref unk_0x08);
                 reader.ReadX(ref unk_0x0C);
                 reader.ReadX(ref unk_0x10);
-                reader.ReadX(ref triCount);
-                reader.ReadX(ref quadCount);
-                reader.ReadX(ref trisPtr);
-                reader.ReadX(ref quadsPtr);
+                collisionArrayPtr2D.Deserialize(reader);
             }
             this.RecordEndAddress(reader);
             {
-                if (trisPtr.IsNotNull)
+                if (TrisPtr.IsNotNull)
                 {
-                    reader.JumpToAddress(trisPtr);
-                    reader.ReadX(ref tris, triCount);
+                    reader.JumpToAddress(TrisPtr);
+                    reader.ReadX(ref tris, TrisPtr.Length);
                 }
 
-                if (quadsPtr.IsNotNull)
+                if (QuadsPtr.IsNotNull)
                 {
-                    reader.JumpToAddress(quadsPtr);
-                    reader.ReadX(ref quads, quadCount);
+                    reader.JumpToAddress(QuadsPtr);
+                    reader.ReadX(ref quads, QuadsPtr.Length);
                 }
             }
             this.SetReaderToEndAddress(reader);
@@ -111,10 +123,9 @@ namespace GameCube.GFZ.Stage
         public void Serialize(BinaryWriter writer)
         {
             {
-                triCount = tris == null ? 0 : tris.Length;
-                quadCount = quads == null ? 0 : quads.Length;
-                trisPtr = tris.GetBasePointer();
-                quadsPtr = quads.GetBasePointer();
+                //
+                TrisPtr = tris.GetArrayPointer();
+                QuadsPtr = quads.GetArrayPointer();
             }
             this.RecordStartAddress(writer);
             {
@@ -123,14 +134,36 @@ namespace GameCube.GFZ.Stage
                 writer.WriteX(unk_0x08);
                 writer.WriteX(unk_0x0C);
                 writer.WriteX(unk_0x10);
-                writer.WriteX(triCount);
-                writer.WriteX(quadCount);
-                writer.WriteX(trisPtr);
-                writer.WriteX(quadsPtr);
+                writer.WriteX(collisionArrayPtr2D);
             }
             this.RecordEndAddress(writer);
 
         }
 
+        public override string ToString() => PrintSingleLine();
+
+        public string PrintSingleLine()
+        {
+            return $"{nameof(ColliderMesh)}({nameof(tris)}: {tris.Length}, {nameof(quads)}: {quads.Length})";
+        }
+
+        public string PrintMultiLine(int indentLevel = 0, string indent = "\t")
+        {
+            var builder = new System.Text.StringBuilder();
+
+            builder.AppendLineIndented(indent, indentLevel, nameof(Checkpoint));
+            indentLevel++;
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(unk_0x00)}: {unk_0x00}");
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(unk_0x04)}: {unk_0x04}");
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(unk_0x08)}: {unk_0x08}");
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(unk_0x0C)}: {unk_0x0C}");
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(unk_0x10)}: {unk_0x10}");
+            //builder.AppendLineIndented(indent, indentLevel, $"{nameof(TrisPtr)}: {TrisPtr}");
+            //builder.AppendLineIndented(indent, indentLevel, $"{nameof(QuadsPtr)}: {QuadsPtr}");
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(Tris)}: {Tris}");
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(Quads)}: {Quads}");
+
+            return builder.ToString();
+        }
     }
 }

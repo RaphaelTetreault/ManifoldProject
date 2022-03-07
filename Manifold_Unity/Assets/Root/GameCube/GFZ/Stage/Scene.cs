@@ -346,17 +346,17 @@ namespace GameCube.GFZ.Stage
                     
                     Due to how the scene data is configured, there are a few data types which share
                     references. This is smart and efficient for memory, but it means simple/traditional
-                    deserialization fails. The way most all data types are deserializedd in this project
-                    is in linear fashion. X1 deserializes itself. If X1 references Y, it deserializes Y.
+                    deserialization fails. The way most all data types are deserialized in this project
+                    is done in linear fashion. X1 deserializes itself. If X1 references Y, it deserializes Y.
                     The issue is that if we have an X2 and it also references Y, what happens is that both
                     X1 and X2 create their own instance of Y. The issue surfaces once the data goes to
-                    serialize and X1 and X2 seriaslize their own version of the data.
+                    serialize and X1 and X2 serialize their own version of the data.
 
                     The solution here is to let X1 and X2 deserialize separate instances of Y. We can then
                     use the pointer address of those references and create a dictionary indexed by the pointer
                     address of the data. If we come across another structure that has the same pointer as
                     a previous structure, we can assign the same reference to it. This relinks shared data
-                    types in memory.
+                    types in memory here in C# land.
                 /*/
 
                 // Keep a dictionary of each shared reference type
@@ -400,9 +400,7 @@ namespace GameCube.GFZ.Stage
                     foreach (var so in templateSceneObject.lods)
                     {
                         GetSerializable(reader, so.lodNamePtr, ref so.name, sceneObjectNamesDict);
-
                     }
-                    //GetSerializable(reader, templateSceneObject.PrimarySceneObject.namePtr, ref templateSceneObject.PrimarySceneObject.name, sceneObjectNamesDict);
                 }
                 // Save, order by name (alphabetical)
                 sceneObjectNames = sceneObjectNamesDict.Values.ToArray();
@@ -412,8 +410,8 @@ namespace GameCube.GFZ.Stage
             // DESERIALIZE TRACK SEGMENTS
             {
                 /*/
-                Unlike any other data type in the scene structure, TrackSegments are very much
-                shared across it's data. A single track can have about a dozen track segments
+                Unlike any other data type in the scene structure, TrackSegments are referenced
+                by many other instances. A single track can have about a dozen track segments
                 total, with perhaps a single root segment, referenced by hundreds TrackNodes.
                 If we were to let each TrackNode deserialize it's own recursive tree, it would
                 take quite a long time for redundant data.
@@ -424,30 +422,23 @@ namespace GameCube.GFZ.Stage
                 deserialize them only once, sharing the C# reference afterwards.
                 /*/
 
-                // Read all ROOT track segments
+                // ROOT TRACK SEGMENTS
                 // These root segments are the ones pointed at by all nodes.
                 var rootTrackSegmentDict = new Dictionary<Pointer, TrackSegment>();
                 foreach (var trackNode in trackNodes)
-                {
                     GetSerializable(reader, trackNode.segmentPtr, ref trackNode.segment, rootTrackSegmentDict);
-                }
                 rootTrackSegments = rootTrackSegmentDict.Values.ToArray();
 
                 // 2021/09/22: test tagging for serialization order
                 foreach (var rootTrackSegment in rootTrackSegments)
-                    rootTrackSegment.isRoot = true;
+                    rootTrackSegment.IsRoot = true;
 
-                // Read ALL track segments
-                // We want to have all segments. We must recursively follow the hierarchy tree.
-                var allTrackSegments = new Dictionary<Pointer, TrackSegment>();
-                // Start by iterating over each root node in graph
+                // ALL TRACK SEGMENTS
+                // Use helper function to collect all TrackSegments
+                var allTrackSegmentsList = new List<TrackSegment>();
                 foreach (var rootSegment in rootTrackSegments)
-                {
-                    // Read out children of root, then continue deserializing children recursively
-                    // Deserialization method respects ArayPointer order in list.
-                    ReadTrackSegmentsRecursive(reader, allTrackSegments, rootSegment);
-                }
-                this.allTrackSegments = allTrackSegments.Values.ToArray();
+                    allTrackSegmentsList.AddRange(rootSegment.GetGraphSerializableOrder());
+                allTrackSegments = allTrackSegmentsList.ToArray();
             }
 
             BinaryIoUtility.PopEndianness();
@@ -504,6 +495,7 @@ namespace GameCube.GFZ.Stage
             // TRACK DATA
             {
                 // TODO: consider re-serializing min height
+
                 // Print track length
                 writer.InlineDesc(serializeVerbose, 0x90 + offset, trackLength);
                 writer.CommentLineWide("Length:", trackLength.value.ToString("0.00"), serializeVerbose);
@@ -520,59 +512,26 @@ namespace GameCube.GFZ.Stage
                     // TRACK CHECKPOINTS
                     {
                         // NOTICE:
-                        // Ensure sequential order in ROM for array pointer deserialization
-
-                        var all = new List<Checkpoint>();
+                        // All Checkpoints for each TrackNode must be sequential (branches 0-4).
+                        // Sequential order in ROM is required for array pointer deserialization.
+                        var typeTemp = new Checkpoint[0]; // TODO: remove need for this
+                        writer.InlineDesc(serializeVerbose, trackNodesPtr, typeTemp);
                         foreach (var trackNode in trackNodes)
-                            foreach (var trackCheckpoint in trackNode.checkpoints)
-                                all.Add(trackCheckpoint);
-                        var array = all.ToArray();
-
-                        writer.InlineDesc(serializeVerbose, trackNodesPtr, array);
-                        writer.WriteX(array);
+                            writer.WriteX(trackNode.checkpoints);
                     }
 
                     // TRACK SEGMENTS
                     {
                         writer.InlineDesc(serializeVerbose, trackNodesPtr, allTrackSegments);
-                        //writer.WriteX(allTrackSegments, false);
-
-                        TrackSegment root = null;
-                        for (int i = 0; i < allTrackSegments.Length; i++)
-                        {
-                            var trackSegment = allTrackSegments[i];
-                            if (trackSegment.isRoot)
-                            {
-                                // If we are holding onto a reference, write
-                                if (root != null)
-                                    writer.WriteX(root);
-
-                                // record next root
-                                root = trackSegment;
-                                continue;
-                            }
-                            else
-                            {
-                                writer.WriteX(trackSegment);
-                            }
-                        }
-                        if (root != null)
-                        {
-                            writer.WriteX(root);
-                        }
-
-
-                        // Manually refresh pointers due to recursive format.
-                        foreach (var trackSegment in allTrackSegments)
-                            trackSegment.SetChildPointers(allTrackSegments);
+                        writer.WriteX(allTrackSegments);
                     }
 
                     // TRACK ANIMATION CURVES
                     {
                         // Construct list of all track curves (sets of 9 ptrs)
-                        var listTrackCurves = new List<TrackCurves>();
+                        var listTrackCurves = new List<AnimationCurveTRS>();
                         foreach (var trackSegment in allTrackSegments)
-                            listTrackCurves.Add(trackSegment.trackCurves);
+                            listTrackCurves.Add(trackSegment.AnimationCurveTRS);
                         var allTrackCurves = listTrackCurves.ToArray();
                         // Write anim curve ptrs
                         writer.InlineDesc(serializeVerbose, allTrackSegments.GetBasePointer(), allTrackCurves);
@@ -581,7 +540,7 @@ namespace GameCube.GFZ.Stage
                         // Construct list of all /animation curves/ (breakout from track structure)
                         var listAnimationCurves = new List<AnimationCurve>();
                         foreach (var trackAnimationCurve in allTrackCurves)
-                            foreach (var animationCurve in trackAnimationCurve.animationCurves)
+                            foreach (var animationCurve in trackAnimationCurve.AnimationCurves)
                                 listAnimationCurves.Add(animationCurve);
                         var allAnimationCurves = listAnimationCurves.ToArray();
                         //
@@ -593,7 +552,7 @@ namespace GameCube.GFZ.Stage
                     writer.InlineDesc(serializeVerbose, new TrackCorner());
                     foreach (var trackSegment in allTrackSegments)
                     {
-                        var corner = trackSegment.trackCorner;
+                        var corner = trackSegment.TrackCorner;
                         if (corner != null)
                         {
                             writer.WriteX(corner);
@@ -627,8 +586,8 @@ namespace GameCube.GFZ.Stage
                 var scmPtr = staticColliderMeshManager.GetPointer();
 
                 // Write collider bounds (applies to to non-tri/quad collision, too)
-                writer.InlineDesc(serializeVerbose, staticColliderMeshManager.boundingSphere);
-                writer.WriteX(staticColliderMeshManager.boundingSphere);
+                writer.InlineDesc(serializeVerbose, staticColliderMeshManager.BoundingSphere);
+                writer.WriteX(staticColliderMeshManager.BoundingSphere);
 
                 // COLLIDER TRIS
                 {
@@ -719,11 +678,11 @@ namespace GameCube.GFZ.Stage
                 {
                     colliderGeometries.Add(colliderGeo);
 
-                    if (colliderGeo.triCount > 0)
-                        colliderGeoTris.AddRange(colliderGeo.tris);
+                    if (colliderGeo.Tris.Length > 0)
+                        colliderGeoTris.AddRange(colliderGeo.Tris);
 
-                    if (colliderGeo.quadCount > 0)
-                        colliderGeoQuads.AddRange(colliderGeo.quads);
+                    if (colliderGeo.Quads.Length > 0)
+                        colliderGeoQuads.AddRange(colliderGeo.Quads);
                 }
             }
             // Collider Geometry
@@ -759,7 +718,7 @@ namespace GameCube.GFZ.Stage
                 {
                     animationClips.Add(dynamicSceneObject.animationClip);
                     // Serialize individual animation clip curves
-                    foreach (var animationClipCurve in dynamicSceneObject.animationClip.curves)
+                    foreach (var animationClipCurve in dynamicSceneObject.animationClip.Curves)
                         animationClipCurves.Add(animationClipCurve);
                 }
 
@@ -799,8 +758,8 @@ namespace GameCube.GFZ.Stage
             // 2022-01-18: add serilization for animation data!
             writer.InlineComment(serializeVerbose, nameof(AnimationClip), "AnimClipCurve", $"{nameof(AnimationCurve)}[]");
             foreach (var animationClipCurve in animationClipCurves)
-                if (animationClipCurve.animationCurve != null)
-                    writer.WriteX(animationClipCurve.animationCurve);
+                if (animationClipCurve.AnimationCurve != null)
+                    writer.WriteX(animationClipCurve.AnimationCurve);
 
             // Texture metadata
             writer.InlineDesc(serializeVerbose, textureScrolls.ToArray());
@@ -829,7 +788,7 @@ namespace GameCube.GFZ.Stage
 
             // TRIGGERS
             {
-                // ARCADE CHECKPOINT TRIGGERS
+                // TIME EXTENSION TRIGGERS
                 if (!timeExtensionTriggers.IsNullOrEmpty())
                     writer.InlineDesc(serializeVerbose, 0xB0 + offset, timeExtensionTriggers);
                 writer.WriteX(timeExtensionTriggers);
@@ -916,7 +875,7 @@ namespace GameCube.GFZ.Stage
                 hasReferences.AddRange(trackNodes);
                 hasReferences.AddRange(allTrackSegments);
                 foreach (var trackSegment in allTrackSegments)
-                    hasReferences.Add(trackSegment.trackCurves);
+                    hasReferences.Add(trackSegment.AnimationCurveTRS);
                 // The checkpoint table
                 hasReferences.Add(trackCheckpointGrid);
 
@@ -1040,58 +999,6 @@ namespace GameCube.GFZ.Stage
             }
         }
 
-
-        public void ReadTrackSegmentsRecursive(BinaryReader reader, Dictionary<Pointer, TrackSegment> allTrackSegments, TrackSegment parent, bool isFirstCall = true)
-        {
-            // Add parent node to master list
-            var parentPtr = parent.GetPointer();
-            if (!allTrackSegments.ContainsKey(parentPtr))
-                allTrackSegments.Add(parentPtr, parent);
-
-            // Deserialize children (if any)
-            var children = parent.GetChildren(reader);
-            var requiresDeserialization = new List<TrackSegment>();
-
-            // Get the index of where these children WILL be in list
-            var childIndexes = new int[children.Length];
-            for (int i = 0; i < childIndexes.Length; i++)
-            {
-                var child = children[i];
-                var childPtr = child.GetPointer();
-
-                var listContainsChild = allTrackSegments.ContainsKey(childPtr);
-                if (listContainsChild)
-                {
-                    // Child is in master list, get index
-                    for (int j = 0; j < allTrackSegments.Count; j++)
-                    {
-                        if (allTrackSegments[j].GetPointer() == childPtr)
-                        {
-                            childIndexes[i] = j;
-                            break;
-                        }
-                    }
-                }
-                else
-                {
-                    // Add child to master list
-                    // child index is COUNT (oob), add to list (is now in array bounds)
-                    childIndexes[i] = allTrackSegments.Count;
-                    allTrackSegments.Add(childPtr, child);
-                    requiresDeserialization.Add(child);
-                }
-            }
-
-            // Set indexes of children to 
-            parent.childIndexes = childIndexes;
-
-            // Read children recursively (if any).
-            foreach (var child in requiresDeserialization)
-            {
-                ReadTrackSegmentsRecursive(reader, allTrackSegments, child, false);
-            }
-        }
-
         /// <summary>
         /// Returns an array of all IBinaryAddressables (possibly with nulls) in this ColiScene.
         /// Useful to check if values are written to disk if addresses are set to consts beforehand.
@@ -1106,13 +1013,13 @@ namespace GameCube.GFZ.Stage
                 list.Add(trackNode);
                 list.AddRange(trackNode.checkpoints);
                 list.Add(trackNode.segment);
-                list.Add(trackNode.segment.trackCurves);
-                list.AddRange(trackNode.segment.trackCurves.animationCurves);
-                foreach (var anim in trackNode.segment.trackCurves.animationCurves) // null?
-                    list.AddRange(anim.keyableAttributes);
-                list.Add(trackNode.segment.trackCorner);
-                if (trackNode.segment.trackCorner != null)
-                    list.Add(trackNode.segment.trackCorner.matrix3x4);
+                list.Add(trackNode.segment.AnimationCurveTRS);
+                list.AddRange(trackNode.segment.AnimationCurveTRS.AnimationCurves);
+                foreach (var anim in trackNode.segment.AnimationCurveTRS.AnimationCurves) // null?
+                    list.AddRange(anim.KeyableAttributes);
+                list.Add(trackNode.segment.TrackCorner);
+                if (trackNode.segment.TrackCorner != null)
+                    list.Add(trackNode.segment.TrackCorner.matrix3x4);
             }
 
             list.AddRange(embeddedPropertyAreas);
@@ -1132,7 +1039,7 @@ namespace GameCube.GFZ.Stage
                 list.AddRange(matrix.indexLists);
             }
             list.Add(staticColliderMeshManager.meshGridXZ);
-            list.Add(staticColliderMeshManager.boundingSphere);
+            //list.Add(staticColliderMeshManager.BoundingSphere);
 
             list.Add(trackMinHeight);
 
@@ -1142,12 +1049,12 @@ namespace GameCube.GFZ.Stage
                 list.Add(dynamicSceneObject.animationClip);
                 if (dynamicSceneObject.animationClip != null)
                 {
-                    foreach (var animClipCurve in dynamicSceneObject.animationClip.curves)
+                    foreach (var animClipCurve in dynamicSceneObject.animationClip.Curves)
                     {
                         list.Add(animClipCurve);
-                        list.Add(animClipCurve.animationCurve);
-                        if (animClipCurve.animationCurve != null)
-                            list.AddRange(animClipCurve.animationCurve.keyableAttributes);
+                        list.Add(animClipCurve.AnimationCurve);
+                        if (animClipCurve.AnimationCurve != null)
+                            list.AddRange(animClipCurve.AnimationCurve.KeyableAttributes);
                     }
                 }
                 list.Add(dynamicSceneObject.textureScroll);
@@ -1177,7 +1084,7 @@ namespace GameCube.GFZ.Stage
                 foreach (var curve in fogCurves.animationCurves)
                 {
                     list.Add(curve);
-                    list.AddRange(curve.keyableAttributes);
+                    list.AddRange(curve.KeyableAttributes);
                 }
             }
 
@@ -1194,7 +1101,7 @@ namespace GameCube.GFZ.Stage
                 if (trigger.storyObjectPath != null)
                 {
                     list.Add(trigger.storyObjectPath.animationCurve);
-                    list.AddRange(trigger.storyObjectPath.animationCurve.keyableAttributes);
+                    list.AddRange(trigger.storyObjectPath.animationCurve.KeyableAttributes);
                 }
             }
 

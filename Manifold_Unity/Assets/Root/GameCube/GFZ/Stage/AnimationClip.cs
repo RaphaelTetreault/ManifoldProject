@@ -25,30 +25,34 @@ namespace GameCube.GFZ.Stage
         /// Number of animation curves. Order: scale.xyz, rotation.xyz, position.xyz, unknown, texture alpha
         /// </summary>
         public const int kAnimationCurvesCount = 11;
-        const int kZeroes0x08 = 0x10;
+        private const int kZeroes0x08 = 0x10;
 
 
         // FIELDS
-        public float unk_0x00;
-        public float unk_0x04;
-        public byte[] zeroes_0x08 = new byte[kZeroes0x08];
-        public EnumFlags32 unk_layer_0x18;
-        public AnimationClipCurve[] curves; // field, NOT reference field
+        private float unk_0x00;
+        private float unk_0x04;
+        private byte[] zeroes_0x08 = new byte[kZeroes0x08];
+        private EnumFlags32 unk_layer_0x18;
+        private AnimationClipCurve[] curves; // field, NOT reference field
 
 
         // PROPERTIES
         public AddressRange AddressRange { get; set; }
-        public AnimationClipCurve Alpha => curves[10];
-        public AnimationClipCurve PositionX => curves[6];
-        public AnimationClipCurve PositionY => curves[7];
-        public AnimationClipCurve PositionZ => curves[8];
-        public AnimationClipCurve RotationX => curves[3];
-        public AnimationClipCurve RotationY => curves[4];
-        public AnimationClipCurve RotationZ => curves[5];
-        public AnimationClipCurve ScaleX => curves[0];
-        public AnimationClipCurve ScaleY => curves[1];
-        public AnimationClipCurve ScaleZ => curves[2];
-        public AnimationClipCurve Unused => curves[9];
+        public AnimationClipCurve Alpha { get => curves[10]; set => curves[10] = value; }
+        public AnimationClipCurve[] Curves { get => curves; set => curves = value; }
+        public AnimationClipCurve PositionX { get => curves[6]; set => curves[6] = value; }
+        public AnimationClipCurve PositionY { get => curves[7]; set => curves[7] = value; }
+        public AnimationClipCurve PositionZ { get => curves[8]; set => curves[8] = value; }
+        public AnimationClipCurve RotationX { get => curves[3]; set => curves[3] = value; }
+        public AnimationClipCurve RotationY { get => curves[4]; set => curves[4] = value; }
+        public AnimationClipCurve RotationZ { get => curves[5]; set => curves[5] = value; }
+        public AnimationClipCurve ScaleX { get => curves[0]; set => curves[0] = value; }
+        public AnimationClipCurve ScaleY { get => curves[1]; set => curves[1] = value; }
+        public AnimationClipCurve ScaleZ { get => curves[2]; set => curves[2] = value; }
+        public AnimationClipCurve Unused { get => curves[9]; set => curves[9] = value; }
+        public float Unk_0x04 { get => unk_0x04; set => unk_0x04 = value; }
+        public float Unk_0x00 { get => unk_0x00; set => unk_0x00 = value; }
+        public EnumFlags32 Unk_layer_0x18 { get => unk_layer_0x18; set => unk_layer_0x18 = value; }
 
 
 
@@ -97,7 +101,7 @@ namespace GameCube.GFZ.Stage
             foreach (var curve in curves)
             {
                 Assert.IsTrue(curve != null);
-                Assert.ReferencePointer(curve.animationCurve, curve.animationCurvePtrs);
+                Assert.ReferencePointer(curve.AnimationCurve, curve.AnimationCurvePtr);
             }
         }
 
@@ -110,9 +114,9 @@ namespace GameCube.GFZ.Stage
         {
             return
                 $"{nameof(AnimationClip)}(" +
-                $"{nameof(unk_0x00)}: {unk_0x00}, " +
-                $"{nameof(unk_0x04)}: {unk_0x04}, " +
-                $"{nameof(unk_layer_0x18)}: {unk_layer_0x18}" +
+                $"{nameof(Unk_0x00)}: {Unk_0x00}, " +
+                $"{nameof(Unk_0x04)}: {Unk_0x04}, " +
+                $"{nameof(Unk_layer_0x18)}: {Unk_layer_0x18}" +
                 $")";
         }
 
@@ -140,13 +144,13 @@ namespace GameCube.GFZ.Stage
             for (int i = 0; i < curves.Length; i++)
             {
                 var animClipCurves = curves[i];
-                if (animClipCurves.animationCurve == null)
+                if (animClipCurves.AnimationCurve == null)
                     continue;
 
                 var prefix = $"{labels[i]} [{i:00}/{curves.Length}]";
                 builder.AppendLineIndented(indent, indentLevel, prefix);
 
-                var multilineText = animClipCurves.PrintMultiLine(indentLevel+1, indent);
+                var multilineText = animClipCurves.PrintMultiLine(indentLevel + 1, indent);
                 builder.Append(multilineText);
             }
 

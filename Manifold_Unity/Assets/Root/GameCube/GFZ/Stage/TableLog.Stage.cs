@@ -45,12 +45,12 @@ namespace GameCube.GFZ.Stage
                 writer.WriteNextCol("FileName");
                 writer.WriteNextCol("Game");
 
-                writer.WriteNextCol(nameof(TrackSegment.segmentType));
-                writer.WriteNextCol(nameof(TrackSegment.embeddedPropertyType));
-                writer.WriteNextCol(nameof(TrackSegment.perimeterFlags));
-                writer.WriteNextCol(nameof(TrackSegment.pipeCylinderFlags));
-                writer.WriteNextCol(nameof(TrackSegment.unk_0x38));
-                writer.WriteNextCol(nameof(TrackSegment.unk_0x3A));
+                writer.WriteNextCol(nameof(TrackSegment.SegmentType));
+                writer.WriteNextCol(nameof(TrackSegment.EmbeddedPropertyType));
+                writer.WriteNextCol(nameof(TrackSegment.PerimeterFlags));
+                writer.WriteNextCol(nameof(TrackSegment.PipeCylinderFlags));
+                writer.WriteNextCol(nameof(TrackSegment.Unk_0x38));
+                writer.WriteNextCol(nameof(TrackSegment.Unk_0x3A));
 
                 writer.WriteNextCol("TrackTransform Index");
                 writer.WriteNextCol("Keyable /9");
@@ -73,7 +73,7 @@ namespace GameCube.GFZ.Stage
                     int trackIndex = 0;
                     foreach (var trackTransform in scene.rootTrackSegments)
                     {
-                        for (int keyablesIndex = 0; keyablesIndex < TrackCurves.kCurveCount; keyablesIndex++)
+                        for (int keyablesIndex = 0; keyablesIndex < AnimationCurveTRS.kCurveCount; keyablesIndex++)
                         {
                             WriteTrackKeyableAttributeRecursive(writer, scene, 0, keyablesIndex, ++trackIndex, trackTransform);
                         }
@@ -92,12 +92,12 @@ namespace GameCube.GFZ.Stage
                 writer.WriteNextCol("FileName");
                 writer.WriteNextCol("Game");
 
-                writer.WriteNextCol(nameof(TrackSegment.segmentType));
-                writer.WriteNextCol(nameof(TrackSegment.embeddedPropertyType));
-                writer.WriteNextCol(nameof(TrackSegment.perimeterFlags));
-                writer.WriteNextCol(nameof(TrackSegment.pipeCylinderFlags));
-                writer.WriteNextCol(nameof(TrackSegment.unk_0x38));
-                writer.WriteNextCol(nameof(TrackSegment.unk_0x3A));
+                writer.WriteNextCol(nameof(TrackSegment.SegmentType));
+                writer.WriteNextCol(nameof(TrackSegment.EmbeddedPropertyType));
+                writer.WriteNextCol(nameof(TrackSegment.PerimeterFlags));
+                writer.WriteNextCol(nameof(TrackSegment.PipeCylinderFlags));
+                writer.WriteNextCol(nameof(TrackSegment.Unk_0x38));
+                writer.WriteNextCol(nameof(TrackSegment.Unk_0x3A));
 
                 writer.WriteNextCol("TrackTransform Index");
                 writer.WriteNextCol("Keyable /9");
@@ -129,12 +129,12 @@ namespace GameCube.GFZ.Stage
         }
         public static void WriteTrackKeyableAttributeRecursive(StreamWriter writer, Scene scene, int nestedDepth, int animationCurveIndex, int trackTransformIndex, TrackSegment trackTransform)
         {
-            var animationCurves = trackTransform.trackCurves.animationCurves;
+            var animationCurves = trackTransform.AnimationCurveTRS.AnimationCurves;
             var keyableIndex = 1; // 0-n, depends on number of keyables in array
             int keyableTotal = animationCurves[animationCurveIndex].Length;
 
             // Animation data of this curve
-            foreach (var keyables in animationCurves[animationCurveIndex].keyableAttributes)
+            foreach (var keyables in animationCurves[animationCurveIndex].KeyableAttributes)
             {
                 WriteKeyableAttribute(writer, scene, nestedDepth + 1, keyableIndex++, keyableTotal, animationCurveIndex, trackTransformIndex, keyables, trackTransform);
             }
@@ -152,12 +152,12 @@ namespace GameCube.GFZ.Stage
             writer.WriteNextCol(scene.FileName);
             writer.WriteNextCol(gameId);
 
-            writer.WriteNextCol(tt.segmentType);
-            writer.WriteNextCol(tt.embeddedPropertyType);
-            writer.WriteNextCol(tt.perimeterFlags);
-            writer.WriteNextCol(tt.pipeCylinderFlags);
-            writer.WriteNextCol(tt.unk_0x38);
-            writer.WriteNextCol(tt.unk_0x3A);
+            writer.WriteNextCol(tt.SegmentType);
+            writer.WriteNextCol(tt.EmbeddedPropertyType);
+            writer.WriteNextCol(tt.PerimeterFlags);
+            writer.WriteNextCol(tt.PipeCylinderFlags);
+            writer.WriteNextCol(tt.Unk_0x38);
+            writer.WriteNextCol(tt.Unk_0x3A);
 
             writer.WriteNextCol(trackTransformIndex);
             writer.WriteNextCol(keyablesSet);
@@ -186,25 +186,25 @@ namespace GameCube.GFZ.Stage
                 writer.WriteNextCol("Root Index");
                 writer.WriteNextCol("Transform Depth");
                 writer.WriteNextCol("Address");
-                writer.WriteNextCol(nameof(TrackSegment.segmentType));
-                writer.WriteNextCol(nameof(TrackSegment.embeddedPropertyType));
-                writer.WriteNextCol(nameof(TrackSegment.perimeterFlags));
-                writer.WriteNextCol(nameof(TrackSegment.pipeCylinderFlags));
-                writer.WriteNextCol(nameof(TrackSegment.trackCurvesPtr));
-                writer.WriteNextCol(nameof(TrackSegment.trackCornerPtr));
-                writer.WriteNextCol(nameof(TrackSegment.childrenPtrs));
-                writer.WriteNextCol(nameof(TrackSegment.localScale));
-                writer.WriteNextCol(nameof(TrackSegment.localRotation));
-                writer.WriteNextCol(nameof(TrackSegment.localPosition));
-                writer.WriteNextCol(nameof(TrackSegment.unk_0x38));
-                writer.WriteNextCol(nameof(TrackSegment.unk_0x39));
-                writer.WriteNextCol(nameof(TrackSegment.unk_0x3A));
-                writer.WriteNextCol(nameof(TrackSegment.unk_0x3B));
-                writer.WriteNextCol(nameof(TrackSegment.railHeightRight));
-                writer.WriteNextCol(nameof(TrackSegment.railHeightLeft));
-                writer.WriteNextCol(nameof(TrackSegment.zero_0x44));
-                writer.WriteNextCol(nameof(TrackSegment.zero_0x48));
-                writer.WriteNextCol(nameof(TrackSegment.branchIndex));
+                writer.WriteNextCol(nameof(TrackSegment.SegmentType));
+                writer.WriteNextCol(nameof(TrackSegment.EmbeddedPropertyType));
+                writer.WriteNextCol(nameof(TrackSegment.PerimeterFlags));
+                writer.WriteNextCol(nameof(TrackSegment.PipeCylinderFlags));
+                writer.WriteNextCol(nameof(TrackSegment.AnimationCurvesTrsPtr));
+                writer.WriteNextCol(nameof(TrackSegment.TrackCornerPtr));
+                writer.WriteNextCol(nameof(TrackSegment.ChildrenPtr));
+                writer.WriteNextCol(nameof(TrackSegment.LocalScale));
+                writer.WriteNextCol(nameof(TrackSegment.LocalRotation));
+                writer.WriteNextCol(nameof(TrackSegment.LocalPosition));
+                writer.WriteNextCol(nameof(TrackSegment.Unk_0x38));
+                writer.WriteNextCol(nameof(TrackSegment.Unk_0x39));
+                writer.WriteNextCol(nameof(TrackSegment.Unk_0x3A));
+                writer.WriteNextCol(nameof(TrackSegment.Unk_0x3B));
+                writer.WriteNextCol(nameof(TrackSegment.RailHeightRight));
+                writer.WriteNextCol(nameof(TrackSegment.RailHeightLeft));
+                //writer.WriteNextCol(nameof(TrackSegment.zero_0x44));
+                //writer.WriteNextCol(nameof(TrackSegment.zero_0x48));
+                writer.WriteNextCol(nameof(TrackSegment.BranchIndex));
                 writer.WriteNextCol();
                 writer.WriteNextColNicify(nameof(TrackCorner.width));
                 writer.WriteNextColNicify(nameof(TrackCorner.perimeterOptions));
@@ -234,10 +234,10 @@ namespace GameCube.GFZ.Stage
             WriteTrackSegment(writer, scene, depth, index, total, trackSegment);
 
             // Write children
-            if (trackSegment.childSegments == null)
+            if (trackSegment.Children == null)
                 return;
 
-            foreach (var child in trackSegment.childSegments)
+            foreach (var child in trackSegment.Children)
             {
                 WriteTrackSegmentRecursive(writer, scene, depth + 1, index, total, child);
             }
@@ -250,31 +250,31 @@ namespace GameCube.GFZ.Stage
             writer.WriteNextCol($"[{index}/{total}]");
             writer.WriteNextCol($"{depth}");
             writer.WriteNextCol(trackTransform.PrintStartAddress());
-            writer.WriteNextCol(trackTransform.segmentType);
-            writer.WriteNextCol(trackTransform.embeddedPropertyType);
-            writer.WriteNextCol(trackTransform.perimeterFlags);
-            writer.WriteNextCol(trackTransform.pipeCylinderFlags);
-            writer.WriteNextCol(trackTransform.trackCurvesPtr);
-            writer.WriteNextCol(trackTransform.trackCornerPtr);
-            writer.WriteNextCol(trackTransform.childrenPtrs);
-            writer.WriteNextCol(trackTransform.localScale);
-            writer.WriteNextCol(trackTransform.localRotation);
-            writer.WriteNextCol(trackTransform.localPosition);
-            writer.WriteNextCol(trackTransform.unk_0x38);
-            writer.WriteNextCol(trackTransform.unk_0x39);
-            writer.WriteNextCol(trackTransform.unk_0x3A);
-            writer.WriteNextCol(trackTransform.unk_0x3B);
-            writer.WriteNextCol(trackTransform.railHeightRight);
-            writer.WriteNextCol(trackTransform.railHeightLeft);
-            writer.WriteNextCol(trackTransform.zero_0x44);
-            writer.WriteNextCol(trackTransform.zero_0x48);
-            writer.WriteNextCol(trackTransform.branchIndex);
+            writer.WriteNextCol(trackTransform.SegmentType);
+            writer.WriteNextCol(trackTransform.EmbeddedPropertyType);
+            writer.WriteNextCol(trackTransform.PerimeterFlags);
+            writer.WriteNextCol(trackTransform.PipeCylinderFlags);
+            writer.WriteNextCol(trackTransform.AnimationCurvesTrsPtr);
+            writer.WriteNextCol(trackTransform.TrackCornerPtr);
+            writer.WriteNextCol(trackTransform.ChildrenPtr);
+            writer.WriteNextCol(trackTransform.LocalScale);
+            writer.WriteNextCol(trackTransform.LocalRotation);
+            writer.WriteNextCol(trackTransform.LocalPosition);
+            writer.WriteNextCol(trackTransform.Unk_0x38);
+            writer.WriteNextCol(trackTransform.Unk_0x39);
+            writer.WriteNextCol(trackTransform.Unk_0x3A);
+            writer.WriteNextCol(trackTransform.Unk_0x3B);
+            writer.WriteNextCol(trackTransform.RailHeightRight);
+            writer.WriteNextCol(trackTransform.RailHeightLeft);
+            //writer.WriteNextCol(trackTransform.zero_0x44);
+            //writer.WriteNextCol(trackTransform.zero_0x48);
+            writer.WriteNextCol(trackTransform.BranchIndex);
             //
-            if (trackTransform.trackCornerPtr.IsNotNull)
+            if (trackTransform.TrackCornerPtr.IsNotNull)
             {
                 writer.WriteNextCol();
-                writer.WriteNextCol(trackTransform.trackCorner.width);
-                writer.WriteNextCol(trackTransform.trackCorner.perimeterOptions);
+                writer.WriteNextCol(trackTransform.TrackCorner.width);
+                writer.WriteNextCol(trackTransform.TrackCorner.perimeterOptions);
             }
             //
             writer.WriteNextRow();
@@ -310,16 +310,16 @@ namespace GameCube.GFZ.Stage
                     {
                         if (gameObject.animationClip == null)
                             continue;
-                        if (gameObject.animationClip.curves == null)
+                        if (gameObject.animationClip.Curves == null)
                             continue;
 
                         int animIndex = 0;
-                        foreach (var animationClipCurve in gameObject.animationClip.curves)
+                        foreach (var animationClipCurve in gameObject.animationClip.Curves)
                         {
-                            if (animationClipCurve.animationCurve == null)
+                            if (animationClipCurve.AnimationCurve == null)
                                 continue;
 
-                            foreach (var keyable in animationClipCurve.animationCurve.keyableAttributes)
+                            foreach (var keyable in animationClipCurve.AnimationCurve.KeyableAttributes)
                             {
                                 writer.WriteNextCol(scene.FileName);
                                 writer.WriteNextCol(gameObjectIndex);
@@ -353,10 +353,10 @@ namespace GameCube.GFZ.Stage
                 writer.WriteNextCol("Game Object");
                 writer.WriteNextCol("Anim Addr");
                 writer.WriteNextCol("Key Addr");
-                writer.WriteNextColNicify(nameof(AnimationClipCurve.unk_0x00));
-                writer.WriteNextColNicify(nameof(AnimationClipCurve.unk_0x04));
-                writer.WriteNextColNicify(nameof(AnimationClipCurve.unk_0x08));
-                writer.WriteNextColNicify(nameof(AnimationClipCurve.unk_0x0C));
+                writer.WriteNextColNicify(nameof(AnimationClipCurve.Unk_0x00));
+                writer.WriteNextColNicify(nameof(AnimationClipCurve.Unk_0x04));
+                writer.WriteNextColNicify(nameof(AnimationClipCurve.Unk_0x08));
+                writer.WriteNextColNicify(nameof(AnimationClipCurve.Unk_0x0C));
                 writer.WriteNextCol("AnimClip Metadata");
                 writer.WriteNextCol("AnimClip Metadata");
                 writer.WriteNextCol("AnimClip Metadata");
@@ -379,13 +379,13 @@ namespace GameCube.GFZ.Stage
                         //    continue;
 
                         int animIndex = 0;
-                        foreach (var animationClipCurve in dynamicSceneObject.animationClip.curves)
+                        foreach (var animationClipCurve in dynamicSceneObject.animationClip.Curves)
                         {
                             // Failing for some reason on indexes 6+ :/
-                            if (animationClipCurve.animationCurve == null)
+                            if (animationClipCurve.AnimationCurve == null)
                                 continue;
 
-                            foreach (var keyable in animationClipCurve.animationCurve.keyableAttributes)
+                            foreach (var keyable in animationClipCurve.AnimationCurve.KeyableAttributes)
                             {
                                 /// HACK, write each anim index as separate file
                                 if (animIndex != index)
@@ -396,10 +396,10 @@ namespace GameCube.GFZ.Stage
                                 writer.WriteNextCol(dynamicSceneObject.Name);
                                 writer.WriteNextCol(animationClipCurve.PrintStartAddress());
                                 writer.WriteNextCol(keyable.PrintStartAddress());
-                                writer.WriteNextCol(animationClipCurve.unk_0x00);
-                                writer.WriteNextCol(animationClipCurve.unk_0x04);
-                                writer.WriteNextCol(animationClipCurve.unk_0x08);
-                                writer.WriteNextCol(animationClipCurve.unk_0x0C);
+                                writer.WriteNextCol(animationClipCurve.Unk_0x00);
+                                writer.WriteNextCol(animationClipCurve.Unk_0x04);
+                                writer.WriteNextCol(animationClipCurve.Unk_0x08);
+                                writer.WriteNextCol(animationClipCurve.Unk_0x0C);
                                 writer.WriteNextCol(animIndex);
                                 writer.WriteNextCol(keyable.easeMode);
                                 writer.WriteNextCol(keyable.time);
@@ -623,11 +623,11 @@ namespace GameCube.GFZ.Stage
                     {
                         if (dynamicSceneObject.sceneObject.colliderMesh == null)
                             continue;
-                        if (dynamicSceneObject.sceneObject.colliderMesh.triCount == 0)
+                        if (dynamicSceneObject.sceneObject.colliderMesh.Tris.Length == 0)
                             continue;
 
                         int triIndex = 0;
-                        foreach (var tri in dynamicSceneObject.sceneObject.colliderMesh.tris)
+                        foreach (var tri in dynamicSceneObject.sceneObject.colliderMesh.Tris)
                         {
                             writer.WriteNextCol(scene.FileName);
                             writer.WriteNextCol(gameObjectIndex);
@@ -718,11 +718,11 @@ namespace GameCube.GFZ.Stage
                     {
                         if (dynamicSceneObject.sceneObject.colliderMesh == null)
                             continue;
-                        if (dynamicSceneObject.sceneObject.colliderMesh.quadCount == 0)
+                        if (dynamicSceneObject.sceneObject.colliderMesh.Quads.Length == 0)
                             continue;
 
                         int quadIndex = 0;
-                        foreach (var quad in dynamicSceneObject.sceneObject.colliderMesh.quads)
+                        foreach (var quad in dynamicSceneObject.sceneObject.colliderMesh.Quads)
                         {
                             writer.WriteNextCol(scene.FileName);
                             writer.WriteNextCol(gameObjectIndex);
@@ -1198,7 +1198,7 @@ namespace GameCube.GFZ.Stage
                     foreach (var animationCurve in scene.fogCurves.animationCurves)
                     {
                         countD1++;
-                        foreach (var keyableAttribute in animationCurve.keyableAttributes)
+                        foreach (var keyableAttribute in animationCurve.KeyableAttributes)
                         {
                             writer.WriteNextCol(scene.FileName);
                             writer.WriteNextCol(scene.ID);
@@ -1348,28 +1348,28 @@ namespace GameCube.GFZ.Stage
                 writer.WriteNextCol("File");
                 writer.WriteNextCol("Track Node");
                 writer.WriteNextCol("Track Point");
-                writer.WriteNextColNicify(nameof(Checkpoint.curveTimeStart));
-                writer.WriteNextColNicify(nameof(Checkpoint.curveTimeEnd));
-                writer.WriteNextColNicify(nameof(Checkpoint.planeStart.dotProduct));
-                writer.WriteNextColNicify(nameof(Checkpoint.planeStart.normal) + ".x");
-                writer.WriteNextColNicify(nameof(Checkpoint.planeStart.normal) + ".y");
-                writer.WriteNextColNicify(nameof(Checkpoint.planeStart.normal) + ".z");
-                writer.WriteNextColNicify(nameof(Checkpoint.planeStart.origin) + ".x");
-                writer.WriteNextColNicify(nameof(Checkpoint.planeStart.origin) + ".y");
-                writer.WriteNextColNicify(nameof(Checkpoint.planeStart.origin) + ".z");
-                writer.WriteNextColNicify(nameof(Checkpoint.planeEnd.dotProduct));
-                writer.WriteNextColNicify(nameof(Checkpoint.planeEnd.normal) + ".x");
-                writer.WriteNextColNicify(nameof(Checkpoint.planeEnd.normal) + ".y");
-                writer.WriteNextColNicify(nameof(Checkpoint.planeEnd.normal) + ".z");
-                writer.WriteNextColNicify(nameof(Checkpoint.planeEnd.origin) + ".x");
-                writer.WriteNextColNicify(nameof(Checkpoint.planeEnd.origin) + ".y");
-                writer.WriteNextColNicify(nameof(Checkpoint.planeEnd.origin) + ".z");
-                writer.WriteNextColNicify(nameof(Checkpoint.startDistance));
-                writer.WriteNextColNicify(nameof(Checkpoint.endDistance));
-                writer.WriteNextColNicify(nameof(Checkpoint.trackWidth));
-                writer.WriteNextColNicify(nameof(Checkpoint.connectToTrackIn));
-                writer.WriteNextColNicify(nameof(Checkpoint.connectToTrackOut));
-                writer.WriteNextColNicify(nameof(Checkpoint.zero_0x4E));
+                writer.WriteNextColNicify(nameof(Checkpoint.CurveTimeStart));
+                writer.WriteNextColNicify(nameof(Checkpoint.CurveTimeEnd));
+                writer.WriteNextColNicify(nameof(Checkpoint.PlaneStart.dotProduct));
+                writer.WriteNextColNicify(nameof(Checkpoint.PlaneStart.normal) + ".x");
+                writer.WriteNextColNicify(nameof(Checkpoint.PlaneStart.normal) + ".y");
+                writer.WriteNextColNicify(nameof(Checkpoint.PlaneStart.normal) + ".z");
+                writer.WriteNextColNicify(nameof(Checkpoint.PlaneStart.origin) + ".x");
+                writer.WriteNextColNicify(nameof(Checkpoint.PlaneStart.origin) + ".y");
+                writer.WriteNextColNicify(nameof(Checkpoint.PlaneStart.origin) + ".z");
+                writer.WriteNextColNicify(nameof(Checkpoint.PlaneEnd.dotProduct));
+                writer.WriteNextColNicify(nameof(Checkpoint.PlaneEnd.normal) + ".x");
+                writer.WriteNextColNicify(nameof(Checkpoint.PlaneEnd.normal) + ".y");
+                writer.WriteNextColNicify(nameof(Checkpoint.PlaneEnd.normal) + ".z");
+                writer.WriteNextColNicify(nameof(Checkpoint.PlaneEnd.origin) + ".x");
+                writer.WriteNextColNicify(nameof(Checkpoint.PlaneEnd.origin) + ".y");
+                writer.WriteNextColNicify(nameof(Checkpoint.PlaneEnd.origin) + ".z");
+                writer.WriteNextColNicify(nameof(Checkpoint.StartDistance));
+                writer.WriteNextColNicify(nameof(Checkpoint.EndDistance));
+                writer.WriteNextColNicify(nameof(Checkpoint.TrackWidth));
+                writer.WriteNextColNicify(nameof(Checkpoint.ConnectToTrackIn));
+                writer.WriteNextColNicify(nameof(Checkpoint.ConnectToTrackOut));
+                //writer.WriteNextColNicify(nameof(Checkpoint.zero_0x4E));
                 writer.WriteNextRow();
 
                 foreach (var scene in scenes)
@@ -1386,28 +1386,28 @@ namespace GameCube.GFZ.Stage
                             writer.WriteNextCol($"[{nodeIndex}/{nodeLength}]");
                             writer.WriteNextCol($"[{pointIndex}/{pointLength}]");
 
-                            writer.WriteNextCol(trackPoint.curveTimeStart);
-                            writer.WriteNextCol(trackPoint.curveTimeEnd);
-                            writer.WriteNextCol(trackPoint.planeStart.dotProduct);
-                            writer.WriteNextCol(trackPoint.planeStart.normal.x);
-                            writer.WriteNextCol(trackPoint.planeStart.normal.y);
-                            writer.WriteNextCol(trackPoint.planeStart.normal.z);
-                            writer.WriteNextCol(trackPoint.planeStart.origin.x);
-                            writer.WriteNextCol(trackPoint.planeStart.origin.y);
-                            writer.WriteNextCol(trackPoint.planeStart.origin.z);
-                            writer.WriteNextCol(trackPoint.planeEnd.dotProduct);
-                            writer.WriteNextCol(trackPoint.planeEnd.normal.x);
-                            writer.WriteNextCol(trackPoint.planeEnd.normal.y);
-                            writer.WriteNextCol(trackPoint.planeEnd.normal.z);
-                            writer.WriteNextCol(trackPoint.planeEnd.origin.x);
-                            writer.WriteNextCol(trackPoint.planeEnd.origin.y);
-                            writer.WriteNextCol(trackPoint.planeEnd.origin.z);
-                            writer.WriteNextCol(trackPoint.startDistance);
-                            writer.WriteNextCol(trackPoint.endDistance);
-                            writer.WriteNextCol(trackPoint.trackWidth);
-                            writer.WriteNextCol(trackPoint.connectToTrackIn);
-                            writer.WriteNextCol(trackPoint.connectToTrackOut);
-                            writer.WriteNextCol(trackPoint.zero_0x4E);
+                            writer.WriteNextCol(trackPoint.CurveTimeStart);
+                            writer.WriteNextCol(trackPoint.CurveTimeEnd);
+                            writer.WriteNextCol(trackPoint.PlaneStart.dotProduct);
+                            writer.WriteNextCol(trackPoint.PlaneStart.normal.x);
+                            writer.WriteNextCol(trackPoint.PlaneStart.normal.y);
+                            writer.WriteNextCol(trackPoint.PlaneStart.normal.z);
+                            writer.WriteNextCol(trackPoint.PlaneStart.origin.x);
+                            writer.WriteNextCol(trackPoint.PlaneStart.origin.y);
+                            writer.WriteNextCol(trackPoint.PlaneStart.origin.z);
+                            writer.WriteNextCol(trackPoint.PlaneEnd.dotProduct);
+                            writer.WriteNextCol(trackPoint.PlaneEnd.normal.x);
+                            writer.WriteNextCol(trackPoint.PlaneEnd.normal.y);
+                            writer.WriteNextCol(trackPoint.PlaneEnd.normal.z);
+                            writer.WriteNextCol(trackPoint.PlaneEnd.origin.x);
+                            writer.WriteNextCol(trackPoint.PlaneEnd.origin.y);
+                            writer.WriteNextCol(trackPoint.PlaneEnd.origin.z);
+                            writer.WriteNextCol(trackPoint.StartDistance);
+                            writer.WriteNextCol(trackPoint.EndDistance);
+                            writer.WriteNextCol(trackPoint.TrackWidth);
+                            writer.WriteNextCol(trackPoint.ConnectToTrackIn);
+                            writer.WriteNextCol(trackPoint.ConnectToTrackOut);
+                            //writer.WriteNextCol(trackPoint.zero_0x4E);
                             writer.WriteNextRow();
 
                             pointIndex++;
@@ -1471,10 +1471,10 @@ namespace GameCube.GFZ.Stage
                     writer.WriteNextCol(staticColliderMeshes.unknownCollidersPtr.PrintAddress);
                     writer.WriteNextCol(staticColliderMeshes.unk_float);
                     writer.WriteNextCol();
-                    writer.WriteNextCol(staticColliderMeshes.boundingSphere.origin.x);
-                    writer.WriteNextCol(staticColliderMeshes.boundingSphere.origin.y);
-                    writer.WriteNextCol(staticColliderMeshes.boundingSphere.origin.z);
-                    writer.WriteNextCol(staticColliderMeshes.boundingSphere.radius);
+                    writer.WriteNextCol(staticColliderMeshes.BoundingSphere.origin.x);
+                    writer.WriteNextCol(staticColliderMeshes.BoundingSphere.origin.y);
+                    writer.WriteNextCol(staticColliderMeshes.BoundingSphere.origin.z);
+                    writer.WriteNextCol(staticColliderMeshes.BoundingSphere.radius);
                     writer.WriteNextRow();
                 }
                 writer.Flush();

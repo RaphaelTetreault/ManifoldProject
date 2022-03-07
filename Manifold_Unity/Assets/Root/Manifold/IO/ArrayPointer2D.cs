@@ -3,6 +3,13 @@ using System.IO;
 
 namespace Manifold.IO
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <remarks>
+    /// Given a 2D array size [n,m]; the underlying binary is represented as 'n' lengths followed after
+    /// by 'n' pointers. Once paired, the length and pointer form an <cref>ArrayPointer</cref>.
+    /// </remarks>
     [Serializable]
     public struct ArrayPointer2D :
         IBinaryAddressable,
@@ -10,15 +17,6 @@ namespace Manifold.IO
     {
         // FIELDS
         private ArrayPointer[] arrayPointers;
-
-        // PROPERTIES
-        public AddressRange AddressRange { get; set; }
-        public ArrayPointer[] ArrayPointers
-        {
-            get => arrayPointers;
-            set => arrayPointers = value;
-        }
-        public int Length => arrayPointers.Length;
 
 
         // CONSTRUCTORS
@@ -32,6 +30,15 @@ namespace Manifold.IO
             AddressRange = new AddressRange();
             this.arrayPointers = arrayPointers;
         }
+
+
+        // INDEXERS
+        public ArrayPointer this[int index] { get => arrayPointers[index]; set => arrayPointers[index] = value; }
+
+        // PROPERTIES
+        public AddressRange AddressRange { get; set; }
+        public ArrayPointer[] ArrayPointers { get => arrayPointers; set => arrayPointers = value; }
+        public int Length => arrayPointers.Length;
 
 
         // METHODS
