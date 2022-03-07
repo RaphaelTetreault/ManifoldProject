@@ -16,17 +16,23 @@ namespace GameCube.GFZ.Stage
         ITextPrintable
     {
         // FIELDS
-        public uint unk_0x00;
-        public uint unk_0x04;
-        public uint unk_0x08;
-        public uint unk_0x0C;
-        public ArrayPointer animationCurvePtrs;
+        private uint unk_0x00;
+        private uint unk_0x04;
+        private uint unk_0x08;
+        private uint unk_0x0C;
+        private ArrayPointer animationCurvePtr;
         // REFERENCE FIELDS
-        public AnimationCurve animationCurve;
+        private AnimationCurve animationCurve;
 
 
         // PROPERTIES
         public AddressRange AddressRange { get; set; }
+        public AnimationCurve AnimationCurve { get => animationCurve; set => animationCurve = value; }
+        public ArrayPointer AnimationCurvePtr { get => animationCurvePtr; set => animationCurvePtr = value; }
+        public uint Unk_0x00 { get => unk_0x00; set => unk_0x00 = value; }
+        public uint Unk_0x04 { get => unk_0x04; set => unk_0x04 = value; }
+        public uint Unk_0x08 { get => unk_0x08; set => unk_0x08 = value; }
+        public uint Unk_0x0C { get => unk_0x0C; set => unk_0x0C = value; }
 
 
         // METHODS
@@ -38,14 +44,14 @@ namespace GameCube.GFZ.Stage
                 reader.ReadX(ref unk_0x04);
                 reader.ReadX(ref unk_0x08);
                 reader.ReadX(ref unk_0x0C);
-                reader.ReadX(ref animationCurvePtrs);
+                reader.ReadX(ref animationCurvePtr);
             }
             this.RecordEndAddress(reader);
             {
-                if (animationCurvePtrs.IsNotNull)
+                if (animationCurvePtr.IsNotNull)
                 {
-                    reader.JumpToAddress(animationCurvePtrs);
-                    animationCurve = new AnimationCurve(animationCurvePtrs.Length);
+                    reader.JumpToAddress(animationCurvePtr);
+                    animationCurve = new AnimationCurve(animationCurvePtr.Length);
                     animationCurve.Deserialize(reader);
                 }
             }
@@ -60,7 +66,7 @@ namespace GameCube.GFZ.Stage
                     ? animationCurve.GetArrayPointer()
                     : new ArrayPointer();
 
-                animationCurvePtrs = ptr;
+                animationCurvePtr = ptr;
             }
             this.RecordStartAddress(writer);
             {
@@ -68,7 +74,7 @@ namespace GameCube.GFZ.Stage
                 writer.WriteX(unk_0x04);
                 writer.WriteX(unk_0x08);
                 writer.WriteX(unk_0x0C);
-                writer.WriteX(animationCurvePtrs);
+                writer.WriteX(animationCurvePtr);
             }
             this.RecordEndAddress(writer);
         }
@@ -78,10 +84,10 @@ namespace GameCube.GFZ.Stage
             // 2022/01/19: Since this is a wrapper class, check if the curve pointer
             // for the collection (wehich points to the base item [0]) is the same
             // as what the array pointer points to.
-            Assert.ReferencePointer(animationCurve, animationCurvePtrs);
+            Assert.ReferencePointer(animationCurve, animationCurvePtr);
             // Ensure that we have the same amount of keyables as we say we do.
             if (animationCurve != null)
-                Assert.IsTrue(animationCurve.keyableAttributes.Length == animationCurvePtrs.Length);
+                Assert.IsTrue(animationCurve.KeyableAttributes.Length == animationCurvePtr.Length);
         }
 
         public override string ToString()

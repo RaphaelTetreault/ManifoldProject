@@ -46,21 +46,21 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         public GameCube.GFZ.Stage.AnimationClip ExportGfz()
         {
             var animationClip = new GameCube.GFZ.Stage.AnimationClip();
-            animationClip.unk_0x00 = unk_0x00;
-            animationClip.unk_0x04 = unk_0x04;
-            animationClip.unk_layer_0x18 = unk_layer_0x18;
+            animationClip.Unk_0x00 = unk_0x00;
+            animationClip.Unk_0x04 = unk_0x04;
+            animationClip.Unk_layer_0x18 = unk_layer_0x18;
 
             var curves = GetCurves;
-            animationClip.curves = new AnimationClipCurve[curves.Length];
+            animationClip.Curves = new AnimationClipCurve[curves.Length];
             for (int i = 0; i < curves.Length; i++)
             {
-                animationClip.curves[i] = new AnimationClipCurve()
+                animationClip.Curves[i] = new AnimationClipCurve()
                 {
-                    unk_0x00 = curves[i].unk0x00,
-                    unk_0x04 = curves[i].unk0x04,
-                    unk_0x08 = curves[i].unk0x08,
-                    unk_0x0C = curves[i].unk0x0C,
-                    animationCurve = AnimationCurveConverter.ToGfz(curves[i].curve),
+                    Unk_0x00 = curves[i].unk0x00,
+                    Unk_0x04 = curves[i].unk0x04,
+                    Unk_0x08 = curves[i].unk0x08,
+                    Unk_0x0C = curves[i].unk0x0C,
+                    AnimationCurve = AnimationCurveConverter.ToGfz(curves[i].curve),
                 };
             }
 
@@ -80,18 +80,18 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         public void ImportGfz(GameCube.GFZ.Stage.AnimationClip animationClip)
         {
-            unk_0x00 = animationClip.unk_0x00;
-            unk_0x04 = animationClip.unk_0x04;
-            unk_layer_0x18 = animationClip.unk_layer_0x18;
+            unk_0x00 = animationClip.Unk_0x00;
+            unk_0x04 = animationClip.Unk_0x04;
+            unk_layer_0x18 = animationClip.Unk_layer_0x18;
 
             var curves = GetCurves;
             for (int i = 0; i < GameCube.GFZ.Stage.AnimationClip.kAnimationCurvesCount; i++)
             {
-                curves[i].unk0x00 = animationClip.curves[i].unk_0x00;
-                curves[i].unk0x04 = animationClip.curves[i].unk_0x04;
-                curves[i].unk0x08 = animationClip.curves[i].unk_0x08;
-                curves[i].unk0x0C = animationClip.curves[i].unk_0x0C;
-                curves[i].curve = AnimationCurveConverter.ToUnity(animationClip.curves[i].animationCurve);
+                curves[i].unk0x00 = animationClip.Curves[i].Unk_0x00;
+                curves[i].unk0x04 = animationClip.Curves[i].Unk_0x04;
+                curves[i].unk0x08 = animationClip.Curves[i].Unk_0x08;
+                curves[i].unk0x0C = animationClip.Curves[i].Unk_0x0C;
+                curves[i].curve = AnimationCurveConverter.ToUnity(animationClip.Curves[i].AnimationCurve);
             }
 
             //var curvePositionZ = curves[6].curve;

@@ -13,7 +13,7 @@ namespace Manifold.EditorTools.GC.GFZ
             if (curve == null)
                 return null;
 
-            var keyframes = KeyablesToKeyframes(curve.keyableAttributes);
+            var keyframes = KeyablesToKeyframes(curve.KeyableAttributes);
             return new UnityEngine.AnimationCurve(keyframes);
         }
 

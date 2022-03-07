@@ -49,7 +49,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             for (int i = 0; i < gfzCurves.Length; i++)
             {
                 var animationCurve = gfzCurves[i];
-                var keyables = AnimationCurveConverter.EnforceNoDuplicateTimes(animationCurve.keyableAttributes);
+                var keyables = AnimationCurveConverter.EnforceNoDuplicateTimes(animationCurve.KeyableAttributes);
                 var keyframes = AnimationCurveConverter.KeyablesToKeyframes(keyables);
                 curves[i] = new UnityEngine.AnimationCurve(keyframes);
 

@@ -7,9 +7,10 @@ namespace GameCube.GFZ.Stage
 {
     /// <summary>
     /// A series of animation keys to define how a singular float value changes over "time"
-    /// 
-    /// Structurally, thus class is a simple wrapper around a KeyableAttribute[].
     /// </summary>
+    /// <remarks>
+    /// Structurally, this class is a simple wrapper around a KeyableAttribute[].
+    /// </remarks>
     [Serializable]
     public class AnimationCurve :
         IBinaryAddressable,
@@ -17,7 +18,7 @@ namespace GameCube.GFZ.Stage
         ITextPrintable
     {
         // FIELDS
-        public KeyableAttribute[] keyableAttributes;
+        private KeyableAttribute[] keyableAttributes;
 
 
         // CONSTRUCTORS
@@ -35,10 +36,20 @@ namespace GameCube.GFZ.Stage
         }
 
 
+        // INDEXERS
+        /// <summary>
+        /// Indexes into the underlying <cref>KeyableAttribute</cref> array.
+        /// </summary>
+        /// <param name="index">The index of the desired value.</param>
+        /// <returns>
+        /// Returns the <cref>KeyableAttribute</cref> at the specified <paramref name="index"/>.
+        /// </returns>
+        public KeyableAttribute this[int index] { get => keyableAttributes[index]; set => keyableAttributes[index] = value; }
+
         // PROPERTIES
         public AddressRange AddressRange { get; set; }
-
         public int Length => keyableAttributes.Length;
+        public KeyableAttribute[] KeyableAttributes { get => keyableAttributes; set => keyableAttributes = value; }
 
 
         // METHODS
@@ -46,7 +57,7 @@ namespace GameCube.GFZ.Stage
         {
             this.RecordStartAddress(reader);
             {
-                reader.ReadX(ref keyableAttributes, keyableAttributes.Length);
+                reader.ReadX(ref keyableAttributes, KeyableAttributes.Length);
             }
             this.RecordEndAddress(reader);
         }
@@ -57,8 +68,7 @@ namespace GameCube.GFZ.Stage
             {
                 this.RecordStartAddress(writer);
                 {
-                    foreach (var keyable in keyableAttributes)
-                        writer.WriteX(keyable);
+                    writer.WriteX(keyableAttributes);
                 }
                 this.RecordEndAddress(writer);
             }

@@ -718,7 +718,7 @@ namespace GameCube.GFZ.Stage
                 {
                     animationClips.Add(dynamicSceneObject.animationClip);
                     // Serialize individual animation clip curves
-                    foreach (var animationClipCurve in dynamicSceneObject.animationClip.curves)
+                    foreach (var animationClipCurve in dynamicSceneObject.animationClip.Curves)
                         animationClipCurves.Add(animationClipCurve);
                 }
 
@@ -758,8 +758,8 @@ namespace GameCube.GFZ.Stage
             // 2022-01-18: add serilization for animation data!
             writer.InlineComment(serializeVerbose, nameof(AnimationClip), "AnimClipCurve", $"{nameof(AnimationCurve)}[]");
             foreach (var animationClipCurve in animationClipCurves)
-                if (animationClipCurve.animationCurve != null)
-                    writer.WriteX(animationClipCurve.animationCurve);
+                if (animationClipCurve.AnimationCurve != null)
+                    writer.WriteX(animationClipCurve.AnimationCurve);
 
             // Texture metadata
             writer.InlineDesc(serializeVerbose, textureScrolls.ToArray());
@@ -1016,7 +1016,7 @@ namespace GameCube.GFZ.Stage
                 list.Add(trackNode.segment.AnimationCurveTRS);
                 list.AddRange(trackNode.segment.AnimationCurveTRS.AnimationCurves);
                 foreach (var anim in trackNode.segment.AnimationCurveTRS.AnimationCurves) // null?
-                    list.AddRange(anim.keyableAttributes);
+                    list.AddRange(anim.KeyableAttributes);
                 list.Add(trackNode.segment.TrackCorner);
                 if (trackNode.segment.TrackCorner != null)
                     list.Add(trackNode.segment.TrackCorner.matrix3x4);
@@ -1049,12 +1049,12 @@ namespace GameCube.GFZ.Stage
                 list.Add(dynamicSceneObject.animationClip);
                 if (dynamicSceneObject.animationClip != null)
                 {
-                    foreach (var animClipCurve in dynamicSceneObject.animationClip.curves)
+                    foreach (var animClipCurve in dynamicSceneObject.animationClip.Curves)
                     {
                         list.Add(animClipCurve);
-                        list.Add(animClipCurve.animationCurve);
-                        if (animClipCurve.animationCurve != null)
-                            list.AddRange(animClipCurve.animationCurve.keyableAttributes);
+                        list.Add(animClipCurve.AnimationCurve);
+                        if (animClipCurve.AnimationCurve != null)
+                            list.AddRange(animClipCurve.AnimationCurve.KeyableAttributes);
                     }
                 }
                 list.Add(dynamicSceneObject.textureScroll);
@@ -1084,7 +1084,7 @@ namespace GameCube.GFZ.Stage
                 foreach (var curve in fogCurves.animationCurves)
                 {
                     list.Add(curve);
-                    list.AddRange(curve.keyableAttributes);
+                    list.AddRange(curve.KeyableAttributes);
                 }
             }
 
@@ -1101,7 +1101,7 @@ namespace GameCube.GFZ.Stage
                 if (trigger.storyObjectPath != null)
                 {
                     list.Add(trigger.storyObjectPath.animationCurve);
-                    list.AddRange(trigger.storyObjectPath.animationCurve.keyableAttributes);
+                    list.AddRange(trigger.storyObjectPath.animationCurve.KeyableAttributes);
                 }
             }
 

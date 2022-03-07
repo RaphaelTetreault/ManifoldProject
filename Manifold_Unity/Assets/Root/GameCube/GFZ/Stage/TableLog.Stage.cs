@@ -134,7 +134,7 @@ namespace GameCube.GFZ.Stage
             int keyableTotal = animationCurves[animationCurveIndex].Length;
 
             // Animation data of this curve
-            foreach (var keyables in animationCurves[animationCurveIndex].keyableAttributes)
+            foreach (var keyables in animationCurves[animationCurveIndex].KeyableAttributes)
             {
                 WriteKeyableAttribute(writer, scene, nestedDepth + 1, keyableIndex++, keyableTotal, animationCurveIndex, trackTransformIndex, keyables, trackTransform);
             }
@@ -310,16 +310,16 @@ namespace GameCube.GFZ.Stage
                     {
                         if (gameObject.animationClip == null)
                             continue;
-                        if (gameObject.animationClip.curves == null)
+                        if (gameObject.animationClip.Curves == null)
                             continue;
 
                         int animIndex = 0;
-                        foreach (var animationClipCurve in gameObject.animationClip.curves)
+                        foreach (var animationClipCurve in gameObject.animationClip.Curves)
                         {
-                            if (animationClipCurve.animationCurve == null)
+                            if (animationClipCurve.AnimationCurve == null)
                                 continue;
 
-                            foreach (var keyable in animationClipCurve.animationCurve.keyableAttributes)
+                            foreach (var keyable in animationClipCurve.AnimationCurve.KeyableAttributes)
                             {
                                 writer.WriteNextCol(scene.FileName);
                                 writer.WriteNextCol(gameObjectIndex);
@@ -353,10 +353,10 @@ namespace GameCube.GFZ.Stage
                 writer.WriteNextCol("Game Object");
                 writer.WriteNextCol("Anim Addr");
                 writer.WriteNextCol("Key Addr");
-                writer.WriteNextColNicify(nameof(AnimationClipCurve.unk_0x00));
-                writer.WriteNextColNicify(nameof(AnimationClipCurve.unk_0x04));
-                writer.WriteNextColNicify(nameof(AnimationClipCurve.unk_0x08));
-                writer.WriteNextColNicify(nameof(AnimationClipCurve.unk_0x0C));
+                writer.WriteNextColNicify(nameof(AnimationClipCurve.Unk_0x00));
+                writer.WriteNextColNicify(nameof(AnimationClipCurve.Unk_0x04));
+                writer.WriteNextColNicify(nameof(AnimationClipCurve.Unk_0x08));
+                writer.WriteNextColNicify(nameof(AnimationClipCurve.Unk_0x0C));
                 writer.WriteNextCol("AnimClip Metadata");
                 writer.WriteNextCol("AnimClip Metadata");
                 writer.WriteNextCol("AnimClip Metadata");
@@ -379,13 +379,13 @@ namespace GameCube.GFZ.Stage
                         //    continue;
 
                         int animIndex = 0;
-                        foreach (var animationClipCurve in dynamicSceneObject.animationClip.curves)
+                        foreach (var animationClipCurve in dynamicSceneObject.animationClip.Curves)
                         {
                             // Failing for some reason on indexes 6+ :/
-                            if (animationClipCurve.animationCurve == null)
+                            if (animationClipCurve.AnimationCurve == null)
                                 continue;
 
-                            foreach (var keyable in animationClipCurve.animationCurve.keyableAttributes)
+                            foreach (var keyable in animationClipCurve.AnimationCurve.KeyableAttributes)
                             {
                                 /// HACK, write each anim index as separate file
                                 if (animIndex != index)
@@ -396,10 +396,10 @@ namespace GameCube.GFZ.Stage
                                 writer.WriteNextCol(dynamicSceneObject.Name);
                                 writer.WriteNextCol(animationClipCurve.PrintStartAddress());
                                 writer.WriteNextCol(keyable.PrintStartAddress());
-                                writer.WriteNextCol(animationClipCurve.unk_0x00);
-                                writer.WriteNextCol(animationClipCurve.unk_0x04);
-                                writer.WriteNextCol(animationClipCurve.unk_0x08);
-                                writer.WriteNextCol(animationClipCurve.unk_0x0C);
+                                writer.WriteNextCol(animationClipCurve.Unk_0x00);
+                                writer.WriteNextCol(animationClipCurve.Unk_0x04);
+                                writer.WriteNextCol(animationClipCurve.Unk_0x08);
+                                writer.WriteNextCol(animationClipCurve.Unk_0x0C);
                                 writer.WriteNextCol(animIndex);
                                 writer.WriteNextCol(keyable.easeMode);
                                 writer.WriteNextCol(keyable.time);
@@ -1198,7 +1198,7 @@ namespace GameCube.GFZ.Stage
                     foreach (var animationCurve in scene.fogCurves.animationCurves)
                     {
                         countD1++;
-                        foreach (var keyableAttribute in animationCurve.keyableAttributes)
+                        foreach (var keyableAttribute in animationCurve.KeyableAttributes)
                         {
                             writer.WriteNextCol(scene.FileName);
                             writer.WriteNextCol(scene.ID);

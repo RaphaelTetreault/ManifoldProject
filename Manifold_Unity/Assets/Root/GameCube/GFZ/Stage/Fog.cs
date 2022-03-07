@@ -355,7 +355,7 @@ namespace GameCube.GFZ.Stage
         {
             return new AnimationCurve()
             {
-                keyableAttributes = new KeyableAttribute[]
+                KeyableAttributes = new KeyableAttribute[]
                 {
                     new KeyableAttribute()
                     {

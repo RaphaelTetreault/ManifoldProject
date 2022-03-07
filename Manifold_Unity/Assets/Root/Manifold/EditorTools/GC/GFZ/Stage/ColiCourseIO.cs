@@ -494,9 +494,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                     var iFormat = i.ArrayFormat(coliScene.dynamicSceneObjects);
                     log.WriteLine($"[{iFormat}]\t");
 
-                    for (int j = 0; j < animClip.curves.Length; j++)
+                    for (int j = 0; j < animClip.Curves.Length; j++)
                     {
-                        var animCurvesPlus = animClip.curves[j];
+                        var animCurvesPlus = animClip.Curves[j];
                         //log.Write(PrintIndex(i, coliScene.sceneObjects));
                         log.WriteLine(PrintData(functionIdx, animCurvesPlus));
                     }
@@ -646,7 +646,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                     var currLabelSRP = labelSRP[animIndex / 3];
                     var currLabelXYZ = labelXYZ[animIndex % 3];
                     log.WriteLine($"{currLabelSRP}.{currLabelXYZ} [{animIndex}] ");
-                    log.WriteArrayToString(animCurve.keyableAttributes);
+                    log.WriteArrayToString(animCurve.KeyableAttributes);
                     //log.WriteLine(HashSerializables.Hash(md5, animCurve));
                     log.WriteLine();
                 }
@@ -748,7 +748,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
                     log.WriteAddress(sceneObject.animationClip);
                     if (sceneObject.animationClip != null)
-                        log.WriteAddress(sceneObject.animationClip.curves);
+                        log.WriteAddress(sceneObject.animationClip.Curves);
                     // TODO: other sub classes?
 
                     log.WriteAddress(sceneObject.textureScroll);

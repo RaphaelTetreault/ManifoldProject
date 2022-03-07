@@ -16,21 +16,21 @@ namespace Manifold.Conversion.GFZ.CourseCollision
             // http://gyanendushekhar.com/2018/03/18/create-play-animation-runtime-unity-tutorial/
 
             // Scale
-            var gfxAnimClipScaleX = animationClip.curves[0];
-            var gfxAnimClipScaleY = animationClip.curves[1];
-            var gfxAnimClipScaleZ = animationClip.curves[2];
+            var gfxAnimClipScaleX = animationClip.Curves[0];
+            var gfxAnimClipScaleY = animationClip.Curves[1];
+            var gfxAnimClipScaleZ = animationClip.Curves[2];
             // Rotation
-            var gfxAnimClipRotationX = animationClip.curves[3];
-            var gfxAnimClipRotationY = animationClip.curves[4];
-            var gfxAnimClipRotationZ = animationClip.curves[5];
+            var gfxAnimClipRotationX = animationClip.Curves[3];
+            var gfxAnimClipRotationY = animationClip.Curves[4];
+            var gfxAnimClipRotationZ = animationClip.Curves[5];
             // Position
-            var gfxAnimClipPositionX = animationClip.curves[6];
-            var gfxAnimClipPositionY = animationClip.curves[7];
-            var gfxAnimClipPositionZ = animationClip.curves[8];
+            var gfxAnimClipPositionX = animationClip.Curves[6];
+            var gfxAnimClipPositionY = animationClip.Curves[7];
+            var gfxAnimClipPositionZ = animationClip.Curves[8];
             // Unknown
-            var gfxAnimClipUnused = animationClip.curves[9];
+            var gfxAnimClipUnused = animationClip.Curves[9];
             // Light
-            var gfxAnimClipAlpha = animationClip.curves[10];
+            var gfxAnimClipAlpha = animationClip.Curves[10];
 
 
             var transformType = typeof(Transform);
@@ -59,13 +59,13 @@ namespace Manifold.Conversion.GFZ.CourseCollision
         public static void SetCurve(UnityEngine.AnimationClip unityClip, AnimationClipCurve gfzCurve, Type type, string propertyName)
         {
             // ignore empty anims
-            if (gfzCurve.animationCurve.Length == 0)
+            if (gfzCurve.AnimationCurve.Length == 0)
             {
                 return;
             }
 
             var curve = new UnityEngine.AnimationCurve();
-            foreach (var keyableAttribute in gfzCurve.animationCurve.keyableAttributes)
+            foreach (var keyableAttribute in gfzCurve.AnimationCurve.KeyableAttributes)
             {
                 var time = keyableAttribute.time;
                 var value = keyableAttribute.value;

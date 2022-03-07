@@ -296,14 +296,14 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 if (dynamicSceneObject.animationClip == null)
                     continue;
 
-                foreach (var animationClipCurve in dynamicSceneObject.animationClip.curves)
+                foreach (var animationClipCurve in dynamicSceneObject.animationClip.Curves)
                 {
-                    if (animationClipCurve.animationCurve == null)
+                    if (animationClipCurve.AnimationCurve == null)
                         continue;
 
-                    if (animationClipCurve.animationCurve.Length == 0)
+                    if (animationClipCurve.AnimationCurve.Length == 0)
                     {
-                        animationClipCurve.animationCurve = null;
+                        animationClipCurve.AnimationCurve = null;
                     }
                 }
             }

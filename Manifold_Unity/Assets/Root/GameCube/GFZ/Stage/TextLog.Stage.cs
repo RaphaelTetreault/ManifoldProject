@@ -108,7 +108,7 @@ namespace GameCube.GFZ.Stage
                     var currLabelSRP = labelSRP[animIndex / 3];
                     var currLabelXYZ = labelXYZ[animIndex % 3];
                     log.WriteLine($"{currLabelSRP}.{currLabelXYZ} [{animIndex}] ");
-                    log.WriteArrayToString(animCurve.keyableAttributes);
+                    log.WriteArrayToString(animCurve.KeyableAttributes);
                     //log.WriteLine(HashSerializables.Hash(md5, animCurve));
                     log.WriteLine();
                 }
@@ -210,7 +210,7 @@ namespace GameCube.GFZ.Stage
 
                     log.WriteAddress(sceneObject.animationClip);
                     if (sceneObject.animationClip != null)
-                        log.WriteAddress(sceneObject.animationClip.curves);
+                        log.WriteAddress(sceneObject.animationClip.Curves);
                     // TODO: other sub classes?
 
                     log.WriteAddress(sceneObject.textureScroll);
