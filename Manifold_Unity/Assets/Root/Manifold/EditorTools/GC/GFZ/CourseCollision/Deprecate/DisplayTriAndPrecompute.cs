@@ -42,7 +42,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             var vertCenter = tri.VertCenter();
             var precomputes = tri.GetPrecomputes();
             var precomputeCenter = tri.PrecomputeCenter();
-            var normal = tri.normal;
+            var normal = tri.Normal;
 
             var rotation = Quaternion.AngleAxis(rot, normal);
 

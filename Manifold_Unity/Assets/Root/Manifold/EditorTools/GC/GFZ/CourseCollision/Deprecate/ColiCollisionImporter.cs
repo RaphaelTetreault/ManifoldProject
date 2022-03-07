@@ -332,7 +332,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 {
                     allVertices.Add(vertices[vertexIndex]);
                     allIndexes.Add(triIndex * vertTotal + vertexIndex);
-                    allNormals.Add(triangle.normal);
+                    allNormals.Add(triangle.Normal);
                 }
             }
 
@@ -393,7 +393,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 for (int vertexIndex = 0; vertexIndex < vertTotal; vertexIndex++)
                 {
                     allIndexes.Add(quadIndex * vertTotal + vertexIndex);
-                    allNormals.Add(quad.normal);
+                    allNormals.Add(quad.Normal);
                 }
             }
 
