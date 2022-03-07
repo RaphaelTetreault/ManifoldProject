@@ -40,8 +40,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
             var value = new CullOverrideTrigger
             {
-                transform = transform,
-                unk_0x20 = unk_0x20,
+                Transform = transform,
+                Unk_0x20 = unk_0x20,
                 //unk_0x22 = unk_0x22,
             };
 
@@ -50,9 +50,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         public void ImportGfz(CullOverrideTrigger value)
         {
-            transform.CopyGfzTransformPRXS(value.transform);
+            transform.CopyGfzTransformPRXS(value.Transform);
             transform.localScale *= scale;
-            unk_0x20 = value.unk_0x20;
+            unk_0x20 = value.Unk_0x20;
             //unk_0x22 = value.unk_0x22;
         }
 

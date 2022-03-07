@@ -12,36 +12,44 @@ namespace GameCube.GFZ.Stage
     [Serializable]
     public class EmbeddedTrackPropertyArea :
         IBinaryAddressable,
-        IBinarySerializable
+        IBinarySerializable,
+        ITextPrintable
     {
         // FIELDS
-        // Default values represent final node.
-        public float lengthFrom = -1f;
-        public float lengthTo = -1f;
-        public float widthLeft = 0;
-        public float widthRight = 0;
-        public EmbeddedTrackPropertyType propertyType = EmbeddedTrackPropertyType.TerminateCode;
-        public byte trackBranchID = 0;
-        public ushort zero_0x12;
+        // Default values represent final terminating node.
+        private float lengthFrom = -1f;
+        private float lengthTo = -1f;
+        private float widthLeft = 0;
+        private float widthRight = 0;
+        private EmbeddedTrackPropertyType propertyType = EmbeddedTrackPropertyType.TerminateCode;
+        private byte trackBranchID = 0;
+        private ushort zero_0x12;
 
 
         // PROPERTIES
         public AddressRange AddressRange { get; set; }
+        public float LengthFrom { get => lengthFrom; set => lengthFrom = value; }
+        public float LengthTo { get => lengthTo; set => lengthTo = value; }
+        public EmbeddedTrackPropertyType PropertyType { get => propertyType; set => propertyType = value; }
+        public byte TrackBranchID { get => trackBranchID; set => trackBranchID = value; }
+        public float WidthLeft { get => widthLeft; set => widthLeft = value; }
+        public float WidthRight { get => widthRight; set => widthRight = value; }
 
+
+        // STATIC METHODS
         public static EmbeddedTrackPropertyArea Terminator()
         {
             return new EmbeddedTrackPropertyArea()
             {
-                lengthFrom = -1f,
-                lengthTo = -1f,
-                widthLeft = 0,
-                widthRight = 0,
-                propertyType = EmbeddedTrackPropertyType.TerminateCode,
-                trackBranchID = 0,
+                LengthFrom = -1f,
+                LengthTo = -1f,
+                WidthLeft = 0,
+                WidthRight = 0,
+                PropertyType = EmbeddedTrackPropertyType.TerminateCode,
+                TrackBranchID = 0,
                 zero_0x12 = 0,
             };
         }
-
         public static EmbeddedTrackPropertyArea[] DefaultArray()
         {
             return new EmbeddedTrackPropertyArea[]
@@ -88,17 +96,27 @@ namespace GameCube.GFZ.Stage
             this.RecordEndAddress(writer);
         }
 
-        public override string ToString()
+        public override string ToString() => PrintSingleLine();
+
+        public string PrintMultiLine(int indentLevel = 0, string indent = "\t")
         {
-            return 
-                $"{nameof(EmbeddedTrackPropertyArea)}(" +
-                $"{nameof(lengthFrom)}: {lengthFrom}, " +
-                $"{nameof(lengthTo)}: {lengthTo}, " +
-                $"{nameof(widthLeft)}: {widthLeft}, " +
-                $"{nameof(widthRight)}: {widthRight}, " +
-                $"{nameof(propertyType)}: {propertyType}, " +
-                $"{nameof(trackBranchID)}: {trackBranchID}" +
-                $")";
+            var builder = new System.Text.StringBuilder();
+
+            builder.AppendLineIndented(indent, indentLevel, nameof(EmbeddedTrackPropertyArea));
+            indentLevel++;
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(trackBranchID)}: {trackBranchID}");
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(propertyType)}: {propertyType}");
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(lengthFrom)}: {lengthFrom}");
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(lengthTo)}: {lengthTo}");
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(widthLeft)}: {widthLeft}");
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(widthRight)}: {widthRight}");
+
+            return builder.ToString();
+        }
+
+        public string PrintSingleLine()
+        {
+            return $"{nameof(EmbeddedTrackPropertyArea)}({trackBranchID}: {trackBranchID}, {propertyType}: {propertyType})";
         }
 
     }

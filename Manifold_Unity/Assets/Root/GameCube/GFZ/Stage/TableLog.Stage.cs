@@ -1070,8 +1070,8 @@ namespace GameCube.GFZ.Stage
                 writer.WriteNextCol("Start");
                 writer.WriteNextCol("End");
                 //
-                writer.WriteNextCol(nameof(CullOverrideTrigger.unk_0x20));
-                writer.WriteNextCol(nameof(CullOverrideTrigger.unk_0x20));
+                writer.WriteNextCol(nameof(CullOverrideTrigger.Unk_0x20));
+                writer.WriteNextCol(nameof(CullOverrideTrigger.Unk_0x20));
                 //
                 writer.WriteNextCol("Order");
                 writer.WriteNextCol("Index");
@@ -1098,8 +1098,8 @@ namespace GameCube.GFZ.Stage
                         writer.WriteNextCol(item.PrintStartAddress());
                         writer.WriteNextCol(item.PrintEndAddress());
 
-                        writer.WriteNextCol(item.unk_0x20);
-                        writer.WriteNextCol($"0x{(int)item.unk_0x20:X8}");
+                        writer.WriteNextCol(item.Unk_0x20);
+                        writer.WriteNextCol($"0x{(int)item.Unk_0x20:X8}");
 
                         writer.WriteNextCol(count);
                         writer.WriteNextCol($"[{count}/{total}]");
@@ -1717,13 +1717,13 @@ namespace GameCube.GFZ.Stage
                 writer.WriteNextCol("Course");
                 writer.WriteNextCol("AX/GX");
                 //
-                writer.WriteNextCol(nameof(EmbeddedTrackPropertyArea.lengthFrom));
-                writer.WriteNextCol(nameof(EmbeddedTrackPropertyArea.lengthTo));
-                writer.WriteNextCol(nameof(EmbeddedTrackPropertyArea.widthLeft));
-                writer.WriteNextCol(nameof(EmbeddedTrackPropertyArea.widthRight));
-                writer.WriteNextCol(nameof(EmbeddedTrackPropertyArea.propertyType));
-                writer.WriteNextCol(nameof(EmbeddedTrackPropertyArea.trackBranchID));
-                writer.WriteNextCol(nameof(EmbeddedTrackPropertyArea.zero_0x12));
+                writer.WriteNextCol(nameof(EmbeddedTrackPropertyArea.LengthFrom));
+                writer.WriteNextCol(nameof(EmbeddedTrackPropertyArea.LengthTo));
+                writer.WriteNextCol(nameof(EmbeddedTrackPropertyArea.WidthLeft));
+                writer.WriteNextCol(nameof(EmbeddedTrackPropertyArea.WidthRight));
+                writer.WriteNextCol(nameof(EmbeddedTrackPropertyArea.PropertyType));
+                writer.WriteNextCol(nameof(EmbeddedTrackPropertyArea.TrackBranchID));
+                //writer.WriteNextCol(nameof(EmbeddedTrackPropertyArea.zero_0x12));
                 //
                 writer.WriteNextRow();
 
@@ -1741,13 +1741,13 @@ namespace GameCube.GFZ.Stage
                         writer.WriteNextCol(courseID);
                         writer.WriteNextCol(isAxGx);
                         //
-                        writer.WriteNextCol(surfaceAttributeArea.lengthFrom);
-                        writer.WriteNextCol(surfaceAttributeArea.lengthTo);
-                        writer.WriteNextCol(surfaceAttributeArea.widthLeft);
-                        writer.WriteNextCol(surfaceAttributeArea.widthRight);
-                        writer.WriteNextCol(surfaceAttributeArea.propertyType);
-                        writer.WriteNextCol(surfaceAttributeArea.trackBranchID);
-                        writer.WriteNextCol(surfaceAttributeArea.zero_0x12);
+                        writer.WriteNextCol(surfaceAttributeArea.LengthFrom);
+                        writer.WriteNextCol(surfaceAttributeArea.LengthTo);
+                        writer.WriteNextCol(surfaceAttributeArea.WidthLeft);
+                        writer.WriteNextCol(surfaceAttributeArea.WidthRight);
+                        writer.WriteNextCol(surfaceAttributeArea.PropertyType);
+                        writer.WriteNextCol(surfaceAttributeArea.TrackBranchID);
+                        //writer.WriteNextCol(surfaceAttributeArea.zero_0x12);
                         //
                         writer.WriteNextRow();
                     }

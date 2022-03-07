@@ -151,7 +151,7 @@ namespace GameCube.GFZ.Stage
         {
             var builder = new System.Text.StringBuilder();
 
-            builder.AppendLineIndented(indent, indentLevel, nameof(Checkpoint));
+            builder.AppendLineIndented(indent, indentLevel, nameof(ColliderMesh));
             indentLevel++;
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(unk_0x00)}: {unk_0x00}");
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(unk_0x04)}: {unk_0x04}");

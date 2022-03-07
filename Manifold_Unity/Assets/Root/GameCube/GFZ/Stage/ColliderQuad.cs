@@ -133,7 +133,7 @@ namespace GameCube.GFZ.Stage
         {
             var builder = new System.Text.StringBuilder();
 
-            builder.AppendLineIndented(indent, indentLevel, nameof(Checkpoint));
+            builder.AppendLineIndented(indent, indentLevel, nameof(ColliderQuad));
             indentLevel++;
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(dotProduct)}: {dotProduct}");
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(vertex0)}: {vertex0}");
