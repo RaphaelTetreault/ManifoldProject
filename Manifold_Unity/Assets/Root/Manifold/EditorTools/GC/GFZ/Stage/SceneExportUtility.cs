@@ -281,13 +281,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 var colliderGeo = sceneObject.colliderMesh;
                 if (colliderGeo != null)
                 {
-                    if (colliderGeo.tris != null)
-                        if (colliderGeo.tris.Length == 0)
-                            colliderGeo.tris = null;
+                    if (colliderGeo.Tris != null)
+                        if (colliderGeo.Tris.Length == 0)
+                            colliderGeo.Tris = null;
 
-                    if (colliderGeo.quads != null)
-                        if (colliderGeo.quads.Length == 0)
-                            colliderGeo.quads = null;
+                    if (colliderGeo.Quads != null)
+                        if (colliderGeo.Quads.Length == 0)
+                            colliderGeo.Quads = null;
                 }
             }
 

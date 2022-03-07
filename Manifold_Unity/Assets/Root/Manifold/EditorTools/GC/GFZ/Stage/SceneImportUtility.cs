@@ -814,7 +814,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
                     for (int j = 0; j < node.checkpoints.Length; j++)
                     {
-                        var position = node.checkpoints[j].planeStart.origin;
+                        var position = node.checkpoints[j].PlaneStart.origin;
                         var instance = CreatePrimitive(PrimitiveType.Sphere, $"{index}.{j}", chain);
                         instance.transform.position = position;
                         instance.transform.localScale = Vector3.one * 5f;

@@ -33,11 +33,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             var colliderGeo = sceneObject.sceneObject.colliderMesh;
 
             //var count = colliderGeo.triCount;
-            var count = colliderGeo.quadCount;
+            var count = colliderGeo.QuadsPtr.Length;
             index = Mathf.Clamp(index, 0, count- 1);
 
             //var tri = colliderGeo.tris[index];
-            var tri = colliderGeo.quads[index];
+            var tri = colliderGeo.Quads[index];
             var verts = tri.GetVerts();
             var vertCenter = tri.VertCenter();
             var precomputes = tri.GetPrecomputes();

@@ -678,11 +678,11 @@ namespace GameCube.GFZ.Stage
                 {
                     colliderGeometries.Add(colliderGeo);
 
-                    if (colliderGeo.triCount > 0)
-                        colliderGeoTris.AddRange(colliderGeo.tris);
+                    if (colliderGeo.Tris.Length > 0)
+                        colliderGeoTris.AddRange(colliderGeo.Tris);
 
-                    if (colliderGeo.quadCount > 0)
-                        colliderGeoQuads.AddRange(colliderGeo.quads);
+                    if (colliderGeo.Quads.Length > 0)
+                        colliderGeoQuads.AddRange(colliderGeo.Quads);
                 }
             }
             // Collider Geometry

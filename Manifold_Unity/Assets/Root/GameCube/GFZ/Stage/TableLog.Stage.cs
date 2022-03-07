@@ -623,11 +623,11 @@ namespace GameCube.GFZ.Stage
                     {
                         if (dynamicSceneObject.sceneObject.colliderMesh == null)
                             continue;
-                        if (dynamicSceneObject.sceneObject.colliderMesh.triCount == 0)
+                        if (dynamicSceneObject.sceneObject.colliderMesh.Tris.Length == 0)
                             continue;
 
                         int triIndex = 0;
-                        foreach (var tri in dynamicSceneObject.sceneObject.colliderMesh.tris)
+                        foreach (var tri in dynamicSceneObject.sceneObject.colliderMesh.Tris)
                         {
                             writer.WriteNextCol(scene.FileName);
                             writer.WriteNextCol(gameObjectIndex);
@@ -718,11 +718,11 @@ namespace GameCube.GFZ.Stage
                     {
                         if (dynamicSceneObject.sceneObject.colliderMesh == null)
                             continue;
-                        if (dynamicSceneObject.sceneObject.colliderMesh.quadCount == 0)
+                        if (dynamicSceneObject.sceneObject.colliderMesh.Quads.Length == 0)
                             continue;
 
                         int quadIndex = 0;
-                        foreach (var quad in dynamicSceneObject.sceneObject.colliderMesh.quads)
+                        foreach (var quad in dynamicSceneObject.sceneObject.colliderMesh.Quads)
                         {
                             writer.WriteNextCol(scene.FileName);
                             writer.WriteNextCol(gameObjectIndex);
@@ -1348,28 +1348,28 @@ namespace GameCube.GFZ.Stage
                 writer.WriteNextCol("File");
                 writer.WriteNextCol("Track Node");
                 writer.WriteNextCol("Track Point");
-                writer.WriteNextColNicify(nameof(Checkpoint.curveTimeStart));
-                writer.WriteNextColNicify(nameof(Checkpoint.curveTimeEnd));
-                writer.WriteNextColNicify(nameof(Checkpoint.planeStart.dotProduct));
-                writer.WriteNextColNicify(nameof(Checkpoint.planeStart.normal) + ".x");
-                writer.WriteNextColNicify(nameof(Checkpoint.planeStart.normal) + ".y");
-                writer.WriteNextColNicify(nameof(Checkpoint.planeStart.normal) + ".z");
-                writer.WriteNextColNicify(nameof(Checkpoint.planeStart.origin) + ".x");
-                writer.WriteNextColNicify(nameof(Checkpoint.planeStart.origin) + ".y");
-                writer.WriteNextColNicify(nameof(Checkpoint.planeStart.origin) + ".z");
-                writer.WriteNextColNicify(nameof(Checkpoint.planeEnd.dotProduct));
-                writer.WriteNextColNicify(nameof(Checkpoint.planeEnd.normal) + ".x");
-                writer.WriteNextColNicify(nameof(Checkpoint.planeEnd.normal) + ".y");
-                writer.WriteNextColNicify(nameof(Checkpoint.planeEnd.normal) + ".z");
-                writer.WriteNextColNicify(nameof(Checkpoint.planeEnd.origin) + ".x");
-                writer.WriteNextColNicify(nameof(Checkpoint.planeEnd.origin) + ".y");
-                writer.WriteNextColNicify(nameof(Checkpoint.planeEnd.origin) + ".z");
-                writer.WriteNextColNicify(nameof(Checkpoint.startDistance));
-                writer.WriteNextColNicify(nameof(Checkpoint.endDistance));
-                writer.WriteNextColNicify(nameof(Checkpoint.trackWidth));
-                writer.WriteNextColNicify(nameof(Checkpoint.connectToTrackIn));
-                writer.WriteNextColNicify(nameof(Checkpoint.connectToTrackOut));
-                writer.WriteNextColNicify(nameof(Checkpoint.zero_0x4E));
+                writer.WriteNextColNicify(nameof(Checkpoint.CurveTimeStart));
+                writer.WriteNextColNicify(nameof(Checkpoint.CurveTimeEnd));
+                writer.WriteNextColNicify(nameof(Checkpoint.PlaneStart.dotProduct));
+                writer.WriteNextColNicify(nameof(Checkpoint.PlaneStart.normal) + ".x");
+                writer.WriteNextColNicify(nameof(Checkpoint.PlaneStart.normal) + ".y");
+                writer.WriteNextColNicify(nameof(Checkpoint.PlaneStart.normal) + ".z");
+                writer.WriteNextColNicify(nameof(Checkpoint.PlaneStart.origin) + ".x");
+                writer.WriteNextColNicify(nameof(Checkpoint.PlaneStart.origin) + ".y");
+                writer.WriteNextColNicify(nameof(Checkpoint.PlaneStart.origin) + ".z");
+                writer.WriteNextColNicify(nameof(Checkpoint.PlaneEnd.dotProduct));
+                writer.WriteNextColNicify(nameof(Checkpoint.PlaneEnd.normal) + ".x");
+                writer.WriteNextColNicify(nameof(Checkpoint.PlaneEnd.normal) + ".y");
+                writer.WriteNextColNicify(nameof(Checkpoint.PlaneEnd.normal) + ".z");
+                writer.WriteNextColNicify(nameof(Checkpoint.PlaneEnd.origin) + ".x");
+                writer.WriteNextColNicify(nameof(Checkpoint.PlaneEnd.origin) + ".y");
+                writer.WriteNextColNicify(nameof(Checkpoint.PlaneEnd.origin) + ".z");
+                writer.WriteNextColNicify(nameof(Checkpoint.StartDistance));
+                writer.WriteNextColNicify(nameof(Checkpoint.EndDistance));
+                writer.WriteNextColNicify(nameof(Checkpoint.TrackWidth));
+                writer.WriteNextColNicify(nameof(Checkpoint.ConnectToTrackIn));
+                writer.WriteNextColNicify(nameof(Checkpoint.ConnectToTrackOut));
+                //writer.WriteNextColNicify(nameof(Checkpoint.zero_0x4E));
                 writer.WriteNextRow();
 
                 foreach (var scene in scenes)
@@ -1386,28 +1386,28 @@ namespace GameCube.GFZ.Stage
                             writer.WriteNextCol($"[{nodeIndex}/{nodeLength}]");
                             writer.WriteNextCol($"[{pointIndex}/{pointLength}]");
 
-                            writer.WriteNextCol(trackPoint.curveTimeStart);
-                            writer.WriteNextCol(trackPoint.curveTimeEnd);
-                            writer.WriteNextCol(trackPoint.planeStart.dotProduct);
-                            writer.WriteNextCol(trackPoint.planeStart.normal.x);
-                            writer.WriteNextCol(trackPoint.planeStart.normal.y);
-                            writer.WriteNextCol(trackPoint.planeStart.normal.z);
-                            writer.WriteNextCol(trackPoint.planeStart.origin.x);
-                            writer.WriteNextCol(trackPoint.planeStart.origin.y);
-                            writer.WriteNextCol(trackPoint.planeStart.origin.z);
-                            writer.WriteNextCol(trackPoint.planeEnd.dotProduct);
-                            writer.WriteNextCol(trackPoint.planeEnd.normal.x);
-                            writer.WriteNextCol(trackPoint.planeEnd.normal.y);
-                            writer.WriteNextCol(trackPoint.planeEnd.normal.z);
-                            writer.WriteNextCol(trackPoint.planeEnd.origin.x);
-                            writer.WriteNextCol(trackPoint.planeEnd.origin.y);
-                            writer.WriteNextCol(trackPoint.planeEnd.origin.z);
-                            writer.WriteNextCol(trackPoint.startDistance);
-                            writer.WriteNextCol(trackPoint.endDistance);
-                            writer.WriteNextCol(trackPoint.trackWidth);
-                            writer.WriteNextCol(trackPoint.connectToTrackIn);
-                            writer.WriteNextCol(trackPoint.connectToTrackOut);
-                            writer.WriteNextCol(trackPoint.zero_0x4E);
+                            writer.WriteNextCol(trackPoint.CurveTimeStart);
+                            writer.WriteNextCol(trackPoint.CurveTimeEnd);
+                            writer.WriteNextCol(trackPoint.PlaneStart.dotProduct);
+                            writer.WriteNextCol(trackPoint.PlaneStart.normal.x);
+                            writer.WriteNextCol(trackPoint.PlaneStart.normal.y);
+                            writer.WriteNextCol(trackPoint.PlaneStart.normal.z);
+                            writer.WriteNextCol(trackPoint.PlaneStart.origin.x);
+                            writer.WriteNextCol(trackPoint.PlaneStart.origin.y);
+                            writer.WriteNextCol(trackPoint.PlaneStart.origin.z);
+                            writer.WriteNextCol(trackPoint.PlaneEnd.dotProduct);
+                            writer.WriteNextCol(trackPoint.PlaneEnd.normal.x);
+                            writer.WriteNextCol(trackPoint.PlaneEnd.normal.y);
+                            writer.WriteNextCol(trackPoint.PlaneEnd.normal.z);
+                            writer.WriteNextCol(trackPoint.PlaneEnd.origin.x);
+                            writer.WriteNextCol(trackPoint.PlaneEnd.origin.y);
+                            writer.WriteNextCol(trackPoint.PlaneEnd.origin.z);
+                            writer.WriteNextCol(trackPoint.StartDistance);
+                            writer.WriteNextCol(trackPoint.EndDistance);
+                            writer.WriteNextCol(trackPoint.TrackWidth);
+                            writer.WriteNextCol(trackPoint.ConnectToTrackIn);
+                            writer.WriteNextCol(trackPoint.ConnectToTrackOut);
+                            //writer.WriteNextCol(trackPoint.zero_0x4E);
                             writer.WriteNextRow();
 
                             pointIndex++;

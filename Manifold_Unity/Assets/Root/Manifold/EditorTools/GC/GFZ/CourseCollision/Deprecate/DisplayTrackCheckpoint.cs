@@ -27,16 +27,16 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 for (int i = 0; i < node.checkpoints.Length; i++)
                 {
                     var point = node.checkpoints[i];
-                    var from = point.planeStart.origin;
-                    var to = point.planeEnd.origin;
-                    var halfWidth = point.trackWidth / 2f;
+                    var from = point.PlaneStart.origin;
+                    var to = point.PlaneEnd.origin;
+                    var halfWidth = point.TrackWidth / 2f;
                     var scaleFrom = new Vector3(halfWidth, halfWidth, 1f);
                     var scaleTo = 2f * debugSize * Vector3.one;
 
                     Gizmos.color = debugColor[i];
                     Gizmos.DrawLine(from, to);
-                    Gizmos.DrawMesh(mesh, 0, from, Quaternion.LookRotation(point.planeStart.normal), scaleFrom);
-                    Gizmos.DrawWireMesh(mesh, 0, to, Quaternion.LookRotation(point.planeEnd.normal), scaleTo);
+                    Gizmos.DrawMesh(mesh, 0, from, Quaternion.LookRotation(point.PlaneStart.normal), scaleFrom);
+                    Gizmos.DrawWireMesh(mesh, 0, to, Quaternion.LookRotation(point.PlaneEnd.normal), scaleTo);
                 }
             }
         }

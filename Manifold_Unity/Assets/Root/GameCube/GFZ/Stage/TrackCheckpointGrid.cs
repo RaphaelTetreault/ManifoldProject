@@ -93,8 +93,8 @@ namespace GameCube.GFZ.Stage
                     {
                         var checkpoint = checkpoints[i];
 
-                        var posX = checkpoint.planeStart.origin.x;
-                        var posZ = checkpoint.planeStart.origin.z;
+                        var posX = checkpoint.PlaneStart.origin.x;
+                        var posZ = checkpoint.PlaneStart.origin.z;
 
                         bool isBetweenX = IsBetween(posX, minX, maxX);
                         bool isBetweenZ = IsBetween(posZ, minZ, maxZ);
