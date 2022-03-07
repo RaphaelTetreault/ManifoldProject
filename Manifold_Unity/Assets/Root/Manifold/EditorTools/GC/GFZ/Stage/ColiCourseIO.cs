@@ -433,7 +433,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 log.WriteLine();
 
                 //
-                log.WriteLine($"{nameof(TrackSegment)}.{nameof(TrackSegment.trackCurves)}");
+                log.WriteLine($"{nameof(TrackSegment)}.{nameof(TrackSegment.animationCurveTRS)}");
                 string[] labelSRP = new string[] { "Sca", "Rot", "Pos" }; // scale, rotation, position
                 string[] labelXYZ = new string[] { "x", "y", "z" };
                 for (int segmentIndex = 0; segmentIndex < coliScene.allTrackSegments.Length; segmentIndex++)
@@ -442,9 +442,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                     var segmentIndexFormat = segmentIndex.ArrayFormat(coliScene.allTrackSegments);
                     log.WriteLine($"[{segmentIndex}]\t");
 
-                    for (int animIndex = 0; animIndex < trackSegment.trackCurves.AnimationCurves.Length; animIndex++)
+                    for (int animIndex = 0; animIndex < trackSegment.animationCurveTRS.AnimationCurves.Length; animIndex++)
                     {
-                        var animCurve = trackSegment.trackCurves.AnimationCurves[animIndex];
+                        var animCurve = trackSegment.animationCurveTRS.AnimationCurves[animIndex];
                         // NOTE: delete. At most 4, so no 2 digit indexes
                         //var animCurveFormat = segmentIndex.ArrayFormat(coliScene.trackNodes);
                         var currLabelSRP = labelSRP[animIndex / 3];
@@ -632,7 +632,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
             // This block writes out the contents of each TrackSegments AnimationCurves
             log.WriteLine("TRACK SEGMENT ANIMATION CURVES");
-            log.WriteLine($"{nameof(TrackSegment)}.{nameof(TrackSegment.trackCurves)}");
+            log.WriteLine($"{nameof(TrackSegment)}.{nameof(TrackSegment.animationCurveTRS)}");
             string[] labelSRP = new string[] { "Sca", "Rot", "Pos" };
             string[] labelXYZ = new string[] { "x", "y", "z" };
             for (int segmentIndex = 0; segmentIndex < coliScene.allTrackSegments.Length; segmentIndex++)
@@ -640,9 +640,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 var trackSegment = coliScene.allTrackSegments[segmentIndex];
                 log.WriteLine($"{nameof(TrackSegment)}[{segmentIndex}]\t{trackSegment}");
 
-                for (int animIndex = 0; animIndex < trackSegment.trackCurves.AnimationCurves.Length; animIndex++)
+                for (int animIndex = 0; animIndex < trackSegment.animationCurveTRS.AnimationCurves.Length; animIndex++)
                 {
-                    var animCurve = trackSegment.trackCurves.AnimationCurves[animIndex];
+                    var animCurve = trackSegment.animationCurveTRS.AnimationCurves[animIndex];
                     var currLabelSRP = labelSRP[animIndex / 3];
                     var currLabelXYZ = labelXYZ[animIndex % 3];
                     log.WriteLine($"{currLabelSRP}.{currLabelXYZ} [{animIndex}] ");

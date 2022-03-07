@@ -196,7 +196,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             trackSegment.unk_0x3B = unk0x3B;
 
             // Get animation data
-            trackSegment.trackCurves = animationCurveTRS.ToTrackSegment();
+            trackSegment.animationCurveTRS = animationCurveTRS.ToTrackSegment();
 
             //
             return trackSegment;

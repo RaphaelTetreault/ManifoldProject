@@ -25,7 +25,7 @@ namespace GameCube.GFZ.Stage
         public TrackEmbeddedPropertyType embeddedPropertyType;
         public TrackPerimeterFlags perimeterFlags;
         public TrackPipeCylinderFlags pipeCylinderFlags;
-        public Pointer trackCurvesPtr;
+        public Pointer animationCurvesTrsPtr;
         public Pointer trackCornerPtr;
         public ArrayPointer childrenPtrs;
         public float3 localScale;
@@ -41,7 +41,7 @@ namespace GameCube.GFZ.Stage
         public uint zero_0x48; // zero confirmed
         public int branchIndex; // 0, 1, 2, 3
         // REFERENCE FIELDS
-        public TrackCurves trackCurves;
+        public AnimationCurveTRS animationCurveTRS;
         public TrackCorner trackCorner;
         // HACK?
         public int[] childIndexes = new int[0];
@@ -60,7 +60,7 @@ namespace GameCube.GFZ.Stage
                 reader.ReadX(ref embeddedPropertyType);
                 reader.ReadX(ref perimeterFlags);
                 reader.ReadX(ref pipeCylinderFlags);
-                reader.ReadX(ref trackCurvesPtr);
+                reader.ReadX(ref animationCurvesTrsPtr);
                 reader.ReadX(ref trackCornerPtr);
                 reader.ReadX(ref childrenPtrs);
                 reader.ReadX(ref localScale);
@@ -78,9 +78,9 @@ namespace GameCube.GFZ.Stage
             }
             this.RecordEndAddress(reader);
             {
-                // Read Topology
-                reader.JumpToAddress(trackCurvesPtr);
-                reader.ReadX(ref trackCurves);
+                // Read animation curves
+                reader.JumpToAddress(animationCurvesTrsPtr);
+                reader.ReadX(ref animationCurveTRS);
 
                 // Read corner transform
                 if (trackCornerPtr.IsNotNull)
@@ -162,7 +162,7 @@ namespace GameCube.GFZ.Stage
                 // recursive nature of this type.
                 // See "SetChildPointers(TrackSegment[] children)"
 
-                trackCurvesPtr = trackCurves.GetPointer();
+                animationCurvesTrsPtr = animationCurveTRS.GetPointer();
                 trackCornerPtr = trackCorner.GetPointer();
             }
             this.RecordStartAddress(writer);
@@ -171,7 +171,7 @@ namespace GameCube.GFZ.Stage
                 writer.WriteX(embeddedPropertyType);
                 writer.WriteX(perimeterFlags);
                 writer.WriteX(pipeCylinderFlags);
-                writer.WriteX(trackCurvesPtr);
+                writer.WriteX(animationCurvesTrsPtr);
                 writer.WriteX(trackCornerPtr);
                 writer.WriteX(childrenPtrs);
                 writer.WriteX(localScale);
@@ -193,7 +193,7 @@ namespace GameCube.GFZ.Stage
         public void ValidateReferences()
         {
             // Make sure references and pointers line up right
-            Assert.ReferencePointer(trackCurves, trackCurvesPtr);
+            Assert.ReferencePointer(animationCurveTRS, animationCurvesTrsPtr);
             Assert.ReferencePointer(trackCorner, trackCornerPtr);
 
             // 2021/12/21: NOT SURE ABOUT THIS, FAILS ON ST43
@@ -246,7 +246,7 @@ namespace GameCube.GFZ.Stage
             builder.Append($"\n\t{nameof(perimeterFlags)}: {perimeterFlags}");
             builder.Append($"\n\t{nameof(segmentType)}: {segmentType}");
             //
-            builder.Append($"\n\t{nameof(trackCurvesPtr)}: {trackCurvesPtr}");
+            builder.Append($"\n\t{nameof(animationCurvesTrsPtr)}: {animationCurvesTrsPtr}");
             builder.Append($"\n\t{nameof(trackCornerPtr)}: {trackCornerPtr}");
             builder.Append($"\n\t{nameof(childrenPtrs)}: {childrenPtrs}");
             //

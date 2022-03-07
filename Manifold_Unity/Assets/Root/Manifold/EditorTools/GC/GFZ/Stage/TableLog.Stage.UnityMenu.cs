@@ -156,12 +156,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
             // TRACK SEGMENT KEYABLES (INDEXED)
             {
-                var count = TrackCurves.kCurveCount;
+                var count = GameCube.GFZ.Stage.AnimationCurveTRS.kCurveCount;
                 for (int i = 0; i < count; i++)
                 {
-                    var fileName = $"{nameof(TrackCurves)}[{i + 1}].tsv";
+                    var fileName = $"{nameof(GameCube.GFZ.Stage.AnimationCurveTRS)}[{i + 1}].tsv";
                     var filePath = Path.Combine(destination, fileName);
-                    EditorUtility.DisplayProgressBar(title, filePath, (float)(i + 1) / TrackCurves.kCurveCount);
+                    EditorUtility.DisplayProgressBar(title, filePath, (float)(i + 1) / GameCube.GFZ.Stage.AnimationCurveTRS.kCurveCount);
                     AnalyzeTrackKeyables(scenes, filePath, i);
                 }
             }

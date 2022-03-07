@@ -73,7 +73,7 @@ namespace GameCube.GFZ.Stage
                     int trackIndex = 0;
                     foreach (var trackTransform in scene.rootTrackSegments)
                     {
-                        for (int keyablesIndex = 0; keyablesIndex < TrackCurves.kCurveCount; keyablesIndex++)
+                        for (int keyablesIndex = 0; keyablesIndex < AnimationCurveTRS.kCurveCount; keyablesIndex++)
                         {
                             WriteTrackKeyableAttributeRecursive(writer, scene, 0, keyablesIndex, ++trackIndex, trackTransform);
                         }
@@ -129,7 +129,7 @@ namespace GameCube.GFZ.Stage
         }
         public static void WriteTrackKeyableAttributeRecursive(StreamWriter writer, Scene scene, int nestedDepth, int animationCurveIndex, int trackTransformIndex, TrackSegment trackTransform)
         {
-            var animationCurves = trackTransform.trackCurves.AnimationCurves;
+            var animationCurves = trackTransform.animationCurveTRS.AnimationCurves;
             var keyableIndex = 1; // 0-n, depends on number of keyables in array
             int keyableTotal = animationCurves[animationCurveIndex].Length;
 
@@ -190,7 +190,7 @@ namespace GameCube.GFZ.Stage
                 writer.WriteNextCol(nameof(TrackSegment.embeddedPropertyType));
                 writer.WriteNextCol(nameof(TrackSegment.perimeterFlags));
                 writer.WriteNextCol(nameof(TrackSegment.pipeCylinderFlags));
-                writer.WriteNextCol(nameof(TrackSegment.trackCurvesPtr));
+                writer.WriteNextCol(nameof(TrackSegment.animationCurvesTrsPtr));
                 writer.WriteNextCol(nameof(TrackSegment.trackCornerPtr));
                 writer.WriteNextCol(nameof(TrackSegment.childrenPtrs));
                 writer.WriteNextCol(nameof(TrackSegment.localScale));
@@ -254,7 +254,7 @@ namespace GameCube.GFZ.Stage
             writer.WriteNextCol(trackTransform.embeddedPropertyType);
             writer.WriteNextCol(trackTransform.perimeterFlags);
             writer.WriteNextCol(trackTransform.pipeCylinderFlags);
-            writer.WriteNextCol(trackTransform.trackCurvesPtr);
+            writer.WriteNextCol(trackTransform.animationCurvesTrsPtr);
             writer.WriteNextCol(trackTransform.trackCornerPtr);
             writer.WriteNextCol(trackTransform.childrenPtrs);
             writer.WriteNextCol(trackTransform.localScale);

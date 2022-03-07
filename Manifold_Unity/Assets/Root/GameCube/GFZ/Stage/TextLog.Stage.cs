@@ -94,7 +94,7 @@ namespace GameCube.GFZ.Stage
 
             // This block writes out the contents of each TrackSegments AnimationCurves
             log.WriteLine("TRACK SEGMENT ANIMATION CURVES");
-            log.WriteLine($"{nameof(TrackSegment)}.{nameof(TrackSegment.trackCurves)}");
+            log.WriteLine($"{nameof(TrackSegment)}.{nameof(TrackSegment.animationCurveTRS)}");
             string[] labelSRP = new string[] { "Sca", "Rot", "Pos" };
             string[] labelXYZ = new string[] { "x", "y", "z" };
             for (int segmentIndex = 0; segmentIndex < coliScene.allTrackSegments.Length; segmentIndex++)
@@ -102,9 +102,9 @@ namespace GameCube.GFZ.Stage
                 var trackSegment = coliScene.allTrackSegments[segmentIndex];
                 log.WriteLine($"{nameof(TrackSegment)}[{segmentIndex}]\t{trackSegment}");
 
-                for (int animIndex = 0; animIndex < trackSegment.trackCurves.AnimationCurves.Length; animIndex++)
+                for (int animIndex = 0; animIndex < trackSegment.animationCurveTRS.AnimationCurves.Length; animIndex++)
                 {
-                    var animCurve = trackSegment.trackCurves.AnimationCurves[animIndex];
+                    var animCurve = trackSegment.animationCurveTRS.AnimationCurves[animIndex];
                     var currLabelSRP = labelSRP[animIndex / 3];
                     var currLabelXYZ = labelXYZ[animIndex % 3];
                     log.WriteLine($"{currLabelSRP}.{currLabelXYZ} [{animIndex}] ");

@@ -570,9 +570,9 @@ namespace GameCube.GFZ.Stage
                     // TRACK ANIMATION CURVES
                     {
                         // Construct list of all track curves (sets of 9 ptrs)
-                        var listTrackCurves = new List<TrackCurves>();
+                        var listTrackCurves = new List<AnimationCurveTRS>();
                         foreach (var trackSegment in allTrackSegments)
-                            listTrackCurves.Add(trackSegment.trackCurves);
+                            listTrackCurves.Add(trackSegment.animationCurveTRS);
                         var allTrackCurves = listTrackCurves.ToArray();
                         // Write anim curve ptrs
                         writer.InlineDesc(serializeVerbose, allTrackSegments.GetBasePointer(), allTrackCurves);
@@ -916,7 +916,7 @@ namespace GameCube.GFZ.Stage
                 hasReferences.AddRange(trackNodes);
                 hasReferences.AddRange(allTrackSegments);
                 foreach (var trackSegment in allTrackSegments)
-                    hasReferences.Add(trackSegment.trackCurves);
+                    hasReferences.Add(trackSegment.animationCurveTRS);
                 // The checkpoint table
                 hasReferences.Add(trackCheckpointGrid);
 
@@ -1106,9 +1106,9 @@ namespace GameCube.GFZ.Stage
                 list.Add(trackNode);
                 list.AddRange(trackNode.checkpoints);
                 list.Add(trackNode.segment);
-                list.Add(trackNode.segment.trackCurves);
-                list.AddRange(trackNode.segment.trackCurves.AnimationCurves);
-                foreach (var anim in trackNode.segment.trackCurves.AnimationCurves) // null?
+                list.Add(trackNode.segment.animationCurveTRS);
+                list.AddRange(trackNode.segment.animationCurveTRS.AnimationCurves);
+                foreach (var anim in trackNode.segment.animationCurveTRS.AnimationCurves) // null?
                     list.AddRange(anim.keyableAttributes);
                 list.Add(trackNode.segment.trackCorner);
                 if (trackNode.segment.trackCorner != null)
