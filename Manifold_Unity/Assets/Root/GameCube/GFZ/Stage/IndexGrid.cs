@@ -13,38 +13,38 @@ namespace GameCube.GFZ.Stage
     public abstract class IndexGrid :
         IBinaryAddressable,
         IBinarySerializable,
-        IHasReference
+        IHasReference,
+        ITextPrintable
     {
-        // "CONSTANTS"
-        public int Count => SubdivisionsX * SubdivisionsZ;
-        public abstract int SubdivisionsX { get; }
-        public abstract int SubdivisionsZ { get; }
-
-
         // FIELDS
-        public Pointer[] indexListPtrs;
+        private Pointer[] indexListPtrs;
         // REFERENCE FIELDS
-        public IndexList[] indexLists;
+        private IndexList[] indexLists;
 
 
         public IndexGrid()
         {
             // Initialize array to default/const size.
             // Requires inheriter to finalize count.
-            indexLists = new IndexList[Count];
-            for (int i = 0; i < indexLists.Length; i++)
+            IndexLists = new IndexList[Count];
+            for (int i = 0; i < IndexLists.Length; i++)
             {
-                indexLists[i] = new IndexList();
+                IndexLists[i] = new IndexList();
             }
-            //
-            //indexListPtrs = new Pointer[Count];
+            
+            IndexListPtrs = new Pointer[Count];
         }
 
 
+        // ABSTRACT PROPERTIES
+        public abstract int SubdivisionsX { get; }
+        public abstract int SubdivisionsZ { get; }
+
         // PROPERTIES
         public AddressRange AddressRange { get; set; }
-        public ushort LargestIndex { get; set; }
-        public bool HasIndexes { get; set; }
+        public int Count => SubdivisionsX * SubdivisionsZ;
+        public ushort LargestIndex { get; private set; }
+        public bool HasIndexes { get; private set; }
         public ushort IndexesLength
         {
             get
@@ -55,6 +55,8 @@ namespace GameCube.GFZ.Stage
                     : (ushort)(0);
             }
         }
+        public Pointer[] IndexListPtrs { get => indexListPtrs; set => indexListPtrs = value; }
+        public IndexList[] IndexLists { get => indexLists; set => indexLists = value; }
 
 
         // METHODS
@@ -112,7 +114,7 @@ namespace GameCube.GFZ.Stage
                     // init value
                     indexLists[i] = new IndexList();
 
-                    var indexArrayPtr = indexListPtrs[i];
+                    var indexArrayPtr = IndexListPtrs[i];
                     if (indexArrayPtr.IsNotNull)
                     {
                         reader.JumpToAddress(indexArrayPtr);
@@ -168,5 +170,39 @@ namespace GameCube.GFZ.Stage
                     Assert.ReferencePointer(indexList, pointer);
             }
         }
+
+        public string PrintMultiLine(int indentLevel = 0, string indent = "\t")
+        {
+            // StringBuilder is still used because of the indent levels
+            var builder = new System.Text.StringBuilder();
+
+            builder.AppendLineIndented(indent, indentLevel, GetType().Name);
+            indentLevel++;
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(SubdivisionsX)}: {SubdivisionsX}");
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(SubdivisionsZ)}: {SubdivisionsZ}");
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(Count)}: {Count}");
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(LargestIndex)}: {LargestIndex}");
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(indexLists)}[{Count}]");
+            indentLevel++;
+            int index = 0;
+            foreach (var indexList in indexLists)
+            {
+                // Write a little header with an [index] marker
+                builder.AppendLineIndented(indent, indentLevel, $"[{index}] {indexList.PrintSingleLine()}");
+                // Write all the values from the index list
+                builder.Append(indexList.PrintMultiLine(indentLevel + 1, indent));
+                index++;
+            }
+
+            return builder.ToString();
+        }
+
+        public string PrintSingleLine()
+        {
+            return $"{GetType().Name}({SubdivisionsX}: {SubdivisionsX}, {SubdivisionsZ}: {SubdivisionsZ})";
+        }
+
+        public override string ToString() => PrintSingleLine();
+
     }
 }

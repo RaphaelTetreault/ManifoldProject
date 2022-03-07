@@ -825,12 +825,12 @@ namespace GameCube.GFZ.Stage
                 writer.WriteNextCol(nameof(Scene.storyObjectTriggersPtr)); // adr
                 writer.WriteNextCol(nameof(Scene.checkpointGridPtr));
                 // Structure
-                writer.WriteNextCol(nameof(Scene.checkpointGridXZ) + "." + nameof(Scene.checkpointGridXZ.left));
-                writer.WriteNextCol(nameof(Scene.checkpointGridXZ) + "." + nameof(Scene.checkpointGridXZ.top));
-                writer.WriteNextCol(nameof(Scene.checkpointGridXZ) + "." + nameof(Scene.checkpointGridXZ.subdivisionWidth));
-                writer.WriteNextCol(nameof(Scene.checkpointGridXZ) + "." + nameof(Scene.checkpointGridXZ.subdivisionLength));
-                writer.WriteNextCol(nameof(Scene.checkpointGridXZ) + "." + nameof(Scene.checkpointGridXZ.numSubdivisionsX));
-                writer.WriteNextCol(nameof(Scene.checkpointGridXZ) + "." + nameof(Scene.checkpointGridXZ.numSubdivisionsZ));
+                writer.WriteNextCol(nameof(Scene.checkpointGridXZ) + "." + nameof(Scene.checkpointGridXZ.Left));
+                writer.WriteNextCol(nameof(Scene.checkpointGridXZ) + "." + nameof(Scene.checkpointGridXZ.Top));
+                writer.WriteNextCol(nameof(Scene.checkpointGridXZ) + "." + nameof(Scene.checkpointGridXZ.SubdivisionWidth));
+                writer.WriteNextCol(nameof(Scene.checkpointGridXZ) + "." + nameof(Scene.checkpointGridXZ.SubdivisionLength));
+                writer.WriteNextCol(nameof(Scene.checkpointGridXZ) + "." + nameof(Scene.checkpointGridXZ.NumSubdivisionsX));
+                writer.WriteNextCol(nameof(Scene.checkpointGridXZ) + "." + nameof(Scene.checkpointGridXZ.NumSubdivisionsZ));
                 // 
                 writer.WriteNextCol(nameof(Scene.zeroes0xD8));
                 writer.WriteNextRow();
@@ -892,12 +892,12 @@ namespace GameCube.GFZ.Stage
                     writer.WriteNextCol(scene.storyObjectTriggersPtr.PrintAddress);
                     writer.WriteNextCol(scene.checkpointGridPtr.PrintAddress);
                     // Structure
-                    writer.WriteNextCol(scene.checkpointGridXZ.left);
-                    writer.WriteNextCol(scene.checkpointGridXZ.top);
-                    writer.WriteNextCol(scene.checkpointGridXZ.subdivisionWidth);
-                    writer.WriteNextCol(scene.checkpointGridXZ.subdivisionLength);
-                    writer.WriteNextCol(scene.checkpointGridXZ.numSubdivisionsX);
-                    writer.WriteNextCol(scene.checkpointGridXZ.numSubdivisionsZ);
+                    writer.WriteNextCol(scene.checkpointGridXZ.Left);
+                    writer.WriteNextCol(scene.checkpointGridXZ.Top);
+                    writer.WriteNextCol(scene.checkpointGridXZ.SubdivisionWidth);
+                    writer.WriteNextCol(scene.checkpointGridXZ.SubdivisionLength);
+                    writer.WriteNextCol(scene.checkpointGridXZ.NumSubdivisionsX);
+                    writer.WriteNextCol(scene.checkpointGridXZ.NumSubdivisionsZ);
                     //
                     writer.WriteNextCol(0);// coliHeader.zero_0xD8);
                     writer.WriteNextCol(scene.trackMinHeight.Value);
@@ -1239,9 +1239,9 @@ namespace GameCube.GFZ.Stage
                 writer.WriteNextCol(nameof(Fog.ColorRGB) + ".R");
                 writer.WriteNextCol(nameof(Fog.ColorRGB) + ".G");
                 writer.WriteNextCol(nameof(Fog.ColorRGB) + ".B");
-                writer.WriteNextCol(nameof(Fog.zero0x18) + ".x");
-                writer.WriteNextCol(nameof(Fog.zero0x18) + ".y");
-                writer.WriteNextCol(nameof(Fog.zero0x18) + ".z");
+                //writer.WriteNextCol(nameof(Fog.zero0x18) + ".x");
+                //writer.WriteNextCol(nameof(Fog.zero0x18) + ".y");
+                //writer.WriteNextCol(nameof(Fog.zero0x18) + ".z");
                 //
                 writer.WriteNextRow();
 
@@ -1263,9 +1263,9 @@ namespace GameCube.GFZ.Stage
                     writer.WriteNextCol(scene.fog.ColorRGB.x);
                     writer.WriteNextCol(scene.fog.ColorRGB.y);
                     writer.WriteNextCol(scene.fog.ColorRGB.z);
-                    writer.WriteNextCol(scene.fog.zero0x18.x);
-                    writer.WriteNextCol(scene.fog.zero0x18.y);
-                    writer.WriteNextCol(scene.fog.zero0x18.z);
+                    //writer.WriteNextCol(scene.fog.zero0x18.x);
+                    //writer.WriteNextCol(scene.fog.zero0x18.y);
+                    //writer.WriteNextCol(scene.fog.zero0x18.z);
                     //
                     writer.WriteNextRow();
                 }
@@ -1428,12 +1428,12 @@ namespace GameCube.GFZ.Stage
                 writer.WriteNextCol("Index");
                 writer.WriteNextColNicify(nameof(StaticColliderMeshManager.staticColliderTrisPtr));
                 writer.WriteNextColNicify(nameof(StaticColliderMeshManager.triMeshGridPtrs));
-                writer.WriteNextColNicify(nameof(GridXZ.left));
-                writer.WriteNextColNicify(nameof(GridXZ.top));
-                writer.WriteNextColNicify(nameof(GridXZ.subdivisionWidth));
-                writer.WriteNextColNicify(nameof(GridXZ.subdivisionLength));
-                writer.WriteNextColNicify(nameof(GridXZ.numSubdivisionsX));
-                writer.WriteNextColNicify(nameof(GridXZ.numSubdivisionsZ));
+                writer.WriteNextColNicify(nameof(GridXZ.Left));
+                writer.WriteNextColNicify(nameof(GridXZ.Top));
+                writer.WriteNextColNicify(nameof(GridXZ.SubdivisionWidth));
+                writer.WriteNextColNicify(nameof(GridXZ.SubdivisionLength));
+                writer.WriteNextColNicify(nameof(GridXZ.NumSubdivisionsX));
+                writer.WriteNextColNicify(nameof(GridXZ.NumSubdivisionsZ));
                 writer.WriteNextColNicify(nameof(StaticColliderMeshManager.staticColliderQuadsPtr));
                 writer.WriteNextColNicify(nameof(StaticColliderMeshManager.quadMeshGridPtrs));
                 writer.WriteNextColNicify(nameof(StaticColliderMeshManager.boundingSpherePtr));
@@ -1458,12 +1458,12 @@ namespace GameCube.GFZ.Stage
                     writer.WriteNextCol(index++);
                     writer.WriteNextCol(staticColliderMeshes.staticColliderTrisPtr.PrintAddress);
                     writer.WriteNextCol(staticColliderMeshes.triMeshGridPtrs.Length);
-                    writer.WriteNextCol(staticColliderMeshes.meshGridXZ.left);
-                    writer.WriteNextCol(staticColliderMeshes.meshGridXZ.top);
-                    writer.WriteNextCol(staticColliderMeshes.meshGridXZ.subdivisionWidth);
-                    writer.WriteNextCol(staticColliderMeshes.meshGridXZ.subdivisionLength);
-                    writer.WriteNextCol(staticColliderMeshes.meshGridXZ.numSubdivisionsX);
-                    writer.WriteNextCol(staticColliderMeshes.meshGridXZ.numSubdivisionsZ);
+                    writer.WriteNextCol(staticColliderMeshes.meshGridXZ.Left);
+                    writer.WriteNextCol(staticColliderMeshes.meshGridXZ.Top);
+                    writer.WriteNextCol(staticColliderMeshes.meshGridXZ.SubdivisionWidth);
+                    writer.WriteNextCol(staticColliderMeshes.meshGridXZ.SubdivisionLength);
+                    writer.WriteNextCol(staticColliderMeshes.meshGridXZ.NumSubdivisionsX);
+                    writer.WriteNextCol(staticColliderMeshes.meshGridXZ.NumSubdivisionsZ);
                     writer.WriteNextCol(staticColliderMeshes.staticColliderQuadsPtr.PrintAddress);
                     writer.WriteNextCol(staticColliderMeshes.quadMeshGridPtrs.Length);
                     writer.WriteNextCol(staticColliderMeshes.boundingSpherePtr.PrintAddress);

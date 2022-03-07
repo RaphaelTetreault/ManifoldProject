@@ -50,7 +50,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             var fog = new Fog();
             fog.FogRange = new ViewRange(fogNear, fogFar);
             fog.ColorRGB = new float3(color.r, color.g, color.b);
-            fog.zero0x18 = new float3();
+            //fog.zero0x18 = new float3();
             return fog;
         }
         private FogCurves CreateCustomFogCurves()

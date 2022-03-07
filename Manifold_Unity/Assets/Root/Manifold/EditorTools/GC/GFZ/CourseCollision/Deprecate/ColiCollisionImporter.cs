@@ -204,12 +204,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
             // Get triangle information for the current mesh type
             var triIndex16x16 = scm.triMeshGrids[meshSurfaceTypeIndex];
-            var triIndexLists = triIndex16x16.indexLists;
+            var triIndexLists = triIndex16x16.IndexLists;
             Assert.IsTrue(triIndexLists.Length == 0 || triIndexLists.Length == StaticColliderMeshGrid.kListCount);
 
             //
             var quadMeshIndexes = scm.quadMeshGrids[meshSurfaceTypeIndex];
-            var quadIndexLists = quadMeshIndexes.indexLists;
+            var quadIndexLists = quadMeshIndexes.IndexLists;
             Assert.IsTrue(quadIndexLists.Length == 0 || quadIndexLists.Length == StaticColliderMeshGrid.kListCount);
 
             //
@@ -284,14 +284,14 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 var submeshes = new SubMeshDescriptor[2];
 
                 // Create triangle mesh from unique triangles
-                var triIndexLists = scm.triMeshGrids[meshSurfaceType].indexLists;
+                var triIndexLists = scm.triMeshGrids[meshSurfaceType].IndexLists;
                 var triUniqueIndexes = GetUniqueIndexes(triIndexLists);
                 var colliderTrianglesSubset = GetIndexes(colliderTriangles, triUniqueIndexes);
                 var trianglesSubmesh = CreateTriSubmeshForMesh(mesh, colliderTrianglesSubset, createBackfaces);
                 submeshes[triSubmeshIndex] = trianglesSubmesh;
 
                 // Create triangle mesh from unique quads (quads are interpreted as triangles)
-                var quadIndexLists = scm.quadMeshGrids[meshSurfaceType].indexLists;
+                var quadIndexLists = scm.quadMeshGrids[meshSurfaceType].IndexLists;
                 var quadUniqueIndexes = GetUniqueIndexes(quadIndexLists);
                 var colliderQuadsSubset = GetIndexes(colliderQuads, quadUniqueIndexes);
                 var quadSubmesh = CreateQuadSubmeshForMesh(mesh, colliderQuadsSubset, createBackfaces);

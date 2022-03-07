@@ -392,9 +392,9 @@ namespace GameCube.GFZ.Stage
         {
             this.RecordStartAddress(reader);
             {
-                reader.ReadX(ref Interpolation);
-                reader.ReadX(ref FogRange);
-                reader.ReadX(ref ColorRGB);
+                reader.ReadX(ref interpolation);
+                reader.ReadX(ref fogRange);
+                reader.ReadX(ref colorRGB);
                 reader.ReadX(ref zero0x18);
             }
             this.RecordEndAddress(reader);

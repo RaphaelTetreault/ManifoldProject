@@ -162,7 +162,7 @@ namespace GameCube.GFZ.Stage
                 if (triIndexList != null)
                 {
                     log.WriteLine($"COLLIDER TYPE [{i}]: {(StaticColliderMeshProperty)i}");
-                    log.WriteAddress(triIndexList.indexLists);
+                    log.WriteAddress(triIndexList.IndexLists);
                 }
             }
             log.WriteNullInArray = true;
@@ -177,7 +177,7 @@ namespace GameCube.GFZ.Stage
                 if (quadIndexList != null)
                 {
                     log.WriteLine($"COLLIDER TYPE [{i}]: {(StaticColliderMeshProperty)i}");
-                    log.WriteAddress(quadIndexList.indexLists);
+                    log.WriteAddress(quadIndexList.IndexLists);
                 }
             }
             log.WriteNullInArray = true;

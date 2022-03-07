@@ -746,7 +746,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         public static Transform CreateGridBoundsXZ(GridXZ grid, float yHeight, string name)
         {
-            var displayName = $"{name} ({grid.numSubdivisionsX}x{grid.numSubdivisionsZ})";
+            var displayName = $"{name} ({grid.NumSubdivisionsX}x{grid.NumSubdivisionsZ})";
 
             var gridObject = CreatePrimitive(PrimitiveType.Cube, displayName);
             (var center, var scale) = grid.GetCenterAndScale();
@@ -754,17 +754,17 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             gridObject.localScale = new float3(scale.x, 1f, scale.y);
 
             //
-            int largest = math.max(grid.numSubdivisionsX, grid.numSubdivisionsZ);
+            int largest = math.max(grid.NumSubdivisionsX, grid.NumSubdivisionsZ);
             int format = largest.ToString().Length;
 
             //
-            for (int z = 0; z < grid.numSubdivisionsX; z++)
+            for (int z = 0; z < grid.NumSubdivisionsX; z++)
             {
-                var centerZ = grid.top + (grid.subdivisionLength * (z + 0.5f));
+                var centerZ = grid.Top + (grid.SubdivisionLength * (z + 0.5f));
 
-                for (int x = 0; x < grid.numSubdivisionsZ; x++)
+                for (int x = 0; x < grid.NumSubdivisionsZ; x++)
                 {
-                    var centerX = grid.left + (grid.subdivisionWidth * (x + 0.5f));
+                    var centerX = grid.Left + (grid.SubdivisionWidth * (x + 0.5f));
 
                     //
                     var textX = x.ToString().PadLeft(format);
@@ -772,7 +772,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                     var cellName = $"{name} [{textX},{textZ}]";
                     var cell = CreatePrimitive(PrimitiveType.Cube, cellName);
                     cell.position = new float3(centerX, yHeight, centerZ);
-                    cell.localScale = new float3(grid.subdivisionWidth, 1f, grid.subdivisionLength);
+                    cell.localScale = new float3(grid.SubdivisionWidth, 1f, grid.SubdivisionLength);
                     cell.parent = gridObject;
                 }
             }
@@ -801,7 +801,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
             int chainIndex = 0;
             var trackNodes = scene.trackNodes;
-            foreach (var indexList in scene.trackCheckpointGrid.indexLists)
+            foreach (var indexList in scene.trackCheckpointGrid.IndexLists)
             {
                 var chain = new GameObject().transform;
                 chain.name = $"Chain {chainIndex++}";

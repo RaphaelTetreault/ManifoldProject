@@ -1,3 +1,4 @@
+using Manifold;
 using Manifold.IO;
 using System.IO;
 using System.Collections.Generic;
@@ -11,7 +12,8 @@ namespace GameCube.GFZ.Stage
     [System.Serializable]
     public class IndexList :
         IBinaryAddressable,
-        IBinarySerializable
+        IBinarySerializable,
+        ITextPrintable
     {
         // CONSTANTS
         public const ushort kUshortArrayTerminator = 0xFFFF;
@@ -20,13 +22,12 @@ namespace GameCube.GFZ.Stage
         private ushort[] indexes = new ushort[0];
 
 
+        // INDEXERS
+        public ushort this[int index] { get => indexes[index]; set => indexes[index] = value; }
+
         // PROPERTIES
         public AddressRange AddressRange { get; set; }
-        public ushort[] Indexes
-        {
-            get => indexes;
-            set => indexes = value;
-        }
+        public ushort[] Indexes { get => indexes; set => indexes = value; }
         public int Length => indexes.Length;
 
 
@@ -107,5 +108,46 @@ namespace GameCube.GFZ.Stage
 
             return indexList;
         }
+
+        public string PrintMultiLine(int indentLevel = 0, string indent = "\t")
+        {
+            // StringBuilder is still used because of the indent levels
+            var builder = new System.Text.StringBuilder();
+
+            const int valuesPerRow = 32;
+            int numRows = Length / valuesPerRow;
+            int numPadding = Length.ToString().Length;
+
+            // Write a little helper heading
+            builder.AppendIndented(indent, indentLevel, "");
+            builder.AppendRepeat(" ", numPadding + 3); // +3 = "[] "
+            for (int i = 0; i < valuesPerRow; i++)
+            {
+                builder.Append($"{i+1,4}, ");
+            }
+
+            // Write all values, 32 per line
+            for (int r = 0; r < numRows; r++)
+            {
+                builder.AppendIndented(indent, indentLevel, $"[{Length.ToString().PadLeft(numPadding)}] ");
+                for (int i = 0; i < valuesPerRow; i++)
+                {
+                    var index = r * valuesPerRow + i;
+                    var value = indexes[index];
+                    builder.Append($"{value:x4}, ");
+                }
+                builder.AppendLine();
+            }
+
+            return builder.ToString();
+        }
+
+        public string PrintSingleLine()
+        {
+            return $"{nameof(IndexList)}[{indexes.Length}]";
+        }
+
+        public override string ToString() => PrintSingleLine();
+
     }
 }

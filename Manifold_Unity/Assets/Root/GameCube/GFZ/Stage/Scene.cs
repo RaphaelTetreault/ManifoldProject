@@ -566,8 +566,8 @@ namespace GameCube.GFZ.Stage
                 writer.WriteX(trackCheckpointGrid);
                 var trackIndexListPtr = trackCheckpointGrid.GetPointer();
                 // Only write if it has indexes
-                writer.InlineDesc(serializeVerbose, trackIndexListPtr, trackCheckpointGrid.indexLists);
-                foreach (var trackIndexList in trackCheckpointGrid.indexLists)
+                writer.InlineDesc(serializeVerbose, trackIndexListPtr, trackCheckpointGrid.IndexLists);
+                foreach (var trackIndexList in trackCheckpointGrid.IndexLists)
                 {
                     writer.WriteX(trackIndexList);
                 }
@@ -986,13 +986,13 @@ namespace GameCube.GFZ.Stage
                     writer.CommentLineWide("Type:", type, serializeVerbose);
                     writer.CommentLineWide("Owner:", id, serializeVerbose);
                     writer.CommentNewLine(serializeVerbose, '-');
-                    for (int index = 0; index < matrix.indexLists.Length; index++)
-                        if (matrix.indexLists[index].Length > 0)
+                    for (int index = 0; index < matrix.IndexLists.Length; index++)
+                        if (matrix.IndexLists[index].Length > 0)
                             writer.CommentIdx(index, serializeVerbose);
                     writer.CommentNewLine(serializeVerbose, '-');
-                    for (int index = 0; index < matrix.indexLists.Length; index++)
+                    for (int index = 0; index < matrix.IndexLists.Length; index++)
                     {
-                        var quadIndexList = matrix.indexLists[index];
+                        var quadIndexList = matrix.IndexLists[index];
                         writer.WriteX(quadIndexList);
                     }
                 }
@@ -1031,12 +1031,12 @@ namespace GameCube.GFZ.Stage
             foreach (var matrix in staticColliderMeshManager.triMeshGrids)
             {
                 list.Add(matrix);
-                list.AddRange(matrix.indexLists);
+                list.AddRange(matrix.IndexLists);
             }
             foreach (var matrix in staticColliderMeshManager.quadMeshGrids)
             {
                 list.Add(matrix);
-                list.AddRange(matrix.indexLists);
+                list.AddRange(matrix.IndexLists);
             }
             list.Add(staticColliderMeshManager.meshGridXZ);
             //list.Add(staticColliderMeshManager.BoundingSphere);
@@ -1106,7 +1106,7 @@ namespace GameCube.GFZ.Stage
             }
 
             list.Add(trackCheckpointGrid);
-            list.AddRange(trackCheckpointGrid.indexLists);
+            list.AddRange(trackCheckpointGrid.IndexLists);
 
             return list.ToArray();
         }

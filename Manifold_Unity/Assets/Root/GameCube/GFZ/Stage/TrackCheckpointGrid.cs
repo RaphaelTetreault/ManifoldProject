@@ -34,12 +34,12 @@ namespace GameCube.GFZ.Stage
 
             // Compute bounds
             var bounds = new GridXZ();
-            bounds.numSubdivisionsX = Subdivisions;
-            bounds.numSubdivisionsZ = Subdivisions;
-            bounds.left = min.x;
-            bounds.top = max.z;
-            bounds.subdivisionWidth = (max.x - min.x) / Subdivisions; // delta / subdivisions
-            bounds.subdivisionLength = (max.z - min.z) / Subdivisions; // delta / subdivisions
+            bounds.NumSubdivisionsX = Subdivisions;
+            bounds.NumSubdivisionsZ = Subdivisions;
+            bounds.Left = min.x;
+            bounds.Top = max.z;
+            bounds.SubdivisionWidth = (max.x - min.x) / Subdivisions; // delta / subdivisions
+            bounds.SubdivisionLength = (max.z - min.z) / Subdivisions; // delta / subdivisions
 
             return bounds;
         }
@@ -47,14 +47,14 @@ namespace GameCube.GFZ.Stage
         public void GenerateIndexes(GridXZ matrixBoundsXZ, Checkpoint[] checkpoints)
         {
             // Init. Value is from inherited structure.
-            indexLists = new IndexList[kListCount];
+            IndexLists = new IndexList[kListCount];
 
             // so if track has no width, we still pick up some points
             //var widthX = math.max(matrixBoundsXZ.subdivisionWidth, 1f);
             //var lengthZ = math.max(matrixBoundsXZ.subdivisionLength, 1f);
 
-            var widthX = matrixBoundsXZ.subdivisionWidth;
-            var lengthZ = matrixBoundsXZ.subdivisionLength;
+            var widthX = matrixBoundsXZ.SubdivisionWidth;
+            var lengthZ = matrixBoundsXZ.SubdivisionLength;
 
             // Condition where theere is no w/l and so no checkpoints are added
             var hasNoWidthOrHeight = widthX == 0 || lengthZ == 0;
@@ -64,8 +64,8 @@ namespace GameCube.GFZ.Stage
                 for (int i = 0; i < checkpoints.Length; i++)
                     list.Add(i);
 
-                for (int i = 0; i < indexLists.Length; i++)
-                    indexLists[i] = IndexList.CreateIndexList(list);
+                for (int i = 0; i < IndexLists.Length; i++)
+                    IndexLists[i] = IndexList.CreateIndexList(list);
 
                 return;
             }
@@ -76,16 +76,16 @@ namespace GameCube.GFZ.Stage
                 // Get the minimum and maximum Z coordinates allowed to exist this cell
                 var minZIndex = math.clamp(z - 2, 0, SubdivisionsZ - 1);
                 var maxZIndex = math.clamp(z + 2, 0, SubdivisionsZ - 1);
-                var minZ = matrixBoundsXZ.top - (lengthZ * minZIndex);
-                var maxZ = matrixBoundsXZ.top - (lengthZ * maxZIndex);
+                var minZ = matrixBoundsXZ.Top - (lengthZ * minZIndex);
+                var maxZ = matrixBoundsXZ.Top - (lengthZ * maxZIndex);
 
                 for (int x = 0; x < SubdivisionsX; x++)
                 {
                     // Get the minimum and maximum X coordinates allowed to exist this cell
                     var minXIndex = math.clamp(x - 2, 0, SubdivisionsX - 1);
                     var maxXIndex = math.clamp(x + 2, 0, SubdivisionsX - 1);
-                    var minX = matrixBoundsXZ.left - (widthX * minXIndex);
-                    var maxX = matrixBoundsXZ.left - (widthX * maxXIndex);
+                    var minX = matrixBoundsXZ.Left - (widthX * minXIndex);
+                    var maxX = matrixBoundsXZ.Left - (widthX * maxXIndex);
 
                     // Iterate over every checkpoint the course has
                     var indexes = new List<int>();
@@ -109,7 +109,7 @@ namespace GameCube.GFZ.Stage
 
                     // Turn those indexes into the structure
                     var cell = z * SubdivisionsZ + x;
-                    indexLists[cell] = IndexList.CreateIndexList(indexes);
+                    IndexLists[cell] = IndexList.CreateIndexList(indexes);
                 }
             }
         }
