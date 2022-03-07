@@ -682,7 +682,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             log.WriteLine();
             log.WriteLine(nameof(GameCube.GFZ.BoundingSphere));
             log.WriteLine("unk float: " + coliScene.staticColliderMeshManager.unk_float);
-            log.WriteAddress(coliScene.staticColliderMeshManager.boundingSphere);
+            log.WriteAddress(coliScene.staticColliderMeshManager.BoundingSphere);
             log.WriteLine(coliScene.staticColliderMeshManager.unknownCollidersPtr);
             log.WriteLine(coliScene.staticColliderMeshManager.staticSceneObjectsPtr);
             log.WriteLine();

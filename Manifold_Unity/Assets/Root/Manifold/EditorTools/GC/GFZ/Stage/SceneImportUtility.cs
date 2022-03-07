@@ -786,8 +786,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         {
             var root = new GameObject($"{nameof(GameCube.GFZ.BoundingSphere)}s");
             var boundingSphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            boundingSphere.transform.localPosition = scene.staticColliderMeshManager.boundingSphere.origin;
-            boundingSphere.transform.localScale = scene.staticColliderMeshManager.boundingSphere.radius * 2f * Vector3.one;
+            boundingSphere.transform.localPosition = scene.staticColliderMeshManager.BoundingSphere.origin;
+            boundingSphere.transform.localScale = scene.staticColliderMeshManager.BoundingSphere.radius * 2f * Vector3.one;
             boundingSphere.SetActive(false);
             boundingSphere.name = $"{nameof(StaticColliderMeshManager)}.{nameof(GameCube.GFZ.BoundingSphere)}";
             boundingSphere.transform.parent = root.transform;

@@ -1471,10 +1471,10 @@ namespace GameCube.GFZ.Stage
                     writer.WriteNextCol(staticColliderMeshes.unknownCollidersPtr.PrintAddress);
                     writer.WriteNextCol(staticColliderMeshes.unk_float);
                     writer.WriteNextCol();
-                    writer.WriteNextCol(staticColliderMeshes.boundingSphere.origin.x);
-                    writer.WriteNextCol(staticColliderMeshes.boundingSphere.origin.y);
-                    writer.WriteNextCol(staticColliderMeshes.boundingSphere.origin.z);
-                    writer.WriteNextCol(staticColliderMeshes.boundingSphere.radius);
+                    writer.WriteNextCol(staticColliderMeshes.BoundingSphere.origin.x);
+                    writer.WriteNextCol(staticColliderMeshes.BoundingSphere.origin.y);
+                    writer.WriteNextCol(staticColliderMeshes.BoundingSphere.origin.z);
+                    writer.WriteNextCol(staticColliderMeshes.BoundingSphere.radius);
                     writer.WriteNextRow();
                 }
                 writer.Flush();

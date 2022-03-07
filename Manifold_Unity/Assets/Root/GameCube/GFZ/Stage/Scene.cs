@@ -586,8 +586,8 @@ namespace GameCube.GFZ.Stage
                 var scmPtr = staticColliderMeshManager.GetPointer();
 
                 // Write collider bounds (applies to to non-tri/quad collision, too)
-                writer.InlineDesc(serializeVerbose, staticColliderMeshManager.boundingSphere);
-                writer.WriteX(staticColliderMeshManager.boundingSphere);
+                writer.InlineDesc(serializeVerbose, staticColliderMeshManager.BoundingSphere);
+                writer.WriteX(staticColliderMeshManager.BoundingSphere);
 
                 // COLLIDER TRIS
                 {
@@ -788,7 +788,7 @@ namespace GameCube.GFZ.Stage
 
             // TRIGGERS
             {
-                // ARCADE CHECKPOINT TRIGGERS
+                // TIME EXTENSION TRIGGERS
                 if (!timeExtensionTriggers.IsNullOrEmpty())
                     writer.InlineDesc(serializeVerbose, 0xB0 + offset, timeExtensionTriggers);
                 writer.WriteX(timeExtensionTriggers);
@@ -1039,7 +1039,7 @@ namespace GameCube.GFZ.Stage
                 list.AddRange(matrix.indexLists);
             }
             list.Add(staticColliderMeshManager.meshGridXZ);
-            list.Add(staticColliderMeshManager.boundingSphere);
+            //list.Add(staticColliderMeshManager.BoundingSphere);
 
             list.Add(trackMinHeight);
 
