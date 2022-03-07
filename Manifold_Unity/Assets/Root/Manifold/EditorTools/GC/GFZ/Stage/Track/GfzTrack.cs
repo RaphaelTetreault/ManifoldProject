@@ -80,7 +80,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 rootSegments.Add(currRootSegment);
 
                 // Get segments in proper order for binary serialization
-                var segmentChildren = currRootSegment.GetChildrenArrayPointerOrdered();
+                var segmentChildren = currRootSegment.GetGraphSerializableOrder();
                 allSegments.AddRange(segmentChildren);
 
                 // Get all checkpoints for this segment

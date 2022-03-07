@@ -545,7 +545,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             display.depth = depth;
 
             //
-            var children = trackTransform.GetChildren(scene.allTrackSegments);
+            var children = trackTransform.children;
             int count = 1;
             int total = children.Length;
             foreach (var child in children)
@@ -568,11 +568,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             controlPoint.transform.localScale = trackTransform.localScale;
 
             //
-            var children = trackTransform.GetChildren(scene.allTrackSegments);
+            var children = trackTransform.children;
             index = 0;
-            foreach (var next in children)
+            foreach (var child in children)
             {
-                CreateControlPointSequential(scene, next, parent, mesh, name, depth + 1, ++index);
+                CreateControlPointSequential(scene, child, parent, mesh, name, depth + 1, ++index);
             }
         }
 

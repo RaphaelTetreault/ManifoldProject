@@ -192,7 +192,7 @@ namespace GameCube.GFZ.Stage
                 writer.WriteNextCol(nameof(TrackSegment.pipeCylinderFlags));
                 writer.WriteNextCol(nameof(TrackSegment.animationCurvesTrsPtr));
                 writer.WriteNextCol(nameof(TrackSegment.trackCornerPtr));
-                writer.WriteNextCol(nameof(TrackSegment.childrenPtrs));
+                writer.WriteNextCol(nameof(TrackSegment.childrenPtr));
                 writer.WriteNextCol(nameof(TrackSegment.localScale));
                 writer.WriteNextCol(nameof(TrackSegment.localRotation));
                 writer.WriteNextCol(nameof(TrackSegment.localPosition));
@@ -234,10 +234,10 @@ namespace GameCube.GFZ.Stage
             WriteTrackSegment(writer, scene, depth, index, total, trackSegment);
 
             // Write children
-            if (trackSegment.childSegments == null)
+            if (trackSegment.children == null)
                 return;
 
-            foreach (var child in trackSegment.childSegments)
+            foreach (var child in trackSegment.children)
             {
                 WriteTrackSegmentRecursive(writer, scene, depth + 1, index, total, child);
             }
@@ -256,7 +256,7 @@ namespace GameCube.GFZ.Stage
             writer.WriteNextCol(trackTransform.pipeCylinderFlags);
             writer.WriteNextCol(trackTransform.animationCurvesTrsPtr);
             writer.WriteNextCol(trackTransform.trackCornerPtr);
-            writer.WriteNextCol(trackTransform.childrenPtrs);
+            writer.WriteNextCol(trackTransform.childrenPtr);
             writer.WriteNextCol(trackTransform.localScale);
             writer.WriteNextCol(trackTransform.localRotation);
             writer.WriteNextCol(trackTransform.localPosition);

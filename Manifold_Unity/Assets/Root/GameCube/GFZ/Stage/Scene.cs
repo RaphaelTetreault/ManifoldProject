@@ -1049,7 +1049,7 @@ namespace GameCube.GFZ.Stage
                 allTrackSegments.Add(parentPtr, parent);
 
             // Deserialize children (if any)
-            var children = parent.GetChildren(reader);
+            var children = parent.DeserializeChildren(reader);
             var requiresDeserialization = new List<TrackSegment>();
 
             // Get the index of where these children WILL be in list
