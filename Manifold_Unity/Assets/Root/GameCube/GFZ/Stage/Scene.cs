@@ -412,8 +412,8 @@ namespace GameCube.GFZ.Stage
             // DESERIALIZE TRACK SEGMENTS
             {
                 /*/
-                Unlike any other data type in the scene structure, TrackSegments are very much
-                shared across it's data. A single track can have about a dozen track segments
+                Unlike any other data type in the scene structure, TrackSegments are referenced
+                by many other isntances. A single track can have about a dozen track segments
                 total, with perhaps a single root segment, referenced by hundreds TrackNodes.
                 If we were to let each TrackNode deserialize it's own recursive tree, it would
                 take quite a long time for redundant data.
@@ -443,9 +443,7 @@ namespace GameCube.GFZ.Stage
                 // Start by iterating over each root node in graph
                 foreach (var rootSegment in rootTrackSegments)
                 {
-                    // Read out children of root, then continue deserializing children recursively
-                    // Deserialization method respects ArayPointer order in list.
-                    ReadTrackSegmentsRecursive(reader, allTrackSegments, rootSegment);
+                    rootSegment.DeserializeChildren(reader);
                 }
                 this.allTrackSegments = allTrackSegments.Values.ToArray();
             }
@@ -520,51 +518,18 @@ namespace GameCube.GFZ.Stage
                     // TRACK CHECKPOINTS
                     {
                         // NOTICE:
-                        // Ensure sequential order in ROM for array pointer deserialization
-
-                        var all = new List<Checkpoint>();
+                        // All Checkpoints for each TrackNode must be sequential (branches 0-4).
+                        // Sequential order in ROM is required for array pointer deserialization.
+                        var typeTemp = new Checkpoint[0]; // TODO: remove need for this
+                        writer.InlineDesc(serializeVerbose, trackNodesPtr, typeTemp);
                         foreach (var trackNode in trackNodes)
-                            foreach (var trackCheckpoint in trackNode.checkpoints)
-                                all.Add(trackCheckpoint);
-                        var array = all.ToArray();
-
-                        writer.InlineDesc(serializeVerbose, trackNodesPtr, array);
-                        writer.WriteX(array);
+                            writer.WriteX(trackNode.checkpoints);
                     }
 
                     // TRACK SEGMENTS
                     {
                         writer.InlineDesc(serializeVerbose, trackNodesPtr, allTrackSegments);
-                        //writer.WriteX(allTrackSegments, false);
-
-                        TrackSegment root = null;
-                        for (int i = 0; i < allTrackSegments.Length; i++)
-                        {
-                            var trackSegment = allTrackSegments[i];
-                            if (trackSegment.isRoot)
-                            {
-                                // If we are holding onto a reference, write
-                                if (root != null)
-                                    writer.WriteX(root);
-
-                                // record next root
-                                root = trackSegment;
-                                continue;
-                            }
-                            else
-                            {
-                                writer.WriteX(trackSegment);
-                            }
-                        }
-                        if (root != null)
-                        {
-                            writer.WriteX(root);
-                        }
-
-
-                        // Manually refresh pointers due to recursive format.
-                        foreach (var trackSegment in allTrackSegments)
-                            trackSegment.SetChildPointers(allTrackSegments);
+                        writer.WriteX(allTrackSegments);
                     }
 
                     // TRACK ANIMATION CURVES
@@ -1081,9 +1046,6 @@ namespace GameCube.GFZ.Stage
                     requiresDeserialization.Add(child);
                 }
             }
-
-            // Set indexes of children to 
-            parent.childIndexes = childIndexes;
 
             // Read children recursively (if any).
             foreach (var child in requiresDeserialization)
