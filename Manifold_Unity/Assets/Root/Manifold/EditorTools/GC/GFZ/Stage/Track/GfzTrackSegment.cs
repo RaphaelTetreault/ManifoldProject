@@ -185,18 +185,18 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         {
             var trackSegment = new TrackSegment();
 
-            trackSegment.localPosition = transform.localPosition;
-            trackSegment.localRotation = transform.localRotation.eulerAngles;
-            trackSegment.localScale = transform.localScale;
+            trackSegment.LocalPosition = transform.localPosition;
+            trackSegment.LocalRotation = transform.localRotation.eulerAngles;
+            trackSegment.LocalScale = transform.localScale;
 
             // TODO: currently hardcoded
-            trackSegment.segmentType = TrackSegmentType.IsTransformLeaf;
+            trackSegment.SegmentType = TrackSegmentType.IsTransformLeaf;
 
             //
-            trackSegment.unk_0x3B = unk0x3B;
+            trackSegment.Unk_0x3B = unk0x3B;
 
             // Get animation data
-            trackSegment.animationCurveTRS = animationCurveTRS.ToTrackSegment();
+            trackSegment.AnimationCurveTRS = animationCurveTRS.ToTrackSegment();
 
             //
             return trackSegment;

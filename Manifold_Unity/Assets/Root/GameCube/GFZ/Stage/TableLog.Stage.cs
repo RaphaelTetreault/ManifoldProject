@@ -45,12 +45,12 @@ namespace GameCube.GFZ.Stage
                 writer.WriteNextCol("FileName");
                 writer.WriteNextCol("Game");
 
-                writer.WriteNextCol(nameof(TrackSegment.segmentType));
-                writer.WriteNextCol(nameof(TrackSegment.embeddedPropertyType));
-                writer.WriteNextCol(nameof(TrackSegment.perimeterFlags));
-                writer.WriteNextCol(nameof(TrackSegment.pipeCylinderFlags));
-                writer.WriteNextCol(nameof(TrackSegment.unk_0x38));
-                writer.WriteNextCol(nameof(TrackSegment.unk_0x3A));
+                writer.WriteNextCol(nameof(TrackSegment.SegmentType));
+                writer.WriteNextCol(nameof(TrackSegment.EmbeddedPropertyType));
+                writer.WriteNextCol(nameof(TrackSegment.PerimeterFlags));
+                writer.WriteNextCol(nameof(TrackSegment.PipeCylinderFlags));
+                writer.WriteNextCol(nameof(TrackSegment.Unk_0x38));
+                writer.WriteNextCol(nameof(TrackSegment.Unk_0x3A));
 
                 writer.WriteNextCol("TrackTransform Index");
                 writer.WriteNextCol("Keyable /9");
@@ -92,12 +92,12 @@ namespace GameCube.GFZ.Stage
                 writer.WriteNextCol("FileName");
                 writer.WriteNextCol("Game");
 
-                writer.WriteNextCol(nameof(TrackSegment.segmentType));
-                writer.WriteNextCol(nameof(TrackSegment.embeddedPropertyType));
-                writer.WriteNextCol(nameof(TrackSegment.perimeterFlags));
-                writer.WriteNextCol(nameof(TrackSegment.pipeCylinderFlags));
-                writer.WriteNextCol(nameof(TrackSegment.unk_0x38));
-                writer.WriteNextCol(nameof(TrackSegment.unk_0x3A));
+                writer.WriteNextCol(nameof(TrackSegment.SegmentType));
+                writer.WriteNextCol(nameof(TrackSegment.EmbeddedPropertyType));
+                writer.WriteNextCol(nameof(TrackSegment.PerimeterFlags));
+                writer.WriteNextCol(nameof(TrackSegment.PipeCylinderFlags));
+                writer.WriteNextCol(nameof(TrackSegment.Unk_0x38));
+                writer.WriteNextCol(nameof(TrackSegment.Unk_0x3A));
 
                 writer.WriteNextCol("TrackTransform Index");
                 writer.WriteNextCol("Keyable /9");
@@ -129,7 +129,7 @@ namespace GameCube.GFZ.Stage
         }
         public static void WriteTrackKeyableAttributeRecursive(StreamWriter writer, Scene scene, int nestedDepth, int animationCurveIndex, int trackTransformIndex, TrackSegment trackTransform)
         {
-            var animationCurves = trackTransform.animationCurveTRS.AnimationCurves;
+            var animationCurves = trackTransform.AnimationCurveTRS.AnimationCurves;
             var keyableIndex = 1; // 0-n, depends on number of keyables in array
             int keyableTotal = animationCurves[animationCurveIndex].Length;
 
@@ -152,12 +152,12 @@ namespace GameCube.GFZ.Stage
             writer.WriteNextCol(scene.FileName);
             writer.WriteNextCol(gameId);
 
-            writer.WriteNextCol(tt.segmentType);
-            writer.WriteNextCol(tt.embeddedPropertyType);
-            writer.WriteNextCol(tt.perimeterFlags);
-            writer.WriteNextCol(tt.pipeCylinderFlags);
-            writer.WriteNextCol(tt.unk_0x38);
-            writer.WriteNextCol(tt.unk_0x3A);
+            writer.WriteNextCol(tt.SegmentType);
+            writer.WriteNextCol(tt.EmbeddedPropertyType);
+            writer.WriteNextCol(tt.PerimeterFlags);
+            writer.WriteNextCol(tt.PipeCylinderFlags);
+            writer.WriteNextCol(tt.Unk_0x38);
+            writer.WriteNextCol(tt.Unk_0x3A);
 
             writer.WriteNextCol(trackTransformIndex);
             writer.WriteNextCol(keyablesSet);
@@ -186,25 +186,25 @@ namespace GameCube.GFZ.Stage
                 writer.WriteNextCol("Root Index");
                 writer.WriteNextCol("Transform Depth");
                 writer.WriteNextCol("Address");
-                writer.WriteNextCol(nameof(TrackSegment.segmentType));
-                writer.WriteNextCol(nameof(TrackSegment.embeddedPropertyType));
-                writer.WriteNextCol(nameof(TrackSegment.perimeterFlags));
-                writer.WriteNextCol(nameof(TrackSegment.pipeCylinderFlags));
-                writer.WriteNextCol(nameof(TrackSegment.animationCurvesTrsPtr));
-                writer.WriteNextCol(nameof(TrackSegment.trackCornerPtr));
-                writer.WriteNextCol(nameof(TrackSegment.childrenPtr));
-                writer.WriteNextCol(nameof(TrackSegment.localScale));
-                writer.WriteNextCol(nameof(TrackSegment.localRotation));
-                writer.WriteNextCol(nameof(TrackSegment.localPosition));
-                writer.WriteNextCol(nameof(TrackSegment.unk_0x38));
-                writer.WriteNextCol(nameof(TrackSegment.unk_0x39));
-                writer.WriteNextCol(nameof(TrackSegment.unk_0x3A));
-                writer.WriteNextCol(nameof(TrackSegment.unk_0x3B));
-                writer.WriteNextCol(nameof(TrackSegment.railHeightRight));
-                writer.WriteNextCol(nameof(TrackSegment.railHeightLeft));
-                writer.WriteNextCol(nameof(TrackSegment.zero_0x44));
-                writer.WriteNextCol(nameof(TrackSegment.zero_0x48));
-                writer.WriteNextCol(nameof(TrackSegment.branchIndex));
+                writer.WriteNextCol(nameof(TrackSegment.SegmentType));
+                writer.WriteNextCol(nameof(TrackSegment.EmbeddedPropertyType));
+                writer.WriteNextCol(nameof(TrackSegment.PerimeterFlags));
+                writer.WriteNextCol(nameof(TrackSegment.PipeCylinderFlags));
+                writer.WriteNextCol(nameof(TrackSegment.AnimationCurvesTrsPtr));
+                writer.WriteNextCol(nameof(TrackSegment.TrackCornerPtr));
+                writer.WriteNextCol(nameof(TrackSegment.ChildrenPtr));
+                writer.WriteNextCol(nameof(TrackSegment.LocalScale));
+                writer.WriteNextCol(nameof(TrackSegment.LocalRotation));
+                writer.WriteNextCol(nameof(TrackSegment.LocalPosition));
+                writer.WriteNextCol(nameof(TrackSegment.Unk_0x38));
+                writer.WriteNextCol(nameof(TrackSegment.Unk_0x39));
+                writer.WriteNextCol(nameof(TrackSegment.Unk_0x3A));
+                writer.WriteNextCol(nameof(TrackSegment.Unk_0x3B));
+                writer.WriteNextCol(nameof(TrackSegment.RailHeightRight));
+                writer.WriteNextCol(nameof(TrackSegment.RailHeightLeft));
+                //writer.WriteNextCol(nameof(TrackSegment.zero_0x44));
+                //writer.WriteNextCol(nameof(TrackSegment.zero_0x48));
+                writer.WriteNextCol(nameof(TrackSegment.BranchIndex));
                 writer.WriteNextCol();
                 writer.WriteNextColNicify(nameof(TrackCorner.width));
                 writer.WriteNextColNicify(nameof(TrackCorner.perimeterOptions));
@@ -234,10 +234,10 @@ namespace GameCube.GFZ.Stage
             WriteTrackSegment(writer, scene, depth, index, total, trackSegment);
 
             // Write children
-            if (trackSegment.children == null)
+            if (trackSegment.Children == null)
                 return;
 
-            foreach (var child in trackSegment.children)
+            foreach (var child in trackSegment.Children)
             {
                 WriteTrackSegmentRecursive(writer, scene, depth + 1, index, total, child);
             }
@@ -250,31 +250,31 @@ namespace GameCube.GFZ.Stage
             writer.WriteNextCol($"[{index}/{total}]");
             writer.WriteNextCol($"{depth}");
             writer.WriteNextCol(trackTransform.PrintStartAddress());
-            writer.WriteNextCol(trackTransform.segmentType);
-            writer.WriteNextCol(trackTransform.embeddedPropertyType);
-            writer.WriteNextCol(trackTransform.perimeterFlags);
-            writer.WriteNextCol(trackTransform.pipeCylinderFlags);
-            writer.WriteNextCol(trackTransform.animationCurvesTrsPtr);
-            writer.WriteNextCol(trackTransform.trackCornerPtr);
-            writer.WriteNextCol(trackTransform.childrenPtr);
-            writer.WriteNextCol(trackTransform.localScale);
-            writer.WriteNextCol(trackTransform.localRotation);
-            writer.WriteNextCol(trackTransform.localPosition);
-            writer.WriteNextCol(trackTransform.unk_0x38);
-            writer.WriteNextCol(trackTransform.unk_0x39);
-            writer.WriteNextCol(trackTransform.unk_0x3A);
-            writer.WriteNextCol(trackTransform.unk_0x3B);
-            writer.WriteNextCol(trackTransform.railHeightRight);
-            writer.WriteNextCol(trackTransform.railHeightLeft);
-            writer.WriteNextCol(trackTransform.zero_0x44);
-            writer.WriteNextCol(trackTransform.zero_0x48);
-            writer.WriteNextCol(trackTransform.branchIndex);
+            writer.WriteNextCol(trackTransform.SegmentType);
+            writer.WriteNextCol(trackTransform.EmbeddedPropertyType);
+            writer.WriteNextCol(trackTransform.PerimeterFlags);
+            writer.WriteNextCol(trackTransform.PipeCylinderFlags);
+            writer.WriteNextCol(trackTransform.AnimationCurvesTrsPtr);
+            writer.WriteNextCol(trackTransform.TrackCornerPtr);
+            writer.WriteNextCol(trackTransform.ChildrenPtr);
+            writer.WriteNextCol(trackTransform.LocalScale);
+            writer.WriteNextCol(trackTransform.LocalRotation);
+            writer.WriteNextCol(trackTransform.LocalPosition);
+            writer.WriteNextCol(trackTransform.Unk_0x38);
+            writer.WriteNextCol(trackTransform.Unk_0x39);
+            writer.WriteNextCol(trackTransform.Unk_0x3A);
+            writer.WriteNextCol(trackTransform.Unk_0x3B);
+            writer.WriteNextCol(trackTransform.RailHeightRight);
+            writer.WriteNextCol(trackTransform.RailHeightLeft);
+            //writer.WriteNextCol(trackTransform.zero_0x44);
+            //writer.WriteNextCol(trackTransform.zero_0x48);
+            writer.WriteNextCol(trackTransform.BranchIndex);
             //
-            if (trackTransform.trackCornerPtr.IsNotNull)
+            if (trackTransform.TrackCornerPtr.IsNotNull)
             {
                 writer.WriteNextCol();
-                writer.WriteNextCol(trackTransform.trackCorner.width);
-                writer.WriteNextCol(trackTransform.trackCorner.perimeterOptions);
+                writer.WriteNextCol(trackTransform.TrackCorner.width);
+                writer.WriteNextCol(trackTransform.TrackCorner.perimeterOptions);
             }
             //
             writer.WriteNextRow();

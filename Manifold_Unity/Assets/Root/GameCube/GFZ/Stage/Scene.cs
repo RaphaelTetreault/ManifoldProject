@@ -431,7 +431,7 @@ namespace GameCube.GFZ.Stage
 
                 // 2021/09/22: test tagging for serialization order
                 foreach (var rootTrackSegment in rootTrackSegments)
-                    rootTrackSegment.isRoot = true;
+                    rootTrackSegment.IsRoot = true;
 
                 // ALL TRACK SEGMENTS
                 // Use helper function to collect all TrackSegments
@@ -531,7 +531,7 @@ namespace GameCube.GFZ.Stage
                         // Construct list of all track curves (sets of 9 ptrs)
                         var listTrackCurves = new List<AnimationCurveTRS>();
                         foreach (var trackSegment in allTrackSegments)
-                            listTrackCurves.Add(trackSegment.animationCurveTRS);
+                            listTrackCurves.Add(trackSegment.AnimationCurveTRS);
                         var allTrackCurves = listTrackCurves.ToArray();
                         // Write anim curve ptrs
                         writer.InlineDesc(serializeVerbose, allTrackSegments.GetBasePointer(), allTrackCurves);
@@ -552,7 +552,7 @@ namespace GameCube.GFZ.Stage
                     writer.InlineDesc(serializeVerbose, new TrackCorner());
                     foreach (var trackSegment in allTrackSegments)
                     {
-                        var corner = trackSegment.trackCorner;
+                        var corner = trackSegment.TrackCorner;
                         if (corner != null)
                         {
                             writer.WriteX(corner);
@@ -875,7 +875,7 @@ namespace GameCube.GFZ.Stage
                 hasReferences.AddRange(trackNodes);
                 hasReferences.AddRange(allTrackSegments);
                 foreach (var trackSegment in allTrackSegments)
-                    hasReferences.Add(trackSegment.animationCurveTRS);
+                    hasReferences.Add(trackSegment.AnimationCurveTRS);
                 // The checkpoint table
                 hasReferences.Add(trackCheckpointGrid);
 
@@ -1013,13 +1013,13 @@ namespace GameCube.GFZ.Stage
                 list.Add(trackNode);
                 list.AddRange(trackNode.checkpoints);
                 list.Add(trackNode.segment);
-                list.Add(trackNode.segment.animationCurveTRS);
-                list.AddRange(trackNode.segment.animationCurveTRS.AnimationCurves);
-                foreach (var anim in trackNode.segment.animationCurveTRS.AnimationCurves) // null?
+                list.Add(trackNode.segment.AnimationCurveTRS);
+                list.AddRange(trackNode.segment.AnimationCurveTRS.AnimationCurves);
+                foreach (var anim in trackNode.segment.AnimationCurveTRS.AnimationCurves) // null?
                     list.AddRange(anim.keyableAttributes);
-                list.Add(trackNode.segment.trackCorner);
-                if (trackNode.segment.trackCorner != null)
-                    list.Add(trackNode.segment.trackCorner.matrix3x4);
+                list.Add(trackNode.segment.TrackCorner);
+                if (trackNode.segment.TrackCorner != null)
+                    list.Add(trackNode.segment.TrackCorner.matrix3x4);
             }
 
             list.AddRange(embeddedPropertyAreas);

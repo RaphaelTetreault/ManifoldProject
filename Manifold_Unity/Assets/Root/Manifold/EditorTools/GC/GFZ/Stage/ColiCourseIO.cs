@@ -433,7 +433,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 log.WriteLine();
 
                 //
-                log.WriteLine($"{nameof(TrackSegment)}.{nameof(TrackSegment.animationCurveTRS)}");
+                log.WriteLine($"{nameof(TrackSegment)}.{nameof(TrackSegment.AnimationCurveTRS)}");
                 string[] labelSRP = new string[] { "Sca", "Rot", "Pos" }; // scale, rotation, position
                 string[] labelXYZ = new string[] { "x", "y", "z" };
                 for (int segmentIndex = 0; segmentIndex < coliScene.allTrackSegments.Length; segmentIndex++)
@@ -442,9 +442,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                     var segmentIndexFormat = segmentIndex.ArrayFormat(coliScene.allTrackSegments);
                     log.WriteLine($"[{segmentIndex}]\t");
 
-                    for (int animIndex = 0; animIndex < trackSegment.animationCurveTRS.AnimationCurves.Length; animIndex++)
+                    for (int animIndex = 0; animIndex < trackSegment.AnimationCurveTRS.AnimationCurves.Length; animIndex++)
                     {
-                        var animCurve = trackSegment.animationCurveTRS.AnimationCurves[animIndex];
+                        var animCurve = trackSegment.AnimationCurveTRS.AnimationCurves[animIndex];
                         // NOTE: delete. At most 4, so no 2 digit indexes
                         //var animCurveFormat = segmentIndex.ArrayFormat(coliScene.trackNodes);
                         var currLabelSRP = labelSRP[animIndex / 3];
@@ -460,7 +460,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 log.WriteLine($"{nameof(TrackSegment)}.{nameof(TrackCorner)}");
                 for (int i = 0; i < coliScene.allTrackSegments.Length; i++)
                 {
-                    var cornerTopology = coliScene.allTrackSegments[i].trackCorner;
+                    var cornerTopology = coliScene.allTrackSegments[i].TrackCorner;
                     var iFormat = i.ArrayFormat(coliScene.trackNodes);
                     log.Write($"[{iFormat}]\t");
                     if (cornerTopology != null)
@@ -632,7 +632,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
             // This block writes out the contents of each TrackSegments AnimationCurves
             log.WriteLine("TRACK SEGMENT ANIMATION CURVES");
-            log.WriteLine($"{nameof(TrackSegment)}.{nameof(TrackSegment.animationCurveTRS)}");
+            log.WriteLine($"{nameof(TrackSegment)}.{nameof(TrackSegment.AnimationCurveTRS)}");
             string[] labelSRP = new string[] { "Sca", "Rot", "Pos" };
             string[] labelXYZ = new string[] { "x", "y", "z" };
             for (int segmentIndex = 0; segmentIndex < coliScene.allTrackSegments.Length; segmentIndex++)
@@ -640,9 +640,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 var trackSegment = coliScene.allTrackSegments[segmentIndex];
                 log.WriteLine($"{nameof(TrackSegment)}[{segmentIndex}]\t{trackSegment}");
 
-                for (int animIndex = 0; animIndex < trackSegment.animationCurveTRS.AnimationCurves.Length; animIndex++)
+                for (int animIndex = 0; animIndex < trackSegment.AnimationCurveTRS.AnimationCurves.Length; animIndex++)
                 {
-                    var animCurve = trackSegment.animationCurveTRS.AnimationCurves[animIndex];
+                    var animCurve = trackSegment.AnimationCurveTRS.AnimationCurves[animIndex];
                     var currLabelSRP = labelSRP[animIndex / 3];
                     var currLabelXYZ = labelXYZ[animIndex % 3];
                     log.WriteLine($"{currLabelSRP}.{currLabelXYZ} [{animIndex}] ");
@@ -657,9 +657,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             {
                 var segment = coliScene.allTrackSegments[i];
                 log.WriteLine($"{nameof(TrackSegment)} Transform Coords [{i}]");
-                log.WriteLine($"\tPosition: {segment.localPosition}");
-                log.WriteLine($"\tRotation: {segment.localRotation}");
-                log.WriteLine($"\tScale...: {segment.localScale}");
+                log.WriteLine($"\tPosition: {segment.LocalPosition}");
+                log.WriteLine($"\tRotation: {segment.LocalRotation}");
+                log.WriteLine($"\tScale...: {segment.LocalScale}");
             }
             log.WriteLine();
             //

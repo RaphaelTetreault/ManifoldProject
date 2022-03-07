@@ -43,7 +43,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         public void SetCurves(TrackSegment trackSegment)
         {
             curves = new AnimationCurveTRS();
-            var gfzCurves = trackSegment.animationCurveTRS.AnimationCurves;
+            var gfzCurves = trackSegment.AnimationCurveTRS.AnimationCurves;
 
             // Convert from animation curves from Gfz to Unity formats
             for (int i = 0; i < gfzCurves.Length; i++)

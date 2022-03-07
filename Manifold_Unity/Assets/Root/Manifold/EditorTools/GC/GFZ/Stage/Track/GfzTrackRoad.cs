@@ -54,16 +54,16 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             var trackSegment = segment.GetSegment();
 
             // Override the rail properies
-            Assert.IsTrue(trackSegment.segmentType == TrackSegmentType.IsTransformLeaf);
+            Assert.IsTrue(trackSegment.SegmentType == TrackSegmentType.IsTransformLeaf);
 
             // Rail height
-            trackSegment.railHeightLeft = railHeightLeft;
-            trackSegment.railHeightRight = railHeightRight;
+            trackSegment.RailHeightLeft = railHeightLeft;
+            trackSegment.RailHeightRight = railHeightRight;
             // Falgs for rail height
             if (railHeightLeft > 0f)
-                trackSegment.perimeterFlags |= TrackPerimeterFlags.hasRailHeightLeft;
+                trackSegment.PerimeterFlags |= TrackPerimeterFlags.hasRailHeightLeft;
             if (railHeightRight > 0f)
-                trackSegment.perimeterFlags |= TrackPerimeterFlags.hasRailHeightRight;
+                trackSegment.PerimeterFlags |= TrackPerimeterFlags.hasRailHeightRight;
 
             //
             return trackSegment;

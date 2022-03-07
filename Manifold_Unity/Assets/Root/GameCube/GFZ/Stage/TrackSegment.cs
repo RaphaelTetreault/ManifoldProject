@@ -17,39 +17,57 @@ namespace GameCube.GFZ.Stage
         IHasReference,
         ITextPrintable
     {
-        // METADATA
-        public int depth;
-        public bool isRoot;
-
         // FIELDS
-        public TrackSegmentType segmentType;
-        public TrackEmbeddedPropertyType embeddedPropertyType;
-        public TrackPerimeterFlags perimeterFlags;
-        public TrackPipeCylinderFlags pipeCylinderFlags;
-        public Pointer animationCurvesTrsPtr;
-        public Pointer trackCornerPtr;
-        public ArrayPointer childrenPtr;
-        public float3 localScale;
-        public float3 localRotation;
-        public float3 localPosition;
-        public byte unk_0x38; // mixed flags
-        public byte unk_0x39; // exclusive flags
-        public byte unk_0x3A; // mixed flags
-        public byte unk_0x3B; // mixed flags
-        public float railHeightRight;
-        public float railHeightLeft;
-        public uint zero_0x44; // zero confirmed
-        public uint zero_0x48; // zero confirmed
-        public int branchIndex; // 0, 1, 2, 3
+        private TrackSegmentType segmentType;
+        private TrackEmbeddedPropertyType embeddedPropertyType;
+        private TrackPerimeterFlags perimeterFlags;
+        private TrackPipeCylinderFlags pipeCylinderFlags;
+        private Pointer animationCurvesTrsPtr;
+        private Pointer trackCornerPtr;
+        private ArrayPointer childrenPtr;
+        private float3 localScale;
+        private float3 localRotation;
+        private float3 localPosition;
+        private byte unk_0x38; // mixed flags
+        private byte unk_0x39; // exclusive flags
+        private byte unk_0x3A; // mixed flags
+        private byte unk_0x3B; // mixed flags
+        private float railHeightRight;
+        private float railHeightLeft;
+        private uint zero_0x44; // zero confirmed
+        private uint zero_0x48; // zero confirmed
+        private int branchIndex; // 0, 1, 2, 3
         // REFERENCE FIELDS
-        public AnimationCurveTRS animationCurveTRS;
-        public TrackCorner trackCorner;
-        public TrackSegment[] children;
+        private AnimationCurveTRS animationCurveTRS;
+        private TrackCorner trackCorner;
+        private TrackSegment[] children;
 
 
         // PROPERTIES
         public AddressRange AddressRange { get; set; }
+        public int Depth { get; set; }
+        public bool IsRoot { get; set; }
         public TrackSegment Parent { get; set; }
+        public TrackSegmentType SegmentType { get => segmentType; set => segmentType = value; }
+        public TrackEmbeddedPropertyType EmbeddedPropertyType { get => embeddedPropertyType; set => embeddedPropertyType = value; }
+        public TrackPerimeterFlags PerimeterFlags { get => perimeterFlags; set => perimeterFlags = value; }
+        public TrackPipeCylinderFlags PipeCylinderFlags { get => pipeCylinderFlags; set => pipeCylinderFlags = value; }
+        public Pointer AnimationCurvesTrsPtr { get => animationCurvesTrsPtr; set => animationCurvesTrsPtr = value; }
+        public Pointer TrackCornerPtr { get => trackCornerPtr; set => trackCornerPtr = value; }
+        public ArrayPointer ChildrenPtr { get => childrenPtr; set => childrenPtr = value; }
+        public float3 LocalScale { get => localScale; set => localScale = value; }
+        public float3 LocalRotation { get => localRotation; set => localRotation = value; }
+        public float3 LocalPosition { get => localPosition; set => localPosition = value; }
+        public byte Unk_0x38 { get => unk_0x38; set => unk_0x38 = value; }
+        public byte Unk_0x39 { get => unk_0x39; set => unk_0x39 = value; }
+        public byte Unk_0x3A { get => unk_0x3A; set => unk_0x3A = value; }
+        public byte Unk_0x3B { get => unk_0x3B; set => unk_0x3B = value; }
+        public float RailHeightRight { get => railHeightRight; set => railHeightRight = value; }
+        public float RailHeightLeft { get => railHeightLeft; set => railHeightLeft = value; }
+        public int BranchIndex { get => branchIndex; set => branchIndex = value; }
+        public AnimationCurveTRS AnimationCurveTRS { get => animationCurveTRS; set => animationCurveTRS = value; }
+        public TrackCorner TrackCorner { get => trackCorner; set => trackCorner = value; }
+        public TrackSegment[] Children { get => children; set => children = value; }
 
 
         // METHODS
@@ -94,7 +112,7 @@ namespace GameCube.GFZ.Stage
                 Assert.IsTrue(zero_0x44 == 0);
                 Assert.IsTrue(zero_0x48 == 0);
 
-                DeserializeChildrenRecursive(reader);
+                DeserializeChildrenRecursively(reader);
             }
             this.SetReaderToEndAddress(reader);
         }
@@ -105,7 +123,7 @@ namespace GameCube.GFZ.Stage
         /// </summary>
         /// <param name="reader">The reader to deserialize children from. Must be same used to deserialize this instance.</param>
         /// <returns>All children of this instance. Result can be of size 0. Result will not be null.</returns>
-        public void DeserializeChildrenRecursive(BinaryReader reader)
+        private void DeserializeChildrenRecursively(BinaryReader reader)
         {
             var children = new TrackSegment[0];
             if (childrenPtr.IsNotNull)
@@ -120,7 +138,7 @@ namespace GameCube.GFZ.Stage
             foreach (var child in children)
             {
                 child.Parent = this;
-                child.DeserializeChildrenRecursive(reader);
+                child.DeserializeChildrenRecursively(reader);
             }
         }
 
@@ -255,7 +273,7 @@ namespace GameCube.GFZ.Stage
 
         public string PrintSingleLine()
         {
-            return $"{nameof(TrackSegment)}(Children [{children.Length}])";
+            return $"{nameof(TrackSegment)}(Children [{Children.Length}])";
         }
 
         public string PrintMultiLine(int indentLevel = 0, string indent = "\t")

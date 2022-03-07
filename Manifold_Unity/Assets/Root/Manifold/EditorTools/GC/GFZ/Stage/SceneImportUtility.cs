@@ -536,16 +536,16 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             controlPoint.name = $"{elementIndex++} {name}";
             controlPoint.transform.parent = parent.transform;
             // Set transform
-            controlPoint.transform.localPosition = trackTransform.localPosition;
-            controlPoint.transform.localRotation = Quaternion.Euler(trackTransform.localRotation);
-            controlPoint.transform.localScale = trackTransform.localScale;
+            controlPoint.transform.localPosition = trackTransform.LocalPosition;
+            controlPoint.transform.localRotation = Quaternion.Euler(trackTransform.LocalRotation);
+            controlPoint.transform.localScale = trackTransform.LocalScale;
 
             //
             var display = controlPoint.AddComponent<DisplayTrackTransformSingle>();
             display.depth = depth;
 
             //
-            var children = trackTransform.children;
+            var children = trackTransform.Children;
             int count = 1;
             int total = children.Length;
             foreach (var child in children)
@@ -563,12 +563,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             controlPoint.name = $"{name} {depth}.{index}";
             controlPoint.transform.parent = parent.transform;
             // Set transform
-            controlPoint.transform.position = trackTransform.localPosition;
-            controlPoint.transform.rotation = Quaternion.Euler(trackTransform.localRotation);
-            controlPoint.transform.localScale = trackTransform.localScale;
+            controlPoint.transform.position = trackTransform.LocalPosition;
+            controlPoint.transform.rotation = Quaternion.Euler(trackTransform.LocalRotation);
+            controlPoint.transform.localScale = trackTransform.LocalScale;
 
             //
-            var children = trackTransform.children;
+            var children = trackTransform.Children;
             index = 0;
             foreach (var child in children)
             {
