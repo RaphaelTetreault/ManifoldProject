@@ -102,9 +102,9 @@ namespace GameCube.GFZ.Stage
                 var trackSegment = coliScene.allTrackSegments[segmentIndex];
                 log.WriteLine($"{nameof(TrackSegment)}[{segmentIndex}]\t{trackSegment}");
 
-                for (int animIndex = 0; animIndex < trackSegment.trackCurves.animationCurves.Length; animIndex++)
+                for (int animIndex = 0; animIndex < trackSegment.trackCurves.AnimationCurves.Length; animIndex++)
                 {
-                    var animCurve = trackSegment.trackCurves.animationCurves[animIndex];
+                    var animCurve = trackSegment.trackCurves.AnimationCurves[animIndex];
                     var currLabelSRP = labelSRP[animIndex / 3];
                     var currLabelXYZ = labelXYZ[animIndex % 3];
                     log.WriteLine($"{currLabelSRP}.{currLabelXYZ} [{animIndex}] ");

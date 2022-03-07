@@ -442,9 +442,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                     var segmentIndexFormat = segmentIndex.ArrayFormat(coliScene.allTrackSegments);
                     log.WriteLine($"[{segmentIndex}]\t");
 
-                    for (int animIndex = 0; animIndex < trackSegment.trackCurves.animationCurves.Length; animIndex++)
+                    for (int animIndex = 0; animIndex < trackSegment.trackCurves.AnimationCurves.Length; animIndex++)
                     {
-                        var animCurve = trackSegment.trackCurves.animationCurves[animIndex];
+                        var animCurve = trackSegment.trackCurves.AnimationCurves[animIndex];
                         // NOTE: delete. At most 4, so no 2 digit indexes
                         //var animCurveFormat = segmentIndex.ArrayFormat(coliScene.trackNodes);
                         var currLabelSRP = labelSRP[animIndex / 3];
@@ -640,9 +640,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 var trackSegment = coliScene.allTrackSegments[segmentIndex];
                 log.WriteLine($"{nameof(TrackSegment)}[{segmentIndex}]\t{trackSegment}");
 
-                for (int animIndex = 0; animIndex < trackSegment.trackCurves.animationCurves.Length; animIndex++)
+                for (int animIndex = 0; animIndex < trackSegment.trackCurves.AnimationCurves.Length; animIndex++)
                 {
-                    var animCurve = trackSegment.trackCurves.animationCurves[animIndex];
+                    var animCurve = trackSegment.trackCurves.AnimationCurves[animIndex];
                     var currLabelSRP = labelSRP[animIndex / 3];
                     var currLabelXYZ = labelXYZ[animIndex % 3];
                     log.WriteLine($"{currLabelSRP}.{currLabelXYZ} [{animIndex}] ");

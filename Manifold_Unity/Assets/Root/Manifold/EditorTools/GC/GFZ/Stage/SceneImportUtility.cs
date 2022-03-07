@@ -96,8 +96,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             foreach (var transform in rootTransforms)
                 transform.SetParent(mirrorRoot);
 
-            TestTransformHeirarchy(scene).SetParent(mirrorRoot);
             CreateTrackTransformHierarchy(scene).SetParent(mirrorRoot);
+            // TODO: convert to tag container
+            //TestTransformHeirarchy(rootSegments).SetParent(mirrorRoot);
             CreateTrackIndexChains(scene).SetParent(mirrorRoot);
             IncludeStaticMeshColliders(scene, stageFolder).SetParent(mirrorRoot);
             CreateGridXZVisual(scene).SetParent(mirrorRoot);
@@ -531,7 +532,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             //
             var controlPoint = new GameObject();
             var tag = controlPoint.AddComponent<TagTrackSegment>();
-            tag.Data = trackTransform;
             //
             controlPoint.name = $"{elementIndex++} {name}";
             controlPoint.transform.parent = parent.transform;
@@ -612,15 +612,15 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             return root.transform;
         }
 
-        public static Transform TestTransformHeirarchy(Scene scene)
+        public static Transform TestTransformHeirarchy(TagTrackSegment[] rootSegments)
         {
             var root = new GameObject();
             root.name = $"Track Curves (Test)";
 
             //
-            var increment = 1f / 1000f * scene.rootTrackSegments.Length;
+            var increment = 1f / 1000f * rootSegments.Length;
             int count = 0;
-            foreach (var trackSegment in scene.rootTrackSegments)
+            foreach (var trackSegment in rootSegments)
             {
                 var subgroup = new GameObject();
                 subgroup.name = $"Subgroup {++count}";
@@ -644,7 +644,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             return root.transform;
         }
 
-        public static Matrix4x4 GetChildMatrix(TrackSegment trackSegment, float timeNormalized)
+        public static Matrix4x4 GetChildMatrix(TagTrackSegment trackSegment, float timeNormalized)
         {
             var transformMtx = Matrix4x4.TRS(
                 trackSegment.localPosition,
@@ -652,46 +652,48 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 trackSegment.localScale);
 
             // Get max times
-            var curves = trackSegment.trackCurves;
-            float3 maxTimeScale = new float3(
-                GetCurveTime(curves.unityCurves[0]),
-                GetCurveTime(curves.unityCurves[1]),
-                GetCurveTime(curves.unityCurves[2]));
-            float3 maxTimeRotation = new float3(
-                GetCurveTime(curves.unityCurves[3]),
-                GetCurveTime(curves.unityCurves[4]),
-                GetCurveTime(curves.unityCurves[5]));
-            float3 maxTimePosition = new float3(
-                GetCurveTime(curves.unityCurves[6]),
-                GetCurveTime(curves.unityCurves[7]),
-                GetCurveTime(curves.unityCurves[8]));
+            var curves = trackSegment.curves;
+            var maxTime = curves.GetMaxTime();
+            //float3 maxTimeScale = new float3(
+            //    GetCurveTime(curves.unityCurves[0]),
+            //    GetCurveTime(curves.unityCurves[1]),
+            //    GetCurveTime(curves.unityCurves[2]));
+            //float3 maxTimeRotation = new float3(
+            //    GetCurveTime(curves.unityCurves[3]),
+            //    GetCurveTime(curves.unityCurves[4]),
+            //    GetCurveTime(curves.unityCurves[5]));
+            //float3 maxTimePosition = new float3(
+            //    GetCurveTime(curves.unityCurves[6]),
+            //    GetCurveTime(curves.unityCurves[7]),
+            //    GetCurveTime(curves.unityCurves[8]));
 
+            var time = timeNormalized * maxTime;
 
-            float3 scale = new float3(
-                curves.unityCurves[0].EvaluateDefault(timeNormalized * maxTimeScale.x, 1),
-                curves.unityCurves[1].EvaluateDefault(timeNormalized * maxTimeScale.y, 1),
-                curves.unityCurves[2].EvaluateDefault(timeNormalized * maxTimeScale.z, 1));
-            float3 rotation = new float3(
-                curves.unityCurves[3].EvaluateDefault(timeNormalized * maxTimeRotation.x, 0),
-                curves.unityCurves[4].EvaluateDefault(timeNormalized * maxTimeRotation.y, 0),
-                curves.unityCurves[5].EvaluateDefault(timeNormalized * maxTimeRotation.z, 0));
             float3 position = new float3(
-                curves.unityCurves[6].EvaluateDefault(timeNormalized * maxTimePosition.x, 0),
-                curves.unityCurves[7].EvaluateDefault(timeNormalized * maxTimePosition.y, 0),
-                curves.unityCurves[8].EvaluateDefault(timeNormalized * maxTimePosition.z, 0));
+                curves.Position.x.EvaluateDefault(time, 0),
+                curves.Position.y.EvaluateDefault(time, 0),
+                curves.Position.z.EvaluateDefault(time, 0));
+            float3 rotation = new float3(
+                curves.Rotation.x.EvaluateDefault(time, 0),
+                curves.Rotation.y.EvaluateDefault(time, 0),
+                curves.Rotation.z.EvaluateDefault(time, 0));
+            float3 scale = new float3(
+                curves.Scale.x.EvaluateDefault(time, 1),
+                curves.Scale.y.EvaluateDefault(time, 1),
+                curves.Scale.z.EvaluateDefault(time, 1));
+
             var animationMtx = Matrix4x4.TRS(position, Quaternion.Euler(rotation), scale);
 
             // indeed, the correct order
             var mtx = animationMtx * transformMtx;
 
-
-            if (trackSegment.childSegments != null && trackSegment.childSegments.Length > 0)
+            if (trackSegment.children != null && trackSegment.children.Length > 0)
             {
-                var child = trackSegment.childSegments[0];
+                var child = trackSegment.children[0];
                 if (child.segmentType == TrackSegmentType.IsTransformParent ||
                     child.segmentType == TrackSegmentType.IsTransformLeaf)
                 {
-                    var childMtx = GetChildMatrix(trackSegment.childSegments[0], timeNormalized);
+                    var childMtx = GetChildMatrix(trackSegment.children[0], timeNormalized);
                     mtx = mtx * childMtx;
                 }
             }

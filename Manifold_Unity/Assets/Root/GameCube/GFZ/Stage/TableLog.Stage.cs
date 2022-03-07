@@ -129,7 +129,7 @@ namespace GameCube.GFZ.Stage
         }
         public static void WriteTrackKeyableAttributeRecursive(StreamWriter writer, Scene scene, int nestedDepth, int animationCurveIndex, int trackTransformIndex, TrackSegment trackTransform)
         {
-            var animationCurves = trackTransform.trackCurves.animationCurves;
+            var animationCurves = trackTransform.trackCurves.AnimationCurves;
             var keyableIndex = 1; // 0-n, depends on number of keyables in array
             int keyableTotal = animationCurves[animationCurveIndex].Length;
 

@@ -581,7 +581,7 @@ namespace GameCube.GFZ.Stage
                         // Construct list of all /animation curves/ (breakout from track structure)
                         var listAnimationCurves = new List<AnimationCurve>();
                         foreach (var trackAnimationCurve in allTrackCurves)
-                            foreach (var animationCurve in trackAnimationCurve.animationCurves)
+                            foreach (var animationCurve in trackAnimationCurve.AnimationCurves)
                                 listAnimationCurves.Add(animationCurve);
                         var allAnimationCurves = listAnimationCurves.ToArray();
                         //
@@ -1107,8 +1107,8 @@ namespace GameCube.GFZ.Stage
                 list.AddRange(trackNode.checkpoints);
                 list.Add(trackNode.segment);
                 list.Add(trackNode.segment.trackCurves);
-                list.AddRange(trackNode.segment.trackCurves.animationCurves);
-                foreach (var anim in trackNode.segment.trackCurves.animationCurves) // null?
+                list.AddRange(trackNode.segment.trackCurves.AnimationCurves);
+                foreach (var anim in trackNode.segment.trackCurves.AnimationCurves) // null?
                     list.AddRange(anim.keyableAttributes);
                 list.Add(trackNode.segment.trackCorner);
                 if (trackNode.segment.trackCorner != null)

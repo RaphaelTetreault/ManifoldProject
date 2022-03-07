@@ -31,13 +31,9 @@ namespace GameCube.GFZ.Stage
         public float3 localScale;
         public float3 localRotation;
         public float3 localPosition;
-        [NumFormat(format0: "{0}", numDigits: 8, numBase: 2)]
         public byte unk_0x38; // mixed flags
-        [NumFormat(format0: "{0}", numDigits: 8, numBase: 2)]
         public byte unk_0x39; // exclusive flags
-        [NumFormat(format0: "{0}", numDigits: 8, numBase: 2)]
         public byte unk_0x3A; // mixed flags
-        [NumFormat(format0: "{0}", numDigits: 8, numBase: 2)]
         public byte unk_0x3B; // mixed flags
         public float railHeightRight;
         public float railHeightLeft;
@@ -86,18 +82,12 @@ namespace GameCube.GFZ.Stage
                 reader.JumpToAddress(trackCurvesPtr);
                 reader.ReadX(ref trackCurves);
 
-                // Read hairpin turn
+                // Read corner transform
                 if (trackCornerPtr.IsNotNull)
                 {
                     reader.JumpToAddress(trackCornerPtr);
                     reader.ReadX(ref trackCorner);
                 }
-
-                // TODO: make this functional
-                // Create a matrix for convenience
-                //localMatrix = float4x4.TRS(localPosition, quaternion.EulerXYZ(localRotation), localScale);
-                // Update values based on children
-                //worldMatrix = localMatrix;
 
                 // Assertions
                 Assert.IsTrue(zero_0x44 == 0);
@@ -310,10 +300,6 @@ namespace GameCube.GFZ.Stage
                 GetChildrenRecursively(childSegment, segments);
             }
         }
-
-
-
-
 
     }
 }

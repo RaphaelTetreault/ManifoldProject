@@ -28,6 +28,14 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             };
         }
 
+
+        public AnimationCurve this[int i]
+        {
+            get => AnimationCurves[i];
+            set => AnimationCurves[i] = value;
+        }
+
+
         public float GetMaxTime()
         {
             var curves = new List<AnimationCurve>();
@@ -64,7 +72,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         public GameCube.GFZ.Stage.TrackCurves ToTrackSegment()
         {
             var trackCurves = new GameCube.GFZ.Stage.TrackCurves();
-            trackCurves.animationCurves = new GameCube.GFZ.Stage.AnimationCurve[9];
+            trackCurves.AnimationCurves = new GameCube.GFZ.Stage.AnimationCurve[9];
 
             var corrected = GetGfzCoordSpaceTRS();
 
