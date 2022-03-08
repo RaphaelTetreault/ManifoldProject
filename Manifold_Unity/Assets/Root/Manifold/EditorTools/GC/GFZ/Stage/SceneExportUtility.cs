@@ -198,7 +198,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 {
                     //if (!sceneObjectNames.Contains(thing.name))
                     //{
-                    sceneObjectNames.Add(thing.name);
+                    sceneObjectNames.Add(thing.Name);
                     //}
                 }
                 // alphabetize, store
@@ -293,10 +293,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
             foreach (var dynamicSceneObject in scene.dynamicSceneObjects)
             {
-                if (dynamicSceneObject.animationClip == null)
+                if (dynamicSceneObject.AnimationClip == null)
                     continue;
 
-                foreach (var animationClipCurve in dynamicSceneObject.animationClip.Curves)
+                foreach (var animationClipCurve in dynamicSceneObject.AnimationClip.Curves)
                 {
                     if (animationClipCurve.AnimationCurve == null)
                         continue;

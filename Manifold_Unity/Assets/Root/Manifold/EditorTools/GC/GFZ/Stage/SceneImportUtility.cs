@@ -936,7 +936,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 script.ImportGfz(dynamicSceneObject);
 
                 // Bind reference
-                var gfzSceneObject = sceneObjectDict[dynamicSceneObject.sceneObject];
+                var gfzSceneObject = sceneObjectDict[dynamicSceneObject.SceneObject];
                 script.SetSceneObject(gfzSceneObject);
             }
 

@@ -12,19 +12,23 @@ namespace GameCube.GFZ.Stage
     public class SceneObjectLOD :
         IBinaryAddressable,
         IBinarySerializable,
-        IHasReference
+        IHasReference,
+        ITextPrintable
     {
         // FIELDS
-        public uint zero_0x00;
-        public Pointer lodNamePtr;
-        public uint zero_0x08;
-        public float lodDistance;
+        private uint zero_0x00;
+        private Pointer lodNamePtr;
+        private uint zero_0x08;
+        private float lodDistance;
         // REFERENCE FIELDS
-        public ShiftJisCString name;
+        private ShiftJisCString name;
 
 
         // PROPERTIES
         public AddressRange AddressRange { get; set; }
+        public Pointer LodNamePtr { get => lodNamePtr; set => lodNamePtr = value; }
+        public float LodDistance { get => lodDistance; set => lodDistance = value; }
+        public ShiftJisCString Name { get => name; set => name = value; }
 
 
         // METHODS
@@ -78,13 +82,19 @@ namespace GameCube.GFZ.Stage
             Assert.IsTrue(zero_0x08 == 0);
         }
 
-        public override string ToString()
+        public string PrintMultiLine(int indentLevel = 0, string indent = "\t")
         {
-            return
-                $"{nameof(SceneObjectLOD)}(" +
-                $"{nameof(lodDistance)}: {lodDistance}, " +
-                $"{nameof(name)}: {name}" +
-                $")";
+            var builder = new System.Text.StringBuilder();
+            builder.AppendLineIndented(indent, indentLevel, PrintSingleLine());
+            return builder.ToString();
         }
+
+        public string PrintSingleLine()
+        {
+            return $"{nameof(SceneObjectLOD)}({name}, {nameof(LodDistance)}: {LodDistance})";
+        }
+
+        public override string ToString() => PrintSingleLine();
+
     }
 }

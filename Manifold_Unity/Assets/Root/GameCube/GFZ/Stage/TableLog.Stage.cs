@@ -308,13 +308,13 @@ namespace GameCube.GFZ.Stage
                     int gameObjectIndex = 0;
                     foreach (var gameObject in scene.dynamicSceneObjects)
                     {
-                        if (gameObject.animationClip == null)
+                        if (gameObject.AnimationClip == null)
                             continue;
-                        if (gameObject.animationClip.Curves == null)
+                        if (gameObject.AnimationClip.Curves == null)
                             continue;
 
                         int animIndex = 0;
-                        foreach (var animationClipCurve in gameObject.animationClip.Curves)
+                        foreach (var animationClipCurve in gameObject.AnimationClip.Curves)
                         {
                             if (animationClipCurve.AnimationCurve == null)
                                 continue;
@@ -373,13 +373,13 @@ namespace GameCube.GFZ.Stage
                     int objIndex = 0;
                     foreach (var dynamicSceneObject in scene.dynamicSceneObjects)
                     {
-                        if (dynamicSceneObject.animationClip == null)
+                        if (dynamicSceneObject.AnimationClip == null)
                             continue;
                         //if (gameObject.animation.curve == null)
                         //    continue;
 
                         int animIndex = 0;
-                        foreach (var animationClipCurve in dynamicSceneObject.animationClip.Curves)
+                        foreach (var animationClipCurve in dynamicSceneObject.AnimationClip.Curves)
                         {
                             // Failing for some reason on indexes 6+ :/
                             if (animationClipCurve.AnimationCurve == null)
@@ -429,19 +429,19 @@ namespace GameCube.GFZ.Stage
                 writer.WriteNextCol("File");
                 writer.WriteNextCol("Game Object #");
                 writer.WriteNextCol("Game Object");
-                writer.WriteNextCol(nameof(SceneObjectDynamic.unk0x00));
-                writer.WriteNextCol(nameof(SceneObjectDynamic.unk0x00));
-                writer.WriteNextCol(nameof(SceneObjectDynamic.unk0x04));
-                writer.WriteNextCol(nameof(SceneObjectDynamic.unk0x04));
-                writer.WriteNextCol(nameof(SceneObjectDynamic.sceneObjectPtr));
-                writer.WriteNextCol(nameof(SceneObjectDynamic.transformPRXS.Position));
-                writer.WriteNextCol(nameof(SceneObjectDynamic.transformPRXS.RotationEuler));
-                writer.WriteNextCol(nameof(SceneObjectDynamic.transformPRXS.Scale));
-                writer.WriteNextCol(nameof(SceneObjectDynamic.zero_0x2C));
-                writer.WriteNextCol(nameof(SceneObjectDynamic.animationClipPtr));
-                writer.WriteNextCol(nameof(SceneObjectDynamic.textureScrollPtr));
-                writer.WriteNextCol(nameof(SceneObjectDynamic.skeletalAnimatorPtr));
-                writer.WriteNextCol(nameof(SceneObjectDynamic.transformMatrix3x4Ptr));
+                writer.WriteNextCol(nameof(SceneObjectDynamic.Unk0x00));
+                writer.WriteNextCol(nameof(SceneObjectDynamic.Unk0x00));
+                writer.WriteNextCol(nameof(SceneObjectDynamic.Unk0x04));
+                writer.WriteNextCol(nameof(SceneObjectDynamic.Unk0x04));
+                writer.WriteNextCol(nameof(SceneObjectDynamic.SceneObjectPtr));
+                writer.WriteNextCol(nameof(SceneObjectDynamic.TransformTRXS.Position));
+                writer.WriteNextCol(nameof(SceneObjectDynamic.TransformTRXS.RotationEuler));
+                writer.WriteNextCol(nameof(SceneObjectDynamic.TransformTRXS.Scale));
+                //writer.WriteNextCol(nameof(SceneObjectDynamic.zero_0x2C));
+                writer.WriteNextCol(nameof(SceneObjectDynamic.AnimationClipPtr));
+                writer.WriteNextCol(nameof(SceneObjectDynamic.TextureScrollPtr));
+                writer.WriteNextCol(nameof(SceneObjectDynamic.SkeletalAnimatorPtr));
+                writer.WriteNextCol(nameof(SceneObjectDynamic.TransformMatrix3x4Ptr));
                 writer.WriteNextRow();
 
                 foreach (var scene in scenes)
@@ -452,19 +452,19 @@ namespace GameCube.GFZ.Stage
                         writer.WriteNextCol(scene.FileName);
                         writer.WriteNextCol(sceneObjectIndex);
                         writer.WriteNextCol(sceneObject.Name);
-                        writer.WriteNextCol(sceneObject.unk0x00);
-                        writer.WriteNextCol($"0x{sceneObject.unk0x00:x8}");
-                        writer.WriteNextCol(sceneObject.unk0x04);
-                        writer.WriteNextCol($"0x{sceneObject.unk0x04:x8}");
-                        writer.WriteNextCol(sceneObject.sceneObjectPtr.PrintAddress);
-                        writer.WriteNextCol(sceneObject.transformPRXS.Position);
-                        writer.WriteNextCol(sceneObject.transformPRXS.RotationEuler);
-                        writer.WriteNextCol(sceneObject.transformPRXS.Scale);
-                        writer.WriteNextCol(sceneObject.zero_0x2C);
-                        writer.WriteNextCol(sceneObject.animationClipPtr.PrintAddress);
-                        writer.WriteNextCol(sceneObject.textureScrollPtr.PrintAddress);
-                        writer.WriteNextCol(sceneObject.skeletalAnimatorPtr.PrintAddress);
-                        writer.WriteNextCol(sceneObject.transformMatrix3x4Ptr.PrintAddress);
+                        writer.WriteNextCol(sceneObject.Unk0x00);
+                        writer.WriteNextCol($"0x{sceneObject.Unk0x00:x8}");
+                        writer.WriteNextCol(sceneObject.Unk0x04);
+                        writer.WriteNextCol($"0x{sceneObject.Unk0x04:x8}");
+                        writer.WriteNextCol(sceneObject.SceneObjectPtr.PrintAddress);
+                        writer.WriteNextCol(sceneObject.TransformTRXS.Position);
+                        writer.WriteNextCol(sceneObject.TransformTRXS.RotationEuler);
+                        writer.WriteNextCol(sceneObject.TransformTRXS.Scale);
+                        //writer.WriteNextCol(sceneObject.zero_0x2C);
+                        writer.WriteNextCol(sceneObject.AnimationClipPtr.PrintAddress);
+                        writer.WriteNextCol(sceneObject.TextureScrollPtr.PrintAddress);
+                        writer.WriteNextCol(sceneObject.SkeletalAnimatorPtr.PrintAddress);
+                        writer.WriteNextCol(sceneObject.TransformMatrix3x4Ptr.PrintAddress);
                         writer.WriteNextRow();
 
                         sceneObjectIndex++;
@@ -492,11 +492,11 @@ namespace GameCube.GFZ.Stage
                     int gameObjectIndex = 0;
                     foreach (var sceneObject in scene.dynamicSceneObjects)
                     {
-                        if (sceneObject.textureScroll == null)
+                        if (sceneObject.TextureScroll == null)
                             continue;
 
                         int fieldArrayIndex = 0;
-                        foreach (var field in sceneObject.textureScroll.fields)
+                        foreach (var field in sceneObject.TextureScroll.fields)
                         {
                             if (field == null)
                                 return;
@@ -547,29 +547,29 @@ namespace GameCube.GFZ.Stage
                     int gameObjectIndex = 0;
                     foreach (var dynamicSceneObject in scene.dynamicSceneObjects)
                     {
-                        if (dynamicSceneObject.skeletalAnimator == null)
+                        if (dynamicSceneObject.SkeletalAnimator == null)
                             continue;
-                        if (dynamicSceneObject.skeletalAnimator.propertiesPtr.IsNull)
+                        if (dynamicSceneObject.SkeletalAnimator.propertiesPtr.IsNull)
                             continue;
 
                         writer.WriteNextCol(scene.FileName);
                         writer.WriteNextCol(gameObjectIndex);
                         writer.WriteNextCol(dynamicSceneObject.Name);
 
-                        writer.WriteNextCol(dynamicSceneObject.skeletalAnimator.zero_0x00);
-                        writer.WriteNextCol(dynamicSceneObject.skeletalAnimator.zero_0x04);
-                        writer.WriteNextCol(dynamicSceneObject.skeletalAnimator.one_0x08);
-                        writer.WriteNextCol(dynamicSceneObject.skeletalAnimator.propertiesPtr);
+                        writer.WriteNextCol(dynamicSceneObject.SkeletalAnimator.zero_0x00);
+                        writer.WriteNextCol(dynamicSceneObject.SkeletalAnimator.zero_0x04);
+                        writer.WriteNextCol(dynamicSceneObject.SkeletalAnimator.one_0x08);
+                        writer.WriteNextCol(dynamicSceneObject.SkeletalAnimator.propertiesPtr);
 
-                        writer.WriteNextCol(dynamicSceneObject.skeletalAnimator.properties.unk_0x00);
-                        writer.WriteNextCol(dynamicSceneObject.skeletalAnimator.properties.unk_0x04);
-                        writer.WriteFlags(dynamicSceneObject.skeletalAnimator.properties.unk_0x04);
-                        writer.WriteNextCol(dynamicSceneObject.skeletalAnimator.properties.unk_0x08);
-                        writer.WriteFlags(dynamicSceneObject.skeletalAnimator.properties.unk_0x08);
-                        writer.WriteNextCol(dynamicSceneObject.skeletalAnimator.properties.zero_0x0C);
-                        writer.WriteNextCol(dynamicSceneObject.skeletalAnimator.properties.zero_0x10);
-                        writer.WriteNextCol(dynamicSceneObject.skeletalAnimator.properties.zero_0x14);
-                        writer.WriteNextCol(dynamicSceneObject.skeletalAnimator.properties.zero_0x18);
+                        writer.WriteNextCol(dynamicSceneObject.SkeletalAnimator.properties.unk_0x00);
+                        writer.WriteNextCol(dynamicSceneObject.SkeletalAnimator.properties.unk_0x04);
+                        writer.WriteFlags(dynamicSceneObject.SkeletalAnimator.properties.unk_0x04);
+                        writer.WriteNextCol(dynamicSceneObject.SkeletalAnimator.properties.unk_0x08);
+                        writer.WriteFlags(dynamicSceneObject.SkeletalAnimator.properties.unk_0x08);
+                        writer.WriteNextCol(dynamicSceneObject.SkeletalAnimator.properties.zero_0x0C);
+                        writer.WriteNextCol(dynamicSceneObject.SkeletalAnimator.properties.zero_0x10);
+                        writer.WriteNextCol(dynamicSceneObject.SkeletalAnimator.properties.zero_0x14);
+                        writer.WriteNextCol(dynamicSceneObject.SkeletalAnimator.properties.zero_0x18);
                         writer.WriteNextRow();
 
                         gameObjectIndex++;
@@ -621,13 +621,13 @@ namespace GameCube.GFZ.Stage
                     int gameObjectIndex = 0;
                     foreach (var dynamicSceneObject in scene.dynamicSceneObjects)
                     {
-                        if (dynamicSceneObject.sceneObject.ColliderMesh == null)
+                        if (dynamicSceneObject.SceneObject.ColliderMesh == null)
                             continue;
-                        if (dynamicSceneObject.sceneObject.ColliderMesh.Tris.Length == 0)
+                        if (dynamicSceneObject.SceneObject.ColliderMesh.Tris.Length == 0)
                             continue;
 
                         int triIndex = 0;
-                        foreach (var tri in dynamicSceneObject.sceneObject.ColliderMesh.Tris)
+                        foreach (var tri in dynamicSceneObject.SceneObject.ColliderMesh.Tris)
                         {
                             writer.WriteNextCol(scene.FileName);
                             writer.WriteNextCol(gameObjectIndex);
@@ -716,13 +716,13 @@ namespace GameCube.GFZ.Stage
                     int gameObjectIndex = 0;
                     foreach (var dynamicSceneObject in scene.dynamicSceneObjects)
                     {
-                        if (dynamicSceneObject.sceneObject.ColliderMesh == null)
+                        if (dynamicSceneObject.SceneObject.ColliderMesh == null)
                             continue;
-                        if (dynamicSceneObject.sceneObject.ColliderMesh.Quads.Length == 0)
+                        if (dynamicSceneObject.SceneObject.ColliderMesh.Quads.Length == 0)
                             continue;
 
                         int quadIndex = 0;
-                        foreach (var quad in dynamicSceneObject.sceneObject.ColliderMesh.Quads)
+                        foreach (var quad in dynamicSceneObject.SceneObject.ColliderMesh.Quads)
                         {
                             writer.WriteNextCol(scene.FileName);
                             writer.WriteNextCol(gameObjectIndex);
@@ -1304,7 +1304,7 @@ namespace GameCube.GFZ.Stage
                     {
                         // Skip objects that don;'t have both matrix and decomposed rotation
                         // These are not helpful for comparision
-                        if (!sceneObject.transformMatrix3x4Ptr.IsNotNull)
+                        if (!sceneObject.TransformMatrix3x4Ptr.IsNotNull)
                             continue;
 
                         writer.WriteNextCol(scene.FileName);
@@ -1312,25 +1312,25 @@ namespace GameCube.GFZ.Stage
                         writer.WriteNextCol(sceneObject.Name);
 
                         // Rotation values from clean, uncompressed matrix
-                        var matrix = sceneObject.transformMatrix3x4.Rotation;
+                        var matrix = sceneObject.TransformMatrix3x4.Rotation;
                         writer.WriteNextCol(matrix.x);
                         writer.WriteNextCol(matrix.y);
                         writer.WriteNextCol(matrix.z);
 
                         // Rotation values as reconstructed
-                        var euler = sceneObject.transformPRXS.CompressedRotation.Eulers;
+                        var euler = sceneObject.TransformTRXS.CompressedRotation.Eulers;
                         writer.WriteNextCol(euler.x);
                         writer.WriteNextCol(euler.y);
                         writer.WriteNextCol(euler.z);
 
                         // Decomposed rotation values, raw, requires processing to be used
-                        var decomposed = sceneObject.transformPRXS.CompressedRotation;
+                        var decomposed = sceneObject.TransformTRXS.CompressedRotation;
                         writer.WriteNextCol(decomposed.X);
                         writer.WriteNextCol(decomposed.Y);
                         writer.WriteNextCol(decomposed.Z);
                         // The other parameters that go with the structure
-                        writer.WriteNextCol(sceneObject.transformPRXS.UnknownOption);
-                        writer.WriteNextCol(sceneObject.transformPRXS.ObjectActiveOverride);
+                        writer.WriteNextCol(sceneObject.TransformTRXS.UnknownOption);
+                        writer.WriteNextCol(sceneObject.TransformTRXS.ObjectActiveOverride);
 
                         writer.WriteNextRow();
                         sceneObjectIndex++;
@@ -1494,10 +1494,10 @@ namespace GameCube.GFZ.Stage
                 //
                 writer.WriteNextCol("name");
                 writer.WriteNextCol("Object Type");
-                writer.WriteNextCol(nameof(SceneObjectLOD.zero_0x00));
-                writer.WriteNextCol(nameof(SceneObjectLOD.lodNamePtr));
-                writer.WriteNextCol(nameof(SceneObjectLOD.zero_0x08));
-                writer.WriteNextCol(nameof(SceneObjectLOD.lodDistance));
+                //writer.WriteNextCol(nameof(SceneObjectLOD.zero_0x00));
+                writer.WriteNextCol(nameof(SceneObjectLOD.LodNamePtr));
+                //writer.WriteNextCol(nameof(SceneObjectLOD.zero_0x08));
+                writer.WriteNextCol(nameof(SceneObjectLOD.LodDistance));
                 //
                 writer.WriteNextRow();
 
@@ -1531,11 +1531,11 @@ namespace GameCube.GFZ.Stage
                         writer.WriteNextCol(courseID);
                         writer.WriteNextCol(isAxGx);
                         //
-                        writer.WriteNextCol(sceneObjectReference.name);
-                        writer.WriteNextCol(sceneObjectReference.zero_0x00);
-                        writer.WriteNextCol(sceneObjectReference.lodNamePtr);
-                        writer.WriteNextCol(sceneObjectReference.zero_0x08);
-                        writer.WriteNextCol(sceneObjectReference.lodDistance);
+                        writer.WriteNextCol(sceneObjectReference.Name);
+                        //writer.WriteNextCol(sceneObjectReference.zero_0x00);
+                        writer.WriteNextCol(sceneObjectReference.LodNamePtr);
+                        //writer.WriteNextCol(sceneObjectReference.zero_0x08);
+                        writer.WriteNextCol(sceneObjectReference.LodDistance);
                         //
                         writer.WriteNextRow();
                     }
@@ -1590,7 +1590,7 @@ namespace GameCube.GFZ.Stage
                         writer.WriteNextCol(courseID);
                         writer.WriteNextCol(isAxGx);
                         //
-                        writer.WriteNextCol(sceneObject.sir.PrimaryLOD.name);
+                        writer.WriteNextCol(sceneObject.sir.PrimaryLOD.Name);
                         writer.WriteNextCol(sceneObject.category);
                         writer.WriteNextCol(sceneObject.sir.LodRenderFlags);
                         writer.WriteNextCol(sceneObject.sir.LodsPtr);
@@ -1620,11 +1620,11 @@ namespace GameCube.GFZ.Stage
                 writer.WriteNextCol(nameof(SceneObject.LodsPtr) + " Adr");
                 writer.WriteNextCol(nameof(SceneObject.ColliderGeometryPtr));
                 writer.WriteNextCol(nameof(SceneObjectLOD) + " IDX");
-                writer.WriteNextCol(nameof(SceneObjectLOD.zero_0x00));
-                writer.WriteNextCol(nameof(SceneObjectLOD.lodNamePtr));
-                writer.WriteNextCol(nameof(SceneObjectLOD.zero_0x08));
-                writer.WriteNextCol(nameof(SceneObjectLOD.lodDistance));
-                writer.WriteNextCol(nameof(SceneObjectLOD.name));
+                //writer.WriteNextCol(nameof(SceneObjectLOD.zero_0x00));
+                writer.WriteNextCol(nameof(SceneObjectLOD.LodNamePtr));
+                //writer.WriteNextCol(nameof(SceneObjectLOD.zero_0x08));
+                writer.WriteNextCol(nameof(SceneObjectLOD.LodDistance));
+                writer.WriteNextCol(nameof(SceneObjectLOD.Name));
                 //
                 writer.WriteNextRow();
 
@@ -1652,11 +1652,11 @@ namespace GameCube.GFZ.Stage
                             writer.WriteNextCol(template.LodsPtr.PrintAddress);
                             writer.WriteNextCol(template.ColliderGeometryPtr);
                             writer.WriteNextCol($"[{++index}/{length}]");
-                            writer.WriteNextCol(sceneObject.zero_0x00);
-                            writer.WriteNextCol(sceneObject.lodNamePtr);
-                            writer.WriteNextCol(sceneObject.zero_0x08);
-                            writer.WriteNextCol(sceneObject.lodDistance);
-                            writer.WriteNextCol(sceneObject.name);
+                            //writer.WriteNextCol(sceneObject.zero_0x00);
+                            writer.WriteNextCol(sceneObject.LodNamePtr);
+                            //writer.WriteNextCol(sceneObject.zero_0x08);
+                            writer.WriteNextCol(sceneObject.LodDistance);
+                            writer.WriteNextCol(sceneObject.Name);
                             writer.WriteNextRow();
                         }
                     }

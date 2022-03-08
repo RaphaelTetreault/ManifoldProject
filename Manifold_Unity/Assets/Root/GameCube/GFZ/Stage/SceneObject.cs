@@ -43,7 +43,7 @@ namespace GameCube.GFZ.Stage
 
         // PROPERTIES
         public AddressRange AddressRange { get; set; }
-        public string Name => lods[0].name;
+        public string Name => lods[0].Name;
         public SceneObjectLOD PrimaryLOD => lods[0];
         public SceneObjectLOD[] LODs { get => lods; set => lods = value; }
         public ColliderMesh ColliderMesh { get => colliderMesh; set => colliderMesh = value; }
@@ -116,9 +116,7 @@ namespace GameCube.GFZ.Stage
             indentLevel++;
             int index = 0;
             foreach (var lod in LODs)
-            {
-                builder.AppendLineIndented(indent, indentLevel, $"[{index}] {lod.name}, {lod.lodDistance}");
-            }
+                builder.AppendLineIndented(indent, indentLevel, $"[{index}] {lod.Name}, {lod.LodDistance}");
 
             return builder.ToString();
         }

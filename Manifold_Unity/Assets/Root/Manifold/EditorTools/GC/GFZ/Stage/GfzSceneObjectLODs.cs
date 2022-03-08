@@ -36,8 +36,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 var levelOfDetail = levelOfDetails[i];
                 sceneObjectLODs[i] = new SceneObjectLOD()
                 {
-                    name = levelOfDetail.modelName,
-                    lodDistance = levelOfDetail.lodDistance,
+                    Name = levelOfDetail.modelName,
+                    LodDistance = levelOfDetail.lodDistance,
                 };
             }
             return sceneObjectLODs;
@@ -53,8 +53,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 var sceneObjectLOD = sceneObjectLODs[i];
                 levelOfDetails[i] = new GfzLOD()
                 {
-                    modelName = sceneObjectLOD.name,
-                    lodDistance = sceneObjectLOD.lodDistance,
+                    modelName = sceneObjectLOD.Name,
+                    lodDistance = sceneObjectLOD.LodDistance,
                 };
             }
         }

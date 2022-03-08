@@ -12,7 +12,7 @@ namespace GameCube.GFZ.Stage
         {
             foreach (var dynamicSceneObject in scene.dynamicSceneObjects)
             {
-                var animationClip = dynamicSceneObject.animationClip;
+                var animationClip = dynamicSceneObject.AnimationClip;
 
                 // Skip if it does not exist
                 if (animationClip == null)
@@ -42,7 +42,7 @@ namespace GameCube.GFZ.Stage
 
             foreach (var dynamicSceneObject in scene.dynamicSceneObjects)
             {
-                var animationClip = dynamicSceneObject.animationClip;
+                var animationClip = dynamicSceneObject.AnimationClip;
                 if (animationClip != null)
                     log.Write(animationClip.PrintMultiLine(indentLevel, indent));
             }
@@ -199,23 +199,23 @@ namespace GameCube.GFZ.Stage
 
                     log.WriteLine($"[{i}/{total}] {sceneObject.Name}");
                     log.WriteAddress(sceneObject);
-                    log.WriteAddress(sceneObject.sceneObject);
-                    log.WriteAddress(sceneObject.sceneObject.LODs);
-                    log.WriteAddress(sceneObject.sceneObject.PrimaryLOD.name);
-                    log.WriteAddress(sceneObject.transformMatrix3x4);
+                    log.WriteAddress(sceneObject.SceneObject);
+                    log.WriteAddress(sceneObject.SceneObject.LODs);
+                    log.WriteAddress(sceneObject.SceneObject.PrimaryLOD.Name);
+                    log.WriteAddress(sceneObject.TransformMatrix3x4);
 
-                    log.WriteAddress(sceneObject.skeletalAnimator);
-                    if (sceneObject.skeletalAnimator != null)
-                        log.WriteAddress(sceneObject.skeletalAnimator.properties);
+                    log.WriteAddress(sceneObject.SkeletalAnimator);
+                    if (sceneObject.SkeletalAnimator != null)
+                        log.WriteAddress(sceneObject.SkeletalAnimator.properties);
 
-                    log.WriteAddress(sceneObject.animationClip);
-                    if (sceneObject.animationClip != null)
-                        log.WriteAddress(sceneObject.animationClip.Curves);
+                    log.WriteAddress(sceneObject.AnimationClip);
+                    if (sceneObject.AnimationClip != null)
+                        log.WriteAddress(sceneObject.AnimationClip.Curves);
                     // TODO: other sub classes?
 
-                    log.WriteAddress(sceneObject.textureScroll);
-                    if (sceneObject.textureScroll != null)
-                        log.WriteAddress(sceneObject.textureScroll.fields);
+                    log.WriteAddress(sceneObject.TextureScroll);
+                    if (sceneObject.TextureScroll != null)
+                        log.WriteAddress(sceneObject.TextureScroll.fields);
 
                     log.WriteLine();
                 }

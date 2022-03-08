@@ -486,7 +486,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 log.WriteLine($"{nameof(AnimationClipCurve)}");
                 for (int i = 0; i < coliScene.dynamicSceneObjects.Length; i++)
                 {
-                    var animClip = coliScene.dynamicSceneObjects[i].animationClip;
+                    var animClip = coliScene.dynamicSceneObjects[i].AnimationClip;
 
                     if (animClip == null)
                         continue;
@@ -507,7 +507,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 log.WriteLine($"{nameof(TextureScroll)}");
                 for (int i = 0; i < coliScene.dynamicSceneObjects.Length; i++)
                 {
-                    var textureMetadata = coliScene.dynamicSceneObjects[i].textureScroll;
+                    var textureMetadata = coliScene.dynamicSceneObjects[i].TextureScroll;
                     if (textureMetadata == null)
                         continue;
                     log.Write(PrintIndex(i, coliScene.dynamicSceneObjects));
@@ -518,7 +518,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 log.WriteLine($"{nameof(SkeletalAnimator)}");
                 for (int i = 0; i < coliScene.dynamicSceneObjects.Length; i++)
                 {
-                    var skeletalAnimator = coliScene.dynamicSceneObjects[i].skeletalAnimator;
+                    var skeletalAnimator = coliScene.dynamicSceneObjects[i].SkeletalAnimator;
                     if (skeletalAnimator == null)
                         continue;
                     log.Write(PrintIndex(i, coliScene.dynamicSceneObjects));
@@ -529,7 +529,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 log.WriteLine($"{nameof(TransformMatrix3x4)}");
                 for (int i = 0; i < coliScene.dynamicSceneObjects.Length; i++)
                 {
-                    var matrix = coliScene.dynamicSceneObjects[i].transformMatrix3x4;
+                    var matrix = coliScene.dynamicSceneObjects[i].TransformMatrix3x4;
                     if (matrix == null)
                         continue;
                     log.Write(PrintIndex(i, coliScene.dynamicSceneObjects));
@@ -737,23 +737,23 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
                     log.WriteLine($"[{i}/{total}] {sceneObject.Name}");
                     log.WriteAddress(sceneObject);
-                    log.WriteAddress(sceneObject.sceneObject);
-                    log.WriteAddress(sceneObject.sceneObject.LODs);
-                    log.WriteAddress(sceneObject.sceneObject.PrimaryLOD.name);
-                    log.WriteAddress(sceneObject.transformMatrix3x4);
+                    log.WriteAddress(sceneObject.SceneObject);
+                    log.WriteAddress(sceneObject.SceneObject.LODs);
+                    log.WriteAddress(sceneObject.SceneObject.PrimaryLOD.Name);
+                    log.WriteAddress(sceneObject.TransformMatrix3x4);
 
-                    log.WriteAddress(sceneObject.skeletalAnimator);
-                    if (sceneObject.skeletalAnimator != null)
-                        log.WriteAddress(sceneObject.skeletalAnimator.properties);
+                    log.WriteAddress(sceneObject.SkeletalAnimator);
+                    if (sceneObject.SkeletalAnimator != null)
+                        log.WriteAddress(sceneObject.SkeletalAnimator.properties);
 
-                    log.WriteAddress(sceneObject.animationClip);
-                    if (sceneObject.animationClip != null)
-                        log.WriteAddress(sceneObject.animationClip.Curves);
+                    log.WriteAddress(sceneObject.AnimationClip);
+                    if (sceneObject.AnimationClip != null)
+                        log.WriteAddress(sceneObject.AnimationClip.Curves);
                     // TODO: other sub classes?
 
-                    log.WriteAddress(sceneObject.textureScroll);
-                    if (sceneObject.textureScroll != null)
-                        log.WriteAddress(sceneObject.textureScroll.fields);
+                    log.WriteAddress(sceneObject.TextureScroll);
+                    if (sceneObject.TextureScroll != null)
+                        log.WriteAddress(sceneObject.TextureScroll.fields);
 
                     log.WriteLine();
                 }

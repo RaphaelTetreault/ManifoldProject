@@ -367,15 +367,18 @@ namespace GameCube.GFZ.Stage
                 // NOTE: instances can share the same name/model but have different properties.
                 foreach (var staticSceneObject in staticSceneObjects)
                 {
-                    GetSerializable(reader, staticSceneObject.sceneObjectPtr, ref staticSceneObject.sceneObject, sceneObjectsDict);
+                    var sceneObject = GetSharedSerializable(reader, staticSceneObject.sceneObjectPtr, sceneObjectsDict);
+                    staticSceneObject.sceneObject = sceneObject;
                 }
                 foreach (var dynamicSceneObject in dynamicSceneObjects)
                 {
-                    GetSerializable(reader, dynamicSceneObject.sceneObjectPtr, ref dynamicSceneObject.sceneObject, sceneObjectsDict);
+                    var sceneObject = GetSharedSerializable(reader, dynamicSceneObject.SceneObjectPtr, sceneObjectsDict);
+                    dynamicSceneObject.SceneObject = sceneObject;
                 }
                 foreach (var unknownCollider in unknownColliders)
                 {
-                    GetSerializable(reader, unknownCollider.templateSceneObjectPtr, ref unknownCollider.sceneObject, sceneObjectsDict);
+                    var sceneObject = GetSharedSerializable(reader, unknownCollider.templateSceneObjectPtr, sceneObjectsDict);
+                    unknownCollider.sceneObject = sceneObject;
                 }
                 // Save, order by address
                 sceneObjects = sceneObjectsDict.Values.ToArray();
@@ -383,9 +386,9 @@ namespace GameCube.GFZ.Stage
 
                 // Copy over the instances into it's own array
                 var sceneObjectLODs = new List<SceneObjectLOD>();
-                for (int i = 0; i < this.sceneObjects.Length; i++)
+                for (int i = 0; i < sceneObjects.Length; i++)
                 {
-                    var template = this.sceneObjects[i];
+                    var template = sceneObjects[i];
                     for (int j = 0; j < template.LODs.Length; j++)
                     {
                         sceneObjectLODs.Add(template.LODs[j]);
@@ -393,13 +396,14 @@ namespace GameCube.GFZ.Stage
                 }
                 this.sceneObjectLODs = sceneObjectLODs.OrderBy(x => x.AddressRange.StartAddress).ToArray();
 
-                // Get all unique instances of SceneObjectTemplates' names
-                // NOTE: since SceneObjectTemplates instances can use the same name/model, there is occasionally a few duplicate names.
-                foreach (var templateSceneObject in this.sceneObjects)
+                // Get all unique name instances
+                // NOTE: since instances can use the same name/model, there is occasionally a few duplicate names.
+                foreach (var sceneObject in sceneObjects)
                 {
-                    foreach (var so in templateSceneObject.LODs)
+                    foreach (var lod in sceneObject.LODs)
                     {
-                        GetSerializable(reader, so.lodNamePtr, ref so.name, sceneObjectNamesDict);
+                        var name = GetSharedSerializable(reader, lod.LodNamePtr, sceneObjectNamesDict);
+                        lod.Name = name;
                     }
                 }
                 // Save, order by name (alphabetical)
@@ -426,7 +430,10 @@ namespace GameCube.GFZ.Stage
                 // These root segments are the ones pointed at by all nodes.
                 var rootTrackSegmentDict = new Dictionary<Pointer, TrackSegment>();
                 foreach (var trackNode in trackNodes)
-                    GetSerializable(reader, trackNode.segmentPtr, ref trackNode.segment, rootTrackSegmentDict);
+                {
+                    var segment = GetSharedSerializable(reader, trackNode.segmentPtr, rootTrackSegmentDict);
+                    trackNode.segment = segment;
+                }
                 rootTrackSegments = rootTrackSegmentDict.Values.ToArray();
 
                 // 2021/09/22: test tagging for serialization order
@@ -678,10 +685,10 @@ namespace GameCube.GFZ.Stage
                 {
                     colliderGeometries.Add(colliderGeo);
 
-                    if (colliderGeo.Tris.Length > 0)
+                    if (colliderGeo.TrisPtr.Length > 0)
                         colliderGeoTris.AddRange(colliderGeo.Tris);
 
-                    if (colliderGeo.Quads.Length > 0)
+                    if (colliderGeo.QuadsPtr.Length > 0)
                         colliderGeoQuads.AddRange(colliderGeo.Quads);
                 }
             }
@@ -714,19 +721,19 @@ namespace GameCube.GFZ.Stage
             foreach (var dynamicSceneObject in dynamicSceneObjects)
             {
                 // Animation Data
-                if (dynamicSceneObject.animationClip != null)
+                if (dynamicSceneObject.AnimationClip != null)
                 {
-                    animationClips.Add(dynamicSceneObject.animationClip);
+                    animationClips.Add(dynamicSceneObject.AnimationClip);
                     // Serialize individual animation clip curves
-                    foreach (var animationClipCurve in dynamicSceneObject.animationClip.Curves)
+                    foreach (var animationClipCurve in dynamicSceneObject.AnimationClip.Curves)
                         animationClipCurves.Add(animationClipCurve);
                 }
 
                 // Texture Metadata
-                if (dynamicSceneObject.textureScroll != null)
+                if (dynamicSceneObject.TextureScroll != null)
                 {
-                    textureScrolls.Add(dynamicSceneObject.textureScroll);
-                    foreach (var field in dynamicSceneObject.textureScroll.fields)
+                    textureScrolls.Add(dynamicSceneObject.TextureScroll);
+                    foreach (var field in dynamicSceneObject.TextureScroll.fields)
                     {
                         if (field != null)
                         {
@@ -736,16 +743,16 @@ namespace GameCube.GFZ.Stage
                 }
 
                 // Skeletal Animator
-                if (dynamicSceneObject.skeletalAnimator != null)
+                if (dynamicSceneObject.SkeletalAnimator != null)
                 {
-                    skeletalAnimators.Add(dynamicSceneObject.skeletalAnimator);
-                    skeletalProperties.Add(dynamicSceneObject.skeletalAnimator.properties);
+                    skeletalAnimators.Add(dynamicSceneObject.SkeletalAnimator);
+                    skeletalProperties.Add(dynamicSceneObject.SkeletalAnimator.properties);
                 }
 
                 // Transforms
-                if (dynamicSceneObject.transformMatrix3x4 != null)
+                if (dynamicSceneObject.TransformMatrix3x4 != null)
                 {
-                    transformMatrices.Add(dynamicSceneObject.transformMatrix3x4);
+                    transformMatrices.Add(dynamicSceneObject.TransformMatrix3x4);
                 }
             }
 
@@ -1046,10 +1053,10 @@ namespace GameCube.GFZ.Stage
             foreach (var dynamicSceneObject in dynamicSceneObjects)
             {
                 list.Add(dynamicSceneObject);
-                list.Add(dynamicSceneObject.animationClip);
-                if (dynamicSceneObject.animationClip != null)
+                list.Add(dynamicSceneObject.AnimationClip);
+                if (dynamicSceneObject.AnimationClip != null)
                 {
-                    foreach (var animClipCurve in dynamicSceneObject.animationClip.Curves)
+                    foreach (var animClipCurve in dynamicSceneObject.AnimationClip.Curves)
                     {
                         list.Add(animClipCurve);
                         list.Add(animClipCurve.AnimationCurve);
@@ -1057,13 +1064,13 @@ namespace GameCube.GFZ.Stage
                             list.AddRange(animClipCurve.AnimationCurve.KeyableAttributes);
                     }
                 }
-                list.Add(dynamicSceneObject.textureScroll);
-                if (dynamicSceneObject.textureScroll != null)
-                    list.AddRange(dynamicSceneObject.textureScroll.fields);
-                list.Add(dynamicSceneObject.skeletalAnimator);
-                if (dynamicSceneObject.skeletalAnimator != null)
-                    list.Add(dynamicSceneObject.skeletalAnimator.properties);
-                list.Add(dynamicSceneObject.transformMatrix3x4);
+                list.Add(dynamicSceneObject.TextureScroll);
+                if (dynamicSceneObject.TextureScroll != null)
+                    list.AddRange(dynamicSceneObject.TextureScroll.fields);
+                list.Add(dynamicSceneObject.SkeletalAnimator);
+                if (dynamicSceneObject.SkeletalAnimator != null)
+                    list.Add(dynamicSceneObject.SkeletalAnimator.properties);
+                list.Add(dynamicSceneObject.TransformMatrix3x4);
                 // Elsewhere: Scene Object Templates
             }
 
@@ -1074,7 +1081,7 @@ namespace GameCube.GFZ.Stage
                 list.Add(template);
                 list.Add(template.ColliderMesh);
                 list.AddRange(template.LODs);
-                list.Add(template.PrimaryLOD.name);
+                list.Add(template.PrimaryLOD.Name);
             }
 
             list.Add(fog);
@@ -1296,6 +1303,39 @@ namespace GameCube.GFZ.Stage
             Assert.ReferencePointer(trackCheckpointGrid, checkpointGridPtr);
         }
 
+        ///// <summary>
+        ///// Adds serialized reference to Dictionary<> if not present, otherwise skips adding it. 'ref' is used so that
+        ///// the calling function can access the reference if found within the dictionary.
+        ///// </summary>
+        ///// <typeparam name="T"></typeparam>
+        ///// <param name="reader"></param>
+        ///// <param name="ptr"></param>
+        ///// <param name="reference"></param>
+        ///// <param name="dict"></param>
+        //public static void GetSerializable<T>(BinaryReader reader, Pointer ptr, ref T reference, Dictionary<Pointer, T> dict)
+        //    where T : class, IBinarySerializable, new()
+        //{
+        //    // If ptr is null, set reference to null, return
+        //    if (ptr.IsNull)
+        //    {
+        //        reference = null;
+        //        return;
+        //    }
+
+        //    // If we have have this reference, return it
+        //    if (dict.ContainsKey(ptr))
+        //    {
+        //        reference = dict[ptr];
+        //    }
+        //    // If we don't have this reference, deserialize it, store in dict, return it
+        //    else
+        //    {
+        //        reader.JumpToAddress(ptr);
+        //        reader.ReadX(ref reference);
+        //        dict.Add(ptr, reference);
+        //    }
+        //}
+
         /// <summary>
         /// Adds serialized reference to Dictionary<> if not present, otherwise skips adding it. 'ref' is used so that
         /// the calling function can access the reference if found within the dictionary.
@@ -1303,33 +1343,29 @@ namespace GameCube.GFZ.Stage
         /// <typeparam name="T"></typeparam>
         /// <param name="reader"></param>
         /// <param name="ptr"></param>
-        /// <param name="reference"></param>
         /// <param name="dict"></param>
-        public static void GetSerializable<T>(BinaryReader reader, Pointer ptr, ref T reference, Dictionary<Pointer, T> dict)
-            where T : class, IBinarySerializable, new()
+        public static TBinarySerializable GetSharedSerializable<TBinarySerializable>(BinaryReader reader, Pointer ptr, Dictionary<Pointer, TBinarySerializable> dict)
+            where TBinarySerializable : class, IBinarySerializable, new()
         {
             // If ptr is null, set reference to null, return
-            if (!ptr.IsNotNull)
-            {
-                reference = null;
-                return;
-            }
+            if (ptr.IsNull)
+                return null;
 
             // If we have have this reference, return it
             if (dict.ContainsKey(ptr))
             {
-                reference = dict[ptr];
-                //DebugConsole.Log($"REMOVING: {ptr} of {typeof(T).Name} ({reference})");
-                //DebugConsole.Log($"REMOVING: {typeof(T).Name}");
-                //DebugConsole.Log($"REMOVING: {ptr} of {typeof(T).Name} ({reference}) macthes ref {dict[ptr]}");
+                return dict[ptr];
             }
             // If we don't have this reference, deserialize it, store in dict, return it
             else
             {
                 reader.JumpToAddress(ptr);
-                reader.ReadX(ref reference);
-                dict.Add(ptr, reference);
+                var binarySerializable = new TBinarySerializable();
+                binarySerializable.Deserialize(reader);
+                dict.Add(ptr, binarySerializable);
+                return binarySerializable;
             }
         }
+
     }
 }
