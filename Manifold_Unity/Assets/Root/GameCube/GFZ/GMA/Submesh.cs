@@ -217,7 +217,7 @@ namespace GameCube.GFZ.GMA
                 if (isAtEnd || isFifoPadding)
                     break;
 
-                var displayList = new DisplayList(material.VertexAttributes, VertexAttributeTable.GfzVat);
+                var displayList = new DisplayList(material.VertexAttributes, GfzGX.VAT);
                 displayList.Deserialize(reader);
                 displayLists.Add(displayList);
             }

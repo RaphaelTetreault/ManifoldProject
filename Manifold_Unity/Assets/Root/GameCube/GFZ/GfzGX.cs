@@ -2,9 +2,17 @@
 
 namespace GameCube.GFZ
 {
-    public static class VertexAttributeTable
+    /// <summary>
+    /// GX data values for GFZ games.
+    /// </summary>
+    public static class GfzGX
     {
-        public static readonly GX.VertexAttributeTable GfzVat = new(
+        /// <summary>
+        /// GFZ's Vertex Attribute Table
+        /// </summary>
+        public static VertexAttributeTable VAT { get => vat; }
+
+        private static readonly VertexAttributeTable vat = new(
             new VertexAttributeFormat[2]
             {
                 // VAT 0
