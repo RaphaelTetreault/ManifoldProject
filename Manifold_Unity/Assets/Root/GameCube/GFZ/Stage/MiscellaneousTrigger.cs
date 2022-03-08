@@ -1,3 +1,4 @@
+using Manifold;
 using Manifold.IO;
 using System;
 using System.IO;
@@ -12,25 +13,27 @@ namespace GameCube.GFZ.Stage
     [Serializable]
     public class MiscellaneousTrigger :
         IBinaryAddressable,
-        IBinarySerializable
+        IBinarySerializable,
+        ITextPrintable
     {
         // FIELDS
-        public TransformTRXS transform;
-        public CourseMetadataType metadataType;
+        private TransformTRXS transform;
+        private CourseMetadataType metadataType;
 
 
         // PROPERTIES
         public AddressRange AddressRange { get; set; }
 
         // PROPERTIES USED TO MAKE SENSE OF THIS NONSENSE
-        public float3 Position => transform.Position;
-        public float3 PositionFrom => transform.Position;
-        public float3 PositionTo => transform.Scale;
-        public float3 Scale => transform.Scale;
-        //public float3 ScaleBigBlueOrdeal => transform.Scale * 27.5f;
-        //public float3 ScaleCapsule => transform.Scale * 10f;
-        public quaternion Rotation => transform.Rotation;
-        public float3 RotationEuler => transform.RotationEuler;
+        public float3 Position => Transform.Position;
+        public float3 PositionFrom => Transform.Position;
+        public float3 PositionTo => Transform.Scale;
+        public float3 Scale => Transform.Scale;
+        public quaternion Rotation => Transform.Rotation;
+        public float3 RotationEuler => Transform.RotationEuler;
+
+        public TransformTRXS Transform { get => transform; set => transform = value; }
+        public CourseMetadataType MetadataType { get => metadataType; set => metadataType = value; }
 
 
         // METHODS
@@ -44,6 +47,8 @@ namespace GameCube.GFZ.Stage
             this.RecordEndAddress(reader);
         }
 
+
+
         public void Serialize(BinaryWriter writer)
         {
             this.RecordStartAddress(writer);
@@ -54,14 +59,24 @@ namespace GameCube.GFZ.Stage
             this.RecordEndAddress(writer);
         }
 
-        public override string ToString()
+        public string PrintMultiLine(int indentLevel = 0, string indent = "\t")
         {
-            return
-                $"{nameof(MiscellaneousTrigger)}(" +
-                $"{nameof(metadataType)}: {metadataType}, " +
-                $"{transform}" +
-                $")";
+            var builder = new System.Text.StringBuilder();
+
+            builder.AppendLineIndented(indent, indentLevel, nameof(MiscellaneousTrigger));
+            indentLevel++;
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(metadataType)}: {metadataType}");
+            builder.Append(transform.PrintMultiLine(indentLevel, indent));
+
+            return builder.ToString();
         }
+
+        public string PrintSingleLine()
+        {
+            return $"{nameof(MiscellaneousTrigger)}({nameof(MetadataType)}: {MetadataType})";
+        }
+
+        public override string ToString() => PrintSingleLine();
 
     }
 }

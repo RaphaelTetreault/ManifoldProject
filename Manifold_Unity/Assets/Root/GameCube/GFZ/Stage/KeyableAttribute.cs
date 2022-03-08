@@ -15,15 +15,20 @@ namespace GameCube.GFZ.Stage
         ITextPrintable
     {
         // FEILDS
-        public InterpolationMode easeMode;
-        public float time;
-        public float value;
-        public float tangentIn;
-        public float tangentOut;
+        private InterpolationMode easeMode;
+        private float time;
+        private float value;
+        private float tangentIn;
+        private float tangentOut;
 
 
         // PROPERTIES
         public AddressRange AddressRange { get; set; }
+        public InterpolationMode EaseMode { get => easeMode; set => easeMode = value; }
+        public float Time { get => time; set => time = value; }
+        public float Value { get => value; set => this.value = value; }
+        public float TangentIn { get => tangentIn; set => tangentIn = value; }
+        public float TangentOut { get => tangentOut; set => tangentOut = value; }
 
 
         // METHODS
@@ -53,9 +58,19 @@ namespace GameCube.GFZ.Stage
             this.RecordEndAddress(writer);
         }
 
-        public override string ToString()
+        public string PrintMultiLine(int indentLevel = 0, string indent = "\t")
         {
-            return PrintSingleLine();
+            var builder = new System.Text.StringBuilder();
+
+            builder.AppendLineIndented(indent, indentLevel, nameof(KeyableAttribute));
+            indentLevel++;
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(EaseMode)}: {EaseMode}");
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(Time)}: {Time}");
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(Value)}: {Value}");
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(TangentIn)}: {TangentIn}");
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(TangentOut)}: {TangentOut}");
+
+            return builder.ToString();
         }
 
         public string PrintSingleLine()
@@ -63,25 +78,14 @@ namespace GameCube.GFZ.Stage
             // Prints all values on single line, limits float precision
             return
                 $"{nameof(KeyableAttribute)}" +
-                $"({nameof(easeMode)}: {easeMode}," +
-                $" {nameof(time)}: {time:0.###}," +
-                $" {nameof(value)}: {value:0.###}," +
-                $" {nameof(tangentIn)}: {tangentIn:0.##}," +
-                $" {nameof(tangentOut)}: {tangentOut:0.##})";
+                $"({nameof(EaseMode)}: {EaseMode}," +
+                $" {nameof(Time)}: {Time:0.###}," +
+                $" {nameof(Value)}: {Value:0.###}," +
+                $" {nameof(TangentIn)}: {TangentIn:0.##}," +
+                $" {nameof(TangentOut)}: {TangentOut:0.##})";
         }
 
-        public string PrintMultiLine(int indentLevel = 0, string indent = "\t")
-        {
-            var builder = new System.Text.StringBuilder();
+        public override string ToString() => PrintSingleLine();
 
-            builder.AppendLineIndented(indent, indentLevel, nameof(KeyableAttribute));
-            indentLevel++;
-            builder.AppendLineIndented(indent, indentLevel, $"{nameof(easeMode)}: {easeMode}");
-            builder.AppendLineIndented(indent, indentLevel, $"{nameof(time)}: {time}");
-            builder.AppendLineIndented(indent, indentLevel, $"{nameof(tangentIn)}: {tangentIn}");
-            builder.AppendLineIndented(indent, indentLevel, $"{nameof(tangentOut)}: {tangentOut}");
-
-            return builder.ToString();
-        }
     }
 }

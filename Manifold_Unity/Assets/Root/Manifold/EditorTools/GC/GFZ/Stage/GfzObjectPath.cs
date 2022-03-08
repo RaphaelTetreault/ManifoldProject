@@ -60,8 +60,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
             var value = new MiscellaneousTrigger
             {
-                transform = transform,
-                metadataType = metadataType,
+                Transform = transform,
+                MetadataType = metadataType,
             };
 
             return value;

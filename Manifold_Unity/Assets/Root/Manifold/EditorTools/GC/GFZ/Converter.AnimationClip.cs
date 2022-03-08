@@ -67,8 +67,8 @@ namespace Manifold.Conversion.GFZ.CourseCollision
             var curve = new UnityEngine.AnimationCurve();
             foreach (var keyableAttribute in gfzCurve.AnimationCurve.KeyableAttributes)
             {
-                var time = keyableAttribute.time;
-                var value = keyableAttribute.value;
+                var time = keyableAttribute.Time;
+                var value = keyableAttribute.Value;
 
                 // TOTAL HACK
                 if (propertyName == "localPosition.z")
@@ -77,7 +77,7 @@ namespace Manifold.Conversion.GFZ.CourseCollision
                 }
 
                 curve.AddKey(time, value);
-                Debug.Log($"time: {keyableAttribute.time}/nValue: {keyableAttribute.value}");
+                Debug.Log($"time: {keyableAttribute.Time}/nValue: {keyableAttribute.Value}");
             }
             unityClip.SetCurve("", type, propertyName, curve);
         }

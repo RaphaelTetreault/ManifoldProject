@@ -376,11 +376,11 @@ namespace GameCube.GFZ.Stage
                 {
                     new KeyableAttribute()
                     {
-                        easeMode = InterpolationMode.unknown1,
-                        time = 0f,
-                        value = value,
-                        tangentIn = 0f,
-                        tangentOut = 0f,
+                        EaseMode = InterpolationMode.unknown1,
+                        Time = 0f,
+                        Value = value,
+                        TangentIn = 0f,
+                        TangentOut = 0f,
                     }
                 }
             };

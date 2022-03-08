@@ -58,8 +58,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             // Construct type
             var value = new MiscellaneousTrigger
             {
-                transform = transform,
-                metadataType = metadataType,
+                Transform = transform,
+                MetadataType = metadataType,
             };
 
             return value;
@@ -67,11 +67,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         public void ImportGfz(MiscellaneousTrigger value)
         {
-            transform.CopyGfzTransformPRXS(value.transform);
+            transform.CopyGfzTransformPRXS(value.Transform);
             transform.localScale *= scale;
 
             // Select which capsule type flag to use.
-            switch (value.metadataType)
+            switch (value.MetadataType)
             {
                 case CourseMetadataType.Story1_CapsuleAX:
                     type = CapsuleType.AxStory1;

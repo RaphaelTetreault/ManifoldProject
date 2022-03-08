@@ -37,7 +37,7 @@ namespace Manifold.EditorTools.GC.GFZ
                 var currKeyframe = keyables[currIndex];
                 var nextKeyframe = keyables[nextIndex];
 
-                if (currKeyframe.time == nextKeyframe.time)
+                if (currKeyframe.Time == nextKeyframe.Time)
                 {
                     // Remove first of 2 indexes
                     removeIndexes.Add(currIndex);
@@ -79,7 +79,7 @@ namespace Manifold.EditorTools.GC.GFZ
             for (int i = 0; i < keyframes.Length; i++)
             {
                 var keyable = keyables[i];
-                var keyframe = new Keyframe(keyable.time, keyable.value, keyable.tangentIn, keyable.tangentOut);
+                var keyframe = new Keyframe(keyable.Time, keyable.Value, keyable.TangentIn, keyable.TangentOut);
                 keyframes[i] = keyframe;
             }
 
@@ -103,11 +103,11 @@ namespace Manifold.EditorTools.GC.GFZ
 
                 var keyable = new KeyableAttribute()
                 {
-                    time = keyframe.time,
-                    value = keyframe.value,
-                    easeMode = UnityToGfzTangentMode(modeL),
-                    tangentIn = keyframe.inTangent,
-                    tangentOut = keyframe.outTangent,
+                    Time = keyframe.time,
+                    Value = keyframe.value,
+                    EaseMode = UnityToGfzTangentMode(modeL),
+                    TangentIn = keyframe.inTangent,
+                    TangentOut = keyframe.outTangent,
                 };
                 keyables[i] = keyable;
             }
@@ -121,7 +121,7 @@ namespace Manifold.EditorTools.GC.GFZ
             {
                 AnimationUtility.TangentMode mode;
 
-                switch (keyables[i].easeMode)
+                switch (keyables[i].EaseMode)
                 {
                     case InterpolationMode.Constant:
                         mode = AnimationUtility.TangentMode.Constant;
@@ -150,7 +150,7 @@ namespace Manifold.EditorTools.GC.GFZ
                     //    break;
 
                     default:
-                        throw new NotImplementedException($"New value {(int)keyables[i].easeMode}");
+                        throw new NotImplementedException($"New value {(int)keyables[i].EaseMode}");
                 }
             }
         }

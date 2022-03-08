@@ -236,7 +236,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
                 // Parse trigger type
                 // There are 3 ways this data is used
-                switch (courseMetadataTrigger.metadataType)
+                switch (courseMetadataTrigger.MetadataType)
                 {
                     // Path data
                     case CourseMetadataType.Lightning_Lightning:
@@ -282,8 +282,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                         break;
 
                     default:
-                        int index = (int)courseMetadataTrigger.metadataType;
-                        throw new NotImplementedException($"{nameof(CourseMetadataType)} index {index} '{courseMetadataTrigger.metadataType}'");
+                        int index = (int)courseMetadataTrigger.MetadataType;
+                        throw new NotImplementedException($"{nameof(CourseMetadataType)} index {index} '{courseMetadataTrigger.MetadataType}'");
                 }
             }
 

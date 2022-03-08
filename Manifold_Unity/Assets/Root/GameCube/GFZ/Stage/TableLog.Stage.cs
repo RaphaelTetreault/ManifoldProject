@@ -58,12 +58,12 @@ namespace GameCube.GFZ.Stage
                 writer.WriteNextCol("Keyable Order");
                 writer.WriteNextCol("Nested Depth");
                 writer.WriteNextCol("Address");
-                writer.WriteNextCol(nameof(KeyableAttribute.easeMode));
-                writer.WriteNextCol(nameof(KeyableAttribute.easeMode));
-                writer.WriteNextCol(nameof(KeyableAttribute.time));
-                writer.WriteNextCol(nameof(KeyableAttribute.value));
-                writer.WriteNextCol(nameof(KeyableAttribute.tangentIn));
-                writer.WriteNextCol(nameof(KeyableAttribute.tangentOut));
+                writer.WriteNextCol(nameof(KeyableAttribute.EaseMode));
+                writer.WriteNextCol(nameof(KeyableAttribute.EaseMode));
+                writer.WriteNextCol(nameof(KeyableAttribute.Time));
+                writer.WriteNextCol(nameof(KeyableAttribute.Value));
+                writer.WriteNextCol(nameof(KeyableAttribute.TangentIn));
+                writer.WriteNextCol(nameof(KeyableAttribute.TangentOut));
                 writer.WriteNextRow();
 
                 // foreach File
@@ -105,12 +105,12 @@ namespace GameCube.GFZ.Stage
                 writer.WriteNextCol("Keyable Order");
                 writer.WriteNextCol("Nested Depth");
                 writer.WriteNextCol("Address");
-                writer.WriteNextCol(nameof(KeyableAttribute.easeMode));
-                writer.WriteNextCol(nameof(KeyableAttribute.easeMode));
-                writer.WriteNextCol(nameof(KeyableAttribute.time));
-                writer.WriteNextCol(nameof(KeyableAttribute.value));
-                writer.WriteNextCol(nameof(KeyableAttribute.tangentIn));
-                writer.WriteNextCol(nameof(KeyableAttribute.tangentOut));
+                writer.WriteNextCol(nameof(KeyableAttribute.EaseMode));
+                writer.WriteNextCol(nameof(KeyableAttribute.EaseMode));
+                writer.WriteNextCol(nameof(KeyableAttribute.Time));
+                writer.WriteNextCol(nameof(KeyableAttribute.Value));
+                writer.WriteNextCol(nameof(KeyableAttribute.TangentIn));
+                writer.WriteNextCol(nameof(KeyableAttribute.TangentOut));
                 writer.WriteNextRow();
 
                 // foreach File
@@ -165,12 +165,12 @@ namespace GameCube.GFZ.Stage
             writer.WriteNextCol($"[{keyableIndex}/{keyableTotal}]");
             writer.WriteNextCol($"{nestedDepth}");
             writer.WriteNextCol(param.PrintStartAddress());
-            writer.WriteNextCol(param.easeMode);
-            writer.WriteNextCol((int)param.easeMode);
-            writer.WriteNextCol(param.time);
-            writer.WriteNextCol(param.value);
-            writer.WriteNextCol(param.tangentIn);
-            writer.WriteNextCol(param.tangentOut);
+            writer.WriteNextCol(param.EaseMode);
+            writer.WriteNextCol((int)param.EaseMode);
+            writer.WriteNextCol(param.Time);
+            writer.WriteNextCol(param.Value);
+            writer.WriteNextCol(param.TangentIn);
+            writer.WriteNextCol(param.TangentOut);
             writer.WriteNextRow();
         }
 
@@ -327,11 +327,11 @@ namespace GameCube.GFZ.Stage
                                 writer.WriteNextCol(animationClipCurve.PrintStartAddress());
                                 writer.WriteNextCol(keyable.PrintStartAddress());
                                 writer.WriteNextCol(animIndex);
-                                writer.WriteNextCol(keyable.easeMode);
-                                writer.WriteNextCol(keyable.time);
-                                writer.WriteNextCol(keyable.value);
-                                writer.WriteNextCol(keyable.tangentIn);
-                                writer.WriteNextCol(keyable.tangentOut);
+                                writer.WriteNextCol(keyable.EaseMode);
+                                writer.WriteNextCol(keyable.Time);
+                                writer.WriteNextCol(keyable.Value);
+                                writer.WriteNextCol(keyable.TangentIn);
+                                writer.WriteNextCol(keyable.TangentOut);
                                 writer.WriteNextRow();
                             }
                             animIndex++;
@@ -361,11 +361,11 @@ namespace GameCube.GFZ.Stage
                 writer.WriteNextCol("AnimClip Metadata");
                 writer.WriteNextCol("AnimClip Metadata");
                 writer.WriteNextCol("Anim Index [0-10]");
-                writer.WriteNextColNicify(nameof(KeyableAttribute.easeMode));
-                writer.WriteNextColNicify(nameof(KeyableAttribute.time));
-                writer.WriteNextColNicify(nameof(KeyableAttribute.value));
-                writer.WriteNextColNicify(nameof(KeyableAttribute.tangentIn));
-                writer.WriteNextColNicify(nameof(KeyableAttribute.tangentOut));
+                writer.WriteNextColNicify(nameof(KeyableAttribute.EaseMode));
+                writer.WriteNextColNicify(nameof(KeyableAttribute.Time));
+                writer.WriteNextColNicify(nameof(KeyableAttribute.Value));
+                writer.WriteNextColNicify(nameof(KeyableAttribute.TangentIn));
+                writer.WriteNextColNicify(nameof(KeyableAttribute.TangentOut));
                 writer.WriteNextRow();
 
                 foreach (var scene in scenes)
@@ -401,11 +401,11 @@ namespace GameCube.GFZ.Stage
                                 writer.WriteNextCol(animationClipCurve.Unk_0x08);
                                 writer.WriteNextCol(animationClipCurve.Unk_0x0C);
                                 writer.WriteNextCol(animIndex);
-                                writer.WriteNextCol(keyable.easeMode);
-                                writer.WriteNextCol(keyable.time);
-                                writer.WriteNextCol(keyable.value);
-                                writer.WriteNextCol(keyable.tangentIn);
-                                writer.WriteNextCol(keyable.tangentOut);
+                                writer.WriteNextCol(keyable.EaseMode);
+                                writer.WriteNextCol(keyable.Time);
+                                writer.WriteNextCol(keyable.Value);
+                                writer.WriteNextCol(keyable.TangentIn);
+                                writer.WriteNextCol(keyable.TangentOut);
                                 writer.WriteNextRow();
                             }
                             animIndex++;
@@ -970,8 +970,8 @@ namespace GameCube.GFZ.Stage
                 writer.WriteNextCol(nameof(MiscellaneousTrigger.Position));
                 writer.WriteNextCol(nameof(MiscellaneousTrigger.RotationEuler));
                 writer.WriteNextCol(nameof(MiscellaneousTrigger.Scale) + " / PositionTo");
-                writer.WriteNextCol(nameof(MiscellaneousTrigger.transform.UnknownOption));
-                writer.WriteNextCol(nameof(MiscellaneousTrigger.metadataType));
+                writer.WriteNextCol(nameof(MiscellaneousTrigger.Transform.UnknownOption));
+                writer.WriteNextCol(nameof(MiscellaneousTrigger.MetadataType));
                 //
                 writer.WriteNextRow();
 
@@ -992,8 +992,8 @@ namespace GameCube.GFZ.Stage
                         writer.WriteNextCol(cmt.Position);
                         writer.WriteNextCol(cmt.RotationEuler);
                         writer.WriteNextCol(cmt.Scale);
-                        writer.WriteNextCol(cmt.transform.UnknownOption);
-                        writer.WriteNextCol(cmt.metadataType);
+                        writer.WriteNextCol(cmt.Transform.UnknownOption);
+                        writer.WriteNextCol(cmt.MetadataType);
                         //
                         writer.WriteNextRow();
                     }
@@ -1176,11 +1176,11 @@ namespace GameCube.GFZ.Stage
                 //
                 writer.WriteNextCol("Index");
                 //
-                writer.WriteNextCol(nameof(KeyableAttribute.easeMode));
-                writer.WriteNextCol(nameof(KeyableAttribute.time));
-                writer.WriteNextCol(nameof(KeyableAttribute.value));
-                writer.WriteNextCol(nameof(KeyableAttribute.tangentIn));
-                writer.WriteNextCol(nameof(KeyableAttribute.tangentOut));
+                writer.WriteNextCol(nameof(KeyableAttribute.EaseMode));
+                writer.WriteNextCol(nameof(KeyableAttribute.Time));
+                writer.WriteNextCol(nameof(KeyableAttribute.Value));
+                writer.WriteNextCol(nameof(KeyableAttribute.TangentIn));
+                writer.WriteNextCol(nameof(KeyableAttribute.TangentOut));
                 //
                 writer.WriteNextRow();
 
@@ -1208,11 +1208,11 @@ namespace GameCube.GFZ.Stage
                             //
                             writer.WriteNextCol($"[{countD1}/{totalD1}]");
                             //
-                            writer.WriteNextCol(keyableAttribute.easeMode);
-                            writer.WriteNextCol(keyableAttribute.time);
-                            writer.WriteNextCol(keyableAttribute.value);
-                            writer.WriteNextCol(keyableAttribute.tangentIn);
-                            writer.WriteNextCol(keyableAttribute.tangentOut);
+                            writer.WriteNextCol(keyableAttribute.EaseMode);
+                            writer.WriteNextCol(keyableAttribute.Time);
+                            writer.WriteNextCol(keyableAttribute.Value);
+                            writer.WriteNextCol(keyableAttribute.TangentIn);
+                            writer.WriteNextCol(keyableAttribute.TangentOut);
                             //
                             writer.WriteNextRow();
                         }

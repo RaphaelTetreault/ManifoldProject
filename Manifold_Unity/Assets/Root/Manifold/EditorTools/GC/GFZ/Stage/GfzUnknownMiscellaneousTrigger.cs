@@ -25,8 +25,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
             var value = new MiscellaneousTrigger
             {
-                transform = transform,
-                metadataType = CourseMetadataType.BigBlueOrdeal,
+                Transform = transform,
+                MetadataType = CourseMetadataType.BigBlueOrdeal,
             };
 
             return value;
@@ -34,7 +34,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         public void ImportGfz(MiscellaneousTrigger value)
         {
-            transform.CopyGfzTransformPRXS(value.transform);
+            transform.CopyGfzTransformPRXS(value.Transform);
             transform.localScale *= scale;
         }
 

@@ -1,3 +1,4 @@
+using Manifold;
 using Manifold.IO;
 using System;
 using System.IO;
@@ -14,7 +15,8 @@ namespace GameCube.GFZ.Stage
     public class TransformTRXS :
         IBinarySerializable,
         IBinaryAddressable,
-        IDeepCopyable<TransformTRXS>
+        IDeepCopyable<TransformTRXS>,
+        ITextPrintable
     {
         // FIELDS
          private float3 position;
@@ -101,18 +103,28 @@ namespace GameCube.GFZ.Stage
             this.RecordEndAddress(writer);
         }
 
-        public override string ToString()
+        public string PrintMultiLine(int indentLevel = 0, string indent = "\t")
         {
-            var euler = RotationEuler;
-            return
-                $"{nameof(TransformTRXS)}(" +
-                $"{nameof(Position)}(x:{position.x:0.0}, y:{position.y:0.0}, z:{position.z:0.0}), " +
-                $"{nameof(RotationEuler)}(x:{euler.x:0.0}, y:{euler.y:0.0}, z:{euler.z:0.0}), " +
-                $"{nameof(Scale)}(x:{scale.x:0.0}, y:{scale.y:0.0}, z:{scale.z:0.0}), " +
-                $"{nameof(unknownOption)} {unknownOption}, " +
-                $"{nameof(objectActiveOverride)}: {objectActiveOverride}" +
-                $")";
+            var builder = new System.Text.StringBuilder();
+
+            builder.AppendLineIndented(indent, indentLevel, nameof(TransformTRXS));
+            indentLevel++;
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(Position)}: {Position}");
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(Rotation)}: {RotationEuler}");
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(Scale)}: {Scale}");
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(unknownOption)}: {unknownOption}");
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(objectActiveOverride)}: {objectActiveOverride}");
+
+            return builder.ToString();
         }
+
+        public string PrintSingleLine()
+        {
+            return $"{nameof(TransformTRXS)}({nameof(unknownOption)}: {unknownOption}, {nameof(objectActiveOverride)}: {objectActiveOverride})";
+        }
+
+        public override string ToString() => PrintSingleLine();
+
 
     }
 }
