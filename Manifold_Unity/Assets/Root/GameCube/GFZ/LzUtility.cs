@@ -10,9 +10,19 @@ namespace GameCube.GFZ
     /// </summary>
     public static class LzUtility
     {
+        /// <summary>
+        /// Metadata struct to indicate file status after IO operation.
+        /// </summary>
         public struct FileStatus
         {
+            /// <summary>
+            /// Indicates the IO operation for was successful.
+            /// </summary>
             public bool success;
+
+            /// <summary>
+            /// The file path of the IO operation.
+            /// </summary>
             public string filePath;
 
             public FileStatus(bool success, string filePath)
@@ -23,12 +33,13 @@ namespace GameCube.GFZ
         }
 
         /// <summary>
-        /// Compresses file at <paramref name="filePath"/> using Amusement Vision LZ
-        /// compression. File is returned as MemoryStream.
+        /// Compresses file at <paramref name="filePath"/> using Amusement Vision LZ compression.
         /// </summary>
-        /// <param name="filePath"></param>
-        /// <param name="game"></param>
-        /// <returns></returns>
+        /// <param name="filePath">The file to compress.</param>
+        /// <param name="game">Which LZ format to use for this game.</param>
+        /// <returns>
+        /// A memory stream with the compressed file contents.
+        /// </returns>
         public static MemoryStream CompressAvLz(string filePath, AvGame game)
         {
             var compressedFile = new MemoryStream();
@@ -42,12 +53,15 @@ namespace GameCube.GFZ
         }
 
         /// <summary>
-        /// Compresses an existing file with Amusement Vision LZ compression and saves it to disk.
+        /// Compresses file at <paramref name="filePath"/> using Amusement Vision LZ compression
+        /// and saves it to disk.
         /// </summary>
-        /// <param name="filePath"></param>
-        /// <param name="game"></param>
-        /// <param name="overwriteFiles"></param>
-        /// <returns></returns>
+        /// <param name="filePath">The file to compress.</param>
+        /// <param name="game">Which LZ format to use for this game.</param>
+        /// <param name="overwriteFiles">Whether the opration can overwrite existing files on disk.</param>
+        /// <returns>
+        /// Returns a bool indicating the IO operation was successful.
+        /// </returns>
         public static bool CompressAvLzToDisk(string filePath, AvGame game, bool overwriteFiles)
         {
             var outputPath = $"{filePath}.lz";
@@ -73,7 +87,17 @@ namespace GameCube.GFZ
             return true;
         }
 
-
+        /// <summary>
+        /// Compresses each file in <paramref name="filePaths"/> using Amusement Vision LZ compression
+        /// and saves it to disk.
+        /// </summary>
+        /// <param name="filePaths">The files to compress.</param>
+        /// <param name="game">Which LZ format to use for this game.</param>
+        /// <param name="overwriteFiles">Whether the opration can overwrite existing files on disk.</param>
+        /// <returns>
+        /// Returns an iterator for each file specified in <paramref name="filePaths"/>. For each file, the
+        /// iterator returns a FileStatus with success and filePath data.
+        /// </returns>
         public static IEnumerable<FileStatus> CompressAvLzToDisk(string[] filePaths, AvGame game, bool overwriteFiles)
         {
             for (int i = 0; i < filePaths.Length; i++)
@@ -84,20 +108,32 @@ namespace GameCube.GFZ
             }
         }
 
-
+        /// <summary>
+        /// Compresses all files in <paramref name="rootPath"/> using Amusement Vision LZ compression
+        /// and saves each file it to disk.
+        /// </summary>
+        /// <param name="rootPath">The folder to compress files in.</param>
+        /// <param name="game">Which LZ format to use for this game.</param>
+        /// <param name="overwriteFiles">Whether the opration can overwrite existing files on disk.</param>
+        /// <param name="searchOption">The search option used to find files in the specified folder.</param>
+        /// <param name="searchPattern">The search pattern used to find files in the specified folder.</param>
+        /// <returns>
+        /// Returns an iterator for each file found using the search parameters. For each file, the iterator
+        /// returns a FileStatus with success and filePath data.
+        /// </returns>
         public static IEnumerable<FileStatus> CompressAvLzDirectoryToDisk(string rootPath, AvGame game, bool overwriteFiles, SearchOption searchOption, string searchPattern)
         {
             var filePaths = Directory.GetFiles(rootPath, searchPattern, searchOption);
             return CompressAvLzToDisk(filePaths, game, overwriteFiles);
         }
 
-
-
         /// <summary>
-        /// 
+        /// Decompresses file at <paramref name="filePath"/> using Amusement Vision LZ decompression.
         /// </summary>
-        /// <param name="filePath"></param>
-        /// <returns></returns>
+        /// <param name="filePath">The file to decompress.</param>
+        /// <returns>
+        /// A memory stream with the decompressed file contents.
+        /// </returns>
         public static MemoryStream DecompressAvLz(string filePath)
         {
             var decompressedFile = new MemoryStream();
@@ -110,14 +146,15 @@ namespace GameCube.GFZ
             return decompressedFile;
         }
 
-
-
         /// <summary>
-        /// 
+        /// Decompresses file at <paramref name="filePath"/> using Amusement Vision LZ decompression
+        /// and saves it to disk.
         /// </summary>
-        /// <param name="filePath"></param>
-        /// <param name="overwriteFiles"></param>
-        /// <returns></returns>
+        /// <param name="filePath">The file to decompress.</param>
+        /// <param name="overwriteFiles">Whether the opration can overwrite existing files on disk.</param>
+        /// <returns>
+        /// Returns a bool indicating the IO operation was successful.
+        /// </returns>
         public static bool DecompressAvLzToDisk(string filePath, bool overwriteFiles)
         {
             var path = Path.GetDirectoryName(filePath);
@@ -144,6 +181,16 @@ namespace GameCube.GFZ
             return true;
         }
 
+        /// <summary>
+        /// Decompresses each file in <paramref name="filePaths"/> using Amusement Vision LZ decompression
+        /// and saves it to disk.
+        /// </summary>
+        /// <param name="filePath">The files to decompress.</param>
+        /// <param name="overwriteFiles">Whether the opration can overwrite existing files on disk.</param>
+        /// <returns>
+        /// Returns an iterator for each file specified in <paramref name="filePaths"/>. For each file, the
+        /// iterator returns a FileStatus with success and filePath data.
+        /// </returns>
         public static IEnumerable<FileStatus> DecompressAvLzToDisk(string[] filePaths, bool overwriteFiles)
         {
             for (int i = 0; i < filePaths.Length; i++)
@@ -154,10 +201,21 @@ namespace GameCube.GFZ
             }
         }
 
-
-        public static IEnumerable<FileStatus> DecompressAvLzDirectoryToDisk(string rootPath, bool overwriteFiles, SearchOption searchOption)
+        /// <summary>
+        /// Deompresses all files in <paramref name="rootPath"/> using Amusement Vision LZ decompression
+        /// and saves each file it to disk.
+        /// </summary>
+        /// <param name="rootPath">The folder to decompress files in.</param>
+        /// <param name="overwriteFiles">Whether the opration can overwrite existing files on disk.</param>
+        /// <param name="searchOption">The search option used to find files in the specified folder.</param>
+        /// <param name="searchPattern">The search pattern used to find files in the specified folder.</param>
+        /// <returns>
+        /// Returns an iterator for each file found using the search parameters. For each file, the iterator
+        /// returns a FileStatus with success and filePath data.
+        /// </returns>
+        public static IEnumerable<FileStatus> DecompressAvLzDirectoryToDisk(string rootPath, bool overwriteFiles, SearchOption searchOption, string searchPattern = "*.lz")
         {
-            var filePaths = Directory.GetFiles(rootPath, "*.lz", searchOption);
+            var filePaths = Directory.GetFiles(rootPath, searchPattern, searchOption);
             return DecompressAvLzToDisk(filePaths, overwriteFiles);
         }
     }
