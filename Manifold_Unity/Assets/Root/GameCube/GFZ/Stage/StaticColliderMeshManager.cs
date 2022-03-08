@@ -35,8 +35,8 @@ namespace GameCube.GFZ.Stage
     public class StaticColliderMeshManager :
         IBinaryAddressable,
         IBinarySerializable,
-        IHasReference
-        //ITextPrintable
+        IHasReference,
+        ITextPrintable
     {
         // CONSTANTS
         public const int kCountAxSurfaceTypes = 11;
@@ -289,6 +289,45 @@ namespace GameCube.GFZ.Stage
                 Assert.ReferencePointer(QuadMeshGrids[i], QuadMeshGridPtrs[i]);
             }
         }
+
+        public string PrintMultiLine(int indentLevel = 0, string indent = "\t")
+        {
+            var builder = new System.Text.StringBuilder();
+
+            builder.AppendLineIndented(indent, indentLevel, nameof(StaticColliderMeshManager));
+            indentLevel++;
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(SerializeFormat)}: {SerializeFormat}");
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(SurfaceCount)}: {SurfaceCount}");
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(unk_float)}: {unk_float}");
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(ColliderTris)}[{ColliderTris.Length}]");
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(ColliderQuads)}[{ColliderQuads.Length}]");
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(StaticSceneObjects)}[{StaticSceneObjects.Length}]");
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(UnknownColliders)}[{UnknownColliders.Length}]");
+            builder.Append(meshGridXZ.PrintMultiLine(indentLevel, indent));
+            builder.Append(boundingSphere.PrintMultiLine(indentLevel, indent));
+
+            int index = 0;
+            foreach (var triMeshGrid in triMeshGrids)
+            {
+                builder.AppendLineIndented(indent, indentLevel, $"[{index++}] {nameof(TriMeshGrids)}");
+                builder.Append(triMeshGrid.PrintMultiLine(indentLevel+1, indent));
+            }
+            index = 0;
+            foreach (var quadMeshGrid in quadMeshGrids)
+            {
+                builder.AppendLineIndented(indent, indentLevel, $"[{index++}] {nameof(quadMeshGrid)}");
+                builder.Append(quadMeshGrid.PrintMultiLine(indentLevel + 1, indent));
+            }
+
+            return builder.ToString();
+        }
+
+        public string PrintSingleLine()
+        {
+            return nameof(StaticColliderMeshManager);
+        }
+
+        public override string ToString() => PrintSingleLine();
 
     }
 }

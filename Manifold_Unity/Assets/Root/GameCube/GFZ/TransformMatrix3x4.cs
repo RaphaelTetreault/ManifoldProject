@@ -80,9 +80,9 @@ namespace GameCube.GFZ
 
             builder.AppendLineIndented(indent, indentLevel, nameof(TransformMatrix3x4));
             indentLevel++;
-            builder.AppendLineIndented(indent, indentLevel, $"{Position}({Position})");
-            builder.AppendLineIndented(indent, indentLevel, $"{Rotation}({RotationEuler})");
-            builder.AppendLineIndented(indent, indentLevel, $"{Scale}({Scale})");
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(Position)}({Position})");
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(Rotation)}({RotationEuler})");
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(Scale)}({Scale})");
 
             return builder.ToString();
         }
