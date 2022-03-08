@@ -6,13 +6,15 @@ namespace GameCube.GFZ.Stage
 {
     /// <summary>
     /// Defines a path for a Story Mode object.
-    /// 
-    /// Example: Chapter 2's falling rocks.
     /// </summary>
+    /// <remarks>
+    /// Example: Chapter 2's falling rocks.
+    /// </remarks>
     public class StoryObjectPath :
         IBinaryAddressable,
         IBinarySerializable,
-        IHasReference
+        IHasReference,
+        ITextPrintable
     {
         // FIELDS
         private ArrayPointer animationCurvePtr;
@@ -63,6 +65,24 @@ namespace GameCube.GFZ.Stage
         {
             Assert.ReferencePointer(animationCurve, animationCurvePtr);
         }
+
+        public string PrintMultiLine(int indentLevel = 0, string indent = "\t")
+        {
+            var builder = new System.Text.StringBuilder();
+
+            builder.AppendLineIndented(indent, indentLevel, nameof(StoryObjectPath));
+            indentLevel++;
+            builder.Append(animationCurve.PrintMultiLine(indentLevel, indent));
+
+            return builder.ToString();
+        }
+
+        public string PrintSingleLine()
+        {
+            return nameof(StoryObjectPath);
+        }
+
+        public override string ToString() => PrintSingleLine();
 
     }
 }

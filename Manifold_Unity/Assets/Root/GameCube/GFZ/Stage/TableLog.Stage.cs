@@ -1014,14 +1014,14 @@ namespace GameCube.GFZ.Stage
                 writer.WriteNextCol("AX/GX");
                 //
                 writer.WriteNextCol(nameof(StoryObjectTrigger.zero_0x00));
-                writer.WriteNextCol(nameof(StoryObjectTrigger.rockGroupOrderIndex));
-                writer.WriteNextCol(nameof(StoryObjectTrigger.RockGroup));
+                writer.WriteNextCol(nameof(StoryObjectTrigger.BoulderGroupOrderIndex));
+                writer.WriteNextCol(nameof(StoryObjectTrigger.BoulderGroup));
                 writer.WriteNextCol(nameof(StoryObjectTrigger.Difficulty));
-                writer.WriteNextCol(nameof(StoryObjectTrigger.story2RockScale));
-                writer.WriteNextCol(nameof(StoryObjectTrigger.storyObjectPathPtr));
-                writer.WriteNextCol(nameof(StoryObjectTrigger.scale));
-                writer.WriteNextCol(nameof(StoryObjectTrigger.rotation));
-                writer.WriteNextCol(nameof(StoryObjectTrigger.position));
+                writer.WriteNextCol(nameof(StoryObjectTrigger.Story2BoulderScale));
+                writer.WriteNextCol(nameof(StoryObjectTrigger.Story2BoulderPathPtr));
+                writer.WriteNextCol(nameof(StoryObjectTrigger.Scale));
+                writer.WriteNextCol(nameof(StoryObjectTrigger.Rotation));
+                writer.WriteNextCol(nameof(StoryObjectTrigger.Position));
                 //
                 writer.WriteNextRow();
 
@@ -1040,14 +1040,14 @@ namespace GameCube.GFZ.Stage
                         writer.WriteNextCol(isAxGx);
                         //
                         writer.WriteNextCol(item.zero_0x00);
-                        writer.WriteNextCol(item.rockGroupOrderIndex);
-                        writer.WriteNextCol(item.RockGroup);
+                        writer.WriteNextCol(item.BoulderGroupOrderIndex);
+                        writer.WriteNextCol(item.BoulderGroup);
                         writer.WriteNextCol(item.Difficulty);
-                        writer.WriteNextCol(item.story2RockScale);
-                        writer.WriteNextCol(item.storyObjectPathPtr);
-                        writer.WriteNextCol(item.scale);
-                        writer.WriteNextCol(item.rotation);
-                        writer.WriteNextCol(item.position);
+                        writer.WriteNextCol(item.Story2BoulderScale);
+                        writer.WriteNextCol(item.Story2BoulderPathPtr);
+                        writer.WriteNextCol(item.Scale);
+                        writer.WriteNextCol(item.Rotation);
+                        writer.WriteNextCol(item.Position);
                         //
                         writer.WriteNextRow();
                     }

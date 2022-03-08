@@ -816,7 +816,7 @@ namespace GameCube.GFZ.Stage
                 foreach (var storyObjectTrigger in storyObjectTriggers)
                 {
                     // Optional data
-                    var storyObjectPath = storyObjectTrigger.storyObjectPath;
+                    var storyObjectPath = storyObjectTrigger.StoryObjectPath;
                     if (storyObjectPath != null)
                     {
                         // Uncomment if you want super-inline -- maybe have that as option?
@@ -915,7 +915,7 @@ namespace GameCube.GFZ.Stage
                 foreach (var storyObjectTrigger in storyObjectTriggers)
                 {
                     hasReferences.Add(storyObjectTrigger);
-                    hasReferences.Add(storyObjectTrigger.storyObjectPath);
+                    hasReferences.Add(storyObjectTrigger.StoryObjectPath);
                 }
 
                 // RE-SERIALIZE
@@ -1104,11 +1104,11 @@ namespace GameCube.GFZ.Stage
             foreach (var trigger in storyObjectTriggers)
             {
                 list.Add(trigger);
-                list.Add(trigger.storyObjectPath);
-                if (trigger.storyObjectPath != null)
+                list.Add(trigger.StoryObjectPath);
+                if (trigger.StoryObjectPath != null)
                 {
-                    list.Add(trigger.storyObjectPath.AnimationCurve);
-                    list.AddRange(trigger.storyObjectPath.AnimationCurve.KeyableAttributes);
+                    list.Add(trigger.StoryObjectPath.AnimationCurve);
+                    list.AddRange(trigger.StoryObjectPath.AnimationCurve.KeyableAttributes);
                 }
             }
 

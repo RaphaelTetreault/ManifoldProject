@@ -30,7 +30,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             // Data from this structure
             dynamicSceneObject.Unk0x00 = unk_0x00;
             dynamicSceneObject.Unk0x04 = unk_0x04;
-            dynamicSceneObject.TransformTRXS = TransformConverter.ToGfzTransformPRXS(transform);
+            dynamicSceneObject.TransformTRXS = TransformConverter.ToGfzTransformTRXS(transform);
 
             // Values from pointed classes
             // These functions should return null if necessary
@@ -67,7 +67,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 }
                 else
                 {
-                    transform.CopyGfzTransformPRXS(dynamicSceneObject.TransformTRXS);
+                    transform.CopyGfzTransformTRXS(dynamicSceneObject.TransformTRXS);
                 }
             }
 

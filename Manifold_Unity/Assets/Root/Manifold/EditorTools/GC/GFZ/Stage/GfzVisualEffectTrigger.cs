@@ -34,7 +34,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         public VisualEffectTrigger ExportGfz()
         {
             // Convert unity transform to gfz transform
-            var transform = TransformConverter.ToGfzTransformPRXS(this.transform);
+            var transform = TransformConverter.ToGfzTransformTRXS(this.transform);
 
             var value = new VisualEffectTrigger
             {
@@ -48,7 +48,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         public void ImportGfz(VisualEffectTrigger value)
         {
-            transform.CopyGfzTransformPRXS(value.transform);
+            transform.CopyGfzTransformTRXS(value.transform);
             transform.localScale *= scale;
             animation = value.animation;
             visualEffect = value.visualEffect;

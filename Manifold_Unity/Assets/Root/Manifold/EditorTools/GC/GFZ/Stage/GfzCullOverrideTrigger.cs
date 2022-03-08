@@ -35,7 +35,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         public CullOverrideTrigger ExportGfz()
         {
             // Convert unity transform to gfz transform
-            var transform = TransformConverter.ToGfzTransformPRXS(this.transform);
+            var transform = TransformConverter.ToGfzTransformTRXS(this.transform);
             transform.Scale /= scale;
 
             var value = new CullOverrideTrigger
@@ -50,7 +50,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         public void ImportGfz(CullOverrideTrigger value)
         {
-            transform.CopyGfzTransformPRXS(value.Transform);
+            transform.CopyGfzTransformTRXS(value.Transform);
             transform.localScale *= scale;
             unk_0x20 = value.Unk_0x20;
             //unk_0x22 = value.unk_0x22;

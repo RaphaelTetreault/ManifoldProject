@@ -9,7 +9,7 @@ namespace Manifold.EditorTools.GC.GFZ
     public static class TransformConverter
     {
         // EXTENSIONS
-        public static void CopyGfzTransformPRXS(this Transform unityTransform, TransformTRXS gfzTransform)
+        public static void CopyGfzTransformTRXS(this Transform unityTransform, TransformTRXS gfzTransform)
         {
             CopyToUnityTransform(gfzTransform, unityTransform);
         }
@@ -20,7 +20,7 @@ namespace Manifold.EditorTools.GC.GFZ
 
         public static void CopyUnityTransform(this TransformTRXS gfzTransform, Transform unityTransform)
         {
-            CopyToGfzTransformPRXS(unityTransform, gfzTransform);
+            CopyToGfzTransformTRXS(unityTransform, gfzTransform);
         }
         public static void CopyUnityTransform(this TransformMatrix3x4 gfzTransform, Transform unityTransform)
         {
@@ -59,17 +59,17 @@ namespace Manifold.EditorTools.GC.GFZ
 
 
         /// <summary>
-        /// Copies the (global) TRS values from the Unity Transform <paramref name="unity"/> to the GFZ Transform <paramref name="gfzPRXS"/>.
+        /// Copies the (global) TRS values from the Unity Transform <paramref name="unity"/> to the GFZ Transform <paramref name="gfzTRXS"/>.
         /// </summary>
         /// <param name="unity">The transform to copy global TRS from.</param>
-        /// <param name="gfzPRXS">The transform to apply global TRS to.</param>
-        public static void CopyToGfzTransformPRXS(Transform unity, TransformTRXS gfzPRXS)
+        /// <param name="gfzTRXS">The transform to apply global TRS to.</param>
+        public static void CopyToGfzTransformTRXS(Transform unity, TransformTRXS gfzTRXS)
         {
             // Copy over GLOBAL position.
             // The game does uses "TransformMatrix3x4" for LOCAL coordinates.
-            gfzPRXS.Position = unity.position;
-            gfzPRXS.CompressedRotation = new CompressedRotation() { Eulers = unity.rotation.eulerAngles };
-            gfzPRXS.Scale = unity.lossyScale;
+            gfzTRXS.Position = unity.position;
+            gfzTRXS.CompressedRotation = new CompressedRotation() { Eulers = unity.rotation.eulerAngles };
+            gfzTRXS.Scale = unity.lossyScale;
         }
 
         /// <summary>
@@ -96,7 +96,7 @@ namespace Manifold.EditorTools.GC.GFZ
         /// </summary>
         /// <param name="unityTransform">The transform to copy global TRS from.</param>
         /// <returns></returns>
-        public static TransformTRXS ToGfzTransformPRXS(Transform unityTransform)
+        public static TransformTRXS ToGfzTransformTRXS(Transform unityTransform)
         {
             var value = new TransformTRXS();
             value.CopyUnityTransform(unityTransform);

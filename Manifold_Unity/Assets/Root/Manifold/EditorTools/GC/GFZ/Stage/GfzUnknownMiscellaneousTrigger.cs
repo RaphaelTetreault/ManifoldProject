@@ -20,7 +20,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         public MiscellaneousTrigger ExportGfz()
         {
             // Convert unity transform to gfz transform
-            var transform = TransformConverter.ToGfzTransformPRXS(this.transform);
+            var transform = TransformConverter.ToGfzTransformTRXS(this.transform);
             transform.Scale /= scale;
 
             var value = new MiscellaneousTrigger
@@ -34,7 +34,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         public void ImportGfz(MiscellaneousTrigger value)
         {
-            transform.CopyGfzTransformPRXS(value.Transform);
+            transform.CopyGfzTransformTRXS(value.Transform);
             transform.localScale *= scale;
         }
 

@@ -28,7 +28,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         public TimeExtensionTrigger ExportGfz()
         {
             // Convert unity transform to gfz transform
-            var transform = TransformConverter.ToGfzTransformPRXS(this.transform);
+            var transform = TransformConverter.ToGfzTransformTRXS(this.transform);
             transform.Scale /= scale;
 
             var value = new TimeExtensionTrigger
@@ -42,7 +42,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         public void ImportGfz(TimeExtensionTrigger value)
         {
-            transform.CopyGfzTransformPRXS(value.transform);
+            transform.CopyGfzTransformTRXS(value.transform);
             transform.localScale *= scale;
             type = value.option;
         }

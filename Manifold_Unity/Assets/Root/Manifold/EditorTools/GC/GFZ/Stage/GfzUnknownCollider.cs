@@ -31,7 +31,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         public UnknownCollider ExportGfz()
         {
             // Convert unity transform to gfz transform
-            var transform = TransformConverter.ToGfzTransformPRXS(this.transform);
+            var transform = TransformConverter.ToGfzTransformTRXS(this.transform);
 
             throw new System.NotImplementedException();
             var value = new UnknownCollider
@@ -45,7 +45,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         public void ImportGfz(UnknownCollider value)
         {
-            transform.CopyGfzTransformPRXS(value.transform);
+            transform.CopyGfzTransformTRXS(value.transform);
             transform.localScale *= scale;
             sceneObject = value.sceneObject.Name;
         }
