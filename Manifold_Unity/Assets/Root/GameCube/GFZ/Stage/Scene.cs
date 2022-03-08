@@ -1026,7 +1026,7 @@ namespace GameCube.GFZ.Stage
                     list.AddRange(anim.KeyableAttributes);
                 list.Add(trackNode.segment.TrackCorner);
                 if (trackNode.segment.TrackCorner != null)
-                    list.Add(trackNode.segment.TrackCorner.matrix3x4);
+                    list.Add(trackNode.segment.TrackCorner.Matrix3x4);
             }
 
             list.AddRange(embeddedPropertyAreas);

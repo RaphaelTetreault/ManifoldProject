@@ -33,8 +33,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
             var value = new TimeExtensionTrigger
             {
-                transform = transform,
-                option = type,
+                Transform = transform,
+                Option = type,
             };
 
             return value;
@@ -42,9 +42,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         public void ImportGfz(TimeExtensionTrigger value)
         {
-            transform.CopyGfzTransformTRXS(value.transform);
+            transform.CopyGfzTransformTRXS(value.Transform);
             transform.localScale *= scale;
-            type = value.option;
+            type = value.Option;
         }
     }
 }

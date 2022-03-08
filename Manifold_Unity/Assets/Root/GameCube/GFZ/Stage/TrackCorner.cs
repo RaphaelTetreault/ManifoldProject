@@ -13,19 +13,23 @@ namespace GameCube.GFZ.Stage
     [Serializable]
     public class TrackCorner :
         IBinaryAddressable,
-        IBinarySerializable
+        IBinarySerializable,
+        ITextPrintable
     {
         // FIELDS
-        public TransformMatrix3x4 matrix3x4; // never null
-        public float width;
+        private TransformMatrix3x4 matrix3x4; // never null
+        private float width;
         private byte const_0x34; // Const: 0x02
         private byte zero_0x35; // Const: 0x00
-        public TrackPerimeterFlags perimeterOptions;
+        private TrackPerimeterFlags perimeterOptions;
         private byte zero_0x37; // Const: 0x00
 
 
         // PROPERTIES
         public AddressRange AddressRange { get; set; }
+        public TransformMatrix3x4 Matrix3x4 { get => matrix3x4; set => matrix3x4 = value; }
+        public TrackPerimeterFlags PerimeterOptions { get => perimeterOptions; set => perimeterOptions = value; }
+        public float Width { get => width; set => width = value; }
 
 
         // METHODS
@@ -51,7 +55,7 @@ namespace GameCube.GFZ.Stage
         public void Serialize(BinaryWriter writer)
         {
             {
-                Assert.IsTrue(matrix3x4 != null);
+                Assert.IsTrue(Matrix3x4 != null);
                 Assert.IsTrue(const_0x34 == 0x02, $"{nameof(const_0x34)} is not 0x02! Is: {const_0x34}");
                 Assert.IsTrue(zero_0x35 == 0x00);
                 Assert.IsTrue(zero_0x37 == 0x00);
@@ -67,5 +71,26 @@ namespace GameCube.GFZ.Stage
             }
             this.RecordEndAddress(writer);
         }
+
+        public string PrintMultiLine(int indentLevel = 0, string indent = "\t")
+        {
+            var builder = new System.Text.StringBuilder();
+
+            builder.AppendLineIndented(indent, indentLevel, nameof(TrackCorner));
+            indentLevel++;
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(Width)}: {Width}");
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(PerimeterOptions)}: {PerimeterOptions}");
+            builder.Append(matrix3x4.PrintMultiLine(indentLevel, indent));
+
+            return builder.ToString();
+        }
+
+        public string PrintSingleLine()
+        {
+            return nameof(TrackCorner);
+        }
+
+        public override string ToString() => PrintSingleLine();
+
     }
 }

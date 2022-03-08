@@ -30,9 +30,9 @@ namespace GameCube.GFZ.Stage
         {
             float minY = float.PositiveInfinity;
 
-            foreach (var point in checkpoints)
-                if (point.PlaneStart.origin.y < minY)
-                    minY = point.PlaneEnd.origin.y;
+            foreach (var checkpoint in checkpoints)
+                if (checkpoint.PlaneStart.origin.y < minY)
+                    minY = checkpoint.PlaneEnd.origin.y;
 
             return minY;
         }

@@ -266,15 +266,7 @@ namespace GameCube.GFZ.Stage
             }
         }
 
-        public override string ToString()
-        {
-            return PrintSingleLine();
-        }
 
-        public string PrintSingleLine()
-        {
-            return $"{nameof(TrackSegment)}(Children [{Children.Length}])";
-        }
 
         public string PrintMultiLine(int indentLevel = 0, string indent = "\t")
         {
@@ -309,6 +301,13 @@ namespace GameCube.GFZ.Stage
 
             return builder.ToString();
         }
+
+        public string PrintSingleLine()
+        {
+            return $"{nameof(TrackSegment)}({nameof(Children)}[{Children.Length}])";
+        }
+
+        public override string ToString() =>PrintSingleLine();
 
     }
 }

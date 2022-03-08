@@ -10,11 +10,16 @@ namespace GameCube.GFZ.Stage
     [System.Serializable]
     public class TrackCheckpointGrid : IndexGrid
     {
+        // CONSTANTS
         public const int Subdivisions = 8;
         public const int kListCount = Subdivisions * Subdivisions;
+        
+        // PROPERTIES
         public override int SubdivisionsX => Subdivisions;
         public override int SubdivisionsZ => Subdivisions;
 
+
+        // STATIC METHODS
         public static GridXZ GetMatrixBoundsXZ(Checkpoint[] checkpoints)
         {
             // Get min and max XZ values of any checkpoint
@@ -44,6 +49,7 @@ namespace GameCube.GFZ.Stage
             return bounds;
         }
 
+        // METHODS
         public void GenerateIndexes(GridXZ matrixBoundsXZ, Checkpoint[] checkpoints)
         {
             // Init. Value is from inherited structure.
@@ -52,7 +58,6 @@ namespace GameCube.GFZ.Stage
             // so if track has no width, we still pick up some points
             //var widthX = math.max(matrixBoundsXZ.subdivisionWidth, 1f);
             //var lengthZ = math.max(matrixBoundsXZ.subdivisionLength, 1f);
-
             var widthX = matrixBoundsXZ.SubdivisionWidth;
             var lengthZ = matrixBoundsXZ.SubdivisionLength;
 

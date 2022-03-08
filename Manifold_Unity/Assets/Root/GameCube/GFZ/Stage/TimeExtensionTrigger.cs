@@ -1,3 +1,4 @@
+using Manifold;
 using Manifold.IO;
 using System;
 using System.IO;
@@ -10,21 +11,25 @@ namespace GameCube.GFZ.Stage
     /// A checkpoint used in the F-Zero AX style arcade mode. When passed through, the
     /// game will add extend the remaining race time. This is used in the AX cup courses
     /// Port Town [Cylinder Wave], Lightning [Thunder Road], and Green Plant [Spiral].
-    /// 
-    /// TODO: it is unclear where the actual time is defined per checkpoint or course.
     /// </summary>
+    /// <remarks>
+    /// TODO: it is unclear where the actual time is defined per checkpoint or course.
+    /// </remarks>
     [Serializable]
     public class TimeExtensionTrigger :
         IBinaryAddressable,
-        IBinarySerializable
+        IBinarySerializable,
+        ITextPrintable
     {
         // FIELDS
-        public TransformTRXS transform;
-        public TimeExtensionOption option;
+        private TransformTRXS transform;
+        private TimeExtensionOption option;
 
 
         // PROPERTIES
         public AddressRange AddressRange { get; set; }
+        public TimeExtensionOption Option { get => option; set => option = value; }
+        public TransformTRXS Transform { get => transform; set => transform = value; }
 
 
         //METHODS
@@ -48,14 +53,24 @@ namespace GameCube.GFZ.Stage
             this.RecordEndAddress(writer);
         }
 
-        public override string ToString()
+        public string PrintMultiLine(int indentLevel = 0, string indent = "\t")
         {
-            return
-                $"{nameof(TimeExtensionTrigger)}(" +
-                $"{nameof(option)}: {option}, " +
-                $"{transform}" +
-                $")";
+            var builder = new System.Text.StringBuilder();
+
+            builder.AppendLineIndented(indent, indentLevel, nameof(TimeExtensionTrigger));
+            indentLevel++;
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(Option)}: {Option}");
+            builder.Append(Transform.PrintMultiLine(indentLevel, indent));
+
+            return builder.ToString();
         }
+
+        public string PrintSingleLine()
+        {
+            return $"{nameof(TimeExtensionTrigger)}({Option})";
+        }
+
+        public override string ToString() => PrintSingleLine();
 
     }
 }

@@ -206,8 +206,8 @@ namespace GameCube.GFZ.Stage
                 //writer.WriteNextCol(nameof(TrackSegment.zero_0x48));
                 writer.WriteNextCol(nameof(TrackSegment.BranchIndex));
                 writer.WriteNextCol();
-                writer.WriteNextColNicify(nameof(TrackCorner.width));
-                writer.WriteNextColNicify(nameof(TrackCorner.perimeterOptions));
+                writer.WriteNextColNicify(nameof(TrackCorner.Width));
+                writer.WriteNextColNicify(nameof(TrackCorner.PerimeterOptions));
                 //
                 writer.WriteNextRow();
 
@@ -273,8 +273,8 @@ namespace GameCube.GFZ.Stage
             if (trackTransform.TrackCornerPtr.IsNotNull)
             {
                 writer.WriteNextCol();
-                writer.WriteNextCol(trackTransform.TrackCorner.width);
-                writer.WriteNextCol(trackTransform.TrackCorner.perimeterOptions);
+                writer.WriteNextCol(trackTransform.TrackCorner.Width);
+                writer.WriteNextCol(trackTransform.TrackCorner.PerimeterOptions);
             }
             //
             writer.WriteNextRow();
@@ -921,11 +921,11 @@ namespace GameCube.GFZ.Stage
                 writer.WriteNextCol("Course");
                 writer.WriteNextCol("AX/GX");
                 //
-                writer.WriteNextCol(nameof(TimeExtensionTrigger.transform.Position));
-                writer.WriteNextCol(nameof(TimeExtensionTrigger.transform.RotationEuler));
-                writer.WriteNextCol(nameof(TimeExtensionTrigger.transform.Scale));
-                writer.WriteNextCol(nameof(TimeExtensionTrigger.transform.UnknownOption));
-                writer.WriteNextCol(nameof(TimeExtensionTrigger.option));
+                writer.WriteNextCol(nameof(TimeExtensionTrigger.Transform.Position));
+                writer.WriteNextCol(nameof(TimeExtensionTrigger.Transform.RotationEuler));
+                writer.WriteNextCol(nameof(TimeExtensionTrigger.Transform.Scale));
+                writer.WriteNextCol(nameof(TimeExtensionTrigger.Transform.UnknownOption));
+                writer.WriteNextCol(nameof(TimeExtensionTrigger.Option));
                 //
                 writer.WriteNextRow();
 
@@ -943,11 +943,11 @@ namespace GameCube.GFZ.Stage
                         writer.WriteNextCol(courseID);
                         writer.WriteNextCol(isAxGx);
                         //
-                        writer.WriteNextCol(arcadeCheckpooint.transform.Position);
-                        writer.WriteNextCol(arcadeCheckpooint.transform.RotationEuler);
-                        writer.WriteNextCol(arcadeCheckpooint.transform.Scale);
-                        writer.WriteNextCol(arcadeCheckpooint.transform.UnknownOption);
-                        writer.WriteNextCol(arcadeCheckpooint.option);
+                        writer.WriteNextCol(arcadeCheckpooint.Transform.Position);
+                        writer.WriteNextCol(arcadeCheckpooint.Transform.RotationEuler);
+                        writer.WriteNextCol(arcadeCheckpooint.Transform.Scale);
+                        writer.WriteNextCol(arcadeCheckpooint.Transform.UnknownOption);
+                        writer.WriteNextCol(arcadeCheckpooint.Option);
                         //
                         writer.WriteNextRow();
                     }

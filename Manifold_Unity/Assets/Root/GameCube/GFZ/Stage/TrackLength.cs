@@ -6,6 +6,7 @@ namespace GameCube.GFZ.Stage
     [System.Serializable]
     public sealed class TrackLength : FloatRef
     {
+        // CONSTRUCTORS
         public TrackLength()
         {
             Value = 0f;
