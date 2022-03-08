@@ -81,7 +81,6 @@ namespace GameCube.GFZ
                 // Go to start of stream, then copy it over
                 compressedFile.Seek(0, SeekOrigin.Begin);
                 compressedFile.CopyTo(writer);
-                //lzStream.Flush(); // is this line necessary?
             }
 
             return true;
