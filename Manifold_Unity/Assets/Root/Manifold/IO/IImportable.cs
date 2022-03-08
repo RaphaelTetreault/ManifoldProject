@@ -1,4 +1,7 @@
-﻿public interface IImportable : IExecutable
+﻿namespace Manifold.IO
 {
-    void Import();
+    public interface IImportable : IExecutable
+    {
+        void Import();
+    }
 }

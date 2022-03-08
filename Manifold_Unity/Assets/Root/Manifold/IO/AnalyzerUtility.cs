@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq.Expressions;
 
 namespace Manifold.IO
 {
@@ -19,10 +18,9 @@ namespace Manifold.IO
             return analysisFilePath;
         }
 
-
         public static StreamWriter OpenWriter(
             string filePath,
-            FileMode mode = FileMode.OpenOrCreate,
+            FileMode mode = FileMode.Create,
             FileAccess access = FileAccess.ReadWrite,
             FileShare share = FileShare.Read
             )
@@ -41,22 +39,5 @@ namespace Manifold.IO
                     yield return null;
         }
 
-        #region
-
-        /// <summary>
-        /// Usage: GetVariableName(() => someVar)
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="expr"></param>
-        /// <returns></returns>
-        public static string GetVariableName<T>(Expression<Func<T>> expr)
-        {
-            var body = (MemberExpression)expr.Body;
-
-            return body.Member.Name;
-        }
-
-
-        #endregion
     }
 }

@@ -1,4 +1,7 @@
-﻿public interface IExportable : IExecutable
+﻿namespace Manifold.IO
 {
-    void Export();
+    public interface IExportable : IExecutable
+    {
+        void Export();
+    }
 }
