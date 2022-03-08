@@ -12,19 +12,22 @@ namespace GameCube.GFZ.Stage
     public class SkeletalAnimator :
         IBinaryAddressable,
         IBinarySerializable,
-        IHasReference
+        IHasReference,
+        ITextPrintable
     {
         // FIELDS
-        public uint zero_0x00;
-        public uint zero_0x04;
-        public uint one_0x08; // Always 1. Bool?
-        public Pointer propertiesPtr;
+        private uint zero_0x00;
+        private uint zero_0x04;
+        private uint one_0x08; // Always 1. Bool?
+        private Pointer propertiesPtr;
         // REFERENCE FIELDS
-        public SkeletalProperties properties;
+        private SkeletalProperties properties;
 
 
         // PROPERTIES
         public AddressRange AddressRange { get; set; }
+        public Pointer PropertiesPtr { get => propertiesPtr; set => propertiesPtr = value; }
+        public SkeletalProperties Properties { get => properties; set => properties = value; }
 
 
         // METHODS
@@ -67,9 +70,22 @@ namespace GameCube.GFZ.Stage
             Assert.ReferencePointer(properties, propertiesPtr);
         }
 
-        public override string ToString()
+        public string PrintMultiLine(int indentLevel = 0, string indent = "\t")
         {
-            return $"{nameof(SkeletalAnimator)}";
+            var builder = new System.Text.StringBuilder();
+
+            builder.AppendLineIndented(indent, indentLevel, PrintSingleLine());
+            indentLevel++;
+            builder.Append(properties.PrintMultiLine(indentLevel, indent));
+
+            return builder.ToString();
         }
+
+        public string PrintSingleLine()
+        {
+            return nameof(SkeletalAnimator);
+        }
+
+        public override string ToString() => PrintSingleLine();
     }
 }

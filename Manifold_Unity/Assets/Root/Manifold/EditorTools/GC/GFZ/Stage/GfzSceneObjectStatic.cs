@@ -24,7 +24,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         {
             return new SceneObjectStatic()
             {
-                sceneObject = sceneObject.ExportGfz(),
+                SceneObject = sceneObject.ExportGfz(),
             };
         }
 

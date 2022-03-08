@@ -367,8 +367,8 @@ namespace GameCube.GFZ.Stage
                 // NOTE: instances can share the same name/model but have different properties.
                 foreach (var staticSceneObject in staticSceneObjects)
                 {
-                    var sceneObject = GetSharedSerializable(reader, staticSceneObject.sceneObjectPtr, sceneObjectsDict);
-                    staticSceneObject.sceneObject = sceneObject;
+                    var sceneObject = GetSharedSerializable(reader, staticSceneObject.SceneObjectPtr, sceneObjectsDict);
+                    staticSceneObject.SceneObject = sceneObject;
                 }
                 foreach (var dynamicSceneObject in dynamicSceneObjects)
                 {
@@ -746,7 +746,7 @@ namespace GameCube.GFZ.Stage
                 if (dynamicSceneObject.SkeletalAnimator != null)
                 {
                     skeletalAnimators.Add(dynamicSceneObject.SkeletalAnimator);
-                    skeletalProperties.Add(dynamicSceneObject.SkeletalAnimator.properties);
+                    skeletalProperties.Add(dynamicSceneObject.SkeletalAnimator.Properties);
                 }
 
                 // Transforms
@@ -1069,7 +1069,7 @@ namespace GameCube.GFZ.Stage
                     list.AddRange(dynamicSceneObject.TextureScroll.fields);
                 list.Add(dynamicSceneObject.SkeletalAnimator);
                 if (dynamicSceneObject.SkeletalAnimator != null)
-                    list.Add(dynamicSceneObject.SkeletalAnimator.properties);
+                    list.Add(dynamicSceneObject.SkeletalAnimator.Properties);
                 list.Add(dynamicSceneObject.TransformMatrix3x4);
                 // Elsewhere: Scene Object Templates
             }

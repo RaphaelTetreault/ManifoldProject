@@ -983,7 +983,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
                 var script = assetInstance.AddComponent<GfzSceneObjectStatic>();
                 // Bind reference
-                var gfzSceneObject = sceneObjectDict[staticSceneObject.sceneObject];
+                var gfzSceneObject = sceneObjectDict[staticSceneObject.SceneObject];
                 script.SetSceneObject(gfzSceneObject);
             }
 

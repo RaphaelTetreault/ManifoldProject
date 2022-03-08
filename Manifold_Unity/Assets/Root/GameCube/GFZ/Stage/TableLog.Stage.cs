@@ -526,20 +526,20 @@ namespace GameCube.GFZ.Stage
                 writer.WriteNextCol("Game Object #");
                 writer.WriteNextCol("Game Object");
 
-                writer.WriteNextColNicify(nameof(SkeletalAnimator.zero_0x00));
-                writer.WriteNextColNicify(nameof(SkeletalAnimator.zero_0x04));
-                writer.WriteNextColNicify(nameof(SkeletalAnimator.one_0x08));
-                writer.WriteNextColNicify(nameof(SkeletalAnimator.propertiesPtr));
+                //writer.WriteNextColNicify(nameof(SkeletalAnimator.zero_0x00));
+                //writer.WriteNextColNicify(nameof(SkeletalAnimator.zero_0x04));
+                //writer.WriteNextColNicify(nameof(SkeletalAnimator.one_0x08));
+                writer.WriteNextColNicify(nameof(SkeletalAnimator.PropertiesPtr));
 
-                writer.WriteNextColNicify(nameof(SkeletalProperties.unk_0x00));
-                writer.WriteNextColNicify(nameof(SkeletalProperties.unk_0x04));
+                writer.WriteNextColNicify(nameof(SkeletalProperties.Unk_0x00));
+                writer.WriteNextColNicify(nameof(SkeletalProperties.Unk_0x04));
                 writer.WriteFlagNames<EnumFlags32>();
-                writer.WriteNextColNicify(nameof(SkeletalProperties.unk_0x08));
+                writer.WriteNextColNicify(nameof(SkeletalProperties.Unk_0x08));
                 writer.WriteFlagNames<EnumFlags32>();
-                writer.WriteNextColNicify(nameof(SkeletalProperties.zero_0x0C));
-                writer.WriteNextColNicify(nameof(SkeletalProperties.zero_0x10));
-                writer.WriteNextColNicify(nameof(SkeletalProperties.zero_0x14));
-                writer.WriteNextColNicify(nameof(SkeletalProperties.zero_0x18));
+                //writer.WriteNextColNicify(nameof(SkeletalProperties.zero_0x0C));
+                //writer.WriteNextColNicify(nameof(SkeletalProperties.zero_0x10));
+                //writer.WriteNextColNicify(nameof(SkeletalProperties.zero_0x14));
+                //writer.WriteNextColNicify(nameof(SkeletalProperties.zero_0x18));
                 writer.WriteNextRow();
 
                 foreach (var scene in scenes)
@@ -549,27 +549,27 @@ namespace GameCube.GFZ.Stage
                     {
                         if (dynamicSceneObject.SkeletalAnimator == null)
                             continue;
-                        if (dynamicSceneObject.SkeletalAnimator.propertiesPtr.IsNull)
+                        if (dynamicSceneObject.SkeletalAnimator.PropertiesPtr.IsNull)
                             continue;
 
                         writer.WriteNextCol(scene.FileName);
                         writer.WriteNextCol(gameObjectIndex);
                         writer.WriteNextCol(dynamicSceneObject.Name);
 
-                        writer.WriteNextCol(dynamicSceneObject.SkeletalAnimator.zero_0x00);
-                        writer.WriteNextCol(dynamicSceneObject.SkeletalAnimator.zero_0x04);
-                        writer.WriteNextCol(dynamicSceneObject.SkeletalAnimator.one_0x08);
-                        writer.WriteNextCol(dynamicSceneObject.SkeletalAnimator.propertiesPtr);
+                        //writer.WriteNextCol(dynamicSceneObject.SkeletalAnimator.zero_0x00);
+                        //writer.WriteNextCol(dynamicSceneObject.SkeletalAnimator.zero_0x04);
+                        //writer.WriteNextCol(dynamicSceneObject.SkeletalAnimator.one_0x08);
+                        writer.WriteNextCol(dynamicSceneObject.SkeletalAnimator.PropertiesPtr);
 
-                        writer.WriteNextCol(dynamicSceneObject.SkeletalAnimator.properties.unk_0x00);
-                        writer.WriteNextCol(dynamicSceneObject.SkeletalAnimator.properties.unk_0x04);
-                        writer.WriteFlags(dynamicSceneObject.SkeletalAnimator.properties.unk_0x04);
-                        writer.WriteNextCol(dynamicSceneObject.SkeletalAnimator.properties.unk_0x08);
-                        writer.WriteFlags(dynamicSceneObject.SkeletalAnimator.properties.unk_0x08);
-                        writer.WriteNextCol(dynamicSceneObject.SkeletalAnimator.properties.zero_0x0C);
-                        writer.WriteNextCol(dynamicSceneObject.SkeletalAnimator.properties.zero_0x10);
-                        writer.WriteNextCol(dynamicSceneObject.SkeletalAnimator.properties.zero_0x14);
-                        writer.WriteNextCol(dynamicSceneObject.SkeletalAnimator.properties.zero_0x18);
+                        writer.WriteNextCol(dynamicSceneObject.SkeletalAnimator.Properties.Unk_0x00);
+                        writer.WriteNextCol(dynamicSceneObject.SkeletalAnimator.Properties.Unk_0x04);
+                        writer.WriteFlags(dynamicSceneObject.SkeletalAnimator.Properties.Unk_0x04);
+                        writer.WriteNextCol(dynamicSceneObject.SkeletalAnimator.Properties.Unk_0x08);
+                        writer.WriteFlags(dynamicSceneObject.SkeletalAnimator.Properties.Unk_0x08);
+                        //writer.WriteNextCol(dynamicSceneObject.SkeletalAnimator.Properties.zero_0x0C);
+                        //writer.WriteNextCol(dynamicSceneObject.SkeletalAnimator.Properties.zero_0x10);
+                        //writer.WriteNextCol(dynamicSceneObject.SkeletalAnimator.Properties.zero_0x14);
+                        //writer.WriteNextCol(dynamicSceneObject.SkeletalAnimator.Properties.zero_0x18);
                         writer.WriteNextRow();
 
                         gameObjectIndex++;
@@ -1577,7 +1577,7 @@ namespace GameCube.GFZ.Stage
                     }
                     foreach (var sceneOriginObject in scene.staticSceneObjects)
                     {
-                        var sceneInstance = sceneOriginObject.sceneObject;
+                        var sceneInstance = sceneOriginObject.SceneObject;
                         sceneObjectsList.Add((sceneInstance, "Origin"));
                     }
 

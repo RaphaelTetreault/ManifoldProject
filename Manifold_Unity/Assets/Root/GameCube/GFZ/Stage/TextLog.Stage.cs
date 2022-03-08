@@ -206,7 +206,7 @@ namespace GameCube.GFZ.Stage
 
                     log.WriteAddress(sceneObject.SkeletalAnimator);
                     if (sceneObject.SkeletalAnimator != null)
-                        log.WriteAddress(sceneObject.SkeletalAnimator.properties);
+                        log.WriteAddress(sceneObject.SkeletalAnimator.Properties);
 
                     log.WriteAddress(sceneObject.AnimationClip);
                     if (sceneObject.AnimationClip != null)

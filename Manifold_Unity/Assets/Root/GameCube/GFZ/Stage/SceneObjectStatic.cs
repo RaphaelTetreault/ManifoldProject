@@ -15,17 +15,21 @@ namespace GameCube.GFZ.Stage
     public class SceneObjectStatic :
         IBinaryAddressable,
         IBinarySerializable,
-        IHasReference
+        IHasReference,
+        ITextPrintable
     {
         // FIELDS
-        public Pointer sceneObjectPtr;
+        private Pointer sceneObjectPtr;
         // REFERENCE FIELDS
-        public SceneObject sceneObject;
+        private SceneObject sceneObject;
 
 
         // PROPERTIES
         public AddressRange AddressRange { get; set; }
-        public string Name => sceneObject.Name;
+        public string Name => SceneObject.Name;
+
+        public SceneObject SceneObject { get => sceneObject; set => sceneObject = value; }
+        public Pointer SceneObjectPtr { get => sceneObjectPtr; set => sceneObjectPtr = value; }
 
 
         // METHODS
@@ -62,13 +66,18 @@ namespace GameCube.GFZ.Stage
             Assert.IsTrue(sceneObjectPtr.IsNotNull);
         }
 
-
-        public override string ToString()
+        public string PrintMultiLine(int indentLevel = 0, string indent = "\t")
         {
-            return 
-                $"{nameof(SceneObjectStatic)}(" +
-                $"Name: {Name}" +
-                $")";
+            var builder = new System.Text.StringBuilder();
+            builder.AppendLineIndented(indent, indentLevel, PrintSingleLine());
+            return builder.ToString();
         }
+
+        public string PrintSingleLine()
+        {
+            return $"{nameof(SceneObjectStatic)}({Name})";
+        }
+
+        public override string ToString() => PrintSingleLine();
     }
 }
