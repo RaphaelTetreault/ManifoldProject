@@ -12,7 +12,7 @@ namespace GameCube.GFZ.GMA
     {
         // CONSTANTS
         /// <summary>
-        /// GameCube GPU No Operation opcode
+        /// GameCube GPU No-Operation opcode
         /// </summary>
         public const byte GX_NOP = 0x00;
 
@@ -36,49 +36,20 @@ namespace GameCube.GFZ.GMA
         /// A copy of the GCMF attributes of the parent GCMF class.
         /// </summary>
         public GcmfAttributes Attributes { get => attributes; set => attributes = value; }
-        public bool IsSkinnedModel
-        {
-            get => attributes.HasFlag(GcmfAttributes.isSkinModel);
-        }
-        public bool IsPhysicsDrivenModel
-        {
-            get => attributes.HasFlag(GcmfAttributes.isEffectiveModel);
-        }
-        public bool IsStitchingModel
-        {
-            get => attributes.HasFlag(GcmfAttributes.isStitchingModel);
-        }
-        public bool Is16bitModel
-        {
-            get => attributes.HasFlag(GcmfAttributes.is16Bit);
-        }
-
-        public bool RenderPrimaryOpaque
-        {
-            get => material.DisplayListRenderFlags.HasFlag(DisplayListRenderFlags.renderPrimaryOpaque);
-        }
-        public bool RenderPrimaryTranslucid
-        {
-            get => material.DisplayListRenderFlags.HasFlag(DisplayListRenderFlags.renderPrimaryTranslucid);
-        }
-        public bool RenderSecondary
-        {
-            get => RenderSecondaryOpaque || RenderSecondaryTranslucid;
-        }
-        public bool RenderSecondaryOpaque
-        {
-            get => material.DisplayListRenderFlags.HasFlag(DisplayListRenderFlags.renderSecondaryOpaque);
-        }
-        public bool RenderSecondaryTranslucid
-        {
-            get => material.DisplayListRenderFlags.HasFlag(DisplayListRenderFlags.renderSecondaryTranslucid);
-        }
-
+        public bool Is16bitModel => attributes.HasFlag(GcmfAttributes.is16Bit);
+        public bool IsPhysicsDrivenModel => attributes.HasFlag(GcmfAttributes.isEffectiveModel);
+        public bool IsSkinnedModel => attributes.HasFlag(GcmfAttributes.isSkinModel);
+        public bool IsStitchingModel => attributes.HasFlag(GcmfAttributes.isStitchingModel);
         public Material Material { get => material; set => material = value; }
-        public DisplayListDescriptor DisplayListDescriptor { get => primaryDisplayListDescriptor; set => primaryDisplayListDescriptor = value; }
+        public DisplayListDescriptor PrimaryDisplayListDescriptor { get => primaryDisplayListDescriptor; set => primaryDisplayListDescriptor = value; }
         public DisplayList[] PrimaryDisplayListsOpaque { get => primaryDisplayListsOpaque; set => primaryDisplayListsOpaque = value; }
         public DisplayList[] PrimaryDisplayListsTranslucid { get => primaryDisplayListsTranslucid; set => primaryDisplayListsTranslucid = value; }
-        public DisplayListDescriptor SecondaryMeshDescriptor { get => secondaryDisplayListDescriptor; set => secondaryDisplayListDescriptor = value; }
+        public bool RenderPrimaryOpaque => material.DisplayListRenderFlags.HasFlag(DisplayListRenderFlags.renderPrimaryOpaque);
+        public bool RenderPrimaryTranslucid => material.DisplayListRenderFlags.HasFlag(DisplayListRenderFlags.renderPrimaryTranslucid);
+        public bool RenderSecondary => RenderSecondaryOpaque || RenderSecondaryTranslucid;
+        public bool RenderSecondaryOpaque => material.DisplayListRenderFlags.HasFlag(DisplayListRenderFlags.renderSecondaryOpaque);
+        public bool RenderSecondaryTranslucid => material.DisplayListRenderFlags.HasFlag(DisplayListRenderFlags.renderSecondaryTranslucid);
+        public DisplayListDescriptor SecondaryDisplayListDescriptor { get => secondaryDisplayListDescriptor; set => secondaryDisplayListDescriptor = value; }
         public DisplayList[] SecondaryDisplayListsOpaque { get => secondaryDisplayListsOpaque; set => secondaryDisplayListsOpaque = value; }
         public DisplayList[] SecondaryDisplayListsTranslucid { get => secondaryDisplayListsTranslucid; set => secondaryDisplayListsTranslucid = value; }
 
@@ -272,10 +243,8 @@ namespace GameCube.GFZ.GMA
             if (remainder > 0)
                 size += GXUtility.GX_FIFO_ALIGN - remainder;
 
-
             return size;
         }
 
     }
-
 }
