@@ -6,25 +6,31 @@ using System.IO;
 namespace GameCube.GFZ.Stage
 {
     /// <summary>
-    /// Collider volume only available in Sand Ocean Lateral Shift. It is known to
-    /// be a collider since has a reference stored in StaticColliderMeshes.
-    /// GX: 6 instances, AX: 9 instances
+    /// Collider volume only available in Sand Ocean [Lateral Shift]. It is known to
+    /// be a collider since has a reference stored in StaticColliderMeshManager.
     /// </summary>
+    /// <remarks>
+    /// GX: 6 instances, AX: 9 instances
+    /// </remarks>
     [Serializable]
     public class UnknownCollider :
         IBinaryAddressable,
         IBinarySerializable,
-        IHasReference
+        IHasReference,
+        ITextPrintable
     {
         // FIELDS
-        public Pointer templateSceneObjectPtr;
-        public TransformTRXS transform;
-        //
-        public SceneObject sceneObject;
+        private Pointer sceneObjectPtr;
+        private TransformTRXS transform;
+        // REFERENCE FIELDS
+        private SceneObject sceneObject;
 
 
         // PROPERTIES
         public AddressRange AddressRange { get; set; }
+        public SceneObject SceneObject { get => sceneObject; set => sceneObject = value; }
+        public Pointer SceneObjectPtr { get => sceneObjectPtr; set => sceneObjectPtr = value; }
+        public TransformTRXS Transform { get => transform; set => transform = value; }
 
 
         // METHODS
@@ -32,14 +38,14 @@ namespace GameCube.GFZ.Stage
         {
             this.RecordStartAddress(reader);
             {
-                reader.ReadX(ref templateSceneObjectPtr);
+                reader.ReadX(ref sceneObjectPtr);
                 reader.ReadX(ref transform);
             }
             this.RecordEndAddress(reader);
             {
-                if (templateSceneObjectPtr.IsNotNull)
+                if (sceneObjectPtr.IsNotNull)
                 {
-                    reader.JumpToAddress(templateSceneObjectPtr);
+                    reader.JumpToAddress(sceneObjectPtr);
                     reader.ReadX(ref sceneObject);
                 }
             }
@@ -49,27 +55,38 @@ namespace GameCube.GFZ.Stage
         public void Serialize(BinaryWriter writer)
         {
             {
-                templateSceneObjectPtr = sceneObject.GetPointer();
+                sceneObjectPtr = sceneObject.GetPointer();
             }
             this.RecordStartAddress(writer);
             {
-                writer.WriteX(templateSceneObjectPtr);
+                writer.WriteX(sceneObjectPtr);
                 writer.WriteX(transform);
             }
             this.RecordEndAddress(writer);
         }
 
-        public override string ToString()
-        {
-            return
-                $"{nameof(UnknownCollider)}(" +
-                $"{transform}" +
-                $")";
-        }
-
         public void ValidateReferences()
         {
-            Assert.ReferencePointer(sceneObject, templateSceneObjectPtr);
+            Assert.ReferencePointer(sceneObject, sceneObjectPtr);
         }
+
+        public string PrintMultiLine(int indentLevel = 0, string indent = "\t")
+        {
+            var builder = new System.Text.StringBuilder();
+
+            builder.AppendLineIndented(indent, indentLevel, nameof(UnknownCollider));
+            indentLevel++;
+            builder.Append(Transform.PrintMultiLine(indentLevel, indent));
+
+            return builder.ToString();
+        }
+
+        public string PrintSingleLine()
+        {
+            return nameof(UnknownCollider);
+        }
+
+        public override string ToString() => PrintSingleLine();
+
     }
 }

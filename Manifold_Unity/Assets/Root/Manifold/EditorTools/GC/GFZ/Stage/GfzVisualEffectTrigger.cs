@@ -38,9 +38,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
             var value = new VisualEffectTrigger
             {
-                transform = transform,
-                animation = animation,
-                visualEffect = visualEffect,
+                Transform = transform,
+                Animation = animation,
+                VisualEffect = visualEffect,
             };
 
             return value;
@@ -48,10 +48,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         public void ImportGfz(VisualEffectTrigger value)
         {
-            transform.CopyGfzTransformTRXS(value.transform);
+            transform.CopyGfzTransformTRXS(value.Transform);
             transform.localScale *= scale;
-            animation = value.animation;
-            visualEffect = value.visualEffect;
+            animation = value.Animation;
+            visualEffect = value.VisualEffect;
         }
     }
 }

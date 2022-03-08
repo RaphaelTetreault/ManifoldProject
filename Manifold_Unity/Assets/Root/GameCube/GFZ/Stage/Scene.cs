@@ -377,8 +377,8 @@ namespace GameCube.GFZ.Stage
                 }
                 foreach (var unknownCollider in unknownColliders)
                 {
-                    var sceneObject = GetSharedSerializable(reader, unknownCollider.templateSceneObjectPtr, sceneObjectsDict);
-                    unknownCollider.sceneObject = sceneObject;
+                    var sceneObject = GetSharedSerializable(reader, unknownCollider.SceneObjectPtr, sceneObjectsDict);
+                    unknownCollider.SceneObject = sceneObject;
                 }
                 // Save, order by address
                 sceneObjects = sceneObjectsDict.Values.ToArray();

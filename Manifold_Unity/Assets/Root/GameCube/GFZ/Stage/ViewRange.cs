@@ -1,3 +1,4 @@
+using Manifold;
 using Manifold.IO;
 using System;
 using System.IO;
@@ -9,7 +10,8 @@ namespace GameCube.GFZ.Stage
     /// </summary>
     [Serializable]
     public struct ViewRange :
-        IBinarySerializable
+        IBinarySerializable,
+        ITextPrintable
     {
         public float near;
         public float far;
@@ -32,10 +34,19 @@ namespace GameCube.GFZ.Stage
             writer.WriteX(far);
         }
 
-        public override string ToString()
+        public string PrintMultiLine(int indentLevel = 0, string indent = "\t")
         {
-            return $"Range({nameof(near)}: {near:0}, {nameof(far)}: {far:0})";
+            var builder = new System.Text.StringBuilder();
+            builder.AppendLineIndented(indent, indentLevel, PrintSingleLine());
+            return builder.ToString();
         }
+
+        public string PrintSingleLine()
+        {
+            return $"{nameof(ViewRange)}({nameof(near)}: {near:0}, {nameof(far)}: {far:0})";
+        }
+
+        public override string ToString() => PrintSingleLine();
 
     }
 }

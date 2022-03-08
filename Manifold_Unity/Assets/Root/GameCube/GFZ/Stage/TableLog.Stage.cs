@@ -1122,12 +1122,12 @@ namespace GameCube.GFZ.Stage
                 writer.WriteNextCol("Course");
                 writer.WriteNextCol("AX/GX");
                 //
-                writer.WriteNextCol(nameof(VisualEffectTrigger.transform.Position));
-                writer.WriteNextCol(nameof(VisualEffectTrigger.transform.RotationEuler));
-                writer.WriteNextCol(nameof(VisualEffectTrigger.transform.Scale));
-                writer.WriteNextCol(nameof(VisualEffectTrigger.transform.UnknownOption));
-                writer.WriteNextCol(nameof(VisualEffectTrigger.animation));
-                writer.WriteNextCol(nameof(VisualEffectTrigger.visualEffect));
+                writer.WriteNextCol(nameof(VisualEffectTrigger.Transform.Position));
+                writer.WriteNextCol(nameof(VisualEffectTrigger.Transform.RotationEuler));
+                writer.WriteNextCol(nameof(VisualEffectTrigger.Transform.Scale));
+                writer.WriteNextCol(nameof(VisualEffectTrigger.Transform.UnknownOption));
+                writer.WriteNextCol(nameof(VisualEffectTrigger.Animation));
+                writer.WriteNextCol(nameof(VisualEffectTrigger.VisualEffect));
                 //
                 writer.WriteNextRow();
 
@@ -1145,12 +1145,12 @@ namespace GameCube.GFZ.Stage
                         writer.WriteNextCol(courseID);
                         writer.WriteNextCol(isAxGx);
                         //
-                        writer.WriteNextCol(vfx.transform.Position);
-                        writer.WriteNextCol(vfx.transform.RotationEuler);
-                        writer.WriteNextCol(vfx.transform.Scale);
-                        writer.WriteNextCol(vfx.transform.UnknownOption);
-                        writer.WriteNextCol(vfx.animation);
-                        writer.WriteNextCol(vfx.visualEffect);
+                        writer.WriteNextCol(vfx.Transform.Position);
+                        writer.WriteNextCol(vfx.Transform.RotationEuler);
+                        writer.WriteNextCol(vfx.Transform.Scale);
+                        writer.WriteNextCol(vfx.Transform.UnknownOption);
+                        writer.WriteNextCol(vfx.Animation);
+                        writer.WriteNextCol(vfx.VisualEffect);
                         //
                         writer.WriteNextRow();
                     }
@@ -1768,11 +1768,11 @@ namespace GameCube.GFZ.Stage
                 writer.WriteNextCol("Course");
                 writer.WriteNextCol("AX/GX");
                 //
-                writer.WriteNextCol(nameof(UnknownCollider.templateSceneObjectPtr));
-                writer.WriteNextCol(nameof(UnknownCollider.transform.Position));
-                writer.WriteNextCol(nameof(UnknownCollider.transform.RotationEuler));
-                writer.WriteNextCol(nameof(UnknownCollider.transform.Scale));
-                writer.WriteNextCol(nameof(UnknownCollider.transform.UnknownOption));
+                writer.WriteNextCol(nameof(UnknownCollider.SceneObjectPtr));
+                writer.WriteNextCol(nameof(UnknownCollider.Transform.Position));
+                writer.WriteNextCol(nameof(UnknownCollider.Transform.RotationEuler));
+                writer.WriteNextCol(nameof(UnknownCollider.Transform.Scale));
+                writer.WriteNextCol(nameof(UnknownCollider.Transform.UnknownOption));
                 //
                 writer.WriteNextRow();
 
@@ -1790,11 +1790,11 @@ namespace GameCube.GFZ.Stage
                         writer.WriteNextCol(courseID);
                         writer.WriteNextCol(isAxGx);
                         //
-                        writer.WriteNextCol(unkSols.templateSceneObjectPtr);
-                        writer.WriteNextCol(unkSols.transform.Position);
-                        writer.WriteNextCol(unkSols.transform.RotationEuler);
-                        writer.WriteNextCol(unkSols.transform.Scale);
-                        writer.WriteNextCol(unkSols.transform.UnknownOption);
+                        writer.WriteNextCol(unkSols.SceneObjectPtr);
+                        writer.WriteNextCol(unkSols.Transform.Position);
+                        writer.WriteNextCol(unkSols.Transform.RotationEuler);
+                        writer.WriteNextCol(unkSols.Transform.Scale);
+                        writer.WriteNextCol(unkSols.Transform.UnknownOption);
                         //
                         writer.WriteNextRow();
                     }

@@ -1,3 +1,4 @@
+using Manifold;
 using Manifold.IO;
 using System;
 using System.IO;
@@ -11,16 +12,20 @@ namespace GameCube.GFZ.Stage
     [Serializable]
     public class VisualEffectTrigger :
         IBinaryAddressable,
-        IBinarySerializable
+        IBinarySerializable,
+        ITextPrintable
     {
         // FIELDS
-        public TransformTRXS transform;
-        public TriggerableAnimation animation;
-        public TriggerableVisualEffect visualEffect;
+        private TransformTRXS transform;
+        private TriggerableAnimation animation;
+        private TriggerableVisualEffect visualEffect;
 
 
         // PROPERTIES
         public AddressRange AddressRange { get; set; }
+        public TriggerableAnimation Animation { get => animation; set => animation = value; }
+        public TransformTRXS Transform { get => transform; set => transform = value; }
+        public TriggerableVisualEffect VisualEffect { get => visualEffect; set => visualEffect = value; }
 
 
         // METHODS
@@ -46,15 +51,25 @@ namespace GameCube.GFZ.Stage
             this.RecordEndAddress(writer);
         }
 
-        public override string ToString()
+        public string PrintMultiLine(int indentLevel = 0, string indent = "\t")
         {
-            return
-                $"{nameof(VisualEffectTrigger)}(" +
-                $"{nameof(animation)}: {animation}, " +
-                $"{nameof(visualEffect)}: {visualEffect}, " +
-                $"{transform}, " +
-                $")";
+            var builder = new System.Text.StringBuilder();
+
+            builder.AppendLineIndented(indent, indentLevel, nameof(VisualEffectTrigger));
+            indentLevel++;
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(Animation)}: {Animation}");
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(VisualEffect)}: {VisualEffect}");
+            builder.Append(Transform.PrintMultiLine(indentLevel, indent));
+
+            return builder.ToString();
         }
+
+        public string PrintSingleLine()
+        {
+            return nameof(VisualEffectTrigger);
+        }
+
+        public override string ToString() => PrintSingleLine();
 
     }
 }

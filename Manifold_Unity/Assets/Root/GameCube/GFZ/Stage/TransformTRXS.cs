@@ -19,48 +19,22 @@ namespace GameCube.GFZ.Stage
         ITextPrintable
     {
         // FIELDS
-         private float3 position;
-         private CompressedRotation compressedRotation;
-         private UnknownTransformOption unknownOption;
-         private ObjectActiveOverride objectActiveOverride;
-         private float3 scale;
+        private float3 position;
+        private CompressedRotation compressedRotation;
+        private UnknownTransformOption unknownOption;
+        private ObjectActiveOverride objectActiveOverride;
+        private float3 scale;
 
 
         // PROPERTIES
         public AddressRange AddressRange { get; set; }
-        public CompressedRotation CompressedRotation
-        {
-            get => compressedRotation;
-            set => compressedRotation = value;
-        }
-        public ObjectActiveOverride ObjectActiveOverride
-        {
-            get => objectActiveOverride;
-            set => objectActiveOverride = value;
-        }
-        public float3 Position
-        {
-            get => position;
-            set => position = value;
-        }
-        public quaternion Rotation
-        {
-            get => compressedRotation.Quaternion;
-        }
-        public float3 RotationEuler
-        {
-            get => compressedRotation.Eulers;
-        }
-        public float3 Scale
-        {
-            get => scale;
-            set => scale = value;
-        }
-        public UnknownTransformOption UnknownOption
-        {
-            get => unknownOption;
-            set => unknownOption = value;
-        }
+        public CompressedRotation CompressedRotation { get => compressedRotation; set => compressedRotation = value; }
+        public ObjectActiveOverride ObjectActiveOverride { get => objectActiveOverride; set => objectActiveOverride = value; }
+        public float3 Position { get => position; set => position = value; }
+        public quaternion Rotation => compressedRotation.Quaternion;
+        public float3 RotationEuler => compressedRotation.Eulers;
+        public float3 Scale { get => scale; set => scale = value; }
+        public UnknownTransformOption UnknownOption { get => unknownOption; set => unknownOption = value; }
 
 
         // METHODS

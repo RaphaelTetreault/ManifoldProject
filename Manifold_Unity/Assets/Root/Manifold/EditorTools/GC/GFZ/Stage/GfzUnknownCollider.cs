@@ -37,7 +37,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             var value = new UnknownCollider
             {
                 //sceneObject = sceneObject,
-                transform = transform
+                Transform = transform
             };
 
             return value;
@@ -45,9 +45,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         public void ImportGfz(UnknownCollider value)
         {
-            transform.CopyGfzTransformTRXS(value.transform);
+            transform.CopyGfzTransformTRXS(value.Transform);
             transform.localScale *= scale;
-            sceneObject = value.sceneObject.Name;
+            sceneObject = value.SceneObject.Name;
         }
     }
 }

@@ -1,7 +1,7 @@
 namespace GameCube.GFZ.Stage
 {
     /// <summary>
-    /// Animation trigger index for volume. How an animations knows to
+    /// Animation trigger index for volume. How an animation knows to
     /// play when based on index is not yet investigated.
     /// </summary>
     [System.Flags]
