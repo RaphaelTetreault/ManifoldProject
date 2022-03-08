@@ -36,6 +36,7 @@ namespace GameCube.GFZ.Stage
         IBinaryAddressable,
         IBinarySerializable,
         IHasReference
+        //ITextPrintable
     {
         // CONSTANTS
         public const int kCountAxSurfaceTypes = 11;
@@ -113,7 +114,6 @@ namespace GameCube.GFZ.Stage
                 }
             }
         }
-
         public Pointer StaticColliderTrisPtr { get => staticColliderTrisPtr; set => staticColliderTrisPtr = value; }
         public Pointer[] TriMeshGridPtrs { get => triMeshGridPtrs; set => triMeshGridPtrs = value; }
         public GridXZ MeshGridXZ { get => meshGridXZ; set => meshGridXZ = value; }

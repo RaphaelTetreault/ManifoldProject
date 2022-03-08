@@ -753,7 +753,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
                     log.WriteAddress(sceneObject.TextureScroll);
                     if (sceneObject.TextureScroll != null)
-                        log.WriteAddress(sceneObject.TextureScroll.fields);
+                        log.WriteAddress(sceneObject.TextureScroll.Fields);
 
                     log.WriteLine();
                 }

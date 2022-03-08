@@ -496,7 +496,7 @@ namespace GameCube.GFZ.Stage
                             continue;
 
                         int fieldArrayIndex = 0;
-                        foreach (var field in sceneObject.TextureScroll.fields)
+                        foreach (var field in sceneObject.TextureScroll.Fields)
                         {
                             if (field == null)
                                 return;
@@ -1312,7 +1312,7 @@ namespace GameCube.GFZ.Stage
                         writer.WriteNextCol(sceneObject.Name);
 
                         // Rotation values from clean, uncompressed matrix
-                        var matrix = sceneObject.TransformMatrix3x4.Rotation;
+                        var matrix = sceneObject.TransformMatrix3x4.RotationEuler;
                         writer.WriteNextCol(matrix.x);
                         writer.WriteNextCol(matrix.y);
                         writer.WriteNextCol(matrix.z);

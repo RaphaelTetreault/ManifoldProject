@@ -1,16 +1,18 @@
-﻿using Manifold.IO;
+﻿using Manifold;
+using Manifold.IO;
 using System;
 using System.IO;
 
 namespace GameCube.GFZ.Stage
 {
     /// <summary>
-    /// A single data field for TextureMetadata.
+    /// A single data field for <cref>TextureScroll</cref>.
     /// </summary>
     [Serializable]
     public class TextureScrollField :
         IBinaryAddressable,
-        IBinarySerializable
+        IBinarySerializable,
+        ITextPrintable
     {
         // FIELDS
         public float x; // range -3 to 6, indexes: 0-3
@@ -42,14 +44,19 @@ namespace GameCube.GFZ.Stage
             this.RecordEndAddress(writer);
         }
 
-        public override string ToString()
+        public string PrintMultiLine(int indentLevel = 0, string indent = "\t")
         {
-            return
-                //$"{nameof(TextureMetadataField)}(" +
-                $"({nameof(x)}: {x}, " +
-                $"{nameof(y)}: {y}" +
-                $")";
+            var builder = new System.Text.StringBuilder();
+            builder.AppendLineIndented(indent, indentLevel, PrintSingleLine());
+            return builder.ToString();
         }
+
+        public string PrintSingleLine()
+        {
+            return $"{nameof(TextureScrollField)}({nameof(x)}: {x}, {nameof(y)}: {y})";
+        }
+
+        public override string ToString() => PrintSingleLine();
 
     }
 }

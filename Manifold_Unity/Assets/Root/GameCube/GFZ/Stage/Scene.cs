@@ -733,7 +733,7 @@ namespace GameCube.GFZ.Stage
                 if (dynamicSceneObject.TextureScroll != null)
                 {
                     textureScrolls.Add(dynamicSceneObject.TextureScroll);
-                    foreach (var field in dynamicSceneObject.TextureScroll.fields)
+                    foreach (var field in dynamicSceneObject.TextureScroll.Fields)
                     {
                         if (field != null)
                         {
@@ -824,9 +824,9 @@ namespace GameCube.GFZ.Stage
                         writer.WriteX(storyObjectPath);
 
                         // Assert is true. This data is always here if existing
-                        Assert.IsTrue(storyObjectPath.animationCurve != null);
+                        Assert.IsTrue(storyObjectPath.AnimationCurve != null);
                         // breaking the rules again. Should inlining be allowed for these ptr types?
-                        writer.WriteX(storyObjectPath.animationCurve);
+                        writer.WriteX(storyObjectPath.AnimationCurve);
                     }
                 }
 
@@ -1066,7 +1066,7 @@ namespace GameCube.GFZ.Stage
                 }
                 list.Add(dynamicSceneObject.TextureScroll);
                 if (dynamicSceneObject.TextureScroll != null)
-                    list.AddRange(dynamicSceneObject.TextureScroll.fields);
+                    list.AddRange(dynamicSceneObject.TextureScroll.Fields);
                 list.Add(dynamicSceneObject.SkeletalAnimator);
                 if (dynamicSceneObject.SkeletalAnimator != null)
                     list.Add(dynamicSceneObject.SkeletalAnimator.Properties);
@@ -1107,8 +1107,8 @@ namespace GameCube.GFZ.Stage
                 list.Add(trigger.storyObjectPath);
                 if (trigger.storyObjectPath != null)
                 {
-                    list.Add(trigger.storyObjectPath.animationCurve);
-                    list.AddRange(trigger.storyObjectPath.animationCurve.KeyableAttributes);
+                    list.Add(trigger.storyObjectPath.AnimationCurve);
+                    list.AddRange(trigger.storyObjectPath.AnimationCurve.KeyableAttributes);
                 }
             }
 

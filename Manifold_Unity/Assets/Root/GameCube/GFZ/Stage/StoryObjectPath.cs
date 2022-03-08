@@ -15,13 +15,15 @@ namespace GameCube.GFZ.Stage
         IHasReference
     {
         // FIELDS
-        public ArrayPointer animationCurvePtr;
+        private ArrayPointer animationCurvePtr;
         // FIELDS (deserialized from pointer)
-        public AnimationCurve animationCurve;
+        private AnimationCurve animationCurve;
 
 
         // PROPERTIES
         public AddressRange AddressRange { get; set; }
+        public AnimationCurve AnimationCurve { get => animationCurve; set => animationCurve = value; }
+        public ArrayPointer AnimationCurvePtr { get => animationCurvePtr; set => animationCurvePtr = value; }
 
 
         // METHODS
@@ -33,7 +35,7 @@ namespace GameCube.GFZ.Stage
             }
             this.RecordEndAddress(reader);
             {
-                if (animationCurvePtr.IsNotNull)
+                if (AnimationCurvePtr.IsNotNull)
                 {
                     // Init anim curve, jump, read without creating new instance
                     reader.JumpToAddress(animationCurvePtr);

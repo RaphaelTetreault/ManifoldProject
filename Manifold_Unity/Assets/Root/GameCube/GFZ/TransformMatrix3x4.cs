@@ -1,4 +1,5 @@
-﻿using Manifold.IO;
+﻿using Manifold;
+using Manifold.IO;
 using System;
 using System.IO;
 using Unity.Mathematics;
@@ -13,23 +14,20 @@ namespace GameCube.GFZ
     [Serializable]
     public class TransformMatrix3x4 :
         IBinaryAddressable,
-        IBinarySerializable
+        IBinarySerializable,
+        ITextPrintable
     {
-        // "FIELDS" as reconstructed for ease of use
+        // "FIELDS" as reconstructed for ease of use (it's really 3 rows x 4 columns)
         private float4x4 matrix;
+
 
         // PROPERTIES
         public AddressRange AddressRange { get; set; }
+        public float4x4 Matrix { get => matrix; set => matrix = value; }
         public float3 Position => matrix.Position();
-        public quaternion QRotation => matrix.RotationBad();
-        public float3 Rotation => matrix.RotationEuler();
+        public quaternion Rotation => matrix.Rotation();
+        public float3 RotationEuler => matrix.RotationEuler();
         public float3 Scale => matrix.Scale();
-
-        public float4x4 Matrix
-        {
-            get => matrix;
-            set => matrix = value;
-        }
 
 
         // METHODS
@@ -76,19 +74,25 @@ namespace GameCube.GFZ
             this.RecordEndAddress(writer);
         }
 
-        public override string ToString()
+        public string PrintMultiLine(int indentLevel = 0, string indent = "\t")
         {
-            var position = Position;
-            var euler = Rotation;
-            var scale = Scale;
+            var builder = new System.Text.StringBuilder();
 
-            return
-                $"{nameof(TransformMatrix3x4)}(" +
-                $"{nameof(Position)}(x:{position.x:0.0}, y:{position.y:0.0}, z:{position.z:0.0}), " +
-                $"{nameof(QRotation)}(x:{euler.x:0.0}, y:{euler.y:0.0}, z:{euler.z:0.0}), " +
-                $"{nameof(Scale)}(x:{scale.x:0.0}, y:{scale.y:0.0}, z:{scale.z:0.0})" +
-                $")";
+            builder.AppendLineIndented(indent, indentLevel, nameof(TransformMatrix3x4));
+            indentLevel++;
+            builder.AppendLineIndented(indent, indentLevel, $"{Position}({Position})");
+            builder.AppendLineIndented(indent, indentLevel, $"{Rotation}({RotationEuler})");
+            builder.AppendLineIndented(indent, indentLevel, $"{Scale}({Scale})");
+
+            return builder.ToString();
         }
+
+        public string PrintSingleLine()
+        {
+            return nameof(TransformMatrix3x4);
+        }
+
+        public override string ToString() => PrintSingleLine();
 
     }
 }

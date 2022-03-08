@@ -163,9 +163,9 @@ namespace GameCube.GFZ.Stage
             builder.Append(transformTRXS.PrintMultiLine(indentLevel, indent));
             builder.Append(sceneObject.PrintMultiLine(indentLevel, indent));
             builder.Append(animationClip.PrintMultiLine(indentLevel, indent));
-            //builder.Append(textureScroll.PrintMultiLine(indentLevel, indent));
-            //builder.Append(skeletalAnimator.PrintMultiLine(indentLevel, indent));
-            //builder.Append(transformMatrix3x4.PrintMultiLine(indentLevel, indent));
+            builder.Append(textureScroll.PrintMultiLine(indentLevel, indent));
+            builder.Append(skeletalAnimator.PrintMultiLine(indentLevel, indent));
+            builder.Append(transformMatrix3x4.PrintMultiLine(indentLevel, indent));
 
             return builder.ToString();
         }

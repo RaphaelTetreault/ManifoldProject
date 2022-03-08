@@ -20,20 +20,23 @@ namespace GameCube.GFZ.Stage
     public class TextureScroll :
         IBinaryAddressable,
         IBinarySerializable,
-        IHasReference
+        IHasReference,
+        ITextPrintable
     {
         // CONSTANTS
         public const int kCount = 12;
 
 
         // FIELDS
-        public Pointer[] fieldPtrs;
+        private Pointer[] fieldPtrs;
         // REFERENCE FIELDS
-        public TextureScrollField[] fields = new TextureScrollField[0];
+        private TextureScrollField[] fields = new TextureScrollField[0];
 
 
         // PROPERTIES
         public AddressRange AddressRange { get; set; }
+        public TextureScrollField[] Fields { get => fields; set => fields = value; }
+        public Pointer[] FieldPtrs { get => fieldPtrs; set => fieldPtrs = value; }
 
 
         // METHODS
@@ -84,18 +87,28 @@ namespace GameCube.GFZ.Stage
             }
         }
 
-        public override string ToString()
+        public string PrintMultiLine(int indentLevel = 0, string indent = "\t")
         {
-            var stringBuilder = new System.Text.StringBuilder();
-            stringBuilder.Append(nameof(TextureScroll));
+            var builder = new System.Text.StringBuilder();
+
+            builder.AppendLineIndented(indent, indentLevel, nameof(TextureScroll));
+            indentLevel++;
             for (int i = 0; i < fields.Length; i++)
             {
                 if (fields[i] == null)
                     continue;
-                stringBuilder.Append($"[{i}]{fields[i]}, ");
+                builder.AppendLineIndented(indent, indentLevel, $"[{i}] {fields[i]}");
             }
 
-            return stringBuilder.ToString();
+            return builder.ToString();
         }
+
+        public string PrintSingleLine()
+        {
+            return nameof(TextureScroll);
+        }
+
+        public override string ToString() => PrintSingleLine();
+
     }
 }

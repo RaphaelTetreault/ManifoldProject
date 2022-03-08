@@ -12,11 +12,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         {
             // If we get here, we have data. Let's build it.
             var textureScroll = new TextureScroll();
-            textureScroll.fields = new TextureScrollField[TextureScroll.kCount];
+            textureScroll.Fields = new TextureScrollField[TextureScroll.kCount];
             for (int i = 0; i < textureScrollFields.Length; i++)
             {
                 var field = textureScrollFields[i];
-                textureScroll.fields[i] = new TextureScrollField()
+                textureScroll.Fields[i] = new TextureScrollField()
                 {
                     x = field.x,
                     y = field.y,
@@ -31,11 +31,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             // Only iterate if we have data to iterate over
             if (textureScroll != null)
             {
-                Assert.IsTrue(textureScrollFields.Length == textureScroll.fields.Length);
+                Assert.IsTrue(textureScrollFields.Length == textureScroll.Fields.Length);
 
-                for (int i = 0; i < textureScroll.fields.Length; i++)
+                for (int i = 0; i < textureScroll.Fields.Length; i++)
                 {
-                    var field = textureScroll.fields[i];
+                    var field = textureScroll.Fields[i];
 
                     if (field == null)
                         continue;
