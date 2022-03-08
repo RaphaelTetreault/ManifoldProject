@@ -144,16 +144,16 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             log.WriteAddress(coliScene.staticColliderMeshManager);
             log.WriteLine();
             log.WriteLine("Mesh Bounds");
-            log.WriteAddress(coliScene.staticColliderMeshManager.meshGridXZ);
+            log.WriteAddress(coliScene.staticColliderMeshManager.MeshGridXZ);
             log.WriteLine();
             log.WriteLine("TRIANGLES");
-            log.WriteAddress(coliScene.staticColliderMeshManager.colliderTris);
-            log.WriteAddress(coliScene.staticColliderMeshManager.triMeshGrids);
+            log.WriteAddress(coliScene.staticColliderMeshManager.ColliderTris);
+            log.WriteAddress(coliScene.staticColliderMeshManager.TriMeshGrids);
             // Write each index list
             log.WriteNullInArray = false;
-            for (int i = 0; i < coliScene.staticColliderMeshManager.triMeshGrids.Length; i++)
+            for (int i = 0; i < coliScene.staticColliderMeshManager.TriMeshGrids.Length; i++)
             {
-                var triIndexList = coliScene.staticColliderMeshManager.triMeshGrids[i];
+                var triIndexList = coliScene.staticColliderMeshManager.TriMeshGrids[i];
                 if (triIndexList != null)
                 {
                     log.WriteLine($"COLLIDER TYPE [{i}]: {(StaticColliderMeshProperty)i}");
@@ -162,13 +162,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             }
             log.WriteNullInArray = true;
             log.WriteLine("QUADS");
-            log.WriteAddress(coliScene.staticColliderMeshManager.colliderQuads);
-            log.WriteAddress(coliScene.staticColliderMeshManager.quadMeshGrids);
+            log.WriteAddress(coliScene.staticColliderMeshManager.ColliderQuads);
+            log.WriteAddress(coliScene.staticColliderMeshManager.QuadMeshGrids);
             // Write each index list
             log.WriteNullInArray = false;
-            for (int i = 0; i < coliScene.staticColliderMeshManager.quadMeshGrids.Length; i++)
+            for (int i = 0; i < coliScene.staticColliderMeshManager.QuadMeshGrids.Length; i++)
             {
-                var quadIndexList = coliScene.staticColliderMeshManager.quadMeshGrids[i];
+                var quadIndexList = coliScene.staticColliderMeshManager.QuadMeshGrids[i];
                 if (quadIndexList != null)
                 {
                     log.WriteLine($"COLLIDER TYPE [{i}]: {(StaticColliderMeshProperty)i}");

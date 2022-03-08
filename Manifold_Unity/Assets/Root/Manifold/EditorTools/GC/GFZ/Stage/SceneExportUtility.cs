@@ -216,17 +216,17 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 // Static Collider Matrix
                 scene.staticColliderMeshManager = new StaticColliderMeshManager(format);
                 // Bind to other references
-                scene.staticColliderMeshManager.unknownColliders = scene.unknownColliders;
-                scene.staticColliderMeshManager.staticSceneObjects = scene.staticSceneObjects;
+                scene.staticColliderMeshManager.UnknownColliders = scene.unknownColliders;
+                scene.staticColliderMeshManager.StaticSceneObjects = scene.staticSceneObjects;
                 //scene.staticColliderMeshes.ComputeMatrixBoundsXZ();
-                scene.staticColliderMeshManager.meshGridXZ = new GridXZ();
+                scene.staticColliderMeshManager.MeshGridXZ = new GridXZ();
 
                 // Get data from scene
                 //scene.staticColliderMeshes = oldScene.staticColliderMeshes;
                 scene.staticColliderMeshManager.SerializeFormat = format;
                 // Point to existing references
-                scene.staticColliderMeshManager.unknownColliders = scene.unknownColliders;
-                scene.staticColliderMeshManager.staticSceneObjects = scene.staticSceneObjects;
+                scene.staticColliderMeshManager.UnknownColliders = scene.unknownColliders;
+                scene.staticColliderMeshManager.StaticSceneObjects = scene.staticSceneObjects;
             }
 
             // TRACK

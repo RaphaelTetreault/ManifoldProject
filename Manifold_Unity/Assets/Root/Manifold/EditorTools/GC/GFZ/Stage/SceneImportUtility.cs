@@ -727,7 +727,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         {
             // Get all bounds
             var boundsTrack = scene.checkpointGridXZ;
-            var boundsColliders = scene.staticColliderMeshManager.meshGridXZ;
+            var boundsColliders = scene.staticColliderMeshManager.MeshGridXZ;
             //
             float yHeight = scene.trackMinHeight;
 

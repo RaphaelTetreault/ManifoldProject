@@ -7,8 +7,11 @@ namespace GameCube.GFZ.Stage
     [System.Serializable]
     public sealed class StaticColliderMeshGrid : IndexGrid
     {
+        //
         public const int Subdivisions = 16;
         public const int kListCount = Subdivisions * Subdivisions;
+
+        //
         public override int SubdivisionsX => Subdivisions;
         public override int SubdivisionsZ => Subdivisions;
     }

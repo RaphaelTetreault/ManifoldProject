@@ -333,10 +333,10 @@ namespace GameCube.GFZ.Stage
 
             // TEMP
             // For some reason, this structure points back to these
-            staticColliderMeshManager.unknownColliders = unknownColliders;
-            staticColliderMeshManager.staticSceneObjects = staticSceneObjects;
-            Assert.IsTrue(staticColliderMeshManager.unknownCollidersPtr == unknownCollidersPtr);
-            Assert.IsTrue(staticColliderMeshManager.staticSceneObjectsPtr == staticSceneObjectsPtr);
+            staticColliderMeshManager.UnknownColliders = unknownColliders;
+            staticColliderMeshManager.StaticSceneObjects = staticSceneObjects;
+            Assert.IsTrue(staticColliderMeshManager.UnknownCollidersPtr == unknownCollidersPtr);
+            Assert.IsTrue(staticColliderMeshManager.StaticSceneObjectsPtr == staticSceneObjectsPtr);
 
 
             // UNMANGLE SHARED REFERENCES
@@ -598,22 +598,22 @@ namespace GameCube.GFZ.Stage
 
                 // COLLIDER TRIS
                 {
-                    var colliderTris = staticColliderMeshManager.colliderTris;
+                    var colliderTris = staticColliderMeshManager.ColliderTris;
                     // Write tri data and comment
                     if (!colliderTris.IsNullOrEmpty())
                         writer.InlineDesc(serializeVerbose, scmPtr, colliderTris);
                     writer.WriteX(colliderTris);
-                    WriteStaticColliderMeshMatrices(writer, scmPtr, "ColiTri", staticColliderMeshManager.triMeshGrids);
+                    WriteStaticColliderMeshMatrices(writer, scmPtr, "ColiTri", staticColliderMeshManager.TriMeshGrids);
                 }
 
                 // COLLIDER QUADS
                 {
-                    var colliderQuads = staticColliderMeshManager.colliderQuads;
+                    var colliderQuads = staticColliderMeshManager.ColliderQuads;
                     // Write quad data and comment
                     if (!colliderQuads.IsNullOrEmpty())
                         writer.InlineDesc(serializeVerbose, scmPtr, colliderQuads);
                     writer.WriteX(colliderQuads);
-                    WriteStaticColliderMeshMatrices(writer, scmPtr, "ColiQuad", staticColliderMeshManager.quadMeshGrids);
+                    WriteStaticColliderMeshMatrices(writer, scmPtr, "ColiQuad", staticColliderMeshManager.QuadMeshGrids);
                 }
             }
 
@@ -888,8 +888,8 @@ namespace GameCube.GFZ.Stage
 
                 // Static Collider Meshes and dependencies
                 hasReferences.Add(staticColliderMeshManager);
-                hasReferences.AddRange(staticColliderMeshManager.triMeshGrids);
-                hasReferences.AddRange(staticColliderMeshManager.quadMeshGrids);
+                hasReferences.AddRange(staticColliderMeshManager.TriMeshGrids);
+                hasReferences.AddRange(staticColliderMeshManager.QuadMeshGrids);
                 hasReferences.AddRange(unknownColliders);
 
                 // OBJECTS
@@ -1033,19 +1033,19 @@ namespace GameCube.GFZ.Stage
 
             // Static Collider Meshes
             list.Add(staticColliderMeshManager);
-            list.AddRange(staticColliderMeshManager.colliderTris);
-            list.AddRange(staticColliderMeshManager.colliderQuads);
-            foreach (var matrix in staticColliderMeshManager.triMeshGrids)
+            list.AddRange(staticColliderMeshManager.ColliderTris);
+            list.AddRange(staticColliderMeshManager.ColliderQuads);
+            foreach (var matrix in staticColliderMeshManager.TriMeshGrids)
             {
                 list.Add(matrix);
                 list.AddRange(matrix.IndexLists);
             }
-            foreach (var matrix in staticColliderMeshManager.quadMeshGrids)
+            foreach (var matrix in staticColliderMeshManager.QuadMeshGrids)
             {
                 list.Add(matrix);
                 list.AddRange(matrix.IndexLists);
             }
-            list.Add(staticColliderMeshManager.meshGridXZ);
+            list.Add(staticColliderMeshManager.MeshGridXZ);
             //list.Add(staticColliderMeshManager.BoundingSphere);
 
             list.Add(trackMinHeight);

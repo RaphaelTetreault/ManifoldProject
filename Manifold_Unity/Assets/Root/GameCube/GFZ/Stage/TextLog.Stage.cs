@@ -143,22 +143,22 @@ namespace GameCube.GFZ.Stage
             log.WriteAddress(coliScene.unknownColliders);
             log.WriteLine();
             log.WriteLine(nameof(GameCube.GFZ.BoundingSphere));
-            log.WriteLine("unk float: " + coliScene.staticColliderMeshManager.unk_float);
+            log.WriteLine("unk float: " + coliScene.staticColliderMeshManager.Unk_float);
             log.WriteAddress(coliScene.staticColliderMeshManager.BoundingSphere);
-            log.WriteLine(coliScene.staticColliderMeshManager.unknownCollidersPtr);
-            log.WriteLine(coliScene.staticColliderMeshManager.staticSceneObjectsPtr);
+            log.WriteLine(coliScene.staticColliderMeshManager.UnknownCollidersPtr);
+            log.WriteLine(coliScene.staticColliderMeshManager.StaticSceneObjectsPtr);
             log.WriteLine();
             log.WriteLine("Mesh Bounds");
-            log.WriteAddress(coliScene.staticColliderMeshManager.meshGridXZ);
+            log.WriteAddress(coliScene.staticColliderMeshManager.MeshGridXZ);
             log.WriteLine();
             log.WriteLine("TRIANGLES");
-            log.WriteAddress(coliScene.staticColliderMeshManager.colliderTris);
-            log.WriteAddress(coliScene.staticColliderMeshManager.triMeshGrids);
+            log.WriteAddress(coliScene.staticColliderMeshManager.ColliderTris);
+            log.WriteAddress(coliScene.staticColliderMeshManager.TriMeshGrids);
             // Write each index list
             log.WriteNullInArray = false;
-            for (int i = 0; i < coliScene.staticColliderMeshManager.triMeshGrids.Length; i++)
+            for (int i = 0; i < coliScene.staticColliderMeshManager.TriMeshGrids.Length; i++)
             {
-                var triIndexList = coliScene.staticColliderMeshManager.triMeshGrids[i];
+                var triIndexList = coliScene.staticColliderMeshManager.TriMeshGrids[i];
                 if (triIndexList != null)
                 {
                     log.WriteLine($"COLLIDER TYPE [{i}]: {(StaticColliderMeshProperty)i}");
@@ -167,13 +167,13 @@ namespace GameCube.GFZ.Stage
             }
             log.WriteNullInArray = true;
             log.WriteLine("QUADS");
-            log.WriteAddress(coliScene.staticColliderMeshManager.colliderQuads);
-            log.WriteAddress(coliScene.staticColliderMeshManager.quadMeshGrids);
+            log.WriteAddress(coliScene.staticColliderMeshManager.ColliderQuads);
+            log.WriteAddress(coliScene.staticColliderMeshManager.QuadMeshGrids);
             // Write each index list
             log.WriteNullInArray = false;
-            for (int i = 0; i < coliScene.staticColliderMeshManager.quadMeshGrids.Length; i++)
+            for (int i = 0; i < coliScene.staticColliderMeshManager.QuadMeshGrids.Length; i++)
             {
-                var quadIndexList = coliScene.staticColliderMeshManager.quadMeshGrids[i];
+                var quadIndexList = coliScene.staticColliderMeshManager.QuadMeshGrids[i];
                 if (quadIndexList != null)
                 {
                     log.WriteLine($"COLLIDER TYPE [{i}]: {(StaticColliderMeshProperty)i}");
