@@ -1013,7 +1013,7 @@ namespace GameCube.GFZ.Stage
                 writer.WriteNextCol("Course");
                 writer.WriteNextCol("AX/GX");
                 //
-                writer.WriteNextCol(nameof(StoryObjectTrigger.zero_0x00));
+                //writer.WriteNextCol(nameof(StoryObjectTrigger.zero_0x00));
                 writer.WriteNextCol(nameof(StoryObjectTrigger.BoulderGroupOrderIndex));
                 writer.WriteNextCol(nameof(StoryObjectTrigger.BoulderGroup));
                 writer.WriteNextCol(nameof(StoryObjectTrigger.Difficulty));
@@ -1039,7 +1039,7 @@ namespace GameCube.GFZ.Stage
                         writer.WriteNextCol(courseID);
                         writer.WriteNextCol(isAxGx);
                         //
-                        writer.WriteNextCol(item.zero_0x00);
+                        //writer.WriteNextCol(item.zero_0x00);
                         writer.WriteNextCol(item.BoulderGroupOrderIndex);
                         writer.WriteNextCol(item.BoulderGroup);
                         writer.WriteNextCol(item.Difficulty);
