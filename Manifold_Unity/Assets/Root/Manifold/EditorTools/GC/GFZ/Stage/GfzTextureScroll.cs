@@ -18,8 +18,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 var field = textureScrollFields[i];
                 textureScroll.Fields[i] = new TextureScrollField()
                 {
-                    x = field.x,
-                    y = field.y,
+                    u = field.x,
+                    v = field.y,
                 };
             }
             return textureScroll;
@@ -40,7 +40,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                     if (field == null)
                         continue;
 
-                    textureScrollFields[i] = new Vector2(field.x, field.y);
+                    textureScrollFields[i] = new Vector2(field.u, field.v);
                     //DebugConsole.Log($"{textureScrollFields[i]}");
                 }
             }

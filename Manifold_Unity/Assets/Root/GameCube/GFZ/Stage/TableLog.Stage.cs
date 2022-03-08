@@ -483,8 +483,8 @@ namespace GameCube.GFZ.Stage
                 writer.WriteNextCol("Game Object #");
                 writer.WriteNextCol("Game Object");
                 writer.WriteNextCol("Unknown 1 Index");
-                writer.WriteNextColNicify(nameof(TextureScrollField.x));
-                writer.WriteNextColNicify(nameof(TextureScrollField.y));
+                writer.WriteNextColNicify(nameof(TextureScrollField.u));
+                writer.WriteNextColNicify(nameof(TextureScrollField.v));
                 writer.WriteNextRow();
 
                 foreach (var scene in scenes)
@@ -505,8 +505,8 @@ namespace GameCube.GFZ.Stage
                             writer.WriteNextCol(gameObjectIndex);
                             writer.WriteNextCol(sceneObject.Name);
                             writer.WriteNextCol(fieldArrayIndex);
-                            writer.WriteNextCol(field.x);
-                            writer.WriteNextCol(field.y);
+                            writer.WriteNextCol(field.u);
+                            writer.WriteNextCol(field.v);
                             writer.WriteNextRow();
                             fieldArrayIndex++;
                         }

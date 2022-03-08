@@ -15,8 +15,8 @@ namespace GameCube.GFZ.Stage
         ITextPrintable
     {
         // FIELDS
-        public float x; // range -3 to 6, indexes: 0-3
-        public float y; // range -10 to 30, indexes: 0-3
+        public float u; // range -3 to 6, indexes: 0-3
+        public float v; // range -10 to 30, indexes: 0-3
 
 
         // PROPERTIES
@@ -28,8 +28,8 @@ namespace GameCube.GFZ.Stage
         {
             this.RecordStartAddress(reader);
             {
-                reader.ReadX(ref x);
-                reader.ReadX(ref y);
+                reader.ReadX(ref u);
+                reader.ReadX(ref v);
             }
             this.RecordEndAddress(reader);
         }
@@ -38,8 +38,8 @@ namespace GameCube.GFZ.Stage
         {
             this.RecordStartAddress(writer);
             {
-                writer.WriteX(x);
-                writer.WriteX(y);
+                writer.WriteX(u);
+                writer.WriteX(v);
             }
             this.RecordEndAddress(writer);
         }
@@ -53,7 +53,7 @@ namespace GameCube.GFZ.Stage
 
         public string PrintSingleLine()
         {
-            return $"{nameof(TextureScrollField)}({nameof(x)}: {x}, {nameof(y)}: {y})";
+            return $"{nameof(TextureScrollField)}({nameof(u)}: {u}, {nameof(v)}: {v})";
         }
 
         public override string ToString() => PrintSingleLine();
