@@ -795,7 +795,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             var sceneIndex = sceneIn.ID;
             var sceneHash = md5.ComputeHash(readerIn.BaseStream);
             var sceneHashStr = HashUtility.ByteArrayToString(sceneHash);
-            var romHashStr = GfzFileHashes.ColiCourseMD5_GFZJ01[sceneIndex];
+            var romHashStr = MD5FileHashes.ColiCourse_GFZJ01[sceneIndex];
             if (romHashStr == sceneHashStr)
             {
                 sceneIn.Venue = CourseUtility.GetVenue(sceneIndex);
