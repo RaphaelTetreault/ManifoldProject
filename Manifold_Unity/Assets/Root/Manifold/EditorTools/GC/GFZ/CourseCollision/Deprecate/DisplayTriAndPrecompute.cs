@@ -30,7 +30,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
             var scene = sceneSobj.Value;
             var sceneObject = scene.dynamicSceneObjects[objectIndex];
-            var colliderGeo = sceneObject.sceneObject.colliderMesh;
+            var colliderGeo = sceneObject.sceneObject.ColliderMesh;
 
             //var count = colliderGeo.triCount;
             var count = colliderGeo.QuadsPtr.Length;

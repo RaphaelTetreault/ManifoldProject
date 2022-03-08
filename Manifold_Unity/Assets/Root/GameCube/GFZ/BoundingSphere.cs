@@ -1,4 +1,5 @@
-﻿using Manifold.IO;
+﻿using Manifold;
+using Manifold.IO;
 using System.IO;
 using Unity.Mathematics;
 
@@ -43,13 +44,24 @@ namespace GameCube.GFZ
         }
 
 
-        public override string ToString()
+        public string PrintMultiLine(int indentLevel = 0, string indent = "\t")
         {
-            return
-                $"{nameof(BoundingSphere)}(" +
-                $"{nameof(origin)}: ({origin.x}, {origin.y}, {origin.z}), " +
-                $"{nameof(radius)}: {radius})";
+            var builder = new System.Text.StringBuilder();
+
+            builder.AppendLineIndented(indent, indentLevel, nameof(BoundingSphere));
+            indentLevel++;
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(origin)}: {origin}");
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(radius)}: {radius}");
+
+            return builder.ToString();
         }
+
+        public string PrintSingleLine()
+        {
+            return nameof(BoundingSphere);
+        }
+
+        public override string ToString() => PrintSingleLine();
 
     }
 }

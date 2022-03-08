@@ -186,7 +186,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 var sceneObjectLODs = new List<SceneObjectLOD>();
                 foreach (var sceneObject in scene.sceneObjects)
                 {
-                    sceneObjectLODs.AddRange(sceneObject.lods);
+                    sceneObjectLODs.AddRange(sceneObject.LODs);
                 }
                 scene.sceneObjectLODs = sceneObjectLODs.ToArray();
 
@@ -278,7 +278,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             // This is because I must handle Unity serializing nulls with empty instances
             foreach (var sceneObject in scene.sceneObjects)
             {
-                var colliderGeo = sceneObject.colliderMesh;
+                var colliderGeo = sceneObject.ColliderMesh;
                 if (colliderGeo != null)
                 {
                     if (colliderGeo.Tris != null)

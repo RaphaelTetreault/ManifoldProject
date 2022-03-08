@@ -73,7 +73,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                     {
                         count++;
 
-                        if (sceneObject.sceneObject.colliderGeometryPtr.IsNotNull)
+                        if (sceneObject.sceneObject.ColliderGeometryPtr.IsNotNull)
                         {
                             var meshName = sceneObject.Name;
                             ImportUtility.ProgressBar<SceneObject>(count, total, $"st{sceneSobj.Value.ID:00} {meshName}");
@@ -460,7 +460,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         public Mesh CreateObjectColliderMesh(SceneObjectDynamic sceneObject, bool createBackfaces, bool usePrecomputes)
         {
-            var colliderGeo = sceneObject.sceneObject.colliderMesh;
+            var colliderGeo = sceneObject.sceneObject.ColliderMesh;
 
             // Create base data for mesh
             var mesh = new Mesh();

@@ -29,24 +29,27 @@ namespace GameCube.GFZ.Stage
     public class SceneObject :
         IBinaryAddressable,
         IBinarySerializable,
-        IHasReference
+        IHasReference,
+        ITextPrintable
     {
         // STRUCTURE
-        public LodRenderFlags lodRenderFlags;
-        public ArrayPointer lodsPtr;
-        public Pointer colliderGeometryPtr;
+        private LodRenderFlags lodRenderFlags;
+        private ArrayPointer lodsPtr;
+        private Pointer colliderGeometryPtr;
         // FIELDS (deserialized from pointers)
-        public SceneObjectLOD[] lods;
-        public ColliderMesh colliderMesh;
-
-
+        private SceneObjectLOD[] lods;
+        private ColliderMesh colliderMesh;
 
 
         // PROPERTIES
         public AddressRange AddressRange { get; set; }
         public string Name => lods[0].name;
         public SceneObjectLOD PrimaryLOD => lods[0];
-        public SceneObjectLOD[] LODs => lods;
+        public SceneObjectLOD[] LODs { get => lods; set => lods = value; }
+        public ColliderMesh ColliderMesh { get => colliderMesh; set => colliderMesh = value; }
+        public Pointer ColliderGeometryPtr { get => colliderGeometryPtr; set => colliderGeometryPtr = value; }
+        public ArrayPointer LodsPtr { get => lodsPtr; set => lodsPtr = value; }
+        public LodRenderFlags LodRenderFlags { get => lodRenderFlags; set => lodRenderFlags = value; }
 
 
         // METHODS
@@ -77,7 +80,7 @@ namespace GameCube.GFZ.Stage
         public void Serialize(BinaryWriter writer)
         {
             {
-                lodsPtr = lods.GetArrayPointer();
+                lodsPtr = LODs.GetArrayPointer();
                 colliderGeometryPtr = colliderMesh.GetPointer();
             }
             this.RecordStartAddress(writer);
@@ -92,21 +95,40 @@ namespace GameCube.GFZ.Stage
         public void ValidateReferences()
         {
             // This pointer CANNOT be null and must refer to an object.
-            Assert.IsTrue(lods != null);
+            Assert.IsTrue(LODs != null);
             Assert.IsTrue(lodsPtr.IsNotNull);
             // Assert that instance/pointer is correct
-            Assert.ReferencePointer(lods, lodsPtr);
+            Assert.ReferencePointer(LODs, lodsPtr);
             Assert.ReferencePointer(colliderMesh, colliderGeometryPtr);
         }
 
-        public override string ToString()
+        public string PrintMultiLine(int indentLevel = 0, string indent = "\t")
         {
-            return 
-                $"{nameof(SceneObject)}(" +
-                $"{nameof(lodRenderFlags)}: {lodRenderFlags}, " +
-                $"LOD Count: {lodsPtr.Length}, " +
-                $"Has {nameof(ColliderMesh)}: {colliderGeometryPtr.IsNotNull}" +
-                $")";
+            var builder = new System.Text.StringBuilder();
+
+            builder.AppendLineIndented(indent, indentLevel, nameof(SceneObject));
+            indentLevel++;
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(LodRenderFlags)}: {LodRenderFlags}");
+            builder.AppendLineIndented(indent, indentLevel, $"Has {nameof(colliderMesh)}: {colliderMesh is not null}");
+            if (colliderMesh is not null)
+                builder.Append(colliderMesh.PrintMultiLine(indentLevel, indent));
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(LODs)}[{LODs.Length}]");
+            indentLevel++;
+            int index = 0;
+            foreach (var lod in LODs)
+            {
+                builder.AppendLineIndented(indent, indentLevel, $"[{index}] {lod.name}, {lod.lodDistance}");
+            }
+
+            return builder.ToString();
         }
+
+        public string PrintSingleLine()
+        {
+            return $"{nameof(SceneObject)}({Name})";
+        }
+
+        public override string ToString() => PrintSingleLine();
+
     }
 }

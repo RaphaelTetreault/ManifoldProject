@@ -1,4 +1,5 @@
-﻿using Manifold.IO;
+﻿using Manifold;
+using Manifold.IO;
 using System;
 using System.IO;
 using Unity.Mathematics;
@@ -21,6 +22,7 @@ namespace GameCube.GFZ.Stage
         /// The origin position of this plane.
         /// </summary>
         public float3 origin;
+
 
         public void Deserialize(BinaryReader reader)
         {
@@ -63,6 +65,26 @@ namespace GameCube.GFZ.Stage
             mirroredPlane.origin = plane.origin;
             return mirroredPlane;
         }
+
+        public string PrintMultiLine(int indentLevel = 0, string indent = "\t")
+        {
+            var builder = new System.Text.StringBuilder();
+
+            builder.AppendLineIndented(indent, indentLevel, nameof(Plane));
+            indentLevel++;
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(origin)}: {origin}");
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(normal)}: {normal}");
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(dotProduct)}: {dotProduct}");
+
+            return builder.ToString();
+        }
+
+        public string PrintSingleLine()
+        {
+            return nameof(Plane);
+        }
+
+        public override string ToString() => PrintSingleLine();
 
     }
 }

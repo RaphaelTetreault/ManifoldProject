@@ -125,6 +125,5 @@ namespace GameCube.GFZ.Stage
 
         public override string ToString() => PrintSingleLine();
 
-
     }
 }

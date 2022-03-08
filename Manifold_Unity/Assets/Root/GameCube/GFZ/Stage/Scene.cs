@@ -386,9 +386,9 @@ namespace GameCube.GFZ.Stage
                 for (int i = 0; i < this.sceneObjects.Length; i++)
                 {
                     var template = this.sceneObjects[i];
-                    for (int j = 0; j < template.lods.Length; j++)
+                    for (int j = 0; j < template.LODs.Length; j++)
                     {
-                        sceneObjectLODs.Add(template.lods[j]);
+                        sceneObjectLODs.Add(template.LODs[j]);
                     }
                 }
                 this.sceneObjectLODs = sceneObjectLODs.OrderBy(x => x.AddressRange.StartAddress).ToArray();
@@ -397,7 +397,7 @@ namespace GameCube.GFZ.Stage
                 // NOTE: since SceneObjectTemplates instances can use the same name/model, there is occasionally a few duplicate names.
                 foreach (var templateSceneObject in this.sceneObjects)
                 {
-                    foreach (var so in templateSceneObject.lods)
+                    foreach (var so in templateSceneObject.LODs)
                     {
                         GetSerializable(reader, so.lodNamePtr, ref so.name, sceneObjectNamesDict);
                     }
@@ -673,7 +673,7 @@ namespace GameCube.GFZ.Stage
             var colliderGeoQuads = new List<ColliderQuad>();
             foreach (var sceneObject in sceneObjects)
             {
-                var colliderGeo = sceneObject.colliderMesh;
+                var colliderGeo = sceneObject.ColliderMesh;
                 if (colliderGeo != null)
                 {
                     colliderGeometries.Add(colliderGeo);
@@ -1072,8 +1072,8 @@ namespace GameCube.GFZ.Stage
             foreach (var template in sceneObjects)
             {
                 list.Add(template);
-                list.Add(template.colliderMesh);
-                list.AddRange(template.lods);
+                list.Add(template.ColliderMesh);
+                list.AddRange(template.LODs);
                 list.Add(template.PrimaryLOD.name);
             }
 

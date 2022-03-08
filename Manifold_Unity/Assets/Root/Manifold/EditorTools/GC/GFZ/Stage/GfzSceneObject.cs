@@ -22,11 +22,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         {
             reference = new SceneObject();
 
-            reference.lodRenderFlags = lodRenderFlags;
-            reference.lods = sceneObjectLODs.ExportGfz();
+            reference.LodRenderFlags = lodRenderFlags;
+            reference.LODs = sceneObjectLODs.ExportGfz();
 
             if (colliderMesh != null)
-                reference.colliderMesh = colliderMesh.ExportGfz();
+                reference.ColliderMesh = colliderMesh.ExportGfz();
         }
 
         public SceneObject ExportGfz()
@@ -37,15 +37,15 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         public void ImportGfz(SceneObject sceneObject)
         {
-            lodRenderFlags = sceneObject.lodRenderFlags;
+            lodRenderFlags = sceneObject.LodRenderFlags;
 
             sceneObjectLODs = this.gameObject.AddComponent<GfzSceneObjectLODs>();
-            sceneObjectLODs.ImportGfz(sceneObject.lods);
+            sceneObjectLODs.ImportGfz(sceneObject.LODs);
 
-            if (sceneObject.colliderMesh != null)
+            if (sceneObject.ColliderMesh != null)
             {
                 colliderMesh = this.gameObject.AddComponent<GfzColliderMesh>();
-                colliderMesh.ImportGfz(sceneObject.colliderMesh);
+                colliderMesh.ImportGfz(sceneObject.ColliderMesh);
             }
         }
 

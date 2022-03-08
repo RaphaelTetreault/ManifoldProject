@@ -200,7 +200,7 @@ namespace GameCube.GFZ.Stage
                     log.WriteLine($"[{i}/{total}] {sceneObject.Name}");
                     log.WriteAddress(sceneObject);
                     log.WriteAddress(sceneObject.sceneObject);
-                    log.WriteAddress(sceneObject.sceneObject.lods);
+                    log.WriteAddress(sceneObject.sceneObject.LODs);
                     log.WriteAddress(sceneObject.sceneObject.PrimaryLOD.name);
                     log.WriteAddress(sceneObject.transformMatrix3x4);
 

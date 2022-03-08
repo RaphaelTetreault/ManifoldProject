@@ -621,13 +621,13 @@ namespace GameCube.GFZ.Stage
                     int gameObjectIndex = 0;
                     foreach (var dynamicSceneObject in scene.dynamicSceneObjects)
                     {
-                        if (dynamicSceneObject.sceneObject.colliderMesh == null)
+                        if (dynamicSceneObject.sceneObject.ColliderMesh == null)
                             continue;
-                        if (dynamicSceneObject.sceneObject.colliderMesh.Tris.Length == 0)
+                        if (dynamicSceneObject.sceneObject.ColliderMesh.Tris.Length == 0)
                             continue;
 
                         int triIndex = 0;
-                        foreach (var tri in dynamicSceneObject.sceneObject.colliderMesh.Tris)
+                        foreach (var tri in dynamicSceneObject.sceneObject.ColliderMesh.Tris)
                         {
                             writer.WriteNextCol(scene.FileName);
                             writer.WriteNextCol(gameObjectIndex);
@@ -716,13 +716,13 @@ namespace GameCube.GFZ.Stage
                     int gameObjectIndex = 0;
                     foreach (var dynamicSceneObject in scene.dynamicSceneObjects)
                     {
-                        if (dynamicSceneObject.sceneObject.colliderMesh == null)
+                        if (dynamicSceneObject.sceneObject.ColliderMesh == null)
                             continue;
-                        if (dynamicSceneObject.sceneObject.colliderMesh.Quads.Length == 0)
+                        if (dynamicSceneObject.sceneObject.ColliderMesh.Quads.Length == 0)
                             continue;
 
                         int quadIndex = 0;
-                        foreach (var quad in dynamicSceneObject.sceneObject.colliderMesh.Quads)
+                        foreach (var quad in dynamicSceneObject.sceneObject.ColliderMesh.Quads)
                         {
                             writer.WriteNextCol(scene.FileName);
                             writer.WriteNextCol(gameObjectIndex);
@@ -1511,7 +1511,7 @@ namespace GameCube.GFZ.Stage
                     var objectsList = new List<SceneObjectLOD>();
                     foreach (var templateSceneObject in scene.sceneObjects)
                     {
-                        var sceneObjects = templateSceneObject.lods;
+                        var sceneObjects = templateSceneObject.LODs;
                         foreach (var sceneObject in sceneObjects)
                             objectsList.Add(sceneObject);
                     }
@@ -1557,9 +1557,9 @@ namespace GameCube.GFZ.Stage
                 //
                 writer.WriteNextCol("name");
                 writer.WriteNextCol("Object Type");
-                writer.WriteNextCol(nameof(SceneObject.lodRenderFlags));
-                writer.WriteNextCol(nameof(SceneObject.lodsPtr));
-                writer.WriteNextCol(nameof(SceneObject.colliderGeometryPtr));
+                writer.WriteNextCol(nameof(SceneObject.LodRenderFlags));
+                writer.WriteNextCol(nameof(SceneObject.LodsPtr));
+                writer.WriteNextCol(nameof(SceneObject.ColliderGeometryPtr));
                 //
                 writer.WriteNextRow();
 
@@ -1592,9 +1592,9 @@ namespace GameCube.GFZ.Stage
                         //
                         writer.WriteNextCol(sceneObject.sir.PrimaryLOD.name);
                         writer.WriteNextCol(sceneObject.category);
-                        writer.WriteNextCol(sceneObject.sir.lodRenderFlags);
-                        writer.WriteNextCol(sceneObject.sir.lodsPtr);
-                        writer.WriteNextCol(sceneObject.sir.colliderGeometryPtr);
+                        writer.WriteNextCol(sceneObject.sir.LodRenderFlags);
+                        writer.WriteNextCol(sceneObject.sir.LodsPtr);
+                        writer.WriteNextCol(sceneObject.sir.ColliderGeometryPtr);
                         //
                         writer.WriteNextRow();
                     }
@@ -1615,10 +1615,10 @@ namespace GameCube.GFZ.Stage
                 writer.WriteNextCol("AX/GX");
                 //
                 writer.WriteNextCol("name");
-                writer.WriteNextCol(nameof(SceneObject.lodRenderFlags));
-                writer.WriteNextCol(nameof(SceneObject.lodsPtr) + " Len");
-                writer.WriteNextCol(nameof(SceneObject.lodsPtr) + " Adr");
-                writer.WriteNextCol(nameof(SceneObject.colliderGeometryPtr));
+                writer.WriteNextCol(nameof(SceneObject.LodRenderFlags));
+                writer.WriteNextCol(nameof(SceneObject.LodsPtr) + " Len");
+                writer.WriteNextCol(nameof(SceneObject.LodsPtr) + " Adr");
+                writer.WriteNextCol(nameof(SceneObject.ColliderGeometryPtr));
                 writer.WriteNextCol(nameof(SceneObjectLOD) + " IDX");
                 writer.WriteNextCol(nameof(SceneObjectLOD.zero_0x00));
                 writer.WriteNextCol(nameof(SceneObjectLOD.lodNamePtr));
@@ -1637,8 +1637,8 @@ namespace GameCube.GFZ.Stage
                     foreach (var template in scene.sceneObjects)
                     {
                         var index = 0;
-                        var length = template.lods.Length;
-                        foreach (var sceneObject in template.lods)
+                        var length = template.LODs.Length;
+                        foreach (var sceneObject in template.LODs)
                         {
                             writer.WriteNextCol(scene.FileName);
                             writer.WriteNextCol(scene.ID);
@@ -1647,10 +1647,10 @@ namespace GameCube.GFZ.Stage
                             writer.WriteNextCol(isAxGx);
                             //
                             writer.WriteNextCol(template.Name);
-                            writer.WriteNextCol(template.lodRenderFlags);
-                            writer.WriteNextCol(template.lodsPtr.Length);
-                            writer.WriteNextCol(template.lodsPtr.PrintAddress);
-                            writer.WriteNextCol(template.colliderGeometryPtr);
+                            writer.WriteNextCol(template.LodRenderFlags);
+                            writer.WriteNextCol(template.LodsPtr.Length);
+                            writer.WriteNextCol(template.LodsPtr.PrintAddress);
+                            writer.WriteNextCol(template.ColliderGeometryPtr);
                             writer.WriteNextCol($"[{++index}/{length}]");
                             writer.WriteNextCol(sceneObject.zero_0x00);
                             writer.WriteNextCol(sceneObject.lodNamePtr);
