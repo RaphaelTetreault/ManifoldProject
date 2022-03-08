@@ -145,10 +145,10 @@ namespace GameCube.GFZ.GMA
         {
             // Reset the render flags based on instance data
             material.DisplayListRenderFlags =
-                (primaryDisplayListsOpaque is null ? 0 : DisplayListRenderFlags.renderPrimaryOpaque) |
-                (primaryDisplayListsTranslucid is null ? 0 : DisplayListRenderFlags.renderPrimaryTranslucid) |
-                (secondaryDisplayListsOpaque is null ? 0 : DisplayListRenderFlags.renderSecondaryOpaque) |
-                (secondaryDisplayListsTranslucid is null ? 0 : DisplayListRenderFlags.renderSecondaryTranslucid);
+                (primaryDisplayListsOpaque.IsNullOrEmpty() ? 0 : DisplayListRenderFlags.renderPrimaryOpaque) |
+                (primaryDisplayListsTranslucid.IsNullOrEmpty() ? 0 : DisplayListRenderFlags.renderPrimaryTranslucid) |
+                (secondaryDisplayListsOpaque.IsNullOrEmpty() ? 0 : DisplayListRenderFlags.renderSecondaryOpaque) |
+                (secondaryDisplayListsTranslucid.IsNullOrEmpty() ? 0 : DisplayListRenderFlags.renderSecondaryTranslucid);
 
             // Temp variables to store ranges that display lists are serialized at, used to get size on disk
             var pdlOpaque = new AddressRange();
