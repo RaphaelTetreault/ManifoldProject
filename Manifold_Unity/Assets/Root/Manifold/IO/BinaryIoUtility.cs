@@ -46,14 +46,13 @@ namespace Manifold.IO
         private static Action<BinaryWriter, long> fWriteInt64 = RequiresSwapEndianness ? WriteInt64SwapEndianness : WriteInt64SameEndianness;
         private static Action<BinaryWriter, float> fWriteFloat = RequiresSwapEndianness ? WriteFloatSwapEndianness : WriteFloatSameEndianness;
         private static Action<BinaryWriter, double> fWriteDouble = RequiresSwapEndianness ? WriteDoubleSwapEndianness : WriteDoubleSameEndianness;
-        private static Action<BinaryWriter, char, Encoding> fWriteChar = RequiresSwapEndianness ? WriteCharSwapEndianness : WriteCharSameEndianness;
-        //private static Action<BinaryWriter, string, Encoding> fWriteString = RequiresSwapEndianness ? WriteStringSwapEndianness : WriteStringSameEndianness;
 
         private static void SetFunctionEndianness()
         {
             bool swapByteOrder = BitConverter.IsLittleEndian ^ IsLittleEndian;
             if (swapByteOrder)
             {
+                // READ
                 fReadInt16 = ReadInt16SwapEndianness;
                 fReadInt32 = ReadInt32SwapEndianness;
                 fReadInt64 = ReadInt64SwapEndianness;
@@ -62,9 +61,20 @@ namespace Manifold.IO
                 fReadUInt64 = ReadUInt64SwapEndianness;
                 fReadFloat = ReadFloatSwapEndianness;
                 fReadDouble = ReadDoubleSwapEndianness;
+
+                // WRITE
+                fWriteInt16 = WriteInt16SwapEndianness;
+                fWriteInt32 = WriteInt32SwapEndianness;
+                fWriteInt64 = WriteInt64SwapEndianness;
+                fWriteUInt16 = WriteUInt16SwapEndianness;
+                fWriteUInt32 = WriteUInt32SwapEndianness;
+                fWriteUInt64 = WriteUInt64SwapEndianness;
+                fWriteFloat = WriteFloatSwapEndianness;
+                fWriteDouble = WriteDoubleSwapEndianness;
             }
             else
             {
+                // READ
                 fReadInt16 = ReadInt16SameEndianness;
                 fReadInt32 = ReadInt32SameEndianness;
                 fReadInt64 = ReadInt64SameEndianness;
@@ -73,6 +83,16 @@ namespace Manifold.IO
                 fReadUInt64 = ReadUInt64SameEndianness;
                 fReadFloat = ReadFloatSameEndianness;
                 fReadDouble = ReadDoubleSameEndianness;
+
+                // WRITE
+                fWriteInt16 = WriteInt16SameEndianness;
+                fWriteInt32 = WriteInt32SameEndianness;
+                fWriteInt64 = WriteInt64SameEndianness;
+                fWriteUInt16 = WriteUInt16SameEndianness;
+                fWriteUInt32 = WriteUInt32SameEndianness;
+                fWriteUInt64 = WriteUInt64SameEndianness;
+                fWriteFloat = WriteFloatSameEndianness;
+                fWriteDouble = WriteDoubleSameEndianness;
             }
         }
 
@@ -708,17 +728,7 @@ namespace Manifold.IO
 
         private static void Write(BinaryWriter writer, char value, Encoding encoding)
         {
-            fWriteChar.Invoke(writer, value, encoding);
-        }
-        private static void WriteCharSameEndianness(BinaryWriter writer, char value, Encoding encoding)
-        {
             byte[] bytes = encoding.GetBytes(new char[] { value }, 0, 1);
-            writer.Write(bytes);
-        }
-        private static void WriteCharSwapEndianness(BinaryWriter writer, char value, Encoding encoding)
-        {
-            byte[] bytes = encoding.GetBytes(new char[]{ value });
-            Array.Reverse(bytes);
             writer.Write(bytes);
         }
 
