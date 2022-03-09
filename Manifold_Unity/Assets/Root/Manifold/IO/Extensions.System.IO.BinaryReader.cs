@@ -172,8 +172,8 @@ namespace Manifold.IO
             => BinaryIoUtility.Read(reader, ref value);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static string ReadX(this BinaryReader reader, ref string value, int lengthBytes, Encoding encoding) 
-           => BinaryIoUtility.Read(reader, ref value, lengthBytes, encoding);
+        public static string ReadX(this BinaryReader reader, ref string value, Encoding encoding) 
+           => BinaryIoUtility.Read(reader, ref value, encoding);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T ReadX<T>(this BinaryReader reader, ref T value) where T : IBinarySerializable, new()

@@ -23,12 +23,8 @@ namespace Manifold.IO
         public const int SizeofDecimal = 16;
 
         // FIELDS
-        //private static readonly Stack<Encoding> EncodingStack = new Stack<Encoding>();
         private static readonly Stack<Endianness> EndianessStack = new Stack<Endianness>();
 
-        //private static Func<BinaryReader, bool> fReadBool = ReadBool; //
-        //private static Func<BinaryReader, byte> fReadUint8 = ReadUInt8; //
-        //private static Func<BinaryReader, sbyte> fReadInt8 = ReadInt8; // 
         private static Func<BinaryReader, ushort> fReadUInt16 = RequiresSwapEndianness ? ReadUInt16SwapEndianness : ReadUInt16SameEndianness;
         private static Func<BinaryReader, uint> fReadUInt32 = RequiresSwapEndianness ? ReadUInt32SwapEndianness : ReadUInt32SameEndianness;
         private static Func<BinaryReader, ulong> fReadUInt64 = RequiresSwapEndianness ? ReadUInt64SwapEndianness : ReadUInt64SameEndianness;
@@ -416,9 +412,11 @@ namespace Manifold.IO
             return value = ReadDouble(binaryReader);
         }
 
-        public static string Read(BinaryReader binaryReader, ref string value, int lengthBytes, Encoding encoding)
+        public static string Read(BinaryReader binaryReader, ref string value, Encoding encoding)
         {
-            return value = ReadString(binaryReader, lengthBytes, encoding);
+            var lengthBytes = binaryReader.ReadInt32();
+            value = ReadString(binaryReader, lengthBytes, encoding);
+            return value;
         }
 
         public static TBinarySerializable ReadBinarySerializable<TBinarySerializable>(BinaryReader binaryReader, ref TBinarySerializable value) where TBinarySerializable : IBinarySerializable, new()
@@ -726,18 +724,11 @@ namespace Manifold.IO
             writer.Write(bytes);
         }
 
-        private static void Write(BinaryWriter writer, char value, Encoding encoding)
-        {
-            byte[] bytes = encoding.GetBytes(new char[] { value }, 0, 1);
-            writer.Write(bytes);
-        }
-
         public static void Write(BinaryWriter writer, string value, Encoding encoding)
         {
-            foreach (char character in value)
-            {
-                Write(writer, character, encoding);
-            }
+            byte[] bytes = encoding.GetBytes(value);
+            writer.Write(bytes.Length);
+            writer.Write(bytes);
         }
 
         public static void Write<TBinarySerializable>(BinaryWriter writer, TBinarySerializable value) where TBinarySerializable : IBinarySerializable
