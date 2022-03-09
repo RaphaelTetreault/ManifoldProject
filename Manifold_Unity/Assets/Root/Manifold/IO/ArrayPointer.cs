@@ -20,16 +20,9 @@ namespace Manifold.IO
         }
 
         // PROPERTIES
-        public int Length
-        {
-            get => length;
-            set => length = value;
-        }
-        public int Address
-        {
-            get => address;
-            set => address = value;
-        }
+        public int Length { get => length; set => length = value; }
+        public int Address { get => address; set => address = value; }
+
 
         public Pointer Pointer
         {
