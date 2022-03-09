@@ -424,9 +424,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
                 //
                 log.WriteLine($"{nameof(TrackSegment)}");
-                for (int i = 0; i < coliScene.allTrackSegments.Length; i++)
+                for (int i = 0; i < coliScene.AllTrackSegments.Length; i++)
                 {
-                    var trackSegment = coliScene.allTrackSegments[i];
+                    var trackSegment = coliScene.AllTrackSegments[i];
                     log.Write(PrintIndex(i, coliScene.trackNodes));
                     log.WriteLine(PrintData(functionIdx, trackSegment));
                 }
@@ -436,10 +436,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 log.WriteLine($"{nameof(TrackSegment)}.{nameof(TrackSegment.AnimationCurveTRS)}");
                 string[] labelSRP = new string[] { "Sca", "Rot", "Pos" }; // scale, rotation, position
                 string[] labelXYZ = new string[] { "x", "y", "z" };
-                for (int segmentIndex = 0; segmentIndex < coliScene.allTrackSegments.Length; segmentIndex++)
+                for (int segmentIndex = 0; segmentIndex < coliScene.AllTrackSegments.Length; segmentIndex++)
                 {
-                    var trackSegment = coliScene.allTrackSegments[segmentIndex];
-                    var segmentIndexFormat = segmentIndex.ArrayFormat(coliScene.allTrackSegments);
+                    var trackSegment = coliScene.AllTrackSegments[segmentIndex];
+                    var segmentIndexFormat = segmentIndex.ArrayFormat(coliScene.AllTrackSegments);
                     log.WriteLine($"[{segmentIndex}]\t");
 
                     for (int animIndex = 0; animIndex < trackSegment.AnimationCurveTRS.AnimationCurves.Length; animIndex++)
@@ -458,9 +458,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
                 //
                 log.WriteLine($"{nameof(TrackSegment)}.{nameof(TrackCorner)}");
-                for (int i = 0; i < coliScene.allTrackSegments.Length; i++)
+                for (int i = 0; i < coliScene.AllTrackSegments.Length; i++)
                 {
-                    var cornerTopology = coliScene.allTrackSegments[i].TrackCorner;
+                    var cornerTopology = coliScene.AllTrackSegments[i].TrackCorner;
                     var iFormat = i.ArrayFormat(coliScene.trackNodes);
                     log.Write($"[{iFormat}]\t");
                     if (cornerTopology != null)
@@ -561,19 +561,19 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 log.WriteLine();
 
                 log.WriteLine($"{nameof(SceneObject)}");
-                for (int i = 0; i < coliScene.sceneObjectLODs.Length; i++)
+                for (int i = 0; i < coliScene.SceneObjectLODs.Length; i++)
                 {
-                    var sceneObjectReference = coliScene.sceneObjectLODs[i];
-                    log.Write(PrintIndex(i, coliScene.sceneObjectLODs));
+                    var sceneObjectReference = coliScene.SceneObjectLODs[i];
+                    log.Write(PrintIndex(i, coliScene.SceneObjectLODs));
                     log.WriteLine(PrintData(functionIdx, sceneObjectReference));
                 }
                 log.WriteLine();
 
                 log.WriteLine($"{nameof(ShiftJisCString)}");
-                for (int i = 0; i < coliScene.sceneObjectNames.Length; i++)
+                for (int i = 0; i < coliScene.SceneObjectNames.Length; i++)
                 {
-                    var objectName = coliScene.sceneObjectNames[i];
-                    log.Write(PrintIndex(i, coliScene.sceneObjectNames));
+                    var objectName = coliScene.SceneObjectNames[i];
+                    log.Write(PrintIndex(i, coliScene.SceneObjectNames));
                     log.WriteLine(PrintData(functionIdx, objectName));
                 }
                 log.WriteLine();
@@ -594,10 +594,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             log.WriteLine($"Venue: {coliScene.Venue}");
             log.WriteLine($"Course: {coliScene.VenueName} [{coliScene.CourseName}]");
             log.WriteLine($"Author: {coliScene.Author}");
-            log.WriteLine($"{nameof(CircuitType)}: {coliScene.circuitType}");
-            log.WriteLine($"{nameof(Bool32)}: {coliScene.staticColliderMeshManagerActive}");
-            log.WriteLine($"{nameof(Bool32)}: {coliScene.unkBool32_0x58}");
-            log.WriteLine($"{nameof(coliScene.unkRange0x00)}: {coliScene.unkRange0x00}");
+            log.WriteLine($"{nameof(CircuitType)}: {coliScene.CircuitType}");
+            log.WriteLine($"{nameof(Bool32)}: {coliScene.StaticColliderMeshManagerActive}");
+            log.WriteLine($"{nameof(Bool32)}: {coliScene.UnkBool32_0x58}");
+            log.WriteLine($"{nameof(coliScene.UnkRange0x00)}: {coliScene.UnkRange0x00}");
             log.WriteLine(); //
             log.WriteLine(); // yes, 2 WriteLines
 
@@ -617,15 +617,15 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             log.WriteHeading("TRACK DATA", padding, h1Width);
             log.WriteAddress(coliScene.trackLength);
             log.WriteAddress(coliScene.trackMinHeight);
-            log.WriteAddress(coliScene.checkpointGridXZ);
+            log.WriteAddress(coliScene.CheckpointGridXZ);
             log.WriteLine();
             // Writes track objects array
             log.WriteAddress(coliScene.embeddedPropertyAreas);
             // Writes track segments (root then all)
             log.WriteLine("ROOT SEGMENTS");
-            log.WriteAddress(coliScene.rootTrackSegments);
+            log.WriteAddress(coliScene.RootTrackSegments);
             log.WriteLine("ALL SEGMENTS");
-            log.WriteAddress(coliScene.allTrackSegments);
+            log.WriteAddress(coliScene.AllTrackSegments);
             log.WriteLine();
             TestHash(log, coliScene);
             log.WriteLine();
@@ -635,9 +635,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             log.WriteLine($"{nameof(TrackSegment)}.{nameof(TrackSegment.AnimationCurveTRS)}");
             string[] labelSRP = new string[] { "Sca", "Rot", "Pos" };
             string[] labelXYZ = new string[] { "x", "y", "z" };
-            for (int segmentIndex = 0; segmentIndex < coliScene.allTrackSegments.Length; segmentIndex++)
+            for (int segmentIndex = 0; segmentIndex < coliScene.AllTrackSegments.Length; segmentIndex++)
             {
-                var trackSegment = coliScene.allTrackSegments[segmentIndex];
+                var trackSegment = coliScene.AllTrackSegments[segmentIndex];
                 log.WriteLine($"{nameof(TrackSegment)}[{segmentIndex}]\t{trackSegment}");
 
                 for (int animIndex = 0; animIndex < trackSegment.AnimationCurveTRS.AnimationCurves.Length; animIndex++)
@@ -653,9 +653,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             }
 
             //
-            for (int i = 0; i < coliScene.allTrackSegments.Length; i++)
+            for (int i = 0; i < coliScene.AllTrackSegments.Length; i++)
             {
-                var segment = coliScene.allTrackSegments[i];
+                var segment = coliScene.AllTrackSegments[i];
                 log.WriteLine($"{nameof(TrackSegment)} Transform Coords [{i}]");
                 log.WriteLine($"\tPosition: {segment.LocalPosition}");
                 log.WriteLine($"\tRotation: {segment.LocalRotation}");
@@ -723,8 +723,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
             log.WriteHeading("SCENE OBJECTS", padding, h1Width);
             log.WriteLine("Object Names");
-            log.WriteAddress(coliScene.sceneObjectNames);
-            log.WriteAddress(coliScene.sceneObjectLODs);
+            log.WriteAddress(coliScene.SceneObjectNames);
+            log.WriteAddress(coliScene.SceneObjectLODs);
             log.WriteAddress(coliScene.sceneObjects);
             log.WriteAddress(coliScene.staticSceneObjects);
             log.WriteAddress(coliScene.dynamicSceneObjects);
@@ -943,7 +943,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         public static void TestHash(TextLogger log, Scene coliScene)
         {
             var md5 = MD5.Create();
-            foreach (var trackSegment in coliScene.allTrackSegments)
+            foreach (var trackSegment in coliScene.AllTrackSegments)
             {
                 log.WriteLine(HashUtility.HashBinary(md5, trackSegment));
             }
@@ -1027,7 +1027,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                     coliScene.Venue = sceneParams.venue;
                     coliScene.Author = sceneParams.author;
                     // Construct range from 2 parameters
-                    coliScene.unkRange0x00 = new ViewRange(sceneParams.rangeNear, sceneParams.rangeFar);
+                    coliScene.UnkRange0x00 = new ViewRange(sceneParams.rangeNear, sceneParams.rangeFar);
                     // Use functions to get form parameters
                     coliScene.fog = sceneParams.ToGfzFog();
                     coliScene.fogCurves = sceneParams.ToGfzFogCurves();
@@ -1103,8 +1103,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                     log.WriteLineSummary(coliScene.dynamicSceneObjects);
                     log.WriteLineSummary(coliScene.staticSceneObjects);
                     log.WriteLineSummary(coliScene.sceneObjects);
-                    log.WriteLineSummary(coliScene.sceneObjectLODs);
-                    log.WriteLineSummary(coliScene.sceneObjectNames);
+                    log.WriteLineSummary(coliScene.SceneObjectLODs);
+                    log.WriteLineSummary(coliScene.SceneObjectNames);
                     log.WriteLine();
                 }
 

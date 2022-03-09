@@ -485,8 +485,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
             // Loop over every top transform
             int count = 0;
-            int total = scene.rootTrackSegments.Length;
-            foreach (var trackTransform in scene.rootTrackSegments)
+            int total = scene.RootTrackSegments.Length;
+            foreach (var trackTransform in scene.RootTrackSegments)
             {
                 // Recursively create transforms
                 count++;
@@ -509,8 +509,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             // Loop over every top transform
             //int count = 0;
             int index = 0;
-            int total = scene.rootTrackSegments.Length;
-            foreach (var trackTransform in scene.rootTrackSegments)
+            int total = scene.RootTrackSegments.Length;
+            foreach (var trackTransform in scene.RootTrackSegments)
             {
                 //
                 var name = $"[{++index}/{total}] Control Point";
@@ -721,7 +721,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         public static Transform CreateGridXZVisual(Scene scene)
         {
             // Get all bounds
-            var boundsTrack = scene.checkpointGridXZ;
+            var boundsTrack = scene.CheckpointGridXZ;
             var boundsColliders = scene.staticColliderMeshManager.MeshGridXZ;
             //
             float yHeight = scene.trackMinHeight;
@@ -995,8 +995,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             sceneParams.courseIndex = scene.ID;
             sceneParams.author = "Amusement Vision";
             // Other data
-            sceneParams.staticColliderMeshesActive = scene.staticColliderMeshManagerActive;
-            sceneParams.circuitType = scene.circuitType;
+            sceneParams.staticColliderMeshesActive = scene.StaticColliderMeshManagerActive;
+            sceneParams.circuitType = scene.CircuitType;
 
             // Copy fog parameters over
             var fog = scene.fog;

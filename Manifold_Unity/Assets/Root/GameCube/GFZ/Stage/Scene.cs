@@ -6,7 +6,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using Unity.Mathematics;
 
 namespace GameCube.GFZ.Stage
 {
@@ -35,40 +34,40 @@ namespace GameCube.GFZ.Stage
 
         // FIELDS
         // Note: order of folowing structures is same as they appear in binary
-        public ViewRange unkRange0x00;
-        public ArrayPointer trackNodesPtr;
-        public ArrayPointer embeddedTrackPropertyAreasPtr;
+        private ViewRange unkRange0x00;
+        private ArrayPointer trackNodesPtr;
+        private ArrayPointer embeddedTrackPropertyAreasPtr;
         // 2022-01-14: this is a bool, the game loads the following structure regardless
         // (because it'd crash anways because of it when unloading)
-        public Bool32 staticColliderMeshManagerActive = Bool32.True;
-        public Pointer staticColliderMeshManagerPtr;
-        public Pointer zeroes0x20Ptr; // GX: 0xE8, AX: 0xE4
-        public Pointer trackMinHeightPtr; // GX: 0xFC, AX: 0xF8
-        public byte[] zeroes0x28 = new byte[kSizeOfZeroes0x28];
-        public int dynamicSceneObjectCount;
-        public int unk_sceneObjectCount1;
-        public int unk_sceneObjectCount2; // GX exclusive
-        public Pointer dynamicSceneObjectsPtr;
-        public Bool32 unkBool32_0x58 = Bool32.True;
-        public ArrayPointer unknownCollidersPtr;
-        public ArrayPointer sceneObjectsPtr;
-        public ArrayPointer staticSceneObjectsPtr;
-        public int zero0x74; // Ptr? Array Ptr length?
-        public int zero0x78; // Ptr? Array Ptr address?
-        public CircuitType circuitType = CircuitType.ClosedCircuit;
-        public Pointer fogCurvesPtr;
-        public Pointer fogPtr;
-        public int zero0x88; // Ptr? Array Ptr length?
-        public int zero0x8C; // Ptr? Array Ptr address?
-        public Pointer trackLengthPtr;
-        public ArrayPointer unknownTriggersPtr;
-        public ArrayPointer visualEffectTriggersPtr;
-        public ArrayPointer miscellaneousTriggersPtr;
-        public ArrayPointer timeExtensionTriggersPtr;
-        public ArrayPointer storyObjectTriggersPtr;
-        public Pointer checkpointGridPtr;
-        public GridXZ checkpointGridXZ;
-        public byte[] zeroes0xD8 = new byte[kSizeOfZeroes0xD8];
+        private Bool32 staticColliderMeshManagerActive = Bool32.True;
+        private Pointer staticColliderMeshManagerPtr;
+        private Pointer zeroes0x20Ptr; // GX: 0xE8, AX: 0xE4
+        private Pointer trackMinHeightPtr; // GX: 0xFC, AX: 0xF8
+        private byte[] zeroes0x28 = new byte[kSizeOfZeroes0x28];
+        private int dynamicSceneObjectCount;
+        private int unk_sceneObjectCount1;
+        private int unk_sceneObjectCount2; // GX exclusive
+        private Pointer dynamicSceneObjectsPtr;
+        private Bool32 unkBool32_0x58 = Bool32.True;
+        private ArrayPointer unknownCollidersPtr;
+        private ArrayPointer sceneObjectsPtr;
+        private ArrayPointer staticSceneObjectsPtr;
+        private int zero0x74; // Ptr? Array Ptr length?
+        private int zero0x78; // Ptr? Array Ptr address?
+        private CircuitType circuitType = CircuitType.ClosedCircuit;
+        private Pointer fogCurvesPtr;
+        private Pointer fogPtr;
+        private int zero0x88; // Ptr? Array Ptr length?
+        private int zero0x8C; // Ptr? Array Ptr address?
+        private Pointer trackLengthPtr;
+        private ArrayPointer unknownTriggersPtr;
+        private ArrayPointer visualEffectTriggersPtr;
+        private ArrayPointer miscellaneousTriggersPtr;
+        private ArrayPointer timeExtensionTriggersPtr;
+        private ArrayPointer storyObjectTriggersPtr;
+        private Pointer checkpointGridPtr;
+        private GridXZ checkpointGridXZ;
+        private byte[] zeroes0xD8 = new byte[kSizeOfZeroes0xD8];
 
         // REFERENCE FIELDS
         public TrackNode[] trackNodes;
@@ -91,10 +90,9 @@ namespace GameCube.GFZ.Stage
         public TrackCheckpointGrid trackCheckpointGrid;
         // FIELDS (that require extra processing)
         // Shared references
-        public TrackSegment[] allTrackSegments;
-        public TrackSegment[] rootTrackSegments;
-        public ShiftJisCString[] sceneObjectNames;
-        public SceneObjectLOD[] sceneObjectLODs; // debug
+        private TrackSegment[] allTrackSegments;
+        private TrackSegment[] rootTrackSegments;
+        private ShiftJisCString[] sceneObjectNames;
 
 
         // PROPERTIES
@@ -116,6 +114,36 @@ namespace GameCube.GFZ.Stage
         /// </summary>
         public string VenueName => EnumExtensions.GetDescription(Venue);
 
+        public ViewRange UnkRange0x00 { get => unkRange0x00; set => unkRange0x00 = value; }
+        public ArrayPointer TrackNodesPtr { get => trackNodesPtr; set => trackNodesPtr = value; }
+        public ArrayPointer EmbeddedTrackPropertyAreasPtr { get => embeddedTrackPropertyAreasPtr; set => embeddedTrackPropertyAreasPtr = value; }
+        public Bool32 StaticColliderMeshManagerActive { get => staticColliderMeshManagerActive; set => staticColliderMeshManagerActive = value; }
+        public Pointer StaticColliderMeshManagerPtr { get => staticColliderMeshManagerPtr; set => staticColliderMeshManagerPtr = value; }
+        public Pointer TrackMinHeightPtr { get => trackMinHeightPtr; set => trackMinHeightPtr = value; }
+        public int DynamicSceneObjectCount { get => dynamicSceneObjectCount; set => dynamicSceneObjectCount = value; }
+        public int Unk_sceneObjectCount1 { get => unk_sceneObjectCount1; set => unk_sceneObjectCount1 = value; }
+        public int Unk_sceneObjectCount2 { get => unk_sceneObjectCount2; set => unk_sceneObjectCount2 = value; }
+        public Pointer DynamicSceneObjectsPtr { get => dynamicSceneObjectsPtr; set => dynamicSceneObjectsPtr = value; }
+        public Bool32 UnkBool32_0x58 { get => unkBool32_0x58; set => unkBool32_0x58 = value; }
+        public ArrayPointer UnknownCollidersPtr { get => unknownCollidersPtr; set => unknownCollidersPtr = value; }
+        public ArrayPointer SceneObjectsPtr { get => sceneObjectsPtr; set => sceneObjectsPtr = value; }
+        public ArrayPointer StaticSceneObjectsPtr { get => staticSceneObjectsPtr; set => staticSceneObjectsPtr = value; }
+        public CircuitType CircuitType { get => circuitType; set => circuitType = value; }
+        public Pointer FogCurvesPtr { get => fogCurvesPtr; set => fogCurvesPtr = value; }
+        public Pointer FogPtr { get => fogPtr; set => fogPtr = value; }
+        public Pointer TrackLengthPtr { get => trackLengthPtr; set => trackLengthPtr = value; }
+        public ArrayPointer UnknownTriggersPtr { get => unknownTriggersPtr; set => unknownTriggersPtr = value; }
+        public ArrayPointer VisualEffectTriggersPtr { get => visualEffectTriggersPtr; set => visualEffectTriggersPtr = value; }
+        public ArrayPointer MiscellaneousTriggersPtr { get => miscellaneousTriggersPtr; set => miscellaneousTriggersPtr = value; }
+        public ArrayPointer TimeExtensionTriggersPtr { get => timeExtensionTriggersPtr; set => timeExtensionTriggersPtr = value; }
+        public ArrayPointer StoryObjectTriggersPtr { get => storyObjectTriggersPtr; set => storyObjectTriggersPtr = value; }
+        public Pointer CheckpointGridPtr { get => checkpointGridPtr; set => checkpointGridPtr = value; }
+        public GridXZ CheckpointGridXZ { get => checkpointGridXZ; set => checkpointGridXZ = value; }
+        public TrackSegment[] AllTrackSegments { get => allTrackSegments; set => allTrackSegments = value; }
+        public TrackSegment[] RootTrackSegments { get => rootTrackSegments; set => rootTrackSegments = value; }
+        public ShiftJisCString[] SceneObjectNames { get => sceneObjectNames; set => sceneObjectNames = value; }
+        public SceneObjectLOD[] SceneObjectLODs { get; set; }
+
 
         public static bool IsAX(Pointer ptr0x20, Pointer ptr0x24)
         {
@@ -135,8 +163,8 @@ namespace GameCube.GFZ.Stage
 
         public void ValidateFileFormatPointers()
         {
-            IsFileAX = IsAX(zeroes0x20Ptr, trackMinHeightPtr);
-            IsFileGX = IsGX(zeroes0x20Ptr, trackMinHeightPtr);
+            IsFileAX = IsAX(zeroes0x20Ptr, TrackMinHeightPtr);
+            IsFileGX = IsGX(zeroes0x20Ptr, TrackMinHeightPtr);
             Assert.IsTrue(IsValidFile);
         }
 
@@ -159,15 +187,15 @@ namespace GameCube.GFZ.Stage
             // the following is order as they appear in the header.
 
             // 0x08 and 0x0C: Track Nodes
-            reader.JumpToAddress(trackNodesPtr);
-            reader.ReadX(ref trackNodes, trackNodesPtr.Length);
+            reader.JumpToAddress(TrackNodesPtr);
+            reader.ReadX(ref trackNodes, TrackNodesPtr.Length);
 
             // 0x10 and 0x14: Track Effect Attribute Areas
-            reader.JumpToAddress(embeddedTrackPropertyAreasPtr);
-            reader.ReadX(ref embeddedPropertyAreas, embeddedTrackPropertyAreasPtr.Length);
+            reader.JumpToAddress(EmbeddedTrackPropertyAreasPtr);
+            reader.ReadX(ref embeddedPropertyAreas, EmbeddedTrackPropertyAreasPtr.Length);
 
             // 0x1C 
-            reader.JumpToAddress(staticColliderMeshManagerPtr);
+            reader.JumpToAddress(StaticColliderMeshManagerPtr);
             // The structure's size differs between AX and GX. Format defines which it uses.
             staticColliderMeshManager = new StaticColliderMeshManager(Format);
             staticColliderMeshManager.Deserialize(reader);
@@ -177,71 +205,71 @@ namespace GameCube.GFZ.Stage
             reader.ReadX(ref zeroes0x20, kSizeOfZeroes0x20);
 
             // 0x24
-            reader.JumpToAddress(trackMinHeightPtr);
+            reader.JumpToAddress(TrackMinHeightPtr);
             reader.ReadX(ref trackMinHeight);
 
             // 0x48 (count total), 0x4C, 0x50, 0x54 (pointer address)
-            reader.JumpToAddress(dynamicSceneObjectsPtr);
-            reader.ReadX(ref dynamicSceneObjects, dynamicSceneObjectCount);
+            reader.JumpToAddress(DynamicSceneObjectsPtr);
+            reader.ReadX(ref dynamicSceneObjects, DynamicSceneObjectCount);
 
             // 0x5C and 0x60 SOLS values
-            reader.JumpToAddress(unknownCollidersPtr);
-            reader.ReadX(ref unknownColliders, unknownCollidersPtr.Length);
+            reader.JumpToAddress(UnknownCollidersPtr);
+            reader.ReadX(ref unknownColliders, UnknownCollidersPtr.Length);
 
             // 0x64 and 0x68
-            reader.JumpToAddress(sceneObjectsPtr);
-            reader.ReadX(ref sceneObjects, sceneObjectsPtr.Length);
+            reader.JumpToAddress(SceneObjectsPtr);
+            reader.ReadX(ref sceneObjects, SceneObjectsPtr.Length);
 
             // 0x6C and 0x70
-            reader.JumpToAddress(staticSceneObjectsPtr);
-            reader.ReadX(ref staticSceneObjects, staticSceneObjectsPtr.Length);
+            reader.JumpToAddress(StaticSceneObjectsPtr);
+            reader.ReadX(ref staticSceneObjects, StaticSceneObjectsPtr.Length);
 
             // 0x80
             // Data is optional
-            if (fogCurvesPtr.IsNotNull)
+            if (FogCurvesPtr.IsNotNull)
             {
-                reader.JumpToAddress(fogCurvesPtr);
+                reader.JumpToAddress(FogCurvesPtr);
                 reader.ReadX(ref fogCurves);
             }
 
             // 0x84
-            reader.JumpToAddress(fogPtr);
+            reader.JumpToAddress(FogPtr);
             reader.ReadX(ref fog);
 
             // 0x90 
-            reader.JumpToAddress(trackLengthPtr);
+            reader.JumpToAddress(TrackLengthPtr);
             reader.ReadX(ref trackLength);
 
             // 0x94 and 0x98
-            reader.JumpToAddress(unknownTriggersPtr);
-            reader.ReadX(ref cullOverrideTriggers, unknownTriggersPtr.Length);
+            reader.JumpToAddress(UnknownTriggersPtr);
+            reader.ReadX(ref cullOverrideTriggers, UnknownTriggersPtr.Length);
 
             // 0x9C and 0xA0
-            reader.JumpToAddress(visualEffectTriggersPtr);
-            reader.ReadX(ref visualEffectTriggers, visualEffectTriggersPtr.Length);
+            reader.JumpToAddress(VisualEffectTriggersPtr);
+            reader.ReadX(ref visualEffectTriggers, VisualEffectTriggersPtr.Length);
 
             // 0xA4 and 0xA8
-            reader.JumpToAddress(miscellaneousTriggersPtr);
-            reader.ReadX(ref miscellaneousTriggers, miscellaneousTriggersPtr.Length);
+            reader.JumpToAddress(MiscellaneousTriggersPtr);
+            reader.ReadX(ref miscellaneousTriggers, MiscellaneousTriggersPtr.Length);
 
             // 0xAC and 0xB0
-            reader.JumpToAddress(timeExtensionTriggersPtr);
-            reader.ReadX(ref timeExtensionTriggers, timeExtensionTriggersPtr.Length);
+            reader.JumpToAddress(TimeExtensionTriggersPtr);
+            reader.ReadX(ref timeExtensionTriggers, TimeExtensionTriggersPtr.Length);
 
             // 0xB4 and 0xB8
-            reader.JumpToAddress(storyObjectTriggersPtr);
-            reader.ReadX(ref storyObjectTriggers, storyObjectTriggersPtr.Length);
+            reader.JumpToAddress(StoryObjectTriggersPtr);
+            reader.ReadX(ref storyObjectTriggers, StoryObjectTriggersPtr.Length);
 
             // 0xBC and 0xC0
-            reader.JumpToAddress(checkpointGridPtr);
+            reader.JumpToAddress(CheckpointGridPtr);
             reader.ReadX(ref trackCheckpointGrid);
 
             // StaticColliderMeshManager shares references to these types. Rather than deserialize
             // twice, simple rebind the shared link here. Assertion proves this is always ther case.
             staticColliderMeshManager.UnknownColliders = unknownColliders;
             staticColliderMeshManager.StaticSceneObjects = staticSceneObjects;
-            Assert.IsTrue(staticColliderMeshManager.UnknownCollidersPtr == unknownCollidersPtr);
-            Assert.IsTrue(staticColliderMeshManager.StaticSceneObjectsPtr == staticSceneObjectsPtr);
+            Assert.IsTrue(staticColliderMeshManager.UnknownCollidersPtr == UnknownCollidersPtr);
+            Assert.IsTrue(staticColliderMeshManager.StaticSceneObjectsPtr == StaticSceneObjectsPtr);
 
 
             // UNMANGLE SHARED REFERENCES
@@ -301,7 +329,7 @@ namespace GameCube.GFZ.Stage
                             sceneObjectLODs.Add(sceneObject.LODs[j]);
                         }
                     }
-                    this.sceneObjectLODs = sceneObjectLODs.OrderBy(x => x.AddressRange.StartAddress).ToArray();
+                    this.SceneObjectLODs = sceneObjectLODs.OrderBy(x => x.AddressRange.StartAddress).ToArray();
                 }
 
                 // Get all unique name instances
@@ -315,8 +343,8 @@ namespace GameCube.GFZ.Stage
                     }
                 }
                 // Save, order by name (alphabetical)
-                sceneObjectNames = sceneObjectNamesDict.Values.ToArray();
-                sceneObjectNames = sceneObjectNames.OrderBy(x => x.value).ToArray();
+                SceneObjectNames = sceneObjectNamesDict.Values.ToArray();
+                SceneObjectNames = SceneObjectNames.OrderBy(x => x.value).ToArray();
             }
 
             // DESERIALIZE TRACK SEGMENTS
@@ -342,17 +370,17 @@ namespace GameCube.GFZ.Stage
                     var segment = GetSharedSerializable(reader, trackNode.SegmentPtr, rootTrackSegmentDict);
                     trackNode.Segment = segment;
                 }
-                rootTrackSegments = rootTrackSegmentDict.Values.ToArray();
+                RootTrackSegments = rootTrackSegmentDict.Values.ToArray();
 
                 // ALL TRACK SEGMENTS
                 // Use helper function to collect all TrackSegments
                 var allTrackSegmentsList = new List<TrackSegment>();
-                foreach (var rootSegment in rootTrackSegments)
+                foreach (var rootSegment in RootTrackSegments)
                 {
                     var rootSegmentHierarchy = rootSegment.GetGraphSerializableOrder();
                     allTrackSegmentsList.AddRange(rootSegmentHierarchy);
                 }
-                allTrackSegments = allTrackSegmentsList.ToArray();
+                AllTrackSegments = allTrackSegmentsList.ToArray();
             }
 
             BinaryIoUtility.PopEndianness();
@@ -377,7 +405,7 @@ namespace GameCube.GFZ.Stage
                 // 0x24
                 // Resulting pointer should be 0xF8 or 0xFC for AX or GX, respectively.
                 writer.WriteX(trackMinHeight);
-                trackMinHeightPtr = trackMinHeight.GetPointer();
+                TrackMinHeightPtr = trackMinHeight.GetPointer();
 
                 // The pointers written by the last 2 calls should create a valid AX or GX file header.
                 // If not, an assert will trigger. Compatibility is important for re-importing scene.
@@ -436,19 +464,19 @@ namespace GameCube.GFZ.Stage
 
                     // TRACK SEGMENTS
                     {
-                        writer.InlineDesc(SerializeVerbose, trackNodesPtr, allTrackSegments);
-                        writer.WriteX(allTrackSegments);
+                        writer.InlineDesc(SerializeVerbose, trackNodesPtr, AllTrackSegments);
+                        writer.WriteX(AllTrackSegments);
                     }
 
                     // TRACK ANIMATION CURVES
                     {
                         // Construct list of all track curves (sets of 9 ptrs)
                         var listTrackCurves = new List<AnimationCurveTRS>();
-                        foreach (var trackSegment in allTrackSegments)
+                        foreach (var trackSegment in AllTrackSegments)
                             listTrackCurves.Add(trackSegment.AnimationCurveTRS);
                         var allTrackCurves = listTrackCurves.ToArray();
                         // Write anim curve ptrs
-                        writer.InlineDesc(SerializeVerbose, allTrackSegments.GetBasePointer(), allTrackCurves);
+                        writer.InlineDesc(SerializeVerbose, AllTrackSegments.GetBasePointer(), allTrackCurves);
                         writer.WriteX(allTrackCurves);
 
                         // Construct list of all /animation curves/ (breakout from track structure)
@@ -464,7 +492,7 @@ namespace GameCube.GFZ.Stage
 
                     // TODO: better type comment
                     writer.InlineDesc(SerializeVerbose, new TrackCorner());
-                    foreach (var trackSegment in allTrackSegments)
+                    foreach (var trackSegment in AllTrackSegments)
                     {
                         var corner = trackSegment.TrackCorner;
                         if (corner != null)
@@ -554,7 +582,7 @@ namespace GameCube.GFZ.Stage
             writer.CommentNewLine(SerializeVerbose, '-');
             writer.Comment("ScnObjectNames[]", SerializeVerbose, ' ');
             writer.CommentNewLine(SerializeVerbose, '-');
-            foreach (var sceneObjectName in sceneObjectNames)
+            foreach (var sceneObjectName in SceneObjectNames)
             {
                 writer.WriteX(sceneObjectName);
                 //writer.AlignTo(4);
@@ -562,7 +590,7 @@ namespace GameCube.GFZ.Stage
 
             // SCENE OBJECTS
             writer.InlineComment(SerializeVerbose, nameof(SceneObjectLOD));
-            writer.WriteX(sceneObjectLODs);
+            writer.WriteX(SceneObjectLODs);
 
             // SCENE OBJECT TEMPLATES
             writer.InlineDesc(SerializeVerbose, 0x68 + offset, sceneObjects); // <<<<
@@ -772,8 +800,8 @@ namespace GameCube.GFZ.Stage
 
                 // Track Nodes and dependencies
                 hasReferences.AddRange(trackNodes);
-                hasReferences.AddRange(allTrackSegments);
-                foreach (var trackSegment in allTrackSegments)
+                hasReferences.AddRange(AllTrackSegments);
+                foreach (var trackSegment in AllTrackSegments)
                     hasReferences.Add(trackSegment.AnimationCurveTRS);
                 // The checkpoint table
                 hasReferences.Add(trackCheckpointGrid);
@@ -786,7 +814,7 @@ namespace GameCube.GFZ.Stage
 
                 // OBJECTS
                 // Scene Objects
-                hasReferences.AddRange(sceneObjectLODs);
+                hasReferences.AddRange(SceneObjectLODs);
                 hasReferences.AddRange(sceneObjects);
                 hasReferences.AddRange(colliderGeometries);
                 // Scene Object Statics
@@ -1078,32 +1106,32 @@ namespace GameCube.GFZ.Stage
 
                 // UPDATE POINTERS AND COUNTS
                 // Track and stage data
-                staticColliderMeshManagerPtr = staticColliderMeshManager.GetPointer();
-                embeddedTrackPropertyAreasPtr = embeddedPropertyAreas.GetArrayPointer();
-                checkpointGridPtr = trackCheckpointGrid.GetPointer();
-                trackLengthPtr = trackLength.GetPointer();
-                trackMinHeightPtr = trackMinHeight.GetPointer();
-                trackNodesPtr = trackNodes.GetArrayPointer();
-                fogPtr = fog.GetPointer();
-                fogCurvesPtr = fogCurves.GetPointer();
+                StaticColliderMeshManagerPtr = staticColliderMeshManager.GetPointer();
+                EmbeddedTrackPropertyAreasPtr = embeddedPropertyAreas.GetArrayPointer();
+                CheckpointGridPtr = trackCheckpointGrid.GetPointer();
+                TrackLengthPtr = trackLength.GetPointer();
+                TrackMinHeightPtr = trackMinHeight.GetPointer();
+                TrackNodesPtr = trackNodes.GetArrayPointer();
+                FogPtr = fog.GetPointer();
+                FogCurvesPtr = fogCurves.GetPointer();
                 // TRIGGERS
-                timeExtensionTriggersPtr = timeExtensionTriggers.GetArrayPointer();
-                miscellaneousTriggersPtr = miscellaneousTriggers.GetArrayPointer();
-                storyObjectTriggersPtr = storyObjectTriggers.GetArrayPointer();
-                unknownCollidersPtr = unknownColliders.GetArrayPointer();
-                unknownTriggersPtr = cullOverrideTriggers.GetArrayPointer();
-                visualEffectTriggersPtr = visualEffectTriggers.GetArrayPointer();
+                TimeExtensionTriggersPtr = timeExtensionTriggers.GetArrayPointer();
+                MiscellaneousTriggersPtr = miscellaneousTriggers.GetArrayPointer();
+                StoryObjectTriggersPtr = storyObjectTriggers.GetArrayPointer();
+                UnknownCollidersPtr = unknownColliders.GetArrayPointer();
+                UnknownTriggersPtr = cullOverrideTriggers.GetArrayPointer();
+                VisualEffectTriggersPtr = visualEffectTriggers.GetArrayPointer();
                 // SCENE OBJECTS
                 // References
-                sceneObjectsPtr = sceneObjects.GetArrayPointer();
-                staticSceneObjectsPtr = staticSceneObjects.GetArrayPointer();
+                SceneObjectsPtr = sceneObjects.GetArrayPointer();
+                StaticSceneObjectsPtr = staticSceneObjects.GetArrayPointer();
                 // Main list
-                dynamicSceneObjectCount = dynamicSceneObjects.Length;
+                DynamicSceneObjectCount = dynamicSceneObjects.Length;
                 // 2021/01/12: test to see if this makes objects appear
                 // It does and doesn't. Objects with animation data seem to play, so may have something to do with that.
-                unk_sceneObjectCount1 = dynamicSceneObjects.Length;
-                unk_sceneObjectCount2 = dynamicSceneObjects.Length;
-                dynamicSceneObjectsPtr = dynamicSceneObjects.GetArrayPointer().Pointer;
+                Unk_sceneObjectCount1 = dynamicSceneObjects.Length;
+                Unk_sceneObjectCount2 = dynamicSceneObjects.Length;
+                DynamicSceneObjectsPtr = dynamicSceneObjects.GetArrayPointer().Pointer;
             }
             this.RecordStartAddress(writer);
             {
@@ -1158,41 +1186,41 @@ namespace GameCube.GFZ.Stage
                 Assert.IsTrue(zeroes0xD8[i] == 0);
 
             // Structures that always exist
-            Assert.IsTrue(trackNodesPtr.IsNotNull);
-            Assert.IsTrue(embeddedTrackPropertyAreasPtr.IsNotNull);
-            Assert.IsTrue(trackMinHeightPtr.IsNotNull);
-            Assert.IsTrue(staticColliderMeshManagerPtr.IsNotNull);
+            Assert.IsTrue(TrackNodesPtr.IsNotNull);
+            Assert.IsTrue(EmbeddedTrackPropertyAreasPtr.IsNotNull);
+            Assert.IsTrue(TrackMinHeightPtr.IsNotNull);
+            Assert.IsTrue(StaticColliderMeshManagerPtr.IsNotNull);
             Assert.IsTrue(zeroes0x20Ptr.IsNotNull);
-            Assert.IsTrue(trackMinHeightPtr.IsNotNull);
+            Assert.IsTrue(TrackMinHeightPtr.IsNotNull);
             if (sceneObjects.Length > 0)
-                Assert.IsTrue(sceneObjectsPtr.IsNotNull);
-            Assert.IsTrue(fogPtr.IsNotNull);
-            Assert.IsTrue(trackLengthPtr.IsNotNull);
-            Assert.IsTrue(checkpointGridPtr.IsNotNull);
+                Assert.IsTrue(SceneObjectsPtr.IsNotNull);
+            Assert.IsTrue(FogPtr.IsNotNull);
+            Assert.IsTrue(TrackLengthPtr.IsNotNull);
+            Assert.IsTrue(CheckpointGridPtr.IsNotNull);
 
             // Ensure existing structures pointers were resolved correctly
-            Assert.ReferencePointer(trackNodes, trackNodesPtr);
-            Assert.ReferencePointer(embeddedPropertyAreas, embeddedTrackPropertyAreasPtr);
-            Assert.ReferencePointer(trackMinHeight, trackMinHeightPtr);
+            Assert.ReferencePointer(trackNodes, TrackNodesPtr);
+            Assert.ReferencePointer(embeddedPropertyAreas, EmbeddedTrackPropertyAreasPtr);
+            Assert.ReferencePointer(trackMinHeight, TrackMinHeightPtr);
             if (dynamicSceneObjects.Length > 0)
-                Assert.ReferencePointer(dynamicSceneObjects, new ArrayPointer(dynamicSceneObjectCount, dynamicSceneObjectsPtr));
+                Assert.ReferencePointer(dynamicSceneObjects, new ArrayPointer(DynamicSceneObjectCount, DynamicSceneObjectsPtr));
             if (sceneObjects.Length > 0)
-                Assert.ReferencePointer(sceneObjects, sceneObjectsPtr);
-            Assert.ReferencePointer(staticSceneObjects, staticSceneObjectsPtr);
+                Assert.ReferencePointer(sceneObjects, SceneObjectsPtr);
+            Assert.ReferencePointer(staticSceneObjects, StaticSceneObjectsPtr);
             if (unknownColliders.Length > 0)
-                Assert.ReferencePointer(unknownColliders, unknownCollidersPtr);
-            Assert.ReferencePointer(fogCurves, fogCurvesPtr);
-            Assert.ReferencePointer(fog, fogPtr);
-            Assert.ReferencePointer(trackLength, trackLengthPtr);
+                Assert.ReferencePointer(unknownColliders, UnknownCollidersPtr);
+            Assert.ReferencePointer(fogCurves, FogCurvesPtr);
+            Assert.ReferencePointer(fog, FogPtr);
+            Assert.ReferencePointer(trackLength, TrackLengthPtr);
             if (cullOverrideTriggers.Length > 0)
-                Assert.ReferencePointer(cullOverrideTriggers, unknownTriggersPtr);
+                Assert.ReferencePointer(cullOverrideTriggers, UnknownTriggersPtr);
             if (miscellaneousTriggers.Length > 0)
-                Assert.ReferencePointer(miscellaneousTriggers, miscellaneousTriggersPtr);
+                Assert.ReferencePointer(miscellaneousTriggers, MiscellaneousTriggersPtr);
             if (timeExtensionTriggers.Length > 0)
-                Assert.ReferencePointer(timeExtensionTriggers, timeExtensionTriggersPtr);
+                Assert.ReferencePointer(timeExtensionTriggers, TimeExtensionTriggersPtr);
             if (storyObjectTriggers.Length > 0)
-                Assert.ReferencePointer(storyObjectTriggers, storyObjectTriggersPtr);
-            Assert.ReferencePointer(trackCheckpointGrid, checkpointGridPtr);
+                Assert.ReferencePointer(storyObjectTriggers, StoryObjectTriggersPtr);
+            Assert.ReferencePointer(trackCheckpointGrid, CheckpointGridPtr);
         }
 
         /// <summary>
@@ -1256,7 +1284,7 @@ namespace GameCube.GFZ.Stage
             builder.AppendRepeat('-', lengthDivider);
             builder.AppendLineIndented(indent, indentLevel, $"MISC DATA");
             indentLevel++;
-            builder.AppendLineIndented(indent, indentLevel, unkRange0x00);
+            builder.AppendLineIndented(indent, indentLevel, UnkRange0x00);
             builder.AppendLineIndented(indent, indentLevel, fog);
             builder.AppendLineIndented(indent, indentLevel, fogCurves);
             builder.AppendLine();
@@ -1302,7 +1330,7 @@ namespace GameCube.GFZ.Stage
                 builder.AppendLine();
 
                 // Track Segments
-                foreach (var rootTrackSegment in rootTrackSegments)
+                foreach (var rootTrackSegment in RootTrackSegments)
                 {
                     var trackSegmentHierarchy = rootTrackSegment.GetGraphHierarchyOrder();
                     foreach (var trackSegment in trackSegmentHierarchy)
@@ -1314,7 +1342,7 @@ namespace GameCube.GFZ.Stage
                 builder.AppendLine();
 
                 // Track segment animation curves
-                foreach (var rootTrackSegment in rootTrackSegments)
+                foreach (var rootTrackSegment in RootTrackSegments)
                 {
                     var trackSegmentHierarchy = rootTrackSegment.GetGraphHierarchyOrder();
                     foreach (var trackSegment in trackSegmentHierarchy)
@@ -1333,7 +1361,7 @@ namespace GameCube.GFZ.Stage
                 builder.AppendLine();
 
                 // Checkpoints
-                builder.AppendLineIndented(indent, indentLevel, checkpointGridXZ);
+                builder.AppendLineIndented(indent, indentLevel, CheckpointGridXZ);
                 builder.AppendLineIndented(indent, indentLevel, trackCheckpointGrid);
                 builder.AppendLine();
 
@@ -1353,7 +1381,7 @@ namespace GameCube.GFZ.Stage
             builder.AppendLineIndented(indent, indentLevel, $"SCENE OBJECTS");
             {
                 indentLevel++;
-                foreach (var name in sceneObjectNames)
+                foreach (var name in SceneObjectNames)
                     builder.AppendLineIndented(indent, indentLevel + 1, name);
                 builder.AppendLine();
 

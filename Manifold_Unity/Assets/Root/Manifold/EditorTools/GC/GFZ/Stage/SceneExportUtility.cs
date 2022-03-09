@@ -127,7 +127,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             // Get scene-wide parameters from SceneParameters
             {
                 // Construct range from 2 parameters
-                scene.unkRange0x00 = new ViewRange(sceneParams.rangeNear, sceneParams.rangeFar);
+                scene.UnkRange0x00 = new ViewRange(sceneParams.rangeNear, sceneParams.rangeFar);
                 // Use functions to get form parameters
                 scene.fog = sceneParams.ToGfzFog();
                 scene.fogCurves = sceneParams.ToGfzFogCurves();
@@ -186,13 +186,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 {
                     sceneObjectLODs.AddRange(sceneObject.LODs);
                 }
-                scene.sceneObjectLODs = sceneObjectLODs.ToArray();
+                scene.SceneObjectLODs = sceneObjectLODs.ToArray();
 
                 // CString names
                 // TODO: share references
                 var sceneObjectNames = new List<ShiftJisCString>();
                 sceneObjectNames.Add("");
-                foreach (var thing in scene.sceneObjectLODs)
+                foreach (var thing in scene.SceneObjectLODs)
                 {
                     //if (!sceneObjectNames.Contains(thing.name))
                     //{
@@ -200,7 +200,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                     //}
                 }
                 // alphabetize, store
-                scene.sceneObjectNames = sceneObjectNames.OrderBy(x => x.value).ToArray();
+                scene.SceneObjectNames = sceneObjectNames.OrderBy(x => x.value).ToArray();
             }
 
             // Static Collider Meshes
@@ -232,14 +232,14 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 var track = GameObject.FindObjectOfType<GfzTrack>();
                 track.InitTrackData();
 
-                scene.rootTrackSegments = track.RootSegments;
-                scene.allTrackSegments = track.AllSegments;
+                scene.RootTrackSegments = track.RootSegments;
+                scene.AllTrackSegments = track.AllSegments;
 
                 // Nodes (checkpoints-segment bound together)
                 scene.trackNodes = track.TrackNodes;
                 // Checkpoint matrix
                 scene.trackCheckpointGrid = track.TrackCheckpointMatrix;
-                scene.checkpointGridXZ = track.TrackCheckpointMatrixBoundsXZ;
+                scene.CheckpointGridXZ = track.TrackCheckpointMatrixBoundsXZ;
 
                 // Track metadata
                 scene.trackLength = track.TrackLength;
@@ -249,7 +249,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 // 2022/01/25: currently save out only the terminating element.
                 scene.embeddedPropertyAreas = track.EmbeddedPropertyAreas;
 
-                scene.circuitType = track.CircuitType;
+                scene.CircuitType = track.CircuitType;
             }
 
             // TEMP until data is stored properly in GFZ unity components
