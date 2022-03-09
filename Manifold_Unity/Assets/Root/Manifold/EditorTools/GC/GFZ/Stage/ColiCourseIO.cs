@@ -1111,7 +1111,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 // Track Data
                 {
                     //
-                    coliScene.trackCheckpointGrid = new TrackCheckpointGrid();
+                    coliScene.trackCheckpointGrid = new CheckpointGrid();
 
                     // TODO: this is temp data
                     coliScene.trackLength = new TrackLength();

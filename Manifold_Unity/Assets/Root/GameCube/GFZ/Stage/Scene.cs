@@ -85,7 +85,7 @@ namespace GameCube.GFZ.Stage
         public MiscellaneousTrigger[] miscellaneousTriggers;
         public TimeExtensionTrigger[] timeExtensionTriggers;
         public StoryObjectTrigger[] storyObjectTriggers;
-        public TrackCheckpointGrid trackCheckpointGrid;
+        public CheckpointGrid trackCheckpointGrid;
 
 
         // PROPERTIES

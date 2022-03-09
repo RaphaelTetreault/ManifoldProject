@@ -8,7 +8,7 @@ namespace GameCube.GFZ.Stage
     /// This class acts a wrapper to make serialization easy (in Unity).
     /// </summary>
     [System.Serializable]
-    public class TrackCheckpointGrid : IndexGrid
+    public class CheckpointGrid : IndexGrid
     {
         // CONSTANTS
         public const int Subdivisions = 8;
