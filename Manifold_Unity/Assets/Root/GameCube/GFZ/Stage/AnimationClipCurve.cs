@@ -51,7 +51,7 @@ namespace GameCube.GFZ.Stage
                 if (animationCurvePtr.IsNotNull)
                 {
                     reader.JumpToAddress(animationCurvePtr);
-                    animationCurve = new AnimationCurve(animationCurvePtr.Length);
+                    animationCurve = new AnimationCurve(animationCurvePtr.length);
                     animationCurve.Deserialize(reader);
                 }
             }
@@ -87,7 +87,7 @@ namespace GameCube.GFZ.Stage
             Assert.ReferencePointer(animationCurve, animationCurvePtr);
             // Ensure that we have the same amount of keyables as we say we do.
             if (animationCurve != null)
-                Assert.IsTrue(animationCurve.KeyableAttributes.Length == animationCurvePtr.Length);
+                Assert.IsTrue(animationCurve.KeyableAttributes.Length == animationCurvePtr.length);
         }
 
         public override string ToString()

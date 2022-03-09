@@ -49,7 +49,7 @@ namespace GameCube.GFZ.Stage
             {
                 // Get point
                 reader.JumpToAddress(checkpointsPtr);
-                reader.ReadX(ref checkpoints, checkpointsPtr.Length);
+                reader.ReadX(ref checkpoints, checkpointsPtr.length);
 
                 // Get transform
                 // NOTE: since this data is referenced many times, I instead

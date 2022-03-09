@@ -65,7 +65,7 @@ namespace GameCube.GFZ.Stage
             {
                 Assert.IsTrue(lodsPtr.IsNotNull);
                 reader.JumpToAddress(lodsPtr);
-                reader.ReadX(ref lods, lodsPtr.Length);
+                reader.ReadX(ref lods, lodsPtr.length);
 
                 // Collision is not required, load only if pointer is not null
                 if (colliderGeometryPtr.IsNotNull)

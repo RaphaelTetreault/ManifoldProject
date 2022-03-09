@@ -72,7 +72,7 @@ namespace GameCube.GFZ.Stage
                     {
                         // Deserialization is done to instance with properties set through constructor.
                         reader.JumpToAddress(arrayPointer);
-                        var animationCurve = new AnimationCurve(arrayPointer.Length);
+                        var animationCurve = new AnimationCurve(arrayPointer.length);
                         animationCurve.Deserialize(reader);
 
                         // Assign curve to array

@@ -65,7 +65,7 @@ namespace GameCube.GFZ.GMA
                 reader.ReadX(ref unknown);
                 reader.AlignTo(GXUtility.GX_FIFO_ALIGN);
 
-                int endAddress = reader.GetPositionAsPointer().Address;
+                int endAddress = reader.GetPositionAsPointer().address;
 
                 // If the GCMF this submesh is a part of has either of these attributes,
                 // then it does not actually store any display lists (at least, not in
@@ -94,7 +94,7 @@ namespace GameCube.GFZ.GMA
                 {
                     reader.ReadX(ref secondaryDisplayListDescriptor);
                     reader.AlignTo(GXUtility.GX_FIFO_ALIGN);
-                    endAddress = new Pointer(reader.BaseStream.Position).Address;
+                    endAddress = new Pointer(reader.BaseStream.Position).address;
 
                     if (RenderSecondaryOpaque)
                     {

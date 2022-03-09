@@ -41,7 +41,7 @@ namespace GameCube.GFZ.Stage
                 {
                     // Init anim curve, jump, read without creating new instance
                     reader.JumpToAddress(animationCurvePtr);
-                    animationCurve = new AnimationCurve(animationCurvePtr.Length);
+                    animationCurve = new AnimationCurve(animationCurvePtr.length);
                     animationCurve.Deserialize(reader);
                 }
             }

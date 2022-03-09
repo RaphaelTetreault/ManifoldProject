@@ -190,7 +190,7 @@ namespace Manifold.IO
                 else
                 {
                     // capture where this ends
-                    range.EndAddress = i;
+                    range.endAddress = i;
                     //
                     if (activeType)
                     {
@@ -203,7 +203,7 @@ namespace Manifold.IO
                     // flips active type
                     activeType = addressRead;
                     // Start next range from current address
-                    range.StartAddress = i;
+                    range.startAddress = i;
                 }
             }
 
@@ -220,8 +220,8 @@ namespace Manifold.IO
             {
                 log.Write(rangeUnread);
                 log.Write("\t");
-                BaseStream.Seek(rangeUnread.StartAddress, SeekOrigin.Begin);
-                for (int i = (int)rangeUnread.StartAddress; i < (int)rangeUnread.EndAddress; i++)
+                BaseStream.Seek(rangeUnread.startAddress, SeekOrigin.Begin);
+                for (int i = (int)rangeUnread.startAddress; i < (int)rangeUnread.endAddress; i++)
                 {
                     var data = ReadByte().ToString("x2");
                     log.Write(data);
@@ -247,8 +247,8 @@ namespace Manifold.IO
 
             foreach (var rangeUnread in rangesUnread)
             {
-                BaseStream.Seek(rangeUnread.StartAddress, SeekOrigin.Begin);
-                for (int i = (int)rangeUnread.StartAddress; i < (int)rangeUnread.EndAddress; i++)
+                BaseStream.Seek(rangeUnread.startAddress, SeekOrigin.Begin);
+                for (int i = (int)rangeUnread.startAddress; i < (int)rangeUnread.endAddress; i++)
                 {
                     bool isEmpty = ReadByte() == 0;
                     if (!isEmpty)
@@ -277,7 +277,7 @@ namespace Manifold.IO
                 else
                 {
                     // capture where this ends
-                    range.EndAddress = i;
+                    range.endAddress = i;
                     //
                     if (activeType)
                     {
@@ -290,7 +290,7 @@ namespace Manifold.IO
                     // flips active type
                     activeType = addressRead;
                     // Start next range from current address
-                    range.StartAddress = i;
+                    range.startAddress = i;
                 }
             }
         }

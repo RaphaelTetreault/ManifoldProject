@@ -207,16 +207,16 @@ namespace GameCube.GFZ.Stage
 
         public static bool IsAX(Pointer ptr0x20, Pointer ptr0x24)
         {
-            bool isAx0x20 = ptr0x20.Address == kAxConstPtr0x20;
-            bool isAx0x24 = ptr0x24.Address == kAxConstPtr0x24;
+            bool isAx0x20 = ptr0x20.address == kAxConstPtr0x20;
+            bool isAx0x24 = ptr0x24.address == kAxConstPtr0x24;
             bool isAX = isAx0x20 & isAx0x24;
             return isAX;
         }
 
         public static bool IsGX(Pointer ptr0x20, Pointer ptr0x24)
         {
-            bool isGx0x20 = ptr0x20.Address == kGxConstPtr0x20;
-            bool isGx0x24 = ptr0x24.Address == kGxConstPtr0x24;
+            bool isGx0x20 = ptr0x20.address == kGxConstPtr0x20;
+            bool isGx0x24 = ptr0x24.address == kGxConstPtr0x24;
             bool isGX = isGx0x20 & isGx0x24;
             return isGX;
         }
@@ -248,11 +248,11 @@ namespace GameCube.GFZ.Stage
 
             // 0x08 and 0x0C: Track Nodes
             reader.JumpToAddress(TrackNodesPtr);
-            reader.ReadX(ref trackNodes, TrackNodesPtr.Length);
+            reader.ReadX(ref trackNodes, TrackNodesPtr.length);
 
             // 0x10 and 0x14: Track Effect Attribute Areas
             reader.JumpToAddress(EmbeddedTrackPropertyAreasPtr);
-            reader.ReadX(ref embeddedPropertyAreas, EmbeddedTrackPropertyAreasPtr.Length);
+            reader.ReadX(ref embeddedPropertyAreas, EmbeddedTrackPropertyAreasPtr.length);
 
             // 0x1C 
             reader.JumpToAddress(StaticColliderMeshManagerPtr);
@@ -274,15 +274,15 @@ namespace GameCube.GFZ.Stage
 
             // 0x5C and 0x60 SOLS values
             reader.JumpToAddress(UnknownCollidersPtr);
-            reader.ReadX(ref unknownColliders, UnknownCollidersPtr.Length);
+            reader.ReadX(ref unknownColliders, UnknownCollidersPtr.length);
 
             // 0x64 and 0x68
             reader.JumpToAddress(SceneObjectsPtr);
-            reader.ReadX(ref sceneObjects, SceneObjectsPtr.Length);
+            reader.ReadX(ref sceneObjects, SceneObjectsPtr.length);
 
             // 0x6C and 0x70
             reader.JumpToAddress(StaticSceneObjectsPtr);
-            reader.ReadX(ref staticSceneObjects, StaticSceneObjectsPtr.Length);
+            reader.ReadX(ref staticSceneObjects, StaticSceneObjectsPtr.length);
 
             // 0x80
             // Data is optional
@@ -302,23 +302,23 @@ namespace GameCube.GFZ.Stage
 
             // 0x94 and 0x98
             reader.JumpToAddress(UnknownTriggersPtr);
-            reader.ReadX(ref cullOverrideTriggers, UnknownTriggersPtr.Length);
+            reader.ReadX(ref cullOverrideTriggers, UnknownTriggersPtr.length);
 
             // 0x9C and 0xA0
             reader.JumpToAddress(VisualEffectTriggersPtr);
-            reader.ReadX(ref visualEffectTriggers, VisualEffectTriggersPtr.Length);
+            reader.ReadX(ref visualEffectTriggers, VisualEffectTriggersPtr.length);
 
             // 0xA4 and 0xA8
             reader.JumpToAddress(MiscellaneousTriggersPtr);
-            reader.ReadX(ref miscellaneousTriggers, MiscellaneousTriggersPtr.Length);
+            reader.ReadX(ref miscellaneousTriggers, MiscellaneousTriggersPtr.length);
 
             // 0xAC and 0xB0
             reader.JumpToAddress(TimeExtensionTriggersPtr);
-            reader.ReadX(ref timeExtensionTriggers, TimeExtensionTriggersPtr.Length);
+            reader.ReadX(ref timeExtensionTriggers, TimeExtensionTriggersPtr.length);
 
             // 0xB4 and 0xB8
             reader.JumpToAddress(StoryObjectTriggersPtr);
-            reader.ReadX(ref storyObjectTriggers, StoryObjectTriggersPtr.Length);
+            reader.ReadX(ref storyObjectTriggers, StoryObjectTriggersPtr.length);
 
             // 0xBC and 0xC0
             reader.JumpToAddress(CheckpointGridPtr);
@@ -375,7 +375,7 @@ namespace GameCube.GFZ.Stage
                 }
                 // Save, order by address
                 sceneObjects = sceneObjectsDict.Values.ToArray();
-                sceneObjects = sceneObjects.OrderBy(x => x.AddressRange.StartAddress).ToArray();
+                sceneObjects = sceneObjects.OrderBy(x => x.AddressRange.startAddress).ToArray();
 
                 // TEMP DEBUGGING
                 // Copy over the LOD instances into it's own array
@@ -389,7 +389,7 @@ namespace GameCube.GFZ.Stage
                             sceneObjectLODs.Add(sceneObject.LODs[j]);
                         }
                     }
-                    this.SceneObjectLODs = sceneObjectLODs.OrderBy(x => x.AddressRange.StartAddress).ToArray();
+                    this.SceneObjectLODs = sceneObjectLODs.OrderBy(x => x.AddressRange.startAddress).ToArray();
                 }
 
                 // Get all unique name instances
@@ -680,10 +680,10 @@ namespace GameCube.GFZ.Stage
                 {
                     colliderGeometries.Add(colliderGeo);
 
-                    if (colliderGeo.TrisPtr.Length > 0)
+                    if (colliderGeo.TrisPtr.length > 0)
                         colliderGeoTris.AddRange(colliderGeo.Tris);
 
-                    if (colliderGeo.QuadsPtr.Length > 0)
+                    if (colliderGeo.QuadsPtr.length > 0)
                         colliderGeoQuads.AddRange(colliderGeo.Quads);
                 }
             }

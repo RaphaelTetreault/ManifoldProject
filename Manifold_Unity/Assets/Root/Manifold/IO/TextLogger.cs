@@ -66,7 +66,7 @@ namespace Manifold.IO
             }
             else
             {
-                var address = value.AddressRange.StartAddress;
+                var address = value.AddressRange.startAddress;
                 WriteLine($"Address: 0x{address:x8}{typeDesc}\t{value}");
             }
         }

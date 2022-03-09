@@ -10,7 +10,7 @@ namespace Manifold.IO
         IPointer
     {
         // FIELDS
-        private int address;
+        public int address;
 
         // CONSTRUCTORS
         public Pointer(int address)
@@ -23,17 +23,17 @@ namespace Manifold.IO
         }
 
         // PROPERTIES
-        public int Address { get => address; set => address = value; }
-        public string PrintAddress => $"{Address:x8}";
-        public bool IsNotNull => Address != 0;
-        public bool IsNull => Address == 0;
+        int IPointer.Address => address;
+        public string PrintAddress => $"{address:x8}";
+        public bool IsNotNull => address != 0;
+        public bool IsNull => address == 0;
 
 
 
         // OPERATORS
         public static implicit operator int(Pointer pointer)
         {
-            return pointer.Address;
+            return pointer.address;
         }
 
         public static implicit operator Pointer(int address)
@@ -69,7 +69,7 @@ namespace Manifold.IO
 
         public bool Equals(Pointer obj)
         {
-            return obj.Address == Address;
+            return obj.address == address;
         }
 
         public override int GetHashCode()

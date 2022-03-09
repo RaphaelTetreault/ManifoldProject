@@ -97,7 +97,7 @@ namespace Manifold.IO
         //    => CommentPtr(writer, pointer.Address, doWrite, padding, alignment);
 
         public static void CommentPtr(this BinaryWriter writer, AddressRange addresRange, bool doWrite, char padding = ' ', int alignment = 16)
-            => CommentPtr(writer, (int)addresRange.StartAddress, doWrite, padding, alignment);
+            => CommentPtr(writer, (int)addresRange.startAddress, doWrite, padding, alignment);
 
         public static void CommentPtr(this BinaryWriter writer, ArrayPointer pointer, bool doWrite, char padding = ' ', int alignment = 16)
         {
@@ -106,8 +106,8 @@ namespace Manifold.IO
                 return;
 
             CommentPtr(writer, pointer.Pointer, doWrite, padding, alignment);
-            CommentCnt(writer, pointer.Length, doWrite, padding, alignment, "x8");
-            CommentCnt(writer, pointer.Length, doWrite, padding, alignment);
+            CommentCnt(writer, pointer.length, doWrite, padding, alignment, "x8");
+            CommentCnt(writer, pointer.length, doWrite, padding, alignment);
         }
 
 
@@ -122,7 +122,7 @@ namespace Manifold.IO
             if (typeof(T).IsArray)
             {
                 var length = (type as Array).Length;
-                writer.CommentPtr(new ArrayPointer(length, pointer.Address), true, padding, alignment);
+                writer.CommentPtr(new ArrayPointer(length, pointer.address), true, padding, alignment);
             }
             else
             {
@@ -182,19 +182,19 @@ namespace Manifold.IO
 
         public static void JumpToAddress(this BinaryWriter writer, Pointer pointer)
         {
-            writer.BaseStream.Seek(pointer.Address, SeekOrigin.Begin);
+            writer.BaseStream.Seek(pointer.address, SeekOrigin.Begin);
         }
         public static void JumpToAddress(this BinaryWriter writer, ArrayPointer arrayPointer)
         {
-            writer.BaseStream.Seek(arrayPointer.Address, SeekOrigin.Begin);
+            writer.BaseStream.Seek(arrayPointer.address, SeekOrigin.Begin);
         }
         public static void JumpToAddress(this BinaryWriter writer, AddressRange addressRange)
         {
-            writer.BaseStream.Seek(addressRange.StartAddress, SeekOrigin.Begin);
+            writer.BaseStream.Seek(addressRange.startAddress, SeekOrigin.Begin);
         }
         public static void JumpToAddress(this BinaryWriter writer, IBinaryAddressable binaryAddressable)
         {
-            writer.BaseStream.Seek(binaryAddressable.AddressRange.StartAddress, SeekOrigin.Begin);
+            writer.BaseStream.Seek(binaryAddressable.AddressRange.startAddress, SeekOrigin.Begin);
         }
 
         public static Pointer GetPositionAsPointer(this BinaryWriter writer)

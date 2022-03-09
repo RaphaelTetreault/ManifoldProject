@@ -63,7 +63,7 @@ namespace GameCube.GFZ.Stage
             {
                 if (Tris.Length > 0)
                 {
-                    Assert.IsTrue(TrisPtr.Length == Tris.Length);
+                    Assert.IsTrue(TrisPtr.length == Tris.Length);
                     Assert.IsTrue(TrisPtr.IsNotNull);
 
                     foreach (var tri in Tris)
@@ -77,7 +77,7 @@ namespace GameCube.GFZ.Stage
             {
                 if (Quads.Length > 0)
                 {
-                    Assert.IsTrue(QuadsPtr.Length == Quads.Length);
+                    Assert.IsTrue(QuadsPtr.length == Quads.Length);
                     Assert.IsTrue(QuadsPtr.IsNotNull);
 
                     foreach (var quad in Quads)
@@ -108,13 +108,13 @@ namespace GameCube.GFZ.Stage
                 if (TrisPtr.IsNotNull)
                 {
                     reader.JumpToAddress(TrisPtr);
-                    reader.ReadX(ref tris, TrisPtr.Length);
+                    reader.ReadX(ref tris, TrisPtr.length);
                 }
 
                 if (QuadsPtr.IsNotNull)
                 {
                     reader.JumpToAddress(QuadsPtr);
-                    reader.ReadX(ref quads, QuadsPtr.Length);
+                    reader.ReadX(ref quads, QuadsPtr.length);
                 }
             }
             this.SetReaderToEndAddress(reader);

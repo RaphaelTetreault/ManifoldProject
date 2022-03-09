@@ -82,7 +82,7 @@ namespace GameCube.GFZ.Stage
                 for (int i = 0; i < animationCurvesPtrs.Length; i++)
                 {
                     var arrayPointer = animationCurvesPtrs[i];
-                    var animationCurve = new AnimationCurve(arrayPointer.Length);
+                    var animationCurve = new AnimationCurve(arrayPointer.length);
 
                     reader.JumpToAddress(arrayPointer);
                     animationCurve.Deserialize(reader);

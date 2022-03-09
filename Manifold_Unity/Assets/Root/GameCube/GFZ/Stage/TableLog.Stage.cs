@@ -845,9 +845,9 @@ namespace GameCube.GFZ.Stage
 
                     writer.WriteNextCol(scene.UnkRange0x00.near);
                     writer.WriteNextCol(scene.UnkRange0x00.far);
-                    writer.WriteNextCol(scene.TrackNodesPtr.Length);
+                    writer.WriteNextCol(scene.TrackNodesPtr.length);
                     writer.WriteNextCol(scene.TrackNodesPtr.PrintAddress);
-                    writer.WriteNextCol(scene.EmbeddedTrackPropertyAreasPtr.Length);
+                    writer.WriteNextCol(scene.EmbeddedTrackPropertyAreasPtr.length);
                     writer.WriteNextCol(scene.EmbeddedTrackPropertyAreasPtr.PrintAddress);
                     writer.WriteNextCol(scene.StaticColliderMeshManagerActive);
                     writer.WriteNextCol(scene.StaticColliderMeshManagerPtr.PrintAddress);
@@ -866,11 +866,11 @@ namespace GameCube.GFZ.Stage
                     writer.WriteNextCol(scene.Unk_sceneObjectCount2);
                     writer.WriteNextCol(scene.DynamicSceneObjectsPtr.PrintAddress);
                     writer.WriteNextCol(scene.UnkBool32_0x58);
-                    writer.WriteNextCol(scene.UnknownCollidersPtr.Length);
+                    writer.WriteNextCol(scene.UnknownCollidersPtr.length);
                     writer.WriteNextCol(scene.UnknownCollidersPtr.PrintAddress);
-                    writer.WriteNextCol(scene.SceneObjectsPtr.Length);
+                    writer.WriteNextCol(scene.SceneObjectsPtr.length);
                     writer.WriteNextCol(scene.SceneObjectsPtr.PrintAddress);
-                    writer.WriteNextCol(scene.StaticSceneObjectsPtr.Length);
+                    writer.WriteNextCol(scene.StaticSceneObjectsPtr.length);
                     writer.WriteNextCol(scene.StaticSceneObjectsPtr.PrintAddress);
                     //writer.WriteNextCol(scene.zero0x74);
                     //writer.WriteNextCol(scene.zero0x78);
@@ -880,15 +880,15 @@ namespace GameCube.GFZ.Stage
                     //writer.WriteNextCol(scene.zero0x88);
                     //writer.WriteNextCol(scene.zero0x8C);
                     writer.WriteNextCol(scene.TrackLengthPtr.PrintAddress);
-                    writer.WriteNextCol(scene.UnknownTriggersPtr.Length);
+                    writer.WriteNextCol(scene.UnknownTriggersPtr.length);
                     writer.WriteNextCol(scene.UnknownTriggersPtr.PrintAddress);
-                    writer.WriteNextCol(scene.VisualEffectTriggersPtr.Length);
+                    writer.WriteNextCol(scene.VisualEffectTriggersPtr.length);
                     writer.WriteNextCol(scene.VisualEffectTriggersPtr.PrintAddress);
-                    writer.WriteNextCol(scene.MiscellaneousTriggersPtr.Length);
+                    writer.WriteNextCol(scene.MiscellaneousTriggersPtr.length);
                     writer.WriteNextCol(scene.MiscellaneousTriggersPtr.PrintAddress);
-                    writer.WriteNextCol(scene.TimeExtensionTriggersPtr.Length);
+                    writer.WriteNextCol(scene.TimeExtensionTriggersPtr.length);
                     writer.WriteNextCol(scene.TimeExtensionTriggersPtr.PrintAddress);
-                    writer.WriteNextCol(scene.StoryObjectTriggersPtr.Length);
+                    writer.WriteNextCol(scene.StoryObjectTriggersPtr.length);
                     writer.WriteNextCol(scene.StoryObjectTriggersPtr.PrintAddress);
                     writer.WriteNextCol(scene.CheckpointGridPtr.PrintAddress);
                     // Structure
@@ -1648,7 +1648,7 @@ namespace GameCube.GFZ.Stage
                             //
                             writer.WriteNextCol(template.Name);
                             writer.WriteNextCol(template.LodRenderFlags);
-                            writer.WriteNextCol(template.LodsPtr.Length);
+                            writer.WriteNextCol(template.LodsPtr.length);
                             writer.WriteNextCol(template.LodsPtr.PrintAddress);
                             writer.WriteNextCol(template.ColliderGeometryPtr);
                             writer.WriteNextCol($"[{++index}/{length}]");

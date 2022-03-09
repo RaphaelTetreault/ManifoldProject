@@ -133,7 +133,7 @@ namespace GameCube.GFZ.Stage
             {
                 // NOTE: children are always sequential (ArrayPointer)
                 reader.JumpToAddress(childrenPtr);
-                reader.ReadX(ref children, childrenPtr.Length);
+                reader.ReadX(ref children, childrenPtr.length);
             }
 
             this.children = children;
@@ -188,8 +188,8 @@ namespace GameCube.GFZ.Stage
                 var curr = children[i + 0];
                 var next = children[i + 1];
                 // The end address of the current child must be the same as the next child
-                var currAddress = curr.AddressRange.EndAddress;
-                var nextAddress = next.AddressRange.StartAddress;
+                var currAddress = curr.AddressRange.endAddress;
+                var nextAddress = next.AddressRange.startAddress;
 
                 // TODO: not true for final entry...
                 // 2022/03/06: if this fails, you have to look into it. I uncommented this in the refactoring process.

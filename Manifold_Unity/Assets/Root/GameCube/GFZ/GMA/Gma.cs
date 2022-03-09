@@ -43,7 +43,7 @@ namespace GameCube.GFZ.GMA
             }
             this.RecordEndAddress(reader);
             {
-                Offset nameBasePtrOffset = AddressRange.EndAddress;
+                Offset nameBasePtrOffset = AddressRange.endAddress;
                 var modelList = new List<Model>();
 
                 // Add offsets necessary for pointers to be correct
@@ -89,7 +89,7 @@ namespace GameCube.GFZ.GMA
             {
                 var gcmf = modelGCMFs[i];
                 gcmfWriter.WriteX(gcmf);
-                gcmfOffsets[i] = gcmf.GetPointer().Address;
+                gcmfOffsets[i] = gcmf.GetPointer().address;
             }
             gcmfWriter.SeekBegin();
 
@@ -100,7 +100,7 @@ namespace GameCube.GFZ.GMA
             {
                 var name = modelNames[i];
                 nameWriter.WriteX(name);
-                nameOffsets[i] = name.GetPointer().Address;
+                nameOffsets[i] = name.GetPointer().address;
             }
             nameWriter.SeekBegin();
 

@@ -56,7 +56,7 @@ namespace Manifold
             if (reference != null)
             {
                 var refPtr = reference.GetPointer();
-                var isSamePointer = pointer.Address == refPtr.Address;
+                var isSamePointer = pointer.Address == refPtr.address;
                 const string msg = "Reference's pointer and supplied pointer do not match!";
                 IsTrue(isSamePointer, msg);
             }
@@ -71,7 +71,7 @@ namespace Manifold
             if (reference != null && reference.Length > 0)
             {
                 var refPtr = reference[0].GetPointer();
-                var isSamePointer = pointer.Address == refPtr.Address;
+                var isSamePointer = pointer.address == refPtr.address;
                 IsTrue(isSamePointer);
             }
         }
