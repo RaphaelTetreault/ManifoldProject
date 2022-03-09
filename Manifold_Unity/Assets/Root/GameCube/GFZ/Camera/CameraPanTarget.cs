@@ -9,8 +9,8 @@ namespace GameCube.GFZ.Camera
 {
     [Serializable]
     public sealed class CameraPanTarget :
-        IBinarySerializable,
-        IBinaryAddressable
+        IBinaryAddressable,
+        IBinarySerializable
     {
         // FIELDS
         private float3 cameraPosition;

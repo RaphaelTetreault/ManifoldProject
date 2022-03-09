@@ -7,8 +7,8 @@ namespace GameCube.GFZ.Camera
 {
     [Serializable]
     public sealed class CameraPan :
-        IBinarySerializable,
-        IBinaryAddressable
+        IBinaryAddressable,
+        IBinarySerializable
     {
         // CONSTANTS
         public const int kStructureSize = 0x54;
