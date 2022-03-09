@@ -14,7 +14,6 @@ namespace Manifold.EditorTools
 
             return children;
         }
-
         
     }
 }

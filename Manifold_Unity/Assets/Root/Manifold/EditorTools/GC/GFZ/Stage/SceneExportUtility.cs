@@ -1,8 +1,6 @@
 ﻿using GameCube.GFZ;
 using GameCube.GFZ.Stage;
 using Manifold.IO;
-using Manifold.IO.GFZ;
-using Manifold.EditorTools.GC.GFZ.Stage;
 using System;
 using System.Collections.Generic;
 using System.IO;

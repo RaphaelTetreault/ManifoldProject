@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Manifold
+namespace Manifold.EditorTools
 {
     public static partial class Vector3Extensions
     {

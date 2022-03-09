@@ -47,6 +47,7 @@ namespace Manifold.IO
         public int Length => value.Length;
         public abstract Encoding Encoding { get; }
 
+
         // METHODS
         public static string ReadCString(BinaryReader reader, Encoding encoding)
         {

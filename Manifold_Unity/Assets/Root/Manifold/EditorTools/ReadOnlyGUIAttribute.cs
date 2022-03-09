@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-namespace Manifold
+namespace Manifold.EditorTools
 {
     public class ReadOnlyGUIAttribute : PropertyAttribute
     {

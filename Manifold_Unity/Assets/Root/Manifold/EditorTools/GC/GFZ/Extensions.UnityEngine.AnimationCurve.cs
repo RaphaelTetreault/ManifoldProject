@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Manifold
+namespace Manifold.EditorTools.GC.GFZ
 {
     public static class AnimationCurveExtensions
     {

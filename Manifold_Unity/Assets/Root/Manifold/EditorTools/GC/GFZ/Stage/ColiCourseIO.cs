@@ -845,8 +845,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             OSUtility.OpenDirectory(openFolderAfterExport, $"{exportTo}/");
             // Set static variable
             // Export file...
-            var x = ExportUtility.ExportSerializable(sceneIn, exportTo, "", true);
-            OSUtility.OpenDirectory(openFolderAfterExport, x);
+            //var x = ExportUtility.ExportSerializable(sceneIn, exportTo, "", true);
+            //OSUtility.OpenDirectory(openFolderAfterExport, x);
+
+            // Clean this class up / move to where appropriate with new codebase
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -1124,24 +1127,27 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 //Debug.LogWarning("TODO: define bounds");
 
                 // Export the file
-                var exported = ExportUtility.ExportSerializable(coliScene, exportTo, "", allowOverwritingFiles);
+                //var exported = ExportUtility.ExportSerializable(coliScene, exportTo, "", allowOverwritingFiles);
                 log.WriteHeading("EXPORT", padding, h1Width);
-                log.WriteLine($"Exported file to path \"{exported}\"");
+                //log.WriteLine($"Exported file to path \"{exported}\"");
                 log.WriteLine();
                 LogSceneData(log, coliScene);
                 log.WriteLine();
                 log.WriteHeading("END OF FILE", padding, h1Width);
                 log.Close();
 
-                OSUtility.OpenDirectory(openFolderAfterExport, exported);
+                //OSUtility.OpenDirectory(openFolderAfterExport, exported);
                 OSUtility.OpenDirectory(openFolderAfterExport, logPath);
             }
 
             //
             // NOTE: no "preserve structure"
             // TODO: make these export functions less long.
-            var exportedFiles = ExportUtility.ExportSerializable(coliScenes, exportTo, "", allowOverwritingFiles);
-            OSUtility.OpenDirectory(openFolderAfterExport, exportedFiles);
+            //var exportedFiles = ExportUtility.ExportSerializable(coliScenes, exportTo, "", allowOverwritingFiles);
+            //OSUtility.OpenDirectory(openFolderAfterExport, exportedFiles);
+
+            // This class is hot-garbage. Refactor / move to where appropriate
+            throw new NotImplementedException();
         }
 
 

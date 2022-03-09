@@ -168,7 +168,7 @@ namespace Manifold.EditorTools
             // Append each directory to parent directory in succession
             for (int i = 0; i < directoriesCount - 1; i++)
             {
-                var nextFolder = folderNames[i+1];
+                var nextFolder = folderNames[i + 1];
                 var fullPath = $"{parentFolder}/{nextFolder}";
 
                 var doCreateFolder = !AssetDatabase.IsValidFolder(fullPath);

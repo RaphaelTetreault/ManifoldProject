@@ -8,31 +8,9 @@ using UnityEditor.SceneManagement;
 namespace Manifold.EditorTools.N64.FZX
 {
     [CreateAssetMenu(menuName = Const.Menu.Fzx + "FZEP Track Importer")]
-    public class FzxFzepImporter : ExecutableScriptableObject,
-    IImportable
+    public static class FzxFzepImporter
     {
-        #region MEMBERS
-
-        [Header("Import Settings")]
-        //[SerializeField, BrowseFolderField()]
-        //protected string importFrom;
-
-        [SerializeField, BrowseFolderField("Assets/")]
-        protected string importTo;
-
-        //[SerializeField]
-        //protected IOOption importOption = IOOption.selectedFiles;
-
-        [Header("Import Files")]
-        [SerializeField] protected TextAsset[] courses;
-
-        #endregion
-
-        public override string ExecuteText => $"Import FZEP Track as GFZ";
-
-        public override void Execute() => Import();
-
-        public void Import()
+        public static void Import(TextAsset[] courses)
         {
             foreach (var textAsset in courses)
             {
@@ -47,7 +25,7 @@ namespace Manifold.EditorTools.N64.FZX
 
                     // Create new, empty scene
                     var sceneName = $"{textAsset.name} {fzep.name} {fzep.descriptionEn}";
-                    var scenePath = $"Assets/{importTo}/{sceneName}.unity";
+                    var scenePath = $"Assets/FZEP-Temp/{sceneName}.unity";
                     var unityScene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
                     EditorSceneManager.SaveScene(unityScene, scenePath);
                     // Keep reference of new scene

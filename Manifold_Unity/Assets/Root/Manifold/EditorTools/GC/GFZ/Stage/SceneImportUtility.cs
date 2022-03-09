@@ -1,7 +1,6 @@
 ﻿using GameCube.GFZ;
 using GameCube.GFZ.Stage;
 using Manifold.IO;
-using Manifold.IO.GFZ;
 using System;
 using System.Collections.Generic;
 using UnityEditor;
@@ -539,10 +538,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             controlPoint.transform.localPosition = trackTransform.LocalPosition;
             controlPoint.transform.localRotation = Quaternion.Euler(trackTransform.LocalRotation);
             controlPoint.transform.localScale = trackTransform.LocalScale;
-
-            //
-            var display = controlPoint.AddComponent<DisplayTrackTransformSingle>();
-            display.depth = depth;
 
             //
             var children = trackTransform.Children;
