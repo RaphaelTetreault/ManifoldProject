@@ -36,6 +36,10 @@ namespace GameCube.GFZ.Stage
         }
 
 
+        // INDEXERS
+        public IndexList this[int index] { get => indexLists[index]; set => indexLists[index] = value; }
+        public IndexList this[int x, int z] { get => indexLists[z * SubdivisionsX + x]; set => indexLists[z * SubdivisionsX + x] = value; }
+
         // ABSTRACT PROPERTIES
         public abstract int SubdivisionsX { get; }
         public abstract int SubdivisionsZ { get; }

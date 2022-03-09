@@ -3,9 +3,10 @@ using Unity.Mathematics;
 
 namespace GameCube.GFZ.Stage
 {
+    // 2022/03/09: formerly TrackCheckpointGrid
+
     /// <summary>
     /// A table for index lists specifically for track checkpoints.
-    /// This class acts a wrapper to make serialization easy (in Unity).
     /// </summary>
     [System.Serializable]
     public class CheckpointGrid : IndexGrid
