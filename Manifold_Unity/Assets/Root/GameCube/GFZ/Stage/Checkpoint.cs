@@ -13,7 +13,7 @@ namespace GameCube.GFZ.Stage
     /// When incorrect, many strange, buggy things happen.
     /// </summary>
     [Serializable]
-    public class Checkpoint :
+    public sealed class Checkpoint :
         IBinaryAddressable,
         IBinarySerializable,
         ITextPrintable
