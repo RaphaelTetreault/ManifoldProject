@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using GameCube.GFZ.Stage;
+using System;
 using UnityEngine;
-using GameCube.GFZ.Stage;
 
 namespace Manifold.Conversion.GFZ.CourseCollision
 {
@@ -10,48 +8,24 @@ namespace Manifold.Conversion.GFZ.CourseCollision
     {
         public static UnityEngine.AnimationClip GfzToUnity(GameCube.GFZ.Stage.AnimationClip animationClip)
         {
-            var unityAnimClip = new UnityEngine.AnimationClip();
-
             // 2020/01/29 Raph: refer to notes in notebook.
             // http://gyanendushekhar.com/2018/03/18/create-play-animation-runtime-unity-tutorial/
 
-            // Scale
-            var gfxAnimClipScaleX = animationClip.Curves[0];
-            var gfxAnimClipScaleY = animationClip.Curves[1];
-            var gfxAnimClipScaleZ = animationClip.Curves[2];
-            // Rotation
-            var gfxAnimClipRotationX = animationClip.Curves[3];
-            var gfxAnimClipRotationY = animationClip.Curves[4];
-            var gfxAnimClipRotationZ = animationClip.Curves[5];
-            // Position
-            var gfxAnimClipPositionX = animationClip.Curves[6];
-            var gfxAnimClipPositionY = animationClip.Curves[7];
-            var gfxAnimClipPositionZ = animationClip.Curves[8];
-            // Unknown
-            var gfxAnimClipUnused = animationClip.Curves[9];
-            // Light
-            var gfxAnimClipAlpha = animationClip.Curves[10];
+            Assert.IsTrue(animationClip.Unused is null);
 
-
+            var unityAnimClip = new UnityEngine.AnimationClip();
             var transformType = typeof(Transform);
 
-            // Scale
-            SetCurve(unityAnimClip, gfxAnimClipScaleX, transformType, "localScale.x");
-            SetCurve(unityAnimClip, gfxAnimClipScaleY, transformType, "localScale.y");
-            SetCurve(unityAnimClip, gfxAnimClipScaleZ, transformType, "localScale.z");
-            // Rotation
-            // localEulerAngles
-            SetCurve(unityAnimClip, gfxAnimClipRotationX, transformType, "localRotation.x");
-            SetCurve(unityAnimClip, gfxAnimClipRotationY, transformType, "localRotation.y");
-            SetCurve(unityAnimClip, gfxAnimClipRotationZ, transformType, "localRotation.z");
-            // Position
-            SetCurve(unityAnimClip, gfxAnimClipPositionX, transformType, "localPosition.x");
-            SetCurve(unityAnimClip, gfxAnimClipPositionY, transformType, "localPosition.y");
-            SetCurve(unityAnimClip, gfxAnimClipPositionZ, transformType, "localPosition.z");
-            //
-            SetCurve(unityAnimClip, gfxAnimClipUnused, transformType, "unused");
-            //
-            SetCurve(unityAnimClip, gfxAnimClipAlpha, transformType, "alpha");
+            SetCurve(unityAnimClip, animationClip.RotationX, transformType, "localRotation.x");
+            SetCurve(unityAnimClip, animationClip.RotationY, transformType, "localRotation.y");
+            SetCurve(unityAnimClip, animationClip.RotationZ, transformType, "localRotation.z");
+            SetCurve(unityAnimClip, animationClip.PositionX, transformType, "localPosition.x");
+            SetCurve(unityAnimClip, animationClip.PositionY, transformType, "localPosition.y");
+            SetCurve(unityAnimClip, animationClip.PositionZ, transformType, "localPosition.z");
+            SetCurve(unityAnimClip, animationClip.ScaleX, transformType, "localScale.x");
+            SetCurve(unityAnimClip, animationClip.ScaleY, transformType, "localScale.y");
+            SetCurve(unityAnimClip, animationClip.ScaleZ, transformType, "localScale.z");
+            SetCurve(unityAnimClip, animationClip.Alpha, typeof(Material), "_Color.a");
 
             return unityAnimClip;
         }
@@ -60,26 +34,16 @@ namespace Manifold.Conversion.GFZ.CourseCollision
         {
             // ignore empty anims
             if (gfzCurve.AnimationCurve.Length == 0)
-            {
                 return;
-            }
 
-            var curve = new UnityEngine.AnimationCurve();
+            var unityCurve = new UnityEngine.AnimationCurve();
             foreach (var keyableAttribute in gfzCurve.AnimationCurve.KeyableAttributes)
             {
                 var time = keyableAttribute.Time;
                 var value = keyableAttribute.Value;
-
-                // TOTAL HACK
-                if (propertyName == "localPosition.z")
-                {
-                    value = -value;
-                }
-
-                curve.AddKey(time, value);
-                Debug.Log($"time: {keyableAttribute.Time}/nValue: {keyableAttribute.Value}");
+                unityCurve.AddKey(time, value);
             }
-            unityClip.SetCurve("", type, propertyName, curve);
+            unityClip.SetCurve("", type, propertyName, unityCurve);
         }
     }
 }
