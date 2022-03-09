@@ -33,7 +33,6 @@ namespace GameCube.GFZ.Stage
 
 
         // FIELDS
-        // Note: order of folowing structures is same as they appear in binary
         private ViewRange unkRange0x00;
         private ArrayPointer trackNodesPtr;
         private ArrayPointer embeddedTrackPropertyAreasPtr;
@@ -68,7 +67,6 @@ namespace GameCube.GFZ.Stage
         private Pointer checkpointGridPtr;
         private GridXZ checkpointGridXZ;
         private byte[] zeroes0xD8 = new byte[kSizeOfZeroes0xD8];
-
         // REFERENCE FIELDS
         public TrackNode[] trackNodes;
         public EmbeddedTrackPropertyArea[] embeddedPropertyAreas;
@@ -88,11 +86,6 @@ namespace GameCube.GFZ.Stage
         public TimeExtensionTrigger[] timeExtensionTriggers;
         public StoryObjectTrigger[] storyObjectTriggers;
         public TrackCheckpointGrid trackCheckpointGrid;
-        // FIELDS (that require extra processing)
-        // Shared references
-        private TrackSegment[] allTrackSegments;
-        private TrackSegment[] rootTrackSegments;
-        private ShiftJisCString[] sceneObjectNames;
 
 
         // PROPERTIES
@@ -163,6 +156,27 @@ namespace GameCube.GFZ.Stage
         /// </summary>
         public string VenueName => EnumExtensions.GetDescription(Venue);
 
+        /// <summary>
+        /// An array of all the track segments in this scene.
+        /// </summary>
+        public TrackSegment[] AllTrackSegments { get; set; }
+
+        /// <summary>
+        /// An array of the only the root track segments in this scene. 
+        /// </summary>
+        public TrackSegment[] RootTrackSegments { get; set; }
+        
+        /// <summary>
+        /// An array of all the scene object names.
+        /// </summary>
+        public ShiftJisCString[] SceneObjectNames { get; set; }
+        
+        /// <summary>
+        /// An array of all the scene objecy LODs.
+        /// </summary>
+        public SceneObjectLOD[] SceneObjectLODs { get; set; }
+
+
         public ViewRange UnkRange0x00 { get => unkRange0x00; set => unkRange0x00 = value; }
         public ArrayPointer TrackNodesPtr { get => trackNodesPtr; set => trackNodesPtr = value; }
         public ArrayPointer EmbeddedTrackPropertyAreasPtr { get => embeddedTrackPropertyAreasPtr; set => embeddedTrackPropertyAreasPtr = value; }
@@ -188,10 +202,7 @@ namespace GameCube.GFZ.Stage
         public ArrayPointer StoryObjectTriggersPtr { get => storyObjectTriggersPtr; set => storyObjectTriggersPtr = value; }
         public Pointer CheckpointGridPtr { get => checkpointGridPtr; set => checkpointGridPtr = value; }
         public GridXZ CheckpointGridXZ { get => checkpointGridXZ; set => checkpointGridXZ = value; }
-        public TrackSegment[] AllTrackSegments { get => allTrackSegments; set => allTrackSegments = value; }
-        public TrackSegment[] RootTrackSegments { get => rootTrackSegments; set => rootTrackSegments = value; }
-        public ShiftJisCString[] SceneObjectNames { get => sceneObjectNames; set => sceneObjectNames = value; }
-        public SceneObjectLOD[] SceneObjectLODs { get; set; }
+
 
 
         public static bool IsAX(Pointer ptr0x20, Pointer ptr0x24)
