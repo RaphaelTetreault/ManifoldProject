@@ -94,16 +94,10 @@ namespace Manifold.IO
 
 
         // PROPERTIES
-
-        private static bool RequiresSwapEndianness
-        {
-            get => BitConverter.IsLittleEndian ^ IsLittleEndian;
-        }
-
         /// <summary>
-        /// The stride used to align the stream to when calling AlignTo method
+        /// 
         /// </summary>
-        public static int ByteAlignment { get; set; } = 4;
+        private static bool RequiresSwapEndianness => BitConverter.IsLittleEndian ^ IsLittleEndian;
 
         /// <summary>
         /// The current endianness used for read/write operations
@@ -111,10 +105,14 @@ namespace Manifold.IO
         public static Endianness Endianness { get; set; } = Endianness.BigEndian;
 
         /// <summary>
-        /// The current endianness used for read/write operations
+        /// Returns true if Endianness is Little Endian
         /// </summary>
-        public static bool IsLittleEndian { get => Endianness == Endianness.LittleEndian; }
+        public static bool IsLittleEndian => Endianness == Endianness.LittleEndian;
 
+        /// <summary>
+        /// Returns true if Endianness is Big Endian
+        /// </summary>
+        public static bool IsBigEndian => Endianness == Endianness.BigEndian;
 
         // METHODS
 
@@ -123,7 +121,19 @@ namespace Manifold.IO
         /// </summary>
         public static void PopEndianness()
         {
-            Endianness = EndianessStack.Pop();
+            var endianness = EndianessStack.Pop();
+
+            // Figure out if we need to change the function pointers
+            bool requiresFunctionChange = endianness != Endianness;
+
+            // Set active state to call value
+            Endianness = endianness;
+
+            // If we need to change functions, change them
+            if (requiresFunctionChange)
+            {
+                SetFunctionEndianness();
+            }
         }
 
         /// <summary>
