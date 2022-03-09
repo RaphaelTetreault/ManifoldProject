@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 
-namespace Manifold.IO
+namespace Manifold
 {
     public static class EnumExtensions
     {

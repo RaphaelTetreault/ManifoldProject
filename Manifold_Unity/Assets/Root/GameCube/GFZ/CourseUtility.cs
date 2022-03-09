@@ -293,14 +293,14 @@
         public static string GetCourseName(int index)
         {
             var value = GetCourseNameAX(index);
-            var name = Manifold.IO.EnumExtensions.GetDescription(value);
+            var name = Manifold.EnumExtensions.GetDescription(value);
             return name;
         }
 
         public static string GetVenueName(int index)
         {
             var value = GetVenue(index);
-            var name = Manifold.IO.EnumExtensions.GetDescription(value);
+            var name = Manifold.EnumExtensions.GetDescription(value);
             return name;
         }
 
