@@ -18,7 +18,8 @@ namespace GameCube.GFZ.Stage
     public class AnimationCurveTRS :
         IBinaryAddressable,
         IBinarySerializable,
-        IHasReference
+        IHasReference,
+        ITextPrintable
     {
         // CONSTANTS
         public const int kCurveCount = 9;
@@ -124,6 +125,37 @@ namespace GameCube.GFZ.Stage
                     Assert.ReferencePointer(animCurve, pointer);
             }
         }
+
+        public void PrintMultiLine(System.Text.StringBuilder builder, int indentLevel = 0, string indent = "\t")
+        {
+            builder.AppendLineIndented(indent, indentLevel, nameof(AnimationCurveTRS));
+            indentLevel++;
+            builder.AppendLineIndented(indent, indentLevel, nameof(PositionX));
+            builder.AppendLineIndented(indent, indentLevel + 1, PositionX);
+            builder.AppendLineIndented(indent, indentLevel, nameof(PositionY));
+            builder.AppendLineIndented(indent, indentLevel + 1, PositionY);
+            builder.AppendLineIndented(indent, indentLevel, nameof(PositionZ));
+            builder.AppendLineIndented(indent, indentLevel + 1, PositionZ);
+            builder.AppendLineIndented(indent, indentLevel, nameof(RotationX));
+            builder.AppendLineIndented(indent, indentLevel + 1, RotationX);
+            builder.AppendLineIndented(indent, indentLevel, nameof(RotationY));
+            builder.AppendLineIndented(indent, indentLevel + 1, RotationY);
+            builder.AppendLineIndented(indent, indentLevel, nameof(RotationZ));
+            builder.AppendLineIndented(indent, indentLevel + 1, RotationZ);
+            builder.AppendLineIndented(indent, indentLevel, nameof(ScaleX));
+            builder.AppendLineIndented(indent, indentLevel + 1, ScaleX);
+            builder.AppendLineIndented(indent, indentLevel, nameof(ScaleZ));
+            builder.AppendLineIndented(indent, indentLevel + 1, ScaleZ);
+            builder.AppendLineIndented(indent, indentLevel, nameof(ScaleZ));
+            builder.AppendLineIndented(indent, indentLevel + 1, ScaleZ);
+        }
+
+        public string PrintSingleLine()
+        {
+            return nameof(AnimationCurveTRS);
+        }
+
+        public override string ToString() => PrintSingleLine();
 
     }
 }

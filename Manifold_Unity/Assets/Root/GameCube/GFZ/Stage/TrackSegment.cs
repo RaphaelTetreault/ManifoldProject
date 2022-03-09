@@ -318,6 +318,8 @@ namespace GameCube.GFZ.Stage
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(railHeightRight)}: {railHeightRight}");
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(railHeightLeft)}: {railHeightLeft}");
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(branchIndex)}: {branchIndex}");
+            //
+            builder.AppendLineIndented(indent, indentLevel, TrackCorner);
         }
 
         public string PrintSingleLine()

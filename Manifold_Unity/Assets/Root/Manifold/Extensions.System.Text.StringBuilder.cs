@@ -6,7 +6,10 @@ namespace Manifold
     {
         public static void AppendLineIndented(this StringBuilder stringBuilder, string indent, int indentLevel, ITextPrintable textPrintable)
         {
-            textPrintable.PrintMultiLine(stringBuilder, indentLevel, indent);
+            if (textPrintable == null)
+                stringBuilder.AppendLineIndented(indent, indentLevel, "null");
+            else
+                textPrintable.PrintMultiLine(stringBuilder, indentLevel, indent);
         }
 
         public static void AppendIndented(this StringBuilder stringBuilder, string indent, int indentLevel, string value)

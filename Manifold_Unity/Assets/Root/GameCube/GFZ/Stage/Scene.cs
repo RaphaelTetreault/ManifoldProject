@@ -1244,6 +1244,8 @@ namespace GameCube.GFZ.Stage
 
         public void PrintMultiLine(StringBuilder builder, int indentLevel = 0, string indent = "\t")
         {
+            const int lengthDivider = 128;
+
             builder.AppendLineIndented(indent, indentLevel, PrintSingleLine());
             indentLevel++;
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(FileSize)}: {FileSize:n0}, {FileSize:x8}");
@@ -1251,6 +1253,7 @@ namespace GameCube.GFZ.Stage
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(IsValidFile)}: {IsValidFile}");
             builder.AppendLine();
 
+            builder.AppendRepeat('-', lengthDivider);
             builder.AppendLineIndented(indent, indentLevel, $"MISC DATA");
             indentLevel++;
             builder.AppendLineIndented(indent, indentLevel, unkRange0x00);
@@ -1259,59 +1262,116 @@ namespace GameCube.GFZ.Stage
             builder.AppendLine();
             indentLevel--;
 
+            builder.AppendRepeat('-', lengthDivider);
             builder.AppendLineIndented(indent, indentLevel, $"TRIGGERS");
-            indentLevel++;
-            foreach (var cullOverrideTrigger in cullOverrideTriggers)
-                builder.AppendLineIndented(indent, indentLevel, cullOverrideTrigger);
-            foreach (var visualEffectTrigger in visualEffectTriggers)
-                builder.AppendLineIndented(indent, indentLevel, visualEffectTrigger);
-            foreach (var miscellaneousTrigger in miscellaneousTriggers)
-                builder.AppendLineIndented(indent, indentLevel, miscellaneousTrigger);
-            foreach (var timeExtensionTrigger in timeExtensionTriggers)
-                builder.AppendLineIndented(indent, indentLevel, timeExtensionTrigger);
-            foreach (var storyObjectTrigger in storyObjectTriggers)
-                builder.AppendLineIndented(indent, indentLevel, storyObjectTrigger);
-            builder.AppendLine();
-            indentLevel--;
-
-
-            builder.AppendLineIndented(indent, indentLevel, $"TRACK DATA");
-            indentLevel++;
-            builder.AppendLineIndented(indent, indentLevel, trackLength);
-            builder.AppendLineIndented(indent, indentLevel, trackMinHeight);
-
-            // Track Segments
-            foreach (var rootTrackSegment in rootTrackSegments)
             {
-                var trackSegmentHierarchy = rootTrackSegment.GetGraphHierarchyOrder();
-                foreach (var trackSegment in trackSegmentHierarchy)
-                {
-                    var depth = trackSegment.Depth;
-                    builder.AppendLineIndented(indent, indentLevel, trackSegment);
-                }
+                indentLevel++;
+                builder.AppendLine();
+
+                foreach (var cullOverrideTrigger in cullOverrideTriggers)
+                    builder.AppendLineIndented(indent, indentLevel, cullOverrideTrigger);
+                builder.AppendLine();
+
+                foreach (var visualEffectTrigger in visualEffectTriggers)
+                    builder.AppendLineIndented(indent, indentLevel, visualEffectTrigger);
+                builder.AppendLine();
+
+                foreach (var miscellaneousTrigger in miscellaneousTriggers)
+                    builder.AppendLineIndented(indent, indentLevel, miscellaneousTrigger);
+                builder.AppendLine();
+
+                foreach (var timeExtensionTrigger in timeExtensionTriggers)
+                    builder.AppendLineIndented(indent, indentLevel, timeExtensionTrigger);
+                builder.AppendLine();
+
+                foreach (var storyObjectTrigger in storyObjectTriggers)
+                    builder.AppendLineIndented(indent, indentLevel, storyObjectTrigger);
+                builder.AppendLine();
+
+                indentLevel--;
             }
 
-            //foreach (var rootTrackSegment in rootTrackSegments)
-            //{
-            //    var trackSegmentHierarchy = rootTrackSegment.GetGraphHierarchyOrder();
-            //    foreach (var trackSegment in trackSegmentHierarchy)
-            //    {
-            //        var depth = trackSegment.Depth;
-            //        builder.Append(trackSegment.AnimationCurveTRS.PrintMultiLine(indentLevel + depth, indent));
-            //    }
-            //}
+            builder.AppendRepeat('-', lengthDivider);
+            builder.AppendLineIndented(indent, indentLevel, $"TRACK DATA");
+            {
+                indentLevel++;
+                builder.AppendLine();
 
-            // Track Nodes
-            int formatWidth = trackNodes.LengthToFormat();
-            builder.AppendLineIndented(indent, indentLevel, $"{nameof(trackNodes)} [{trackNodes.Length}]");
-            for (int i = 0; i < trackNodes.Length; i++)
-                builder.AppendLineIndented(indent, indentLevel, $"[{i.PadLeft(formatWidth)}] {trackNodes[i]}");
+                builder.AppendLineIndented(indent, indentLevel, trackLength);
+                builder.AppendLineIndented(indent, indentLevel, trackMinHeight);
+                builder.AppendLine();
 
-            // Checkpoints
-            builder.AppendLineIndented(indent, indentLevel, checkpointGridXZ);
-            builder.AppendLineIndented(indent, indentLevel, trackCheckpointGrid);
-            builder.AppendLine();
-            indentLevel--;
+                // Track Segments
+                foreach (var rootTrackSegment in rootTrackSegments)
+                {
+                    var trackSegmentHierarchy = rootTrackSegment.GetGraphHierarchyOrder();
+                    foreach (var trackSegment in trackSegmentHierarchy)
+                    {
+                        var depth = trackSegment.Depth;
+                        builder.AppendLineIndented(indent, indentLevel, trackSegment);
+                    }
+                }
+                builder.AppendLine();
+
+                // Track segment animation curves
+                foreach (var rootTrackSegment in rootTrackSegments)
+                {
+                    var trackSegmentHierarchy = rootTrackSegment.GetGraphHierarchyOrder();
+                    foreach (var trackSegment in trackSegmentHierarchy)
+                    {
+                        var depth = trackSegment.Depth;
+                        builder.AppendLineIndented(indent, indentLevel, trackSegment.AnimationCurveTRS);
+                    }
+                }
+                builder.AppendLine();
+
+                // Track Nodes
+                int formatWidth = trackNodes.LengthToFormat();
+                builder.AppendLineIndented(indent, indentLevel, $"{nameof(trackNodes)} [{trackNodes.Length}]");
+                for (int i = 0; i < trackNodes.Length; i++)
+                    builder.AppendLineIndented(indent, indentLevel, $"[{i.PadLeft(formatWidth)}] {trackNodes[i]}");
+                builder.AppendLine();
+
+                // Checkpoints
+                builder.AppendLineIndented(indent, indentLevel, checkpointGridXZ);
+                builder.AppendLineIndented(indent, indentLevel, trackCheckpointGrid);
+                builder.AppendLine();
+
+                indentLevel--;
+            }
+
+            //
+            builder.AppendRepeat('-', lengthDivider);
+            builder.AppendLineIndented(indent, indentLevel, $"COLLIDER DATA");
+            {
+                indentLevel++;
+                builder.AppendLineIndented(indent, indentLevel, staticColliderMeshManager);
+                indentLevel--;
+            }
+
+            builder.AppendRepeat('-', lengthDivider);
+            builder.AppendLineIndented(indent, indentLevel, $"SCENE OBJECTS");
+            {
+                indentLevel++;
+                foreach (var name in sceneObjectNames)
+                    builder.AppendLineIndented(indent, indentLevel + 1, name);
+                builder.AppendLine();
+
+                foreach (var sceneObject in sceneObjects)
+                    builder.AppendLineIndented(indent, indentLevel + 1, sceneObject);
+                builder.AppendLine();
+
+                foreach (var staticSceneObject in staticSceneObjects)
+                    builder.AppendLineIndented(indent, indentLevel + 1, staticSceneObject);
+                builder.AppendLine();
+
+                foreach (var dynamicSceneObject in dynamicSceneObjects)
+                    builder.AppendLineIndented(indent, indentLevel + 1, dynamicSceneObject);
+                builder.AppendLine();
+
+                builder.AppendLineIndented(indent, indentLevel, staticColliderMeshManager);
+                indentLevel--;
+            }
         }
 
         public override string ToString() => PrintSingleLine();
