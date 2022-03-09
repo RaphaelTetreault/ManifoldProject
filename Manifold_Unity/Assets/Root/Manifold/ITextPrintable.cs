@@ -11,9 +11,9 @@ namespace Manifold
         public string PrintSingleLine();
 
         /// <summary>
-        /// Prints this value, possibly including newlines.
+        /// Prints this value, possibly including newlines, to the provided <paramref name="stringBuilder"/>.
         /// </summary>
         /// <returns></returns>
-        public void PrintMultiLine(StringBuilder builder, int indentLevel = 0, string indent = "\t");
+        public void PrintMultiLine(StringBuilder stringBuilder, int indentLevel = 0, string indent = "\t");
     }
 }

@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using System.Text;
 
 namespace Manifold.IO
@@ -16,12 +15,16 @@ namespace Manifold.IO
         public static readonly Encoding shiftJis = Encoding.GetEncoding(shiftJisCodepage);
 
 
+        // CONSTRUCTORS
         public ShiftJisCString() : base() { }
         public ShiftJisCString(string value) : base(value) { }
 
+
+        // PROPERTIES
         public override Encoding Encoding => shiftJis;
 
 
+        // OPERATORS
         public static implicit operator string(ShiftJisCString cstr)
         {
             return cstr.value;
