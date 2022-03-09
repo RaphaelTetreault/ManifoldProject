@@ -94,7 +94,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         {
             if (mesh == null)
             {
-                mesh = Resources.GetBuiltinResource<Mesh>(EditorTools.Const.Resources.Cube);
+                mesh = Resources.GetBuiltinResource<Mesh>(UnityConst.Resources.Cube);
             }
 
             const int sizeofKeyableAttributes = 0x20;

@@ -7,7 +7,7 @@ using UnityEditor.SceneManagement;
 
 namespace Manifold.EditorTools.N64.FZX
 {
-    [CreateAssetMenu(menuName = Const.Menu.Fzx + "FZEP Track Importer")]
+    [CreateAssetMenu(menuName = FzxConst.Menu.Fzx + "FZEP Track Importer")]
     public static class FzxFzepImporter
     {
         public static void Import(TextAsset[] courses)

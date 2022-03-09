@@ -29,7 +29,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 return;
 
             Gizmos.color = Color.red;
-            var mesh = Resources.GetBuiltinResource<Mesh>(EditorTools.Const.Resources.Cube);
+            var mesh = Resources.GetBuiltinResource<Mesh>(UnityConst.Resources.Cube);
 
             var baseMtx = transform.localToWorldMatrix;
             var increment = 1f / 512f;

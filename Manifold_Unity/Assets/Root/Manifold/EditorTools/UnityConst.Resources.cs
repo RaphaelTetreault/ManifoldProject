@@ -1,10 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
 namespace Manifold.EditorTools
 {
-    public static partial class Const
+    public static partial class UnityConst
     {
         public static partial class Resources
         {
