@@ -496,6 +496,17 @@ namespace Manifold.IO
             return ReadArray(binaryReader, length, ReadDouble);
         }
 
+        public static string[] ReadStringArray(BinaryReader binaryReader, int length, Encoding encoding)
+        {
+            var array = new string[length];
+            for (int i = 0; i < length; i++)
+            {
+                var lengthBytes = binaryReader.ReadInt32();
+                array[i] = ReadString(binaryReader, lengthBytes, encoding);
+            }
+            return array;
+        }
+
         public static TBinarySerializable[] ReadBinarySerializableArray<TBinarySerializable>(BinaryReader binaryReader, int length) where TBinarySerializable : IBinarySerializable, new()
         {
             return ReadArray(binaryReader, length, ReadBinarySerializable<TBinarySerializable>);
@@ -567,6 +578,12 @@ namespace Manifold.IO
         {
             return value = ReadDoubleArray(binaryReader, length);
         }
+
+        public static string[] Read(BinaryReader binaryReader, int length, ref string[] value, Encoding encoding)
+        {
+            return value = ReadStringArray(binaryReader, length, encoding);
+        }
+
 
         public static TBinarySerializable[] Read<TBinarySerializable>(BinaryReader binaryReader, int length, ref TBinarySerializable[] value) where TBinarySerializable : IBinarySerializable, new()
         {
