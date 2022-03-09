@@ -1,0 +1,491 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="GameCube.GFZ.Stage.AnimationClip" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="8.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AARAAAEAAAABAoAkAAIgAgAGACDABFAAgAIAAAAEAIA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\Stage\AnimationClip.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="GameCube.GFZ.Stage.AnimationClipCurve" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="10" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAABACBAABAAAEAAAgQgAGACBABAAAEAIEQAAEAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\Stage\AnimationClipCurve.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="GameCube.GFZ.Stage.AnimationCurve" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="11.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAEAABAAAECAAgAgBAACBAAAAAEAAAAAAQAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\Stage\AnimationCurve.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="GameCube.GFZ.Stage.AnimationCurveTRS" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="13.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAABAIAkCAIgQgAAACBAAAEAAAIBQQAAAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\Stage\AnimationCurveTRS.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="GameCube.GFZ.Stage.Checkpoint" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="15.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAADCAAQAgABAAAEAAggEgIMADBCEAEgCgAAAAgEEgA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\Stage\Checkpoint.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="GameCube.GFZ.Stage.CheckpointGrid" Collapsed="true">
+    <Position X="5.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAEAAAAAAIAAAAAAAQAEAAAAAAAYAAAEAAAAAAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\Stage\CheckpointGrid.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GameCube.GFZ.Stage.ColliderMesh" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="17" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAwAAAACJAABACCEAAAggggGACBADBAAAAIEEEAECBA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\Stage\ColliderMesh.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="GameCube.GFZ.Stage.ColliderQuad" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="18.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAgAQALgAQAB4AEEAAAgAghAACBIAABAAEAFAAAAAQA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\Stage\ColliderQuad.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="GameCube.GFZ.Stage.ColliderTriangle" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="8.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAgAQALAAQABwAEEAAAgAghAACBIAABAAEAFAAAAAQA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\Stage\ColliderTriangle.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="GameCube.GFZ.Stage.CullOverrideTrigger" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="10" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABAAAAAAAAABAAAEAAAgAgQAACBEEAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\Stage\CullOverrideTrigger.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="GameCube.GFZ.Stage.EmbeddedTrackPropertyArea" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="11.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CAAAAAAEAAABBAAEAAAgAgCABKBIAAMAACADAAEgAIA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\Stage\EmbeddedTrackPropertyArea.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="GameCube.GFZ.Stage.FloatRef" Collapsed="true">
+    <Position X="4.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAABAAAEAAAgAgAAAGBAACAAAAAgAAAAAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\Stage\FloatRef.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="GameCube.GFZ.Stage.Fog" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="13.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>jAIABgEWoASBAABEAIAhAoIBgDBQAQAAAABBAAACARA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\Stage\Fog.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="GameCube.GFZ.Stage.FogCurves" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="15.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACAAAAAAAAABAAAECAAgwiAAACBAAQAAAAIAAQAAAAQ=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\Stage\FogCurves.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="GameCube.GFZ.Stage.GridXZ" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="17" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAKAAABAAAEACgiAggIACBIgAAACAoAAAAAAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\Stage\GridXZ.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="GameCube.GFZ.Stage.IndexGrid" Collapsed="true">
+    <Position X="4.75" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAIgAAAAAABAAAECAAgQgUAACJAABAAAAIAAAIACII=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\Stage\IndexGrid.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="GameCube.GFZ.Stage.IndexList" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="18.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACAAAgEAAAABAAAECAAgAgBAACBAAAAAAAAAAAAAAAI=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\Stage\IndexList.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="GameCube.GFZ.Stage.KeyableAttribute" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="8.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAABAAAAAAABBAAEEAQgAhAAACBAACAACAAgAAgAAQA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\Stage\KeyableAttribute.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="GameCube.GFZ.Stage.MiscellaneousTrigger" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="10" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAIAAAACAABAIAkAAIgAgQAQCBEEAAAAAAAEAAAAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\Stage\MiscellaneousTrigger.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="GameCube.GFZ.Stage.Scene" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="11.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ApeAugJCx4hDggpkggSwIpbSDmjwoASwkifCCYdSKgM=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\Stage\Scene.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="GameCube.GFZ.Stage.SceneObject" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="13.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAgAAAAJBEAAEQAAgAgQAACBAAEAAABJAAAAQAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\Stage\SceneObject.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="GameCube.GFZ.Stage.SceneObjectDynamic" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="15.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQKgAEAAYAQBAEAEAAEgQkSAKCBBgCgBAAIAAQQAAAQ=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\Stage\SceneObjectDynamic.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="GameCube.GFZ.Stage.SceneObjectLOD" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="17" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAIAAAAAABAAAEAAAgIgQCACBEAAAAAAIIAAACAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\Stage\SceneObjectLOD.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="GameCube.GFZ.Stage.SceneObjectStatic" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="18.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAQAABAEAEAAAgAgQAACBAAAABAAIAAQAAAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\Stage\SceneObjectStatic.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="GameCube.GFZ.Stage.SkeletalAnimator" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="8.25" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAIAAAAAAAABAAAEAAAgAoAAACDAAAAAABIIAAACAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\Stage\SkeletalAnimator.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="GameCube.GFZ.Stage.SkeletalProperties" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="10" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAABAABAAAEAAAgAgAEBCBABAAAAAAMAAAEAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\Stage\SkeletalProperties.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="GameCube.GFZ.Stage.StaticColliderMeshGrid" Collapsed="true">
+    <Position X="3.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAQAEAAAAAAAQAAAEAAAAAAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\Stage\StaticColliderMeshGrid.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GameCube.GFZ.Stage.StaticColliderMeshManager" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="15.25" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEoA0QBIDBBDEAgGPgAgQ8CABCDAgEEfBAIABAQABIA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\Stage\StaticColliderMeshManager.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="GameCube.GFZ.Stage.StoryObjectPath" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="17" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAABAAAAABAAAEAAAgQgAAACBAAAAAEAIAQAAAAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\Stage\StoryObjectPath.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="GameCube.GFZ.Stage.StoryObjectTrigger" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="18.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAACAAAAAABAYAsBAKgKgACACBAgAIABEIIAABAAAg=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\Stage\StoryObjectTrigger.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="GameCube.GFZ.Stage.StageTableLogger" Collapsed="true">
+    <Position X="11.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BligAEIZpQAQkAAgAAJQALCAAYERAggFKLoqAEEACKA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\Stage\TableLog.Stage.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GameCube.GFZ.Stage.StageTextLogger" Collapsed="true">
+    <Position X="13.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAQIAAAAIAAAAAAAAAAAAAAAAAAAAAQA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\Stage\TextLog.Stage.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GameCube.GFZ.Stage.TextureScroll" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="8.25" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CACAIAgAAAABAAAEAAAgAgAAACBAAAAAAAIAAAAAgAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\Stage\TextureScroll.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="GameCube.GFZ.Stage.TextureScrollField" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="10" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAABAAAEAAAgAgAAACBAAAAAABIAAAAAAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\Stage\TextureScrollField.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="GameCube.GFZ.Stage.TimeExtensionTrigger" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="11.75" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAABAAAMAAAgCgQAACBEAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\Stage\TimeExtensionTrigger.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="GameCube.GFZ.Stage.TrackCorner" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="13.5" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAQABAAAEQAAhAkQAACBUAAAAAAAAAAAAAgA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\Stage\TrackCorner.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="GameCube.GFZ.Stage.TrackLength" Collapsed="true">
+    <Position X="3.5" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\Stage\TrackLength.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GameCube.GFZ.Stage.TrackMinHeight" Collapsed="true">
+    <Position X="5.75" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\Stage\TrackMinHeight.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GameCube.GFZ.Stage.TrackNode" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="15.25" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAABAAAAQAQBAUAEAAEgAgAAACBAAAAAAAIAAAAAAQA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\Stage\TrackNode.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="GameCube.GFZ.Stage.TrackSegment" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="17" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAICEABCJlIhQAQsUAAkYhCAAGhQgECgcwJligAAAQA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\Stage\TrackSegment.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="GameCube.GFZ.Stage.TransformTRXS" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="18.75" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAABAAgABAIAkAIIgIgBCQCBAAAAAAAAQAACAEAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\Stage\TransformTRXS.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="GameCube.GFZ.Stage.UnknownCollider" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="8.25" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAQAABAEAEAAAgAgQAACBEAAABAAIAAQAAAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\Stage\UnknownCollider.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="GameCube.GFZ.Stage.VisualEffectTrigger" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="10" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAABAABAAAEgAAgAoQABCBEAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\Stage\VisualEffectTrigger.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Struct Name="GameCube.GFZ.Stage.Plane" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="8.25" Y="6.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CAAAAAAAAAAAAAAEAAAgAggAACBAAABIAAAkAAAAAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\Stage\Plane.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Struct>
+  <Struct Name="GameCube.GFZ.Stage.ViewRange" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="10" Y="6.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AACAAAAAAAAAAAAEAAAgAgAAACBAAAAAAAAAAIAAAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\Stage\ViewRange.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Struct>
+  <Enum Name="GameCube.GFZ.Stage.Bool32" Collapsed="true">
+    <Position X="8.25" Y="8" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\Stage\Bool32.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GameCube.GFZ.Stage.CircuitType" Collapsed="true">
+    <Position X="10" Y="8" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAABAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\Stage\CircuitType.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GameCube.GFZ.Stage.CourseMetadataType" Collapsed="true">
+    <Position X="11.75" Y="8" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAQEAAAAAAAAAAEAAAAAAAABAAAAAAAABAAAAAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\Stage\CourseMetadataType.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GameCube.GFZ.Stage.EmbeddedTrackPropertyType" Collapsed="true">
+    <Position X="13.5" Y="8" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAACAAAAAAAAAAEAACAAAAAAAAAAAAAAAAAIAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\Stage\EmbeddedTrackPropertyType.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GameCube.GFZ.Stage.FogType" Collapsed="true">
+    <Position X="15.25" Y="8" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AACAAAAgAAAAAAAAAAAAAAAAQIAEAAAAAAAAAAEAAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\Stage\FogType.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GameCube.GFZ.Stage.InterpolationMode" Collapsed="true">
+    <Position X="17" Y="8" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAgAAAAAAAAAAAAAAAAAAAAAAgCAAAAAAQAAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\Stage\InterpolationMode.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GameCube.GFZ.Stage.LodRenderFlags" Collapsed="true">
+    <Position X="18.75" Y="8" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ATAMCAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\Stage\LodRenderFlags.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GameCube.GFZ.Stage.ObjectActiveOverride" Collapsed="true">
+    <Position X="8.25" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAggAAABAAAAAAAAAAAAAAAAAAAAAEAABA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\Stage\ObjectActiveOverride.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GameCube.GFZ.Stage.SerializeFormat" Collapsed="true">
+    <Position X="10" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAKCAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\Stage\SerializeFormat.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GameCube.GFZ.Stage.StaticColliderMeshProperty" Collapsed="true">
+    <Position X="11.75" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BABCAAAAIAEAgAAAAABAAAABAAAAAAAAAAAEIAAAAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\Stage\StaticColliderMeshProperty.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GameCube.GFZ.Stage.StoryDifficulty" Collapsed="true">
+    <Position X="13.5" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAECAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\Stage\StoryDifficulty.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GameCube.GFZ.Stage.TimeExtensionOption" Collapsed="true">
+    <Position X="15.25" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAACAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\Stage\TimeExtensionOption.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GameCube.GFZ.Stage.TrackEmbeddedPropertyType" Collapsed="true">
+    <Position X="17" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAAEAAAAAAAAAAAIIAAAAAAACgAIAAAAAAAAAAEAAAI=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\Stage\TrackEmbeddedPropertyType.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GameCube.GFZ.Stage.TrackPerimeterFlags" Collapsed="true">
+    <Position X="18.75" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAABAgAAABAAAAAAAABAAAAAAAAEAAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\Stage\TrackPerimeterFlags.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GameCube.GFZ.Stage.TrackPipeCylinderFlags" Collapsed="true">
+    <Position X="8.25" Y="9.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAQAAAAAAABAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\Stage\TrackPipeCylinderFlags.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GameCube.GFZ.Stage.TrackSegmentType" Collapsed="true">
+    <Position X="10" Y="9.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAQAAAACIAAAAAABAAAAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\Stage\TrackSegmentType.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GameCube.GFZ.Stage.TriggerableAnimation" Collapsed="true">
+    <Position X="11.75" Y="9.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAYDAAAYBAIAAAAMAgAAAAAAAwAAAAAAAAAQDAA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\Stage\TriggerableAnimation.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GameCube.GFZ.Stage.TriggerableVisualEffect" Collapsed="true">
+    <Position X="13.5" Y="9.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAIIAACBAEAAAAAAAAQABAAAkCAAIAAAAAIAAAAQ=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\Stage\TriggerableVisualEffect.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GameCube.GFZ.Stage.UnknownTransformOption" Collapsed="true">
+    <Position X="15.25" Y="9.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAABA=</HashCode>
+      <FileName>Assets\Root\GameCube\GFZ\Stage\UnknownTransformOption.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
