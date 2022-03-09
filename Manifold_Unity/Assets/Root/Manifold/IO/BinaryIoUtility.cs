@@ -750,9 +750,9 @@ namespace Manifold.IO
             byte[] bytes = encoding.GetBytes(value);
 
             if (writeLengthBytes)
-                writer.Write(bytes.Length);
+                Write(writer, bytes.Length);
 
-            writer.Write(bytes);
+            Write(writer, bytes);
         }
 
         public static void Write<TBinarySerializable>(BinaryWriter writer, TBinarySerializable value) where TBinarySerializable : IBinarySerializable
