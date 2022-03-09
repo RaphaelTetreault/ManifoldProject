@@ -75,9 +75,6 @@ namespace Manifold.IO
 
         #endregion
 
-
-        // BinaryIOUtility function forwarding
-
         #region ReadX_Value
 
         public static bool ReadX_Bool(this BinaryReader reader)
@@ -123,7 +120,6 @@ namespace Manifold.IO
             => BinaryIoUtility.ReadEnum<TEnum>(reader);
 
         #endregion
-
 
         #region ReadX(ref value)
 

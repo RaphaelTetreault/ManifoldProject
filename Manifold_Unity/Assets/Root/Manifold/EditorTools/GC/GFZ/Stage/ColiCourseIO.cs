@@ -953,12 +953,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
 
 
-        public static void ExportUnityScenes(Scene.SerializeFormat format, bool serializeVerbose, params SceneAsset[] scenes)
+        public static void ExportUnityScenes(SerializeFormat format, bool serializeVerbose, params SceneAsset[] scenes)
         {
             // TEMP from previous function
             //var serializeVerbose = true;
             var openFolderAfterExport = true;
-            var allowOverwritingFiles = true;
+            //var allowOverwritingFiles = true;
             var exportTo = "C:/test";
             /////////////////////////////////////////////////////
 

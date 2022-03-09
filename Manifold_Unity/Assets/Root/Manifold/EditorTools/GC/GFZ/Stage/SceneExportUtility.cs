@@ -18,11 +18,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         [MenuItem(Const.Menu.Manifold + "Scene Generation/Export (Active Scene)")]
         public static void ExportSceneActive()
         {
-            var format = Scene.SerializeFormat.GX;
+            var format = SerializeFormat.GX;
             ExportScene(format, true, true);
         }
 
-        public static void ExportScene(Scene.SerializeFormat format, bool verbose, bool findInactive)
+        public static void ExportScene(SerializeFormat format, bool verbose, bool findInactive)
         {
             var settings = GfzProjectWindow.GetSettings();
             var outputPath = settings.SceneExportPath;
@@ -73,15 +73,15 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             LibGxFormat.AvGame compressFormat;
             switch (format)
             {
-                case Scene.SerializeFormat.AX:
+                case SerializeFormat.AX:
                     compressFormat = LibGxFormat.AvGame.FZeroAX;
                     break;
 
-                case Scene.SerializeFormat.GX:
+                case SerializeFormat.GX:
                     compressFormat = LibGxFormat.AvGame.FZeroGX;
                     break;
 
-                case Scene.SerializeFormat.InvalidFormat:
+                case SerializeFormat.InvalidFormat:
                     throw new ArgumentException("No format specified for serialization!");
 
                 default:

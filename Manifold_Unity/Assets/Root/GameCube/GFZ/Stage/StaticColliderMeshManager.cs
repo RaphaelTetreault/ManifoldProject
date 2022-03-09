@@ -74,7 +74,7 @@ namespace GameCube.GFZ.Stage
 
 
         // CONSTRUCTORS
-        public StaticColliderMeshManager(Scene.SerializeFormat serializeFormat)
+        public StaticColliderMeshManager(SerializeFormat serializeFormat)
         {
             SerializeFormat = serializeFormat;
             int count = SurfaceCount;
@@ -93,20 +93,20 @@ namespace GameCube.GFZ.Stage
         // PROPERTIES
         public AddressRange AddressRange { get; set; }
         public BoundingSphere BoundingSphere { get => boundingSphere; set => boundingSphere = value; }
-        public Scene.SerializeFormat SerializeFormat { get; set; } = Scene.SerializeFormat.InvalidFormat;
+        public SerializeFormat SerializeFormat { get; set; } = SerializeFormat.InvalidFormat;
         public int SurfaceCount
         {
             get
             {
                 switch (SerializeFormat)
                 {
-                    case Scene.SerializeFormat.AX:
+                    case SerializeFormat.AX:
                         return kCountAxSurfaceTypes;
 
-                    case Scene.SerializeFormat.GX:
+                    case SerializeFormat.GX:
                         return kCountGxSurfaceTypes;
 
-                    case Scene.SerializeFormat.InvalidFormat:
+                    case SerializeFormat.InvalidFormat:
                         throw new ArgumentException("Invalid serialization format!");
 
                     default:

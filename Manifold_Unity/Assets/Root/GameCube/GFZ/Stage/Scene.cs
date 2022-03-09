@@ -22,19 +22,6 @@ namespace GameCube.GFZ.Stage
         IFileType,
         IHasReference
     {
-        // To find
-        // * minimap rotation
-        // OF NOTE:
-        // some of this stuff might be in the REL file.
-
-        // TODO: move enum where most appropriate
-        public enum SerializeFormat
-        {
-            InvalidFormat,
-            AX,
-            GX,
-        }
-
         // CONSTANTS
         public const int kSizeOfZeroes0x20 = 0x14; // 20
         public const int kSizeOfZeroes0x28 = 0x20; // 32
@@ -43,19 +30,6 @@ namespace GameCube.GFZ.Stage
         public const int kAxConstPtr0x24 = 0xF8;
         public const int kGxConstPtr0x20 = 0xE8;
         public const int kGxConstPtr0x24 = 0xFC;
-
-        // METADATA
-        private bool isFileAX;
-        private bool isFileGX;
-        private AddressRange addressRange;
-        private int id;
-        private string fileName;
-        private int fileSize;
-        private Venue venue;
-        private string courseName;
-        private string author;
-        private bool serializeVerbose = true;
-        private SerializeFormat format;
 
 
         // FIELDS
@@ -119,68 +93,28 @@ namespace GameCube.GFZ.Stage
         public TrackSegment[] allTrackSegments;
         public TrackSegment[] rootTrackSegments;
         public ShiftJisCString[] sceneObjectNames;
-        public SceneObjectLOD[] sceneObjectLODs;
+        public SceneObjectLOD[] sceneObjectLODs; // debug
 
 
         // PROPERTIES
         public AddressRange AddressRange { get; set; }
-
-        public bool IsFileAX => isFileAX;
-        public bool IsFileGX => isFileGX;
+        public string Author { get; set; }
+        public string CourseName { get; set; }
+        public string FileExtension => "";
+        public string FileName { get; set; }
+        public int FileSize { get; private set; }
+        public SerializeFormat Format { get; set; }
+        public int ID { get; private set; }
+        public bool IsFileAX { get; private set; }
+        public bool IsFileGX { get; private set; }
+        public bool IsValidFile => IsFileAX ^ IsFileGX;
+        public bool SerializeVerbose { get; set; }
+        public Venue Venue { get; set; }
         /// <summary>
         /// Returns true if file is tagged either AX or GX, but not both
         /// </summary>
-        public bool IsValidFile => isFileAX ^ isFileGX;
-        public SerializeFormat Format
-        {
-            get => format;
-            set => format = value;
-        }
-
-        public bool SerializeVerbose
-        {
-            get => serializeVerbose;
-            set => serializeVerbose = value;
-        }
-
-        public string FileExtension => "";
-
-        public string FileName
-        {
-            get => fileName;
-            set => fileName = value;
-        }
-
-        public int FileSize
-        {
-            get => fileSize;
-            set => fileSize = value;
-        }
-
-        public string CourseName
-        {
-            get => courseName;
-            set => courseName = value;
-        }
-
-        public string VenueName
-        {
-            get => EnumExtensions.GetDescription(venue);
-        }
-
-        public Venue Venue
-        {
-            get => venue;
-            set => venue = value;
-        }
-        public string Author
-        {
-            get => author;
-            set => author = value;
-        }
-        public int ID => id;
-
-
+        public string VenueName => EnumExtensions.GetDescription(Venue);
+        
 
         public static bool IsAX(Pointer ptr0x20, Pointer ptr0x24)
         {
@@ -198,54 +132,22 @@ namespace GameCube.GFZ.Stage
             return isGX;
         }
 
-        public void InitAllTypes()
-        {
-            checkpointGridXZ = new GridXZ();
-
-            // REFERENCE FIELDS
-            trackNodes = new TrackNode[0];
-            embeddedPropertyAreas = EmbeddedTrackPropertyArea.DefaultArray();
-            staticColliderMeshManager = new StaticColliderMeshManager(SerializeFormat.InvalidFormat);
-
-            trackMinHeight = new TrackMinHeight(); // has default constructor
-            dynamicSceneObjects = new SceneObjectDynamic[0];
-            sceneObjects = new SceneObject[0];
-            staticSceneObjects = new SceneObjectStatic[0];
-            unknownColliders = new UnknownCollider[0];
-            fogCurves = new FogCurves();
-            fog = new Fog();
-            trackLength = new TrackLength();
-            unknownTriggers = new CullOverrideTrigger[0];
-            visualEffectTriggers = new VisualEffectTrigger[0];
-            miscellaneousTriggers = new MiscellaneousTrigger[0];
-            timeExtensionTriggers = new TimeExtensionTrigger[0];
-            storyObjectTriggers = new StoryObjectTrigger[0];
-            trackCheckpointGrid = new TrackCheckpointGrid();
-            // FIELDS (that require extra processing)
-            // Shared references
-            allTrackSegments = new TrackSegment[0];
-            rootTrackSegments = new TrackSegment[0];
-            sceneObjectNames = new ShiftJisCString[0];
-            sceneObjectLODs = new SceneObjectLOD[0];
-        }
-
         public void ValidateFileFormatPointers()
         {
-            isFileAX = IsAX(zeroes0x20Ptr, trackMinHeightPtr);
-            isFileGX = IsGX(zeroes0x20Ptr, trackMinHeightPtr);
+            IsFileAX = IsAX(zeroes0x20Ptr, trackMinHeightPtr);
+            IsFileGX = IsGX(zeroes0x20Ptr, trackMinHeightPtr);
             Assert.IsTrue(IsValidFile);
         }
-
 
         public void Deserialize(BinaryReader reader)
         {
             BinaryIoUtility.PushEndianness(Endianness.BigEndian);
 
             // CAPTURE METADATA
-            fileSize = (int)reader.BaseStream.Length;
+            FileSize = (int)reader.BaseStream.Length;
             // Store the stage index, can solve venue and course name from this using hashes
             var matchDigits = Regex.Match(FileName, Const.Regex.MatchIntegers);
-            id = int.Parse(matchDigits.Value);
+            ID = int.Parse(matchDigits.Value);
 
             // Read COLI_COURSE## file header
             DeserializeHeader(reader);
@@ -333,8 +235,8 @@ namespace GameCube.GFZ.Stage
             reader.JumpToAddress(checkpointGridPtr);
             reader.ReadX(ref trackCheckpointGrid);
 
-            // TEMP
-            // For some reason, this structure points back to these
+            // StaticColliderMeshManager shares references to these types. Rather than deserialize
+            // twice, simple rebind the shared link here. Assertion proves this is always ther case.
             staticColliderMeshManager.UnknownColliders = unknownColliders;
             staticColliderMeshManager.StaticSceneObjects = staticSceneObjects;
             Assert.IsTrue(staticColliderMeshManager.UnknownCollidersPtr == unknownCollidersPtr);
@@ -365,7 +267,7 @@ namespace GameCube.GFZ.Stage
                 var sceneObjectsDict = new Dictionary<Pointer, SceneObject>();
                 var sceneObjectNamesDict = new Dictionary<Pointer, ShiftJisCString>();
 
-                // Get all unique instances of SceneObjectTemplates
+                // Get all unique instances of SceneObjects
                 // NOTE: instances can share the same name/model but have different properties.
                 foreach (var staticSceneObject in staticSceneObjects)
                 {
@@ -386,17 +288,20 @@ namespace GameCube.GFZ.Stage
                 sceneObjects = sceneObjectsDict.Values.ToArray();
                 sceneObjects = sceneObjects.OrderBy(x => x.AddressRange.StartAddress).ToArray();
 
-                // Copy over the instances into it's own array
-                var sceneObjectLODs = new List<SceneObjectLOD>();
-                for (int i = 0; i < sceneObjects.Length; i++)
+                // TEMP DEBUGGING
+                // Copy over the LOD instances into it's own array
                 {
-                    var template = sceneObjects[i];
-                    for (int j = 0; j < template.LODs.Length; j++)
+                    var sceneObjectLODs = new List<SceneObjectLOD>();
+                    for (int i = 0; i < sceneObjects.Length; i++)
                     {
-                        sceneObjectLODs.Add(template.LODs[j]);
+                        var sceneObject = sceneObjects[i];
+                        for (int j = 0; j < sceneObject.LODs.Length; j++)
+                        {
+                            sceneObjectLODs.Add(sceneObject.LODs[j]);
+                        }
                     }
+                    this.sceneObjectLODs = sceneObjectLODs.OrderBy(x => x.AddressRange.StartAddress).ToArray();
                 }
-                this.sceneObjectLODs = sceneObjectLODs.OrderBy(x => x.AddressRange.StartAddress).ToArray();
 
                 // Get all unique name instances
                 // NOTE: since instances can use the same name/model, there is occasionally a few duplicate names.
@@ -446,7 +351,10 @@ namespace GameCube.GFZ.Stage
                 // Use helper function to collect all TrackSegments
                 var allTrackSegmentsList = new List<TrackSegment>();
                 foreach (var rootSegment in rootTrackSegments)
-                    allTrackSegmentsList.AddRange(rootSegment.GetGraphSerializableOrder());
+                {
+                    var rootSegmentHierarchy = rootSegment.GetGraphSerializableOrder();
+                    allTrackSegmentsList.AddRange(rootSegmentHierarchy);
+                }
                 allTrackSegments = allTrackSegmentsList.ToArray();
             }
 
@@ -486,7 +394,7 @@ namespace GameCube.GFZ.Stage
             writer.CommentDateAndCredits(true);
             writer.Comment("File Information", true);
             writer.CommentLineWide("Format:", Format, true);
-            writer.CommentLineWide("Verbose:", serializeVerbose, true);
+            writer.CommentLineWide("Verbose:", SerializeVerbose, true);
             writer.CommentLineWide("Universal:", false, true);
             writer.CommentNewLine(true, '-');
             writer.Comment("File name:", true);
@@ -494,10 +402,10 @@ namespace GameCube.GFZ.Stage
             writer.CommentNewLine(true, ' ');
             writer.Comment("Course Name:", true);
             writer.Comment(VenueName, true);
-            writer.Comment(courseName, true);
+            writer.Comment(CourseName, true);
             writer.CommentNewLine(true, ' ');
             writer.Comment("Stage Author(s):", true);
-            writer.Comment(author, true);
+            writer.Comment(Author, true);
             writer.CommentNewLine(true, '-');
 
 
@@ -506,15 +414,15 @@ namespace GameCube.GFZ.Stage
                 // TODO: consider re-serializing min height
 
                 // Print track length
-                writer.InlineDesc(serializeVerbose, 0x90 + offset, trackLength);
-                writer.CommentLineWide("Length:", trackLength.Value.ToString("0.00"), serializeVerbose);
-                writer.CommentNewLine(serializeVerbose, '-');
+                writer.InlineDesc(SerializeVerbose, 0x90 + offset, trackLength);
+                writer.CommentLineWide("Length:", trackLength.Value.ToString("0.00"), SerializeVerbose);
+                writer.CommentNewLine(SerializeVerbose, '-');
                 writer.WriteX(trackLength);
 
                 // The actual track data
                 {
                     // Write each tracknode - stitch of trackpoint and tracksegment
-                    writer.InlineDesc(serializeVerbose, 0x0C, trackNodes);
+                    writer.InlineDesc(SerializeVerbose, 0x0C, trackNodes);
                     writer.WriteX(trackNodes);
                     var trackNodesPtr = trackNodes.GetBasePointer();
 
@@ -524,14 +432,14 @@ namespace GameCube.GFZ.Stage
                         // All Checkpoints for each TrackNode must be sequential (branches 0-4).
                         // Sequential order in ROM is required for array pointer deserialization.
                         var typeTemp = new Checkpoint[0]; // TODO: remove need for this
-                        writer.InlineDesc(serializeVerbose, trackNodesPtr, typeTemp);
+                        writer.InlineDesc(SerializeVerbose, trackNodesPtr, typeTemp);
                         foreach (var trackNode in trackNodes)
                             writer.WriteX(trackNode.checkpoints);
                     }
 
                     // TRACK SEGMENTS
                     {
-                        writer.InlineDesc(serializeVerbose, trackNodesPtr, allTrackSegments);
+                        writer.InlineDesc(SerializeVerbose, trackNodesPtr, allTrackSegments);
                         writer.WriteX(allTrackSegments);
                     }
 
@@ -543,7 +451,7 @@ namespace GameCube.GFZ.Stage
                             listTrackCurves.Add(trackSegment.AnimationCurveTRS);
                         var allTrackCurves = listTrackCurves.ToArray();
                         // Write anim curve ptrs
-                        writer.InlineDesc(serializeVerbose, allTrackSegments.GetBasePointer(), allTrackCurves);
+                        writer.InlineDesc(SerializeVerbose, allTrackSegments.GetBasePointer(), allTrackCurves);
                         writer.WriteX(allTrackCurves);
 
                         // Construct list of all /animation curves/ (breakout from track structure)
@@ -553,12 +461,12 @@ namespace GameCube.GFZ.Stage
                                 listAnimationCurves.Add(animationCurve);
                         var allAnimationCurves = listAnimationCurves.ToArray();
                         //
-                        writer.InlineDesc(serializeVerbose, allTrackCurves.GetBasePointer(), allAnimationCurves);
+                        writer.InlineDesc(SerializeVerbose, allTrackCurves.GetBasePointer(), allAnimationCurves);
                         writer.WriteX(allAnimationCurves);
                     }
 
                     // TODO: better type comment
-                    writer.InlineDesc(serializeVerbose, new TrackCorner());
+                    writer.InlineDesc(SerializeVerbose, new TrackCorner());
                     foreach (var trackSegment in allTrackSegments)
                     {
                         var corner = trackSegment.TrackCorner;
@@ -571,18 +479,18 @@ namespace GameCube.GFZ.Stage
 
 
                 // Write track checkpoint indexers
-                writer.InlineDesc(serializeVerbose, 0xBC + offset, trackCheckpointGrid);
+                writer.InlineDesc(SerializeVerbose, 0xBC + offset, trackCheckpointGrid);
                 writer.WriteX(trackCheckpointGrid);
                 var trackIndexListPtr = trackCheckpointGrid.GetPointer();
                 // Only write if it has indexes
-                writer.InlineDesc(serializeVerbose, trackIndexListPtr, trackCheckpointGrid.IndexLists);
+                writer.InlineDesc(SerializeVerbose, trackIndexListPtr, trackCheckpointGrid.IndexLists);
                 foreach (var trackIndexList in trackCheckpointGrid.IndexLists)
                 {
                     writer.WriteX(trackIndexList);
                 }
 
                 //
-                writer.InlineDesc(serializeVerbose, 0x14, embeddedPropertyAreas);
+                writer.InlineDesc(SerializeVerbose, 0x14, embeddedPropertyAreas);
                 writer.WriteX(embeddedPropertyAreas);
             }
 
@@ -590,12 +498,12 @@ namespace GameCube.GFZ.Stage
             {
                 // STATIC COLLIDER MESHES
                 // Write main structure
-                writer.InlineDesc(serializeVerbose, 0x1C, staticColliderMeshManager);
+                writer.InlineDesc(SerializeVerbose, 0x1C, staticColliderMeshManager);
                 writer.WriteX(staticColliderMeshManager);
                 var scmPtr = staticColliderMeshManager.GetPointer();
 
                 // Write collider bounds (applies to to non-tri/quad collision, too)
-                writer.InlineDesc(serializeVerbose, staticColliderMeshManager.BoundingSphere);
+                writer.InlineDesc(SerializeVerbose, staticColliderMeshManager.BoundingSphere);
                 writer.WriteX(staticColliderMeshManager.BoundingSphere);
 
                 // COLLIDER TRIS
@@ -603,7 +511,7 @@ namespace GameCube.GFZ.Stage
                     var colliderTris = staticColliderMeshManager.ColliderTris;
                     // Write tri data and comment
                     if (!colliderTris.IsNullOrEmpty())
-                        writer.InlineDesc(serializeVerbose, scmPtr, colliderTris);
+                        writer.InlineDesc(SerializeVerbose, scmPtr, colliderTris);
                     writer.WriteX(colliderTris);
                     WriteStaticColliderMeshMatrices(writer, scmPtr, "ColiTri", staticColliderMeshManager.TriMeshGrids);
                 }
@@ -613,7 +521,7 @@ namespace GameCube.GFZ.Stage
                     var colliderQuads = staticColliderMeshManager.ColliderQuads;
                     // Write quad data and comment
                     if (!colliderQuads.IsNullOrEmpty())
-                        writer.InlineDesc(serializeVerbose, scmPtr, colliderQuads);
+                        writer.InlineDesc(SerializeVerbose, scmPtr, colliderQuads);
                     writer.WriteX(colliderQuads);
                     WriteStaticColliderMeshMatrices(writer, scmPtr, "ColiQuad", staticColliderMeshManager.QuadMeshGrids);
                 }
@@ -622,7 +530,7 @@ namespace GameCube.GFZ.Stage
             // FOG
             {
                 // Stage always has fog parameters
-                writer.InlineDesc(serializeVerbose, 0x84 + offset, fog);
+                writer.InlineDesc(SerializeVerbose, 0x84 + offset, fog);
                 writer.WriteX(fog);
 
                 // ... but does not always have associated curves
@@ -631,47 +539,47 @@ namespace GameCube.GFZ.Stage
                     // TODO: assert venue vs fog curves?
 
                     // Write FogCurves pointers to animation curves...
-                    writer.InlineDesc(serializeVerbose, 0x80 + offset, fogCurves);
+                    writer.InlineDesc(SerializeVerbose, 0x80 + offset, fogCurves);
                     writer.WriteX(fogCurves);
                     var fogCurvesPtr = fogCurves.GetPointer();
                     // ... then write the animation data associated with fog curves
-                    writer.InlineDesc(serializeVerbose, fogCurvesPtr, fogCurves.animationCurves);
+                    writer.InlineDesc(SerializeVerbose, fogCurvesPtr, fogCurves.animationCurves);
                     foreach (var curve in fogCurves.animationCurves)
                         writer.WriteX(curve);
                 }
             }
 
             // SCENE OBJECTS
-            //{
-            //// SCENE OBJECT NAMES
-            //// No direct pointer. Names are aligned to 4 bytes.
-            //writer.CommentAlign(serializeVerbose);
-            //writer.CommentNewLine(serializeVerbose, '-');
-            //writer.Comment("ScnObjectNames[]", serializeVerbose, ' ');
-            //writer.CommentNewLine(serializeVerbose, '-');
-            //foreach (var sceneObjectName in sceneObjectNames)
-            //{
-            //    writer.WriteX(sceneObjectName);
-            //    //writer.AlignTo(4);
-            //}
+            
+            // SCENE OBJECT NAMES
+            // No direct pointer. Names are aligned to 4 bytes.
+            writer.CommentAlign(SerializeVerbose);
+            writer.CommentNewLine(SerializeVerbose, '-');
+            writer.Comment("ScnObjectNames[]", SerializeVerbose, ' ');
+            writer.CommentNewLine(SerializeVerbose, '-');
+            foreach (var sceneObjectName in sceneObjectNames)
+            {
+                writer.WriteX(sceneObjectName);
+                //writer.AlignTo(4);
+            }
 
             // SCENE OBJECTS
-            writer.InlineComment(serializeVerbose, nameof(SceneObjectLOD));
+            writer.InlineComment(SerializeVerbose, nameof(SceneObjectLOD));
             writer.WriteX(sceneObjectLODs);
 
             // SCENE OBJECT TEMPLATES
-            writer.InlineDesc(serializeVerbose, 0x68 + offset, sceneObjects); // <<<<
+            writer.InlineDesc(SerializeVerbose, 0x68 + offset, sceneObjects); // <<<<
             writer.WriteX(sceneObjects);
 
             // STATIC SCENE OBJECTS
             if (!staticSceneObjects.IsNullOrEmpty())
             {
-                writer.InlineDesc(serializeVerbose, 0x70 + offset, staticSceneObjects); // <<<<
+                writer.InlineDesc(SerializeVerbose, 0x70 + offset, staticSceneObjects); // <<<<
                 writer.WriteX(staticSceneObjects);
             }
 
             // DYNAMIC SCENE OBJECTS
-            writer.InlineDesc(serializeVerbose, 0x54 + offset, dynamicSceneObjects);
+            writer.InlineDesc(SerializeVerbose, 0x54 + offset, dynamicSceneObjects);
             writer.WriteX(dynamicSceneObjects);
 
             // Scene Object Collider Geo
@@ -695,17 +603,17 @@ namespace GameCube.GFZ.Stage
                 }
             }
             // Collider Geometry
-            writer.InlineComment(serializeVerbose, nameof(ColliderMesh));
+            writer.InlineComment(SerializeVerbose, nameof(ColliderMesh));
             foreach (var colliderGeometry in colliderGeometries)
                 writer.WriteX(colliderGeometry);
             //
-            writer.InlineComment(serializeVerbose, nameof(ColliderMesh), nameof(ColliderTriangle));
+            writer.InlineComment(SerializeVerbose, nameof(ColliderMesh), nameof(ColliderTriangle));
             foreach (var tri in colliderGeoTris)
                 writer.WriteX(tri);
-            writer.InlineComment(serializeVerbose, nameof(ColliderMesh), nameof(ColliderQuad));
+            writer.InlineComment(SerializeVerbose, nameof(ColliderMesh), nameof(ColliderQuad));
             foreach (var quad in colliderGeoQuads)
                 writer.WriteX(quad);
-            //}
+            
 
             // Grab all of the data needed to serialize. By doing this, we can
             // create linear blocks of data for each type. It simplifies the
@@ -760,61 +668,58 @@ namespace GameCube.GFZ.Stage
 
             // Animation clips
             //writer.InlineDesc(serializeVerbose, animationClips.ToArray());
-            writer.InlineComment(serializeVerbose, nameof(AnimationClip) + "[]");
+            writer.InlineComment(SerializeVerbose, nameof(AnimationClip) + "[]");
             foreach (var animationClip in animationClips)
                 writer.WriteX(animationClip);
             // Animation clips' animation curves
             // 2022-01-18: add serilization for animation data!
-            writer.InlineComment(serializeVerbose, nameof(AnimationClip), "AnimClipCurve", $"{nameof(AnimationCurve)}[]");
+            writer.InlineComment(SerializeVerbose, nameof(AnimationClip), "AnimClipCurve", $"{nameof(AnimationCurve)}[]");
             foreach (var animationClipCurve in animationClipCurves)
                 if (animationClipCurve.AnimationCurve != null)
                     writer.WriteX(animationClipCurve.AnimationCurve);
 
             // Texture metadata
-            writer.InlineDesc(serializeVerbose, textureScrolls.ToArray());
+            writer.InlineDesc(SerializeVerbose, textureScrolls.ToArray());
             foreach (var textureMetadata in textureScrolls)
                 writer.WriteX(textureMetadata);
-            writer.InlineDesc(serializeVerbose, textureScrollFields.ToArray());
+            writer.InlineDesc(SerializeVerbose, textureScrollFields.ToArray());
             foreach (var textureMetadataField in textureScrollFields)
                 writer.WriteX(textureMetadataField);
 
             // Skeletal animator
-            writer.InlineDesc(serializeVerbose, skeletalAnimators.ToArray());
+            writer.InlineDesc(SerializeVerbose, skeletalAnimators.ToArray());
             foreach (var skeletalAnimator in skeletalAnimators)
                 writer.WriteX(skeletalAnimator);
-            writer.InlineDesc(serializeVerbose, skeletalProperties.ToArray());
+            writer.InlineDesc(SerializeVerbose, skeletalProperties.ToArray());
             foreach (var skeletalProperty in skeletalProperties)
                 writer.WriteX(skeletalProperty);
 
             // Transforms for dynamic scene objects
-            writer.InlineDesc(serializeVerbose, transformMatrices.ToArray());
+            writer.InlineDesc(SerializeVerbose, transformMatrices.ToArray());
             foreach (var transformMatrix3x4 in transformMatrices)
                 writer.WriteX(transformMatrix3x4);
 
-            //writer.InlineDesc(serializeVerbose, 0x54 + offset, dynamicSceneObjects);
-            //writer.WriteX(dynamicSceneObjects, false);
-            //}
 
             // TRIGGERS
             {
                 // TIME EXTENSION TRIGGERS
                 if (!timeExtensionTriggers.IsNullOrEmpty())
-                    writer.InlineDesc(serializeVerbose, 0xB0 + offset, timeExtensionTriggers);
+                    writer.InlineDesc(SerializeVerbose, 0xB0 + offset, timeExtensionTriggers);
                 writer.WriteX(timeExtensionTriggers);
 
                 // COURSE METADATA TRIGGERS
                 if (!miscellaneousTriggers.IsNullOrEmpty())
-                    writer.InlineDesc(serializeVerbose, 0xA8 + offset, miscellaneousTriggers);
+                    writer.InlineDesc(SerializeVerbose, 0xA8 + offset, miscellaneousTriggers);
                 writer.WriteX(miscellaneousTriggers);
 
                 // STORY OBJECT TRIGGERS
                 if (!storyObjectTriggers.IsNullOrEmpty())
-                    writer.InlineDesc(serializeVerbose, 0xB8 + offset, storyObjectTriggers);
+                    writer.InlineDesc(SerializeVerbose, 0xB8 + offset, storyObjectTriggers);
                 writer.WriteX(storyObjectTriggers);
                 //
                 // Get better comment? Get proper pointers?
                 if (!storyObjectTriggers.IsNullOrEmpty())
-                    writer.InlineDesc(serializeVerbose, new StoryObjectPath());
+                    writer.InlineDesc(SerializeVerbose, new StoryObjectPath());
                 foreach (var storyObjectTrigger in storyObjectTriggers)
                 {
                     // Optional data
@@ -835,41 +740,29 @@ namespace GameCube.GFZ.Stage
                 // UNKNOWN TRIGGERS
                 if (!unknownTriggers.IsNullOrEmpty())
                 {
-                    writer.InlineDesc(serializeVerbose, 0x94 + offset, unknownTriggers);
+                    writer.InlineDesc(SerializeVerbose, 0x94 + offset, unknownTriggers);
                     writer.WriteX(unknownTriggers);
                 }
 
                 // VISUAL EFFECT TRIGGERS
                 if (!visualEffectTriggers.IsNullOrEmpty())
                 {
-                    writer.InlineDesc(serializeVerbose, 0x9C + offset, visualEffectTriggers);
+                    writer.InlineDesc(SerializeVerbose, 0x9C + offset, visualEffectTriggers);
                     writer.WriteX(visualEffectTriggers);
                 }
 
                 // UNKNOWN COLLIDERS (SOLS ONLY)
                 if (!unknownColliders.IsNullOrEmpty())
                 {
-                    writer.InlineDesc(serializeVerbose, 0x60 + offset, unknownColliders);
+                    writer.InlineDesc(SerializeVerbose, 0x60 + offset, unknownColliders);
                     writer.WriteX(unknownColliders);
                 }
             }
 
-            // SCENE OBJECT NAMES
-            // No direct pointer. Names are aligned to 4 bytes.
-            writer.CommentAlign(serializeVerbose);
-            writer.CommentNewLine(serializeVerbose, '-');
-            writer.Comment("ScnObjectNames[]", serializeVerbose, ' ');
-            writer.CommentNewLine(serializeVerbose, '-');
-            foreach (var sceneObjectName in sceneObjectNames)
-            {
-                writer.WriteX(sceneObjectName);
-                //writer.AlignTo(4);
-            }
-
             // DEBUG
             // Assuming the writer for this stream is the type specified below,
-            // It will error if we write to the same address twice. this is useful
-            // for finding bugs where 
+            // It will error if we write to the same address twice. This is useful
+            // for finding bugs where writer is not reset to correct position.
             if (writer.GetType() == typeof(AddressLogBinaryWriter))
             {
                 ((AddressLogBinaryWriter)writer).MemoryLogActive = false;
@@ -943,7 +836,7 @@ namespace GameCube.GFZ.Stage
             ValidateReferences();
 
             //
-            fileSize = (int)writer.BaseStream.Length;
+            FileSize = (int)writer.BaseStream.Length;
 
             BinaryIoUtility.PopEndianness();
         }
@@ -970,17 +863,17 @@ namespace GameCube.GFZ.Stage
                 Assert.IsTrue(matrix != null);
 
                 // Write extra-helpful comment.
-                writer.CommentAlign(serializeVerbose, ' ');
-                writer.CommentNewLine(serializeVerbose, '-');
-                writer.CommentType(matrix, serializeVerbose);
-                writer.CommentPtr(refPtr, serializeVerbose);
-                writer.CommentNewLine(serializeVerbose, '-');
-                writer.CommentLineWide("Owner:", id, serializeVerbose);
-                writer.CommentLineWide("Index:", $"[{i,w}/{nMatrices}]", serializeVerbose);
-                writer.CommentLineWide("Type:", type, serializeVerbose);
-                writer.CommentLineWide("Mtx:", $"x:{matrix.SubdivisionsX,2}, z:{matrix.SubdivisionsZ,2}", serializeVerbose);
-                writer.CommentLineWide("MtxCnt:", matrix.Count, serializeVerbose);
-                writer.CommentNewLine(serializeVerbose, '-');
+                writer.CommentAlign(SerializeVerbose, ' ');
+                writer.CommentNewLine(SerializeVerbose, '-');
+                writer.CommentType(matrix, SerializeVerbose);
+                writer.CommentPtr(refPtr, SerializeVerbose);
+                writer.CommentNewLine(SerializeVerbose, '-');
+                writer.CommentLineWide("Owner:", id, SerializeVerbose);
+                writer.CommentLineWide("Index:", $"[{i,w}/{nMatrices}]", SerializeVerbose);
+                writer.CommentLineWide("Type:", type, SerializeVerbose);
+                writer.CommentLineWide("Mtx:", $"x:{matrix.SubdivisionsX,2}, z:{matrix.SubdivisionsZ,2}", SerializeVerbose);
+                writer.CommentLineWide("MtxCnt:", matrix.Count, SerializeVerbose);
+                writer.CommentNewLine(SerializeVerbose, '-');
                 //
                 writer.WriteX(matrix);
                 var qmiPtr = matrix.GetPointer(); // quad mesh indices? rename as is generic function between quad/tri
@@ -988,17 +881,17 @@ namespace GameCube.GFZ.Stage
                 if (matrix.HasIndexes)
                 {
                     // 256 lists
-                    writer.CommentAlign(serializeVerbose, ' ');
-                    writer.CommentNewLine(serializeVerbose, '-');
-                    writer.Comment($"{nameof(IndexList)}[{i,w}/{nMatrices}]", serializeVerbose);
-                    writer.CommentPtr(qmiPtr, serializeVerbose);
-                    writer.CommentLineWide("Type:", type, serializeVerbose);
-                    writer.CommentLineWide("Owner:", id, serializeVerbose);
-                    writer.CommentNewLine(serializeVerbose, '-');
+                    writer.CommentAlign(SerializeVerbose, ' ');
+                    writer.CommentNewLine(SerializeVerbose, '-');
+                    writer.Comment($"{nameof(IndexList)}[{i,w}/{nMatrices}]", SerializeVerbose);
+                    writer.CommentPtr(qmiPtr, SerializeVerbose);
+                    writer.CommentLineWide("Type:", type, SerializeVerbose);
+                    writer.CommentLineWide("Owner:", id, SerializeVerbose);
+                    writer.CommentNewLine(SerializeVerbose, '-');
                     for (int index = 0; index < matrix.IndexLists.Length; index++)
                         if (matrix.IndexLists[index].Length > 0)
-                            writer.CommentIdx(index, serializeVerbose);
-                    writer.CommentNewLine(serializeVerbose, '-');
+                            writer.CommentIdx(index, SerializeVerbose);
+                    writer.CommentNewLine(SerializeVerbose, '-');
                     for (int index = 0; index < matrix.IndexLists.Length; index++)
                     {
                         var quadIndexList = matrix.IndexLists[index];
@@ -1137,7 +1030,7 @@ namespace GameCube.GFZ.Stage
                 reader.ReadX(ref zeroes0x28, kSizeOfZeroes0x28);
                 reader.ReadX(ref dynamicSceneObjectCount);
                 reader.ReadX(ref unk_sceneObjectCount1);
-                if (isFileGX) reader.ReadX(ref unk_sceneObjectCount2);
+                if (IsFileGX) reader.ReadX(ref unk_sceneObjectCount2);
                 reader.ReadX(ref dynamicSceneObjectsPtr);
                 reader.ReadX(ref unkBool32_0x58);
                 reader.ReadX(ref unknownCollidersPtr);
@@ -1182,8 +1075,8 @@ namespace GameCube.GFZ.Stage
         {
             {
                 // Refresh metadata
-                isFileAX = Format == SerializeFormat.AX;
-                isFileGX = Format == SerializeFormat.GX;
+                IsFileAX = Format == SerializeFormat.AX;
+                IsFileGX = Format == SerializeFormat.GX;
                 Assert.IsFalse(Format == SerializeFormat.InvalidFormat);
 
                 // UPDATE POINTERS AND COUNTS
