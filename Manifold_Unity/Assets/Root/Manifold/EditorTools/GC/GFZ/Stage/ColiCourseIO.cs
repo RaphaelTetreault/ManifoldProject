@@ -1110,13 +1110,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
                 // Track Data
                 {
-                    var controlPoints = GameObject.FindObjectsOfType<GfzControlPoint>(canFindInactive);
-
-                    //coliScene.
-
-                    // Parse all CPs, get root nodes only?
-                    // Serialization could then run from root through chicldren, respecting array pointer seriialization.
-
                     //
                     coliScene.trackCheckpointGrid = new TrackCheckpointGrid();
 
