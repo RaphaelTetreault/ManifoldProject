@@ -401,7 +401,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         private static Transform CreateUnknownTriggers(Scene scene)
         {
-            var unknownTriggers = scene.unknownTriggers;
+            var unknownTriggers = scene.cullOverrideTriggers;
             int count = 0;
             int total = unknownTriggers.Length;
 
@@ -807,9 +807,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                     int index = indexList.Indexes[i];
                     var node = trackNodes[index];
 
-                    for (int j = 0; j < node.checkpoints.Length; j++)
+                    for (int j = 0; j < node.Checkpoints.Length; j++)
                     {
-                        var position = node.checkpoints[j].PlaneStart.origin;
+                        var position = node.Checkpoints[j].PlaneStart.origin;
                         var instance = CreatePrimitive(PrimitiveType.Sphere, $"{index}.{j}", chain);
                         instance.transform.position = position;
                         instance.transform.localScale = Vector3.one * 5f;

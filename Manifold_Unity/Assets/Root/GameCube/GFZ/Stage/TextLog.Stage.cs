@@ -74,7 +74,7 @@ namespace GameCube.GFZ.Stage
             log.WriteAddress(coliScene.timeExtensionTriggers);
             log.WriteAddress(coliScene.miscellaneousTriggers);
             log.WriteAddress(coliScene.storyObjectTriggers);
-            log.WriteAddress(coliScene.unknownTriggers);
+            log.WriteAddress(coliScene.cullOverrideTriggers);
             log.WriteAddress(coliScene.visualEffectTriggers);
 
             // Writes non-array track data
@@ -130,7 +130,7 @@ namespace GameCube.GFZ.Stage
             {
                 var checkpoints = new List<Checkpoint>();
                 foreach (var trackNode in coliScene.trackNodes)
-                    foreach (var checkpoint in trackNode.checkpoints)
+                    foreach (var checkpoint in trackNode.Checkpoints)
                         checkpoints.Add(checkpoint);
                 log.WriteAddress(checkpoints.ToArray());
             }

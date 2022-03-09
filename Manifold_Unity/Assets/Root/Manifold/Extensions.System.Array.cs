@@ -27,5 +27,11 @@ namespace Manifold
             var charWidth = LengthToFormat(array);
             return i.ToString().PadLeft(charWidth);
         }
+
+        public static string PadLeft(this int i, int width, char paddingChar = ' ')
+        {
+            string formattedString = i.ToString().PadLeft(width, paddingChar);
+            return formattedString;
+        }
     }
 }

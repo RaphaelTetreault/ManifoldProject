@@ -153,7 +153,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
                 // This trigger type is a mess... Get all 3 representations, combine, assign.
                 var unknownTriggers = GameObject.FindObjectsOfType<GfzCullOverrideTrigger>(findInactive);
-                scene.unknownTriggers = GetGfzValues(unknownTriggers);
+                scene.cullOverrideTriggers = GetGfzValues(unknownTriggers);
 
                 // 
                 var visualEffectTriggers = GameObject.FindObjectsOfType<GfzVisualEffectTrigger>(findInactive);

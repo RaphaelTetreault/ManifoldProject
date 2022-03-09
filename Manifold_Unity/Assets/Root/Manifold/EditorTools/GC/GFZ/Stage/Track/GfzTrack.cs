@@ -100,8 +100,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                     var trackNode = new TrackNode()
                     {
                         // Add checkpoints. TODO: support branching
-                        checkpoints = new Checkpoint[] { checkpoint },
-                        segment = currRootSegment,
+                        Checkpoints = new Checkpoint[] { checkpoint },
+                        Segment = currRootSegment,
                     };
 
                     // Add to master list

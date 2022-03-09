@@ -1084,8 +1084,8 @@ namespace GameCube.GFZ.Stage
                     var isAxGx = scene.IsFileGX ? "GX" : "AX";
 
                     int count = 0;
-                    int total = scene.unknownTriggers.Length;
-                    foreach (var item in scene.unknownTriggers)
+                    int total = scene.cullOverrideTriggers.Length;
+                    foreach (var item in scene.cullOverrideTriggers)
                     {
                         count++;
 
@@ -1378,9 +1378,9 @@ namespace GameCube.GFZ.Stage
                     int nodeIndex = 0;
                     foreach (var trackNode in scene.trackNodes)
                     {
-                        int pointLength = trackNode.checkpoints.Length;
+                        int pointLength = trackNode.Checkpoints.Length;
                         int pointIndex = 0;
-                        foreach (var trackPoint in trackNode.checkpoints)
+                        foreach (var trackPoint in trackNode.Checkpoints)
                         {
                             writer.WriteNextCol($"COLI_COURSE{scene.ID:d2}");
                             writer.WriteNextCol($"[{nodeIndex}/{nodeLength}]");

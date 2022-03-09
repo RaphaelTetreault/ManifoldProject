@@ -18,18 +18,23 @@ namespace GameCube.GFZ.Stage
     public class TrackNode :
         IBinaryAddressable,
         IBinarySerializable,
-        IHasReference
+        IHasReference,
+        ITextPrintable
     {
         // FIELDS
-        public ArrayPointer checkpointsPtr;
-        public Pointer segmentPtr;
+        private ArrayPointer checkpointsPtr;
+        private Pointer segmentPtr;
         // FIELDS (deserialized from pointers)
-        public Checkpoint[] checkpoints;
-        public TrackSegment segment;
+        private Checkpoint[] checkpoints;
+        private TrackSegment segment;
 
 
         // PROPERTIES
         public AddressRange AddressRange { get; set; }
+        public Checkpoint[] Checkpoints { get => checkpoints; set => checkpoints = value; }
+        public ArrayPointer CheckpointsPtr { get => checkpointsPtr; set => checkpointsPtr = value; }
+        public TrackSegment Segment { get => segment; set => segment = value; }
+        public Pointer SegmentPtr { get => segmentPtr; set => segmentPtr = value; }
 
 
         // METHODS
@@ -80,13 +85,19 @@ namespace GameCube.GFZ.Stage
             Assert.IsTrue(segmentPtr.IsNotNull);
         }
 
-        public override string ToString()
+        public string PrintSingleLine()
         {
-            return 
-                $"{nameof(TrackNode)}(" +
-                $"{nameof(segmentPtr)}: 0x{segmentPtr}, " +
-                $"{nameof(checkpoints)}: {checkpoints.Length}" +
-                $")";
+            return $"{nameof(TrackNode)}({Checkpoints}[{checkpoints.Length}])";
         }
+
+        public string PrintMultiLine(int indentLevel = 0, string indent = "\t")
+        {
+            var builder = new System.Text.StringBuilder();
+            builder.AppendLineIndented(indent, indentLevel, PrintSingleLine());
+            return builder.ToString();
+        }
+
+        public override string ToString() => PrintSingleLine();
+
     }
 }

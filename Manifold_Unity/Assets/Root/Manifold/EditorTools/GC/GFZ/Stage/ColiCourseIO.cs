@@ -411,10 +411,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                     var trackNode = coliScene.trackNodes[i];
                     var iFormat = i.ArrayFormat(coliScene.trackNodes);
 
-                    for (int j = 0; j < trackNode.checkpoints.Length; j++)
+                    for (int j = 0; j < trackNode.Checkpoints.Length; j++)
                     {
-                        var checkpoint = trackNode.checkpoints[j];
-                        var jFormat = j.ArrayFormat(trackNode.checkpoints);
+                        var checkpoint = trackNode.Checkpoints[j];
+                        var jFormat = j.ArrayFormat(trackNode.Checkpoints);
                         // Write index, string to log
                         log.Write($"[{iFormat},{jFormat}]\t");
                         log.WriteLine(PrintData(functionIdx, checkpoint));
@@ -610,7 +610,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             log.WriteAddress(coliScene.timeExtensionTriggers);
             log.WriteAddress(coliScene.miscellaneousTriggers);
             log.WriteAddress(coliScene.storyObjectTriggers);
-            log.WriteAddress(coliScene.unknownTriggers);
+            log.WriteAddress(coliScene.cullOverrideTriggers);
             log.WriteAddress(coliScene.visualEffectTriggers);
 
             // Writes non-array track data
@@ -668,7 +668,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             {
                 var checkpoints = new List<Checkpoint>();
                 foreach (var trackNode in coliScene.trackNodes)
-                    foreach (var checkpoint in trackNode.checkpoints)
+                    foreach (var checkpoint in trackNode.Checkpoints)
                         checkpoints.Add(checkpoint);
                 log.WriteAddress(checkpoints.ToArray());
             }
@@ -1072,7 +1072,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
                     // This trigger type is a mess... Get all 3 representations, combine, assign.
                     var unknownTriggers = GameObject.FindObjectsOfType<GfzCullOverrideTrigger>(canFindInactive);
-                    coliScene.unknownTriggers = GetGfzValues(unknownTriggers);
+                    coliScene.cullOverrideTriggers = GetGfzValues(unknownTriggers);
 
                     var unknownSolsTriggers = GameObject.FindObjectsOfType<GfzUnknownCollider>(canFindInactive);
                     coliScene.unknownColliders = GetGfzValues(unknownSolsTriggers);
@@ -1085,7 +1085,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                     log.WriteLineSummary(coliScene.timeExtensionTriggers);
                     // Log. TODO: more granularity in type.
                     log.WriteLineSummary(coliScene.miscellaneousTriggers);
-                    log.WriteLineSummary(coliScene.unknownTriggers);
+                    log.WriteLineSummary(coliScene.cullOverrideTriggers);
                     log.WriteLineSummary(coliScene.unknownColliders);
                     log.WriteLineSummary(coliScene.visualEffectTriggers);
                     log.WriteLine();

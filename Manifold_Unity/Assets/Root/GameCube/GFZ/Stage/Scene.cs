@@ -20,7 +20,8 @@ namespace GameCube.GFZ.Stage
         IBinaryAddressable,
         IBinarySerializable,
         IFileType,
-        IHasReference
+        IHasReference,
+        ITextPrintable
     {
         // CONSTANTS
         public const int kSizeOfZeroes0x20 = 0x14; // 20
@@ -82,7 +83,7 @@ namespace GameCube.GFZ.Stage
         public FogCurves fogCurves;
         public Fog fog;
         public TrackLength trackLength;
-        public CullOverrideTrigger[] unknownTriggers;
+        public CullOverrideTrigger[] cullOverrideTriggers;
         public VisualEffectTrigger[] visualEffectTriggers;
         public MiscellaneousTrigger[] miscellaneousTriggers;
         public TimeExtensionTrigger[] timeExtensionTriggers;
@@ -114,7 +115,7 @@ namespace GameCube.GFZ.Stage
         /// Returns true if file is tagged either AX or GX, but not both
         /// </summary>
         public string VenueName => EnumExtensions.GetDescription(Venue);
-        
+
 
         public static bool IsAX(Pointer ptr0x20, Pointer ptr0x24)
         {
@@ -213,7 +214,7 @@ namespace GameCube.GFZ.Stage
 
             // 0x94 and 0x98
             reader.JumpToAddress(unknownTriggersPtr);
-            reader.ReadX(ref unknownTriggers, unknownTriggersPtr.Length);
+            reader.ReadX(ref cullOverrideTriggers, unknownTriggersPtr.Length);
 
             // 0x9C and 0xA0
             reader.JumpToAddress(visualEffectTriggersPtr);
@@ -338,14 +339,10 @@ namespace GameCube.GFZ.Stage
                 var rootTrackSegmentDict = new Dictionary<Pointer, TrackSegment>();
                 foreach (var trackNode in trackNodes)
                 {
-                    var segment = GetSharedSerializable(reader, trackNode.segmentPtr, rootTrackSegmentDict);
-                    trackNode.segment = segment;
+                    var segment = GetSharedSerializable(reader, trackNode.SegmentPtr, rootTrackSegmentDict);
+                    trackNode.Segment = segment;
                 }
                 rootTrackSegments = rootTrackSegmentDict.Values.ToArray();
-
-                // 2021/09/22: test tagging for serialization order
-                foreach (var rootTrackSegment in rootTrackSegments)
-                    rootTrackSegment.IsRoot = true;
 
                 // ALL TRACK SEGMENTS
                 // Use helper function to collect all TrackSegments
@@ -434,7 +431,7 @@ namespace GameCube.GFZ.Stage
                         var typeTemp = new Checkpoint[0]; // TODO: remove need for this
                         writer.InlineDesc(SerializeVerbose, trackNodesPtr, typeTemp);
                         foreach (var trackNode in trackNodes)
-                            writer.WriteX(trackNode.checkpoints);
+                            writer.WriteX(trackNode.Checkpoints);
                     }
 
                     // TRACK SEGMENTS
@@ -550,7 +547,7 @@ namespace GameCube.GFZ.Stage
             }
 
             // SCENE OBJECTS
-            
+
             // SCENE OBJECT NAMES
             // No direct pointer. Names are aligned to 4 bytes.
             writer.CommentAlign(SerializeVerbose);
@@ -613,7 +610,7 @@ namespace GameCube.GFZ.Stage
             writer.InlineComment(SerializeVerbose, nameof(ColliderMesh), nameof(ColliderQuad));
             foreach (var quad in colliderGeoQuads)
                 writer.WriteX(quad);
-            
+
 
             // Grab all of the data needed to serialize. By doing this, we can
             // create linear blocks of data for each type. It simplifies the
@@ -738,10 +735,10 @@ namespace GameCube.GFZ.Stage
                 }
 
                 // UNKNOWN TRIGGERS
-                if (!unknownTriggers.IsNullOrEmpty())
+                if (!cullOverrideTriggers.IsNullOrEmpty())
                 {
-                    writer.InlineDesc(SerializeVerbose, 0x94 + offset, unknownTriggers);
-                    writer.WriteX(unknownTriggers);
+                    writer.InlineDesc(SerializeVerbose, 0x94 + offset, cullOverrideTriggers);
+                    writer.WriteX(cullOverrideTriggers);
                 }
 
                 // VISUAL EFFECT TRIGGERS
@@ -913,15 +910,15 @@ namespace GameCube.GFZ.Stage
             foreach (var trackNode in trackNodes)
             {
                 list.Add(trackNode);
-                list.AddRange(trackNode.checkpoints);
-                list.Add(trackNode.segment);
-                list.Add(trackNode.segment.AnimationCurveTRS);
-                list.AddRange(trackNode.segment.AnimationCurveTRS.AnimationCurves);
-                foreach (var anim in trackNode.segment.AnimationCurveTRS.AnimationCurves) // null?
+                list.AddRange(trackNode.Checkpoints);
+                list.Add(trackNode.Segment);
+                list.Add(trackNode.Segment.AnimationCurveTRS);
+                list.AddRange(trackNode.Segment.AnimationCurveTRS.AnimationCurves);
+                foreach (var anim in trackNode.Segment.AnimationCurveTRS.AnimationCurves) // null?
                     list.AddRange(anim.KeyableAttributes);
-                list.Add(trackNode.segment.TrackCorner);
-                if (trackNode.segment.TrackCorner != null)
-                    list.Add(trackNode.segment.TrackCorner.Matrix3x4);
+                list.Add(trackNode.Segment.TrackCorner);
+                if (trackNode.Segment.TrackCorner != null)
+                    list.Add(trackNode.Segment.TrackCorner.Matrix3x4);
             }
 
             list.AddRange(embeddedPropertyAreas);
@@ -991,7 +988,7 @@ namespace GameCube.GFZ.Stage
             }
 
             list.Add(trackLength);
-            list.AddRange(unknownTriggers);
+            list.AddRange(cullOverrideTriggers);
             list.AddRange(visualEffectTriggers);
             list.AddRange(miscellaneousTriggers);
             list.AddRange(timeExtensionTriggers);
@@ -1094,7 +1091,7 @@ namespace GameCube.GFZ.Stage
                 miscellaneousTriggersPtr = miscellaneousTriggers.GetArrayPointer();
                 storyObjectTriggersPtr = storyObjectTriggers.GetArrayPointer();
                 unknownCollidersPtr = unknownColliders.GetArrayPointer();
-                unknownTriggersPtr = unknownTriggers.GetArrayPointer();
+                unknownTriggersPtr = cullOverrideTriggers.GetArrayPointer();
                 visualEffectTriggersPtr = visualEffectTriggers.GetArrayPointer();
                 // SCENE OBJECTS
                 // References
@@ -1187,8 +1184,8 @@ namespace GameCube.GFZ.Stage
             Assert.ReferencePointer(fogCurves, fogCurvesPtr);
             Assert.ReferencePointer(fog, fogPtr);
             Assert.ReferencePointer(trackLength, trackLengthPtr);
-            if (unknownTriggers.Length > 0)
-                Assert.ReferencePointer(unknownTriggers, unknownTriggersPtr);
+            if (cullOverrideTriggers.Length > 0)
+                Assert.ReferencePointer(cullOverrideTriggers, unknownTriggersPtr);
             if (miscellaneousTriggers.Length > 0)
                 Assert.ReferencePointer(miscellaneousTriggers, miscellaneousTriggersPtr);
             if (timeExtensionTriggers.Length > 0)
@@ -1198,69 +1195,130 @@ namespace GameCube.GFZ.Stage
             Assert.ReferencePointer(trackCheckpointGrid, checkpointGridPtr);
         }
 
-        ///// <summary>
-        ///// Adds serialized reference to Dictionary<> if not present, otherwise skips adding it. 'ref' is used so that
-        ///// the calling function can access the reference if found within the dictionary.
-        ///// </summary>
-        ///// <typeparam name="T"></typeparam>
-        ///// <param name="reader"></param>
-        ///// <param name="ptr"></param>
-        ///// <param name="reference"></param>
-        ///// <param name="dict"></param>
-        //public static void GetSerializable<T>(BinaryReader reader, Pointer ptr, ref T reference, Dictionary<Pointer, T> dict)
-        //    where T : class, IBinarySerializable, new()
-        //{
-        //    // If ptr is null, set reference to null, return
-        //    if (ptr.IsNull)
-        //    {
-        //        reference = null;
-        //        return;
-        //    }
-
-        //    // If we have have this reference, return it
-        //    if (dict.ContainsKey(ptr))
-        //    {
-        //        reference = dict[ptr];
-        //    }
-        //    // If we don't have this reference, deserialize it, store in dict, return it
-        //    else
-        //    {
-        //        reader.JumpToAddress(ptr);
-        //        reader.ReadX(ref reference);
-        //        dict.Add(ptr, reference);
-        //    }
-        //}
-
         /// <summary>
-        /// Adds serialized reference to Dictionary<> if not present, otherwise skips adding it. 'ref' is used so that
-        /// the calling function can access the reference if found within the dictionary.
+        /// Returns the BinarySerializable at the specified <paramref name="pointer"/>. If the instance's pointer is not in the
+        /// <paramref name="dictionary"/>, a new instance will be deserialized from the <paramref name="reader"/> at the
+        /// <paramref name="pointer"/> address and added to the <paramref name="dictionary"/>. If the <paramref name="pointer"/>
+        /// exists in the <paramref name="dictionary"/>, that instance will be returned without deserializing a new
+        /// instance from the <paramref name="reader"/>.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="reader"></param>
-        /// <param name="ptr"></param>
-        /// <param name="dict"></param>
-        public static TBinarySerializable GetSharedSerializable<TBinarySerializable>(BinaryReader reader, Pointer ptr, Dictionary<Pointer, TBinarySerializable> dict)
+        /// <typeparam name="TBinarySerializable">The type of BinarySerializable</typeparam>
+        /// <param name="reader">The binary reader to deserialize from, if necessary.</param>
+        /// <param name="pointer">The pointer of an instance to either deserialize or retrieve from <paramref name="dictionary"/></param>
+        /// <param name="dictionary">The dictionary correlating <paramref name="pointer"/> to instances.</param>
+        public static TBinarySerializable GetSharedSerializable<TBinarySerializable>(BinaryReader reader, Pointer pointer, Dictionary<Pointer, TBinarySerializable> dictionary)
             where TBinarySerializable : class, IBinarySerializable, new()
         {
             // If ptr is null, set reference to null, return
-            if (ptr.IsNull)
+            if (pointer.IsNull)
                 return null;
 
             // If we have have this reference, return it
-            if (dict.ContainsKey(ptr))
+            if (dictionary.ContainsKey(pointer))
             {
-                return dict[ptr];
+                return dictionary[pointer];
             }
             // If we don't have this reference, deserialize it, store in dict, return it
             else
             {
-                reader.JumpToAddress(ptr);
+                reader.JumpToAddress(pointer);
                 var binarySerializable = new TBinarySerializable();
                 binarySerializable.Deserialize(reader);
-                dict.Add(ptr, binarySerializable);
+                dictionary.Add(pointer, binarySerializable);
                 return binarySerializable;
             }
         }
+
+
+        public string PrintSingleLine()
+        {
+            return $"{nameof(Scene)}({Venue} [{CourseName}] by {Author}, {nameof(ID)}({ID}), {Format})";
+        }
+
+        //// FIELDS (that require extra processing)
+        //// Shared references
+        //public TrackSegment[] allTrackSegments;
+        //public TrackSegment[] rootTrackSegments;
+        //public ShiftJisCString[] sceneObjectNames;
+        //public SceneObjectLOD[] sceneObjectLODs; // debug
+
+        public string PrintMultiLine(int indentLevel = 0, string indent = "\t")
+        {
+            var builder = new System.Text.StringBuilder();
+
+            builder.AppendLineIndented(indent, indentLevel, PrintSingleLine());
+            indentLevel++;
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(FileSize)}: {FileSize:n0}, {FileSize:x8}");
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(SerializeFormat)}: {Format}");
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(IsValidFile)}: {IsValidFile}");
+            builder.AppendLine();
+
+            builder.AppendLineIndented(indent, indentLevel, $"MISC DATA");
+            indentLevel++;
+            builder.Append(unkRange0x00.PrintMultiLine(indentLevel, indent));
+            builder.Append(fog.PrintMultiLine(indentLevel, indent));
+            builder.Append(fogCurves.PrintMultiLine(indentLevel, indent));
+            builder.AppendLine();
+            indentLevel--;
+
+            builder.AppendLineIndented(indent, indentLevel, $"TRIGGERS");
+            indentLevel++;
+            foreach (var cullOverrideTrigger in cullOverrideTriggers)
+                builder.Append(cullOverrideTrigger.PrintMultiLine(indentLevel, indent));
+            foreach (var visualEffectTrigger in visualEffectTriggers)
+                builder.Append(visualEffectTrigger.PrintMultiLine(indentLevel, indent));
+            foreach (var miscellaneousTrigger in miscellaneousTriggers)
+                builder.Append(miscellaneousTrigger.PrintMultiLine(indentLevel, indent));
+            foreach (var timeExtensionTrigger in timeExtensionTriggers)
+                builder.Append(timeExtensionTrigger.PrintMultiLine(indentLevel, indent));
+            foreach (var storyObjectTrigger in storyObjectTriggers)
+                builder.Append(storyObjectTrigger.PrintMultiLine(indentLevel, indent));
+            builder.AppendLine();
+            indentLevel--;
+
+
+            builder.AppendLineIndented(indent, indentLevel, $"TRACK DATA");
+            indentLevel++;
+            builder.Append(trackLength.PrintMultiLine(indentLevel, indent));
+            builder.Append(trackMinHeight.PrintMultiLine(indentLevel, indent));
+
+            // Track Segments
+            foreach (var rootTrackSegment in rootTrackSegments)
+            {
+                var trackSegmentHierarchy = rootTrackSegment.GetGraphHierarchyOrder();
+                foreach (var trackSegment in trackSegmentHierarchy)
+                {
+                    var depth = trackSegment.Depth;
+                    builder.Append(trackSegment.PrintMultiLine(indentLevel + depth, indent));
+                }
+            }
+
+            //foreach (var rootTrackSegment in rootTrackSegments)
+            //{
+            //    var trackSegmentHierarchy = rootTrackSegment.GetGraphHierarchyOrder();
+            //    foreach (var trackSegment in trackSegmentHierarchy)
+            //    {
+            //        var depth = trackSegment.Depth;
+            //        builder.Append(trackSegment.AnimationCurveTRS.PrintMultiLine(indentLevel + depth, indent));
+            //    }
+            //}
+
+            // Track Nodes
+            int formatWidth = trackNodes.LengthToFormat();
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(trackNodes)} [{trackNodes.Length}]");
+            for (int i = 0; i < trackNodes.Length; i++)
+                builder.AppendLineIndented(indent, indentLevel, $"[{i.PadLeft(formatWidth)}] {trackNodes[i]}");
+
+            // Checkpoints
+            builder.Append(checkpointGridXZ.PrintMultiLine(indentLevel, indent));
+            builder.Append(trackCheckpointGrid.PrintMultiLine(indentLevel, indent));
+            builder.AppendLine();
+            indentLevel--;
+
+            return builder.ToString();
+        }
+
+        public override string ToString() => PrintSingleLine();
 
     }
 }

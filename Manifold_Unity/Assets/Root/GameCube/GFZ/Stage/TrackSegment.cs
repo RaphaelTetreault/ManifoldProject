@@ -112,6 +112,9 @@ namespace GameCube.GFZ.Stage
                 Assert.IsTrue(zero_0x44 == 0);
                 Assert.IsTrue(zero_0x48 == 0);
 
+                // We are a root segment if out depth is 0
+                IsRoot = Depth == 0;
+
                 DeserializeChildrenRecursively(reader);
             }
             this.SetReaderToEndAddress(reader);
@@ -123,7 +126,7 @@ namespace GameCube.GFZ.Stage
         /// </summary>
         /// <param name="reader">The reader to deserialize children from. Must be same used to deserialize this instance.</param>
         /// <returns>All children of this instance. Result can be of size 0. Result will not be null.</returns>
-        private void DeserializeChildrenRecursively(BinaryReader reader)
+        private void DeserializeChildrenRecursively(BinaryReader reader, int depth = 0)
         {
             var children = new TrackSegment[0];
             if (childrenPtr.IsNotNull)
@@ -138,6 +141,7 @@ namespace GameCube.GFZ.Stage
             foreach (var child in children)
             {
                 child.Parent = this;
+                child.Depth = depth + 1;
                 child.DeserializeChildrenRecursively(reader);
             }
         }
@@ -244,6 +248,24 @@ namespace GameCube.GFZ.Stage
             return trackSegmentHierarchy.ToArray();
         }
 
+        public TrackSegment[] GetGraphHierarchyOrder()
+        {
+            var trackSegmentHierarchy = new List<TrackSegment>();
+
+            // Add root/parent as first element
+            trackSegmentHierarchy.Add(this);
+
+            // Kick off recursive collection of TrackSegments
+            foreach (var child in children)
+            {
+                var childHierarchy = child.GetGraphHierarchyOrder();
+                trackSegmentHierarchy.AddRange(childHierarchy);
+            }
+
+            // Return our list/array which is ready to be serialized to disk
+            return trackSegmentHierarchy.ToArray();
+        }
+
         /// <summary>
         /// Gets all children of <paramref name="parent"/> and adds it to the list <paramref name="segmentGraph"/>.
         /// After collecting children, the function recursively adds each child's children to the graph.
@@ -272,16 +294,16 @@ namespace GameCube.GFZ.Stage
         {
             var builder = new System.Text.StringBuilder();
             
-            builder.AppendLineIndented(indent, indentLevel, $"{nameof(TrackSegment)}");
+            builder.AppendLineIndented(indent, indentLevel, $"{nameof(TrackSegment)} ({nameof(Depth)}: {Depth})");
             indentLevel++;
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(segmentType)}: {segmentType}");
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(embeddedPropertyType)}: {embeddedPropertyType}");
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(perimeterFlags)}: {perimeterFlags}");
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(segmentType)}: {segmentType}");
-            //
-            builder.AppendLineIndented(indent, indentLevel, $"{nameof(animationCurvesTrsPtr)}: {animationCurvesTrsPtr}");
-            builder.AppendLineIndented(indent, indentLevel, $"{nameof(trackCornerPtr)}: {trackCornerPtr}");
-            builder.AppendLineIndented(indent, indentLevel, $"{nameof(childrenPtr)}: {childrenPtr}");
+            ////
+            //builder.AppendLineIndented(indent, indentLevel, $"{nameof(animationCurvesTrsPtr)}: {animationCurvesTrsPtr}");
+            //builder.AppendLineIndented(indent, indentLevel, $"{nameof(trackCornerPtr)}: {trackCornerPtr}");
+            //builder.AppendLineIndented(indent, indentLevel, $"{nameof(childrenPtr)}: {childrenPtr}");
             //
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(localScale)}: {localScale}");
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(localRotation)}: {localRotation}");
@@ -307,7 +329,7 @@ namespace GameCube.GFZ.Stage
             return $"{nameof(TrackSegment)}({nameof(Children)}[{Children.Length}])";
         }
 
-        public override string ToString() =>PrintSingleLine();
+        public override string ToString() => PrintSingleLine();
 
     }
 }
