@@ -8,7 +8,7 @@ namespace GameCube.GFZ.Camera
     [Serializable]
     public sealed class LiveCameraStage :
         IBinarySerializable,
-        IFile
+        IFileType
     {
         // FIELDS
         private CameraPan[] pans;
@@ -16,6 +16,7 @@ namespace GameCube.GFZ.Camera
 
         // PROPERTIES
         public string FileName { get; set; }
+        public string FileExtension => ".bin";
         public CameraPan[] Pans
         {
             get => pans;

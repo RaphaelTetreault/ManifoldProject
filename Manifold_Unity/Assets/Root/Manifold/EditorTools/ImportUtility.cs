@@ -38,7 +38,7 @@ namespace Manifold.EditorTools
         }
 
         public static TSobj CreateFromBinaryFile<TSobj>(string destinationDir, string fileName, BinaryReader reader)
-        where TSobj : ScriptableObject, IBinarySerializable, IFile
+        where TSobj : ScriptableObject, IBinarySerializable, IFileType
         {
             var sobj = Create<TSobj>(destinationDir, fileName);
             sobj.FileName = fileName;
@@ -47,7 +47,7 @@ namespace Manifold.EditorTools
         }
 
         public static TSobj ImportAs<TSobj>(BinaryReader reader, string file, string importFrom, string importTo, out string filePath)
-            where TSobj : ScriptableObject, IBinarySerializable, IFile
+            where TSobj : ScriptableObject, IBinarySerializable, IFileType
         {
             var unityPath = GetUnityOutputPath(file, importFrom, importTo);
             var fileName = Path.GetFileName(file);
@@ -67,7 +67,7 @@ namespace Manifold.EditorTools
         }
 
         public static TSobj[] ImportManyAs<TSobj>(string[] importFiles, string importFrom, string importTo, FileMode mode = FileMode.Open, FileAccess access = FileAccess.Read, FileShare share = FileShare.Read)
-            where TSobj : ScriptableObject, IBinarySerializable, IFile
+            where TSobj : ScriptableObject, IBinarySerializable, IFileType
         {
             var count = 0;
             var total = importFiles.Length;

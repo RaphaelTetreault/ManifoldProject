@@ -19,7 +19,7 @@ namespace GameCube.GFZ.Stage
     public class Scene :
         IBinaryAddressable,
         IBinarySerializable,
-        IFile,
+        IFileType,
         IHasReference
     {
         // To find
@@ -142,6 +142,8 @@ namespace GameCube.GFZ.Stage
             get => serializeVerbose;
             set => serializeVerbose = value;
         }
+
+        public string FileExtension => "";
 
         public string FileName
         {

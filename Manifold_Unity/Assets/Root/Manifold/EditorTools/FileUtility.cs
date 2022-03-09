@@ -87,7 +87,7 @@ namespace Manifold.EditorTools
         /// <param name="count">How many items are in the iterator.</param>
         /// <returns></returns>
         public static T[] IteratorCanceableProgressBar<T>(IEnumerable<T> iterator, int count)
-            where T : IFile
+            where T : IFileType
         {
             T[] values = new T[count];
             int index = 0;

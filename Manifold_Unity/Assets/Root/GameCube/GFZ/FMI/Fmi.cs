@@ -8,7 +8,7 @@ namespace GameCube.GFZ.FMI
     public class Fmi :
         IBinaryAddressable,
         IBinarySerializable,
-        IFile
+        IFileType
     {
         // CONSTANTS
         private const long kParticlesAbsPtr = 0x0044;
@@ -33,6 +33,7 @@ namespace GameCube.GFZ.FMI
         // PROPERTIES
         public AddressRange AddressRange { get; set; }
         public string FileName { get; set; }
+        public string FileExtension => ".fmi";
 
 
         // METHODS

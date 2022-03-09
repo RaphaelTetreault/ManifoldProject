@@ -12,7 +12,7 @@ namespace GameCube.GFZ.GMA
         IBinaryAddressable,
         IBinarySerializable,
         IHasReference,
-        IFile
+        IFileType
     {
         // FIELDS
         private int modelsCount;
@@ -25,6 +25,7 @@ namespace GameCube.GFZ.GMA
         // PROPERTIES
         public AddressRange AddressRange { get; set; }
         public string FileName { get; set; }
+        public string FileExtension => ".gma";
         public int ModelsCount { get => modelsCount; set => modelsCount = value; }
         public Offset ModelBasePtr { get => modelBasePtrOffset; set => modelBasePtrOffset = value; }
         public ModelEntry[] ModelEntries { get => modelEntries; set => modelEntries = value; }
