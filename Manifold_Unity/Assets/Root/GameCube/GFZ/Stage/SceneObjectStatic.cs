@@ -12,7 +12,7 @@ namespace GameCube.GFZ.Stage
     /// This kind of object was used for all test objects in old AX scenes.
     /// </summary>
     [Serializable]
-    public class SceneObjectStatic :
+    public sealed class SceneObjectStatic :
         IBinaryAddressable,
         IBinarySerializable,
         IHasReference,

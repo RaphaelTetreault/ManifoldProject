@@ -14,7 +14,7 @@ namespace GameCube.GFZ.Stage
     /// a transform and thus affected by the parent's transform.
     /// </summary>
     [Serializable]
-    public class AnimationClip :
+    public sealed class AnimationClip :
         IBinaryAddressable,
         IBinarySerializable,
         IHasReference, // The AnimationClipCurve has references

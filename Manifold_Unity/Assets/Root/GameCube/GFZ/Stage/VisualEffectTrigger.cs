@@ -10,7 +10,7 @@ namespace GameCube.GFZ.Stage
     /// NOTE: assumed mesh scale for trigger is 10xyz
     /// </summary>
     [Serializable]
-    public class VisualEffectTrigger :
+    public sealed class VisualEffectTrigger :
         IBinaryAddressable,
         IBinarySerializable,
         ITextPrintable

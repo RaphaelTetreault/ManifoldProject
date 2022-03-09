@@ -16,7 +16,7 @@ namespace GameCube.GFZ.Stage
     /// TODO: it is unclear where the actual time is defined per checkpoint or course.
     /// </remarks>
     [Serializable]
-    public class TimeExtensionTrigger :
+    public sealed class TimeExtensionTrigger :
         IBinaryAddressable,
         IBinarySerializable,
         ITextPrintable

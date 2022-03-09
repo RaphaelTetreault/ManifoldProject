@@ -31,7 +31,7 @@ namespace GameCube.GFZ.Stage
     /// </list>
     /// </remarks>
     [Serializable]
-    public class StoryObjectTrigger :
+    public sealed class StoryObjectTrigger :
         IBinaryAddressable,
         IBinarySerializable,
         IHasReference,

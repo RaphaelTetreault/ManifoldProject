@@ -10,7 +10,7 @@ namespace GameCube.GFZ.Stage
     /// <remarks>
     /// Example: Chapter 2's falling rocks.
     /// </remarks>
-    public class StoryObjectPath :
+    public sealed class StoryObjectPath :
         IBinaryAddressable,
         IBinarySerializable,
         IHasReference,

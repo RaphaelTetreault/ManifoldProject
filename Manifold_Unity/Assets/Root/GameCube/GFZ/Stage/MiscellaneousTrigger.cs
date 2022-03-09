@@ -11,7 +11,7 @@ namespace GameCube.GFZ.Stage
     /// which course it appears. Consult enum comments for more details.
     /// </summary>
     [Serializable]
-    public class MiscellaneousTrigger :
+    public sealed class MiscellaneousTrigger :
         IBinaryAddressable,
         IBinarySerializable,
         ITextPrintable

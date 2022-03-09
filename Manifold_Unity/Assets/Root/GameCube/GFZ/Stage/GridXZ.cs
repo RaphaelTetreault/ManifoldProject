@@ -28,7 +28,7 @@ namespace GameCube.GFZ.Stage
     /// will work using this.
     /// </remarks>
     [Serializable]
-    public class GridXZ :
+    public sealed class GridXZ :
         IBinaryAddressable,
         IBinarySerializable,
         ITextPrintable

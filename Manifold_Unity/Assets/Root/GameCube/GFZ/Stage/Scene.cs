@@ -15,7 +15,7 @@ namespace GameCube.GFZ.Stage
     /// track metadata, and triggers for mission, visual effects, etc.
     /// </summary>
     [Serializable]
-    public class Scene :
+    public sealed class Scene :
         IBinaryAddressable,
         IBinarySerializable,
         IFileType,

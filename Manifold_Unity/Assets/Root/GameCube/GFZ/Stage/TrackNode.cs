@@ -15,7 +15,7 @@ namespace GameCube.GFZ.Stage
     /// the first indicate the specific branched path and it's own data.
     /// </summary>
     [Serializable]
-    public class TrackNode :
+    public sealed class TrackNode :
         IBinaryAddressable,
         IBinarySerializable,
         IHasReference,

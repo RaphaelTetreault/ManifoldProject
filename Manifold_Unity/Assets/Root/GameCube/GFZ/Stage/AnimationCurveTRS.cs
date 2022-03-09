@@ -15,7 +15,7 @@ namespace GameCube.GFZ.Stage
     /// being multiplied with it's parent up a tree structure.
     /// </summary>
     [Serializable]
-    public class AnimationCurveTRS :
+    public sealed class AnimationCurveTRS :
         IBinaryAddressable,
         IBinarySerializable,
         IHasReference,

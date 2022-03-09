@@ -12,7 +12,7 @@ namespace GameCube.GFZ.Stage
     /// As noted, it contains "extra" bits.
     /// </summary>
     [Serializable]
-    public class TransformTRXS :
+    public sealed class TransformTRXS :
         IBinarySerializable,
         IBinaryAddressable,
         IDeepCopyable<TransformTRXS>,

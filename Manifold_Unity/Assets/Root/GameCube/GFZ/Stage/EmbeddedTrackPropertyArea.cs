@@ -10,7 +10,7 @@ namespace GameCube.GFZ.Stage
     /// such as boost plates, jump plates, and heal strips. Likely for use by AI.
     /// </summary>
     [Serializable]
-    public class EmbeddedTrackPropertyArea :
+    public sealed class EmbeddedTrackPropertyArea :
         IBinaryAddressable,
         IBinarySerializable,
         ITextPrintable

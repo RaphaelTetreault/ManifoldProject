@@ -11,7 +11,7 @@ namespace GameCube.GFZ.Stage
     /// Defines a segment of track.
     /// </summary>
     [Serializable]
-    public class TrackSegment :
+    public sealed class TrackSegment :
         IBinaryAddressable,
         IBinarySerializable,
         IHasReference,

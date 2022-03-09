@@ -13,7 +13,7 @@ namespace GameCube.GFZ.Stage
     /// GX: 6 instances, AX: 9 instances
     /// </remarks>
     [Serializable]
-    public class UnknownCollider :
+    public sealed class UnknownCollider :
         IBinaryAddressable,
         IBinarySerializable,
         IHasReference,

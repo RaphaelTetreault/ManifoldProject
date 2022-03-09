@@ -12,7 +12,7 @@ namespace GameCube.GFZ.Stage
     /// Structurally, this class is a simple wrapper around a KeyableAttribute[].
     /// </remarks>
     [Serializable]
-    public class AnimationCurve :
+    public sealed class AnimationCurve :
         IBinaryAddressable,
         IBinarySerializable,
         ITextPrintable

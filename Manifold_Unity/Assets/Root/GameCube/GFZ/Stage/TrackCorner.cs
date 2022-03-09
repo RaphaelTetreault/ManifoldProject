@@ -11,7 +11,7 @@ namespace GameCube.GFZ.Stage
     /// It is assumed this is necessary for AI rather than anything else.
     /// </summary>
     [Serializable]
-    public class TrackCorner :
+    public sealed class TrackCorner :
         IBinaryAddressable,
         IBinarySerializable,
         ITextPrintable

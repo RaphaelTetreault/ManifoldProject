@@ -34,7 +34,7 @@ namespace GameCube.GFZ.Stage
     /// + AX Loop Cross test (broken) has #0a050f, near black purple value. GX uses #181a1e - very dark blue.
     /// </remarks>
     [Serializable]
-    public class Fog :
+    public sealed class Fog :
         IBinaryAddressable,
         IBinarySerializable,
         IDeepCopyable<Fog>,

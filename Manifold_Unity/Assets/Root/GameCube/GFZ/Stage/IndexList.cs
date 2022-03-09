@@ -10,7 +10,7 @@ namespace GameCube.GFZ.Stage
     /// track checkpoint nodes.
     /// </summary>
     [System.Serializable]
-    public class IndexList :
+    public sealed class IndexList :
         IBinaryAddressable,
         IBinarySerializable,
         ITextPrintable

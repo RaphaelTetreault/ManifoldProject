@@ -14,7 +14,7 @@ namespace GameCube.GFZ.Stage
     /// is 10 units per side.
     /// </remarks>
     [Serializable]
-    public class CullOverrideTrigger :
+    public sealed class CullOverrideTrigger :
         IBinaryAddressable,
         IBinarySerializable,
         ITextPrintable

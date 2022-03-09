@@ -26,7 +26,7 @@ namespace GameCube.GFZ.Stage
     /// An object to display in a scene. Refers to LODs.
     /// </summary>
     [Serializable]
-    public class SceneObject :
+    public sealed class SceneObject :
         IBinaryAddressable,
         IBinarySerializable,
         IHasReference,

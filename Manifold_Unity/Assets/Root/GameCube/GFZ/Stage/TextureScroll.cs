@@ -17,7 +17,7 @@ namespace GameCube.GFZ.Stage
     /// Texture metadata. In some instasnces defines how a texture scrolls.
     /// </summary>
     [Serializable]
-    public class TextureScroll :
+    public sealed class TextureScroll :
         IBinaryAddressable,
         IBinarySerializable,
         IHasReference,

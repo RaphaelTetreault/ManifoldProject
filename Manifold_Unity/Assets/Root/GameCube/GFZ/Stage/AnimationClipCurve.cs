@@ -9,7 +9,7 @@ namespace GameCube.GFZ.Stage
     /// A metadata-enhanced AnimationCurve.
     /// </summary>
     [Serializable]
-    public class AnimationClipCurve :
+    public sealed class AnimationClipCurve :
         IBinaryAddressable,
         IBinarySerializable,
         IHasReference,

@@ -9,7 +9,7 @@ namespace GameCube.GFZ.Stage
     /// Represents a complex scene object that can have various properties.
     /// </summary>
     [Serializable]
-    public class SceneObjectDynamic :
+    public sealed class SceneObjectDynamic :
         IBinaryAddressable,
         IBinarySerializable,
         IHasReference,

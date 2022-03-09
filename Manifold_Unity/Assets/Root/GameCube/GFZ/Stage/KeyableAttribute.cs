@@ -9,7 +9,7 @@ namespace GameCube.GFZ.Stage
     /// Represents a Maya (4.X) KeyableAttribute (animation keyframe).
     /// </summary>
     [Serializable]
-    public class KeyableAttribute :
+    public sealed class KeyableAttribute :
         IBinaryAddressable,
         IBinarySerializable,
         ITextPrintable

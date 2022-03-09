@@ -9,7 +9,7 @@ namespace GameCube.GFZ.Stage
     /// Binds an object name to a loadable display model.
     /// </summary>
     [Serializable]
-    public class SceneObjectLOD :
+    public sealed class SceneObjectLOD :
         IBinaryAddressable,
         IBinarySerializable,
         IHasReference,

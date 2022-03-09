@@ -32,7 +32,7 @@ namespace GameCube.GFZ.Stage
     /// It also points to some data which the ColiScene header points to. Notably, it points to 
     /// </summary>
     [Serializable]
-    public class StaticColliderMeshManager :
+    public sealed class StaticColliderMeshManager :
         IBinaryAddressable,
         IBinarySerializable,
         IHasReference,

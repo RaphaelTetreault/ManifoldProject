@@ -9,7 +9,7 @@ namespace GameCube.GFZ.Stage
     /// A table for index lists specifically for track checkpoints.
     /// </summary>
     [System.Serializable]
-    public class CheckpointGrid : IndexGrid
+    public sealed class CheckpointGrid : IndexGrid
     {
         // CONSTANTS
         public const int Subdivisions = 8;

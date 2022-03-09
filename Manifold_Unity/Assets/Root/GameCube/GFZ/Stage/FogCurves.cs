@@ -31,7 +31,7 @@ namespace GameCube.GFZ.Stage
     /// 
     /// </summary>
     [Serializable]
-    public class FogCurves :
+    public sealed class FogCurves :
         IBinaryAddressable,
         IBinarySerializable,
         IHasReference,

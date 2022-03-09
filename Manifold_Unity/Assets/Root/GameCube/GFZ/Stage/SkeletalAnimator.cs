@@ -9,7 +9,7 @@ namespace GameCube.GFZ.Stage
     /// Defines an object with skeletal animations.
     /// </summary>
     [Serializable]
-    public class SkeletalAnimator :
+    public sealed class SkeletalAnimator :
         IBinaryAddressable,
         IBinarySerializable,
         IHasReference,

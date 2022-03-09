@@ -14,7 +14,7 @@ namespace GameCube.GFZ.Stage
     /// Example: rotary collider in Port Town [Long Pipe]
     /// </remarks>
     [Serializable]
-    public class ColliderMesh :
+    public sealed class ColliderMesh :
         IBinaryAddressable,
         IBinarySerializable,
         IHasReference,

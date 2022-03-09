@@ -9,7 +9,7 @@ namespace GameCube.GFZ.Stage
     /// A single data field for <cref>TextureScroll</cref>.
     /// </summary>
     [Serializable]
-    public class TextureScrollField :
+    public sealed class TextureScrollField :
         IBinaryAddressable,
         IBinarySerializable,
         ITextPrintable

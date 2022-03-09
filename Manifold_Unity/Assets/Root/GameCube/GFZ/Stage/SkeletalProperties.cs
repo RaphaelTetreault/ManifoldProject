@@ -9,7 +9,7 @@ namespace GameCube.GFZ.Stage
     /// Data (presumably) referenced by a SkeletalAnimator.
     /// </summary>
     [Serializable]
-    public class SkeletalProperties :
+    public sealed class SkeletalProperties :
         IBinaryAddressable,
         IBinarySerializable,
         ITextPrintable
