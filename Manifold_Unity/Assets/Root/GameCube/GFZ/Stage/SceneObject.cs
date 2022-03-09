@@ -102,23 +102,23 @@ namespace GameCube.GFZ.Stage
             Assert.ReferencePointer(colliderMesh, colliderGeometryPtr);
         }
 
-        public string PrintMultiLine(int indentLevel = 0, string indent = "\t")
+        public void PrintMultiLine(System.Text.StringBuilder builder, int indentLevel = 0, string indent = "\t")
         {
-            var builder = new System.Text.StringBuilder();
-
             builder.AppendLineIndented(indent, indentLevel, nameof(SceneObject));
             indentLevel++;
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(LodRenderFlags)}: {LodRenderFlags}");
-            builder.AppendLineIndented(indent, indentLevel, $"Has {nameof(colliderMesh)}: {colliderMesh is not null}");
+            builder.AppendLineIndented(indent, indentLevel, $"Has {nameof(ColliderMesh)}: {ColliderMesh is not null}");
             if (colliderMesh is not null)
-                builder.Append(colliderMesh.PrintMultiLine(indentLevel, indent));
+            {
+                builder.AppendLineIndented(indent, indentLevel, ColliderMesh);
+            }
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(LODs)}[{LODs.Length}]");
             indentLevel++;
             int index = 0;
             foreach (var lod in LODs)
+            {
                 builder.AppendLineIndented(indent, indentLevel, $"[{index}] {lod.Name}, {lod.LodDistance}");
-
-            return builder.ToString();
+            }
         }
 
         public string PrintSingleLine()

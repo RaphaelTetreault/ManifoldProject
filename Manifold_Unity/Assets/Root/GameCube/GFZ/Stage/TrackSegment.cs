@@ -290,10 +290,8 @@ namespace GameCube.GFZ.Stage
 
 
 
-        public string PrintMultiLine(int indentLevel = 0, string indent = "\t")
-        {
-            var builder = new System.Text.StringBuilder();
-            
+        public void PrintMultiLine(System.Text.StringBuilder builder, int indentLevel = 0, string indent = "\t")
+        {         
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(TrackSegment)} ({nameof(Depth)}: {Depth})");
             indentLevel++;
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(segmentType)}: {segmentType}");
@@ -320,8 +318,6 @@ namespace GameCube.GFZ.Stage
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(railHeightRight)}: {railHeightRight}");
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(railHeightLeft)}: {railHeightLeft}");
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(branchIndex)}: {branchIndex}");
-
-            return builder.ToString();
         }
 
         public string PrintSingleLine()

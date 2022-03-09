@@ -147,10 +147,8 @@ namespace GameCube.GFZ.Stage
             return $"{nameof(ColliderMesh)}({nameof(tris)}: {tris.Length}, {nameof(quads)}: {quads.Length})";
         }
 
-        public string PrintMultiLine(int indentLevel = 0, string indent = "\t")
+        public void PrintMultiLine(System.Text.StringBuilder builder, int indentLevel = 0, string indent = "\t")
         {
-            var builder = new System.Text.StringBuilder();
-
             builder.AppendLineIndented(indent, indentLevel, nameof(ColliderMesh));
             indentLevel++;
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(unk_0x00)}: {unk_0x00}");
@@ -162,8 +160,6 @@ namespace GameCube.GFZ.Stage
             //builder.AppendLineIndented(indent, indentLevel, $"{nameof(QuadsPtr)}: {QuadsPtr}");
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(Tris)}: {Tris}");
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(Quads)}: {Quads}");
-
-            return builder.ToString();
         }
     }
 }

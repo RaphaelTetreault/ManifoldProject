@@ -109,11 +109,8 @@ namespace GameCube.GFZ.Stage
             return indexList;
         }
 
-        public string PrintMultiLine(int indentLevel = 0, string indent = "\t")
+        public void PrintMultiLine(System.Text.StringBuilder builder, int indentLevel = 0, string indent = "\t")
         {
-            // StringBuilder is still used because of the indent levels
-            var builder = new System.Text.StringBuilder();
-
             const int valuesPerRow = 32;
             int numRows = Length / valuesPerRow;
             int numPadding = Length.ToString().Length;
@@ -138,8 +135,6 @@ namespace GameCube.GFZ.Stage
                 }
                 builder.AppendLine();
             }
-
-            return builder.ToString();
         }
 
         public string PrintSingleLine()

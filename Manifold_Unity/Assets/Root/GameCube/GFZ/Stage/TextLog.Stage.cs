@@ -10,17 +10,20 @@ namespace GameCube.GFZ.Stage
 
         public static void LogAnimationClips(TextLogger log, Scene scene, int indentLevel = 0, string indent = "\t")
         {
-            foreach (var dynamicSceneObject in scene.dynamicSceneObjects)
-            {
-                var animationClip = dynamicSceneObject.AnimationClip;
+            //var builder = new System.Text.StringBuilder();
 
-                // Skip if it does not exist
-                if (animationClip == null)
-                    continue;
+            //foreach (var dynamicSceneObject in scene.dynamicSceneObjects)
+            //{
+            //    var animationClip = dynamicSceneObject.AnimationClip;
 
-                var printOut = animationClip.PrintMultiLine(indentLevel, indent);
-                log.Write(printOut);
-            }
+            //    // Skip if it does not exist
+            //    if (animationClip == null)
+            //        continue;
+
+            //    animationClip.PrintMultiLine(builder, indentLevel, indent);
+            //    log.Write(builder);
+            //}
+            throw new System.NotImplementedException();
         }
 
         public static void LogSceneMetadata(TextLogger log, Scene scene, int indentLevel = 0, string indent = "\t")
@@ -35,18 +38,20 @@ namespace GameCube.GFZ.Stage
 
         public static void LogScene(TextLogger log, Scene scene, int indentLevel = 0, string indent = "\t")
         {
-            // TODO: write header information
+            //// TODO: write header information
+            //var builder = new System.Text.StringBuilder();
 
-            LogSceneMetadata(log, scene, indentLevel, indent);
-            log.WriteLine();
+            //LogSceneMetadata(log, scene, indentLevel, indent);
+            //log.WriteLine();
 
-            foreach (var dynamicSceneObject in scene.dynamicSceneObjects)
-            {
-                var animationClip = dynamicSceneObject.AnimationClip;
-                if (animationClip != null)
-                    log.Write(animationClip.PrintMultiLine(indentLevel, indent));
-            }
+            //foreach (var dynamicSceneObject in scene.dynamicSceneObjects)
+            //{
+            //    var animationClip = dynamicSceneObject.AnimationClip;
+            //    if (animationClip != null)
+            //        log.Write(animationClip.PrintMultiLine(builder, indentLevel, indent));
+            //}
 
+            throw new System.NotImplementedException();
         }
 
 

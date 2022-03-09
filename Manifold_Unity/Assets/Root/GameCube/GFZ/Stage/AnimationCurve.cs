@@ -100,7 +100,7 @@ namespace GameCube.GFZ.Stage
             return $"{nameof(AnimationCurve)}({nameof(KeyableAttribute)}s:[{keyableAttributes.Length}])";
         }
 
-        public string PrintMultiLine(int indentLevel = 0, string indent = "\t")
+        public void PrintMultiLine(System.Text.StringBuilder builder, int indentLevel = 0, string indent = "\t")
         {
             int lengthKeyables = keyableAttributes.Length;
             var stringBuilder = new System.Text.StringBuilder();
@@ -115,8 +115,6 @@ namespace GameCube.GFZ.Stage
                 var keyableText = keyable.PrintSingleLine();
                 stringBuilder.AppendLineIndented(indent, indentLevel, $"[{i}]\t {keyableText}");
             }
-
-            return stringBuilder.ToString();
         }
     }
 }

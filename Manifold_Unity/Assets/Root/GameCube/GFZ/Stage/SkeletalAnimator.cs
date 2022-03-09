@@ -70,15 +70,11 @@ namespace GameCube.GFZ.Stage
             Assert.ReferencePointer(properties, propertiesPtr);
         }
 
-        public string PrintMultiLine(int indentLevel = 0, string indent = "\t")
+        public void PrintMultiLine(System.Text.StringBuilder builder, int indentLevel = 0, string indent = "\t")
         {
-            var builder = new System.Text.StringBuilder();
-
             builder.AppendLineIndented(indent, indentLevel, PrintSingleLine());
             indentLevel++;
-            builder.Append(properties.PrintMultiLine(indentLevel, indent));
-
-            return builder.ToString();
+            builder.AppendLineIndented(indent, indentLevel, properties);
         }
 
         public string PrintSingleLine()

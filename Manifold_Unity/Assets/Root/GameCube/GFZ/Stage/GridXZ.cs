@@ -120,11 +120,8 @@ namespace GameCube.GFZ.Stage
         }
 
 
-        public string PrintMultiLine(int indentLevel = 0, string indent = "\t")
+        public void PrintMultiLine(System.Text.StringBuilder builder, int indentLevel = 0, string indent = "\t")
         {
-            // StringBuilder is still used because of the indent levels
-            var builder = new System.Text.StringBuilder();
-
             // Get some useful metadata to print
             (float2 center, float2 scale) = GetCenterAndScale();
 
@@ -138,8 +135,6 @@ namespace GameCube.GFZ.Stage
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(NumSubdivisionsZ)}: {NumSubdivisionsZ}");
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(center)}: {center}");
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(scale)}: {scale}");
-
-            return builder.ToString();
         }
 
         public string PrintSingleLine()

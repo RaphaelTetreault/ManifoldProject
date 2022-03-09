@@ -106,15 +106,12 @@ namespace GameCube.GFZ.Stage
                 $" Has {nameof(animationCurve)}: {animationCurve != null})";
         }
 
-        public string PrintMultiLine(int indentLevel = 0, string indent = "\t")
+        public void PrintMultiLine(System.Text.StringBuilder builder, int indentLevel = 0, string indent = "\t")
         {
-            var builder = new System.Text.StringBuilder();
             // Write the main structure on one line
             builder.AppendLineIndented(indent, indentLevel, PrintSingleLine());
             indentLevel++;
-            builder.Append(animationCurve.PrintMultiLine(indentLevel, indent));
-
-            return builder.ToString();
+            builder.AppendLineIndented(indent, indentLevel, animationCurve);
         }
 
     }

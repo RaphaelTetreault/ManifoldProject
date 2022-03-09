@@ -121,10 +121,8 @@ namespace GameCube.GFZ.Stage
             return nameof(ColliderTriangle);
         }
 
-        public string PrintMultiLine(int indentLevel = 0, string indent = "\t")
+        public void PrintMultiLine(System.Text.StringBuilder builder, int indentLevel = 0, string indent = "\t")
         {
-            var builder = new System.Text.StringBuilder();
-
             builder.AppendLineIndented(indent, indentLevel, nameof(ColliderTriangle));
             indentLevel++;
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(DotProduct)}: {DotProduct}");
@@ -134,8 +132,6 @@ namespace GameCube.GFZ.Stage
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(Precomputed0)}: {Precomputed0}");
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(Precomputed1)}: {Precomputed1}");
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(Precomputed2)}: {Precomputed2}");
-
-            return builder.ToString();
         }
     }
 }

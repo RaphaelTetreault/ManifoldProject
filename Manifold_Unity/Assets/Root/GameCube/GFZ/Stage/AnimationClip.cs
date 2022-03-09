@@ -120,7 +120,7 @@ namespace GameCube.GFZ.Stage
                 $")";
         }
 
-        public string PrintMultiLine(int indentLevel = 0, string indent = "\t")
+        public void PrintMultiLine(System.Text.StringBuilder builder, int indentLevel = 0, string indent = "\t")
         {
             string[] labels = new string[] {
                 "Scale.X",
@@ -136,25 +136,20 @@ namespace GameCube.GFZ.Stage
                 "Alpha",
             };
 
-            var builder = new System.Text.StringBuilder();
             // Write the main structure on one line
             builder.AppendLineIndented(indent, indentLevel, PrintSingleLine());
             indentLevel++;
 
             for (int i = 0; i < curves.Length; i++)
             {
-                var animClipCurves = curves[i];
-                if (animClipCurves.AnimationCurve == null)
+                var animClipCurve = curves[i];
+                if (animClipCurve.AnimationCurve == null)
                     continue;
 
                 var prefix = $"{labels[i]} [{i:00}/{curves.Length}]";
                 builder.AppendLineIndented(indent, indentLevel, prefix);
-
-                var multilineText = animClipCurves.PrintMultiLine(indentLevel + 1, indent);
-                builder.Append(multilineText);
+                builder.AppendLineIndented(indent, indentLevel + 1, animClipCurve);
             }
-
-            return builder.ToString();
         }
 
     }

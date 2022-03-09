@@ -132,37 +132,25 @@ namespace GameCube.GFZ.Stage
             //}
         }
 
-        public string PrintMultiLine(int indentLevel = 0, string indent = "\t")
+        public void PrintMultiLine(System.Text.StringBuilder builder, int indentLevel = 0, string indent = "\t")
         {
-            // StringBuilder is still used because of the indent levels
-            var builder = new System.Text.StringBuilder();
-
             builder.AppendLineIndented(indent, indentLevel, nameof(FogCurves));
             indentLevel++;
-            {
-                // NEAR / FAR
-                builder.AppendLineIndented(indent, indentLevel, nameof(FogCurveNear));
-                builder.Append(FogCurveNear.PrintMultiLine(indentLevel + 1, indent));
-
-                builder.AppendLineIndented(indent, indentLevel, nameof(FogCurveFar));
-                builder.Append(FogCurveFar.PrintMultiLine(indentLevel + 1, indent));
-
-                // RGB
-                builder.AppendLineIndented(indent, indentLevel, nameof(FogCurveR));
-                builder.Append(FogCurveR.PrintMultiLine(indentLevel + 1, indent));
-
-                builder.AppendLineIndented(indent, indentLevel, nameof(FogCurveG));
-                builder.Append(FogCurveG.PrintMultiLine(indentLevel + 1, indent));
-
-                builder.AppendLineIndented(indent, indentLevel, nameof(FogCurveB));
-                builder.Append(FogCurveB.PrintMultiLine(indentLevel + 1, indent));
-
-                // UNUSED / UNKNOWN
-                builder.AppendLineIndented(indent, indentLevel, nameof(FogCurveUnk));
-                builder.Append(FogCurveUnk.PrintMultiLine(indentLevel, indent));
-            }
-
-            return builder.ToString();
+            // NEAR / FAR
+            builder.AppendLineIndented(indent, indentLevel, nameof(FogCurveNear));
+            builder.AppendLineIndented(indent, indentLevel + 1, FogCurveNear);
+            builder.AppendLineIndented(indent, indentLevel, nameof(FogCurveFar));
+            builder.AppendLineIndented(indent, indentLevel + 1, FogCurveFar);
+            // RGB
+            builder.AppendLineIndented(indent, indentLevel, nameof(FogCurveR));
+            builder.AppendLineIndented(indent, indentLevel + 1, FogCurveR);
+            builder.AppendLineIndented(indent, indentLevel, nameof(FogCurveG));
+            builder.AppendLineIndented(indent, indentLevel + 1, FogCurveG);
+            builder.AppendLineIndented(indent, indentLevel, nameof(FogCurveB));
+            builder.AppendLineIndented(indent, indentLevel + 1, FogCurveB);
+            // UNUSED / UNKNOWN
+            builder.AppendLineIndented(indent, indentLevel, nameof(FogCurveUnk));
+            builder.AppendLineIndented(indent, indentLevel + 1, FogCurveUnk);
         }
 
         public string PrintSingleLine()

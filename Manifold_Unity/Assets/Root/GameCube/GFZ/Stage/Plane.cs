@@ -66,17 +66,13 @@ namespace GameCube.GFZ.Stage
             return mirroredPlane;
         }
 
-        public string PrintMultiLine(int indentLevel = 0, string indent = "\t")
+        public void PrintMultiLine(System.Text.StringBuilder builder, int indentLevel = 0, string indent = "\t")
         {
-            var builder = new System.Text.StringBuilder();
-
             builder.AppendLineIndented(indent, indentLevel, nameof(Plane));
             indentLevel++;
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(origin)}: {origin}");
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(normal)}: {normal}");
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(dotProduct)}: {dotProduct}");
-
-            return builder.ToString();
         }
 
         public string PrintSingleLine()

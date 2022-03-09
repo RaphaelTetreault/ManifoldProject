@@ -4,6 +4,11 @@ namespace Manifold
 {
     public static class StringBuilderExtension
     {
+        public static void AppendLineIndented(this StringBuilder stringBuilder, string indent, int indentLevel, ITextPrintable textPrintable)
+        {
+            textPrintable.PrintMultiLine(stringBuilder, indentLevel, indent);
+        }
+
         public static void AppendIndented(this StringBuilder stringBuilder, string indent, int indentLevel, string value)
         {
             stringBuilder.AppendRepeat(indent, indentLevel);

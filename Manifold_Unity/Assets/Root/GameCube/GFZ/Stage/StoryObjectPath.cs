@@ -66,15 +66,11 @@ namespace GameCube.GFZ.Stage
             Assert.ReferencePointer(animationCurve, animationCurvePtr);
         }
 
-        public string PrintMultiLine(int indentLevel = 0, string indent = "\t")
+        public void PrintMultiLine(System.Text.StringBuilder builder, int indentLevel = 0, string indent = "\t")
         {
-            var builder = new System.Text.StringBuilder();
-
             builder.AppendLineIndented(indent, indentLevel, nameof(StoryObjectPath));
             indentLevel++;
-            builder.Append(animationCurve.PrintMultiLine(indentLevel, indent));
-
-            return builder.ToString();
+            builder.AppendLineIndented(indent, indentLevel, animationCurve);
         }
 
         public string PrintSingleLine()

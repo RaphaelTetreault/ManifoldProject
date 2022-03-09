@@ -918,7 +918,7 @@ namespace GameCube.GFZ.Stage
                     list.AddRange(anim.KeyableAttributes);
                 list.Add(trackNode.Segment.TrackCorner);
                 if (trackNode.Segment.TrackCorner != null)
-                    list.Add(trackNode.Segment.TrackCorner.Matrix3x4);
+                    list.Add(trackNode.Segment.TrackCorner.Transform);
             }
 
             list.AddRange(embeddedPropertyAreas);
@@ -1242,10 +1242,8 @@ namespace GameCube.GFZ.Stage
         //public ShiftJisCString[] sceneObjectNames;
         //public SceneObjectLOD[] sceneObjectLODs; // debug
 
-        public string PrintMultiLine(int indentLevel = 0, string indent = "\t")
+        public void PrintMultiLine(StringBuilder builder, int indentLevel = 0, string indent = "\t")
         {
-            var builder = new System.Text.StringBuilder();
-
             builder.AppendLineIndented(indent, indentLevel, PrintSingleLine());
             indentLevel++;
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(FileSize)}: {FileSize:n0}, {FileSize:x8}");
@@ -1255,32 +1253,32 @@ namespace GameCube.GFZ.Stage
 
             builder.AppendLineIndented(indent, indentLevel, $"MISC DATA");
             indentLevel++;
-            builder.Append(unkRange0x00.PrintMultiLine(indentLevel, indent));
-            builder.Append(fog.PrintMultiLine(indentLevel, indent));
-            builder.Append(fogCurves.PrintMultiLine(indentLevel, indent));
+            builder.AppendLineIndented(indent, indentLevel, unkRange0x00);
+            builder.AppendLineIndented(indent, indentLevel, fog);
+            builder.AppendLineIndented(indent, indentLevel, fogCurves);
             builder.AppendLine();
             indentLevel--;
 
             builder.AppendLineIndented(indent, indentLevel, $"TRIGGERS");
             indentLevel++;
             foreach (var cullOverrideTrigger in cullOverrideTriggers)
-                builder.Append(cullOverrideTrigger.PrintMultiLine(indentLevel, indent));
+                builder.AppendLineIndented(indent, indentLevel, cullOverrideTrigger);
             foreach (var visualEffectTrigger in visualEffectTriggers)
-                builder.Append(visualEffectTrigger.PrintMultiLine(indentLevel, indent));
+                builder.AppendLineIndented(indent, indentLevel, visualEffectTrigger);
             foreach (var miscellaneousTrigger in miscellaneousTriggers)
-                builder.Append(miscellaneousTrigger.PrintMultiLine(indentLevel, indent));
+                builder.AppendLineIndented(indent, indentLevel, miscellaneousTrigger);
             foreach (var timeExtensionTrigger in timeExtensionTriggers)
-                builder.Append(timeExtensionTrigger.PrintMultiLine(indentLevel, indent));
+                builder.AppendLineIndented(indent, indentLevel, timeExtensionTrigger);
             foreach (var storyObjectTrigger in storyObjectTriggers)
-                builder.Append(storyObjectTrigger.PrintMultiLine(indentLevel, indent));
+                builder.AppendLineIndented(indent, indentLevel, storyObjectTrigger);
             builder.AppendLine();
             indentLevel--;
 
 
             builder.AppendLineIndented(indent, indentLevel, $"TRACK DATA");
             indentLevel++;
-            builder.Append(trackLength.PrintMultiLine(indentLevel, indent));
-            builder.Append(trackMinHeight.PrintMultiLine(indentLevel, indent));
+            builder.AppendLineIndented(indent, indentLevel, trackLength);
+            builder.AppendLineIndented(indent, indentLevel, trackMinHeight);
 
             // Track Segments
             foreach (var rootTrackSegment in rootTrackSegments)
@@ -1289,7 +1287,7 @@ namespace GameCube.GFZ.Stage
                 foreach (var trackSegment in trackSegmentHierarchy)
                 {
                     var depth = trackSegment.Depth;
-                    builder.Append(trackSegment.PrintMultiLine(indentLevel + depth, indent));
+                    builder.AppendLineIndented(indent, indentLevel, trackSegment);
                 }
             }
 
@@ -1310,12 +1308,10 @@ namespace GameCube.GFZ.Stage
                 builder.AppendLineIndented(indent, indentLevel, $"[{i.PadLeft(formatWidth)}] {trackNodes[i]}");
 
             // Checkpoints
-            builder.Append(checkpointGridXZ.PrintMultiLine(indentLevel, indent));
-            builder.Append(trackCheckpointGrid.PrintMultiLine(indentLevel, indent));
+            builder.AppendLineIndented(indent, indentLevel, checkpointGridXZ);
+            builder.AppendLineIndented(indent, indentLevel, trackCheckpointGrid);
             builder.AppendLine();
             indentLevel--;
-
-            return builder.ToString();
         }
 
         public override string ToString() => PrintSingleLine();

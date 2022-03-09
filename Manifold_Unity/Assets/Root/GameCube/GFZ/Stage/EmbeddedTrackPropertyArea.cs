@@ -98,10 +98,8 @@ namespace GameCube.GFZ.Stage
 
         public override string ToString() => PrintSingleLine();
 
-        public string PrintMultiLine(int indentLevel = 0, string indent = "\t")
+        public void PrintMultiLine(System.Text.StringBuilder builder, int indentLevel = 0, string indent = "\t")
         {
-            var builder = new System.Text.StringBuilder();
-
             builder.AppendLineIndented(indent, indentLevel, nameof(EmbeddedTrackPropertyArea));
             indentLevel++;
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(trackBranchID)}: {trackBranchID}");
@@ -110,8 +108,6 @@ namespace GameCube.GFZ.Stage
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(lengthTo)}: {lengthTo}");
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(widthLeft)}: {widthLeft}");
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(widthRight)}: {widthRight}");
-
-            return builder.ToString();
         }
 
         public string PrintSingleLine()

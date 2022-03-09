@@ -87,10 +87,8 @@ namespace GameCube.GFZ.Stage
             }
         }
 
-        public string PrintMultiLine(int indentLevel = 0, string indent = "\t")
+        public void PrintMultiLine(System.Text.StringBuilder builder, int indentLevel = 0, string indent = "\t")
         {
-            var builder = new System.Text.StringBuilder();
-
             builder.AppendLineIndented(indent, indentLevel, nameof(TextureScroll));
             indentLevel++;
             for (int i = 0; i < fields.Length; i++)
@@ -99,8 +97,6 @@ namespace GameCube.GFZ.Stage
                     continue;
                 builder.AppendLineIndented(indent, indentLevel, $"[{i}] {fields[i]}");
             }
-
-            return builder.ToString();
         }
 
         public string PrintSingleLine()

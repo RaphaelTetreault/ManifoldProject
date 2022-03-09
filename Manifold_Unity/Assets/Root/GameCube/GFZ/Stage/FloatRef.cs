@@ -51,14 +51,9 @@ namespace GameCube.GFZ.Stage
 
         public override string ToString() => PrintSingleLine();
 
-        public string PrintMultiLine(int indentLevel = 0, string indent = "\t")
+        public void PrintMultiLine(System.Text.StringBuilder builder, int indentLevel = 0, string indent = "\t")
         {
-            // StringBuilder is still used because of the indent levels
-            var builder = new System.Text.StringBuilder();
-
             builder.AppendLineIndented(indent, indentLevel, PrintSingleLine());
-
-            return builder.ToString();
         }
 
         public string PrintSingleLine()

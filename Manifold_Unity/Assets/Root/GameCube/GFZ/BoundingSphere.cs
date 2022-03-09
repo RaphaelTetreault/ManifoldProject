@@ -7,7 +7,8 @@ namespace GameCube.GFZ
 {
     public struct BoundingSphere :
         IBinarySerializable,
-        IBinaryAddressable
+        IBinaryAddressable,
+        ITextPrintable
     {
         // FIELDS
         public float3 origin;
@@ -44,16 +45,12 @@ namespace GameCube.GFZ
         }
 
 
-        public string PrintMultiLine(int indentLevel = 0, string indent = "\t")
+        public void PrintMultiLine(System.Text.StringBuilder builder, int indentLevel = 0, string indent = "\t")
         {
-            var builder = new System.Text.StringBuilder();
-
             builder.AppendLineIndented(indent, indentLevel, nameof(BoundingSphere));
             indentLevel++;
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(origin)}: {origin}");
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(radius)}: {radius}");
-
-            return builder.ToString();
         }
 
         public string PrintSingleLine()

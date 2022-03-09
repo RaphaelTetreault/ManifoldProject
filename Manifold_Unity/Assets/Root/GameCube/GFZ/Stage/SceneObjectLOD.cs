@@ -82,11 +82,9 @@ namespace GameCube.GFZ.Stage
             Assert.IsTrue(zero_0x08 == 0);
         }
 
-        public string PrintMultiLine(int indentLevel = 0, string indent = "\t")
+        public void PrintMultiLine(System.Text.StringBuilder builder, int indentLevel = 0, string indent = "\t")
         {
-            var builder = new System.Text.StringBuilder();
             builder.AppendLineIndented(indent, indentLevel, PrintSingleLine());
-            return builder.ToString();
         }
 
         public string PrintSingleLine()

@@ -44,11 +44,9 @@ namespace GameCube.GFZ.Stage
             this.RecordEndAddress(writer);
         }
 
-        public string PrintMultiLine(int indentLevel = 0, string indent = "\t")
+        public void PrintMultiLine(System.Text.StringBuilder builder, int indentLevel = 0, string indent = "\t")
         {
-            var builder = new System.Text.StringBuilder();
             builder.AppendLineIndented(indent, indentLevel, PrintSingleLine());
-            return builder.ToString();
         }
 
         public string PrintSingleLine()
