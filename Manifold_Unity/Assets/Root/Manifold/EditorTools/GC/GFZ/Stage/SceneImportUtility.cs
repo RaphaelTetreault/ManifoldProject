@@ -70,7 +70,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
             // Course-related values, used to find models
             // Triple digit IDs do overflow the "00" format, that's okay.
-            var stageID = scene.ID;
+            var stageID = scene.CourseIndex;
             var stageNumber = stageID.ToString("00");
             var venueID = CourseUtility.GetVenueID(stageID).ToString().ToLower();
 
@@ -586,7 +586,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             for (int i = 0; i < scene.staticColliderMeshManager.SurfaceCount; i++)
             {
                 var property = (StaticColliderMeshProperty)i;
-                var meshName = $"st{scene.ID:00}_{i:00}_{property}";
+                var meshName = $"st{scene.CourseIndex:00}_{i:00}_{property}";
                 var assetPath = $"{stageFolder}/pf_{meshName}.prefab";
                 var asset = AssetDatabase.LoadAssetAtPath<GameObject>(assetPath);
 
@@ -989,10 +989,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         {
             var sceneParamsObj = new GameObject("Scene Parameters");
             var sceneParams = sceneParamsObj.AddComponent<GfzSceneParameters>();
-            sceneParams.venue = CourseUtility.GetVenue(scene.ID);
+            sceneParams.venue = CourseUtility.GetVenue(scene.CourseIndex);
             // TODO: embed course name in file, use that if it exists.
-            sceneParams.courseName = CourseUtility.GetCourseName(scene.ID);
-            sceneParams.courseIndex = scene.ID;
+            sceneParams.courseName = CourseUtility.GetCourseName(scene.CourseIndex);
+            sceneParams.courseIndex = scene.CourseIndex;
             sceneParams.author = "Amusement Vision";
             // Other data
             sceneParams.staticColliderMeshesActive = scene.StaticColliderMeshManagerActive;

@@ -329,7 +329,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             sceneIn.Deserialize(readerIn);
             // Log true file
             {
-                var logPath = Path.Combine(exportTo, $"{timestamp} - COLI_COURSE{sceneIn.ID:d2} IN.txt");
+                var logPath = Path.Combine(exportTo, $"{timestamp} - COLI_COURSE{sceneIn.CourseIndex:d2} IN.txt");
                 var log = new TextLogger(logPath);
                 LogSceneData(log, sceneIn);
                 log.Close();
@@ -351,7 +351,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             sceneOut.Deserialize(readerOut);
             // Log intermediary
             {
-                var logPath = Path.Combine(exportTo, $"{timestamp} - COLI_COURSE{sceneIn.ID:d2} OUT.txt");
+                var logPath = Path.Combine(exportTo, $"{timestamp} - COLI_COURSE{sceneIn.CourseIndex:d2} OUT.txt");
                 var log = new TextLogger(logPath);
                 LogSceneData(log, sceneIn);
                 log.Close();
@@ -386,9 +386,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         public static void LogColiScene(Scene coliScene, TextLogger log, int functionIdx)
         {
             // Write some metadata
-            var venueName = CourseUtility.GetVenueName(coliScene.ID);
+            var venueName = CourseUtility.GetVenueName(coliScene.CourseIndex);
             log.WriteLine($"Stage: {venueName} [{coliScene.CourseName}]");
-            log.WriteLine($"Stage ID: {coliScene.ID}");
+            log.WriteLine($"Stage ID: {coliScene.CourseIndex}");
             log.WriteLine($"Stage Author: {coliScene.Author}");
             log.WriteLine($"Format: {coliScene.Format}");
             log.WriteLine($"File Size: {coliScene.FileSize:n0} bytes");
@@ -792,7 +792,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             // Check to see if file is from ROM. Add correct metadata.
             // TODO: remove hardcoded match and use dynamic JP/EN/PAL
             readerIn.SeekBegin();
-            var sceneIndex = sceneIn.ID;
+            var sceneIndex = sceneIn.CourseIndex;
             var sceneHash = md5.ComputeHash(readerIn.BaseStream);
             var sceneHashStr = HashUtility.ByteArrayToString(sceneHash);
             var romHashStr = MD5FileHashes.ColiCourse_GFZJ01[sceneIndex];
@@ -808,7 +808,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 //WriteTrackDataHashReport(log, sceneIn);
                 for (int i = 0; i < NumFunctions; i++)
                 {
-                    var logPath = Path.Combine(exportTo, $"{timestamp} - {i + 1} {labels[i]} COLI_COURSE{sceneIn.ID:d2} IN.txt");
+                    var logPath = Path.Combine(exportTo, $"{timestamp} - {i + 1} {labels[i]} COLI_COURSE{sceneIn.CourseIndex:d2} IN.txt");
                     var log = new TextLogger(logPath);
                     LogColiScene(sceneIn, log, i);
                     log.Close();
@@ -834,7 +834,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 //WriteTrackDataHashReport(log, sceneIn);
                 for (int i = 0; i < NumFunctions; i++)
                 {
-                    var logPath = Path.Combine(exportTo, $"{timestamp} - {i + 1} {labels[i]} COLI_COURSE{sceneIn.ID:d2} OUT.txt");
+                    var logPath = Path.Combine(exportTo, $"{timestamp} - {i + 1} {labels[i]} COLI_COURSE{sceneIn.CourseIndex:d2} OUT.txt");
                     var log = new TextLogger(logPath);
                     LogColiScene(sceneIn, log, i);
                     log.Close();

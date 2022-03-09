@@ -97,20 +97,69 @@ namespace GameCube.GFZ.Stage
 
         // PROPERTIES
         public AddressRange AddressRange { get; set; }
-        public string Author { get; set; }
-        public string CourseName { get; set; }
-        public string FileExtension => "";
-        public string FileName { get; set; }
-        public int FileSize { get; private set; }
-        public SerializeFormat Format { get; set; }
-        public int ID { get; private set; }
-        public bool IsFileAX { get; private set; }
-        public bool IsFileGX { get; private set; }
-        public bool IsValidFile => IsFileAX ^ IsFileGX;
-        public bool SerializeVerbose { get; set; }
-        public Venue Venue { get; set; }
+
         /// <summary>
-        /// Returns true if file is tagged either AX or GX, but not both
+        /// The course's author.
+        /// </summary>
+        public string Author { get; set; }
+
+        /// <summary>
+        /// The course's name.
+        /// </summary>
+        public string CourseName { get; set; }
+
+        /// <summary>
+        /// The file extension for Scene (COLI_COURSE##). There is none.
+        /// </summary>
+        public string FileExtension => "";
+
+        /// <summary>
+        /// The Scene's file name. 
+        /// </summary>
+        public string FileName { get; set; }
+
+        /// <summary>
+        /// How large the file is in bytes.
+        /// </summary>
+        public int FileSize { get; private set; }
+
+        /// <summary>
+        /// The serialization format to use on Serialize().
+        /// </summary>
+        public SerializeFormat Format { get; set; }
+
+        /// <summary>
+        /// The course index as indicated by the file name COLI_COURSE## where ## is the index.
+        /// </summary>
+        public int CourseIndex { get; private set; }
+
+        /// <summary>
+        /// Returns true if this Scene is in F-Zero AX format.
+        /// </summary>
+        public bool IsFileAX { get; private set; }
+
+        /// <summary>
+        /// Returns true if this Scene is in F-Zero GX format.
+        /// </summary>
+        public bool IsFileGX { get; private set; }
+
+        /// <summary>
+        /// Returns true if file is properly tagged as either AX or GX (mutually exclusive).
+        /// </summary>
+        public bool IsValidFile => IsFileAX ^ IsFileGX;
+
+        /// <summary>
+        /// If set to true, serialization prints text inlined into the resulting binary output file.
+        /// </summary>
+        public bool SerializeVerbose { get; set; }
+        
+        /// <summary>
+        /// The venue for this course.
+        /// </summary>
+        public Venue Venue { get; set; }
+
+        /// <summary>
+        /// Gets the venue's name
         /// </summary>
         public string VenueName => EnumExtensions.GetDescription(Venue);
 
@@ -176,7 +225,7 @@ namespace GameCube.GFZ.Stage
             FileSize = (int)reader.BaseStream.Length;
             // Store the stage index, can solve venue and course name from this using hashes
             var matchDigits = Regex.Match(FileName, Const.Regex.MatchIntegers);
-            ID = int.Parse(matchDigits.Value);
+            CourseIndex = int.Parse(matchDigits.Value);
 
             // Read COLI_COURSE## file header
             DeserializeHeader(reader);
@@ -1260,7 +1309,7 @@ namespace GameCube.GFZ.Stage
 
         public string PrintSingleLine()
         {
-            return $"{nameof(Scene)}({Venue} [{CourseName}] by {Author}, {nameof(ID)}({ID}), {Format})";
+            return $"{nameof(Scene)}({Venue} [{CourseName}] by {Author}, {nameof(CourseIndex)}({CourseIndex}), {Format})";
         }
 
         //// FIELDS (that require extra processing)

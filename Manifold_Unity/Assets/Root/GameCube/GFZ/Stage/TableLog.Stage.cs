@@ -838,9 +838,9 @@ namespace GameCube.GFZ.Stage
                 foreach (var scene in scenes)
                 {
                     writer.WriteNextCol(scene.FileName);
-                    writer.WriteNextCol(scene.ID);
-                    writer.WriteNextCol(CourseUtility.GetVenueID(scene.ID).GetDescription());
-                    writer.WriteNextCol(((CourseIndexAX)scene.ID).GetDescription());
+                    writer.WriteNextCol(scene.CourseIndex);
+                    writer.WriteNextCol(CourseUtility.GetVenueID(scene.CourseIndex).GetDescription());
+                    writer.WriteNextCol(((CourseIndexAX)scene.CourseIndex).GetDescription());
                     writer.WriteNextCol(scene.IsFileGX ? "GX" : "AX");
 
                     writer.WriteNextCol(scene.UnkRange0x00.near);
@@ -931,14 +931,14 @@ namespace GameCube.GFZ.Stage
 
                 foreach (var scene in scenes)
                 {
-                    var venueID = CourseUtility.GetVenueID(scene.ID).GetDescription();
-                    var courseID = ((CourseIndexAX)scene.ID).GetDescription();
+                    var venueID = CourseUtility.GetVenueID(scene.CourseIndex).GetDescription();
+                    var courseID = ((CourseIndexAX)scene.CourseIndex).GetDescription();
                     var isAxGx = scene.IsFileGX ? "GX" : "AX";
 
                     foreach (var arcadeCheckpooint in scene.timeExtensionTriggers)
                     {
                         writer.WriteNextCol(scene.FileName);
-                        writer.WriteNextCol(scene.ID);
+                        writer.WriteNextCol(scene.CourseIndex);
                         writer.WriteNextCol(venueID);
                         writer.WriteNextCol(courseID);
                         writer.WriteNextCol(isAxGx);
@@ -977,14 +977,14 @@ namespace GameCube.GFZ.Stage
 
                 foreach (var scene in scenes)
                 {
-                    var venueID = CourseUtility.GetVenueID(scene.ID).GetDescription();
-                    var courseID = ((CourseIndexAX)scene.ID).GetDescription();
+                    var venueID = CourseUtility.GetVenueID(scene.CourseIndex).GetDescription();
+                    var courseID = ((CourseIndexAX)scene.CourseIndex).GetDescription();
                     var isAxGx = scene.IsFileGX ? "GX" : "AX";
 
                     foreach (var cmt in scene.miscellaneousTriggers)
                     {
                         writer.WriteNextCol(scene.FileName);
-                        writer.WriteNextCol(scene.ID);
+                        writer.WriteNextCol(scene.CourseIndex);
                         writer.WriteNextCol(venueID);
                         writer.WriteNextCol(courseID);
                         writer.WriteNextCol(isAxGx);
@@ -1027,14 +1027,14 @@ namespace GameCube.GFZ.Stage
 
                 foreach (var scene in scenes)
                 {
-                    var venueID = CourseUtility.GetVenueID(scene.ID).GetDescription();
-                    var courseID = ((CourseIndexAX)scene.ID).GetDescription();
+                    var venueID = CourseUtility.GetVenueID(scene.CourseIndex).GetDescription();
+                    var courseID = ((CourseIndexAX)scene.CourseIndex).GetDescription();
                     var isAxGx = scene.IsFileGX ? "GX" : "AX";
 
                     foreach (var item in scene.storyObjectTriggers)
                     {
                         writer.WriteNextCol(scene.FileName);
-                        writer.WriteNextCol(scene.ID);
+                        writer.WriteNextCol(scene.CourseIndex);
                         writer.WriteNextCol(venueID);
                         writer.WriteNextCol(courseID);
                         writer.WriteNextCol(isAxGx);
@@ -1079,8 +1079,8 @@ namespace GameCube.GFZ.Stage
 
                 foreach (var scene in scenes)
                 {
-                    var venueID = CourseUtility.GetVenueID(scene.ID).GetDescription();
-                    var courseID = ((CourseIndexAX)scene.ID).GetDescription();
+                    var venueID = CourseUtility.GetVenueID(scene.CourseIndex).GetDescription();
+                    var courseID = ((CourseIndexAX)scene.CourseIndex).GetDescription();
                     var isAxGx = scene.IsFileGX ? "GX" : "AX";
 
                     int count = 0;
@@ -1090,7 +1090,7 @@ namespace GameCube.GFZ.Stage
                         count++;
 
                         writer.WriteNextCol(scene.FileName);
-                        writer.WriteNextCol(scene.ID);
+                        writer.WriteNextCol(scene.CourseIndex);
                         writer.WriteNextCol(venueID);
                         writer.WriteNextCol(courseID);
                         writer.WriteNextCol(isAxGx);
@@ -1133,14 +1133,14 @@ namespace GameCube.GFZ.Stage
 
                 foreach (var scene in scenes)
                 {
-                    var venueID = CourseUtility.GetVenueID(scene.ID).GetDescription();
-                    var courseID = ((CourseIndexAX)scene.ID).GetDescription();
+                    var venueID = CourseUtility.GetVenueID(scene.CourseIndex).GetDescription();
+                    var courseID = ((CourseIndexAX)scene.CourseIndex).GetDescription();
                     var isAxGx = scene.IsFileGX ? "GX" : "AX";
 
                     foreach (var vfx in scene.visualEffectTriggers)
                     {
                         writer.WriteNextCol(scene.FileName);
-                        writer.WriteNextCol(scene.ID);
+                        writer.WriteNextCol(scene.CourseIndex);
                         writer.WriteNextCol(venueID);
                         writer.WriteNextCol(courseID);
                         writer.WriteNextCol(isAxGx);
@@ -1189,8 +1189,8 @@ namespace GameCube.GFZ.Stage
                     if (scene.fogCurves == null)
                         continue;
 
-                    var venueID = CourseUtility.GetVenueID(scene.ID).GetDescription();
-                    var courseID = ((CourseIndexAX)scene.ID).GetDescription();
+                    var venueID = CourseUtility.GetVenueID(scene.CourseIndex).GetDescription();
+                    var courseID = ((CourseIndexAX)scene.CourseIndex).GetDescription();
                     var isAxGx = scene.IsFileGX ? "GX" : "AX";
 
                     var totalD1 = scene.fogCurves.animationCurves.Length;
@@ -1201,7 +1201,7 @@ namespace GameCube.GFZ.Stage
                         foreach (var keyableAttribute in animationCurve.KeyableAttributes)
                         {
                             writer.WriteNextCol(scene.FileName);
-                            writer.WriteNextCol(scene.ID);
+                            writer.WriteNextCol(scene.CourseIndex);
                             writer.WriteNextCol(venueID);
                             writer.WriteNextCol(courseID);
                             writer.WriteNextCol(isAxGx);
@@ -1247,12 +1247,12 @@ namespace GameCube.GFZ.Stage
 
                 foreach (var scene in scenes)
                 {
-                    var venueID = CourseUtility.GetVenueID(scene.ID).GetDescription();
-                    var courseID = ((CourseIndexAX)scene.ID).GetDescription();
+                    var venueID = CourseUtility.GetVenueID(scene.CourseIndex).GetDescription();
+                    var courseID = ((CourseIndexAX)scene.CourseIndex).GetDescription();
                     var isAxGx = scene.IsFileGX ? "GX" : "AX";
 
                     writer.WriteNextCol(scene.FileName);
-                    writer.WriteNextCol(scene.ID);
+                    writer.WriteNextCol(scene.CourseIndex);
                     writer.WriteNextCol(venueID);
                     writer.WriteNextCol(courseID);
                     writer.WriteNextCol(isAxGx);
@@ -1382,7 +1382,7 @@ namespace GameCube.GFZ.Stage
                         int pointIndex = 0;
                         foreach (var trackPoint in trackNode.Checkpoints)
                         {
-                            writer.WriteNextCol($"COLI_COURSE{scene.ID:d2}");
+                            writer.WriteNextCol($"COLI_COURSE{scene.CourseIndex:d2}");
                             writer.WriteNextCol($"[{nodeIndex}/{nodeLength}]");
                             writer.WriteNextCol($"[{pointIndex}/{pointLength}]");
 
@@ -1454,7 +1454,7 @@ namespace GameCube.GFZ.Stage
                 {
                     var staticColliderMeshes = scene.staticColliderMeshManager;
 
-                    writer.WriteNextCol($"COLI_COURSE{scene.ID:d2}");
+                    writer.WriteNextCol($"COLI_COURSE{scene.CourseIndex:d2}");
                     writer.WriteNextCol(index++);
                     writer.WriteNextCol(staticColliderMeshes.StaticColliderTrisPtr.PrintAddress);
                     writer.WriteNextCol(staticColliderMeshes.TriMeshGridPtrs.Length);
@@ -1503,8 +1503,8 @@ namespace GameCube.GFZ.Stage
 
                 foreach (var scene in scenes)
                 {
-                    var venueID = CourseUtility.GetVenueID(scene.ID).GetDescription();
-                    var courseID = ((CourseIndexAX)scene.ID).GetDescription();
+                    var venueID = CourseUtility.GetVenueID(scene.CourseIndex).GetDescription();
+                    var courseID = ((CourseIndexAX)scene.CourseIndex).GetDescription();
                     var isAxGx = scene.IsFileGX ? "GX" : "AX";
 
                     // Get all the scene object references
@@ -1526,7 +1526,7 @@ namespace GameCube.GFZ.Stage
                     foreach (var sceneObjectReference in objectsList)
                     {
                         writer.WriteNextCol(scene.FileName);
-                        writer.WriteNextCol(scene.ID);
+                        writer.WriteNextCol(scene.CourseIndex);
                         writer.WriteNextCol(venueID);
                         writer.WriteNextCol(courseID);
                         writer.WriteNextCol(isAxGx);
@@ -1565,8 +1565,8 @@ namespace GameCube.GFZ.Stage
 
                 foreach (var scene in scenes)
                 {
-                    var venueID = CourseUtility.GetVenueID(scene.ID).GetDescription();
-                    var courseID = ((CourseIndexAX)scene.ID).GetDescription();
+                    var venueID = CourseUtility.GetVenueID(scene.CourseIndex).GetDescription();
+                    var courseID = ((CourseIndexAX)scene.CourseIndex).GetDescription();
                     var isAxGx = scene.IsFileGX ? "GX" : "AX";
 
                     // Get all the scene object references
@@ -1585,7 +1585,7 @@ namespace GameCube.GFZ.Stage
                     foreach (var sceneObject in sceneObjectsList)
                     {
                         writer.WriteNextCol(scene.FileName);
-                        writer.WriteNextCol(scene.ID);
+                        writer.WriteNextCol(scene.CourseIndex);
                         writer.WriteNextCol(venueID);
                         writer.WriteNextCol(courseID);
                         writer.WriteNextCol(isAxGx);
@@ -1630,8 +1630,8 @@ namespace GameCube.GFZ.Stage
 
                 foreach (var scene in scenes)
                 {
-                    var venueID = CourseUtility.GetVenueID(scene.ID).GetDescription();
-                    var courseID = ((CourseIndexAX)scene.ID).GetDescription();
+                    var venueID = CourseUtility.GetVenueID(scene.CourseIndex).GetDescription();
+                    var courseID = ((CourseIndexAX)scene.CourseIndex).GetDescription();
                     var isAxGx = scene.IsFileGX ? "GX" : "AX";
 
                     foreach (var template in scene.sceneObjects)
@@ -1641,7 +1641,7 @@ namespace GameCube.GFZ.Stage
                         foreach (var sceneObject in template.LODs)
                         {
                             writer.WriteNextCol(scene.FileName);
-                            writer.WriteNextCol(scene.ID);
+                            writer.WriteNextCol(scene.CourseIndex);
                             writer.WriteNextCol(venueID);
                             writer.WriteNextCol(courseID);
                             writer.WriteNextCol(isAxGx);
@@ -1686,12 +1686,12 @@ namespace GameCube.GFZ.Stage
 
                 foreach (var scene in scenes)
                 {
-                    var venueID = CourseUtility.GetVenueID(scene.ID).GetDescription();
-                    var courseID = ((CourseIndexAX)scene.ID).GetDescription();
+                    var venueID = CourseUtility.GetVenueID(scene.CourseIndex).GetDescription();
+                    var courseID = ((CourseIndexAX)scene.CourseIndex).GetDescription();
                     var isAxGx = scene.IsFileGX ? "GX" : "AX";
 
                     writer.WriteNextCol(scene.FileName);
-                    writer.WriteNextCol(scene.ID);
+                    writer.WriteNextCol(scene.CourseIndex);
                     writer.WriteNextCol(venueID);
                     writer.WriteNextCol(courseID);
                     writer.WriteNextCol(isAxGx);
@@ -1729,14 +1729,14 @@ namespace GameCube.GFZ.Stage
 
                 foreach (var scene in scenes)
                 {
-                    var venueID = CourseUtility.GetVenueID(scene.ID).GetDescription();
-                    var courseID = ((CourseIndexAX)scene.ID).GetDescription();
+                    var venueID = CourseUtility.GetVenueID(scene.CourseIndex).GetDescription();
+                    var courseID = ((CourseIndexAX)scene.CourseIndex).GetDescription();
                     var isAxGx = scene.IsFileGX ? "GX" : "AX";
 
                     foreach (var surfaceAttributeArea in scene.embeddedPropertyAreas)
                     {
                         writer.WriteNextCol(scene.FileName);
-                        writer.WriteNextCol(scene.ID);
+                        writer.WriteNextCol(scene.CourseIndex);
                         writer.WriteNextCol(venueID);
                         writer.WriteNextCol(courseID);
                         writer.WriteNextCol(isAxGx);
@@ -1778,14 +1778,14 @@ namespace GameCube.GFZ.Stage
 
                 foreach (var scene in scenes)
                 {
-                    var venueID = CourseUtility.GetVenueID(scene.ID).GetDescription();
-                    var courseID = ((CourseIndexAX)scene.ID).GetDescription();
+                    var venueID = CourseUtility.GetVenueID(scene.CourseIndex).GetDescription();
+                    var courseID = ((CourseIndexAX)scene.CourseIndex).GetDescription();
                     var isAxGx = scene.IsFileGX ? "GX" : "AX";
 
                     foreach (var unkSols in scene.unknownColliders)
                     {
                         writer.WriteNextCol(scene.FileName);
-                        writer.WriteNextCol(scene.ID);
+                        writer.WriteNextCol(scene.CourseIndex);
                         writer.WriteNextCol(venueID);
                         writer.WriteNextCol(courseID);
                         writer.WriteNextCol(isAxGx);
