@@ -101,8 +101,8 @@ namespace Manifold.IO
         public static void WriteX(this BinaryWriter writer, double[] value)
         => BinaryIoUtility.Write(writer, value);
 
-        public static void WriteX(this BinaryWriter writer, string value, Encoding encoding)
-        => BinaryIoUtility.Write(writer, value, encoding);
+        public static void WriteX(this BinaryWriter writer, string value, Encoding encoding, bool writeLengthBytes)
+        => BinaryIoUtility.Write(writer, value, encoding, writeLengthBytes);
 
         public static void WriteX<TBinarySerializable>(this BinaryWriter writer, TBinarySerializable[] value) where TBinarySerializable : IBinarySerializable
         => BinaryIoUtility.Write(writer, value);

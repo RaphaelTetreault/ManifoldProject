@@ -412,10 +412,15 @@ namespace Manifold.IO
             return value = ReadDouble(binaryReader);
         }
 
+        public static string Read(BinaryReader binaryReader, ref string value, Encoding encoding, int lengthBytes)
+        {
+            value = ReadString(binaryReader, lengthBytes, encoding);
+            return value;
+        }
         public static string Read(BinaryReader binaryReader, ref string value, Encoding encoding)
         {
             var lengthBytes = binaryReader.ReadInt32();
-            value = ReadString(binaryReader, lengthBytes, encoding);
+            value = Read(binaryReader, ref value, encoding, lengthBytes);
             return value;
         }
 
@@ -584,7 +589,6 @@ namespace Manifold.IO
             return value = ReadStringArray(binaryReader, length, encoding);
         }
 
-
         public static TBinarySerializable[] Read<TBinarySerializable>(BinaryReader binaryReader, int length, ref TBinarySerializable[] value) where TBinarySerializable : IBinarySerializable, new()
         {
             return value = ReadArray(binaryReader, length, ReadBinarySerializable<TBinarySerializable>);
@@ -741,10 +745,13 @@ namespace Manifold.IO
             writer.Write(bytes);
         }
 
-        public static void Write(BinaryWriter writer, string value, Encoding encoding)
+        public static void Write(BinaryWriter writer, string value, Encoding encoding, bool writeLengthBytes)
         {
             byte[] bytes = encoding.GetBytes(value);
-            writer.Write(bytes.Length);
+
+            if (writeLengthBytes)
+                writer.Write(bytes.Length);
+
             writer.Write(bytes);
         }
 
@@ -822,7 +829,7 @@ namespace Manifold.IO
         {
             foreach (string str in value)
             {
-                Write(writer, str, encoding);
+                Write(writer, str, encoding, true);
             }
         }
 

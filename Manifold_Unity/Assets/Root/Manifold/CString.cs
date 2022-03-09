@@ -70,7 +70,7 @@ namespace Manifold.IO
 
         public static void WriteCString(BinaryWriter writer, string value, Encoding encoding)
         {
-            writer.WriteX(value, encoding);
+            writer.WriteX(value, encoding, false);
             writer.WriteX(nullTerminator);
         }
 
