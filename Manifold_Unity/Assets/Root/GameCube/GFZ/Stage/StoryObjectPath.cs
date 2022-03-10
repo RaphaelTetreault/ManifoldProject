@@ -10,7 +10,7 @@ namespace GameCube.GFZ.Stage
     /// <remarks>
     /// Example: Chapter 2's falling rocks.
     /// </remarks>
-    public class StoryObjectPath :
+    public sealed class StoryObjectPath :
         IBinaryAddressable,
         IBinarySerializable,
         IHasReference,
@@ -41,7 +41,7 @@ namespace GameCube.GFZ.Stage
                 {
                     // Init anim curve, jump, read without creating new instance
                     reader.JumpToAddress(animationCurvePtr);
-                    animationCurve = new AnimationCurve(animationCurvePtr.Length);
+                    animationCurve = new AnimationCurve(animationCurvePtr.length);
                     animationCurve.Deserialize(reader);
                 }
             }
@@ -66,15 +66,11 @@ namespace GameCube.GFZ.Stage
             Assert.ReferencePointer(animationCurve, animationCurvePtr);
         }
 
-        public string PrintMultiLine(int indentLevel = 0, string indent = "\t")
+        public void PrintMultiLine(System.Text.StringBuilder builder, int indentLevel = 0, string indent = "\t")
         {
-            var builder = new System.Text.StringBuilder();
-
             builder.AppendLineIndented(indent, indentLevel, nameof(StoryObjectPath));
             indentLevel++;
-            builder.Append(animationCurve.PrintMultiLine(indentLevel, indent));
-
-            return builder.ToString();
+            builder.AppendLineIndented(indent, indentLevel, animationCurve);
         }
 
         public string PrintSingleLine()

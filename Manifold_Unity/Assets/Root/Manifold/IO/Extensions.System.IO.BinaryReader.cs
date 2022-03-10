@@ -75,9 +75,6 @@ namespace Manifold.IO
 
         #endregion
 
-
-        // BinaryIOUtility function forwarding
-
         #region ReadX_Value
 
         public static bool ReadX_Bool(this BinaryReader reader)
@@ -123,7 +120,6 @@ namespace Manifold.IO
             => BinaryIoUtility.ReadEnum<TEnum>(reader);
 
         #endregion
-
 
         #region ReadX(ref value)
 
@@ -172,15 +168,19 @@ namespace Manifold.IO
             => BinaryIoUtility.Read(reader, ref value);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static string ReadX(this BinaryReader reader, ref string value, int lengthBytes, Encoding encoding) 
-           => BinaryIoUtility.Read(reader, ref value, lengthBytes, encoding);
+        public static string ReadX(this BinaryReader reader, ref string value, Encoding encoding, int lengthBytes) 
+           => BinaryIoUtility.Read(reader, ref value, encoding, lengthBytes);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static string ReadX(this BinaryReader reader, ref string value, Encoding encoding)
+            => BinaryIoUtility.Read(reader, ref value, encoding);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T ReadX<T>(this BinaryReader reader, ref T value) where T : IBinarySerializable, new()
             => BinaryIoUtility.ReadBinarySerializable(reader, ref value);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static TEnum ReadX<TEnum>(this BinaryReader reader, ref TEnum value, bool discard = false) where TEnum : struct, Enum
+        public static TEnum ReadX<TEnum>(this BinaryReader reader, ref TEnum value, bool _ = false) where TEnum : struct, Enum
             =>  BinaryIoUtility.Read(reader, ref value);
 
         #endregion
@@ -229,6 +229,10 @@ namespace Manifold.IO
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double[] ReadX(this BinaryReader reader, ref double[] value, int length)
             => BinaryIoUtility.Read(reader, length, ref value);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static string[] ReadX(this BinaryReader reader, ref string[] value, int length, Encoding encoding)
+            => BinaryIoUtility.Read(reader, length, ref value, encoding);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static TBinarySerializable[] ReadX<TBinarySerializable>(this BinaryReader reader, ref TBinarySerializable[] value, int length) where TBinarySerializable : IBinarySerializable, new()

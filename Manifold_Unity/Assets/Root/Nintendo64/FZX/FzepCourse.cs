@@ -33,16 +33,16 @@ namespace Nintendo64.FZX
             Assert.IsTrue(string.IsNullOrEmpty(reader.ReadLine()));
 
             //
-            venue = (Venue)int.Parse(Regex.Match(reader.ReadLine(), Const.Regex.MatchIntegers).ToString());
-            sky = (Sky)int.Parse(Regex.Match(reader.ReadLine(), Const.Regex.MatchIntegers).ToString());
-            romMusic = (CartridgeMusic)int.Parse(Regex.Match(reader.ReadLine(), Const.Regex.MatchIntegers).ToString());
-            ekMusic = (DiskDriveMusic)int.Parse(Regex.Match(reader.ReadLine(), Const.Regex.MatchIntegers).ToString());
+            venue = (Venue)int.Parse(Regex.Match(reader.ReadLine(), ConstRegex.MatchIntegers).ToString());
+            sky = (Sky)int.Parse(Regex.Match(reader.ReadLine(), ConstRegex.MatchIntegers).ToString());
+            romMusic = (CartridgeMusic)int.Parse(Regex.Match(reader.ReadLine(), ConstRegex.MatchIntegers).ToString());
+            ekMusic = (DiskDriveMusic)int.Parse(Regex.Match(reader.ReadLine(), ConstRegex.MatchIntegers).ToString());
 
             Assert.IsTrue(string.IsNullOrEmpty(reader.ReadLine()));
 
             // 
-            int horizonCount = int.Parse(Regex.Match(reader.ReadLine(), Const.Regex.MatchIntegers).ToString());
-            int controlPointCount = int.Parse(Regex.Match(reader.ReadLine(), Const.Regex.MatchIntegers).ToString());
+            int horizonCount = int.Parse(Regex.Match(reader.ReadLine(), ConstRegex.MatchIntegers).ToString());
+            int controlPointCount = int.Parse(Regex.Match(reader.ReadLine(), ConstRegex.MatchIntegers).ToString());
 
             Assert.IsTrue(string.IsNullOrEmpty(reader.ReadLine()));
             Assert.IsTrue(string.IsNullOrEmpty(reader.ReadLine()));

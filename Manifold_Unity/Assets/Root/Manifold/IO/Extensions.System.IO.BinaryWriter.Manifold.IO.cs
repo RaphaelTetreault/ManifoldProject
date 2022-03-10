@@ -29,7 +29,7 @@ namespace Manifold.IO
         private const char kWhiteSpace = ' ';
         private const char kPadding = '-';
 
-
+        #region TODO: hacky comment code
 
         // Added the below extensions to help debug file outputs
         public static void Comment(this BinaryWriter writer, string message, bool doWrite, char padding = ' ', int alignment = 16)
@@ -97,7 +97,7 @@ namespace Manifold.IO
         //    => CommentPtr(writer, pointer.Address, doWrite, padding, alignment);
 
         public static void CommentPtr(this BinaryWriter writer, AddressRange addresRange, bool doWrite, char padding = ' ', int alignment = 16)
-            => CommentPtr(writer, (int)addresRange.StartAddress, doWrite, padding, alignment);
+            => CommentPtr(writer, (int)addresRange.startAddress, doWrite, padding, alignment);
 
         public static void CommentPtr(this BinaryWriter writer, ArrayPointer pointer, bool doWrite, char padding = ' ', int alignment = 16)
         {
@@ -106,10 +106,9 @@ namespace Manifold.IO
                 return;
 
             CommentPtr(writer, pointer.Pointer, doWrite, padding, alignment);
-            CommentCnt(writer, pointer.Length, doWrite, padding, alignment, "x8");
-            CommentCnt(writer, pointer.Length, doWrite, padding, alignment);
+            CommentCnt(writer, pointer.length, doWrite, padding, alignment, "x8");
+            CommentCnt(writer, pointer.length, doWrite, padding, alignment);
         }
-
 
         public static void InlineDesc<T>(this BinaryWriter writer, bool doWrite, Pointer pointer, T type, char padding = ' ', int alignment = 16)
         {
@@ -122,7 +121,7 @@ namespace Manifold.IO
             if (typeof(T).IsArray)
             {
                 var length = (type as Array).Length;
-                writer.CommentPtr(new ArrayPointer(length, pointer.Address), true, padding, alignment);
+                writer.CommentPtr(new ArrayPointer(length, pointer.address), true, padding, alignment);
             }
             else
             {
@@ -180,26 +179,39 @@ namespace Manifold.IO
             //writer.CommentNewLine(true);
         }
 
+        #endregion
+
+        /// <summary>
+        /// Moves the <paramref name="reader"/>'s stream position to the <paramref name="pointer"/>'s address.
+        /// </summary>
+        /// <param name="reader">The writer to jump in.</param>
+        /// <param name="pointer">The pointer to jump to.</param>
         public static void JumpToAddress(this BinaryWriter writer, Pointer pointer)
         {
-            writer.BaseStream.Seek(pointer.Address, SeekOrigin.Begin);
-        }
-        public static void JumpToAddress(this BinaryWriter writer, ArrayPointer arrayPointer)
-        {
-            writer.BaseStream.Seek(arrayPointer.Address, SeekOrigin.Begin);
-        }
-        public static void JumpToAddress(this BinaryWriter writer, AddressRange addressRange)
-        {
-            writer.BaseStream.Seek(addressRange.StartAddress, SeekOrigin.Begin);
-        }
-        public static void JumpToAddress(this BinaryWriter writer, IBinaryAddressable binaryAddressable)
-        {
-            writer.BaseStream.Seek(binaryAddressable.AddressRange.StartAddress, SeekOrigin.Begin);
+            writer.BaseStream.Seek(pointer.address, SeekOrigin.Begin);
         }
 
+        /// <summary>
+        /// Moves the <paramref name="writer"/>'s stream position to the <paramref name="arrayPointer"/>'s address.
+        /// </summary>
+        /// <param name="writer">The writer to jump in.</param>
+        /// <param name="arrayPointer">The pointer to jump to.</param>
+        public static void JumpToAddress(this BinaryWriter writer, ArrayPointer arrayPointer)
+        {
+            writer.BaseStream.Seek(arrayPointer.address, SeekOrigin.Begin);
+        }
+
+        /// <summary>
+        /// Returns the <paramref name="writer"/>'s position as a Pointer.
+        /// </summary>
+        /// <param name="writer">The writer to convert position to pointer from.</param>
+        /// <returns>
+        /// A pointer pointing to the address of the <paramref name="writer"/>'s stream position.
+        /// </returns>
         public static Pointer GetPositionAsPointer(this BinaryWriter writer)
         {
             return new Pointer(writer.BaseStream.Position);
         }
+
     }
 }

@@ -9,10 +9,9 @@ namespace GameCube.GFZ.GMA
     /// Represents a GMA file.
     /// </summary>
     public class Gma :
-        IBinaryAddressable,
         IBinarySerializable,
         IHasReference,
-        IFile
+        IFileType
     {
         // FIELDS
         private int modelsCount;
@@ -25,6 +24,7 @@ namespace GameCube.GFZ.GMA
         // PROPERTIES
         public AddressRange AddressRange { get; set; }
         public string FileName { get; set; }
+        public string FileExtension => ".gma";
         public int ModelsCount { get => modelsCount; set => modelsCount = value; }
         public Offset ModelBasePtr { get => modelBasePtrOffset; set => modelBasePtrOffset = value; }
         public ModelEntry[] ModelEntries { get => modelEntries; set => modelEntries = value; }
@@ -34,37 +34,32 @@ namespace GameCube.GFZ.GMA
         // METHODS
         public void Deserialize(BinaryReader reader)
         {
-            this.RecordStartAddress(reader);
-            {
-                reader.ReadX(ref modelsCount);
-                reader.ReadX(ref modelBasePtrOffset);
-                reader.ReadX(ref modelEntries, modelsCount);
-            }
-            this.RecordEndAddress(reader);
-            {
-                Offset nameBasePtrOffset = AddressRange.EndAddress;
-                var modelList = new List<Model>();
+            reader.ReadX(ref modelsCount);
+            reader.ReadX(ref modelBasePtrOffset);
+            reader.ReadX(ref modelEntries, modelsCount);
 
-                // Add offsets necessary for pointers to be correct
-                for (int i = 0; i < modelsCount; i++)
+            Offset nameBasePtrOffset = reader.GetPositionAsPointer().address;
+            var modelList = new List<Model>();
+
+            // Add offsets necessary for pointers to be correct
+            for (int i = 0; i < modelsCount; i++)
+            {
+                var modelEntry = modelEntries[i];
+                modelEntry.GcmfBasePtrOffset = modelBasePtrOffset;
+                modelEntry.NameBasePtrOffset = nameBasePtrOffset;
+
+                if (modelEntry.IsNull)
+                    continue;
+
+                var model = new Model()
                 {
-                    var modelEntry = modelEntries[i];
-                    modelEntry.GcmfBasePtrOffset = modelBasePtrOffset;
-                    modelEntry.NameBasePtrOffset = nameBasePtrOffset;
-
-                    if (modelEntry.IsNull)
-                        continue;
-
-                    var model = new Model()
-                    {
-                        GcmfPtr = modelEntry.GcmfPtr,
-                        NamePtr = modelEntry.NamePtr,
-                    };
-                    model.Deserialize(reader);
-                    modelList.Add(model);
-                }
-                models = modelList.ToArray();
+                    GcmfPtr = modelEntry.GcmfPtr,
+                    NamePtr = modelEntry.NamePtr,
+                };
+                model.Deserialize(reader);
+                modelList.Add(model);
             }
+            models = modelList.ToArray();
         }
 
         public void Serialize(BinaryWriter writer)
@@ -88,7 +83,7 @@ namespace GameCube.GFZ.GMA
             {
                 var gcmf = modelGCMFs[i];
                 gcmfWriter.WriteX(gcmf);
-                gcmfOffsets[i] = gcmf.GetPointer().Address;
+                gcmfOffsets[i] = gcmf.GetPointer().address;
             }
             gcmfWriter.SeekBegin();
 
@@ -99,7 +94,7 @@ namespace GameCube.GFZ.GMA
             {
                 var name = modelNames[i];
                 nameWriter.WriteX(name);
-                nameOffsets[i] = name.GetPointer().Address;
+                nameOffsets[i] = name.GetPointer().address;
             }
             nameWriter.SeekBegin();
 
@@ -114,22 +109,29 @@ namespace GameCube.GFZ.GMA
                 };
             }
 
-            this.RecordStartAddress(writer);
-            {
-                writer.WriteX(modelsCount);
-                writer.WriteX(modelBasePtrOffset);
-            }
-            this.RecordEndAddress(writer);
-            {
-                // Write entries (offsets)
-                foreach (var modelEntry in modelEntries)
-                    writer.WriteX(modelEntry);
+            // This will be grabage/blank
+            writer.WriteX(modelsCount);
+            writer.WriteX(modelBasePtrOffset);
 
-                // Copy written memory stream data over to file stream
-                nameWriter.BaseStream.CopyTo(writer.BaseStream);
-                writer.WriteAlignment(GX.GXUtility.GX_FIFO_ALIGN);
-                gcmfWriter.BaseStream.CopyTo(writer.BaseStream);
-            }
+            // Write entries (offsets)
+            foreach (var modelEntry in modelEntries)
+                writer.WriteX(modelEntry);
+
+            // Copy written memory stream data over to file stream
+            nameWriter.BaseStream.CopyTo(writer.BaseStream);
+            writer.WriteAlignment(GX.GXUtility.GX_FIFO_ALIGN);
+
+            // Update some metadata
+            modelBasePtrOffset = writer.GetPositionAsPointer().address;
+            modelsCount = modelEntries.Length;
+
+            // Write model data
+            gcmfWriter.BaseStream.CopyTo(writer.BaseStream);
+
+            // Re-write values
+            writer.JumpToAddress(0);
+            writer.WriteX(modelsCount);
+            writer.WriteX(modelBasePtrOffset);
         }
 
         public void ValidateReferences()

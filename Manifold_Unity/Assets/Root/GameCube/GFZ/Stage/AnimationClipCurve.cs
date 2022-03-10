@@ -9,7 +9,7 @@ namespace GameCube.GFZ.Stage
     /// A metadata-enhanced AnimationCurve.
     /// </summary>
     [Serializable]
-    public class AnimationClipCurve :
+    public sealed class AnimationClipCurve :
         IBinaryAddressable,
         IBinarySerializable,
         IHasReference,
@@ -51,7 +51,7 @@ namespace GameCube.GFZ.Stage
                 if (animationCurvePtr.IsNotNull)
                 {
                     reader.JumpToAddress(animationCurvePtr);
-                    animationCurve = new AnimationCurve(animationCurvePtr.Length);
+                    animationCurve = new AnimationCurve(animationCurvePtr.length);
                     animationCurve.Deserialize(reader);
                 }
             }
@@ -87,7 +87,7 @@ namespace GameCube.GFZ.Stage
             Assert.ReferencePointer(animationCurve, animationCurvePtr);
             // Ensure that we have the same amount of keyables as we say we do.
             if (animationCurve != null)
-                Assert.IsTrue(animationCurve.KeyableAttributes.Length == animationCurvePtr.Length);
+                Assert.IsTrue(animationCurve.KeyableAttributes.Length == animationCurvePtr.length);
         }
 
         public override string ToString()
@@ -106,15 +106,12 @@ namespace GameCube.GFZ.Stage
                 $" Has {nameof(animationCurve)}: {animationCurve != null})";
         }
 
-        public string PrintMultiLine(int indentLevel = 0, string indent = "\t")
+        public void PrintMultiLine(System.Text.StringBuilder builder, int indentLevel = 0, string indent = "\t")
         {
-            var builder = new System.Text.StringBuilder();
             // Write the main structure on one line
             builder.AppendLineIndented(indent, indentLevel, PrintSingleLine());
             indentLevel++;
-            builder.Append(animationCurve.PrintMultiLine(indentLevel, indent));
-
-            return builder.ToString();
+            builder.AppendLineIndented(indent, indentLevel, animationCurve);
         }
 
     }

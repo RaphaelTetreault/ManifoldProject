@@ -11,7 +11,7 @@ namespace GameCube.GFZ.Stage
     /// which course it appears. Consult enum comments for more details.
     /// </summary>
     [Serializable]
-    public class MiscellaneousTrigger :
+    public sealed class MiscellaneousTrigger :
         IBinaryAddressable,
         IBinarySerializable,
         ITextPrintable
@@ -59,16 +59,12 @@ namespace GameCube.GFZ.Stage
             this.RecordEndAddress(writer);
         }
 
-        public string PrintMultiLine(int indentLevel = 0, string indent = "\t")
+        public void PrintMultiLine(System.Text.StringBuilder builder, int indentLevel = 0, string indent = "\t")
         {
-            var builder = new System.Text.StringBuilder();
-
             builder.AppendLineIndented(indent, indentLevel, nameof(MiscellaneousTrigger));
             indentLevel++;
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(metadataType)}: {metadataType}");
-            builder.Append(transform.PrintMultiLine(indentLevel, indent));
-
-            return builder.ToString();
+            builder.AppendLineIndented(indent, indentLevel, transform);
         }
 
         public string PrintSingleLine()

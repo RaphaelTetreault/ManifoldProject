@@ -9,7 +9,7 @@ namespace GameCube.GFZ.Stage
     /// A single data field for <cref>TextureScroll</cref>.
     /// </summary>
     [Serializable]
-    public class TextureScrollField :
+    public sealed class TextureScrollField :
         IBinaryAddressable,
         IBinarySerializable,
         ITextPrintable
@@ -44,11 +44,9 @@ namespace GameCube.GFZ.Stage
             this.RecordEndAddress(writer);
         }
 
-        public string PrintMultiLine(int indentLevel = 0, string indent = "\t")
+        public void PrintMultiLine(System.Text.StringBuilder builder, int indentLevel = 0, string indent = "\t")
         {
-            var builder = new System.Text.StringBuilder();
             builder.AppendLineIndented(indent, indentLevel, PrintSingleLine());
-            return builder.ToString();
         }
 
         public string PrintSingleLine()

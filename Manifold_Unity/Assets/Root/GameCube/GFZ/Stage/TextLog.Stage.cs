@@ -10,17 +10,20 @@ namespace GameCube.GFZ.Stage
 
         public static void LogAnimationClips(TextLogger log, Scene scene, int indentLevel = 0, string indent = "\t")
         {
-            foreach (var dynamicSceneObject in scene.dynamicSceneObjects)
-            {
-                var animationClip = dynamicSceneObject.AnimationClip;
+            //var builder = new System.Text.StringBuilder();
 
-                // Skip if it does not exist
-                if (animationClip == null)
-                    continue;
+            //foreach (var dynamicSceneObject in scene.dynamicSceneObjects)
+            //{
+            //    var animationClip = dynamicSceneObject.AnimationClip;
 
-                var printOut = animationClip.PrintMultiLine(indentLevel, indent);
-                log.Write(printOut);
-            }
+            //    // Skip if it does not exist
+            //    if (animationClip == null)
+            //        continue;
+
+            //    animationClip.PrintMultiLine(builder, indentLevel, indent);
+            //    log.Write(builder);
+            //}
+            throw new System.NotImplementedException();
         }
 
         public static void LogSceneMetadata(TextLogger log, Scene scene, int indentLevel = 0, string indent = "\t")
@@ -28,25 +31,27 @@ namespace GameCube.GFZ.Stage
             log.WriteLine($"Venue: {scene.Venue}");
             log.WriteLine($"Course: {scene.VenueName} [{scene.CourseName}]");
             log.WriteLine($"Author: {scene.Author}");
-            log.WriteLine($"{nameof(CircuitType)}: {scene.circuitType}");
-            log.WriteLine($"{nameof(Bool32)}: {scene.unkBool32_0x58}");
-            log.WriteLine($"{nameof(scene.unkRange0x00)}: {scene.unkRange0x00}");
+            log.WriteLine($"{nameof(CircuitType)}: {scene.CircuitType}");
+            log.WriteLine($"{nameof(Bool32)}: {scene.UnkBool32_0x58}");
+            log.WriteLine($"{nameof(scene.UnkRange0x00)}: {scene.UnkRange0x00}");
         }
 
         public static void LogScene(TextLogger log, Scene scene, int indentLevel = 0, string indent = "\t")
         {
-            // TODO: write header information
+            //// TODO: write header information
+            //var builder = new System.Text.StringBuilder();
 
-            LogSceneMetadata(log, scene, indentLevel, indent);
-            log.WriteLine();
+            //LogSceneMetadata(log, scene, indentLevel, indent);
+            //log.WriteLine();
 
-            foreach (var dynamicSceneObject in scene.dynamicSceneObjects)
-            {
-                var animationClip = dynamicSceneObject.AnimationClip;
-                if (animationClip != null)
-                    log.Write(animationClip.PrintMultiLine(indentLevel, indent));
-            }
+            //foreach (var dynamicSceneObject in scene.dynamicSceneObjects)
+            //{
+            //    var animationClip = dynamicSceneObject.AnimationClip;
+            //    if (animationClip != null)
+            //        log.Write(animationClip.PrintMultiLine(builder, indentLevel, indent));
+            //}
 
+            throw new System.NotImplementedException();
         }
 
 
@@ -74,22 +79,22 @@ namespace GameCube.GFZ.Stage
             log.WriteAddress(coliScene.timeExtensionTriggers);
             log.WriteAddress(coliScene.miscellaneousTriggers);
             log.WriteAddress(coliScene.storyObjectTriggers);
-            log.WriteAddress(coliScene.unknownTriggers);
+            log.WriteAddress(coliScene.cullOverrideTriggers);
             log.WriteAddress(coliScene.visualEffectTriggers);
 
             // Writes non-array track data
             log.WriteHeading("TRACK DATA", padding, h1Width);
             log.WriteAddress(coliScene.trackLength);
             log.WriteAddress(coliScene.trackMinHeight);
-            log.WriteAddress(coliScene.checkpointGridXZ);
+            log.WriteAddress(coliScene.CheckpointGridXZ);
             log.WriteLine();
             // Writes track objects array
             log.WriteAddress(coliScene.embeddedPropertyAreas);
             // Writes track segments (root then all)
             log.WriteLine("ROOT SEGMENTS");
-            log.WriteAddress(coliScene.rootTrackSegments);
+            log.WriteAddress(coliScene.RootTrackSegments);
             log.WriteLine("ALL SEGMENTS");
-            log.WriteAddress(coliScene.allTrackSegments);
+            log.WriteAddress(coliScene.AllTrackSegments);
             log.WriteLine();
 
             // This block writes out the contents of each TrackSegments AnimationCurves
@@ -97,9 +102,9 @@ namespace GameCube.GFZ.Stage
             log.WriteLine($"{nameof(TrackSegment)}.{nameof(TrackSegment.AnimationCurveTRS)}");
             string[] labelSRP = new string[] { "Sca", "Rot", "Pos" };
             string[] labelXYZ = new string[] { "x", "y", "z" };
-            for (int segmentIndex = 0; segmentIndex < coliScene.allTrackSegments.Length; segmentIndex++)
+            for (int segmentIndex = 0; segmentIndex < coliScene.AllTrackSegments.Length; segmentIndex++)
             {
-                var trackSegment = coliScene.allTrackSegments[segmentIndex];
+                var trackSegment = coliScene.AllTrackSegments[segmentIndex];
                 log.WriteLine($"{nameof(TrackSegment)}[{segmentIndex}]\t{trackSegment}");
 
                 for (int animIndex = 0; animIndex < trackSegment.AnimationCurveTRS.AnimationCurves.Length; animIndex++)
@@ -115,9 +120,9 @@ namespace GameCube.GFZ.Stage
             }
 
             //
-            for (int i = 0; i < coliScene.allTrackSegments.Length; i++)
+            for (int i = 0; i < coliScene.AllTrackSegments.Length; i++)
             {
-                var segment = coliScene.allTrackSegments[i];
+                var segment = coliScene.AllTrackSegments[i];
                 log.WriteLine($"{nameof(TrackSegment)} Transform Coords [{i}]");
                 log.WriteLine($"\tPosition: {segment.LocalPosition}");
                 log.WriteLine($"\tRotation: {segment.LocalRotation}");
@@ -130,7 +135,7 @@ namespace GameCube.GFZ.Stage
             {
                 var checkpoints = new List<Checkpoint>();
                 foreach (var trackNode in coliScene.trackNodes)
-                    foreach (var checkpoint in trackNode.checkpoints)
+                    foreach (var checkpoint in trackNode.Checkpoints)
                         checkpoints.Add(checkpoint);
                 log.WriteAddress(checkpoints.ToArray());
             }
@@ -185,8 +190,8 @@ namespace GameCube.GFZ.Stage
 
             log.WriteHeading("SCENE OBJECTS", padding, h1Width);
             log.WriteLine("Object Names");
-            log.WriteAddress(coliScene.sceneObjectNames);
-            log.WriteAddress(coliScene.sceneObjectLODs);
+            log.WriteAddress(coliScene.SceneObjectNames);
+            log.WriteAddress(coliScene.SceneObjectLODs);
             log.WriteAddress(coliScene.sceneObjects);
             log.WriteAddress(coliScene.staticSceneObjects);
             log.WriteAddress(coliScene.dynamicSceneObjects);

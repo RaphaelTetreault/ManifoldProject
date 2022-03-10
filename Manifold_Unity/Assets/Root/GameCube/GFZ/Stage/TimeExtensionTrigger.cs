@@ -16,7 +16,7 @@ namespace GameCube.GFZ.Stage
     /// TODO: it is unclear where the actual time is defined per checkpoint or course.
     /// </remarks>
     [Serializable]
-    public class TimeExtensionTrigger :
+    public sealed class TimeExtensionTrigger :
         IBinaryAddressable,
         IBinarySerializable,
         ITextPrintable
@@ -53,16 +53,12 @@ namespace GameCube.GFZ.Stage
             this.RecordEndAddress(writer);
         }
 
-        public string PrintMultiLine(int indentLevel = 0, string indent = "\t")
+        public void PrintMultiLine(System.Text.StringBuilder builder, int indentLevel = 0, string indent = "\t")
         {
-            var builder = new System.Text.StringBuilder();
-
             builder.AppendLineIndented(indent, indentLevel, nameof(TimeExtensionTrigger));
             indentLevel++;
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(Option)}: {Option}");
-            builder.Append(Transform.PrintMultiLine(indentLevel, indent));
-
-            return builder.ToString();
+            builder.AppendLineIndented(indent, indentLevel, Transform);
         }
 
         public string PrintSingleLine()

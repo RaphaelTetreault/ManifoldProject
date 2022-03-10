@@ -5,8 +5,7 @@ using UnityEngine;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage
 {
-    public sealed class GfzTrackSegment : MonoBehaviour,
-        IEditableComponent<GfzTrackSegment>
+    public sealed class GfzTrackSegment : MonoBehaviour
     {
         // Fields
         [Header("Checkpoints")]
@@ -24,8 +23,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         [SerializeField] private bool genAnimCurves;
         [SerializeField] private SegmentGenerator segmentGenerator;
         [SerializeField] private AnimationCurveTRS animationCurveTRS = new AnimationCurveTRS();
-
-        public event IEditableComponent<GfzTrackSegment>.OnEditCallback OnEdited;
 
 
         // Properties
@@ -206,21 +203,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         private void OnValidate()
         {
-            // Once this has been edited, let listeners know
-            OnEdited?.Invoke(this);
-
-
-
-            //if (genRotationXY)
-            //{
-            //    this.animationCurveTRS = segmentGenerator.GetAnimationCurveTRS();
-
-            //    //var anims = animTransform.ComputerRotationXY();
-            //    //animTransform.Rotation.x = anims.x;
-            //    //animTransform.Rotation.y = anims.y;
-            //    genRotationXY = false;
-            //}
-
             if (genCheckpoints)
             {
                 var checkpoints = CreateCheckpoints(invertCheckpoints);
@@ -247,7 +229,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 animationCurveTRS = animationCurveTRS.GetGfzCoordSpaceTRS();
                 flipAnim = false;
             }
-
         }
+
     }
 }

@@ -15,21 +15,26 @@ namespace GameCube.GFZ.Stage
     /// the first indicate the specific branched path and it's own data.
     /// </summary>
     [Serializable]
-    public class TrackNode :
+    public sealed class TrackNode :
         IBinaryAddressable,
         IBinarySerializable,
-        IHasReference
+        IHasReference,
+        ITextPrintable
     {
         // FIELDS
-        public ArrayPointer checkpointsPtr;
-        public Pointer segmentPtr;
+        private ArrayPointer checkpointsPtr;
+        private Pointer segmentPtr;
         // FIELDS (deserialized from pointers)
-        public Checkpoint[] checkpoints;
-        public TrackSegment segment;
+        private Checkpoint[] checkpoints;
+        private TrackSegment segment;
 
 
         // PROPERTIES
         public AddressRange AddressRange { get; set; }
+        public Checkpoint[] Checkpoints { get => checkpoints; set => checkpoints = value; }
+        public ArrayPointer CheckpointsPtr { get => checkpointsPtr; set => checkpointsPtr = value; }
+        public TrackSegment Segment { get => segment; set => segment = value; }
+        public Pointer SegmentPtr { get => segmentPtr; set => segmentPtr = value; }
 
 
         // METHODS
@@ -44,7 +49,7 @@ namespace GameCube.GFZ.Stage
             {
                 // Get point
                 reader.JumpToAddress(checkpointsPtr);
-                reader.ReadX(ref checkpoints, checkpointsPtr.Length);
+                reader.ReadX(ref checkpoints, checkpointsPtr.length);
 
                 // Get transform
                 // NOTE: since this data is referenced many times, I instead
@@ -80,13 +85,17 @@ namespace GameCube.GFZ.Stage
             Assert.IsTrue(segmentPtr.IsNotNull);
         }
 
-        public override string ToString()
+        public string PrintSingleLine()
         {
-            return 
-                $"{nameof(TrackNode)}(" +
-                $"{nameof(segmentPtr)}: 0x{segmentPtr}, " +
-                $"{nameof(checkpoints)}: {checkpoints.Length}" +
-                $")";
+            return $"{nameof(TrackNode)}({Checkpoints}[{checkpoints.Length}])";
         }
+
+        public void PrintMultiLine(System.Text.StringBuilder builder, int indentLevel = 0, string indent = "\t")
+        {
+            builder.AppendLineIndented(indent, indentLevel, PrintSingleLine());
+        }
+
+        public override string ToString() => PrintSingleLine();
+
     }
 }

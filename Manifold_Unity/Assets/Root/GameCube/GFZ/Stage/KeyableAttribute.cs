@@ -9,7 +9,7 @@ namespace GameCube.GFZ.Stage
     /// Represents a Maya (4.X) KeyableAttribute (animation keyframe).
     /// </summary>
     [Serializable]
-    public class KeyableAttribute :
+    public sealed class KeyableAttribute :
         IBinaryAddressable,
         IBinarySerializable,
         ITextPrintable
@@ -58,10 +58,8 @@ namespace GameCube.GFZ.Stage
             this.RecordEndAddress(writer);
         }
 
-        public string PrintMultiLine(int indentLevel = 0, string indent = "\t")
+        public void PrintMultiLine(System.Text.StringBuilder builder, int indentLevel = 0, string indent = "\t")
         {
-            var builder = new System.Text.StringBuilder();
-
             builder.AppendLineIndented(indent, indentLevel, nameof(KeyableAttribute));
             indentLevel++;
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(EaseMode)}: {EaseMode}");
@@ -69,8 +67,6 @@ namespace GameCube.GFZ.Stage
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(Value)}: {Value}");
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(TangentIn)}: {TangentIn}");
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(TangentOut)}: {TangentOut}");
-
-            return builder.ToString();
         }
 
         public string PrintSingleLine()

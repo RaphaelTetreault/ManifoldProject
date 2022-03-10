@@ -34,7 +34,7 @@ namespace GameCube.GFZ.Stage
     /// + AX Loop Cross test (broken) has #0a050f, near black purple value. GX uses #181a1e - very dark blue.
     /// </remarks>
     [Serializable]
-    public class Fog :
+    public sealed class Fog :
         IBinaryAddressable,
         IBinarySerializable,
         IDeepCopyable<Fog>,
@@ -429,18 +429,13 @@ namespace GameCube.GFZ.Stage
             };
         }
 
-        public string PrintMultiLine(int indentLevel = 0, string indent = "\t")
+        public void PrintMultiLine(System.Text.StringBuilder builder, int indentLevel = 0, string indent = "\t")
         {
-            // StringBuilder is still used because of the indent levels
-            var builder = new System.Text.StringBuilder();
-
             builder.AppendLineIndented(indent, indentLevel, nameof(Fog));
             indentLevel++;
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(Interpolation)}: {Interpolation}");
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(FogRange)}: {FogRange}");
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(ColorRGB)}(r:{ColorRGB.x}, g:{ColorRGB.y}, b:{ColorRGB.z})");
-
-            return builder.ToString();
         }
 
         public string PrintSingleLine()

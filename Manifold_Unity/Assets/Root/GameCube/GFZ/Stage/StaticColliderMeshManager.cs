@@ -32,7 +32,7 @@ namespace GameCube.GFZ.Stage
     /// It also points to some data which the ColiScene header points to. Notably, it points to 
     /// </summary>
     [Serializable]
-    public class StaticColliderMeshManager :
+    public sealed class StaticColliderMeshManager :
         IBinaryAddressable,
         IBinarySerializable,
         IHasReference,
@@ -74,7 +74,7 @@ namespace GameCube.GFZ.Stage
 
 
         // CONSTRUCTORS
-        public StaticColliderMeshManager(Scene.SerializeFormat serializeFormat)
+        public StaticColliderMeshManager(SerializeFormat serializeFormat)
         {
             SerializeFormat = serializeFormat;
             int count = SurfaceCount;
@@ -93,20 +93,20 @@ namespace GameCube.GFZ.Stage
         // PROPERTIES
         public AddressRange AddressRange { get; set; }
         public BoundingSphere BoundingSphere { get => boundingSphere; set => boundingSphere = value; }
-        public Scene.SerializeFormat SerializeFormat { get; set; } = Scene.SerializeFormat.InvalidFormat;
+        public SerializeFormat SerializeFormat { get; set; } = SerializeFormat.InvalidFormat;
         public int SurfaceCount
         {
             get
             {
                 switch (SerializeFormat)
                 {
-                    case Scene.SerializeFormat.AX:
+                    case SerializeFormat.AX:
                         return kCountAxSurfaceTypes;
 
-                    case Scene.SerializeFormat.GX:
+                    case SerializeFormat.GX:
                         return kCountGxSurfaceTypes;
 
-                    case Scene.SerializeFormat.InvalidFormat:
+                    case SerializeFormat.InvalidFormat:
                         throw new ArgumentException("Invalid serialization format!");
 
                     default:
@@ -290,10 +290,8 @@ namespace GameCube.GFZ.Stage
             }
         }
 
-        public string PrintMultiLine(int indentLevel = 0, string indent = "\t")
+        public void PrintMultiLine(System.Text.StringBuilder builder, int indentLevel = 0, string indent = "\t")
         {
-            var builder = new System.Text.StringBuilder();
-
             builder.AppendLineIndented(indent, indentLevel, nameof(StaticColliderMeshManager));
             indentLevel++;
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(SerializeFormat)}: {SerializeFormat}");
@@ -303,23 +301,22 @@ namespace GameCube.GFZ.Stage
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(ColliderQuads)}[{ColliderQuads.Length}]");
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(StaticSceneObjects)}[{StaticSceneObjects.Length}]");
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(UnknownColliders)}[{UnknownColliders.Length}]");
-            builder.Append(meshGridXZ.PrintMultiLine(indentLevel, indent));
-            builder.Append(boundingSphere.PrintMultiLine(indentLevel, indent));
+            builder.AppendLineIndented(indent, indentLevel, meshGridXZ);
+            builder.AppendLineIndented(indent, indentLevel, boundingSphere);
 
             int index = 0;
             foreach (var triMeshGrid in triMeshGrids)
             {
                 builder.AppendLineIndented(indent, indentLevel, $"[{index++}] {nameof(TriMeshGrids)}");
-                builder.Append(triMeshGrid.PrintMultiLine(indentLevel+1, indent));
+                builder.AppendLineIndented(indent, indentLevel, triMeshGrid);
             }
+
             index = 0;
             foreach (var quadMeshGrid in quadMeshGrids)
             {
                 builder.AppendLineIndented(indent, indentLevel, $"[{index++}] {nameof(quadMeshGrid)}");
-                builder.Append(quadMeshGrid.PrintMultiLine(indentLevel + 1, indent));
+                builder.AppendLineIndented(indent, indentLevel, quadMeshGrid);
             }
-
-            return builder.ToString();
         }
 
         public string PrintSingleLine()

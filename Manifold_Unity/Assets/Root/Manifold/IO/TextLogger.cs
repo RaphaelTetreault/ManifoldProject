@@ -34,11 +34,6 @@ namespace Manifold.IO
         public void WriteLine() => streamWriter.WriteLine();
         public void WriteLine(string value) => streamWriter.WriteLine(value);
         public void Write(string value) => streamWriter.Write(value);
-        public void WriteLineColor(string value, byte r, byte g, byte b)
-        {
-            //streamWriter.WriteLine($"<font color={r:x2}{g:x2}{b:x2}>{value}</font>");
-            streamWriter.WriteLine(value);
-        }
         public void WriteLineHighlight(string value, byte r, byte g, byte b)
         {
             streamWriter.WriteLine($"<span style=\"background-color:#{r:x2}{g:x2}{b:x2}\">{value}</span>");
@@ -66,7 +61,7 @@ namespace Manifold.IO
             }
             else
             {
-                var address = value.AddressRange.StartAddress;
+                var address = value.AddressRange.startAddress;
                 WriteLine($"Address: 0x{address:x8}{typeDesc}\t{value}");
             }
         }

@@ -6,6 +6,14 @@ namespace Manifold.IO
 {
     public static partial class BinaryWriterExtensions
     {
+        /// <summary>
+        /// Writes in the <paramref name="writer"/>'s stream to align it to <paramref name="alignment"/> using the
+        /// supplied <paramref name="paddingValue"/>.
+        /// </summary>
+        /// <param name="writer">The writer to write to.</param>
+        /// <param name="alignment">The stride of the alignment.</param>
+        /// <param name="paddingValue">The value to use as padding.</param>
+        /// <returns></returns>
         public static long WriteAlignment(this BinaryWriter writer, long alignment, byte paddingValue = 0x00)
         {
             var bytesToAlign = StreamExtensions.GetLengthOfAlignment(writer.BaseStream, alignment);
@@ -101,8 +109,8 @@ namespace Manifold.IO
         public static void WriteX(this BinaryWriter writer, double[] value)
         => BinaryIoUtility.Write(writer, value);
 
-        public static void WriteX(this BinaryWriter writer, string value, Encoding encoding)
-        => BinaryIoUtility.Write(writer, value, encoding);
+        public static void WriteX(this BinaryWriter writer, string value, Encoding encoding, bool writeLengthBytes)
+        => BinaryIoUtility.Write(writer, value, encoding, writeLengthBytes);
 
         public static void WriteX<TBinarySerializable>(this BinaryWriter writer, TBinarySerializable[] value) where TBinarySerializable : IBinarySerializable
         => BinaryIoUtility.Write(writer, value);

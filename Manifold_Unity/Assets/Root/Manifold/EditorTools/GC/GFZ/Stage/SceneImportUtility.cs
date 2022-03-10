@@ -1,7 +1,6 @@
 ﻿using GameCube.GFZ;
 using GameCube.GFZ.Stage;
 using Manifold.IO;
-using Manifold.IO.GFZ;
 using System;
 using System.Collections.Generic;
 using UnityEditor;
@@ -71,7 +70,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
             // Course-related values, used to find models
             // Triple digit IDs do overflow the "00" format, that's okay.
-            var stageID = scene.ID;
+            var stageID = scene.CourseIndex;
             var stageNumber = stageID.ToString("00");
             var venueID = CourseUtility.GetVenueID(stageID).ToString().ToLower();
 
@@ -402,7 +401,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         private static Transform CreateUnknownTriggers(Scene scene)
         {
-            var unknownTriggers = scene.unknownTriggers;
+            var unknownTriggers = scene.cullOverrideTriggers;
             int count = 0;
             int total = unknownTriggers.Length;
 
@@ -486,8 +485,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
             // Loop over every top transform
             int count = 0;
-            int total = scene.rootTrackSegments.Length;
-            foreach (var trackTransform in scene.rootTrackSegments)
+            int total = scene.RootTrackSegments.Length;
+            foreach (var trackTransform in scene.RootTrackSegments)
             {
                 // Recursively create transforms
                 count++;
@@ -510,8 +509,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             // Loop over every top transform
             //int count = 0;
             int index = 0;
-            int total = scene.rootTrackSegments.Length;
-            foreach (var trackTransform in scene.rootTrackSegments)
+            int total = scene.RootTrackSegments.Length;
+            foreach (var trackTransform in scene.RootTrackSegments)
             {
                 //
                 var name = $"[{++index}/{total}] Control Point";
@@ -539,10 +538,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             controlPoint.transform.localPosition = trackTransform.LocalPosition;
             controlPoint.transform.localRotation = Quaternion.Euler(trackTransform.LocalRotation);
             controlPoint.transform.localScale = trackTransform.LocalScale;
-
-            //
-            var display = controlPoint.AddComponent<DisplayTrackTransformSingle>();
-            display.depth = depth;
 
             //
             var children = trackTransform.Children;
@@ -591,7 +586,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             for (int i = 0; i < scene.staticColliderMeshManager.SurfaceCount; i++)
             {
                 var property = (StaticColliderMeshProperty)i;
-                var meshName = $"st{scene.ID:00}_{i:00}_{property}";
+                var meshName = $"st{scene.CourseIndex:00}_{i:00}_{property}";
                 var assetPath = $"{stageFolder}/pf_{meshName}.prefab";
                 var asset = AssetDatabase.LoadAssetAtPath<GameObject>(assetPath);
 
@@ -726,7 +721,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         public static Transform CreateGridXZVisual(Scene scene)
         {
             // Get all bounds
-            var boundsTrack = scene.checkpointGridXZ;
+            var boundsTrack = scene.CheckpointGridXZ;
             var boundsColliders = scene.staticColliderMeshManager.MeshGridXZ;
             //
             float yHeight = scene.trackMinHeight;
@@ -812,9 +807,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                     int index = indexList.Indexes[i];
                     var node = trackNodes[index];
 
-                    for (int j = 0; j < node.checkpoints.Length; j++)
+                    for (int j = 0; j < node.Checkpoints.Length; j++)
                     {
-                        var position = node.checkpoints[j].PlaneStart.origin;
+                        var position = node.Checkpoints[j].PlaneStart.origin;
                         var instance = CreatePrimitive(PrimitiveType.Sphere, $"{index}.{j}", chain);
                         instance.transform.position = position;
                         instance.transform.localScale = Vector3.one * 5f;
@@ -994,14 +989,14 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         {
             var sceneParamsObj = new GameObject("Scene Parameters");
             var sceneParams = sceneParamsObj.AddComponent<GfzSceneParameters>();
-            sceneParams.venue = CourseUtility.GetVenue(scene.ID);
+            sceneParams.venue = CourseUtility.GetVenue(scene.CourseIndex);
             // TODO: embed course name in file, use that if it exists.
-            sceneParams.courseName = CourseUtility.GetCourseName(scene.ID);
-            sceneParams.courseIndex = scene.ID;
+            sceneParams.courseName = CourseUtility.GetCourseName(scene.CourseIndex);
+            sceneParams.courseIndex = scene.CourseIndex;
             sceneParams.author = "Amusement Vision";
             // Other data
-            sceneParams.staticColliderMeshesActive = scene.staticColliderMeshManagerActive;
-            sceneParams.circuitType = scene.circuitType;
+            sceneParams.staticColliderMeshesActive = scene.StaticColliderMeshManagerActive;
+            sceneParams.circuitType = scene.CircuitType;
 
             // Copy fog parameters over
             var fog = scene.fog;

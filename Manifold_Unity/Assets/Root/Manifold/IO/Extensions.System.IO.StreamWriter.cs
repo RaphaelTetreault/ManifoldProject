@@ -88,7 +88,7 @@ namespace Manifold.IO
 
         public static void WriteStartAddress(this StreamWriter writer, IBinaryAddressable binaryAddressable)
         {
-            writer.WriteNextCol(binaryAddressable.PrintStartAddress());
+            writer.WriteNextCol(binaryAddressable.AddressRange.PrintStartAddress());
         }
     }
 }

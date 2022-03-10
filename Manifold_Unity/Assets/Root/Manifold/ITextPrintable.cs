@@ -1,4 +1,6 @@
-﻿namespace Manifold
+﻿using System.Text;
+
+namespace Manifold
 {
     public interface ITextPrintable
     {
@@ -9,9 +11,9 @@
         public string PrintSingleLine();
 
         /// <summary>
-        /// Prints this value, possibly including newlines.
+        /// Prints this value, possibly including newlines, to the provided <paramref name="stringBuilder"/>.
         /// </summary>
         /// <returns></returns>
-        public string PrintMultiLine(int indentLevel = 0, string indent = "\t");
+        public void PrintMultiLine(StringBuilder stringBuilder, int indentLevel = 0, string indent = "\t");
     }
 }

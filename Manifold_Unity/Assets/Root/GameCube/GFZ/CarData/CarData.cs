@@ -8,7 +8,7 @@ namespace GameCube.GFZ.CarData
     [Serializable]
     public class CarData :
         IBinarySerializable,
-        IFile
+        IFileType
     {
         // CONSTANTS
         // Numbers of things
@@ -151,6 +151,8 @@ namespace GameCube.GFZ.CarData
 
         // Properties
         public string FileName { get; set; }
+
+        public string FileExtension => "";
 
         /// <summary>
         /// Returns all machines in internal strucuture order (X, GX, AX)

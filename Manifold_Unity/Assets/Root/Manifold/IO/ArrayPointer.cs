@@ -9,8 +9,9 @@ namespace Manifold.IO
         IPointer
     {
         // FIELDS
-        private int length;
-        private int address;
+        public int length;
+        public int address;
+
 
         // CONSTRUCTORS
         public ArrayPointer(int length = 0, int address = 0)
@@ -19,28 +20,16 @@ namespace Manifold.IO
             this.address = address;
         }
 
+
         // PROPERTIES
-        public int Length
-        {
-            get => length;
-            set => length = value;
-        }
-        public int Address
-        {
-            get => address;
-            set => address = value;
-        }
-
-        public Pointer Pointer
-        {
-            get => new Pointer() { Address = address };
-        }
-
-        public string PrintAddress => $"{address:x8}";
+        int IPointer.Address => address;
         public bool IsNotNull => address != 0;
         public bool IsNull => address == 0;
+        public Pointer Pointer => new(address);
+        public string PrintAddress => $"{address:x8}";
 
 
+        // METHODS
         public void Deserialize(BinaryReader reader)
         {
             reader.ReadX(ref length);
@@ -54,9 +43,11 @@ namespace Manifold.IO
         }
         public override string ToString()
         {
-            return $"Length: {Length}, Address: {PrintAddress}";
+            return $"Length: {length}, Address: {PrintAddress}";
         }
 
+
+        // OPERATORS
         public static bool operator ==(ArrayPointer lhs, ArrayPointer rhs)
         {
             return lhs.address == rhs.address && lhs.length == rhs.length;
@@ -64,7 +55,7 @@ namespace Manifold.IO
 
         public static bool operator !=(ArrayPointer lhs, ArrayPointer rhs)
         {
-            return (lhs.address == rhs.address && lhs.length == rhs.length);
+            return lhs.address != rhs.address || lhs.length != rhs.length;
         }
 
         public override bool Equals(object obj)

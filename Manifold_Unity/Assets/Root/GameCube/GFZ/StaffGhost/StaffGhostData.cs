@@ -6,7 +6,7 @@ namespace GameCube.GFZ.StaffGhost
     [System.Serializable]
     public struct StaffGhostData :
         IBinarySerializable,
-        IFile
+        IFileType
     {
         // METADATA
         private string timeDisplay;
@@ -21,7 +21,7 @@ namespace GameCube.GFZ.StaffGhost
         public byte timeSeconds; // 0x25
         public short timeMilliseconds; // 0x26
 
-
+        public string FileExtension => ".bin";
         public string FileName { get; set; }
         public string TimeDisplay { get => timeDisplay; set => timeDisplay = value; }
 

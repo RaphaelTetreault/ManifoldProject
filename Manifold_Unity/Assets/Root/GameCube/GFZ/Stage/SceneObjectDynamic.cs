@@ -9,7 +9,7 @@ namespace GameCube.GFZ.Stage
     /// Represents a complex scene object that can have various properties.
     /// </summary>
     [Serializable]
-    public class SceneObjectDynamic :
+    public sealed class SceneObjectDynamic :
         IBinaryAddressable,
         IBinarySerializable,
         IHasReference,
@@ -151,23 +151,19 @@ namespace GameCube.GFZ.Stage
             Assert.IsTrue(zero_0x2C == 0);
         }
 
-        public string PrintMultiLine(int indentLevel = 0, string indent = "\t")
+        public void PrintMultiLine(System.Text.StringBuilder builder, int indentLevel = 0, string indent = "\t")
         {
-            var builder = new System.Text.StringBuilder();
-
             builder.AppendLineIndented(indent, indentLevel, nameof(SceneObjectDynamic));
             indentLevel++;
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(Name)}: {Name}");
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(Unk0x00)}: {Unk0x00}");
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(Unk0x04)}: {Unk0x04}");
-            builder.Append(transformTRXS.PrintMultiLine(indentLevel, indent));
-            builder.Append(sceneObject.PrintMultiLine(indentLevel, indent));
-            builder.Append(animationClip.PrintMultiLine(indentLevel, indent));
-            builder.Append(textureScroll.PrintMultiLine(indentLevel, indent));
-            builder.Append(skeletalAnimator.PrintMultiLine(indentLevel, indent));
-            builder.Append(transformMatrix3x4.PrintMultiLine(indentLevel, indent));
-
-            return builder.ToString();
+            builder.AppendLineIndented(indent, indentLevel, transformTRXS);
+            builder.AppendLineIndented(indent, indentLevel, sceneObject);
+            builder.AppendLineIndented(indent, indentLevel, animationClip);
+            builder.AppendLineIndented(indent, indentLevel, textureScroll);
+            builder.AppendLineIndented(indent, indentLevel, skeletalAnimator);
+            builder.AppendLineIndented(indent, indentLevel, transformMatrix3x4);
         }
 
         public string PrintSingleLine()

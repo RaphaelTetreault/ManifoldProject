@@ -12,7 +12,7 @@ namespace GameCube.GFZ.Stage
     /// This kind of object was used for all test objects in old AX scenes.
     /// </summary>
     [Serializable]
-    public class SceneObjectStatic :
+    public sealed class SceneObjectStatic :
         IBinaryAddressable,
         IBinarySerializable,
         IHasReference,
@@ -66,11 +66,9 @@ namespace GameCube.GFZ.Stage
             Assert.IsTrue(sceneObjectPtr.IsNotNull);
         }
 
-        public string PrintMultiLine(int indentLevel = 0, string indent = "\t")
+        public void PrintMultiLine(System.Text.StringBuilder builder, int indentLevel = 0, string indent = "\t")
         {
-            var builder = new System.Text.StringBuilder();
             builder.AppendLineIndented(indent, indentLevel, PrintSingleLine());
-            return builder.ToString();
         }
 
         public string PrintSingleLine()

@@ -31,7 +31,7 @@ namespace GameCube.GFZ.Stage
     /// </list>
     /// </remarks>
     [Serializable]
-    public class StoryObjectTrigger :
+    public sealed class StoryObjectTrigger :
         IBinaryAddressable,
         IBinarySerializable,
         IHasReference,
@@ -128,10 +128,8 @@ namespace GameCube.GFZ.Stage
             Assert.ReferencePointer(StoryObjectPath, Story2BoulderPathPtr);
         }
 
-        public string PrintMultiLine(int indentLevel = 0, string indent = "\t")
+        public void PrintMultiLine(System.Text.StringBuilder builder, int indentLevel = 0, string indent = "\t")
         {
-            var builder = new System.Text.StringBuilder();
-
             builder.AppendLineIndented(indent, indentLevel, nameof(StoryObjectTrigger));
             indentLevel++;
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(Position)}: {Position}");
@@ -141,9 +139,7 @@ namespace GameCube.GFZ.Stage
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(BoulderGroup)}: {BoulderGroup}");
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(Difficulty)}: {Difficulty}");
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(Story2BoulderScale)}: {Story2BoulderScale}");
-            builder.Append(StoryObjectPath.PrintMultiLine(indentLevel, indent));
-
-            return builder.ToString();
+            builder.AppendLineIndented(indent, indentLevel, StoryObjectPath);
         }
 
         public string PrintSingleLine()

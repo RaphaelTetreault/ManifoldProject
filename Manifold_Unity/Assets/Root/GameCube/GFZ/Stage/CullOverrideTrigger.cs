@@ -14,7 +14,7 @@ namespace GameCube.GFZ.Stage
     /// is 10 units per side.
     /// </remarks>
     [Serializable]
-    public class CullOverrideTrigger :
+    public sealed class CullOverrideTrigger :
         IBinaryAddressable,
         IBinarySerializable,
         ITextPrintable
@@ -53,16 +53,12 @@ namespace GameCube.GFZ.Stage
 
         public override string ToString() => PrintSingleLine();
 
-        public string PrintMultiLine(int indentLevel = 0, string indent = "\t")
+        public void PrintMultiLine(System.Text.StringBuilder builder, int indentLevel = 0, string indent = "\t")
         {
-            var builder = new System.Text.StringBuilder();
-
             builder.AppendLineIndented(indent, indentLevel, nameof(CullOverrideTrigger));
             indentLevel++;
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(unk_0x20)}: {unk_0x20}");
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(transform)}: {transform}");
-
-            return builder.ToString();
         }
 
         public string PrintSingleLine()

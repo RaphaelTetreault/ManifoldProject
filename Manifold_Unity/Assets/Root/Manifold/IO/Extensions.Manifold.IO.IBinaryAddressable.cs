@@ -9,7 +9,7 @@ namespace Manifold.IO
             where TBinaryAddressable : IBinaryAddressable
         {
             var addressRange = binaryAddressable.AddressRange;
-            addressRange.StartAddress = stream.Position;
+            addressRange.startAddress = stream.Position;
             binaryAddressable.AddressRange = addressRange;
         }
 
@@ -26,9 +26,10 @@ namespace Manifold.IO
             where TBinaryAddressable : IBinaryAddressable
         {
             var addressRange = binaryAddressable.AddressRange;
-            addressRange.EndAddress = stream.Position;
+            addressRange.endAddress = stream.Position;
             binaryAddressable.AddressRange = addressRange;
         }
+
         public static void RecordEndAddress<TBinaryAddressable>(this TBinaryAddressable binaryAddressable, BinaryReader reader)
             where TBinaryAddressable : IBinaryAddressable
             => RecordEndAddress(binaryAddressable, reader.BaseStream);
@@ -41,14 +42,14 @@ namespace Manifold.IO
         public static void SetReaderToStartAddress<TBinaryAddressable>(this TBinaryAddressable binaryAddressable, BinaryReader reader)
             where TBinaryAddressable : IBinaryAddressable
         {
-            var address = binaryAddressable.AddressRange.StartAddress;
+            var address = binaryAddressable.AddressRange.startAddress;
             reader.BaseStream.Seek(address, SeekOrigin.Begin);
         }
 
         public static void SetWriterToStartAddress<TBinaryAddressable>(this TBinaryAddressable binaryAddressable, BinaryWriter writer)
             where TBinaryAddressable : IBinaryAddressable
         {
-            var address = binaryAddressable.AddressRange.StartAddress;
+            var address = binaryAddressable.AddressRange.startAddress;
             writer.BaseStream.Seek(address, SeekOrigin.Begin);
         }
 
@@ -56,40 +57,17 @@ namespace Manifold.IO
         public static void SetReaderToEndAddress<TBinaryAddressable>(this TBinaryAddressable binaryAddressable, BinaryReader reader)
             where TBinaryAddressable : IBinaryAddressable
         {
-            var address = binaryAddressable.AddressRange.EndAddress;
+            var address = binaryAddressable.AddressRange.endAddress;
             reader.BaseStream.Seek(address, SeekOrigin.Begin);
         }
 
         public static void SetWriterToEndAddress<TBinaryAddressable>(this TBinaryAddressable binaryAddressable, BinaryWriter writer)
             where TBinaryAddressable : IBinaryAddressable
         {
-            var address = binaryAddressable.AddressRange.EndAddress;
+            var address = binaryAddressable.AddressRange.endAddress;
             writer.BaseStream.Seek(address, SeekOrigin.Begin);
         }
 
-
-        public static string PrintStartAddress<TBinaryAddressable>(this TBinaryAddressable binaryAddressable, string prefix = "0x", string format = "X8")
-            where TBinaryAddressable : IBinaryAddressable
-        {
-            var startAddress = binaryAddressable.AddressRange.StartAddress;
-            return $"{prefix}{startAddress.ToString(format)}";
-        }
-
-        public static string PrintEndAddress<TBinaryAddressable>(this TBinaryAddressable binaryAddressable, string prefix = "0x", string format = "X8")
-            where TBinaryAddressable : IBinaryAddressable
-        {
-            var endAddress = binaryAddressable.AddressRange.EndAddress;
-            return $"{prefix}{endAddress.ToString(format)}";
-        }
-
-        public static string PrintAddressRange<TBinaryAddressable>(this TBinaryAddressable binaryAddressable, string format = "x8")
-            where TBinaryAddressable : IBinaryAddressable
-        {
-            var addressRange = binaryAddressable.AddressRange;
-            var size = addressRange.Size;
-
-            return $"Address: 0x{addressRange.StartAddress.ToString(format)} to 0x{addressRange.EndAddress.ToString(format)} (hex:{size:x}, dec:{size})";
-        }
 
         /// <summary>
         /// Get the address of the value. Address is relative to last (de)serialization stream.
@@ -103,7 +81,7 @@ namespace Manifold.IO
             if (value is null)
                 return 0;
 
-            var pointer = value.AddressRange.GetPointer();
+            var pointer = value.AddressRange.Pointer;
             return pointer;
         }
 
@@ -173,8 +151,8 @@ namespace Manifold.IO
             int length = values.Length;
             var arrayPointer = new ArrayPointer()
             {
-                Length = length,
-                Address = values[0].GetPointer(),
+                length = length,
+                address = values[0].GetPointer(),
             };
 
             return arrayPointer;

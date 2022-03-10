@@ -12,7 +12,7 @@ namespace GameCube.GFZ.GMA
     {
         // CONSTANTS
         /// <summary>
-        /// GameCube GPU No Operation opcode
+        /// GameCube GPU No-Operation opcode
         /// </summary>
         public const byte GX_NOP = 0x00;
 
@@ -36,49 +36,20 @@ namespace GameCube.GFZ.GMA
         /// A copy of the GCMF attributes of the parent GCMF class.
         /// </summary>
         public GcmfAttributes Attributes { get => attributes; set => attributes = value; }
-        public bool IsSkinnedModel
-        {
-            get => attributes.HasFlag(GcmfAttributes.isSkinModel);
-        }
-        public bool IsPhysicsDrivenModel
-        {
-            get => attributes.HasFlag(GcmfAttributes.isEffectiveModel);
-        }
-        public bool IsStitchingModel
-        {
-            get => attributes.HasFlag(GcmfAttributes.isStitchingModel);
-        }
-        public bool Is16bitModel
-        {
-            get => attributes.HasFlag(GcmfAttributes.is16Bit);
-        }
-
-        public bool RenderPrimaryOpaque
-        {
-            get => material.DisplayListRenderFlags.HasFlag(DisplayListRenderFlags.renderPrimaryOpaque);
-        }
-        public bool RenderPrimaryTranslucid
-        {
-            get => material.DisplayListRenderFlags.HasFlag(DisplayListRenderFlags.renderPrimaryTranslucid);
-        }
-        public bool RenderSecondary
-        {
-            get => RenderSecondaryOpaque || RenderSecondaryTranslucid;
-        }
-        public bool RenderSecondaryOpaque
-        {
-            get => material.DisplayListRenderFlags.HasFlag(DisplayListRenderFlags.renderSecondaryOpaque);
-        }
-        public bool RenderSecondaryTranslucid
-        {
-            get => material.DisplayListRenderFlags.HasFlag(DisplayListRenderFlags.renderSecondaryTranslucid);
-        }
-
+        public bool Is16bitModel => attributes.HasFlag(GcmfAttributes.is16Bit);
+        public bool IsPhysicsDrivenModel => attributes.HasFlag(GcmfAttributes.isEffectiveModel);
+        public bool IsSkinnedModel => attributes.HasFlag(GcmfAttributes.isSkinModel);
+        public bool IsStitchingModel => attributes.HasFlag(GcmfAttributes.isStitchingModel);
         public Material Material { get => material; set => material = value; }
-        public DisplayListDescriptor DisplayListDescriptor { get => primaryDisplayListDescriptor; set => primaryDisplayListDescriptor = value; }
+        public DisplayListDescriptor PrimaryDisplayListDescriptor { get => primaryDisplayListDescriptor; set => primaryDisplayListDescriptor = value; }
         public DisplayList[] PrimaryDisplayListsOpaque { get => primaryDisplayListsOpaque; set => primaryDisplayListsOpaque = value; }
         public DisplayList[] PrimaryDisplayListsTranslucid { get => primaryDisplayListsTranslucid; set => primaryDisplayListsTranslucid = value; }
-        public DisplayListDescriptor SecondaryMeshDescriptor { get => secondaryDisplayListDescriptor; set => secondaryDisplayListDescriptor = value; }
+        public bool RenderPrimaryOpaque => material.DisplayListRenderFlags.HasFlag(DisplayListRenderFlags.renderPrimaryOpaque);
+        public bool RenderPrimaryTranslucid => material.DisplayListRenderFlags.HasFlag(DisplayListRenderFlags.renderPrimaryTranslucid);
+        public bool RenderSecondary => RenderSecondaryOpaque || RenderSecondaryTranslucid;
+        public bool RenderSecondaryOpaque => material.DisplayListRenderFlags.HasFlag(DisplayListRenderFlags.renderSecondaryOpaque);
+        public bool RenderSecondaryTranslucid => material.DisplayListRenderFlags.HasFlag(DisplayListRenderFlags.renderSecondaryTranslucid);
+        public DisplayListDescriptor SecondaryDisplayListDescriptor { get => secondaryDisplayListDescriptor; set => secondaryDisplayListDescriptor = value; }
         public DisplayList[] SecondaryDisplayListsOpaque { get => secondaryDisplayListsOpaque; set => secondaryDisplayListsOpaque = value; }
         public DisplayList[] SecondaryDisplayListsTranslucid { get => secondaryDisplayListsTranslucid; set => secondaryDisplayListsTranslucid = value; }
 
@@ -94,7 +65,7 @@ namespace GameCube.GFZ.GMA
                 reader.ReadX(ref unknown);
                 reader.AlignTo(GXUtility.GX_FIFO_ALIGN);
 
-                int endAddress = reader.GetPositionAsPointer().Address;
+                int endAddress = reader.GetPositionAsPointer().address;
 
                 // If the GCMF this submesh is a part of has either of these attributes,
                 // then it does not actually store any display lists (at least, not in
@@ -123,7 +94,7 @@ namespace GameCube.GFZ.GMA
                 {
                     reader.ReadX(ref secondaryDisplayListDescriptor);
                     reader.AlignTo(GXUtility.GX_FIFO_ALIGN);
-                    endAddress = new Pointer(reader.BaseStream.Position).Address;
+                    endAddress = new Pointer(reader.BaseStream.Position).address;
 
                     if (RenderSecondaryOpaque)
                     {
@@ -145,10 +116,10 @@ namespace GameCube.GFZ.GMA
         {
             // Reset the render flags based on instance data
             material.DisplayListRenderFlags =
-                (primaryDisplayListsOpaque is null ? 0 : DisplayListRenderFlags.renderPrimaryOpaque) |
-                (primaryDisplayListsTranslucid is null ? 0 : DisplayListRenderFlags.renderPrimaryTranslucid) |
-                (secondaryDisplayListsOpaque is null ? 0 : DisplayListRenderFlags.renderSecondaryOpaque) |
-                (secondaryDisplayListsTranslucid is null ? 0 : DisplayListRenderFlags.renderSecondaryTranslucid);
+                (primaryDisplayListsOpaque.IsNullOrEmpty() ? 0 : DisplayListRenderFlags.renderPrimaryOpaque) |
+                (primaryDisplayListsTranslucid.IsNullOrEmpty() ? 0 : DisplayListRenderFlags.renderPrimaryTranslucid) |
+                (secondaryDisplayListsOpaque.IsNullOrEmpty() ? 0 : DisplayListRenderFlags.renderSecondaryOpaque) |
+                (secondaryDisplayListsTranslucid.IsNullOrEmpty() ? 0 : DisplayListRenderFlags.renderSecondaryTranslucid);
 
             // Temp variables to store ranges that display lists are serialized at, used to get size on disk
             var pdlOpaque = new AddressRange();
@@ -188,14 +159,14 @@ namespace GameCube.GFZ.GMA
                 // Now that we know the size of the display lists, update values and reserialize
                 primaryDisplayListDescriptor.OpaqueMaterialSize = pdlOpaque.Size;
                 primaryDisplayListDescriptor.TranslucidMaterialSize = pdlTranslucid.Size;
-                writer.JumpToAddress(primaryDisplayListDescriptor);
+                writer.JumpToAddress(primaryDisplayListDescriptor.AddressRange.startAddress);
                 writer.WriteX(primaryDisplayListDescriptor);
 
                 if (RenderSecondary)
                 {
                     secondaryDisplayListDescriptor.OpaqueMaterialSize = sdlOpaque.Size;
                     secondaryDisplayListDescriptor.TranslucidMaterialSize = sdlTranslucid.Size;
-                    writer.JumpToAddress(secondaryDisplayListDescriptor);
+                    writer.JumpToAddress(secondaryDisplayListDescriptor.AddressRange.startAddress);
                     writer.WriteX(secondaryDisplayListDescriptor);
                 }
             }
@@ -217,7 +188,7 @@ namespace GameCube.GFZ.GMA
                 if (isAtEnd || isFifoPadding)
                     break;
 
-                var displayList = new DisplayList(material.VertexAttributes, VertexAttributeTable.GfzVat);
+                var displayList = new DisplayList(material.VertexAttributes, GfzGX.VAT);
                 displayList.Deserialize(reader);
                 displayLists.Add(displayList);
             }
@@ -272,10 +243,8 @@ namespace GameCube.GFZ.GMA
             if (remainder > 0)
                 size += GXUtility.GX_FIFO_ALIGN - remainder;
 
-
             return size;
         }
 
     }
-
 }

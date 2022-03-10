@@ -9,7 +9,7 @@ namespace GameCube.GFZ.Stage
     /// Data (presumably) referenced by a SkeletalAnimator.
     /// </summary>
     [Serializable]
-    public class SkeletalProperties :
+    public sealed class SkeletalProperties :
         IBinaryAddressable,
         IBinarySerializable,
         ITextPrintable
@@ -71,17 +71,13 @@ namespace GameCube.GFZ.Stage
             this.RecordEndAddress(writer);
         }
 
-        public string PrintMultiLine(int indentLevel = 0, string indent = "\t")
+        public void PrintMultiLine(System.Text.StringBuilder builder, int indentLevel = 0, string indent = "\t")
         {
-            var builder = new System.Text.StringBuilder();
-
             builder.AppendLineIndented(indent, indentLevel, PrintSingleLine());
             indentLevel++;
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(Unk_0x00)}: {Unk_0x00}");
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(Unk_0x04)}: {Unk_0x04}");
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(Unk_0x08)}: {Unk_0x08}");
-
-            return builder.ToString();
         }
 
         public string PrintSingleLine()

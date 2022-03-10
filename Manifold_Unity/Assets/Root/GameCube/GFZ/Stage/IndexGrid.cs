@@ -36,6 +36,10 @@ namespace GameCube.GFZ.Stage
         }
 
 
+        // INDEXERS
+        public IndexList this[int index] { get => indexLists[index]; set => indexLists[index] = value; }
+        public IndexList this[int x, int z] { get => indexLists[z * SubdivisionsX + x]; set => indexLists[z * SubdivisionsX + x] = value; }
+
         // ABSTRACT PROPERTIES
         public abstract int SubdivisionsX { get; }
         public abstract int SubdivisionsZ { get; }
@@ -171,11 +175,8 @@ namespace GameCube.GFZ.Stage
             }
         }
 
-        public string PrintMultiLine(int indentLevel = 0, string indent = "\t")
+        public void PrintMultiLine(System.Text.StringBuilder builder, int indentLevel = 0, string indent = "\t")
         {
-            // StringBuilder is still used because of the indent levels
-            var builder = new System.Text.StringBuilder();
-
             builder.AppendLineIndented(indent, indentLevel, GetType().Name);
             indentLevel++;
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(SubdivisionsX)}: {SubdivisionsX}");
@@ -190,11 +191,9 @@ namespace GameCube.GFZ.Stage
                 // Write a little header with an [index] marker
                 builder.AppendLineIndented(indent, indentLevel, $"[{index}] {indexList.PrintSingleLine()}");
                 // Write all the values from the index list
-                builder.Append(indexList.PrintMultiLine(indentLevel + 1, indent));
+                builder.AppendLineIndented(indent, indentLevel+1, indexList);
                 index++;
             }
-
-            return builder.ToString();
         }
 
         public string PrintSingleLine()

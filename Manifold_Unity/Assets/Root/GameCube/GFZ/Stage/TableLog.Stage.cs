@@ -71,7 +71,7 @@ namespace GameCube.GFZ.Stage
                 {
                     // foreach Transform
                     int trackIndex = 0;
-                    foreach (var trackTransform in scene.rootTrackSegments)
+                    foreach (var trackTransform in scene.RootTrackSegments)
                     {
                         for (int keyablesIndex = 0; keyablesIndex < AnimationCurveTRS.kCurveCount; keyablesIndex++)
                         {
@@ -118,7 +118,7 @@ namespace GameCube.GFZ.Stage
                 {
                     // foreach Transform
                     int trackTransformIndex = 0;
-                    foreach (var trackTransform in scene.rootTrackSegments)
+                    foreach (var trackTransform in scene.RootTrackSegments)
                     {
                         WriteTrackKeyableAttributeRecursive(writer, scene, nestedDepth: 0, keyablesSet, trackTransformIndex++, trackTransform);
                     }
@@ -164,7 +164,7 @@ namespace GameCube.GFZ.Stage
             writer.WriteNextCol(keyableIndex);
             writer.WriteNextCol($"[{keyableIndex}/{keyableTotal}]");
             writer.WriteNextCol($"{nestedDepth}");
-            writer.WriteNextCol(param.PrintStartAddress());
+            writer.WriteNextCol(param.AddressRange.PrintStartAddress());
             writer.WriteNextCol(param.EaseMode);
             writer.WriteNextCol((int)param.EaseMode);
             writer.WriteNextCol(param.Time);
@@ -217,8 +217,8 @@ namespace GameCube.GFZ.Stage
                 foreach (var scene in scenes)
                 {
                     var index = 0;
-                    var total = scene.rootTrackSegments.Length;
-                    foreach (var trackTransform in scene.rootTrackSegments)
+                    var total = scene.RootTrackSegments.Length;
+                    foreach (var trackTransform in scene.RootTrackSegments)
                     {
                         WriteTrackSegmentRecursive(writer, scene, 0, ++index, total, trackTransform);
                     }
@@ -249,7 +249,7 @@ namespace GameCube.GFZ.Stage
             writer.WriteNextCol($"{s_order++}");
             writer.WriteNextCol($"[{index}/{total}]");
             writer.WriteNextCol($"{depth}");
-            writer.WriteNextCol(trackTransform.PrintStartAddress());
+            writer.WriteNextCol(trackTransform.AddressRange.PrintStartAddress());
             writer.WriteNextCol(trackTransform.SegmentType);
             writer.WriteNextCol(trackTransform.EmbeddedPropertyType);
             writer.WriteNextCol(trackTransform.PerimeterFlags);
@@ -324,8 +324,8 @@ namespace GameCube.GFZ.Stage
                                 writer.WriteNextCol(scene.FileName);
                                 writer.WriteNextCol(gameObjectIndex);
                                 writer.WriteNextCol(gameObject.Name);
-                                writer.WriteNextCol(animationClipCurve.PrintStartAddress());
-                                writer.WriteNextCol(keyable.PrintStartAddress());
+                                writer.WriteNextCol(animationClipCurve.AddressRange.PrintStartAddress());
+                                writer.WriteNextCol(keyable.AddressRange.PrintStartAddress());
                                 writer.WriteNextCol(animIndex);
                                 writer.WriteNextCol(keyable.EaseMode);
                                 writer.WriteNextCol(keyable.Time);
@@ -394,8 +394,8 @@ namespace GameCube.GFZ.Stage
                                 writer.WriteNextCol(scene.FileName);
                                 writer.WriteNextCol(objIndex);
                                 writer.WriteNextCol(dynamicSceneObject.Name);
-                                writer.WriteNextCol(animationClipCurve.PrintStartAddress());
-                                writer.WriteNextCol(keyable.PrintStartAddress());
+                                writer.WriteNextCol(animationClipCurve.AddressRange.PrintStartAddress());
+                                writer.WriteNextCol(keyable.AddressRange.PrintStartAddress());
                                 writer.WriteNextCol(animationClipCurve.Unk_0x00);
                                 writer.WriteNextCol(animationClipCurve.Unk_0x04);
                                 writer.WriteNextCol(animationClipCurve.Unk_0x08);
@@ -783,121 +783,121 @@ namespace GameCube.GFZ.Stage
                 writer.WriteNextCol("Course");
                 writer.WriteNextCol("AX/GX");
                 //
-                writer.WriteNextCol(nameof(Scene.unkRange0x00) + "." + nameof(ViewRange.near));
-                writer.WriteNextCol(nameof(Scene.unkRange0x00) + "." + nameof(ViewRange.far));
-                writer.WriteNextCol(nameof(Scene.trackNodesPtr));
-                writer.WriteNextCol(nameof(Scene.trackNodesPtr));
-                writer.WriteNextCol(nameof(Scene.embeddedTrackPropertyAreasPtr));
-                writer.WriteNextCol(nameof(Scene.embeddedTrackPropertyAreasPtr));
-                writer.WriteNextCol(nameof(Scene.staticColliderMeshManagerActive));
-                writer.WriteNextCol(nameof(Scene.embeddedTrackPropertyAreasPtr));
-                writer.WriteNextCol(nameof(Scene.zeroes0x20Ptr));
-                writer.WriteNextCol(nameof(Scene.trackMinHeightPtr));
-                writer.WriteNextCol(nameof(Scene.zeroes0x28));
-                writer.WriteNextCol(nameof(Scene.dynamicSceneObjectCount));
-                writer.WriteNextCol(nameof(Scene.unk_sceneObjectCount1));
-                writer.WriteNextCol(nameof(Scene.unk_sceneObjectCount2));
-                writer.WriteNextCol(nameof(Scene.dynamicSceneObjectsPtr));
-                writer.WriteNextCol(nameof(Scene.unkBool32_0x58));
-                writer.WriteNextCol(nameof(Scene.unknownCollidersPtr));
-                writer.WriteNextCol(nameof(Scene.unknownCollidersPtr));
-                writer.WriteNextCol(nameof(Scene.sceneObjectsPtr));
-                writer.WriteNextCol(nameof(Scene.sceneObjectsPtr));
-                writer.WriteNextCol(nameof(Scene.staticSceneObjectsPtr));
-                writer.WriteNextCol(nameof(Scene.staticSceneObjectsPtr));
-                writer.WriteNextCol(nameof(Scene.zero0x74));
-                writer.WriteNextCol(nameof(Scene.zero0x78));
-                writer.WriteNextCol(nameof(Scene.circuitType));
-                writer.WriteNextCol(nameof(Scene.fogCurvesPtr));
-                writer.WriteNextCol(nameof(Scene.fogPtr));
-                writer.WriteNextCol(nameof(Scene.zero0x88));
-                writer.WriteNextCol(nameof(Scene.zero0x8C));
-                writer.WriteNextCol(nameof(Scene.trackLengthPtr));
-                writer.WriteNextCol(nameof(Scene.unknownTriggersPtr)); // len
-                writer.WriteNextCol(nameof(Scene.unknownTriggersPtr)); // adr
-                writer.WriteNextCol(nameof(Scene.visualEffectTriggersPtr)); // len
-                writer.WriteNextCol(nameof(Scene.visualEffectTriggersPtr)); // adr
-                writer.WriteNextCol(nameof(Scene.miscellaneousTriggersPtr)); // len
-                writer.WriteNextCol(nameof(Scene.miscellaneousTriggersPtr)); // adr
-                writer.WriteNextCol(nameof(Scene.timeExtensionTriggersPtr)); // len
-                writer.WriteNextCol(nameof(Scene.timeExtensionTriggersPtr)); // adr
-                writer.WriteNextCol(nameof(Scene.storyObjectTriggersPtr)); // len
-                writer.WriteNextCol(nameof(Scene.storyObjectTriggersPtr)); // adr
-                writer.WriteNextCol(nameof(Scene.checkpointGridPtr));
+                writer.WriteNextCol(nameof(Scene.UnkRange0x00) + "." + nameof(ViewRange.near));
+                writer.WriteNextCol(nameof(Scene.UnkRange0x00) + "." + nameof(ViewRange.far));
+                writer.WriteNextCol(nameof(Scene.TrackNodesPtr));
+                writer.WriteNextCol(nameof(Scene.TrackNodesPtr));
+                writer.WriteNextCol(nameof(Scene.EmbeddedTrackPropertyAreasPtr));
+                writer.WriteNextCol(nameof(Scene.EmbeddedTrackPropertyAreasPtr));
+                writer.WriteNextCol(nameof(Scene.StaticColliderMeshManagerActive));
+                writer.WriteNextCol(nameof(Scene.EmbeddedTrackPropertyAreasPtr));
+                //writer.WriteNextCol(nameof(Scene.zeroes0x20Ptr));
+                writer.WriteNextCol(nameof(Scene.TrackMinHeightPtr));
+                //writer.WriteNextCol(nameof(Scene.zeroes0x28));
+                writer.WriteNextCol(nameof(Scene.DynamicSceneObjectCount));
+                writer.WriteNextCol(nameof(Scene.Unk_sceneObjectCount1));
+                writer.WriteNextCol(nameof(Scene.Unk_sceneObjectCount2));
+                writer.WriteNextCol(nameof(Scene.DynamicSceneObjectsPtr));
+                writer.WriteNextCol(nameof(Scene.UnkBool32_0x58));
+                writer.WriteNextCol(nameof(Scene.UnknownCollidersPtr));
+                writer.WriteNextCol(nameof(Scene.UnknownCollidersPtr));
+                writer.WriteNextCol(nameof(Scene.SceneObjectsPtr));
+                writer.WriteNextCol(nameof(Scene.SceneObjectsPtr));
+                writer.WriteNextCol(nameof(Scene.StaticSceneObjectsPtr));
+                writer.WriteNextCol(nameof(Scene.StaticSceneObjectsPtr));
+                //writer.WriteNextCol(nameof(Scene.zero0x74));
+                //writer.WriteNextCol(nameof(Scene.zero0x78));
+                writer.WriteNextCol(nameof(Scene.CircuitType));
+                writer.WriteNextCol(nameof(Scene.FogCurvesPtr));
+                writer.WriteNextCol(nameof(Scene.FogPtr));
+                //writer.WriteNextCol(nameof(Scene.zero0x88));
+                //writer.WriteNextCol(nameof(Scene.zero0x8C));
+                writer.WriteNextCol(nameof(Scene.TrackLengthPtr));
+                writer.WriteNextCol(nameof(Scene.UnknownTriggersPtr)); // len
+                writer.WriteNextCol(nameof(Scene.UnknownTriggersPtr)); // adr
+                writer.WriteNextCol(nameof(Scene.VisualEffectTriggersPtr)); // len
+                writer.WriteNextCol(nameof(Scene.VisualEffectTriggersPtr)); // adr
+                writer.WriteNextCol(nameof(Scene.MiscellaneousTriggersPtr)); // len
+                writer.WriteNextCol(nameof(Scene.MiscellaneousTriggersPtr)); // adr
+                writer.WriteNextCol(nameof(Scene.TimeExtensionTriggersPtr)); // len
+                writer.WriteNextCol(nameof(Scene.TimeExtensionTriggersPtr)); // adr
+                writer.WriteNextCol(nameof(Scene.StoryObjectTriggersPtr)); // len
+                writer.WriteNextCol(nameof(Scene.StoryObjectTriggersPtr)); // adr
+                writer.WriteNextCol(nameof(Scene.CheckpointGridPtr));
                 // Structure
-                writer.WriteNextCol(nameof(Scene.checkpointGridXZ) + "." + nameof(Scene.checkpointGridXZ.Left));
-                writer.WriteNextCol(nameof(Scene.checkpointGridXZ) + "." + nameof(Scene.checkpointGridXZ.Top));
-                writer.WriteNextCol(nameof(Scene.checkpointGridXZ) + "." + nameof(Scene.checkpointGridXZ.SubdivisionWidth));
-                writer.WriteNextCol(nameof(Scene.checkpointGridXZ) + "." + nameof(Scene.checkpointGridXZ.SubdivisionLength));
-                writer.WriteNextCol(nameof(Scene.checkpointGridXZ) + "." + nameof(Scene.checkpointGridXZ.NumSubdivisionsX));
-                writer.WriteNextCol(nameof(Scene.checkpointGridXZ) + "." + nameof(Scene.checkpointGridXZ.NumSubdivisionsZ));
+                writer.WriteNextCol(nameof(Scene.CheckpointGridXZ) + "." + nameof(Scene.CheckpointGridXZ.Left));
+                writer.WriteNextCol(nameof(Scene.CheckpointGridXZ) + "." + nameof(Scene.CheckpointGridXZ.Top));
+                writer.WriteNextCol(nameof(Scene.CheckpointGridXZ) + "." + nameof(Scene.CheckpointGridXZ.SubdivisionWidth));
+                writer.WriteNextCol(nameof(Scene.CheckpointGridXZ) + "." + nameof(Scene.CheckpointGridXZ.SubdivisionLength));
+                writer.WriteNextCol(nameof(Scene.CheckpointGridXZ) + "." + nameof(Scene.CheckpointGridXZ.NumSubdivisionsX));
+                writer.WriteNextCol(nameof(Scene.CheckpointGridXZ) + "." + nameof(Scene.CheckpointGridXZ.NumSubdivisionsZ));
                 // 
-                writer.WriteNextCol(nameof(Scene.zeroes0xD8));
+                //writer.WriteNextCol(nameof(Scene.zeroes0xD8));
                 writer.WriteNextRow();
 
                 foreach (var scene in scenes)
                 {
                     writer.WriteNextCol(scene.FileName);
-                    writer.WriteNextCol(scene.ID);
-                    writer.WriteNextCol(CourseUtility.GetVenueID(scene.ID).GetDescription());
-                    writer.WriteNextCol(((CourseIndexAX)scene.ID).GetDescription());
+                    writer.WriteNextCol(scene.CourseIndex);
+                    writer.WriteNextCol(CourseUtility.GetVenueID(scene.CourseIndex).GetDescription());
+                    writer.WriteNextCol(((CourseIndexAX)scene.CourseIndex).GetDescription());
                     writer.WriteNextCol(scene.IsFileGX ? "GX" : "AX");
 
-                    writer.WriteNextCol(scene.unkRange0x00.near);
-                    writer.WriteNextCol(scene.unkRange0x00.far);
-                    writer.WriteNextCol(scene.trackNodesPtr.Length);
-                    writer.WriteNextCol(scene.trackNodesPtr.PrintAddress);
-                    writer.WriteNextCol(scene.embeddedTrackPropertyAreasPtr.Length);
-                    writer.WriteNextCol(scene.embeddedTrackPropertyAreasPtr.PrintAddress);
-                    writer.WriteNextCol(scene.staticColliderMeshManagerActive);
-                    writer.WriteNextCol(scene.staticColliderMeshManagerPtr.PrintAddress);
-                    writer.WriteNextCol(scene.zeroes0x20Ptr.PrintAddress);
-                    writer.WriteNextCol(scene.trackMinHeightPtr.PrintAddress);
+                    writer.WriteNextCol(scene.UnkRange0x00.near);
+                    writer.WriteNextCol(scene.UnkRange0x00.far);
+                    writer.WriteNextCol(scene.TrackNodesPtr.length);
+                    writer.WriteNextCol(scene.TrackNodesPtr.PrintAddress);
+                    writer.WriteNextCol(scene.EmbeddedTrackPropertyAreasPtr.length);
+                    writer.WriteNextCol(scene.EmbeddedTrackPropertyAreasPtr.PrintAddress);
+                    writer.WriteNextCol(scene.StaticColliderMeshManagerActive);
+                    writer.WriteNextCol(scene.StaticColliderMeshManagerPtr.PrintAddress);
+                    //writer.WriteNextCol(scene.zeroes0x20Ptr.PrintAddress);
+                    writer.WriteNextCol(scene.TrackMinHeightPtr.PrintAddress);
                     writer.WriteNextCol(0);// coliHeader.zero_0x28);
-                    writer.WriteNextCol(scene.dynamicSceneObjectCount);
+                    writer.WriteNextCol(scene.DynamicSceneObjectCount);
                     if (scene.IsFileGX)
                     {
-                        writer.WriteNextCol(scene.unk_sceneObjectCount1);
+                        writer.WriteNextCol(scene.Unk_sceneObjectCount1);
                     }
                     else // is AX
                     {
                         writer.WriteNextCol();
                     }
-                    writer.WriteNextCol(scene.unk_sceneObjectCount2);
-                    writer.WriteNextCol(scene.dynamicSceneObjectsPtr.PrintAddress);
-                    writer.WriteNextCol(scene.unkBool32_0x58);
-                    writer.WriteNextCol(scene.unknownCollidersPtr.Length);
-                    writer.WriteNextCol(scene.unknownCollidersPtr.PrintAddress);
-                    writer.WriteNextCol(scene.sceneObjectsPtr.Length);
-                    writer.WriteNextCol(scene.sceneObjectsPtr.PrintAddress);
-                    writer.WriteNextCol(scene.staticSceneObjectsPtr.Length);
-                    writer.WriteNextCol(scene.staticSceneObjectsPtr.PrintAddress);
-                    writer.WriteNextCol(scene.zero0x74);
-                    writer.WriteNextCol(scene.zero0x78);
-                    writer.WriteNextCol(scene.circuitType);
-                    writer.WriteNextCol(scene.fogCurvesPtr.PrintAddress);
-                    writer.WriteNextCol(scene.fogPtr.PrintAddress);
-                    writer.WriteNextCol(scene.zero0x88);
-                    writer.WriteNextCol(scene.zero0x8C);
-                    writer.WriteNextCol(scene.trackLengthPtr.PrintAddress);
-                    writer.WriteNextCol(scene.unknownTriggersPtr.Length);
-                    writer.WriteNextCol(scene.unknownTriggersPtr.PrintAddress);
-                    writer.WriteNextCol(scene.visualEffectTriggersPtr.Length);
-                    writer.WriteNextCol(scene.visualEffectTriggersPtr.PrintAddress);
-                    writer.WriteNextCol(scene.miscellaneousTriggersPtr.Length);
-                    writer.WriteNextCol(scene.miscellaneousTriggersPtr.PrintAddress);
-                    writer.WriteNextCol(scene.timeExtensionTriggersPtr.Length);
-                    writer.WriteNextCol(scene.timeExtensionTriggersPtr.PrintAddress);
-                    writer.WriteNextCol(scene.storyObjectTriggersPtr.Length);
-                    writer.WriteNextCol(scene.storyObjectTriggersPtr.PrintAddress);
-                    writer.WriteNextCol(scene.checkpointGridPtr.PrintAddress);
+                    writer.WriteNextCol(scene.Unk_sceneObjectCount2);
+                    writer.WriteNextCol(scene.DynamicSceneObjectsPtr.PrintAddress);
+                    writer.WriteNextCol(scene.UnkBool32_0x58);
+                    writer.WriteNextCol(scene.UnknownCollidersPtr.length);
+                    writer.WriteNextCol(scene.UnknownCollidersPtr.PrintAddress);
+                    writer.WriteNextCol(scene.SceneObjectsPtr.length);
+                    writer.WriteNextCol(scene.SceneObjectsPtr.PrintAddress);
+                    writer.WriteNextCol(scene.StaticSceneObjectsPtr.length);
+                    writer.WriteNextCol(scene.StaticSceneObjectsPtr.PrintAddress);
+                    //writer.WriteNextCol(scene.zero0x74);
+                    //writer.WriteNextCol(scene.zero0x78);
+                    writer.WriteNextCol(scene.CircuitType);
+                    writer.WriteNextCol(scene.FogCurvesPtr.PrintAddress);
+                    writer.WriteNextCol(scene.FogPtr.PrintAddress);
+                    //writer.WriteNextCol(scene.zero0x88);
+                    //writer.WriteNextCol(scene.zero0x8C);
+                    writer.WriteNextCol(scene.TrackLengthPtr.PrintAddress);
+                    writer.WriteNextCol(scene.UnknownTriggersPtr.length);
+                    writer.WriteNextCol(scene.UnknownTriggersPtr.PrintAddress);
+                    writer.WriteNextCol(scene.VisualEffectTriggersPtr.length);
+                    writer.WriteNextCol(scene.VisualEffectTriggersPtr.PrintAddress);
+                    writer.WriteNextCol(scene.MiscellaneousTriggersPtr.length);
+                    writer.WriteNextCol(scene.MiscellaneousTriggersPtr.PrintAddress);
+                    writer.WriteNextCol(scene.TimeExtensionTriggersPtr.length);
+                    writer.WriteNextCol(scene.TimeExtensionTriggersPtr.PrintAddress);
+                    writer.WriteNextCol(scene.StoryObjectTriggersPtr.length);
+                    writer.WriteNextCol(scene.StoryObjectTriggersPtr.PrintAddress);
+                    writer.WriteNextCol(scene.CheckpointGridPtr.PrintAddress);
                     // Structure
-                    writer.WriteNextCol(scene.checkpointGridXZ.Left);
-                    writer.WriteNextCol(scene.checkpointGridXZ.Top);
-                    writer.WriteNextCol(scene.checkpointGridXZ.SubdivisionWidth);
-                    writer.WriteNextCol(scene.checkpointGridXZ.SubdivisionLength);
-                    writer.WriteNextCol(scene.checkpointGridXZ.NumSubdivisionsX);
-                    writer.WriteNextCol(scene.checkpointGridXZ.NumSubdivisionsZ);
+                    writer.WriteNextCol(scene.CheckpointGridXZ.Left);
+                    writer.WriteNextCol(scene.CheckpointGridXZ.Top);
+                    writer.WriteNextCol(scene.CheckpointGridXZ.SubdivisionWidth);
+                    writer.WriteNextCol(scene.CheckpointGridXZ.SubdivisionLength);
+                    writer.WriteNextCol(scene.CheckpointGridXZ.NumSubdivisionsX);
+                    writer.WriteNextCol(scene.CheckpointGridXZ.NumSubdivisionsZ);
                     //
                     writer.WriteNextCol(0);// coliHeader.zero_0xD8);
                     writer.WriteNextCol(scene.trackMinHeight.Value);
@@ -931,14 +931,14 @@ namespace GameCube.GFZ.Stage
 
                 foreach (var scene in scenes)
                 {
-                    var venueID = CourseUtility.GetVenueID(scene.ID).GetDescription();
-                    var courseID = ((CourseIndexAX)scene.ID).GetDescription();
+                    var venueID = CourseUtility.GetVenueID(scene.CourseIndex).GetDescription();
+                    var courseID = ((CourseIndexAX)scene.CourseIndex).GetDescription();
                     var isAxGx = scene.IsFileGX ? "GX" : "AX";
 
                     foreach (var arcadeCheckpooint in scene.timeExtensionTriggers)
                     {
                         writer.WriteNextCol(scene.FileName);
-                        writer.WriteNextCol(scene.ID);
+                        writer.WriteNextCol(scene.CourseIndex);
                         writer.WriteNextCol(venueID);
                         writer.WriteNextCol(courseID);
                         writer.WriteNextCol(isAxGx);
@@ -977,14 +977,14 @@ namespace GameCube.GFZ.Stage
 
                 foreach (var scene in scenes)
                 {
-                    var venueID = CourseUtility.GetVenueID(scene.ID).GetDescription();
-                    var courseID = ((CourseIndexAX)scene.ID).GetDescription();
+                    var venueID = CourseUtility.GetVenueID(scene.CourseIndex).GetDescription();
+                    var courseID = ((CourseIndexAX)scene.CourseIndex).GetDescription();
                     var isAxGx = scene.IsFileGX ? "GX" : "AX";
 
                     foreach (var cmt in scene.miscellaneousTriggers)
                     {
                         writer.WriteNextCol(scene.FileName);
-                        writer.WriteNextCol(scene.ID);
+                        writer.WriteNextCol(scene.CourseIndex);
                         writer.WriteNextCol(venueID);
                         writer.WriteNextCol(courseID);
                         writer.WriteNextCol(isAxGx);
@@ -1027,14 +1027,14 @@ namespace GameCube.GFZ.Stage
 
                 foreach (var scene in scenes)
                 {
-                    var venueID = CourseUtility.GetVenueID(scene.ID).GetDescription();
-                    var courseID = ((CourseIndexAX)scene.ID).GetDescription();
+                    var venueID = CourseUtility.GetVenueID(scene.CourseIndex).GetDescription();
+                    var courseID = ((CourseIndexAX)scene.CourseIndex).GetDescription();
                     var isAxGx = scene.IsFileGX ? "GX" : "AX";
 
                     foreach (var item in scene.storyObjectTriggers)
                     {
                         writer.WriteNextCol(scene.FileName);
-                        writer.WriteNextCol(scene.ID);
+                        writer.WriteNextCol(scene.CourseIndex);
                         writer.WriteNextCol(venueID);
                         writer.WriteNextCol(courseID);
                         writer.WriteNextCol(isAxGx);
@@ -1079,24 +1079,24 @@ namespace GameCube.GFZ.Stage
 
                 foreach (var scene in scenes)
                 {
-                    var venueID = CourseUtility.GetVenueID(scene.ID).GetDescription();
-                    var courseID = ((CourseIndexAX)scene.ID).GetDescription();
+                    var venueID = CourseUtility.GetVenueID(scene.CourseIndex).GetDescription();
+                    var courseID = ((CourseIndexAX)scene.CourseIndex).GetDescription();
                     var isAxGx = scene.IsFileGX ? "GX" : "AX";
 
                     int count = 0;
-                    int total = scene.unknownTriggers.Length;
-                    foreach (var item in scene.unknownTriggers)
+                    int total = scene.cullOverrideTriggers.Length;
+                    foreach (var item in scene.cullOverrideTriggers)
                     {
                         count++;
 
                         writer.WriteNextCol(scene.FileName);
-                        writer.WriteNextCol(scene.ID);
+                        writer.WriteNextCol(scene.CourseIndex);
                         writer.WriteNextCol(venueID);
                         writer.WriteNextCol(courseID);
                         writer.WriteNextCol(isAxGx);
 
-                        writer.WriteNextCol(item.PrintStartAddress());
-                        writer.WriteNextCol(item.PrintEndAddress());
+                        writer.WriteNextCol(item.AddressRange.PrintStartAddress());
+                        writer.WriteNextCol(item.AddressRange.PrintEndAddress());
 
                         writer.WriteNextCol(item.Unk_0x20);
                         writer.WriteNextCol($"0x{(int)item.Unk_0x20:X8}");
@@ -1133,14 +1133,14 @@ namespace GameCube.GFZ.Stage
 
                 foreach (var scene in scenes)
                 {
-                    var venueID = CourseUtility.GetVenueID(scene.ID).GetDescription();
-                    var courseID = ((CourseIndexAX)scene.ID).GetDescription();
+                    var venueID = CourseUtility.GetVenueID(scene.CourseIndex).GetDescription();
+                    var courseID = ((CourseIndexAX)scene.CourseIndex).GetDescription();
                     var isAxGx = scene.IsFileGX ? "GX" : "AX";
 
                     foreach (var vfx in scene.visualEffectTriggers)
                     {
                         writer.WriteNextCol(scene.FileName);
-                        writer.WriteNextCol(scene.ID);
+                        writer.WriteNextCol(scene.CourseIndex);
                         writer.WriteNextCol(venueID);
                         writer.WriteNextCol(courseID);
                         writer.WriteNextCol(isAxGx);
@@ -1189,8 +1189,8 @@ namespace GameCube.GFZ.Stage
                     if (scene.fogCurves == null)
                         continue;
 
-                    var venueID = CourseUtility.GetVenueID(scene.ID).GetDescription();
-                    var courseID = ((CourseIndexAX)scene.ID).GetDescription();
+                    var venueID = CourseUtility.GetVenueID(scene.CourseIndex).GetDescription();
+                    var courseID = ((CourseIndexAX)scene.CourseIndex).GetDescription();
                     var isAxGx = scene.IsFileGX ? "GX" : "AX";
 
                     var totalD1 = scene.fogCurves.animationCurves.Length;
@@ -1201,7 +1201,7 @@ namespace GameCube.GFZ.Stage
                         foreach (var keyableAttribute in animationCurve.KeyableAttributes)
                         {
                             writer.WriteNextCol(scene.FileName);
-                            writer.WriteNextCol(scene.ID);
+                            writer.WriteNextCol(scene.CourseIndex);
                             writer.WriteNextCol(venueID);
                             writer.WriteNextCol(courseID);
                             writer.WriteNextCol(isAxGx);
@@ -1247,12 +1247,12 @@ namespace GameCube.GFZ.Stage
 
                 foreach (var scene in scenes)
                 {
-                    var venueID = CourseUtility.GetVenueID(scene.ID).GetDescription();
-                    var courseID = ((CourseIndexAX)scene.ID).GetDescription();
+                    var venueID = CourseUtility.GetVenueID(scene.CourseIndex).GetDescription();
+                    var courseID = ((CourseIndexAX)scene.CourseIndex).GetDescription();
                     var isAxGx = scene.IsFileGX ? "GX" : "AX";
 
                     writer.WriteNextCol(scene.FileName);
-                    writer.WriteNextCol(scene.ID);
+                    writer.WriteNextCol(scene.CourseIndex);
                     writer.WriteNextCol(venueID);
                     writer.WriteNextCol(courseID);
                     writer.WriteNextCol(isAxGx);
@@ -1378,11 +1378,11 @@ namespace GameCube.GFZ.Stage
                     int nodeIndex = 0;
                     foreach (var trackNode in scene.trackNodes)
                     {
-                        int pointLength = trackNode.checkpoints.Length;
+                        int pointLength = trackNode.Checkpoints.Length;
                         int pointIndex = 0;
-                        foreach (var trackPoint in trackNode.checkpoints)
+                        foreach (var trackPoint in trackNode.Checkpoints)
                         {
-                            writer.WriteNextCol($"COLI_COURSE{scene.ID:d2}");
+                            writer.WriteNextCol($"COLI_COURSE{scene.CourseIndex:d2}");
                             writer.WriteNextCol($"[{nodeIndex}/{nodeLength}]");
                             writer.WriteNextCol($"[{pointIndex}/{pointLength}]");
 
@@ -1454,7 +1454,7 @@ namespace GameCube.GFZ.Stage
                 {
                     var staticColliderMeshes = scene.staticColliderMeshManager;
 
-                    writer.WriteNextCol($"COLI_COURSE{scene.ID:d2}");
+                    writer.WriteNextCol($"COLI_COURSE{scene.CourseIndex:d2}");
                     writer.WriteNextCol(index++);
                     writer.WriteNextCol(staticColliderMeshes.StaticColliderTrisPtr.PrintAddress);
                     writer.WriteNextCol(staticColliderMeshes.TriMeshGridPtrs.Length);
@@ -1503,8 +1503,8 @@ namespace GameCube.GFZ.Stage
 
                 foreach (var scene in scenes)
                 {
-                    var venueID = CourseUtility.GetVenueID(scene.ID).GetDescription();
-                    var courseID = ((CourseIndexAX)scene.ID).GetDescription();
+                    var venueID = CourseUtility.GetVenueID(scene.CourseIndex).GetDescription();
+                    var courseID = ((CourseIndexAX)scene.CourseIndex).GetDescription();
                     var isAxGx = scene.IsFileGX ? "GX" : "AX";
 
                     // Get all the scene object references
@@ -1526,7 +1526,7 @@ namespace GameCube.GFZ.Stage
                     foreach (var sceneObjectReference in objectsList)
                     {
                         writer.WriteNextCol(scene.FileName);
-                        writer.WriteNextCol(scene.ID);
+                        writer.WriteNextCol(scene.CourseIndex);
                         writer.WriteNextCol(venueID);
                         writer.WriteNextCol(courseID);
                         writer.WriteNextCol(isAxGx);
@@ -1565,8 +1565,8 @@ namespace GameCube.GFZ.Stage
 
                 foreach (var scene in scenes)
                 {
-                    var venueID = CourseUtility.GetVenueID(scene.ID).GetDescription();
-                    var courseID = ((CourseIndexAX)scene.ID).GetDescription();
+                    var venueID = CourseUtility.GetVenueID(scene.CourseIndex).GetDescription();
+                    var courseID = ((CourseIndexAX)scene.CourseIndex).GetDescription();
                     var isAxGx = scene.IsFileGX ? "GX" : "AX";
 
                     // Get all the scene object references
@@ -1585,7 +1585,7 @@ namespace GameCube.GFZ.Stage
                     foreach (var sceneObject in sceneObjectsList)
                     {
                         writer.WriteNextCol(scene.FileName);
-                        writer.WriteNextCol(scene.ID);
+                        writer.WriteNextCol(scene.CourseIndex);
                         writer.WriteNextCol(venueID);
                         writer.WriteNextCol(courseID);
                         writer.WriteNextCol(isAxGx);
@@ -1630,8 +1630,8 @@ namespace GameCube.GFZ.Stage
 
                 foreach (var scene in scenes)
                 {
-                    var venueID = CourseUtility.GetVenueID(scene.ID).GetDescription();
-                    var courseID = ((CourseIndexAX)scene.ID).GetDescription();
+                    var venueID = CourseUtility.GetVenueID(scene.CourseIndex).GetDescription();
+                    var courseID = ((CourseIndexAX)scene.CourseIndex).GetDescription();
                     var isAxGx = scene.IsFileGX ? "GX" : "AX";
 
                     foreach (var template in scene.sceneObjects)
@@ -1641,14 +1641,14 @@ namespace GameCube.GFZ.Stage
                         foreach (var sceneObject in template.LODs)
                         {
                             writer.WriteNextCol(scene.FileName);
-                            writer.WriteNextCol(scene.ID);
+                            writer.WriteNextCol(scene.CourseIndex);
                             writer.WriteNextCol(venueID);
                             writer.WriteNextCol(courseID);
                             writer.WriteNextCol(isAxGx);
                             //
                             writer.WriteNextCol(template.Name);
                             writer.WriteNextCol(template.LodRenderFlags);
-                            writer.WriteNextCol(template.LodsPtr.Length);
+                            writer.WriteNextCol(template.LodsPtr.length);
                             writer.WriteNextCol(template.LodsPtr.PrintAddress);
                             writer.WriteNextCol(template.ColliderGeometryPtr);
                             writer.WriteNextCol($"[{++index}/{length}]");
@@ -1686,18 +1686,18 @@ namespace GameCube.GFZ.Stage
 
                 foreach (var scene in scenes)
                 {
-                    var venueID = CourseUtility.GetVenueID(scene.ID).GetDescription();
-                    var courseID = ((CourseIndexAX)scene.ID).GetDescription();
+                    var venueID = CourseUtility.GetVenueID(scene.CourseIndex).GetDescription();
+                    var courseID = ((CourseIndexAX)scene.CourseIndex).GetDescription();
                     var isAxGx = scene.IsFileGX ? "GX" : "AX";
 
                     writer.WriteNextCol(scene.FileName);
-                    writer.WriteNextCol(scene.ID);
+                    writer.WriteNextCol(scene.CourseIndex);
                     writer.WriteNextCol(venueID);
                     writer.WriteNextCol(courseID);
                     writer.WriteNextCol(isAxGx);
                     //
-                    writer.WriteNextCol(scene.unkRange0x00.near);
-                    writer.WriteNextCol(scene.unkRange0x00.far);
+                    writer.WriteNextCol(scene.UnkRange0x00.near);
+                    writer.WriteNextCol(scene.UnkRange0x00.far);
                     writer.WriteNextCol(scene.trackMinHeight.Value);
                     writer.WriteNextCol(scene.trackLength.Value);
                     writer.WriteNextRow();
@@ -1729,14 +1729,14 @@ namespace GameCube.GFZ.Stage
 
                 foreach (var scene in scenes)
                 {
-                    var venueID = CourseUtility.GetVenueID(scene.ID).GetDescription();
-                    var courseID = ((CourseIndexAX)scene.ID).GetDescription();
+                    var venueID = CourseUtility.GetVenueID(scene.CourseIndex).GetDescription();
+                    var courseID = ((CourseIndexAX)scene.CourseIndex).GetDescription();
                     var isAxGx = scene.IsFileGX ? "GX" : "AX";
 
                     foreach (var surfaceAttributeArea in scene.embeddedPropertyAreas)
                     {
                         writer.WriteNextCol(scene.FileName);
-                        writer.WriteNextCol(scene.ID);
+                        writer.WriteNextCol(scene.CourseIndex);
                         writer.WriteNextCol(venueID);
                         writer.WriteNextCol(courseID);
                         writer.WriteNextCol(isAxGx);
@@ -1778,14 +1778,14 @@ namespace GameCube.GFZ.Stage
 
                 foreach (var scene in scenes)
                 {
-                    var venueID = CourseUtility.GetVenueID(scene.ID).GetDescription();
-                    var courseID = ((CourseIndexAX)scene.ID).GetDescription();
+                    var venueID = CourseUtility.GetVenueID(scene.CourseIndex).GetDescription();
+                    var courseID = ((CourseIndexAX)scene.CourseIndex).GetDescription();
                     var isAxGx = scene.IsFileGX ? "GX" : "AX";
 
                     foreach (var unkSols in scene.unknownColliders)
                     {
                         writer.WriteNextCol(scene.FileName);
-                        writer.WriteNextCol(scene.ID);
+                        writer.WriteNextCol(scene.CourseIndex);
                         writer.WriteNextCol(venueID);
                         writer.WriteNextCol(courseID);
                         writer.WriteNextCol(isAxGx);

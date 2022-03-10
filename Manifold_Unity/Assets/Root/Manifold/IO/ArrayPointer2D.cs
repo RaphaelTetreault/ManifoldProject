@@ -11,7 +11,7 @@ namespace Manifold.IO
     /// by 'n' pointers. Once paired, the length and pointer form an <cref>ArrayPointer</cref>.
     /// </remarks>
     [Serializable]
-    public struct ArrayPointer2D :
+    public sealed class ArrayPointer2D :
         IBinaryAddressable,
         IBinarySerializable
     {
@@ -51,7 +51,7 @@ namespace Manifold.IO
                 {
                     int length = 0;
                     reader.ReadX(ref length);
-                    arrayPointers[i].Length = length;
+                    arrayPointers[i].length = length;
                 }
 
                 // Read array addresses
@@ -59,7 +59,7 @@ namespace Manifold.IO
                 {
                     int address = 0;
                     reader.ReadX(ref address);
-                    arrayPointers[i].Address = address;
+                    arrayPointers[i].address = address;
                 }
             }
             this.RecordEndAddress(reader);
@@ -72,13 +72,13 @@ namespace Manifold.IO
                 // Write array lengths
                 for (int i = 0; i < arrayPointers.Length; i++)
                 {
-                    writer.WriteX(arrayPointers[i].Length);
+                    writer.WriteX(arrayPointers[i].length);
                 }
 
                 // Write array addresses
                 for (int i = 0; i < arrayPointers.Length; i++)
                 {
-                    writer.WriteX(arrayPointers[i].Address);
+                    writer.WriteX(arrayPointers[i].address);
                 }
             }
             this.RecordEndAddress(writer);

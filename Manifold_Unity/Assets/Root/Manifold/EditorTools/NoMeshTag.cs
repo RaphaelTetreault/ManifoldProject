@@ -1,4 +1,4 @@
 namespace Manifold.EditorTools
 {
-    public class NoMeshTag : QueryTag { }
+    public class NoMeshTag : UnityEngine.MonoBehaviour { }
 }

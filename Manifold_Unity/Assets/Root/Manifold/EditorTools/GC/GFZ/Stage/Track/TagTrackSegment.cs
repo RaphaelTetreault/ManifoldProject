@@ -20,13 +20,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         public float3 localScale;
         public float3 localRotation;
         public float3 localPosition;
-        [NumFormat(format0: "{0}", numDigits: 8, numBase: 2)]
         public byte unk_0x38; // mixed flags
-        [NumFormat(format0: "{0}", numDigits: 8, numBase: 2)]
         public byte unk_0x39; // exclusive flags
-        [NumFormat(format0: "{0}", numDigits: 8, numBase: 2)]
         public byte unk_0x3A; // mixed flags
-        [NumFormat(format0: "{0}", numDigits: 8, numBase: 2)]
         public byte unk_0x3B; // mixed flags
         public float railHeightRight;
         public float railHeightLeft;

@@ -23,12 +23,8 @@ namespace Manifold.IO
         public const int SizeofDecimal = 16;
 
         // FIELDS
-        //private static readonly Stack<Encoding> EncodingStack = new Stack<Encoding>();
         private static readonly Stack<Endianness> EndianessStack = new Stack<Endianness>();
 
-        //private static Func<BinaryReader, bool> fReadBool = ReadBool; //
-        //private static Func<BinaryReader, byte> fReadUint8 = ReadUInt8; //
-        //private static Func<BinaryReader, sbyte> fReadInt8 = ReadInt8; // 
         private static Func<BinaryReader, ushort> fReadUInt16 = RequiresSwapEndianness ? ReadUInt16SwapEndianness : ReadUInt16SameEndianness;
         private static Func<BinaryReader, uint> fReadUInt32 = RequiresSwapEndianness ? ReadUInt32SwapEndianness : ReadUInt32SameEndianness;
         private static Func<BinaryReader, ulong> fReadUInt64 = RequiresSwapEndianness ? ReadUInt64SwapEndianness : ReadUInt64SameEndianness;
@@ -46,14 +42,13 @@ namespace Manifold.IO
         private static Action<BinaryWriter, long> fWriteInt64 = RequiresSwapEndianness ? WriteInt64SwapEndianness : WriteInt64SameEndianness;
         private static Action<BinaryWriter, float> fWriteFloat = RequiresSwapEndianness ? WriteFloatSwapEndianness : WriteFloatSameEndianness;
         private static Action<BinaryWriter, double> fWriteDouble = RequiresSwapEndianness ? WriteDoubleSwapEndianness : WriteDoubleSameEndianness;
-        private static Action<BinaryWriter, char, Encoding> fWriteChar = RequiresSwapEndianness ? WriteCharSwapEndianness : WriteCharSameEndianness;
-        //private static Action<BinaryWriter, string, Encoding> fWriteString = RequiresSwapEndianness ? WriteStringSwapEndianness : WriteStringSameEndianness;
 
         private static void SetFunctionEndianness()
         {
             bool swapByteOrder = BitConverter.IsLittleEndian ^ IsLittleEndian;
             if (swapByteOrder)
             {
+                // READ
                 fReadInt16 = ReadInt16SwapEndianness;
                 fReadInt32 = ReadInt32SwapEndianness;
                 fReadInt64 = ReadInt64SwapEndianness;
@@ -62,9 +57,20 @@ namespace Manifold.IO
                 fReadUInt64 = ReadUInt64SwapEndianness;
                 fReadFloat = ReadFloatSwapEndianness;
                 fReadDouble = ReadDoubleSwapEndianness;
+
+                // WRITE
+                fWriteInt16 = WriteInt16SwapEndianness;
+                fWriteInt32 = WriteInt32SwapEndianness;
+                fWriteInt64 = WriteInt64SwapEndianness;
+                fWriteUInt16 = WriteUInt16SwapEndianness;
+                fWriteUInt32 = WriteUInt32SwapEndianness;
+                fWriteUInt64 = WriteUInt64SwapEndianness;
+                fWriteFloat = WriteFloatSwapEndianness;
+                fWriteDouble = WriteDoubleSwapEndianness;
             }
             else
             {
+                // READ
                 fReadInt16 = ReadInt16SameEndianness;
                 fReadInt32 = ReadInt32SameEndianness;
                 fReadInt64 = ReadInt64SameEndianness;
@@ -73,21 +79,25 @@ namespace Manifold.IO
                 fReadUInt64 = ReadUInt64SameEndianness;
                 fReadFloat = ReadFloatSameEndianness;
                 fReadDouble = ReadDoubleSameEndianness;
+
+                // WRITE
+                fWriteInt16 = WriteInt16SameEndianness;
+                fWriteInt32 = WriteInt32SameEndianness;
+                fWriteInt64 = WriteInt64SameEndianness;
+                fWriteUInt16 = WriteUInt16SameEndianness;
+                fWriteUInt32 = WriteUInt32SameEndianness;
+                fWriteUInt64 = WriteUInt64SameEndianness;
+                fWriteFloat = WriteFloatSameEndianness;
+                fWriteDouble = WriteDoubleSameEndianness;
             }
         }
 
 
         // PROPERTIES
-
-        private static bool RequiresSwapEndianness
-        {
-            get => BitConverter.IsLittleEndian ^ IsLittleEndian;
-        }
-
         /// <summary>
-        /// The stride used to align the stream to when calling AlignTo method
+        /// 
         /// </summary>
-        public static int ByteAlignment { get; set; } = 4;
+        private static bool RequiresSwapEndianness => BitConverter.IsLittleEndian ^ IsLittleEndian;
 
         /// <summary>
         /// The current endianness used for read/write operations
@@ -95,10 +105,14 @@ namespace Manifold.IO
         public static Endianness Endianness { get; set; } = Endianness.BigEndian;
 
         /// <summary>
-        /// The current endianness used for read/write operations
+        /// Returns true if Endianness is Little Endian
         /// </summary>
-        public static bool IsLittleEndian { get => Endianness == Endianness.LittleEndian; }
+        public static bool IsLittleEndian => Endianness == Endianness.LittleEndian;
 
+        /// <summary>
+        /// Returns true if Endianness is Big Endian
+        /// </summary>
+        public static bool IsBigEndian => Endianness == Endianness.BigEndian;
 
         // METHODS
 
@@ -107,7 +121,19 @@ namespace Manifold.IO
         /// </summary>
         public static void PopEndianness()
         {
-            Endianness = EndianessStack.Pop();
+            var endianness = EndianessStack.Pop();
+
+            // Figure out if we need to change the function pointers
+            bool requiresFunctionChange = endianness != Endianness;
+
+            // Set active state to call value
+            Endianness = endianness;
+
+            // If we need to change functions, change them
+            if (requiresFunctionChange)
+            {
+                SetFunctionEndianness();
+            }
         }
 
         /// <summary>
@@ -396,9 +422,16 @@ namespace Manifold.IO
             return value = ReadDouble(binaryReader);
         }
 
-        public static string Read(BinaryReader binaryReader, ref string value, int lengthBytes, Encoding encoding)
+        public static string Read(BinaryReader binaryReader, ref string value, Encoding encoding, int lengthBytes)
         {
-            return value = ReadString(binaryReader, lengthBytes, encoding);
+            value = ReadString(binaryReader, lengthBytes, encoding);
+            return value;
+        }
+        public static string Read(BinaryReader binaryReader, ref string value, Encoding encoding)
+        {
+            var lengthBytes = binaryReader.ReadInt32();
+            value = Read(binaryReader, ref value, encoding, lengthBytes);
+            return value;
         }
 
         public static TBinarySerializable ReadBinarySerializable<TBinarySerializable>(BinaryReader binaryReader, ref TBinarySerializable value) where TBinarySerializable : IBinarySerializable, new()
@@ -478,6 +511,17 @@ namespace Manifold.IO
             return ReadArray(binaryReader, length, ReadDouble);
         }
 
+        public static string[] ReadStringArray(BinaryReader binaryReader, int length, Encoding encoding)
+        {
+            var array = new string[length];
+            for (int i = 0; i < length; i++)
+            {
+                var lengthBytes = binaryReader.ReadInt32();
+                array[i] = ReadString(binaryReader, lengthBytes, encoding);
+            }
+            return array;
+        }
+
         public static TBinarySerializable[] ReadBinarySerializableArray<TBinarySerializable>(BinaryReader binaryReader, int length) where TBinarySerializable : IBinarySerializable, new()
         {
             return ReadArray(binaryReader, length, ReadBinarySerializable<TBinarySerializable>);
@@ -548,6 +592,11 @@ namespace Manifold.IO
         public static double[] Read(BinaryReader binaryReader, int length, ref double[] value)
         {
             return value = ReadDoubleArray(binaryReader, length);
+        }
+
+        public static string[] Read(BinaryReader binaryReader, int length, ref string[] value, Encoding encoding)
+        {
+            return value = ReadStringArray(binaryReader, length, encoding);
         }
 
         public static TBinarySerializable[] Read<TBinarySerializable>(BinaryReader binaryReader, int length, ref TBinarySerializable[] value) where TBinarySerializable : IBinarySerializable, new()
@@ -706,28 +755,14 @@ namespace Manifold.IO
             writer.Write(bytes);
         }
 
-        private static void Write(BinaryWriter writer, char value, Encoding encoding)
+        public static void Write(BinaryWriter writer, string value, Encoding encoding, bool writeLengthBytes)
         {
-            fWriteChar.Invoke(writer, value, encoding);
-        }
-        private static void WriteCharSameEndianness(BinaryWriter writer, char value, Encoding encoding)
-        {
-            byte[] bytes = encoding.GetBytes(new char[] { value }, 0, 1);
-            writer.Write(bytes);
-        }
-        private static void WriteCharSwapEndianness(BinaryWriter writer, char value, Encoding encoding)
-        {
-            byte[] bytes = encoding.GetBytes(new char[]{ value });
-            Array.Reverse(bytes);
-            writer.Write(bytes);
-        }
+            byte[] bytes = encoding.GetBytes(value);
 
-        public static void Write(BinaryWriter writer, string value, Encoding encoding)
-        {
-            foreach (char character in value)
-            {
-                Write(writer, character, encoding);
-            }
+            if (writeLengthBytes)
+                Write(writer, bytes.Length);
+
+            Write(writer, bytes);
         }
 
         public static void Write<TBinarySerializable>(BinaryWriter writer, TBinarySerializable value) where TBinarySerializable : IBinarySerializable
@@ -804,7 +839,7 @@ namespace Manifold.IO
         {
             foreach (string str in value)
             {
-                Write(writer, str, encoding);
+                Write(writer, str, encoding, true);
             }
         }
 

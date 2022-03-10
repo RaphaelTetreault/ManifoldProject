@@ -12,7 +12,7 @@ namespace GameCube.GFZ.Stage
     /// As noted, it contains "extra" bits.
     /// </summary>
     [Serializable]
-    public class TransformTRXS :
+    public sealed class TransformTRXS :
         IBinarySerializable,
         IBinaryAddressable,
         IDeepCopyable<TransformTRXS>,
@@ -77,10 +77,8 @@ namespace GameCube.GFZ.Stage
             this.RecordEndAddress(writer);
         }
 
-        public string PrintMultiLine(int indentLevel = 0, string indent = "\t")
+        public void PrintMultiLine(System.Text.StringBuilder builder, int indentLevel = 0, string indent = "\t")
         {
-            var builder = new System.Text.StringBuilder();
-
             builder.AppendLineIndented(indent, indentLevel, nameof(TransformTRXS));
             indentLevel++;
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(Position)}: {Position}");
@@ -88,8 +86,6 @@ namespace GameCube.GFZ.Stage
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(Scale)}: {Scale}");
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(unknownOption)}: {unknownOption}");
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(objectActiveOverride)}: {objectActiveOverride}");
-
-            return builder.ToString();
         }
 
         public string PrintSingleLine()

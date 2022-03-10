@@ -134,7 +134,7 @@ namespace GameCube.GFZ.GMA
                     reader.AlignTo(GX.GXUtility.GX_FIFO_ALIGN);
 
                     // Get base pointer for skinned data offsets
-                    SkinnedDataBaseAddress = skinnedVertexDescriptor.AddressRange.StartAddress;
+                    SkinnedDataBaseAddress = skinnedVertexDescriptor.AddressRange.startAddress;
                 }
 
                 // Read in submeshes. Each submesh contains a single material to be applied

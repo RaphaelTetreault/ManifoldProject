@@ -25,10 +25,10 @@ namespace Manifold.IO
 
 
         // PROPERTIES
-        public int AddressOffset => addressOffset;
+        int IOffset.AddressOffset => addressOffset;
         public bool IsNotNull => addressOffset != 0;
         public bool IsNull => addressOffset == 0;
-        public string Hexadecimal => $"{addressOffset:x8}";
+        public string PrintAddressOffset => $"{addressOffset:x8}";
 
 
         // OPERATORS
@@ -55,11 +55,11 @@ namespace Manifold.IO
         }
         public static Pointer CreatePointer(Pointer lhs, Offset rhs)
         {
-            return new Pointer(lhs.Address + rhs.addressOffset);
+            return new Pointer(lhs.address + rhs.addressOffset);
         }
         public static Pointer CreatePointer(Offset lhs, Pointer rhs)
         {
-            return new Pointer(lhs.addressOffset + rhs.Address);
+            return new Pointer(lhs.addressOffset + rhs.address);
         }
 
 
@@ -75,7 +75,7 @@ namespace Manifold.IO
 
         public override string ToString()
         {
-            return Hexadecimal;
+            return PrintAddressOffset;
         }
 
         public override bool Equals(object obj)

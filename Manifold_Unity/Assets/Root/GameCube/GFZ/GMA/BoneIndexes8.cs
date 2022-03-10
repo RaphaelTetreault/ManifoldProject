@@ -5,7 +5,7 @@ using System.IO;
 namespace GameCube.GFZ.GMA
 {
     /// <summary>
-    /// A set of 8 matrix indexes. Null indexes read as 0xFF.
+    /// A set of 8 matrix indexes. Root indexes read as -1/0xFF, indicating no parent bone/matrix.
     /// </summary>
     /// <remarks>
     /// Consider making the backing a uint64, contruct array on demand.
@@ -17,19 +17,12 @@ namespace GameCube.GFZ.GMA
         // CONSTANTS
         private const int kIndexCount = 8;
 
-
-        // CONSTRUCTORS
-        public BoneIndexes8()
-        {
-            indexes = new sbyte[kIndexCount];
-            for (int i = 0; i < indexes.Length; i++)
-                indexes[i] = -1;
-        }
-
-
         // FIELDS
-        private sbyte[] indexes; // look into 'fixed' arrays
+        private sbyte[] indexes = new sbyte[] { -1, -1, -1, -1, -1, -1, -1, -1, };
 
+
+        // INDEXERS
+        public sbyte this[int index] { get => indexes[index]; set => indexes[index] = value; }
 
         // PROPERTIES
         public AddressRange AddressRange { get; set; }

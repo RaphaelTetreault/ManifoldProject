@@ -11,13 +11,13 @@ namespace GameCube.GFZ.Stage
     /// It is assumed this is necessary for AI rather than anything else.
     /// </summary>
     [Serializable]
-    public class TrackCorner :
+    public sealed class TrackCorner :
         IBinaryAddressable,
         IBinarySerializable,
         ITextPrintable
     {
         // FIELDS
-        private TransformMatrix3x4 matrix3x4; // never null
+        private TransformMatrix3x4 transform; // never null
         private float width;
         private byte const_0x34; // Const: 0x02
         private byte zero_0x35; // Const: 0x00
@@ -27,7 +27,7 @@ namespace GameCube.GFZ.Stage
 
         // PROPERTIES
         public AddressRange AddressRange { get; set; }
-        public TransformMatrix3x4 Matrix3x4 { get => matrix3x4; set => matrix3x4 = value; }
+        public TransformMatrix3x4 Transform { get => transform; set => transform = value; }
         public TrackPerimeterFlags PerimeterOptions { get => perimeterOptions; set => perimeterOptions = value; }
         public float Width { get => width; set => width = value; }
 
@@ -37,7 +37,7 @@ namespace GameCube.GFZ.Stage
         {
             this.RecordStartAddress(reader);
             {
-                reader.ReadX(ref matrix3x4);
+                reader.ReadX(ref transform);
                 reader.ReadX(ref width);
                 reader.ReadX(ref const_0x34);
                 reader.ReadX(ref zero_0x35);
@@ -55,14 +55,14 @@ namespace GameCube.GFZ.Stage
         public void Serialize(BinaryWriter writer)
         {
             {
-                Assert.IsTrue(Matrix3x4 != null);
+                Assert.IsTrue(Transform != null);
                 Assert.IsTrue(const_0x34 == 0x02, $"{nameof(const_0x34)} is not 0x02! Is: {const_0x34}");
                 Assert.IsTrue(zero_0x35 == 0x00);
                 Assert.IsTrue(zero_0x37 == 0x00);
             }
             this.RecordStartAddress(writer);
             {
-                writer.WriteX(matrix3x4);
+                writer.WriteX(transform);
                 writer.WriteX(width);
                 writer.WriteX(const_0x34);
                 writer.WriteX(zero_0x35);
@@ -72,17 +72,13 @@ namespace GameCube.GFZ.Stage
             this.RecordEndAddress(writer);
         }
 
-        public string PrintMultiLine(int indentLevel = 0, string indent = "\t")
+        public void PrintMultiLine(System.Text.StringBuilder builder, int indentLevel = 0, string indent = "\t")
         {
-            var builder = new System.Text.StringBuilder();
-
             builder.AppendLineIndented(indent, indentLevel, nameof(TrackCorner));
             indentLevel++;
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(Width)}: {Width}");
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(PerimeterOptions)}: {PerimeterOptions}");
-            builder.Append(matrix3x4.PrintMultiLine(indentLevel, indent));
-
-            return builder.ToString();
+            builder.AppendLineIndented(indent, indentLevel, transform);
         }
 
         public string PrintSingleLine()

@@ -13,7 +13,7 @@ namespace GameCube.GFZ.Stage
     /// When incorrect, many strange, buggy things happen.
     /// </summary>
     [Serializable]
-    public class Checkpoint :
+    public sealed class Checkpoint :
         IBinaryAddressable,
         IBinarySerializable,
         ITextPrintable
@@ -177,10 +177,8 @@ namespace GameCube.GFZ.Stage
             return $"{nameof(Checkpoint)}({nameof(CurveTimeStart)}: {CurveTimeStart:0.00}, {nameof(CurveTimeEnd)}: {CurveTimeEnd:0.00})";
         }
 
-        public string PrintMultiLine(int indentLevel = 0, string indent = "\t")
+        public void PrintMultiLine(System.Text.StringBuilder builder, int indentLevel = 0, string indent = "\t")
         {
-            var builder = new System.Text.StringBuilder();
-
             builder.AppendLineIndented(indent, indentLevel, nameof(Checkpoint));
             indentLevel++;
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(curveTimeStart)}: {curveTimeStart}");
@@ -192,8 +190,6 @@ namespace GameCube.GFZ.Stage
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(trackWidth)}: {trackWidth}");
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(connectToTrackIn)}: {connectToTrackIn}");
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(connectToTrackOut)}: {connectToTrackOut}");
-
-            return builder.ToString();
         }
 
     }

@@ -14,7 +14,7 @@ namespace Manifold.IO
         /// <param name="filePath"></param>
         /// <returns></returns>
         public static TBinarySerializable LoadFile<TBinarySerializable>(string filePath)
-            where TBinarySerializable : IBinarySerializable, IFile, new()
+            where TBinarySerializable : IBinarySerializable, IFileType, new()
         {
             using (var reader = new BinaryReader(File.OpenRead(filePath)))
             {
@@ -33,7 +33,7 @@ namespace Manifold.IO
         /// <param name="binarySerializable">The instance to deserialize the file to.</param>
         /// <returns></returns>
         public static TBinarySerializable LoadFile<TBinarySerializable>(string filePath, TBinarySerializable binarySerializable)
-            where TBinarySerializable : IBinarySerializable, IFile
+            where TBinarySerializable : IBinarySerializable, IFileType
         {
             using (var reader = new BinaryReader(File.OpenRead(filePath)))
             {
@@ -52,7 +52,7 @@ namespace Manifold.IO
         /// <returns></returns>
         /// <exception cref="ArgumentException"></exception>
         public static IEnumerable<TBinarySerializable> LoadFile<TBinarySerializable>(string[] filePaths, TBinarySerializable[] binarySerializables)
-            where TBinarySerializable : IBinarySerializable, IFile, new()
+            where TBinarySerializable : IBinarySerializable, IFileType, new()
         {
             // Make sure arays are same length
             if (filePaths.Length != binarySerializables.Length)
@@ -80,7 +80,7 @@ namespace Manifold.IO
         /// <param name="filePaths"></param>
         /// <returns></returns>
         public static IEnumerable<TBinarySerializable> LoadFile<TBinarySerializable>(params string[] filePaths)
-            where TBinarySerializable : IBinarySerializable, IFile, new()
+            where TBinarySerializable : IBinarySerializable, IFileType, new()
         {
             foreach (string filePath in filePaths)
             {
@@ -96,7 +96,7 @@ namespace Manifold.IO
         /// <param name="binarySerializable"></param>
         /// <param name="filePath"></param>
         public static void SaveFile<TBinarySerializable>(TBinarySerializable binarySerializable, string filePath)
-            where TBinarySerializable : IBinarySerializable, IFile
+            where TBinarySerializable : IBinarySerializable, IFileType
         {
             using (var writer = new BinaryWriter(File.Create(filePath)))
             {
@@ -115,7 +115,7 @@ namespace Manifold.IO
         /// <exception cref="NullReferenceException"></exception>
         /// <exception cref="IOException"></exception>
         public static IEnumerable SaveFile<TBinarySerializable>(string rootPath, TBinarySerializable[] binarySerializables)
-            where TBinarySerializable : IBinarySerializable, IFile
+            where TBinarySerializable : IBinarySerializable, IFileType
         {
             // Do a sanity check on parameters before serializing
             foreach (var binarySerializable in binarySerializables)

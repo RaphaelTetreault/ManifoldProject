@@ -36,13 +36,13 @@ namespace Nintendo64.FZX
         public void Deserialize(StreamReader reader)
         {
             name = reader.ReadLine();
-            x = float.Parse(Regex.Match(reader.ReadLine(), Const.Regex.MatchFloat).ToString());
-            y = float.Parse(Regex.Match(reader.ReadLine(), Const.Regex.MatchFloat).ToString());
-            z = float.Parse(Regex.Match(reader.ReadLine(), Const.Regex.MatchFloat).ToString());
-            widthL = float.Parse(Regex.Match(reader.ReadLine(), Const.Regex.MatchFloat).ToString());
-            widthR = float.Parse(Regex.Match(reader.ReadLine(), Const.Regex.MatchFloat).ToString());
-            banking = int.Parse(Regex.Match(reader.ReadLine(), Const.Regex.MatchIntegers).ToString());
-            trackType = int.Parse(Regex.Match(reader.ReadLine(), Const.Regex.MatchIntegers).ToString());
+            x = float.Parse(Regex.Match(reader.ReadLine(), ConstRegex.MatchFloat).ToString());
+            y = float.Parse(Regex.Match(reader.ReadLine(), ConstRegex.MatchFloat).ToString());
+            z = float.Parse(Regex.Match(reader.ReadLine(), ConstRegex.MatchFloat).ToString());
+            widthL = float.Parse(Regex.Match(reader.ReadLine(), ConstRegex.MatchFloat).ToString());
+            widthR = float.Parse(Regex.Match(reader.ReadLine(), ConstRegex.MatchFloat).ToString());
+            banking = int.Parse(Regex.Match(reader.ReadLine(), ConstRegex.MatchIntegers).ToString());
+            trackType = int.Parse(Regex.Match(reader.ReadLine(), ConstRegex.MatchIntegers).ToString());
 
             string nextLine;
             while (!string.IsNullOrEmpty(nextLine = reader.ReadLine()))
@@ -52,45 +52,45 @@ namespace Nintendo64.FZX
                 switch (split[0])
                 {
                     case "DartZone":
-                        dirtZone = (Feature)int.Parse(Regex.Match(nextLine, Const.Regex.MatchIntegers).ToString());
+                        dirtZone = (Feature)int.Parse(Regex.Match(nextLine, ConstRegex.MatchIntegers).ToString());
                         break;
 
                     case "DashPlate":
-                        dashPlate = (Feature)int.Parse(Regex.Match(nextLine, Const.Regex.MatchIntegers).ToString());
+                        dashPlate = (Feature)int.Parse(Regex.Match(nextLine, ConstRegex.MatchIntegers).ToString());
                         break;
 
                     case "Decoration":
-                        decoration = (Feature)int.Parse(Regex.Match(nextLine, Const.Regex.MatchIntegers).ToString());
+                        decoration = (Feature)int.Parse(Regex.Match(nextLine, ConstRegex.MatchIntegers).ToString());
                         break;
 
                     case "Gate":
-                        gate = (Gate)int.Parse(Regex.Match(nextLine, Const.Regex.MatchIntegers).ToString());
+                        gate = (Gate)int.Parse(Regex.Match(nextLine, ConstRegex.MatchIntegers).ToString());
                         break;
 
                     case "JumpPlate":
-                        jumpPlate = (Feature)int.Parse(Regex.Match(nextLine, Const.Regex.MatchIntegers).ToString());
+                        jumpPlate = (Feature)int.Parse(Regex.Match(nextLine, ConstRegex.MatchIntegers).ToString());
                         break;
 
                     case "PitArea":
-                        pitArea = (Feature)int.Parse(Regex.Match(nextLine, Const.Regex.MatchIntegers).ToString());
+                        pitArea = (Feature)int.Parse(Regex.Match(nextLine, ConstRegex.MatchIntegers).ToString());
                         break;
 
                     case "SlipZone":
-                        slipZone = (Feature)int.Parse(Regex.Match(nextLine, Const.Regex.MatchIntegers).ToString());
+                        slipZone = (Feature)int.Parse(Regex.Match(nextLine, ConstRegex.MatchIntegers).ToString());
                         break;
 
                     case "Structure":
-                        structure = (Structure)int.Parse(Regex.Match(nextLine, Const.Regex.MatchIntegers).ToString());
-                        var side = Regex.Match(nextLine, Const.Regex.MatchWithinParenthesis).ToString();
+                        structure = (Structure)int.Parse(Regex.Match(nextLine, ConstRegex.MatchIntegers).ToString());
+                        var side = Regex.Match(nextLine, ConstRegex.MatchWithinParenthesis).ToString();
                         structureSide = side.Contains("Right") ? StructureSide.Right : side.Contains("Left") ? StructureSide.Left : StructureSide.None;
                         break;
 
                     case "Texture":
-                        texture = int.Parse(Regex.Match(nextLine, Const.Regex.MatchIntegers).ToString());
+                        texture = int.Parse(Regex.Match(nextLine, ConstRegex.MatchIntegers).ToString());
                         break;
 
                     case "TrapField":
-                        trapField = (Feature)int.Parse(Regex.Match(nextLine, Const.Regex.MatchIntegers).ToString());
+                        trapField = (Feature)int.Parse(Regex.Match(nextLine, ConstRegex.MatchIntegers).ToString());
                         break;
 
                     default:

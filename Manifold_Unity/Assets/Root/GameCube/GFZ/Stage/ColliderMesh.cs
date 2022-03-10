@@ -14,7 +14,7 @@ namespace GameCube.GFZ.Stage
     /// Example: rotary collider in Port Town [Long Pipe]
     /// </remarks>
     [Serializable]
-    public class ColliderMesh :
+    public sealed class ColliderMesh :
         IBinaryAddressable,
         IBinarySerializable,
         IHasReference,
@@ -63,7 +63,7 @@ namespace GameCube.GFZ.Stage
             {
                 if (Tris.Length > 0)
                 {
-                    Assert.IsTrue(TrisPtr.Length == Tris.Length);
+                    Assert.IsTrue(TrisPtr.length == Tris.Length);
                     Assert.IsTrue(TrisPtr.IsNotNull);
 
                     foreach (var tri in Tris)
@@ -77,7 +77,7 @@ namespace GameCube.GFZ.Stage
             {
                 if (Quads.Length > 0)
                 {
-                    Assert.IsTrue(QuadsPtr.Length == Quads.Length);
+                    Assert.IsTrue(QuadsPtr.length == Quads.Length);
                     Assert.IsTrue(QuadsPtr.IsNotNull);
 
                     foreach (var quad in Quads)
@@ -108,13 +108,13 @@ namespace GameCube.GFZ.Stage
                 if (TrisPtr.IsNotNull)
                 {
                     reader.JumpToAddress(TrisPtr);
-                    reader.ReadX(ref tris, TrisPtr.Length);
+                    reader.ReadX(ref tris, TrisPtr.length);
                 }
 
                 if (QuadsPtr.IsNotNull)
                 {
                     reader.JumpToAddress(QuadsPtr);
-                    reader.ReadX(ref quads, QuadsPtr.Length);
+                    reader.ReadX(ref quads, QuadsPtr.length);
                 }
             }
             this.SetReaderToEndAddress(reader);
@@ -147,10 +147,8 @@ namespace GameCube.GFZ.Stage
             return $"{nameof(ColliderMesh)}({nameof(tris)}: {tris.Length}, {nameof(quads)}: {quads.Length})";
         }
 
-        public string PrintMultiLine(int indentLevel = 0, string indent = "\t")
+        public void PrintMultiLine(System.Text.StringBuilder builder, int indentLevel = 0, string indent = "\t")
         {
-            var builder = new System.Text.StringBuilder();
-
             builder.AppendLineIndented(indent, indentLevel, nameof(ColliderMesh));
             indentLevel++;
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(unk_0x00)}: {unk_0x00}");
@@ -162,8 +160,6 @@ namespace GameCube.GFZ.Stage
             //builder.AppendLineIndented(indent, indentLevel, $"{nameof(QuadsPtr)}: {QuadsPtr}");
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(Tris)}: {Tris}");
             builder.AppendLineIndented(indent, indentLevel, $"{nameof(Quads)}: {Quads}");
-
-            return builder.ToString();
         }
     }
 }
