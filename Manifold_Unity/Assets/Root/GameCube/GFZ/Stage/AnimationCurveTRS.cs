@@ -1,6 +1,4 @@
 ﻿using Manifold;
-using Manifold.EditorTools;
-using Manifold.EditorTools.GC.GFZ;
 using Manifold.IO;
 using System;
 using System.IO;

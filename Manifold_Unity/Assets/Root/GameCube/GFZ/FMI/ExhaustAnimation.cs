@@ -1,5 +1,4 @@
-﻿using Manifold.EditorTools;
-using Manifold.IO;
+﻿using Manifold.IO;
 using System;
 using System.IO;
 using Unity.Mathematics;

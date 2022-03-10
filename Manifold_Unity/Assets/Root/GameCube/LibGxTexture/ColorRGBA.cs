@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace GameCube.LibGxTexture
+﻿namespace GameCube.LibGxTexture
 {
     /// <summary>
     /// A lightweight structure for representing a color as its 8-bit color components.
@@ -15,25 +13,6 @@ namespace GameCube.LibGxTexture
         public byte b;
         /// <summary>The alpha component (0-255) of the color.</summary>
         public byte a;
-
-        // Enable conversion between this and Unity colors
-        public static explicit operator ColorRGBA(Color32 c)
-        {
-            return new ColorRGBA(c.r, c.g, c.b, c.a);
-        }
-        public static explicit operator Color32(ColorRGBA c)
-        {
-            return new Color32(c.r, c.g, c.b, c.a);
-        }
-        public static explicit operator ColorRGBA(Color c)
-        {
-            Color32 c32 = c;
-            return new ColorRGBA(c32.r, c32.g, c32.b, c32.a);
-        }
-        public static explicit operator Color(ColorRGBA c)
-        {
-            return new Color32(c.r, c.g, c.b, c.a);
-        }
 
         /// <summary>Create a RGBA color from its color components.</summary>
         /// <param name="red">The red component (0-255) of the color.</param>
