@@ -1,9 +1,6 @@
-﻿using System;
-
-namespace Manifold
+﻿namespace Manifold
 {
-
-    [Flags]
+    [System.Flags]
     public enum EnumFlags32 : int
     {
         _1 = 1 << 0,
@@ -38,39 +35,5 @@ namespace Manifold
         _30 = 1 << 29,
         _31 = 1 << 30,
         _32 = 1 << 31,
-    }
-
-    [Flags]
-    public enum EnumFlags16 : ushort
-    {
-        _1 = 1 << 0,
-        _2 = 1 << 1,
-        _3 = 1 << 2,
-        _4 = 1 << 3,
-        _5 = 1 << 4,
-        _6 = 1 << 5,
-        _7 = 1 << 6,
-        _8 = 1 << 7,
-        _9 = 1 << 8,
-        _10 = 1 << 9,
-        _11 = 1 << 10,
-        _12 = 1 << 11,
-        _13 = 1 << 12,
-        _14 = 1 << 13,
-        _15 = 1 << 14,
-        _16 = 1 << 15,
-    }
-
-    [Flags]
-    public enum EnumFlags8 : byte
-    {
-        _1 = 1 << 0,
-        _2 = 1 << 1,
-        _3 = 1 << 2,
-        _4 = 1 << 3,
-        _5 = 1 << 4,
-        _6 = 1 << 5,
-        _7 = 1 << 6,
-        _8 = 1 << 7,
     }
 }
