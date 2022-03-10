@@ -1,5 +1,4 @@
 ﻿using GameCube.GX;
-using Manifold.EditorTools;
 using Manifold.IO;
 using System;
 using System.IO;
