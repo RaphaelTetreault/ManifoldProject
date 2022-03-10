@@ -29,6 +29,7 @@ namespace Manifold.IO
             addressRange.endAddress = stream.Position;
             binaryAddressable.AddressRange = addressRange;
         }
+
         public static void RecordEndAddress<TBinaryAddressable>(this TBinaryAddressable binaryAddressable, BinaryReader reader)
             where TBinaryAddressable : IBinaryAddressable
             => RecordEndAddress(binaryAddressable, reader.BaseStream);
@@ -67,29 +68,6 @@ namespace Manifold.IO
             writer.BaseStream.Seek(address, SeekOrigin.Begin);
         }
 
-
-        public static string PrintStartAddress<TBinaryAddressable>(this TBinaryAddressable binaryAddressable, string prefix = "0x", string format = "X8")
-            where TBinaryAddressable : IBinaryAddressable
-        {
-            var startAddress = binaryAddressable.AddressRange.startAddress;
-            return $"{prefix}{startAddress.ToString(format)}";
-        }
-
-        public static string PrintEndAddress<TBinaryAddressable>(this TBinaryAddressable binaryAddressable, string prefix = "0x", string format = "X8")
-            where TBinaryAddressable : IBinaryAddressable
-        {
-            var endAddress = binaryAddressable.AddressRange.endAddress;
-            return $"{prefix}{endAddress.ToString(format)}";
-        }
-
-        public static string PrintAddressRange<TBinaryAddressable>(this TBinaryAddressable binaryAddressable, string format = "x8")
-            where TBinaryAddressable : IBinaryAddressable
-        {
-            var addressRange = binaryAddressable.AddressRange;
-            var size = addressRange.Size;
-
-            return $"Address: 0x{addressRange.startAddress.ToString(format)} to 0x{addressRange.endAddress.ToString(format)} (hex:{size:x}, dec:{size})";
-        }
 
         /// <summary>
         /// Get the address of the value. Address is relative to last (de)serialization stream.
