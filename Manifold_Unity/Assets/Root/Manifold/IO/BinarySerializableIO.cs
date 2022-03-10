@@ -19,7 +19,7 @@ namespace Manifold.IO
             using (var reader = new BinaryReader(File.OpenRead(filePath)))
             {
                 var binarySerializable = new TBinarySerializable();
-                binarySerializable.FileName = Path.GetFileName(filePath);
+                binarySerializable.FileName = Path.GetFileNameWithoutExtension(filePath);
                 binarySerializable.Deserialize(reader);
                 return binarySerializable;
             }
@@ -37,7 +37,7 @@ namespace Manifold.IO
         {
             using (var reader = new BinaryReader(File.OpenRead(filePath)))
             {
-                binarySerializable.FileName = Path.GetFileName(filePath);
+                binarySerializable.FileName = Path.GetFileNameWithoutExtension(filePath);
                 binarySerializable.Deserialize(reader);
                 return binarySerializable;
             }
@@ -100,7 +100,7 @@ namespace Manifold.IO
         {
             using (var writer = new BinaryWriter(File.Create(filePath)))
             {
-                binarySerializable.FileName = Path.GetFileName(filePath);
+                binarySerializable.FileName = Path.GetFileNameWithoutExtension(filePath);
                 binarySerializable.Serialize(writer);
             }
         }
@@ -135,7 +135,8 @@ namespace Manifold.IO
 
             foreach (var binarySerializable in binarySerializables)
             {
-                var filePath = Path.Combine(rootPath, binarySerializable.FileName);
+                var fileName = binarySerializable.FileName + binarySerializable.FileExtension;
+                var filePath = Path.Combine(rootPath, fileName);
                 SaveFile(binarySerializable, filePath);
                 yield return null;
             }
