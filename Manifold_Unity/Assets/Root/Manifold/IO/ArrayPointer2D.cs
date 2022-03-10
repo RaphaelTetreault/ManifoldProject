@@ -11,7 +11,7 @@ namespace Manifold.IO
     /// by 'n' pointers. Once paired, the length and pointer form an <cref>ArrayPointer</cref>.
     /// </remarks>
     [Serializable]
-    public struct ArrayPointer2D :
+    public sealed class ArrayPointer2D :
         IBinaryAddressable,
         IBinarySerializable
     {
