@@ -129,7 +129,7 @@ namespace GameCube.GX
 
         public void Deserialize(BinaryReader reader)
         {
-            this.RecordStartAddress(reader);
+            AddressRange.RecordStartAddress(reader);
             {
                 // Read primitive Data
                 reader.ReadX(ref gxCommand);
@@ -227,7 +227,7 @@ namespace GameCube.GX
                     }
                 }
             }
-            this.RecordEndAddress(reader);
+            AddressRange.RecordEndAddress(reader);
         }
 
         public void Serialize(BinaryWriter writer)
@@ -290,7 +290,7 @@ namespace GameCube.GX
             if (hasTEX6) serializeComponents.Add((int i) => { WriteTEX(writer, fmt.tex6, i, tex6); });
             if (hasTEX7) serializeComponents.Add((int i) => { WriteTEX(writer, fmt.tex7, i, tex7); });
 
-            this.RecordStartAddress(writer);
+            AddressRange.RecordStartAddress(writer);
             {
                 writer.WriteX(gxCommand);
                 writer.WriteX(count);
@@ -302,7 +302,7 @@ namespace GameCube.GX
                     }
                 }
             }
-            this.RecordEndAddress(writer);
+            AddressRange.RecordEndAddress(writer);
         }
 
 

@@ -57,7 +57,7 @@ namespace GameCube.GFZ.GMA
                     {
                         var gcmf = model.Gcmf;
                         writer.WriteNextCol(gma.FileName);
-                        writer.WriteNextCol(gcmf.PrintStartAddress());
+                        writer.WriteNextCol(gcmf.AddressRange.PrintStartAddress());
                         writer.WriteNextCol(model.Name);
                         writer.WriteNextCol(modelIndex++);
                         writer.WriteNextCol(gcmf.Attributes);
@@ -111,7 +111,7 @@ namespace GameCube.GFZ.GMA
                         foreach (var textureConfif in model.Gcmf.TextureConfigs)
                         {
                             writer.WriteNextCol(gma.FileName);
-                            writer.WriteNextCol(textureConfif.PrintStartAddress());
+                            writer.WriteNextCol(textureConfif.AddressRange.PrintStartAddress());
                             writer.WriteNextCol(model.Name);
                             writer.WriteNextCol(modelIndex);
                             writer.WriteNextCol(textureConfigIndex++);
@@ -170,7 +170,7 @@ namespace GameCube.GFZ.GMA
                         foreach (var submesh in model.Gcmf.Submeshes)
                         {
                             writer.WriteNextCol(gma.FileName);
-                            writer.WriteNextCol(submesh.PrintStartAddress());
+                            writer.WriteNextCol(submesh.AddressRange.PrintStartAddress());
                             writer.WriteNextCol(model.Name);
                             writer.WriteNextCol(modelIndex);
                             writer.WriteNextCol(submeshIndex++);

@@ -25,12 +25,12 @@ namespace GameCube.GFZ.GMA
         // METHODS
         public void Deserialize(BinaryReader reader)
         {
-            this.RecordStartAddress(reader);
+            AddressRange.RecordStartAddress(reader);
             {
                 reader.ReadX(ref count);
                 reader.ReadX(ref verticePtrOffsets, count);
             }
-            this.RecordEndAddress(reader);
+            AddressRange.RecordEndAddress(reader);
         }
 
         public void Serialize(BinaryWriter writer)
@@ -38,12 +38,12 @@ namespace GameCube.GFZ.GMA
             {
                 // TODO: assign offsets here? (similar to getting pointers)
             }
-            this.RecordStartAddress(writer);
+            AddressRange.RecordStartAddress(writer);
             {
                 writer.WriteX(Count);
                 writer.WriteX(verticePtrOffsets);
             }
-            this.RecordEndAddress(writer);
+            AddressRange.RecordEndAddress(writer);
             {
                 //throw new NotImplementedException();
             }

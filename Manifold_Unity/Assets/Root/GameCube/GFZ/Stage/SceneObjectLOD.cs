@@ -34,14 +34,14 @@ namespace GameCube.GFZ.Stage
         // METHODS
         public void Deserialize(BinaryReader reader)
         {
-            this.RecordStartAddress(reader);
+            AddressRange.RecordStartAddress(reader);
             {
                 reader.ReadX(ref zero_0x00);
                 reader.ReadX(ref lodNamePtr);
                 reader.ReadX(ref zero_0x08);
                 reader.ReadX(ref lodDistance);
             }
-            this.RecordEndAddress(reader);
+            AddressRange.RecordEndAddress(reader);
             {
                 Assert.IsTrue(zero_0x00 == 0);
                 Assert.IsTrue(zero_0x08 == 0);
@@ -49,7 +49,7 @@ namespace GameCube.GFZ.Stage
                 reader.JumpToAddress(lodNamePtr);
                 reader.ReadX(ref name);
             }
-            this.SetReaderToEndAddress(reader);
+            reader.JumpToAddress(AddressRange.endAddress);
         }
 
         public void Serialize(BinaryWriter writer)
@@ -60,14 +60,14 @@ namespace GameCube.GFZ.Stage
 
                 lodNamePtr = name.GetPointer();
             }
-            this.RecordStartAddress(writer);
+            AddressRange.RecordStartAddress(writer);
             {
                 writer.WriteX(zero_0x00);
                 writer.WriteX(lodNamePtr);
                 writer.WriteX(zero_0x08);
                 writer.WriteX(lodDistance);
             }
-            this.RecordEndAddress(writer);
+            AddressRange.RecordEndAddress(writer);
         }
 
         public void ValidateReferences()

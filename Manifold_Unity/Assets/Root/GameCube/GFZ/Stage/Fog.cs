@@ -390,14 +390,14 @@ namespace GameCube.GFZ.Stage
         // METHODS
         public void Deserialize(BinaryReader reader)
         {
-            this.RecordStartAddress(reader);
+            AddressRange.RecordStartAddress(reader);
             {
                 reader.ReadX(ref interpolation);
                 reader.ReadX(ref fogRange);
                 reader.ReadX(ref colorRGB);
                 reader.ReadX(ref zero0x18);
             }
-            this.RecordEndAddress(reader);
+            AddressRange.RecordEndAddress(reader);
             {
                 Assert.IsTrue(zero0x18.Equals(float3.zero));
             }
@@ -408,14 +408,14 @@ namespace GameCube.GFZ.Stage
             {
                 Assert.IsTrue(zero0x18.Equals(float3.zero));
             }
-            this.RecordStartAddress(writer);
+            AddressRange.RecordStartAddress(writer);
             {
                 writer.WriteX(Interpolation);
                 writer.WriteX(FogRange);
                 writer.WriteX(ColorRGB);
                 writer.WriteX(zero0x18);
             }
-            this.RecordEndAddress(writer);
+            AddressRange.RecordEndAddress(writer);
         }
 
         public Fog CreateDeepCopy()

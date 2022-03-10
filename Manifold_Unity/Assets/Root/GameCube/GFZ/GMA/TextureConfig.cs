@@ -43,7 +43,7 @@ namespace GameCube.GFZ.GMA
         // METHODS
         public void Deserialize(BinaryReader reader)
         {
-            this.RecordStartAddress(reader);
+            AddressRange.RecordStartAddress(reader);
             {
                 reader.ReadX(ref unk0x00);
                 reader.ReadX(ref mipmapSetting);
@@ -57,7 +57,7 @@ namespace GameCube.GFZ.GMA
                 reader.ReadX(ref configIndex);
                 reader.ReadX(ref unk0x10);
             }
-            this.RecordEndAddress(reader);
+            AddressRange.RecordEndAddress(reader);
             {
                 Assert.IsTrue(zero0x08 == 0);
             }
@@ -68,7 +68,7 @@ namespace GameCube.GFZ.GMA
             {
                 Assert.IsTrue(zero0x08 == 0);
             }
-            this.RecordStartAddress(writer);
+            AddressRange.RecordStartAddress(writer);
             {
                 writer.WriteX(unk0x00);
                 writer.WriteX(mipmapSetting);
@@ -82,7 +82,7 @@ namespace GameCube.GFZ.GMA
                 writer.WriteX(configIndex);
                 writer.WriteX(unk0x10);
             }
-            this.RecordEndAddress(writer);
+            AddressRange.RecordEndAddress(writer);
         }
 
     }

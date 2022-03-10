@@ -57,7 +57,7 @@ namespace GameCube.GFZ.GMA
         // METHODS
         public void Deserialize(BinaryReader reader)
         {
-            this.RecordStartAddress(reader);
+            AddressRange.RecordStartAddress(reader);
             {
                 //
                 reader.ReadX(ref material);
@@ -74,7 +74,7 @@ namespace GameCube.GFZ.GMA
                 // These "skinned" containers reside in the GCMF structure.
                 if (IsSkinnedModel || IsPhysicsDrivenModel)
                 {
-                    this.RecordEndAddress(reader);
+                    AddressRange.RecordEndAddress(reader);
                     return;
                 }
 
@@ -109,7 +109,7 @@ namespace GameCube.GFZ.GMA
                     }
                 }
             }
-            this.RecordEndAddress(reader);
+            AddressRange.RecordEndAddress(reader);
         }
 
         public void Serialize(BinaryWriter writer)
@@ -127,7 +127,7 @@ namespace GameCube.GFZ.GMA
             var sdlOpaque = new AddressRange();
             var sdlTranslucid = new AddressRange();
 
-            this.RecordStartAddress(writer);
+            AddressRange.RecordStartAddress(writer);
             {
                 writer.WriteX(material);
                 writer.WriteX(primaryDisplayListDescriptor);
@@ -154,7 +154,7 @@ namespace GameCube.GFZ.GMA
                 }
 
             }
-            this.RecordEndAddress(writer);
+            AddressRange.RecordEndAddress(writer);
             {
                 // Now that we know the size of the display lists, update values and reserialize
                 primaryDisplayListDescriptor.OpaqueMaterialSize = pdlOpaque.Size;
@@ -170,7 +170,7 @@ namespace GameCube.GFZ.GMA
                     writer.WriteX(secondaryDisplayListDescriptor);
                 }
             }
-            this.SetWriterToEndAddress(writer);
+            writer.JumpToAddress(AddressRange.endAddress);
         }
 
         private DisplayList[] ReadDisplayLists(BinaryReader reader, int endAddress)

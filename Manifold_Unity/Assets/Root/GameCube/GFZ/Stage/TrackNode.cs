@@ -40,12 +40,12 @@ namespace GameCube.GFZ.Stage
         // METHODS
         public void Deserialize(BinaryReader reader)
         {
-            this.RecordStartAddress(reader);
+            AddressRange.RecordStartAddress(reader);
             {
                 reader.ReadX(ref checkpointsPtr);
                 reader.ReadX(ref segmentPtr);
             }
-            this.RecordEndAddress(reader);
+            AddressRange.RecordEndAddress(reader);
             {
                 // Get point
                 reader.JumpToAddress(checkpointsPtr);
@@ -57,7 +57,7 @@ namespace GameCube.GFZ.Stage
                 // TODO: link the references? Does this work in Unity when
                 // serialized?
             }
-            this.SetReaderToEndAddress(reader);
+            reader.JumpToAddress(AddressRange.endAddress);
         }
 
         public void Serialize(BinaryWriter writer)
@@ -66,12 +66,12 @@ namespace GameCube.GFZ.Stage
                 checkpointsPtr = checkpoints.GetArrayPointer();
                 segmentPtr = segment.GetPointer();
             }
-            this.RecordStartAddress(writer);
+            AddressRange.RecordStartAddress(writer);
             {
                 writer.WriteX(checkpointsPtr);
                 writer.WriteX(segmentPtr);
             }
-            this.RecordEndAddress(writer);
+            AddressRange.RecordEndAddress(writer);
         }
 
         public void ValidateReferences()

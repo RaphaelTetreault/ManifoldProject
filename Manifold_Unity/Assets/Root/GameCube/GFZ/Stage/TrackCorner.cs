@@ -35,7 +35,7 @@ namespace GameCube.GFZ.Stage
         // METHODS
         public void Deserialize(BinaryReader reader)
         {
-            this.RecordStartAddress(reader);
+            AddressRange.RecordStartAddress(reader);
             {
                 reader.ReadX(ref transform);
                 reader.ReadX(ref width);
@@ -44,7 +44,7 @@ namespace GameCube.GFZ.Stage
                 reader.ReadX(ref perimeterOptions);
                 reader.ReadX(ref zero_0x37);
             }
-            this.RecordEndAddress(reader);
+            AddressRange.RecordEndAddress(reader);
             {
                 Assert.IsTrue(const_0x34 == 0x02);
                 Assert.IsTrue(zero_0x35 == 0x00);
@@ -60,7 +60,7 @@ namespace GameCube.GFZ.Stage
                 Assert.IsTrue(zero_0x35 == 0x00);
                 Assert.IsTrue(zero_0x37 == 0x00);
             }
-            this.RecordStartAddress(writer);
+            AddressRange.RecordStartAddress(writer);
             {
                 writer.WriteX(transform);
                 writer.WriteX(width);
@@ -69,7 +69,7 @@ namespace GameCube.GFZ.Stage
                 writer.WriteX(perimeterOptions);
                 writer.WriteX(zero_0x37);
             }
-            this.RecordEndAddress(writer);
+            AddressRange.RecordEndAddress(writer);
         }
 
         public void PrintMultiLine(System.Text.StringBuilder builder, int indentLevel = 0, string indent = "\t")

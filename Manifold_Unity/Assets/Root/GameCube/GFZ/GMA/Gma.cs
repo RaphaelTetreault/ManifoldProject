@@ -35,13 +35,13 @@ namespace GameCube.GFZ.GMA
         // METHODS
         public void Deserialize(BinaryReader reader)
         {
-            this.RecordStartAddress(reader);
+            AddressRange.RecordStartAddress(reader);
             {
                 reader.ReadX(ref modelsCount);
                 reader.ReadX(ref modelBasePtrOffset);
                 reader.ReadX(ref modelEntries, modelsCount);
             }
-            this.RecordEndAddress(reader);
+            AddressRange.RecordEndAddress(reader);
             {
                 Offset nameBasePtrOffset = AddressRange.endAddress;
                 var modelList = new List<Model>();
@@ -115,12 +115,12 @@ namespace GameCube.GFZ.GMA
                 };
             }
 
-            this.RecordStartAddress(writer);
+            AddressRange.RecordStartAddress(writer);
             {
                 writer.WriteX(modelsCount);
                 writer.WriteX(modelBasePtrOffset);
             }
-            this.RecordEndAddress(writer);
+            AddressRange.RecordEndAddress(writer);
             {
                 // Write entries (offsets)
                 foreach (var modelEntry in modelEntries)

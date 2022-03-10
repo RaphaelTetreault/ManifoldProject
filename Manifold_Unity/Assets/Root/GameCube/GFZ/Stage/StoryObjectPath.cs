@@ -31,11 +31,11 @@ namespace GameCube.GFZ.Stage
         // METHODS
         public void Deserialize(BinaryReader reader)
         {
-            this.RecordStartAddress(reader);
+            AddressRange.RecordStartAddress(reader);
             {
                 reader.ReadX(ref animationCurvePtr);
             }
-            this.RecordEndAddress(reader);
+            AddressRange.RecordEndAddress(reader);
             {
                 if (AnimationCurvePtr.IsNotNull)
                 {
@@ -45,7 +45,7 @@ namespace GameCube.GFZ.Stage
                     animationCurve.Deserialize(reader);
                 }
             }
-            this.SetReaderToEndAddress(reader);
+            reader.JumpToAddress(AddressRange.endAddress);
         }
 
         public void Serialize(BinaryWriter writer)
@@ -54,11 +54,11 @@ namespace GameCube.GFZ.Stage
             {
                 animationCurvePtr = animationCurve.GetArrayPointer();
             }
-            this.RecordStartAddress(writer);
+            AddressRange.RecordStartAddress(writer);
             {
                 writer.WriteX(animationCurvePtr);
             }
-            this.RecordEndAddress(writer);
+            AddressRange.RecordEndAddress(writer);
         }
 
         public void ValidateReferences()

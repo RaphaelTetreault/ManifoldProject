@@ -40,14 +40,14 @@ namespace GameCube.GFZ
             // The final row is implied (constant) in a 3x4 matrix
             float4 row3 = new float4(0, 0, 0, 1);
 
-            this.RecordStartAddress(reader);
+            AddressRange.RecordStartAddress(reader);
             {
                 // Read rows
                 reader.ReadX(ref row0);
                 reader.ReadX(ref row1);
                 reader.ReadX(ref row2);
             }
-            this.RecordEndAddress(reader);
+            AddressRange.RecordEndAddress(reader);
             {
                 // matrix is constructed from 4 columns -NOT- rows...
                 var matrixTransposed = new float4x4(row0, row1, row2, row3);
@@ -58,7 +58,7 @@ namespace GameCube.GFZ
 
         public void Serialize(BinaryWriter writer)
         {
-            this.RecordStartAddress(writer);
+            AddressRange.RecordStartAddress(writer);
             {
                 // the matrix only returns colunms but we need rows, so transpose to swap row/col
                 var matrixTransposed = math.transpose(matrix);
@@ -71,7 +71,7 @@ namespace GameCube.GFZ
                 writer.WriteX(row1);
                 writer.WriteX(row2);
             }
-            this.RecordEndAddress(writer);
+            AddressRange.RecordEndAddress(writer);
         }
 
         public void PrintMultiLine(System.Text.StringBuilder builder, int indentLevel = 0, string indent = "\t")

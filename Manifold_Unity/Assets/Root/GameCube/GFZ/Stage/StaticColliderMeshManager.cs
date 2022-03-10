@@ -142,7 +142,7 @@ namespace GameCube.GFZ.Stage
             var countSurfaceTypes = SurfaceCount;
 
             // Deserialize values
-            this.RecordStartAddress(reader);
+            AddressRange.RecordStartAddress(reader);
             {
                 reader.ReadX(ref zeroes_group1, kZeroesGroup1);
                 reader.ReadX(ref staticColliderTrisPtr);
@@ -159,7 +159,7 @@ namespace GameCube.GFZ.Stage
                 reader.ReadX(ref unk_float);
                 reader.ReadX(ref zeroes_group5, kZeroesGroup5);
             }
-            this.RecordEndAddress(reader);
+            AddressRange.RecordEndAddress(reader);
             {
                 // ASSERTIONS
                 {
@@ -217,7 +217,7 @@ namespace GameCube.GFZ.Stage
                 // I don't read the StaticSceneObjects and UnknownColliders since it's easier to assign the
                 // reference in the main Scene class directly and saves some deserialization time.
             }
-            this.SetReaderToEndAddress(reader);
+            reader.JumpToAddress(AddressRange.endAddress);
         }
         public void Serialize(BinaryWriter writer)
         {
@@ -234,7 +234,7 @@ namespace GameCube.GFZ.Stage
                 unknownCollidersPtr = unknownColliders.GetArrayPointer();
                 staticSceneObjectsPtr = staticSceneObjects.GetArrayPointer();
             }
-            this.RecordStartAddress(writer);
+            AddressRange.RecordStartAddress(writer);
             {
                 // Write empty int array for unknown
                 writer.WriteX(new byte[kZeroesGroup1]);
@@ -252,7 +252,7 @@ namespace GameCube.GFZ.Stage
                 writer.WriteX(unk_float);
                 writer.WriteX(new byte[kZeroesGroup5]);
             }
-            this.RecordEndAddress(writer);
+            AddressRange.RecordEndAddress(writer);
         }
         public void ValidateReferences()
         {

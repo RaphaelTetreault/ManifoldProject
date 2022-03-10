@@ -88,7 +88,7 @@ namespace GameCube.GFZ.CarData
         // METHODS
         public void Deserialize(BinaryReader reader)
         {
-            this.RecordStartAddress(reader);
+            AddressRange.RecordStartAddress(reader);
             {
                 reader.ReadX(ref namePtr);
                 reader.ReadX(ref weight);
@@ -122,12 +122,12 @@ namespace GameCube.GFZ.CarData
                 reader.ReadX(ref wallCollisionBackRight);
                 reader.ReadX(ref wallCollisionBackLeft);
             }
-            this.RecordEndAddress(reader);
+            AddressRange.RecordEndAddress(reader);
         }
 
         public void Serialize(BinaryWriter writer)
         {
-            this.RecordStartAddress(writer);
+            AddressRange.RecordStartAddress(writer);
             {
                 writer.WriteX(namePtr);
                 writer.WriteX(weight);
@@ -161,7 +161,7 @@ namespace GameCube.GFZ.CarData
                 writer.WriteX(wallCollisionBackRight);
                 writer.WriteX(wallCollisionBackLeft);
             }
-            this.RecordEndAddress(writer);
+            AddressRange.RecordEndAddress(writer);
         }
 
     }

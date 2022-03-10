@@ -101,11 +101,11 @@ namespace GameCube.GFZ.Stage
         public void Deserialize(BinaryReader reader)
         {
             // Read index arrays
-            this.RecordStartAddress(reader);
+            AddressRange.RecordStartAddress(reader);
             {
                 reader.ReadX(ref indexListPtrs, Count);
             }
-            this.RecordEndAddress(reader);
+            AddressRange.RecordEndAddress(reader);
             {
                 indexLists = new IndexList[Count];
 
@@ -130,7 +130,7 @@ namespace GameCube.GFZ.Stage
                 LargestIndex = GetLargestIndex(indexLists);
                 HasIndexes = HasAnyIndexes(indexLists);
             }
-            this.SetReaderToEndAddress(reader);
+            reader.JumpToAddress(AddressRange.endAddress);
         }
 
         public void Serialize(BinaryWriter writer)
@@ -145,7 +145,7 @@ namespace GameCube.GFZ.Stage
                     pointers[i] = indexLists[i].GetPointer();
                 indexListPtrs = pointers;
             }
-            this.RecordStartAddress(writer);
+            AddressRange.RecordStartAddress(writer);
             {
                 //ValidateReferences();
 
@@ -156,7 +156,7 @@ namespace GameCube.GFZ.Stage
                     writer.WriteX(ptr);
                 }
             }
-            this.RecordEndAddress(writer);
+            AddressRange.RecordEndAddress(writer);
         }
 
         public void ValidateReferences()

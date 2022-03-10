@@ -94,7 +94,7 @@ namespace GameCube.GFZ.Stage
                 // Initialize ArrayPointer2D with constant size, manually deserialized later
                 collisionArrayPtr2D = new ArrayPointer2D(kTotalIndices);
             }
-            this.RecordStartAddress(reader);
+            AddressRange.RecordStartAddress(reader);
             {
                 reader.ReadX(ref unk_0x00);
                 reader.ReadX(ref unk_0x04);
@@ -103,7 +103,7 @@ namespace GameCube.GFZ.Stage
                 reader.ReadX(ref unk_0x10);
                 collisionArrayPtr2D.Deserialize(reader);
             }
-            this.RecordEndAddress(reader);
+            AddressRange.RecordEndAddress(reader);
             {
                 if (TrisPtr.IsNotNull)
                 {
@@ -117,7 +117,7 @@ namespace GameCube.GFZ.Stage
                     reader.ReadX(ref quads, QuadsPtr.length);
                 }
             }
-            this.SetReaderToEndAddress(reader);
+            reader.JumpToAddress(AddressRange.endAddress);
         }
 
         public void Serialize(BinaryWriter writer)
@@ -127,7 +127,7 @@ namespace GameCube.GFZ.Stage
                 TrisPtr = tris.GetArrayPointer();
                 QuadsPtr = quads.GetArrayPointer();
             }
-            this.RecordStartAddress(writer);
+            AddressRange.RecordStartAddress(writer);
             {
                 writer.WriteX(unk_0x00);
                 writer.WriteX(unk_0x04);
@@ -136,7 +136,7 @@ namespace GameCube.GFZ.Stage
                 writer.WriteX(unk_0x10);
                 writer.WriteX(collisionArrayPtr2D);
             }
-            this.RecordEndAddress(writer);
+            AddressRange.RecordEndAddress(writer);
 
         }
 

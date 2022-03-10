@@ -57,7 +57,7 @@ namespace GameCube.GFZ.Camera
         // METHODS
         public void Deserialize(BinaryReader reader)
         {
-            this.RecordStartAddress(reader);
+            AddressRange.RecordStartAddress(reader);
             {
                 reader.ReadX(ref frameCount);
                 reader.ReadX(ref lerpSpeed);
@@ -65,7 +65,7 @@ namespace GameCube.GFZ.Camera
                 reader.ReadX(ref from);
                 reader.ReadX(ref to);
             }
-            this.RecordEndAddress(reader);
+            AddressRange.RecordEndAddress(reader);
 
             // Assertions
             foreach (var @byte in zeroes0x08)
@@ -74,7 +74,7 @@ namespace GameCube.GFZ.Camera
 
         public void Serialize(BinaryWriter writer)
         {
-            this.RecordStartAddress(writer);
+            AddressRange.RecordStartAddress(writer);
             {
                 writer.WriteX(frameCount);
                 writer.WriteX(lerpSpeed);
@@ -82,7 +82,7 @@ namespace GameCube.GFZ.Camera
                 writer.WriteX(from);
                 writer.WriteX(to);
             }
-            this.RecordEndAddress(writer);
+            AddressRange.RecordEndAddress(writer);
         }
     }
 }

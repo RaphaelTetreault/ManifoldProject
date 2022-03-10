@@ -53,7 +53,7 @@ namespace GameCube.GFZ.Stage
 
         public void Deserialize(BinaryReader reader)
         {
-            this.RecordStartAddress(reader);
+            AddressRange.RecordStartAddress(reader);
             {
                 reader.ReadX(ref position);
                 reader.ReadX(ref compressedRotation);
@@ -61,12 +61,12 @@ namespace GameCube.GFZ.Stage
                 reader.ReadX(ref objectActiveOverride);
                 reader.ReadX(ref scale);
             }
-            this.RecordEndAddress(reader);
+            AddressRange.RecordEndAddress(reader);
         }
 
         public void Serialize(BinaryWriter writer)
         {
-            this.RecordStartAddress(writer);
+            AddressRange.RecordStartAddress(writer);
             {
                 writer.WriteX(position);
                 writer.WriteX(compressedRotation);
@@ -74,7 +74,7 @@ namespace GameCube.GFZ.Stage
                 writer.WriteX(objectActiveOverride);
                 writer.WriteX(scale);
             }
-            this.RecordEndAddress(writer);
+            AddressRange.RecordEndAddress(writer);
         }
 
         public void PrintMultiLine(System.Text.StringBuilder builder, int indentLevel = 0, string indent = "\t")

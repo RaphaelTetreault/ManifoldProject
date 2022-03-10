@@ -59,7 +59,7 @@ namespace GameCube.GFZ.Stage
         // METHODS
         public void Deserialize(BinaryReader reader)
         {
-            this.RecordStartAddress(reader);
+            AddressRange.RecordStartAddress(reader);
             {
                 reader.ReadX(ref unk_0x00);
                 reader.ReadX(ref unk_0x04);
@@ -67,7 +67,7 @@ namespace GameCube.GFZ.Stage
                 reader.ReadX(ref unk_layer_0x18);
                 reader.ReadX(ref curves, kAnimationCurvesCount);
             }
-            this.RecordEndAddress(reader);
+            AddressRange.RecordEndAddress(reader);
             {
                 foreach (var zero in zeroes_0x08)
                     Assert.IsTrue(zero == 0);
@@ -80,7 +80,7 @@ namespace GameCube.GFZ.Stage
                 foreach (var zero in zeroes_0x08)
                     Assert.IsTrue(zero == 0);
             }
-            this.RecordStartAddress(writer);
+            AddressRange.RecordStartAddress(writer);
             {
                 writer.WriteX(unk_0x00);
                 writer.WriteX(unk_0x04);
@@ -88,7 +88,7 @@ namespace GameCube.GFZ.Stage
                 writer.WriteX(unk_layer_0x18);
                 writer.WriteX(curves);
             }
-            this.RecordEndAddress(writer);
+            AddressRange.RecordEndAddress(writer);
         }
 
         public void ValidateReferences()

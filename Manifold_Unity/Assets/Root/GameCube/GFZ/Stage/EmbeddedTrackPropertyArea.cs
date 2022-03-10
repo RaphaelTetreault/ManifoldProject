@@ -62,7 +62,7 @@ namespace GameCube.GFZ.Stage
         // METHODS
         public void Deserialize(BinaryReader reader)
         {
-            this.RecordStartAddress(reader);
+            AddressRange.RecordStartAddress(reader);
             {
                 reader.ReadX(ref lengthFrom);
                 reader.ReadX(ref lengthTo);
@@ -72,7 +72,7 @@ namespace GameCube.GFZ.Stage
                 reader.ReadX(ref trackBranchID);
                 reader.ReadX(ref zero_0x12);
             }
-            this.RecordEndAddress(reader);
+            AddressRange.RecordEndAddress(reader);
             {
                 Assert.IsTrue(zero_0x12 == 0);
             }
@@ -83,7 +83,7 @@ namespace GameCube.GFZ.Stage
             {
                 Assert.IsTrue(zero_0x12 == 0);
             }
-            this.RecordStartAddress(writer);
+            AddressRange.RecordStartAddress(writer);
             {
                 writer.WriteX(lengthFrom);
                 writer.WriteX(lengthTo);
@@ -93,7 +93,7 @@ namespace GameCube.GFZ.Stage
                 writer.WriteX(trackBranchID);
                 writer.WriteX(zero_0x12);
             }
-            this.RecordEndAddress(writer);
+            AddressRange.RecordEndAddress(writer);
         }
 
         public override string ToString() => PrintSingleLine();
