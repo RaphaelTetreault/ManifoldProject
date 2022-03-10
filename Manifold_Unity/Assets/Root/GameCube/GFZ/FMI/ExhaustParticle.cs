@@ -31,7 +31,7 @@ namespace GameCube.GFZ.FMI
         // METHODS
         public void Deserialize(BinaryReader reader)
         {
-            AddressRange.RecordStartAddress(reader);
+            this.RecordStartAddress(reader);
             {
                 reader.ReadX(ref position);
                 reader.ReadX(ref unk_0x0C);
@@ -41,12 +41,12 @@ namespace GameCube.GFZ.FMI
                 reader.ReadX(ref colorMin);
                 reader.ReadX(ref colorMax);
             }
-            AddressRange.RecordEndAddress(reader);
+            this.RecordEndAddress(reader);
         }
 
         public void Serialize(BinaryWriter writer)
         {
-            AddressRange.RecordStartAddress(writer);
+            this.RecordStartAddress(writer);
             {
                 writer.WriteX(position);
                 writer.WriteX(unk_0x0C);
@@ -56,7 +56,7 @@ namespace GameCube.GFZ.FMI
                 writer.WriteX(colorMin);
                 writer.WriteX(colorMax);
             }
-            AddressRange.RecordEndAddress(writer);
+            this.RecordEndAddress(writer);
         }
 
     }

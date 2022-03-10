@@ -31,11 +31,11 @@ namespace GameCube.GFZ.GMA
         // METHODS
         public void Deserialize(BinaryReader reader)
         {
-            AddressRange.RecordStartAddress(reader);
+            this.RecordStartAddress(reader);
             {
                 reader.ReadX(ref indexes, kIndexCount);
             }
-            AddressRange.RecordEndAddress(reader);
+            this.RecordEndAddress(reader);
         }
 
         public void Serialize(BinaryWriter writer)
@@ -43,11 +43,11 @@ namespace GameCube.GFZ.GMA
             {
                 Assert.IsTrue(indexes.Length == kIndexCount);
             }
-            AddressRange.RecordStartAddress(writer);
+            this.RecordStartAddress(writer);
             {
                 writer.WriteX(indexes);
             }
-            AddressRange.RecordEndAddress(writer);
+            this.RecordEndAddress(writer);
         }
 
     }

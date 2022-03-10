@@ -922,7 +922,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         public static string PrintAddress<T>(T binarySerializable)
             where T : IBinarySerializable, IBinaryAddressable
         {
-            return binarySerializable.AddressRange.ToString();
+            return binarySerializable.PrintAddressRange();
         }
         public static string PrintValue<T>(T binarySerializable)
             where T : IBinarySerializable, IBinaryAddressable

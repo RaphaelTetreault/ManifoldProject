@@ -32,7 +32,7 @@ namespace GameCube.GFZ.GMA
         // METHODS
         public void Deserialize(BinaryReader reader)
         {
-            AddressRange.RecordStartAddress(reader);
+            this.RecordStartAddress(reader);
             {
                 reader.ReadX(ref skinnedVertexBCount);
                 reader.ReadX(ref skinnedVerticesAPtrOffset);
@@ -40,12 +40,12 @@ namespace GameCube.GFZ.GMA
                 reader.ReadX(ref skinBoneBindingsPtrOffset);
                 reader.ReadX(ref unkBoneIndicesPtrOffset);
             }
-            AddressRange.RecordEndAddress(reader);
+            this.RecordEndAddress(reader);
         }
 
         public void Serialize(BinaryWriter writer)
         {
-            AddressRange.RecordStartAddress(writer);
+            this.RecordStartAddress(writer);
             {
                 writer.WriteX(skinnedVertexBCount);
                 writer.WriteX(skinnedVerticesAPtrOffset);
@@ -53,7 +53,7 @@ namespace GameCube.GFZ.GMA
                 writer.WriteX(skinBoneBindingsPtrOffset);
                 writer.WriteX(unkBoneIndicesPtrOffset);
             }
-            AddressRange.RecordEndAddress(writer);
+            this.RecordEndAddress(writer);
         }
 
     }

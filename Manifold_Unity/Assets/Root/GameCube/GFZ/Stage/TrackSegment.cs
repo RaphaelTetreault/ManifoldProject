@@ -73,7 +73,7 @@ namespace GameCube.GFZ.Stage
         // METHODS
         public void Deserialize(BinaryReader reader)
         {
-            AddressRange.RecordStartAddress(reader);
+            this.RecordStartAddress(reader);
             {
                 reader.ReadX(ref segmentType);
                 reader.ReadX(ref embeddedPropertyType);
@@ -95,7 +95,7 @@ namespace GameCube.GFZ.Stage
                 reader.ReadX(ref zero_0x48);
                 reader.ReadX(ref branchIndex);
             }
-            AddressRange.RecordEndAddress(reader);
+            this.RecordEndAddress(reader);
             {
                 // Read animation curves
                 reader.JumpToAddress(animationCurvesTrsPtr);
@@ -117,7 +117,7 @@ namespace GameCube.GFZ.Stage
 
                 DeserializeChildrenRecursively(reader);
             }
-            reader.JumpToAddress(AddressRange.endAddress);
+            this.SetReaderToEndAddress(reader);
         }
 
         /// <summary>
@@ -153,7 +153,7 @@ namespace GameCube.GFZ.Stage
                 trackCornerPtr = trackCorner.GetPointer();
                 childrenPtr = children.GetArrayPointer();
             }
-            AddressRange.RecordStartAddress(writer);
+            this.RecordStartAddress(writer);
             {
                 writer.WriteX(segmentType);
                 writer.WriteX(embeddedPropertyType);
@@ -175,7 +175,7 @@ namespace GameCube.GFZ.Stage
                 writer.WriteX(zero_0x48);
                 writer.WriteX(branchIndex);
             }
-            AddressRange.RecordEndAddress(writer);
+            this.RecordEndAddress(writer);
         }
 
         public void ValidateReferences()

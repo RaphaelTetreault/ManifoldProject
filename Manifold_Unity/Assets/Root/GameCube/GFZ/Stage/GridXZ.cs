@@ -93,7 +93,7 @@ namespace GameCube.GFZ.Stage
 
         public void Deserialize(BinaryReader reader)
         {
-            AddressRange.RecordStartAddress(reader);
+            this.RecordStartAddress(reader);
             {
                 reader.ReadX(ref left);
                 reader.ReadX(ref top);
@@ -102,12 +102,12 @@ namespace GameCube.GFZ.Stage
                 reader.ReadX(ref numSubdivisionsX);
                 reader.ReadX(ref numSubdivisionsZ);
             }
-            AddressRange.RecordEndAddress(reader);
+            this.RecordEndAddress(reader);
         }
 
         public void Serialize(BinaryWriter writer)
         {
-            AddressRange.RecordStartAddress(writer);
+            this.RecordStartAddress(writer);
             {
                 writer.WriteX(left);
                 writer.WriteX(top);
@@ -116,7 +116,7 @@ namespace GameCube.GFZ.Stage
                 writer.WriteX(numSubdivisionsX);
                 writer.WriteX(numSubdivisionsZ);
             }
-            AddressRange.RecordEndAddress(writer);
+            this.RecordEndAddress(writer);
         }
 
 

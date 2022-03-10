@@ -44,19 +44,10 @@ namespace Manifold.IO
             => RecordEndAddress(writer.BaseStream);
 
 
-        public string PrintStartAddress(string prefix = "0x", string format = "x8")
-        {
-            return $"{prefix}{startAddress.ToString(format)}";
-        }
-
-        public string PrintEndAddress(string prefix = "0x", string format = "x8")
-        {
-            return $"{prefix}{endAddress.ToString(format)}";
-        }
 
         public override string ToString()
         {
-            return $"{nameof(AddressRange)}(Start: {startAddress:x8}, End: {endAddress:x8}, Size: {Size} 0x{Size:x})";
+            return $"Start: {startAddress:x8}, End: {endAddress:x8}, Size: {Size} ({Size:x})";
         }
     }
 }

@@ -42,11 +42,11 @@ namespace GameCube.GFZ.Stage
         // METHODS
         public void Deserialize(BinaryReader reader)
         {
-            AddressRange.RecordStartAddress(reader);
+            this.RecordStartAddress(reader);
             {
                 reader.ReadX(ref fieldPtrs, kCount);
             }
-            AddressRange.RecordEndAddress(reader);
+            this.RecordEndAddress(reader);
             {
                 fields = new TextureScrollField[kCount];
                 for (int i = 0; i < kCount; i++)
@@ -59,7 +59,7 @@ namespace GameCube.GFZ.Stage
                     }
                 }
             }
-            reader.JumpToAddress(AddressRange.endAddress);
+            this.SetReaderToEndAddress(reader);
         }
 
         public void Serialize(BinaryWriter writer)
@@ -67,11 +67,11 @@ namespace GameCube.GFZ.Stage
             {
                 fieldPtrs = fields.GetPointers();
             }
-            AddressRange.RecordStartAddress(writer);
+            this.RecordStartAddress(writer);
             {
                 writer.WriteX(fieldPtrs);
             }
-            AddressRange.RecordEndAddress(writer);
+            this.RecordEndAddress(writer);
         }
 
         public void ValidateReferences()

@@ -34,7 +34,7 @@ namespace GameCube.GFZ.Stage
         // METHODS
         public void Deserialize(BinaryReader reader)
         {
-            AddressRange.RecordStartAddress(reader);
+            this.RecordStartAddress(reader);
             {
                 reader.ReadX(ref easeMode);
                 reader.ReadX(ref time);
@@ -42,12 +42,12 @@ namespace GameCube.GFZ.Stage
                 reader.ReadX(ref tangentIn);
                 reader.ReadX(ref tangentOut);
             }
-            AddressRange.RecordEndAddress(reader);
+            this.RecordEndAddress(reader);
         }
 
         public void Serialize(BinaryWriter writer)
         {
-            AddressRange.RecordStartAddress(writer);
+            this.RecordStartAddress(writer);
             {
                 writer.WriteX(easeMode);
                 writer.WriteX(time);
@@ -55,7 +55,7 @@ namespace GameCube.GFZ.Stage
                 writer.WriteX(tangentIn);
                 writer.WriteX(tangentOut);
             }
-            AddressRange.RecordEndAddress(writer);
+            this.RecordEndAddress(writer);
         }
 
         public void PrintMultiLine(System.Text.StringBuilder builder, int indentLevel = 0, string indent = "\t")

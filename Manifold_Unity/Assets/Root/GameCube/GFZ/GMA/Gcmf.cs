@@ -89,7 +89,7 @@ namespace GameCube.GFZ.GMA
         // METHODS
         public void Deserialize(BinaryReader reader)
         {
-            AddressRange.RecordStartAddress(reader);
+            this.RecordStartAddress(reader);
             {
                 reader.ReadX(ref magic);
                 reader.ReadX(ref attributes);
@@ -103,7 +103,7 @@ namespace GameCube.GFZ.GMA
                 reader.ReadX(ref zero0x24);
                 reader.ReadX(ref boneIndices);
             }
-            AddressRange.RecordEndAddress(reader);
+            this.RecordEndAddress(reader);
             {
                 // Align from after main deserialization
                 reader.AlignTo(GX.GXUtility.GX_FIFO_ALIGN);
@@ -214,7 +214,7 @@ namespace GameCube.GFZ.GMA
                 boneCount = (byte)Bones.Length;
                 // TODO: calc gcmf texture size!
             }
-            AddressRange.RecordStartAddress(writer);
+            this.RecordStartAddress(writer);
             {
                 writer.WriteX(kMagic);
                 writer.WriteX(attributes);
@@ -228,7 +228,7 @@ namespace GameCube.GFZ.GMA
                 writer.WriteX(zero0x24);
                 writer.WriteX(boneIndices);
             }
-            AddressRange.RecordEndAddress(writer);
+            this.RecordEndAddress(writer);
             {
                 writer.WriteAlignment(GX.GXUtility.GX_FIFO_ALIGN);
 

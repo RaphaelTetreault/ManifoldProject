@@ -164,7 +164,7 @@ namespace GameCube.GFZ.Stage
             writer.WriteNextCol(keyableIndex);
             writer.WriteNextCol($"[{keyableIndex}/{keyableTotal}]");
             writer.WriteNextCol($"{nestedDepth}");
-            writer.WriteNextCol(param.AddressRange.PrintStartAddress());
+            writer.WriteNextCol(param.PrintStartAddress());
             writer.WriteNextCol(param.EaseMode);
             writer.WriteNextCol((int)param.EaseMode);
             writer.WriteNextCol(param.Time);
@@ -249,7 +249,7 @@ namespace GameCube.GFZ.Stage
             writer.WriteNextCol($"{s_order++}");
             writer.WriteNextCol($"[{index}/{total}]");
             writer.WriteNextCol($"{depth}");
-            writer.WriteNextCol(trackTransform.AddressRange.PrintStartAddress());
+            writer.WriteNextCol(trackTransform.PrintStartAddress());
             writer.WriteNextCol(trackTransform.SegmentType);
             writer.WriteNextCol(trackTransform.EmbeddedPropertyType);
             writer.WriteNextCol(trackTransform.PerimeterFlags);
@@ -324,8 +324,8 @@ namespace GameCube.GFZ.Stage
                                 writer.WriteNextCol(scene.FileName);
                                 writer.WriteNextCol(gameObjectIndex);
                                 writer.WriteNextCol(gameObject.Name);
-                                writer.WriteNextCol(animationClipCurve.AddressRange.PrintStartAddress());
-                                writer.WriteNextCol(keyable.AddressRange.PrintStartAddress());
+                                writer.WriteNextCol(animationClipCurve.PrintStartAddress());
+                                writer.WriteNextCol(keyable.PrintStartAddress());
                                 writer.WriteNextCol(animIndex);
                                 writer.WriteNextCol(keyable.EaseMode);
                                 writer.WriteNextCol(keyable.Time);
@@ -394,8 +394,8 @@ namespace GameCube.GFZ.Stage
                                 writer.WriteNextCol(scene.FileName);
                                 writer.WriteNextCol(objIndex);
                                 writer.WriteNextCol(dynamicSceneObject.Name);
-                                writer.WriteNextCol(animationClipCurve.AddressRange.PrintStartAddress());
-                                writer.WriteNextCol(keyable.AddressRange.PrintStartAddress());
+                                writer.WriteNextCol(animationClipCurve.PrintStartAddress());
+                                writer.WriteNextCol(keyable.PrintStartAddress());
                                 writer.WriteNextCol(animationClipCurve.Unk_0x00);
                                 writer.WriteNextCol(animationClipCurve.Unk_0x04);
                                 writer.WriteNextCol(animationClipCurve.Unk_0x08);
@@ -1095,8 +1095,8 @@ namespace GameCube.GFZ.Stage
                         writer.WriteNextCol(courseID);
                         writer.WriteNextCol(isAxGx);
 
-                        writer.WriteNextCol(item.AddressRange.PrintStartAddress());
-                        writer.WriteNextCol(item.AddressRange.PrintEndAddress());
+                        writer.WriteNextCol(item.PrintStartAddress());
+                        writer.WriteNextCol(item.PrintEndAddress());
 
                         writer.WriteNextCol(item.Unk_0x20);
                         writer.WriteNextCol($"0x{(int)item.Unk_0x20:X8}");

@@ -81,7 +81,7 @@ namespace GameCube.GFZ.Stage
         // METHODS
         public void Deserialize(BinaryReader reader)
         {
-            AddressRange.RecordStartAddress(reader);
+            this.RecordStartAddress(reader);
             {
                 reader.ReadX(ref zero_0x00);
                 reader.ReadX(ref boulderGroupOrderIndex);
@@ -92,7 +92,7 @@ namespace GameCube.GFZ.Stage
                 reader.ReadX(ref rotation);
                 reader.ReadX(ref position);
             }
-            AddressRange.RecordEndAddress(reader);
+            this.RecordEndAddress(reader);
             {
                 if (story2BoulderPathPtr.IsNotNull)
                 {
@@ -101,7 +101,7 @@ namespace GameCube.GFZ.Stage
                     reader.ReadX(ref storyObjectPath);
                 }
             }
-            reader.JumpToAddress(AddressRange.endAddress);
+            this.SetReaderToEndAddress(reader);
         }
 
         public void Serialize(BinaryWriter writer)
@@ -109,7 +109,7 @@ namespace GameCube.GFZ.Stage
             {
                 story2BoulderPathPtr = storyObjectPath.GetPointer();
             }
-            AddressRange.RecordStartAddress(writer);
+            this.RecordStartAddress(writer);
             {
                 writer.WriteX(zero_0x00);
                 writer.WriteX(boulderGroupOrderIndex);
@@ -120,7 +120,7 @@ namespace GameCube.GFZ.Stage
                 writer.WriteX(rotation);
                 writer.WriteX(position);
             }
-            AddressRange.RecordEndAddress(writer);
+            this.RecordEndAddress(writer);
         }
 
         public void ValidateReferences()

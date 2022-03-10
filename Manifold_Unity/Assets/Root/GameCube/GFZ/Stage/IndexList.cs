@@ -34,7 +34,7 @@ namespace GameCube.GFZ.Stage
         // METHODS
         public void Deserialize(BinaryReader reader)
         {
-            AddressRange.RecordStartAddress(reader);
+            this.RecordStartAddress(reader);
             {
                 var list = new List<ushort>();
                 while (true)
@@ -51,18 +51,18 @@ namespace GameCube.GFZ.Stage
                 }
                 indexes = list.ToArray();
             }
-            AddressRange.RecordEndAddress(reader);
+            this.RecordEndAddress(reader);
         }
 
         public void Serialize(BinaryWriter writer)
         {
-            AddressRange.RecordStartAddress(writer);
+            this.RecordStartAddress(writer);
             {
                 // Only serialize list if we have indexes to serialize.
                 // Otherwise we accidentally serialize a null terminator.
                 if (Length > 0)
                 {
-                    AddressRange.RecordStartAddress(writer);
+                    this.RecordStartAddress(writer);
                     {
                         // Write each index
                         foreach (var index in indexes)
@@ -72,7 +72,7 @@ namespace GameCube.GFZ.Stage
                         // Write terminating character
                         writer.WriteX(kUshortArrayTerminator);
                     }
-                    AddressRange.RecordEndAddress(writer);
+                    this.RecordEndAddress(writer);
                 }
                 else
                 {

@@ -44,7 +44,7 @@ namespace Manifold.IO
         // METHODS
         public void Deserialize(BinaryReader reader)
         {
-            AddressRange.RecordStartAddress(reader);
+            this.RecordStartAddress(reader);
             {
                 // Read array lengths
                 for (int i = 0; i < arrayPointers.Length; i++)
@@ -62,12 +62,12 @@ namespace Manifold.IO
                     arrayPointers[i].address = address;
                 }
             }
-            AddressRange.RecordEndAddress(reader);
+            this.RecordEndAddress(reader);
         }
 
         public void Serialize(BinaryWriter writer)
         {
-            AddressRange.RecordStartAddress(writer);
+            this.RecordStartAddress(writer);
             {
                 // Write array lengths
                 for (int i = 0; i < arrayPointers.Length; i++)
@@ -81,7 +81,7 @@ namespace Manifold.IO
                     writer.WriteX(arrayPointers[i].address);
                 }
             }
-            AddressRange.RecordEndAddress(writer);
+            this.RecordEndAddress(writer);
         }
 
     }

@@ -1101,7 +1101,7 @@ namespace GameCube.GFZ.Stage
 
         public void DeserializeHeader(BinaryReader reader)
         {
-            AddressRange.RecordStartAddress(reader);
+            this.RecordStartAddress(reader);
             {
                 // Deserialize main structure
                 reader.ReadX(ref unkRange0x00);
@@ -1138,7 +1138,7 @@ namespace GameCube.GFZ.Stage
                 reader.ReadX(ref checkpointGridXZ);
                 reader.ReadX(ref zeroes0xD8, kSizeOfZeroes0xD8);
             }
-            AddressRange.RecordEndAddress(reader);
+            this.RecordEndAddress(reader);
             {
                 Assert.IsTrue(zero0x74 == 0);
                 Assert.IsTrue(zero0x78 == 0);
@@ -1193,7 +1193,7 @@ namespace GameCube.GFZ.Stage
                 Unk_sceneObjectCount2 = dynamicSceneObjects.Length;
                 DynamicSceneObjectsPtr = dynamicSceneObjects.GetArrayPointer().Pointer;
             }
-            AddressRange.RecordStartAddress(writer);
+            this.RecordStartAddress(writer);
             {
                 writer.WriteX(unkRange0x00);
                 writer.WriteX(trackNodesPtr);
@@ -1227,7 +1227,7 @@ namespace GameCube.GFZ.Stage
                 writer.WriteX(checkpointGridXZ);
                 writer.WriteX(new byte[kSizeOfZeroes0xD8]); // write const zeros
             }
-            AddressRange.RecordEndAddress(writer);
+            this.RecordEndAddress(writer);
         }
 
         public void ValidateReferences()

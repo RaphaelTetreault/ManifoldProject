@@ -39,7 +39,7 @@ namespace GameCube.GFZ.FMI
         // METHODS
         public void Deserialize(BinaryReader reader)
         {
-            AddressRange.RecordStartAddress(reader);
+            this.RecordStartAddress(reader);
             {
                 reader.ReadX(ref unk_0x00);
                 reader.ReadX(ref unk_0x01);
@@ -51,7 +51,7 @@ namespace GameCube.GFZ.FMI
                 reader.ReadX(ref unk_0x07);
                 reader.ReadX(ref unk_0x08);
             }
-            AddressRange.RecordEndAddress(reader);
+            this.RecordEndAddress(reader);
             {
                 reader.BaseStream.Seek(kParticlesAbsPtr, SeekOrigin.Begin);
                 reader.ReadX(ref particles, animationCount);
@@ -61,7 +61,7 @@ namespace GameCube.GFZ.FMI
 
                 // TODO: read names
             }
-            reader.JumpToAddress(AddressRange.endAddress);
+            this.SetReaderToEndAddress(reader);
         }
 
         public void Serialize(BinaryWriter writer)

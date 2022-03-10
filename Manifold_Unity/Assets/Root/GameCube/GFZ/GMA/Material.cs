@@ -53,7 +53,7 @@ namespace GameCube.GFZ.GMA
         // METHODS
         public void Deserialize(BinaryReader reader)
         {
-            AddressRange.RecordStartAddress(reader);
+            this.RecordStartAddress(reader);
             {
                 reader.ReadX(ref zero0x00);
                 reader.ReadX(ref unk0x02);
@@ -72,7 +72,7 @@ namespace GameCube.GFZ.GMA
                 reader.ReadX(ref textureIndex2);
                 reader.ReadX(ref vertexAttributes);
             }
-            AddressRange.RecordEndAddress(reader);
+            this.RecordEndAddress(reader);
             {
                 Assert.IsTrue(zero0x00 == 0);
             }
@@ -86,7 +86,7 @@ namespace GameCube.GFZ.GMA
                 Assert.IsTrue(color1.ComponentType == ComponentType.GX_RGBA8);
                 Assert.IsTrue(color2.ComponentType == ComponentType.GX_RGBA8);
             }
-            AddressRange.RecordStartAddress(writer);
+            this.RecordStartAddress(writer);
             {
                 writer.WriteX(zero0x00);
                 writer.WriteX(unk0x02);
@@ -105,7 +105,7 @@ namespace GameCube.GFZ.GMA
                 writer.WriteX(textureIndex2);
                 writer.WriteX(vertexAttributes);
             }
-            AddressRange.RecordEndAddress(writer);
+            this.RecordEndAddress(writer);
         }
 
     }
