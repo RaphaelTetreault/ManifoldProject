@@ -235,7 +235,7 @@ namespace GameCube.GFZ.Stage
             // CAPTURE METADATA
             FileSize = (int)reader.BaseStream.Length;
             // Store the stage index, can solve venue and course name from this using hashes
-            var matchDigits = Regex.Match(FileName, Const.Regex.MatchIntegers);
+            var matchDigits = Regex.Match(FileName, ConstRegex.MatchIntegers);
             CourseIndex = int.Parse(matchDigits.Value);
 
             // Read COLI_COURSE## file header

@@ -17,8 +17,8 @@ namespace Nintendo64.FZX
         public void Deserialize(StreamReader reader)
         {
             name = reader.ReadLine();
-            image = (Image)int.Parse(Regex.Match(reader.ReadLine(), Const.Regex.MatchIntegers).ToString());
-            angleY = float.Parse(Regex.Match(reader.ReadLine(), Const.Regex.MatchFloat).ToString());
+            image = (Image)int.Parse(Regex.Match(reader.ReadLine(), ConstRegex.MatchIntegers).ToString());
+            angleY = float.Parse(Regex.Match(reader.ReadLine(), ConstRegex.MatchFloat).ToString());
             Assert.IsTrue(string.IsNullOrEmpty(reader.ReadLine()));
         }
 
