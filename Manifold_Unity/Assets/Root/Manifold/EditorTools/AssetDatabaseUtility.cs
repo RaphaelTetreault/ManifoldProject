@@ -1,5 +1,4 @@
-﻿using Manifold.IO;
-using System;
+﻿using System;
 using UnityEditor;
 using UnityEngine;
 
@@ -46,18 +45,18 @@ namespace Manifold.EditorTools
             return GetAllOfType<T>(new string[0]);
         }
 
-        public static TScriptableObject[] GetSobjByOption<TScriptableObject>(TScriptableObject[] sobjs, IOOption option, params string[] searchFolders)
+        public static TScriptableObject[] GetSobjByOption<TScriptableObject>(TScriptableObject[] sobjs, AssetDatabseSearch option, params string[] searchFolders)
           where TScriptableObject : ScriptableObject
         {
             switch (option)
             {
-                case IOOption.selectedFiles:
+                case AssetDatabseSearch.selectedFiles:
                     return sobjs;
 
-                case IOOption.allFromSourceFolder:
+                case AssetDatabseSearch.allFromSourceFolder:
                     return GetAllOfType<TScriptableObject>(searchFolders);
 
-                case IOOption.allFromAssetDatabase:
+                case AssetDatabseSearch.allFromAssetDatabase:
                     return GetAllOfType<TScriptableObject>();
 
                 default:
@@ -65,7 +64,7 @@ namespace Manifold.EditorTools
             }
         }
 
-        public static TScriptableObject[] GetSobjByOption<TScriptableObject>(TScriptableObject[] sobjs, IOOption option)
+        public static TScriptableObject[] GetSobjByOption<TScriptableObject>(TScriptableObject[] sobjs, AssetDatabseSearch option)
             where TScriptableObject : ScriptableObject
         {
             return GetSobjByOption(sobjs, option, new string[0]);

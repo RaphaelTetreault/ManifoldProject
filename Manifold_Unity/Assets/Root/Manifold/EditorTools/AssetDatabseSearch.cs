@@ -1,6 +1,6 @@
-﻿namespace Manifold.IO
+﻿namespace Manifold.EditorTools
 {
-    public enum IOOption
+    public enum AssetDatabseSearch
     {
         selectedFiles,
         allFromSourceFolder,

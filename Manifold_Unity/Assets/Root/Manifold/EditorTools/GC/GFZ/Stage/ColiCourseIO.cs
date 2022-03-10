@@ -1015,8 +1015,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 // Validate venue and id
                 {
                     bool isValidIndexForVenue = CourseUtility.GetVenue(sceneParams.courseIndex) == sceneParams.venue;
-                    byte r = isValidIndexForVenue ? (byte)0 : (byte)255;
-                    log.WriteLineColor($"{nameof(isValidIndexForVenue)} = {isValidIndexForVenue}", r, 0, 0);
+                    log.WriteLine($"{nameof(isValidIndexForVenue)} = {isValidIndexForVenue}");
                 }
 
                 // Get scene-wide parameters from SceneParameters

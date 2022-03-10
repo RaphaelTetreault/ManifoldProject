@@ -29,7 +29,7 @@ namespace Manifold.IO
         private const char kWhiteSpace = ' ';
         private const char kPadding = '-';
 
-
+        #region TODO: hacky comment code
 
         // Added the below extensions to help debug file outputs
         public static void Comment(this BinaryWriter writer, string message, bool doWrite, char padding = ' ', int alignment = 16)
@@ -110,7 +110,6 @@ namespace Manifold.IO
             CommentCnt(writer, pointer.length, doWrite, padding, alignment);
         }
 
-
         public static void InlineDesc<T>(this BinaryWriter writer, bool doWrite, Pointer pointer, T type, char padding = ' ', int alignment = 16)
         {
             if (!doWrite)
@@ -180,26 +179,39 @@ namespace Manifold.IO
             //writer.CommentNewLine(true);
         }
 
+        #endregion
+
+        /// <summary>
+        /// Moves the <paramref name="reader"/>'s stream position to the <paramref name="pointer"/>'s address.
+        /// </summary>
+        /// <param name="reader">The writer to jump in.</param>
+        /// <param name="pointer">The pointer to jump to.</param>
         public static void JumpToAddress(this BinaryWriter writer, Pointer pointer)
         {
             writer.BaseStream.Seek(pointer.address, SeekOrigin.Begin);
         }
+
+        /// <summary>
+        /// Moves the <paramref name="writer"/>'s stream position to the <paramref name="arrayPointer"/>'s address.
+        /// </summary>
+        /// <param name="writer">The writer to jump in.</param>
+        /// <param name="arrayPointer">The pointer to jump to.</param>
         public static void JumpToAddress(this BinaryWriter writer, ArrayPointer arrayPointer)
         {
             writer.BaseStream.Seek(arrayPointer.address, SeekOrigin.Begin);
         }
-        public static void JumpToAddress(this BinaryWriter writer, AddressRange addressRange)
-        {
-            writer.BaseStream.Seek(addressRange.startAddress, SeekOrigin.Begin);
-        }
-        public static void JumpToAddress(this BinaryWriter writer, IBinaryAddressable binaryAddressable)
-        {
-            writer.BaseStream.Seek(binaryAddressable.AddressRange.startAddress, SeekOrigin.Begin);
-        }
 
+        /// <summary>
+        /// Returns the <paramref name="writer"/>'s position as a Pointer.
+        /// </summary>
+        /// <param name="writer">The writer to convert position to pointer from.</param>
+        /// <returns>
+        /// A pointer pointing to the address of the <paramref name="writer"/>'s stream position.
+        /// </returns>
         public static Pointer GetPositionAsPointer(this BinaryWriter writer)
         {
             return new Pointer(writer.BaseStream.Position);
         }
+
     }
 }

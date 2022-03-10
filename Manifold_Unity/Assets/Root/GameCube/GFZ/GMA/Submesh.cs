@@ -159,14 +159,14 @@ namespace GameCube.GFZ.GMA
                 // Now that we know the size of the display lists, update values and reserialize
                 primaryDisplayListDescriptor.OpaqueMaterialSize = pdlOpaque.Size;
                 primaryDisplayListDescriptor.TranslucidMaterialSize = pdlTranslucid.Size;
-                writer.JumpToAddress(primaryDisplayListDescriptor);
+                writer.JumpToAddress(primaryDisplayListDescriptor.AddressRange.startAddress);
                 writer.WriteX(primaryDisplayListDescriptor);
 
                 if (RenderSecondary)
                 {
                     secondaryDisplayListDescriptor.OpaqueMaterialSize = sdlOpaque.Size;
                     secondaryDisplayListDescriptor.TranslucidMaterialSize = sdlTranslucid.Size;
-                    writer.JumpToAddress(secondaryDisplayListDescriptor);
+                    writer.JumpToAddress(secondaryDisplayListDescriptor.AddressRange.startAddress);
                     writer.WriteX(secondaryDisplayListDescriptor);
                 }
             }
