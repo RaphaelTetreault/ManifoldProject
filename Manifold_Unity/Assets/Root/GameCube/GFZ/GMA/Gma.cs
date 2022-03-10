@@ -38,7 +38,7 @@ namespace GameCube.GFZ.GMA
             reader.ReadX(ref modelBasePtrOffset);
             reader.ReadX(ref modelEntries, modelsCount);
 
-            Offset nameBasePtrOffset = AddressRange.endAddress;
+            Offset nameBasePtrOffset = reader.GetPositionAsPointer().address;
             var modelList = new List<Model>();
 
             // Add offsets necessary for pointers to be correct
@@ -129,6 +129,7 @@ namespace GameCube.GFZ.GMA
             gcmfWriter.BaseStream.CopyTo(writer.BaseStream);
 
             // Re-write values
+            writer.JumpToAddress(0);
             writer.WriteX(modelsCount);
             writer.WriteX(modelBasePtrOffset);
         }
