@@ -31,7 +31,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             // Only iterate if we have data to iterate over
             if (textureScroll != null)
             {
-                Assert.IsTrue(textureScrollFields.Length == textureScroll.Fields.Length);
+                IO.Assert.IsTrue(textureScrollFields.Length == textureScroll.Fields.Length);
 
                 for (int i = 0; i < textureScroll.Fields.Length; i++)
                 {

@@ -11,7 +11,7 @@ namespace Manifold.EditorTools
         public static string HashBinary(HashAlgorithm hashAlgorithm, IBinarySerializable binarySerializable)
         {
             // Convert IBinarySerializable into hash
-            var writer = new BinaryWriter(new MemoryStream());
+            var writer = new EndianBinaryWriter(new MemoryStream(), Endianness.LittleEndian);
             binarySerializable.Serialize(writer);
             writer.Flush();
             writer.SeekBegin();
@@ -40,7 +40,7 @@ namespace Manifold.EditorTools
         public static string SerializableToStreamString(IBinarySerializable binarySerializable)
         {
             // Convert IBinarySerializable into byte stream
-            var writer = new BinaryWriter(new MemoryStream());
+            var writer = new EndianBinaryWriter(new MemoryStream(), Endianness.LittleEndian);
             binarySerializable.Serialize(writer);
             writer.Flush();
             writer.SeekBegin();

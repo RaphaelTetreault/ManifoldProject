@@ -40,7 +40,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         public virtual GfzTrackEmbededProperty GetEmbeddedProperties()
         {
             var embeddedProperties = GetComponents<GfzTrackEmbededProperty>();
-            Assert.IsTrue(embeddedProperties.Length == 1);
+            IO.Assert.IsTrue(embeddedProperties.Length == 1);
             return embeddedProperties[0];
         }
 

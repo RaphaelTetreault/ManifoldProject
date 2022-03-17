@@ -1,5 +1,6 @@
-﻿using GameCube.GFZ;
+﻿using GameCube.AmusementVision;
 using GameCube.GFZ.GMA;
+using GameCube.GFZ.LZ;
 using Manifold;
 using Manifold.IO;
 using System;
@@ -36,7 +37,7 @@ namespace Manifold.EditorTools.GC.GFZ.GMA
             var rootPath = settings.RootFolder;
             var outputPath = settings.FileOutput + "/gma";
             var outputFilePath = FileUtility.LoadSaveToDisk(filePath, rootPath, outputPath, BinarySerializableIO.LoadFile<Gma>, BinarySerializableIO.SaveFile, true);
-            LzUtility.CompressAvLzToDisk(outputFilePath, LibGxFormat.AvGame.FZeroGX, true);
+            LzUtility.CompressAvLzToDisk(outputFilePath, GxGame.FZeroGX, true);
         }
 
 

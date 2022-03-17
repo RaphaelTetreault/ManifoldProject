@@ -1,4 +1,6 @@
+using GameCube.AmusementVision;
 using GameCube.GFZ;
+using GameCube.GFZ.LZ;
 using GameCube.GFZ.Stage;
 using Manifold.Conversion;
 using Manifold.IO;
@@ -71,7 +73,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         public static Scene LoadScene(string filePath)
         {
-            var reader = new BinaryReader(File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read));
+            var reader = new EndianBinaryReader(File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read), Scene.endianness);
             var scene = new Scene();
             var fileName = Path.GetFileName(filePath);
             scene.FileName = fileName;
@@ -156,11 +158,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 var outputPath = dest + "stage/";
                 var outputFile = outputPath + coliScene.FileName;
                 var outputLog = outputPath + coliScene.FileName + "-log.txt";
-                using (var writer = new BinaryWriter(File.Create(outputFile)))
+                using (var writer = new EndianBinaryWriter(File.Create(outputFile), Scene.endianness))
                 {
                     // Serialize the scene data to file
                     coliScene.SerializeVerbose = true;
-                    writer.WriteX(coliScene);
+                    writer.Write(coliScene);
                     writer.Flush();
                 }
 
@@ -171,7 +173,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 log.Close();
 
                 // Compress and make an LZed copy
-                LzUtility.CompressAvLzToDisk(outputFile, LibGxFormat.AvGame.FZeroGX, true);
+                LzUtility.CompressAvLzToDisk(outputFile, GxGame.FZeroGX, true);
             }
             OSUtility.OpenDirectory(dest);
         }
@@ -188,12 +190,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         public static void TestSaveAllStagesMemory(string title, string path)
         {
-            // Iterate over all stages, serialize them to RAM.
-            foreach (var coliScene in LoadAllStages(path, title))
-            {
-                var writer = new AddressLogBinaryWriter(new MemoryStream());
-                writer.WriteX(coliScene);
-            }
+            throw new NotImplementedException();
+            //// Iterate over all stages, serialize them to RAM.
+            //foreach (var coliScene in LoadAllStages(path, title))
+            //{
+            //    var writer = new AddressLogBinaryWriter(new MemoryStream());
+            //    writer.Write(coliScene);
+            //}
         }
 
         [MenuItem(Const.Menu.tests + TestSave + ActiveRoot)]
@@ -247,8 +250,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
                     // Write scene to buffer
                     var buffer = new MemoryStream();
-                    var writer = new BinaryWriter(buffer);
-                    writer.WriteX(sceneWrite);
+                    var writer = new EndianBinaryWriter(buffer, Scene.endianness);
+                    writer.Write(sceneWrite);
                     writer.Flush();
                     //
                     var fsw = File.Create(logWrite.Path + ".bin");
@@ -266,7 +269,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                     sceneRead.SerializeVerbose = true;
                     sceneRead.FileName = sceneWrite.FileName;
                     // Read buffer, think of it like File.Open
-                    var reader = new BinaryReader(buffer);
+                    var reader = new EndianBinaryReader(buffer, Scene.endianness);
                     sceneRead.Deserialize(reader);
                     buffer.Seek(0, SeekOrigin.Begin);
                     //
@@ -322,7 +325,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
 
             // LOAD FRESH FILE IN
-            var readerIn = new BinaryReader(File.OpenRead(filePath));
+            var readerIn = new EndianBinaryReader(File.OpenRead(filePath), Scene.endianness);
             var sceneIn = new Scene();
             sceneIn.FileName = Path.GetFileName(filePath);
             sceneIn.SerializeVerbose = serializeVerbose;
@@ -337,14 +340,14 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
             // WRITE INTERMEDIARY
             // Write scene out to memory stream...
-            var writer = new BinaryWriter(new MemoryStream());
-            writer.WriteX(sceneIn);
+            var writer = new EndianBinaryWriter(new MemoryStream(), Scene.endianness);
+            writer.Write(sceneIn);
             writer.Flush();
             writer.BaseStream.Seek(0, SeekOrigin.Begin);
 
             // LOAD INTERMEDIARY
             // Load memory stream back in
-            var readerOut = new BinaryReader(writer.BaseStream);
+            var readerOut = new EndianBinaryReader(writer.BaseStream, Scene.endianness);
             var sceneOut = new Scene();
             sceneOut.SerializeVerbose = serializeVerbose;
             sceneOut.FileName = sceneIn.FileName;
@@ -783,7 +786,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             var timestamp = $"[{dateTime:yyyy-MM-dd}][{dateTime:HH-mm-ss}]";
 
             // LOAD FRESH FILE IN
-            var readerIn = new BinaryReader(File.OpenRead(filePath));
+            var readerIn = new EndianBinaryReader(File.OpenRead(filePath), Scene.endianness);
             // Set scene instance, deserialize data
             var sceneIn = new Scene();
             sceneIn.FileName = Path.GetFileName(filePath);
@@ -817,14 +820,14 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
             // WRITE INTERMEDIARY
             // Write scene out to memory stream...
-            var writer = new BinaryWriter(new MemoryStream());
-            writer.WriteX(sceneIn);
+            var writer = new EndianBinaryWriter(new MemoryStream(), Scene.endianness);
+            writer.Write(sceneIn);
             writer.Flush();
             writer.BaseStream.Seek(0, SeekOrigin.Begin);
 
             // LOAD INTERMEDIARY
             // Load memory stream back in
-            var readerOut = new BinaryReader(writer.BaseStream);
+            var readerOut = new EndianBinaryReader(writer.BaseStream, Scene.endianness);
             var sceneOut = new Scene();
             sceneOut.SerializeVerbose = serializeVerbose;
             sceneOut.FileName = sceneIn.FileName;
@@ -873,7 +876,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 EditorUtility.DisplayProgressBar("Roundtrip Error Test", $"{filename}, Test ({index}/{iterations})", index / (float)iterations);
 
                 // LOAD FRESH FILE IN
-                var readerIn = new BinaryReader(stream);
+                var readerIn = new EndianBinaryReader(stream, Scene.endianness);
                 var sceneIn = new Scene();
                 sceneIn.FileName = filename;
                 sceneIn.SerializeVerbose = serializeVerbose;
@@ -881,8 +884,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
                 // WRITE INTERMEDIARY
                 // Write scene out to memory stream...
-                var writer = new BinaryWriter(new MemoryStream());
-                writer.WriteX(sceneIn);
+                var writer = new EndianBinaryWriter(new MemoryStream(), Scene.endianness);
+                writer.Write(sceneIn);
                 writer.Flush();
                 writer.BaseStream.Seek(0, SeekOrigin.Begin);
 

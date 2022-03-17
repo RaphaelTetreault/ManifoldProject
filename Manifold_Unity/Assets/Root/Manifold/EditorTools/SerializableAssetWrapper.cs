@@ -17,12 +17,12 @@ namespace Manifold.EditorTools
             return sobj.value;
         }
 
-        public void Deserialize(BinaryReader reader)
+        public void Deserialize(EndianBinaryReader reader)
         {
             value.Deserialize(reader);
         }
 
-        public void Serialize(BinaryWriter writer)
+        public void Serialize(EndianBinaryWriter writer)
         {
             value.Serialize(writer);
         }

@@ -28,7 +28,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         public SceneObjectLOD[] ExportGfz()
         {
-            Assert.IsTrue(levelOfDetails.Length > 0);
+            IO.Assert.IsTrue(levelOfDetails.Length > 0);
 
             var sceneObjectLODs = new SceneObjectLOD[levelOfDetails.Length];
             for (int i = 0; i < sceneObjectLODs.Length; i++)
@@ -45,7 +45,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         public void ImportGfz(SceneObjectLOD[] sceneObjectLODs)
         {
-            Assert.IsTrue(sceneObjectLODs.Length > 0);
+            IO.Assert.IsTrue(sceneObjectLODs.Length > 0);
 
             levelOfDetails = new GfzLOD[sceneObjectLODs.Length];
             for (int i = 0; i < levelOfDetails.Length; i++)

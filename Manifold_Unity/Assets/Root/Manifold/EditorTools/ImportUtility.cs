@@ -29,7 +29,7 @@ namespace Manifold.EditorTools
             }
         }
 
-        public static TSobj CreateFromBinary<TSobj>(string destinationDir, string fileName, BinaryReader reader)
+        public static TSobj CreateFromBinary<TSobj>(string destinationDir, string fileName, EndianBinaryReader reader)
             where TSobj : ScriptableObject, IBinarySerializable
         {
             var sobj = Create<TSobj>(destinationDir, fileName);
@@ -37,7 +37,7 @@ namespace Manifold.EditorTools
             return sobj;
         }
 
-        public static TSobj CreateFromBinaryFile<TSobj>(string destinationDir, string fileName, BinaryReader reader)
+        public static TSobj CreateFromBinaryFile<TSobj>(string destinationDir, string fileName, EndianBinaryReader reader)
         where TSobj : ScriptableObject, IBinarySerializable, IFileType
         {
             var sobj = Create<TSobj>(destinationDir, fileName);
@@ -46,7 +46,7 @@ namespace Manifold.EditorTools
             return sobj;
         }
 
-        public static TSobj ImportAs<TSobj>(BinaryReader reader, string file, string importFrom, string importTo, out string filePath)
+        public static TSobj ImportAs<TSobj>(EndianBinaryReader reader, string file, string importFrom, string importTo, out string filePath)
             where TSobj : ScriptableObject, IBinarySerializable, IFileType
         {
             var unityPath = GetUnityOutputPath(file, importFrom, importTo);
@@ -66,37 +66,38 @@ namespace Manifold.EditorTools
             return sobj;
         }
 
-        public static TSobj[] ImportManyAs<TSobj>(string[] importFiles, string importFrom, string importTo, FileMode mode = FileMode.Open, FileAccess access = FileAccess.Read, FileShare share = FileShare.Read)
-            where TSobj : ScriptableObject, IBinarySerializable, IFileType
-        {
-            var count = 0;
-            var total = importFiles.Length;
-            var sobjs = new TSobj[total];
+        //public static TSobj[] ImportManyAs<TSobj>(string[] importFiles, string importFrom, string importTo, FileMode mode = FileMode.Open, FileAccess access = FileAccess.Read, FileShare share = FileShare.Read)
+        //    where TSobj : ScriptableObject, IBinarySerializable, IBinaryFileType
+        //{
+        //    var count = 0;
+        //    var total = importFiles.Length;
+        //    var sobjs = new TSobj[total];
 
-            foreach (var file in importFiles)
-            {
-                using (var fileStream = File.Open(file, mode, access, share))
-                {
-                    using (var reader = new BinaryReader(fileStream))
-                    {
-                        var filepath = string.Empty;
-                        var sobj = ImportAs<TSobj>(reader, file, importFrom, importTo, out filepath);
-                        sobjs[count] = sobj;
-                        var userCancelled = ProgressBar<TSobj>(count, total, filepath);
+        //    foreach (var file in importFiles)
+        //    {
+        //        using (var fileStream = File.Open(file, mode, access, share))
+        //        {
+        //            var endian
+        //            using (var reader = new EndianBinaryReader(fileStream))
+        //            {
+        //                var filepath = string.Empty;
+        //                var sobj = ImportAs<TSobj>(reader, file, importFrom, importTo, out filepath);
+        //                sobjs[count] = sobj;
+        //                var userCancelled = ProgressBar<TSobj>(count, total, filepath);
 
-                        if (userCancelled)
-                        {
-                            break;
-                        }
-                    }
-                }
-                count++;
-            }
+        //                if (userCancelled)
+        //                {
+        //                    break;
+        //                }
+        //            }
+        //        }
+        //        count++;
+        //    }
 
-            FinalizeAssetImport();
+        //    FinalizeAssetImport();
 
-            return sobjs;
-        }
+        //    return sobjs;
+        //}
 
         public static string GetUnityOutputPath(string importFile, string importFrom, string importTo)
         {
