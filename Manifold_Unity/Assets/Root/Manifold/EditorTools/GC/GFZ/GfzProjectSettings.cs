@@ -28,7 +28,7 @@ namespace Manifold.EditorTools.GC.GFZ
         public string LogOutput => logOutput;
         public string AnalysisOutput => analysisOutput;
         public string FileOutput => fileOutput;
-        public string UnityImportDir => unityImportDir;
+        //public string UnityImportDir => unityImportDir;
         public int SceneOfInterestID => sceneOfInterestID;
         public string SceneExportPath => sceneExportPath;
 

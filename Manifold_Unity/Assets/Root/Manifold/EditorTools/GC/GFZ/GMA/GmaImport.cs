@@ -38,9 +38,10 @@ namespace Manifold.EditorTools.GC.GFZ.GMA
             var filePaths = Directory.GetFiles(rootDirectory, "*.gma", SearchOption.AllDirectories);
             var gmas = BinarySerializableIO.LoadFile<Gma>(filePaths);
 
-            // TODO: clean strings between "/" and "\\"
-            var relativeRoot = Path.GetDirectoryName(rootDirectory);
-            relativeRoot = Path.GetDirectoryName(relativeRoot);
+            // Go up a directory
+            //var relativeRoot = Path.GetDirectoryName(rootDirectory);
+            //relativeRoot = Path.GetFullPath(Path.Combine(relativeRoot, @"..\"));
+            var relativeRoot = DirectoryUtility.GoUpDirectory(rootDirectory, 1);
 
             int index = 0;
             foreach (var gma in gmas)

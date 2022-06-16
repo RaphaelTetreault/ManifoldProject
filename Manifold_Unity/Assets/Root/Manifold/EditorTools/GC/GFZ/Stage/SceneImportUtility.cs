@@ -2,6 +2,7 @@
 using GameCube.GFZ.Stage;
 using Manifold.IO;
 using System;
+using System.IO;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -14,7 +15,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
     {
         // todo: make title consistent across progress bars.
 
-
         public const string ExecuteText = "Import COLI as Unity Scene";
 
         [MenuItem(Const.Menu.Manifold + "Scene Generation/Import All Stages")]
@@ -22,7 +22,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         {
             var settings = GfzProjectWindow.GetSettings();
             var inputPath = settings.StageDir;
-            var outputPath = settings.UnityImportDir + "stage/";
+            var outputPath = DirectoryUtility.GetTopDirectory(settings.RootFolder) + "/stage/";
             foreach (var scene in ColiCourseIO.LoadAllStages(inputPath, "Generating Unity Scene From GFZ Scene"))
             {
                 Import(scene, outputPath);
@@ -36,7 +36,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         {
             var settings = GfzProjectWindow.GetSettings();
             var inputPath = settings.StageDir;
-            var outputPath = settings.UnityImportDir + "stage/";
+            var outputPath = DirectoryUtility.GetTopDirectory(settings.RootFolder) + "/stage/";
             var sceneIndex = settings.SceneOfInterestID;
             var filePath = $"{inputPath}COLI_COURSE{sceneIndex:00}";
             var scene = ColiCourseIO.LoadScene(filePath);
@@ -52,7 +52,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             var filePath = EditorUtility.OpenFilePanel("Select Stage File", settings.StageDir, "");
             if (string.IsNullOrEmpty(filePath))
                 return;
-            var outputPath = settings.UnityImportDir + "stage/";
+            var outputPath = DirectoryUtility.GetTopDirectory(settings.RootFolder) + "/stage/";
             var scene = ColiCourseIO.LoadScene(filePath);
             Import(scene, outputPath);
             EditorUtility.ClearProgressBar();
