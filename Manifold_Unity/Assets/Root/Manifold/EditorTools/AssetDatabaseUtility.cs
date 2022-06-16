@@ -100,7 +100,7 @@ namespace Manifold.EditorTools
                 throw new ArgumentException($"Path must begin with \"Assets/\"");
 
             // Append each directory to parent directory in succession
-            var path = "Assets/";
+            var path = "Assets";
             for (int i = 1; i < splitDirectories.Length; i++)
             {
                 // Get the name of the next directory in the path

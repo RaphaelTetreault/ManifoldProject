@@ -195,7 +195,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             {
                 count++;
                 var name = $"[{count.ToString(format)}] {typeName}";
-                ImportUtility.ProgressBar(count, total, name, title);
+                ProgressBar.ShowIndexed(count, total, name, title);
 
                 // Represent trigger as cube
                 var gobj = CreatePrimitive(PrimitiveType.Cube, name, root).gameObject;
@@ -232,7 +232,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 //
                 count++;
                 var name = $"[{count.ToString(format)}] {typeName}";
-                ImportUtility.ProgressBar(count, total, name, title);
+                ProgressBar.ShowIndexed(count, total, name, title);
 
                 // Parse trigger type
                 // There are 3 ways this data is used
@@ -354,7 +354,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 count++;
                 // TODO: add data as component, not name?
                 var name = $"[{count.ToString(format)}] {typeName}";
-                ImportUtility.ProgressBar(count, total, name, title);
+                ProgressBar.ShowIndexed(count, total, name, title);
 
                 // Create primite to represent trigger
                 var gobj = CreatePrimitive(PrimitiveType.Cube, name, root).gameObject;
@@ -388,7 +388,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 count++;
                 // TODO: add data as component, not name?
                 var name = $"[{count.ToString(format)}] {typeName}";
-                ImportUtility.ProgressBar(count, total, name, title);
+                ProgressBar.ShowIndexed(count, total, name, title);
 
                 //
                 var gobj = CreatePrimitive(PrimitiveType.Cube, name, root).gameObject;
@@ -421,7 +421,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             {
                 count++;
                 var name = $"[{count.ToString(format)}/{total}] {typeName}";
-                ImportUtility.ProgressBar(count, total, name, title);
+                ProgressBar.ShowIndexed(count, total, name, title);
 
                 //
                 var gobj = CreatePrimitive(PrimitiveType.Cube, name, root).gameObject;
@@ -454,7 +454,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             {
                 count++;
                 var name = $"[{count.ToString(format)}] {typeName}";
-                ImportUtility.ProgressBar(count, total, name, title);
+                ProgressBar.ShowIndexed(count, total, name, title);
 
                 var gobj = CreatePrimitive(PrimitiveType.Cube, name, root).gameObject;
                 var script = gobj.AddComponent<GfzVisualEffectTrigger>();

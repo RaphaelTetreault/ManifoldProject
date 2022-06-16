@@ -50,7 +50,7 @@ namespace Manifold.EditorTools.GC.GFZ
             // The current window instance in serializable format
             var window = new SerializedObject(this);
             // The window tab we want to look at
-            tabIndex = GUILayout.Toolbar(tabIndex, new string[] { "Settings", "Tests", "TBD" });
+            tabIndex = GUILayout.Toolbar(tabIndex, new string[] { "Settings", "Testing" });
 
             switch (tabIndex)
             {

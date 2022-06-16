@@ -9,26 +9,34 @@ using System.IO;
 using UnityEditor;
 using UnityEngine;
 
+using static Manifold.IO.BinarySerializableIO;
+
+
 namespace Manifold.EditorTools.GC.GFZ.GMA
 {
     /// <summary>
     /// Class meant for exposing GMA related tests in the Unity Editor.
     /// </summary>
-    public static class GmaMenuItems
+    public static class GmaTestMenuItems
     {
+        public static void ForeachGma(string title, string rootDirectory, FileUtility.FileAction fileAction)
+        {
+            var filePaths = Directory.GetFiles(rootDirectory, "*.gma", SearchOption.AllDirectories);
+            FileUtility.FileActionLoop(title, filePaths, fileAction);
+        }
         public static void ForeachGma(string title, FileUtility.FileAction fileAction)
         {
             var settings = GfzProjectWindow.GetSettings();
             var rootFolder = settings.RootFolder;
-            var filePaths = Directory.GetFiles(rootFolder, "*.gma", SearchOption.AllDirectories);
-            FileUtility.FileActionLoop(title, filePaths, fileAction);
+            ForeachGma(title, rootFolder, fileAction);
         }
 
 
+        // LOAD GMA, SAVE GAME
         [MenuItem(Const.Menu.Manifold + "GMA/LoadSave to Disk")]
         public static void LoadSaveToDisk()
         {
-            ForeachGma("Load/Save byte-for-byte", LoadSaveToDisk);
+            ForeachGma("Load/Save to Disk", LoadSaveToDisk);
         }
         public static void LoadSaveToDisk(string filePath)
         {
@@ -36,12 +44,12 @@ namespace Manifold.EditorTools.GC.GFZ.GMA
             var settings = GfzProjectWindow.GetSettings();
             var rootPath = settings.RootFolder;
             var outputPath = settings.FileOutput + "/gma";
-            var outputFilePath = FileUtility.LoadSaveToDisk(filePath, rootPath, outputPath, BinarySerializableIO.LoadFile<Gma>, BinarySerializableIO.SaveFile, true);
+            var outputFilePath = FileUtility.LoadSaveToDisk(filePath, rootPath, outputPath, LoadFile<Gma>, SaveFile, true);
             LzUtility.CompressAvLzToDisk(outputFilePath, GxGame.FZeroGX, true);
         }
 
 
-        [MenuItem(Const.Menu.Manifold + "GMA/Test Roundtrip Byte For Byte")]
+        [MenuItem(Const.Menu.Manifold + "GMA/Test - Roundtrip Byte For Byte (in RAM)")]
         public static void RoundtripByteForByte()
         {
             ForeachGma("Load/Save byte-for-byte", RoundtripByteForByte);
@@ -53,22 +61,16 @@ namespace Manifold.EditorTools.GC.GFZ.GMA
         }
 
 
-        [MenuItem(Const.Menu.Manifold + "GMA/Import All TEST")]
+        [MenuItem(Const.Menu.Manifold + "GMA/Test - Load/Save (in RAM)")]
         public static void LoadSaveToMemory()
         {
-            ForeachGma("Load/Save All GMA", LoadSaveGma);
+            ForeachGma("Load/Save (in RAM)", LoadSaveGma);
         }
         public static void LoadSaveGma(string filePath)
         {
             GmaTests.TestLoadSaveGma(filePath);
             Debug.Log(filePath);
         }
-
-        //public static void LoadGma(string filePath)
-        //{
-        //    GmaIO.LoadGMA(filePath);
-        //    Debug.Log(filePath);
-        //}
 
     }
 }
