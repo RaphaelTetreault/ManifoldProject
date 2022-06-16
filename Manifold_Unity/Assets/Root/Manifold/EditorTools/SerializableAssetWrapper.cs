@@ -1,6 +1,5 @@
 ﻿using Manifold.IO;
 using System;
-using System.IO;
 using UnityEngine;
 
 namespace Manifold.EditorTools
@@ -10,7 +9,9 @@ namespace Manifold.EditorTools
         where T : IBinarySerializable
     {
         [SerializeField]
-        public T value;
+        private T value;
+
+        public T Value => value;
 
         public static implicit operator T(SerializableAssetWrapper<T> sobj)
         {

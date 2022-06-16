@@ -16,9 +16,10 @@ namespace Manifold.EditorTools
 
             foreach (string filePath in filePaths)
             {
-                var sysPath = UnityPathUtility.EnforceSystemSeparators(filePath);
-                var dirPath = Path.GetDirectoryName(sysPath);
-                var uriPath = UnityPathUtility.EnforceUnitySeparators(dirPath);
+                //var sysPath = UnityPathUtility.EnforceSystemSeparators(filePath);
+                //var dirPath = Path.GetDirectoryName(filePath);
+                //var uriPath = UnityPathUtility.EnforceUnitySeparators(dirPath);
+                var uriPath = Path.GetDirectoryName(filePath);
                 Application.OpenURL(@"file:///" + uriPath);
             }
         }

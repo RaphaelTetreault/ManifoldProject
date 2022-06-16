@@ -6,6 +6,9 @@ using UnityEngine;
 
 namespace Manifold.EditorTools
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public static class FileUtility
     {
         public delegate void FileAction(string filePath);
