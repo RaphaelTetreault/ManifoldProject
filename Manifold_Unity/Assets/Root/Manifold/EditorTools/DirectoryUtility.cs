@@ -35,8 +35,10 @@ namespace Manifold.EditorTools
             string directory = Path.GetDirectoryName(path);
             var cleanDirectory = directory.Replace('\\', '/');
             string[] directories = cleanDirectory.Split('/');
-            // -1 for index, -1 since last dir is "" from trailing '/', ei: "C:/a/dir/"
-            int lastDirectory = directories.Length - 2;
+            // -1 for index
+            int lastDirectory = directories.Length - 1;
+            // -1 since last dir is "" from trailing '/', ei: "C:/a/dir/"
+            lastDirectory -= string.IsNullOrEmpty(directories[lastDirectory]) ? 1 : 0;
             return directories[lastDirectory];
         }
 

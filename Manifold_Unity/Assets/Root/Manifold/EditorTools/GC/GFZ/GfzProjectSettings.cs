@@ -23,6 +23,8 @@ namespace Manifold.EditorTools.GC.GFZ
         [SerializeField] string sceneExportPath = string.Empty;
         [SerializeField] bool convertCoordSpace = true;
 
+        [field: SerializeField] public bool CollisionCreateBackfaces { get; set; } = true;
+
         public SerializeFormat SerializeFormat => serializeFormat;
         public string RootFolder => rootFolder;
         public string LogOutput => logOutput;

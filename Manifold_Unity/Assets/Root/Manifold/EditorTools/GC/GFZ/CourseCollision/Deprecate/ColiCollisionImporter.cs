@@ -38,7 +38,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         public void Import()
         {
-            //sceneSobjs = AssetDatabaseUtility.GetSobjByOption(sceneSobjs, importOption, importFrom);
             var scenes = new Scene[0];
             var importTo = string.Empty;
 
