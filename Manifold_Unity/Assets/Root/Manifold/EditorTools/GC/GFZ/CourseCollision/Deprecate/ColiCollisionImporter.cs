@@ -10,21 +10,8 @@ using UnityEngine.Rendering;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage
 {
-    [CreateAssetMenu(menuName = Const.Menu.GfzCourseCollision + "COLI Collision Importer")]
-    public class ColiCollisionImporter : ExecutableScriptableObject,
-        IImportable
+    public class ColiCollisionImporter
     {
-        // FIELDS
-        [Header("Import Settings")]
-        [SerializeField, BrowseFolderField()]
-        protected string importFrom;
-
-        [SerializeField, BrowseFolderField("Assets/")]
-        protected string importTo;
-
-        [SerializeField]
-        protected IOOption importOption = IOOption.selectedFiles;
-
         [Header("Mesh Generation Options")]
         [SerializeField]
         protected bool usePrecomputes = false;
@@ -49,22 +36,14 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         [SerializeField]
         protected Material[] quadMaterials;
 
-        [Header("Import Files")]
-        [SerializeField] protected ColiSceneSobj[] sceneSobjs;
-
-
-        public override string ExecuteText => "Import COLI Object Collision";
-
-        public override void Execute() => Import();
-
         public void Import()
         {
-            sceneSobjs = AssetDatabaseUtility.GetSobjByOption(sceneSobjs, importOption, importFrom);
+            //sceneSobjs = AssetDatabaseUtility.GetSobjByOption(sceneSobjs, importOption, importFrom);
+            var scenes = new Scene[0];
+            var importTo = string.Empty;
 
-            foreach (var sceneSobj in sceneSobjs)
+            foreach (var scene in scenes)
             {
-                var scene = sceneSobj.Value;
-
                 // Create object-based collider meshes
                 {
                     int total = scene.dynamicSceneObjects.Length;
@@ -76,13 +55,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                         if (sceneObject.SceneObject.ColliderGeometryPtr.IsNotNull)
                         {
                             var meshName = sceneObject.Name;
-                            ImportUtility.ProgressBar<SceneObject>(count, total, $"st{sceneSobj.Value.ID:00} {meshName}");
+                            //ProgressBar.ShowIndexed<SceneObject>(count, total, $"st{sceneSobj.Value.ID:00} {meshName}");
 
                             // Create mesh
                             var mesh = CreateObjectColliderMesh(sceneObject, createBackfaces, usePrecomputes);
 
                             // Save mesh to Asset Database
-                            var assetPath = $"Assets/{importTo}/st{sceneSobj.Value.ID:00}/coli_{meshName}.asset";
+                            var assetPath = $"Assets/{importTo}/st{scene.CourseIndex:00}/coli_{meshName}.asset";
                             AssetDatabase.CreateAsset(mesh, assetPath);
 
                             // Refresh instance reference
@@ -91,8 +70,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
                             // Create mesh prefab
                             var materials = new Material[] { triMaterial, quadMaterial };
-                            var prefabPath = $"Assets/{importTo}/st{sceneSobj.Value.ID:00}/pf_{meshName}.prefab";
-                            var prefab = ImportUtility.CreatePrefabFromModel(mesh, materials, prefabPath);
+                            var prefabPath = $"Assets/{importTo}/st{scene.CourseIndex:00}/pf_{meshName}.prefab";
+                            var prefab = new GameObject();
+                            //var prefab = ImportUtility.CreatePrefabFromModel(mesh, materials, prefabPath);
 
                             // Edit then save again
                             var script = prefab.AddComponent<GfzObjectColliderMesh>();
@@ -104,7 +84,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
                 // Create static scene colliders
                 {
-                    var meshes = CreateStaticColliderMeshes(sceneSobj, createBackfaces);
+                    var meshes = CreateStaticColliderMeshes(scene, createBackfaces);
                     int total = meshes.Length;
                     int count = 0;
 
@@ -123,10 +103,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
                         count++;
                         var meshName = mesh.name;
-                        ImportUtility.ProgressBar<SceneObject>(count, total, $"st{sceneSobj.Value.ID:00} {meshName}");
+                        //ProgressBar.ShowIndexed<SceneObject>(count, total, $"st{scene.CourseIndex:00} {meshName}");
 
                         // Save mesh to Asset Database
-                        var meshPath = $"Assets/{importTo}/st{sceneSobj.Value.ID:00}/coli_{meshName}.asset";
+                        var meshPath = $"Assets/{importTo}/st{scene.CourseIndex:00}/coli_{meshName}.asset";
                         if (AssetDatabase.LoadAssetAtPath<Mesh>(meshPath) != null)
                             AssetDatabase.DeleteAsset(meshPath);
                         AssetDatabase.CreateAsset(mesh, meshPath);
@@ -136,8 +116,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                         mesh = AssetDatabase.LoadAssetAtPath<Mesh>(meshPath);
 
                         // Create mesh prefab
-                        var prefabPath = $"Assets/{importTo}/st{sceneSobj.Value.ID:00}/pf_{meshName}.prefab";
-                        var prefab = ImportUtility.CreatePrefabFromModel(mesh, materials, prefabPath);
+                        var prefabPath = $"Assets/{importTo}/st{scene.CourseIndex:00}/pf_{meshName}.prefab";
+                        var prefab = new GameObject();
+                        //var prefab = ImportUtility.CreatePrefabFromModel(mesh, materials, prefabPath);
                     }
                 }
 
@@ -145,7 +126,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 //The current format create 256 per run.
                 if (createMesh256OfType)
                 {
-                    var meshes = CreateStaticColliderMeshes256(sceneSobj, type, createBackfaces);
+                    var meshes = CreateStaticColliderMeshes256(scene, type, createBackfaces);
                     int total = meshes.Length;
                     int count = 0;
 
@@ -157,14 +138,14 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                         var mesh = meshes[meshIndex];
                         var materials = new Material[mesh.subMeshCount];
                         for (int subMeshIndex = 0; subMeshIndex < mesh.subMeshCount; subMeshIndex++)
-                             materials[subMeshIndex] = material;
+                            materials[subMeshIndex] = material;
 
                         count++;
                         var meshName = mesh.name;
-                        ImportUtility.ProgressBar<SceneObject>(count, total, $"st{sceneSobj.Value.ID:00} {meshName}");
+                        //ProgressBar.ShowIndexed<SceneObject>(count, total, $"st{scene.CourseIndex:00} {meshName}");
 
                         // Save mesh to Asset Database
-                        var meshPath = $"Assets/{importTo}/st{sceneSobj.Value.ID:00}/coli_{meshName}.asset";
+                        var meshPath = $"Assets/{importTo}/st{scene.CourseIndex:00}/coli_{meshName}.asset";
                         if (AssetDatabase.LoadAssetAtPath<Mesh>(meshPath) != null)
                             AssetDatabase.DeleteAsset(meshPath);
                         AssetDatabase.CreateAsset(mesh, meshPath);
@@ -174,20 +155,20 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                         mesh = AssetDatabase.LoadAssetAtPath<Mesh>(meshPath);
 
                         // Create mesh prefab
-                        var prefabPath = $"Assets/{importTo}/st{sceneSobj.Value.ID:00}/pf_{meshName}.prefab";
-                        var prefab = ImportUtility.CreatePrefabFromModel(mesh, materials, prefabPath);
+                        var prefabPath = $"Assets/{importTo}/st{scene.CourseIndex:00}/pf_{meshName}.prefab";
+                        var prefab = new GameObject();
+                        //var prefab = ImportUtility.CreatePrefabFromModel(mesh, materials, prefabPath);
                     }
                 }
             }
 
-            ImportUtility.ProgressBar<SceneObject>(1, 1, $"Saving assets...");
-            ImportUtility.FinalizeAssetImport();
+            //ImportUtility.ProgressBar<SceneObject>(1, 1, $"Saving assets...");
+            //ImportUtility.FinalizeAssetImport();
         }
 
-        public static Mesh[] CreateStaticColliderMeshes256(ColiSceneSobj sceneSobj, StaticColliderMeshProperty meshSurfaceType, bool createBackfaces)
+        public static Mesh[] CreateStaticColliderMeshes256(Scene scene, StaticColliderMeshProperty meshSurfaceType, bool createBackfaces)
         {
             // Get scene, assert validity
-            var scene = sceneSobj.Value;
             Assert.IsTrue(scene.IsValidFile);
 
             // Simplify access to tris/quads
@@ -218,7 +199,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 // Create base data for mesh for EACH mesh type (boost, heal, etc)
                 var mesh = new Mesh()
                 {
-                    name = $"st{scene.ID:00}_{meshSurfaceTypeIndex:00}.{listIndex:000}_{meshSurfaceType}",
+                    name = $"st{scene.CourseIndex:00}_{meshSurfaceTypeIndex:00}.{listIndex:000}_{meshSurfaceType}",
                 };
 
                 // Get triangle indexes, get traingles from array using indexes, create submesh, then assign it.
@@ -253,10 +234,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             return meshes;
         }
 
-        public static Mesh[] CreateStaticColliderMeshes(ColiSceneSobj sceneSobj, bool createBackfaces)
+        public static Mesh[] CreateStaticColliderMeshes(Scene scene, bool createBackfaces)
         {
             // Get scene, assert validity
-            var scene = sceneSobj.Value;
             Assert.IsTrue(scene.IsValidFile);
 
             // Get number of mesh. AX and GX differ in count.
@@ -278,7 +258,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 // Create base data for mesh for EACH mesh type (boost, heal, etc)
                 var mesh = new Mesh()
                 {
-                    name = $"st{scene.ID:00}_{meshSurfaceType:00}_{(StaticColliderMeshProperty)meshSurfaceType}",
+                    name = $"st{scene.CourseIndex:00}_{meshSurfaceType:00}_{(StaticColliderMeshProperty)meshSurfaceType}",
                 };
                 // one submesh for tris, one for quads
                 var submeshes = new SubMeshDescriptor[2];
