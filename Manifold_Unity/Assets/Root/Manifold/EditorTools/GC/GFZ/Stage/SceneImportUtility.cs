@@ -14,8 +14,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
     public static class SceneImportUtility
     {
         // todo: make title consistent across progress bars.
+        public static string ExecuteText => "Import COLI as Unity Scene";
 
-        public const string ExecuteText = "Import COLI as Unity Scene";
 
         [MenuItem(Const.Menu.Manifold + "Scene Generation/Import All Stages")]
         public static void ImportAll()
@@ -154,7 +154,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             var noMeshObject = new GameObject();
 
             // Tag object with metadata
-            noMeshObject.AddComponent<NoMeshTag>();
+            noMeshObject.AddComponent<TagNoMesh>();
 
             // TEMP? Disable for visual clarity
             //noMeshObject.SetActive(false);
@@ -772,7 +772,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                     cell.parent = gridObject;
                 }
             }
-
 
             return gridObject;
         }

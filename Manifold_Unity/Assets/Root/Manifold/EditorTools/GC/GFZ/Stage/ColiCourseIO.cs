@@ -17,6 +17,7 @@ using System.Diagnostics;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage
 {
+    [Obsolete]
     public static class ColiCourseIO
     {
         // CONSTANTS
