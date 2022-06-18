@@ -22,7 +22,7 @@ namespace Manifold.EditorTools.GC.GFZ.GMA
         public static void MenuForward(Action<Gma[], string> action, string outputFileName)
         {
             var settings = GfzProjectWindow.GetSettings();
-            var inputPath = settings.RootFolder;
+            var inputPath = settings.SourceDirectory;
             var outputPath = settings.AnalysisOutput + outputFileName;
 
             var filePaths = Directory.GetFiles(inputPath, "*.gma", SearchOption.AllDirectories);

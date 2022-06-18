@@ -27,7 +27,7 @@ namespace Manifold.EditorTools.GC.GFZ.GMA
         public static void ForeachGma(string title, FileUtility.FileAction fileAction)
         {
             var settings = GfzProjectWindow.GetSettings();
-            var rootFolder = settings.RootFolder;
+            var rootFolder = settings.SourceDirectory;
             ForeachGma(title, rootFolder, fileAction);
         }
 
@@ -42,7 +42,7 @@ namespace Manifold.EditorTools.GC.GFZ.GMA
         {
             // Get output parameters
             var settings = GfzProjectWindow.GetSettings();
-            var rootPath = settings.RootFolder;
+            var rootPath = settings.SourceDirectory;
             var outputPath = settings.FileOutput + "/gma";
             var outputFilePath = FileUtility.LoadSaveToDisk(filePath, rootPath, outputPath, LoadFile<Gma>, SaveFile, true);
             LzUtility.CompressAvLzToDisk(outputFilePath, GxGame.FZeroGX, true);

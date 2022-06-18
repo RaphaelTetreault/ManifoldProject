@@ -108,7 +108,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         public static void TestLoadSingle()
         {
             var settings = GfzProjectWindow.GetSettings();
-            var root = settings.RootFolder;
+            var root = settings.SourceDirectory;
             var path = $"{root}/stage/";
             var file = EditorUtility.OpenFilePanel("Select Scene", path, "");
 
@@ -124,7 +124,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         public static void TestLoadAllStages()
         {
             var settings = GfzProjectWindow.GetSettings();
-            var root = settings.RootFolder;
+            var root = settings.SourceDirectory;
             var path = $"{root}/stage/";
             TestLoadAllStages(TestLoad, path);
         }
@@ -183,7 +183,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         public static void Temp()
         {
             var settings = GfzProjectWindow.GetSettings();
-            var inputPath = settings.StageDir;
+            var inputPath = settings.SourceStageDirectory;
             var outputPath = settings.FileOutput;
             var title = $"Writing {nameof(Scene)} to disk...";
             TestSaveAllStagesDisk(title, inputPath, outputPath);
@@ -204,7 +204,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         public static void TestSaveAllStagesMemory()
         {
             var settings = GfzProjectWindow.GetSettings();
-            var root = settings.RootFolder;
+            var root = settings.SourceDirectory;
             var path = $"{root}/stage/";
             TestSaveAllStagesMemory(TestSave, path);
         }
@@ -230,7 +230,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         public static void RoundtripScenes()
         {
             var settings = GfzProjectWindow.GetSettings();
-            var path = settings.StageDir;
+            var path = settings.SourceStageDirectory;
             var title = "Roundtrip Test";
             Scene sceneWrite;
             var logPath = settings.LogOutput;

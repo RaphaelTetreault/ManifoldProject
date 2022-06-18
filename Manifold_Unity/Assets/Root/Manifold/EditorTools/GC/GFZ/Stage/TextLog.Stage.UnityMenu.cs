@@ -16,7 +16,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         {
             var settings = GfzProjectWindow.GetSettings();
 
-            foreach (var coliScene in ColiCourseIO.LoadAllStages(settings.StageDir, "Logging Stages..."))
+            foreach (var coliScene in ColiCourseIO.LoadAllStages(settings.SourceStageDirectory, "Logging Stages..."))
             {
                 var outputFile = $"{settings.LogOutput}/log-{coliScene.FileName}.txt";
                 using (var log = new TextLogger(outputFile))

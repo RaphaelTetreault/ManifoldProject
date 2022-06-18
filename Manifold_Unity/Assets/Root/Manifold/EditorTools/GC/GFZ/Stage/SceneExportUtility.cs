@@ -82,11 +82,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                     compressFormat = GameCube.AmusementVision.GxGame.FZeroGX;
                     break;
 
-                case SerializeFormat.InvalidFormat:
-                    throw new ArgumentException("No format specified for serialization!");
-
                 default:
-                    throw new NotImplementedException();
+                    throw new ArgumentException($"Invalid format '{format}' specified for serialization.");
             }
 
             var mirroredObjects = GameObject.FindObjectsOfType<GfzMirroredObject>();

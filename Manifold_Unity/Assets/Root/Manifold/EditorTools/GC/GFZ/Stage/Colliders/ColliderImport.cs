@@ -13,30 +13,98 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Colliders
 {
     public static class ColliderImport
     {
+        private const string materialsFolder = "Assets/Root/Manifold/EditorTools/GC/GFZ/Materials/";
+        private const string triMaterialAsset = materialsFolder + "mat_ColliderTriangles.mat";
+        private const string quadMaterialAsset = materialsFolder + "mat_ColliderQuads.mat";
+        private static readonly string[] StaticColliderTypeMaterialAssets = new string[] {
+            materialsFolder + "mat_ColiType00_Driveable.mat",
+            materialsFolder + "mat_ColiType01_Recover.mat",
+            materialsFolder + "mat_ColiType02_Wall.mat",
+            materialsFolder + "mat_ColiType03_Dash.mat",
+            materialsFolder + "mat_ColiType04_Jump.mat",
+            materialsFolder + "mat_ColiType05_Ice.mat",
+            materialsFolder + "mat_ColiType06_Dirt.mat",
+            materialsFolder + "mat_ColiType07_Damage.mat",
+            materialsFolder + "mat_ColiType08_OutOfBounds.mat",
+            materialsFolder + "mat_ColiType09_DeathGrounds.mat",
+            materialsFolder + "mat_ColiType10_Death1.mat",
+            materialsFolder + "mat_ColiType11_Death2.mat",
+            materialsFolder + "mat_ColiType12_Death3.mat",
+            materialsFolder + "mat_ColiType13_Death4.mat",
+        };
+
         // For object colliders
         private static Material triMaterial = null;
         private static Material quadMaterial = null;
+        private static Material[] staticColliderTypeMaterials = new Material[14];
 
-        // For static surface type colliders
-        private static Material[] triMaterials = new Material[14];
-        private static Material[] quadMaterials = new Material[14];
+        private static Material TriMaterial
+        {
+            get
+            {
+                if (triMaterial == null)
+                    triMaterial = AssetDatabase.LoadAssetAtPath<Material>(triMaterialAsset);
+                return triMaterial;
+            }
+        }
+        private static Material QuadMaterial
+        {
+            get
+            {
+                if (quadMaterial == null)
+                    quadMaterial = AssetDatabase.LoadAssetAtPath<Material>(quadMaterialAsset);
+                return triMaterial;
+            }
+        }
+        private static Material[] StaticColliderTypeMaterials
+        {
+            get
+            {
+                for (int i = 0; i < staticColliderTypeMaterials.Length; i++)
+                {
+                    if (staticColliderTypeMaterials[i] is null)
+                        staticColliderTypeMaterials[i] = AssetDatabase.LoadAssetAtPath<Material>(StaticColliderTypeMaterialAssets[i]);
+                }
+                return staticColliderTypeMaterials;
+            }
+        }
 
-        [MenuItem(ManifoldConst.Menu.Manifold + "Collision/Create Collider Meshes")]
+
+
+        [MenuItem(ManifoldConst.Menu.Manifold + "Colliders/Create Collider Meshes", priority = 0)]
         public static void Import()
         {
             var settings = GfzProjectWindow.GetSettings();
-            var inputPath = settings.StageDir;
+            var inputPath = settings.SourceStageDirectory;
             var filePaths = Directory.GetFiles(inputPath, "COLI_COURSE???", SearchOption.TopDirectoryOnly);
             var sceneIterator = BinarySerializableIO.LoadFile<Scene>(filePaths);
 
-            var outputPath = DirectoryUtility.GetTopDirectory(settings.RootFolder);
+            var outputPath = DirectoryUtility.GetTopDirectory(settings.SourceDirectory);
             var fullOutputPath = $"Assets/{outputPath}/stage/";
             AssetDatabaseUtility.CreateDirectory(fullOutputPath);
 
             foreach (Scene scene in sceneIterator)
             {
-                CreateColliders(scene, fullOutputPath, settings.CollisionCreateBackfaces);
+                CreateColliders(scene, fullOutputPath, settings.CreateColliderBackfaces);
             }
+        }
+
+        [MenuItem(ManifoldConst.Menu.Manifold + "Colliders/Create 256 Static Collider Meshes (Single Scene, Select Layer)", priority = 100)]
+        public static void Import256()
+        {
+            var settings = GfzProjectWindow.GetSettings();
+            var inputPath = settings.SourceStageDirectory;
+            var outputPath = DirectoryUtility.GetTopDirectory(settings.SourceDirectory);
+            var fullOutputPath = $"Assets/{outputPath}/stage/";
+            AssetDatabaseUtility.CreateDirectory(fullOutputPath);
+
+            var sceneIndex = settings.Collider256SceneIndex;
+            var filePath = $"{inputPath}COLI_COURSE{sceneIndex:00}";
+            var scene = BinarySerializableIO.LoadFile<Scene>(filePath);
+
+            CreateStaticColliders256(scene, fullOutputPath, settings.CreateColliderBackfaces, settings.Collider256MeshType);
+
+            ProgressBar.Clear();
         }
 
         public static void CreateColliders(Scene scene, string outputDirectory, bool createBackfaces)
@@ -50,6 +118,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Colliders
             // Then these functions build the assets
             CreateObjectColliders(scene, outputDirectory, createBackfaces);
             CreateStaticColliders(scene, outputDirectory, createBackfaces);
+
+            ProgressBar.Clear();
         }
 
         public static void CreateObjectColliders(Scene scene, string outputDirectory, bool createBackfaces)
@@ -71,11 +141,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Colliders
                     // Save mesh to Asset Database
                     var assetPath = $"{outputPathBase}coli_{meshName}.asset";
                     AssetDatabase.CreateAsset(mesh, assetPath);
-                    // IMPORTANT! Sometimes reference gets lost. This refreshes instance reference
-                    mesh = AssetDatabase.LoadAssetAtPath<Mesh>(assetPath);
 
                     // Create mesh prefab
-                    var materials = new Material[] { triMaterial, quadMaterial };
+                    var materials = new Material[] { TriMaterial, QuadMaterial };
                     var prefabPath = $"{outputPathBase}/pf_{meshName}.prefab";
                     var prefab = GmaImport.CreatePrefabFromModel(mesh, materials, prefabPath);
 
@@ -98,137 +166,118 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Colliders
                 ProgressBar.ShowIndexed(meshIndex, meshes.Length, "Importing Static Colliders", $"st{scene.CourseIndex:00} {meshName}");
 
                 // HACK: assign material to each static surface type mesh
-                var half = mesh.subMeshCount / 2;
                 var materials = new Material[mesh.subMeshCount];
                 for (int matIndex = 0; matIndex < materials.Length; matIndex++)
                 {
-                    materials[matIndex] = matIndex < half
-                        ? triMaterials[meshIndex]
-                        : quadMaterials[meshIndex];
+                    materials[matIndex] = StaticColliderTypeMaterials[meshIndex];
                 }
 
                 // Save mesh to Asset Database.
-                var meshPath = $"{outputPathBase}/coli_{meshName}.asset";
-                // Delete any existing instances.
-                //if (AssetDatabase.LoadAssetAtPath<Mesh>(meshPath) != null)
-                //    AssetDatabase.DeleteAsset(meshPath);
+                var meshPath = $"{outputPathBase}/coli_{meshName}_{(StaticColliderMeshProperty)meshIndex}.asset";
                 AssetDatabase.CreateAsset(mesh, meshPath);
-                // IMPORTANT! Sometimes reference gets lost. This refreshes instance reference
-                mesh = AssetDatabase.LoadAssetAtPath<Mesh>(meshPath);
 
                 // Create mesh prefab
-                var prefabPath = $"{outputPathBase}/pf_{meshName}.prefab";
+                var prefabPath = $"{outputPathBase}/pf_{meshName}_{(StaticColliderMeshProperty)meshIndex}.prefab";
                 var prefab = GmaImport.CreatePrefabFromModel(mesh, materials, prefabPath);
                 // TODO: anything to tag prefab with?
             }
         }
 
-        // static colliders 256 - deprecate
-        //public static void CreateStaticColliders256(Scene scene, string outputDirectory, bool createBackfaces)
-        //{
-        //    // The lesson I learned is that generating 14 * 256 meshes AND prefabs is a bad idea.
-        //    //The current format create 256 per run.
-        //    if (createMesh256OfType)
-        //    {
-        //        var meshes = CreateStaticColliderMeshes256(scene, type, createBackfaces);
-        //        int total = meshes.Length;
-        //        int count = 0;
+        public static void CreateStaticColliders256(Scene scene, string outputDirectory, bool createBackfaces, StaticColliderMeshProperty type)
+        {
+            // The lesson I learned is that generating 14 * 256 meshes AND prefabs is a bad idea.
+            string baseMeshName = $"st{scene.CourseIndex:00}_{(int)type:00}_{type}";
+            var meshes = CreateStaticColliderMeshes256(scene, type, createBackfaces, baseMeshName);
+            string outputPathBase = $"{outputDirectory}st{scene.CourseIndex:00}/{baseMeshName}";
+            AssetDatabaseUtility.CreateDirectory(outputPathBase);
 
-        //        var material = triMaterials[(int)type];
+            var material = StaticColliderTypeMaterials[(int)type];
+            for (int meshIndex = 0; meshIndex < meshes.Length; meshIndex++)
+            {
+                // get mesh
+                var mesh = meshes[meshIndex];
+                var materials = new Material[mesh.subMeshCount];
+                for (int subMeshIndex = 0; subMeshIndex < mesh.subMeshCount; subMeshIndex++)
+                    materials[subMeshIndex] = material;
+                var meshName = mesh.name;
 
-        //        for (int meshIndex = 0; meshIndex < meshes.Length; meshIndex++)
-        //        {
-        //            // get mesh
-        //            var mesh = meshes[meshIndex];
-        //            var materials = new Material[mesh.subMeshCount];
-        //            for (int subMeshIndex = 0; subMeshIndex < mesh.subMeshCount; subMeshIndex++)
-        //                materials[subMeshIndex] = material;
+                var cancel = ProgressBar.ShowIndexed(meshIndex, meshes.Length, "Importing Static Colliders", $"st{scene.CourseIndex:00} {meshName}");
+                if (cancel) break;
 
-        //            count++;
-        //            var meshName = mesh.name;
-        //            //ProgressBar.ShowIndexed<SceneObject>(count, total, $"st{scene.CourseIndex:00} {meshName}");
+                // Save mesh to Asset Database
+                var meshPath = $"{outputPathBase}/coli_{meshName}.asset";
+                AssetDatabase.CreateAsset(mesh, meshPath);
 
-        //            // Save mesh to Asset Database
-        //            var meshPath = $"Assets/{importTo}/st{scene.CourseIndex:00}/coli_{meshName}.asset";
-        //            if (AssetDatabase.LoadAssetAtPath<Mesh>(meshPath) != null)
-        //                AssetDatabase.DeleteAsset(meshPath);
-        //            AssetDatabase.CreateAsset(mesh, meshPath);
+                // Create mesh prefab
+                var prefabPath = $"{outputPathBase}/pf_{meshName}.prefab";
+                var prefab = GmaImport.CreatePrefabFromModel(mesh, materials, prefabPath);
+            }
+        }
 
-        //            // Refresh instance reference
-        //            // IMPORTANT! Sometimes reference gets lost.
-        //            mesh = AssetDatabase.LoadAssetAtPath<Mesh>(meshPath);
+        public static Mesh[] CreateStaticColliderMeshes256(Scene scene, StaticColliderMeshProperty meshSurfaceType, bool createBackfaces, string baseMeshName)
+        {
+            // Simplify access to tris/quads
+            var scm = scene.staticColliderMeshManager;
+            var colliderTriangles = scm.ColliderTris;
+            var colliderQuads = scm.ColliderQuads;
 
-        //            // Create mesh prefab
-        //            var prefabPath = $"Assets/{importTo}/st{scene.CourseIndex:00}/pf_{meshName}.prefab";
-        //            var prefab = new GameObject();
-        //            //var prefab = ImportUtility.CreatePrefabFromModel(mesh, materials, prefabPath);
-        //        }
-        //    }
-        //}
-        //public static Mesh[] CreateStaticColliderMeshes256(Scene scene, StaticColliderMeshProperty meshSurfaceType, bool createBackfaces)
-        //{
-        //    // Simplify access to tris/quads
-        //    var scm = scene.staticColliderMeshManager;
-        //    var colliderTriangles = scm.ColliderTris;
-        //    var colliderQuads = scm.ColliderQuads;
+            //
+            const int nLists = StaticColliderMeshGrid.kListCount;
+            var meshes = new Mesh[nLists];
 
-        //    //
-        //    const int nLists = StaticColliderMeshGrid.kListCount;
-        //    var meshes = new Mesh[nLists];
+            //
+            int meshSurfaceTypeIndex = (int)meshSurfaceType;
 
-        //    //
-        //    int meshSurfaceTypeIndex = (int)meshSurfaceType;
+            // Get triangle information for the current mesh type
+            var triIndex16x16 = scm.TriMeshGrids[meshSurfaceTypeIndex];
+            var triIndexLists = triIndex16x16.IndexLists;
+            Assert.IsTrue(triIndexLists.Length == 0 || triIndexLists.Length == StaticColliderMeshGrid.kListCount);
 
-        //    // Get triangle information for the current mesh type
-        //    var triIndex16x16 = scm.TriMeshGrids[meshSurfaceTypeIndex];
-        //    var triIndexLists = triIndex16x16.IndexLists;
-        //    Assert.IsTrue(triIndexLists.Length == 0 || triIndexLists.Length == StaticColliderMeshGrid.kListCount);
+            //
+            var quadMeshIndexes = scm.QuadMeshGrids[meshSurfaceTypeIndex];
+            var quadIndexLists = quadMeshIndexes.IndexLists;
+            Assert.IsTrue(quadIndexLists.Length == 0 || quadIndexLists.Length == StaticColliderMeshGrid.kListCount);
 
-        //    //
-        //    var quadMeshIndexes = scm.QuadMeshGrids[meshSurfaceTypeIndex];
-        //    var quadIndexLists = quadMeshIndexes.IndexLists;
-        //    Assert.IsTrue(quadIndexLists.Length == 0 || quadIndexLists.Length == StaticColliderMeshGrid.kListCount);
+            //
+            for (int listIndex = 0; listIndex < nLists; listIndex++)
+            {
+                // Create base data for mesh for EACH mesh type (boost, heal, etc)
+                var mesh = new Mesh()
+                {
+                    name = $"{baseMeshName}.{listIndex:000}_{meshSurfaceType}",
+                };
 
-        //    //
-        //    for (int listIndex = 0; listIndex < nLists; listIndex++)
-        //    {
-        //        // Create base data for mesh for EACH mesh type (boost, heal, etc)
-        //        var mesh = new Mesh()
-        //        {
-        //            name = $"st{scene.CourseIndex:00}_{meshSurfaceTypeIndex:00}.{listIndex:000}_{meshSurfaceType}",
-        //        };
+                // Get triangle indexes, get traingles from array using indexes, create submesh, then assign it.
+                var triIndexList = triIndexLists[listIndex];
+                var colliderTriangleSubset = GetIndexes(colliderTriangles, triIndexList.Indexes);
+                var trianglesSubmesh = CreateTriSubmeshForMesh(mesh, colliderTriangleSubset, createBackfaces);
 
-        //        // Get triangle indexes, get traingles from array using indexes, create submesh, then assign it.
-        //        var triIndexList = triIndexLists[listIndex];
-        //        var colliderTriangleSubset = GetIndexes(colliderTriangles, triIndexList.Indexes);
-        //        var trianglesSubmesh = CreateTriSubmeshForMesh(mesh, colliderTriangleSubset, createBackfaces);
+                // Get quad indexes, get traingles from array using indexes, create submesh, then assign it.
+                var quadIndexList = quadIndexLists[listIndex];
+                var colliderQuadSubset = GetIndexes(colliderQuads, quadIndexList.Indexes);
+                var quadSubmesh = CreateQuadSubmeshForMesh(mesh, colliderQuadSubset, createBackfaces);
 
-        //        // Get quad indexes, get traingles from array using indexes, create submesh, then assign it.
-        //        var quadIndexList = quadIndexLists[listIndex];
-        //        var colliderQuadSubset = GetIndexes(colliderQuads, quadIndexList.Indexes);
-        //        var quadSubmesh = CreateQuadSubmeshForMesh(mesh, colliderQuadSubset, createBackfaces);
+                //
+                var submeshes = new SubMeshDescriptor[]
+                {
+                        trianglesSubmesh,
+                        quadSubmesh,
+                };
+                // Set each submesh in the mesh
+                mesh.subMeshCount = submeshes.Length;
+                for (int submeshIndex = 0; submeshIndex < submeshes.Length; submeshIndex++)
+                {
+                    mesh.SetSubMesh(submeshIndex, submeshes[submeshIndex], MeshUpdateFlags.Default);
+                }
 
-        //        //
-        //        var submeshes = new SubMeshDescriptor[]
-        //        {
-        //                trianglesSubmesh,
-        //                quadSubmesh,
-        //        };
-        //        // Set each submesh in the mesh
-        //        mesh.subMeshCount = submeshes.Length;
-        //        for (int submeshIndex = 0; submeshIndex < submeshes.Length; submeshIndex++)
-        //        {
-        //            mesh.SetSubMesh(submeshIndex, submeshes[submeshIndex], MeshUpdateFlags.Default);
-        //        }
+                // Compute other Mesh data
+                mesh.RecalculateBounds();
+                // Assign mesh to mesh array
+                meshes[listIndex] = mesh;
+            }
 
-        //        // Compute other Mesh data
-        //        mesh.RecalculateBounds();
-        //        // Assign mesh to mesh array
-        //        meshes[listIndex] = mesh;
-        //    }
-
-        //    return meshes;
-        //}
+            return meshes;
+        }
 
 
         /// <summary>
@@ -259,7 +308,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Colliders
                 // This is done for EACH mesh type (boost, heal, etc)
                 var mesh = new Mesh()
                 {
-                    name = $"st{scene.CourseIndex:00}_{meshSurfaceType:00}_{(StaticColliderMeshProperty)meshSurfaceType}",
+                    name = $"st{scene.CourseIndex:00}_{meshSurfaceType:00}",
                 };
                 // One submesh for tris, one for quads
                 var submeshes = new SubMeshDescriptor[2];

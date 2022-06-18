@@ -21,8 +21,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         public static void ImportAll()
         {
             var settings = GfzProjectWindow.GetSettings();
-            var inputPath = settings.StageDir;
-            var outputPath = DirectoryUtility.GetTopDirectory(settings.RootFolder) + "/stage/";
+            var inputPath = settings.SourceStageDirectory;
+            var outputPath = DirectoryUtility.GetTopDirectory(settings.SourceDirectory) + "/stage/";
             foreach (var scene in ColiCourseIO.LoadAllStages(inputPath, "Generating Unity Scene From GFZ Scene"))
             {
                 Import(scene, outputPath);
@@ -35,9 +35,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         public static void ImportSingle()
         {
             var settings = GfzProjectWindow.GetSettings();
-            var inputPath = settings.StageDir;
-            var outputPath = DirectoryUtility.GetTopDirectory(settings.RootFolder) + "/stage/";
-            var sceneIndex = settings.SceneOfInterestID;
+            var inputPath = settings.SourceStageDirectory;
+            var outputPath = DirectoryUtility.GetTopDirectory(settings.SourceDirectory) + "/stage/";
+            var sceneIndex = settings.SingleSceneIndex;
             var filePath = $"{inputPath}COLI_COURSE{sceneIndex:00}";
             var scene = ColiCourseIO.LoadScene(filePath);
             Import(scene, outputPath);
@@ -49,10 +49,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         public static void ImportSingleSelect()
         {
             var settings = GfzProjectWindow.GetSettings();
-            var filePath = EditorUtility.OpenFilePanel("Select Stage File", settings.StageDir, "");
+            var filePath = EditorUtility.OpenFilePanel("Select Stage File", settings.SourceStageDirectory, "");
             if (string.IsNullOrEmpty(filePath))
                 return;
-            var outputPath = DirectoryUtility.GetTopDirectory(settings.RootFolder) + "/stage/";
+            var outputPath = DirectoryUtility.GetTopDirectory(settings.SourceDirectory) + "/stage/";
             var scene = ColiCourseIO.LoadScene(filePath);
             Import(scene, outputPath);
             EditorUtility.ClearProgressBar();

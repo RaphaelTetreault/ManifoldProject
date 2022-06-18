@@ -18,14 +18,18 @@ namespace Manifold.EditorTools.GC.GFZ.GMA
 {
     public static class GmaImport
     {
-        [MenuItem(Const.Menu.Manifold + "GMA/Import from Root Folder")]
+        private const string MaterialsFolder = "Assets/Root/Manifold/EditorTools/GC/GFZ/Materials/";
+        private const string DefaultMaterialAssetPath = MaterialsFolder + "mat_VertexColor.mat";
+
+
+        [MenuItem(Const.Menu.Manifold + "GMA/Import all models from Source Folder", priority = 0)]
         public static void ImportGma()
         {
             var settings = GfzProjectWindow.GetSettings();
-            var rootDirectory = settings.RootFolder;
+            var rootDirectory = settings.SourceDirectory;
             ImportGma(rootDirectory);
         }
-        [MenuItem(Const.Menu.Manifold + "GMA/Import All Regions")]
+        [MenuItem(Const.Menu.Manifold + "GMA/Testing - Import all models from all regions", priority = 100)]
         public static void ImportGmaAllRegions()
         {
             var settings = GfzProjectWindow.GetSettings();
@@ -58,8 +62,7 @@ namespace Manifold.EditorTools.GC.GFZ.GMA
                 {
                     // Get mesh and materials
                     var mesh = CreateSingleMeshFromModel(model, outputDirectory, "Importing Model");
-                    var materialPath = "Assets/Root/Manifold/EditorTools/Materials/mat_VertexColor.mat";
-                    var tempMaterial = AssetDatabase.LoadAssetAtPath<UnityEngine.Material>(materialPath);
+                    var tempMaterial = AssetDatabase.LoadAssetAtPath<UnityEngine.Material>(DefaultMaterialAssetPath);
                     var meshMaterials = HackApplyDefaultMaterial(mesh, tempMaterial);
 
                     // Construct prefab path, save to asset database
@@ -198,7 +201,7 @@ namespace Manifold.EditorTools.GC.GFZ.GMA
             // Go over each mesh in submeshes
             foreach (var submesh in model.Gcmf.Submeshes)
             {
-                var cancel = ProgressBar.ShowIndexed(submeshIndex, numSubmeshes, "Importing Models", $"{path}{model.Name}");
+                var cancel = ProgressBar.ShowIndexed(submeshIndex, numSubmeshes, "Importing Model's Submesh", $"{path}/{model.Name}");
                 if (cancel)
                 {
                     ProgressBar.Clear();
