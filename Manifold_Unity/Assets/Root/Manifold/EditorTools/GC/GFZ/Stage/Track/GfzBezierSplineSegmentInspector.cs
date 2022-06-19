@@ -222,6 +222,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 {
                     Undo.RecordObject(spline, $"Add bézier point at {selectedIndex}");
                     spline.InsertBefore(selectedIndex);
+                    selectedPart = SelectedPart.point;
                     EditorUtility.SetDirty(spline);
                 }
 
@@ -229,6 +230,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 {
                     Undo.RecordObject(spline, $"Add bézier point at {spline.PointsCount}");
                     spline.InsertAfter(selectedIndex + 1);
+                    selectedPart = SelectedPart.point;
                     EditorUtility.SetDirty(spline);
                     selectedIndex++;
                 }
@@ -238,6 +240,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 {
                     Undo.RecordObject(spline, $"Delete bézier point {selectedIndex}");
                     spline.RemovePoint(selectedIndex);
+                    selectedPart = SelectedPart.point;
                     EditorUtility.SetDirty(spline);
                     selectedIndex--;
                 }
@@ -271,7 +274,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             // Save values modified through PropertyField()
             serializedObject.ApplyModifiedProperties();
             //
-            Repaint();
+            //Repaint();
         }
 
         private void DrawSelectedBezierPointInspector(int index)
@@ -350,7 +353,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         private void DrawIndexToolbar()
         {
-            int rows = spline.CurveCount / 10;
+            int isLoopedCountOffset = spline.IsLoop ? 1 : 0;
+            int rows = (spline.CurveCount - isLoopedCountOffset) / 10;
             for (int r = 0; r <= rows; r++)
             {
                 int rowBaseCurr = (r + 0) * 10;
