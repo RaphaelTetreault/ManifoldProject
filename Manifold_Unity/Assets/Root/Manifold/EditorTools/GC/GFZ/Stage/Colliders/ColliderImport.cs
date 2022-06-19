@@ -71,7 +71,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Colliders
 
 
 
-        [MenuItem(ManifoldConst.Menu.Manifold + "Colliders/Create Collider Meshes", priority = 0)]
+        [MenuItem(GfzMenuItems.ColiImport, priority = GfzMenuItems.ColiImportPriority)]
         public static void Import()
         {
             var settings = GfzProjectWindow.GetSettings();
@@ -89,7 +89,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Colliders
             }
         }
 
-        [MenuItem(ManifoldConst.Menu.Manifold + "Colliders/Create 256 Static Collider Meshes (Single Scene, Select Layer)", priority = 100)]
+        [MenuItem(GfzMenuItems.ColiImport256, priority = GfzMenuItems.ColiImport256Priority)]
         public static void Import256()
         {
             var settings = GfzProjectWindow.GetSettings();
