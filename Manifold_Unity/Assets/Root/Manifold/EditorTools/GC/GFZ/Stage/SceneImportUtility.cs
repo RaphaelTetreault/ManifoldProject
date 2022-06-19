@@ -17,7 +17,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         public static string ExecuteText => "Import COLI as Unity Scene";
 
 
-        [MenuItem(Const.Menu.Manifold + "Scene Generation/Import All Stages")]
+        [MenuItem(GfzMenuItems.Stage.ImportAll, priority = GfzMenuItems.Stage.ImportAllPriority)]
         public static void ImportAll()
         {
             var settings = GfzProjectWindow.GetSettings();
@@ -31,7 +31,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             AssetDatabase.Refresh();
         }
 
-        [MenuItem(Const.Menu.Manifold + "Scene Generation/Import Stage (Single)")]
+        [MenuItem(GfzMenuItems.Stage.ImportSingle, priority = GfzMenuItems.Stage.ImportSinglePriority)]
         public static void ImportSingle()
         {
             var settings = GfzProjectWindow.GetSettings();
@@ -45,7 +45,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             AssetDatabase.Refresh();
         }
 
-        [MenuItem(Const.Menu.Manifold + "Scene Generation/Import Stage (Single, Select File)")]
+        [MenuItem(GfzMenuItems.Stage.ImportSingleSelect, priority = GfzMenuItems.Stage.ImportSingleSelectPriority)]
         public static void ImportSingleSelect()
         {
             var settings = GfzProjectWindow.GetSettings();

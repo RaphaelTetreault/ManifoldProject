@@ -16,7 +16,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
     public static class SceneExportUtility
     {
 
-        [MenuItem(Const.Menu.Manifold + "Scene Generation/Export (Active Scene)")]
+        [MenuItem(GfzMenuItems.Stage.ExportActiveScene, priority = GfzMenuItems.Stage.ExportActiveScenePriority)]
         public static void ExportSceneActive()
         {
             var format = SerializeFormat.GX;

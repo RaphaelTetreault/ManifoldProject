@@ -27,7 +27,7 @@ namespace Manifold.EditorTools.GC.GFZ.GMA
         }
 
 
-        [MenuItem(GfzMenuItems.GmaLoadSaveToDisk, priority = GfzMenuItems.GmaLoadSaveToDiskPriority)]
+        [MenuItem(GfzMenuItems.GMA.LoadSaveToDisk, priority = GfzMenuItems.GMA.LoadSaveToDiskPriority)]
         public static void LoadSaveToDisk()
         {
             ForeachGma("Load/Save to Disk", LoadSaveToDisk);
@@ -43,7 +43,7 @@ namespace Manifold.EditorTools.GC.GFZ.GMA
         }
 
 
-        [MenuItem(GfzMenuItems.GmaLoadSaveToMemory, priority = GfzMenuItems.GmaLoadSaveToMemoryPriority)]
+        [MenuItem(GfzMenuItems.GMA.LoadSaveToMemory, priority = GfzMenuItems.GMA.LoadSaveToMemoryPriority)]
         public static void LoadSaveToMemory()
         {
             ForeachGma("Load/Save (in RAM)", LoadSaveToMemory);

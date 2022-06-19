@@ -71,7 +71,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Colliders
 
 
 
-        [MenuItem(GfzMenuItems.ColiImport, priority = GfzMenuItems.ColiImportPriority)]
+        [MenuItem(GfzMenuItems.Colliders.Import, priority = GfzMenuItems.Colliders.ImportPriority)]
         public static void Import()
         {
             var settings = GfzProjectWindow.GetSettings();
@@ -89,7 +89,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Colliders
             }
         }
 
-        [MenuItem(GfzMenuItems.ColiImport256, priority = GfzMenuItems.ColiImport256Priority)]
+        [MenuItem(GfzMenuItems.Colliders.Import256, priority = GfzMenuItems.Colliders.Import256Priority)]
         public static void Import256()
         {
             var settings = GfzProjectWindow.GetSettings();

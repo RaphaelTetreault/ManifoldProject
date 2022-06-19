@@ -20,7 +20,7 @@ namespace Manifold.EditorTools.GC.GFZ.GMA
         private const string DefaultMaterialAssetPath = MaterialsFolder + "mat_VertexColor.mat";
 
 
-        [MenuItem(GfzMenuItems.ImportGma, priority = GfzMenuItems.ImportGmaPriority)]
+        [MenuItem(GfzMenuItems.GMA.ImportGma, priority = GfzMenuItems.GMA.ImportGmaPriority)]
         public static void ImportGma()
         {
             var settings = GfzProjectWindow.GetSettings();
@@ -28,7 +28,7 @@ namespace Manifold.EditorTools.GC.GFZ.GMA
             ImportGma(rootDirectory);
         }
 
-        [MenuItem(GfzMenuItems.ImportGmaAllRegions, priority = GfzMenuItems.ImportGmaAllRegionsPriority)]
+        [MenuItem(GfzMenuItems.GMA.ImportGmaAllRegions, priority = GfzMenuItems.GMA.ImportGmaAllRegionsPriority)]
         public static void ImportGmaAllRegions()
         {
             var settings = GfzProjectWindow.GetSettings();
