@@ -1,16 +1,11 @@
 ﻿using GameCube.AmusementVision;
 using GameCube.GFZ.GMA;
 using GameCube.GFZ.LZ;
-using Manifold;
 using Manifold.IO;
-using System;
-using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
 using UnityEngine;
-
 using static Manifold.IO.BinarySerializableIO;
-
 
 namespace Manifold.EditorTools.GC.GFZ.GMA
 {
@@ -32,8 +27,7 @@ namespace Manifold.EditorTools.GC.GFZ.GMA
         }
 
 
-        // LOAD GMA, SAVE GAME
-        [MenuItem(Const.Menu.Manifold + "GMA/LoadSave to Disk")]
+        [MenuItem(GfzMenuItems.GmaLoadSaveToDisk, priority = GfzMenuItems.GmaLoadSaveToDiskPriority)]
         public static void LoadSaveToDisk()
         {
             ForeachGma("Load/Save to Disk", LoadSaveToDisk);
@@ -49,26 +43,15 @@ namespace Manifold.EditorTools.GC.GFZ.GMA
         }
 
 
-        [MenuItem(Const.Menu.Manifold + "GMA/Test - Roundtrip Byte For Byte (in RAM)")]
-        public static void RoundtripByteForByte()
-        {
-            ForeachGma("Load/Save byte-for-byte", RoundtripByteForByte);
-        }
-        public static void RoundtripByteForByte(string filePath)
-        {
-            GmaTests.TestGmaRoundtripByteForByte(filePath);
-            Debug.Log(filePath);
-        }
-
-
-        [MenuItem(Const.Menu.Manifold + "GMA/Test - Load/Save (in RAM)")]
+        [MenuItem(GfzMenuItems.GmaLoadSaveToMemory, priority = GfzMenuItems.GmaLoadSaveToMemoryPriority)]
         public static void LoadSaveToMemory()
         {
-            ForeachGma("Load/Save (in RAM)", LoadSaveGma);
+            ForeachGma("Load/Save (in RAM)", LoadSaveToMemory);
         }
-        public static void LoadSaveGma(string filePath)
+        public static void LoadSaveToMemory(string filePath)
         {
-            GmaTests.TestLoadSaveGma(filePath);
+            var gma = LoadFile<Gma>(filePath);
+            SaveTo(gma, new MemoryStream());
             Debug.Log(filePath);
         }
 

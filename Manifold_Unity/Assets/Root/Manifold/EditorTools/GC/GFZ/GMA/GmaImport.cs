@@ -3,10 +3,8 @@
 
 using GameCube.GX;
 using GameCube.GFZ.GMA;
-using Manifold;
 using Manifold.IO;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Unity.Mathematics;
@@ -22,14 +20,15 @@ namespace Manifold.EditorTools.GC.GFZ.GMA
         private const string DefaultMaterialAssetPath = MaterialsFolder + "mat_VertexColor.mat";
 
 
-        [MenuItem(Const.Menu.Manifold + "GMA/Import all models from Source Folder", priority = 0)]
+        [MenuItem(GfzMenuItems.ImportGma, priority = GfzMenuItems.ImportGmaPriority)]
         public static void ImportGma()
         {
             var settings = GfzProjectWindow.GetSettings();
             var rootDirectory = settings.SourceDirectory;
             ImportGma(rootDirectory);
         }
-        [MenuItem(Const.Menu.Manifold + "GMA/Testing - Import all models from all regions", priority = 100)]
+
+        [MenuItem(GfzMenuItems.ImportGmaAllRegions, priority = GfzMenuItems.ImportGmaAllRegionsPriority)]
         public static void ImportGmaAllRegions()
         {
             var settings = GfzProjectWindow.GetSettings();
@@ -37,14 +36,13 @@ namespace Manifold.EditorTools.GC.GFZ.GMA
             foreach (var dir in testDirectories)
                 ImportGma(dir);
         }
+
         public static void ImportGma(string rootDirectory)
         {
             var filePaths = Directory.GetFiles(rootDirectory, "*.gma", SearchOption.AllDirectories);
             var gmas = BinarySerializableIO.LoadFile<Gma>(filePaths);
 
             // Go up a directory
-            //var relativeRoot = Path.GetDirectoryName(rootDirectory);
-            //relativeRoot = Path.GetFullPath(Path.Combine(relativeRoot, @"..\"));
             var relativeRoot = DirectoryUtility.GoUpDirectory(rootDirectory, 1);
 
             int index = 0;
@@ -103,7 +101,6 @@ namespace Manifold.EditorTools.GC.GFZ.GMA
 
             return prefab;
         }
-
 
         public static int[] GetTrianglesFromTriangleStrip(int numVerts, bool baseCCW)
         {
