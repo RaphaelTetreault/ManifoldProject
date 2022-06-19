@@ -33,7 +33,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         {
             var progress = 1f;
             var title = "Analysing All ColiScene Files...";
-            var time = DateTime.Now.ToString();
+            var time = DateTime.Now.ToString("dd-MM-yyyy hh-mm-ss");
             bool cancel;
 
             var destination = Path.Combine(outputPath, time);
