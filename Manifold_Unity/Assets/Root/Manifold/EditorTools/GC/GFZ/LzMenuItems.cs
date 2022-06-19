@@ -6,14 +6,12 @@ using UnityEditor;
 
 namespace Manifold.EditorTools.GC.GFZ
 {
-    public class LzMenu
+    public class LzMenuItems
     {
-        public const string GfzMenu = Const.Menu.Manifold + "Utility/";
-
         /// <summary>
         /// Decompresses all F-Zero GX LZ files in selected folder and subfolders
         /// </summary>
-        [MenuItem(GfzMenu + "Decompress All LZ Files in Subdirectories")]
+        [MenuItem(GfzMenuItems.Lz.DecompressAllAvLz, priority = GfzMenuItems.Lz.DecompressAllAvLzPriority)]
         public static void DecompressAllAvLz()
         {
             var rootPath = EditorUtility.OpenFolderPanel("Select GFZ Root Folder", "", "");
@@ -25,13 +23,11 @@ namespace Manifold.EditorTools.GC.GFZ
             FileUtility.FileActionLoop(title, filePaths, decompressFile);
         }
 
-
-
-        [MenuItem(GfzMenu + "Compress single AV LZ (GX)")]
+        [MenuItem(GfzMenuItems.Lz.CompressSingleFileGx, priority = GfzMenuItems.Lz.CompressSingleFileGxPriority)]
         public static void CompressSingleFileGX()
             => CompressSingleFile("Open File to Compress to LZ (F-Zero GX)", GxGame.FZeroGX);
 
-        [MenuItem(GfzMenu + "Compress single AV LZ (AX)")]
+        [MenuItem(GfzMenuItems.Lz.CompressSingleFileAx, priority = GfzMenuItems.Lz.CompressSingleFileAxPriority)]
         public static void CompressSingleFileAX()
             => CompressSingleFile("Open File to Compress to LZ (F-Zero AX)", GxGame.FZeroAX);
 

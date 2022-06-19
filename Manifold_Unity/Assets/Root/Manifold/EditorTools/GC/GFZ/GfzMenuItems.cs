@@ -27,6 +27,26 @@ namespace Manifold.EditorTools.GC.GFZ
             public const int LoadSaveToMemoryPriority = 103;
         }
 
+        public static class Lz
+        {
+            public const string Menu = Const.Menu.Manifold + "LZ Compression Tools/";
+            // LzMenuItems
+            public const string DecompressAllAvLz = Menu + "Decompress all LZ files in directory tree";
+            public const string CompressSingleFileGx = Menu + "Compress single file with AV LZ (GX)";
+            public const string CompressSingleFileAx = Menu + "Compress single file with AV LZ (AX)";
+            public const int DecompressAllAvLzPriority = 1;
+            public const int CompressSingleFileGxPriority = 101;
+            public const int CompressSingleFileAxPriority = 102;
+        }
+
+        public static class ProjectWindow
+        {
+            public const string Menu = Const.Menu.Manifold;
+            // GfzProjectWindow
+            public const string OpenNewWindow = Menu + "Open Settings Window";
+            public const int OpenNewWindowPriority = 101;
+        }
+
         public static class Stage
         {
             public const string Menu = Const.Menu.Manifold + "Scenes/";
