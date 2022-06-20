@@ -10,21 +10,18 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
     [System.Serializable]
     public class AnimationCurveTRS
     {
-        [SerializeField] protected AnimationCurve3 position = new();
-        [SerializeField] protected AnimationCurve3 rotation = new();
-        [SerializeField] protected AnimationCurve3 scale = new();
+        [field: SerializeField] public AnimationCurve3 Position { get; private set; } = new();
+        [field: SerializeField] public AnimationCurve3 Rotation { get; private set; } = new();
+        [field: SerializeField] public AnimationCurve3 Scale { get; private set; } = new();
 
-        public AnimationCurve3 Position => position;
-        public AnimationCurve3 Rotation => rotation;
-        public AnimationCurve3 Scale => scale;
 
         public AnimationCurve[] AnimationCurves
         {
             get => new AnimationCurve[]
             {
-                position.x, position.y, position.z,
-                rotation.x, rotation.y, rotation.z,
-                scale.x, scale.y, scale.z,
+                Position.x, Position.y, Position.z,
+                Rotation.x, Rotation.y, Rotation.z,
+                Scale.x, Scale.y, Scale.z,
             };
         }
 
@@ -41,11 +38,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             var curves = new List<AnimationCurve>();
             var maxTimes = new List<float>();
 
-            curves.AddRange(position.GetCurves());
-            curves.AddRange(rotation.GetCurves());
-            curves.AddRange(scale.GetCurves());
+            curves.AddRange(Position.GetCurves());
+            curves.AddRange(Rotation.GetCurves());
+            curves.AddRange(Scale.GetCurves());
 
-            foreach (var curve in position.GetCurves())
+            foreach (var curve in Position.GetCurves())
             {
                 if (curve.length != 0)
                 {
@@ -76,26 +73,26 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
             var corrected = GetGfzCoordSpaceTRS();
 
-            trackCurves.PositionX = AnimationCurveConverter.ToGfz(corrected.position.x);
-            trackCurves.PositionY = AnimationCurveConverter.ToGfz(corrected.position.y);
-            trackCurves.PositionZ = AnimationCurveConverter.ToGfz(corrected.position.z);
+            trackCurves.PositionX = AnimationCurveConverter.ToGfz(corrected.Position.x);
+            trackCurves.PositionY = AnimationCurveConverter.ToGfz(corrected.Position.y);
+            trackCurves.PositionZ = AnimationCurveConverter.ToGfz(corrected.Position.z);
 
-            trackCurves.RotationX = AnimationCurveConverter.ToGfz(corrected.rotation.x);
-            trackCurves.RotationY = AnimationCurveConverter.ToGfz(corrected.rotation.y);
-            trackCurves.RotationZ = AnimationCurveConverter.ToGfz(corrected.rotation.z);
+            trackCurves.RotationX = AnimationCurveConverter.ToGfz(corrected.Rotation.x);
+            trackCurves.RotationY = AnimationCurveConverter.ToGfz(corrected.Rotation.y);
+            trackCurves.RotationZ = AnimationCurveConverter.ToGfz(corrected.Rotation.z);
 
-            trackCurves.ScaleX = AnimationCurveConverter.ToGfz(corrected.scale.x);
-            trackCurves.ScaleY = AnimationCurveConverter.ToGfz(corrected.scale.y);
-            trackCurves.ScaleZ = AnimationCurveConverter.ToGfz(corrected.scale.z);
+            trackCurves.ScaleX = AnimationCurveConverter.ToGfz(corrected.Scale.x);
+            trackCurves.ScaleY = AnimationCurveConverter.ToGfz(corrected.Scale.y);
+            trackCurves.ScaleZ = AnimationCurveConverter.ToGfz(corrected.Scale.z);
 
             return trackCurves;
         }
 
         public AnimationCurveTRS GetGfzCoordSpaceTRS()
         {
-            var p = position.CreateDeepCopy();
-            var r = rotation.CreateDeepCopy();
-            var s = scale.CreateDeepCopy();
+            var p = Position.CreateDeepCopy();
+            var r = Rotation.CreateDeepCopy();
+            var s = Scale.CreateDeepCopy();
 
             var convertCoordinateSpace = GfzProjectWindow.GetSettings().ConvertCoordSpace;
             if (convertCoordinateSpace)
@@ -120,9 +117,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
             return new AnimationCurveTRS()
             {
-                position = p,
-                rotation = r,
-                scale = s,
+                Position = p,
+                Rotation = r,
+                Scale = s,
             };
         }
 
@@ -140,7 +137,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 var p1 = Position.Evaluate(time + 0.00001f);
                 var forward = (p1 - p0).normalized;
 
-                var zUp = rotation.z.EvaluateNormalized(time);
+                var zUp = Rotation.z.EvaluateNormalized(time);
                 var up = Quaternion.Euler(0, 0, zUp) * Vector3.up;
                 var orientation = Quaternion.LookRotation(forward, up);
                 var eulers = orientation.eulerAngles;
@@ -223,8 +220,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 var currDistance = timeStart + (timeDelta / nIterations * (i + 0));
                 var nextDistance = timeStart + (timeDelta / nIterations * (i + 1));
                 // Compute the distance between these 2 points
-                var currPosition = position.Evaluate(currDistance);
-                var nextPosition = position.Evaluate(nextDistance);
+                var currPosition = Position.Evaluate(currDistance);
+                var nextPosition = Position.Evaluate(nextDistance);
                 // Get distance between 2 points, store delta
                 var delta = Vector3.Distance(currPosition, nextPosition);
                 distance += delta;
@@ -235,9 +232,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         public Matrix4x4 EvaluateMatrix(float time)
         {
             var matrix = new Matrix4x4();
-            var p = position.Evaluate(time);
-            var r = rotation.Evaluate(time);
-            var s = scale.Evaluate(time);
+            var p = Position.Evaluate(time);
+            var r = Rotation.Evaluate(time);
+            var s = Scale.Evaluate(time);
             matrix.SetTRS(p, Quaternion.Euler(r), s);
             return matrix;
         }

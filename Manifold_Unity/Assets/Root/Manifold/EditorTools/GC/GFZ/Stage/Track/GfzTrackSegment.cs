@@ -22,7 +22,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         [SerializeField] private bool genCheckpoints;
         [SerializeField] private bool genAnimCurves;
         [SerializeField] private SegmentGenerator segmentGenerator;
-        [SerializeField] private AnimationCurveTRS animationCurveTRS = new AnimationCurveTRS();
+        [SerializeField] private AnimationCurveTRS animationCurveTRS = new();
+
+
+        [field: SerializeField] private HierarchichalAnimationCurveTRS TrsHierarchy = new();
 
 
         // Properties

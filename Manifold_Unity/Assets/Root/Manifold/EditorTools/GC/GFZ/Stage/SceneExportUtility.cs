@@ -29,20 +29,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             var outputPath = settings.SceneExportPath;
             var activeScene = EditorSceneManager.GetActiveScene();
 
-
             // Get scene parameters for general info
-            var gfzSceneParameters = GameObject.FindObjectsOfType<GfzSceneParameters>();
-            if (gfzSceneParameters.Length == 0)
-            {
-                var errorMsg = $"No {nameof(GfzSceneParameters)} found in scene! There must be one per scene.";
-                throw new ArgumentException(errorMsg);
-            }
-            else if (gfzSceneParameters.Length > 1)
-            {
-                var errorMsg = $"More than one {nameof(GfzSceneParameters)} found in scene! There can only be one per scene.";
-                throw new ArgumentException(errorMsg);
-            }
-            var sceneParams = gfzSceneParameters[0];
+            var sceneParams = GetGfzSceneParameters();
 
             // This object contains the original scene deserialized. Use it in the meantime to get
             // data for which I can't/don't want to construct.
@@ -86,6 +74,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                     throw new ArgumentException($"Invalid format '{format}' specified for serialization.");
             }
 
+            // If objects have been mirrored, mirror again before export
             var mirroredObjects = GameObject.FindObjectsOfType<GfzMirroredObject>();
             foreach (var mirroredObject in mirroredObjects)
                 mirroredObject.MirrorTransform();
@@ -126,7 +115,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             {
                 // Construct range from 2 parameters
                 scene.UnkRange0x00 = new ViewRange(sceneParams.rangeNear, sceneParams.rangeFar);
-                // Use functions to get form parameters
+                // Use functions to get fog parameters
                 scene.fog = sceneParams.ToGfzFog();
                 scene.fogCurves = sceneParams.ToGfzFogCurves();
             }
@@ -263,6 +252,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             LzUtility.CompressAvLzToDisk(outputFile, compressFormat, true);
             OSUtility.OpenDirectory(outputPath);
 
+            // Undo mirroring
             foreach (var mirroredObject in mirroredObjects)
                 mirroredObject.MirrorTransform();
         }
@@ -316,6 +306,23 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             return gfz;
         }
 
+        public static GfzSceneParameters GetGfzSceneParameters()
+        {
+            // Get parameters - ensure there is only 1 in scene!
+            var gfzSceneParameters = GameObject.FindObjectsOfType<GfzSceneParameters>();
+            if (gfzSceneParameters.Length == 0)
+            {
+                var errorMsg = $"No {nameof(GfzSceneParameters)} found in scene! There must be one per scene.";
+                throw new ArgumentException(errorMsg);
+            }
+            else if (gfzSceneParameters.Length > 1)
+            {
+                var errorMsg = $"More than one {nameof(GfzSceneParameters)} found in scene! There can only be one per scene.";
+                throw new ArgumentException(errorMsg);
+            }
+            var sceneParams = gfzSceneParameters[0];
 
+            return sceneParams;
+        }
     }
 }

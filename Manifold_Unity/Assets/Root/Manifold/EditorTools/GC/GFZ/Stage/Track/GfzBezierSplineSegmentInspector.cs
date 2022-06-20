@@ -274,7 +274,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             // Save values modified through PropertyField()
             serializedObject.ApplyModifiedProperties();
             //
-            //Repaint();
+            Repaint();
         }
 
         private void DrawSelectedBezierPointInspector(int index)
