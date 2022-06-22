@@ -14,12 +14,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         public TrackEmbeddedPropertyType embeddedPropertyType;
         public TrackPerimeterFlags perimeterFlags;
         public TrackPipeCylinderFlags pipeCylinderFlags;
-        public Pointer trackCurvesPtr;
-        public Pointer trackCornerPtr;
-        public ArrayPointer childrenPtrs;
-        public float3 localScale;
-        public float3 localRotation;
+        //public Pointer trackCurvesPtr;
+        //public Pointer trackCornerPtr;
+        //public ArrayPointer childrenPtrs;
         public float3 localPosition;
+        public float3 localRotation;
+        public float3 localScale;
         public byte unk_0x38; // mixed flags
         public byte unk_0x39; // exclusive flags
         public byte unk_0x3A; // mixed flags
@@ -39,7 +39,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         public void SetCurves(TrackSegment trackSegment)
         {
             curves = new AnimationCurveTRS();
-            var gfzCurves = trackSegment.AnimationCurveTRS.AnimationCurves;
+            var gfzCurves = trackSegment.AnimationCurveTRS.AnimationCurvesOrderedPRS;
 
             // Convert from animation curves from Gfz to Unity formats
             for (int i = 0; i < gfzCurves.Length; i++)
@@ -47,17 +47,27 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 var animationCurve = gfzCurves[i];
                 var keyables = AnimationCurveConverter.EnforceNoDuplicateTimes(animationCurve.KeyableAttributes);
                 var keyframes = AnimationCurveConverter.KeyablesToKeyframes(keyables);
-                curves[i] = new UnityEngine.AnimationCurve(keyframes);
+                // Unity 2022.1.5f is broken... use workaround
+                //curves[i] = new UnityEngine.AnimationCurve(keyframes);
+                curves[i] = new UnityEngine.AnimationCurve();
+                curves[i].keys = keyframes;
+                var unityCurve = curves[i];
 
-                // 
-                AnimationCurveConverter.SetGfzTangentsToUnityTangents(keyables, curves[i]);
+                if (unityCurve.length != keyframes.Length)
+                {
+                    //Assert.IsTrue(curves[i].length == keyframes.Length);
+                    Debug.Log($"Error? UnityCurve:{unityCurve.length}, Keyframes:{keyframes.Length}, Keyables:{keyables.Length}, GfzCurve:{animationCurve.Length}");
+                }
+
+                //
+                AnimationCurveConverter.SetGfzTangentsToUnityTangents(keyables, unityCurve);
 
                 // TEST - re-apply key values.
                 // Not being respected by Unity?
-                for (int j = 0; j < curves[i].length; j++)
+                for (int j = 0; j < unityCurve.length; j++)
                 {
-                    curves[i].keys[j].inTangent = keyframes[j].inTangent;
-                    curves[i].keys[j].outTangent = keyframes[j].outTangent;
+                    unityCurve.keys[j].inTangent = keyframes[j].inTangent;
+                    unityCurve.keys[j].outTangent = keyframes[j].outTangent;
                 }
             }
         }

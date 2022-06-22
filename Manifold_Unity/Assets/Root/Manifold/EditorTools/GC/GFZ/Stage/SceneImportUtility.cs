@@ -527,7 +527,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             }
         }
 
-        public static void CreateControlPointRecursive(Scene scene, TrackSegment trackTransform, GameObject parent, Mesh mesh, string name, int depth)
+        public static void CreateControlPointRecursive(Scene scene, TrackSegment trackSegment, GameObject parent, Mesh mesh, string name, int depth)
         {
             //
             var controlPoint = new GameObject();
@@ -536,12 +536,32 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             controlPoint.name = $"{elementIndex++} {name}";
             controlPoint.transform.parent = parent.transform;
             // Set transform
-            controlPoint.transform.localPosition = trackTransform.LocalPosition;
-            controlPoint.transform.localRotation = Quaternion.Euler(trackTransform.LocalRotation);
-            controlPoint.transform.localScale = trackTransform.LocalScale;
+            controlPoint.transform.localPosition = trackSegment.LocalPosition;
+            controlPoint.transform.localRotation = Quaternion.Euler(trackSegment.LocalRotation);
+            controlPoint.transform.localScale = trackSegment.LocalScale;
 
             //
-            var children = trackTransform.Children;
+            tag.SetCurves(trackSegment);
+            tag.segmentType = trackSegment.SegmentType;
+            tag.embeddedPropertyType = trackSegment.EmbeddedPropertyType;
+            tag.perimeterFlags = trackSegment.PerimeterFlags;
+            tag.pipeCylinderFlags = trackSegment.PipeCylinderFlags;
+            //trackCurvesPtr;
+            //trackCornerPtr;
+            //childrenPtrs;
+            tag.localScale = trackSegment.LocalScale;
+            tag.localRotation = trackSegment.LocalRotation;
+            tag.localPosition = trackSegment.LocalPosition;
+            tag.unk_0x38 = trackSegment.Unk_0x38; // mixed flags
+            tag.unk_0x39 = trackSegment.Unk_0x39; // exclusive flags
+            tag.unk_0x3A = trackSegment.Unk_0x3A; // mixed flags
+            tag.unk_0x3B = trackSegment.Unk_0x3B; // mixed flags
+            tag.railHeightRight = trackSegment.RailHeightRight;
+            tag.railHeightLeft = trackSegment.RailHeightLeft;
+            tag.branchIndex = trackSegment.BranchIndex; // 0, 1, 2, 3
+
+            //
+            var children = trackSegment.Children;
             int count = 1;
             int total = children.Length;
             foreach (var child in children)
