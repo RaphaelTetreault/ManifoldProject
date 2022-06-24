@@ -16,6 +16,42 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         // todo: make title consistent across progress bars.
         public static string ExecuteText => "Import COLI as Unity Scene";
 
+        [MenuItem(GfzMenuItems.Stage.Menu + "Midiman", priority = GfzMenuItems.Stage.ImportSingleSelectPriority + 1)]
+        public static void ExportMidiman()
+        {
+            var settings = GfzProjectWindow.GetSettings();
+            var inputPath = settings.SourceStageDirectory;
+            var outputPath = settings.LogOutput;
+            foreach (var scene in ColiCourseIO.LoadAllStages(inputPath, "???"))
+            {
+                var path = outputPath + scene.FileName + ".tsv";
+                using (var writer = new StreamWriter(File.Create(path)))
+                {
+                    foreach (var model in scene.dynamicSceneObjects)
+                    {
+                        var name = model.Name;
+                        var hasMatrix = model.TransformMatrix3x4 is not null;
+                        var pos = hasMatrix ? model.TransformMatrix3x4.Position : model.TransformTRXS.Position;
+                        var rot = hasMatrix ? model.TransformMatrix3x4.RotationEuler : model.TransformTRXS.RotationEuler;
+                        var scl = hasMatrix ? model.TransformMatrix3x4.Scale : model.TransformTRXS.Scale;
+
+                        writer.WriteNextCol(name);
+                        writer.WriteNextCol(pos.x);
+                        writer.WriteNextCol(pos.y);
+                        writer.WriteNextCol(pos.z);
+                        writer.WriteNextCol(rot.x);
+                        writer.WriteNextCol(rot.y);
+                        writer.WriteNextCol(rot.z);
+                        writer.WriteNextCol(scl.x);
+                        writer.WriteNextCol(scl.y);
+                        writer.WriteNextCol(scl.z);
+                        writer.WriteNextRow();
+                    }
+                }
+            }
+            EditorUtility.ClearProgressBar();
+            AssetDatabase.Refresh();
+        }
 
         [MenuItem(GfzMenuItems.Stage.ImportAll, priority = GfzMenuItems.Stage.ImportAllPriority)]
         public static void ImportAll()

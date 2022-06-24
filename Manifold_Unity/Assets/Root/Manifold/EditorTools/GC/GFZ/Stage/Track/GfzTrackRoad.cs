@@ -25,6 +25,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         private void OnDrawGizmos()
         {
+            return;
+
             if (!doGizmos)
                 return;
 
