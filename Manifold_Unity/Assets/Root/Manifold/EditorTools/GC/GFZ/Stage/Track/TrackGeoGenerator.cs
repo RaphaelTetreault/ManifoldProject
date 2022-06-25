@@ -1,9 +1,12 @@
+using GameCube.GX;
 using GameCube.GFZ.GMA;
+using GameCube.GFZ.LZ;
 using GameCube.GFZ.Stage;
 using Manifold;
 using Manifold.IO;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using Unity.Mathematics;
 
@@ -101,7 +104,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         public static void TestGmaExport()
         {
             var trackSegment = GameObject.FindObjectOfType<GfzTrackSegment>(false);
-            var tempMesh = GenerateTopSurface(trackSegment, 10f, 1);
+            var tempMesh = GenerateTopSurface(trackSegment, 10f, 4);
 
             // TODO easy way to pop in a model and get out this crap? -- note on materials, too.
 
@@ -131,7 +134,132 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                     },
                 },
             };
-
         }
+
+        [MenuItem("Manifold/HEY! TEST GMA")]
+        public static void TestGmaExport2()
+        {
+            var trackSegment = GameObject.FindObjectOfType<GfzTrackSegment>(false);
+            var tempMesh = GenerateTopSurface(trackSegment, 10f, 1);
+            var dlists = TempMeshToDisplayList(tempMesh, (GXAttributes)0, GameCube.GFZ.GfzGX.VAT);
+            // TODO easy way to pop in a model and get out this crap? -- note on materials, too.
+
+            var submeshes = new Submesh[]
+            {
+                new Submesh()
+                {
+                    Material = new GameCube.GFZ.GMA.Material()
+                    {
+                        Unk0x02 = MatFlags0x02.unlit | MatFlags0x02.doubleSidedFaces,
+                        MaterialColor = new GXColor(0xFFFFFFFF),
+                        AmbientColor = new GXColor(0xFFFFFFFF),
+                        SpecularColor = new GXColor(0x00000000),
+
+                        // Hacky, find elegant solution - out param?
+                        VertexAttributes = dlists[0].Attributes,
+                    },
+
+                    // THIS information is auto-calculated
+                    //PrimaryDisplayListDescriptor = new DisplayListDescriptor(),
+
+                    // Set DLs
+                    PrimaryDisplayListsOpaque = dlists,
+                },
+            };
+
+            var gma = new Gma();
+            gma.Models = new Model[]
+            {
+                new Model()
+                {
+                    Name = "my cool model name",
+                    Gcmf = new Gcmf()
+                    {
+                        // attributes = default
+                        Attributes = (GcmfAttributes)0,
+                        BoundingSphere = CreateFromPoints(tempMesh.vertexes),
+                        //
+                        TextureCount = 0,
+                        OpaqueMaterialCount = (ushort)submeshes.Length,
+                        TranslucidMaterialCount = 0,
+                        BoneCount = 0,
+                        //
+                        TextureConfigs = new TextureConfig[0], // this is what you get from templating materials...
+                        Submeshes = submeshes,
+                    },
+                },
+            };
+
+            var settings = GfzProjectWindow.GetSettings();
+            var dest = settings.FileOutput + "common.gma";
+            BinarySerializableIO.SaveFile(gma, dest);
+            LzUtility.CompressAvLzToDisk(dest, GameCube.AmusementVision.GxGame.FZeroGX, true);
+            OSUtility.OpenDirectory(dest);
+        }
+
+        private static DisplayList[] TempMeshToDisplayList(TempMesh tempMesh, GXAttributes attributes, VertexAttributeTable vat)
+        {
+            var dlist = new DisplayList(attributes, vat);
+            dlist.GxCommand = new DisplayCommand()
+            {
+                Primitive = Primitive.GX_TRIANGLESTRIP,
+                VertexFormat = VertexFormat.GX_VTXFMT0,
+            };
+
+            dlist.clr0 = new GXColor[tempMesh.vertexes.Length];
+            for (int i = 0; i < dlist.clr0.Length; i++)
+                dlist.clr0[i] = new GXColor(255, 128, 255, 255);
+
+            // This is actually bad when there are more than one width divisions - the strip
+            // does "wrap" correctly, right?
+            Copy(tempMesh.vertexes, ref dlist.pos);
+            Copy(tempMesh.normals, ref dlist.nrm);
+
+            //
+            dlist.Attributes = dlist.ComponentsToGXAttributes();
+            dlist.VertexCount = checked((ushort)tempMesh.vertexes.Length);
+
+            return new DisplayList[] { dlist };
+        }
+
+        private static void Copy(Vector3[] vector3s, ref float3[] float3s)
+        {
+            float3s = new float3[vector3s.Length];
+            for (int i = 0; i < float3s.Length; i++)
+                float3s[i] = vector3s[i];
+        }
+
+        // http://www.technologicalutopia.com/sourcecode/xnageometry/boundingsphere.cs.htm
+        public static GameCube.GFZ.BoundingSphere CreateFromPoints(IEnumerable<Vector3> points)
+        {
+
+            if (points == null)
+                throw new System.ArgumentNullException("points");
+
+            float radius = 0;
+            Vector3 center = new Vector3();
+            // First, we'll find the center of gravity for the point 'cloud'.
+            int num_points = 0; // The number of points (there MUST be a better way to get this instead of counting the number of points one by one?)
+
+            foreach (Vector3 v in points)
+            {
+                center += v;    // If we actually knew the number of points, we'd get better accuracy by adding v / num_points.
+                ++num_points;
+            }
+
+            center /= num_points;
+
+            // Calculate the radius of the needed sphere (it equals the distance between the center and the point further away).
+            foreach (Vector3 v in points)
+            {
+                float distance = (v - center).magnitude;
+
+                if (distance > radius)
+                    radius = distance;
+            }
+
+            return new GameCube.GFZ.BoundingSphere(center, radius);
+        }
+
     }
 }

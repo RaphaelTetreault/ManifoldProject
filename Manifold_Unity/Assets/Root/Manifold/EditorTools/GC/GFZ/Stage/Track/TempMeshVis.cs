@@ -21,7 +21,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             var submesh = CreateSubMesh(tempMesh, mesh);
             mesh.SetSubMesh(0, submesh, MeshUpdateFlags.Default);
 
-            Gizmos.color = Color.green;
+            Gizmos.color = Color.white;
             for (int i = 0; i < mesh.subMeshCount; i++)
                 Gizmos.DrawMesh(mesh, i);
 
