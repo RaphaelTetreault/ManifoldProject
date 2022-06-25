@@ -252,6 +252,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             LzUtility.CompressAvLzToDisk(outputFile, compressFormat, true);
             OSUtility.OpenDirectory(outputPath);
 
+            // Fix for Dolphin double file error :/
+            File.Delete(outputFile);
+
             // Undo mirroring
             foreach (var mirroredObject in mirroredObjects)
                 mirroredObject.MirrorTransform();

@@ -59,7 +59,7 @@ namespace Manifold.EditorTools
             // Get file parameters
             var name = Path.GetFileNameWithoutExtension(filePath);
             var ext = Path.GetExtension(filePath);
-            // Create path to loaded file, saved file
+            // Create path to loaded file, save file
             var copyFilePath = Path.Combine(outputPath, folderPath, $"{name}.copy{ext}");
             var saveFilePath = Path.Combine(outputPath, folderPath, $"{name}{ext}");
             // Make sure the directory exists for the output files

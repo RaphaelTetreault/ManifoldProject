@@ -389,6 +389,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 {
                     selectedIndex = result;
                     EditorUtility.SetDirty(target);
+                    // TODO: deselect
                 }
             }
         }

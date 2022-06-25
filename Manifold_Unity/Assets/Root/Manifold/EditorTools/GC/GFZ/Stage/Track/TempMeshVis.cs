@@ -25,12 +25,20 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             for (int i = 0; i < mesh.subMeshCount; i++)
                 Gizmos.DrawMesh(mesh, i);
 
-            Gizmos.color = Color.black;
-            for (int vi = 0; vi < mesh.vertices.Length - 1; vi++)
+            Gizmos.color = Color.red;
+            int stride = widthSamples + 1;
+            int maxVertIter = mesh.vertexCount - stride;
+            for (int vi = 0; vi < maxVertIter; vi += stride)
             {
                 var v0 = mesh.vertices[vi];
                 var v1 = mesh.vertices[vi + 1];
+                var v2 = mesh.vertices[vi + stride];
+                var v3 = mesh.vertices[vi + 1 + stride];
                 Gizmos.DrawLine(v0, v1);
+                Gizmos.DrawLine(v0, v2);
+                Gizmos.DrawLine(v1, v2);
+                Gizmos.DrawLine(v1, v3);
+                //Gizmos.DrawLine(v2, v3);
             }
         }
 

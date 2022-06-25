@@ -1,3 +1,4 @@
+using GameCube.GFZ.GMA;
 using GameCube.GFZ.Stage;
 using Manifold;
 using Manifold.IO;
@@ -29,10 +30,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             float step = segmentLength / minDistance;
             int lengthSamples = (int)math.ceil(step);
 
-            Vector3[] vertexes = new Vector3[((lengthSamples+1) * (widthSamples+1))];
+            Vector3[] vertexes = new Vector3[((lengthSamples + 1) * (widthSamples + 1))];
             Vector3[] normals = new Vector3[vertexes.Length];
 
-            for (int l = 0; l < lengthSamples; l++)
+            for (int l = 0; l <= lengthSamples; l++)
             {
                 double samplePoint = l / (double)lengthSamples;
                 var animMtx = trackSegment.AnimationCurveTRS.EvaluateMatrix(samplePoint);
@@ -41,8 +42,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 var position = sampleMtx.Position();
                 var rotation = sampleMtx.Rotation();
                 var scale = sampleMtx.Scale();
-                var tempR = rotation.eulerAngles;
-                rotation = Quaternion.Euler(tempR.x, tempR.y, -tempR.z);
 
                 var width = scale.x;
                 var halfWidth = width / 2;
@@ -55,7 +54,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                     var offsetRight = directionRight * percent * width;
                     var vertexPos = beginLeft + offsetRight;
 
-                    int index = l * (widthSamples+1) + w;
+                    int index = l * (widthSamples + 1) + w;
                     vertexes[index] = vertexPos;
 
                     //
@@ -63,21 +62,22 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 }
             }
 
-
-            int[] indexes = new int[lengthSamples * widthSamples * 6];
+            int divsZ = lengthSamples;
+            int divsX = widthSamples;
+            int strideX = divsX + 1;
+            int nIndexes = vertexes.Length * 3 * 2; // 3 indexes per tri, 2 tris per quad
+            int[] indexes = new int[nIndexes];
             int currIndex = 0;
-            for (int w = 0; w < widthSamples; w++)
+            for (int x = 0; x < divsX; x++)
             {
-                // iterations = length-wise direction
-                for (int l = 0; l < lengthSamples; l++)
+                for (int z = 0; z < divsZ; z++)
                 {
                     // Create a quad along the path in the Z/forward direction
-                    int stride = widthSamples + 1;
-                    int baseIndex = l * stride;
-                    int v0 = baseIndex;
+                    int baseIndex = x + (z * strideX);
+                    int v0 = baseIndex + 0;
                     int v1 = baseIndex + 1;
-                    int v2 = baseIndex + stride;
-                    int v3 = baseIndex + stride + 1;
+                    int v2 = v0 + strideX;
+                    int v3 = v1 + strideX;
 
                     indexes[currIndex++] = v0;
                     indexes[currIndex++] = v1;
@@ -96,6 +96,42 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             };
 
             return temp;
+        }
+
+        public static void TestGmaExport()
+        {
+            var trackSegment = GameObject.FindObjectOfType<GfzTrackSegment>(false);
+            var tempMesh = GenerateTopSurface(trackSegment, 10f, 1);
+
+            // TODO easy way to pop in a model and get out this crap? -- note on materials, too.
+
+            var gma = new Gma();
+            gma.Models = new Model[]
+            {
+                new Model()
+                {
+                    Name = "my cool model name",
+                    Gcmf = new Gcmf()
+                    {
+                        // attributes = default
+                        TextureConfigs = new TextureConfig[0], // this is what you get from templating materials... + v
+                        Submeshes = new Submesh[]
+                        {
+                            new Submesh()
+                            {
+                                Material = new GameCube.GFZ.GMA.Material(), // along with this... + ^
+                                PrimaryDisplayListDescriptor = new DisplayListDescriptor(),
+                                PrimaryDisplayListsOpaque = new GameCube.GX.DisplayList[]
+                                {
+                                    new GameCube.GX.DisplayList(GameCube.GX.GXAttributes.GX_VA_POS, GameCube.GFZ.GfzGX.VAT),
+                                },
+                            },
+                        },
+                        BoundingSphere = new GameCube.GFZ.BoundingSphere(),
+                    },
+                },
+            };
+
         }
     }
 }
