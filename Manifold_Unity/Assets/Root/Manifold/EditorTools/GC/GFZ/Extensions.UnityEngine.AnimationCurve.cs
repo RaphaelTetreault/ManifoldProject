@@ -4,9 +4,17 @@ namespace Manifold.EditorTools.GC.GFZ
 {
     public static class AnimationCurveExtensions
     {
+        /// <summary>
+        /// Evaluates <paramref name="curve"/> and returns <paramref name="default"/> if the
+        /// curve is null or empty.
+        /// </summary>
+        /// <param name="curve"></param>
+        /// <param name="time"></param>
+        /// <param name="default"></param>
+        /// <returns></returns>
         public static float EvaluateDefault(this AnimationCurve curve, float time, float @default)
         {
-            if (time == 0f)
+            if (curve is null || curve.length == 0)
                 return @default;
 
             return curve.Evaluate(time);

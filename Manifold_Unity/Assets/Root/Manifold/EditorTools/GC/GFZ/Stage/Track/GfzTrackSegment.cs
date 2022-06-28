@@ -13,8 +13,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         [SerializeField] private GfzTrackSegment end;
         [SerializeField] private float metersPerCheckpoint = 100;
 
-        [Header("Unknown properties")]
-        [SerializeField] private byte unk0x3B;
+        //[Header("Unknown properties")]
+        //[SerializeField] private byte unk0x3B;
 
         [Header("Track Curves")]
         [SerializeField] private bool flipAnim;
@@ -192,10 +192,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             trackSegment.LocalScale = transform.localScale;
 
             // TODO: currently hardcoded
-            trackSegment.SegmentType = TrackSegmentType.IsTransformLeaf;
+            trackSegment.SegmentType = TrackSegmentType.IsTrack;
 
             //
-            trackSegment.Unk_0x3B = unk0x3B;
+            //trackSegment.Unk_0x3B = unk0x3B;
 
             // Get animation data
             trackSegment.AnimationCurveTRS = animationCurveTRS.ToTrackSegment();

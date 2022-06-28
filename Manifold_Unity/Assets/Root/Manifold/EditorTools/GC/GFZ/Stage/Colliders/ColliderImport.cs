@@ -26,7 +26,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Colliders
             materialsFolder + "mat_ColiType06_Dirt.mat",
             materialsFolder + "mat_ColiType07_Damage.mat",
             materialsFolder + "mat_ColiType08_OutOfBounds.mat",
-            materialsFolder + "mat_ColiType09_DeathGrounds.mat",
+            materialsFolder + "mat_ColiType09_DeathGround.mat",
             materialsFolder + "mat_ColiType10_Death1.mat",
             materialsFolder + "mat_ColiType11_Death2.mat",
             materialsFolder + "mat_ColiType12_Death3.mat",

@@ -3,6 +3,7 @@ using GameCube.GFZ.Stage;
 using Manifold;
 using Manifold.IO;
 using System;
+using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -14,27 +15,40 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         public TrackEmbeddedPropertyType embeddedPropertyType;
         public TrackPerimeterFlags perimeterFlags;
         public TrackPipeCylinderFlags pipeCylinderFlags;
-        //public Pointer trackCurvesPtr;
-        //public Pointer trackCornerPtr;
-        //public ArrayPointer childrenPtrs;
         public float3 localPosition;
         public float3 localRotation;
         public float3 localScale;
-        public byte unk_0x38; // mixed flags
-        public byte unk_0x39; // exclusive flags
-        public byte unk_0x3A; // mixed flags
-        public byte unk_0x3B; // mixed flags
+        public ushort root_unk_0x38;
+        public ushort root_unk_0x3A; 
         public float railHeightRight;
         public float railHeightLeft;
         public int branchIndex; // 0, 1, 2, 3
 
         public AnimationCurveTRS curves;
         public bool hasCorner;
-        public Matrix4x4 cornerTransformMatrix4x4;
+        public float3 cornerPosition;
+        public float3 cornerRotation;
+        public float3 cornerScale;
+        public float width;
+        public TrackPerimeterFlags cornerPerimeterFlags;
 
-        public TagTrackSegment[] children;
+        public List<TagTrackSegment> children = new List<TagTrackSegment>();
+        public int depth;
 
 
+        private void OnDrawGizmos()
+        {
+            if (hasCorner)
+            {
+                var mesh = Resources.GetBuiltinResource<Mesh>("Cube.fbx");
+                Gizmos.color = Color.green;
+                var scale = new Vector3(width, 5f, 5f);
+                var rot = Quaternion.Euler(cornerRotation);
+                var pos = cornerPosition;
+                pos.x = -pos.x;
+                Gizmos.DrawMesh(mesh, 0, pos, rot, scale);
+            }
+        }
 
         public void SetCurves(TrackSegment trackSegment)
         {
