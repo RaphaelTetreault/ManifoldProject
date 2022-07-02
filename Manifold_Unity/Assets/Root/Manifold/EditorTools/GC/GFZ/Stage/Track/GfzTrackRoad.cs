@@ -54,18 +54,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         public override TrackSegment GenerateTrackSegment()
         {
             var trackSegment = segment.GetSegment();
+            var lastNode = trackSegment.Children[0];
 
             // Override the rail properies
-            IO.Assert.IsTrue(trackSegment.SegmentType == TrackSegmentType.IsTrack);
+            IO.Assert.IsTrue(lastNode.SegmentType == TrackSegmentType.IsTrack);
 
             // Rail height
-            trackSegment.RailHeightLeft = railHeightLeft;
-            trackSegment.RailHeightRight = railHeightRight;
-            // Falgs for rail height
-            if (railHeightLeft > 0f)
-                trackSegment.PerimeterFlags |= TrackPerimeterFlags.hasRailHeightLeft;
-            if (railHeightRight > 0f)
-                trackSegment.PerimeterFlags |= TrackPerimeterFlags.hasRailHeightRight;
+            lastNode.SetRails(railHeightLeft, railHeightRight);
 
             //
             return trackSegment;

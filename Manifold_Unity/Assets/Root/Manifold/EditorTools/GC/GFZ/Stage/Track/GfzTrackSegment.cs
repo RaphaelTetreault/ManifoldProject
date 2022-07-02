@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage
 {
+    [ExecuteInEditMode]
     public sealed class GfzTrackSegment : MonoBehaviour
     {
         // Fields
@@ -13,14 +14,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         [SerializeField] private GfzTrackSegment end;
         [SerializeField] private float metersPerCheckpoint = 100;
 
-        //[Header("Unknown properties")]
-        //[SerializeField] private byte unk0x3B;
-
         [Header("Track Curves")]
-        [SerializeField] private bool flipAnim;
-        [SerializeField] private bool invertCheckpoints;
-        [SerializeField] private bool genCheckpoints;
-        [SerializeField] private bool genAnimCurves;
         [SerializeField] private SegmentGenerator segmentGenerator;
         [SerializeField] private AnimationCurveTRS animationCurveTRS = new();
 
@@ -159,7 +153,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             {
                 var lastCheckpoint = checkpoints[lastIndex];
                 lastCheckpoint.CurveTimeEnd = curveMaxTime;
-                
+
                 var animMtx = animationTRS.EvaluateMatrix(curveMaxTime);
                 var mtx = baseMtx * animMtx;
 
@@ -191,48 +185,72 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             trackSegment.LocalRotation = transform.localRotation.eulerAngles;
             trackSegment.LocalScale = transform.localScale;
 
-            // TODO: currently hardcoded
-            trackSegment.SegmentType = TrackSegmentType.IsTrack;
-
-            //
-            //trackSegment.Unk_0x3B = unk0x3B;
-
             // Get animation data
             trackSegment.AnimationCurveTRS = animationCurveTRS.ToTrackSegment();
+            // Move rotation.z to child node, otherwise matrix is messed up with x, y, and z rotations
+            trackSegment.Children = new TrackSegment[] { new() };
+            trackSegment.Children[0].AnimationCurveTRS.RotationZ = trackSegment.AnimationCurveTRS.RotationZ;
+            // Make root rotation.z empty
+            trackSegment.AnimationCurveTRS.RotationZ = new();
+
+            // TODO: currently hardcoded
+            // Well, could be good actually. Other tracks can simply override this
+            trackSegment.SegmentType = TrackSegmentType.IsMatrix;
+            trackSegment.Children[0].SegmentType = TrackSegmentType.IsTrack;
 
             //
             return trackSegment;
         }
 
+
+
+
+
         private void OnValidate()
         {
-            if (genCheckpoints)
-            {
-                var checkpoints = CreateCheckpoints(invertCheckpoints);
 
-                int index = 0;
-                foreach (var checkpoint in checkpoints)
-                {
-                    var gobj = new GameObject($"Checkpoint[{index++}]");
-                    gobj.transform.parent = this.transform;
-                    var script = gobj.AddComponent<GfzCheckpoint>();
-                    script.Init(checkpoint);
-                }
-                genCheckpoints = false;
-            }
-
-            if (genAnimCurves)
-            {
-                this.animationCurveTRS = segmentGenerator.GetAnimationCurveTRS();
-                genAnimCurves = false;
-            }
-
-            if (flipAnim)
-            {
-                animationCurveTRS = animationCurveTRS.GetGfzCoordSpaceTRS();
-                flipAnim = false;
-            }
         }
 
+
+        private void Awake()
+        {
+            if (segmentGenerator is not null)
+                return;
+
+            segmentGenerator.OnEdited += GenerateAnimationCurves;
+        }
+
+        private void OnDestroy()
+        {
+            if (segmentGenerator is not null)
+                return;
+
+            segmentGenerator.OnEdited -= GenerateAnimationCurves;
+        }
+
+
+
+        /// <summary>
+        /// Creates new animation TRS from segment generator
+        /// </summary>
+        public void GenerateAnimationCurves()
+        {
+            animationCurveTRS = segmentGenerator.GetAnimationCurveTRS();
+        }
+
+
+        public void GenerateCheckpointDebug()
+        {
+            var checkpoints = CreateCheckpoints(false);
+
+            int index = 0;
+            foreach (var checkpoint in checkpoints)
+            {
+                var gobj = new GameObject($"Checkpoint[{index++}]");
+                gobj.transform.parent = this.transform;
+                var script = gobj.AddComponent<GfzCheckpoint>();
+                script.Init(checkpoint);
+            }
+        }
     }
 }

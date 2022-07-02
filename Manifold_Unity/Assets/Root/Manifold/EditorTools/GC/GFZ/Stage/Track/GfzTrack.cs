@@ -1,29 +1,19 @@
 using GameCube.GFZ.Stage;
+using Manifold;
+using Manifold.IO;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage
 {
+    /// <summary>
+    /// Entry point for collecting and generating track data
+    /// </summary>
     public class GfzTrack : MonoBehaviour
     {
-        [SerializeField] private GfzSegmentShape startSegment;
-        [SerializeField] private GfzSegmentShape[] rootSegments;
-
-
-
-        //public GfzTrackSegment StartSegment
-        //{
-        //    get => startSegment;
-        //    set => startSegment = value;
-        //}
-
-        //public GfzTrackSegment[] RootSegments
-        //{
-        //    get => rootSegments;
-        //    set => rootSegments = value;
-        //}
-
+        [field: SerializeField] public GfzSegmentShape StartSegment { get; private set; }
+        [field: SerializeField] public GfzSegmentShape[] AllRootSegments { get; private set; }
 
         public TrackMinHeight TrackMinHeight { get; private set; }
         public TrackLength TrackLength { get; private set; }
@@ -39,10 +29,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         public void InitTrackData()
         {
-            if (this.rootSegments.Length == 0)
-                throw new MissingReferenceException($"No references to any {typeof(GfzTrackSegment).Name}! Make sure references existin in inspector.");
+            if (this.AllRootSegments.Length == 0)
+                throw new MissingReferenceException($"No references to any {typeof(GfzSegmentShape).Name}! Make sure references existin in inspector.");
 
-            foreach (var seg in this.rootSegments)
+            foreach (var seg in this.AllRootSegments)
             {
                 if (seg == null)
                 {
@@ -73,7 +63,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             var trackEmbeddedPropertyAreas = new List<EmbeddedTrackPropertyArea>();
 
 
-            foreach (var rootSegmentScript in this.rootSegments)
+            foreach (var rootSegmentScript in this.AllRootSegments)
             {
                 // Init the GFZ data, add to list
                 var currRootSegment = rootSegmentScript.GenerateTrackSegment();
@@ -136,6 +126,14 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             TrackCheckpointMatrixBoundsXZ = checkpointMatrixBoundsXZ;
             // TEMP: because it caused me so much strife hunting a bug before...
             CircuitType = CircuitType.ClosedCircuit;
+        }
+
+        public void FindChildSegments()
+        {
+            StartSegment = GetComponentInChildren<GfzSegmentShape>(false);
+            AllRootSegments = GetComponentsInChildren<GfzSegmentShape>(false);
+            Assert.IsTrue(StartSegment is not null);
+            Assert.IsTrue(StartSegment == AllRootSegments[0]);
         }
 
     }

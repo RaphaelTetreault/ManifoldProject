@@ -124,6 +124,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         public void SetBezierPoint(int index, BezierPoint point)
         {
             points[index] = point;
+            CallOnEdited();
         }
 
 
@@ -336,6 +337,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             newBezier.roll = lastBezier.roll;
 
             points.Insert(lastIndex + 1, newBezier);
+            CallOnEdited();
         }
 
         public void AddPointAtStart()
@@ -355,11 +357,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             newBezier.roll = firstBezier.roll;
 
             points.Insert(0, newBezier);
+            CallOnEdited();
         }
 
         public void RemovePoint(int index)
         {
             points.RemoveAt(index);
+            CallOnEdited();
         }
 
         public void InsertPoint(int index)
@@ -377,6 +381,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             bezier.roll = (bezier0.roll + bezier1.roll) / 2f;
 
             points.Insert(index + 1, bezier);
+            CallOnEdited();
         }
 
         public void InsertBefore(int index)
@@ -434,6 +439,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
 
             this.isLoop = isLoop;
+            CallOnEdited();
         }
 
         public void Reset()
@@ -464,6 +470,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     roll = 0f,
                 },
             };
+
+            CallOnEdited();
         }
 
 
