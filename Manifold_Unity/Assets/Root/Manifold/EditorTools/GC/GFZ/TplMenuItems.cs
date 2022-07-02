@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEditor;
@@ -20,11 +21,11 @@ namespace Manifold.EditorTools.GC.GFZ
         {
             var settings = GfzProjectWindow.GetSettings();
             var input = settings.SourceDirectory;
-            var inputPaths = Directory.GetFiles(input, "*.tpl", SearchOption.AllDirectories);
+            //var inputPaths = Directory.GetFiles(input, "*.tpl", SearchOption.AllDirectories);
+            var inputPaths = Directory.GetFiles(input, "bg_por_s.tpl", SearchOption.AllDirectories);
 
-            var rootPath = "./Assets/gfzj01/tpl-test/";
-            //AssetDatabaseUtility.CreateDirectory(rootPath);
-            //Directory.CreateDirectory(rootPath);
+            var rootPath = "./Assets/gfzj01/tpl-test3/";
+            Directory.CreateDirectory(rootPath);
 
             int count = 0;
             int total = inputPaths.Length;
@@ -36,19 +37,25 @@ namespace Manifold.EditorTools.GC.GFZ
                 if (cancel) break;
                 count++;
 
-                int texIndex = 0;
-                foreach (var texture in tpl.Textures)
+                int texArrayIndex = 0;
+                foreach (var textureArray in tpl.TextureAndMipmaps)
                 {
-                    var name = $"{tpl.FileName}_{texIndex++}_{texture.Format}";
-                    var fullPath = Path.Combine(rootPath, name);
-                    CreateTexture(texture, fullPath);
+                    for (int i = 0; i < textureArray.Length; i++)
+                    {
+                        var texture = textureArray[i];
+                        if (texture is null)
+                            continue;
+                        string name = $"{tpl.FileName}_tex{texArrayIndex}_mip{i}";
+                        CreateTexture(texture, rootPath, name);
+                    }
+                    texArrayIndex++;
                 }
             }
             ProgressBar.Clear();
             AssetDatabase.Refresh();
         }
 
-        public static void CreateTexture(GameCube.GX.Texture.Texture texture, string relPath)
+        public static void CreateTexture(GameCube.GX.Texture.Texture texture, string rootPath, string name)
         {
             var unityTexture = new Texture2D(texture.Width, texture.Height);
             for (int h = 0; h < texture.Height; h++)
@@ -62,11 +69,33 @@ namespace Manifold.EditorTools.GC.GFZ
                 }
             }
 
+
+            // TODO: separate from above - make texture, and save/hash it
             byte[] png = unityTexture.EncodeToPNG();
-            using (var writer = new BinaryWriter(File.Create(relPath + ".png")))
+            byte[] hash = MD5.Create().ComputeHash(png, 0, png.Length);
+            //string name = HashToString(hash);
+            string filePath = $"{rootPath}/{name}.png";
+
+            if (File.Exists(filePath))
+            {
+                //Debug.Log(filePath);
+                return;
+            }
+
+            using (var writer = new BinaryWriter(File.Create(filePath)))
             {
                 writer.Write(png);
             }
+        }
+
+        private static string HashToString(byte[] hash)
+        {
+            var builder = new System.Text.StringBuilder();
+            foreach (var value in hash)
+            {
+                builder.Append($"{value:x2}");
+            }
+            return builder.ToString();
         }
     }
 }
