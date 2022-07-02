@@ -5,20 +5,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 {
     public abstract class GfzSegmentShape : MonoBehaviour
     {
-        [Header("Segment Base")]
-        [SerializeField]
-        protected GfzTrackSegment segment;
+        [field: Header("Segment Base")]
+        [field: SerializeField] public GfzTrackSegment Segment { get; private set; }
 
-        public GfzTrackSegment Segment
-        {
-            get => segment;
-            set => segment = value;
-        }
-
-        public AnimationCurveTRS AnimationCurveTRS
-        {
-            get => segment.AnimationCurveTRS;
-        }
+        public AnimationCurveTRS AnimationCurveTRS => Segment.AnimationCurveTRS;
+        
 
 
         /// <summary>
@@ -37,9 +28,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         /// Acquires GfzTrackEmbededProperty from this GameObject instance.
         /// </summary>
         /// <returns></returns>
-        public virtual GfzTrackEmbededProperty GetEmbeddedProperties()
+        public virtual GfzTrackEmbeddedProperty GetEmbeddedProperties()
         {
-            var embeddedProperties = GetComponents<GfzTrackEmbededProperty>();
+            var embeddedProperties = GetComponents<GfzTrackEmbeddedProperty>();
             IO.Assert.IsTrue(embeddedProperties.Length == 1);
             return embeddedProperties[0];
         }
@@ -47,9 +38,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         protected virtual void OnValidate()
         {
-            if (segment == null)
+            if (Segment == null)
             {
-                segment = GetComponent<GfzTrackSegment>();
+                Segment = GetComponent<GfzTrackSegment>();
             }
         }
 

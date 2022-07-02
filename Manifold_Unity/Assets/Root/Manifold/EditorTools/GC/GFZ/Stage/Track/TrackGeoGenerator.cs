@@ -245,10 +245,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             track.FindChildSegments();
 
             // TODO: iterate over all segments, not just the first
-            var trackSegment = track.StartSegment.Segment;
+            var trackSegment = track.StartSegmentShape.Segment;
             //var tristrips = GenerateTristrips(trackSegment, 10f, null);
             var trackMesh = new TrackMesh();
-            var dlists = TrackMeshComponentToDisplayLists(trackMesh.TrackTop, (GXAttributes)0, GameCube.GFZ.GfzGX.VAT);
+            var dlists = TrackMeshComponentToDisplayLists(trackMesh.TrackTop, (AttributeFlags)0, GameCube.GFZ.GfzGX.VAT);
             // TODO easy way to pop in a model and get out this bleep? -- note on materials, too.
 
             var submeshes = new Submesh[]
@@ -311,7 +311,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             OSUtility.OpenDirectory(dest);
         }
 
-        private static DisplayList[] TrackMeshComponentToDisplayLists(Tristrip[] tristrips, GXAttributes attributes, VertexAttributeTable vat)
+        private static DisplayList[] TrackMeshComponentToDisplayLists(Tristrip[] tristrips, AttributeFlags attributes, VertexAttributeTable vat)
         {
             var displayLists = new DisplayList[tristrips.Length];
             for (int i = 0; i < displayLists.Length; i++)

@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage
 {
-    public abstract class GfzTrackEmbededProperty : MonoBehaviour
+    public abstract class GfzTrackEmbeddedProperty : MonoBehaviour
     {
         // property type?
 

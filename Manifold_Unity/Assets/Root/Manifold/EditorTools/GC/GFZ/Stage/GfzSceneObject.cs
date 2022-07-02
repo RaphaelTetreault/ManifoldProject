@@ -15,24 +15,22 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         public GfzSceneObjectLODs GfzSceneObjectLODs => sceneObjectLODs;
         public GfzColliderMesh ColliderMesh => colliderMesh;
 
-
-        private SceneObject reference;
-
+        // This stuff is so that each call to Export gives the same reference
+        private SceneObject SceneObjectReference { get; set; }
         public void InitSharedReference()
         {
-            reference = new SceneObject();
+            SceneObjectReference = new SceneObject();
 
-            reference.LodRenderFlags = lodRenderFlags;
-            reference.LODs = sceneObjectLODs.ExportGfz();
+            SceneObjectReference.LodRenderFlags = lodRenderFlags;
+            SceneObjectReference.LODs = sceneObjectLODs.ExportGfz();
 
             if (colliderMesh != null)
-                reference.ColliderMesh = colliderMesh.ExportGfz();
+                SceneObjectReference.ColliderMesh = colliderMesh.ExportGfz();
         }
-
         public SceneObject ExportGfz()
         {
             // If null, you have not init the shared reference value
-            return reference;
+            return SceneObjectReference;
         }
 
         public void ImportGfz(SceneObject sceneObject)

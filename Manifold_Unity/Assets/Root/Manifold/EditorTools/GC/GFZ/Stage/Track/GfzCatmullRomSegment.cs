@@ -9,7 +9,7 @@ using Unity.Mathematics;
 namespace Manifold.EditorTools.GC.GFZ.Stage
 {
     [ExecuteInEditMode]
-    public class GfzCatmullRomSegment : SegmentGenerator
+    public class GfzCatmullRomSegment : SegmentPathGenerator
     {
         public bool includeInactive = false;
         [Range(0f, 1f)]

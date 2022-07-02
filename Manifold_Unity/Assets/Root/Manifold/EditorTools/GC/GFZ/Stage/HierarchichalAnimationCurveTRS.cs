@@ -5,8 +5,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
     [System.Serializable]
     public class HierarchichalAnimationCurveTRS
     {
-        [field: SerializeField] public AnimationCurveTRS TRS { get; set; } = new();
-        [field: SerializeField] public HierarchichalAnimationCurveTRS Parent { get; set; }
-        [field: SerializeField] public HierarchichalAnimationCurveTRS[] Children { get; set; }
+        //[field: SerializeField] public AnimationCurveTRS TRS { get; set; } = new();
+        //[field: SerializeField] public HierarchichalAnimationCurveTRS Parent { get; set; } = null;
+        //[field: SerializeField] public HierarchichalAnimationCurveTRS[] Children { get; set; } = null;
     }
 }

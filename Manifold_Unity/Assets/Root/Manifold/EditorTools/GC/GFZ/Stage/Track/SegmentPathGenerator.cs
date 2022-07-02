@@ -5,7 +5,7 @@ using GameCube.GFZ.Stage;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage
 {
-    public abstract class SegmentGenerator : MonoBehaviour
+    public abstract class SegmentPathGenerator : MonoBehaviour
     {
         public event System.Action OnEdited;
 

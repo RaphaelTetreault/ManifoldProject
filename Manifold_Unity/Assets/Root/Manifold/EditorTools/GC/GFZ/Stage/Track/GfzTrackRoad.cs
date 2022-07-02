@@ -6,7 +6,6 @@ using UnityEngine;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage
 {
-
     public class GfzTrackRoad : GfzSegmentShape
     {
         [Header("Gizmos")]
@@ -53,7 +52,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         public override TrackSegment GenerateTrackSegment()
         {
-            var trackSegment = segment.GetSegment();
+            var trackSegment = Segment.GetTrackSegment();
             var lastNode = trackSegment.Children[0];
 
             // Override the rail properies

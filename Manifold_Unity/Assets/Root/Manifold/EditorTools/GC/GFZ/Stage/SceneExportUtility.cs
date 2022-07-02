@@ -154,7 +154,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             // Scene Objects
             {
                 var gfzDynamicSceneObjects = GameObject.FindObjectsOfType<GfzSceneObjectDynamic>(false).Reverse().ToArray();
-                var gfzStaticSceneObjects = GameObject.FindObjectsOfType<GfzSceneObjectStatic>(true).Reverse().ToArray(); //todo: make false. Errors when I do.
+                var gfzStaticSceneObjects = GameObject.FindObjectsOfType<GfzSceneObjectStatic>(false).Reverse().ToArray();
                 var gfzSceneObjects = GameObject.FindObjectsOfType<GfzSceneObject>(true).Reverse().ToArray();
                 var gfzSceneObjectLODs = GameObject.FindObjectsOfType<GfzSceneObjectLODs>(true).Reverse().ToArray();
 
@@ -211,7 +211,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 scene.staticColliderMeshManager.SerializeFormat = format;
                 // Point to existing references
                 scene.staticColliderMeshManager.UnknownColliders = scene.unknownColliders;
-                scene.staticColliderMeshManager.StaticSceneObjects = scene.staticSceneObjects;
+                scene.staticColliderMeshManager.StaticSceneObjects = scene.staticSceneObjects is null ? new SceneObjectStatic[0] : scene.staticSceneObjects;
             }
 
             // TRACK

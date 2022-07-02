@@ -11,7 +11,7 @@ using Manifold.Spline;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
-    public class GfzBezierSplineSegment : SegmentGenerator,
+    public class GfzBezierSplineSegment : SegmentPathGenerator,
         IPositionEvaluable
     {
         // TODO: maneage consts better

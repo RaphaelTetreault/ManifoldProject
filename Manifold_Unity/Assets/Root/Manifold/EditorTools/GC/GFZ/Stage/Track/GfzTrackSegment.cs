@@ -8,49 +8,66 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
     [ExecuteInEditMode]
     public sealed class GfzTrackSegment : MonoBehaviour
     {
-        // Fields
-        [Header("Checkpoints")]
-        [SerializeField] private GfzTrackSegment start;
-        [SerializeField] private GfzTrackSegment end;
-        [SerializeField] private float metersPerCheckpoint = 100;
+        [field: Header("Track Segment Order")]
+        // TODO: in the future, make readonly and assign on export based on order (from GfzTrack script?)
+        [field: SerializeField] public GfzTrackSegment PreviousSegment { get; internal set; }
+        [field: SerializeField] public GfzTrackSegment NextSegment { get; internal set; }
 
-        [Header("Track Curves")]
-        [SerializeField] private SegmentGenerator segmentGenerator;
-        [SerializeField] private AnimationCurveTRS animationCurveTRS = new();
+        [field: Header("Checkpoints")]
+        [field: SerializeField] public float MetersPerCheckpoint { get; private set; } = 100f;
 
+        [field: Header("Track Curves")]
+        [field: SerializeField] public SegmentPathGenerator SegmentPathGenerator { get; private set; }
+        [field: SerializeField] public AnimationCurveTRS AnimationCurveTRS { get; private set; } = new();
+        [field: SerializeField] public HierarchichalAnimationCurveTRS TrsHierarchy { get; private set; } = new();
 
-        [field: SerializeField] private HierarchichalAnimationCurveTRS TrsHierarchy = new();
-
-
-        // Properties
-        public GfzTrackSegment PreviousSegment
-        {
-            get => start;
-            set => start = value;
-        }
-        public GfzTrackSegment NextSegment
-        {
-            get => end;
-            set => end = value;
-        }
-        public AnimationCurveTRS AnimationCurveTRS => animationCurveTRS;
 
 
         public float GetSegmentLength()
         {
             // 2022/01/31: current work assumes min and max of 0 and 1
-            var maxTime = animationCurveTRS.GetMaxTime();
+            var maxTime = AnimationCurveTRS.GetMaxTime();
             Assert.IsTrue(maxTime == 1);
             // tODO: get min time, assert
 
-            var distance = animationCurveTRS.GetDistanceBetweenRepeated(0, 1);
+            var distance = AnimationCurveTRS.GetDistanceBetweenRepeated(0, 1);
             return distance;
         }
+        /// <summary>
+        /// Sum of lengths from all previous segments.
+        /// </summary>
+        /// <returns></returns>
+        public float GetDistanceOffset()
+        {
+            // If we are the start segment, offset is 0
+            var track = FindObjectOfType<GfzTrack>();
+            Assert.IsTrue(track.StartSegmentShape != null, $"track.StartSegment is null.");
+
+            if (this == track.StartSegmentShape.Segment)
+                return 0f;
+
+            var distanceOffset = 0f;
+            var previousSegment = PreviousSegment;
+            while (previousSegment is not null)
+            {
+                distanceOffset += previousSegment.GetSegmentLength();
+                previousSegment = previousSegment.PreviousSegment;
+
+                // If we strumble onto the first segment, stop getting lengths (we are at the start)
+                if (previousSegment == track.StartSegmentShape)
+                    break;
+
+                // If somehow previous segments wrap to this segment, we done goofed
+                Assert.IsTrue(previousSegment != this, $"You done goofed. 'track.StartSegment' is probably not set.");
+            }
+            return distanceOffset;
+        }
+
 
         public EmbeddedTrackPropertyArea[] GetEmbededPropertyAreas()
         {
             // Get all properties on self and children.
-            var embededProperties = GetComponentsInChildren<GfzTrackEmbededProperty>();
+            var embededProperties = GetComponentsInChildren<GfzTrackEmbeddedProperty>();
 
             // Iterate over collection
             var count = embededProperties.Length;
@@ -63,121 +80,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             return embededPropertyAreas;
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="convertCoordinateSpace"></param>
-        /// <returns></returns>
-        public Checkpoint[] CreateCheckpoints(bool convertCoordinateSpace)
-        {
-            //
-            var segmentLength = GetSegmentLength();
-            var numCheckpoints = Mathf.CeilToInt(segmentLength / metersPerCheckpoint);
-            var checkpoints = new Checkpoint[numCheckpoints];
-
-            var distanceOffset = 0f;
-
-            // Get the AnimationCurveTransform appropriate for requester.
-            // Use GFZ space (game) if 'true'
-            // Use Unity space if 'false'
-            var animationTRS = convertCoordinateSpace
-                ? AnimationCurveTRS.GetGfzCoordSpaceTRS()
-                : AnimationCurveTRS;
-
-            Vector3 forward = -segmentGenerator.transform.forward;
-            Vector3 backward = -forward;
-
-            var curveMaxTime = animationTRS.GetMaxTime();
-            var baseMtx = segmentGenerator.transform.localToWorldMatrix;
-            //var pos = animationTRS.Position;
-            //var rot = animationTRS.Rotation;
-            //var scl = animationTRS.Scale;
-
-            for (int i = 0; i < numCheckpoints; i++)
-            {
-                // Curve-sampling start and end times.
-                double checkpointTimeStart = (double)(i + 0) / numCheckpoints;
-                double checkpointTimeEnd = (double)(i + 1) / numCheckpoints;
-
-                //
-                var animMtx = animationTRS.EvaluateMatrix(checkpointTimeStart);
-                var mtx = baseMtx * animMtx;
-                var position = mtx.GetPosition();
-                var rotation = mtx.rotation;
-                //var scale = mtx.lossyScale;
-                var scale = animationTRS.Scale.Evaluate(checkpointTimeStart);
-
-                // Get origin of start plane, track width at start sampling point
-                var origin = position;// + transform.position;
-                var trackWidth = scale.x;
-                var normal = rotation * forward;
-                //
-                var planeStart = new GameCube.GFZ.Stage.Plane() { origin = origin, normal = normal };
-                planeStart.ComputeDotProduct();
-
-                // DISTANCE
-                // Compute the distance between these 2 points, keep track of total distance travelled along segment
-                var distanceBetween = animationTRS.GetDistanceBetweenRepeated(checkpointTimeStart, checkpointTimeEnd);
-                var distanceStart = distanceOffset;
-                var distanceEnd = distanceOffset + distanceBetween;
-                distanceOffset = distanceEnd;
-
-                // CHECKPOINT
-                checkpoints[i] = new Checkpoint();
-                var checkpoint = checkpoints[i];
-                checkpoint.CurveTimeStart = (float)checkpointTimeStart;
-                checkpoint.StartDistance = distanceStart;
-                checkpoint.EndDistance = distanceEnd;
-                checkpoint.TrackWidth = trackWidth;
-                checkpoint.ConnectToTrackIn = true;
-                checkpoint.ConnectToTrackOut = true;
-                checkpoint.PlaneStart = planeStart;
-                // We construct (copy) the checkpoint.planeEnd later
-            }
-
-            // Copy values from one checkpoint to the previous one
-            // NOTE: start at second index '1' since we refer to the previous checkpoint (i-1)
-            for (int i = 1; i < checkpoints.Length; i++)
-            {
-                var prevCheckpoint = checkpoints[i - 1];
-                var currCheckpoint = checkpoints[i];
-                // Copy over values
-                prevCheckpoint.CurveTimeEnd = currCheckpoint.CurveTimeStart;
-                prevCheckpoint.PlaneEnd = currCheckpoint.PlaneStart.GetMirror();
-            }
-
-            // Index for last checkpoint
-            var lastIndex = checkpoints.Length - 1;
-
-            // Complete missing information in last checkpoint of segment
-            {
-                var lastCheckpoint = checkpoints[lastIndex];
-                lastCheckpoint.CurveTimeEnd = curveMaxTime;
-
-                var animMtx = animationTRS.EvaluateMatrix(curveMaxTime);
-                var mtx = baseMtx * animMtx;
-
-                var origin = mtx.GetPosition();
-                var rotation = mtx.rotation;
-                var normal = rotation * backward;
-
-                var endPlane = new GameCube.GFZ.Stage.Plane() { origin = origin, normal = normal };
-                endPlane.ComputeDotProduct();
-
-                lastCheckpoint.PlaneEnd = endPlane;
-            }
-
-            // Set segment in/out connections
-            var connectToTrackIn = start != null;
-            var connectToTrackOut = end != null;
-            checkpoints[0].ConnectToTrackIn = connectToTrackIn;
-            checkpoints[lastIndex].ConnectToTrackOut = connectToTrackOut;
-
-            // That's all!
-            return checkpoints;
-        }
-
-        public TrackSegment GetSegment()
+        public TrackSegment GetTrackSegment()
         {
             var trackSegment = new TrackSegment();
 
@@ -186,11 +89,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             trackSegment.LocalScale = transform.localScale;
 
             // Get animation data
-            trackSegment.AnimationCurveTRS = animationCurveTRS.ToTrackSegment();
+            trackSegment.AnimationCurveTRS = AnimationCurveTRS.ToTrackSegment();
             // Move rotation.z to child node, otherwise matrix is messed up with x, y, and z rotations
             trackSegment.Children = new TrackSegment[] { new() };
             trackSegment.Children[0].AnimationCurveTRS.RotationZ = trackSegment.AnimationCurveTRS.RotationZ;
-            // Make root rotation.z empty
+            // Make root rotation.z empty (null makes errors)
             trackSegment.AnimationCurveTRS.RotationZ = new();
 
             // TODO: currently hardcoded
@@ -198,59 +101,66 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             trackSegment.SegmentType = TrackSegmentType.IsMatrix;
             trackSegment.Children[0].SegmentType = TrackSegmentType.IsTrack;
 
-            //
+            // :clap:
             return trackSegment;
         }
 
-
-
-
-
-        private void OnValidate()
+        public bool IsContinuousToNext()
         {
+            if (PreviousSegment is null)
+                throw new System.NullReferenceException($"{nameof(PreviousSegment)} node is not set!");
 
+            var selfEndMaxTime = AnimationCurveTRS.GetMaxTime();
+            var selfEnd = AnimationCurveTRS.Position.Evaluate(selfEndMaxTime);
+            var nextStart = PreviousSegment.AnimationCurveTRS.Position.Evaluate(0);
+            bool isContinuousToNext = Vector3.Distance(selfEnd, nextStart) < 0.1f;
+            return isContinuousToNext;
+        }
+
+        public bool IsContinuousFromPrevious()
+        {
+            if (NextSegment is null)
+                throw new System.NullReferenceException($"{nameof(NextSegment)} node is not set!");
+
+            var prevEndMaxTime = PreviousSegment.AnimationCurveTRS.GetMaxTime();
+            var prevEnd = PreviousSegment.AnimationCurveTRS.Position.Evaluate(prevEndMaxTime);
+            var selfStart = AnimationCurveTRS.Position.Evaluate(0);
+            bool isContinuousFromPrev = Vector3.Distance(selfStart, prevEnd) < 0.1f;
+            return isContinuousFromPrev;
         }
 
 
         private void Awake()
         {
-            if (segmentGenerator is not null)
+            if (SegmentPathGenerator is not null)
                 return;
 
-            segmentGenerator.OnEdited += GenerateAnimationCurves;
+            SegmentPathGenerator.OnEdited += GenerateAnimationCurves;
         }
 
         private void OnDestroy()
         {
-            if (segmentGenerator is not null)
+            if (SegmentPathGenerator is not null)
                 return;
 
-            segmentGenerator.OnEdited -= GenerateAnimationCurves;
+            SegmentPathGenerator.OnEdited -= GenerateAnimationCurves;
         }
 
-
+        private void OnValidate()
+        {
+            if (SegmentPathGenerator is null)
+            {
+                SegmentPathGenerator = GetComponent<SegmentPathGenerator>();
+            }
+        }
 
         /// <summary>
         /// Creates new animation TRS from segment generator
         /// </summary>
         public void GenerateAnimationCurves()
         {
-            animationCurveTRS = segmentGenerator.GetAnimationCurveTRS();
+            AnimationCurveTRS = SegmentPathGenerator.GetAnimationCurveTRS();
         }
 
-
-        public void GenerateCheckpointDebug()
-        {
-            var checkpoints = CreateCheckpoints(false);
-
-            int index = 0;
-            foreach (var checkpoint in checkpoints)
-            {
-                var gobj = new GameObject($"Checkpoint[{index++}]");
-                gobj.transform.parent = this.transform;
-                var script = gobj.AddComponent<GfzCheckpoint>();
-                script.Init(checkpoint);
-            }
-        }
     }
 }
