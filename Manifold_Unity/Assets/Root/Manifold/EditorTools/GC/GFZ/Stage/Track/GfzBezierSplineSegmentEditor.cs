@@ -7,7 +7,7 @@ using Manifold.Spline;
 namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
     [CustomEditor(typeof(GfzBezierSplineSegment))]
-    public class GfzBezierSplineSegmentInspector : Editor
+    public class GfzBezierSplineSegmentEditor : Editor
     {
         private static readonly Color splineColor = Color.white;
         private static readonly Color[] modeColors = {
@@ -242,7 +242,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     spline.RemovePoint(selectedIndex);
                     selectedPart = SelectedPart.point;
                     EditorUtility.SetDirty(spline);
-                    selectedIndex--;
+                    selectedIndex = Mathf.Clamp(selectedIndex - 1, 0, int.MaxValue);
                 }
                 GUI.color = Color.white;
                 GUI.enabled = true;

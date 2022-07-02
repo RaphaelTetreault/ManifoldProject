@@ -10,8 +10,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         [field: SerializeField] public float GizmosSize { get; set; } = 25f;
 
         [field: Header("Debug")]
-        [field: SerializeField] public float start { get; set; }
-        [field: SerializeField] public float end { get; set; }
+        [field: SerializeField, ReadOnlyGUI] public float StartDistance { get; set; }
+        [field: SerializeField, ReadOnlyGUI] public float EndDistance { get; set; }
+        [field: SerializeField, ReadOnlyGUI] public bool ConnectToTrackIn{ get; set; }
+        [field: SerializeField, ReadOnlyGUI] public bool ConnectToTrackOut{ get; set; }
 
 
         public void Init(Checkpoint checkpoint)
@@ -20,8 +22,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             transform.position = checkpoint.PlaneStart.origin;
             transform.localRotation = Quaternion.LookRotation(checkpoint.PlaneStart.normal);
             // debug
-            start = checkpoint.StartDistance;
-            end = checkpoint.EndDistance;
+            StartDistance = checkpoint.StartDistance;
+            EndDistance = checkpoint.EndDistance;
+            ConnectToTrackIn = checkpoint.ConnectToTrackIn;
+            ConnectToTrackOut = checkpoint.ConnectToTrackOut;
         }
 
         const float size = 5f;

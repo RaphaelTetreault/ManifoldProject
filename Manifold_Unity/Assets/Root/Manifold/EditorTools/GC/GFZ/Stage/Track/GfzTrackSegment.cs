@@ -39,11 +39,14 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         /// <returns></returns>
         public float GetDistanceOffset()
         {
-            // If we are the start segment, offset is 0
             var track = FindObjectOfType<GfzTrack>();
+            Assert.IsTrue(track != null, $"track is null.");
             Assert.IsTrue(track.StartSegmentShape != null, $"track.StartSegment is null.");
+            Assert.IsTrue(track.StartSegmentShape.Segment != null, $"track.StartSegment.Segment is null.");
 
-            if (this == track.StartSegmentShape.Segment)
+            // If we are the start segment, offset is 0
+            var startSegment = track.StartSegmentShape.Segment;
+            if (this == startSegment)
                 return 0f;
 
             var distanceOffset = 0f;
@@ -51,11 +54,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             while (previousSegment is not null)
             {
                 distanceOffset += previousSegment.GetSegmentLength();
-                previousSegment = previousSegment.PreviousSegment;
 
-                // If we strumble onto the first segment, stop getting lengths (we are at the start)
-                if (previousSegment == track.StartSegmentShape)
+                // If we strumble onto the first segment, stop getting lengths
+                // (we are at the start, don't get subsequent previous node)
+                if (previousSegment == startSegment)
                     break;
+
+                previousSegment = previousSegment.PreviousSegment;
 
                 // If somehow previous segments wrap to this segment, we done goofed
                 Assert.IsTrue(previousSegment != this, $"You done goofed. 'track.StartSegment' is probably not set.");
