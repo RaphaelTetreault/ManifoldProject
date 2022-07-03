@@ -30,7 +30,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         {
             DeleteCheckpointDebug(checkpointGenerator);
 
-            var checkpoints = CheckpointUtility.CreateCheckpoints(checkpointGenerator.TrackSegment, false);
+            var checkpoints = CheckpointUtility.CreateCheckpoints2(checkpointGenerator.TrackSegment, false);
 
             int index = 0;
             foreach (var checkpoint in checkpoints)

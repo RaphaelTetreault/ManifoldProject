@@ -25,12 +25,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         public float GetSegmentLength()
         {
-            // 2022/01/31: current work assumes min and max of 0 and 1
             var maxTime = AnimationCurveTRS.GetMaxTime();
-            Assert.IsTrue(maxTime == 1);
-            // TODO: get min time, assert
-
-            var distance = AnimationCurveTRS.GetDistanceBetweenRepeated(0, 1);
+            var distance = maxTime;
+            //var distance = AnimationCurveTRS.GetDistanceBetweenRepeated(0, maxTime);
             if (distance <= 0f)
             {
                 var msg = "Distance is 0 which is invalid. TRS animation curves must define path.";

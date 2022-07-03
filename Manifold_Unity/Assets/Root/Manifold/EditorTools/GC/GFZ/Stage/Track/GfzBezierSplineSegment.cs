@@ -545,6 +545,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             // generate an angle of +75. Inversing only the transform's +30 to -30 corrects this.
             var initRotation = GetOrientation(0, 0).eulerAngles;
             var inverseInitialRotation = Quaternion.Inverse(Quaternion.Euler(initRotation.x, initRotation.y, transform.eulerAngles.z));
+            //var inverseInitialRotation = Quaternion.identity;
             var previousRotation = inverseInitialRotation.eulerAngles;
 
             double currDistance = 0;
