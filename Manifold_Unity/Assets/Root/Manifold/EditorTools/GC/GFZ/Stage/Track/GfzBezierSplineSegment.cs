@@ -323,7 +323,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         {
             var lastIndex = points.Count - 1;
             var lastBezier = points[lastIndex];
-            var length = (lastBezier.outTangent - lastBezier.position).magnitude;
+            //var length = (lastBezier.outTangent - lastBezier.position).magnitude;
             // Get the direction of the final spline curve point
             var direction = GetDirection(1f);
 
@@ -343,7 +343,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         public void AddPointAtStart()
         {
             var firstBezier = points[0];
-            var length = (firstBezier.outTangent - firstBezier.position).magnitude;
+            //var length = (firstBezier.outTangent - firstBezier.position).magnitude;
             // Get the direction of the final spline curve point, point position
             var direction = GetDirection(0f);
 
@@ -475,75 +475,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         }
 
 
-        public override AnimationCurveTRS GetAnimationCurveTRS()
+        public override AnimationCurveTRS GenerateAnimationCurveTRS()
         {
-            var trs = new AnimationCurveTRS();
-
-            // Compute curve lengths between each bezier control point
-            int numCurves = points.Count - 1;
-            double[] distances = new double[numCurves];
-            double totalDistance = 0;
-            for (int i = 0; i < distances.Length; i++)
-            {
-                double timeStart = (double)(i + 0) / numCurves;
-                double timeEnd = (double)(i + 1) / numCurves;
-                double distance = CurveLengthUtility.GetDistanceBetweenRepeated(this, timeStart, timeEnd, powerExp: 9); // consider raising powerExp to 4?
-                distances[i] = distance;
-                totalDistance += distance;
-                Debug.Log($"Distance {i}: {distance}");
-            }
-            Debug.Log("Total distance: " + totalDistance);
-
-            // GOAL: the inital X and Y rotation for any segment should/has to be x:0, y:0.
-            // This is because X and Y rotation is controlled by/is the forward vector of the segment's
-            // transform component. The animation data here should only represent the delta/difference
-            // between the initial transform component and the sampled matrix at time 't'.
-            // However, the Z/roll is independant of this XY rotation and should be preserved. However,
-            // it too is relative to the inital transform. Thus, we use the transform's Z/roll as the offset,
-            // leaving the Z/roll parameter of the bezier intact. If the transform is rotated +30 degrees about
-            // the Z axis, and the Z/roll parameter of the first anim key is +45, the animation data would
-            // generate an angle of +75. Inversing only the transform's +30 to -30 corrects this.
-            var initRotation = GetOrientation(0, 0).eulerAngles;
-            var inverseInitialRotation = Quaternion.Inverse(Quaternion.Euler(initRotation.x, initRotation.y, transform.eulerAngles.z));
-            var previousRotation = inverseInitialRotation.eulerAngles;
-
-            double currDistance = 0;
-            for (int i = 0; i < numCurves; i++)
-            {
-                float currLength = (float)distances[i];
-
-                // TODO: add and use samples per curve in bezier point
-                const int samples = 16;
-                for (int s = 0; s < samples; s++)
-                {
-                    var t = (float)(s + 0) / samples;
-                    var position = GetPosition(t, i);
-                    var scale = GetScale(t, i);
-                    var qRotation = inverseInitialRotation * GetOrientation(t, i);
-                    var rotation = qRotation.eulerAngles;
-                    rotation = CleanRotation(previousRotation, rotation);
-                    previousRotation = rotation;
-
-                    var timeNormalized = (currDistance + (t * currLength)) / totalDistance;
-                    trs.AddKeys((float)timeNormalized, position, rotation, scale);
-                }
-
-                currDistance += distances[i];
-            }
-
-            // Add last key at time = 1f
-            {
-                float t = 1f;
-                int i = numCurves - 1;
-                var position = GetPosition(t, i);
-                var scale = GetScale(t, i);
-                var qRotation = inverseInitialRotation * GetOrientation(t, i);
-                var rotation = qRotation.eulerAngles;
-                rotation = CleanRotation(previousRotation, rotation);
-                trs.AddKeys(t, position, rotation, scale);
-            }
-
-            return trs;
+            //return ComputeMultiSampleV2();
+            return ComputeMultiSample();
         }
 
         public float3 EvaluatePosition(double time)
@@ -576,6 +511,81 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return currAngle;
         }
 
+        /// <summary>
+        /// Iteration 1 curve sampling
+        /// </summary>
+        /// <returns></returns>
+        public AnimationCurveTRS ComputeMultiSample(int samplesBetweenControlsPoints = 32)
+        {
+            var trs = new AnimationCurveTRS();
+
+            // Compute curve lengths between each bezier control point
+            int numCurves = points.Count - 1;
+            double[] distances = new double[numCurves];
+            double totalDistance = 0;
+            for (int i = 0; i < distances.Length; i++)
+            {
+                double timeStart = (double)(i + 0) / numCurves;
+                double timeEnd = (double)(i + 1) / numCurves;
+                double distance = CurveLengthUtility.GetDistanceBetweenRepeated(this, timeStart, timeEnd);
+                distances[i] = distance;
+                totalDistance += distance;
+                Debug.Log($"Distance {i}: {distance}");
+            }
+            Debug.Log("Total distance: " + totalDistance);
+
+            // GOAL: the inital X and Y rotation for any segment should/has to be x:0, y:0.
+            // This is because X and Y rotation is controlled by/is the forward vector of the segment's
+            // transform component. The animation data here should only represent the delta/difference
+            // between the initial transform component and the sampled matrix at time 't'.
+            // However, the Z/roll is independant of this XY rotation and should be preserved. However,
+            // it too is relative to the inital transform. Thus, we use the transform's Z/roll as the offset,
+            // leaving the Z/roll parameter of the bezier intact. If the transform is rotated +30 degrees about
+            // the Z axis, and the Z/roll parameter of the first anim key is +45, the animation data would
+            // generate an angle of +75. Inversing only the transform's +30 to -30 corrects this.
+            var initRotation = GetOrientation(0, 0).eulerAngles;
+            var inverseInitialRotation = Quaternion.Inverse(Quaternion.Euler(initRotation.x, initRotation.y, transform.eulerAngles.z));
+            var previousRotation = inverseInitialRotation.eulerAngles;
+
+            double currDistance = 0;
+            for (int i = 0; i < numCurves; i++)
+            {
+                float currLength = (float)distances[i];
+
+                for (int s = 0; s < samplesBetweenControlsPoints; s++)
+                {
+                    var t = (float)(s + 0) / samplesBetweenControlsPoints;
+                    var position = GetPosition(t, i);
+                    var scale = GetScale(t, i);
+                    var qRotation = inverseInitialRotation * GetOrientation(t, i);
+                    var rotation = qRotation.eulerAngles;
+                    rotation = CleanRotation(previousRotation, rotation);
+                    previousRotation = rotation;
+
+                    var time = currDistance + (t * currLength);
+                    trs.AddKeys((float)time, position, rotation, scale);
+                    //var timeNormalized = (currDistance + (t * currLength)) / totalDistance;
+                    //trs.AddKeys((float)timeNormalized, position, rotation, scale);
+                }
+
+                currDistance += distances[i];
+            }
+
+            // Add last key
+            {
+                float t = (float)totalDistance;
+                int i = numCurves - 1;
+                var position = GetPosition(t, i);
+                var scale = GetScale(t, i);
+                var qRotation = inverseInitialRotation * GetOrientation(t, i);
+                var rotation = qRotation.eulerAngles;
+                rotation = CleanRotation(previousRotation, rotation);
+                trs.AddKeys(t, position, rotation, scale);
+            }
+
+            trs.CleanDuplicateKeys();
+            return trs;
+        }
 
     }
 }

@@ -9,7 +9,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
     {
         public event System.Action OnEdited;
 
-        public abstract AnimationCurveTRS GetAnimationCurveTRS();
+        public abstract AnimationCurveTRS GenerateAnimationCurveTRS();
 
         protected void CallOnEdited()
         {

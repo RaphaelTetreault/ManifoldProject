@@ -28,9 +28,14 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             // 2022/01/31: current work assumes min and max of 0 and 1
             var maxTime = AnimationCurveTRS.GetMaxTime();
             Assert.IsTrue(maxTime == 1);
-            // tODO: get min time, assert
+            // TODO: get min time, assert
 
             var distance = AnimationCurveTRS.GetDistanceBetweenRepeated(0, 1);
+            if (distance <= 0f)
+            {
+                var msg = "Distance is 0 which is invalid. TRS animation curves must define path.";
+                throw new System.ArgumentException(msg);
+            }
             return distance;
         }
         /// <summary>
@@ -118,7 +123,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             var selfEndMaxTime = AnimationCurveTRS.GetMaxTime();
             var selfEnd = AnimationCurveTRS.Position.Evaluate(selfEndMaxTime);
             var nextStart = PreviousSegment.AnimationCurveTRS.Position.Evaluate(0);
-            bool isContinuousToNext = Vector3.Distance(selfEnd, nextStart) < 0.1f;
+            bool isContinuousToNext = Vector3.Distance(selfEnd, nextStart) < 0.01f; // 1cm
             return isContinuousToNext;
         }
 
@@ -130,7 +135,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             var prevEndMaxTime = PreviousSegment.AnimationCurveTRS.GetMaxTime();
             var prevEnd = PreviousSegment.AnimationCurveTRS.Position.Evaluate(prevEndMaxTime);
             var selfStart = AnimationCurveTRS.Position.Evaluate(0);
-            bool isContinuousFromPrev = Vector3.Distance(selfStart, prevEnd) < 0.1f;
+            bool isContinuousFromPrev = Vector3.Distance(selfStart, prevEnd) < 0.01f; // 1cm
             return isContinuousFromPrev;
         }
 
@@ -164,7 +169,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         /// </summary>
         public void GenerateAnimationCurves()
         {
-            AnimationCurveTRS = SegmentPathGenerator.GetAnimationCurveTRS();
+            AnimationCurveTRS = SegmentPathGenerator.GenerateAnimationCurveTRS();
         }
 
     }

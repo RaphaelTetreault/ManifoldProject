@@ -100,17 +100,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 // Position X is inverted compared to Unity
                 // 2022/01/31: This does not work with inverting Z axis!
                 p.x = p.x.GetInverted();
-
-                //
                 //p.z = p.z.GetInverted();
 
                 // As a result of X's inversion:
                 // Rotation Y is inverted compared to Unity
                 r.y = r.y.GetInverted();
-                //
-
                 //r.z = r.z.GetInverted();
-
                 // Conform Y rotation to -Z forward
                 //r.y = r.y.GetOffset(180f);
             }
@@ -249,6 +244,68 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             Position.AddKeys(time, position);
             Rotation.AddKeys(time, rotation);
             Scale.AddKeys(time, scale);
+        }
+
+        public void CleanDuplicateKeys()
+        {
+            foreach (var animationCurve in AnimationCurves)
+            {
+                CleanDuplicateKeys(animationCurve);
+            }
+        }
+
+        private void CleanDuplicateKeys(AnimationCurve animationCurve)
+        {
+            const float valueDelta = 1e-5f;
+            const float tangentDelta = 1e-3f;
+            int maxRemovableKeys = animationCurve.keys.Length - 2;
+            int sameKeyValuesCount = 0;
+            var keysToRemove = new List<int>();
+            for (int i = 0; i < animationCurve.keys.Length - 2; i++)
+            {
+                var key0 = animationCurve.keys[i + 0];
+                var key1 = animationCurve.keys[i + 1];
+                var key2 = animationCurve.keys[i + 2];
+
+                bool isSameValueAsKey0 = IsBetween(key1.value, key0.value - valueDelta, key0.value + valueDelta);
+                bool isSameValueAsKey2 = IsBetween(key1.value, key2.value - valueDelta, key2.value + valueDelta);
+                if (isSameValueAsKey0 && isSameValueAsKey2)
+                    sameKeyValuesCount++;
+                else
+                    continue;
+
+                bool isSameTangentIn = IsBetween(key1.inTangent, key0.outTangent - tangentDelta, key0.outTangent + tangentDelta);
+                bool isSameTangentOut = IsBetween(key1.outTangent, key2.inTangent - tangentDelta, key2.inTangent + tangentDelta);
+                if (isSameTangentIn && isSameTangentOut)
+                    keysToRemove.Add(i + 1);
+            }
+
+            // Any key that has value and tangent similar to prev and next.
+            // In removing all in-between keys, we shift the index as array shrinks.
+            for (int i = 0; i < keysToRemove.Count; i++)
+            {
+                int index = keysToRemove[i] - i;
+                animationCurve.RemoveKey(index);
+            }
+
+            // If all removable keys want to be removed, we have a flat line.
+            bool isFlatAnimationCurve = keysToRemove.Count == maxRemovableKeys;
+            if (isFlatAnimationCurve)
+            {
+                // Smooth both tangents
+                for (int i = 0; i < animationCurve.keys.Length; i++)
+                {
+                    animationCurve.SmoothTangents(i, 1);
+                }
+            }
+        }
+
+        private bool IsBetween(float value, float min, float max)
+        {
+            bool isGreaterThanMin = value > min;
+            bool isLessThanMax = value < max;
+            bool isBetween = isGreaterThanMin && isLessThanMax;
+            return isBetween;
         }
     }
 }

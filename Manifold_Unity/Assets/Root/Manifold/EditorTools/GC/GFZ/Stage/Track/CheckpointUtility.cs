@@ -22,7 +22,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             float3 forward = -trackSegment.transform.forward;
             float3 backward = -forward;
 
-
             // Get the AnimationCurveTransform appropriate for requester.
             // Use GFZ space (game) if 'true'
             // Use Unity space if 'false'

@@ -19,10 +19,15 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         /// <param name="powerBase"></param>
         /// <param name="powerExp"></param>
         /// <returns></returns>
-        public static double GetDistanceBetweenRepeated(IPositionEvaluable evaluable, double timeStart, double timeEnd, float minDelta = 0.01f, int powerBase = 2, int powerExp = 1)
+        public static double GetDistanceBetweenRepeated(IPositionEvaluable evaluable, double timeStart, double timeEnd, float minDelta = 0.01f,  int powerBase = 2, int powerExp = 1)
         {
+            const int powerExpMin = 1;
+            const int powerExpMax = 20;
+            if (powerExp < powerExpMin || powerExp >= powerExpMax)
+                throw new ArgumentOutOfRangeException($"{nameof(powerExp)} must be between {powerExpMin} and {powerExpMax-2}");
+
             // Limit on how many cycles we can do
-            const int maxIterations = 1 << 20; // 2^20 = 1,048,576
+            const int maxIterations = 1 << powerExpMax; // 2^20 = 1,048,576
 
             // Values to store distance state between sampling points
             double delta = 0f;

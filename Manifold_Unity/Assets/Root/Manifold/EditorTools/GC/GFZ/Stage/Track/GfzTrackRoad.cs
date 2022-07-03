@@ -22,29 +22,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         private float railHeightRight = 5f;
 
 
-        private void OnDrawGizmos()
-        {
-            return;
-
-            if (!doGizmos)
-                return;
-
-            Gizmos.color = Color.red;
-            var mesh = Resources.GetBuiltinResource<Mesh>(UnityConst.Resources.Cube);
-
-            var baseMtx = transform.localToWorldMatrix;
-            var increment = 1f / 512f;
-            for (float t = 0; t < 1f; t += increment)
-            {
-                var animMtx = AnimationCurveTRS.EvaluateMatrix(t);
-                var mtx = baseMtx * animMtx;
-                var p = mtx.GetPosition();
-                var r = mtx.rotation;
-                var s = mtx.lossyScale;
-                Gizmos.DrawMesh(mesh, 0, p, r, s);
-            }
-        }
-
         public override Mesh[] GenerateMeshes()
         {
             throw new System.NotImplementedException();
