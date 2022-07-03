@@ -90,22 +90,15 @@ namespace Manifold.EditorTools.GC.GFZ
         {
             var keyframes = animationCurve.keys;
             var keyables = new KeyableAttribute[keyframes.Length];
+            var modes = TangentModesToInterpolationModes(animationCurve);
             for (int i = 0; i < keyables.Length; i++)
             {
                 var keyframe = keyframes[i];
-
-                // Must be the same for GFZ!
-                // 2022/01/31: might just be that prev.out and curr.in must be same.
-                var modeL = AnimationUtility.GetKeyLeftTangentMode(animationCurve, i);
-                var modeR = AnimationUtility.GetKeyRightTangentMode(animationCurve, i);
-                if (modeL != modeR)
-                    throw new ArgumentException("GFZ keyables must have same tangent mode for L/R tangents!");
-
                 var keyable = new KeyableAttribute()
                 {
                     Time = keyframe.time,
                     Value = keyframe.value,
-                    EaseMode = UnityToGfzTangentMode(modeL),
+                    EaseMode = modes[i],
                     TangentIn = keyframe.inTangent,
                     TangentOut = keyframe.outTangent,
                 };
@@ -113,6 +106,25 @@ namespace Manifold.EditorTools.GC.GFZ
             }
 
             return keyables;
+        }
+
+        public static InterpolationMode[] TangentModesToInterpolationModes(UnityEngine.AnimationCurve animationCurve)
+        {
+            var modes = new InterpolationMode[animationCurve.keys.Length];
+            for (int i = 0; i < modes.Length - 1; i++)
+            {
+                // GFZ: key modes -between- keys must be the same.
+                var modeR = AnimationUtility.GetKeyRightTangentMode(animationCurve, i + 0);
+                var modeL = AnimationUtility.GetKeyLeftTangentMode(animationCurve, i + 1);
+                if (modeL != modeR)
+                    throw new ArgumentException("GFZ keyables must have same tangent mode between keyframes!");
+
+                // We only need to keep the key's right tangent mode - it'll apply to the current and next keys
+                // ie: key[n].right == key[n+1].left
+                modes[i] = UnityToGfzTangentMode(modeR);
+            }
+
+            return modes;
         }
 
         public static void SetGfzTangentsToUnityTangents(KeyableAttribute[] keyables, UnityEngine.AnimationCurve curve)
@@ -167,7 +179,7 @@ namespace Manifold.EditorTools.GC.GFZ
                     return InterpolationMode.unknown1;
 
                 default:
-                    throw new Exception($"Unhandled conversiont to {nameof(AnimationUtility.TangentMode)}.{mode}");
+                    throw new Exception($"Unhandled conversion to {nameof(AnimationUtility.TangentMode)}.{mode}");
             }
         }
 
