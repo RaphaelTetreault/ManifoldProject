@@ -133,7 +133,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             var checkpoints = new Checkpoint[numCheckpoints];
 
             // Get direction vectors
-            float3 forward = new float3(0, 0, +1);
+            float3 forward = new float3(0, 0, -1);
             float3 backward = -forward;
 
             // Get the AnimationCurveTransform appropriate for requester.

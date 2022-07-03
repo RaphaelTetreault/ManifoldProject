@@ -534,19 +534,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
             Debug.Log("Total distance: " + totalDistance);
 
-            // GOAL: the inital X and Y rotation for any segment should/has to be x:0, y:0.
-            // This is because X and Y rotation is controlled by/is the forward vector of the segment's
-            // transform component. The animation data here should only represent the delta/difference
-            // between the initial transform component and the sampled matrix at time 't'.
-            // However, the Z/roll is independant of this XY rotation and should be preserved. However,
-            // it too is relative to the inital transform. Thus, we use the transform's Z/roll as the offset,
-            // leaving the Z/roll parameter of the bezier intact. If the transform is rotated +30 degrees about
-            // the Z axis, and the Z/roll parameter of the first anim key is +45, the animation data would
-            // generate an angle of +75. Inversing only the transform's +30 to -30 corrects this.
-            var initRotation = GetOrientation(0, 0).eulerAngles;
-            var inverseInitialRotation = Quaternion.Inverse(Quaternion.Euler(initRotation.x, initRotation.y, transform.eulerAngles.z));
-            //var inverseInitialRotation = Quaternion.identity;
-            var previousRotation = inverseInitialRotation.eulerAngles;
+            var mirrorXOffsetRotationY = new Vector3(0, 180, 0);
+            var previousRotation = GetOrientation(0, 0).eulerAngles + mirrorXOffsetRotationY;
 
             double currDistance = 0;
             for (int i = 0; i < numCurves; i++)
@@ -558,15 +547,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     var t = (float)(s + 0) / samplesBetweenControlsPoints;
                     var position = GetPosition(t, i);
                     var scale = GetScale(t, i);
-                    var qRotation = inverseInitialRotation * GetOrientation(t, i);
-                    var rotation = qRotation.eulerAngles;
+                    var rotation = GetOrientation(t, i).eulerAngles + mirrorXOffsetRotationY;
                     rotation = CleanRotation(previousRotation, rotation);
                     previousRotation = rotation;
 
                     var time = currDistance + (t * currLength);
                     trs.AddKeys((float)time, position, rotation, scale);
-                    //var timeNormalized = (currDistance + (t * currLength)) / totalDistance;
-                    //trs.AddKeys((float)timeNormalized, position, rotation, scale);
                 }
 
                 currDistance += distances[i];
@@ -578,8 +564,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 int i = numCurves - 1;
                 var position = GetPosition(t, i);
                 var scale = GetScale(t, i);
-                var qRotation = inverseInitialRotation * GetOrientation(t, i);
-                var rotation = qRotation.eulerAngles;
+                var rotation = GetOrientation(t, i).eulerAngles + mirrorXOffsetRotationY;
                 rotation = CleanRotation(previousRotation, rotation);
                 trs.AddKeys(t, position, rotation, scale);
             }
