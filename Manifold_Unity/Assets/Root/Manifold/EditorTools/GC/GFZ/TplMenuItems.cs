@@ -27,26 +27,27 @@ namespace Manifold.EditorTools.GC.GFZ
             var rootPath = "./Assets/gfzj01/tpl-test3/";
             Directory.CreateDirectory(rootPath);
 
-            int count = 0;
-            int total = inputPaths.Length;
+            int tplCount = 0;
+            int tplTotal = inputPaths.Length;
 
             var tplEnumerable = BinarySerializableIO.LoadFile<Tpl>(inputPaths);
             foreach (var tpl in tplEnumerable)
             {
-                bool cancel = ProgressBar.ShowIndexed(count, total, "TPL Test", inputPaths[count]);
+                bool cancel = ProgressBar.ShowIndexed(tplCount, tplTotal, "TPL Test", inputPaths[tplCount]);
                 if (cancel) break;
-                count++;
+                tplCount++;
 
                 int texArrayIndex = 0;
-                foreach (var textureArray in tpl.TextureAndMipmaps)
+                foreach (var textureSeries in tpl.TextureSeries)
                 {
-                    for (int i = 0; i < textureArray.Length; i++)
+                    for (int i = 0; i < textureSeries.Length; i++)
                     {
-                        var texture = textureArray[i];
-                        if (texture is null)
-                            continue;
-                        string name = $"{tpl.FileName}_tex{texArrayIndex}_mip{i}";
-                        CreateTexture(texture, rootPath, name);
+                        var texture = textureSeries[i].Texture;
+                        var texture2D = CreateTexture2D(texture);
+
+                        string name = string.Empty;
+                        //string name = $"{tpl.FileName}_tex{texArrayIndex}_mip{i}";
+                        SaveTexture2DWithHash(texture2D, rootPath, name);
                     }
                     texArrayIndex++;
                 }
@@ -55,32 +56,28 @@ namespace Manifold.EditorTools.GC.GFZ
             AssetDatabase.Refresh();
         }
 
-        public static void CreateTexture(GameCube.GX.Texture.Texture texture, string rootPath, string name)
+        public static Texture2D CreateTexture2D(GameCube.GX.Texture.Texture texture)
         {
-            var unityTexture = new Texture2D(texture.Width, texture.Height);
+            var texture2D = new Texture2D(texture.Width, texture.Height);
             for (int h = 0; h < texture.Height; h++)
             {
                 for (int w = 0; w < texture.Width; w++)
                 {
-                    //var texColor = texture[w, h];
                     var texColor = texture.Pixels[w + h * texture.Width];
                     var color = new Color32(texColor.r, texColor.g, texColor.b, texColor.a);
-                    unityTexture.SetPixel(w, (texture.Height - 1 - h), color); // unsure if flip is error from here
+                    texture2D.SetPixel(w, (texture.Height - 1 - h), color); // unsure if flip is error from here
                 }
             }
+            return texture2D;
+        }
 
-
-            // TODO: separate from above - make texture, and save/hash it
-            byte[] png = unityTexture.EncodeToPNG();
+        public static void SaveTexture2DWithHash(Texture2D texture2D, string rootPath, string name = "")
+        {
+            byte[] png = texture2D.EncodeToPNG();
             byte[] hash = MD5.Create().ComputeHash(png, 0, png.Length);
-            //string name = HashToString(hash);
-            string filePath = $"{rootPath}/{name}.png";
-
-            if (File.Exists(filePath))
-            {
-                //Debug.Log(filePath);
-                return;
-            }
+            string printName = String.IsNullOrEmpty(name)
+                ? HashToString(hash) : name;
+            string filePath = $"{rootPath}/{printName}.png";
 
             using (var writer = new BinaryWriter(File.Create(filePath)))
             {
@@ -90,7 +87,7 @@ namespace Manifold.EditorTools.GC.GFZ
 
         private static string HashToString(byte[] hash)
         {
-            var builder = new System.Text.StringBuilder();
+            var builder = new StringBuilder();
             foreach (var value in hash)
             {
                 builder.Append($"{value:x2}");
