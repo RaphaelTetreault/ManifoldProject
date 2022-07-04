@@ -21,15 +21,16 @@ namespace Manifold.EditorTools.GC.GFZ
         {
             var settings = GfzProjectWindow.GetSettings();
             var input = settings.SourceDirectory;
-            //var inputPaths = Directory.GetFiles(input, "*.tpl", SearchOption.AllDirectories);
-            var inputPaths = Directory.GetFiles(input, "bg_por_s.tpl", SearchOption.AllDirectories);
+            var inputPaths = Directory.GetFiles(input, "*.tpl", SearchOption.AllDirectories);
+            //var inputPaths = Directory.GetFiles(input, "arobin_sv0.tpl", SearchOption.AllDirectories);
 
-            var rootPath = "./Assets/gfzj01/tpl-test3/";
+            // TODO: make not hard-coded
+            //var rootPath = "./Assets/gfzj01/tpl-test-4/";
+            var rootPath = "./Assets/gfzj01/tpl-test/";
             Directory.CreateDirectory(rootPath);
 
             int tplCount = 0;
             int tplTotal = inputPaths.Length;
-
             var tplEnumerable = BinarySerializableIO.LoadFile<Tpl>(inputPaths);
             foreach (var tpl in tplEnumerable)
             {
@@ -37,19 +38,13 @@ namespace Manifold.EditorTools.GC.GFZ
                 if (cancel) break;
                 tplCount++;
 
-                int texArrayIndex = 0;
                 foreach (var textureSeries in tpl.TextureSeries)
                 {
-                    for (int i = 0; i < textureSeries.Length; i++)
-                    {
-                        var texture = textureSeries[i].Texture;
-                        var texture2D = CreateTexture2D(texture);
+                    if (textureSeries is null)
+                        continue;
 
-                        string name = string.Empty;
-                        //string name = $"{tpl.FileName}_tex{texArrayIndex}_mip{i}";
-                        SaveTexture2DWithHash(texture2D, rootPath, name);
-                    }
-                    texArrayIndex++;
+                    for (int i = 0; i < textureSeries.Length; i++)
+                        SaveTextures(textureSeries, rootPath, false);
                 }
             }
             ProgressBar.Clear();
@@ -71,17 +66,15 @@ namespace Manifold.EditorTools.GC.GFZ
             return texture2D;
         }
 
-        public static void SaveTexture2DWithHash(Texture2D texture2D, string rootPath, string name = "")
+        public static void SaveData(string filePath, byte[] data, bool overwrite)
         {
-            byte[] png = texture2D.EncodeToPNG();
-            byte[] hash = MD5.Create().ComputeHash(png, 0, png.Length);
-            string printName = String.IsNullOrEmpty(name)
-                ? HashToString(hash) : name;
-            string filePath = $"{rootPath}/{printName}.png";
+            if (!overwrite)
+                if (File.Exists(filePath))
+                    return;
 
             using (var writer = new BinaryWriter(File.Create(filePath)))
             {
-                writer.Write(png);
+                writer.Write(data);
             }
         }
 
@@ -93,6 +86,25 @@ namespace Manifold.EditorTools.GC.GFZ
                 builder.Append($"{value:x2}");
             }
             return builder.ToString();
+        }
+
+        private static void SaveTextures(TextureSeries textureSeries, string rootPath, bool overwrite)
+        {
+            var hasher = MD5.Create();
+            var mainTex = CreateTexture2D(textureSeries[0].Texture);
+            byte[] png = mainTex.EncodeToPNG();
+            var name = HashToString(hasher.ComputeHash(png, 0, png.Length));
+            var filePath = $"{rootPath}{name}.png";
+            SaveData(filePath, png, overwrite);
+
+            for (int i = 1; i < textureSeries.Length; i++)
+            {
+                var mipmap = CreateTexture2D(textureSeries[i].Texture);
+                var mipmapPng = mipmap.EncodeToPNG();
+                var mipmapName = $"{name}_mipmap{i}";
+                filePath = $"{rootPath}{mipmapName}.png";
+                SaveData(filePath, mipmapPng, overwrite);
+            }
         }
     }
 }
