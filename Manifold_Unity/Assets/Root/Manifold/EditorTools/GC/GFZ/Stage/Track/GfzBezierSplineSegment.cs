@@ -530,9 +530,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 double distance = CurveLengthUtility.GetDistanceBetweenRepeated(this, timeStart, timeEnd);
                 distances[i] = distance;
                 totalDistance += distance;
-                Debug.Log($"Distance {i}: {distance}");
+                //Debug.Log($"Distance {i}: {distance}");
             }
-            Debug.Log("Total distance: " + totalDistance);
+            //Debug.Log("Total distance: " + totalDistance);
 
             var mirrorXOffsetRotationY = new Vector3(0, 180, 0);
             var previousRotation = GetOrientation(0, 0).eulerAngles + mirrorXOffsetRotationY;
