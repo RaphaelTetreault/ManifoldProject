@@ -12,8 +12,8 @@ namespace Manifold.EditorTools.GC.GFZ.TPL
     public static class TplMenuItems
     {
         /// <summary>
-        /// Some gross code that imports both PNG textures and makes TPL scriptable objects
-        /// with reference to textures, mipmaps, and source blocks
+        /// Imports all textures and mipmaps and creates scriptable objects which hold references
+        /// between textures and their source TPLs via texture hashes.
         /// </summary>
         [MenuItem("Manifold/TPL/Import all textures and mipmaps (with hash reference objects)")]
         public static void SobjsBasedTpls()
