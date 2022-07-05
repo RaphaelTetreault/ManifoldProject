@@ -43,6 +43,11 @@ namespace Manifold.EditorTools.GC.GFZ
         /// Location to store working files in Unity project (begins with "Assets/").
         /// </summary>
         public string AssetsWorkingDirectory => $"Assets/{UnityWorkingDirectory}";
+        /// <summary>
+        /// Used to define a safe output directory when a path is undefined.
+        /// </summary>
+        public string UndefinedDestination => Path.Combine(DriveRootDirectory, "Manifold");
+
 
         public string[] GetTestRootDirectories()
         {
