@@ -38,7 +38,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 var gobj = new GameObject($"Checkpoint[{index++}]");
                 gobj.transform.parent = checkpointGenerator.transform;
                 var script = gobj.AddComponent<GfzCheckpoint>();
-                script.Init(checkpoint);
+                script.SetCheckpointData(checkpoint);
                 script.Mesh = checkpointGenerator.GizmosMesh;
             }
         }
