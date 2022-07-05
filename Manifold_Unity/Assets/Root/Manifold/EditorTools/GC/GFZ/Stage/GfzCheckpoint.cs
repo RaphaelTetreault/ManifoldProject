@@ -43,8 +43,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         {
             var from = PlaneStart.origin;
             var to = PlaneEnd.origin;
-            var halfWidthFrom = TrackWidth * GizmosMeshScaleXY;
-            var scale = new Vector3(halfWidthFrom, halfWidthFrom, GizmosMeshScaleZ);
+            var scaleXY = TrackWidth * GizmosMeshScaleXY;
+            var scale = new Vector3(scaleXY, scaleXY, GizmosMeshScaleZ);
             var forward = Quaternion.LookRotation(PlaneStart.normal);
             var backward = Quaternion.LookRotation(PlaneEnd.normal);
 
