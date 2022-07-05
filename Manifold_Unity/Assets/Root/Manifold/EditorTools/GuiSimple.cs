@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using UnityEngine;
 using UnityEditor;
 
@@ -62,13 +63,14 @@ namespace Manifold.EditorTools
         }
 
 
-        public static string BrowseFile(string value, string label, string title, string directory, string extensions)
+        public static string BrowseFile(string value, string label, string title, string directory, string extensions, string fallbackDirectory = "")
         {
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.PrefixLabel(Labelize(label));
             if (GUILayout.Button("Browse"))
             {
-                var result = EditorUtility.OpenFilePanel(title, directory, extensions);
+                string directoryToOpen = Directory.Exists(directory) ? directory : fallbackDirectory;
+                string result = EditorUtility.OpenFilePanel(title, directoryToOpen, extensions);
                 if (!string.IsNullOrEmpty(result))
                 {
                     value = result;
@@ -79,30 +81,57 @@ namespace Manifold.EditorTools
 
             return value;
         }
-        public static string BrowseFolder(string value, string label, string title, string directory, string defaultName)
+        public static string BrowseFolder(string directory, string label, string title, string fallbackDirectory = "")
         {
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.PrefixLabel(Labelize(label));
             if (GUILayout.Button("Browse"))
             {
-                var result = EditorUtility.OpenFolderPanel(title, directory, defaultName);
+                string directoryToOpen = Directory.Exists(directory) ? directory : fallbackDirectory;
+                string result = EditorUtility.OpenFolderPanel(title, directoryToOpen, "");
                 if (!string.IsNullOrEmpty(result))
                 {
-                    value = result + "/";
+                    directory = result + "/";
                 }
             }
-            value = EditorGUILayout.TextField(value);
+            directory = EditorGUILayout.TextField(directory);
             EditorGUILayout.EndHorizontal();
 
-            return value;
+            return directory;
         }
-        public static string BrowseFolderWithFilters(string value, string label, string title, string directory, params string[] filters)
+        public static string BrowseUnityAssets(string assetsDirectory, string label, string title)
+        {
+            var unityRootPath = Directory.GetCurrentDirectory();
+            var unityAssetsPath = Path.Combine(unityRootPath, "Assets/").Replace('\\', '/');
+            var requestedAssetsPath = Path.Combine(unityAssetsPath, assetsDirectory).Replace('\\', '/');
+
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.PrefixLabel(Labelize(label));
+            if (GUILayout.Button("Browse"))
+            {
+                string directoryToOpen = Directory.Exists(requestedAssetsPath) ? requestedAssetsPath : unityAssetsPath;
+                string result = EditorUtility.OpenFolderPanel(title, directoryToOpen, "");
+                if (!string.IsNullOrEmpty(result))
+                {
+                    // Remove path up to and including "Assets/"
+                    assetsDirectory = result.Substring(unityAssetsPath.Length);
+                    assetsDirectory += "/";
+                }
+            }
+            assetsDirectory = EditorGUILayout.TextField(assetsDirectory);
+            EditorGUILayout.EndHorizontal();
+
+            return assetsDirectory;
+        }
+
+        public static string BrowseFolderWithFilters(string value, string label, string title, string directory, string fallbackDirectory = "", params string[] filters)
         {
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.PrefixLabel(Labelize(label));
             if (GUILayout.Button("Browse"))
             {
-                var result = EditorUtility.OpenFilePanelWithFilters(title, directory, filters);
+                string directoryToOpen = Directory.Exists(directory) ? directory : fallbackDirectory;
+                var result = EditorUtility.OpenFilePanelWithFilters(title, directoryToOpen, filters);
                 if (!string.IsNullOrEmpty(result))
                 {
                     value = result + "/";
@@ -126,6 +155,5 @@ namespace Manifold.EditorTools
         {
             DefaultScript("Script", behaviour);
         }
-
     }
 }

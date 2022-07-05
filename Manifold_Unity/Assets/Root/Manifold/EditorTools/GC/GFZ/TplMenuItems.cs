@@ -23,9 +23,9 @@ namespace Manifold.EditorTools.GC.GFZ.TPL
             var inputPaths = Directory.GetFiles(inputPath, "*.tpl", SearchOption.AllDirectories);
 
             // TODO: make not hard-coded
-            //var outputPath = settings.
-            var textureRootOutputPath = "./Assets/gfzj01/tpl/textures/";
-            var scriptableObjectPath = "Assets/gfzj01/tpl/";
+            var outputPath = settings.AssetsWorkingDirectory;
+            var textureRootOutputPath = $"./{outputPath}/tpl/textures/";
+            var scriptableObjectPath = $"{outputPath}/tpl/";
             Directory.CreateDirectory(textureRootOutputPath);
 
             // This type maps a texture's hash to information about what the texture is and where it came from

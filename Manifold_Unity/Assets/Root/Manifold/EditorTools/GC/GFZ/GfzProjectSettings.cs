@@ -1,5 +1,6 @@
 using GameCube.GFZ.Stage;
 using System;
+using System.IO;
 using UnityEngine;
 using UnityEditor;
 
@@ -12,6 +13,7 @@ namespace Manifold.EditorTools.GC.GFZ
         [field: SerializeField] public SerializeFormat SerializeFormat { get; private set; } = SerializeFormat.GX;
         [field: SerializeField] public string SourceDirectory { get; private set; } = string.Empty;
         [field: SerializeField] public string WorkingFilesDirectory { get; private set; } = string.Empty;
+        [field: SerializeField] public string UnityWorkingDirectory { get; private set; } = "gfz/";
 
         // Output Directories
         [field: SerializeField] public string LogOutput { get; private set; } = string.Empty;
@@ -37,7 +39,10 @@ namespace Manifold.EditorTools.GC.GFZ
 
         // Easy accessors for common places
         public string SourceStageDirectory => $"{SourceDirectory}stage/";
-
+        /// <summary>
+        /// Location to store working files in Unity project (begins with "Assets/").
+        /// </summary>
+        public string AssetsWorkingDirectory => $"Assets/{UnityWorkingDirectory}";
 
         public string[] GetTestRootDirectories()
         {
@@ -50,22 +55,19 @@ namespace Manifold.EditorTools.GC.GFZ
             };
         }
 
-        public string SeekRootStart()
-        {
-            // TODO: change per editor platform
-            return "C:/";
-        }
+        private static string DriveRootDirectory => Directory.GetDirectoryRoot(Directory.GetCurrentDirectory());
 
         public void DrawSettingsTab()
         {
             GuiSimple.Label("General", EditorStyles.boldLabel);
             SerializeFormat = GuiSimple.EnumPopup(nameof(SerializeFormat), SerializeFormat);
-            SourceDirectory = GuiSimple.BrowseFolder(SourceDirectory, nameof(SourceDirectory), "Open GFZ source directory", SeekRootStart(), "");
-            WorkingFilesDirectory = GuiSimple.BrowseFolder(WorkingFilesDirectory, nameof(WorkingFilesDirectory), "Open GFZ working directory", SeekRootStart(), "");
+            SourceDirectory = GuiSimple.BrowseFolder(SourceDirectory, nameof(SourceDirectory), "Open GFZ source directory", DriveRootDirectory);
+            WorkingFilesDirectory = GuiSimple.BrowseFolder(WorkingFilesDirectory, nameof(WorkingFilesDirectory), "Open GFZ working directory", DriveRootDirectory);
+            UnityWorkingDirectory = GuiSimple.BrowseUnityAssets(UnityWorkingDirectory, nameof(UnityWorkingDirectory), "Open Unity working directory");
 
             EditorGUILayout.Space();
             GuiSimple.Label("Scene Generation", EditorStyles.boldLabel);
-            SceneExportPath = GuiSimple.BrowseFolder(SceneExportPath, nameof(SceneExportPath), "Open Scene Export Directory", SceneExportPath, "");
+            SceneExportPath = GuiSimple.BrowseFolder(SceneExportPath, nameof(SceneExportPath), "Open Scene Export Directory", DriveRootDirectory);
             SingleSceneIndex = GuiSimple.Int(nameof(SingleSceneIndex), SingleSceneIndex);
             ConvertCoordSpace = GuiSimple.Bool(nameof(ConvertCoordSpace), ConvertCoordSpace);
 
@@ -77,9 +79,9 @@ namespace Manifold.EditorTools.GC.GFZ
 
             EditorGUILayout.Space();
             GuiSimple.Label("File Output Directories", EditorStyles.boldLabel);
-            LogOutput = GuiSimple.BrowseFolder(LogOutput, "Log Output Directory", "Open Log Directory", LogOutput, "");
-            AnalysisOutput = GuiSimple.BrowseFolder(AnalysisOutput, "Analysis Output Directory", "Open Analysis Directory", AnalysisOutput, "");
-            FileOutput = GuiSimple.BrowseFolder(FileOutput, "File/Binary Output Directory", "Open File Output Directory", FileOutput, "");
+            LogOutput = GuiSimple.BrowseFolder(LogOutput, "Log Output Directory", "Open Log Directory", DriveRootDirectory);
+            AnalysisOutput = GuiSimple.BrowseFolder(AnalysisOutput, "Analysis Output Directory", "Open Analysis Directory", DriveRootDirectory);
+            FileOutput = GuiSimple.BrowseFolder(FileOutput, "File/Binary Output Directory", "Open File Output Directory", DriveRootDirectory);
 
         }
 
@@ -87,10 +89,10 @@ namespace Manifold.EditorTools.GC.GFZ
         {
             GuiSimple.Label("Mass IO Test Folders", EditorStyles.boldLabel);
             EditorGUILayout.HelpBox("These folders are used to test all files from all extracted versions of F-Zero AX and F-Zero GX.", MessageType.None, true);
-            Gfzj01Dir = GuiSimple.BrowseFolder(Gfzj01Dir, "GFZJ01 Directory (GX-JP)", "Open F-Zero GX (JP) root folder with extracted files", Gfzj01Dir, "");
-            Gfze01Dir = GuiSimple.BrowseFolder(Gfze01Dir, "GFZE01 Directory (GX-NA)", "Open F-Zero GX (NA) root folder with extracted files", Gfze01Dir, "");
-            Gfzp01Dir = GuiSimple.BrowseFolder(Gfzp01Dir, "GFZP01 Directory (GX-PAL)", "Open F-Zero GX (PAL) root folder with extracted files", Gfzp01Dir, "");
-            Gfzj8pDir = GuiSimple.BrowseFolder(Gfzj8pDir, "GFZJ8P Directory (AX-JP)", "Open F-Zero AX (JP) root folder with extracted files", Gfzj8pDir, "");
+            Gfzj01Dir = GuiSimple.BrowseFolder(Gfzj01Dir, "GFZJ01 Directory (GX-JP)", "Open F-Zero GX (JP) root folder with extracted files", DriveRootDirectory);
+            Gfze01Dir = GuiSimple.BrowseFolder(Gfze01Dir, "GFZE01 Directory (GX-NA)", "Open F-Zero GX (NA) root folder with extracted files", DriveRootDirectory);
+            Gfzp01Dir = GuiSimple.BrowseFolder(Gfzp01Dir, "GFZP01 Directory (GX-PAL)", "Open F-Zero GX (PAL) root folder with extracted files", DriveRootDirectory);
+            Gfzj8pDir = GuiSimple.BrowseFolder(Gfzj8pDir, "GFZJ8P Directory (AX-JP)", "Open F-Zero AX (JP) root folder with extracted files", DriveRootDirectory);
         }
 
 
