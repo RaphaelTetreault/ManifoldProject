@@ -16,7 +16,7 @@ namespace Manifold.EditorTools.GC.GFZ.TPL
 {
     public static class TplMenuItems
     {
-        [MenuItem("Manifold/Tpl Test Load")]
+        [MenuItem("Manifold/TPL/Test Load")]
         public static void TestTplRead()
         {
             var settings = GfzProjectWindow.GetSettings();
@@ -55,7 +55,7 @@ namespace Manifold.EditorTools.GC.GFZ.TPL
         /// Some gross code that imports both PNG textures and makes TPL scriptable objects
         /// with reference to textures, mipmaps, and source blocks
         /// </summary>
-        [MenuItem("Manifold/Tpl Sobj Test Load")]
+        [MenuItem("Manifold/TPL/Sobj Test Load")]
         public static void NewTest()
         {
             var settings = GfzProjectWindow.GetSettings();
@@ -110,12 +110,114 @@ namespace Manifold.EditorTools.GC.GFZ.TPL
                 var sobjDest = $"{sobjPath}{tpl.FileName}.asset";
                 if (AssetDatabase.LoadAssetAtPath<TplSobj>(sobjDest) != null)
                     Debug.Log($"Conflict! {tpl.FileName}");
-                    //AssetDatabase.DeleteAsset(sobjDest);
+                //AssetDatabase.DeleteAsset(sobjDest);
                 AssetDatabase.CreateAsset(tplSobj, sobjDest);
             }
             ProgressBar.Clear();
             AssetDatabase.Refresh();
         }
+
+
+        /// <summary>
+        /// Some gross code that imports both PNG textures and makes TPL scriptable objects
+        /// with reference to textures, mipmaps, and source blocks
+        /// </summary>
+        [MenuItem("Manifold/TPL/NEW - SOBJ based solution")]
+        public static void SobjsBasedTpls()
+        {
+            var settings = GfzProjectWindow.GetSettings();
+            var input = settings.SourceDirectory;
+            var inputPaths = Directory.GetFiles(input, "*.tpl", SearchOption.AllDirectories);
+
+            // TODO: make not hard-coded
+            var textureRootOutputPath = "./Assets/gfzj01/tpl/textures/";
+            var sobjPath = "Assets/gfzj01/tpl/";
+            Directory.CreateDirectory(textureRootOutputPath);
+            //Directory.CreateDirectory(sobjPath);
+
+            // This type maps a texture's hash to information about what the texture is and where it came from
+            var textureHashesToTextureInfo = ScriptableObject.CreateInstance<TextureHashToTextureInfo>();
+            var textureInfoHashes = new List<string>();
+            var textureInfos = new List<TextureInfo>();
+            // This type maps TPL's texture to their textures' hashes
+            var tplTexturesToTextureHash = ScriptableObject.CreateInstance<TplTextureToTextureHash>();
+            var tplFileNames = new List<string>();
+            var tplTextureHashes = new List<TplTextureHashes>();
+
+            int tplCount = 0;
+            int tplTotal = inputPaths.Length;
+            var tplEnumerable = BinarySerializableIO.LoadFile<Tpl>(inputPaths);
+            foreach (var tpl in tplEnumerable)
+            {
+                // Progress bar
+                {
+                    bool cancel = ProgressBar.ShowIndexed(tplCount, tplTotal, "TPL Test", inputPaths[tplCount]);
+                    if (cancel)
+                        break;
+                    tplCount++;
+                }
+
+                // Setup for tex-desc to hash
+                tplFileNames.Add(tpl.FileName);
+                var textureHashes = new TplTextureHashes()
+                {
+                    TextureHashes = new string[tpl.TextureDescriptions.Length],
+                };
+                tplTextureHashes.Add(textureHashes);
+
+                // Iterate over all textures
+                Assert.IsTrue(tpl.TextureDescriptions.Length == tpl.TextureSeries.Length);
+                for (int i = 0; i < tpl.TextureDescriptions.Length; i++)
+                {
+                    var textureDescription = tpl.TextureDescriptions[i];
+                    var textureSeries = tpl.TextureSeries[i];
+                    Assert.IsTrue(textureDescription.IsNull == textureSeries is null);
+
+                    if (textureSeries is null)
+                        continue;
+
+                    // Save all textures in TPL
+                    var filePaths = SaveTextures(textureSeries, textureRootOutputPath, false);
+                    var hash = Path.GetFileNameWithoutExtension(filePaths[0]);
+
+                    // Set TPL hash for this index. If skipped due to above `continue`, stays null.
+                    // Unity will serialize this to string.Empty "".
+                    textureHashes.TextureHashes[i] = hash;
+
+                    // Create a description entry for this texture / hash
+                    var textureInfo = new TextureInfo()
+                    {
+                        SourceFileName = tpl.FileName,
+                        AddressRange = textureSeries.AddressRange,
+                        TextureFormat = textureDescription.TextureFormat,
+                        PixelWidth = textureDescription.Width,
+                        PixelHeight = textureDescription.Height,
+                        TextureLevels = textureDescription.MipmapLevels,
+                    };
+                    textureInfos.Add(textureInfo);
+                    textureInfoHashes.Add(hash);
+                }
+            }
+
+            //
+            textureHashesToTextureInfo.Hashes = textureInfoHashes.ToArray();
+            textureHashesToTextureInfo.TextureInfos = textureInfos.ToArray();
+            Assert.IsTrue(textureHashesToTextureInfo.Hashes.Length == textureHashesToTextureInfo.TextureInfos.Length);
+            string textureHashToTextureInfoPath = $"{sobjPath}/TPL-TextureHash-to-TextureInfo.asset";
+            AssetDatabase.DeleteAsset(textureHashToTextureInfoPath);
+            AssetDatabase.CreateAsset(textureHashesToTextureInfo, textureHashToTextureInfoPath);
+
+            tplTexturesToTextureHash.FileNames = tplFileNames.ToArray();
+            tplTexturesToTextureHash.Hashes = tplTextureHashes.ToArray();
+            Assert.IsTrue(tplTexturesToTextureHash.FileNames.Length == tplTexturesToTextureHash.Hashes.Length);
+            string tplTextureToHashPath = $"{sobjPath}/TPL-TextureDescription-to-Hash.asset";
+            AssetDatabase.DeleteAsset(tplTextureToHashPath);
+            AssetDatabase.CreateAsset(tplTexturesToTextureHash, tplTextureToHashPath);
+
+            ProgressBar.Clear();
+            AssetDatabase.Refresh();
+        }
+
 
         public static Texture2D CreateTexture2D(GameCube.GX.Texture.Texture texture)
         {
