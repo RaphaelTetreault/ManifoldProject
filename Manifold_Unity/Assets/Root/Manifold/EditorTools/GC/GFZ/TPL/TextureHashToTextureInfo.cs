@@ -12,18 +12,24 @@ namespace Manifold.EditorTools.GC.GFZ.TPL
     public class TextureHashToTextureInfo : ScriptableObject
     {
         /// <summary>
+        /// Number of elements in the dictionary. Represents number of textures (without mipmaps)
+        /// stored in this scriptable object.
+        /// </summary>
+        [field: SerializeField, ReadOnlyGUI] public int TextureHashCount { get; private set; }
+        /// <summary>
         /// All texture hashes stored in this object.
         /// </summary>
-        [field: SerializeField] public string[] Hashes { get; internal set; }
+        [field: SerializeField, HideInInspector] public string[] Hashes { get; internal set; }
         /// <summary>
         /// Description of each hashed texture.
         /// </summary>
-        [field: SerializeField] public TextureInfo[] TextureInfos { get; internal set; }
+        [field: SerializeField, HideInInspector] public TextureInfo[] TextureInfos { get; internal set; }
 
         public Dictionary<string, TextureInfo> GetDictionary()
         {
             var dictionary = new Dictionary<string, TextureInfo>();
             dictionary.AddArraysAsKeyValuePairs(Hashes, TextureInfos);
+            TextureHashCount = dictionary.Count;
             return dictionary;
         }
     }
