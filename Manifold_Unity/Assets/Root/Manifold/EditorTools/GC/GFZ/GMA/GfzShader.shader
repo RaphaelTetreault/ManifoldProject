@@ -13,9 +13,6 @@ Shader "Custom/GfzShader"
 		_Tex1("Tex1", 2D) = "white" {}
 		_Tex2("Tex2", 2D) = "white" {}
 
-		[Header(Mat Flags 0x15)][Space]
-		[EnumFlag(GameCube.GFZ.GMA.MatFlags0x10)] _Test("Test", Float) = 0
-
 		[Header(Mat Flags 0x10)][Space]
 		[Toggle] _Flag0_0("Unk 0", Float) = 0
 		[Toggle] _Flag0_1("Unk 1", Float) = 0
