@@ -264,7 +264,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                         AmbientColor = new GXColor(0xFFFFFFFF),
                         SpecularColor = new GXColor(0x00000000),
                         // ??? THIS IS OPTIONAL?
-                        DisplayListFlags = 0,
+                        MaterialDestination = 0,
                     },
 
                     // Set DLs
@@ -291,12 +291,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                         Attributes = (GcmfAttributes)0,
                         BoundingSphere = boundingSphere,
                         //
-                        TextureCount = 0,
+                        TextureConfigsCount = 0,
                         OpaqueMaterialCount = (ushort)submeshes.Length,
                         TranslucidMaterialCount = 0,
                         BoneCount = 0,
                         //
-                        TextureConfigs = new TextureConfig[0], // this is what you get from templating materials...
+                        TevLayers = new TevLayer[0], // this is what you get from templating materials...
                         Submeshes = submeshes,
                     },
                 },
