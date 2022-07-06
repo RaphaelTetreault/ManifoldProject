@@ -28,11 +28,21 @@ namespace Manifold.EditorTools.GC.GFZ.TPL
         /// </remarks>
         [field: SerializeField, HideInInspector] public TplTextureHashes[] Hashes { get; internal set; }
 
-        public Dictionary<string, TplTextureHashes> GetDictionary()
+        public Dictionary<string, TplTextureHashes> ReconstructDictionary()
         {
             var dictionary = new Dictionary<string, TplTextureHashes>();
             dictionary.AddArraysAsKeyValuePairs(FileNames, Hashes);
             TplFileCount = dictionary.Count;
+            return dictionary;
+        }
+
+        private Dictionary<string, TplTextureHashes> dictionary;
+        public Dictionary<string, TplTextureHashes> GetDictionary()
+        {
+            if (dictionary == null)
+            {
+                dictionary = ReconstructDictionary();
+            }
             return dictionary;
         }
     }

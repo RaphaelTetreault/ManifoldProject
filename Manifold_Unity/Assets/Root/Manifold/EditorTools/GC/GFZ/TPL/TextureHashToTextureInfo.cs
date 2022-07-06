@@ -25,11 +25,21 @@ namespace Manifold.EditorTools.GC.GFZ.TPL
         /// </summary>
         [field: SerializeField, HideInInspector] public TextureInfo[] TextureInfos { get; internal set; }
 
-        public Dictionary<string, TextureInfo> GetDictionary()
+        public Dictionary<string, TextureInfo> ReconstructDictionary()
         {
             var dictionary = new Dictionary<string, TextureInfo>();
             dictionary.AddArraysAsKeyValuePairs(Hashes, TextureInfos);
             TextureHashCount = dictionary.Count;
+            return dictionary;
+        }
+
+        private Dictionary<string, TextureInfo> dictionary;
+        public Dictionary<string, TextureInfo> GetDictionary()
+        {
+            if (dictionary == null)
+            {
+                dictionary = ReconstructDictionary();
+            }
             return dictionary;
         }
     }

@@ -143,7 +143,7 @@ namespace Manifold.EditorTools.GC.GFZ.TPL
                 int index = -1;
                 int digitsFormat = tpl.TextureSeries.Length.ToString().Length;
                 
-                var fileRoot = $"{outputPath}{tpl.FileName}/";
+                var fileRoot = $"{outputPath}/{tpl.FileName}/";
                 Directory.CreateDirectory(fileRoot);
 
                 // Iterate over all textures
