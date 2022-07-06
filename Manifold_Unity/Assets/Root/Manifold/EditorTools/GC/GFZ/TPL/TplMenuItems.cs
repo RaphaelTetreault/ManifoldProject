@@ -11,6 +11,8 @@ namespace Manifold.EditorTools.GC.GFZ.TPL
 {
     public static class TplMenuItems
     {
+        private static readonly MD5 md5 = MD5.Create();
+
         /// <summary>
         /// Imports all textures and mipmaps and creates scriptable objects which hold references
         /// between textures and their source TPLs via texture hashes.
@@ -22,7 +24,6 @@ namespace Manifold.EditorTools.GC.GFZ.TPL
             var inputPath = settings.SourceDirectory;
             var inputPaths = Directory.GetFiles(inputPath, "*.tpl", SearchOption.AllDirectories);
 
-            // TODO: make not hard-coded
             var outputPath = settings.AssetsWorkingDirectory;
             var textureRootOutputPath = $"./{outputPath}/tpl/textures/";
             var scriptableObjectPath = $"{outputPath}/tpl/";
@@ -114,6 +115,63 @@ namespace Manifold.EditorTools.GC.GFZ.TPL
             AssetDatabase.Refresh();
         }
 
+        [MenuItem("Manifold/TPL/Convert TPL Textures - Main Textures Only")]
+        public static void ImportMainTexturesOnly()
+        {
+            var settings = GfzProjectWindow.GetSettings();
+            var inputPath = settings.SourceDirectory;
+            var inputPaths = Directory.GetFiles(inputPath, "*.tpl", SearchOption.AllDirectories);
+            
+            var outputPath = EditorUtility.OpenFolderPanel("Select TPL Files Output Folder", "", "");
+            if (string.IsNullOrEmpty(outputPath))
+                return;
+
+            // Iterate over all TPLs found
+            int tplCount = 0;
+            int tplTotal = inputPaths.Length;
+            var tplEnumerable = BinarySerializableIO.LoadFile<Tpl>(inputPaths);
+            foreach (var tpl in tplEnumerable)
+            {
+                // Progress bar
+                {
+                    bool cancel = ProgressBar.ShowIndexed(tplCount, tplTotal, "TPL Test", inputPaths[tplCount]);
+                    if (cancel)
+                        break;
+                    tplCount++;
+                }
+
+                int index = -1;
+                int digitsFormat = tpl.TextureSeries.Length.ToString().Length;
+                
+                var fileRoot = $"{outputPath}{tpl.FileName}/";
+                Directory.CreateDirectory(fileRoot);
+
+                // Iterate over all textures
+                foreach (var textureSeries in tpl.TextureSeries)
+                {
+                    index++;
+                    if (textureSeries is null)
+                        continue;
+
+                    var mainTexture = textureSeries[0].Texture;
+                    var texture = CreateTexture2D(mainTexture);
+                    var pngData = texture.EncodeToPNG();
+                    var hash = md5.ComputeHash(pngData);
+                    var hashName = HashToString(hash);
+
+                    var filePath = $"{fileRoot}/[{index.PadLeft(digitsFormat, '0')}] {hashName}.png";
+
+                    if (!File.Exists(filePath))
+                        using (var writer = new BinaryWriter(File.Create(filePath)))
+                            writer.Write(pngData);
+                }
+            }
+
+            // Wrap up
+            ProgressBar.Clear();
+            AssetDatabase.Refresh();
+        }
+
 
         public static Texture2D CreateTexture2D(GameCube.GX.Texture.Texture texture)
         {
@@ -156,10 +214,9 @@ namespace Manifold.EditorTools.GC.GFZ.TPL
         {
             var outputNames = new string[textureSeries.Length];
 
-            var hasher = MD5.Create();
             var mainTex = CreateTexture2D(textureSeries[0].Texture);
             byte[] png = mainTex.EncodeToPNG();
-            var name = HashToString(hasher.ComputeHash(png, 0, png.Length));
+            var name = HashToString(md5.ComputeHash(png, 0, png.Length));
             var filePath = $"{rootPath}{name}.png";
             SaveData(filePath, png, overwrite);
             outputNames[0] = filePath;
