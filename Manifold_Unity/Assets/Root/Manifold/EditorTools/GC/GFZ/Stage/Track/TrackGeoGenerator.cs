@@ -255,19 +255,17 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             {
                 new Submesh()
                 {
+                    RenderFlags = RenderFlags.unlit | RenderFlags.doubleSidedFaces,
+                    VertexAttributes = dlists[0].Attributes, // hacky
+
                     Material = new GameCube.GFZ.GMA.Material()
                     {
-                        Unk0x02 = MatFlags0x02.unlit | MatFlags0x02.doubleSidedFaces,
                         MaterialColor = new GXColor(0xFFFFFFFF),
                         AmbientColor = new GXColor(0xFFFFFFFF),
                         SpecularColor = new GXColor(0x00000000),
-
-                        // Hacky, find elegant solution - out param?
-                        VertexAttributes = dlists[0].Attributes,
+                        // ??? THIS IS OPTIONAL?
+                        DisplayListFlags = 0,
                     },
-
-                    // THIS information is auto-calculated
-                    //PrimaryDisplayListDescriptor = new DisplayListDescriptor(),
 
                     // Set DLs
                     PrimaryDisplayListsOpaque = dlists,
