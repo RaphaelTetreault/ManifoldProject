@@ -1,4 +1,6 @@
-﻿using Manifold.EditorTools.GC.GFZ;
+﻿using Manifold;
+using Manifold.IO;
+using Manifold.EditorTools.GC.GFZ;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,7 +10,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
     /// Three AnimationCurve3s combined to represent position, rotation, and scale; a transform.
     /// </summary>
     [System.Serializable]
-    public class AnimationCurveTRS
+    public class AnimationCurveTRS :
+         IDeepCopyable<AnimationCurveTRS>
     {
         [field: SerializeField] public AnimationCurve3 Position { get; private set; } = new();
         [field: SerializeField] public AnimationCurve3 Rotation { get; private set; } = new();
@@ -308,6 +311,17 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             bool isLessThanMax = value < max;
             bool isBetween = isGreaterThanMin && isLessThanMax;
             return isBetween;
+        }
+
+        public AnimationCurveTRS CreateDeepCopy()
+        {
+            var deepcopy = new AnimationCurveTRS()
+            {
+                Position = Position.CreateDeepCopy(),
+                Rotation = Rotation.CreateDeepCopy(),
+                Scale = Scale.CreateDeepCopy(),
+            };
+            return deepcopy;
         }
     }
 }

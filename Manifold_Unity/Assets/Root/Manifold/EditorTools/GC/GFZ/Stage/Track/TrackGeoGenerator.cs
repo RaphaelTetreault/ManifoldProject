@@ -14,12 +14,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 {
     public class TrackMesh
     {
-        public Tristrip[] TrackTop { get; private set; }
-        public Tristrip[] TrackBottom { get; private set; }
-        public Tristrip[] TrackLeft { get; private set; }
-        public Tristrip[] TrackRight { get; private set; }
-        public Tristrip[] RailLeft { get; private set; }
-        public Tristrip[] RailRight { get; private set; }
+        public Tristrip[] TrackTop { get; set; }
+        public Tristrip[] TrackBottom { get; set; }
+        public Tristrip[] TrackLeft { get; set; }
+        public Tristrip[] TrackRight { get; set; }
+        public Tristrip[] RailLeft { get; set; }
+        public Tristrip[] RailRight { get; set; }
 
         public Tristrip[] GetAllTristrips()
         {
@@ -34,20 +34,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         }
     }
 
-    public class TrackMeshComponent
-    {
-        public Vector3[] vertexes { get; set; }
-        public Vector3[] normals { get; set; }
-        public Vector3[] binormals { get; set; }
-        public Vector3[] tangents { get; set; }
-        public Vector2[] uv0 { get; set; }
-        public Vector2[] uv1 { get; set; }
-        public Vector2[] uv2 { get; set; }
-        public Color[] color0 { get; set; }
-        public Color[] color1 { get; set; }
-        public int[][] tristrips { get; set; }
-    }
-
     public class Tristrip
     {
         public Vector3[] positions { get; set; }
@@ -59,182 +45,123 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         public Vector2[] uv2 { get; set; }
         public Color[] color0 { get; set; }
         public Color[] color1 { get; set; }
+
+        public int TrianglesCount => ((positions.Length / 2) - 1) * 6;
+
+        public int[] GetIndices()
+        {
+            int nTriangles = TrianglesCount;
+            int[] indexes = new int[nTriangles];
+
+            // Process 1 triangle at a time
+            int vertexBaseIndex = 0;
+            for (int i = 0; i < indexes.Length; i += 6)
+            {
+                indexes[i + 0] = vertexBaseIndex + 0;
+                indexes[i + 1] = vertexBaseIndex + 1;
+                indexes[i + 2] = vertexBaseIndex + 2;
+                vertexBaseIndex++;
+                indexes[i + 3] = vertexBaseIndex + 0;
+                indexes[i + 4] = vertexBaseIndex + 2;
+                indexes[i + 5] = vertexBaseIndex + 1;
+                vertexBaseIndex++;
+            }
+            return indexes;
+        }
     }
 
-    public struct Vertex
-    {
-        public Vector3 position;
-        public Vector3 normal;
-    }
 
     public static class TrackGeoGenerator
     {
-        private static readonly Vector3 left = new Vector3(-1, 0, 0);
-        private static readonly Vector3 right = new Vector3(1, 0, 0);
-
-        public static TrackMesh GenerateTopSurface(GfzTrackSegment trackSegment, float minDistance, int widthSamples = 4)
+        public static Matrix4x4[] GenerateMtxIntervals(GfzTrackSegment trackSegment, float maxStep)
         {
-            var mtx = trackSegment.transform.localToWorldMatrix;
-            //var maxTime = trackSegment.AnimationCurveTRS.GetMaxTime();
-            var segmentLength = trackSegment.AnimationCurveTRS.GetDistanceBetweenRepeated(0, 1);
-            float step = segmentLength / minDistance;
-            int lengthSamples = (int)math.ceil(step);
+            var trueMts = trackSegment.AnimationCurveTRS.CreateDeepCopy();
+            trueMts.Rotation.z = trueMts.Rotation.z.GetInverted();
 
-            Vector3[] vertexes = new Vector3[((lengthSamples + 1) * (widthSamples + 1))];
-            Vector3[] normals = new Vector3[vertexes.Length];
+            var segmentLength = trueMts.GetMaxTime();
+            float step = segmentLength / maxStep;
+            int totalIterations = (int)math.ceil(step);
 
-            for (int l = 0; l <= lengthSamples; l++)
+            var staticMatrix = trackSegment.transform.localToWorldMatrix;
+            var matrices = new Matrix4x4[totalIterations + 1];
+
+            for (int i = 0; i <= totalIterations; i++)
             {
-                double samplePoint = l / (double)lengthSamples;
-                var animMtx = trackSegment.AnimationCurveTRS.EvaluateMatrix(samplePoint);
-                var sampleMtx = mtx * animMtx;
-
-                var position = sampleMtx.Position();
-                var rotation = sampleMtx.Rotation();
-                var scale = sampleMtx.Scale();
-
-                var width = scale.x;
-                var halfWidth = width / 2;
-                var beginLeft = position + rotation * (left * halfWidth);
-                var directionRight = rotation * right;
-
-                for (int w = 0; w <= widthSamples; w++)
-                {
-                    var percent = w / (float)widthSamples;
-                    var offsetRight = directionRight * percent * width;
-                    var vertexPos = beginLeft + offsetRight;
-
-                    int index = l * (widthSamples + 1) + w;
-                    vertexes[index] = vertexPos;
-
-                    //
-                    normals[index] = rotation * Vector3.up;
-                }
+                double percentage = i / (double)totalIterations;
+                double sampleTime = percentage * segmentLength;
+                var animationMatrix = trueMts.EvaluateMatrix(sampleTime);
+                matrices[i] = staticMatrix * animationMatrix;
             }
-
-            int divsZ = lengthSamples;
-            int divsX = widthSamples;
-            int strideX = divsX + 1;
-            int nIndexes = vertexes.Length * 3 * 2; // 3 indexes per tri, 2 tris per quad
-            int[] indexes = new int[nIndexes];
-            int currIndex = 0;
-            for (int x = 0; x < divsX; x++)
-            {
-                for (int z = 0; z < divsZ; z++)
-                {
-                    // Create a quad along the path in the Z/forward direction
-                    int baseIndex = x + (z * strideX);
-                    int v0 = baseIndex + 0;
-                    int v1 = baseIndex + 1;
-                    int v2 = v0 + strideX;
-                    int v3 = v1 + strideX;
-
-                    indexes[currIndex++] = v0;
-                    indexes[currIndex++] = v1;
-                    indexes[currIndex++] = v2;
-                    indexes[currIndex++] = v2;
-                    indexes[currIndex++] = v1;
-                    indexes[currIndex++] = v3;
-                }
-            }
-
-            throw new System.NotImplementedException();
-
-            //var temp = new TrackMesh()
-            //{
-            //    vertexes = vertexes,
-            //    normals = normals,
-            //    indexes = indexes,
-            //};
-
-            //return temp;
+            return matrices;
         }
 
-        public static Tristrip GenerateTristrip(GfzTrackSegment trackSegment, Vertex a, Vertex b, float minDistance, bool doScaleX)
+        public static Tristrip[] GenerateTristrips(Matrix4x4[] matrices, Vector3[] vertices)
         {
-            var mtx = trackSegment.transform.localToWorldMatrix;
-            //var maxTime = trackSegment.AnimationCurveTRS.GetMaxTime();
-            var segmentLength = trackSegment.AnimationCurveTRS.GetDistanceBetweenRepeated(0, 1);
-            float step = segmentLength / minDistance;
-            int lengthSamples = (int)math.ceil(step);
+            // Get sizes
+            int nTriangleStrips = vertices.Length - 1;
+            int nVertsPerStrip = matrices.Length * 2;
+            int lastTristripIndex = nTriangleStrips - 1;
 
-            var nverts = (lengthSamples + 1) * 2;
-            var tristrip = new Tristrip();
-            tristrip.positions = new Vector3[nverts];
-            tristrip.normals = new Vector3[nverts];
-
-            for (int l = 0; l <= lengthSamples; l++)
+            // Init tristrips
+            Tristrip[] tristrips = new Tristrip[nTriangleStrips];
+            for (int i = 0; i < tristrips.Length; i++)
             {
-                double sampleTime = l / (double)lengthSamples;
-                var animMtx = trackSegment.AnimationCurveTRS.EvaluateMatrix(sampleTime);
-                var sampleMtx = mtx * animMtx;
-
-                var position = sampleMtx.Position();
-                var rotation = sampleMtx.Rotation();
-                var scale = sampleMtx.Scale();
-                var width = doScaleX ? scale.x : 1f;
-
-                int index0 = l * 2;
-                int index1 = index0 + 1;
-                var p0 = (rotation * (a.position * width)) + position;
-                var p1 = (rotation * (b.position * width)) + position;
-                tristrip.positions[index0] = p0;
-                tristrip.positions[index1] = p1;
-                tristrip.normals[index0] = rotation * a.normal;
-                tristrip.normals[index1] = rotation * b.normal;
+                tristrips[i] = new Tristrip();
+                var tristrip = tristrips[i];
+                tristrip.positions = new Vector3[nVertsPerStrip];
+                tristrip.normals = new Vector3[nVertsPerStrip]; // could be compute after, no?
             }
 
-            return tristrip;
-        }
-
-        public static Tristrip[] GenerateTristrips(GfzTrackSegment trackSegment, float minDistance, Vertex[] v)
-        {
-            var mtx = trackSegment.transform.localToWorldMatrix;
-            //var maxTime = trackSegment.AnimationCurveTRS.GetMaxTime();
-            var segmentLength = trackSegment.AnimationCurveTRS.GetDistanceBetweenRepeated(0, 1);
-            float step = segmentLength / minDistance;
-            int lengthSamples = (int)math.ceil(step);
-
-            var nverts = (lengthSamples + 1) * v.Length;
-            Tristrip[] tristrips = new Tristrip[v.Length];
-            foreach (var tristrip in tristrips)
+            // Compute vertex for all tristrips
+            for (int m = 0; m < matrices.Length; m++)
             {
-                tristrip.positions = new Vector3[nverts];
-                tristrip.normals = new Vector3[nverts];
-            }
-
-            for (int z = 0; z <= lengthSamples; z++)
-            {
-                double samplePoint = z / (double)lengthSamples;
-                var animMtx = trackSegment.AnimationCurveTRS.EvaluateMatrix(samplePoint);
-                var sampleMtx = mtx * animMtx;
-
-                var position = sampleMtx.Position();
-                var rotation = sampleMtx.Rotation();
-                var scale = sampleMtx.Scale();
-
-                var width = scale.x;
-                var halfWidth = width / 2;
-                var beginLeft = position + rotation * (left * halfWidth);
-                var directionRight = rotation * right;
-
-                for (int x = 0; x < tristrips.Length; x++)
+                var matrix = matrices[m];
+                // Compute indexes
+                int tristripBaseIndex = m * 2;
+                var index0 = tristripBaseIndex + 0;
+                var index1 = tristripBaseIndex + 1;
+                // Compute first and last
+                var firstVertex = matrix.MultiplyPoint(vertices[0]);
+                var lastVertex = matrix.MultiplyPoint(vertices[vertices.Length - 1]);
+                tristrips[0].positions[index0] = firstVertex;
+                tristrips[lastTristripIndex].positions[index1] = lastVertex;
+                // And then everything else in-between. The vertex between 2 tristrips is the same,
+                // so we can copy them to both tristrips, just offset (n+0.last, n+1.first).
+                for (int t = 0; t < lastTristripIndex; t++)
                 {
-                    var percent = x / (float)tristrips.Length;
-                    var offsetRight = directionRight * percent * width;
-                    var vertexPos = beginLeft + offsetRight;
-
-                    int index0 = z * 2;
-                    int index1 = index0 + 1;
-                    tristrips[x + 0].positions[index0] = vertexPos;
-                    tristrips[x + 1].positions[index1] = vertexPos;
-                    throw new System.NotImplementedException();
+                    var vertex = matrix.MultiplyPoint(vertices[t + 1]);
+                    tristrips[t + 0].positions[index1] = vertex;
+                    tristrips[t + 1].positions[index0] = vertex;
                 }
-
             }
             return tristrips;
         }
 
+        // This shouldn't really be a function, too hard-coded
+        public static Tristrip[] CreateTrackTemp(GfzTrackSegment trackSegment, int nTristrips, float maxStep)
+        {
+            // Sample left and right vertices
+            var endpointA = new Vector3(-0.5f, 0, 0);
+            var endpointB = new Vector3(+0.5f, 0, 0);
+            var vertices = new Vector3[nTristrips + 1];
+            for (int i = 0; i < vertices.Length; i++)
+            {
+                float percentage = i / (float)nTristrips;
+                vertices[i] = Vector3.Lerp(endpointA, endpointB, percentage);
+            }
+
+            var matrices = GenerateMtxIntervals(trackSegment, maxStep);
+            var tristrips = GenerateTristrips(matrices, vertices);
+
+            foreach (var tristrip in tristrips)
+            {
+                tristrip.normals = new Vector3[tristrip.positions.Length];
+                for (int i = 0; i < tristrip.normals.Length; i++)
+                    tristrip.normals[i] = new Vector3(0, 1, 0);
+            }
+
+            return tristrips;
+        }
 
 
         [MenuItem("Manifold/HEY! TEST GMA")]
@@ -246,16 +173,17 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
             // TODO: iterate over all segments, not just the first
             var trackSegment = track.StartSegmentShape.Segment;
-            //var tristrips = GenerateTristrips(trackSegment, 10f, null);
-            var trackMesh = new TrackMesh();
-            var dlists = TrackMeshComponentToDisplayLists(trackMesh.TrackTop, (AttributeFlags)0, GameCube.GFZ.GfzGX.VAT);
-            // TODO easy way to pop in a model and get out this bleep? -- note on materials, too.
+
+            // Make the vertex data
+            var trackMeshTristrips = CreateTrackTemp(trackSegment, 4, 10f);
+            // convert to GameCube format
+            var dlists = TrackMeshComponentToDisplayLists(trackMeshTristrips, GameCube.GFZ.GfzGX.VAT);
 
             var submeshes = new Submesh[]
             {
                 new Submesh()
                 {
-                    RenderFlags = RenderFlags.unlit | RenderFlags.doubleSidedFaces,
+                    RenderFlags = RenderFlags.doubleSidedFaces,
                     VertexAttributes = dlists[0].Attributes, // hacky
 
                     Material = new GameCube.GFZ.GMA.Material()
@@ -274,8 +202,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
             // Compute bounding sphere
             var allVertices = new List<Vector3>();
-            foreach (var component in trackMesh.GetAllTristrips())
-                allVertices.AddRange(component.positions);
+            foreach (var tristrip in trackMeshTristrips)
+                allVertices.AddRange(tristrip.positions);
             var boundingSphere = CreateFromPoints(allVertices);
 
             // Create single GMA for model, comprised on many GCMFs (display lists and materials)
@@ -309,7 +237,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             OSUtility.OpenDirectory(dest);
         }
 
-        private static DisplayList[] TrackMeshComponentToDisplayLists(Tristrip[] tristrips, AttributeFlags attributes, VertexAttributeTable vat)
+        private static DisplayList[] TrackMeshComponentToDisplayLists(Tristrip[] tristrips, VertexAttributeTable vat)
         {
             var displayLists = new DisplayList[tristrips.Length];
             for (int i = 0; i < displayLists.Length; i++)
@@ -317,7 +245,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 var tristrip = tristrips[i];
 
                 // Initialize display list
-                var dlist = new DisplayList(attributes, vat);
+                var dlist = new DisplayList(0, vat);
                 dlist.GxCommand = new DisplayCommand()
                 {
                     Primitive = Primitive.GX_TRIANGLESTRIP,
@@ -335,9 +263,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 // Set attributes based on provided data
                 dlist.Attributes = dlist.ComponentsToGXAttributes();
                 dlist.VertexCount = checked((ushort)tristrip.positions.Length);
+
+                displayLists[i] = dlist;
             }
             return displayLists;
         }
+
+
 
         private static void Copy(Vector3[] vector3s, ref float3[] float3s)
         {

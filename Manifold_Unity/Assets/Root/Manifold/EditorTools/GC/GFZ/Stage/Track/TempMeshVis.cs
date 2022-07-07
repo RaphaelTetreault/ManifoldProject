@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -9,8 +10,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
     {
         public GfzTrackSegment trackSegment;
         public bool enableDebug = true;
-        public int widthSamples = 4;
-        public float minDistance = 10f;
+        public int nTritrips = 4;
+        public float maxStep = 10f;
 
         private void OnDrawGizmos()
         {
@@ -19,73 +20,97 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             if (trackSegment is null)
                 return;
 
-            var tempStrips = TrackGeoGenerator.GenerateTristrips(trackSegment, minDistance, null);
-            var mesh = new Mesh();
-            var submeshes = CreateSubMesh(tempStrips, mesh);
-            foreach (var submesh in submeshes)
-                mesh.SetSubMesh(0, submesh, MeshUpdateFlags.Default);
+            // Sample left and right vertices
+            var endpointA = new Vector3(-0.5f, 0, 0);
+            var endpointB = new Vector3(+0.5f, 0, 0);
+            var vertices = new Vector3[nTritrips+1];
+            for (int i = 0; i < vertices.Length; i++)
+            {
+                float percentage = i / (float)nTritrips;
+                vertices[i] = Vector3.Lerp(endpointA, endpointB, percentage);
+            }
 
-            Gizmos.color = Color.white;
+            //var vertices = new Vector3[] { new Vector3(0.5f, 0, 0), new Vector3(0,0,0), new Vector3(-0.5f, 0, 0) };
+            var matrices = TrackGeoGenerator.GenerateMtxIntervals(trackSegment, maxStep);
+            var tristrips = TrackGeoGenerator.GenerateTristrips(matrices, vertices);
+
+            foreach (var tristrip in tristrips)
+            {
+                tristrip.normals = new Vector3[tristrip.positions.Length];
+                for (int i = 0; i < tristrip.normals.Length; i++)
+                    tristrip.normals[i] = new Vector3(0, 1, 0);
+            }
+
+            var mesh = new Mesh();
+            var submeshes = SubmeshesFromTristrips(mesh, tristrips);
+            mesh.SetSubMeshes(submeshes);
+
+            Gizmos.color = Color.blue;
             for (int i = 0; i < mesh.subMeshCount; i++)
                 Gizmos.DrawMesh(mesh, i);
 
-            Gizmos.color = Color.red;
-            int stride = widthSamples + 1;
-            int maxVertIter = mesh.vertexCount - stride;
-            for (int vi = 0; vi < maxVertIter; vi += stride)
-            {
-                var v0 = mesh.vertices[vi];
-                var v1 = mesh.vertices[vi + 1];
-                var v2 = mesh.vertices[vi + stride];
-                var v3 = mesh.vertices[vi + 1 + stride];
-                Gizmos.DrawLine(v0, v1);
-                Gizmos.DrawLine(v0, v2);
-                Gizmos.DrawLine(v1, v2);
-                Gizmos.DrawLine(v1, v3);
-                //Gizmos.DrawLine(v2, v3);
-            }
+            //Gizmos.color = Color.red;
+            //for (int t = 0; t < tristrips.Length; t++)
+            //{
+            //    var tristrip = tristrips[t];
+            //    for (int i = 0; i < tristrip.TrianglesCount; i++)
+            //    {
+            //        var v0 = tristrip.positions[i + 0];
+            //        var v1 = tristrip.positions[i + 1];
+            //        var v2 = tristrip.positions[i + 2];
+            //        var v3 = tristrip.positions[i + 3];
+            //        Gizmos.DrawLine(v0, v1);
+            //        Gizmos.DrawLine(v0, v2);
+            //        Gizmos.DrawLine(v1, v2);
+            //        Gizmos.DrawLine(v1, v3);
+            //        Gizmos.DrawLine(v2, v3);
+            //    }
+            //}
         }
 
-        public static SubMeshDescriptor[] CreateSubMesh(Tristrip[] tristrips, Mesh mesh)
+        public static SubMeshDescriptor[] SubmeshesFromTristrips(Mesh mesh, Tristrip[] tristrips)
         {
             var submeshes = new SubMeshDescriptor[tristrips.Length];
             for (int i = 0; i < submeshes.Length; i++)
             {
                 var submesh = new SubMeshDescriptor();
-                var indexes = tristrips[i];
 
-                // Build submesh. Init with current position in mesh.
+                var tristrip = tristrips[i];
+                var vertices = tristrip.positions;
+                var normals = tristrip.normals;
+                var triangles = tristrip.GetIndices(); // not offset
+
+                // Build submesh
                 submesh.baseVertex = mesh.vertexCount;
                 submesh.firstVertex = mesh.vertexCount;
-                submesh.indexCount = mesh.triangles.Length;
+                submesh.indexCount = triangles.Length;
                 submesh.indexStart = mesh.triangles.Length;
                 submesh.topology = MeshTopology.Triangles;
-                submesh.vertexCount = mesh.vertices.Length;
+                submesh.vertexCount = vertices.Length;
 
                 // Append to mesh
-                //var verticesConcat = mesh.vertices.Concat(vertices).ToArray();
-                //var normalsConcat = mesh.normals.Concat(normals).ToArray();
+                var verticesConcat = mesh.vertices.Concat(vertices).ToArray();
+                var normalsConcat = mesh.normals.Concat(normals).ToArray();
                 //var uv1Concat = mesh.uv.Concat(uv1).ToArray();
                 //var uv2Concat = mesh.uv2.Concat(uv2).ToArray();
                 //var uv3Concat = mesh.uv3.Concat(uv3).ToArray();
                 //var colorsConcat = mesh.colors32.Concat(colors).ToArray();
-                ////if (list.nbt != null)
-                ////    mesh.tangents = list.nbt;
-                //var trianglesConcat = mesh.triangles.Concat(triangles).ToArray();
+                //if (list.nbt != null)
+                //    mesh.tangents = list.nbt;
+                var trianglesConcat = mesh.triangles.Concat(triangles).ToArray();
 
-                //// Assign values to mesh
-                //mesh.vertices = verticesConcat;
-                //mesh.normals = normalsConcat;
+                // Assign values to mesh
+                mesh.vertices = verticesConcat;
+                mesh.normals = normalsConcat;
                 //mesh.uv = uv1Concat;
                 //mesh.uv2 = uv2Concat;
                 //mesh.uv3 = uv3Concat;
                 //mesh.colors32 = colorsConcat;
-                //mesh.triangles = trianglesConcat;
+                mesh.triangles = trianglesConcat;
 
                 submeshes[i] = submesh;
             }
-            throw new System.NotImplementedException();
-            //return submeshes;
+            return submeshes;
         }
 
         //public static SubMeshDescriptor CreateSubMesh(TrackMesh tempMesh, Mesh mesh)
