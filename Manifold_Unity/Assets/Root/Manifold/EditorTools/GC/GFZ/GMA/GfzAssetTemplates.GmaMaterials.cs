@@ -20,7 +20,7 @@ namespace Manifold.EditorTools.GC.GFZ
                 public static MeshTemplate CreateRail()
                 {
                     // Not doing isSwappable, tpl index, config index
-                    var textureConfigs = new TevLayer[]
+                    var tevLayers = new TevLayer[]
                     {
                         new TevLayer()
                         {
@@ -31,6 +31,8 @@ namespace Manifold.EditorTools.GC.GFZ
                             AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
                             Unk0x0C = 0,
                             Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
+                            // TEMP
+                            TplTextureIndex = 3,
                         },
                         new TevLayer()
                         {
@@ -41,6 +43,8 @@ namespace Manifold.EditorTools.GC.GFZ
                             AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
                             Unk0x0C = 0,
                             Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
+                            // TEMP
+                            TplTextureIndex = 40,
                         },
                         new TevLayer()
                         {
@@ -51,6 +55,8 @@ namespace Manifold.EditorTools.GC.GFZ
                             AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
                             Unk0x0C = 0,
                             Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
+                            // TEMP
+                            TplTextureIndex = 0,
                         },
                     };
                     var textureHashes = new string[]
@@ -69,8 +75,8 @@ namespace Manifold.EditorTools.GC.GFZ
                         SpecularColor = new GameCube.GX.GXColor(0x00000000),
                         Unk0x10 = 0,
                         Alpha = 255,
-                        TevLayerCount = (byte)textureConfigs.Length,
-                        MaterialDestination = 0, // resolved based on display lists
+                        TevLayerCount = (byte)tevLayers.Length,
+                        MaterialDestination = 0, // resolve based on display lists
                         UnkAlpha0x14 = 0,
                         Unk0x15 = 0,
                         TevLayerIndex0 = 0,
@@ -86,20 +92,20 @@ namespace Manifold.EditorTools.GC.GFZ
                     {
                         new Submesh ()
                         {
-                            RenderFlags = RenderFlags.unlit | RenderFlags.doubleSidedFaces | RenderFlags.customBlendDestination,
+                            RenderFlags = RenderFlags.unlit | RenderFlags.doubleSidedFaces | RenderFlags.customBlendSource | RenderFlags.customBlendDestination,
                             Material = material,
                             UnkAlphaOptions = unknownAlphaOptions,
-                            // attributes
+                            // GX attributes
                         },
                     };
                     var gcmf = new Gcmf
                     {
                         Attributes = 0,
                         // bounding sphere
-                        TextureConfigsCount = (ushort)textureConfigs.Length,
+                        TextureConfigsCount = (ushort)tevLayers.Length,
                         OpaqueMaterialCount = 0,
                         TranslucidMaterialCount = 1,
-                        TevLayers = textureConfigs,
+                        TevLayers = tevLayers,
                         Submeshes = submeshes,
                     };
 

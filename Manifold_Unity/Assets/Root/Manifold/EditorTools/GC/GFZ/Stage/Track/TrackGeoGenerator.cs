@@ -158,6 +158,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 tristrip.normals = new Vector3[tristrip.positions.Length];
                 for (int i = 0; i < tristrip.normals.Length; i++)
                     tristrip.normals[i] = new Vector3(0, 1, 0);
+
+                tristrip.uv0 = new Vector2[tristrip.positions.Length];
+                for (int i = 0; i < tristrip.normals.Length; i++)
+                {
+                    tristrip.normals[i] = new Vector2(i*0.5f, i*0.1f);
+                }
             }
 
             return tristrips;
@@ -165,6 +171,50 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
 
         [MenuItem("Manifold/HEY! TEST GMA")]
+        public static void TestGmaExport3()
+        {
+            // TODO: get GfzTrack, use it to get children
+            var track = GameObject.FindObjectOfType<GfzTrack>(false);
+            track.FindChildSegments();
+
+            int debugIndex = 0;
+            var models = new List<Model>();
+            foreach (var trackSegment in track.AllRootSegmentShapes)
+            {
+                // Make the vertex data
+                var trackMeshTristrips = CreateTrackTemp(trackSegment.Segment, 4, 10f);
+                // convert to GameCube format
+                var dlists = TristripsToDisplayLists(trackMeshTristrips, GameCube.GFZ.GfzGX.VAT);
+
+                // Compute bounding sphere
+                var allVertices = new List<Vector3>();
+                foreach (var tristrip in trackMeshTristrips)
+                    allVertices.AddRange(tristrip.positions);
+                var boundingSphere = CreateFromPoints(allVertices);
+
+                var railTemplate = GfzAssetTemplates.MeshTemplates.MuteCity.CreateRail();
+                var railGcmf = railTemplate.Gcmf;
+                railGcmf.BoundingSphere = boundingSphere;
+                railGcmf.Submeshes[0].PrimaryDisplayListsTranslucid = dlists;
+                railGcmf.Submeshes[0].VertexAttributes = dlists[0].Attributes; // hacky
+                railGcmf.Submeshes[0].UnkAlphaOptions.Origin = boundingSphere.origin;
+                railGcmf.PatchTevLayerIndexes();
+
+                models.Add(new Model($"TRACK TEST {debugIndex++}", railGcmf));
+            }
+
+            // Create single GMA for model, comprised on many GCMFs (display lists and materials)
+            var gma = new Gma();
+            gma.Models = models.ToArray();
+
+            var settings = GfzProjectWindow.GetSettings();
+            var dest = settings.FileOutput + "common.gma";
+            BinarySerializableIO.SaveFile(gma, dest);
+            LzUtility.CompressAvLzToDisk(dest, GameCube.AmusementVision.GxGame.FZeroGX, true);
+            OSUtility.OpenDirectory(dest);
+        }
+
+
         public static void TestGmaExport2()
         {
             // TODO: get GfzTrack, use it to get children
@@ -177,7 +227,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             // Make the vertex data
             var trackMeshTristrips = CreateTrackTemp(trackSegment, 4, 10f);
             // convert to GameCube format
-            var dlists = TrackMeshComponentToDisplayLists(trackMeshTristrips, GameCube.GFZ.GfzGX.VAT);
+            var dlists = TristripsToDisplayLists(trackMeshTristrips, GameCube.GFZ.GfzGX.VAT);
 
             var submeshes = new Submesh[]
             {
@@ -237,7 +287,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             OSUtility.OpenDirectory(dest);
         }
 
-        private static DisplayList[] TrackMeshComponentToDisplayLists(Tristrip[] tristrips, VertexAttributeTable vat)
+
+
+        private static DisplayList[] TristripsToDisplayLists(Tristrip[] tristrips, VertexAttributeTable vat)
         {
             var displayLists = new DisplayList[tristrips.Length];
             for (int i = 0; i < displayLists.Length; i++)
@@ -253,12 +305,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 };
 
                 // TODO: set to something real
-                dlist.clr0 = GetColor(tristrip.positions.Length, new GXColor(128, 128, 128, 255));
+                dlist.clr0 = GetColor(tristrip.positions.Length, new GXColor(255, 255, 255, 255));
 
                 // This is actually bad when there are more than one width divisions - the strip
                 // does "wrap" correctly, right?
                 Copy(tristrip.positions, ref dlist.pos);
                 Copy(tristrip.normals, ref dlist.nrm);
+                Copy(tristrip.uv0, ref dlist.tex0);
 
                 // Set attributes based on provided data
                 dlist.Attributes = dlist.ComponentsToGXAttributes();
@@ -269,14 +322,19 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             return displayLists;
         }
 
-
-
         private static void Copy(Vector3[] vector3s, ref float3[] float3s)
         {
             float3s = new float3[vector3s.Length];
             for (int i = 0; i < float3s.Length; i++)
                 float3s[i] = vector3s[i];
         }
+        private static void Copy(Vector2[] vector2s, ref float2[] float2s)
+        {
+            float2s = new float2[vector2s.Length];
+            for (int i = 0; i < float2s.Length; i++)
+                float2s[i] = vector2s[i];
+        }
+
 
         private static GXColor[] GetColor(int length, GXColor color)
         {
