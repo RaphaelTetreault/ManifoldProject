@@ -11,16 +11,14 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
     public class GfzTrackRoad : GfzSegmentShape,
         IRailSegment
     {
+        [field: Header("Mesh Properties")]
         [field: SerializeField] public Material DefaultMaterial { get; private set; }
         [field: SerializeField] public MeshFilter MeshFilter { get; private set; }
         [field: SerializeField] public MeshRenderer MeshRenderer { get; private set; }
-        [field: SerializeField] public bool DoGenMesh { get; private set; }
         [field: SerializeField] public Mesh GenMesh { get; private set; }
+        [field: SerializeField] public bool DoGenMesh { get; private set; }
         [field: SerializeField, Min(1)] public int WidthDivisions { get; private set; } = 4;
         [field: SerializeField, Min(1f)] public float LengthDistance { get; private set; } = 10f;
-
-        [field: Header("Gizmos")]
-        [field: SerializeField] public bool DoGizmos { get; private set; } = true;
 
         [field: Header("Road Properties")]
         [field: SerializeField, Min(0f)] public float RailHeightLeft { get; private set; } = 3f;
