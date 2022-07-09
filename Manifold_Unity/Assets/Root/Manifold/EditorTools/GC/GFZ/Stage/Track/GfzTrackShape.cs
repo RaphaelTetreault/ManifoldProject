@@ -5,10 +5,13 @@ using UnityEngine.Rendering;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
-    public abstract class GfzSegmentShape : MonoBehaviour
+    [RequireComponent(typeof(MeshFilter))]
+    [RequireComponent(typeof(MeshRenderer))]
+    public abstract class GfzTrackShape : MonoBehaviour
     {
         [field: Header("Segment Base")]
         [field: SerializeField] public GfzTrackSegment Segment { get; private set; }
+
 
         public AnimationCurveTRS AnimationCurveTRS => Segment.AnimationCurveTRS;
 

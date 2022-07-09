@@ -75,7 +75,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return tristrips;
         }
 
-        public static Tristrip[] CreateAllTemp(GfzSegmentShape trackSegmentShape, int nTristrips, float maxStep, bool useGfzCoordSpace)
+        public static Tristrip[] CreateAllTemp(GfzTrackShape trackSegmentShape, int nTristrips, float maxStep, bool useGfzCoordSpace)
         {
             var allTriStrips = new List<Tristrip>();
 
@@ -112,7 +112,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             {
                 var endpointA = new Vector3(-0.5f, +0.0f, 0);
                 var endpointB = new Vector3(-0.5f, -2.0f, 0);
-                var color0 = new Color32(127, 255, 127, 127); // green
+                var color0 = new Color32(127, 255, 127, 255); // green
                 var normal = Vector3.left;
                 var trackLeftTristrips = CreateTristrips(matrices, endpointA, endpointB, 1, color0, normal, 0, true);
                 allTriStrips.AddRange(trackLeftTristrips);
@@ -122,7 +122,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             {
                 var endpointA = new Vector3(+0.5f, +0.0f, 0);
                 var endpointB = new Vector3(+0.5f, -2.0f, 0);
-                var color0 = new Color32(255, 127, 127, 127); // red
+                var color0 = new Color32(255, 127, 127, 255); // red
                 var normal = Vector3.right;
                 var trackRightTristrips = CreateTristrips(matrices, endpointA, endpointB, 1, color0, normal, 0, false);
                 allTriStrips.AddRange(trackRightTristrips);
@@ -173,9 +173,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 allTriStrips.AddRange(widthDividers);
             }
 
-
             // REMOVE SCALE.X
-
             animationCurveTRS.Scale.x = new UnityEngine.AnimationCurve(new Keyframe(0, 1), new Keyframe(maxTime, 1));
             matrices = GenerateMatrixIntervals(animationCurveTRS, staticMatrix, maxStep);
             // center line

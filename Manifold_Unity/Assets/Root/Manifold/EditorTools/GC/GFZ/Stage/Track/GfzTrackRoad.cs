@@ -8,7 +8,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
     [RequireComponent(typeof(MeshFilter))]
     [RequireComponent(typeof(MeshRenderer))]
-    public class GfzTrackRoad : GfzSegmentShape,
+    public class GfzTrackRoad : GfzTrackShape,
         IRailSegment
     {
         [field: Header("Mesh Properties")]

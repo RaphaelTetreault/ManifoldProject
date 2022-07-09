@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
-    public class GfzTrackHalfPipeCylinder : GfzSegmentShape
+    public class GfzTrackHalfPipeCylinder : GfzTrackShape
     {
         [Header("Half-Pipe / Half-Cylinder")]
         [SerializeField] private PipeCylinderType type = PipeCylinderType.Pipe;

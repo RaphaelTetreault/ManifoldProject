@@ -12,8 +12,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
     /// </summary>
     public class GfzTrack : MonoBehaviour
     {
-        [field: SerializeField] public GfzSegmentShape StartSegmentShape { get; private set; }
-        [field: SerializeField] public GfzSegmentShape[] AllRootSegmentShapes { get; private set; }
+        [field: SerializeField] public GfzTrackShape StartSegmentShape { get; private set; }
+        [field: SerializeField] public GfzTrackShape[] AllRootSegmentShapes { get; private set; }
 
         public TrackMinHeight TrackMinHeight { get; private set; }
         public TrackLength TrackLength { get; private set; }
@@ -30,7 +30,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         public void InitTrackData()
         {
             if (this.AllRootSegmentShapes.Length == 0)
-                throw new MissingReferenceException($"No references to any {typeof(GfzSegmentShape).Name}! Make sure references existin in inspector.");
+                throw new MissingReferenceException($"No references to any {typeof(GfzTrackShape).Name}! Make sure references existin in inspector.");
 
             foreach (var seg in this.AllRootSegmentShapes)
             {
@@ -131,8 +131,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public void FindChildSegments()
         {
-            StartSegmentShape = GetComponentInChildren<GfzSegmentShape>(false);
-            AllRootSegmentShapes = GetComponentsInChildren<GfzSegmentShape>(false);
+            StartSegmentShape = GetComponentInChildren<GfzTrackShape>(false);
+            AllRootSegmentShapes = GetComponentsInChildren<GfzTrackShape>(false);
             Assert.IsTrue(StartSegmentShape is not null);
             Assert.IsTrue(StartSegmentShape == AllRootSegmentShapes[0]);
         }
