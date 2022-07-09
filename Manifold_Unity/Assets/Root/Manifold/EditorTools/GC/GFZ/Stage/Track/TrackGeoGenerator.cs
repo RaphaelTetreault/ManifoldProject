@@ -6,6 +6,7 @@ using Manifold;
 using Manifold.IO;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using Unity.Mathematics;
@@ -45,6 +46,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         public Vector2[] uv2 { get; set; }
         public Color32[] color0 { get; set; }
         public Color32[] color1 { get; set; }
+        public bool reverse { get; set; }
+
 
         public int TrianglesCount => ((positions.Length / 2) - 1) * 6;
 
@@ -66,6 +69,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 indexes[i + 5] = vertexBaseIndex + 1;
                 vertexBaseIndex++;
             }
+
+            if (reverse)
+                indexes = indexes.Reverse().ToArray();
+
             return indexes;
         }
     }
@@ -155,11 +162,16 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return tristrips;
         }
 
-        public static Tristrip[] CreateAllTemp(GfzSegmentShape trackSegmentShape, int nTristrips, float maxStep)
+        public static Tristrip[] CreateAllTemp(GfzSegmentShape trackSegmentShape, int nTristrips, float maxStep, bool useGfzCoordSpace)
         {
             var allTriStrips = new List<Tristrip>();
-            //var matrices = GenerateMatrixIntervals(trackSegmentShape.Segment, maxStep);
-            var animationCurveTRS = trackSegmentShape.AnimationCurveTRS.GetDeepCopyGfzCoordSpaceTRS();
+
+            var animationCurveTRS = useGfzCoordSpace
+                ? trackSegmentShape.AnimationCurveTRS.GetDeepCopyGfzCoordSpaceTRS()
+                : trackSegmentShape.AnimationCurveTRS.CreateDeepCopy();
+            if (!useGfzCoordSpace)
+                animationCurveTRS.Rotation.z = animationCurveTRS.Rotation.z.GetInverted();
+
             var staticMatrix = trackSegmentShape.transform.localToWorldMatrix;
             var matrices = GenerateMatrixIntervals(animationCurveTRS, staticMatrix, maxStep);
 
@@ -167,9 +179,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             {
                 var endpointA = new Vector3(-0.5f, 0, 0);
                 var endpointB = new Vector3(+0.5f, 0, 0);
-                var color0 = new Color32(196, 196, 196, 255);
+                var color0 = new Color32(128, 128, 128, 255);
                 var normal = Vector3.up;
-                var trackTopTristrips = CreateTristrips(matrices, endpointA, endpointB, nTristrips, color0, normal, 3);
+                var trackTopTristrips = CreateTristrips(matrices, endpointA, endpointB, nTristrips, color0, normal, 3, false);
                 allTriStrips.AddRange(trackTopTristrips);
             }
 
@@ -177,9 +189,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             {
                 var endpointA = new Vector3(-0.5f, -2.0f, 0);
                 var endpointB = new Vector3(+0.5f, -2.0f, 0);
-                var color0 = new Color32(128, 128, 128, 255);
+                var color0 = new Color32(64, 64, 64, 255);
                 var normal = Vector3.down;
-                var trackBottomTristrips = CreateTristrips(matrices, endpointA, endpointB, nTristrips, color0, normal, 3);
+                var trackBottomTristrips = CreateTristrips(matrices, endpointA, endpointB, nTristrips, color0, normal, 3, true);
                 allTriStrips.AddRange(trackBottomTristrips);
             }
 
@@ -189,7 +201,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 var endpointB = new Vector3(-0.5f, -2.0f, 0);
                 var color0 = new Color32(127, 255, 127, 255); // green
                 var normal = Vector3.left;
-                var trackLeftTristrips = CreateTristrips(matrices, endpointA, endpointB, 1, color0, normal, 0);
+                var trackLeftTristrips = CreateTristrips(matrices, endpointA, endpointB, 1, color0, normal, 0, true);
                 allTriStrips.AddRange(trackLeftTristrips);
             }
 
@@ -199,7 +211,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 var endpointB = new Vector3(+0.5f, -2.0f, 0);
                 var color0 = new Color32(255, 127, 127, 255); // red
                 var normal = Vector3.right;
-                var trackRightTristrips = CreateTristrips(matrices, endpointA, endpointB, 1, color0, normal, 0);
+                var trackRightTristrips = CreateTristrips(matrices, endpointA, endpointB, 1, color0, normal, 0, false);
                 allTriStrips.AddRange(trackRightTristrips);
             }
 
@@ -213,7 +225,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     var endpointA = new Vector3(-0.5f, +0.0f, 0);
                     var endpointB = new Vector3(-0.5f, rails.RailHeightLeft, 0);
                     var color0 = new Color32(0, 255, 0, 255); // green
-                    var trackRightTristrips = CreateTristrips(matrices, endpointA, endpointB, 1, color0, null, 0);
+                    var trackRightTristrips = CreateTristrips(matrices, endpointA, endpointB, 1, color0, null, 0, true);
                     allTriStrips.AddRange(trackRightTristrips);
                 }
 
@@ -222,7 +234,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     var endpointA = new Vector3(+0.5f, +0.0f, 0);
                     var endpointB = new Vector3(+0.5f, rails.RailHeightRight, 0);
                     var color0 = new Color32(255, 0, 0, 255); // red
-                    var trackRightTristrips = CreateTristrips(matrices, endpointA, endpointB, 1, color0, null, 0);
+                    var trackRightTristrips = CreateTristrips(matrices, endpointA, endpointB, 1, color0, null, 0, false);
                     allTriStrips.AddRange(trackRightTristrips);
                 }
             }
@@ -230,7 +242,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return allTriStrips.ToArray();
         }
 
-        public static Tristrip[] CreateTristrips(Matrix4x4[] matrices, Vector3 endpointA, Vector3 endpointB, int nTristrips, Color32 color0, Vector3? defaultNormal, int uvs)
+        public static Tristrip[] CreateTristrips(Matrix4x4[] matrices, Vector3 endpointA, Vector3 endpointB, int nTristrips, Color32 color0, Vector3? defaultNormal, int uvs, bool reverse)
         {
             // Sample left and right vertices
             var vertices = new Vector3[nTristrips + 1];
@@ -258,12 +270,15 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 if (defaultNormal is not null)
                     tristrip.normals = CreateNormals(matrices, (Vector3)defaultNormal);
 
-                if (uvs > 0)
-                    tristrip.uv0 = CreateUVs(tristrip.positions);
-                if (uvs > 1)
-                    tristrip.uv1 = CreateUVs(tristrip.positions);
-                if (uvs > 2)
-                    tristrip.uv2 = CreateUVs(tristrip.positions);
+                // UVs
+                //if (uvs > 0)
+                //    tristrip.uv0 = CreateUVs(matrices);
+                //if (uvs > 1)
+                //    tristrip.uv1 = CreateUVs(matrices);
+                //if (uvs > 2)
+                //    tristrip.uv2 = CreateUVs(matrices);
+
+                tristrip.reverse = reverse;
             }
 
             return tristrips;
@@ -276,19 +291,20 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             for (int i = 0; i < matrices.Length; i++)
             {
                 int index = i * 2;
-                normals[index+0] = matrices[i].rotation * defaultNormal;
-                normals[index+1] = matrices[i].rotation * defaultNormal;
+                normals[index + 0] = matrices[i].rotation * defaultNormal;
+                normals[index + 1] = matrices[i].rotation * defaultNormal;
             }
             return normals;
         }
-        public static Vector2[] CreateUVs(Vector3[] positions)
+        public static Vector2[] CreateUVs(Matrix4x4[] matrices)
         {
             int baseIndex = 0;
-            var uvs = new Vector2[positions.Length];
-            for (int i = 0; i < uvs.Length; i += 2)
+            var uvs = new Vector2[matrices.Length * 2];
+            for (int i = 0; i < matrices.Length; i++)
             {
-                uvs[i + 0] = new Vector2(0,baseIndex);
-                uvs[i + 1] = new Vector2(1,baseIndex);
+                int index = i * 2;
+                uvs[index + 0] = new Vector2(0, baseIndex);
+                uvs[index + 1] = new Vector2(1, baseIndex);
                 baseIndex++;
                 baseIndex %= 2;
             }
@@ -318,7 +334,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             foreach (var trackSegment in track.AllRootSegmentShapes)
             {
                 // Make the vertex data
-                var trackMeshTristrips = CreateAllTemp(trackSegment, 4, 10f);
+                var trackMeshTristrips = CreateAllTemp(trackSegment, 4, 10f, true);
                 // convert to GameCube format
                 var dlists = TristripsToDisplayLists(trackMeshTristrips, GameCube.GFZ.GfzGX.VAT);
 
@@ -364,6 +380,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 Copy(tristrip.positions, ref dlist.pos);
                 Copy(tristrip.normals, ref dlist.nrm);
                 Copy(tristrip.uv0, ref dlist.tex0);
+                Copy(tristrip.uv1, ref dlist.tex1);
+                Copy(tristrip.uv2, ref dlist.tex2);
                 Copy(tristrip.color0, ref dlist.clr0);
 
                 // Set attributes based on provided data

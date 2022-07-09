@@ -18,6 +18,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         [SerializeField] public AnimationCurve y = new AnimationCurve();
         [SerializeField] public AnimationCurve z = new AnimationCurve();
 
+        public AnimationCurve[] CurvesXYZ
+        {
+            get => new AnimationCurve[] { x, y, z };
+        }
 
         // METHODS
         public AnimationCurve3 CreateDeepCopy()

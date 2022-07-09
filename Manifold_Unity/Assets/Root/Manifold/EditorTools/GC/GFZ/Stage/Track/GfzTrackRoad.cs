@@ -6,29 +6,47 @@ using UnityEngine;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
+    [RequireComponent(typeof(MeshFilter))]
+    [RequireComponent(typeof(MeshRenderer))]
     public class GfzTrackRoad : GfzSegmentShape,
         IRailSegment
     {
-        [Header("Gizmos")]
-        [SerializeField]
-        private bool doGizmos = true;
+        [field: SerializeField] public Material DefaultMaterial { get; private set; }
+        [field: SerializeField] public MeshFilter MeshFilter { get; private set; }
+        [field: SerializeField] public MeshRenderer MeshRenderer { get; private set; }
+        [field: SerializeField] public bool DoGenMesh { get; private set; }
+        [field: SerializeField] public Mesh GenMesh { get; private set; }
+        [field: SerializeField, Min(1)] public int WidthDivisions { get; private set; } = 4;
+        [field: SerializeField, Min(1f)] public float LengthDistance { get; private set; } = 10f;
 
-        [Header("Road Properties")]
-        [Min(0f)]
-        [SerializeField]
-        private float railHeightLeft = 5f;
+        [field: Header("Gizmos")]
+        [field: SerializeField] public bool DoGizmos { get; private set; } = true;
 
-        [Min(0f)]
-        [SerializeField]
-        private float railHeightRight = 5f;
+        [field: Header("Road Properties")]
+        [field: SerializeField, Min(0f)] public float RailHeightLeft { get; private set; } = 3f;
+        [field: SerializeField, Min(0f)] public float RailHeightRight { get; private set; } = 3f;
 
-        public float RailHeightLeft => railHeightLeft;
-        public float RailHeightRight => railHeightRight;
 
 
         public override Mesh[] GenerateMeshes()
         {
-            throw new System.NotImplementedException();
+            var tristrips = TrackGeoGenerator.CreateAllTemp(this, WidthDivisions, LengthDistance, false);
+            GenMesh = TristripsToMesh(tristrips);
+            GenMesh.name = $"Auto Gen - {this.name}";
+
+            if (MeshFilter != null)
+                MeshFilter.mesh = GenMesh;
+
+            if (MeshRenderer != null)
+            {
+                int numTristrips = GenMesh.subMeshCount;
+                var materials = new Material[numTristrips];
+                for (int i = 0; i < materials.Length; i++)
+                    materials[i] = DefaultMaterial;
+                MeshRenderer.sharedMaterials = materials;
+            }
+
+            return new Mesh[] { GenMesh };
         }
 
         public override TrackSegment GenerateTrackSegment()
@@ -40,10 +58,27 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             IO.Assert.IsTrue(lastNode.SegmentType == TrackSegmentType.IsTrack);
 
             // Rail height
-            lastNode.SetRails(railHeightLeft, railHeightRight);
+            lastNode.SetRails(RailHeightLeft, RailHeightRight);
 
             //
             return trackSegment;
+        }
+
+        protected override void OnValidate()
+        {
+            base.OnValidate();
+
+            if (DoGenMesh)
+            {
+                GenerateMeshes();
+                DoGenMesh = false;
+            }
+
+            if (MeshRenderer == null)
+                MeshRenderer = GetComponent<MeshRenderer>();
+
+            if (MeshFilter == null)
+                MeshFilter = GetComponent<MeshFilter>();
         }
 
     }

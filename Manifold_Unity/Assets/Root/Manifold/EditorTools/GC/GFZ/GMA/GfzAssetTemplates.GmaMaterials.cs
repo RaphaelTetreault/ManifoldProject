@@ -27,10 +27,10 @@ namespace Manifold.EditorTools.GC.GFZ
 
                     var material = new Material()
                     {
-                        //MaterialColor = new GXColor(0xb2b2b2ff, ComponentType.GX_RGBA8),
-                        //AmbientColor = new GXColor(0x7f7f7fff, ComponentType.GX_RGBA8),
-                        //SpecularColor = new GXColor(0xFFFFFFFF, ComponentType.GX_RGBA8),
-                        //Unk0x10 = MatFlags0x10.unk1 | MatFlags0x10.unk3 | MatFlags0x10.unk5,
+                        MaterialColor = new GXColor(0xb2b2b2ff, ComponentType.GX_RGBA8),
+                        AmbientColor = new GXColor(0x7f7f7fff, ComponentType.GX_RGBA8),
+                        SpecularColor = new GXColor(0xFFFFFFFF, ComponentType.GX_RGBA8),
+                        Unk0x10 = MatFlags0x10.unk1 | MatFlags0x10.unk3 | MatFlags0x10.unk5,
                     };
                     var unknownAlphaOptions = new UnkAlphaOptions();
                     var submeshes = new Submesh[]

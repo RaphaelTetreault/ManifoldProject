@@ -253,10 +253,18 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         public void CleanDuplicateKeys()
         {
+            // Clean keys
             foreach (var animationCurve in AnimationCurves)
-            {
                 CleanDuplicateKeys(animationCurve);
-            }
+
+            // ISSUE: empty curves are used, does not fall back on static transform!
+
+            //foreach (var curve in Position.CurvesXYZ)
+            //    DeleteKeysIfDefault(curve, 0f);
+            //foreach (var curve in Rotation.CurvesXYZ)
+            //    DeleteKeysIfDefault(curve, 0f);
+            //foreach (var curve in Scale.CurvesXYZ)
+            //    DeleteKeysIfDefault(curve, 1f);
         }
 
         private void CleanDuplicateKeys(AnimationCurve animationCurve)
@@ -302,6 +310,19 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 {
                     animationCurve.SmoothTangents(i, 1);
                 }
+            }
+        }
+
+        private void DeleteKeysIfDefault(AnimationCurve animationCurve, float defaultValue)
+        {
+            // If keys are zero, remove keys
+            bool isValueDefault =
+                animationCurve.keys[0].value == defaultValue &&
+                animationCurve.keys[1].value == defaultValue;
+            if (isValueDefault)
+            {
+                animationCurve.RemoveKey(0);
+                animationCurve.RemoveKey(0);
             }
         }
 

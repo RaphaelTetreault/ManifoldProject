@@ -259,7 +259,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 using (var writer = new EndianBinaryWriter(File.Create(gmaFileName), Gma.endianness))
                     writer.Write(trackModelsGma);
                 LzUtility.CompressAvLzToDisk(gmaFileName, compressFormat, true);
-                //File.Delete(gmaFileName);
+                File.Delete(gmaFileName);
             }
 
             // TEMP until data is stored properly in GFZ unity components
@@ -276,7 +276,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             OSUtility.OpenDirectory(outputPath);
 
             // Fix for Dolphin double file error :/
-            //File.Delete(outputFile);
+            File.Delete(outputFile);
 
             // Undo mirroring
             foreach (var mirroredObject in mirroredObjects)
