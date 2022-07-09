@@ -10,6 +10,8 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using Unity.Mathematics;
 
+using Manifold.EditorTools.GC.GFZ.Stage.Track;
+
 namespace Manifold.EditorTools.GC.GFZ.Stage
 {
     public static class SceneImportUtility

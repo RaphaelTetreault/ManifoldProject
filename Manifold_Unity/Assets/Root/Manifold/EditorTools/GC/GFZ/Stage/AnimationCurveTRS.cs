@@ -74,7 +74,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             var trackCurves = new GameCube.GFZ.Stage.AnimationCurveTRS();
             trackCurves.AnimationCurves = new GameCube.GFZ.Stage.AnimationCurve[9];
 
-            var corrected = GetGfzCoordSpaceTRS();
+            var corrected = GetDeepCopyGfzCoordSpaceTRS();
 
             trackCurves.PositionX = AnimationCurveConverter.ToGfz(corrected.Position.x);
             trackCurves.PositionY = AnimationCurveConverter.ToGfz(corrected.Position.y);
@@ -91,7 +91,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             return trackCurves;
         }
 
-        public AnimationCurveTRS GetGfzCoordSpaceTRS()
+        public AnimationCurveTRS GetDeepCopyGfzCoordSpaceTRS()
         {
             var p = Position.CreateDeepCopy();
             var r = Rotation.CreateDeepCopy();

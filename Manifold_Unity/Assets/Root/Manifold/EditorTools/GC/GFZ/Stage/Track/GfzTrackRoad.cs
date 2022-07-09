@@ -4,9 +4,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Manifold.EditorTools.GC.GFZ.Stage
+namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
-    public class GfzTrackRoad : GfzSegmentShape
+    public class GfzTrackRoad : GfzSegmentShape,
+        IRailSegment
     {
         [Header("Gizmos")]
         [SerializeField]
@@ -20,6 +21,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         [Min(0f)]
         [SerializeField]
         private float railHeightRight = 5f;
+
+        public float RailHeightLeft => railHeightLeft;
+        public float RailHeightRight => railHeightRight;
 
 
         public override Mesh[] GenerateMeshes()

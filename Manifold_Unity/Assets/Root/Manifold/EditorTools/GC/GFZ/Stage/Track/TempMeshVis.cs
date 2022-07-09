@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-namespace Manifold.EditorTools.GC.GFZ.Stage
+namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
     public class TempMeshVis : MonoBehaviour
     {
@@ -31,7 +31,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             }
 
             //var vertices = new Vector3[] { new Vector3(0.5f, 0, 0), new Vector3(0,0,0), new Vector3(-0.5f, 0, 0) };
-            var matrices = TrackGeoGenerator.GenerateMtxIntervals(trackSegment, maxStep);
+            var matrices = TrackGeoGenerator.GenerateMatrixIntervals(trackSegment, maxStep);
             var tristrips = TrackGeoGenerator.GenerateTristrips(matrices, vertices);
 
             foreach (var tristrip in tristrips)

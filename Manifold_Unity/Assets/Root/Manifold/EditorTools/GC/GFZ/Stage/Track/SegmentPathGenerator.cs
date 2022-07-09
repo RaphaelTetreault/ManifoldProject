@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using GameCube.GFZ.Stage;
 
-namespace Manifold.EditorTools.GC.GFZ.Stage
+namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
     public abstract class SegmentPathGenerator : MonoBehaviour
     {

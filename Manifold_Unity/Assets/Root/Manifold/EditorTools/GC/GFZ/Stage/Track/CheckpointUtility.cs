@@ -1,7 +1,7 @@
 ﻿using GameCube.GFZ.Stage;
 using Unity.Mathematics;
 
-namespace Manifold.EditorTools.GC.GFZ.Stage
+namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
     public static class CheckpointUtility
     {
@@ -26,7 +26,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             // Use GFZ space (game) if 'true'
             // Use Unity space if 'false'
             var animationTRS = convertCoordinateSpace
-                ? trackSegment.AnimationCurveTRS.GetGfzCoordSpaceTRS()
+                ? trackSegment.AnimationCurveTRS.GetDeepCopyGfzCoordSpaceTRS()
                 : trackSegment.AnimationCurveTRS;
 
             // Get matrices, time
@@ -140,7 +140,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             // Use GFZ space (game) if 'true'
             // Use Unity space if 'false'
             var animationTRS = convertCoordinateSpace
-                ? trackSegment.AnimationCurveTRS.GetGfzCoordSpaceTRS()
+                ? trackSegment.AnimationCurveTRS.GetDeepCopyGfzCoordSpaceTRS()
                 : trackSegment.AnimationCurveTRS;
 
             // Get matrices, time

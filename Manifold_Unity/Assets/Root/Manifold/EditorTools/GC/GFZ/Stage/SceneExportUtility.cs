@@ -1,4 +1,5 @@
 ﻿using GameCube.GFZ;
+using GameCube.GFZ.GMA;
 using GameCube.GFZ.LZ;
 using GameCube.GFZ.Stage;
 using Manifold.IO;
@@ -10,6 +11,8 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using Unity.Mathematics;
 using System.Linq;
+
+using Manifold.EditorTools.GC.GFZ.Stage.Track;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage
 {
@@ -168,12 +171,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 scene.sceneObjects = GetGfzValues(gfzSceneObjects);
 
                 // LODs
-                var sceneObjectLODs = new List<SceneObjectLOD>();
                 foreach (var sceneObject in scene.sceneObjects)
                 {
-                    sceneObjectLODs.AddRange(sceneObject.LODs);
+                    scene.SceneObjectLODs.AddRange(sceneObject.LODs);
                 }
-                scene.SceneObjectLODs = sceneObjectLODs.ToArray();
 
                 // CString names
                 // TODO: share references
@@ -181,13 +182,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 sceneObjectNames.Add("");
                 foreach (var thing in scene.SceneObjectLODs)
                 {
-                    //if (!sceneObjectNames.Contains(thing.name))
-                    //{
-                    sceneObjectNames.Add(thing.Name);
-                    //}
+                    scene.SceneObjectNames.Add(thing.Name);
                 }
                 // alphabetize, store
-                scene.SceneObjectNames = sceneObjectNames.OrderBy(x => x.Value).ToArray();
+                scene.SceneObjectNames = scene.SceneObjectNames.OrderBy(x => x.Value).ToList();
             }
 
             // Static Collider Meshes
@@ -238,6 +236,31 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
                 scene.CircuitType = track.CircuitType;
             }
+            // Inject TRACK models
+            {
+                var trackModelsGma = TrackGeoGenerator.CreateTrackModelsGma("Track Segment");
+                var sceneObjects = CreateSceneObjectsFromGma(trackModelsGma);
+
+                // Add SceneObject (template)< it's LODs, and name
+                foreach (var sceneObject in sceneObjects)
+                {
+                    scene.SceneObjectLODs.AddRange(sceneObject.LODs);
+                    scene.SceneObjectNames.Add(sceneObject.Name);
+                }
+                scene.sceneObjects = sceneObjects.Concat(scene.sceneObjects).ToArray();
+
+                // add static / dynamic
+                var dynamicSceneObjects = GetAsSceneObjectDynamic(sceneObjects);
+                scene.dynamicSceneObjects = dynamicSceneObjects.Concat(scene.dynamicSceneObjects).ToArray();
+
+                // save gma
+                //var gmaFileName = outputPath + $"st{scene.CourseIndex,2}.gma";
+                var gmaFileName = outputPath + $"st01.gma";
+                using (var writer = new EndianBinaryWriter(File.Create(gmaFileName), Gma.endianness))
+                    writer.Write(trackModelsGma);
+                LzUtility.CompressAvLzToDisk(gmaFileName, compressFormat, true);
+                //File.Delete(gmaFileName);
+            }
 
             // TEMP until data is stored properly in GFZ unity components
             MakeTrueNulls(scene);
@@ -253,7 +276,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             OSUtility.OpenDirectory(outputPath);
 
             // Fix for Dolphin double file error :/
-            File.Delete(outputFile);
+            //File.Delete(outputFile);
 
             // Undo mirroring
             foreach (var mirroredObject in mirroredObjects)
@@ -326,6 +349,51 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             var sceneParams = gfzSceneParameters[0];
 
             return sceneParams;
+        }
+
+        public static SceneObject[] CreateSceneObjectsFromGma(Gma gma)
+        {
+            var sceneObjects = new List<SceneObject>();
+
+            foreach (var model in gma.Models)
+            {
+                // Only 1 LOD for now
+                var lod = new SceneObjectLOD()
+                {
+                    Name = model.Name,
+                    LodDistance = 0f,
+                };
+
+                // Wrap it up
+                var sceneObject = new SceneObject()
+                {
+                    LodRenderFlags = 0,
+                    LODs = new SceneObjectLOD[] { lod },
+                    ColliderMesh = null,
+                };
+
+                // Add to list
+                sceneObjects.Add(sceneObject);
+            }
+
+            return sceneObjects.ToArray();
+        }
+
+        // TODO: move to scene object dynamic
+        public static SceneObjectDynamic[] GetAsSceneObjectDynamic(SceneObject[] sceneObjects)
+        {
+            var dynamics = new SceneObjectDynamic[sceneObjects.Length];
+            for (int i = 0; i < dynamics.Length; i++)
+            {
+                dynamics[i] = new SceneObjectDynamic()
+                {
+                    Unk0x00 = 0xF,
+                    Unk0x04 = unchecked((int)0xFFFFFFFF),
+                    SceneObject = sceneObjects[i],
+                    TransformMatrix3x4 = new(),
+                };
+            }
+            return dynamics;
         }
     }
 }

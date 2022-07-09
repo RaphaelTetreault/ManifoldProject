@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-namespace Manifold.EditorTools.GC.GFZ
+namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
     [ExecuteInEditMode]
     public class GfzTrackSegmentRoot : MonoBehaviour

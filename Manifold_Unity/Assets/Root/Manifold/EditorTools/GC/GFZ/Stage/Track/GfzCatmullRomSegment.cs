@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using Unity.Mathematics;
 
-namespace Manifold.EditorTools.GC.GFZ.Stage
+namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
     [ExecuteInEditMode]
     public class GfzCatmullRomSegment : SegmentPathGenerator

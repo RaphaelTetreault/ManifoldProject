@@ -1,6 +1,7 @@
 using GameCube.GFZ.GMA;
 using GameCube.GFZ.Stage;
 using GameCube.GFZ.TPL;
+using GameCube.GX;
 using GameCube.GX.Texture;
 using Manifold.IO;
 using Manifold.EditorTools.GC.GFZ;
@@ -15,6 +16,91 @@ namespace Manifold.EditorTools.GC.GFZ
     {
         public static class MeshTemplates
         {
+            public static class DebugTemplates
+            {
+                public static MeshTemplate CreateLitVertexColored()
+                {
+                    // Not doing isSwappable, tpl index, config index
+                    var tevLayers = new TevLayer[0];
+                    var textureHashes = new string[0];
+                    TextureScroll textureScroll = null;
+
+                    var material = new Material()
+                    {
+                        //MaterialColor = new GXColor(0xb2b2b2ff, ComponentType.GX_RGBA8),
+                        //AmbientColor = new GXColor(0x7f7f7fff, ComponentType.GX_RGBA8),
+                        //SpecularColor = new GXColor(0xFFFFFFFF, ComponentType.GX_RGBA8),
+                        //Unk0x10 = MatFlags0x10.unk1 | MatFlags0x10.unk3 | MatFlags0x10.unk5,
+                    };
+                    var unknownAlphaOptions = new UnkAlphaOptions();
+                    var submeshes = new Submesh[]
+                    {
+                        new Submesh ()
+                        {
+                            RenderFlags = RenderFlags.doubleSidedFaces,
+                            Material = material,
+                            UnkAlphaOptions = unknownAlphaOptions,
+                        },
+                    };
+                    var gcmf = new Gcmf
+                    {
+                        Attributes = 0,
+                        TextureConfigsCount = (ushort)tevLayers.Length,
+                        OpaqueMaterialCount = 1,
+                        TranslucidMaterialCount = 0,
+                        TevLayers = tevLayers,
+                        Submeshes = submeshes,
+                    };
+
+                    var template = new MeshTemplate()
+                    {
+                        Gcmf = gcmf,
+                        TextureHashes = textureHashes,
+                        TextureScroll = textureScroll,
+                    };
+
+                    return template;
+                }
+
+                public static MeshTemplate CreateUnlitVertexColored()
+                {
+                    // Not doing isSwappable, tpl index, config index
+                    var tevLayers = new TevLayer[0];
+                    var textureHashes = new string[0];
+                    TextureScroll textureScroll = null;
+
+                    var material = new Material();
+                    var unknownAlphaOptions = new UnkAlphaOptions();
+                    var submeshes = new Submesh[]
+                    {
+                        new Submesh ()
+                        {
+                            RenderFlags = RenderFlags.unlit | RenderFlags.doubleSidedFaces,
+                            Material = material,
+                            UnkAlphaOptions = unknownAlphaOptions,
+                        },
+                    };
+                    var gcmf = new Gcmf
+                    {
+                        Attributes = 0,
+                        TextureConfigsCount = (ushort)tevLayers.Length,
+                        OpaqueMaterialCount = 0,
+                        TranslucidMaterialCount = 1,
+                        TevLayers = tevLayers,
+                        Submeshes = submeshes,
+                    };
+
+                    var template = new MeshTemplate()
+                    {
+                        Gcmf = gcmf,
+                        TextureHashes = textureHashes,
+                        TextureScroll = textureScroll,
+                    };
+
+                    return template;
+                }
+            }
+
             public static class MuteCity
             {
                 public static MeshTemplate CreateRail()
@@ -76,7 +162,7 @@ namespace Manifold.EditorTools.GC.GFZ
                         Unk0x10 = 0,
                         Alpha = 255,
                         TevLayerCount = (byte)tevLayers.Length,
-                        MaterialDestination = 0, // resolve based on display lists
+                        //MaterialDestination = 0, // Resolved based on display lists at serialize time
                         UnkAlpha0x14 = 0,
                         Unk0x15 = 0,
                         TevLayerIndex0 = 0,
@@ -118,9 +204,6 @@ namespace Manifold.EditorTools.GC.GFZ
 
                     return template;
                 }
-
-
-
             }
         }
     }

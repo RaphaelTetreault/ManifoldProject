@@ -1,7 +1,7 @@
 ﻿using GameCube.GFZ.Stage;
 using UnityEngine;
 
-namespace Manifold.EditorTools.GC.GFZ.Stage
+namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
     public abstract class GfzSegmentShape : MonoBehaviour
     {
@@ -9,7 +9,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         [field: SerializeField] public GfzTrackSegment Segment { get; private set; }
 
         public AnimationCurveTRS AnimationCurveTRS => Segment.AnimationCurveTRS;
-        
+
 
 
         /// <summary>

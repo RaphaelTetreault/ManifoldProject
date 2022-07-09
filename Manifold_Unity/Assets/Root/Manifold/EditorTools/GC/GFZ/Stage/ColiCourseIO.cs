@@ -564,23 +564,23 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 }
                 log.WriteLine();
 
-                log.WriteLine($"{nameof(SceneObject)}");
-                for (int i = 0; i < coliScene.SceneObjectLODs.Length; i++)
-                {
-                    var sceneObjectReference = coliScene.SceneObjectLODs[i];
-                    log.Write(PrintIndex(i, coliScene.SceneObjectLODs));
-                    log.WriteLine(PrintData(functionIdx, sceneObjectReference));
-                }
-                log.WriteLine();
+                //log.WriteLine($"{nameof(SceneObject)}");
+                //for (int i = 0; i < coliScene.SceneObjectLODs.Length; i++)
+                //{
+                //    var sceneObjectReference = coliScene.SceneObjectLODs[i];
+                //    log.Write(PrintIndex(i, coliScene.SceneObjectLODs));
+                //    log.WriteLine(PrintData(functionIdx, sceneObjectReference));
+                //}
+                //log.WriteLine();
 
-                log.WriteLine($"{nameof(ShiftJisCString)}");
-                for (int i = 0; i < coliScene.SceneObjectNames.Length; i++)
-                {
-                    var objectName = coliScene.SceneObjectNames[i];
-                    log.Write(PrintIndex(i, coliScene.SceneObjectNames));
-                    log.WriteLine(PrintData(functionIdx, objectName));
-                }
-                log.WriteLine();
+                //log.WriteLine($"{nameof(ShiftJisCString)}");
+                //for (int i = 0; i < coliScene.SceneObjectNames.Length; i++)
+                //{
+                //    var objectName = coliScene.SceneObjectNames[i];
+                //    log.Write(PrintIndex(i, coliScene.SceneObjectNames));
+                //    log.WriteLine(PrintData(functionIdx, objectName));
+                //}
+                //log.WriteLine();
             }
         }
         public static void LogSceneData(TextLogger log, Scene coliScene)
@@ -727,8 +727,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
             log.WriteHeading("SCENE OBJECTS", padding, h1Width);
             log.WriteLine("Object Names");
-            log.WriteAddress(coliScene.SceneObjectNames);
-            log.WriteAddress(coliScene.SceneObjectLODs);
+            //log.WriteAddress(coliScene.SceneObjectNames);
+            //log.WriteAddress(coliScene.SceneObjectLODs);
             log.WriteAddress(coliScene.sceneObjects);
             log.WriteAddress(coliScene.staticSceneObjects);
             log.WriteAddress(coliScene.dynamicSceneObjects);
@@ -1106,8 +1106,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                     log.WriteLineSummary(coliScene.dynamicSceneObjects);
                     log.WriteLineSummary(coliScene.staticSceneObjects);
                     log.WriteLineSummary(coliScene.sceneObjects);
-                    log.WriteLineSummary(coliScene.SceneObjectLODs);
-                    log.WriteLineSummary(coliScene.SceneObjectNames);
+                    //log.WriteLineSummary(coliScene.SceneObjectLODs);
+                    //log.WriteLineSummary(coliScene.SceneObjectNames);
                     log.WriteLine();
                 }
 

@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEditor;
 
 
-namespace Manifold.EditorTools.GC.GFZ.Stage
+namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
     [ExecuteInEditMode]
     public class CatmullRomPoint : MonoBehaviour

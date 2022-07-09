@@ -129,7 +129,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Colliders
             foreach (var sceneObject in scene.dynamicSceneObjects)
             {
                 count++;
-                if (sceneObject.SceneObject.ColliderGeometryPtr.IsNotNull)
+                if (sceneObject.SceneObject.ColliderMeshPtr.IsNotNull)
                 {
                     string meshName = sceneObject.Name;
                     string outputPathBase = $"{outputDirectory}st{scene.CourseIndex:00}/";
