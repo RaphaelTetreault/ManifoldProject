@@ -29,7 +29,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             return finalMatrix;
         }
 
-        public HierarchichalAnimationCurveTRS[] Temp()
+        public HierarchichalAnimationCurveTRS[] GetLeaves()
         {
             // Get the root. From there, make a list of all leaves, recursively
             // collect all children, then return that.
