@@ -82,8 +82,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             var animationCurveTRS = useGfzCoordSpace
                 ? trackSegmentShape.AnimationCurveTRS.GetInGfzCoordinateSpace()
                 : trackSegmentShape.AnimationCurveTRS.CreateDeepCopy();
-            if (!useGfzCoordSpace)
-                animationCurveTRS.Rotation.z = animationCurveTRS.Rotation.z.GetInverted();
 
             var staticMatrix = trackSegmentShape.transform.localToWorldMatrix;
             var matrices = GenerateMatrixIntervals(animationCurveTRS, staticMatrix, maxStep);
