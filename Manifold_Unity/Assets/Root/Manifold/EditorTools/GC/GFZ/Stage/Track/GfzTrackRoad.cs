@@ -19,6 +19,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         [field: SerializeField] public bool DoGenMesh { get; private set; }
         [field: SerializeField, Min(1)] public int WidthDivisions { get; private set; } = 4;
         [field: SerializeField, Min(1f)] public float LengthDistance { get; private set; } = 10f;
+        [field: SerializeField, Min(1f)] public bool GenGfz { get; private set; }
 
         [field: Header("Road Properties")]
         [field: SerializeField, Min(0f)] public float RailHeightLeft { get; private set; } = 3f;
@@ -28,7 +29,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public override Mesh[] GenerateMeshes()
         {
-            var tristrips = TrackGeoGenerator.CreateAllTemp(this, WidthDivisions, LengthDistance, false);
+            var tristrips = TrackGeoGenerator.CreateAllTemp(this, WidthDivisions, LengthDistance, GenGfz);
             GenMesh = TristripsToMesh(tristrips);
             GenMesh.name = $"Auto Gen - {this.name}";
 

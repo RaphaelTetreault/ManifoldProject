@@ -534,7 +534,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
             //Debug.Log("Total distance: " + totalDistance);
 
-            var mirrorXOffsetRotationY = new Vector3(0, 180, 0);
+            //var mirrorXOffsetRotationY = new Vector3(0, 180, 0);
+            var mirrorXOffsetRotationY = new Vector3(0, 0, 0);
             var previousRotation = GetOrientation(0, 0).eulerAngles + mirrorXOffsetRotationY;
 
             double currDistance = 0;

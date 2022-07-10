@@ -11,7 +11,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         public void MirrorTransform()
         {
             var s = transform.localScale;
-            transform.localScale = new Vector3(-s.x, s.y, s.z);
+            //transform.localScale = new Vector3(-s.x, s.y, s.z);
+            transform.localScale = new Vector3(s.x, s.y, -s.z);
         }
 
     }

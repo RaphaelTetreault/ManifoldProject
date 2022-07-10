@@ -6,6 +6,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
     {
         [field: SerializeField] public GfzTrackSegment TrackSegment { get; private set; }
         [field: SerializeField] public Mesh GizmosMesh { get; private set; }
+        [field: SerializeField] public bool GenGfz { get; private set; }
 
         private void OnValidate()
         {
