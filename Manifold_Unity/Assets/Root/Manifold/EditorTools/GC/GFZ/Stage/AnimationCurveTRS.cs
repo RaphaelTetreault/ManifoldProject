@@ -1,6 +1,4 @@
-﻿using Manifold;
-using Manifold.IO;
-using Manifold.EditorTools.GC.GFZ;
+﻿using Manifold.IO;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -72,9 +70,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         public GameCube.GFZ.Stage.AnimationCurveTRS ToTrackSegment()
         {
             var trackCurves = new GameCube.GFZ.Stage.AnimationCurveTRS();
-            trackCurves.AnimationCurves = new GameCube.GFZ.Stage.AnimationCurve[9];
-
-            var corrected = GetInGfzCoordinateSpace();
+            var corrected = CreateGfzCoordinateSpace();
 
             trackCurves.PositionX = AnimationCurveConverter.ToGfz(corrected.Position.x);
             trackCurves.PositionY = AnimationCurveConverter.ToGfz(corrected.Position.y);
@@ -91,7 +87,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             return trackCurves;
         }
 
-        public AnimationCurveTRS GetInGfzCoordinateSpace()
+        public AnimationCurveTRS CreateGfzCoordinateSpace()
         {
             // Something people seem to get wrong is the coordinate space of GFZ.
             // Many believe you need to invert the X axis in a scene. However, this
@@ -120,33 +116,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 Rotation = r,
                 Scale = s,
             };
-        }
-
-        public AnimationCurve3 ComputerRotationXY()
-        {
-            //rotation.x = new AnimationCurve();
-            //rotation.y = new AnimationCurve();
-            var temp = new AnimationCurve3();
-
-            int interations = 100;
-            for (int i = 0; i <= interations; i++)
-            {
-                var time = (float)((double)i / interations);
-                var p0 = Position.Evaluate(time);
-                var p1 = Position.Evaluate(time + 0.00001f);
-                var forward = (p1 - p0).normalized;
-
-                var zUp = Rotation.z.EvaluateNormalized(time);
-                var up = Quaternion.Euler(0, 0, zUp) * Vector3.up;
-                var orientation = Quaternion.LookRotation(forward, up);
-                var eulers = orientation.eulerAngles;
-
-                temp.x.AddKey(time, eulers.x);
-                temp.y.AddKey(time, eulers.y);
-                temp.z.AddKey(time, eulers.z);
-            }
-
-            return temp;
         }
 
         /// <summary>

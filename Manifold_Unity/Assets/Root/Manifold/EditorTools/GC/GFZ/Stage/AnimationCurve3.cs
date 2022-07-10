@@ -1,6 +1,4 @@
 using Manifold.IO;
-using System.Collections;
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 
@@ -51,7 +49,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         public AnimationCurve[] GetCurves()
         {
-            return new AnimationCurve[] {x, y, z };
+            return new AnimationCurve[] { x, y, z };
         }
 
         public float GetMaxTime()

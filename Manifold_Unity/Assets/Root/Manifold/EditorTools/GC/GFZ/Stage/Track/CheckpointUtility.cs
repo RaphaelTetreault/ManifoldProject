@@ -26,7 +26,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             // Use GFZ space (game) if 'true'
             // Use Unity space if 'false'
             var animationTRS = convertCoordinateSpace
-                ? trackSegment.AnimationCurveTRS.GetInGfzCoordinateSpace()
+                ? trackSegment.AnimationCurveTRS.CreateGfzCoordinateSpace()
                 : trackSegment.AnimationCurveTRS;
 
             // Get matrices, time

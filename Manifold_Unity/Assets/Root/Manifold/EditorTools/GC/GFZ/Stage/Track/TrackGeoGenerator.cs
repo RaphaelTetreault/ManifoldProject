@@ -80,7 +80,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             var allTriStrips = new List<Tristrip>();
 
             var animationCurveTRS = useGfzCoordSpace
-                ? trackSegmentShape.AnimationCurveTRS.GetInGfzCoordinateSpace()
+                ? trackSegmentShape.AnimationCurveTRS.CreateGfzCoordinateSpace()
                 : trackSegmentShape.AnimationCurveTRS.CreateDeepCopy();
 
             var staticMatrix = trackSegmentShape.transform.localToWorldMatrix;

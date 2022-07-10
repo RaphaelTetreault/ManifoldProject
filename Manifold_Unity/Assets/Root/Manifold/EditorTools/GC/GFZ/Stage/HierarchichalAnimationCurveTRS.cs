@@ -7,7 +7,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
     public class HierarchichalAnimationCurveTRS
     {
         public Matrix4x4 StaticMatrix { get; set; } = new();
-        public AnimationCurveTRS AnimationTRS { get; set; } = new();
+        public AnimationCurveTRS AnimationCurveTRS { get; set; } = new();
         public HierarchichalAnimationCurveTRS Parent { get; set; } = null;
         public HierarchichalAnimationCurveTRS[] Children { get; set; } = null;
 
@@ -22,7 +22,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 ? Parent.EvaluateHierarchyMatrix(time)
                 : Matrix4x4.TRS(Vector3.zero, Quaternion.identity, Vector3.one);
 
-            var selfAnimationMatrix = AnimationTRS.EvaluateMatrix(time);
+            var selfAnimationMatrix = AnimationCurveTRS.EvaluateMatrix(time);
             var selfMatrix = StaticMatrix * selfAnimationMatrix;
 
             var finalMatrix = parentMatrix * selfMatrix;
