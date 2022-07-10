@@ -74,7 +74,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             var trackCurves = new GameCube.GFZ.Stage.AnimationCurveTRS();
             trackCurves.AnimationCurves = new GameCube.GFZ.Stage.AnimationCurve[9];
 
-            var corrected = GetDeepCopyGfzCoordSpaceTRS();
+            var corrected = GetInGfzCoordinateSpace();
 
             trackCurves.PositionX = AnimationCurveConverter.ToGfz(corrected.Position.x);
             trackCurves.PositionY = AnimationCurveConverter.ToGfz(corrected.Position.y);
@@ -91,29 +91,28 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             return trackCurves;
         }
 
-        public AnimationCurveTRS GetDeepCopyGfzCoordSpaceTRS()
+        public AnimationCurveTRS GetInGfzCoordinateSpace()
         {
+            // Something people seem to get wrong is the coordinate space of GFZ.
+            // Many believe you need to invert the X axis in a scene. However, this
+            // then requires you to add 180 degrees (rotate around). This is not
+            // how coordinate spaces work!
+            //
+            // In reality, it is the Z axis which is inverted. Taking ST01 as an example,
+            // the first turn goes +X/right. In the pre-mirrored coordinate space (at least, 
+            // in Unity), this is correct. What isn't is that, since Z is still mirrored,
+            // if you place yourself on the track (rather than looking at it from global
+            // space), then it appears to go left. However, once you invert Z, the turn
+            // goes right from taht perspective. Once this is done, rotations about the Y
+            // axis also need to be inverted (due to inverted handidness). Once done,
+            // you're good to go! Z+ is forward, X+ is right, and Y+ stays upwards.
+
             var p = Position.CreateDeepCopy();
             var r = Rotation.CreateDeepCopy();
             var s = Scale.CreateDeepCopy();
 
-            var convertCoordinateSpace = GfzProjectWindow.GetSettings().ConvertCoordSpace;
-            if (convertCoordinateSpace)
-            {
-                // Position X is inverted compared to Unity
-                // 2022/01/31: This does not work with inverting Z axis!
-                //p.x = p.x.GetInverted();
-                p.z = p.z.GetInverted();
-
-                // As a result of X's inversion:
-                // Rotation Y is inverted compared to Unity
-                //r.y = r.y.GetInverted();
-
-
-                //r.z = r.z.GetInverted();
-                // Conform Y rotation to -Z forward
-                r.y = r.y.GetInverted();
-            }
+            p.z = p.z.GetInverted();
+            r.y = r.y.GetInverted();
 
             return new AnimationCurveTRS()
             {

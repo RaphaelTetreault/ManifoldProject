@@ -80,7 +80,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             var allTriStrips = new List<Tristrip>();
 
             var animationCurveTRS = useGfzCoordSpace
-                ? trackSegmentShape.AnimationCurveTRS.GetDeepCopyGfzCoordSpaceTRS()
+                ? trackSegmentShape.AnimationCurveTRS.GetInGfzCoordinateSpace()
                 : trackSegmentShape.AnimationCurveTRS.CreateDeepCopy();
             if (!useGfzCoordSpace)
                 animationCurveTRS.Rotation.z = animationCurveTRS.Rotation.z.GetInverted();
@@ -94,7 +94,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 var endpointB = new Vector3(+0.5f, 0, 0);
                 var color0 = new Color32(128, 128, 128, 255);
                 var normal = Vector3.up;
-                var trackTopTristrips = CreateTristrips(matrices, endpointA, endpointB, nTristrips, color0, normal, 3, false);
+                var trackTopTristrips = CreateTristrips(matrices, endpointA, endpointB, nTristrips, color0, normal, 3, true);
                 allTriStrips.AddRange(trackTopTristrips);
             }
 
@@ -104,7 +104,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 var endpointB = new Vector3(+0.5f, -2.0f, 0);
                 var color0 = new Color32(48, 48, 48, 255);
                 var normal = Vector3.down;
-                var trackBottomTristrips = CreateTristrips(matrices, endpointA, endpointB, nTristrips, color0, normal, 3, true);
+                var trackBottomTristrips = CreateTristrips(matrices, endpointA, endpointB, nTristrips, color0, normal, 3, false);
                 allTriStrips.AddRange(trackBottomTristrips);
             }
 
@@ -114,7 +114,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 var endpointB = new Vector3(-0.5f, -2.0f, 0);
                 var color0 = new Color32(127, 255, 127, 255); // green
                 var normal = Vector3.left;
-                var trackLeftTristrips = CreateTristrips(matrices, endpointA, endpointB, 1, color0, normal, 0, true);
+                var trackLeftTristrips = CreateTristrips(matrices, endpointA, endpointB, 1, color0, normal, 0, false);
                 allTriStrips.AddRange(trackLeftTristrips);
             }
 
@@ -124,7 +124,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 var endpointB = new Vector3(+0.5f, -2.0f, 0);
                 var color0 = new Color32(255, 127, 127, 255); // red
                 var normal = Vector3.right;
-                var trackRightTristrips = CreateTristrips(matrices, endpointA, endpointB, 1, color0, normal, 0, false);
+                var trackRightTristrips = CreateTristrips(matrices, endpointA, endpointB, 1, color0, normal, 0, true);
                 allTriStrips.AddRange(trackRightTristrips);
             }
 
@@ -139,7 +139,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     var endpointA = new Vector3(-0.5f, +0.0f, 0);
                     var endpointB = new Vector3(-0.5f, rails.RailHeightLeft, 0);
                     var color0 = new Color32(0, 255, 0, 255); // green
-                    var trackRightTristrips = CreateTristrips(matrices, endpointA, endpointB, 1, color0, null, 0, true);
+                    var trackRightTristrips = CreateTristrips(matrices, endpointA, endpointB, 1, color0, null, 0, false);
                     allTriStrips.AddRange(trackRightTristrips);
                 }
 
@@ -149,7 +149,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     var endpointA = new Vector3(+0.5f, +0.0f, 0);
                     var endpointB = new Vector3(+0.5f, rails.RailHeightRight, 0);
                     var color0 = new Color32(255, 0, 0, 255); // red
-                    var trackRightTristrips = CreateTristrips(matrices, endpointA, endpointB, 1, color0, null, 0, false);
+                    var trackRightTristrips = CreateTristrips(matrices, endpointA, endpointB, 1, color0, null, 0, true);
                     allTriStrips.AddRange(trackRightTristrips);
                 }
             }
@@ -169,7 +169,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 var endpointB = new Vector3(+0.5f, +0.10f, 0);
                 var color0 = new Color32(96, 96, 96, 255); // dark grey
                 var normal = Vector3.up;
-                var widthDividers = CreateTristrips(matrices01, endpointA, endpointB, 1, color0, normal, 0, false);
+                var widthDividers = CreateTristrips(matrices01, endpointA, endpointB, 1, color0, normal, 0, true);
                 allTriStrips.AddRange(widthDividers);
             }
 
@@ -182,7 +182,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 var endpointB = new Vector3(+0.5f, +0.15f, 0);
                 var color0 = new Color32(127, 255, 255, 255); // cyan
                 var normal = Vector3.up;
-                var trackLaneDivider = CreateTristrips(matrices, endpointA, endpointB, 1, color0, normal, 0, false);
+                var trackLaneDivider = CreateTristrips(matrices, endpointA, endpointB, 1, color0, normal, 0, true);
                 allTriStrips.AddRange(trackLaneDivider);
             }
 

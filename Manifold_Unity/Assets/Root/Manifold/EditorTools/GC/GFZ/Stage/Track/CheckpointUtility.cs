@@ -6,7 +6,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
     public static class CheckpointUtility
     {
         /// <summary>
-        /// 
+        /// The difference: if key time is embedded distance, sample time = sample distance
         /// </summary>
         /// <param name="trackSegment">The track segment to generate checkpoints for.</param>
         /// <param name="convertCoordinateSpace">Coordinate space is for game.</param>
@@ -19,128 +19,14 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             var checkpoints = new Checkpoint[numCheckpoints];
 
             // Get direction vectors
-            float3 forward = new float3(0, 0, 1);
+            float3 forward = convertCoordinateSpace ? new float3(0, 0, -1) : new float3(0, 0, +1);
             float3 backward = -forward;
 
             // Get the AnimationCurveTransform appropriate for requester.
             // Use GFZ space (game) if 'true'
             // Use Unity space if 'false'
             var animationTRS = convertCoordinateSpace
-                ? trackSegment.AnimationCurveTRS.GetDeepCopyGfzCoordSpaceTRS()
-                : trackSegment.AnimationCurveTRS;
-
-            // Get matrices, time
-            var baseMtx = trackSegment.transform.localToWorldMatrix;
-            var curveMaxTime = animationTRS.GetMaxTime();
-
-            var checkpointDistanceOffset = trackSegment.GetDistanceOffset();
-            var distanceTravelled = 0f;
-            for (int i = 0; i < numCheckpoints; i++)
-            {
-                // Curve-sampling start and end times.
-                double checkpointTimeStart = (double)(i + 0) / numCheckpoints;
-                double checkpointTimeEnd = (double)(i + 1) / numCheckpoints;
-
-                // Evaluate matrices
-                var animMtx = animationTRS.EvaluateMatrix(checkpointTimeStart);
-                var mtx = baseMtx * animMtx;
-                var position = mtx.GetPosition();
-                var rotation = mtx.rotation;
-                var scale = animationTRS.Scale.Evaluate(checkpointTimeStart);
-
-                // Get origin of start plane, track width at start sampling point
-                var origin = position;// + transform.position;
-                var trackWidth = scale.x;
-                var normal = rotation * forward;
-                // Create plane
-                var planeStart = new Plane() { origin = origin, normal = normal };
-                planeStart.ComputeDotProduct();
-
-                // DISTANCE
-                // Compute the distance between these 2 points, keep track of total distance travelled along segment
-                var distanceBetween = animationTRS.GetDistanceBetweenRepeated(checkpointTimeStart, checkpointTimeEnd);
-                var distanceStart = distanceTravelled;
-                var distanceEnd = distanceTravelled + distanceBetween;
-                distanceTravelled = distanceEnd;
-
-                // CHECKPOINT
-                checkpoints[i] = new Checkpoint();
-                var checkpoint = checkpoints[i];
-                checkpoint.CurveTimeStart = (float)checkpointTimeStart;
-                checkpoint.StartDistance = checkpointDistanceOffset + distanceStart;
-                checkpoint.EndDistance = checkpointDistanceOffset + distanceEnd;
-                checkpoint.TrackWidth = trackWidth;
-                checkpoint.ConnectToTrackIn = true;
-                checkpoint.ConnectToTrackOut = true;
-                checkpoint.PlaneStart = planeStart;
-                // We construct (copy) the checkpoint.planeEnd later
-            }
-
-            // Copy values from one checkpoint to the previous one
-            // NOTE: start at second index '1' since we refer to the previous checkpoint (i-1)
-            for (int i = 1; i < checkpoints.Length; i++)
-            {
-                var prevCheckpoint = checkpoints[i - 1];
-                var currCheckpoint = checkpoints[i];
-                // Copy over values
-                prevCheckpoint.CurveTimeEnd = currCheckpoint.CurveTimeStart;
-                prevCheckpoint.PlaneEnd = currCheckpoint.PlaneStart.GetMirror();
-            }
-
-            // Index for last checkpoint
-            var lastIndex = checkpoints.Length - 1;
-
-            // Complete missing information in last checkpoint of segment
-            {
-                var lastCheckpoint = checkpoints[lastIndex];
-                lastCheckpoint.CurveTimeEnd = curveMaxTime;
-
-                var animMtx = animationTRS.EvaluateMatrix(curveMaxTime);
-                var mtx = baseMtx * animMtx;
-
-                var origin = mtx.GetPosition();
-                var rotation = mtx.rotation;
-                var normal = rotation * backward;
-
-                var endPlane = new Plane() { origin = origin, normal = normal };
-                endPlane.ComputeDotProduct();
-
-                lastCheckpoint.PlaneEnd = endPlane;
-            }
-
-            // Set segment in/out connections
-            var connectToTrackIn = trackSegment.IsContinuousFromPrevious();
-            var connectToTrackOut = trackSegment.IsContinuousToNext();
-            checkpoints[0].ConnectToTrackIn = connectToTrackIn;
-            checkpoints[lastIndex].ConnectToTrackOut = connectToTrackOut;
-
-            // That's all!
-            return checkpoints;
-        }
-
-
-        /// <summary>
-        /// The difference: if key time is embedded distance, sample time = sample distance
-        /// </summary>
-        /// <param name="trackSegment">The track segment to generate checkpoints for.</param>
-        /// <param name="convertCoordinateSpace">Coordinate space is for game.</param>
-        /// <returns></returns>
-        public static Checkpoint[] CreateCheckpoints2(GfzTrackSegment trackSegment, bool convertCoordinateSpace)
-        {
-            // Set up info about checkpoints
-            var segmentLength = trackSegment.GetSegmentLength();
-            var numCheckpoints = (int)math.ceil(segmentLength / trackSegment.MetersPerCheckpoint);
-            var checkpoints = new Checkpoint[numCheckpoints];
-
-            // Get direction vectors
-            float3 forward = new float3(0, 0, -1);
-            float3 backward = -forward;
-
-            // Get the AnimationCurveTransform appropriate for requester.
-            // Use GFZ space (game) if 'true'
-            // Use Unity space if 'false'
-            var animationTRS = convertCoordinateSpace
-                ? trackSegment.AnimationCurveTRS.GetDeepCopyGfzCoordSpaceTRS()
+                ? trackSegment.AnimationCurveTRS.GetInGfzCoordinateSpace()
                 : trackSegment.AnimationCurveTRS;
 
             // Get matrices, time

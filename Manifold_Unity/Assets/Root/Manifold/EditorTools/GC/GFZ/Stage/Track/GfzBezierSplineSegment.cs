@@ -451,8 +451,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 {
                     tangentMode = BezierControlPointMode.Mirrored,
                     position = new Vector3(0f, 0f, 0f),
-                    inTangent = new Vector3(0f, 0f, 100f),
-                    outTangent = new Vector3(0f, 0f, -100f),
+                    inTangent = new Vector3(0f, 0f, -100f),
+                    outTangent = new Vector3(0f, 0f, 100f),
                     width = 64f,
                     height = 1f,
                     roll = 0f,
@@ -462,9 +462,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 new BezierPoint()
                 {
                     tangentMode = BezierControlPointMode.Mirrored,
-                    position = new Vector3(0f, 0f, -400f),
-                    inTangent = new Vector3(0f, 0f, -300f),
-                    outTangent = new Vector3(0f, 0f, -500f),
+                    position = new Vector3(0f, 0f, 400f),
+                    inTangent = new Vector3(0f, 0f, 300f),
+                    outTangent = new Vector3(0f, 0f, 500f),
                     width = 64f,
                     height = 1f,
                     roll = 0f,
