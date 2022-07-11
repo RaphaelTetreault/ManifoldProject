@@ -24,15 +24,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         [SerializeField, HideInInspector]
         private bool isLoop = false;
 
-        [SerializeField, HideInInspector]
-        private AnimationCurve widthsCurve = new();
-
-        [SerializeField, HideInInspector]
-        private AnimationCurve heightsCurve = new();
-
-        [SerializeField, HideInInspector]
-        private AnimationCurve rollsCurve = new();
-
         //
         [SerializeField]
         private bool viewDirection = true;
@@ -58,11 +49,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         private float outterLineThickness = 2f;
 
 
-        // TODO
-        //      add widths => animation curve
-        //      add rolls  => animation curve
-        //      add option for loop? Extend array by 1, copy first into last, last into first
-
         public bool IsLoop
         {
             get => isLoop;
@@ -73,25 +59,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             get => viewDirection;
             set => viewDirection = value;
         }
-
-        public AnimationCurve WidthsCurve
-        {
-            get => widthsCurve;
-            set => widthsCurve = value;
-        }
-
-        public AnimationCurve HeightsCurve
-        {
-            get => heightsCurve;
-            set => heightsCurve = value;
-        }
-
-        public AnimationCurve RollsCurve
-        {
-            get => rollsCurve;
-            set => rollsCurve = value;
-        }
-
 
         public int PointsCount
         {
@@ -137,21 +104,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 {
                     time = i,
                     value = points[i].width,
-                };
-                curve.AddKey(key);
-            }
-            return curve;
-        }
-
-        public AnimationCurve CreateHeightsCurve()
-        {
-            var curve = new AnimationCurve();
-            for (int i = 0; i < points.Count; i++)
-            {
-                var key = new Keyframe()
-                {
-                    time = i,
-                    value = points[i].height,
                 };
                 curve.AddKey(key);
             }
@@ -272,11 +224,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         public Quaternion GetOrientation(float time, int index)
         {
             var xy = Quaternion.LookRotation(GetDirection(time, index));
-            var z = Quaternion.Euler(0, 0, rollsCurve.Evaluate(index + time));
-            var orientation = xy * z;
+            return xy;
+
+            //var z = Quaternion.Euler(0, 0, 0);
+            //var orientation = xy * z;
             // Re-orient as per transform orientation
-            orientation = orientation * transform.rotation;
-            return orientation;
+            //orientation = orientation * transform.rotation;
+            //return orientation;
         }
 
         public Quaternion GetOrientation(float time01)
@@ -288,9 +242,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public Vector3 GetScale(float time, int index)
         {
-            var width = widthsCurve.Evaluate(index + time);
-            var height = heightsCurve.Evaluate(index + time);
-            var scale = new Vector3(width, height, 1f);
+            var width = 0f;
+            //var width = widthsCurve.Evaluate(index + time);
+            //var height = heightsCurve.Evaluate(index + time);
+            var scale = new Vector3(width, 1f, 1f);
             return scale;
         }
 
@@ -454,7 +409,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     inTangent = new Vector3(0f, 0f, -100f),
                     outTangent = new Vector3(0f, 0f, 100f),
                     width = 64f,
-                    height = 1f,
                     roll = 0f,
                 },
 
@@ -466,7 +420,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     inTangent = new Vector3(0f, 0f, 300f),
                     outTangent = new Vector3(0f, 0f, 500f),
                     width = 64f,
-                    height = 1f,
                     roll = 0f,
                 },
             };
@@ -477,8 +430,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public override AnimationCurveTRS GenerateAnimationCurveTRS()
         {
-            //return ComputeMultiSampleV2();
-            return ComputeMultiSample();
+            return CreateTRS();
         }
 
         public float3 EvaluatePosition(double time)
@@ -511,13 +463,14 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return currAngle;
         }
 
-        /// <summary>
-        /// Iteration 1 curve sampling
-        /// </summary>
-        /// <returns></returns>
-        public AnimationCurveTRS ComputeMultiSample(int samplesBetweenControlsPoints = 32)
+
+        public AnimationCurveTRS CreateTRS(int samplesBetweenControlsPoints = 32)
         {
             var trs = new AnimationCurveTRS();
+
+            // Entire curve approximate length to within 100m
+            double entireCurveApproximateLength = CurveLengthUtility.GetDistanceBetweenRepeated(this, 0, 1, 100, 2, 1);
+            int nApproximationIterations = (int)(entireCurveApproximateLength * (1.0 / 50.0));
 
             // Compute curve lengths between each bezier control point
             int numCurves = points.Count - 1;
@@ -527,17 +480,15 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             {
                 double timeStart = (double)(i + 0) / numCurves;
                 double timeEnd = (double)(i + 1) / numCurves;
-                double distance = CurveLengthUtility.GetDistanceBetweenRepeated(this, timeStart, timeEnd);
+                //double distance = CurveLengthUtility.GetDistanceBetweenRepeated(this, timeStart, timeEnd);
+                double distance = BezierApproximateDistance(this, timeStart, timeEnd, nApproximationIterations);
                 distances[i] = distance;
                 totalDistance += distance;
                 //Debug.Log($"Distance {i}: {distance}");
             }
             //Debug.Log("Total distance: " + totalDistance);
 
-            //var mirrorXOffsetRotationY = new Vector3(0, 180, 0);
-            var mirrorXOffsetRotationY = new Vector3(0, 0, 0);
-            var previousRotation = GetOrientation(0, 0).eulerAngles + mirrorXOffsetRotationY;
-
+            var previousRotation = GetOrientation(0, 0).eulerAngles;
             double currDistance = 0;
             for (int i = 0; i < numCurves; i++)
             {
@@ -547,13 +498,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 {
                     var t = (float)(s + 0) / samplesBetweenControlsPoints;
                     var position = GetPosition(t, i);
-                    var scale = GetScale(t, i);
-                    var rotation = GetOrientation(t, i).eulerAngles + mirrorXOffsetRotationY;
+                    var rotation = GetOrientation(t, i).eulerAngles;
                     rotation = CleanRotation(previousRotation, rotation);
                     previousRotation = rotation;
-
-                    var time = currDistance + (t * currLength);
-                    trs.AddKeys((float)time, position, rotation, scale);
+                    var time = (float)(currDistance + (t * currLength));
+                    trs.Position.AddKeys(time, position);
+                    trs.Rotation.AddKeys(time, rotation);
                 }
 
                 currDistance += distances[i];
@@ -564,14 +514,114 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 float t = (float)totalDistance;
                 int i = numCurves - 1;
                 var position = GetPosition(t, i);
-                var scale = GetScale(t, i);
-                var rotation = GetOrientation(t, i).eulerAngles + mirrorXOffsetRotationY;
+                var rotation = GetOrientation(t, i).eulerAngles;
                 rotation = CleanRotation(previousRotation, rotation);
-                trs.AddKeys(t, position, rotation, scale);
+                trs.Position.AddKeys(t, position);
+                trs.Rotation.AddKeys(t, rotation);
             }
+
+            // Assign animation curves for things we don't need to generate/sample/guess
+            {
+                var points = this.points.ToArray();
+                // ROTATION.Z
+                float[] rolls = GetRolls(points);
+                trs.Rotation.z = CreateCurve(rolls, distances);
+                // SCALE.X
+                float[] widths= GetWidths(points);
+                trs.Scale.x = CreateCurve(widths, distances);
+                // SCALE.Y and SCALE.Z, const scales of 1f
+                var key0 = new Keyframe(0, 1f);
+                var key1 = new Keyframe((float)totalDistance, 1f);
+                trs.Scale.y = new AnimationCurve(key0, key1);
+                trs.Scale.z = new AnimationCurve(key0, key1);
+            }
+
 
             trs.CleanDuplicateKeys();
             return trs;
+        }
+
+        public double BezierApproximateDistance(IPositionEvaluable evaluable, double timeStart, double timeEnd, int nApproximationIterations)
+        {
+            // TimeDelta: difference between start and end times
+            double timeDelta = timeEnd - timeStart;
+            // Total distance that has been approximated
+            double approximateDistance = 0f;
+            // How many times we should sample curve.
+            double inverseNIterations = 1.0 / nApproximationIterations;
+
+            // Approximate (segment of) curve length to greater degree.
+            // Since this is a bezier, it means points may not be evenly spaced out.
+            double approximateDistanceTotal = 0;
+            double[] approximateDistances = new double[nApproximationIterations];
+            for (int i = 0; i < nApproximationIterations; i++)
+            {
+                var distance1 = CurveLengthUtility.GetDistanceBetweenRepeated(evaluable, timeStart, timeEnd, 10f, 2, 1);
+                approximateDistances[i] = distance1;
+                approximateDistanceTotal += distance1;
+            }
+            // Figure out how long each segment should be if they were equally spaced
+            double distancePerSegment = approximateDistanceTotal / nApproximationIterations;
+
+            // Sample distance using uneven lengths to compensate and compute a more accurate distance
+            for (int i = 0; i < nApproximationIterations; i++)
+            {
+                // throttle sample rate to distance per segment
+                double sampleNormalizer = distancePerSegment / approximateDistances[i];
+
+                // TODO: pretty this is wrong since smaple normalizer is not corrected between iterations?
+                double currDistance = timeStart + (timeDelta * inverseNIterations * sampleNormalizer * (i + 0));
+                double nextDistance = timeStart + (timeDelta * inverseNIterations * sampleNormalizer * (i + 1));
+
+                // Compute the distance between these 2 points
+                float3 currPosition = evaluable.EvaluatePosition(currDistance);
+                float3 nextPosition = evaluable.EvaluatePosition(nextDistance);
+
+                // Get distance between 2 points, store delta
+                double delta = math.distance(currPosition, nextPosition);
+                approximateDistance += delta;
+            }
+
+            return approximateDistance;
+        }
+
+
+        public AnimationCurve CreateCurve(float[] values, double[] distances)
+        {
+            float time = 0f;
+            var curve = new AnimationCurve();
+            for (int i = 0; i <= distances.Length; i++)
+            {
+                // Create animation curve with time value only
+                var key = new Keyframe(time, values[i], 0, 0);
+                curve.AddKey(key);
+
+                //
+                if (i >= distances.Length)
+                    break;
+
+                //
+                time += (float)distances[i];
+            }
+            return curve;
+        }
+        public float[] GetWidths(BezierPoint[] bezierPoints)
+        {
+            var widths = new float[bezierPoints.Length];
+            for (int i = 0; i < bezierPoints.Length; i++)
+            {
+                widths[i] = bezierPoints[i].width;
+            }
+            return widths;
+        }
+        public float[] GetRolls(BezierPoint[] bezierPoints)
+        {
+            var rolls = new float[bezierPoints.Length];
+            for (int i = 0; i < bezierPoints.Length; i++)
+            {
+                rolls[i] = bezierPoints[i].roll;
+            }
+            return rolls;
         }
 
     }

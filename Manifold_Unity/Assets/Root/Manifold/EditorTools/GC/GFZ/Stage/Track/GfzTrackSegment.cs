@@ -19,7 +19,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         [field: Header("Track Curves")]
         [field: SerializeField] public SegmentPathGenerator SegmentPathGenerator { get; private set; }
         [field: SerializeField] public AnimationCurveTRS AnimationCurveTRS { get; private set; } = new();
-        [field: SerializeField] public HierarchichalAnimationCurveTRS TrsHierarchy { get; private set; } = new();
 
 
 

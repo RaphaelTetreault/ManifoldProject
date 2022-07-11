@@ -237,7 +237,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         private void CleanDuplicateKeys(AnimationCurve animationCurve)
         {
-            const float valueDelta = 1e-5f;
+            const float valueDelta = 1e-4f;
             const float tangentDelta = 5e-3f;
             var keysToRemove = new List<int>();
             int sameKeyValuesCount = 0;

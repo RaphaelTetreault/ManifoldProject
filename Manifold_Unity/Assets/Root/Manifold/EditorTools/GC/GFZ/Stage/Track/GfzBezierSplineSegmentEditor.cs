@@ -33,7 +33,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         private bool settingsTabFoldout = false;
 
         SerializedProperty widthsCurve;
-        SerializedProperty heightsCurve;
         SerializedProperty rollsCurve;
         SerializedProperty viewDirection;
         SerializedProperty viewDirectionArrowsPerCurve;
@@ -45,7 +44,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         void OnEnable()
         {
             widthsCurve = serializedObject.FindProperty(nameof(widthsCurve));
-            heightsCurve = serializedObject.FindProperty(nameof(heightsCurve));
             rollsCurve = serializedObject.FindProperty(nameof(rollsCurve));
 
             viewDirection = serializedObject.FindProperty(nameof(viewDirection));
@@ -125,7 +123,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             // Some properties are modified via PropertyField. Set up for those values.
             serializedObject.Update();
 
-
             // Default Script field for MonoBehaviour components
             GuiSimple.DefaultScript(spline);
 
@@ -160,54 +157,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                         EditorUtility.SetDirty(spline);
                     }
                 }
-
-                // WIDTH
-                GUILayout.BeginHorizontal();
-                {
-                    // Animation curve
-                    EditorGUILayout.PropertyField(widthsCurve);
-                    // Button & undo handling
-                    if (GUILayout.Button("Reset Widths", buttonWidth))
-                    {
-                        string undoMessage = $"Reset {nameof(spline.WidthsCurve)} to bezier curve values.";
-                        Undo.RecordObject(spline, undoMessage);
-                        spline.WidthsCurve = spline.CreateWidthsCurve();
-                        EditorUtility.SetDirty(spline);
-                    }
-                }
-                GUILayout.EndHorizontal();
-
-                // HEIGHT
-                GUILayout.BeginHorizontal();
-                {
-                    // Animation curve
-                    EditorGUILayout.PropertyField(heightsCurve);
-                    // Button & undo handling
-                    if (GUILayout.Button("Reset Heights", buttonWidth))
-                    {
-                        string undoMessage = $"Reset {nameof(spline.HeightsCurve)} to bezier curve values.";
-                        Undo.RecordObject(spline, undoMessage);
-                        spline.HeightsCurve = spline.CreateHeightsCurve();
-                        EditorUtility.SetDirty(spline);
-                    }
-                }
-                GUILayout.EndHorizontal();
-
-                // ROLL
-                GUILayout.BeginHorizontal();
-                {
-                    // Animation curve
-                    EditorGUILayout.PropertyField(rollsCurve);
-                    // Button & undo handling
-                    if (GUILayout.Button("Reset Rolls", buttonWidth))
-                    {
-                        string undoMessage = $"Reset {nameof(spline.RollsCurve)} to bezier curve values.";
-                        Undo.RecordObject(spline, undoMessage);
-                        spline.RollsCurve = spline.CreateRollsCurve();
-                        EditorUtility.SetDirty(spline);
-                    }
-                }
-                GUILayout.EndHorizontal();
             }
             EditorGUILayout.Space();
 
@@ -329,26 +278,18 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 spline.SetBezierPoint(index, bezier);
                 EditorUtility.SetDirty(spline);
             }
-
-            // HEIGHT
             EditorGUI.BeginChangeCheck();
-            bezier.height = GuiSimple.Float(nameof(bezier.height), bezier.height);
-            if (EditorGUI.EndChangeCheck())
-            {
-                Undo.RecordObject(spline, $"Set bézier point [{selectedIndex}] height");
-                spline.SetBezierPoint(index, bezier);
-                EditorUtility.SetDirty(spline);
-            }
 
             // ROLL
             EditorGUI.BeginChangeCheck();
             bezier.roll = GuiSimple.Float(nameof(bezier.roll), bezier.roll);
             if (EditorGUI.EndChangeCheck())
             {
-                Undo.RecordObject(spline, $"Set bézier point [{selectedIndex}] roll");
+                Undo.RecordObject(spline, $"Set bézier point [{selectedIndex}] roll tangent mode");
                 spline.SetBezierPoint(index, bezier);
                 EditorUtility.SetDirty(spline);
             }
+            EditorGUI.BeginChangeCheck();
         }
 
         private void DrawIndexToolbar()
