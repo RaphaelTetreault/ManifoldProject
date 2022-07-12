@@ -167,13 +167,14 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 var endpointB = new Vector3(+0.5f, +0.10f, 0);
                 var color0 = new Color32(96, 96, 96, 255); // dark grey
                 var normal = Vector3.up;
-                var widthDividers = CreateTristrips(matrices01, endpointA, endpointB, 1, color0, normal, 0, true);
+                var widthDividers = CreateTristrips(matrices01, endpointA, endpointB, nTristrips, color0, normal, 0, true);
                 allTriStrips.AddRange(widthDividers);
             }
 
             // REMOVE SCALE.X
             animationCurveTRS.Scale.x = new UnityEngine.AnimationCurve(new Keyframe(0, 1), new Keyframe(maxTime, 1));
             matrices = GenerateMatrixIntervals(animationCurveTRS, staticMatrix, maxStep);
+
             // center line
             {
                 var endpointA = new Vector3(-0.5f, +0.15f, 0);

@@ -289,7 +289,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             newBezier.inTangent = newBezier.position - direction * kNewTangentLength;
             newBezier.outTangent = newBezier.position + direction * kNewTangentLength;
             newBezier.width = lastBezier.width;
+            newBezier.widthTangentMode = lastBezier.widthTangentMode;
             newBezier.roll = lastBezier.roll;
+            newBezier.rollTangentMode = lastBezier.rollTangentMode;
 
             points.Insert(lastIndex + 1, newBezier);
             CallOnEdited();
@@ -309,7 +311,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             newBezier.inTangent = newBezier.position - direction * kNewTangentLength;
             newBezier.outTangent = newBezier.position + direction * kNewTangentLength;
             newBezier.width = firstBezier.width;
+            newBezier.widthTangentMode = firstBezier.widthTangentMode;
             newBezier.roll = firstBezier.roll;
+            newBezier.rollTangentMode = firstBezier.rollTangentMode;
 
             points.Insert(0, newBezier);
             CallOnEdited();
@@ -333,7 +337,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             bezier.outTangent = bezier.position + direction;
             bezier.tangentMode = BezierControlPointMode.Mirrored;
             bezier.width = (bezier0.width + bezier1.width) / 2f;
+            bezier.widthTangentMode = AnimationUtility.TangentMode.Free;
             bezier.roll = (bezier0.roll + bezier1.roll) / 2f;
+            bezier.rollTangentMode = AnimationUtility.TangentMode.Free;
 
             points.Insert(index + 1, bezier);
             CallOnEdited();
@@ -409,7 +415,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     inTangent = new Vector3(0f, 0f, -100f),
                     outTangent = new Vector3(0f, 0f, 100f),
                     width = 64f,
+                    widthTangentMode = AnimationUtility.TangentMode.Free,
+                    height = 1f,
+                    heightTangentMode = AnimationUtility.TangentMode.Free,
                     roll = 0f,
+                    rollTangentMode = AnimationUtility.TangentMode.Free,
                 },
 
                 // First point which can form a curve with the start
@@ -420,7 +430,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     inTangent = new Vector3(0f, 0f, 300f),
                     outTangent = new Vector3(0f, 0f, 500f),
                     width = 64f,
+                    widthTangentMode = AnimationUtility.TangentMode.Free,
+                    height = 1f,
+                    heightTangentMode = AnimationUtility.TangentMode.Free,
                     roll = 0f,
+                    rollTangentMode = AnimationUtility.TangentMode.Free,
                 },
             };
 
@@ -524,12 +538,15 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             {
                 var points = this.points.ToArray();
                 // ROTATION.Z
-                float[] rolls = GetRolls(points);
-                trs.Rotation.z = CreateCurve(rolls, distances);
+                (float[] rolls, var rollModes) = GetRolls(points);
+                trs.Rotation.z = CreateCurve(rolls, rollModes, distances);
                 // SCALE.X
-                float[] widths= GetWidths(points);
-                trs.Scale.x = CreateCurve(widths, distances);
-                // SCALE.Y and SCALE.Z, const scales of 1f
+                (float[] widths, var widthModes) = GetWidths(points);
+                trs.Scale.x = CreateCurve(widths, widthModes, distances);
+                // SCALE.Y
+                (float[] heights, var heightModes) = GetHeights(points);
+                trs.Scale.y = CreateCurve(heights, heightModes, distances);
+                // SCALE.Z, const scale of 1f
                 var key0 = new Keyframe(0, 1f);
                 var key1 = new Keyframe((float)totalDistance, 1f);
                 trs.Scale.y = new AnimationCurve(key0, key1);
@@ -586,7 +603,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         }
 
 
-        public AnimationCurve CreateCurve(float[] values, double[] distances)
+        public AnimationCurve CreateCurve(float[] values, AnimationUtility.TangentMode[] modes, double[] distances)
         {
             float time = 0f;
             var curve = new AnimationCurve();
@@ -603,25 +620,51 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 //
                 time += (float)distances[i];
             }
+
+            // Set tange mode for all keys.
+            // GFZ has tangent modes between keys, not on left/right of keys.
+            // The below assigns it as so.
+            for (int i = 0; i < curve.length - 1; i++)
+            {
+                var mode = modes[i];
+                AnimationUtility.SetKeyRightTangentMode(curve, i + 0, mode);
+                AnimationUtility.SetKeyLeftTangentMode(curve, i + 1, mode);
+            }
+
             return curve;
         }
-        public float[] GetWidths(BezierPoint[] bezierPoints)
+        public (float[] widths, AnimationUtility.TangentMode[] widthModes) GetWidths(BezierPoint[] bezierPoints)
         {
             var widths = new float[bezierPoints.Length];
+            var widthModes = new AnimationUtility.TangentMode[bezierPoints.Length];
             for (int i = 0; i < bezierPoints.Length; i++)
             {
                 widths[i] = bezierPoints[i].width;
+                widthModes[i] = bezierPoints[i].widthTangentMode;
             }
-            return widths;
+            return (widths, widthModes);
         }
-        public float[] GetRolls(BezierPoint[] bezierPoints)
+        public (float[] heights, AnimationUtility.TangentMode[] heightModes) GetHeights(BezierPoint[] bezierPoints)
+        {
+            var heights = new float[bezierPoints.Length];
+            var heightModes = new AnimationUtility.TangentMode[bezierPoints.Length];
+            for (int i = 0; i < bezierPoints.Length; i++)
+            {
+                heights[i] = bezierPoints[i].height;
+                heightModes[i] = bezierPoints[i].heightTangentMode;
+            }
+            return (heights, heightModes);
+        }
+        public (float[] rolls, AnimationUtility.TangentMode[] rollModes) GetRolls(BezierPoint[] bezierPoints)
         {
             var rolls = new float[bezierPoints.Length];
+            var rollModes = new AnimationUtility.TangentMode[bezierPoints.Length];
             for (int i = 0; i < bezierPoints.Length; i++)
             {
                 rolls[i] = bezierPoints[i].roll;
+                rollModes[i] = bezierPoints[i].rollTangentMode;
             }
-            return rolls;
+            return (rolls, rollModes);
         }
 
     }

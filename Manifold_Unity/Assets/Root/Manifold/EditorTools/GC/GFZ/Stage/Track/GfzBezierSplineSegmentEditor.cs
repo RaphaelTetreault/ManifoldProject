@@ -270,6 +270,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
 
             // WIDTH
+            EditorGUILayout.Space();
+            GuiSimple.Label("Scale.X", EditorStyles.boldLabel);
+            EditorGUI.indentLevel++;
             EditorGUI.BeginChangeCheck();
             bezier.width = GuiSimple.Float(nameof(bezier.width), bezier.width);
             if (EditorGUI.EndChangeCheck())
@@ -279,8 +282,41 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 EditorUtility.SetDirty(spline);
             }
             EditorGUI.BeginChangeCheck();
+            bezier.widthTangentMode = GuiSimple.EnumPopup(nameof(bezier.widthTangentMode), bezier.widthTangentMode);
+            if (EditorGUI.EndChangeCheck())
+            {
+                Undo.RecordObject(spline, $"Set bézier point [{selectedIndex}] width tangent mode");
+                spline.SetBezierPoint(index, bezier);
+                EditorUtility.SetDirty(spline);
+            }
+            EditorGUI.indentLevel--;
+
+            // HEIGHT
+            EditorGUILayout.Space();
+            GuiSimple.Label("Scale.Y", EditorStyles.boldLabel);
+            EditorGUI.indentLevel++;
+            EditorGUI.BeginChangeCheck();
+            bezier.height = GuiSimple.Float(nameof(bezier.height), bezier.height);
+            if (EditorGUI.EndChangeCheck())
+            {
+                Undo.RecordObject(spline, $"Set bézier point [{selectedIndex}] height");
+                spline.SetBezierPoint(index, bezier);
+                EditorUtility.SetDirty(spline);
+            }
+            EditorGUI.BeginChangeCheck();
+            bezier.heightTangentMode = GuiSimple.EnumPopup(nameof(bezier.heightTangentMode), bezier.heightTangentMode);
+            if (EditorGUI.EndChangeCheck())
+            {
+                Undo.RecordObject(spline, $"Set bézier point [{selectedIndex}] height tangent mode");
+                spline.SetBezierPoint(index, bezier);
+                EditorUtility.SetDirty(spline);
+            }
+            EditorGUI.indentLevel--;
 
             // ROLL
+            EditorGUILayout.Space();
+            GuiSimple.Label("Rotation.Z", EditorStyles.boldLabel);
+            EditorGUI.indentLevel++;
             EditorGUI.BeginChangeCheck();
             bezier.roll = GuiSimple.Float(nameof(bezier.roll), bezier.roll);
             if (EditorGUI.EndChangeCheck())
@@ -290,6 +326,14 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 EditorUtility.SetDirty(spline);
             }
             EditorGUI.BeginChangeCheck();
+            bezier.rollTangentMode = GuiSimple.EnumPopup(nameof(bezier.rollTangentMode), bezier.rollTangentMode);
+            if (EditorGUI.EndChangeCheck())
+            {
+                Undo.RecordObject(spline, $"Set bézier point [{selectedIndex}] roll tangent mode");
+                spline.SetBezierPoint(index, bezier);
+                EditorUtility.SetDirty(spline);
+            }
+            EditorGUI.indentLevel--;
         }
 
         private void DrawIndexToolbar()
@@ -326,11 +370,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
                 // Set index if valid. If invalid row, we have result = -1, so this doesn't run.
                 bool isValidIndex = result >= 0 && result <= spline.LoopCurveCount;
-                if (isValidIndex)
+                bool valueChanged = index != result;
+                if (isValidIndex && valueChanged)
                 {
                     selectedIndex = result;
                     EditorUtility.SetDirty(target);
-                    // TODO: deselect
+                    GUI.FocusControl(null);
                 }
             }
         }
@@ -348,7 +393,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             var inTangentPosition = root.TransformPoint(bezierPoint.inTangent);
             var outTangentPosition = root.TransformPoint(bezierPoint.outTangent);
 
-            //
+            // 
             string undoMessage = $"Move bézier point [{index}] position";
             Undo.RecordObject(spline, undoMessage);
             bezierPoint.position = root.InverseTransformPoint(newPosition);
