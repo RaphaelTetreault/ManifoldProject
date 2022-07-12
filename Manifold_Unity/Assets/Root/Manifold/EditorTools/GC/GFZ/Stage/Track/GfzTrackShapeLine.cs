@@ -17,5 +17,22 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         [field: SerializeField] public bool DoGenMesh { get; protected set; }
         [field: SerializeField, Min(1)] public int WidthDivisions { get; protected set; } = 4;
         [field: SerializeField, Min(1f)] public float LengthDistance { get; protected set; } = 10f;
+
+        protected override void OnValidate()
+        {
+            base.OnValidate();
+
+            if (MeshRenderer == null)
+                MeshRenderer = GetComponent<MeshRenderer>();
+
+            if (MeshFilter == null)
+                MeshFilter = GetComponent<MeshFilter>();
+
+            if (DoGenMesh)
+            {
+                GenerateMeshes();
+                DoGenMesh = false;
+            }
+        }
     }
 }

@@ -66,18 +66,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         protected override void OnValidate()
         {
             base.OnValidate();
-
-            if (DoGenMesh)
-            {
-                GenerateMeshes();
-                DoGenMesh = false;
-            }
-
-            if (MeshRenderer == null)
-                MeshRenderer = GetComponent<MeshRenderer>();
-
-            if (MeshFilter == null)
-                MeshFilter = GetComponent<MeshFilter>();
         }
 
     }

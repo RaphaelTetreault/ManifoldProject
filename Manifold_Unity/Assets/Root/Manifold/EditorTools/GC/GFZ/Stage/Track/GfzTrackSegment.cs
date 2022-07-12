@@ -24,9 +24,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public float GetSegmentLength()
         {
-            var maxTime = AnimationCurveTRS.GetMaxTime();
-            var distance = maxTime;
-            //var distance = AnimationCurveTRS.GetDistanceBetweenRepeated(0, maxTime);
+            var distance = AnimationCurveTRS.GetMaxTime();
             if (distance <= 0f)
             {
                 var msg = "Distance is 0 which is invalid. TRS animation curves must define path.";
@@ -68,7 +66,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
             return distanceOffset;
         }
-
 
         public EmbeddedTrackPropertyArea[] GetEmbededPropertyAreas()
         {

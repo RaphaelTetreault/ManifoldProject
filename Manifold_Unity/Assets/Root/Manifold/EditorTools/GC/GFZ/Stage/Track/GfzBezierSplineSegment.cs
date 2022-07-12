@@ -483,8 +483,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             var trs = new AnimationCurveTRS();
 
             // Entire curve approximate length to within 100m
-            double entireCurveApproximateLength = CurveLengthUtility.GetDistanceBetweenRepeated(this, 0, 1, 100, 2, 1);
-            int nApproximationIterations = (int)(entireCurveApproximateLength * (1.0 / 50.0));
+            const int nStartIterDistance = 50;
+            double entireCurveApproximateLength = CurveLengthUtility.GetDistanceBetweenRepeated(this, 0, 1, nStartIterDistance, 2, 1);
+            int nApproximationIterations = (int)(entireCurveApproximateLength * (1.0 / nStartIterDistance / 2.0));
 
             // Compute curve lengths between each bezier control point
             int numCurves = points.Count - 1;
@@ -567,28 +568,28 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             // How many times we should sample curve.
             double inverseNIterations = 1.0 / nApproximationIterations;
 
-            // Approximate (segment of) curve length to greater degree.
-            // Since this is a bezier, it means points may not be evenly spaced out.
-            double approximateDistanceTotal = 0;
-            double[] approximateDistances = new double[nApproximationIterations];
-            for (int i = 0; i < nApproximationIterations; i++)
-            {
-                var distance1 = CurveLengthUtility.GetDistanceBetweenRepeated(evaluable, timeStart, timeEnd, 10f, 2, 1);
-                approximateDistances[i] = distance1;
-                approximateDistanceTotal += distance1;
-            }
-            // Figure out how long each segment should be if they were equally spaced
-            double distancePerSegment = approximateDistanceTotal / nApproximationIterations;
+            //// Approximate (segment of) curve length to greater degree.
+            //// Since this is a bezier, it means points may not be evenly spaced out.
+            //double approximateDistanceTotal = 0;
+            //double[] approximateDistances = new double[nApproximationIterations];
+            //for (int i = 0; i < nApproximationIterations; i++)
+            //{
+            //    var distance1 = CurveLengthUtility.GetDistanceBetweenRepeated(evaluable, timeStart, timeEnd, 10f, 2, 1);
+            //    approximateDistances[i] = distance1;
+            //    approximateDistanceTotal += distance1;
+            //}
+            //// Figure out how long each segment should be if they were equally spaced
+            //double distancePerSegment = approximateDistanceTotal / nApproximationIterations;
 
             // Sample distance using uneven lengths to compensate and compute a more accurate distance
             for (int i = 0; i < nApproximationIterations; i++)
             {
                 // throttle sample rate to distance per segment
-                double sampleNormalizer = distancePerSegment / approximateDistances[i];
+                //double sampleNormalizer = distancePerSegment / approximateDistances[i];
 
                 // TODO: pretty this is wrong since smaple normalizer is not corrected between iterations?
-                double currDistance = timeStart + (timeDelta * inverseNIterations * sampleNormalizer * (i + 0));
-                double nextDistance = timeStart + (timeDelta * inverseNIterations * sampleNormalizer * (i + 1));
+                double currDistance = timeStart + (timeDelta * inverseNIterations *  (i + 0));
+                double nextDistance = timeStart + (timeDelta * inverseNIterations *  (i + 1));
 
                 // Compute the distance between these 2 points
                 float3 currPosition = evaluable.EvaluatePosition(currDistance);

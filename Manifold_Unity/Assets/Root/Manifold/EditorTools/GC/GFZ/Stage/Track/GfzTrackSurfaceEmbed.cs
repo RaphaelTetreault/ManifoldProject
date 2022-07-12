@@ -21,14 +21,15 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         [field: SerializeField] public SurfaceEmbedType Type { get; private set; } = SurfaceEmbedType.Recover;
         [field: SerializeField, Range(0f, 1f)] public float From { get; private set; } = 0f;
         [field: SerializeField, Range(0f, 1f)] public float To { get; private set; } = 1f;
-        [field: SerializeField] public UnityEngine.AnimationCurve Width { get; private set; }
-        [field: SerializeField] public UnityEngine.AnimationCurve Offset { get; private set; }
+        [field: SerializeField] public UnityEngine.AnimationCurve Width { get; private set; } = new UnityEngine.AnimationCurve(new(0, 0.5f), new(1, 0.5f));
+        [field: SerializeField] public UnityEngine.AnimationCurve Offset { get; private set; } = new UnityEngine.AnimationCurve(new(0, 0), new(1, 0));
 
 
         public override Mesh[] GenerateMeshes()
         {
+            var hacTRS = new HierarchichalAnimationCurveTRS();
+
             var animationCurveTRS = AnimationCurveTRS.CreateDeepCopy();
-            animationCurveTRS.Rotation.z = animationCurveTRS.Rotation.z.GetInverted();
             var staticMatrix = transform.localToWorldMatrix;
 
             // THE TODO HERE is proper matrix hierarchy
@@ -74,6 +75,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 default:
                     throw new System.ArgumentException();
             }
+        }
+
+        protected override void OnValidate()
+        {
+            base.OnValidate();
         }
 
     }
