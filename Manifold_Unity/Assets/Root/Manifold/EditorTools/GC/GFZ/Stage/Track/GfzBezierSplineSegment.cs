@@ -678,7 +678,31 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public override GameCube.GFZ.Stage.TrackSegment CreateTrackSegment()
         {
-            throw new NotImplementedException();
+            var trs = animationCurveTRS.CreateGfzCoordinateSpace();
+
+            // TRS 0: has all animation curves EXCEPT rotation Z
+            var trs0 = trs.CreateDeepCopy();
+            trs0.Rotation.z = new AnimationCurve();
+
+            // TRS 1: has ONLY rotation 0
+            var trs1 = new AnimationCurveTRS();
+            trs1.Rotation.z = trs.Rotation.z;
+
+            // Child is basically empty, only storing the rotation.z curve.
+            var trackSegmentChild = new GameCube.GFZ.Stage.TrackSegment();
+            trackSegmentChild.BranchIndex = GetBranchIndex();
+            trackSegmentChild.AnimationCurveTRS = trs1.ToTrackSegment();
+
+            // Parent has all the other values, and has above as child element.
+            var trackSegmentParent = new GameCube.GFZ.Stage.TrackSegment();
+            trackSegmentParent.LocalPosition = transform.localPosition;
+            trackSegmentParent.LocalRotation = transform.localRotation.eulerAngles;
+            trackSegmentParent.LocalScale = transform.localScale;
+            trackSegmentParent.BranchIndex = GetBranchIndex();
+            trackSegmentParent.AnimationCurveTRS = animationCurveTRS.ToTrackSegment();
+            trackSegmentParent.Children = new GameCube.GFZ.Stage.TrackSegment[] { trackSegmentChild };
+
+            return trackSegmentParent;
         }
 
         public override float GetMaxTime()

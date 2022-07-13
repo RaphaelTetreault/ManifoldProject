@@ -23,6 +23,15 @@ namespace Manifold.EditorTools.GC.GFZ
             FileUtility.FileActionLoop(title, filePaths, decompressFile);
         }
 
+        [MenuItem(GfzMenuItems.Lz.DecompressSingleAvLz, priority = GfzMenuItems.Lz.DecompressSingleAvLzPriority)]
+        public static void DecompressSingleAvLz()
+        {
+            var filePath = EditorUtility.OpenFilePanel("Select GFZ Root Folder", "", "");
+            if (string.IsNullOrEmpty(filePath))
+                return;
+            LzUtility.DecompressAvLzToDisk(filePath, true);
+        }
+
         [MenuItem(GfzMenuItems.Lz.CompressSingleFileGx, priority = GfzMenuItems.Lz.CompressSingleFileGxPriority)]
         public static void CompressSingleFileGX()
             => CompressSingleFile("Open File to Compress to LZ (F-Zero GX)", GxGame.FZeroGX);
