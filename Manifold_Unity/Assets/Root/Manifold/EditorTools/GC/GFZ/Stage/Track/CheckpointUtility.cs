@@ -18,7 +18,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             // Length is max key time from root segment
             double segmentLength = hacTRS.GetRoot().GetMaxTime();
             // Get the distance where this segment begins
-            float checkpointDistanceOffset = trackSegment.GetDistanceOffset();
+            var rootNode = trackSegment.GetRoot() as GfzTrackSegmentRootNode;
+            float checkpointDistanceOffset = rootNode.GetDistanceOffset();
             // Set up info about checkpoints
             int numCheckpoints = (int)math.ceil(segmentLength / metersPerCheckpoint);
             var checkpoints = new Checkpoint[numCheckpoints];
@@ -93,8 +94,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
 
             // Get hacTRS of previous and next nodes
-            var fromHacTRS = trackSegment.Prev.CreateHierarchichalAnimationCurveTRS(isGfzCoordinateSpace);
-            var toHacTRS = trackSegment.Next.CreateHierarchichalAnimationCurveTRS(isGfzCoordinateSpace);
+            var fromHacTRS = rootNode.Prev.CreateHierarchichalAnimationCurveTRS(isGfzCoordinateSpace);
+            var toHacTRS = rootNode.Next.CreateHierarchichalAnimationCurveTRS(isGfzCoordinateSpace);
             // Set segment in/out connections
             var connectToTrackIn = IsContinuousBetweenFromTo(fromHacTRS, hacTRS);
             var connectToTrackOut = IsContinuousBetweenFromTo(hacTRS, toHacTRS);

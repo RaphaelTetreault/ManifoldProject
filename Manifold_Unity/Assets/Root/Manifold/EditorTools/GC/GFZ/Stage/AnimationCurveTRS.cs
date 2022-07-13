@@ -312,5 +312,17 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             };
             return deepcopy;
         }
+
+        public static AnimationCurveTRS CreateDefault(float maxTime)
+        {
+            var trs = new AnimationCurveTRS();
+            trs.Position.AddKeys(0, Vector3.zero); 
+            trs.Position.AddKeys(maxTime, Vector3.zero);
+            trs.Rotation.AddKeys(0, Vector3.zero);
+            trs.Rotation.AddKeys(maxTime, Vector3.zero);
+            trs.Scale.AddKeys(0, Vector3.one);
+            trs.Scale.AddKeys(maxTime, Vector3.one);
+            return trs;
+        }
     }
 }

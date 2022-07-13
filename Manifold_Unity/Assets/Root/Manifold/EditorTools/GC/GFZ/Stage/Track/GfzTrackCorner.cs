@@ -42,6 +42,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             throw new System.NotImplementedException();
         }
 
+        public override float GetMaxTime()
+        {
+            throw new System.NotImplementedException();
+        }
+
         public override Mesh CreateMesh()
         {
             throw new System.NotImplementedException();

@@ -32,26 +32,24 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         private bool settingsTabFoldout = false;
 
-        SerializedProperty widthsCurve;
-        SerializedProperty rollsCurve;
         SerializedProperty viewDirection;
         SerializedProperty viewDirectionArrowsPerCurve;
         SerializedProperty viewDirectionScale;
         SerializedProperty bezierHandleSize;
         SerializedProperty splineThickness;
         SerializedProperty outterLineThickness;
+        SerializedProperty animationCurveTRS;
 
         void OnEnable()
         {
-            widthsCurve = serializedObject.FindProperty(nameof(widthsCurve));
-            rollsCurve = serializedObject.FindProperty(nameof(rollsCurve));
-
             viewDirection = serializedObject.FindProperty(nameof(viewDirection));
             viewDirectionArrowsPerCurve = serializedObject.FindProperty(nameof(viewDirectionArrowsPerCurve));
             viewDirectionScale = serializedObject.FindProperty(nameof(viewDirectionScale));
             bezierHandleSize = serializedObject.FindProperty(nameof(bezierHandleSize));
             splineThickness = serializedObject.FindProperty(nameof(splineThickness));
             outterLineThickness = serializedObject.FindProperty(nameof(outterLineThickness));
+
+            animationCurveTRS = serializedObject.FindProperty(nameof(animationCurveTRS));
         }
 
         private void OnSceneGUI()
@@ -140,11 +138,29 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
             EditorGUILayout.Space();
 
+            // Animation Curve
+            GuiSimple.Label("Animation Curve TRS", EditorStyles.boldLabel);
+            {
+                GUI.enabled = false;
+                EditorGUILayout.ObjectField("Prev", spline.Prev, typeof(GfzTrackSegmentRootNode), allowSceneObjects: true);
+                EditorGUILayout.ObjectField("Next", spline.Next, typeof(GfzTrackSegmentRootNode), allowSceneObjects: true);
+                GuiSimple.Float(nameof(spline.SegmentLength), spline.SegmentLength);
+                GUI.enabled = true;
+
+                if (GUILayout.Button($"Generate Animation Curve TRS"))
+                {
+                    Undo.RecordObject(spline, $"Create TRS");
+                    spline.UpdateAnimationCurveTRS();
+                    EditorUtility.SetDirty(spline);
+                }
+
+                EditorGUILayout.PropertyField(animationCurveTRS);
+            }
+            EditorGUILayout.Space();
+
             // GLOBAL SCRIPT FIELDS 
             GuiSimple.Label("Global Fields", EditorStyles.boldLabel);
             {
-                var buttonWidth = GUILayout.Width(96);
-
                 // LOOP
                 {
                     EditorGUI.BeginChangeCheck();

@@ -28,7 +28,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public override AnimationCurveTRS CreateAnimationCurveTRS(bool isGfzCoordinateSpace)
         {
-            throw new System.NotImplementedException();
+            var maxTime = GetMaxTime();
+            var trs = AnimationCurveTRS.CreateDefault(maxTime);
+            return trs;
         }
 
         public override Gcmf CreateGcmf()
@@ -37,6 +39,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             var gcmf = new Gcmf();
 
             throw new System.NotImplementedException();
+        }
+
+        public override float GetMaxTime()
+        {
+            return GetRoot().GetMaxTime();
         }
 
         public override Mesh CreateMesh()

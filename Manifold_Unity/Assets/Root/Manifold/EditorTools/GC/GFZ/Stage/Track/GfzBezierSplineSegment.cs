@@ -11,7 +11,7 @@ using Manifold.Spline;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
-    public class GfzBezierSplineSegment : SegmentPathGenerator,
+    public class GfzBezierSplineSegment : GfzTrackSegmentRootNode,
         IPositionEvaluable
     {
         // TODO: maneage consts better
@@ -48,6 +48,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         [SerializeField]
         private float outterLineThickness = 2f;
 
+        [SerializeField]
+        private AnimationCurveTRS animationCurveTRS = new();
+        public AnimationCurveTRS AnimationCurveTRS => animationCurveTRS;
 
         public bool IsLoop
         {
@@ -82,6 +85,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         public float BezierHandleSize { get => bezierHandleSize; set => bezierHandleSize = value; }
         public float SplineThickness { get => splineThickness; set => splineThickness = value; }
         public float OutterLineThickness { get => outterLineThickness; set => outterLineThickness = value; }
+
+        public override GameCube.GFZ.Stage.TrackSegmentType TrackSegmentType => throw new NotImplementedException();
 
         public BezierPoint GetBezierPoint(int index)
         {
@@ -124,8 +129,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
             return curve;
         }
-
-
 
         public (float time, int index) NormalizedTimeToTimeAndIndex(float t)
         {
@@ -441,12 +444,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             CallOnEdited();
         }
 
-
-        public override AnimationCurveTRS GenerateAnimationCurveTRS()
-        {
-            return CreateTRS();
-        }
-
         public float3 EvaluatePosition(double time)
         {
             return GetPositionRelative((float)time);
@@ -559,6 +556,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return trs;
         }
 
+        public void UpdateAnimationCurveTRS()
+        {
+            animationCurveTRS = CreateTRS();
+            SegmentLength = animationCurveTRS.GetMaxTime();
+        }
+
         public double BezierApproximateDistance(IPositionEvaluable evaluable, double timeStart, double timeEnd, int nApproximationIterations)
         {
             // TimeDelta: difference between start and end times
@@ -668,5 +671,25 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return (rolls, rollModes);
         }
 
+        public override AnimationCurveTRS CreateAnimationCurveTRS(bool isGfzCoordinateSpace)
+        {
+            return animationCurveTRS;
+        }
+
+        public override GameCube.GFZ.Stage.TrackSegment CreateTrackSegment()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override float GetMaxTime()
+        {
+            return animationCurveTRS.GetMaxTime();
+        }
+
+        // DEPRECATE
+        public void CallOnEdited()
+        {
+            DebugConsole.Log("CallOnEdit from Bezier. Deprecated.");
+        }
     }
 }

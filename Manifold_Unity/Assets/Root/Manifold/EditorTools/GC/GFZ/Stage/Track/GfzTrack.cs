@@ -12,8 +12,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
     /// </summary>
     public sealed class GfzTrack : MonoBehaviour
     {
-        [field: SerializeField] public GfzTrackSegmentNode FirstRoot { get; private set; }
-        [field: SerializeField] public GfzTrackSegmentNode[] AllRoots { get; private set; }
+        [field: SerializeField] public GfzTrackSegmentRootNode FirstRoot { get; private set; }
+        [field: SerializeField] public GfzTrackSegmentRootNode[] AllRoots { get; private set; }
+        [field: SerializeField] public bool DoFind { get; private set; }
 
         public TrackMinHeight TrackMinHeight { get; private set; }
         public TrackLength TrackLength { get; private set; }
@@ -135,7 +136,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public void FindChildSegments()
         {
-            FirstRoot = GetComponentInChildren<GfzTrackSegmentNode>(false);
+            FirstRoot = GetComponentInChildren<GfzTrackSegmentRootNode>(false);
             AllRoots = GetAllRootSegments();
             Assert.IsTrue(FirstRoot is not null);
             Assert.IsTrue(FirstRoot == AllRoots[0]);
@@ -164,21 +165,31 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             allRootSegments[lastIndex].Next = allRootSegments[0];
         }
 
-        public GfzTrackSegmentNode[] GetAllRootSegments()
+        public GfzTrackSegmentRootNode[] GetAllRootSegments()
         {
-            var rootSegments = new List<GfzTrackSegmentNode>();
+            var rootSegments = new List<GfzTrackSegmentRootNode>();
             foreach (var child in transform.GetChildren())
             {
                 var isActive = child.gameObject.activeSelf;
                 if (!isActive)
                     continue;
 
-                var rootSegment = child.GetComponent<GfzTrackSegmentNode>();
+                var rootSegment = child.GetComponent<GfzTrackSegmentRootNode>();
                 var exists = rootSegment != null;
                 if (exists)
                     rootSegments.Add(rootSegment);
             }
             return rootSegments.ToArray();
+        }
+
+        private void OnValidate()
+        {
+            if (DoFind)
+            {
+                FindChildSegments();
+                AssignContinuity();
+                DoFind = false;
+            }
         }
 
     }
