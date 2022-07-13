@@ -69,8 +69,14 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public TGfzTrackSegmentNode GetParent<TGfzTrackSegmentNode>() where TGfzTrackSegmentNode : GfzTrackSegmentNode
         {
-            var parentSegment = transform.GetComponentInParent<TGfzTrackSegmentNode>();
-            return parentSegment;
+            bool hasParent = transform.parent != null;
+            if (hasParent)
+            {
+                var parentSegment = transform.parent.GetComponent<TGfzTrackSegmentNode>();
+                return parentSegment;
+            }
+            else
+                return null;
         }
 
         public GfzTrackSegmentNode GetParent()
@@ -111,7 +117,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             
             var scale = isRoot
                 ? transform.lossyScale
-                : transform.localPosition;
+                : transform.localScale;
 
             // If GFZ, flip Z coordinate space
             if (useGfzCoordinateSpace)

@@ -26,7 +26,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             {
                 double percentage = i / (double)totalIterations;
                 double sampleTime = percentage * segmentLength;
-                matrices[i] = hacTRS.EvaluateHierarchyMatrix(sampleTime);
+                var matrix = hacTRS.EvaluateHierarchyMatrix(sampleTime);
+                matrices[i] = matrix;
+                // debug
+                var position = matrices[i].Position();
+                var rotation = matrices[i].Rotation().eulerAngles;
+                var scale = matrices[i].Scale();
             }
             return matrices;
         }
