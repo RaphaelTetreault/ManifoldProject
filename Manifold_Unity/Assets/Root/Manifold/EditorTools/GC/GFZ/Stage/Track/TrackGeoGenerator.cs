@@ -28,10 +28,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 double sampleTime = percentage * segmentLength;
                 var matrix = hacTRS.EvaluateHierarchyMatrix(sampleTime);
                 matrices[i] = matrix;
-                // debug
-                var position = matrices[i].Position();
-                var rotation = matrices[i].Rotation().eulerAngles;
-                var scale = matrices[i].Scale();
             }
             return matrices;
         }
@@ -307,10 +303,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
             int debugIndex = 0;
             var models = new List<Model>();
-            foreach (var trackSegment in track.AllRoots)
+            foreach (var rootTrackSegmentNode in track.AllRoots)
             {
+                var shapeNodes = rootTrackSegmentNode.GetShapeNodes();
+                Assert.IsTrue(shapeNodes.Length == 1);
+
                 // Make the vertex data
-                var trackMeshTristrips = CreateAllTemp(trackSegment, 4, 10f, true);
+                var trackMeshTristrips = CreateAllTemp(shapeNodes[0], 4, 10f, true);
                 // convert to GameCube format
                 var dlists = TristripsToDisplayLists(trackMeshTristrips, GameCube.GFZ.GfzGX.VAT);
 

@@ -160,5 +160,23 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
             return trackSegments;
         }
+
+        public GfzTrackSegmentShapeNode[] GetShapeNodes()
+        {
+            var shapeNodes = new List<GfzTrackSegmentShapeNode>();
+            var children = GetChildren();
+            foreach (var child in children)
+            {
+                bool childIsShape = child is GfzTrackSegmentShapeNode;
+                if (childIsShape)
+                {
+                    shapeNodes.Add(child as GfzTrackSegmentShapeNode);
+                }
+
+                var childShapeNodes = child.GetShapeNodes();
+                shapeNodes.AddRange(childShapeNodes);
+            }
+            return shapeNodes.ToArray();
+        }
     }
 }
