@@ -673,7 +673,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public override AnimationCurveTRS CreateAnimationCurveTRS(bool isGfzCoordinateSpace)
         {
-            return animationCurveTRS;
+            var trs = isGfzCoordinateSpace
+                ? animationCurveTRS.CreateGfzCoordinateSpace()
+                : animationCurveTRS.CreateDeepCopy();
+
+            return trs;
         }
 
         public override GameCube.GFZ.Stage.TrackSegment CreateTrackSegment()
@@ -688,10 +692,14 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             var trs1 = new AnimationCurveTRS();
             trs1.Rotation.z = trs.Rotation.z;
 
+            //
+            var children = CreateChildTrackSegments();
+
             // Child is basically empty, only storing the rotation.z curve.
             var trackSegmentChild = new GameCube.GFZ.Stage.TrackSegment();
             trackSegmentChild.BranchIndex = GetBranchIndex();
             trackSegmentChild.AnimationCurveTRS = trs1.ToTrackSegment();
+            trackSegmentChild.Children = children;
 
             // Parent has all the other values, and has above as child element.
             var trackSegmentParent = new GameCube.GFZ.Stage.TrackSegment();

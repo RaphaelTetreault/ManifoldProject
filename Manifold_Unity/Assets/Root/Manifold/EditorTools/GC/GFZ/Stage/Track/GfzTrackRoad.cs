@@ -51,6 +51,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public override TrackSegment CreateTrackSegment()
         {
+            var children = CreateChildTrackSegments();
+
             var trackSegment = new TrackSegment();
             trackSegment.SegmentType = TrackSegmentType.IsTrack;
             trackSegment.LocalPosition = transform.localPosition;
@@ -58,6 +60,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             trackSegment.LocalScale = transform.localScale;
             trackSegment.BranchIndex = GetBranchIndex();
             trackSegment.SetRails(RailHeightLeft, RailHeightRight);
+            trackSegment.Children = children;
 
             return trackSegment;
         }

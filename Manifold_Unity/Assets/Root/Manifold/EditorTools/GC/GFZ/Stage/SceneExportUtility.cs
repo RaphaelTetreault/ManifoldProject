@@ -282,6 +282,14 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             // Undo mirroring
             foreach (var mirroredObject in mirroredObjects)
                 mirroredObject.MirrorTransform();
+
+            // LOG
+            using (var writer = new StreamWriter(File.Create(outputFile + ".txt")))
+            {
+                var builder = new System.Text.StringBuilder();
+                scene.PrintMultiLine(builder);
+                writer.Write(builder.ToString());
+            }
         }
 
 

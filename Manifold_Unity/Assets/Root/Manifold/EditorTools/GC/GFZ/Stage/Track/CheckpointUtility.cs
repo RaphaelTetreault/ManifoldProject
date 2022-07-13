@@ -87,7 +87,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 var lastCheckpoint = checkpoints[lastIndex];
                 lastCheckpoint.CurveTimeEnd = (float)segmentLength;
 
-                var matrix = hacTRS.EvaluateHierarchyMatrix(1);
+                var matrix = hacTRS.EvaluateHierarchyMatrix(segmentLength);
                 var origin = matrix.GetPosition();
                 var normal = matrix.rotation * backward;
 

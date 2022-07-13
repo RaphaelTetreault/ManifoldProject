@@ -90,6 +90,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             var children = new List<TGfzTrackSegmentNode>();
             foreach (var child in transform.GetChildren())
             {
+                bool isActive = child.gameObject.activeInHierarchy;
+                if (!isActive)
+                    continue;
+
                 var childSegment = child.GetComponent<TGfzTrackSegmentNode>();
                 bool childIsSegment = childSegment != null;
                 if (childIsSegment)
@@ -145,5 +149,16 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return 0;
         }
 
+        public TrackSegment[] CreateChildTrackSegments()
+        {
+            var children = GetChildren();
+            var trackSegments = new TrackSegment[children.Length];
+            for (int i = 0; i < trackSegments.Length; i++)
+            {
+                var trackSegment = children[i].CreateTrackSegment();
+                trackSegments[i] = trackSegment;
+            }
+            return trackSegments;
+        }
     }
 }
