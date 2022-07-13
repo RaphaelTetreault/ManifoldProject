@@ -591,8 +591,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 //double sampleNormalizer = distancePerSegment / approximateDistances[i];
 
                 // TODO: pretty this is wrong since smaple normalizer is not corrected between iterations?
-                double currDistance = timeStart + (timeDelta * inverseNIterations *  (i + 0));
-                double nextDistance = timeStart + (timeDelta * inverseNIterations *  (i + 1));
+                double currDistance = timeStart + (timeDelta * inverseNIterations * (i + 0));
+                double nextDistance = timeStart + (timeDelta * inverseNIterations * (i + 1));
 
                 // Compute the distance between these 2 points
                 float3 currPosition = evaluable.EvaluatePosition(currDistance);
@@ -606,6 +606,54 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return approximateDistance;
         }
 
+        public AnimationCurve SubdivideCurve(AnimationCurve animationCurve, int subdivisions)
+        {
+            var keys = new List<Keyframe>();
+            for (int i = 0; i < animationCurve.length - 1; i++)
+            {
+                var key0 = animationCurve.keys[i + 0];
+                var key1 = animationCurve.keys[i + 1];
+
+                bool isDifferent =
+                    key0.value != key1.value ||
+                    key0.inTangent != key1.inTangent ||
+                    key0.outTangent != key1.outTangent;
+
+                if (!isDifferent)
+                    continue;
+
+                float startTime = key0.time;
+                float endTime = key1.time;
+                for (int subd = 0; subd < subdivisions; subd++)
+                {
+                    float time = (float)subd / subdivisions;
+                    //float keyTime = startTime + endTime * time;
+                    float keyTime = math.lerp(startTime, endTime, time);
+                    var value = animationCurve.Evaluate(keyTime);
+                    var key = new Keyframe(keyTime, value);
+                    keys.Add(key);
+                }
+            }
+
+            //var curve = new AnimationCurve(animationCurve.keys);
+            //keys.AddRange(animationCurve.keys);
+
+            // Don't add key directly or it will set tangents of 0
+            //foreach (var key in keys)
+            //    animationCurve.AddKey(key.time, key.value);
+
+            //var curve = new AnimationCurve(keys.ToArray());
+
+            foreach (var key in keys)
+            {
+                int index = animationCurve.AddKey(key);
+
+                if (index > 0)
+                animationCurve.SmoothTangents(index, 1f/3f);
+            }
+
+            return animationCurve;
+        }
 
         public AnimationCurve CreateCurve(float[] values, AnimationUtility.TangentMode[] modes, double[] distances)
         {
@@ -634,6 +682,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 AnimationUtility.SetKeyRightTangentMode(curve, i + 0, mode);
                 AnimationUtility.SetKeyLeftTangentMode(curve, i + 1, mode);
             }
+
+            //curve = SubdivideCurve(curve, 32);
 
             return curve;
         }
@@ -682,13 +732,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public override GameCube.GFZ.Stage.TrackSegment CreateTrackSegment()
         {
-            var trs = animationCurveTRS.CreateGfzCoordinateSpace();
+            var trs = animationCurveTRS.CreateDeepCopy();
 
             // TRS 0: has all animation curves EXCEPT rotation Z
             var trs0 = trs.CreateDeepCopy();
             trs0.Rotation.z = new AnimationCurve();
 
-            // TRS 1: has ONLY rotation 0
+            // TRS 1: has ONLY rotation Z
             var trs1 = new AnimationCurveTRS();
             trs1.Rotation.z = trs.Rotation.z;
 
@@ -707,7 +757,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             trackSegmentParent.LocalRotation = transform.localRotation.eulerAngles;
             trackSegmentParent.LocalScale = transform.localScale;
             trackSegmentParent.BranchIndex = GetBranchIndex();
-            trackSegmentParent.AnimationCurveTRS = animationCurveTRS.ToTrackSegment();
+            trackSegmentParent.AnimationCurveTRS = trs0.ToTrackSegment();
             trackSegmentParent.Children = new GameCube.GFZ.Stage.TrackSegment[] { trackSegmentChild };
 
             return trackSegmentParent;
@@ -723,5 +773,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         {
             DebugConsole.Log("CallOnEdit from Bezier. Deprecated.");
         }
+
     }
 }
