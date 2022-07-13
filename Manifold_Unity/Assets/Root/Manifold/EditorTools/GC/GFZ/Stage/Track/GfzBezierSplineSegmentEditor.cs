@@ -182,8 +182,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
             EditorGUILayout.Space();
 
-            // GLOBAL SCRIPT FIELDS 
-            GuiSimple.Label("Global Fields", EditorStyles.boldLabel);
+            // BEZIER POINTS EDITOR
+            GuiSimple.Label("Bézier Points", EditorStyles.boldLabel);
             {
                 // LOOP
                 {
@@ -197,12 +197,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                         EditorUtility.SetDirty(spline);
                     }
                 }
-            }
-            EditorGUILayout.Space();
 
-            // BEZIER POINTS EDITOR
-            GuiSimple.Label("Bézier Points", EditorStyles.boldLabel);
-            {
                 GUILayout.BeginHorizontal();
                 bool isValid = selectedIndex >= 0 && selectedIndex < spline.PointsCount;
                 GUI.enabled = isValid;

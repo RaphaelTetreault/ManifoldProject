@@ -20,7 +20,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
     public static class SceneExportUtility
     {
 
-        [MenuItem(GfzMenuItems.Stage.ExportActiveScene, priority = GfzMenuItems.Stage.ExportActiveScenePriority)]
+        [MenuItem(GfzMenuItems.Stage.ExportActiveScene + " _F8", priority = GfzMenuItems.Stage.ExportActiveScenePriority)]
         public static void ExportSceneActive()
         {
             var format = SerializeFormat.GX;
@@ -87,18 +87,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             //// Load the old stage to use it's data I don't know how to generate yet
             ////var oldScene = ColiCourseIO.LoadScene(settings.StageDir + scene.FileName);
 
-            //// TEST
-            //// load in real, modify what you'd like
-            //var scene = ColiCourseIO.LoadScene(settings.StageDir + sceneParams.GetGfzInternalName());
-            //// Serialization settings
-            //scene.Format = format;
-            //scene.SerializeVerbose = verbose;
-            //// Exported filename 'COLI_COURSE##'
-            ////FileName = sceneParams.GetGfzInternalName();
-            //// Data about the creator
-            //scene.Author = sceneParams.author;
-            //scene.Venue = sceneParams.venue;
-            //scene.CourseName = sceneParams.courseName;
+            // TEST
 
             // Build a new scene!
             var scene = new Scene()
@@ -107,6 +96,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 Format = format,
                 SerializeVerbose = verbose,
                 // Exported filename 'COLI_COURSE##'
+                CourseIndex = checked((byte)sceneParams.courseIndex),
                 FileName = sceneParams.GetGfzInternalName(),
                 // Data about the creator
                 Author = sceneParams.author,
@@ -255,12 +245,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 scene.dynamicSceneObjects = dynamicSceneObjects.Concat(scene.dynamicSceneObjects).ToArray();
 
                 // save gma
-                //var gmaFileName = outputPath + $"st{scene.CourseIndex,2}.gma";
-                var gmaFileName = outputPath + $"st01.gma";
+                var gmaFileName = outputPath + $"st{scene.CourseIndex:00}.gma";
                 using (var writer = new EndianBinaryWriter(File.Create(gmaFileName), Gma.endianness))
                     writer.Write(trackModelsGma);
                 LzUtility.CompressAvLzToDisk(gmaFileName, compressFormat, true);
-                File.Delete(gmaFileName);
+                Debug.Log($"Created models archive '{gmaFileName}'.");
             }
 
             // TEMP until data is stored properly in GFZ unity components
@@ -275,9 +264,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             }
             LzUtility.CompressAvLzToDisk(outputFile, compressFormat, true);
             OSUtility.OpenDirectory(outputPath);
-
-            // Fix for Dolphin double file error :/
-            File.Delete(outputFile);
+            Debug.Log($"Created course '{outputFile}'.");
 
             // Undo mirroring
             foreach (var mirroredObject in mirroredObjects)

@@ -17,7 +17,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public float GetSegmentLength()
         {
-            var root = GetRoot() as GfzTrackSegmentRootNode;
+            var root = GetRoot();
             var segmentLength = root.SegmentLength;
             if (segmentLength <= 0f)
             {

@@ -192,7 +192,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         }
 
 
-        [MenuItem(menu + "Analyze all ColiScene Data #F5")]
+        [MenuItem(menu + "Analyze all ColiScene Data")]
         public static void AnalyzeAllPartsOfColiCourse()
         {
             var settings = GfzProjectWindow.GetSettings();

@@ -120,7 +120,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             DebugConsole.Log("Test single complete!");
         }
 
-        [MenuItem(Const.Menu.tests + TestLoad + ActiveRoot + " _F6")]
+        [MenuItem(Const.Menu.tests + TestLoad + ActiveRoot)]
         public static void TestLoadAllStages()
         {
             var settings = GfzProjectWindow.GetSettings();
@@ -141,7 +141,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             }
         }
 
-        [MenuItem("Manifold/Reset Prompt #F8")]
+        [MenuItem("Manifold/Reset Prompt")]
         public static void ClearProgBar()
         {
             EditorUtility.ClearProgressBar();
@@ -179,7 +179,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             OSUtility.OpenDirectory(dest);
         }
 
-        [MenuItem(Const.Menu.tests + TestSave + " To Disk" + ActiveRoot + " _F7")]
+        [MenuItem(Const.Menu.tests + TestSave + " To Disk" + ActiveRoot)]
         public static void Temp()
         {
             var settings = GfzProjectWindow.GetSettings();
@@ -226,7 +226,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         #region Roundtrip
 
-        [MenuItem("Manifold/Tests/Roundtrip Test (Active Dir) _F8")]
+        [MenuItem("Manifold/Tests/Roundtrip Test (Active Dir)")]
         public static void RoundtripScenes()
         {
             var settings = GfzProjectWindow.GetSettings();
