@@ -649,7 +649,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 int index = animationCurve.AddKey(key);
 
                 if (index > 0)
-                animationCurve.SmoothTangents(index, 1f/3f);
+                    animationCurve.SmoothTangents(index, 1f / 3f);
             }
 
             return animationCurve;
@@ -774,5 +774,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             DebugConsole.Log("CallOnEdit from Bezier. Deprecated.");
         }
 
+        public void UpdateShapeNodeMeshes(GfzTrackSegmentShapeNode[] shapes)
+        {
+            foreach (var shape in shapes)
+            {
+                shape.UpdateMesh();
+            }
+        }
     }
 }

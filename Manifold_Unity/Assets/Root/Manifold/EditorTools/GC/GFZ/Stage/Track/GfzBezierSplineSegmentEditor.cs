@@ -124,35 +124,59 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             // Default Script field for MonoBehaviour components
             GuiSimple.DefaultScript(spline);
 
-            // SETTINGS
-            settingsTabFoldout = EditorGUILayout.Foldout(settingsTabFoldout, "Settings", EditorStyles.foldoutHeader);
-            //GuiSimple.Label("Editor Settings", EditorStyles.boldLabel);
-            if (settingsTabFoldout)
-            {
-                EditorGUILayout.PropertyField(bezierHandleSize);
-                EditorGUILayout.PropertyField(splineThickness);
-                EditorGUILayout.PropertyField(outterLineThickness);
-                EditorGUILayout.PropertyField(viewDirection);
-                EditorGUILayout.PropertyField(viewDirectionScale);
-                EditorGUILayout.PropertyField(viewDirectionArrowsPerCurve);
-            }
-            EditorGUILayout.Space();
-
-            // Animation Curve
-            GuiSimple.Label("Animation Curve TRS", EditorStyles.boldLabel);
+            // METADATA
+            GuiSimple.Label("Track-Assigned Data", EditorStyles.boldLabel);
             {
                 GUI.enabled = false;
                 EditorGUILayout.ObjectField("Prev", spline.Prev, typeof(GfzTrackSegmentRootNode), allowSceneObjects: true);
                 EditorGUILayout.ObjectField("Next", spline.Next, typeof(GfzTrackSegmentRootNode), allowSceneObjects: true);
-                GuiSimple.Float(nameof(spline.SegmentLength), spline.SegmentLength);
                 GUI.enabled = true;
 
+                if (GUILayout.Button($"Update Track Data"))
+                {
+                    var track = spline.GetComponentInParent<GfzTrack>();
+                    track.FindChildSegments();
+                    track.AssignContinuity();
+                }
+            }
+            EditorGUILayout.Separator();
+
+            // TRS
+            GuiSimple.Label("Animation Curve TRS", EditorStyles.boldLabel);
+            {
+                GUILayout.BeginHorizontal();
                 if (GUILayout.Button($"Generate Animation Curve TRS"))
                 {
-                    Undo.RecordObject(spline, $"Create TRS");
+                    var objects = new List<GfzTrackSegmentNode>();
+                    var shapes = spline.GetShapeNodes();
+                    objects.AddRange(shapes);
+                    objects.Add(spline);
+                    var objectsArray = objects.ToArray();
+
+                    Undo.RecordObjects(objectsArray, $"Create TRS");
                     spline.UpdateAnimationCurveTRS();
-                    EditorUtility.SetDirty(spline);
+                    spline.UpdateShapeNodeMeshes(shapes);
+                    foreach (var obj in objectsArray)
+                        EditorUtility.SetDirty(obj);
                 }
+
+                if (GUILayout.Button($"Update Child Meshes"))
+                {
+                    var objects = new List<GfzTrackSegmentNode>();
+                    var shapes = spline.GetShapeNodes();
+                    objects.AddRange(shapes);
+                    var objectsArray = objects.ToArray();
+
+                    Undo.RecordObjects(objectsArray, $"Create TRS");
+                    spline.UpdateShapeNodeMeshes(shapes);
+                    foreach (var obj in objectsArray)
+                        EditorUtility.SetDirty(obj);
+                }
+                GUILayout.EndHorizontal();
+
+                GUI.enabled = false;
+                GuiSimple.Float(nameof(spline.SegmentLength), spline.SegmentLength);
+                GUI.enabled = true;
 
                 EditorGUILayout.PropertyField(animationCurveTRS);
             }
@@ -233,6 +257,20 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     EditorGUILayout.HelpBox(msg, MessageType.Info);
                 }
             }
+
+            // SETTINGS
+            settingsTabFoldout = EditorGUILayout.Foldout(settingsTabFoldout, "Settings", EditorStyles.foldoutHeader);
+            //GuiSimple.Label("Editor Settings", EditorStyles.boldLabel);
+            if (settingsTabFoldout)
+            {
+                EditorGUILayout.PropertyField(bezierHandleSize);
+                EditorGUILayout.PropertyField(splineThickness);
+                EditorGUILayout.PropertyField(outterLineThickness);
+                EditorGUILayout.PropertyField(viewDirection);
+                EditorGUILayout.PropertyField(viewDirectionScale);
+                EditorGUILayout.PropertyField(viewDirectionArrowsPerCurve);
+            }
+            EditorGUILayout.Space();
 
             // Uncomment for debugging
             //DrawDefaultInspector();
@@ -596,7 +634,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             {
                 for (int j = 1; j < steps; j++)
                 {
-                    var t = (float)j / steps; 
+                    var t = (float)j / steps;
                     var point = spline.GetPositionRelative(t, i);
                     var direction = spline.GetDirection(t, i);
                     var orientation = Quaternion.LookRotation(direction);

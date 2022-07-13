@@ -17,7 +17,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         [field: SerializeField] public MeshRenderer MeshRenderer { get; protected set; }
         [field: SerializeField] public Mesh Mesh { get; protected set; }
         [field: SerializeField] public UnityEngine.Material DefaultMaterial { get; protected set; }
-        [field: SerializeField] public bool DoGenMesh { get; private set; }
 
 
         public abstract Mesh CreateMesh();
@@ -30,25 +29,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
             if (MeshFilter == null)
                 MeshFilter = GetComponent<MeshFilter>();
-
-            if (DoGenMesh)
-            {
-                Mesh = CreateMesh();
-
-                if (MeshFilter != null)
-                    MeshFilter.mesh = Mesh;
-
-                if (MeshRenderer != null)
-                {
-                    int numTristrips = Mesh.subMeshCount;
-                    var materials = new UnityEngine.Material[numTristrips];
-                    for (int i = 0; i < materials.Length; i++)
-                        materials[i] = DefaultMaterial;
-                    MeshRenderer.sharedMaterials = materials;
-                }
-
-                DoGenMesh = false;
-            }
         }
 
         public Mesh TristripsToMesh(Tristrip[] tristrips)
@@ -102,6 +82,23 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 submeshes[i] = submesh;
             }
             return submeshes;
+        }
+
+        public void UpdateMesh()
+        {
+            Mesh = CreateMesh();
+
+            if (MeshFilter != null)
+                MeshFilter.mesh = Mesh;
+
+            if (MeshRenderer != null)
+            {
+                int numTristrips = Mesh.subMeshCount;
+                var materials = new UnityEngine.Material[numTristrips];
+                for (int i = 0; i < materials.Length; i++)
+                    materials[i] = DefaultMaterial;
+                MeshRenderer.sharedMaterials = materials;
+            }
         }
     }
 }
