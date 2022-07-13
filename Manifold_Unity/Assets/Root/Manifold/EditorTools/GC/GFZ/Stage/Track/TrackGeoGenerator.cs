@@ -305,8 +305,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             var models = new List<Model>();
             foreach (var rootTrackSegmentNode in track.AllRoots)
             {
+                // TODO: get terminal node types...
+                // UH, WAIT. TODO: GET GCMF PER SHAPE.
                 var shapeNodes = rootTrackSegmentNode.GetShapeNodes();
-                Assert.IsTrue(shapeNodes.Length == 1);
+                Assert.IsTrue(shapeNodes.Length > 0);
 
                 // Make the vertex data
                 var trackMeshTristrips = CreateAllTemp(shapeNodes[0], 4, 10f, true);

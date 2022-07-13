@@ -22,6 +22,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         public abstract Mesh CreateMesh();
         public abstract Gcmf CreateGcmf();
 
+        public override float GetMaxTime()
+        {
+            return GetRoot().GetMaxTime();
+        }
+
         protected virtual void OnValidate()
         {
             if (MeshRenderer == null)

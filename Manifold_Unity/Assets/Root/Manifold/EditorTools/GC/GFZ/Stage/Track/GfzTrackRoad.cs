@@ -36,11 +36,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             throw new System.NotImplementedException();
         }
 
-        public override float GetMaxTime()
-        {
-            return GetRoot().GetMaxTime();
-        }
-
         public override Mesh CreateMesh()
         {
             var tristrips = TrackGeoGenerator.CreateAllTemp(this, WidthDivisions, LengthDistance, false);

@@ -39,6 +39,19 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
         }
 
+        public TrackEmbeddedPropertyType GetEmbedProperty(SurfaceEmbedType type)
+        {
+            switch (type)
+            {
+                case SurfaceEmbedType.Recover: return TrackEmbeddedPropertyType.IsRecover;
+                case SurfaceEmbedType.Damage: return TrackEmbeddedPropertyType.IsDamage;
+                case SurfaceEmbedType.Slip: return TrackEmbeddedPropertyType.IsSlip;
+                case SurfaceEmbedType.Dirt: return TrackEmbeddedPropertyType.IsDirt;
+                default:
+                    throw new System.ArgumentException();
+            }
+        }
+
         protected override void OnValidate()
         {
             base.OnValidate();
@@ -48,7 +61,21 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public override AnimationCurveTRS CreateAnimationCurveTRS(bool isGfzCoordinateSpace)
         {
-            throw new System.NotImplementedException();
+            var maxTime = GetMaxTime();
+            var trs = AnimationCurveTRS.CreateDefault(maxTime);
+
+            var posx = new UnityEngine.AnimationCurve(Offset.keys);
+            var sclx = new UnityEngine.AnimationCurve(Width.keys);
+            RenormalizeKeyTimes(posx, maxTime);
+            RenormalizeKeyTimes(sclx, maxTime);
+
+            trs.Position.x = posx;
+            trs.Scale.x = sclx;
+
+            if (isGfzCoordinateSpace)
+                trs = trs.CreateGfzCoordinateSpace();
+
+            return trs;
         }
 
         public override Gcmf CreateGcmf()
@@ -56,50 +83,60 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             throw new System.NotImplementedException();
         }
 
-        public override float GetMaxTime()
-        {
-            throw new System.NotImplementedException();
-        }
-
         public override Mesh CreateMesh()
         {
-            throw new System.NotImplementedException();
+            var hacTRS = CreateHierarchichalAnimationCurveTRS(false);
+            var matrices = TrackGeoGenerator.GenerateMatrixIntervals(hacTRS, 10f);
 
-            //var hacTRS = new HierarchichalAnimationCurveTRS();
+            //
+            var endpointA = new Vector3(-0.5f, 0.20f, 0f);
+            var endpointB = new Vector3(+0.5f, 0.20f, 0f);
+            var color0 = GetColor(Type);
+            var tristrips = TrackGeoGenerator.CreateTristrips(matrices, endpointA, endpointB, 4, color0, Vector3.up, 0, true);
+            var mesh = TristripsToMesh(tristrips);
+            mesh.name = $"Auto Gen - {this.name}";
 
-            //var animationCurveTRS = AnimationCurveTRS.CreateDeepCopy();
-            //var staticMatrix = transform.localToWorldMatrix;
-
-            //// THE TODO HERE is proper matrix hierarchy
-
-            //var matrices = TrackGeoGenerator.GenerateMatrixIntervals(animationCurveTRS, staticMatrix, LengthDistance);
-
-            ////
-            //var endpointA = new Vector3(-0.5f, 0.01f, 0f);
-            //var endpointB = new Vector3(+0.5f, 0.01f, 0f);
-            //var color0 = GetColor(Type);
-            //var tristrips = TrackGeoGenerator.CreateTristrips(matrices, endpointA, endpointB, 1, color0, Vector3.up, 0, false);
-            //GenMesh = TristripsToMesh(tristrips);
-            //GenMesh.name = $"Auto Gen - {this.name}";
-
-            //if (MeshFilter != null)
-            //    MeshFilter.mesh = GenMesh;
-
-            //if (MeshRenderer != null)
-            //{
-            //    int numTristrips = GenMesh.subMeshCount;
-            //    var materials = new Material[numTristrips];
-            //    for (int i = 0; i < materials.Length; i++)
-            //        materials[i] = DefaultMaterial;
-            //    MeshRenderer.sharedMaterials = materials;
-            //}
-
-            //return new Mesh[] { GenMesh };
+            return mesh;
         }
 
         public override TrackSegment CreateTrackSegment()
         {
-            throw new System.NotImplementedException();
+            var children = CreateChildTrackSegments();
+            var trs = CreateAnimationCurveTRS(false);
+
+            var trackSegment = new TrackSegment();
+            trackSegment.SegmentType = TrackSegmentType.IsEmbed;
+            trackSegment.EmbeddedPropertyType = GetEmbedProperty(Type);
+            trackSegment.LocalPosition = transform.localPosition;
+            trackSegment.LocalRotation = transform.localRotation.eulerAngles;
+            trackSegment.LocalScale = transform.localScale;
+            trackSegment.AnimationCurveTRS = trs.ToTrackSegment();
+            trackSegment.BranchIndex = 0; // these kinds of embeds do not specify branch
+            trackSegment.Children = children;
+
+            return trackSegment;
+
+        }
+
+        private void RenormalizeKeyTimes(UnityEngine.AnimationCurve curve, float maxTime)
+        {
+            var keys = curve.keys;
+            for (int i = 0; i < curve.length; i++)
+            {
+                var key = keys[i];
+                var mappedTime = Map(key.time, From, To);
+                var time = mappedTime * maxTime;
+                keys[i].time = time;
+            }
+            curve.keys = keys;
+        }
+
+        private float Map(float time, float min, float max)
+        {
+            float delta = max - min;
+            float rangedTime = time * delta;
+            float trueTime = min + rangedTime;
+            return trueTime;
         }
     }
 }
