@@ -4,7 +4,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
     public class GfzCheckpointGenerator : MonoBehaviour
     {
-        [field: SerializeField] public GfzTrackSegment TrackSegment { get; private set; }
+        [field: SerializeField] public GfzTrackSegmentNode TrackSegment { get; private set; }
         [field: SerializeField] public Mesh GizmosMesh { get; private set; }
         [field: SerializeField] public bool GenGfz { get; private set; }
 
@@ -12,7 +12,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         {
             if (TrackSegment is null)
             {
-                TrackSegment = GetComponent<GfzTrackSegment>();
+                TrackSegment = GetComponent<GfzTrackSegmentNode>();
             }
         }
     }

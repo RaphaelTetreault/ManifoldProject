@@ -29,10 +29,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public void InitTrackData()
         {
-            FindChildSegments(false);
+            FindChildSegments();
+            AssignContinuity();
 
             if (this.AllRoots.Length == 0)
-                throw new MissingReferenceException($"No references to any {typeof(GfzTrackShape).Name}! Make sure references existin in inspector.");
+                throw new MissingReferenceException($"No references to any {typeof(GfzTrackSegmentNode).Name}! Make sure references existin in inspector.");
 
             foreach (var seg in this.AllRoots)
             {
@@ -66,22 +67,17 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
 
             // Get all ROOT track segments
-            foreach (var rootSegmentScript in AllRoots)
+            foreach (var rootTrackSegmentNode in AllRoots)
             {
-                // Ask each root component to create one or more track segments
-                var currRootSegment = rootSegmentScript.CreateTrackSegments();
-                rootSegments.AddRange(currRootSegment);
-            }
+                var rootTrackSegment = rootTrackSegmentNode.CreateTrackSegment();
+                rootSegments.Add(rootTrackSegment);
 
-            foreach (var rootSegment in rootSegments)
-            {
                 // Get segments in proper order for binary serialization
-                var trackSegmentHierarchy = rootSegment.GetGraphSerializableOrder();
+                var trackSegmentHierarchy = rootTrackSegment.GetGraphSerializableOrder();
                 allSegments.AddRange(trackSegmentHierarchy);
 
-                ////////////////////////////////////////////////////////////////
                 // Get all checkpoints for this segment
-                var checkpoints = CheckpointUtility.CreateCheckpoints(rootSegment, true);
+                var checkpoints = CheckpointUtility.CreateCheckpoints(rootTrackSegmentNode, 100f, true);
                 allCheckpointsList.AddRange(checkpoints); // checkpoints flat
                 // Create TrackNodes
                 foreach (var checkpoint in checkpoints)
@@ -90,22 +86,23 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     {
                         // Add checkpoints. TODO: support branching
                         Checkpoints = new Checkpoint[] { checkpoint },
-                        RootSegment = rootSegment,
+                        RootSegment = rootTrackSegment,
                     };
 
                     // Add to master list
                     trackNodes.Add(trackNode);
                 }
-                ///////////////////////////////////////////////////////////////////
-                
+
                 // TODO: interface
-                var embededPropertyAreas = rootSegment.GetEmbededPropertyAreas();
-                trackEmbeddedPropertyAreas.AddRange(embededPropertyAreas);
+                //var embededPropertyAreas = rootSegment.GetEmbededPropertyAreas();
+                //trackEmbeddedPropertyAreas.AddRange(embededPropertyAreas);
 
                 // Compute some metadata based on segments
-                trackLength.Value += rootSegment.GetSegmentLength();
-             }
+                trackLength.Value += rootTrackSegmentNode.GetSegmentLength();
+            }
 
+            trackEmbeddedPropertyAreas = new List<EmbeddedTrackPropertyArea>();
+            trackEmbeddedPropertyAreas.Add(EmbeddedTrackPropertyArea.Terminator());
 
             //// Set circuit type depending on if 
             //var lastSegmentIndex = this.rootSegments.Length - 1;
@@ -136,25 +133,45 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             CircuitType = CircuitType.ClosedCircuit;
         }
 
-        public void FindChildSegments(bool includeInactive = false)
+        public void FindChildSegments()
         {
-            FirstRoot = GetComponentInChildren<GfzTrackSegmentNode>(includeInactive);
-            AllRoots = GetAllRootSegments(includeInactive);
+            FirstRoot = GetComponentInChildren<GfzTrackSegmentNode>(false);
+            AllRoots = GetAllRootSegments();
             Assert.IsTrue(FirstRoot is not null);
             Assert.IsTrue(FirstRoot == AllRoots[0]);
         }
 
-        public GfzTrackSegmentNode[] GetAllRootSegments(bool includeInactive = false)
+        public void AssignContinuity()
+        {
+            var allRootSegments = GetAllRootSegments();
+
+            bool hasSegments = allRootSegments.Length > 0;
+            if (!hasSegments)
+                return;
+
+            for (int i = 0; i < allRootSegments.Length - 1; i++)
+            {
+                var curr = allRootSegments[i + 0];
+                var next = allRootSegments[i + 1];
+
+                curr.Next = next;
+                next.Prev = curr;
+            }
+
+            // Patch the first/last indexes which wrap around
+            int lastIndex = allRootSegments.Length - 1;
+            allRootSegments[0].Prev = allRootSegments[lastIndex];
+            allRootSegments[lastIndex].Next = allRootSegments[0];
+        }
+
+        public GfzTrackSegmentNode[] GetAllRootSegments()
         {
             var rootSegments = new List<GfzTrackSegmentNode>();
             foreach (var child in transform.GetChildren())
             {
-                if (!includeInactive)
-                {
-                    var isActive = child.gameObject.activeSelf;
-                    if (!isActive)
-                        continue;
-                }
+                var isActive = child.gameObject.activeSelf;
+                if (!isActive)
+                    continue;
 
                 var rootSegment = child.GetComponent<GfzTrackSegmentNode>();
                 var exists = rootSegment != null;

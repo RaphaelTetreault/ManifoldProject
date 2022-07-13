@@ -11,13 +11,16 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         /// <param name="trackSegment">The track segment to generate checkpoints for.</param>
         /// <param name="isGfzCoordinateSpace">Coordinate space is for game.</param>
         /// <returns></returns>
-        public static Checkpoint[] CreateCheckpoints(GfzTrackSegmentNode trackSegment, float checkpointDistanceOffset, float metersPerCheckpoint, bool isGfzCoordinateSpace)
+        public static Checkpoint[] CreateCheckpoints(GfzTrackSegmentNode trackSegment, float metersPerCheckpoint, bool isGfzCoordinateSpace)
         {
+            // Get the hierarchy to sample matrices from
             var hacTRS = trackSegment.CreateHierarchichalAnimationCurveTRS(isGfzCoordinateSpace);
-
+            // Length is max key time from root segment
+            double segmentLength = hacTRS.GetRoot().GetMaxTime();
+            // Get the distance where this segment begins
+            float checkpointDistanceOffset = trackSegment.GetDistanceOffset();
             // Set up info about checkpoints
-            var segmentLength = hacTRS.ComputeApproximateLength(0, 1);
-            var numCheckpoints = (int)math.ceil(segmentLength / metersPerCheckpoint);
+            int numCheckpoints = (int)math.ceil(segmentLength / metersPerCheckpoint);
             var checkpoints = new Checkpoint[numCheckpoints];
 
             // Get direction vectors
@@ -26,7 +29,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
             for (int i = 0; i < numCheckpoints; i++)
             {
-                // Curve-sampling start and end times. Normalized time: 0 through 1 (inclusive on both ends).
+                // Curve-sampling start and end times. Normalized time: 0 through 1 (inclusive, exclusive).
                 double checkpointTimeStart = (double)(i + 0) / numCheckpoints;
                 double checkpointTimeEnd = (double)(i + 1) / numCheckpoints;
                 // Get distanced for checkpoint
@@ -34,7 +37,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 float distanceEnd = (float)(checkpointTimeEnd * segmentLength);
 
                 // Evaluate matrix hierarchy using normalized time
-                var matrix = hacTRS.EvaluateHierarchyMatrixNormalized(checkpointTimeStart);
+                var matrix = hacTRS.EvaluateHierarchyMatrix(distanceStart);
                 var position = matrix.Position();
                 var rotation = matrix.Rotation();
                 var scale = matrix.Scale();
@@ -50,7 +53,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 // CHECKPOINT
                 checkpoints[i] = new Checkpoint();
                 var checkpoint = checkpoints[i];
-                checkpoint.CurveTimeStart = (float)(checkpointTimeStart * segmentLength);
+                checkpoint.CurveTimeStart = distanceStart;
                 checkpoint.StartDistance = checkpointDistanceOffset + distanceStart;
                 checkpoint.EndDistance = checkpointDistanceOffset + distanceEnd;
                 checkpoint.TrackWidth = trackWidth;
@@ -79,7 +82,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 var lastCheckpoint = checkpoints[lastIndex];
                 lastCheckpoint.CurveTimeEnd = (float)segmentLength;
 
-                var matrix = hacTRS.EvaluateHierarchyMatrixNormalized(1);
+                var matrix = hacTRS.EvaluateHierarchyMatrix(1);
                 var origin = matrix.GetPosition();
                 var normal = matrix.rotation * backward;
 
@@ -89,9 +92,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 lastCheckpoint.PlaneEnd = endPlane;
             }
 
+            // Get hacTRS of previous and next nodes
+            var fromHacTRS = trackSegment.Prev.CreateHierarchichalAnimationCurveTRS(isGfzCoordinateSpace);
+            var toHacTRS = trackSegment.Next.CreateHierarchichalAnimationCurveTRS(isGfzCoordinateSpace);
             // Set segment in/out connections
-            var connectToTrackIn = trackSegment.IsContinuousFromPrevious();
-            var connectToTrackOut = trackSegment.IsContinuousToNext();
+            var connectToTrackIn = IsContinuousBetweenFromTo(fromHacTRS, hacTRS);
+            var connectToTrackOut = IsContinuousBetweenFromTo(hacTRS, toHacTRS);
+            // Assign to appropriate checkpoints
             checkpoints[0].ConnectToTrackIn = connectToTrackIn;
             checkpoints[lastIndex].ConnectToTrackOut = connectToTrackOut;
 
@@ -99,6 +106,18 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return checkpoints;
         }
 
+        public static bool IsContinuousBetweenFromTo(HierarchichalAnimationCurveTRS from, HierarchichalAnimationCurveTRS to)
+        {
+            var endMaxTime = from.GetMaxTime();
+            var endMatrix = from.EvaluateHierarchyMatrix(endMaxTime);
+            var startMatrix = to.EvaluateHierarchyMatrix(0);
+
+            var startPosition = startMatrix.Position();
+            var endPosition = endMatrix.Position();
+
+            bool isContinuousBetween = math.distance(endPosition, startPosition) < 0.01f; // 1cm
+            return isContinuousBetween;
+        }
 
     }
 }

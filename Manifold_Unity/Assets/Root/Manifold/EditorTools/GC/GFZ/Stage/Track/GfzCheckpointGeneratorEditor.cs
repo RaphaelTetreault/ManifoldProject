@@ -28,7 +28,15 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         {
             DeleteCheckpointDebug(checkpointGenerator);
 
-            var checkpoints = CheckpointUtility.CreateCheckpoints(checkpointGenerator.TrackSegment, checkpointGenerator.GenGfz);
+            var isCheckpointProducer = checkpointGenerator.TrackSegment is ICheckpointProducer;
+            if (!isCheckpointProducer)
+            {
+                var msg = $"{checkpointGenerator.TrackSegment.name} does not define {nameof(ICheckpointProducer.MetersPerCheckpoint)}";
+                throw new System.ArgumentException(msg);
+            }
+
+            var metersPerCheckpoint = (checkpointGenerator.TrackSegment as ICheckpointProducer).MetersPerCheckpoint;
+            var checkpoints = CheckpointUtility.CreateCheckpoints(checkpointGenerator.TrackSegment, metersPerCheckpoint, checkpointGenerator.GenGfz);
 
             int index = 0;
             foreach (var checkpoint in checkpoints)

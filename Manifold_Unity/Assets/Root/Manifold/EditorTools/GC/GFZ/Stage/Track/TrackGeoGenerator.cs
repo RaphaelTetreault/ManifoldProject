@@ -15,17 +15,18 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
     public static class TrackGeoGenerator
     {
-        public static Matrix4x4[] GenerateMatrixIntervals(HierarchichalAnimationCurveTRS hacTRS, float segmentLength, float maxStep)
+        public static Matrix4x4[] GenerateMatrixIntervals(HierarchichalAnimationCurveTRS hacTRS, float maxStep)
         {
+            float segmentLength = hacTRS.GetSegmentLength();
             float step = segmentLength / maxStep;
             int totalIterations = (int)math.ceil(step);
-            var matrices = new Matrix4x4[totalIterations + 1];
+            var matrices = new Matrix4x4[totalIterations + 1]; // +1 since we do <= total, since we want 0 to 1 inclusve
 
             for (int i = 0; i <= totalIterations; i++)
             {
                 double percentage = i / (double)totalIterations;
                 double sampleTime = percentage * segmentLength;
-                matrices[i] = hacTRS.EvaluateHierarchyMatrixNormalized(sampleTime);
+                matrices[i] = hacTRS.EvaluateHierarchyMatrix(sampleTime);
             }
             return matrices;
         }
@@ -94,9 +95,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         {
             var allTriStrips = new List<Tristrip>();
             var hacTRS = node.CreateHierarchichalAnimationCurveTRS(useGfzCoordSpace);
-            // Get length. Wish this were faster...
-            var segmentLength = (float)hacTRS.ComputeApproximateLength(0, 1);
-            var matrices = GenerateMatrixIntervals(hacTRS, segmentLength, maxStep);
+            var segmentLength = hacTRS.GetSegmentLength();
+            var matrices = GenerateMatrixIntervals(hacTRS, maxStep);
 
             // track top
             {
@@ -167,13 +167,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             //
             var intervals = (int)math.ceil(segmentLength / 100.0); // per ~100 meters
             var intervalsInverse = 1.0 / intervals;
-            var unitsAhead = 3f * intervalsInverse; // 3 units forward
             // width dividers
             for (int i = 0; i < intervals; i++)
             {
-                var time = i * intervalsInverse;
-                var matrix0 = hacTRS.EvaluateHierarchyMatrixNormalized(time);
-                var matrix1 = hacTRS.EvaluateHierarchyMatrixNormalized(time + unitsAhead);
+                var time = (i * intervalsInverse) * segmentLength;
+                var matrix0 = hacTRS.EvaluateHierarchyMatrix(time);
+                var matrix1 = hacTRS.EvaluateHierarchyMatrix(time + 3f);// 3 units forward
                 var matrices01 = new Matrix4x4[] { matrix0, matrix1 };
 
                 var endpointA = new Vector3(-0.5f, +0.10f, 0);
@@ -299,7 +298,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         {
             // TODO: get GfzTrack, use it to get children
             var track = GameObject.FindObjectOfType<GfzTrack>(false);
-            track.FindChildSegments(false);
+            track.FindChildSegments();
 
             int debugIndex = 0;
             var models = new List<Model>();
