@@ -40,11 +40,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         {
             var track = FindObjectOfType<GfzTrack>();
             Assert.IsTrue(track != null, $"track is null.");
-            Assert.IsTrue(track.StartSegmentShape != null, $"track.StartSegment is null.");
-            Assert.IsTrue(track.StartSegmentShape.Segment != null, $"track.StartSegment.Segment is null.");
+            Assert.IsTrue(track.FirstRoot != null, $"track.StartSegment is null.");
+            Assert.IsTrue(track.FirstRoot.Segment != null, $"track.StartSegment.Segment is null.");
 
             // If we are the start segment, offset is 0
-            var startSegment = track.StartSegmentShape.Segment;
+            var startSegment = track.FirstRoot.Segment;
             if (this == startSegment)
                 return 0f;
 

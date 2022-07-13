@@ -15,6 +15,21 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
     public static class TrackGeoGenerator
     {
+        public static Matrix4x4[] GenerateMatrixIntervals(HierarchichalAnimationCurveTRS hacTRS, float segmentLength, float maxStep)
+        {
+            float step = segmentLength / maxStep;
+            int totalIterations = (int)math.ceil(step);
+            var matrices = new Matrix4x4[totalIterations + 1];
+
+            for (int i = 0; i <= totalIterations; i++)
+            {
+                double percentage = i / (double)totalIterations;
+                double sampleTime = percentage * segmentLength;
+                matrices[i] = hacTRS.EvaluateHierarchyMatrixNormalized(sampleTime);
+            }
+            return matrices;
+        }
+
         public static Matrix4x4[] GenerateMatrixIntervals(AnimationCurveTRS animationCurveTRS, Matrix4x4 staticMatrix, float maxStep)
         {
             var segmentLength = animationCurveTRS.GetMaxTime();
@@ -75,16 +90,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return tristrips;
         }
 
-        public static Tristrip[] CreateAllTemp(GfzTrackShape trackSegmentShape, int nTristrips, float maxStep, bool useGfzCoordSpace)
+        public static Tristrip[] CreateAllTemp(GfzTrackSegmentNode node, int nTristrips, float maxStep, bool useGfzCoordSpace)
         {
             var allTriStrips = new List<Tristrip>();
-
-            var animationCurveTRS = useGfzCoordSpace
-                ? trackSegmentShape.AnimationCurveTRS.CreateGfzCoordinateSpace()
-                : trackSegmentShape.AnimationCurveTRS.CreateDeepCopy();
-
-            var staticMatrix = trackSegmentShape.transform.localToWorldMatrix;
-            var matrices = GenerateMatrixIntervals(animationCurveTRS, staticMatrix, maxStep);
+            var hacTRS = node.CreateHierarchichalAnimationCurveTRS(useGfzCoordSpace);
+            // Get length. Wish this were faster...
+            var segmentLength = (float)hacTRS.ComputeApproximateLength(0, 1);
+            var matrices = GenerateMatrixIntervals(hacTRS, segmentLength, maxStep);
 
             // track top
             {
@@ -126,10 +138,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 allTriStrips.AddRange(trackRightTristrips);
             }
 
-            var isTypeofRail = trackSegmentShape is IRailSegment;
+            var isTypeofRail = node is IRailSegment;
             if (isTypeofRail)
             {
-                var rails = trackSegmentShape as IRailSegment;
+                var rails = node as IRailSegment;
 
                 // rail left
                 if (rails.RailHeightLeft > 0f)
@@ -153,14 +165,15 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
 
             //
-            var maxTime = animationCurveTRS.GetMaxTime();
-            var intervals = (int)math.ceil(maxTime / 100.0); // per ~100 meters
+            var intervals = (int)math.ceil(segmentLength / 100.0); // per ~100 meters
+            var intervalsInverse = 1.0 / intervals;
+            var unitsAhead = 3f * intervalsInverse; // 3 units forward
             // width dividers
             for (int i = 0; i < intervals; i++)
             {
-                var time = (i / (double)intervals) * maxTime;
-                var matrix0 = animationCurveTRS.EvaluateMatrix(time);
-                var matrix1 = animationCurveTRS.EvaluateMatrix(time+3f); // 3 units forward
+                var time = i * intervalsInverse;
+                var matrix0 = hacTRS.EvaluateHierarchyMatrixNormalized(time);
+                var matrix1 = hacTRS.EvaluateHierarchyMatrixNormalized(time + unitsAhead);
                 var matrices01 = new Matrix4x4[] { matrix0, matrix1 };
 
                 var endpointA = new Vector3(-0.5f, +0.10f, 0);
@@ -172,21 +185,34 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
 
             // REMOVE SCALE.X
-            animationCurveTRS.Scale.x = new UnityEngine.AnimationCurve(new Keyframe(0, 1), new Keyframe(maxTime, 1));
-            matrices = GenerateMatrixIntervals(animationCurveTRS, staticMatrix, maxStep);
-
+            var matricesNoScale = GetMatricesDefaultScale(matrices, Vector3.one);
             // center line
             {
                 var endpointA = new Vector3(-0.5f, +0.15f, 0);
                 var endpointB = new Vector3(+0.5f, +0.15f, 0);
                 var color0 = new Color32(127, 255, 255, 255); // cyan
                 var normal = Vector3.up;
-                var trackLaneDivider = CreateTristrips(matrices, endpointA, endpointB, 1, color0, normal, 0, true);
+                var trackLaneDivider = CreateTristrips(matricesNoScale, endpointA, endpointB, 1, color0, normal, 0, true);
                 allTriStrips.AddRange(trackLaneDivider);
             }
 
             return allTriStrips.ToArray();
         }
+
+        public static Matrix4x4[] GetMatricesDefaultScale(Matrix4x4[] matrices, Vector3 scale)
+        {
+            var matricesDefaultScale = new Matrix4x4[matrices.Length];
+            for (int i = 0; i < matricesDefaultScale.Length; i++)
+            {
+                var matrix = matrices[i];
+                var position = matrix.Position();
+                var rotation = matrix.Rotation();
+
+                matricesDefaultScale[i] = Matrix4x4.TRS(position, rotation, scale);
+            }
+            return matricesDefaultScale;
+        }
+
 
         public static Tristrip[] CreateTristrips(Matrix4x4[] matrices, Vector3 endpointA, Vector3 endpointB, int nTristrips, Color32 color0, Vector3? defaultNormal, int uvs, bool reverse)
         {
@@ -273,11 +299,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         {
             // TODO: get GfzTrack, use it to get children
             var track = GameObject.FindObjectOfType<GfzTrack>(false);
-            track.FindChildSegments();
+            track.FindChildSegments(false);
 
             int debugIndex = 0;
             var models = new List<Model>();
-            foreach (var trackSegment in track.AllRootSegmentShapes)
+            foreach (var trackSegment in track.AllRoots)
             {
                 // Make the vertex data
                 var trackMeshTristrips = CreateAllTemp(trackSegment, 4, 10f, true);

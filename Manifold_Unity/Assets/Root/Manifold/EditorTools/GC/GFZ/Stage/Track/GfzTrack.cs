@@ -10,10 +10,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
     /// <summary>
     /// Entry point for collecting and generating track data
     /// </summary>
-    public class GfzTrack : MonoBehaviour
+    public sealed class GfzTrack : MonoBehaviour
     {
-        [field: SerializeField] public GfzTrackShape StartSegmentShape { get; private set; }
-        [field: SerializeField] public GfzTrackShape[] AllRootSegmentShapes { get; private set; }
+        [field: SerializeField] public GfzTrackSegmentNode FirstRoot { get; private set; }
+        [field: SerializeField] public GfzTrackSegmentNode[] AllRoots { get; private set; }
 
         public TrackMinHeight TrackMinHeight { get; private set; }
         public TrackLength TrackLength { get; private set; }
@@ -29,10 +29,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public void InitTrackData()
         {
-            if (this.AllRootSegmentShapes.Length == 0)
+            FindChildSegments(false);
+
+            if (this.AllRoots.Length == 0)
                 throw new MissingReferenceException($"No references to any {typeof(GfzTrackShape).Name}! Make sure references existin in inspector.");
 
-            foreach (var seg in this.AllRootSegmentShapes)
+            foreach (var seg in this.AllRoots)
             {
                 if (seg == null)
                 {
@@ -63,28 +65,24 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             var trackEmbeddedPropertyAreas = new List<EmbeddedTrackPropertyArea>();
 
 
-            foreach (var rootSegmentScript in this.AllRootSegmentShapes)
+            // Get all ROOT track segments
+            foreach (var rootSegmentScript in AllRoots)
             {
-                // Init the GFZ data, add to list
-                var currRootSegment = rootSegmentScript.GenerateTrackSegment();
-                rootSegments.Add(currRootSegment);
+                // Ask each root component to create one or more track segments
+                var currRootSegment = rootSegmentScript.CreateTrackSegments();
+                rootSegments.AddRange(currRootSegment);
+            }
 
+            foreach (var rootSegment in rootSegments)
+            {
                 // Get segments in proper order for binary serialization
-                var segmentChildren = currRootSegment.GetGraphSerializableOrder();
-                allSegments.AddRange(segmentChildren);
+                var trackSegmentHierarchy = rootSegment.GetGraphSerializableOrder();
+                allSegments.AddRange(trackSegmentHierarchy);
 
+                ////////////////////////////////////////////////////////////////
                 // Get all checkpoints for this segment
-                var checkpoints = CheckpointUtility.CreateCheckpoints(rootSegmentScript.Segment, true);
-                //var checkpoints = rootSegmentScript.Segment.CreateCheckpoints(true);
+                var checkpoints = CheckpointUtility.CreateCheckpoints(rootSegment, true);
                 allCheckpointsList.AddRange(checkpoints); // checkpoints flat
-
-                //
-                var embededPropertyAreas = rootSegmentScript.Segment.GetEmbededPropertyAreas();
-                trackEmbeddedPropertyAreas.AddRange(embededPropertyAreas);
-
-                // Compute some metadata based on segments
-                trackLength.Value += rootSegmentScript.Segment.GetSegmentLength();
-
                 // Create TrackNodes
                 foreach (var checkpoint in checkpoints)
                 {
@@ -92,13 +90,22 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     {
                         // Add checkpoints. TODO: support branching
                         Checkpoints = new Checkpoint[] { checkpoint },
-                        Segment = currRootSegment,
+                        RootSegment = rootSegment,
                     };
 
                     // Add to master list
                     trackNodes.Add(trackNode);
                 }
-            }
+                ///////////////////////////////////////////////////////////////////
+                
+                // TODO: interface
+                var embededPropertyAreas = rootSegment.GetEmbededPropertyAreas();
+                trackEmbeddedPropertyAreas.AddRange(embededPropertyAreas);
+
+                // Compute some metadata based on segments
+                trackLength.Value += rootSegment.GetSegmentLength();
+             }
+
 
             //// Set circuit type depending on if 
             //var lastSegmentIndex = this.rootSegments.Length - 1;
@@ -129,12 +136,32 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             CircuitType = CircuitType.ClosedCircuit;
         }
 
-        public void FindChildSegments()
+        public void FindChildSegments(bool includeInactive = false)
         {
-            StartSegmentShape = GetComponentInChildren<GfzTrackShape>(false);
-            AllRootSegmentShapes = GetComponentsInChildren<GfzTrackShape>(false);
-            Assert.IsTrue(StartSegmentShape is not null);
-            Assert.IsTrue(StartSegmentShape == AllRootSegmentShapes[0]);
+            FirstRoot = GetComponentInChildren<GfzTrackSegmentNode>(includeInactive);
+            AllRoots = GetAllRootSegments(includeInactive);
+            Assert.IsTrue(FirstRoot is not null);
+            Assert.IsTrue(FirstRoot == AllRoots[0]);
+        }
+
+        public GfzTrackSegmentNode[] GetAllRootSegments(bool includeInactive = false)
+        {
+            var rootSegments = new List<GfzTrackSegmentNode>();
+            foreach (var child in transform.GetChildren())
+            {
+                if (!includeInactive)
+                {
+                    var isActive = child.gameObject.activeSelf;
+                    if (!isActive)
+                        continue;
+                }
+
+                var rootSegment = child.GetComponent<GfzTrackSegmentNode>();
+                var exists = rootSegment != null;
+                if (exists)
+                    rootSegments.Add(rootSegment);
+            }
+            return rootSegments.ToArray();
         }
 
     }

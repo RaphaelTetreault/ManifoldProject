@@ -1,3 +1,4 @@
+using GameCube.GFZ.GMA;
 using GameCube.GFZ.Stage;
 using Manifold.EditorTools;
 using System.Collections;
@@ -6,66 +7,51 @@ using UnityEngine;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
-    [RequireComponent(typeof(MeshFilter))]
-    [RequireComponent(typeof(MeshRenderer))]
-    public class GfzTrackRoad : GfzTrackShape,
+    public class GfzTrackRoad : GfzTrackSegmentShapeNode,
         IRailSegment
     {
-        [field: Header("Mesh Properties")]
-        [field: SerializeField] public Material DefaultMaterial { get; private set; }
-        [field: SerializeField] public MeshFilter MeshFilter { get; private set; }
-        [field: SerializeField] public MeshRenderer MeshRenderer { get; private set; }
-        [field: SerializeField] public Mesh GenMesh { get; private set; }
-        [field: SerializeField] public bool DoGenMesh { get; private set; }
+        // Mesh stuff
         [field: SerializeField, Min(1)] public int WidthDivisions { get; private set; } = 4;
         [field: SerializeField, Min(1f)] public float LengthDistance { get; private set; } = 10f;
-        [field: SerializeField, Min(1f)] public bool GenGfz { get; private set; }
 
         [field: Header("Road Properties")]
         [field: SerializeField, Min(0f)] public float RailHeightLeft { get; private set; } = 3f;
         [field: SerializeField, Min(0f)] public float RailHeightRight { get; private set; } = 3f;
 
+        public override TrackSegmentType TrackSegmentType => TrackSegmentType.IsTrack;
 
-
-        public override Mesh[] GenerateMeshes()
+        public override AnimationCurveTRS CreateAnimationCurveTRS(bool isGfzCoordinateSpace)
         {
-            var tristrips = TrackGeoGenerator.CreateAllTemp(this, WidthDivisions, LengthDistance, GenGfz);
-            GenMesh = TristripsToMesh(tristrips);
-            GenMesh.name = $"Auto Gen - {this.name}";
-
-            if (MeshFilter != null)
-                MeshFilter.mesh = GenMesh;
-
-            if (MeshRenderer != null)
-            {
-                int numTristrips = GenMesh.subMeshCount;
-                var materials = new Material[numTristrips];
-                for (int i = 0; i < materials.Length; i++)
-                    materials[i] = DefaultMaterial;
-                MeshRenderer.sharedMaterials = materials;
-            }
-
-            return new Mesh[] { GenMesh };
+            var trs = new AnimationCurveTRS();
+            return trs;
         }
 
-        public override TrackSegment GenerateTrackSegment()
+        public override Gcmf CreateGcmf()
         {
-            var trackSegment = Segment.GetTrackSegment();
-            var lastNode = trackSegment.Children[0];
+            var tristrips = TrackGeoGenerator.CreateAllTemp(this, WidthDivisions, LengthDistance, true);
+            var gcmf = new Gcmf();
 
-            // Override the rail properies
-            IO.Assert.IsTrue(lastNode.SegmentType == TrackSegmentType.IsTrack);
-
-            // Rail height
-            lastNode.SetRails(RailHeightLeft, RailHeightRight);
-
-            //
-            return trackSegment;
+            throw new System.NotImplementedException();
         }
 
-        protected override void OnValidate()
+        public override Mesh CreateMesh()
         {
-            base.OnValidate();
+            var tristrips = TrackGeoGenerator.CreateAllTemp(this, WidthDivisions, LengthDistance, false);
+            Mesh = TristripsToMesh(tristrips);
+            Mesh.name = $"Auto Gen - {this.name}";
+            return Mesh;
+        }
+
+        public override TrackSegment[] CreateTrackSegments()
+        {
+            var trackSegment = new TrackSegment();
+            trackSegment.LocalPosition = transform.localPosition;
+            trackSegment.LocalRotation = transform.localRotation.eulerAngles;
+            trackSegment.LocalScale = transform.localScale;
+            trackSegment.BranchIndex = GetBranchIndex();
+            trackSegment.SetRails(RailHeightLeft, RailHeightRight);
+
+            return new TrackSegment[] { trackSegment };
         }
 
     }

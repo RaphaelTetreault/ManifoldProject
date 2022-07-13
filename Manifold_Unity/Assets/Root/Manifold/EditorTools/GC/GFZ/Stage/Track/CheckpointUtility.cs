@@ -9,46 +9,35 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         /// The difference: if key time is embedded distance, sample time = sample distance
         /// </summary>
         /// <param name="trackSegment">The track segment to generate checkpoints for.</param>
-        /// <param name="convertCoordinateSpace">Coordinate space is for game.</param>
+        /// <param name="isGfzCoordinateSpace">Coordinate space is for game.</param>
         /// <returns></returns>
-        public static Checkpoint[] CreateCheckpoints(GfzTrackSegment trackSegment, bool convertCoordinateSpace)
+        public static Checkpoint[] CreateCheckpoints(GfzTrackSegmentNode trackSegment, float checkpointDistanceOffset, float metersPerCheckpoint, bool isGfzCoordinateSpace)
         {
+            var hacTRS = trackSegment.CreateHierarchichalAnimationCurveTRS(isGfzCoordinateSpace);
+
             // Set up info about checkpoints
-            var segmentLength = trackSegment.GetSegmentLength();
-            var numCheckpoints = (int)math.ceil(segmentLength / trackSegment.MetersPerCheckpoint);
+            var segmentLength = hacTRS.ComputeApproximateLength(0, 1);
+            var numCheckpoints = (int)math.ceil(segmentLength / metersPerCheckpoint);
             var checkpoints = new Checkpoint[numCheckpoints];
 
             // Get direction vectors
-            float3 forward = convertCoordinateSpace ? new float3(0, 0, -1) : new float3(0, 0, +1);
+            float3 forward = isGfzCoordinateSpace ? new float3(0, 0, -1) : new float3(0, 0, +1);
             float3 backward = -forward;
 
-            // Get the AnimationCurveTransform appropriate for requester.
-            // Use GFZ space (game) if 'true'
-            // Use Unity space if 'false'
-            var animationTRS = convertCoordinateSpace
-                ? trackSegment.AnimationCurveTRS.CreateGfzCoordinateSpace()
-                : trackSegment.AnimationCurveTRS;
-
-            // Get matrices, time
-            var baseMtx = trackSegment.transform.localToWorldMatrix;
-            var curveMaxTime = animationTRS.GetMaxTime(); // is also length
-
-            var checkpointDistanceOffset = trackSegment.GetDistanceOffset();
             for (int i = 0; i < numCheckpoints; i++)
             {
-                // Curve-sampling start and end times.
+                // Curve-sampling start and end times. Normalized time: 0 through 1 (inclusive on both ends).
                 double checkpointTimeStart = (double)(i + 0) / numCheckpoints;
                 double checkpointTimeEnd = (double)(i + 1) / numCheckpoints;
-                // Scale normalized time by max
-                checkpointTimeStart *= curveMaxTime;
-                checkpointTimeEnd *= curveMaxTime;
+                // Get distanced for checkpoint
+                float distanceStart = (float)(checkpointTimeStart * segmentLength);
+                float distanceEnd = (float)(checkpointTimeEnd * segmentLength);
 
-                // Evaluate matrices
-                var animMtx = animationTRS.EvaluateMatrix(checkpointTimeStart);
-                var mtx = baseMtx * animMtx;
-                var position = mtx.GetPosition();
-                var rotation = mtx.rotation;
-                var scale = animationTRS.Scale.Evaluate(checkpointTimeStart);
+                // Evaluate matrix hierarchy using normalized time
+                var matrix = hacTRS.EvaluateHierarchyMatrixNormalized(checkpointTimeStart);
+                var position = matrix.Position();
+                var rotation = matrix.Rotation();
+                var scale = matrix.Scale();
 
                 // Get origin of start plane, track width at start sampling point
                 var origin = position;// + transform.position;
@@ -61,9 +50,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 // CHECKPOINT
                 checkpoints[i] = new Checkpoint();
                 var checkpoint = checkpoints[i];
-                checkpoint.CurveTimeStart = (float)checkpointTimeStart;
-                checkpoint.StartDistance = checkpointDistanceOffset + (float)checkpointTimeStart;
-                checkpoint.EndDistance = checkpointDistanceOffset + (float)checkpointTimeEnd;
+                checkpoint.CurveTimeStart = (float)(checkpointTimeStart * segmentLength);
+                checkpoint.StartDistance = checkpointDistanceOffset + distanceStart;
+                checkpoint.EndDistance = checkpointDistanceOffset + distanceEnd;
                 checkpoint.TrackWidth = trackWidth;
                 checkpoint.ConnectToTrackIn = true;
                 checkpoint.ConnectToTrackOut = true;
@@ -85,17 +74,14 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             // Index for last checkpoint
             var lastIndex = checkpoints.Length - 1;
 
-            // Complete missing information in last checkpoint of segment
+            // Missing information in last checkpoint about end plane
             {
                 var lastCheckpoint = checkpoints[lastIndex];
-                lastCheckpoint.CurveTimeEnd = curveMaxTime;
+                lastCheckpoint.CurveTimeEnd = (float)segmentLength;
 
-                var animMtx = animationTRS.EvaluateMatrix(curveMaxTime);
-                var mtx = baseMtx * animMtx;
-
-                var origin = mtx.GetPosition();
-                var rotation = mtx.rotation;
-                var normal = rotation * backward;
+                var matrix = hacTRS.EvaluateHierarchyMatrixNormalized(1);
+                var origin = matrix.GetPosition();
+                var normal = matrix.rotation * backward;
 
                 var endPlane = new Plane() { origin = origin, normal = normal };
                 endPlane.ComputeDotProduct();
