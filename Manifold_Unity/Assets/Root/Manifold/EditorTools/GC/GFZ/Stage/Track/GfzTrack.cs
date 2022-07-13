@@ -8,7 +8,7 @@ using UnityEngine;
 namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
     /// <summary>
-    /// Entry point for collecting and generating track data
+    /// Entry point for collecting and generating track data.
     /// </summary>
     public sealed class GfzTrack : MonoBehaviour
     {
@@ -77,8 +77,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 var trackSegmentHierarchy = rootTrackSegment.GetGraphSerializableOrder();
                 allSegments.AddRange(trackSegmentHierarchy);
 
+                // CREATE CHECKPOINTS
+                var checkpointGenerators = rootTrackSegmentNode.GetComponentsInChildren<GfzCheckpointGenerator>();
+                // For now, should only have 1
+                Assert.IsTrue(checkpointGenerators.Length == 1);
                 // Get all checkpoints for this segment
-                var checkpoints = CheckpointUtility.CreateCheckpoints(rootTrackSegmentNode, 100f, true);
+                var checkpoints = CheckpointUtility.CreateCheckpoints(checkpointGenerators[0], true);
                 allCheckpointsList.AddRange(checkpoints); // checkpoints flat
                 // Create TrackNodes
                 foreach (var checkpoint in checkpoints)

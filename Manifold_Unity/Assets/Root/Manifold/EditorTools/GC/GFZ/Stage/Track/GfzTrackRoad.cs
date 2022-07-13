@@ -8,23 +8,17 @@ using UnityEngine;
 namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
     public class GfzTrackRoad : GfzTrackSegmentShapeNode,
-        IRailSegment,
-        ICheckpointProducer
+        IRailSegment
     {
         // Mesh stuff
         [field: SerializeField, Min(1)] public int WidthDivisions { get; private set; } = 4;
         [field: SerializeField, Min(1f)] public float LengthDistance { get; private set; } = 10f;
-
-        [field: Header("Checkpoints")]
-        [field: SerializeField, Min(10f)] public float MetersPerCheckpoints { get; private set; } = 100f;
 
         [field: Header("Road Properties")]
         [field: SerializeField, Min(0f)] public float RailHeightLeft { get; private set; } = 3f;
         [field: SerializeField, Min(0f)] public float RailHeightRight { get; private set; } = 3f;
 
         public override TrackSegmentType TrackSegmentType => TrackSegmentType.IsTrack;
-
-        public float MetersPerCheckpoint => MetersPerCheckpoint;
 
         public override AnimationCurveTRS CreateAnimationCurveTRS(bool isGfzCoordinateSpace)
         {

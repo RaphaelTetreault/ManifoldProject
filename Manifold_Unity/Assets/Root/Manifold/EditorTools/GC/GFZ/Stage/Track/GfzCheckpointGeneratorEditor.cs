@@ -6,14 +6,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
     [CustomEditor(typeof(GfzCheckpointGenerator))]
     public class GfzCheckpointGeneratorEditor : Editor
     {
-        private const string assetPath = "Assets/Root/normal-cylinder-16-hollowed.fbx";
-
         public override void OnInspectorGUI()
         {
             var trackSegment = target as GfzCheckpointGenerator;
 
             base.OnInspectorGUI();
-            GuiSimple.Label("Generation");
+            //GuiSimple.Label("Generation", EditorStyles.boldLabel);
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("Generate Debug Checkpoints"))
                 GenerateCheckpointDebug(trackSegment);
@@ -28,15 +26,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         {
             DeleteCheckpointDebug(checkpointGenerator);
 
-            var isCheckpointProducer = checkpointGenerator.TrackSegment is ICheckpointProducer;
-            if (!isCheckpointProducer)
-            {
-                var msg = $"{checkpointGenerator.TrackSegment.name} does not define {nameof(ICheckpointProducer.MetersPerCheckpoint)}";
-                throw new System.ArgumentException(msg);
-            }
-
-            var metersPerCheckpoint = (checkpointGenerator.TrackSegment as ICheckpointProducer).MetersPerCheckpoint;
-            var checkpoints = CheckpointUtility.CreateCheckpoints(checkpointGenerator.TrackSegment, metersPerCheckpoint, checkpointGenerator.GenGfz);
+            var checkpoints = CheckpointUtility.CreateCheckpoints(checkpointGenerator, checkpointGenerator.IsGfzCoordinateSpace);
 
             int index = 0;
             foreach (var checkpoint in checkpoints)

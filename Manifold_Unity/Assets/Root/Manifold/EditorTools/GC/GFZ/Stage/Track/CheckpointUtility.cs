@@ -11,16 +11,20 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         /// <param name="trackSegment">The track segment to generate checkpoints for.</param>
         /// <param name="isGfzCoordinateSpace">Coordinate space is for game.</param>
         /// <returns></returns>
-        public static Checkpoint[] CreateCheckpoints(GfzTrackSegmentNode trackSegment, float metersPerCheckpoint, bool isGfzCoordinateSpace)
+        public static Checkpoint[] CreateCheckpoints(GfzCheckpointGenerator gfzCheckpointGenerator, bool isGfzCoordinateSpace)
         {
+            // Simplify access
+            GfzTrackSegmentNode trackSegmentNode = gfzCheckpointGenerator.TrackSegmentNode;
+            float metersPerCheckpoint = gfzCheckpointGenerator.MetersPerCheckpoint;
+
             // Get the hierarchy to sample matrices from
-            var hacTRS = trackSegment.CreateHierarchichalAnimationCurveTRS(isGfzCoordinateSpace);
+            var hacTRS = trackSegmentNode.CreateHierarchichalAnimationCurveTRS(isGfzCoordinateSpace);
             // Length is max key time from root segment
             double segmentLength = hacTRS.GetRoot().GetMaxTime();
             // Get the distance where this segment begins
-            var rootNode = trackSegment.GetRoot() as GfzTrackSegmentRootNode;
+            var rootNode = trackSegmentNode.GetRoot();
             float checkpointDistanceOffset = rootNode.GetDistanceOffset();
-            // Set up info about checkpoints
+            // Figure out how many checkpoints we need to make
             int numCheckpoints = (int)math.ceil(segmentLength / metersPerCheckpoint);
             var checkpoints = new Checkpoint[numCheckpoints];
 
