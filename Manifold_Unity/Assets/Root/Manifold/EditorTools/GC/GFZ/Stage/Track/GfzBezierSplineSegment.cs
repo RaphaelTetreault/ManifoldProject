@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
@@ -293,6 +294,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             newBezier.outTangent = newBezier.position + direction * kNewTangentLength;
             newBezier.width = lastBezier.width;
             newBezier.widthTangentMode = lastBezier.widthTangentMode;
+            newBezier.height = lastBezier.height;
+            newBezier.heightTangentMode = lastBezier.heightTangentMode;
             newBezier.roll = lastBezier.roll;
             newBezier.rollTangentMode = lastBezier.rollTangentMode;
 
@@ -315,6 +318,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             newBezier.outTangent = newBezier.position + direction * kNewTangentLength;
             newBezier.width = firstBezier.width;
             newBezier.widthTangentMode = firstBezier.widthTangentMode;
+            newBezier.height = firstBezier.height;
+            newBezier.heightTangentMode = firstBezier.heightTangentMode;
             newBezier.roll = firstBezier.roll;
             newBezier.rollTangentMode = firstBezier.rollTangentMode;
 
@@ -341,6 +346,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             bezier.tangentMode = BezierControlPointMode.Mirrored;
             bezier.width = (bezier0.width + bezier1.width) / 2f;
             bezier.widthTangentMode = AnimationUtility.TangentMode.Free;
+            bezier.height = (bezier0.height + bezier1.height) / 2f;
+            bezier.heightTangentMode = AnimationUtility.TangentMode.Free;
             bezier.roll = (bezier0.roll + bezier1.roll) / 2f;
             bezier.rollTangentMode = AnimationUtility.TangentMode.Free;
 
@@ -482,7 +489,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             // Entire curve approximate length to within 100m
             const int nStartIterDistance = 50;
             double entireCurveApproximateLength = CurveLengthUtility.GetDistanceBetweenRepeated(this, 0, 1, nStartIterDistance, 2, 1);
-            int nApproximationIterations = (int)(entireCurveApproximateLength * (1.0 / nStartIterDistance / 2.0));
+            int nApproximationIterations = (int)(entireCurveApproximateLength / 200);
+
+            //var threads = new Thread[8];
+            //for (int i = 0; i < threads.Length; i++)
+            //{
+            //    threads[i] = new Thread(new ThreadStart());
+            //}
 
             // Compute curve lengths between each bezier control point
             int numCurves = points.Count - 1;
@@ -683,7 +696,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 AnimationUtility.SetKeyLeftTangentMode(curve, i + 1, mode);
             }
 
-            //curve = SubdivideCurve(curve, 32);
+            curve = SubdivideCurve(curve, 32);
 
             return curve;
         }
@@ -771,7 +784,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         // DEPRECATE
         public void CallOnEdited()
         {
-            DebugConsole.Log("CallOnEdit from Bezier. Deprecated.");
+            //DebugConsole.Log("CallOnEdit from Bezier. Deprecated.");
+            UpdateAnimationCurveTRS();
+            UpdateShapeNodeMeshes(GetShapeNodes());
         }
 
         public void UpdateShapeNodeMeshes(GfzTrackSegmentShapeNode[] shapes)
