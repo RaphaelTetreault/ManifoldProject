@@ -41,6 +41,16 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             return point;
         }
 
+        public Vector3 EvaluateDefault(float time, Vector3 @default)
+        {
+            var px = x.EvaluateDefault(time, @default.x);
+            var py = y.EvaluateDefault(time, @default.y);
+            var pz = z.EvaluateDefault(time, @default.z);
+            var point = new Vector3(px, py, pz);
+
+            return point;
+        }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Vector3 Evaluate(double time)
         {

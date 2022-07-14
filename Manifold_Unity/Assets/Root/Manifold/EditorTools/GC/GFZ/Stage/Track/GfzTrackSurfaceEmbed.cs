@@ -61,8 +61,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public override AnimationCurveTRS CreateAnimationCurveTRS(bool isGfzCoordinateSpace)
         {
+            // NOTE to document:
+            // Looks like GFZ uses the max time range on this node, so if other "blank"
+            // animation curves have earlier or later times, it will use those instead.
+
             var maxTime = GetMaxTime();
-            var trs = AnimationCurveTRS.CreateDefault(maxTime);
+            var trs = new AnimationCurveTRS();
 
             var posx = new UnityEngine.AnimationCurve(Offset.keys);
             var sclx = new UnityEngine.AnimationCurve(Width.keys);
@@ -80,19 +84,45 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public override Gcmf CreateGcmf()
         {
-            throw new System.NotImplementedException();
+            // Make the vertex data
+            var color0 = GetColor(Type);
+            var trackMeshTristrips = TristripGenerator.CreateTempTrackRoadEmbed(this, 4, 10f, color0, true);
+            // convert to GameCube format
+            var dlists = TristripGenerator.TristripsToDisplayLists(trackMeshTristrips, GameCube.GFZ.GfzGX.VAT);
+
+            // Compute bounding sphere
+            var allVertices = new List<Vector3>();
+            foreach (var tristrip in trackMeshTristrips)
+                allVertices.AddRange(tristrip.positions);
+            var boundingSphere = TristripGenerator.CreateBoundingSphereFromPoints(allVertices);
+
+            // Note: this template is both sides, we do not YET need to sort front/back facing tristrips.
+            var template = GfzAssetTemplates.MeshTemplates.DebugTemplates.CreateLitVertexColored();
+            var gcmf = template.Gcmf;
+            gcmf.Submeshes[0].RenderFlags |= RenderFlags.unlit;
+            gcmf.BoundingSphere = boundingSphere;
+            gcmf.Submeshes[0].PrimaryDisplayListsTranslucid = dlists;
+            gcmf.Submeshes[0].VertexAttributes = dlists[0].Attributes; // hacky
+            gcmf.Submeshes[0].UnkAlphaOptions.Origin = boundingSphere.origin;
+            gcmf.PatchTevLayerIndexes();
+
+            return gcmf;
         }
 
         public override Mesh CreateMesh()
         {
             var hacTRS = CreateHierarchichalAnimationCurveTRS(false);
-            var matrices = TrackGeoGenerator.GenerateMatrixIntervals(hacTRS, 10f);
+            var maxTime = hacTRS.GetRootMaxTime();
+            var min = From * maxTime;
+            var max = To * maxTime;
+            Debug.Log($"MeshUnity -- Min: {min}, Max: {max}, MaxTime: {maxTime}");
+            var matrices = TristripGenerator.GenerateMatrixIntervals(hacTRS, 10f, min, max);
 
             //
-            var endpointA = new Vector3(-0.5f, 0.20f, 0f);
-            var endpointB = new Vector3(+0.5f, 0.20f, 0f);
+            var endpointA = new Vector3(-0.5f, 0.33f, 0f);
+            var endpointB = new Vector3(+0.5f, 0.33f, 0f);
             var color0 = GetColor(Type);
-            var tristrips = TrackGeoGenerator.CreateTristrips(matrices, endpointA, endpointB, 4, color0, Vector3.up, 0, true);
+            var tristrips = TristripGenerator.CreateTristrips(matrices, endpointA, endpointB, 4, color0, Vector3.up, 0, true);
             var mesh = TristripsToMesh(tristrips);
             mesh.name = $"Auto Gen - {this.name}";
 

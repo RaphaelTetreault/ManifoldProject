@@ -13,8 +13,18 @@ using Unity.Mathematics;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
-    public static class TrackGeoGenerator
+    public static class TristripGenerator
     {
+        [MenuItem(itemName: "Manifold/Temp - Update Meshes _F7")]
+        public static void UpdateMeshes()
+        {
+            var objs = GameObject.FindObjectsOfType<GfzTrackSegmentShapeNode>();
+            foreach (var obj in objs)
+            {
+                obj.UpdateMesh();
+            }
+        }
+
         public static Matrix4x4[] GenerateMatrixIntervals(HierarchichalAnimationCurveTRS hacTRS, float maxStep)
         {
             float segmentLength = hacTRS.GetSegmentLength();
@@ -26,6 +36,27 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             {
                 double percentage = i / (double)totalIterations;
                 double sampleTime = percentage * segmentLength;
+                var matrix = hacTRS.EvaluateHierarchyMatrix(sampleTime);
+                matrices[i] = matrix;
+            }
+            return matrices;
+        }
+
+        // Evaluate from later to earlier - road embed type
+        public static Matrix4x4[] GenerateMatrixIntervals(HierarchichalAnimationCurveTRS hacTRS, float maxStep, float min, float max)
+        {
+            //float maxTime = hacTRS.GetMaxTime();
+            float subLength = max - min;
+            float step = subLength / maxStep;
+            int totalIterations = (int)math.ceil(step);
+            var matrices = new Matrix4x4[totalIterations + 1]; // +1 since we do <= total, since we want 0 to 1 inclusve
+
+            Debug.Log($"MeshGfz -- Min: {min}, Max: {max}, MaxTime: {-1}");
+
+            for (int i = 0; i <= totalIterations; i++)
+            {
+                double percentage = i / (double)totalIterations;
+                double sampleTime = min + percentage * subLength;
                 var matrix = hacTRS.EvaluateHierarchyMatrix(sampleTime);
                 matrices[i] = matrix;
             }
@@ -92,7 +123,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return tristrips;
         }
 
-        public static Tristrip[] CreateAllTemp(GfzTrackSegmentNode node, int nTristrips, float maxStep, bool useGfzCoordSpace)
+        public static Tristrip[] CreateTempTrackRoad(GfzTrackSegmentNode node, int nTristrips, float maxStep, bool useGfzCoordSpace)
         {
             var allTriStrips = new List<Tristrip>();
             var hacTRS = node.CreateHierarchichalAnimationCurveTRS(useGfzCoordSpace);
@@ -194,6 +225,27 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 var normal = Vector3.up;
                 var trackLaneDivider = CreateTristrips(matricesNoScale, endpointA, endpointB, 1, color0, normal, 0, true);
                 allTriStrips.AddRange(trackLaneDivider);
+            }
+
+            return allTriStrips.ToArray();
+        }
+
+        public static Tristrip[] CreateTempTrackRoadEmbed(GfzTrackSegmentNode node, int nTristrips, float maxStep, Color32 color0, bool useGfzCoordSpace)
+        {
+            var allTriStrips = new List<Tristrip>();
+            var hacTRS = node.CreateHierarchichalAnimationCurveTRS(useGfzCoordSpace);
+            var animKeys = hacTRS.AnimationCurveTRS.Position.x.keys;
+            var min = animKeys[0].time;
+            var max = animKeys[animKeys.Length - 1].time;
+            var matrices = GenerateMatrixIntervals(hacTRS, maxStep, min, max);
+
+            // area
+            {
+                var endpointA = new Vector3(-0.5f, 0.33f, 0);
+                var endpointB = new Vector3(+0.5f, 0.33f, 0);
+                var normal = Vector3.up;
+                var trackTopTristrips = CreateTristrips(matrices, endpointA, endpointB, nTristrips, color0, normal, 3, true);
+                allTriStrips.AddRange(trackTopTristrips);
             }
 
             return allTriStrips.ToArray();
@@ -311,7 +363,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 Assert.IsTrue(shapeNodes.Length > 0);
 
                 // Make the vertex data
-                var trackMeshTristrips = CreateAllTemp(shapeNodes[0], 4, 10f, true);
+                var trackMeshTristrips = CreateTempTrackRoad(shapeNodes[0], 4, 10f, true);
                 // convert to GameCube format
                 var dlists = TristripsToDisplayLists(trackMeshTristrips, GameCube.GFZ.GfzGX.VAT);
 
@@ -339,7 +391,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return gma;
         }
 
-        private static DisplayList[] TristripsToDisplayLists(Tristrip[] tristrips, VertexAttributeTable vat)
+
+        public static DisplayList[] TristripsToDisplayLists(Tristrip[] tristrips, VertexAttributeTable vat)
         {
             var displayLists = new DisplayList[tristrips.Length];
             for (int i = 0; i < displayLists.Length; i++)

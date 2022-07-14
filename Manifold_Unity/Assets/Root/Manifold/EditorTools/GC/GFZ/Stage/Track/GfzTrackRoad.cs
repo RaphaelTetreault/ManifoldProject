@@ -23,22 +23,37 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public override AnimationCurveTRS CreateAnimationCurveTRS(bool isGfzCoordinateSpace)
         {
-            var maxTime = GetMaxTime();
-            var trs = AnimationCurveTRS.CreateDefault(maxTime);
-            return trs;
+            return new AnimationCurveTRS();
         }
 
         public override Gcmf CreateGcmf()
         {
-            var tristrips = TrackGeoGenerator.CreateAllTemp(this, WidthDivisions, LengthDistance, true);
-            var gcmf = new Gcmf();
+            // Make the vertex data
+            var trackMeshTristrips = TristripGenerator.CreateTempTrackRoad(this, WidthDivisions, LengthDistance, true);
+            // convert to GameCube format
+            var dlists = TristripGenerator.TristripsToDisplayLists(trackMeshTristrips, GameCube.GFZ.GfzGX.VAT);
 
-            throw new System.NotImplementedException();
+            // Compute bounding sphere
+            var allVertices = new List<Vector3>();
+            foreach (var tristrip in trackMeshTristrips)
+                allVertices.AddRange(tristrip.positions);
+            var boundingSphere = TristripGenerator.CreateBoundingSphereFromPoints(allVertices);
+
+            // Note: this template is both sides, we do not YET need to sort front/back facing tristrips.
+            var template = GfzAssetTemplates.MeshTemplates.DebugTemplates.CreateLitVertexColored();
+            var gcmf = template.Gcmf;
+            gcmf.BoundingSphere = boundingSphere;
+            gcmf.Submeshes[0].PrimaryDisplayListsTranslucid = dlists;
+            gcmf.Submeshes[0].VertexAttributes = dlists[0].Attributes; // hacky
+            gcmf.Submeshes[0].UnkAlphaOptions.Origin = boundingSphere.origin;
+            gcmf.PatchTevLayerIndexes();
+
+            return gcmf;
         }
 
         public override Mesh CreateMesh()
         {
-            var tristrips = TrackGeoGenerator.CreateAllTemp(this, WidthDivisions, LengthDistance, false);
+            var tristrips = TristripGenerator.CreateTempTrackRoad(this, WidthDivisions, LengthDistance, false);
             Mesh = TristripsToMesh(tristrips);
             Mesh.name = $"Auto Gen - {this.name}";
             return Mesh;

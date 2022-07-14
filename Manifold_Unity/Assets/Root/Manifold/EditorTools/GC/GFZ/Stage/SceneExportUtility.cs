@@ -229,7 +229,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             }
             // Inject TRACK models
             {
-                var trackModelsGma = TrackGeoGenerator.CreateTrackModelsGma("Track Segment");
+                var trackModelsGma = CreateTrackModelsGma("Track Segment");
                 var sceneObjects = CreateSceneObjectsFromGma(trackModelsGma);
 
                 // Add SceneObject (template)< it's LODs, and name
@@ -390,6 +390,31 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 };
             }
             return dynamics;
+        }
+
+        public static Gma CreateTrackModelsGma(string modelName)
+        {
+            // TODO: get GfzTrack, use it to get children
+            var track = GameObject.FindObjectOfType<GfzTrack>(false);
+            track.FindChildSegments();
+
+            int debugIndex = 0;
+            var models = new List<Model>();
+            foreach (var rootTrackSegmentNode in track.AllRoots)
+            {
+                var shapeNodes = rootTrackSegmentNode.GetShapeNodes();
+                foreach (var shape in shapeNodes)
+                {
+                    var gcmf = shape.CreateGcmf();
+                    models.Add(new Model($"{modelName} {debugIndex++}", gcmf));
+                }
+            }
+
+            // Create single GMA for model, comprised on many GCMFs (display lists and materials)
+            var gma = new Gma();
+            gma.Models = models.ToArray();
+
+            return gma;
         }
     }
 }
