@@ -85,5 +85,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 }
             }
         }
+
+        //private void OnValidate()
+        //{
+        //    var tangent = curves.Scale.x.keys[0].outTangent;
+        //    Debug.Log(tangent);
+        //}
+
     }
 }

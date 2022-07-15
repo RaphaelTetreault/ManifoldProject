@@ -18,8 +18,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             set => type = value;
         }
 
-        public override TrackSegmentType TrackSegmentType => throw new System.NotImplementedException();
-
         public override AnimationCurveTRS CreateAnimationCurveTRS(bool isGfzCoordinateSpace)
         {
             throw new System.NotImplementedException();

@@ -22,21 +22,29 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         public float GetRootMaxTime() => GetRoot().GetMaxTime();
         public float GetSegmentLength() => GetRootMaxTime();
 
-        // Fuck, hard problem. ALL nodes in hierarchy NEED the same max time for this recusion to work.
-        // Normalized func needs to call other normalized functions.
+        // PROBABLY WRONG
+        //public Matrix4x4 EvaluateHierarchyMatrix2(double time)
+        //{
+        //    // Get parent matrix. This is recursive.
+        //    var parentMatrix = HasParent
+        //        ? Parent.EvaluateHierarchyMatrix(time)
+        //        : Matrix4x4.TRS(Vector3.zero, Quaternion.identity, Vector3.one);
+
+        //    var selfAnimationMatrix = AnimationCurveTRS.EvaluateMatrix(time);
+        //    var selfMatrix = StaticMatrix * selfAnimationMatrix;
+
+        //    var finalMatrix = parentMatrix * selfMatrix;
+        //    return finalMatrix;
+        //}
+
         public Matrix4x4 EvaluateHierarchyMatrix(double time)
         {
-            // Get parent matrix. This is recursive.
-            var parentMatrix = HasParent
-                ? Parent.EvaluateHierarchyMatrix(time)
-                : Matrix4x4.TRS(Vector3.zero, Quaternion.identity, Vector3.one);
-
-            var selfAnimationMatrix = AnimationCurveTRS.EvaluateMatrix(time);
-            var selfMatrix = StaticMatrix * selfAnimationMatrix;
-
-            var finalMatrix = parentMatrix * selfMatrix;
+            var finalStaticMatrix = EvaluateStaticMatrices();
+            var finalAnimationMatrix = EvaluateAnimationMatrices(time);
+            var finalMatrix = finalStaticMatrix * finalAnimationMatrix;
             return finalMatrix;
         }
+
         public Vector3 EvaluateHierarchyPosition(double time)
         {
             // Get parent matrix. This is recursive.
@@ -51,6 +59,26 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return finalMatrix;
         }
         public float3 EvaluatePosition(double time) => EvaluateHierarchyPosition(time);
+
+        public Matrix4x4 EvaluateStaticMatrices()
+        {
+            var parentStaticMatrix = HasParent
+                ? Parent.EvaluateStaticMatrices()
+                : Matrix4x4.TRS(Vector3.zero, Quaternion.identity, Vector3.one);
+
+            var staticMatrix = parentStaticMatrix * StaticMatrix;
+            return staticMatrix;
+        }
+        public Matrix4x4 EvaluateAnimationMatrices(double time)
+        {
+            var parentAniamtionMatrix = HasParent
+                ? Parent.EvaluateAnimationMatrices(time)
+                : Matrix4x4.TRS(Vector3.zero, Quaternion.identity, Vector3.one);
+
+            var animationMatrix = AnimationCurveTRS.EvaluateMatrix(time);
+            var staticMatrix = parentAniamtionMatrix * animationMatrix;
+            return staticMatrix;
+        }
 
 
         public HierarchichalAnimationCurveTRS[] GetLeaves()

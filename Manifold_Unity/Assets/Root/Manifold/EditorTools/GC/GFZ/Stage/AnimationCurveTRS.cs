@@ -16,6 +16,15 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         [field: SerializeField] public AnimationCurve3 Scale { get; private set; } = new();
 
 
+        public AnimationCurveTRS() { }
+        public AnimationCurveTRS(AnimationCurve3 position, AnimationCurve3 rotation, AnimationCurve3 scale)
+        {
+            Position = position;
+            Rotation = rotation;
+            Scale = scale;
+        }
+
+
         public AnimationCurve[] AnimationCurves
         {
             get => new AnimationCurve[]

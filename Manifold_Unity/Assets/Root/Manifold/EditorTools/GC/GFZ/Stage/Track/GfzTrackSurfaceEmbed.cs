@@ -57,8 +57,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             base.OnValidate();
         }
 
-        public override TrackSegmentType TrackSegmentType => throw new System.NotImplementedException();
-
         public override AnimationCurveTRS CreateAnimationCurveTRS(bool isGfzCoordinateSpace)
         {
             // NOTE to document:

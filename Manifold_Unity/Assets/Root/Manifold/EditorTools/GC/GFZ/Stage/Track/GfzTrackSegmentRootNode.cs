@@ -12,20 +12,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
     {
         [field: SerializeField] public GfzTrackSegmentRootNode Prev { get; set; }
         [field: SerializeField] public GfzTrackSegmentRootNode Next { get; set; }
-        [field: SerializeField] public float SegmentLength { get; protected set; } = -1;
 
 
-        public float GetSegmentLength()
-        {
-            var root = GetRoot();
-            var segmentLength = root.SegmentLength;
-            if (segmentLength <= 0f)
-            {
-                var msg = "Distance is 0 which is invalid. TRS animation curves must define path.";
-                throw new System.ArgumentException(msg);
-            }
-            return segmentLength;
-        }
+        public abstract float GetSegmentLength();
 
         /// <summary>
         /// Sum of lengths from all previous segments.

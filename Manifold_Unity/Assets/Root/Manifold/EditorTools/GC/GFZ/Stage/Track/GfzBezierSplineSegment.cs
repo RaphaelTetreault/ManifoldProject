@@ -53,6 +53,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         private AnimationCurveTRS animationCurveTRS = new();
         public AnimationCurveTRS AnimationCurveTRS => animationCurveTRS;
 
+        [field: SerializeField] public float SegmentLength { get; protected set; } = -1;
+
+
         public bool IsLoop
         {
             get => isLoop;
@@ -86,8 +89,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         public float BezierHandleSize { get => bezierHandleSize; set => bezierHandleSize = value; }
         public float SplineThickness { get => splineThickness; set => splineThickness = value; }
         public float OutterLineThickness { get => outterLineThickness; set => outterLineThickness = value; }
-
-        public override GameCube.GFZ.Stage.TrackSegmentType TrackSegmentType => throw new NotImplementedException();
 
         public BezierPoint GetBezierPoint(int index)
         {
@@ -491,11 +492,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             double entireCurveApproximateLength = CurveLengthUtility.GetDistanceBetweenRepeated(this, 0, 1, nStartIterDistance, 2, 1);
             int nApproximationIterations = (int)(entireCurveApproximateLength / 200);
 
-            //var threads = new Thread[8];
-            //for (int i = 0; i < threads.Length; i++)
-            //{
-            //    threads[i] = new Thread(new ThreadStart());
-            //}
+            //var tasks = new List<Task>();
 
             // Compute curve lengths between each bezier control point
             int numCurves = points.Count - 1;
@@ -505,13 +502,18 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             {
                 double timeStart = (double)(i + 0) / numCurves;
                 double timeEnd = (double)(i + 1) / numCurves;
-                //double distance = CurveLengthUtility.GetDistanceBetweenRepeated(this, timeStart, timeEnd);
-                double distance = BezierApproximateDistance(this, timeStart, timeEnd, nApproximationIterations);
-                distances[i] = distance;
-                totalDistance += distance;
-                //Debug.Log($"Distance {i}: {distance}");
+
+                //Action func = () =>
+                //{
+                    double distance = BezierApproximateDistance(this, timeStart, timeEnd, nApproximationIterations);
+                    distances[i] = distance;
+                    totalDistance += distance;
+                    //Debug.Log($"Thread {i} complete");
+                //};
+                //tasks.Add(Task.Factory.StartNew(func));
             }
-            //Debug.Log("Total distance: " + totalDistance);
+
+            //Task.WaitAll(tasks.ToArray());
 
             var previousRotation = GetOrientation(0, 0).eulerAngles;
             double currDistance = 0;
@@ -796,5 +798,22 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 shape.UpdateMesh();
             }
         }
+
+        public override float GetSegmentLength()
+        {
+            var root = GetRoot();
+
+            if (this != root)
+                throw new Exception("Bezier makes assumption that it is always root node!");
+
+            var segmentLength = SegmentLength;
+            if (segmentLength <= 0f)
+            {
+                var msg = "Distance is 0 which is invalid. TRS animation curves must define path.";
+                throw new System.ArgumentException(msg);
+            }
+            return segmentLength;
+        }
+
     }
 }
