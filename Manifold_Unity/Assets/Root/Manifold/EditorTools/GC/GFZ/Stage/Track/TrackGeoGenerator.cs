@@ -126,7 +126,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         public static Tristrip[] CreateTempTrackRoad(GfzTrackSegmentNode node, int nTristrips, float maxStep, bool useGfzCoordSpace)
         {
             var allTriStrips = new List<Tristrip>();
-            var hacTRS = node.CreateHierarchichalAnimationCurveTRS(useGfzCoordSpace);
+            var hacTRS = node.CreateHierarchichalAnimationCurveTRS(Scope.Local, useGfzCoordSpace);
             var segmentLength = hacTRS.GetSegmentLength();
             var matrices = GenerateMatrixIntervals(hacTRS, maxStep);
 
@@ -233,7 +233,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         public static Tristrip[] CreateTempTrackRoadEmbed(GfzTrackSegmentNode node, int nTristrips, float maxStep, Color32 color0, bool useGfzCoordSpace)
         {
             var allTriStrips = new List<Tristrip>();
-            var hacTRS = node.CreateHierarchichalAnimationCurveTRS(useGfzCoordSpace);
+            var hacTRS = node.CreateHierarchichalAnimationCurveTRS(Scope.Local, useGfzCoordSpace);
             var animKeys = hacTRS.AnimationCurveTRS.Position.x.keys;
             var min = animKeys[0].time;
             var max = animKeys[animKeys.Length - 1].time;

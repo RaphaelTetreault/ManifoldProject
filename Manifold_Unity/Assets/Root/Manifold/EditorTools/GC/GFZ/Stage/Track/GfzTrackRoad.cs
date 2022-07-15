@@ -18,7 +18,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         [field: SerializeField, Min(0f)] public float RailHeightLeft { get; private set; } = 3f;
         [field: SerializeField, Min(0f)] public float RailHeightRight { get; private set; } = 3f;
 
-        public override AnimationCurveTRS CreateAnimationCurveTRS(bool isGfzCoordinateSpace)
+        public override AnimationCurveTRS CreateAnimationCurveTRS(Scope scope, bool isGfzCoordinateSpace = false)
         {
             return new AnimationCurveTRS();
         }

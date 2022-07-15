@@ -60,7 +60,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             base.OnValidate();
         }
 
-        public override AnimationCurveTRS CreateAnimationCurveTRS(bool isGfzCoordinateSpace)
+        public override AnimationCurveTRS CreateAnimationCurveTRS(Scope scope, bool isGfzCoordinateSpace)
         {
             // NOTE to document:
             // Looks like GFZ uses the max time range on this node, so if other "blank"
@@ -115,7 +115,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public override Mesh CreateMesh()
         {
-            var hacTRS = CreateHierarchichalAnimationCurveTRS(false);
+            var hacTRS = CreateHierarchichalAnimationCurveTRS(Scope.Local, false);
             var maxTime = hacTRS.GetRootMaxTime();
             var min = From * maxTime;
             var max = To * maxTime;
@@ -136,7 +136,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         public override TrackSegment CreateTrackSegment()
         {
             var children = CreateChildTrackSegments();
-            var trs = CreateAnimationCurveTRS(false);
+            var trs = CreateAnimationCurveTRS(Scope.Global, false);
 
             var trackSegment = new TrackSegment();
             trackSegment.SegmentType = TrackSegmentType.IsEmbed;

@@ -80,11 +80,22 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return length;
         }
 
-        public override AnimationCurveTRS CreateAnimationCurveTRS(bool isGfzCoordinateSpace)
+        public override AnimationCurveTRS CreateAnimationCurveTRS(Scope scope, bool isGfzCoordinateSpace)
         {
-            var trs = isGfzCoordinateSpace
-                ? animationCurveTRS.CreateGfzCoordinateSpace()
-                : animationCurveTRS.CreateDeepCopy();
+            var trs = AnimationCurveTRS.CreateDeepCopy();
+
+            if (scope == Scope.Global)
+            {
+                var mtx = Matrix4x4.TRS(transform.position, transform.rotation, transform.lossyScale);
+                //var invMtx = mtx.inverse;
+                // The problem is that each point would need to be rotated :/, along with rotation, etc.
+                trs.Position.x = trs.Position.x.CreateValueOffset(pos.x);
+                trs.Position.y = trs.Position.y.CreateValueOffset(pos.y);
+                trs.Position.z = trs.Position.z.CreateValueOffset(pos.z);
+                trs.Rotation.x = trs.Rotation.x.CreateValueOffset(transform.rotation.eulerAngles.x);
+                trs.Rotation.y = trs.Rotation.y.CreateValueOffset(transform.rotation.eulerAngles.y);
+                trs.Rotation.z = trs.Rotation.z.CreateValueOffset(transform.rotation.eulerAngles.z);
+            }
 
             if (isGfzCoordinateSpace)
                 trs = trs.CreateGfzCoordinateSpace();
@@ -92,18 +103,17 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return trs;
         }
 
+
         public override TrackSegment CreateTrackSegment()
         {
-            var trs = AnimationCurveTRS.CreateDeepCopy();
+            var trs = CreateAnimationCurveTRS(Scope.Global, false);
 
             var trackSegment = new TrackSegment();
             trackSegment.SegmentType = TrackSegmentType.IsMatrix;
-            trackSegment.LocalPosition = transform.localPosition;
-            trackSegment.LocalRotation = transform.localRotation.eulerAngles;
-            trackSegment.LocalScale = transform.localScale;
             trackSegment.AnimationCurveTRS = trs.ToTrackSegment();
             trackSegment.BranchIndex = GetBranchIndex();
             trackSegment.Children = CreateChildTrackSegments();
+
 
             return trackSegment;
         }

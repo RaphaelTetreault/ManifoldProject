@@ -736,11 +736,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return (rolls, rollModes);
         }
 
-        public override AnimationCurveTRS CreateAnimationCurveTRS(bool isGfzCoordinateSpace)
+        public override AnimationCurveTRS CreateAnimationCurveTRS(Scope scope, bool isGfzCoordinateSpace)
         {
             var trs = isGfzCoordinateSpace
                 ? animationCurveTRS.CreateGfzCoordinateSpace()
                 : animationCurveTRS.CreateDeepCopy();
+
+            throw new NotImplementedException();
 
             return trs;
         }

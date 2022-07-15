@@ -18,7 +18,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             float metersPerCheckpoint = gfzCheckpointGenerator.MetersPerCheckpoint;
 
             // Get the hierarchy to sample matrices from
-            var hacTRS = trackSegmentNode.CreateHierarchichalAnimationCurveTRS(isGfzCoordinateSpace);
+            var hacTRS = trackSegmentNode.CreateHierarchichalAnimationCurveTRS(Scope.Global, isGfzCoordinateSpace);
             // Length is max key time from root segment
             double segmentLength = hacTRS.GetRoot().GetMaxTime();
             // Get the distance where this segment begins
@@ -42,7 +42,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 float distanceEnd = (float)(checkpointTimeEnd * segmentLength);
 
                 // Evaluate matrix hierarchy using normalized time
-                var matrix = hacTRS.EvaluateHierarchyMatrix(distanceStart);
+                var matrix = hacTRS.EvaluateAnimationMatrices(distanceStart);
                 var position = matrix.Position();
                 var rotation = matrix.Rotation();
                 var scale = matrix.Scale();
@@ -98,8 +98,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
 
             // Get hacTRS of previous and next nodes
-            var fromHacTRS = rootNode.Prev.CreateHierarchichalAnimationCurveTRS(isGfzCoordinateSpace);
-            var toHacTRS = rootNode.Next.CreateHierarchichalAnimationCurveTRS(isGfzCoordinateSpace);
+            var fromHacTRS = rootNode.Prev.CreateHierarchichalAnimationCurveTRS(Scope.Global, isGfzCoordinateSpace);
+            var toHacTRS = rootNode.Next.CreateHierarchichalAnimationCurveTRS(Scope.Global, isGfzCoordinateSpace);
             // Set segment in/out connections
             var connectToTrackIn = IsContinuousBetweenFromTo(fromHacTRS, hacTRS);
             var connectToTrackOut = IsContinuousBetweenFromTo(hacTRS, toHacTRS);

@@ -134,14 +134,14 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         {
             var line = target as GfzLinePath;
 
-            var hacTRS = line.CreateHierarchichalAnimationCurveTRS(false);
+            var hacTRS = line.CreateHierarchichalAnimationCurveTRS(Scope.Global, false);
             float length = line.GetLineLength();
             int nSteps = (int)Mathf.Ceil(length / line.Step);
             var matrices = new Matrix4x4[nSteps + 1];
             for (int i = 0; i <= nSteps; i++)
             {
                 var time = i / (float)nSteps * length;
-                matrices[i] = hacTRS.EvaluateHierarchyMatrix(time);
+                matrices[i] = hacTRS.EvaluateAnimationMatrices(time);
                 // debug
                 var p = matrices[i].Position();
                 var r = matrices[i].rotation.eulerAngles;

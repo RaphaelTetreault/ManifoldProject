@@ -31,7 +31,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         public float RailHeight { get => railHeight; set => railHeight = value; }
 
 
-        public override AnimationCurveTRS CreateAnimationCurveTRS(bool isGfzCoordinateSpace)
+        public override AnimationCurveTRS CreateAnimationCurveTRS(Scope scope, bool isGfzCoordinateSpace)
         {
             throw new System.NotImplementedException();
         }

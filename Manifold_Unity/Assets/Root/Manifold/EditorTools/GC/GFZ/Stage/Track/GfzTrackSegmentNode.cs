@@ -7,22 +7,30 @@ using UnityEngine;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
+    public enum Scope
+    {
+        Local,
+        Global,
+    }
+
     public abstract class GfzTrackSegmentNode : MonoBehaviour
     {
-        public abstract AnimationCurveTRS CreateAnimationCurveTRS(bool isGfzCoordinateSpace);
+        public abstract AnimationCurveTRS CreateAnimationCurveTRS(Scope scope, bool isGfzCoordinateSpace = false);
+
+
         public abstract TrackSegment CreateTrackSegment();
 
         // TODO? Consider adding children to construction?
-        public HierarchichalAnimationCurveTRS CreateHierarchichalAnimationCurveTRS(bool isGfzCoordinateSpace)
+        public HierarchichalAnimationCurveTRS CreateHierarchichalAnimationCurveTRS(Scope scope, bool isGfzCoordinateSpace)
         {
-            var parentHacTRS = GetParentHacTRS(isGfzCoordinateSpace, out bool isRoot);
-            var staticMatrix = GetStaticMatrix(isGfzCoordinateSpace, isRoot);
-            var animTRS = CreateAnimationCurveTRS(isGfzCoordinateSpace);
+            var parentHacTRS = GetParentHacTRS(scope, isGfzCoordinateSpace, out bool isRoot);
+            //var staticMatrix = GetStaticMatrix(isGfzCoordinateSpace, isRoot);
+            var animTRS = CreateAnimationCurveTRS(scope, isGfzCoordinateSpace);
 
             var hacTRS = new HierarchichalAnimationCurveTRS()
             {
                 Parent = parentHacTRS,
-                StaticMatrix = staticMatrix,
+                //StaticMatrix = staticMatrix,
                 AnimationCurveTRS = animTRS,
             };
 
@@ -133,11 +141,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return matrix;
         }
 
-        public HierarchichalAnimationCurveTRS GetParentHacTRS(bool isGfzCoordinateSpace, out bool isRoot)
+        public HierarchichalAnimationCurveTRS GetParentHacTRS(Scope scope, bool isGfzCoordinateSpace, out bool isRoot)
         {
             var parent = GetParent();
             isRoot = parent == null;
-            var parentHacTRS = isRoot ? null : parent.CreateHierarchichalAnimationCurveTRS(isGfzCoordinateSpace);
+            var parentHacTRS = isRoot ? null : parent.CreateHierarchichalAnimationCurveTRS(scope, isGfzCoordinateSpace);
             return parentHacTRS;
         }
 

@@ -9,7 +9,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
     public class HierarchichalAnimationCurveTRS :
         IPositionEvaluable
     {
-        public Matrix4x4 StaticMatrix { get; set; } = new();
+        //public Matrix4x4 StaticMatrix { get; set; } = new();
         public AnimationCurveTRS AnimationCurveTRS { get; set; } = new();
         public HierarchichalAnimationCurveTRS Parent { get; set; } = null;
         public HierarchichalAnimationCurveTRS[] Children { get; set; } = new HierarchichalAnimationCurveTRS[0];
@@ -31,19 +31,20 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 : Matrix4x4.TRS(Vector3.zero, Quaternion.identity, Vector3.one);
 
             var selfAnimationMatrix = AnimationCurveTRS.EvaluateMatrix(time);
-            var selfMatrix = StaticMatrix * selfAnimationMatrix;
+            //var selfMatrix = StaticMatrix * selfAnimationMatrix;
 
-            var finalMatrix = parentMatrix * selfMatrix;
+            //var finalMatrix = parentMatrix * selfMatrix;
+            var finalMatrix = parentMatrix * selfAnimationMatrix;
             return finalMatrix;
         }
 
-        public Matrix4x4 EvaluateHierarchyMatrix2(double time)
-        {
-            var finalStaticMatrix = EvaluateStaticMatrices();
-            var finalAnimationMatrix = EvaluateAnimationMatrices(time);
-            var finalMatrix = finalAnimationMatrix * finalStaticMatrix;
-            return finalMatrix;
-        }
+        //public Matrix4x4 EvaluateHierarchyMatrix2(double time)
+        //{
+        //    var finalStaticMatrix = EvaluateStaticMatrices();
+        //    var finalAnimationMatrix = EvaluateAnimationMatrices(time);
+        //    var finalMatrix = finalAnimationMatrix * finalStaticMatrix;
+        //    return finalMatrix;
+        //}
 
         public Vector3 EvaluateHierarchyPosition(double time)
         {
@@ -53,22 +54,23 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 : Vector3.zero;
 
             var selfAnimationPosition = AnimationCurveTRS.Position.Evaluate(time);
-            var selfPosition = StaticMatrix.Position() + selfAnimationPosition;
+            //var selfPosition = StaticMatrix.Position() + selfAnimationPosition;
 
-            var finalMatrix = parentPosition + selfPosition;
+            //var finalMatrix = parentPosition + selfPosition;
+            var finalMatrix = parentPosition + selfAnimationPosition;
             return finalMatrix;
         }
         public float3 EvaluatePosition(double time) => EvaluateHierarchyPosition(time);
 
-        public Matrix4x4 EvaluateStaticMatrices()
-        {
-            var parentStaticMatrix = HasParent
-                ? Parent.EvaluateStaticMatrices()
-                : Matrix4x4.TRS(Vector3.zero, Quaternion.identity, Vector3.one);
+        //public Matrix4x4 EvaluateStaticMatrices()
+        //{
+        //    var parentStaticMatrix = HasParent
+        //        ? Parent.EvaluateStaticMatrices()
+        //        : Matrix4x4.TRS(Vector3.zero, Quaternion.identity, Vector3.one);
 
-            var staticMatrix = parentStaticMatrix * StaticMatrix;
-            return staticMatrix;
-        }
+        //    var staticMatrix = parentStaticMatrix * StaticMatrix;
+        //    return staticMatrix;
+        //}
         public Matrix4x4 EvaluateAnimationMatrices(double time)
         {
             var parentAniamtionMatrix = HasParent
