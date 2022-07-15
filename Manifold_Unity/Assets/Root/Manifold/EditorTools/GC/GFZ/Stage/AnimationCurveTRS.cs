@@ -79,19 +79,19 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         public GameCube.GFZ.Stage.AnimationCurveTRS ToTrackSegment()
         {
             var trackCurves = new GameCube.GFZ.Stage.AnimationCurveTRS();
-            var corrected = CreateGfzCoordinateSpace();
+            var rightHanded = CreateGfzCoordinateSpace();
 
-            trackCurves.PositionX = AnimationCurveConverter.ToGfz(corrected.Position.x);
-            trackCurves.PositionY = AnimationCurveConverter.ToGfz(corrected.Position.y);
-            trackCurves.PositionZ = AnimationCurveConverter.ToGfz(corrected.Position.z);
+            trackCurves.PositionX = AnimationCurveConverter.ToGfz(rightHanded.Position.x);
+            trackCurves.PositionY = AnimationCurveConverter.ToGfz(rightHanded.Position.y);
+            trackCurves.PositionZ = AnimationCurveConverter.ToGfz(rightHanded.Position.z);
 
-            trackCurves.RotationX = AnimationCurveConverter.ToGfz(corrected.Rotation.x);
-            trackCurves.RotationY = AnimationCurveConverter.ToGfz(corrected.Rotation.y);
-            trackCurves.RotationZ = AnimationCurveConverter.ToGfz(corrected.Rotation.z);
+            trackCurves.RotationX = AnimationCurveConverter.ToGfz(rightHanded.Rotation.x);
+            trackCurves.RotationY = AnimationCurveConverter.ToGfz(rightHanded.Rotation.y);
+            trackCurves.RotationZ = AnimationCurveConverter.ToGfz(rightHanded.Rotation.z);
 
-            trackCurves.ScaleX = AnimationCurveConverter.ToGfz(corrected.Scale.x);
-            trackCurves.ScaleY = AnimationCurveConverter.ToGfz(corrected.Scale.y);
-            trackCurves.ScaleZ = AnimationCurveConverter.ToGfz(corrected.Scale.z);
+            trackCurves.ScaleX = AnimationCurveConverter.ToGfz(rightHanded.Scale.x);
+            trackCurves.ScaleY = AnimationCurveConverter.ToGfz(rightHanded.Scale.y);
+            trackCurves.ScaleZ = AnimationCurveConverter.ToGfz(rightHanded.Scale.z);
 
             return trackCurves;
         }

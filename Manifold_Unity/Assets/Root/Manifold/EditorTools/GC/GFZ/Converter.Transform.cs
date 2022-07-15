@@ -22,12 +22,12 @@ namespace Manifold.EditorTools.GC.GFZ
         {
             CopyToGfzTransformTRXS(unityTransform, gfzTransform);
         }
-        public static void CopyUnityTransform(this TransformMatrix3x4 gfzTransform, Transform unityTransform, Space space)
+        public static void CopyUnityTransform(this TransformMatrix3x4 gfzTransform, Transform unityTransform, Space space, bool flipCoords = false)
         {
             if (space == Space.Self)
-                LocalToGfzTransformMatrix3x4(unityTransform, gfzTransform);
+                LocalToGfzTransformMatrix3x4(unityTransform, gfzTransform, flipCoords);
             else
-                WorldToGfzTransformMatrix3x4(unityTransform, gfzTransform);
+                WorldToGfzTransformMatrix3x4(unityTransform, gfzTransform, flipCoords);
         }
 
 
@@ -80,29 +80,42 @@ namespace Manifold.EditorTools.GC.GFZ
         /// </summary>
         /// <param name="from">The transform to copy local TRS from.</param>
         /// <param name="to">The transform to apply local TRS to.</param>
-        public static void LocalToGfzTransformMatrix3x4(Transform from, TransformMatrix3x4 to)
+        public static void LocalToGfzTransformMatrix3x4(Transform from, TransformMatrix3x4 to, bool flipCoords = false)
         {
             // Create Unity Matrix for easy setup of TRS.
             // Use LOCAL coordinates since this structure may exist in a hierarchy with parenting.
+
+            Vector3 position = from.localPosition;
+            Vector3 rotation = from.localRotation.eulerAngles;
+            Vector3 scale = from.localScale;
+
+            if (flipCoords)
+            {
+                position.z = -position.z;
+                rotation.y = -rotation.y;
+            }
+
             var matrix = new Matrix4x4();
-            matrix.SetTRS(
-                from.localPosition,
-                from.localRotation,
-                from.localScale);
+            matrix.SetTRS(position, Quaternion.Euler(rotation), scale);
 
             // Set value to transform, implicitely converts Matrix4x4 to float4x4
             to.Matrix = matrix;
         }
 
-        public static void WorldToGfzTransformMatrix3x4(Transform from, TransformMatrix3x4 to)
+        public static void WorldToGfzTransformMatrix3x4(Transform from, TransformMatrix3x4 to, bool flipCoords)
         {
-            // Create Unity Matrix for easy setup of TRS.
-            // Use LOCAL coordinates since this structure may exist in a hierarchy with parenting.
+            Vector3 position = from.position;
+            Vector3 rotation = from.rotation.eulerAngles;
+            Vector3 scale = from.lossyScale;
+
+            if (flipCoords)
+            {
+                position.z = -position.z;
+                rotation.y = -rotation.y;
+            }
+
             var matrix = new Matrix4x4();
-            matrix.SetTRS(
-                from.position,
-                from.rotation,
-                from.lossyScale);
+            matrix.SetTRS(position, Quaternion.Euler(rotation), scale);
 
             // Set value to transform, implicitely converts Matrix4x4 to float4x4
             to.Matrix = matrix;
@@ -126,10 +139,10 @@ namespace Manifold.EditorTools.GC.GFZ
         /// </summary>
         /// <param name="unityTransform">The transform to copy local TRS from.</param>
         /// <returns></returns>
-        public static TransformMatrix3x4 ToGfzTransformMatrix3x4(Transform unityTransform, Space space)
+        public static TransformMatrix3x4 ToGfzTransformMatrix3x4(Transform unityTransform, Space space, bool flipCoords = false)
         {
             var value = new TransformMatrix3x4();
-            value.CopyUnityTransform(unityTransform, space);
+            value.CopyUnityTransform(unityTransform, space, flipCoords);
 
             return value;
         }
