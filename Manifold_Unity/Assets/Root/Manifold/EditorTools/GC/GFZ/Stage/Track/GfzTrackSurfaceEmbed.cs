@@ -25,6 +25,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         [field: SerializeField] public UnityEngine.AnimationCurve Width { get; private set; } = new UnityEngine.AnimationCurve(new(0, 0.5f), new(1, 0.5f));
         [field: SerializeField] public UnityEngine.AnimationCurve Offset { get; private set; } = new UnityEngine.AnimationCurve(new(0, 0), new(1, 0));
 
+        [field: Header("Debug")]
+        [field: SerializeField] public AnimationCurveTRS trs { get; private set; } = new();
+
 
         public Color32 GetColor(SurfaceEmbedType type)
         {
@@ -68,14 +71,17 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
             var posx = new UnityEngine.AnimationCurve(Offset.keys);
             var sclx = new UnityEngine.AnimationCurve(Width.keys);
-            RenormalizeKeyTimes(posx, maxTime);
-            RenormalizeKeyTimes(sclx, maxTime);
+            var keysPX = posx.GetRenormalizedKeyRangeAndTangents(From * maxTime, To * maxTime);
+            var keysSX = sclx.GetRenormalizedKeyRangeAndTangents(From * maxTime, To * maxTime);
 
-            trs.Position.x = posx;
-            trs.Scale.x = sclx;
+            trs.Position.x = new UnityEngine.AnimationCurve(keysPX);
+            trs.Scale.x = new UnityEngine.AnimationCurve(keysSX);
 
-            if (isGfzCoordinateSpace)
-                trs = trs.CreateGfzCoordinateSpace();
+            // Don't need this right? We flip p.z and r.y
+            //if (isGfzCoordinateSpace)
+            //    trs = trs.CreateGfzCoordinateSpace();
+
+            this.trs = trs;
 
             return trs;
         }
@@ -146,25 +152,5 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         }
 
-        private void RenormalizeKeyTimes(UnityEngine.AnimationCurve curve, float maxTime)
-        {
-            var keys = curve.keys;
-            for (int i = 0; i < curve.length; i++)
-            {
-                var key = keys[i];
-                var mappedTime = Map(key.time, From, To);
-                var time = mappedTime * maxTime;
-                keys[i].time = time;
-            }
-            curve.keys = keys;
-        }
-
-        private float Map(float time, float min, float max)
-        {
-            float delta = max - min;
-            float rangedTime = time * delta;
-            float trueTime = min + rangedTime;
-            return trueTime;
-        }
     }
 }

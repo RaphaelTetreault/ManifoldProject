@@ -23,25 +23,25 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         public float GetSegmentLength() => GetRootMaxTime();
 
         // PROBABLY WRONG
-        //public Matrix4x4 EvaluateHierarchyMatrix2(double time)
-        //{
-        //    // Get parent matrix. This is recursive.
-        //    var parentMatrix = HasParent
-        //        ? Parent.EvaluateHierarchyMatrix(time)
-        //        : Matrix4x4.TRS(Vector3.zero, Quaternion.identity, Vector3.one);
-
-        //    var selfAnimationMatrix = AnimationCurveTRS.EvaluateMatrix(time);
-        //    var selfMatrix = StaticMatrix * selfAnimationMatrix;
-
-        //    var finalMatrix = parentMatrix * selfMatrix;
-        //    return finalMatrix;
-        //}
-
         public Matrix4x4 EvaluateHierarchyMatrix(double time)
+        {
+            // Get parent matrix. This is recursive.
+            var parentMatrix = HasParent
+                ? Parent.EvaluateHierarchyMatrix(time)
+                : Matrix4x4.TRS(Vector3.zero, Quaternion.identity, Vector3.one);
+
+            var selfAnimationMatrix = AnimationCurveTRS.EvaluateMatrix(time);
+            var selfMatrix = StaticMatrix * selfAnimationMatrix;
+
+            var finalMatrix = parentMatrix * selfMatrix;
+            return finalMatrix;
+        }
+
+        public Matrix4x4 EvaluateHierarchyMatrix2(double time)
         {
             var finalStaticMatrix = EvaluateStaticMatrices();
             var finalAnimationMatrix = EvaluateAnimationMatrices(time);
-            var finalMatrix = finalStaticMatrix * finalAnimationMatrix;
+            var finalMatrix = finalAnimationMatrix * finalStaticMatrix;
             return finalMatrix;
         }
 

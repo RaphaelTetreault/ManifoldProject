@@ -21,6 +21,20 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             get => new AnimationCurve[] { x, y, z };
         }
 
+        public AnimationCurve3() { }
+        public AnimationCurve3(AnimationCurve x, AnimationCurve y, AnimationCurve z)
+        {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+        }
+        public AnimationCurve3(Keyframe[] x, Keyframe[] y, Keyframe[] z)
+        {
+            this.x = new AnimationCurve(x);
+            this.y = new AnimationCurve(y);
+            this.z = new AnimationCurve(z);
+        }
+
         // METHODS
         public AnimationCurve3 CreateDeepCopy()
         {

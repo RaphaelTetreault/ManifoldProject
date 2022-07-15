@@ -15,6 +15,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         SerializedProperty endPositionX;
         SerializedProperty endPositionY;
         SerializedProperty endPositionZ;
+        SerializedProperty startRotationY;
+        SerializedProperty startRotationZ;
         SerializedProperty endRotationY;
         SerializedProperty endRotationZ;
         SerializedProperty scaleCurvesXYZ;
@@ -25,6 +27,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             endPositionX = serializedObject.FindProperty(nameof(endPositionX));
             endPositionY = serializedObject.FindProperty(nameof(endPositionY));
             endPositionZ = serializedObject.FindProperty(nameof(endPositionZ));
+            startRotationY = serializedObject.FindProperty(nameof(startRotationY));
+            startRotationZ = serializedObject.FindProperty(nameof(startRotationZ));
             endRotationY = serializedObject.FindProperty(nameof(endRotationY));
             endRotationZ = serializedObject.FindProperty(nameof(endRotationZ));
             scaleCurvesXYZ = serializedObject.FindProperty(nameof(scaleCurvesXYZ));
@@ -87,7 +91,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 var s = matrices[i].lossyScale;
             }
 
-            const float thickness = 1.2f;
+            const float thickness = 5f;
             Vector3 left = Vector3.left * 0.5f;
             Vector3 right = Vector3.right * 0.5f;
 
@@ -113,7 +117,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 var r0 = mtx0.MultiplyPoint(right);
                 var r1 = mtx1.MultiplyPoint(right);
                 Handles.color = Color.white;
-                Handles.DrawLine(l0, r0, 1f);
+                Handles.DrawLine(l0, r0, 1.25f);
                 Handles.color = Color.green;
                 Handles.DrawLine(l0, l1, thickness);
                 Handles.color = Color.red;

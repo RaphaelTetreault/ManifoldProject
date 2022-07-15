@@ -116,8 +116,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             var r = Rotation.CreateDeepCopy();
             var s = Scale.CreateDeepCopy();
 
-            p.z = p.z.GetInverted();
-            r.y = r.y.GetInverted();
+            p.z = p.z.CreateInverted();
+            r.y = r.y.CreateInverted();
 
             return new AnimationCurveTRS()
             {

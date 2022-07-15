@@ -11,6 +11,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         [SerializeField] private float endPositionX;
         [SerializeField] private float endPositionY;
         [SerializeField, Min(1f)] private float endPositionZ = 1f;
+        [SerializeField] private float startRotationY;
+        [SerializeField] private float startRotationZ;
         [SerializeField] private float endRotationY;
         [SerializeField] private float endRotationZ;
         [SerializeField] private AnimationCurve3 scaleCurvesXYZ = new();
@@ -49,6 +51,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         public Vector3 GetRotationStart()
         {
             Vector3 rotation = transform.localRotation.eulerAngles;
+            rotation += new Vector3(0, startRotationY, startRotationZ);
             return rotation;
         }
         public Vector3 GetRotationOffset()
@@ -59,7 +62,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         public Vector3 GetRotationEnd()
         {
             Vector3 start = GetRotationStart();
-            Vector3 offset = GetRotationEnd();
+            Vector3 offset = GetRotationOffset();
             Vector3 end = start + offset;
             return end;
         }
@@ -114,12 +117,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public AnimationCurve3 CreatePositionCurvesXYZ(float maxTime)
         {
-            var positionOffset = GetPositionOffset();
-
             var curves = new AnimationCurve3();
-            curves.x = new UnityEngine.AnimationCurve(new(0, 0), new(maxTime, positionOffset.x));
-            curves.y = new UnityEngine.AnimationCurve(new(0, 0), new(maxTime, positionOffset.y));
-            curves.z = new UnityEngine.AnimationCurve(new(0, 0), new(maxTime, positionOffset.z));
+            curves.x = new UnityEngine.AnimationCurve(new(0, 0), new(maxTime, EndPositionX));
+            curves.y = new UnityEngine.AnimationCurve(new(0, 0), new(maxTime, EndPositionY));
+            curves.z = new UnityEngine.AnimationCurve(new(0, 0), new(maxTime, EndPositionZ));
             SetAnimationKeysAsLinear(curves);
 
             return curves;
@@ -127,12 +128,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public AnimationCurve3 CreateRotationCurvesXYZ(float maxTime)
         {
-            // For curve, start is always zero, static matrix has Transform component
-            var rotationOffset = GetRotationOffset();
             var curves = new AnimationCurve3();
-            curves.x = new UnityEngine.AnimationCurve(new(0, 0), new(maxTime, rotationOffset.x));
-            curves.y = new UnityEngine.AnimationCurve(new(0, 0), new(maxTime, rotationOffset.y));
-            curves.z = new UnityEngine.AnimationCurve(new(0, 0), new(maxTime, rotationOffset.z));
+            curves.x = new UnityEngine.AnimationCurve(new(0, 0             ), new(maxTime, 0           ));
+            curves.y = new UnityEngine.AnimationCurve(new(0, startRotationY), new(maxTime, EndRotationY));
+            curves.z = new UnityEngine.AnimationCurve(new(0, startRotationZ), new(maxTime, EndRotationZ));
             SetAnimationKeysAsLinear(curves);
 
             return curves;
@@ -140,18 +139,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public AnimationCurve3 CreateScaleCurvesXYZ(float maxTime)
         {
-            var copy = scaleCurvesXYZ.CreateDeepCopy();
-            var x = new UnityEngine.AnimationCurve(GetKeysRenormalized(copy.x, maxTime));
-            var y = new UnityEngine.AnimationCurve(GetKeysRenormalized(copy.y, maxTime));
-            var z = new UnityEngine.AnimationCurve(GetKeysRenormalized(copy.z, maxTime));
-
-            var curves = new AnimationCurve3()
-            {
-                x = x,
-                y = y,
-                z = z,
-            };
-
+            var x = scaleCurvesXYZ.x.GetRenormalizedKeyRangeAndTangents(0, maxTime);
+            var y = scaleCurvesXYZ.y.GetRenormalizedKeyRangeAndTangents(0, maxTime);
+            var z = scaleCurvesXYZ.z.GetRenormalizedKeyRangeAndTangents(0, maxTime);
+            var curves = new AnimationCurve3(x, y, z);
             return curves;
         }
 
@@ -168,62 +159,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
         }
 
-        public Keyframe[] GetRenormalizedKeyRange(UnityEngine.AnimationCurve curve, float newMaxTime)
-        {
-            if (curve.length == 0)
-                return new Keyframe[0];
-
-            var currMinTime = curve.GetMinTime();
-            var currMaxTime = curve.GetMaxTime();
-            var timeRange = currMaxTime - currMinTime;
-
-            var newKeys = new List<Keyframe>();
-            for (int i = 0; i < curve.keys.Length; i++)
-            {
-                var key = curve.keys[i];
-                var keyTimeNormalized = (key.time - currMinTime) / timeRange;
-                var newKeyTime = keyTimeNormalized * newMaxTime;
-
-                // In case timeRange is 0, resulting in div0
-                if (float.IsNaN(newKeyTime))
-                    newKeyTime = 0;
-
-                key.time = newKeyTime;
-                newKeys.Add(key);
-            }
-
-            return newKeys.ToArray();
-        }
-
-        public Keyframe[] GetKeysRenormalized(UnityEngine.AnimationCurve curve, float newMaxTime)
-        {
-            var oldKeys = curve.keys;
-            var newKeys = GetRenormalizedKeyRange(curve, newMaxTime);
-
-            for (int i = 0; i < newKeys.Length - 1; i++)
-            {
-                int curr = i;
-                int next = curr + 1;
-
-                var oldDeltaTime = GetDeltaTime(oldKeys[curr], oldKeys[next]);
-                var newDeltaTime = GetDeltaTime(newKeys[curr], newKeys[next]);
-                var deltaTime = newDeltaTime / oldDeltaTime;
-
-                newKeys[curr].outTangent /= deltaTime;
-                newKeys[next].inTangent /= deltaTime;
-            }
-            return newKeys;
-        }
-
-        public float GetDeltaTime(Keyframe a, Keyframe b)
-        {
-            var aTime = a.time;
-            var bTime = b.time;
-            var deltaTime = MathF.Abs(aTime - bTime);
-            return deltaTime;
-        }
-
-
         internal void UpdateTRS()
         {
             var maxTime = GetLineLength();
@@ -239,25 +174,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             var maxTime = GetMaxTime();
             foreach (var curve in animationCurveTRS.AnimationCurves)
             {
-                curve.keys = GetKeysRenormalized(curve, maxTime);
+                curve.keys = curve.GetRenormalizedKeyRangeAndTangents(0, maxTime);
             }
         }
-
-        //private Vector2 KeyToVector2(Keyframe keyframe)
-        //{
-        //    var vector2 = new Vector2(keyframe.time, keyframe.value);
-        //    return vector2;
-        //}
-
-        //private float GetAtanBetween(Keyframe from, Keyframe to)
-        //{
-        //    float x = to.time - from.time;
-        //    float y = to.value - from.value;
-        //    float angle = y / x;
-        //    float tangentRadians = Mathf.Atan(angle * Mathf.Deg2Rad);
-        //    float tangentDegrees = tangentRadians * Mathf.Rad2Deg;
-        //    return tangentDegrees;
-        //}
 
         // NOTE: isintangent could be figure out based on from index < or > to index
         private Keyframe[] SmoothCircleTangent(UnityEngine.AnimationCurve curve, int indexFrom, int indexTo, bool isInTangent)
