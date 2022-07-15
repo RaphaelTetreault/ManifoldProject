@@ -10,25 +10,29 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
     {
         [SerializeField] private float endPositionX;
         [SerializeField] private float endPositionY;
-        [SerializeField, Min(1f)] private float endPositionZ = 1f;
-        [SerializeField] private float startRotationY;
-        [SerializeField] private float startRotationZ;
-        [SerializeField] private float endRotationY;
-        [SerializeField] private float endRotationZ;
-        [SerializeField] private AnimationCurve3 scaleCurvesXYZ = new();
+        [SerializeField, Min(1f)] private float endPositionZ = 100f;
+        [SerializeField] private UnityEngine.AnimationCurve rotationY = CreateDefaultCurve();
+        [SerializeField] private UnityEngine.AnimationCurve rotationZ = CreateDefaultCurve();
+        [SerializeField] private UnityEngine.AnimationCurve scaleX = CreateDefaultCurve(64);
+        [SerializeField] private UnityEngine.AnimationCurve scaleY = CreateDefaultCurve(1);
+        [SerializeField] private UnityEngine.AnimationCurve scaleZ = CreateDefaultCurve(1);
         [SerializeField] private AnimationCurveTRS animationCurveTRS = new();
+        //
+        [SerializeField, Min(1f)] private float step = 10f;
 
         public float EndPositionX { get => endPositionX; set => endPositionX = value; }
         public float EndPositionY { get => endPositionY; set => endPositionY = value; }
         public float EndPositionZ { get => endPositionZ; set => endPositionZ = value; }
-        public float EndRotationY { get => endRotationY; set => endRotationY = value; }
-        public float EndRotationZ { get => endRotationZ; set => endRotationZ = value; }
-        public AnimationCurve3 ScaleCurvesXYZ { get => scaleCurvesXYZ; private set => scaleCurvesXYZ = value; }
+        public float Step { get => step; set => step = value; }
+        //public AnimationCurve3 ScaleCurvesXYZ { get => scaleCurvesXYZ; private set => scaleCurvesXYZ = value; }
         public AnimationCurveTRS AnimationCurveTRS { get => animationCurveTRS; private set => animationCurveTRS = value; }
 
-        [field: SerializeField]
-        public float Step { get; set; } = 10f;
 
+
+        private static UnityEngine.AnimationCurve CreateDefaultCurve(float defaultValue = 0)
+        {
+            return new UnityEngine.AnimationCurve(new(0, defaultValue), new(1, defaultValue));
+        }
 
         public Vector3 GetPositionStart()
         {
@@ -50,13 +54,14 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public Vector3 GetRotationStart()
         {
+            Vector3 startOffset = new Vector3(0, rotationY.EvaluateMin(), rotationZ.EvaluateMin());
             Vector3 rotation = transform.localRotation.eulerAngles;
-            rotation += new Vector3(0, startRotationY, startRotationZ);
-            return rotation;
+            Vector3 finalRotation = rotation + startOffset;
+            return finalRotation;
         }
         public Vector3 GetRotationOffset()
         {
-            Vector3 offset = new Vector3(0, endRotationY, endRotationZ);
+            Vector3 offset = new Vector3(0, rotationY.EvaluateMax(), rotationZ.EvaluateMax());
             return offset;
         }
         public Vector3 GetRotationEnd()
@@ -117,31 +122,28 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public AnimationCurve3 CreatePositionCurvesXYZ(float maxTime)
         {
-            var curves = new AnimationCurve3();
-            curves.x = new UnityEngine.AnimationCurve(new(0, 0), new(maxTime, EndPositionX));
-            curves.y = new UnityEngine.AnimationCurve(new(0, 0), new(maxTime, EndPositionY));
-            curves.z = new UnityEngine.AnimationCurve(new(0, 0), new(maxTime, EndPositionZ));
+            var x = new Keyframe[] { new(0, 0), new(maxTime, EndPositionX) };
+            var y = new Keyframe[] { new(0, 0), new(maxTime, EndPositionY) };
+            var z = new Keyframe[] { new(0, 0), new(maxTime, EndPositionZ) };
+            var curves = new AnimationCurve3(x, y, z);
             SetAnimationKeysAsLinear(curves);
-
             return curves;
         }
 
         public AnimationCurve3 CreateRotationCurvesXYZ(float maxTime)
         {
-            var curves = new AnimationCurve3();
-            curves.x = new UnityEngine.AnimationCurve(new(0, 0             ), new(maxTime, 0           ));
-            curves.y = new UnityEngine.AnimationCurve(new(0, startRotationY), new(maxTime, EndRotationY));
-            curves.z = new UnityEngine.AnimationCurve(new(0, startRotationZ), new(maxTime, EndRotationZ));
-            SetAnimationKeysAsLinear(curves);
-
+            var x = new Keyframe[0];
+            var y = rotationY.GetRenormalizedKeyRangeAndTangents(0, maxTime);
+            var z = rotationZ.GetRenormalizedKeyRangeAndTangents(0, maxTime);
+            var curves = new AnimationCurve3(x, y, z);
             return curves;
         }
 
         public AnimationCurve3 CreateScaleCurvesXYZ(float maxTime)
         {
-            var x = scaleCurvesXYZ.x.GetRenormalizedKeyRangeAndTangents(0, maxTime);
-            var y = scaleCurvesXYZ.y.GetRenormalizedKeyRangeAndTangents(0, maxTime);
-            var z = scaleCurvesXYZ.z.GetRenormalizedKeyRangeAndTangents(0, maxTime);
+            var x = scaleX.GetRenormalizedKeyRangeAndTangents(0, maxTime);
+            var y = scaleY.GetRenormalizedKeyRangeAndTangents(0, maxTime);
+            var z = scaleZ.GetRenormalizedKeyRangeAndTangents(0, maxTime);
             var curves = new AnimationCurve3(x, y, z);
             return curves;
         }
@@ -167,15 +169,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             var scale = CreateScaleCurvesXYZ(maxTime);
             var trs = new AnimationCurveTRS(position, rotation, scale);
             animationCurveTRS = trs;
-        }
-
-        internal void UpdateMaxKeyTimes()
-        {
-            var maxTime = GetMaxTime();
-            foreach (var curve in animationCurveTRS.AnimationCurves)
-            {
-                curve.keys = curve.GetRenormalizedKeyRangeAndTangents(0, maxTime);
-            }
         }
 
         // NOTE: isintangent could be figure out based on from index < or > to index
@@ -215,6 +208,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 return curve.keys;
 
             return SmoothCircleTangent(curve, index, index - 1, true);
+        }
+
+        private void Reset()
+        {
+            UpdateTRS();
         }
     }
 }

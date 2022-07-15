@@ -12,65 +12,122 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
     [CustomEditor(typeof(GfzLinePath))]
     internal class GfzLinePathEditor : Editor
     {
+        // position
         SerializedProperty endPositionX;
         SerializedProperty endPositionY;
         SerializedProperty endPositionZ;
-        SerializedProperty startRotationY;
-        SerializedProperty startRotationZ;
-        SerializedProperty endRotationY;
-        SerializedProperty endRotationZ;
-        SerializedProperty scaleCurvesXYZ;
+        // rotation
+        SerializedProperty rotationY;
+        SerializedProperty rotationZ;
+        // scale
+        SerializedProperty scaleX;
+        SerializedProperty scaleY;
+        SerializedProperty scaleZ;
+        // all
         SerializedProperty animationCurveTRS;
+        SerializedProperty step;
 
         void OnEnable()
         {
             endPositionX = serializedObject.FindProperty(nameof(endPositionX));
             endPositionY = serializedObject.FindProperty(nameof(endPositionY));
             endPositionZ = serializedObject.FindProperty(nameof(endPositionZ));
-            startRotationY = serializedObject.FindProperty(nameof(startRotationY));
-            startRotationZ = serializedObject.FindProperty(nameof(startRotationZ));
-            endRotationY = serializedObject.FindProperty(nameof(endRotationY));
-            endRotationZ = serializedObject.FindProperty(nameof(endRotationZ));
-            scaleCurvesXYZ = serializedObject.FindProperty(nameof(scaleCurvesXYZ));
+            rotationY = serializedObject.FindProperty(nameof(rotationY));
+            rotationZ = serializedObject.FindProperty(nameof(rotationZ));
+            scaleX = serializedObject.FindProperty(nameof(scaleX));
+            scaleY = serializedObject.FindProperty(nameof(scaleY));
+            scaleZ = serializedObject.FindProperty(nameof(scaleZ));
             animationCurveTRS = serializedObject.FindProperty(nameof(animationCurveTRS));
+
+            step = serializedObject.FindProperty(nameof(step));
         }
 
         public override void OnInspectorGUI()
         {
-            var line = target as GfzLinePath;
+            var linePath = target as GfzLinePath;
 
-            if (GUILayout.Button("Generate TRS"))
-                line.UpdateTRS();
-            if (GUILayout.Button("Update Max Time"))
-                line.UpdateMaxKeyTimes();
-            if (GUILayout.Button("Debug tangents"))
-                DebugTangents(line);
+            serializedObject.Update();
+            {
+                DrawUnityEditorDefaults(linePath);
+                EditorGUILayout.Separator();
+                DrawGizmosFields(linePath);
+                EditorGUILayout.Separator();
+                DrawSourceFields(linePath);
+                EditorGUILayout.Separator();
+                DrawTrsGeneration(linePath);
+            }
+            serializedObject.ApplyModifiedProperties();
 
-            //if (GUILayout.Button("Smooth Circle Tangent P.X"))
-            //{
-            //    var curve = line.AnimationCurveTRS.Position.y;
-            //    var keys = line.SmoothCircleTangentFromPrevious(curve, 1);
-            //    line.AnimationCurveTRS.Position.x.keys = keys;
-            //}
-            //if (GUILayout.Button("Smooth Circle Tangent P.Y"))
-            //{
-            //    var curve = line.AnimationCurveTRS.Position.y;
-            //    var keys = line.SmoothCircleTangentToNext(curve, 0);
-            //    line.AnimationCurveTRS.Position.y.keys = keys;
-            //}
-
-            base.OnInspectorGUI();
+            // Uncomment if you need to debug something
+            //base.OnInspectorGUI();
         }
 
-        private void DebugTangents(GfzLinePath linePath)
+        private void DrawUnityEditorDefaults(GfzLinePath linePath)
         {
-            int index = 0;
-            foreach (var key in linePath.AnimationCurveTRS.Scale.x.keys)
-                Debug.Log($"TRS {index++}: in: {key.inTangent} out: {key.outTangent}");
+            GuiSimple.DefaultScript("Script", linePath);
+            GUI.enabled = false;
+            EditorGUILayout.ObjectField(nameof(linePath.Prev), linePath.Prev, typeof(GfzTrackSegmentRootNode), false);
+            EditorGUILayout.ObjectField(nameof(linePath.Next), linePath.Next, typeof(GfzTrackSegmentRootNode), false);
+            GUI.enabled = true;
+        }
 
-            index = 0;
-            foreach (var key in linePath.ScaleCurvesXYZ.x.keys)
-                Debug.Log($"Scale {index++}: in: {key.inTangent} out: {key.outTangent}");
+        private void DrawGizmosFields(GfzLinePath linePath)
+        {
+            GuiSimple.Label("Gizmos", EditorStyles.boldLabel);
+            EditorGUI.indentLevel++;
+            {
+                EditorGUILayout.PropertyField(step);
+            }
+            EditorGUI.indentLevel--;
+        }
+
+
+        private void DrawSourceFields(GfzLinePath linePath)
+        {
+            GuiSimple.Label("Source Values", EditorStyles.boldLabel);
+            EditorGUI.indentLevel++;
+            {
+                GuiSimple.Label("Position", EditorStyles.boldLabel);
+                EditorGUI.indentLevel++;
+                EditorGUILayout.PropertyField(endPositionX);
+                EditorGUILayout.PropertyField(endPositionY);
+                EditorGUILayout.PropertyField(endPositionZ);
+                EditorGUI.indentLevel--;
+                GuiSimple.Label("Rotation", EditorStyles.boldLabel);
+                EditorGUI.indentLevel++;
+                EditorGUILayout.PropertyField(rotationY);
+                EditorGUILayout.PropertyField(rotationZ);
+                EditorGUI.indentLevel--;
+                GuiSimple.Label("Scale", EditorStyles.boldLabel);
+                EditorGUI.indentLevel++;
+                EditorGUILayout.PropertyField(scaleX);
+                EditorGUILayout.PropertyField(scaleY);
+                EditorGUILayout.PropertyField(scaleZ);
+                EditorGUI.indentLevel--;
+            }
+            EditorGUI.indentLevel--;
+        }
+
+        public void DrawTrsGeneration(GfzLinePath linePath)
+        {
+            var buttonWidths = GUILayout.Width(GuiSimple.GetElementsWidth(3));
+
+            GuiSimple.Label("Generate TRS", EditorStyles.boldLabel);
+            EditorGUILayout.BeginHorizontal();
+            {
+                if (GUILayout.Button("Generate Position", buttonWidths))
+                    ;// linePath.UpdateTRS();
+                if (GUILayout.Button("Generate Rotation", buttonWidths))
+                    ;// linePath.UpdateTRS();
+                if (GUILayout.Button("Generate Scale", buttonWidths))
+                    ;// linePath.UpdateTRS();
+            }
+            EditorGUILayout.EndHorizontal();
+
+            if (GUILayout.Button("Generate All Components"))
+                linePath.UpdateTRS();
+
+            EditorGUILayout.PropertyField(animationCurveTRS);
         }
 
         private void OnSceneGUI()
@@ -80,7 +137,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             var hacTRS = line.CreateHierarchichalAnimationCurveTRS(false);
             float length = line.GetLineLength();
             int nSteps = (int)Mathf.Ceil(length / line.Step);
-            var matrices = new Matrix4x4[nSteps+1];
+            var matrices = new Matrix4x4[nSteps + 1];
             for (int i = 0; i <= nSteps; i++)
             {
                 var time = i / (float)nSteps * length;

@@ -59,6 +59,18 @@ namespace Manifold.EditorTools
             return value;
         }
 
+        public static float EvaluateMin(this AnimationCurve curve)
+        {
+            float minTime = curve.GetMinTime();
+            float value = curve.Evaluate(minTime);
+            return value;
+        }
+        public static float EvaluateMax(this AnimationCurve curve)
+        {
+            float maxTime = curve.GetMaxTime();
+            float value = curve.Evaluate(maxTime);
+            return value;
+        }
 
         public static float FastEvaluateNormalized(this AnimationCurve curve, float normalizedTime)
         {
