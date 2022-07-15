@@ -39,15 +39,34 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 line.UpdateTRS();
             if (GUILayout.Button("Update Max Time"))
                 line.UpdateMaxKeyTimes();
+            if (GUILayout.Button("Debug tangents"))
+                DebugTangents(line);
 
-            if (GUILayout.Button("Smooth Circle Tangent"))
-            {
-                var curve = line.AnimationCurveTRS.Position.y;
-                var keys = line.SmoothCircleTangentToNext(curve, 0);
-                line.AnimationCurveTRS.Position.y.keys = keys;
-            }
+            //if (GUILayout.Button("Smooth Circle Tangent P.X"))
+            //{
+            //    var curve = line.AnimationCurveTRS.Position.y;
+            //    var keys = line.SmoothCircleTangentFromPrevious(curve, 1);
+            //    line.AnimationCurveTRS.Position.x.keys = keys;
+            //}
+            //if (GUILayout.Button("Smooth Circle Tangent P.Y"))
+            //{
+            //    var curve = line.AnimationCurveTRS.Position.y;
+            //    var keys = line.SmoothCircleTangentToNext(curve, 0);
+            //    line.AnimationCurveTRS.Position.y.keys = keys;
+            //}
 
             base.OnInspectorGUI();
+        }
+
+        private void DebugTangents(GfzLinePath linePath)
+        {
+            int index = 0;
+            foreach (var key in linePath.AnimationCurveTRS.Scale.x.keys)
+                Debug.Log($"TRS {index++}: in: {key.inTangent} out: {key.outTangent}");
+
+            index = 0;
+            foreach (var key in linePath.ScaleCurvesXYZ.x.keys)
+                Debug.Log($"Scale {index++}: in: {key.inTangent} out: {key.outTangent}");
         }
 
         private void OnSceneGUI()
