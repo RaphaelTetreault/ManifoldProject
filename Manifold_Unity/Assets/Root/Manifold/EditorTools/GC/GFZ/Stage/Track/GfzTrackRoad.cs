@@ -1,73 +1,81 @@
+using GameCube.GFZ.GMA;
 using GameCube.GFZ.Stage;
 using Manifold.EditorTools;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Manifold.EditorTools.GC.GFZ.Stage
+namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
-
-    public class GfzTrackRoad : GfzSegmentShape
+    public class GfzTrackRoad : GfzTrackSegmentShapeNode,
+        IRailSegment
     {
-        [Header("Gizmos")]
-        [SerializeField]
-        private bool doGizmos = true;
+        // Mesh stuff
+        [field: SerializeField, Min(1)] public int WidthDivisions { get; private set; } = 4;
+        [field: SerializeField, Min(1f)] public float LengthDistance { get; private set; } = 10f;
 
-        [Header("Road Properties")]
-        [Min(0f)]
-        [SerializeField]
-        private float railHeightLeft = 5f;
+        [field: Header("Road Properties")]
+        [field: SerializeField, Min(0f)] public float RailHeightLeft { get; private set; } = 3f;
+        [field: SerializeField, Min(0f)] public float RailHeightRight { get; private set; } = 3f;
 
-        [Min(0f)]
-        [SerializeField]
-        private float railHeightRight = 5f;
+        // TODO: deprecate
+        public override TrackSegmentType TrackSegmentType => TrackSegmentType.IsTrack;
 
-
-        private void OnDrawGizmos()
+        public override AnimationCurveTRS CreateAnimationCurveTRS(bool isGfzCoordinateSpace)
         {
-            if (!doGizmos)
-                return;
-
-            Gizmos.color = Color.red;
-            var mesh = Resources.GetBuiltinResource<Mesh>(UnityConst.Resources.Cube);
-
-            var baseMtx = transform.localToWorldMatrix;
-            var increment = 1f / 512f;
-            for (float t = 0; t < 1f; t += increment)
-            {
-                var animMtx = AnimationCurveTRS.EvaluateMatrix(t);
-                var mtx = baseMtx * animMtx;
-                var p = mtx.GetPosition();
-                var r = mtx.rotation;
-                var s = mtx.lossyScale;
-                Gizmos.DrawMesh(mesh, 0, p, r, s);
-            }
+            return new AnimationCurveTRS();
         }
 
-        public override Mesh[] GenerateMeshes()
+        public override Gcmf CreateGcmf()
         {
-            throw new System.NotImplementedException();
+            // Make the vertex data
+            var trackMeshTristrips = TristripGenerator.CreateTempTrackRoad(this, WidthDivisions, LengthDistance, true);
+            // convert to GameCube format
+            var dlists = TristripGenerator.TristripsToDisplayLists(trackMeshTristrips, GameCube.GFZ.GfzGX.VAT);
+
+            // Compute bounding sphere
+            var allVertices = new List<Vector3>();
+            foreach (var tristrip in trackMeshTristrips)
+                allVertices.AddRange(tristrip.positions);
+            var boundingSphere = TristripGenerator.CreateBoundingSphereFromPoints(allVertices);
+
+            // Note: this template is both sides, we do not YET need to sort front/back facing tristrips.
+            var template = GfzAssetTemplates.MeshTemplates.DebugTemplates.CreateLitVertexColored();
+            var gcmf = template.Gcmf;
+            gcmf.BoundingSphere = boundingSphere;
+            gcmf.Submeshes[0].PrimaryDisplayListsTranslucid = dlists;
+            gcmf.Submeshes[0].VertexAttributes = dlists[0].Attributes; // hacky
+            gcmf.Submeshes[0].UnkAlphaOptions.Origin = boundingSphere.origin;
+            gcmf.PatchTevLayerIndexes();
+
+            return gcmf;
         }
 
-        public override TrackSegment GenerateTrackSegment()
+        public override Mesh CreateMesh()
         {
-            var trackSegment = segment.GetSegment();
+            var tristrips = TristripGenerator.CreateTempTrackRoad(this, WidthDivisions, LengthDistance, false);
+            Mesh = TristripsToMesh(tristrips);
+            Mesh.name = $"Auto Gen - {this.name}";
+            return Mesh;
+        }
 
-            // Override the rail properies
-            IO.Assert.IsTrue(trackSegment.SegmentType == TrackSegmentType.IsTransformLeaf);
+        public override TrackSegment CreateTrackSegment()
+        {
+            var children = CreateChildTrackSegments();
 
-            // Rail height
-            trackSegment.RailHeightLeft = railHeightLeft;
-            trackSegment.RailHeightRight = railHeightRight;
-            // Falgs for rail height
-            if (railHeightLeft > 0f)
-                trackSegment.PerimeterFlags |= TrackPerimeterFlags.hasRailHeightLeft;
-            if (railHeightRight > 0f)
-                trackSegment.PerimeterFlags |= TrackPerimeterFlags.hasRailHeightRight;
+            var trackSegment = new TrackSegment();
+            trackSegment.SegmentType = TrackSegmentType.IsTrack;
+            trackSegment.LocalPosition = transform.localPosition;
+            trackSegment.LocalRotation = transform.localRotation.eulerAngles;
+            trackSegment.LocalScale = transform.localScale;
+            trackSegment.BranchIndex = GetBranchIndex();
+            trackSegment.SetRails(RailHeightLeft, RailHeightRight);
+            trackSegment.Children = children;
 
-            //
             return trackSegment;
         }
+
+
 
     }
 }

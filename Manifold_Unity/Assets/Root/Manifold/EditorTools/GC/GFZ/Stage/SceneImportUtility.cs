@@ -2,27 +2,112 @@
 using GameCube.GFZ.Stage;
 using Manifold.IO;
 using System;
+using System.IO;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using Unity.Mathematics;
+
+using Manifold.EditorTools.GC.GFZ.Stage.Track;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage
 {
     public static class SceneImportUtility
     {
         // todo: make title consistent across progress bars.
+        public static string ExecuteText => "Import COLI as Unity Scene";
+
+        [MenuItem(GfzMenuItems.Stage.Menu + "Midiman", priority = GfzMenuItems.Stage.ImportSingleSelectPriority + 1)]
+        public static void ExportMidiman()
+        {
+            var settings = GfzProjectWindow.GetSettings();
+            var inputPath = settings.SourceStageDirectory;
+            var outputPath = settings.LogOutput;
+            foreach (var scene in ColiCourseIO.LoadAllStages(inputPath, "???"))
+            {
+                var path = outputPath + scene.FileName + ".tsv";
+                using (var writer = new StreamWriter(File.Create(path)))
+                {
+                    foreach (var model in scene.dynamicSceneObjects)
+                    {
+                        var name = model.Name;
+                        var hasMatrix = model.TransformMatrix3x4 is not null;
+                        var pos = hasMatrix ? model.TransformMatrix3x4.Position : model.TransformTRXS.Position;
+                        var rot = hasMatrix ? model.TransformMatrix3x4.RotationEuler : model.TransformTRXS.RotationEuler;
+                        var scl = hasMatrix ? model.TransformMatrix3x4.Scale : model.TransformTRXS.Scale;
+
+                        writer.WriteNextCol(name);
+                        writer.WriteNextCol(pos.x);
+                        writer.WriteNextCol(pos.y);
+                        writer.WriteNextCol(pos.z);
+                        writer.WriteNextCol(rot.x);
+                        writer.WriteNextCol(rot.y);
+                        writer.WriteNextCol(rot.z);
+                        writer.WriteNextCol(scl.x);
+                        writer.WriteNextCol(scl.y);
+                        writer.WriteNextCol(scl.z);
+                        writer.WriteNextRow();
+                    }
+                }
+            }
+            EditorUtility.ClearProgressBar();
+        }
+
+        [MenuItem(GfzMenuItems.Stage.Menu + "Midiman2", priority = GfzMenuItems.Stage.ImportSingleSelectPriority + 2)]
+        public static void ExportMidiman2()
+        {
+            var settings = GfzProjectWindow.GetSettings();
+            var inputPath = settings.SourceStageDirectory;
+            var outputPath = settings.LogOutput;
+            foreach (var scene in ColiCourseIO.LoadAllStages(inputPath, "???"))
+            {
+                var path = outputPath + scene.FileName + ".tsv";
+                using (var writer = new StreamWriter(File.Create(path)))
+                {
+                    int trackNodeIndex = 0;
+                    foreach (var trackNode in scene.trackNodes)
+                    {
+                        int checkpointIndex = 0;
+                        foreach (var checkpoint in trackNode.Checkpoints)
+                        {
+                            var name = $"Checkpoint {trackNodeIndex}.{checkpointIndex}";
+                            var pos0 = checkpoint.PlaneStart.origin;
+                            var rot0 = Quaternion.LookRotation(checkpoint.PlaneStart.normal, Vector3.up).eulerAngles;
+                            var pos1 = checkpoint.PlaneEnd.origin;
+                            var rot1 = Quaternion.LookRotation(checkpoint.PlaneEnd.normal, Vector3.up).eulerAngles;
+
+                            writer.WriteNextCol(name);
+                            writer.WriteNextCol(pos0.x);
+                            writer.WriteNextCol(pos0.y);
+                            writer.WriteNextCol(pos0.z);
+                            writer.WriteNextCol(rot0.x);
+                            writer.WriteNextCol(rot0.y);
+                            writer.WriteNextCol(rot0.z);
+                            writer.WriteNextCol(pos1.x);
+                            writer.WriteNextCol(pos1.y);
+                            writer.WriteNextCol(pos1.z);
+                            writer.WriteNextCol(rot1.x);
+                            writer.WriteNextCol(rot1.y);
+                            writer.WriteNextCol(rot1.z);
+                            writer.WriteNextRow();
+                            checkpointIndex++;
+                        }
+                        trackNodeIndex++;
+                    }
+                }
+            }
+            EditorUtility.ClearProgressBar();
+        }
 
 
-        public const string ExecuteText = "Import COLI as Unity Scene";
-
-        [MenuItem(Const.Menu.Manifold + "Scene Generation/Import All Stages")]
+        [MenuItem(GfzMenuItems.Stage.ImportAll, priority = GfzMenuItems.Stage.ImportAllPriority)]
         public static void ImportAll()
         {
             var settings = GfzProjectWindow.GetSettings();
-            var inputPath = settings.StageDir;
-            var outputPath = settings.UnityImportDir + "stage/";
+            var inputPath = settings.SourceStageDirectory;
+            var outputPath = DirectoryUtility.GetTopDirectory(settings.SourceDirectory) + "/stage/";
             foreach (var scene in ColiCourseIO.LoadAllStages(inputPath, "Generating Unity Scene From GFZ Scene"))
             {
                 Import(scene, outputPath);
@@ -31,13 +116,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             AssetDatabase.Refresh();
         }
 
-        [MenuItem(Const.Menu.Manifold + "Scene Generation/Import Stage (Single)")]
+        [MenuItem(GfzMenuItems.Stage.ImportSingle, priority = GfzMenuItems.Stage.ImportSinglePriority)]
         public static void ImportSingle()
         {
             var settings = GfzProjectWindow.GetSettings();
-            var inputPath = settings.StageDir;
-            var outputPath = settings.UnityImportDir + "stage/";
-            var sceneIndex = settings.SceneOfInterestID;
+            var inputPath = settings.SourceStageDirectory;
+            var outputPath = DirectoryUtility.GetTopDirectory(settings.SourceDirectory) + "/stage/";
+            var sceneIndex = settings.SingleSceneIndex;
             var filePath = $"{inputPath}COLI_COURSE{sceneIndex:00}";
             var scene = ColiCourseIO.LoadScene(filePath);
             Import(scene, outputPath);
@@ -45,14 +130,14 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             AssetDatabase.Refresh();
         }
 
-        [MenuItem(Const.Menu.Manifold + "Scene Generation/Import Stage (Single, Select File)")]
+        [MenuItem(GfzMenuItems.Stage.ImportSingleSelect, priority = GfzMenuItems.Stage.ImportSingleSelectPriority)]
         public static void ImportSingleSelect()
         {
             var settings = GfzProjectWindow.GetSettings();
-            var filePath = EditorUtility.OpenFilePanel("Select Stage File", settings.StageDir, "");
+            var filePath = EditorUtility.OpenFilePanel("Select Stage File", settings.SourceStageDirectory, "");
             if (string.IsNullOrEmpty(filePath))
                 return;
-            var outputPath = settings.UnityImportDir + "stage/";
+            var outputPath = DirectoryUtility.GetTopDirectory(settings.SourceDirectory) + "/stage/";
             var scene = ColiCourseIO.LoadScene(filePath);
             Import(scene, outputPath);
             EditorUtility.ClearProgressBar();
@@ -127,6 +212,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 triggersRoot.SetParent(mirrorRoot);
             }
 
+            // Hack AF, could use some cleaning
+            var allRootSegments = GameObject.FindObjectsOfType<TagTrackSegment>();
+            var rootSegments = allRootSegments.Where(x => x.depth == 0).Reverse().ToArray();
+            var testTransforms = TestTransformHeirarchy(rootSegments);
+            testTransforms.SetParent(mirrorRoot);
+            testTransforms.gameObject.SetActive(false);
+
             // Mirror all objects
             // Now that everything is placed right, get rid of mirror root
             var mirrorRootChildren = mirrorRoot.GetChildren();
@@ -154,7 +246,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             var noMeshObject = new GameObject();
 
             // Tag object with metadata
-            noMeshObject.AddComponent<NoMeshTag>();
+            noMeshObject.AddComponent<TagNoMesh>();
 
             // TEMP? Disable for visual clarity
             //noMeshObject.SetActive(false);
@@ -195,7 +287,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             {
                 count++;
                 var name = $"[{count.ToString(format)}] {typeName}";
-                ImportUtility.ProgressBar(count, total, name, title);
+                ProgressBar.ShowIndexed(count, total, name, title);
 
                 // Represent trigger as cube
                 var gobj = CreatePrimitive(PrimitiveType.Cube, name, root).gameObject;
@@ -232,7 +324,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 //
                 count++;
                 var name = $"[{count.ToString(format)}] {typeName}";
-                ImportUtility.ProgressBar(count, total, name, title);
+                ProgressBar.ShowIndexed(count, total, name, title);
 
                 // Parse trigger type
                 // There are 3 ways this data is used
@@ -354,7 +446,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 count++;
                 // TODO: add data as component, not name?
                 var name = $"[{count.ToString(format)}] {typeName}";
-                ImportUtility.ProgressBar(count, total, name, title);
+                ProgressBar.ShowIndexed(count, total, name, title);
 
                 // Create primite to represent trigger
                 var gobj = CreatePrimitive(PrimitiveType.Cube, name, root).gameObject;
@@ -388,7 +480,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 count++;
                 // TODO: add data as component, not name?
                 var name = $"[{count.ToString(format)}] {typeName}";
-                ImportUtility.ProgressBar(count, total, name, title);
+                ProgressBar.ShowIndexed(count, total, name, title);
 
                 //
                 var gobj = CreatePrimitive(PrimitiveType.Cube, name, root).gameObject;
@@ -421,7 +513,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             {
                 count++;
                 var name = $"[{count.ToString(format)}/{total}] {typeName}";
-                ImportUtility.ProgressBar(count, total, name, title);
+                ProgressBar.ShowIndexed(count, total, name, title);
 
                 //
                 var gobj = CreatePrimitive(PrimitiveType.Cube, name, root).gameObject;
@@ -454,7 +546,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             {
                 count++;
                 var name = $"[{count.ToString(format)}] {typeName}";
-                ImportUtility.ProgressBar(count, total, name, title);
+                ProgressBar.ShowIndexed(count, total, name, title);
 
                 var gobj = CreatePrimitive(PrimitiveType.Cube, name, root).gameObject;
                 var script = gobj.AddComponent<GfzVisualEffectTrigger>();
@@ -527,7 +619,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             }
         }
 
-        public static void CreateControlPointRecursive(Scene scene, TrackSegment trackTransform, GameObject parent, Mesh mesh, string name, int depth)
+        public static TagTrackSegment CreateControlPointRecursive(Scene scene, TrackSegment trackSegment, GameObject parent, Mesh mesh, string name, int depth)
         {
             //
             var controlPoint = new GameObject();
@@ -536,19 +628,49 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             controlPoint.name = $"{elementIndex++} {name}";
             controlPoint.transform.parent = parent.transform;
             // Set transform
-            controlPoint.transform.localPosition = trackTransform.LocalPosition;
-            controlPoint.transform.localRotation = Quaternion.Euler(trackTransform.LocalRotation);
-            controlPoint.transform.localScale = trackTransform.LocalScale;
+            controlPoint.transform.localPosition = trackSegment.LocalPosition;
+            controlPoint.transform.localRotation = Quaternion.Euler(trackSegment.LocalRotation);
+            controlPoint.transform.localScale = trackSegment.LocalScale;
 
             //
-            var children = trackTransform.Children;
+            tag.SetCurves(trackSegment);
+            tag.segmentType = trackSegment.SegmentType;
+            tag.embeddedPropertyType = trackSegment.EmbeddedPropertyType;
+            tag.perimeterFlags = trackSegment.PerimeterFlags;
+            tag.pipeCylinderFlags = trackSegment.PipeCylinderFlags;
+            tag.localScale = trackSegment.LocalScale;
+            tag.localRotation = trackSegment.LocalRotation;
+            tag.localPosition = trackSegment.LocalPosition;
+            tag.root_unk_0x38 = trackSegment.Root_unk_0x38;
+            tag.root_unk_0x3A = trackSegment.Root_unk_0x3A;
+            tag.railHeightRight = trackSegment.RailHeightRight;
+            tag.railHeightLeft = trackSegment.RailHeightLeft;
+            tag.branchIndex = trackSegment.BranchIndex; // 0, 1, 2, 3
+
+            tag.depth = trackSegment.Depth;
+
+            tag.hasCorner = trackSegment.TrackCornerPtr.IsNotNull;
+            if (tag.hasCorner)
+            {
+                var q = trackSegment.TrackCorner.Transform.Rotation.value;
+                tag.cornerPosition = trackSegment.TrackCorner.Transform.Position;
+                tag.cornerRotation = new Quaternion(q.x, q.y, q.z, q.w).eulerAngles;
+                tag.cornerScale = trackSegment.TrackCorner.Transform.Scale;
+                tag.width = trackSegment.TrackCorner.Width;
+                tag.perimeterFlags = trackSegment.TrackCorner.PerimeterOptions;
+            }
+            //
+            var children = trackSegment.Children;
             int count = 1;
             int total = children.Length;
             foreach (var child in children)
             {
                 var nameNext = $"{name}.{count++}";
-                CreateControlPointRecursive(scene, child, controlPoint, mesh, nameNext, depth + 1);
+                var tagChild = CreateControlPointRecursive(scene, child, controlPoint, mesh, nameNext, depth + 1);
+                tag.children.Add(tagChild);
             }
+
+            return tag;
         }
 
         public static void CreateControlPointSequential(Scene scene, TrackSegment trackTransform, GameObject parent, Mesh mesh, string name, int depth, int index)
@@ -628,76 +750,139 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                     cube.name = $"time {t:0.000}";
                     cube.transform.parent = subgroup.transform;
 
-                    var mtx = GetChildMatrix(trackSegment, t);
+                    var mtx = GetMatrixRecursive(trackSegment, t);
                     cube.transform.localPosition = mtx.Position();
                     cube.transform.localRotation = mtx.Rotation();
-                    // Override scale because some places are wtf
                     var scale = mtx.Scale();
-                    cube.transform.localScale = new Vector3(scale.x, scale.y / 100f, 1f);
+                    // Override scale because some places are wtf
+                    cube.transform.localScale = new Vector3(scale.x, 1f, 1f);
                 }
             }
 
             return root.transform;
         }
 
-        public static Matrix4x4 GetChildMatrix(TagTrackSegment trackSegment, float timeNormalized)
+        public static Matrix4x4 GetMatrixRecursive(TagTrackSegment trackSegment, float time)
         {
-            var transformMtx = Matrix4x4.TRS(
-                trackSegment.localPosition,
-                Quaternion.Euler(trackSegment.localRotation),
-                trackSegment.localScale);
+            var animationMtx = GetAnimationMatrix(trackSegment, time);
+            var staticMtx = GetStaticMatrix(trackSegment);
+            var mtx = animationMtx * staticMtx;
 
-            // Get max times
-            var curves = trackSegment.curves;
-            var maxTime = curves.GetMaxTime();
-            //float3 maxTimeScale = new float3(
-            //    GetCurveTime(curves.unityCurves[0]),
-            //    GetCurveTime(curves.unityCurves[1]),
-            //    GetCurveTime(curves.unityCurves[2]));
-            //float3 maxTimeRotation = new float3(
-            //    GetCurveTime(curves.unityCurves[3]),
-            //    GetCurveTime(curves.unityCurves[4]),
-            //    GetCurveTime(curves.unityCurves[5]));
-            //float3 maxTimePosition = new float3(
-            //    GetCurveTime(curves.unityCurves[6]),
-            //    GetCurveTime(curves.unityCurves[7]),
-            //    GetCurveTime(curves.unityCurves[8]));
-
-            var time = timeNormalized * maxTime;
-
-            float3 position = new float3(
-                curves.Position.x.EvaluateDefault(time, 0),
-                curves.Position.y.EvaluateDefault(time, 0),
-                curves.Position.z.EvaluateDefault(time, 0));
-            float3 rotation = new float3(
-                curves.Rotation.x.EvaluateDefault(time, 0),
-                curves.Rotation.y.EvaluateDefault(time, 0),
-                curves.Rotation.z.EvaluateDefault(time, 0));
-            float3 scale = new float3(
-                curves.Scale.x.EvaluateDefault(time, 1),
-                curves.Scale.y.EvaluateDefault(time, 1),
-                curves.Scale.z.EvaluateDefault(time, 1));
-
-            var animationMtx = Matrix4x4.TRS(position, Quaternion.Euler(rotation), scale);
-
-            // indeed, the correct order
-            var mtx = animationMtx * transformMtx;
-
-            if (trackSegment.children != null && trackSegment.children.Length > 0)
+            if (trackSegment.children != null && trackSegment.children.Count > 0)
             {
-                var child = trackSegment.children[0];
-                if (child.segmentType == TrackSegmentType.IsTransformParent ||
-                    child.segmentType == TrackSegmentType.IsTransformLeaf)
+                // Iterate over children until a valid node is found.
+                // Caveat: can't do branching paths like this since it only uses first found
+                for (int i = 0; i < trackSegment.children.Count; i++)
                 {
-                    var childMtx = GetChildMatrix(trackSegment.children[0], timeNormalized);
-                    mtx = mtx * childMtx;
+                    var child = trackSegment.children[i];
+
+                    bool isInvalidEmbed =
+                        child.segmentType == TrackSegmentType.IsEmbed && (
+                        child.embeddedPropertyType == TrackEmbeddedPropertyType.IsDamage ||
+                        child.embeddedPropertyType == TrackEmbeddedPropertyType.IsDirt ||
+                        child.embeddedPropertyType == TrackEmbeddedPropertyType.IsSlip ||
+                        child.embeddedPropertyType == TrackEmbeddedPropertyType.IsRecover);
+                    if (isInvalidEmbed)
+                        continue;
+
+                    bool isModulated =
+                        child.segmentType == TrackSegmentType.IsEmbed &&
+                        child.embeddedPropertyType == TrackEmbeddedPropertyType.IsModulated;
+                    bool isOpenPipeOrCapsule =
+                        child.segmentType == TrackSegmentType.IsEmbed &&
+                        child.embeddedPropertyType == TrackEmbeddedPropertyType.IsOpenPipeOrCylinder;
+
+
+                    Matrix4x4 childMtx;
+
+                    if (isModulated)
+                    {
+                        // Strip out position data
+                        var childAnimationMtx = GetAnimationMatrix(child, time);
+                        var amr = childAnimationMtx.Rotation();
+                        var ams = childAnimationMtx.Scale();
+                        childAnimationMtx = Matrix4x4.TRS(float3.zero, amr, ams);
+
+                        var childStaticMtx = GetStaticMatrix(child);
+                        var smr = childStaticMtx.Rotation();
+                        var sms = childStaticMtx.Scale();
+                        childStaticMtx = Matrix4x4.TRS(float3.zero, smr, sms);
+
+                        childMtx = childStaticMtx * childAnimationMtx;
+                    }
+                    else if (isOpenPipeOrCapsule)
+                    {
+                        // Strip out scale data
+                        var childAnimationMtx = GetAnimationMatrix(child, time);
+                        var amp = childAnimationMtx.Position();
+                        var amr = childAnimationMtx.Rotation();
+                        childAnimationMtx = Matrix4x4.TRS(amp, amr, new float3(1, 1, 1));
+
+                        var childStaticMtx = GetStaticMatrix(child);
+                        var smp = childStaticMtx.Position();
+                        var smr = childStaticMtx.Rotation();
+                        childStaticMtx = Matrix4x4.TRS(smp, smr, new float3(1, 1, 1));
+
+                        childMtx = childStaticMtx * childAnimationMtx;
+                    }
+                    else
+                    {
+                        childMtx = GetMatrixRecursive(child, time);
+                    }
+
+                    return mtx * childMtx;
                 }
             }
 
             return mtx;
         }
 
-        public static float GetCurveTime(UnityEngine.AnimationCurve curve)
+        public static Matrix4x4 GetStaticMatrix(TagTrackSegment trackSegment)
+        {
+            var staticMtx = Matrix4x4.TRS(
+                trackSegment.localPosition,
+                Quaternion.Euler(trackSegment.localRotation),
+                trackSegment.localScale);
+
+            return staticMtx;
+        }
+
+        public static Matrix4x4 GetAnimationMatrix(TagTrackSegment trackSegment, float timeNormalized)
+        {
+            // Get max times
+            var curves = trackSegment.curves;
+            float3 tp = new float3(
+                GetCurveMaxTime(curves.Position.x),
+                GetCurveMaxTime(curves.Position.y),
+                GetCurveMaxTime(curves.Position.z));
+            float3 tr = new float3(
+                GetCurveMaxTime(curves.Rotation.x),
+                GetCurveMaxTime(curves.Rotation.y),
+                GetCurveMaxTime(curves.Rotation.z));
+            float3 ts = new float3(
+                GetCurveMaxTime(curves.Scale.x),
+                GetCurveMaxTime(curves.Scale.y),
+                GetCurveMaxTime(curves.Scale.z));
+            var t = timeNormalized;
+
+            float3 position = new float3(
+                curves.Position.x.EvaluateDefault(t * tp.x, 0),
+                curves.Position.y.EvaluateDefault(t * tp.y, 0),
+                curves.Position.z.EvaluateDefault(t * tp.z, 0));
+            float3 rotation = new float3(
+                curves.Rotation.x.EvaluateDefault(t * tr.x, 0),
+                curves.Rotation.y.EvaluateDefault(t * tr.y, 0),
+                curves.Rotation.z.EvaluateDefault(t * tr.z, 0));
+            float3 scale = new float3(
+                curves.Scale.x.EvaluateDefault(t * ts.x, 1),
+                curves.Scale.y.EvaluateDefault(t * ts.y, 1),
+                curves.Scale.z.EvaluateDefault(t * ts.z, 1));
+
+            var animationMtx = Matrix4x4.TRS(position, Quaternion.Euler(rotation), scale);
+            return animationMtx;
+        }
+
+        public static float GetCurveMaxTime(UnityEngine.AnimationCurve curve)
         {
             if (curve.length == 0)
                 return 0f;
@@ -772,7 +957,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                     cell.parent = gridObject;
                 }
             }
-
 
             return gridObject;
         }

@@ -1,18 +1,18 @@
+using GameCube.GFZ.GMA;
 using GameCube.GFZ.Stage;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Manifold.EditorTools.GC.GFZ.Stage
+namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
-    public class GfzTrackCorner : GfzSegmentShape
+    public class GfzTrackCorner : GfzTrackSegmentShapeNode
     {
         public enum CornerTurnDirection
         {
             left = 1,
             right = 2,
         }
-
 
         [Header("Corner Properties")]
         [SerializeField]
@@ -30,16 +30,31 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         }
         public float RailHeight { get => railHeight; set => railHeight = value; }
 
+        public override TrackSegmentType TrackSegmentType => throw new System.NotImplementedException();
 
-        public override Mesh[] GenerateMeshes()
+        public override AnimationCurveTRS CreateAnimationCurveTRS(bool isGfzCoordinateSpace)
         {
             throw new System.NotImplementedException();
         }
 
-        public override TrackSegment GenerateTrackSegment()
+        public override Gcmf CreateGcmf()
         {
             throw new System.NotImplementedException();
         }
 
+        public override float GetMaxTime()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override Mesh CreateMesh()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override TrackSegment CreateTrackSegment()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

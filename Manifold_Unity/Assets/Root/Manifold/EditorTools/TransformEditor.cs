@@ -3,7 +3,7 @@ using UnityEditor;
 
 namespace Manifold.EditorTools
 {
-    // TODO: cleanup this crap from 3 iterations...
+    // TODO: cleanup this script...?
     [CustomEditor(typeof(Transform))]
     public class TransformEditor : Editor
     {

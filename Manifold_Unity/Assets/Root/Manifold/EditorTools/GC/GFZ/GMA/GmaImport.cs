@@ -1,9 +1,10 @@
-﻿using GameCube.GX;
+﻿// TODO:
+// - Implement data for all vertex data, ie: NBT, etc. Review what is used for GFZ.
+
+using GameCube.GX;
 using GameCube.GFZ.GMA;
-using Manifold;
 using Manifold.IO;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Unity.Mathematics;
@@ -15,33 +16,90 @@ namespace Manifold.EditorTools.GC.GFZ.GMA
 {
     public static class GmaImport
     {
-        public static void Import(Gma gma, UnityEngine.Material defaultMaterial)
+        private const string MaterialsFolder = "Assets/Root/Manifold/EditorTools/GC/GFZ/Materials/";
+        private const string DefaultMaterialAssetPath = MaterialsFolder + "mat_VertexColor.mat";
+
+
+        [MenuItem(GfzMenuItems.GMA.ImportGma, priority = GfzMenuItems.GMA.ImportGmaPriority)]
+        public static void ImportGma()
         {
-            // Set destination folder name for models
-            var filePath = Path.GetDirectoryName(gma.FileName);
-            var fileName = Path.GetFileNameWithoutExtension(gma.FileName);
-            // Create folder if it doesn't already exist
-            var modelDestination = $"{filePath}/{fileName}/";
-            // Ensure the folder path exists
-            AssetDatabaseUtility.CreateDirectory(modelDestination);
+            var settings = GfzProjectWindow.GetSettings();
+            var rootDirectory = settings.SourceDirectory;
+            ImportGma(rootDirectory);
+        }
 
-            foreach (var model in gma.Models)
+        [MenuItem(GfzMenuItems.GMA.ImportGmaAllRegions, priority = GfzMenuItems.GMA.ImportGmaAllRegionsPriority)]
+        public static void ImportGmaAllRegions()
+        {
+            var settings = GfzProjectWindow.GetSettings();
+            var testDirectories = settings.GetTestRootDirectories();
+            foreach (var dir in testDirectories)
+                ImportGma(dir);
+        }
+
+        public static void ImportGma(string rootDirectory)
+        {
+            var filePaths = Directory.GetFiles(rootDirectory, "*.gma", SearchOption.AllDirectories);
+            var gmas = BinarySerializableIO.LoadFile<Gma>(filePaths);
+
+            // Go up a directory
+            var relativeRoot = DirectoryUtility.GoUpDirectory(rootDirectory, 1);
+
+            int index = 0;
+            foreach (var gma in gmas)
             {
-                //var importTitle = $"Importing Model (/{totalModels}) Submesh Total ({submeshes})";
-                var mesh = CreateSingleMeshFromModel(model, modelDestination, "TEMP: Importing Model");
+                // Get relative path to asset, get folder, create folder in Assets if necessary
+                var filePath = filePaths[index++].Remove(0, relativeRoot.Length);
+                var fileName = Path.GetFileNameWithoutExtension(filePath);
+                var directory = Path.GetDirectoryName($"Assets/{filePath}");
+                var cleanDirectory = directory.Replace('\\', '/');
+                var outputDirectory = $"{cleanDirectory}/{fileName}";
+                AssetDatabaseUtility.CreateDirectory(outputDirectory);
 
-                // HACK: Add a generic material to each model
-                // In the future, generate materials for models
-                var hackMaterials = new UnityEngine.Material[mesh.subMeshCount];
-                for (int i = 0; i < hackMaterials.Length; i++)
-                    hackMaterials[i] = defaultMaterial;
+                foreach (var model in gma.Models)
+                {
+                    // Get mesh and materials
+                    var mesh = CreateSingleMeshFromModel(model, outputDirectory, "Importing Model");
+                    var tempMaterial = AssetDatabase.LoadAssetAtPath<UnityEngine.Material>(DefaultMaterialAssetPath);
+                    var meshMaterials = HackApplyDefaultMaterial(mesh, tempMaterial);
 
-                // Construct path and name for prefab
-                var prefabPath = $"{modelDestination}/pf_{model.Name}.prefab";
-                // Create and store asset to Asset Database
-                ImportUtility.CreatePrefabFromModel(mesh, hackMaterials, prefabPath);
+                    // Construct prefab path, save to asset database
+                    var prefabPath = $"{outputDirectory}/pf_{model.Name}.prefab";
+                    CreatePrefabFromModel(mesh, meshMaterials, prefabPath);
+                }
             }
-            ImportUtility.FinalizeAssetImport();
+
+            ProgressBar.Clear();
+        }
+
+        public static UnityEngine.Material[] HackApplyDefaultMaterial(Mesh mesh, UnityEngine.Material defaultMaterial)
+        {
+            // HACK: Add a generic material to each model submesh
+            // In the future, generate materials for models from GMA
+            var hackMaterials = new UnityEngine.Material[mesh.subMeshCount];
+            for (int i = 0; i < hackMaterials.Length; i++)
+                hackMaterials[i] = defaultMaterial;
+
+            return hackMaterials;
+        }
+
+        public static GameObject CreatePrefabFromModel(Mesh mesh, UnityEngine.Material[] meshMaterials, string assetPath)
+        {
+            // Create new GameObject (ends up in current scene)
+            var tempObject = new GameObject();
+
+            // Add mesh components, assign mesh
+            var meshRenderer = tempObject.AddComponent<MeshRenderer>();
+            var meshFilter = tempObject.AddComponent<MeshFilter>();
+            meshFilter.mesh = mesh;
+            meshRenderer.sharedMaterials = meshMaterials;
+
+            // Save to Asset Database
+            var prefab = PrefabUtility.SaveAsPrefabAsset(tempObject, assetPath);
+            // Remove asset from scene
+            UnityEngine.Object.DestroyImmediate(tempObject);
+
+            return prefab;
         }
 
         public static int[] GetTrianglesFromTriangleStrip(int numVerts, bool baseCCW)
@@ -81,6 +139,52 @@ namespace Manifold.EditorTools.GC.GFZ.GMA
             return triangles;
         }
 
+        private static void SetTrianglesCounterClockwise(int[] triangles, int triIndex, int i)
+        {
+            triangles[triIndex + 0] = i + 0;
+            triangles[triIndex + 1] = i + 1;
+            triangles[triIndex + 2] = i + 2;
+        }
+        private static void SetTrianglesClockwise(int[] triangles, int triIndex, int i)
+        {
+            triangles[triIndex + 0] = i + 0;
+            triangles[triIndex + 1] = i + 2;
+            triangles[triIndex + 2] = i + 1;
+        }
+
+        delegate void SetTriangleIndexes(int[] triangleIndexes, int baseTriangleIndex, int triangleIndex);
+        public static int[] GetTrianglesFromTriangleStrip2(int numVerts, bool baseCCW)
+        {
+            // Construct triangles from GameCube GX TRIANGLE_STRIP
+            // For one, note that we need to unwind the tristrip.
+            // We can use the index to know if the indice is odd or even.
+            // However, in GFZ, the winding for different display lists
+            // inverts based on it's "index," so to speak.
+            // To compensate, we need to XOR the odd/even value with whether
+            // the base index of the strip is meant to be CCW or CW.
+
+            const int vertexStride = 3;
+            int nTriangles = numVerts - 2;
+            int[] triangles = new int[nTriangles * vertexStride];
+
+            // Create array of functions to set rtriangles based on index
+            SetTriangleIndexes[] setTris = new SetTriangleIndexes[]
+            {
+                baseCCW ? SetTrianglesCounterClockwise : SetTrianglesClockwise,
+                baseCCW ? SetTrianglesClockwise : SetTrianglesCounterClockwise,
+            };
+
+            // Foreach triangle
+            for (int i = 0; i < nTriangles; i++)
+            {
+                int baseTriangleIndex = i * vertexStride;
+                setTris[0].Invoke(triangles, baseTriangleIndex + 0, i + 0);
+                setTris[1].Invoke(triangles, baseTriangleIndex + 1, i + 1);
+            }
+
+            return triangles;
+        }
+
         public static Mesh CreateSingleMeshFromModel(Model model, string path, string title = "Importing GCMF...")
         {
             // Count how many submeshes we will need to iterate through
@@ -94,13 +198,18 @@ namespace Manifold.EditorTools.GC.GFZ.GMA
             // Go over each mesh in submeshes
             foreach (var submesh in model.Gcmf.Submeshes)
             {
-                ImportUtility.ProgressBar<Gcmf>(submeshIndex, numSubmeshes, $"{path}{model.Name}");
+                var cancel = ProgressBar.ShowIndexed(submeshIndex, numSubmeshes, "Importing Model's Submesh", $"{path}/{model.Name}");
+                if (cancel)
+                {
+                    ProgressBar.Clear();
+                    throw new Exception("Aborted import.");
+                }
 
                 if (submesh.PrimaryDisplayListsOpaque is not null)
                 {
                     foreach (var displayList in submesh.PrimaryDisplayListsOpaque)
                     {
-                        var submeshDescriptor = CreateSubMesh(displayList, ref mesh, true);
+                        var submeshDescriptor = CreateSubMesh(displayList, mesh, true);
                         submeshDescriptors[submeshIndex] = submeshDescriptor;
                         submeshIndex++;
                     }
@@ -110,7 +219,7 @@ namespace Manifold.EditorTools.GC.GFZ.GMA
                 {
                     foreach (var displayList in submesh.PrimaryDisplayListsTranslucid)
                     {
-                        var submeshDescriptor = CreateSubMesh(displayList, ref mesh, true);
+                        var submeshDescriptor = CreateSubMesh(displayList, mesh, false);
                         submeshDescriptors[submeshIndex] = submeshDescriptor;
                         submeshIndex++;
                     }
@@ -120,7 +229,7 @@ namespace Manifold.EditorTools.GC.GFZ.GMA
                 {
                     foreach (var displayList in submesh.SecondaryDisplayListsOpaque)
                     {
-                        var submeshDescriptor = CreateSubMesh(displayList, ref mesh, true);
+                        var submeshDescriptor = CreateSubMesh(displayList, mesh, true);
                         submeshDescriptors[submeshIndex] = submeshDescriptor;
                         submeshIndex++;
                     }
@@ -130,7 +239,7 @@ namespace Manifold.EditorTools.GC.GFZ.GMA
                 {
                     foreach (var displayList in submesh.SecondaryDisplayListsTranslucid)
                     {
-                        var submeshDescriptor = CreateSubMesh(displayList, ref mesh, true);
+                        var submeshDescriptor = CreateSubMesh(displayList, mesh, false);
                         submeshDescriptors[submeshIndex] = submeshDescriptor;
                         submeshIndex++;
                     }
@@ -150,7 +259,8 @@ namespace Manifold.EditorTools.GC.GFZ.GMA
             // COM1, COM2, COM3, etc, which results in an error on Windows due to those being
             // reserved names for legacy systems.
             string name = $"mdl_{model.Name}.asset";
-            AssetDatabase.CreateAsset(mesh, $"{path}/{name}");
+            string outputPath = $"{path}/{name}";
+            AssetDatabase.CreateAsset(mesh, outputPath);
 
             return mesh;
         }
@@ -211,7 +321,7 @@ namespace Manifold.EditorTools.GC.GFZ.GMA
 
             for (int i = 0; i < colors.Length; i++)
             {
-                colors[i] = (colors.Length > 0)
+                colors[i] = (gxColors.Length > 0)
                     ? new Color32(gxColors[i].R, gxColors[i].G, gxColors[i].B, gxColors[i].A)
                     : defaultColor;
             }
@@ -219,7 +329,7 @@ namespace Manifold.EditorTools.GC.GFZ.GMA
             return colors;
         }
 
-        public static SubMeshDescriptor CreateSubMesh(DisplayList displayList, ref Mesh mesh, bool isCCW)
+        public static SubMeshDescriptor CreateSubMesh(DisplayList displayList, Mesh mesh, bool isCCW)
         {
             var submesh = new SubMeshDescriptor();
             var nVerts = displayList.pos.Length;

@@ -22,9 +22,12 @@ namespace Manifold.EditorTools.GC.GFZ
         {
             CopyToGfzTransformTRXS(unityTransform, gfzTransform);
         }
-        public static void CopyUnityTransform(this TransformMatrix3x4 gfzTransform, Transform unityTransform)
+        public static void CopyUnityTransform(this TransformMatrix3x4 gfzTransform, Transform unityTransform, Space space)
         {
-            CopyToGfzTransformMatrix3x4(unityTransform, gfzTransform);
+            if (space == Space.Self)
+                LocalToGfzTransformMatrix3x4(unityTransform, gfzTransform);
+            else
+                WorldToGfzTransformMatrix3x4(unityTransform, gfzTransform);
         }
 
 
@@ -77,7 +80,7 @@ namespace Manifold.EditorTools.GC.GFZ
         /// </summary>
         /// <param name="from">The transform to copy local TRS from.</param>
         /// <param name="to">The transform to apply local TRS to.</param>
-        public static void CopyToGfzTransformMatrix3x4(Transform from, TransformMatrix3x4 to)
+        public static void LocalToGfzTransformMatrix3x4(Transform from, TransformMatrix3x4 to)
         {
             // Create Unity Matrix for easy setup of TRS.
             // Use LOCAL coordinates since this structure may exist in a hierarchy with parenting.
@@ -86,6 +89,20 @@ namespace Manifold.EditorTools.GC.GFZ
                 from.localPosition,
                 from.localRotation,
                 from.localScale);
+
+            // Set value to transform, implicitely converts Matrix4x4 to float4x4
+            to.Matrix = matrix;
+        }
+
+        public static void WorldToGfzTransformMatrix3x4(Transform from, TransformMatrix3x4 to)
+        {
+            // Create Unity Matrix for easy setup of TRS.
+            // Use LOCAL coordinates since this structure may exist in a hierarchy with parenting.
+            var matrix = new Matrix4x4();
+            matrix.SetTRS(
+                from.position,
+                from.rotation,
+                from.lossyScale);
 
             // Set value to transform, implicitely converts Matrix4x4 to float4x4
             to.Matrix = matrix;
@@ -109,10 +126,10 @@ namespace Manifold.EditorTools.GC.GFZ
         /// </summary>
         /// <param name="unityTransform">The transform to copy local TRS from.</param>
         /// <returns></returns>
-        public static TransformMatrix3x4 ToGfzTransformMatrix3x4(Transform unityTransform)
+        public static TransformMatrix3x4 ToGfzTransformMatrix3x4(Transform unityTransform, Space space)
         {
             var value = new TransformMatrix3x4();
-            value.CopyUnityTransform(unityTransform);
+            value.CopyUnityTransform(unityTransform, space);
 
             return value;
         }

@@ -2,6 +2,9 @@ using UnityEngine;
 
 namespace Manifold.EditorTools
 {
+    /// <summary>
+    /// Extensions for Unity's Vector3 struct.
+    /// </summary>
     public static partial class Vector3Extensions
     {
         public static Vector3 Multiply(this Vector3 lhs, Vector3 rhs)

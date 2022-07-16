@@ -54,7 +54,7 @@ namespace Manifold.EditorTools.GC.GFZ
         public static void TryHash()
         {
             var settings = GfzProjectWindow.GetSettings();
-            var inputPath = settings.RootFolder;
+            var inputPath = settings.SourceDirectory;
             var outputPath = settings.FileOutput;
             var outputFile = outputPath + "md5-hashes.txt";
 
@@ -73,7 +73,7 @@ namespace Manifold.EditorTools.GC.GFZ
         public static void HashColiCourse()
         {
             var settings = GfzProjectWindow.GetSettings();
-            var inputPath = settings.StageDir;
+            var inputPath = settings.SourceStageDirectory;
             var outputPath = settings.FileOutput;
             var outputFile = outputPath + "md5-hashes.txt";
 

@@ -90,22 +90,15 @@ namespace Manifold.EditorTools.GC.GFZ
         {
             var keyframes = animationCurve.keys;
             var keyables = new KeyableAttribute[keyframes.Length];
+            var modes = TangentModesToInterpolationModes(animationCurve);
             for (int i = 0; i < keyables.Length; i++)
             {
                 var keyframe = keyframes[i];
-
-                // Must be the same for GFZ!
-                // 2022/01/31: might just be that prev.out and curr.in must be same.
-                var modeL = AnimationUtility.GetKeyLeftTangentMode(animationCurve, i);
-                var modeR = AnimationUtility.GetKeyRightTangentMode(animationCurve, i);
-                if (modeL != modeR)
-                    throw new ArgumentException("GFZ keyables must have same tangent mode for L/R tangents!");
-
                 var keyable = new KeyableAttribute()
                 {
                     Time = keyframe.time,
                     Value = keyframe.value,
-                    EaseMode = UnityToGfzTangentMode(modeL),
+                    EaseMode = modes[i],
                     TangentIn = keyframe.inTangent,
                     TangentOut = keyframe.outTangent,
                 };
@@ -115,49 +108,63 @@ namespace Manifold.EditorTools.GC.GFZ
             return keyables;
         }
 
+        public static InterpolationMode[] TangentModesToInterpolationModes(UnityEngine.AnimationCurve animationCurve)
+        {
+            var modes = new InterpolationMode[animationCurve.keys.Length];
+            for (int i = 0; i < modes.Length - 1; i++)
+            {
+                // GFZ: key modes -between- keys must be the same.
+                var modeR = AnimationUtility.GetKeyRightTangentMode(animationCurve, i + 0);
+                var modeL = AnimationUtility.GetKeyLeftTangentMode(animationCurve, i + 1);
+                if (modeL != modeR)
+                    throw new ArgumentException("GFZ keyables must have same tangent mode between keyframes!");
+
+                // We only need to keep the key's right tangent mode - it'll apply to the current and next keys
+                // ie: key[n].right == key[n+1].left
+                modes[i] = UnityToGfzTangentMode(modeR);
+            }
+
+            return modes;
+        }
+
         public static void SetGfzTangentsToUnityTangents(KeyableAttribute[] keyables, UnityEngine.AnimationCurve curve)
         {
-            for (int i = 0; i < keyables.Length; i++)
+            for (int i = 0; i < keyables.Length - 1; i++)
             {
-                AnimationUtility.TangentMode mode;
-
-                switch (keyables[i].EaseMode)
-                {
-                    case InterpolationMode.Constant:
-                        mode = AnimationUtility.TangentMode.Constant;
-                        AnimationUtility.SetKeyLeftTangentMode(curve, i, mode);
-                        AnimationUtility.SetKeyRightTangentMode(curve, i, mode);
-                        break;
-
-                    case InterpolationMode.Linear:
-                        mode = AnimationUtility.TangentMode.Linear;
-                        AnimationUtility.SetKeyLeftTangentMode(curve, i, mode);
-                        AnimationUtility.SetKeyRightTangentMode(curve, i, mode);
-                        break;
-
-                    case InterpolationMode.unknown1:
-                    case InterpolationMode.unknown2:
-                        // don't do anything... seems to be a better option than not.
-                        // The tangents seem to work fine in default (until I find something off)
-                        break;
-
-                    //case InterpolationMode.unknown1:
-                    //    mode = UnityEditor.AnimationUtility.TangentMode.Auto;
-                    //    break;
-
-                    //case InterpolationMode.unknown2:
-                    //    mode = UnityEditor.AnimationUtility.TangentMode.ClampedAuto;
-                    //    break;
-
-                    default:
-                        throw new NotImplementedException($"New value {(int)keyables[i].EaseMode}");
-                }
+                int keyCurr = i;
+                int keyNext = i + 1;
+                AnimationUtility.TangentMode mode = GfzToUnityTangentMode(keyables[keyCurr].EaseMode);
+                // In GFZ, animation key[n]'s mode applies to key[n].rightTangent and key[n+1].leftTanget.
+                // Think of it like the mode is inbetween the keys.
+                AnimationUtility.SetKeyRightTangentMode(curve, keyCurr, mode);
+                AnimationUtility.SetKeyLeftTangentMode(curve, keyNext, mode);
             }
         }
 
-        public static InterpolationMode UnityToGfzTangentMode(AnimationUtility.TangentMode tangentMode)
+        public static AnimationUtility.TangentMode GfzToUnityTangentMode(InterpolationMode mode)
         {
-            switch (tangentMode)
+            switch (mode)
+            {
+                case InterpolationMode.Constant:
+                    return AnimationUtility.TangentMode.Constant;
+
+                case InterpolationMode.Linear:
+                    return AnimationUtility.TangentMode.Linear;
+
+                case InterpolationMode.unknown1:
+                case InterpolationMode.unknown2:
+                    // don't do anything... seems to be a better option than not.
+                    // The tangents seem to work fine in default (until I find something off)
+                    return AnimationUtility.TangentMode.Free; // Value: 0
+
+                default:
+                    throw new Exception($"Unhandled conversiont to {nameof(InteractionMode)}.{mode}");
+            }
+        }
+
+        public static InterpolationMode UnityToGfzTangentMode(AnimationUtility.TangentMode mode)
+        {
+            switch (mode)
             {
                 case AnimationUtility.TangentMode.Constant:
                     return InterpolationMode.Constant;
@@ -172,7 +179,7 @@ namespace Manifold.EditorTools.GC.GFZ
                     return InterpolationMode.unknown1;
 
                 default:
-                    throw new NotImplementedException();
+                    throw new Exception($"Unhandled conversion to {nameof(AnimationUtility.TangentMode)}.{mode}");
             }
         }
 

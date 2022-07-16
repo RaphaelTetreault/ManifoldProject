@@ -11,23 +11,18 @@ using Manifold.Spline;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
-    public class GfzBezierSplineSegment : SegmentGenerator,
+    public class GfzBezierSplineSegment : GfzTrackSegmentRootNode,
         IPositionEvaluable
     {
+        // TODO: maneage consts better
+        private const int kNewSegmentLength = 300;
+        private const int kNewTangentLength = 100;
+
         [SerializeField]
         private List<BezierPoint> points;
 
         [SerializeField, HideInInspector]
         private bool isLoop = false;
-
-        [SerializeField, HideInInspector]
-        private AnimationCurve widthsCurve = new();
-
-        [SerializeField, HideInInspector]
-        private AnimationCurve heightsCurve = new();
-
-        [SerializeField, HideInInspector]
-        private AnimationCurve rollsCurve = new();
 
         //
         [SerializeField]
@@ -53,11 +48,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         [SerializeField]
         private float outterLineThickness = 2f;
 
-
-        // TODO
-        //      add widths => animation curve
-        //      add rolls  => animation curve
-        //      add option for loop? Extend array by 1, copy first into last, last into first
+        [SerializeField]
+        private AnimationCurveTRS animationCurveTRS = new();
+        public AnimationCurveTRS AnimationCurveTRS => animationCurveTRS;
 
         public bool IsLoop
         {
@@ -69,25 +62,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             get => viewDirection;
             set => viewDirection = value;
         }
-
-        public AnimationCurve WidthsCurve
-        {
-            get => widthsCurve;
-            set => widthsCurve = value;
-        }
-
-        public AnimationCurve HeightsCurve
-        {
-            get => heightsCurve;
-            set => heightsCurve = value;
-        }
-
-        public AnimationCurve RollsCurve
-        {
-            get => rollsCurve;
-            set => rollsCurve = value;
-        }
-
 
         public int PointsCount
         {
@@ -112,6 +86,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         public float SplineThickness { get => splineThickness; set => splineThickness = value; }
         public float OutterLineThickness { get => outterLineThickness; set => outterLineThickness = value; }
 
+        public override GameCube.GFZ.Stage.TrackSegmentType TrackSegmentType => throw new NotImplementedException();
+
         public BezierPoint GetBezierPoint(int index)
         {
             return points[index];
@@ -120,6 +96,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         public void SetBezierPoint(int index, BezierPoint point)
         {
             points[index] = point;
+            CallOnEdited();
         }
 
 
@@ -132,21 +109,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 {
                     time = i,
                     value = points[i].width,
-                };
-                curve.AddKey(key);
-            }
-            return curve;
-        }
-
-        public AnimationCurve CreateHeightsCurve()
-        {
-            var curve = new AnimationCurve();
-            for (int i = 0; i < points.Count; i++)
-            {
-                var key = new Keyframe()
-                {
-                    time = i,
-                    value = points[i].height,
                 };
                 curve.AddKey(key);
             }
@@ -167,8 +129,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
             return curve;
         }
-
-
 
         public (float time, int index) NormalizedTimeToTimeAndIndex(float t)
         {
@@ -267,11 +227,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         public Quaternion GetOrientation(float time, int index)
         {
             var xy = Quaternion.LookRotation(GetDirection(time, index));
-            var z = Quaternion.Euler(0, 0, rollsCurve.Evaluate(index + time));
-            var orientation = xy * z;
+            return xy;
+
+            //var z = Quaternion.Euler(0, 0, 0);
+            //var orientation = xy * z;
             // Re-orient as per transform orientation
-            orientation = orientation * transform.rotation;
-            return orientation;
+            //orientation = orientation * transform.rotation;
+            //return orientation;
         }
 
         public Quaternion GetOrientation(float time01)
@@ -283,9 +245,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public Vector3 GetScale(float time, int index)
         {
-            var width = widthsCurve.Evaluate(index + time);
-            var height = heightsCurve.Evaluate(index + time);
-            var scale = new Vector3(width, height, 1f);
+            var width = 0f;
+            //var width = widthsCurve.Evaluate(index + time);
+            //var height = heightsCurve.Evaluate(index + time);
+            var scale = new Vector3(width, 1f, 1f);
             return scale;
         }
 
@@ -318,44 +281,51 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         {
             var lastIndex = points.Count - 1;
             var lastBezier = points[lastIndex];
-            var length = (lastBezier.outTangent - lastBezier.position).magnitude;
+            //var length = (lastBezier.outTangent - lastBezier.position).magnitude;
             // Get the direction of the final spline curve point
             var direction = GetDirection(1f);
 
             //
             var newBezier = new BezierPoint();
-            newBezier.position = lastBezier.position + direction * length * 2f;
+            newBezier.position = lastBezier.position + direction * kNewSegmentLength;
             newBezier.tangentMode = BezierControlPointMode.Mirrored;
-            newBezier.inTangent = newBezier.position - direction * length / 4f;
-            newBezier.outTangent = newBezier.position + direction * length / 4f;
+            newBezier.inTangent = newBezier.position - direction * kNewTangentLength;
+            newBezier.outTangent = newBezier.position + direction * kNewTangentLength;
             newBezier.width = lastBezier.width;
+            newBezier.widthTangentMode = lastBezier.widthTangentMode;
             newBezier.roll = lastBezier.roll;
+            newBezier.rollTangentMode = lastBezier.rollTangentMode;
 
             points.Insert(lastIndex + 1, newBezier);
+            CallOnEdited();
         }
 
         public void AddPointAtStart()
         {
             var firstBezier = points[0];
-            var length = (firstBezier.outTangent - firstBezier.position).magnitude;
+            //var length = (firstBezier.outTangent - firstBezier.position).magnitude;
             // Get the direction of the final spline curve point, point position
             var direction = GetDirection(0f);
 
             //
             var newBezier = new BezierPoint();
-            newBezier.position = firstBezier.position - direction * length * 2f;
+            newBezier.position = firstBezier.position - direction * kNewSegmentLength;
             newBezier.tangentMode = BezierControlPointMode.Mirrored;
-            newBezier.inTangent = newBezier.position - direction * length / 4f;
-            newBezier.outTangent = newBezier.position + direction * length / 4f;
+            newBezier.inTangent = newBezier.position - direction * kNewTangentLength;
+            newBezier.outTangent = newBezier.position + direction * kNewTangentLength;
             newBezier.width = firstBezier.width;
+            newBezier.widthTangentMode = firstBezier.widthTangentMode;
             newBezier.roll = firstBezier.roll;
+            newBezier.rollTangentMode = firstBezier.rollTangentMode;
 
             points.Insert(0, newBezier);
+            CallOnEdited();
         }
 
         public void RemovePoint(int index)
         {
             points.RemoveAt(index);
+            CallOnEdited();
         }
 
         public void InsertPoint(int index)
@@ -370,9 +340,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             bezier.outTangent = bezier.position + direction;
             bezier.tangentMode = BezierControlPointMode.Mirrored;
             bezier.width = (bezier0.width + bezier1.width) / 2f;
+            bezier.widthTangentMode = AnimationUtility.TangentMode.Free;
             bezier.roll = (bezier0.roll + bezier1.roll) / 2f;
+            bezier.rollTangentMode = AnimationUtility.TangentMode.Free;
 
             points.Insert(index + 1, bezier);
+            CallOnEdited();
         }
 
         public void InsertBefore(int index)
@@ -430,6 +403,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
 
             this.isLoop = isLoop;
+            CallOnEdited();
         }
 
         public void Reset()
@@ -444,8 +418,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     inTangent = new Vector3(0f, 0f, -100f),
                     outTangent = new Vector3(0f, 0f, 100f),
                     width = 64f,
+                    widthTangentMode = AnimationUtility.TangentMode.Free,
                     height = 1f,
+                    heightTangentMode = AnimationUtility.TangentMode.Free,
                     roll = 0f,
+                    rollTangentMode = AnimationUtility.TangentMode.Free,
                 },
 
                 // First point which can form a curve with the start
@@ -456,82 +433,15 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     inTangent = new Vector3(0f, 0f, 300f),
                     outTangent = new Vector3(0f, 0f, 500f),
                     width = 64f,
+                    widthTangentMode = AnimationUtility.TangentMode.Free,
                     height = 1f,
+                    heightTangentMode = AnimationUtility.TangentMode.Free,
                     roll = 0f,
+                    rollTangentMode = AnimationUtility.TangentMode.Free,
                 },
             };
-        }
 
-
-        public override AnimationCurveTRS GetAnimationCurveTRS()
-        {
-            var trs = new AnimationCurveTRS();
-
-            // Compute curve lengths between each bezier control point
-            int numCurves = points.Count - 1;
-            double[] distances = new double[numCurves];
-            double totalDistance = 0;
-            for (int i = 0; i < distances.Length; i++)
-            {
-                double timeStart = (double)(i + 0) / numCurves;
-                double timeEnd = (double)(i + 1) / numCurves;
-                double distance = CurveLengthUtility.GetDistanceBetweenRepeated(this, timeStart, timeEnd, powerExp: 9); // consider raising powerExp to 4?
-                distances[i] = distance;
-                totalDistance += distance;
-                Debug.Log($"Distance {i}: {distance}");
-            }
-            Debug.Log("Total distance: " + totalDistance);
-
-            // GOAL: the inital X and Y rotation for any segment should/has to be x:0, y:0.
-            // This is because X and Y rotation is controlled by/is the forward vector of the segment's
-            // transform component. The animation data here should only represent the delta/difference
-            // between the initial transform component and the sampled matrix at time 't'.
-            // However, the Z/roll is independant of this XY rotation and should be preserved. However,
-            // it too is relative to the inital transform. Thus, we use the transform's Z/roll as the offset,
-            // leaving the Z/roll parameter of the bezier intact. If the transform is rotated +30 degrees about
-            // the Z axis, and the Z/roll parameter of the first anim key is +45, the animation data would
-            // generate an angle of +75. Inversing only the transform's +30 to -30 corrects this.
-            var initRotation = GetOrientation(0, 0).eulerAngles;
-            var inverseInitialRotation = Quaternion.Inverse(Quaternion.Euler(initRotation.x, initRotation.y, transform.eulerAngles.z));
-            var previousRotation = inverseInitialRotation.eulerAngles;
-
-            double currDistance = 0;
-            for (int i = 0; i < numCurves; i++)
-            {
-                float currLength = (float)distances[i];
-
-                // TODO: add and use samples per curve in bezier point
-                const int samples = 16;
-                for (int s = 0; s < samples; s++)
-                {
-                    var t = (float)(s + 0) / samples;
-                    var position = GetPosition(t, i);
-                    var scale = GetScale(t, i);
-                    var qRotation = inverseInitialRotation * GetOrientation(t, i);
-                    var rotation = qRotation.eulerAngles;
-                    rotation = CleanRotation(previousRotation, rotation);
-                    previousRotation = rotation;
-
-                    var timeNormalized = (currDistance + (t * currLength)) / totalDistance;
-                    trs.AddKeys((float)timeNormalized, position, rotation, scale);
-                }
-
-                currDistance += distances[i];
-            }
-
-            // Add last key at time = 1f
-            {
-                float t = 1f;
-                int i = numCurves - 1;
-                var position = GetPosition(t, i);
-                var scale = GetScale(t, i);
-                var qRotation = inverseInitialRotation * GetOrientation(t, i);
-                var rotation = qRotation.eulerAngles;
-                rotation = CleanRotation(previousRotation, rotation);
-                trs.AddKeys(t, position, rotation, scale);
-            }
-
-            return trs;
+            CallOnEdited();
         }
 
         public float3 EvaluatePosition(double time)
@@ -565,5 +475,311 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         }
 
 
+        public AnimationCurveTRS CreateTRS(int samplesBetweenControlsPoints = 32)
+        {
+            var trs = new AnimationCurveTRS();
+
+            // Entire curve approximate length to within 100m
+            const int nStartIterDistance = 50;
+            double entireCurveApproximateLength = CurveLengthUtility.GetDistanceBetweenRepeated(this, 0, 1, nStartIterDistance, 2, 1);
+            int nApproximationIterations = (int)(entireCurveApproximateLength * (1.0 / nStartIterDistance / 2.0));
+
+            // Compute curve lengths between each bezier control point
+            int numCurves = points.Count - 1;
+            double[] distances = new double[numCurves];
+            double totalDistance = 0;
+            for (int i = 0; i < distances.Length; i++)
+            {
+                double timeStart = (double)(i + 0) / numCurves;
+                double timeEnd = (double)(i + 1) / numCurves;
+                //double distance = CurveLengthUtility.GetDistanceBetweenRepeated(this, timeStart, timeEnd);
+                double distance = BezierApproximateDistance(this, timeStart, timeEnd, nApproximationIterations);
+                distances[i] = distance;
+                totalDistance += distance;
+                //Debug.Log($"Distance {i}: {distance}");
+            }
+            //Debug.Log("Total distance: " + totalDistance);
+
+            var previousRotation = GetOrientation(0, 0).eulerAngles;
+            double currDistance = 0;
+            for (int i = 0; i < numCurves; i++)
+            {
+                float currLength = (float)distances[i];
+
+                for (int s = 0; s < samplesBetweenControlsPoints; s++)
+                {
+                    var t = (float)(s + 0) / samplesBetweenControlsPoints;
+                    var position = GetPosition(t, i);
+                    var rotation = GetOrientation(t, i).eulerAngles;
+                    rotation = CleanRotation(previousRotation, rotation);
+                    previousRotation = rotation;
+                    var time = (float)(currDistance + (t * currLength));
+                    trs.Position.AddKeys(time, position);
+                    trs.Rotation.AddKeys(time, rotation);
+                }
+
+                currDistance += distances[i];
+            }
+
+            // Add last key
+            {
+                float t = (float)totalDistance;
+                int i = numCurves - 1;
+                var position = GetPosition(t, i);
+                var rotation = GetOrientation(t, i).eulerAngles;
+                rotation = CleanRotation(previousRotation, rotation);
+                trs.Position.AddKeys(t, position);
+                trs.Rotation.AddKeys(t, rotation);
+            }
+
+            // Assign animation curves for things we don't need to generate/sample/guess
+            {
+                var points = this.points.ToArray();
+                // ROTATION.Z
+                (float[] rolls, var rollModes) = GetRolls(points);
+                trs.Rotation.z = CreateCurve(rolls, rollModes, distances);
+                // SCALE.X
+                (float[] widths, var widthModes) = GetWidths(points);
+                trs.Scale.x = CreateCurve(widths, widthModes, distances);
+                // SCALE.Y
+                (float[] heights, var heightModes) = GetHeights(points);
+                trs.Scale.y = CreateCurve(heights, heightModes, distances);
+                // SCALE.Z, const scale of 1f
+                var key0 = new Keyframe(0, 1f);
+                var key1 = new Keyframe((float)totalDistance, 1f);
+                trs.Scale.y = new AnimationCurve(key0, key1);
+                trs.Scale.z = new AnimationCurve(key0, key1);
+            }
+
+
+            trs.CleanDuplicateKeys();
+            return trs;
+        }
+
+        public void UpdateAnimationCurveTRS()
+        {
+            animationCurveTRS = CreateTRS();
+            SegmentLength = animationCurveTRS.GetMaxTime();
+        }
+
+        public double BezierApproximateDistance(IPositionEvaluable evaluable, double timeStart, double timeEnd, int nApproximationIterations)
+        {
+            // TimeDelta: difference between start and end times
+            double timeDelta = timeEnd - timeStart;
+            // Total distance that has been approximated
+            double approximateDistance = 0f;
+            // How many times we should sample curve.
+            double inverseNIterations = 1.0 / nApproximationIterations;
+
+            //// Approximate (segment of) curve length to greater degree.
+            //// Since this is a bezier, it means points may not be evenly spaced out.
+            //double approximateDistanceTotal = 0;
+            //double[] approximateDistances = new double[nApproximationIterations];
+            //for (int i = 0; i < nApproximationIterations; i++)
+            //{
+            //    var distance1 = CurveLengthUtility.GetDistanceBetweenRepeated(evaluable, timeStart, timeEnd, 10f, 2, 1);
+            //    approximateDistances[i] = distance1;
+            //    approximateDistanceTotal += distance1;
+            //}
+            //// Figure out how long each segment should be if they were equally spaced
+            //double distancePerSegment = approximateDistanceTotal / nApproximationIterations;
+
+            // Sample distance using uneven lengths to compensate and compute a more accurate distance
+            for (int i = 0; i < nApproximationIterations; i++)
+            {
+                // throttle sample rate to distance per segment
+                //double sampleNormalizer = distancePerSegment / approximateDistances[i];
+
+                // TODO: pretty this is wrong since smaple normalizer is not corrected between iterations?
+                double currDistance = timeStart + (timeDelta * inverseNIterations * (i + 0));
+                double nextDistance = timeStart + (timeDelta * inverseNIterations * (i + 1));
+
+                // Compute the distance between these 2 points
+                float3 currPosition = evaluable.EvaluatePosition(currDistance);
+                float3 nextPosition = evaluable.EvaluatePosition(nextDistance);
+
+                // Get distance between 2 points, store delta
+                double delta = math.distance(currPosition, nextPosition);
+                approximateDistance += delta;
+            }
+
+            return approximateDistance;
+        }
+
+        public AnimationCurve SubdivideCurve(AnimationCurve animationCurve, int subdivisions)
+        {
+            var keys = new List<Keyframe>();
+            for (int i = 0; i < animationCurve.length - 1; i++)
+            {
+                var key0 = animationCurve.keys[i + 0];
+                var key1 = animationCurve.keys[i + 1];
+
+                bool isDifferent =
+                    key0.value != key1.value ||
+                    key0.inTangent != key1.inTangent ||
+                    key0.outTangent != key1.outTangent;
+
+                if (!isDifferent)
+                    continue;
+
+                float startTime = key0.time;
+                float endTime = key1.time;
+                for (int subd = 0; subd < subdivisions; subd++)
+                {
+                    float time = (float)subd / subdivisions;
+                    //float keyTime = startTime + endTime * time;
+                    float keyTime = math.lerp(startTime, endTime, time);
+                    var value = animationCurve.Evaluate(keyTime);
+                    var key = new Keyframe(keyTime, value);
+                    keys.Add(key);
+                }
+            }
+
+            //var curve = new AnimationCurve(animationCurve.keys);
+            //keys.AddRange(animationCurve.keys);
+
+            // Don't add key directly or it will set tangents of 0
+            //foreach (var key in keys)
+            //    animationCurve.AddKey(key.time, key.value);
+
+            //var curve = new AnimationCurve(keys.ToArray());
+
+            foreach (var key in keys)
+            {
+                int index = animationCurve.AddKey(key);
+
+                if (index > 0)
+                    animationCurve.SmoothTangents(index, 1f / 3f);
+            }
+
+            return animationCurve;
+        }
+
+        public AnimationCurve CreateCurve(float[] values, AnimationUtility.TangentMode[] modes, double[] distances)
+        {
+            float time = 0f;
+            var curve = new AnimationCurve();
+            for (int i = 0; i <= distances.Length; i++)
+            {
+                // Create animation curve with time value only
+                var key = new Keyframe(time, values[i], 0, 0);
+                curve.AddKey(key);
+
+                //
+                if (i >= distances.Length)
+                    break;
+
+                //
+                time += (float)distances[i];
+            }
+
+            // Set tange mode for all keys.
+            // GFZ has tangent modes between keys, not on left/right of keys.
+            // The below assigns it as so.
+            for (int i = 0; i < curve.length - 1; i++)
+            {
+                var mode = modes[i];
+                AnimationUtility.SetKeyRightTangentMode(curve, i + 0, mode);
+                AnimationUtility.SetKeyLeftTangentMode(curve, i + 1, mode);
+            }
+
+            //curve = SubdivideCurve(curve, 32);
+
+            return curve;
+        }
+        public (float[] widths, AnimationUtility.TangentMode[] widthModes) GetWidths(BezierPoint[] bezierPoints)
+        {
+            var widths = new float[bezierPoints.Length];
+            var widthModes = new AnimationUtility.TangentMode[bezierPoints.Length];
+            for (int i = 0; i < bezierPoints.Length; i++)
+            {
+                widths[i] = bezierPoints[i].width;
+                widthModes[i] = bezierPoints[i].widthTangentMode;
+            }
+            return (widths, widthModes);
+        }
+        public (float[] heights, AnimationUtility.TangentMode[] heightModes) GetHeights(BezierPoint[] bezierPoints)
+        {
+            var heights = new float[bezierPoints.Length];
+            var heightModes = new AnimationUtility.TangentMode[bezierPoints.Length];
+            for (int i = 0; i < bezierPoints.Length; i++)
+            {
+                heights[i] = bezierPoints[i].height;
+                heightModes[i] = bezierPoints[i].heightTangentMode;
+            }
+            return (heights, heightModes);
+        }
+        public (float[] rolls, AnimationUtility.TangentMode[] rollModes) GetRolls(BezierPoint[] bezierPoints)
+        {
+            var rolls = new float[bezierPoints.Length];
+            var rollModes = new AnimationUtility.TangentMode[bezierPoints.Length];
+            for (int i = 0; i < bezierPoints.Length; i++)
+            {
+                rolls[i] = bezierPoints[i].roll;
+                rollModes[i] = bezierPoints[i].rollTangentMode;
+            }
+            return (rolls, rollModes);
+        }
+
+        public override AnimationCurveTRS CreateAnimationCurveTRS(bool isGfzCoordinateSpace)
+        {
+            var trs = isGfzCoordinateSpace
+                ? animationCurveTRS.CreateGfzCoordinateSpace()
+                : animationCurveTRS.CreateDeepCopy();
+
+            return trs;
+        }
+
+        public override GameCube.GFZ.Stage.TrackSegment CreateTrackSegment()
+        {
+            var trs = animationCurveTRS.CreateDeepCopy();
+
+            // TRS 0: has all animation curves EXCEPT rotation Z
+            var trs0 = trs.CreateDeepCopy();
+            trs0.Rotation.z = new AnimationCurve();
+
+            // TRS 1: has ONLY rotation Z
+            var trs1 = new AnimationCurveTRS();
+            trs1.Rotation.z = trs.Rotation.z;
+
+            //
+            var children = CreateChildTrackSegments();
+
+            // Child is basically empty, only storing the rotation.z curve.
+            var trackSegmentChild = new GameCube.GFZ.Stage.TrackSegment();
+            trackSegmentChild.BranchIndex = GetBranchIndex();
+            trackSegmentChild.AnimationCurveTRS = trs1.ToTrackSegment();
+            trackSegmentChild.Children = children;
+
+            // Parent has all the other values, and has above as child element.
+            var trackSegmentParent = new GameCube.GFZ.Stage.TrackSegment();
+            trackSegmentParent.LocalPosition = transform.localPosition;
+            trackSegmentParent.LocalRotation = transform.localRotation.eulerAngles;
+            trackSegmentParent.LocalScale = transform.localScale;
+            trackSegmentParent.BranchIndex = GetBranchIndex();
+            trackSegmentParent.AnimationCurveTRS = trs0.ToTrackSegment();
+            trackSegmentParent.Children = new GameCube.GFZ.Stage.TrackSegment[] { trackSegmentChild };
+
+            return trackSegmentParent;
+        }
+
+        public override float GetMaxTime()
+        {
+            return animationCurveTRS.GetMaxTime();
+        }
+
+        // DEPRECATE
+        public void CallOnEdited()
+        {
+            DebugConsole.Log("CallOnEdit from Bezier. Deprecated.");
+        }
+
+        public void UpdateShapeNodeMeshes(GfzTrackSegmentShapeNode[] shapes)
+        {
+            foreach (var shape in shapes)
+            {
+                shape.UpdateMesh();
+            }
+        }
     }
 }

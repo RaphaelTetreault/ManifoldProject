@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Unity.Mathematics;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage.Track
@@ -19,10 +15,15 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         /// <param name="powerBase"></param>
         /// <param name="powerExp"></param>
         /// <returns></returns>
-        public static double GetDistanceBetweenRepeated(IPositionEvaluable evaluable, double timeStart, double timeEnd, float minDelta = 0.01f, int powerBase = 2, int powerExp = 1)
+        public static double GetDistanceBetweenRepeated(IPositionEvaluable evaluable, double timeStart, double timeEnd, float minDelta = 0.01f,  int powerBase = 2, int powerExp = 1)
         {
+            const int powerExpMin = 1;
+            const int powerExpMax = 20;
+            if (powerExp < powerExpMin || powerExp >= powerExpMax)
+                throw new ArgumentOutOfRangeException($"{nameof(powerExp)} must be between {powerExpMin} and {powerExpMax-2}");
+
             // Limit on how many cycles we can do
-            const int maxIterations = 1 << 20; // 2^20 = 1,048,576
+            const int maxIterations = 1 << powerExpMax; // 2^20 = 1,048,576
 
             // Values to store distance state between sampling points
             double delta = 0f;
@@ -51,6 +52,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             // Continue this process so long as the distance gained from more precise sampling is more than 'minDelta'
             while (delta >= minDelta);
 
+            //DebugConsole.Log($"iters: {(int)math.pow(powerBase, powerExp)}, distance: {currDistance}");
+
             // If we stop, 'currDistance' holds the most precise distance value
             return currDistance;
         }
@@ -67,6 +70,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             // If we start at, say, 0.3 and end at 0.45, get the difference or total "step"
             double timeDelta = timeEnd - timeStart;
 
+            //
+            double inverseNIterations = 1.0 / nIterations;
+
             double distance = 0f;
             for (int i = 0; i <= nIterations; i++)
             {
@@ -77,8 +83,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 // iterate 100 times, and the start is from 0.3000 to 0.3015 since we
                 // will travel 0.15s through time from start to end, and each iteration
                 // is 1/100.
-                double currDistance = timeStart + (timeDelta / nIterations * (i + 0));
-                double nextDistance = timeStart + (timeDelta / nIterations * (i + 1));
+                double currDistance = timeStart + (timeDelta * inverseNIterations * (i + 0));
+                double nextDistance = timeStart + (timeDelta * inverseNIterations * (i + 1));
                 // Compute the distance between these 2 points
                 float3 currPosition = evaluable.EvaluatePosition(currDistance);
                 float3 nextPosition = evaluable.EvaluatePosition(nextDistance);

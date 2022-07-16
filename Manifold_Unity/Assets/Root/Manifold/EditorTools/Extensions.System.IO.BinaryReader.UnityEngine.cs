@@ -5,6 +5,9 @@ using UnityEngine;
 
 namespace Manifold.EditorTools
 {
+    /// <summary>
+    /// Binary IO extensions for common Unity types.
+    /// </summary>
     public static partial class BinaryReaderExtensions
     {
         public static Vector2 ReadVector2(this EndianBinaryReader reader)

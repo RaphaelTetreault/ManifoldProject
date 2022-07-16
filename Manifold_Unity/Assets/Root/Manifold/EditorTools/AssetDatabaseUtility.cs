@@ -46,30 +46,6 @@ namespace Manifold.EditorTools
             return GetAllOfType<T>(new string[0]);
         }
 
-        public static TScriptableObject[] GetSobjByOption<TScriptableObject>(TScriptableObject[] sobjs, AssetDatabseSearch option, params string[] searchFolders)
-          where TScriptableObject : ScriptableObject
-        {
-            switch (option)
-            {
-                case AssetDatabseSearch.selectedFiles:
-                    return sobjs;
-
-                case AssetDatabseSearch.allFromSourceFolder:
-                    return GetAllOfType<TScriptableObject>(searchFolders);
-
-                case AssetDatabseSearch.allFromAssetDatabase:
-                    return GetAllOfType<TScriptableObject>();
-
-                default:
-                    throw new NotImplementedException();
-            }
-        }
-
-        public static TScriptableObject[] GetSobjByOption<TScriptableObject>(TScriptableObject[] sobjs, AssetDatabseSearch option)
-            where TScriptableObject : ScriptableObject
-        {
-            return GetSobjByOption(sobjs, option, new string[0]);
-        }
 
         public static void CreateDirectoryForAsset(string assetPath)
         {
@@ -100,7 +76,7 @@ namespace Manifold.EditorTools
                 throw new ArgumentException($"Path must begin with \"Assets/\"");
 
             // Append each directory to parent directory in succession
-            var path = "Assets/";
+            var path = "Assets";
             for (int i = 1; i < splitDirectories.Length; i++)
             {
                 // Get the name of the next directory in the path

@@ -1,5 +1,6 @@
 using GameCube.GFZ.Stage;
 using System;
+using System.IO;
 using UnityEngine;
 using UnityEditor;
 
@@ -8,89 +9,95 @@ namespace Manifold.EditorTools.GC.GFZ
     [Serializable]
     public class GfzProjectSettings
     {
-        [SerializeField] SerializeFormat serializeFormat = SerializeFormat.GX;
-        [SerializeField] string rootFolder = string.Empty;
-        [SerializeField] string testGfzj01 = string.Empty;
-        [SerializeField] string testGfze01 = string.Empty;
-        [SerializeField] string testGfzp01 = string.Empty;
-        [SerializeField] string testGfzj8p = string.Empty;
-        //
-        [SerializeField] string logOutput = string.Empty;
-        [SerializeField] string analysisOutput = string.Empty;
-        [SerializeField] string fileOutput = string.Empty;
-        [SerializeField] string unityImportDir = "GFZ/";
-        [SerializeField] int sceneOfInterestID = 1;
-        [SerializeField] string sceneExportPath = string.Empty;
-        [SerializeField] bool convertCoordSpace = true;
+        // General settings
+        [field: SerializeField] public SerializeFormat SerializeFormat { get; private set; } = SerializeFormat.GX;
+        [field: SerializeField] public string SourceDirectory { get; private set; } = string.Empty;
+        [field: SerializeField] public string WorkingFilesDirectory { get; private set; } = string.Empty;
+        [field: SerializeField] public string UnityWorkingDirectory { get; private set; } = "gfz/";
 
-        public SerializeFormat SerializeFormat => serializeFormat;
-        public string RootFolder => rootFolder;
-        public string LogOutput => logOutput;
-        public string AnalysisOutput => analysisOutput;
-        public string FileOutput => fileOutput;
-        public string UnityImportDir => unityImportDir;
-        public int SceneOfInterestID => sceneOfInterestID;
-        public string SceneExportPath => sceneExportPath;
+        // Output Directories
+        [field: SerializeField] public string LogOutput { get; private set; } = string.Empty;
+        [field: SerializeField] public string AnalysisOutput { get; private set; } = string.Empty;
+        [field: SerializeField] public string FileOutput { get; private set; } = string.Empty;
 
+        // Scene Gen
+        [field: SerializeField] public string SceneExportPath { get; private set; } = string.Empty;
+        [field: SerializeField] public bool ConvertCoordSpace { get; private set; } = true;
+        [field: SerializeField] public int SingleSceneIndex { get; private set; } = 1;
 
-        public bool ConvertCoordSpace => convertCoordSpace;
+        // Collision Gen
+        [field: SerializeField] public int Collider256SceneIndex { get; private set; } = 1;
+        [field: SerializeField] public bool CreateColliderBackfaces { get; private set; } = true;
+        [field: SerializeField] public StaticColliderMeshProperty Collider256MeshType { get; private set; } = StaticColliderMeshProperty.death1;
+
+        // Debug / testing
+        [field: SerializeField] public string Gfzj01Dir { get; private set; } = string.Empty;
+        [field: SerializeField] public string Gfze01Dir { get; private set; } = string.Empty;
+        [field: SerializeField] public string Gfzp01Dir { get; private set; } = string.Empty;
+        [field: SerializeField] public string Gfzj8pDir { get; private set; } = string.Empty;
 
 
         // Easy accessors for common places
-        public string StageDir => $"{rootFolder}stage/";
+        public string SourceStageDirectory => $"{SourceDirectory}stage/";
+        /// <summary>
+        /// Location to store working files in Unity project (begins with "Assets/").
+        /// </summary>
+        public string AssetsWorkingDirectory => $"Assets/{UnityWorkingDirectory}";
+        /// <summary>
+        /// Used to define a safe output directory when a path is undefined.
+        /// </summary>
+        public string UndefinedDestination => Path.Combine(DriveRootDirectory, "Manifold");
 
 
         public string[] GetTestRootDirectories()
         {
             return new string[]
             {
-                testGfzj01,
-                testGfze01,
-                testGfzp01,
-                testGfzj8p,
+                Gfzj01Dir,
+                Gfze01Dir,
+                Gfzp01Dir,
+                Gfzj8pDir,
             };
         }
 
-        public string SeekRootStart()
-        {
-            // TODO: change per editor platform
-            return "C:/";
-        }
+        private static string DriveRootDirectory => Directory.GetDirectoryRoot(Directory.GetCurrentDirectory());
 
         public void DrawSettingsTab()
         {
+            GuiSimple.Label("General", EditorStyles.boldLabel);
+            SerializeFormat = GuiSimple.EnumPopup(nameof(SerializeFormat), SerializeFormat);
+            SourceDirectory = GuiSimple.BrowseFolder(SourceDirectory, nameof(SourceDirectory), "Open GFZ source directory", DriveRootDirectory);
+            WorkingFilesDirectory = GuiSimple.BrowseFolder(WorkingFilesDirectory, nameof(WorkingFilesDirectory), "Open GFZ working directory", DriveRootDirectory);
+            UnityWorkingDirectory = GuiSimple.BrowseUnityAssets(UnityWorkingDirectory, nameof(UnityWorkingDirectory), "Open Unity working directory");
+
             EditorGUILayout.Space();
-            serializeFormat = GuiSimple.EnumPopup(nameof(serializeFormat), serializeFormat);
-            rootFolder = GuiSimple.BrowseFolder(rootFolder, "Root Folder", "Open Root GFZ Folder", SeekRootStart(), "");
+            GuiSimple.Label("Scene Generation", EditorStyles.boldLabel);
+            SceneExportPath = GuiSimple.BrowseFolder(SceneExportPath, nameof(SceneExportPath), "Open Scene Export Directory", DriveRootDirectory);
+            SingleSceneIndex = GuiSimple.Int(nameof(SingleSceneIndex), SingleSceneIndex);
+            ConvertCoordSpace = GuiSimple.Bool(nameof(ConvertCoordSpace), ConvertCoordSpace);
+
+            EditorGUILayout.Space();
+            GuiSimple.Label("Collider Generation", EditorStyles.boldLabel);
+            CreateColliderBackfaces = GuiSimple.Bool(nameof(CreateColliderBackfaces), CreateColliderBackfaces);
+            Collider256SceneIndex = GuiSimple.Int(nameof(Collider256SceneIndex), Collider256SceneIndex);
+            Collider256MeshType = GuiSimple.EnumPopup(nameof(Collider256MeshType), Collider256MeshType);
+
+            EditorGUILayout.Space();
+            GuiSimple.Label("File Output Directories", EditorStyles.boldLabel);
+            LogOutput = GuiSimple.BrowseFolder(LogOutput, "Log Output Directory", "Open Log Directory", DriveRootDirectory);
+            AnalysisOutput = GuiSimple.BrowseFolder(AnalysisOutput, "Analysis Output Directory", "Open Analysis Directory", DriveRootDirectory);
+            FileOutput = GuiSimple.BrowseFolder(FileOutput, "File/Binary Output Directory", "Open File Output Directory", DriveRootDirectory);
+
         }
 
         public void DrawTestTab()
         {
-            EditorGUILayout.Space();
-            GuiSimple.Label("Folders for all version for mass tests", EditorStyles.boldLabel);
-            testGfzj01 = GuiSimple.BrowseFolder(testGfzj01, "Root Folder (gfzj01)", "Open Root GFZ J Folder", testGfzj01, "");
-            testGfze01 = GuiSimple.BrowseFolder(testGfze01, "Root Folder (gfze01)", "Open Root GFZ E Folder", testGfze01, "");
-            testGfzp01 = GuiSimple.BrowseFolder(testGfzp01, "Root Folder (gfzp01)", "Open Root GFZ P Folder", testGfzp01, "");
-            testGfzj8p = GuiSimple.BrowseFolder(testGfzj8p, "Root Folder (gfzj8p)", "Open Root AX Folder", testGfzj8p, "");
-            EditorGUILayout.Space();
-            GuiSimple.Label("Output Logs Go Here", EditorStyles.boldLabel);
-            logOutput = GuiSimple.BrowseFolder(logOutput, "Log Output Directory", "Open Log Directory", logOutput, "");
-            EditorGUILayout.Space();
-            GuiSimple.Label("Analysis", EditorStyles.boldLabel);
-            analysisOutput = GuiSimple.BrowseFolder(analysisOutput, "Analysis Output Directory", "Open Analysis Directory", analysisOutput, "");
-            EditorGUILayout.Space();
-            GuiSimple.Label("File (Binaries)", EditorStyles.boldLabel);
-            fileOutput = GuiSimple.BrowseFolder(fileOutput, "File/Binary Output Directory", "Open File Output Directory", fileOutput, "");
-            EditorGUILayout.Space();
-            GuiSimple.Label("GFZ->Unity Output", EditorStyles.boldLabel);
-            unityImportDir = GuiSimple.String("Unity Import Dest", unityImportDir);
-
-            EditorGUILayout.Space();
-            GuiSimple.Label("Scene Single", EditorStyles.boldLabel);
-            sceneOfInterestID = GuiSimple.Int("Scene Of Interest", sceneOfInterestID);
-            sceneExportPath = GuiSimple.BrowseFolder(sceneExportPath, "Scene Export Path", "Open Scene Export Directory", sceneExportPath, "");
-            convertCoordSpace = GuiSimple.Bool(nameof(convertCoordSpace), convertCoordSpace);
-
+            GuiSimple.Label("Mass IO Test Folders", EditorStyles.boldLabel);
+            EditorGUILayout.HelpBox("These folders are used to test all files from all extracted versions of F-Zero AX and F-Zero GX.", MessageType.None, true);
+            Gfzj01Dir = GuiSimple.BrowseFolder(Gfzj01Dir, "GFZJ01 Directory (GX-JP)", "Open F-Zero GX (JP) root folder with extracted files", DriveRootDirectory);
+            Gfze01Dir = GuiSimple.BrowseFolder(Gfze01Dir, "GFZE01 Directory (GX-NA)", "Open F-Zero GX (NA) root folder with extracted files", DriveRootDirectory);
+            Gfzp01Dir = GuiSimple.BrowseFolder(Gfzp01Dir, "GFZP01 Directory (GX-PAL)", "Open F-Zero GX (PAL) root folder with extracted files", DriveRootDirectory);
+            Gfzj8pDir = GuiSimple.BrowseFolder(Gfzj8pDir, "GFZJ8P Directory (AX-JP)", "Open F-Zero AX (JP) root folder with extracted files", DriveRootDirectory);
         }
 
 

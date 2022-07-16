@@ -1,4 +1,5 @@
 ﻿using GameCube.GFZ;
+using GameCube.GFZ.GMA;
 using GameCube.GFZ.LZ;
 using GameCube.GFZ.Stage;
 using Manifold.IO;
@@ -11,12 +12,15 @@ using UnityEngine;
 using Unity.Mathematics;
 using System.Linq;
 
+using Manifold.EditorTools.GC.GFZ.Stage.Track;
+
+
 namespace Manifold.EditorTools.GC.GFZ.Stage
 {
     public static class SceneExportUtility
     {
 
-        [MenuItem(Const.Menu.Manifold + "Scene Generation/Export (Active Scene)")]
+        [MenuItem(GfzMenuItems.Stage.ExportActiveScene + " _F8", priority = GfzMenuItems.Stage.ExportActiveScenePriority)]
         public static void ExportSceneActive()
         {
             var format = SerializeFormat.GX;
@@ -29,20 +33,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             var outputPath = settings.SceneExportPath;
             var activeScene = EditorSceneManager.GetActiveScene();
 
-
             // Get scene parameters for general info
-            var gfzSceneParameters = GameObject.FindObjectsOfType<GfzSceneParameters>();
-            if (gfzSceneParameters.Length == 0)
-            {
-                var errorMsg = $"No {nameof(GfzSceneParameters)} found in scene! There must be one per scene.";
-                throw new ArgumentException(errorMsg);
-            }
-            else if (gfzSceneParameters.Length > 1)
-            {
-                var errorMsg = $"More than one {nameof(GfzSceneParameters)} found in scene! There can only be one per scene.";
-                throw new ArgumentException(errorMsg);
-            }
-            var sceneParams = gfzSceneParameters[0];
+            var sceneParams = GetGfzSceneParameters();
 
             // This object contains the original scene deserialized. Use it in the meantime to get
             // data for which I can't/don't want to construct.
@@ -82,13 +74,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                     compressFormat = GameCube.AmusementVision.GxGame.FZeroGX;
                     break;
 
-                case SerializeFormat.InvalidFormat:
-                    throw new ArgumentException("No format specified for serialization!");
-
                 default:
-                    throw new NotImplementedException();
+                    throw new ArgumentException($"Invalid format '{format}' specified for serialization.");
             }
 
+            // If objects have been mirrored, mirror again before export
             var mirroredObjects = GameObject.FindObjectsOfType<GfzMirroredObject>();
             foreach (var mirroredObject in mirroredObjects)
                 mirroredObject.MirrorTransform();
@@ -97,18 +87,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             //// Load the old stage to use it's data I don't know how to generate yet
             ////var oldScene = ColiCourseIO.LoadScene(settings.StageDir + scene.FileName);
 
-            //// TEST
-            //// load in real, modify what you'd like
-            //var scene = ColiCourseIO.LoadScene(settings.StageDir + sceneParams.GetGfzInternalName());
-            //// Serialization settings
-            //scene.Format = format;
-            //scene.SerializeVerbose = verbose;
-            //// Exported filename 'COLI_COURSE##'
-            ////FileName = sceneParams.GetGfzInternalName();
-            //// Data about the creator
-            //scene.Author = sceneParams.author;
-            //scene.Venue = sceneParams.venue;
-            //scene.CourseName = sceneParams.courseName;
+            // TEST
 
             // Build a new scene!
             var scene = new Scene()
@@ -117,6 +96,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 Format = format,
                 SerializeVerbose = verbose,
                 // Exported filename 'COLI_COURSE##'
+                CourseIndex = checked((byte)sceneParams.courseIndex),
                 FileName = sceneParams.GetGfzInternalName(),
                 // Data about the creator
                 Author = sceneParams.author,
@@ -129,7 +109,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             {
                 // Construct range from 2 parameters
                 scene.UnkRange0x00 = new ViewRange(sceneParams.rangeNear, sceneParams.rangeFar);
-                // Use functions to get form parameters
+                // Use functions to get fog parameters
                 scene.fog = sceneParams.ToGfzFog();
                 scene.fogCurves = sceneParams.ToGfzFogCurves();
             }
@@ -167,8 +147,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
             // Scene Objects
             {
-                var gfzDynamicSceneObjects = GameObject.FindObjectsOfType<GfzSceneObjectDynamic>(true).Reverse().ToArray();
-                var gfzStaticSceneObjects = GameObject.FindObjectsOfType<GfzSceneObjectStatic>(true).Reverse().ToArray();
+                var gfzDynamicSceneObjects = GameObject.FindObjectsOfType<GfzSceneObjectDynamic>(false).Reverse().ToArray();
+                var gfzStaticSceneObjects = GameObject.FindObjectsOfType<GfzSceneObjectStatic>(false).Reverse().ToArray();
                 var gfzSceneObjects = GameObject.FindObjectsOfType<GfzSceneObject>(true).Reverse().ToArray();
                 var gfzSceneObjectLODs = GameObject.FindObjectsOfType<GfzSceneObjectLODs>(true).Reverse().ToArray();
 
@@ -182,12 +162,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 scene.sceneObjects = GetGfzValues(gfzSceneObjects);
 
                 // LODs
-                var sceneObjectLODs = new List<SceneObjectLOD>();
                 foreach (var sceneObject in scene.sceneObjects)
                 {
-                    sceneObjectLODs.AddRange(sceneObject.LODs);
+                    scene.SceneObjectLODs.AddRange(sceneObject.LODs);
                 }
-                scene.SceneObjectLODs = sceneObjectLODs.ToArray();
 
                 // CString names
                 // TODO: share references
@@ -195,13 +173,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 sceneObjectNames.Add("");
                 foreach (var thing in scene.SceneObjectLODs)
                 {
-                    //if (!sceneObjectNames.Contains(thing.name))
-                    //{
-                    sceneObjectNames.Add(thing.Name);
-                    //}
+                    scene.SceneObjectNames.Add(thing.Name);
                 }
                 // alphabetize, store
-                scene.SceneObjectNames = sceneObjectNames.OrderBy(x => x.Value).ToArray();
+                scene.SceneObjectNames = scene.SceneObjectNames.OrderBy(x => x.Value).ToList();
             }
 
             // Static Collider Meshes
@@ -225,7 +200,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 scene.staticColliderMeshManager.SerializeFormat = format;
                 // Point to existing references
                 scene.staticColliderMeshManager.UnknownColliders = scene.unknownColliders;
-                scene.staticColliderMeshManager.StaticSceneObjects = scene.staticSceneObjects;
+                scene.staticColliderMeshManager.StaticSceneObjects = scene.staticSceneObjects is null ? new SceneObjectStatic[0] : scene.staticSceneObjects;
             }
 
             // TRACK
@@ -252,6 +227,30 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
                 scene.CircuitType = track.CircuitType;
             }
+            // Inject TRACK models
+            {
+                var trackModelsGma = CreateTrackModelsGma("Track Segment");
+                var sceneObjects = CreateSceneObjectsFromGma(trackModelsGma);
+
+                // Add SceneObject (template)< it's LODs, and name
+                foreach (var sceneObject in sceneObjects)
+                {
+                    scene.SceneObjectLODs.AddRange(sceneObject.LODs);
+                    scene.SceneObjectNames.Add(sceneObject.Name);
+                }
+                scene.sceneObjects = sceneObjects.Concat(scene.sceneObjects).ToArray();
+
+                // add static / dynamic
+                var dynamicSceneObjects = GetAsSceneObjectDynamic(sceneObjects);
+                scene.dynamicSceneObjects = dynamicSceneObjects.Concat(scene.dynamicSceneObjects).ToArray();
+
+                // save gma
+                var gmaFileName = outputPath + $"st{scene.CourseIndex:00}.gma";
+                using (var writer = new EndianBinaryWriter(File.Create(gmaFileName), Gma.endianness))
+                    writer.Write(trackModelsGma);
+                LzUtility.CompressAvLzToDisk(gmaFileName, compressFormat, true);
+                Debug.Log($"Created models archive '{gmaFileName}'.");
+            }
 
             // TEMP until data is stored properly in GFZ unity components
             MakeTrueNulls(scene);
@@ -265,9 +264,19 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             }
             LzUtility.CompressAvLzToDisk(outputFile, compressFormat, true);
             OSUtility.OpenDirectory(outputPath);
+            Debug.Log($"Created course '{outputFile}'.");
 
+            // Undo mirroring
             foreach (var mirroredObject in mirroredObjects)
                 mirroredObject.MirrorTransform();
+
+            // LOG
+            using (var writer = new StreamWriter(File.Create(outputFile + ".txt")))
+            {
+                var builder = new System.Text.StringBuilder();
+                scene.PrintMultiLine(builder);
+                writer.Write(builder.ToString());
+            }
         }
 
 
@@ -319,6 +328,93 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             return gfz;
         }
 
+        public static GfzSceneParameters GetGfzSceneParameters()
+        {
+            // Get parameters - ensure there is only 1 in scene!
+            var gfzSceneParameters = GameObject.FindObjectsOfType<GfzSceneParameters>();
+            if (gfzSceneParameters.Length == 0)
+            {
+                var errorMsg = $"No {nameof(GfzSceneParameters)} found in scene! There must be one per scene.";
+                throw new ArgumentException(errorMsg);
+            }
+            else if (gfzSceneParameters.Length > 1)
+            {
+                var errorMsg = $"More than one {nameof(GfzSceneParameters)} found in scene! There can only be one per scene.";
+                throw new ArgumentException(errorMsg);
+            }
+            var sceneParams = gfzSceneParameters[0];
 
+            return sceneParams;
+        }
+
+        public static SceneObject[] CreateSceneObjectsFromGma(Gma gma)
+        {
+            var sceneObjects = new List<SceneObject>();
+
+            foreach (var model in gma.Models)
+            {
+                // Only 1 LOD for now
+                var lod = new SceneObjectLOD()
+                {
+                    Name = model.Name,
+                    LodDistance = 0f,
+                };
+
+                // Wrap it up
+                var sceneObject = new SceneObject()
+                {
+                    LodRenderFlags = 0,
+                    LODs = new SceneObjectLOD[] { lod },
+                    ColliderMesh = null,
+                };
+
+                // Add to list
+                sceneObjects.Add(sceneObject);
+            }
+
+            return sceneObjects.ToArray();
+        }
+
+        // TODO: move to scene object dynamic
+        public static SceneObjectDynamic[] GetAsSceneObjectDynamic(SceneObject[] sceneObjects)
+        {
+            var dynamics = new SceneObjectDynamic[sceneObjects.Length];
+            for (int i = 0; i < dynamics.Length; i++)
+            {
+                dynamics[i] = new SceneObjectDynamic()
+                {
+                    Unk0x00 = 0xF,
+                    Unk0x04 = unchecked((int)0xFFFFFFFF),
+                    SceneObject = sceneObjects[i],
+                    TransformMatrix3x4 = new(),
+                };
+            }
+            return dynamics;
+        }
+
+        public static Gma CreateTrackModelsGma(string modelName)
+        {
+            // TODO: get GfzTrack, use it to get children
+            var track = GameObject.FindObjectOfType<GfzTrack>(false);
+            track.FindChildSegments();
+
+            int debugIndex = 0;
+            var models = new List<Model>();
+            foreach (var rootTrackSegmentNode in track.AllRoots)
+            {
+                var shapeNodes = rootTrackSegmentNode.GetShapeNodes();
+                foreach (var shape in shapeNodes)
+                {
+                    var gcmf = shape.CreateGcmf();
+                    models.Add(new Model($"{modelName} {debugIndex++}", gcmf));
+                }
+            }
+
+            // Create single GMA for model, comprised on many GCMFs (display lists and materials)
+            var gma = new Gma();
+            gma.Models = models.ToArray();
+
+            return gma;
+        }
     }
 }

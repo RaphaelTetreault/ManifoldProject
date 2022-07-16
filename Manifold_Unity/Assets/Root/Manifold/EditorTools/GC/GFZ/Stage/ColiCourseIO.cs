@@ -17,6 +17,7 @@ using System.Diagnostics;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage
 {
+    [Obsolete]
     public static class ColiCourseIO
     {
         // CONSTANTS
@@ -107,7 +108,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         public static void TestLoadSingle()
         {
             var settings = GfzProjectWindow.GetSettings();
-            var root = settings.RootFolder;
+            var root = settings.SourceDirectory;
             var path = $"{root}/stage/";
             var file = EditorUtility.OpenFilePanel("Select Scene", path, "");
 
@@ -119,11 +120,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             DebugConsole.Log("Test single complete!");
         }
 
-        [MenuItem(Const.Menu.tests + TestLoad + ActiveRoot + " _F6")]
+        [MenuItem(Const.Menu.tests + TestLoad + ActiveRoot)]
         public static void TestLoadAllStages()
         {
             var settings = GfzProjectWindow.GetSettings();
-            var root = settings.RootFolder;
+            var root = settings.SourceDirectory;
             var path = $"{root}/stage/";
             TestLoadAllStages(TestLoad, path);
         }
@@ -140,7 +141,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             }
         }
 
-        [MenuItem("Manifold/Reset Prompt #F8")]
+        [MenuItem("Manifold/Reset Prompt")]
         public static void ClearProgBar()
         {
             EditorUtility.ClearProgressBar();
@@ -178,11 +179,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             OSUtility.OpenDirectory(dest);
         }
 
-        [MenuItem(Const.Menu.tests + TestSave + " To Disk" + ActiveRoot + " _F7")]
+        [MenuItem(Const.Menu.tests + TestSave + " To Disk" + ActiveRoot)]
         public static void Temp()
         {
             var settings = GfzProjectWindow.GetSettings();
-            var inputPath = settings.StageDir;
+            var inputPath = settings.SourceStageDirectory;
             var outputPath = settings.FileOutput;
             var title = $"Writing {nameof(Scene)} to disk...";
             TestSaveAllStagesDisk(title, inputPath, outputPath);
@@ -203,7 +204,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         public static void TestSaveAllStagesMemory()
         {
             var settings = GfzProjectWindow.GetSettings();
-            var root = settings.RootFolder;
+            var root = settings.SourceDirectory;
             var path = $"{root}/stage/";
             TestSaveAllStagesMemory(TestSave, path);
         }
@@ -225,11 +226,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         #region Roundtrip
 
-        [MenuItem("Manifold/Tests/Roundtrip Test (Active Dir) _F8")]
+        [MenuItem("Manifold/Tests/Roundtrip Test (Active Dir)")]
         public static void RoundtripScenes()
         {
             var settings = GfzProjectWindow.GetSettings();
-            var path = settings.StageDir;
+            var path = settings.SourceStageDirectory;
             var title = "Roundtrip Test";
             Scene sceneWrite;
             var logPath = settings.LogOutput;
@@ -563,23 +564,23 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 }
                 log.WriteLine();
 
-                log.WriteLine($"{nameof(SceneObject)}");
-                for (int i = 0; i < coliScene.SceneObjectLODs.Length; i++)
-                {
-                    var sceneObjectReference = coliScene.SceneObjectLODs[i];
-                    log.Write(PrintIndex(i, coliScene.SceneObjectLODs));
-                    log.WriteLine(PrintData(functionIdx, sceneObjectReference));
-                }
-                log.WriteLine();
+                //log.WriteLine($"{nameof(SceneObject)}");
+                //for (int i = 0; i < coliScene.SceneObjectLODs.Length; i++)
+                //{
+                //    var sceneObjectReference = coliScene.SceneObjectLODs[i];
+                //    log.Write(PrintIndex(i, coliScene.SceneObjectLODs));
+                //    log.WriteLine(PrintData(functionIdx, sceneObjectReference));
+                //}
+                //log.WriteLine();
 
-                log.WriteLine($"{nameof(ShiftJisCString)}");
-                for (int i = 0; i < coliScene.SceneObjectNames.Length; i++)
-                {
-                    var objectName = coliScene.SceneObjectNames[i];
-                    log.Write(PrintIndex(i, coliScene.SceneObjectNames));
-                    log.WriteLine(PrintData(functionIdx, objectName));
-                }
-                log.WriteLine();
+                //log.WriteLine($"{nameof(ShiftJisCString)}");
+                //for (int i = 0; i < coliScene.SceneObjectNames.Length; i++)
+                //{
+                //    var objectName = coliScene.SceneObjectNames[i];
+                //    log.Write(PrintIndex(i, coliScene.SceneObjectNames));
+                //    log.WriteLine(PrintData(functionIdx, objectName));
+                //}
+                //log.WriteLine();
             }
         }
         public static void LogSceneData(TextLogger log, Scene coliScene)
@@ -726,8 +727,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
             log.WriteHeading("SCENE OBJECTS", padding, h1Width);
             log.WriteLine("Object Names");
-            log.WriteAddress(coliScene.SceneObjectNames);
-            log.WriteAddress(coliScene.SceneObjectLODs);
+            //log.WriteAddress(coliScene.SceneObjectNames);
+            //log.WriteAddress(coliScene.SceneObjectLODs);
             log.WriteAddress(coliScene.sceneObjects);
             log.WriteAddress(coliScene.staticSceneObjects);
             log.WriteAddress(coliScene.dynamicSceneObjects);
@@ -1105,8 +1106,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                     log.WriteLineSummary(coliScene.dynamicSceneObjects);
                     log.WriteLineSummary(coliScene.staticSceneObjects);
                     log.WriteLineSummary(coliScene.sceneObjects);
-                    log.WriteLineSummary(coliScene.SceneObjectLODs);
-                    log.WriteLineSummary(coliScene.SceneObjectNames);
+                    //log.WriteLineSummary(coliScene.SceneObjectLODs);
+                    //log.WriteLineSummary(coliScene.SceneObjectNames);
                     log.WriteLine();
                 }
 

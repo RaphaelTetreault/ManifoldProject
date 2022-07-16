@@ -36,7 +36,7 @@ namespace Manifold.EditorTools.GC.GFZ
         }
 
         // Add menu named "My Window" to the Window menu
-        [MenuItem(Const.Menu.Manifold + "Open Settings Window")]
+        [MenuItem(GfzMenuItems.ProjectWindow.OpenNewWindow, priority = GfzMenuItems.ProjectWindow.OpenNewWindowPriority)]
         static void OpenNewWindow()
         {
             // Get existing open window or if none, make a new one:
@@ -50,7 +50,8 @@ namespace Manifold.EditorTools.GC.GFZ
             // The current window instance in serializable format
             var window = new SerializedObject(this);
             // The window tab we want to look at
-            tabIndex = GUILayout.Toolbar(tabIndex, new string[] { "Settings", "Tests", "TBD" });
+            tabIndex = GUILayout.Toolbar(tabIndex, new string[] { "Settings", "Testing" });
+            EditorGUILayout.Space();
 
             switch (tabIndex)
             {

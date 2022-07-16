@@ -5,6 +5,9 @@ using UnityEngine;
 
 namespace Manifold.EditorTools
 {
+    /// <summary>
+    /// Binary IO extensions for common Unity types.
+    /// </summary>
     public static partial class BinaryWriterExtensions
     {
         public static void Write(this EndianBinaryWriter writer, Vector2 value)

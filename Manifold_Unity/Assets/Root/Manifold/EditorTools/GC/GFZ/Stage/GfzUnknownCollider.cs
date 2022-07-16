@@ -18,14 +18,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         public const float scale = 27.5f;
 
         // INSPECTOR FIELDS
-        [SerializeField] private string sceneObject;
+        [SerializeField] private GfzSceneObject sceneObject;
 
-        // PROPERTIES
-        public string SceneObject
-        {
-            get => sceneObject;
-            set => sceneObject = value;
-        }
 
         // METHODS
         public UnknownCollider ExportGfz()
@@ -33,10 +27,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             // Convert unity transform to gfz transform
             var transform = TransformConverter.ToGfzTransformTRXS(this.transform);
 
-            throw new System.NotImplementedException();
             var value = new UnknownCollider
             {
-                //sceneObject = sceneObject,
+                SceneObject = sceneObject.ExportGfz(),
                 Transform = transform
             };
 
@@ -47,7 +40,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         {
             transform.CopyGfzTransformTRXS(value.Transform);
             transform.localScale *= scale;
-            sceneObject = value.SceneObject.Name;
+            sceneObject = GameObject.Find(value.SceneObject.Name).GetComponent<GfzSceneObject>();
+            
+            if (sceneObject is null)
+            DebugConsole.Log("Hack fix did not work.");
         }
     }
 }

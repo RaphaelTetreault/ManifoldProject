@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using Manifold.Spline;
+using UnityEditor;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage
 {
@@ -13,6 +13,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         [ReadOnlyGUI] public float width;
         [ReadOnlyGUI] public float height;
         [ReadOnlyGUI] public float roll;
+        [ReadOnlyGUI] public AnimationUtility.TangentMode widthTangentMode;
+        [ReadOnlyGUI] public AnimationUtility.TangentMode heightTangentMode;
+        [ReadOnlyGUI] public AnimationUtility.TangentMode rollTangentMode;
     }
 
 }

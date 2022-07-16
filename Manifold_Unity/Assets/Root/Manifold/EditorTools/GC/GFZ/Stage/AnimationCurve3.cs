@@ -1,6 +1,4 @@
 using Manifold.IO;
-using System.Collections;
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 
@@ -18,6 +16,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         [SerializeField] public AnimationCurve y = new AnimationCurve();
         [SerializeField] public AnimationCurve z = new AnimationCurve();
 
+        public AnimationCurve[] CurvesXYZ
+        {
+            get => new AnimationCurve[] { x, y, z };
+        }
 
         // METHODS
         public AnimationCurve3 CreateDeepCopy()
@@ -39,6 +41,16 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             return point;
         }
 
+        public Vector3 EvaluateDefault(float time, Vector3 @default)
+        {
+            var px = x.EvaluateDefault(time, @default.x);
+            var py = y.EvaluateDefault(time, @default.y);
+            var pz = z.EvaluateDefault(time, @default.z);
+            var point = new Vector3(px, py, pz);
+
+            return point;
+        }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Vector3 Evaluate(double time)
         {
@@ -47,7 +59,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         public AnimationCurve[] GetCurves()
         {
-            return new AnimationCurve[] {x, y, z };
+            return new AnimationCurve[] { x, y, z };
         }
 
         public float GetMaxTime()
