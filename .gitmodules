@@ -1,0 +1,15 @@
+[submodule "Manifold_Unity/Assets/Root/Libraries/GameCube.AmusementVision"]
+	path = Manifold_Unity/Assets/Root/Libraries/GameCube.AmusementVision
+	url = ../GameCube.AmusementVision.git
+[submodule "Manifold_Unity/Assets/Root/Libraries/GameCube.Core"]
+	path = Manifold_Unity/Assets/Root/Libraries/GameCube.Core
+	url = ../GameCube.Core.git
+[submodule "Manifold_Unity/Assets/Root/Libraries/GameCube.GFZ"]
+	path = Manifold_Unity/Assets/Root/Libraries/GameCube.GFZ
+	url = ../GameCube.GFZ.git
+[submodule "Manifold_Unity/Assets/Root/Libraries/Manifold.Core"]
+	path = Manifold_Unity/Assets/Root/Libraries/Manifold.Core
+	url = ../Manifold.Core.git
+[submodule "Manifold_Unity/Assets/Root/Libraries/Nintendo64.FZX"]
+	path = Manifold_Unity/Assets/Root/Libraries/Nintendo64.FZX
+	url = ../Nintendo64.FZX.git

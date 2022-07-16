@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using UnityEditor;
 using UnityEngine;
 
@@ -70,33 +71,37 @@ namespace Manifold.EditorTools
             return GetSobjByOption(sobjs, option, new string[0]);
         }
 
-        public static void CreateAssetPath(string assetPath)
+        public static void CreateDirectoryForAsset(string assetPath)
         {
             // Ensure folder path is indeed a path
             if (string.IsNullOrEmpty(assetPath))
                 throw new ArgumentException($"Asset path \"{assetPath}\" is null or empty.");
 
-            var pathWithoutFileName = System.IO.Path.GetDirectoryName(assetPath);
+            var pathWithoutFileName = Path.GetDirectoryName(assetPath);
 
-            CreatePath(pathWithoutFileName);
+            CreateDirectory(pathWithoutFileName);
         }
 
         /// <summary>
         /// Ensures the path exists inside "Assets/"
         /// </summary>
         /// <param name="assetDatabasePath">The path to create inside "Assets/"</param>
-        public static void CreatePath(string assetDatabasePath)
+        public static void CreateDirectory(string assetDatabasePath)
         {
             // Ensure folder path is indeed a path
             if (string.IsNullOrEmpty(assetDatabasePath))
                 throw new ArgumentException($"Folder path \"{assetDatabasePath}\" is null or empty.");
-
+            
             //
-            var splitDirectories = assetDatabasePath.Split('/');
+            string cleanPath = assetDatabasePath.Replace('\\', '/');
+            string[] splitDirectories = cleanPath.Split('/');
+
+            if (splitDirectories[0] != "Assets")
+                throw new ArgumentException($"Path must begin with \"Assets/\"");
 
             // Append each directory to parent directory in succession
             var path = "Assets/";
-            for (int i = 0; i < splitDirectories.Length; i++)
+            for (int i = 1; i < splitDirectories.Length; i++)
             {
                 // Get the name of the next directory in the path
                 var directoryName = splitDirectories[i];
@@ -106,7 +111,7 @@ namespace Manifold.EditorTools
                     continue;
 
                 // Add directory to base
-                var currPath = $"[{path}/{directoryName}";
+                var currPath = $"{path}/{directoryName}";
 
                 // Create folder if it does not exist
                 var doCreateFolder = !AssetDatabase.IsValidFolder(currPath);
@@ -117,9 +122,15 @@ namespace Manifold.EditorTools
                 path = currPath;
             }
         }
-        public static void CreateAssetAndPath(UnityEngine.Object @object, string path)
+
+        /// <summary>
+        /// Creates asset at path. Directory structure is created if it does not exist.
+        /// </summary>
+        /// <param name="object"></param>
+        /// <param name="path"></param>
+        public static void CreateAsset(UnityEngine.Object @object, string path)
         {
-            CreateAssetPath(path);
+            CreateDirectoryForAsset(path);
             AssetDatabase.CreateAsset(@object, path);
         }
 

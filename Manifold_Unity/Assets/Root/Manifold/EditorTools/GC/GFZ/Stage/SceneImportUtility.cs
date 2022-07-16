@@ -64,6 +64,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             // Create new, empty scene
             var scenePath = $"Assets/{outputPath}{scene.FileName}.unity";
             var unityScene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+            AssetDatabaseUtility.CreateDirectoryForAsset(scenePath);
             EditorSceneManager.SaveScene(unityScene, scenePath);
             // Keep reference of new scene
             unityScene = EditorSceneManager.OpenScene(scenePath);

@@ -1,4 +1,5 @@
 ﻿using GameCube.GFZ;
+using GameCube.GFZ.LZ;
 using GameCube.GFZ.Stage;
 using Manifold.IO;
 using System;
@@ -70,15 +71,15 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             }
 
             // TODO: this should be in ColiScene
-            LibGxFormat.AvGame compressFormat;
+            GameCube.AmusementVision.GxGame compressFormat;
             switch (format)
             {
                 case SerializeFormat.AX:
-                    compressFormat = LibGxFormat.AvGame.FZeroAX;
+                    compressFormat = GameCube.AmusementVision.GxGame.FZeroAX;
                     break;
 
                 case SerializeFormat.GX:
-                    compressFormat = LibGxFormat.AvGame.FZeroGX;
+                    compressFormat = GameCube.AmusementVision.GxGame.FZeroGX;
                     break;
 
                 case SerializeFormat.InvalidFormat:
@@ -200,7 +201,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                     //}
                 }
                 // alphabetize, store
-                scene.SceneObjectNames = sceneObjectNames.OrderBy(x => x.value).ToArray();
+                scene.SceneObjectNames = sceneObjectNames.OrderBy(x => x.Value).ToArray();
             }
 
             // Static Collider Meshes
@@ -257,9 +258,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
             // Save out file and LZ'ed file
             var outputFile = outputPath + scene.FileName;
-            using (var writer = new BinaryWriter(File.Create(outputFile)))
+            using (var writer = new EndianBinaryWriter(File.Create(outputFile), Scene.endianness))
             {
-                writer.WriteX(scene);
+                writer.Write(scene);
                 writer.Flush();
             }
             LzUtility.CompressAvLzToDisk(outputFile, compressFormat, true);

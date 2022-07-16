@@ -1,5 +1,5 @@
-﻿using GameCube.GFZ;
-using LibGxFormat;
+﻿using GameCube.AmusementVision;
+using GameCube.GFZ.LZ;
 using System.IO;
 using UnityEditor;
 
@@ -29,13 +29,13 @@ namespace Manifold.EditorTools.GC.GFZ
 
         [MenuItem(GfzMenu + "Compress single AV LZ (GX)")]
         public static void CompressSingleFileGX()
-            => CompressSingleFile("Open File to Compress to LZ (F-Zero GX)", AvGame.FZeroGX);
+            => CompressSingleFile("Open File to Compress to LZ (F-Zero GX)", GxGame.FZeroGX);
 
         [MenuItem(GfzMenu + "Compress single AV LZ (AX)")]
         public static void CompressSingleFileAX()
-            => CompressSingleFile("Open File to Compress to LZ (F-Zero AX)", AvGame.FZeroAX);
+            => CompressSingleFile("Open File to Compress to LZ (F-Zero AX)", GxGame.FZeroAX);
 
-        public static void CompressSingleFile(string title, AvGame game)
+        public static void CompressSingleFile(string title, GxGame game)
         {
             var settings = GfzProjectWindow.GetSettings();
             var openPath = settings.FileOutput;

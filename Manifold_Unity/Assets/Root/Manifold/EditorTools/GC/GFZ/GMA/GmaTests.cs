@@ -41,7 +41,7 @@ namespace Manifold.EditorTools.GC.GFZ.GMA
         /// <param name="gma"></param>
         public static void TestSaveGma(Gma gma)
         {
-            using (var writer = new BinaryWriter(new MemoryStream()))
+            using (var writer = new EndianBinaryWriter(new MemoryStream(), Gma.endianness))
             {
                 gma.Serialize(writer);
             }
@@ -49,13 +49,13 @@ namespace Manifold.EditorTools.GC.GFZ.GMA
 
         public static void TestGmaRoundtripByteForByte(string filePath)
         {
-            var reader = new BinaryReader(File.OpenRead(filePath));
+            var reader = new EndianBinaryReader(File.OpenRead(filePath), Gma.endianness);
             var gma = new Gma();
-            gma.FileName = Path.GetFileName(filePath);
+            gma.FileName = Path.GetFileName(filePath); 
             gma.Deserialize(reader);
 
-            var writer = new BinaryWriter(new MemoryStream());
-            writer.WriteX(gma);
+            var writer = new EndianBinaryWriter(new MemoryStream(), Gma.endianness);
+            writer.Write(gma);
             writer.Flush();
 
             bool isSameLength = reader.BaseStream.Length == writer.BaseStream.Length;

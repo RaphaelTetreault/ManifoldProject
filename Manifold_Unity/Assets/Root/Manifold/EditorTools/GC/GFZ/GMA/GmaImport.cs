@@ -23,7 +23,7 @@ namespace Manifold.EditorTools.GC.GFZ.GMA
             // Create folder if it doesn't already exist
             var modelDestination = $"{filePath}/{fileName}/";
             // Ensure the folder path exists
-            AssetDatabaseUtility.CreatePath(modelDestination);
+            AssetDatabaseUtility.CreateDirectory(modelDestination);
 
             foreach (var model in gma.Models)
             {
