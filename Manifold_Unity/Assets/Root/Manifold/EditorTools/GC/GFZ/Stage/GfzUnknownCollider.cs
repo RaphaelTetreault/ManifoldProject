@@ -40,7 +40,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         {
             transform.CopyGfzTransformTRXS(value.Transform);
             transform.localScale *= scale;
-            sceneObject = GameObject.Find(value.SceneObject.Name).GetComponent<GfzSceneObject>();
+
+            var gobj = GameObject.Find(value.SceneObject.Name);
+            sceneObject = gobj == null ? null : gobj.GetComponent<GfzSceneObject>();
             
             if (sceneObject is null)
             DebugConsole.Log("Hack fix did not work.");

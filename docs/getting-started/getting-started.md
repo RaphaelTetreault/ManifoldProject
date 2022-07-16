@@ -102,15 +102,19 @@ The final folder structure will look like the above.
 
 
 
+TEST OPEN
+
+
+
 ### Opening Project
 
-[]
+![github](.\res\github.png)
 
 Download the project repository from Github. https://github.com/RaphaelTetreault/ManifoldProject
 
 
 
-[]
+![extract](.\res\extract.png)
 
 Extract the files from the archive and place them somewhere on your system. We recommend placing you files somewhere "low" on your system, where the root path is as short as possible to prevent path errors.
 
@@ -152,31 +156,139 @@ Now that we have our files and editor ready, we can configure the project to imp
 
 
 
+First, open the project.
+
+![editor1](.\res\editor1.png)
+
+The default view should be like so. However, I use a different layout. We can change that so that you can better follow along.
 
 
 
+![editor2](.\res\editor2.png)
+
+Go to `Window / Layouts` and select `2 by 3`.
 
 
 
+![editor3](.\res\editor3.png)
+
+In the Project window on the right, select the options icon (three vertical dots, right of the lock symbol). Select `One Column Layout`.
 
 
 
+![editor4](.\res\editor4.png)
+
+We still need to decompress the game files from earlier. In the `Manifold /  LZ Compression Tools` and select `Decompress all LZ files in directory tree`.
 
 
 
+![editor5](.\res\editor5.png)
+
+Locate the bootable files folder from earlier. Press confirm your choice.
+
+The program will now decompress all LZ files in and under that folder.
 
 
 
+![editor6](.\res\editor6.png)
+
+Now that the files are decompressed, we need to tell the tools where to import and manage files from.
+
+In the menu options, select `Manifold` and then `Open Settings Window`.
 
 
 
+![editor7](.\res\editor7.png)
+
+This window houses all the options I have specified for the various tools. Above is what my settings look like. Importantly, this is just point to folders on my computer to load in and export files to various locations.
+
+**General**
+
+* **Serialize Format**: select if files are for *<u>F-Zero AX</u>* or <u>*F-Zero GX*</u>.
+* **Source Directory**: point this to our clean source files that we decompressed. This folder is used when importing game files.
+* **Working Files Directory**: point this to a folder where you want exported files to go. Ideally this is a working directory that Dolphin can run so you can test out the files you made.
+* **Unity Working Directory**: where imported files are moved to. NOTE: currently this is the idea, but I haven't smoothed over some hard-coded paths. Not all files may be placed inside this folder.
+
+**Scene Generation**
+
+* **Scene Export Path**: point this to where you wish generated scene files to be exported.
+* **Single Scene Index**: the scene index used when importing scenes with the "single scene" option. By default, index 1 is for the file COLI_COURSE01.
+* **Convert Coord Space**: deprecated, does nothing at the moment.
+
+**Collider Generation**:
+
+* **Create Collider Backfaces**: when importing colliders, if the mesh should have both front and back faces.
+* **Collider 256 Scene Index**: the scene index used when importing all 256 chunked static scene colliders. By default, index 1 is for the file COLI_COURSE01. This is *slow* and is meant for debugging.
+* **Collider 256 Mesh Type**: the kind of mesh to construct all 256 chunks of. 
+
+**File Output Directories**
+
+* **Log Output Directory**: where log files are placed.
+* **Analysis Output Directory**: where file analysis spreadsheets are placed.
+* **File/Binary Output Directory**: where binary files are output (for debugging functions).
 
 
 
+![editor8](.\res\editor8.png)
+
+We need to generate some assets to see scenes. Technically, you don't need any of this, but it is very helpful.
+
+Select `Manifold / GMA` and choose `Import all models from source folder`.
+
+![editor-model-import](.\res\editor-model-import.png)
+
+This process takes about 15 minutes on a high end machine with a NVMe 3.0 drive. Expect this to take a while. Grab yourself a tea :tea:.
 
 
 
+![editor9](.\res\editor9.png)
+
+**Optional**: import colliders meshes.
+
+Select `Manifold / Colliders` and choose `Create collider meshes`. This should be fairly brief, only a couple of minutes.
 
 
 
+![editor10](.\res\editor10.png)
 
+**Optional**: import textures. They aren't used yet, but if you want to peruse them, you can.
+
+Selecting `Manifold / TPL` and choosing `Import all textures and mipmaps (with hash reference objects)` will import each unique texture only once and name it its PNG hash. This is not really human-friendly, so not advised.
+
+Selecting `Manifold / TPL` and choosing `Convert TPL Textures - Main Textures Only` will import all main textures from TPLs to subfolders named after the TPL archive. Mipmaps are not generated. The user selects which folder to place them in. It is recommended to place the folder outside of Unity as Unity with optimize the PNGs, which takes more time.
+
+In either case, this will take a while to process.
+
+
+
+![editor11](.\res\editor11.png)
+
+Finally, select `Manifold / Scenes` and choose `Import All Stages`. This will construct a Unity scene which replicates GFZ's scenes, creating objects for all of the data.
+
+
+
+![editor12](.\res\editor12.png)
+
+Once the import is done, you should see something like this.
+
+
+
+![editor13](.\res\editor13.png)
+
+Let's change the render view to be more helpful. In the render options, select `Shaded Wireframe`.
+
+
+
+![editor14](.\res\editor14.png)
+
+Things look clearer now. We can also disable all of the other visual layers. Uncheck items in the menu.
+
+
+
+![editor15](.\res\editor15.png)
+
+If we open up COLI_COURSE01, we can peruse it a bit.
+
+
+
+At this point, the assets are in the editor and you can begin manipulating them. A guide on creating stage data to come at a later date.

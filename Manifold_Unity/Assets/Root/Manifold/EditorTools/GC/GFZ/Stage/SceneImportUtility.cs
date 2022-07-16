@@ -19,7 +19,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         // todo: make title consistent across progress bars.
         public static string ExecuteText => "Import COLI as Unity Scene";
 
-        [MenuItem(GfzMenuItems.Stage.Menu + "Midiman", priority = GfzMenuItems.Stage.ImportSingleSelectPriority + 1)]
+        //[MenuItem(GfzMenuItems.Stage.Menu + "Midiman", priority = GfzMenuItems.Stage.ImportSingleSelectPriority + 1)]
         public static void ExportMidiman()
         {
             var settings = GfzProjectWindow.GetSettings();
@@ -55,7 +55,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             EditorUtility.ClearProgressBar();
         }
 
-        [MenuItem(GfzMenuItems.Stage.Menu + "Midiman2", priority = GfzMenuItems.Stage.ImportSingleSelectPriority + 2)]
+        //[MenuItem(GfzMenuItems.Stage.Menu + "Midiman2", priority = GfzMenuItems.Stage.ImportSingleSelectPriority + 2)]
         public static void ExportMidiman2()
         {
             var settings = GfzProjectWindow.GetSettings();
