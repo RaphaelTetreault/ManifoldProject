@@ -37,6 +37,25 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return finalMatrix;
         }
 
+        //public Matrix4x4 EvaluateHierarchyMatrix(double time, bool isGfzCoordinateSpace)
+        //{
+        //    // Get parent matrix. This is recursive.
+        //    var parentMatrix = HasParent
+        //        ? Parent.EvaluateHierarchyMatrix(time)
+        //        : Matrix4x4.TRS(Vector3.zero, Quaternion.identity, Vector3.one);
+
+        //    //var trs = isGfzCoordinateSpace
+        //    //    ? AnimationCurveTRS.CreateGfzCoordinateSpace()
+        //    //    : AnimationCurveTRS;
+        //    var trs = AnimationCurveTRS;
+
+        //    var selfAnimationMatrix = trs.EvaluateMatrix(time);
+        //    var selfMatrix = StaticMatrix * selfAnimationMatrix;
+
+        //    var finalMatrix = parentMatrix * selfMatrix;
+        //    return finalMatrix;
+        //}
+
         public Matrix4x4 EvaluateHierarchyMatrix2(double time)
         {
             var finalStaticMatrix = EvaluateStaticMatrices();
