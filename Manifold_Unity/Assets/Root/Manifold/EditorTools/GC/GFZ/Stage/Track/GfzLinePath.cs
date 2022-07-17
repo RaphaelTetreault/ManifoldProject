@@ -17,6 +17,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         [SerializeField] private UnityEngine.AnimationCurve scaleY = CreateDefaultCurve(1);
         [SerializeField] private UnityEngine.AnimationCurve scaleZ = CreateDefaultCurve(1);
         [SerializeField] private AnimationCurveTRS animationCurveTRS = new();
+        [SerializeField] private AnimationCurveTRS debugTrs = new();
         //
         [SerializeField, Min(1f)] private float step = 10f;
 
@@ -86,15 +87,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
             if (scope == Scope.Global)
             {
-                var mtx = Matrix4x4.TRS(transform.position, transform.rotation, transform.lossyScale);
-                //var invMtx = mtx.inverse;
-                // The problem is that each point would need to be rotated :/, along with rotation, etc.
-                trs.Position.x = trs.Position.x.CreateValueOffset(pos.x);
-                trs.Position.y = trs.Position.y.CreateValueOffset(pos.y);
-                trs.Position.z = trs.Position.z.CreateValueOffset(pos.z);
-                trs.Rotation.x = trs.Rotation.x.CreateValueOffset(transform.rotation.eulerAngles.x);
-                trs.Rotation.y = trs.Rotation.y.CreateValueOffset(transform.rotation.eulerAngles.y);
-                trs.Rotation.z = trs.Rotation.z.CreateValueOffset(transform.rotation.eulerAngles.z);
+                var mtx = Matrix4x4.TRS(transform.localPosition, transform.localRotation, transform.localScale);
+                Debug.Log($"OLD: tan out {trs.Position.z[0].outTangent}, tan in {trs.Position.z[1].inTangent}");
+                trs = trs.AddMatrixToCurve(mtx);
+                debugTrs = trs;
+                Debug.Log($"NEW: tan out {trs.Position.z[0].outTangent}, tan in {trs.Position.z[1].inTangent}");
             }
 
             if (isGfzCoordinateSpace)

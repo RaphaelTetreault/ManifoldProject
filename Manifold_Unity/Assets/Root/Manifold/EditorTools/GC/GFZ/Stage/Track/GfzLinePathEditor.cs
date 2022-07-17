@@ -25,6 +25,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         SerializedProperty scaleZ;
         // all
         SerializedProperty animationCurveTRS;
+        SerializedProperty debugTrs;
         SerializedProperty step;
 
         void OnEnable()
@@ -38,6 +39,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             scaleY = serializedObject.FindProperty(nameof(scaleY));
             scaleZ = serializedObject.FindProperty(nameof(scaleZ));
             animationCurveTRS = serializedObject.FindProperty(nameof(animationCurveTRS));
+            debugTrs = serializedObject.FindProperty(nameof(debugTrs));
 
             step = serializedObject.FindProperty(nameof(step));
         }
@@ -55,6 +57,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 DrawSourceFields(linePath);
                 EditorGUILayout.Separator();
                 DrawTrsGeneration(linePath);
+                EditorGUILayout.PropertyField(debugTrs);
             }
             serializedObject.ApplyModifiedProperties();
 

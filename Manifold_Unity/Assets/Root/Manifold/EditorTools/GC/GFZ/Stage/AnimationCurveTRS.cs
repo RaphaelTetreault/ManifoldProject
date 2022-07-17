@@ -333,5 +333,56 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         //    trs.Scale.AddKeys(maxTime, Vector3.one);
         //    return trs;
         //}
+
+        public AnimationCurveTRS AddMatrixToCurve(Matrix4x4 staticMatrix)
+        {
+            var trs = CreateDeepCopy();
+            Keyframe[][] keyframes = new Keyframe[9][];
+
+            // Get pre-multiplied values
+            var curves = trs.AnimationCurves;
+            for (int cIndex = 0; cIndex < curves.Length; cIndex++)
+            {
+                var curve = curves[cIndex];
+                keyframes[cIndex] = curve.keys;
+                for (int k = 0; k < curve.keys.Length; k++)
+                {
+                    var key = curve.keys[k];
+                    var mtx = trs.EvaluateMatrix(key.time);
+                    var result = staticMatrix * mtx;
+                    var value = GetValue(result, cIndex);
+                    keyframes[cIndex][k].value = value;
+                }
+                // correct tangents
+                keyframes[cIndex] = KeyframeUtility.CorrectKeyTangents2(curve.keys, keyframes[cIndex]);
+            }
+
+            trs.Position = new AnimationCurve3(keyframes[0], keyframes[1], keyframes[2]);
+            trs.Rotation = new AnimationCurve3(keyframes[3], keyframes[4], keyframes[5]);
+            trs.Scale = new AnimationCurve3(keyframes[6], keyframes[7], keyframes[8]);
+
+            return trs;
+        }
+
+        public float GetValue(Matrix4x4 matrix, int index)
+        {
+            switch (index)
+            {
+                case 0: return matrix.Position().x;
+                case 1: return matrix.Position().y;
+                case 2: return matrix.Position().z;
+
+                case 3: return matrix.rotation.eulerAngles.x;
+                case 4: return matrix.rotation.eulerAngles.y;
+                case 5: return matrix.rotation.eulerAngles.z;
+
+                case 6: return matrix.lossyScale.x;
+                case 7: return matrix.lossyScale.y;
+                case 8: return matrix.lossyScale.z;
+
+                default: throw new System.Exception();
+            }
+        }
+
     }
 }
