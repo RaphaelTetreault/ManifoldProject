@@ -738,6 +738,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
             // TRS 0: has all animation curves EXCEPT rotation Z
             var trs0 = trs.CreateDeepCopy();
+            trs0.Rotation.x = new AnimationCurve(); // nullify
             trs0.Rotation.z = new AnimationCurve();
 
             // TRS 1: has ONLY rotation Z
