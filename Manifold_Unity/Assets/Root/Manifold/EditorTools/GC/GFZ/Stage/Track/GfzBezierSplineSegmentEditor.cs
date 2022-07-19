@@ -39,6 +39,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         SerializedProperty splineThickness;
         SerializedProperty outterLineThickness;
         SerializedProperty animationCurveTRS;
+        SerializedProperty autoGenTRS;
 
         void OnEnable()
         {
@@ -50,6 +51,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             outterLineThickness = serializedObject.FindProperty(nameof(outterLineThickness));
 
             animationCurveTRS = serializedObject.FindProperty(nameof(animationCurveTRS));
+            autoGenTRS = serializedObject.FindProperty(nameof(autoGenTRS));
         }
 
         private void OnSceneGUI()
@@ -144,6 +146,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             // TRS
             GuiSimple.Label("Animation Curve TRS", EditorStyles.boldLabel);
             {
+                EditorGUILayout.PropertyField(autoGenTRS);
+
                 GUILayout.BeginHorizontal();
                 if (GUILayout.Button($"Generate Animation Curve TRS"))
                 {

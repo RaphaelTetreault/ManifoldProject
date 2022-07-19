@@ -23,6 +23,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         [SerializeField, HideInInspector]
         private bool isLoop = false;
+        [SerializeField, HideInInspector]
+        private bool autoGenTRS = false;
 
         //
         [SerializeField]
@@ -771,7 +773,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         // DEPRECATE
         public void CallOnEdited()
         {
-            DebugConsole.Log("CallOnEdit from Bezier. Deprecated.");
+            if (autoGenTRS)
+            {
+                UpdateAnimationCurveTRS();
+                UpdateShapeNodeMeshes(GetShapeNodes());
+            }
+            //DebugConsole.Log("CallOnEdit from Bezier. Deprecated.");
         }
 
         public void UpdateShapeNodeMeshes(GfzTrackSegmentShapeNode[] shapes)
