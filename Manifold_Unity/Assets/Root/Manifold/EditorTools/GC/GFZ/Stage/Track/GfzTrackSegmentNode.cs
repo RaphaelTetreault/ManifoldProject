@@ -125,6 +125,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             if (useGfzCoordinateSpace)
             {
                 position.z = -position.z;
+                rotation.x = -rotation.x;
                 rotation.y = -rotation.y;
             }
 

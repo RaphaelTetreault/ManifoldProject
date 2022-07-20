@@ -95,8 +95,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             var pos = transform.localPosition;
             var rot = transform.localRotation.eulerAngles;
             var scl = transform.localScale;
-
             pos.z = -pos.z;
+            rot.x = -rot.x;
             rot.y = -rot.y;
 
             var trackSegment = new TrackSegment();

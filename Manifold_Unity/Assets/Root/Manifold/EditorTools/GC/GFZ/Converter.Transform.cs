@@ -92,6 +92,7 @@ namespace Manifold.EditorTools.GC.GFZ
             if (flipCoords)
             {
                 position.z = -position.z;
+                rotation.x = -rotation.x;
                 rotation.y = -rotation.y;
             }
 
@@ -111,6 +112,7 @@ namespace Manifold.EditorTools.GC.GFZ
             if (flipCoords)
             {
                 position.z = -position.z;
+                rotation.x = -rotation.x;
                 rotation.y = -rotation.y;
             }
 
