@@ -177,5 +177,21 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
             return shapeNodes.ToArray();
         }
+
+        public Vector3 GetPosition()
+        {
+            var position = IsRoot() ? transform.position : transform.localPosition;
+            return position;
+        }
+        public Quaternion GetRotation()
+        {
+            var position = IsRoot() ? transform.rotation : transform.localRotation;
+            return position;
+        }
+        public Vector3 GetScale()
+        {
+            var scale = IsRoot() ? transform.lossyScale : transform.localScale;
+            return scale;
+        }
     }
 }

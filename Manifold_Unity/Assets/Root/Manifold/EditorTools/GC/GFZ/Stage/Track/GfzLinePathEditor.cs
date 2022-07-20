@@ -141,11 +141,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             for (int i = 0; i <= nSteps; i++)
             {
                 var time = i / (float)nSteps * length;
-                matrices[i] = hacTRS.EvaluateHierarchyMatrix(time);
-                // debug
-                var p = matrices[i].Position();
-                var r = matrices[i].rotation.eulerAngles;
-                var s = matrices[i].lossyScale;
+                matrices[i] = hacTRS.EvaluateAnimationMatrices(time);
+                //// debug
+                //var p = matrices[i].Position();
+                //var r = matrices[i].rotation.eulerAngles;
+                //var s = matrices[i].lossyScale;
             }
 
             const float thickness = 5f;
