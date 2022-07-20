@@ -9,8 +9,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
     public abstract class GfzTrackSegmentNode : MonoBehaviour
     {
-        public abstract TrackSegmentType TrackSegmentType { get; }
-
         public abstract AnimationCurveTRS CreateAnimationCurveTRS(bool isGfzCoordinateSpace);
         public abstract TrackSegment CreateTrackSegment();
 

@@ -1,6 +1,7 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
-namespace Manifold.EditorTools.GC.GFZ
+namespace Manifold.EditorTools
 {
     public static class AnimationCurveExtensions
     {
@@ -58,6 +59,18 @@ namespace Manifold.EditorTools.GC.GFZ
             return value;
         }
 
+        public static float EvaluateMin(this AnimationCurve curve)
+        {
+            float minTime = curve.GetMinTime();
+            float value = curve.Evaluate(minTime);
+            return value;
+        }
+        public static float EvaluateMax(this AnimationCurve curve)
+        {
+            float maxTime = curve.GetMaxTime();
+            float value = curve.Evaluate(maxTime);
+            return value;
+        }
 
         public static float FastEvaluateNormalized(this AnimationCurve curve, float normalizedTime)
         {
@@ -94,68 +107,26 @@ namespace Manifold.EditorTools.GC.GFZ
             return GetMinTime(curve);
         }
 
-
-
-        public static float GetMinTime(this AnimationCurve curve)
-        {
-            // Can error if keys.length is [0]
-
-            var minTime = curve.keys[0].time;
-            return minTime;
-        }
-
-        public static float GetMaxTime(this AnimationCurve curve)
-        {
-            // Can error if keys.length is [0]
-
-            // Get max time value, normalize input time
-            var lastIndex = curve.keys.Length - 1;
-            var maxTime = curve.keys[lastIndex].time;
-            return maxTime;
-        }
-
-
-
-
         public static AnimationCurve GetCopy(this AnimationCurve curve)
         {
             return new AnimationCurve(curve.keys);
         }
 
 
-        public static AnimationCurve GetInverted(this AnimationCurve curve)
-        {
-            var keys = curve.keys;
-            var invertedKeys = new Keyframe[keys.Length];
+        public static float GetMinTime(this AnimationCurve curve)
+            => KeyframeUtility.GetMinTime(curve.keys);
 
-            for (int i = 0; i < keys.Length; i++)
-            {
-                // copy all misc data
-                invertedKeys[i] = keys[i];
-                // Invert values
-                invertedKeys[i].value = -keys[i].value;
-                invertedKeys[i].inTangent = -keys[i].inTangent;
-                invertedKeys[i].outTangent = -keys[i].outTangent;
-            }
+        public static float GetMaxTime(this AnimationCurve curve)
+            => KeyframeUtility.GetMaxTime(curve.keys);
 
-            return new AnimationCurve(invertedKeys);
-        }
+        public static AnimationCurve CreateInverted(this AnimationCurve curve)
+            => new AnimationCurve(KeyframeUtility.InvertedKeys(curve.keys));
 
-        public static AnimationCurve GetOffset(this AnimationCurve curve, float valueOffset)
-        {
-            var keys = curve.keys;
-            var invertedKeys = new Keyframe[keys.Length];
+        public static AnimationCurve CreateValueOffset(this AnimationCurve curve, float valueOffset)
+            => new AnimationCurve(KeyframeUtility.OffsetKeyValues(curve.keys, valueOffset));
 
-            for (int i = 0; i < keys.Length; i++)
-            {
-                // copy all misc data
-                invertedKeys[i] = keys[i];
-                // Invert values
-                invertedKeys[i].value += valueOffset;
-            }
-
-            return new AnimationCurve(invertedKeys);
-        }
+        public static Keyframe[] GetRenormalizedKeyRangeAndTangents(this AnimationCurve curve, float newMinTime, float newMaxTime)
+            => KeyframeUtility.GetRenormalizedKeyRangeAndTangents(curve.keys, newMinTime, newMaxTime);
 
     }
 }

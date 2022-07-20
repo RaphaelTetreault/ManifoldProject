@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
@@ -23,8 +24,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         [SerializeField, HideInInspector]
         private bool isLoop = false;
-        [SerializeField, HideInInspector]
-        private bool autoGenTRS = false;
 
         //
         [SerializeField]
@@ -53,6 +52,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         [SerializeField]
         private AnimationCurveTRS animationCurveTRS = new();
         public AnimationCurveTRS AnimationCurveTRS => animationCurveTRS;
+
+        [field: SerializeField] public float SegmentLength { get; protected set; } = -1;
+
 
         public bool IsLoop
         {
@@ -87,8 +89,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         public float BezierHandleSize { get => bezierHandleSize; set => bezierHandleSize = value; }
         public float SplineThickness { get => splineThickness; set => splineThickness = value; }
         public float OutterLineThickness { get => outterLineThickness; set => outterLineThickness = value; }
-
-        public override GameCube.GFZ.Stage.TrackSegmentType TrackSegmentType => throw new NotImplementedException();
 
         public BezierPoint GetBezierPoint(int index)
         {
@@ -295,6 +295,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             newBezier.outTangent = newBezier.position + direction * kNewTangentLength;
             newBezier.width = lastBezier.width;
             newBezier.widthTangentMode = lastBezier.widthTangentMode;
+            newBezier.height = lastBezier.height;
+            newBezier.heightTangentMode = lastBezier.heightTangentMode;
             newBezier.roll = lastBezier.roll;
             newBezier.rollTangentMode = lastBezier.rollTangentMode;
 
@@ -317,6 +319,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             newBezier.outTangent = newBezier.position + direction * kNewTangentLength;
             newBezier.width = firstBezier.width;
             newBezier.widthTangentMode = firstBezier.widthTangentMode;
+            newBezier.height = firstBezier.height;
+            newBezier.heightTangentMode = firstBezier.heightTangentMode;
             newBezier.roll = firstBezier.roll;
             newBezier.rollTangentMode = firstBezier.rollTangentMode;
 
@@ -343,6 +347,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             bezier.tangentMode = BezierControlPointMode.Mirrored;
             bezier.width = (bezier0.width + bezier1.width) / 2f;
             bezier.widthTangentMode = AnimationUtility.TangentMode.Free;
+            bezier.height = (bezier0.height + bezier1.height) / 2f;
+            bezier.heightTangentMode = AnimationUtility.TangentMode.Free;
             bezier.roll = (bezier0.roll + bezier1.roll) / 2f;
             bezier.rollTangentMode = AnimationUtility.TangentMode.Free;
 
@@ -484,7 +490,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             // Entire curve approximate length to within 100m
             const int nStartIterDistance = 50;
             double entireCurveApproximateLength = CurveLengthUtility.GetDistanceBetweenRepeated(this, 0, 1, nStartIterDistance, 2, 1);
-            int nApproximationIterations = (int)(entireCurveApproximateLength * (1.0 / nStartIterDistance / 2.0));
+            int nApproximationIterations = (int)(entireCurveApproximateLength / 200);
+
+            //var tasks = new List<Task>();
 
             // Compute curve lengths between each bezier control point
             int numCurves = points.Count - 1;
@@ -494,13 +502,18 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             {
                 double timeStart = (double)(i + 0) / numCurves;
                 double timeEnd = (double)(i + 1) / numCurves;
-                //double distance = CurveLengthUtility.GetDistanceBetweenRepeated(this, timeStart, timeEnd);
-                double distance = BezierApproximateDistance(this, timeStart, timeEnd, nApproximationIterations);
-                distances[i] = distance;
-                totalDistance += distance;
-                //Debug.Log($"Distance {i}: {distance}");
+
+                //Action func = () =>
+                //{
+                    double distance = BezierApproximateDistance(this, timeStart, timeEnd, nApproximationIterations);
+                    distances[i] = distance;
+                    totalDistance += distance;
+                    //Debug.Log($"Thread {i} complete");
+                //};
+                //tasks.Add(Task.Factory.StartNew(func));
             }
-            //Debug.Log("Total distance: " + totalDistance);
+
+            //Task.WaitAll(tasks.ToArray());
 
             var previousRotation = GetOrientation(0, 0).eulerAngles;
             double currDistance = 0;
@@ -685,7 +698,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 AnimationUtility.SetKeyLeftTangentMode(curve, i + 1, mode);
             }
 
-            //curve = SubdivideCurve(curve, 32);
+            curve = SubdivideCurve(curve, 32);
 
             return curve;
         }
@@ -773,12 +786,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         // DEPRECATE
         public void CallOnEdited()
         {
-            if (autoGenTRS)
-            {
-                UpdateAnimationCurveTRS();
-                UpdateShapeNodeMeshes(GetShapeNodes());
-            }
             //DebugConsole.Log("CallOnEdit from Bezier. Deprecated.");
+            UpdateAnimationCurveTRS();
+            UpdateShapeNodeMeshes(GetShapeNodes());
         }
 
         public void UpdateShapeNodeMeshes(GfzTrackSegmentShapeNode[] shapes)
@@ -788,5 +798,22 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 shape.UpdateMesh();
             }
         }
+
+        public override float GetSegmentLength()
+        {
+            var root = GetRoot();
+
+            if (this != root)
+                throw new Exception("Bezier makes assumption that it is always root node!");
+
+            var segmentLength = SegmentLength;
+            if (segmentLength <= 0f)
+            {
+                var msg = "Distance is 0 which is invalid. TRS animation curves must define path.";
+                throw new System.ArgumentException(msg);
+            }
+            return segmentLength;
+        }
+
     }
 }

@@ -16,6 +16,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         [ReadOnlyGUI] public AnimationUtility.TangentMode widthTangentMode;
         [ReadOnlyGUI] public AnimationUtility.TangentMode heightTangentMode;
         [ReadOnlyGUI] public AnimationUtility.TangentMode rollTangentMode;
+
+        public Vector3 InTangentLocal => inTangent - position;
+        public Vector3 OutTangentLocal => outTangent - position;
     }
 
 }

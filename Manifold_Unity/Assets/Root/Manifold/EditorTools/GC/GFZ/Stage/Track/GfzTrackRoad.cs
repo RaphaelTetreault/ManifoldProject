@@ -18,9 +18,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         [field: SerializeField, Min(0f)] public float RailHeightLeft { get; private set; } = 3f;
         [field: SerializeField, Min(0f)] public float RailHeightRight { get; private set; } = 3f;
 
-        // TODO: deprecate
-        public override TrackSegmentType TrackSegmentType => TrackSegmentType.IsTrack;
-
         public override AnimationCurveTRS CreateAnimationCurveTRS(bool isGfzCoordinateSpace)
         {
             return new AnimationCurveTRS();
@@ -64,6 +61,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             var children = CreateChildTrackSegments();
 
             var trackSegment = new TrackSegment();
+            trackSegment.OrderIndentifier = name;
             trackSegment.SegmentType = TrackSegmentType.IsTrack;
             trackSegment.LocalPosition = transform.localPosition;
             trackSegment.LocalRotation = transform.localRotation.eulerAngles;

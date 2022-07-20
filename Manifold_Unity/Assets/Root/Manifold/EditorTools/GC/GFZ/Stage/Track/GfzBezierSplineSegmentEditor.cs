@@ -203,37 +203,58 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 }
 
                 GUILayout.BeginHorizontal();
-                bool isValid = selectedIndex >= 0 && selectedIndex < spline.PointsCount;
-                GUI.enabled = isValid;
-
-                if (GUILayout.Button($"Insert Before [{selectedIndex}]"))
                 {
-                    Undo.RecordObject(spline, $"Add bézier point at {selectedIndex}");
-                    spline.InsertBefore(selectedIndex);
-                    selectedPart = SelectedPart.point;
-                    EditorUtility.SetDirty(spline);
-                }
+                    bool isValid = selectedIndex >= 0 && selectedIndex < spline.PointsCount;
+                    GUI.enabled = isValid;
 
-                if (GUILayout.Button($"Insert After [{selectedIndex}]"))
-                {
-                    Undo.RecordObject(spline, $"Add bézier point at {spline.PointsCount}");
-                    spline.InsertAfter(selectedIndex + 1);
-                    selectedPart = SelectedPart.point;
-                    EditorUtility.SetDirty(spline);
-                    selectedIndex++;
-                }
+                    var buttonWidth = GUILayout.Width(GuiSimple.GetElementsWidth(3));
 
-                GUI.color = new Color32(255, 160, 160, 255);
-                if (GUILayout.Button($"Delete [{selectedIndex}]"))
-                {
-                    Undo.RecordObject(spline, $"Delete bézier point {selectedIndex}");
-                    spline.RemovePoint(selectedIndex);
-                    selectedPart = SelectedPart.point;
-                    EditorUtility.SetDirty(spline);
-                    selectedIndex = Mathf.Clamp(selectedIndex - 1, 0, int.MaxValue);
+                    if (GUILayout.Button($"Insert Before [{selectedIndex}]", buttonWidth))
+                    {
+                        Undo.RecordObject(spline, $"Add bézier point at {selectedIndex}");
+                        spline.InsertBefore(selectedIndex);
+                        selectedPart = SelectedPart.point;
+                        EditorUtility.SetDirty(spline);
+                    }
+
+                    if (GUILayout.Button($"Insert After [{selectedIndex}]", buttonWidth))
+                    {
+                        Undo.RecordObject(spline, $"Add bézier point at {spline.PointsCount}");
+                        spline.InsertAfter(selectedIndex + 1);
+                        selectedPart = SelectedPart.point;
+                        EditorUtility.SetDirty(spline);
+                        selectedIndex++;
+                    }
+
+                    GUI.color = new Color32(255, 160, 160, 255);
+                    if (GUILayout.Button($"Delete [{selectedIndex}]", buttonWidth))
+                    {
+                        Undo.RecordObject(spline, $"Delete bézier point {selectedIndex}");
+                        spline.RemovePoint(selectedIndex);
+                        selectedPart = SelectedPart.point;
+                        EditorUtility.SetDirty(spline);
+                        selectedIndex = Mathf.Clamp(selectedIndex - 1, 0, int.MaxValue);
+                    }
+                    GUI.color = Color.white;
+                    GUI.enabled = true;
                 }
-                GUI.color = Color.white;
-                GUI.enabled = true;
+                GUILayout.EndHorizontal();
+
+                GUILayout.BeginHorizontal();
+                {
+                    const float oneQuarter = 1 / 4f;
+                    const float oneThird = 1 / 3f;
+                    const float oneHalf = 1 / 2f;
+
+                    var buttonWidth = GUILayout.Width(GuiSimple.GetElementsWidth(3));
+
+                    if (GUILayout.Button($"Weight Tangents 1/4", buttonWidth))
+                        SetBezierWeight(selectedIndex, selectedIndex + 1, oneQuarter, oneQuarter);
+                    if (GUILayout.Button($"Weight Tangents 1/3", buttonWidth))
+                        SetBezierWeight(selectedIndex, selectedIndex + 1, oneThird, oneThird);
+                    if (GUILayout.Button($"Weight Tangents 1/2", buttonWidth))
+                        SetBezierWeight(selectedIndex, selectedIndex + 1, oneHalf, oneHalf);
+                }
                 GUILayout.EndHorizontal();
 
                 //
@@ -640,9 +661,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     var size = spline.ViewDirectionScale;
                     Handles.ArrowHandleCap(-1, point, orientation, size, EventType.Repaint);
                 }
-
             }
-
         }
 
         public bool IsSelected(int index)
@@ -656,6 +675,39 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return isSelected ? c : new Color(c.r, c.g, c.b, 0.4f);
         }
 
+        public void SetBezierWeight(int index0, int index1, float weight0, float weight1)
+        {
+            bool invalidMin = index0 < 0;
+            bool invalidMax = index1 >= spline.PointsCount;
+            if (invalidMin || invalidMax)
+                return;
+
+            BezierPoint bezierPoint0 = spline.GetBezierPoint(index0);
+            BezierPoint bezierPoint1 = spline.GetBezierPoint(index1);
+
+            // Set tangent mode to aligned if it was set to mirrored
+            var mode0 = bezierPoint0.tangentMode;
+            var mode1 = bezierPoint1.tangentMode;
+
+            bezierPoint0.tangentMode = mode0 == BezierControlPointMode.Mirrored ? BezierControlPointMode.Aligned : mode0;
+            bezierPoint1.tangentMode = mode1 == BezierControlPointMode.Mirrored ? BezierControlPointMode.Aligned : mode1;
+
+            // 
+            var distanceBetween = Vector3.Distance(bezierPoint0.position, bezierPoint1.position);
+            bezierPoint0.outTangent = weight0 * distanceBetween * bezierPoint0.OutTangentLocal.normalized + bezierPoint0.position;
+            bezierPoint1.inTangent = weight1 * distanceBetween * bezierPoint1.InTangentLocal.normalized + bezierPoint1.position;
+
+            //
+            string undoMessage = $"Set weight of tangets {index0} and {index1}";
+            Undo.RecordObject(spline, undoMessage);
+            {
+                spline.SetBezierPoint(index0, bezierPoint0);
+                spline.SetBezierPoint(index1, bezierPoint1);
+                ConnectEndsIfLoop(index0, bezierPoint0);
+                ConnectEndsIfLoop(index1, bezierPoint1);
+            }
+            EditorUtility.SetDirty(spline);
+        }
 
     }
 }

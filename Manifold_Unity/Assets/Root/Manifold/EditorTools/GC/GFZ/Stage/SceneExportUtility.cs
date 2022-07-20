@@ -229,19 +229,18 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             }
             // Inject TRACK models
             {
-                var trackModelsGma = CreateTrackModelsGma("Track Segment");
-                var sceneObjects = CreateSceneObjectsFromGma(trackModelsGma);
+                // This creates the GMA archive and gives us the scene objects and dynamic scene objects for them
+                var trackModelsGma = CreateTrackModelsGma(out SceneObject[] sceneObjects, out SceneObjectDynamic[] dynamicSceneObjects);
 
-                // Add SceneObject (template)< it's LODs, and name
+                // Add SceneObject's LODs and their name to archive
                 foreach (var sceneObject in sceneObjects)
                 {
                     scene.SceneObjectLODs.AddRange(sceneObject.LODs);
-                    scene.SceneObjectNames.Add(sceneObject.Name);
+                    scene.SceneObjectNames.Add(sceneObject.Name); // wouldn't you need to put int all LOD names?
                 }
                 scene.sceneObjects = sceneObjects.Concat(scene.sceneObjects).ToArray();
 
                 // add static / dynamic
-                var dynamicSceneObjects = GetAsSceneObjectDynamic(sceneObjects);
                 scene.dynamicSceneObjects = dynamicSceneObjects.Concat(scene.dynamicSceneObjects).ToArray();
 
                 // save gma
@@ -347,16 +346,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             return sceneParams;
         }
 
-        public static SceneObject[] CreateSceneObjectsFromGma(Gma gma)
+        public static SceneObject CreateSceneObject(string modelName)
         {
-            var sceneObjects = new List<SceneObject>();
-
-            foreach (var model in gma.Models)
-            {
                 // Only 1 LOD for now
                 var lod = new SceneObjectLOD()
                 {
-                    Name = model.Name,
+                    Name = modelName,
                     LodDistance = 0f,
                 };
 
@@ -368,51 +363,57 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                     ColliderMesh = null,
                 };
 
-                // Add to list
-                sceneObjects.Add(sceneObject);
-            }
-
-            return sceneObjects.ToArray();
+            return sceneObject;
         }
-
-        // TODO: move to scene object dynamic
-        public static SceneObjectDynamic[] GetAsSceneObjectDynamic(SceneObject[] sceneObjects)
+        public static SceneObjectDynamic CreateSceneObjectDynamic(SceneObject sceneObject, TransformMatrix3x4 transform)
         {
-            var dynamics = new SceneObjectDynamic[sceneObjects.Length];
-            for (int i = 0; i < dynamics.Length; i++)
+            var dynamicSceneObject = new SceneObjectDynamic()
             {
-                dynamics[i] = new SceneObjectDynamic()
-                {
-                    Unk0x00 = 0xF,
-                    Unk0x04 = unchecked((int)0xFFFFFFFF),
-                    SceneObject = sceneObjects[i],
-                    TransformMatrix3x4 = new(),
-                };
-            }
-            return dynamics;
+                Unk0x00 = 0xF,
+                Unk0x04 = unchecked((int)0xFFFFFFFF),
+                SceneObject = sceneObject,
+                TransformMatrix3x4 = transform,
+            };
+            return dynamicSceneObject;
         }
 
-        public static Gma CreateTrackModelsGma(string modelName)
+        public static Gma CreateTrackModelsGma(out SceneObject[] sceneObjects, out SceneObjectDynamic[] dynamicSceneObjects)
         {
-            // TODO: get GfzTrack, use it to get children
+            // get GfzTrack, use it to get children
             var track = GameObject.FindObjectOfType<GfzTrack>(false);
             track.FindChildSegments();
 
-            int debugIndex = 0;
             var models = new List<Model>();
+            var _sceneObjects = new List<SceneObject>();
+            var _dynamicSceneObjects = new List<SceneObjectDynamic>();
+
+            int shapeIndex = 0;
             foreach (var rootTrackSegmentNode in track.AllRoots)
             {
+                int subIndex = 0;
                 var shapeNodes = rootTrackSegmentNode.GetShapeNodes();
                 foreach (var shape in shapeNodes)
                 {
                     var gcmf = shape.CreateGcmf();
-                    models.Add(new Model($"{modelName} {debugIndex++}", gcmf));
+                    var modelName = $"{shape.GetRoot().name}-{shape.name}-#{shapeIndex++}.{subIndex++}";
+                    models.Add(new Model(modelName, gcmf));
+
+                    var sceneObject = CreateSceneObject(modelName);
+                    _sceneObjects.Add(sceneObject);
+
+                    //var transform = TransformConverter.ToGfzTransformMatrix3x4(shape.transform, Space.World, true);
+                    var transform = new TransformMatrix3x4();
+                    var sceneObjectDynamic = CreateSceneObjectDynamic(sceneObject, transform);
+                    _dynamicSceneObjects.Add(sceneObjectDynamic);
                 }
             }
 
             // Create single GMA for model, comprised on many GCMFs (display lists and materials)
             var gma = new Gma();
             gma.Models = models.ToArray();
+
+            sceneObjects = _sceneObjects.ToArray();
+            dynamicSceneObjects = _dynamicSceneObjects.ToArray();
 
             return gma;
         }

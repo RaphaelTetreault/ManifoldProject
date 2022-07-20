@@ -105,5 +105,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 MeshRenderer.sharedMaterials = materials;
             }
         }
+
     }
 }

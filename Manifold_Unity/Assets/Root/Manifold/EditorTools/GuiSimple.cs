@@ -155,5 +155,18 @@ namespace Manifold.EditorTools
         {
             DefaultScript("Script", behaviour);
         }
+
+        public static float GetInspectorWidth()
+        {
+            var width = EditorGUIUtility.currentViewWidth;
+            return width;
+        }
+
+        public static float GetElementsWidth(int nElements)
+        {
+            var width = EditorGUIUtility.currentViewWidth;
+            var widthDivided = width / (nElements * 1.1f); // 1.1 acounts for gap between controls
+            return widthDivided;
+        }
     }
 }

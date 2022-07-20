@@ -16,6 +16,15 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         [field: SerializeField] public AnimationCurve3 Scale { get; private set; } = new();
 
 
+        public AnimationCurveTRS() { }
+        public AnimationCurveTRS(AnimationCurve3 position, AnimationCurve3 rotation, AnimationCurve3 scale)
+        {
+            Position = position;
+            Rotation = rotation;
+            Scale = scale;
+        }
+
+
         public AnimationCurve[] AnimationCurves
         {
             get => new AnimationCurve[]
@@ -70,19 +79,19 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         public GameCube.GFZ.Stage.AnimationCurveTRS ToTrackSegment()
         {
             var trackCurves = new GameCube.GFZ.Stage.AnimationCurveTRS();
-            var corrected = CreateGfzCoordinateSpace();
+            var rightHanded = CreateGfzCoordinateSpace();
 
-            trackCurves.PositionX = AnimationCurveConverter.ToGfz(corrected.Position.x);
-            trackCurves.PositionY = AnimationCurveConverter.ToGfz(corrected.Position.y);
-            trackCurves.PositionZ = AnimationCurveConverter.ToGfz(corrected.Position.z);
+            trackCurves.PositionX = AnimationCurveConverter.ToGfz(rightHanded.Position.x);
+            trackCurves.PositionY = AnimationCurveConverter.ToGfz(rightHanded.Position.y);
+            trackCurves.PositionZ = AnimationCurveConverter.ToGfz(rightHanded.Position.z);
 
-            trackCurves.RotationX = AnimationCurveConverter.ToGfz(corrected.Rotation.x);
-            trackCurves.RotationY = AnimationCurveConverter.ToGfz(corrected.Rotation.y);
-            trackCurves.RotationZ = AnimationCurveConverter.ToGfz(corrected.Rotation.z);
+            trackCurves.RotationX = AnimationCurveConverter.ToGfz(rightHanded.Rotation.x);
+            trackCurves.RotationY = AnimationCurveConverter.ToGfz(rightHanded.Rotation.y);
+            trackCurves.RotationZ = AnimationCurveConverter.ToGfz(rightHanded.Rotation.z);
 
-            trackCurves.ScaleX = AnimationCurveConverter.ToGfz(corrected.Scale.x);
-            trackCurves.ScaleY = AnimationCurveConverter.ToGfz(corrected.Scale.y);
-            trackCurves.ScaleZ = AnimationCurveConverter.ToGfz(corrected.Scale.z);
+            trackCurves.ScaleX = AnimationCurveConverter.ToGfz(rightHanded.Scale.x);
+            trackCurves.ScaleY = AnimationCurveConverter.ToGfz(rightHanded.Scale.y);
+            trackCurves.ScaleZ = AnimationCurveConverter.ToGfz(rightHanded.Scale.z);
 
             return trackCurves;
         }
@@ -99,7 +108,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             // in Unity), this is correct. What isn't is that, since Z is still mirrored,
             // if you place yourself on the track (rather than looking at it from global
             // space), then it appears to go left. However, once you invert Z, the turn
-            // goes right from taht perspective. Once this is done, rotations about the X and Y
+            // goes right from taht perspective. Once this is done, rotations about the Y
             // axis also need to be inverted (due to inverted handidness). Once done,
             // you're good to go! Z+ is forward, X+ is right, and Y+ stays upwards.
 
@@ -107,9 +116,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             var r = Rotation.CreateDeepCopy();
             var s = Scale.CreateDeepCopy();
 
-            p.z = p.z.GetInverted();
-            r.x = r.x.GetInverted();
-            r.y = r.y.GetInverted();
+            p.z = p.z.CreateInverted();
+            r.y = r.y.CreateInverted();
 
             return new AnimationCurveTRS()
             {
