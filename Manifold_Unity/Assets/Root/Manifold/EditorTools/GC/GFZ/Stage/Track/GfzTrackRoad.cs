@@ -63,9 +63,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             var trackSegment = new TrackSegment();
             trackSegment.OrderIndentifier = name;
             trackSegment.SegmentType = TrackSegmentType.IsTrack;
-            trackSegment.LocalPosition = transform.localPosition;
-            trackSegment.LocalRotation = transform.localRotation.eulerAngles;
-            trackSegment.LocalScale = transform.localScale;
+            trackSegment.FallbackPosition = transform.localPosition;
+            trackSegment.FallbackRotation = transform.localRotation.eulerAngles;
+            trackSegment.FallbackScale = transform.localScale;
             trackSegment.BranchIndex = GetBranchIndex();
             trackSegment.SetRails(RailHeightLeft, RailHeightRight);
             trackSegment.Children = children;

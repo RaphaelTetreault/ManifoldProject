@@ -144,9 +144,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             var trackSegment = new TrackSegment();
             trackSegment.SegmentType = TrackSegmentType.IsEmbed;
             trackSegment.EmbeddedPropertyType = GetEmbedProperty(Type);
-            trackSegment.LocalPosition = transform.localPosition;
-            trackSegment.LocalRotation = transform.localRotation.eulerAngles;
-            trackSegment.LocalScale = transform.localScale;
+            trackSegment.FallbackPosition = transform.localPosition;
+            trackSegment.FallbackRotation = transform.localRotation.eulerAngles;
+            trackSegment.FallbackScale = transform.localScale;
             trackSegment.AnimationCurveTRS = trs.ToTrackSegment();
             trackSegment.BranchIndex = 0; // these kinds of embeds do not specify branch
             trackSegment.Children = children;

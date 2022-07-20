@@ -92,19 +92,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         {
             var trs = AnimationCurveTRS.CreateDeepCopy();
 
-            var pos = transform.localPosition;
-            var rot = transform.localRotation.eulerAngles;
-            var scl = transform.localScale;
-
-            pos.z = -pos.z;
-            rot.y = -rot.y;
-
             var trackSegment = new TrackSegment();
             trackSegment.OrderIndentifier = name;
             trackSegment.SegmentType = TrackSegmentType.IsMatrix;
-            trackSegment.LocalPosition = pos;
-            trackSegment.LocalRotation = rot;
-            trackSegment.LocalScale = scl;
             trackSegment.AnimationCurveTRS = trs.ToTrackSegment();
             trackSegment.BranchIndex = GetBranchIndex();
             trackSegment.Children = CreateChildTrackSegments();

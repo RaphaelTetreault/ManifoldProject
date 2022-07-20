@@ -216,8 +216,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             var allRootSegments = GameObject.FindObjectsOfType<TagTrackSegment>();
             var rootSegments = allRootSegments.Where(x => x.depth == 0).Reverse().ToArray();
             var testTransforms = TestTransformHeirarchy(rootSegments);
-            testTransforms.SetParent(mirrorRoot);
-            testTransforms.gameObject.SetActive(false);
+            //testTransforms.SetParent(mirrorRoot);
+            //testTransforms.gameObject.SetActive(false);
 
             // Mirror all objects
             // Now that everything is placed right, get rid of mirror root
@@ -628,9 +628,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             controlPoint.name = $"{elementIndex++} {name}";
             controlPoint.transform.parent = parent.transform;
             // Set transform
-            controlPoint.transform.localPosition = trackSegment.LocalPosition;
-            controlPoint.transform.localRotation = Quaternion.Euler(trackSegment.LocalRotation);
-            controlPoint.transform.localScale = trackSegment.LocalScale;
+            controlPoint.transform.localPosition = trackSegment.FallbackPosition;
+            controlPoint.transform.localRotation = Quaternion.Euler(trackSegment.FallbackRotation);
+            controlPoint.transform.localScale = trackSegment.FallbackScale;
 
             //
             tag.SetCurves(trackSegment);
@@ -638,9 +638,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             tag.embeddedPropertyType = trackSegment.EmbeddedPropertyType;
             tag.perimeterFlags = trackSegment.PerimeterFlags;
             tag.pipeCylinderFlags = trackSegment.PipeCylinderFlags;
-            tag.localScale = trackSegment.LocalScale;
-            tag.localRotation = trackSegment.LocalRotation;
-            tag.localPosition = trackSegment.LocalPosition;
+            tag.fallbackScale = trackSegment.FallbackScale;
+            tag.fallbackRotation = trackSegment.FallbackRotation;
+            tag.fallbackPosition = trackSegment.FallbackPosition;
             tag.root_unk_0x38 = trackSegment.Root_unk_0x38;
             tag.root_unk_0x3A = trackSegment.Root_unk_0x3A;
             tag.railHeightRight = trackSegment.RailHeightRight;
@@ -681,9 +681,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             controlPoint.name = $"{name} {depth}.{index}";
             controlPoint.transform.parent = parent.transform;
             // Set transform
-            controlPoint.transform.position = trackTransform.LocalPosition;
-            controlPoint.transform.rotation = Quaternion.Euler(trackTransform.LocalRotation);
-            controlPoint.transform.localScale = trackTransform.LocalScale;
+            controlPoint.transform.position = trackTransform.FallbackPosition;
+            controlPoint.transform.rotation = Quaternion.Euler(trackTransform.FallbackRotation);
+            controlPoint.transform.localScale = trackTransform.FallbackScale;
 
             //
             var children = trackTransform.Children;
@@ -764,9 +764,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         public static Matrix4x4 GetMatrixRecursive(TagTrackSegment trackSegment, float time)
         {
-            var animationMtx = GetAnimationMatrix(trackSegment, time);
-            var staticMtx = GetStaticMatrix(trackSegment);
-            var mtx = animationMtx * staticMtx;
+            var selfAnimationMtx = GetAnimationMatrix(trackSegment, time);
+            //var staticMtx = GetStaticMatrix(trackSegment);
+            //var mtx = animationMtx * staticMtx;
 
             if (trackSegment.children != null && trackSegment.children.Count > 0)
             {
@@ -792,60 +792,45 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                         child.segmentType == TrackSegmentType.IsEmbed &&
                         child.embeddedPropertyType == TrackEmbeddedPropertyType.IsOpenPipeOrCylinder;
 
+                    Matrix4x4 childAnimationMatrix;
 
-                    Matrix4x4 childMtx;
+                    //if (isModulated)
+                    //{
+                    //    // Strip out position data
+                    //    childAnimationMatrix = GetAnimationMatrix(child, time);
+                    //    var amr = childAnimationMatrix.Rotation();
+                    //    var ams = childAnimationMatrix.Scale();
+                    //    childAnimationMatrix = Matrix4x4.TRS(float3.zero, amr, ams);
+                    //}
+                    //else if (isOpenPipeOrCapsule)
+                    //{
+                    //    // Strip out scale data
+                    //    childAnimationMatrix = GetAnimationMatrix(child, time);
+                    //    var amp = childAnimationMatrix.Position();
+                    //    var amr = childAnimationMatrix.Rotation();
+                    //    childAnimationMatrix = Matrix4x4.TRS(amp, amr, new float3(1, 1, 1));
+                    //}
+                    //else
+                    //{
+                        childAnimationMatrix = GetMatrixRecursive(child, time);
+                    //}
 
-                    if (isModulated)
-                    {
-                        // Strip out position data
-                        var childAnimationMtx = GetAnimationMatrix(child, time);
-                        var amr = childAnimationMtx.Rotation();
-                        var ams = childAnimationMtx.Scale();
-                        childAnimationMtx = Matrix4x4.TRS(float3.zero, amr, ams);
-
-                        var childStaticMtx = GetStaticMatrix(child);
-                        var smr = childStaticMtx.Rotation();
-                        var sms = childStaticMtx.Scale();
-                        childStaticMtx = Matrix4x4.TRS(float3.zero, smr, sms);
-
-                        childMtx = childStaticMtx * childAnimationMtx;
-                    }
-                    else if (isOpenPipeOrCapsule)
-                    {
-                        // Strip out scale data
-                        var childAnimationMtx = GetAnimationMatrix(child, time);
-                        var amp = childAnimationMtx.Position();
-                        var amr = childAnimationMtx.Rotation();
-                        childAnimationMtx = Matrix4x4.TRS(amp, amr, new float3(1, 1, 1));
-
-                        var childStaticMtx = GetStaticMatrix(child);
-                        var smp = childStaticMtx.Position();
-                        var smr = childStaticMtx.Rotation();
-                        childStaticMtx = Matrix4x4.TRS(smp, smr, new float3(1, 1, 1));
-
-                        childMtx = childStaticMtx * childAnimationMtx;
-                    }
-                    else
-                    {
-                        childMtx = GetMatrixRecursive(child, time);
-                    }
-
-                    return mtx * childMtx;
+                    return selfAnimationMtx * childAnimationMatrix;
                 }
             }
 
-            return mtx;
+            return selfAnimationMtx;
         }
 
-        public static Matrix4x4 GetStaticMatrix(TagTrackSegment trackSegment)
-        {
-            var staticMtx = Matrix4x4.TRS(
-                trackSegment.localPosition,
-                Quaternion.Euler(trackSegment.localRotation),
-                trackSegment.localScale);
+        //public static Matrix4x4 GetStaticMatrix(TagTrackSegment trackSegment)
+        //{
+        //    var staticMtx = Matrix4x4.TRS(
+        //        trackSegment.localPosition,
+        //        Quaternion.Euler(trackSegment.localRotation),
+        //        trackSegment.localScale);
 
-            return staticMtx;
-        }
+        //    return staticMtx;
+        //}
 
         public static Matrix4x4 GetAnimationMatrix(TagTrackSegment trackSegment, float timeNormalized)
         {
@@ -866,19 +851,27 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             var t = timeNormalized;
 
             float3 position = new float3(
-                curves.Position.x.EvaluateDefault(t * tp.x, 0),
-                curves.Position.y.EvaluateDefault(t * tp.y, 0),
-                curves.Position.z.EvaluateDefault(t * tp.z, 0));
+                curves.Position.x.EvaluateDefault(t * tp.x, trackSegment.fallbackPosition.x),
+                curves.Position.y.EvaluateDefault(t * tp.y, trackSegment.fallbackPosition.y),
+                -curves.Position.z.EvaluateDefault(t * tp.z, trackSegment.fallbackPosition.z));
             float3 rotation = new float3(
-                curves.Rotation.x.EvaluateDefault(t * tr.x, 0),
-                curves.Rotation.y.EvaluateDefault(t * tr.y, 0),
-                curves.Rotation.z.EvaluateDefault(t * tr.z, 0));
+                -curves.Rotation.x.EvaluateDefault(t * tr.x, trackSegment.fallbackRotation.x),
+                -curves.Rotation.y.EvaluateDefault(t * tr.y, trackSegment.fallbackRotation.y),
+                curves.Rotation.z.EvaluateDefault(t * tr.z, trackSegment.fallbackRotation.z));
             float3 scale = new float3(
-                curves.Scale.x.EvaluateDefault(t * ts.x, 1),
-                curves.Scale.y.EvaluateDefault(t * ts.y, 1),
-                curves.Scale.z.EvaluateDefault(t * ts.z, 1));
+                curves.Scale.x.EvaluateDefault(t * ts.x, trackSegment.fallbackScale.x),
+                curves.Scale.y.EvaluateDefault(t * ts.y, trackSegment.fallbackScale.y),
+                curves.Scale.z.EvaluateDefault(t * ts.z, trackSegment.fallbackScale.z));
 
-            var animationMtx = Matrix4x4.TRS(position, Quaternion.Euler(rotation), scale);
+            var rx = Quaternion.Euler(rotation.x, 0, 0);
+            var ry = Quaternion.Euler(0, rotation.y, 0);
+            var rz = Quaternion.Euler(0, 0, rotation.z);
+            //var qr = rx * ry * rz;
+            var qr = rz * ry * rx;
+            //var qr = rz * rx * ry;
+
+            //var animationMtx = Matrix4x4.TRS(position, Quaternion.Euler(rotation), scale);
+            var animationMtx = Matrix4x4.TRS(position, qr, scale);
             return animationMtx;
         }
 

@@ -758,9 +758,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
             // Parent has all the other values, and has above as child element.
             var trackSegmentParent = new GameCube.GFZ.Stage.TrackSegment();
-            trackSegmentParent.LocalPosition = transform.localPosition;
-            trackSegmentParent.LocalRotation = transform.localRotation.eulerAngles;
-            trackSegmentParent.LocalScale = transform.localScale;
+            trackSegmentParent.FallbackPosition = transform.localPosition;
+            trackSegmentParent.FallbackRotation = transform.localRotation.eulerAngles;
+            trackSegmentParent.FallbackScale = transform.localScale;
             trackSegmentParent.BranchIndex = GetBranchIndex();
             trackSegmentParent.AnimationCurveTRS = trs0.ToTrackSegment();
             trackSegmentParent.Children = new GameCube.GFZ.Stage.TrackSegment[] { trackSegmentChild };

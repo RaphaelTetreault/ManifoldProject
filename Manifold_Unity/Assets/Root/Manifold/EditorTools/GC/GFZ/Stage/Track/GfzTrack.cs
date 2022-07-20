@@ -80,7 +80,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 // CREATE CHECKPOINTS
                 var checkpointGenerators = rootTrackSegmentNode.GetComponentsInChildren<GfzCheckpointGenerator>();
                 // For now, should only have 1
-                if (checkpointGenerators.Length == 1)
+                if (checkpointGenerators.Length != 1)
                 {
                     var msg =
                         $"Track segment hierachy does not have exactly 1 {nameof(GfzCheckpointGenerator)} in it " +

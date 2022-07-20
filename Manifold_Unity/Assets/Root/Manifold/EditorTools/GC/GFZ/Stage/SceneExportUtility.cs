@@ -401,8 +401,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                     var sceneObject = CreateSceneObject(modelName);
                     _sceneObjects.Add(sceneObject);
 
-                    //var transform = TransformConverter.ToGfzTransformMatrix3x4(shape.transform, Space.World, true);
-                    var transform = new TransformMatrix3x4();
+                    var transform = TransformConverter.ToGfzTransformMatrix3x4(shape.transform, Space.World, true);
+                    //var transform = new TransformMatrix3x4();
                     var sceneObjectDynamic = CreateSceneObjectDynamic(sceneObject, transform);
                     _dynamicSceneObjects.Add(sceneObjectDynamic);
                 }
