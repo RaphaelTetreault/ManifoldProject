@@ -108,7 +108,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             // in Unity), this is correct. What isn't is that, since Z is still mirrored,
             // if you place yourself on the track (rather than looking at it from global
             // space), then it appears to go left. However, once you invert Z, the turn
-            // goes right from taht perspective. Once this is done, rotations about the Y
+            // goes right from taht perspective. Once this is done, rotations about the X and Y
             // axis also need to be inverted (due to inverted handidness). Once done,
             // you're good to go! Z+ is forward, X+ is right, and Y+ stays upwards.
 
@@ -117,6 +117,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             var s = Scale.CreateDeepCopy();
 
             p.z = p.z.CreateInverted();
+            r.x = r.x.CreateInverted();
             r.y = r.y.CreateInverted();
 
             return new AnimationCurveTRS()

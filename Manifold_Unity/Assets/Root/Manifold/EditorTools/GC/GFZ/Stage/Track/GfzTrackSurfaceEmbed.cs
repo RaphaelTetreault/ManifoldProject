@@ -18,6 +18,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
     public class GfzTrackSurfaceEmbed : GfzTrackSegmentShapeNode
     {
+        [field: SerializeField, Min(1)] public int WidthDivisions { get; private set; } = 2;
+        [field: SerializeField, Min(1f)] public float LengthDistance { get; private set; } = 10f;
+
         [field: Header("Properties")]
         [field: SerializeField] public SurfaceEmbedType Type { get; private set; } = SurfaceEmbedType.Recover;
         [field: SerializeField, Range(0f, 1f)] public float From { get; private set; } = 0f;
@@ -90,7 +93,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         {
             // Make the vertex data
             var color0 = GetColor(Type);
-            var trackMeshTristrips = TristripGenerator.CreateTempTrackRoadEmbed(this, 4, 10f, color0, true);
+            var trackMeshTristrips = TristripGenerator.CreateTempTrackRoadEmbed(this, WidthDivisions, LengthDistance, color0, true);
             // convert to GameCube format
             var dlists = TristripGenerator.TristripsToDisplayLists(trackMeshTristrips, GameCube.GFZ.GfzGX.VAT);
 
@@ -120,13 +123,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             var min = From * maxTime;
             var max = To * maxTime;
             Debug.Log($"MeshUnity -- Min: {min}, Max: {max}, MaxTime: {maxTime}");
-            var matrices = TristripGenerator.GenerateMatrixIntervals(hacTRS, 10f, min, max);
+            var matrices = TristripGenerator.GenerateMatrixIntervals(hacTRS, LengthDistance, min, max);
 
             //
             var endpointA = new Vector3(-0.5f, 0.33f, 0f);
             var endpointB = new Vector3(+0.5f, 0.33f, 0f);
             var color0 = GetColor(Type);
-            var tristrips = TristripGenerator.CreateTristrips(matrices, endpointA, endpointB, 4, color0, Vector3.up, 0, true);
+            var tristrips = TristripGenerator.CreateTristrips(matrices, endpointA, endpointB, WidthDivisions, color0, Vector3.up, 0, true);
             var mesh = TristripsToMesh(tristrips);
             mesh.name = $"Auto Gen - {this.name}";
 

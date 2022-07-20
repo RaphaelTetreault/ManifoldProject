@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 using Unity.Mathematics;
@@ -24,6 +22,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         [SerializeField, HideInInspector]
         private bool isLoop = false;
+        [SerializeField, HideInInspector]
+        private bool autoGenTRS = false;
 
         //
         [SerializeField]
@@ -492,8 +492,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             double entireCurveApproximateLength = CurveLengthUtility.GetDistanceBetweenRepeated(this, 0, 1, nStartIterDistance, 2, 1);
             int nApproximationIterations = (int)(entireCurveApproximateLength / 200);
 
-            //var tasks = new List<Task>();
-
             // Compute curve lengths between each bezier control point
             int numCurves = points.Count - 1;
             double[] distances = new double[numCurves];
@@ -502,18 +500,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             {
                 double timeStart = (double)(i + 0) / numCurves;
                 double timeEnd = (double)(i + 1) / numCurves;
-
-                //Action func = () =>
-                //{
-                    double distance = BezierApproximateDistance(this, timeStart, timeEnd, nApproximationIterations);
-                    distances[i] = distance;
-                    totalDistance += distance;
-                    //Debug.Log($"Thread {i} complete");
-                //};
-                //tasks.Add(Task.Factory.StartNew(func));
+                double distance = BezierApproximateDistance(this, timeStart, timeEnd, nApproximationIterations);
+                distances[i] = distance;
+                totalDistance += distance;
             }
-
-            //Task.WaitAll(tasks.ToArray());
 
             var previousRotation = GetOrientation(0, 0).eulerAngles;
             double currDistance = 0;
@@ -786,9 +776,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         // DEPRECATE
         public void CallOnEdited()
         {
-            //DebugConsole.Log("CallOnEdit from Bezier. Deprecated.");
-            UpdateAnimationCurveTRS();
-            UpdateShapeNodeMeshes(GetShapeNodes());
+            if (autoGenTRS)
+            {
+                UpdateAnimationCurveTRS();
+                UpdateShapeNodeMeshes(GetShapeNodes());
+            }
         }
 
         public void UpdateShapeNodeMeshes(GfzTrackSegmentShapeNode[] shapes)
