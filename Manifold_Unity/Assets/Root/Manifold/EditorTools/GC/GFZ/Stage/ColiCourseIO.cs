@@ -661,9 +661,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             {
                 var segment = coliScene.AllTrackSegments[i];
                 log.WriteLine($"{nameof(TrackSegment)} Transform Coords [{i}]");
-                log.WriteLine($"\tPosition: {segment.LocalPosition}");
-                log.WriteLine($"\tRotation: {segment.LocalRotation}");
-                log.WriteLine($"\tScale...: {segment.LocalScale}");
+                log.WriteLine($"\tPosition: {segment.FallbackPosition}");
+                log.WriteLine($"\tRotation: {segment.FallbackRotation}");
+                log.WriteLine($"\tScale...: {segment.FallbackScale}");
             }
             log.WriteLine();
             //

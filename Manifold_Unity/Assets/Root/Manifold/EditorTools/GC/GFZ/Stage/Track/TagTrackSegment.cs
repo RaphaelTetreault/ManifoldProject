@@ -15,9 +15,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         public TrackEmbeddedPropertyType embeddedPropertyType;
         public TrackPerimeterFlags perimeterFlags;
         public TrackPipeCylinderFlags pipeCylinderFlags;
-        public float3 localPosition;
-        public float3 localRotation;
-        public float3 localScale;
+        public float3 fallbackPosition;
+        public float3 fallbackRotation;
+        public float3 fallbackScale;
         public ushort root_unk_0x38;
         public ushort root_unk_0x3A; 
         public float railHeightRight;
