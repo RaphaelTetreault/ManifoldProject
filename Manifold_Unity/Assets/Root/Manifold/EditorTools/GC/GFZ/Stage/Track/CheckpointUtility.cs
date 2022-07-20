@@ -97,6 +97,18 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 lastCheckpoint.PlaneEnd = endPlane;
             }
 
+            // Make sure the metadata used after this point exists. Provide robust reason if it fails.
+            bool prevNodeIsNull = rootNode.Prev == null;
+            bool nextNodeIsNull = rootNode.Next == null;
+            if (prevNodeIsNull || nextNodeIsNull)
+            {
+                var msg =
+                    $"Track segment's auto-assigned prev or next segments are null! " +
+                    $"Prev is null == {prevNodeIsNull}; Next is null == {nextNodeIsNull}. " +
+                    $"Try force-reloading references on {nameof(GfzTrack)} object.";
+                throw new System.NullReferenceException();
+            }
+
             // Get hacTRS of previous and next nodes
             var fromHacTRS = rootNode.Prev.CreateHierarchichalAnimationCurveTRS(isGfzCoordinateSpace);
             var toHacTRS = rootNode.Next.CreateHierarchichalAnimationCurveTRS(isGfzCoordinateSpace);
