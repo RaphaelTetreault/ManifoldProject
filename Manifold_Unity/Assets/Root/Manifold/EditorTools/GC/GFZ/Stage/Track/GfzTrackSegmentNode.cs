@@ -178,6 +178,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return shapeNodes.ToArray();
         }
 
+        public void UpdateShapeMeshes()
+        {
+            var shapes = GetShapeNodes();
+            foreach (var shape in shapes)
+                shape.UpdateMesh();
+        }
+
         public Vector3 GetPosition()
         {
             var position = IsRoot() ? transform.position : transform.localPosition;

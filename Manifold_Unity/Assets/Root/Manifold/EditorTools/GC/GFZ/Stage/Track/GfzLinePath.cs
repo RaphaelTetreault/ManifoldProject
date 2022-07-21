@@ -6,6 +6,7 @@ using UnityEngine;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
+    [ExecuteInEditMode]
     public class GfzLinePath : GfzTrackSegmentRootNode
     {
         [SerializeField] private float endPositionX;
@@ -15,16 +16,16 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         [SerializeField] private UnityEngine.AnimationCurve rotationZ = CreateDefaultCurve();
         [SerializeField] private UnityEngine.AnimationCurve scaleX = CreateDefaultCurve(64);
         [SerializeField] private UnityEngine.AnimationCurve scaleY = CreateDefaultCurve(1);
-        [SerializeField] private UnityEngine.AnimationCurve scaleZ = CreateDefaultCurve(1);
         [SerializeField] private AnimationCurveTRS animationCurveTRS = new();
         //
         [SerializeField, Min(1f)] private float step = 10f;
+        [SerializeField] private bool autoGenerateTRS = true;
+        [SerializeField] private bool showGizmos = true;
 
         public float EndPositionX { get => endPositionX; set => endPositionX = value; }
         public float EndPositionY { get => endPositionY; set => endPositionY = value; }
         public float EndPositionZ { get => endPositionZ; set => endPositionZ = value; }
         public float Step { get => step; set => step = value; }
-        //public AnimationCurve3 ScaleCurvesXYZ { get => scaleCurvesXYZ; private set => scaleCurvesXYZ = value; }
         public AnimationCurveTRS AnimationCurveTRS { get => animationCurveTRS; private set => animationCurveTRS = value; }
 
 
@@ -89,43 +90,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public override TrackSegment CreateTrackSegment()
         {
-            //var trs = AnimationCurveTRS.CreateDeepCopy();
-
-            //var trackSegmentX = new TrackSegment();
-            //var trackSegmentY = new TrackSegment();
-            //var trackSegmentZ = new TrackSegment();
-            //trackSegmentX.Children = new TrackSegment[] { trackSegmentY };
-            //trackSegmentY.Children = new TrackSegment[] { trackSegmentZ };
-            //trackSegmentZ.Children = CreateChildTrackSegments();
-
-            //trackSegmentX.BranchIndex =
-            //trackSegmentY.BranchIndex =
-            //trackSegmentZ.BranchIndex = GetBranchIndex();
-
-            //{
-            //    var trsX = new AnimationCurveTRS();
-            //    trsX.Position.x = new UnityEngine.AnimationCurve(trs.Position.x.keys);
-            //    trsX.Rotation.x = new UnityEngine.AnimationCurve(trs.Rotation.x.keys);
-            //    trsX.Scale.x = new UnityEngine.AnimationCurve(trs.Scale.x.keys);
-            //    trackSegmentX.AnimationCurveTRS = trsX.ToTrackSegment();
-            //}
-            //{
-            //    var trsY = new AnimationCurveTRS();
-            //    trsY.Position.y = new UnityEngine.AnimationCurve(trs.Position.y.keys);
-            //    trsY.Rotation.y = new UnityEngine.AnimationCurve(trs.Rotation.y.keys);
-            //    trsY.Scale.y = new UnityEngine.AnimationCurve(trs.Scale.y.keys);
-            //    trackSegmentY.AnimationCurveTRS = trsY.ToTrackSegment();
-            //}
-            //{
-            //    var trsZ = new AnimationCurveTRS();
-            //    trsZ.Position.z = new UnityEngine.AnimationCurve(trs.Position.z.keys);
-            //    trsZ.Rotation.z = new UnityEngine.AnimationCurve(trs.Rotation.z.keys);
-            //    trsZ.Scale.z = new UnityEngine.AnimationCurve(trs.Scale.z.keys);
-            //    trackSegmentZ.AnimationCurveTRS = trsZ.ToTrackSegment();
-            //}
-
-            //return trackSegmentX;
-
             var trs = AnimationCurveTRS.CreateDeepCopy();
 
             var trackSegmentRoot = new TrackSegment();
@@ -188,7 +152,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             // TODO: multiply keys function
             var x = scaleX.GetRenormalizedKeyRangeAndTangents(0, maxTime);
             var y = scaleY.GetRenormalizedKeyRangeAndTangents(0, maxTime);
-            var z = scaleZ.GetRenormalizedKeyRangeAndTangents(0, maxTime);
+            var z = new Keyframe[0];
             var curves = new AnimationCurve3(x, y, z);
             return curves;
         }
@@ -258,6 +222,67 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         private void Reset()
         {
             UpdateTRS();
+        }
+
+        private void Update()
+        {
+            if (autoGenerateTRS && transform.hasChanged)
+            {
+                UpdateTRS();
+                UpdateShapeMeshes();
+            }
+        }
+
+
+        public void UpdateTrsPosition()
+        {
+            var maxTime = GetSegmentLength();
+            var positionsXYZ = CreatePositionCurvesXYZ(maxTime);
+            var rotationsXYZ = new AnimationCurve3(
+                animationCurveTRS.Rotation.x.GetRenormalizedKeyRangeAndTangents(0, maxTime),
+                animationCurveTRS.Rotation.y.GetRenormalizedKeyRangeAndTangents(0, maxTime),
+                animationCurveTRS.Rotation.z.GetRenormalizedKeyRangeAndTangents(0, maxTime));
+            var scaleXYZ = new AnimationCurve3(
+                animationCurveTRS.Scale.x.GetRenormalizedKeyRangeAndTangents(0, maxTime),
+                animationCurveTRS.Scale.y.GetRenormalizedKeyRangeAndTangents(0, maxTime),
+                animationCurveTRS.Scale.z.GetRenormalizedKeyRangeAndTangents(0, maxTime));
+
+            animationCurveTRS = new AnimationCurveTRS(positionsXYZ, rotationsXYZ, scaleXYZ);
+            UpdateShapeMeshes();
+        }
+
+        public void UpdateTrsRotation()
+        {
+            var maxTime = GetMaxTime();
+            var positionsXYZ = new AnimationCurve3(
+                animationCurveTRS.Position.x.GetRenormalizedKeyRangeAndTangents(0, maxTime),
+                animationCurveTRS.Position.y.GetRenormalizedKeyRangeAndTangents(0, maxTime),
+                animationCurveTRS.Position.z.GetRenormalizedKeyRangeAndTangents(0, maxTime));
+            var rotationsXYZ = CreateRotationCurvesXYZ(maxTime);
+            var scaleXYZ = new AnimationCurve3(
+                animationCurveTRS.Scale.x.GetRenormalizedKeyRangeAndTangents(0, maxTime),
+                animationCurveTRS.Scale.y.GetRenormalizedKeyRangeAndTangents(0, maxTime),
+                animationCurveTRS.Scale.z.GetRenormalizedKeyRangeAndTangents(0, maxTime));
+
+            animationCurveTRS = new AnimationCurveTRS(positionsXYZ, rotationsXYZ, scaleXYZ);
+            UpdateShapeMeshes();
+        }
+
+        public void UpdateTrsScale()
+        {
+            var maxTime = GetMaxTime();
+            var positionsXYZ = new AnimationCurve3(
+                animationCurveTRS.Position.x.GetRenormalizedKeyRangeAndTangents(0, maxTime),
+                animationCurveTRS.Position.y.GetRenormalizedKeyRangeAndTangents(0, maxTime),
+                animationCurveTRS.Position.z.GetRenormalizedKeyRangeAndTangents(0, maxTime));
+            var rotationsXYZ = new AnimationCurve3(
+                animationCurveTRS.Rotation.x.GetRenormalizedKeyRangeAndTangents(0, maxTime),
+                animationCurveTRS.Rotation.y.GetRenormalizedKeyRangeAndTangents(0, maxTime),
+                animationCurveTRS.Rotation.z.GetRenormalizedKeyRangeAndTangents(0, maxTime));
+            var scaleXYZ = CreateScaleCurvesXYZ(maxTime);
+
+            animationCurveTRS = new AnimationCurveTRS(positionsXYZ, rotationsXYZ, scaleXYZ);
+            UpdateShapeMeshes();
         }
     }
 }
