@@ -165,8 +165,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
             var maxTimeOffset = offsetCurve.GetMaxTime();
             var maxTimeRadius = radiusCurve.GetMaxTime();
+            var maxTimeRolls = rollsCurve.GetMaxTime();
             var initRadius = radiusCurve.Evaluate(0);
-            var prevRotation = Vector3.zero;
 
             int nKeys = Mathf.CeilToInt(degrees * nKeysPer360Degrees / 360f);
             //float stepDegrees = degrees / nKeys;
@@ -174,7 +174,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             {
                 double percentage = i / (double)nKeys;
                 double stepDistanceDegrees = percentage * degrees;
-                double stepDistanceRadians = stepDistanceDegrees * Mathf.Deg2Rad;
+                double stepDistanceRadians = (stepDistanceDegrees % 360) * Mathf.Deg2Rad; // mod to increase precision
                 float time = (float)percentage;
 
                 // 
@@ -189,27 +189,52 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 Vector3 spiralPosition0 = componentToSpiralFunction((float)componentA0, (float)componentB0, offset0);
                 Vector3 position0 = startPosition + spiralPosition0;
                 positionXYZ.AddKeys(time, position0);
+            }
+            positionXYZ.y.SmoothTangents(0, 1/3f);
 
-                // compute rotation
-                float outTangent = positionXYZ.y.keys[i].outTangent;
-                float angle = math.atan(outTangent) * Mathf.Rad2Deg;
-                float angle2 = math.tan(outTangent) * Mathf.Rad2Deg;
-                float middle = -(angle + angle2) / 2f;
-                Quaternion qRotation0 = componentToSprialNormal((float)cos, (float)sin, middle);
-                Vector3 eRotation = qRotation0.eulerAngles;
-                int fullRotations = Mathf.FloorToInt((float)stepDistanceDegrees / 360f);
+            //
+            var prevRotation = Vector3.zero;
+            for (int i = 0; i < nKeys; i++)
+            {
+                float time0 = (i+0) / (float)nKeys;
+                float time1 = time0 + 0.0001f;
+                Vector3 p0 = positionXYZ.Evaluate(time0);
+                Vector3 p1 = positionXYZ.Evaluate(time1);
+                Vector3 direction = (p1 - p0).normalized;
 
-                var rx = CleanEulerRotation360(prevRotation.x, eRotation.x, 1);
-                eRotation.x = rx;
-                eRotation = CleanEulerRotation3(prevRotation, eRotation, fullRotations);
+                Quaternion roll = Quaternion.Euler(new(0, 0, rollsCurve.Evaluate(time0 * maxTimeRolls)));
+                int rotationsCompleted = Mathf.FloorToInt(time0 * (degrees / 360f));
 
-                prevRotation = eRotation;
-                Vector3 rotation0 = startRotation + eRotation;
-                rotationXYZ.AddKeys(time, rotation0);
+                Quaternion rotation = Quaternion.LookRotation(direction, roll * Vector3.up); // req: up vec
+                Vector3 eulers = rotation.eulerAngles;
+                eulers.x = CleanEulerRotation360(prevRotation.x, eulers.x, 0); // req: correct axis
+                eulers.y = CleanEulerRotation360(prevRotation.y, eulers.y, rotationsCompleted);
+                rotationXYZ.AddKeys(time0, eulers);
+                prevRotation = eulers;
+            }
+            // last key
+            {
+                Vector3 p0 = positionXYZ.Evaluate(1f - 0.0001f);
+                Vector3 p1 = positionXYZ.Evaluate(1f);
+                Vector3 direction = (p1 - p0).normalized;
+
+                Quaternion roll = Quaternion.Euler(new(0, 0, rollsCurve.Evaluate(maxTimeRolls)));
+                int rotationsCompleted = Mathf.FloorToInt(degrees / 360f);
+
+                Quaternion rotation = Quaternion.LookRotation(direction, roll * Vector3.up); // req: up vec
+                Vector3 eulers = rotation.eulerAngles;
+                eulers.x = CleanEulerRotation360(prevRotation.x, eulers.x, 0); // req: correct axis
+                eulers.y = CleanEulerRotation360(prevRotation.y, eulers.y, rotationsCompleted);
+                rotationXYZ.AddKeys(1, eulers);
+                //prevRotation = eulers;
             }
 
-            //rotationXYZ.x.SmoothTangents(0, 1 / 3f);
-            rotationXYZ.y.SmoothTangents(0, 1 / 3f);
+            rotationXYZ.x.SmoothTangents();
+            rotationXYZ.y.SmoothTangents();
+
+            //rotationXYZ.x = rotationXYZ.x.SetKeyTangents(0);
+
+
 
 
             // "Lazy" key time adjustment
@@ -247,7 +272,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
             return curr;
         }
-
         public static float3 CleanEulerRotation3(float3 prev, float3 curr, float nFullRotationsCompleted)
         {
             var x = CleanEulerRotation360(prev.x, curr.x, nFullRotationsCompleted);

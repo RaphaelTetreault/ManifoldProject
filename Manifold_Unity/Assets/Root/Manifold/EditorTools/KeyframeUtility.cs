@@ -182,6 +182,18 @@ namespace Manifold.EditorTools
             return offsetKeys;
         }
 
+        public static Keyframe[] SetKeyTangents(Keyframe[] keys, float inOutTangent)
+        {
+            var offsetKeys = new Keyframe[keys.Length];
+            for (int i = 0; i < keys.Length; i++)
+            {
+                offsetKeys[i] = keys[i];
+                offsetKeys[i].inTangent = inOutTangent;
+                offsetKeys[i].outTangent = inOutTangent;
+            }
+
+            return offsetKeys;
+        }
 
         //public static Keyframe[] SubdivideCurve(AnimationCurve animationCurve, int subdivisions)
         //{
