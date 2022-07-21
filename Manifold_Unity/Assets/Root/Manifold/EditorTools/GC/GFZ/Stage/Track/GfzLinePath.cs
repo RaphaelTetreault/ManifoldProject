@@ -28,6 +28,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         public float Step { get => step; set => step = value; }
         public AnimationCurveTRS AnimationCurveTRS { get => animationCurveTRS; private set => animationCurveTRS = value; }
 
+        protected override AnimationCurveTRS TrackSegmentAnimationCurveTRS => animationCurveTRS;
 
 
         private static UnityEngine.AnimationCurve CreateDefaultCurve(float defaultValue = 0)
@@ -88,30 +89,30 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return trs;
         }
 
-        public override TrackSegment CreateTrackSegment()
-        {
-            var trs = AnimationCurveTRS.CreateDeepCopy();
+        //public override TrackSegment CreateTrackSegment()
+        //{
+        //    var trs = AnimationCurveTRS.CreateDeepCopy();
 
-            var trackSegmentRoot = new TrackSegment();
-            var trackSegmentRZ = new TrackSegment();
-            trackSegmentRoot.Children = new TrackSegment[] { trackSegmentRZ };
-            trackSegmentRZ.Children = CreateChildTrackSegments();
+        //    var trackSegmentRoot = new TrackSegment();
+        //    var trackSegmentRZ = new TrackSegment();
+        //    trackSegmentRoot.Children = new TrackSegment[] { trackSegmentRZ };
+        //    trackSegmentRZ.Children = CreateChildTrackSegments();
 
-            trackSegmentRoot.BranchIndex = trackSegmentRZ.BranchIndex = GetBranchIndex();
+        //    trackSegmentRoot.BranchIndex = trackSegmentRZ.BranchIndex = GetBranchIndex();
 
-            {
-                var trsXY = trs.CreateDeepCopy();
-                trsXY.Rotation.z = new UnityEngine.AnimationCurve();
-                trackSegmentRoot.AnimationCurveTRS = trsXY.ToTrackSegment();
-            }
-            {
-                var trsRZ = new AnimationCurveTRS();
-                trsRZ.Rotation.z = trs.Rotation.z;
-                trackSegmentRZ.AnimationCurveTRS = trsRZ.ToTrackSegment();
-            }
+        //    {
+        //        var trsXY = trs.CreateDeepCopy();
+        //        trsXY.Rotation.z = new UnityEngine.AnimationCurve();
+        //        trackSegmentRoot.AnimationCurveTRS = trsXY.ToTrackSegment();
+        //    }
+        //    {
+        //        var trsRZ = new AnimationCurveTRS();
+        //        trsRZ.Rotation.z = trs.Rotation.z;
+        //        trackSegmentRZ.AnimationCurveTRS = trsRZ.ToTrackSegment();
+        //    }
 
-            return trackSegmentRoot;
-        }
+        //    return trackSegmentRoot;
+        //}
 
         public override float GetSegmentLength()
         {

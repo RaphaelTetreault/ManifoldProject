@@ -33,6 +33,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         [SerializeField] private float gizmosStep = 10f;
         [SerializeField] private AnimationCurveTRS animationCurveTRS = new();
 
+        protected override AnimationCurveTRS TrackSegmentAnimationCurveTRS => animationCurveTRS;
 
         public override AnimationCurveTRS CreateAnimationCurveTRS(bool isGfzCoordinateSpace)
         {
@@ -43,10 +44,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return trs;
         }
 
-        public override TrackSegment CreateTrackSegment()
-        {
-            throw new NotImplementedException();
-        }
+        //public override TrackSegment CreateTrackSegment()
+        //{
+        //    throw new NotImplementedException();
+        //}
 
         public override float GetMaxTime()
         {

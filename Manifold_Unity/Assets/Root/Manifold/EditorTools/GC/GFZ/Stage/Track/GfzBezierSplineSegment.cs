@@ -710,38 +710,40 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return trs;
         }
 
-        public override GameCube.GFZ.Stage.TrackSegment CreateTrackSegment()
-        {
-            var trs = animationCurveTRS.CreateDeepCopy();
+        protected override AnimationCurveTRS TrackSegmentAnimationCurveTRS => animationCurveTRS;
 
-            // TRS 0: has all animation curves EXCEPT rotation Z
-            var trs0 = trs.CreateDeepCopy();
-            trs0.Rotation.z = new AnimationCurve();
+        //public override GameCube.GFZ.Stage.TrackSegment CreateTrackSegment()
+        //{
+        //    var trs = animationCurveTRS.CreateDeepCopy();
 
-            // TRS 1: has ONLY rotation Z
-            var trs1 = new AnimationCurveTRS();
-            trs1.Rotation.z = trs.Rotation.z;
+        //    // TRS 0: has all animation curves EXCEPT rotation Z
+        //    var trs0 = trs.CreateDeepCopy();
+        //    trs0.Rotation.z = new AnimationCurve();
 
-            //
-            var children = CreateChildTrackSegments();
+        //    // TRS 1: has ONLY rotation Z
+        //    var trs1 = new AnimationCurveTRS();
+        //    trs1.Rotation.z = trs.Rotation.z;
 
-            // Child is basically empty, only storing the rotation.z curve.
-            var trackSegmentChild = new GameCube.GFZ.Stage.TrackSegment();
-            trackSegmentChild.BranchIndex = GetBranchIndex();
-            trackSegmentChild.AnimationCurveTRS = trs1.ToTrackSegment();
-            trackSegmentChild.Children = children;
+        //    //
+        //    var children = CreateChildTrackSegments();
 
-            // Parent has all the other values, and has above as child element.
-            var trackSegmentParent = new GameCube.GFZ.Stage.TrackSegment();
-            trackSegmentParent.FallbackPosition = transform.localPosition;
-            trackSegmentParent.FallbackRotation = transform.localRotation.eulerAngles;
-            trackSegmentParent.FallbackScale = transform.localScale;
-            trackSegmentParent.BranchIndex = GetBranchIndex();
-            trackSegmentParent.AnimationCurveTRS = trs0.ToTrackSegment();
-            trackSegmentParent.Children = new GameCube.GFZ.Stage.TrackSegment[] { trackSegmentChild };
+        //    // Child is basically empty, only storing the rotation.z curve.
+        //    var trackSegmentChild = new GameCube.GFZ.Stage.TrackSegment();
+        //    trackSegmentChild.BranchIndex = GetBranchIndex();
+        //    trackSegmentChild.AnimationCurveTRS = trs1.ToTrackSegment();
+        //    trackSegmentChild.Children = children;
 
-            return trackSegmentParent;
-        }
+        //    // Parent has all the other values, and has above as child element.
+        //    var trackSegmentParent = new GameCube.GFZ.Stage.TrackSegment();
+        //    trackSegmentParent.FallbackPosition = transform.localPosition;
+        //    trackSegmentParent.FallbackRotation = transform.localRotation.eulerAngles;
+        //    trackSegmentParent.FallbackScale = transform.localScale;
+        //    trackSegmentParent.BranchIndex = GetBranchIndex();
+        //    trackSegmentParent.AnimationCurveTRS = trs0.ToTrackSegment();
+        //    trackSegmentParent.Children = new GameCube.GFZ.Stage.TrackSegment[] { trackSegmentChild };
+
+        //    return trackSegmentParent;
+        //}
 
         public override float GetMaxTime()
         {

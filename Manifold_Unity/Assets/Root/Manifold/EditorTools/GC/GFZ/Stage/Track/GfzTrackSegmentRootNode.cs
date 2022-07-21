@@ -12,6 +12,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
     {
         [field: SerializeField] public GfzTrackSegmentRootNode Prev { get; set; }
         [field: SerializeField] public GfzTrackSegmentRootNode Next { get; set; }
+        
+        /// <summary>
+        /// The final TRS to use as GFZ track segment
+        /// </summary>
+        protected abstract AnimationCurveTRS TrackSegmentAnimationCurveTRS { get; }
 
 
         public abstract float GetSegmentLength();
@@ -53,5 +58,31 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
             return distanceOffset;
         }
+
+        public sealed override GameCube.GFZ.Stage.TrackSegment CreateTrackSegment()
+        {
+            var trs = TrackSegmentAnimationCurveTRS.CreateDeepCopy();
+
+            var trackSegmentRoot = new GameCube.GFZ.Stage.TrackSegment();
+            var trackSegmentRZ = new GameCube.GFZ.Stage.TrackSegment();
+            trackSegmentRoot.Children = new GameCube.GFZ.Stage.TrackSegment[] { trackSegmentRZ };
+            trackSegmentRZ.Children = CreateChildTrackSegments();
+
+            trackSegmentRoot.BranchIndex = trackSegmentRZ.BranchIndex = GetBranchIndex();
+
+            {
+                var trsXY = trs.CreateDeepCopy();
+                trsXY.Rotation.z = new AnimationCurve();
+                trackSegmentRoot.AnimationCurveTRS = trsXY.ToTrackSegment();
+            }
+            {
+                var trsRZ = new AnimationCurveTRS();
+                trsRZ.Rotation.z = trs.Rotation.z;
+                trackSegmentRZ.AnimationCurveTRS = trsRZ.ToTrackSegment();
+            }
+
+            return trackSegmentRoot;
+        }
+
     }
 }
