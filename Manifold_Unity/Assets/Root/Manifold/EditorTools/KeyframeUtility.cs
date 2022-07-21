@@ -14,7 +14,7 @@ namespace Manifold.EditorTools
         /// <param name="oldKeys"></param>
         /// <param name="newKeys"></param>
         /// <returns></returns>
-        public static Keyframe[] CorrectKeyTangents(Keyframe[] oldKeys, Keyframe[] newKeys)
+        public static Keyframe[] ScaleKeyTangents(Keyframe[] oldKeys, Keyframe[] newKeys)
         {
             for (int i = 0; i < newKeys.Length - 1; i++)
             {
@@ -31,8 +31,11 @@ namespace Manifold.EditorTools
             return newKeys;
         }
 
-        public static Keyframe[] CorrectKeyTangents2(Keyframe[] oldKeys, Keyframe[] newKeys)
+        public static Keyframe[] RecomputeKeyTangents(Keyframe[] oldKeys, Keyframe[] newKeys)
         {
+            // one such error is that key tangents appear to be different, means borken tangents.
+            // Also, downward-slope tangents seem to be wrecked due to inversion?
+
             for (int i = 0; i < newKeys.Length - 1; i++)
             {
                 int curr = i;
@@ -56,11 +59,6 @@ namespace Manifold.EditorTools
 
                 var newDeltaX = (newKeys[next].time - newKeys[curr].time);
                 var newDeltaY = (newKeys[next].value - newKeys[curr].value);
-                var newTangent = newDeltaY / newDeltaX;
-                var newTanOut = newTangent;// * oldOutRatio;
-                var newTanIn = newTangent;// * oldInRatio;
-                //newKeys[curr].outTangent = Mathf.Atan(newTanOut);
-                //newKeys[next].inTangent = Mathf.Atan(newTanIn);
 
                 {
                     float atanOld = Mathf.Atan(oldDeltaY / oldDeltaX);
@@ -70,55 +68,18 @@ namespace Manifold.EditorTools
                     float deltaOut = atanOldOut - atanOld;
                     float deltaIn = atanOldIn - atanOld;
 
-                    float atanNew = Mathf.Atan(newDeltaY / oldDeltaX);
+                    float atanNew = Mathf.Atan(newDeltaY / newDeltaX);
                     float atanNewOut = atanNew + deltaOut;
                     float atanNewIn = atanNew + deltaIn;
 
                     newKeys[curr].outTangent = Mathf.Tan(atanNewOut);
                     newKeys[next].inTangent = Mathf.Tan(atanNewIn);
+                    newKeys[curr].outTangent = atanNewOut;
+                    newKeys[next].inTangent = atanNewIn;
                 }
 
 
 
-            }
-            return newKeys;
-        }
-
-        public static Keyframe[] CorrectKeyTangents3XXX(Keyframe[] oldKeys, Keyframe[] newKeys)
-        {
-            for (int i = 0; i < newKeys.Length - 1; i++)
-            {
-                int curr = i;
-                int next = i + 1;
-
-                // Get TAN for old keys, get ratio between angle and TAN value
-                var oldDeltaX = Mathf.Abs(oldKeys[next].time - oldKeys[curr].time);
-                var oldDeltaY = Mathf.Abs(oldKeys[next].value - oldKeys[curr].value);
-                var oldTan = Mathf.Tan(oldDeltaY / oldDeltaX);
-                // Find how many degrees (in radians) the tangent was offset from default TAN(theta)
-                // For instance, maybe old tan was 60 degrees and tangent was set to 65. Delta = 5 degrees.
-                var oldDeltaOut = Mathf.Atan(oldKeys[curr].outTangent) - oldTan;
-                var oldDeltaIn = Mathf.Atan(oldKeys[next].inTangent) - oldTan;
-                //var oldRatioOut = oldKeys[curr].outTangent / oldTan;
-                //var oldRatioIn = oldKeys[next].inTangent / oldTan;
-                //
-                var newDeltaX = Mathf.Abs(newKeys[next].time - newKeys[curr].time);
-                var newDeltaY = Mathf.Abs(newKeys[next].value - newKeys[curr].value);
-                var tanOut = Mathf.Tan(newDeltaY / newDeltaX);
-                var tanIn = Mathf.Tan(newDeltaX / newDeltaY);
-                // Add degrees offset (in radians) to new TAN(theta)
-                // Conitnuing the example: if the old delta was 5 degrees, and our new tangent has a value of
-                // of 63.5 degres, we add the 5 degrees back to it.
-                var newTanOut = tanOut + oldDeltaOut;
-                var newTanIn = tanIn + oldDeltaIn;
-                //var newTanOut = newTan * oldRatioOut;
-                //var newTanIn = newTan * oldRatioIn;
-
-                // assign to keys
-                newKeys[curr].outTangent = Mathf.Atan(newTanOut);
-                newKeys[next].inTangent = Mathf.Atan(newTanIn);
-                //newKeys[curr].outTangent = newTanOut;
-                //newKeys[next].inTangent = newTanIn;
             }
             return newKeys;
         }
@@ -155,7 +116,9 @@ namespace Manifold.EditorTools
         public static Keyframe[] GetRenormalizedKeyRangeAndTangents(Keyframe[] keys, float newMinTime, float newMaxTime)
         {
             var newKeys = GetRenormalizedKeyRange(keys, newMinTime, newMaxTime);
-            newKeys = CorrectKeyTangents2(keys, newKeys);
+            newKeys = ScaleKeyTangents(keys, newKeys);
+            // TODO: use this, but first, fix
+            //newKeys = RecomputeKeyTangents(keys, newKeys);
             return newKeys;
         }
 
