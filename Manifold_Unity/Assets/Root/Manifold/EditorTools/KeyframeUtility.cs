@@ -31,6 +31,98 @@ namespace Manifold.EditorTools
             return newKeys;
         }
 
+        public static Keyframe[] CorrectKeyTangents2(Keyframe[] oldKeys, Keyframe[] newKeys)
+        {
+            for (int i = 0; i < newKeys.Length - 1; i++)
+            {
+                int curr = i;
+                int next = i + 1;
+
+                // Get TAN for old keys, get ratio between angle and TAN value
+                var oldDeltaX = Mathf.Abs(oldKeys[next].time - oldKeys[curr].time);
+                var oldDeltaY = Mathf.Abs(oldKeys[next].value - oldKeys[curr].value);
+                var oldTangent = Mathf.Tan(oldDeltaY / oldDeltaX);
+                var oldTangent2 = Mathf.Tan(oldDeltaX / oldDeltaY);
+                var oldArcTangent = Mathf.Atan(oldDeltaY / oldDeltaX);
+                var oldArcTangent2 = Mathf.Atan(oldDeltaX / oldDeltaY);
+
+                var oldTanDeg = oldTangent * Mathf.Rad2Deg;
+                var oldTan2Deg = oldTangent2 * Mathf.Rad2Deg;
+                var oldAtanDeg = oldArcTangent * Mathf.Rad2Deg;
+                var oldAtan2Deg = oldArcTangent2 * Mathf.Rad2Deg;
+                var oldTanOutDeg = oldKeys[curr].outTangent * Mathf.Rad2Deg;
+                var oldTanInDeg = oldKeys[next].inTangent * Mathf.Rad2Deg;
+
+
+                var newDeltaX = (newKeys[next].time - newKeys[curr].time);
+                var newDeltaY = (newKeys[next].value - newKeys[curr].value);
+                var newTangent = newDeltaY / newDeltaX;
+                var newTanOut = newTangent;// * oldOutRatio;
+                var newTanIn = newTangent;// * oldInRatio;
+                //newKeys[curr].outTangent = Mathf.Atan(newTanOut);
+                //newKeys[next].inTangent = Mathf.Atan(newTanIn);
+
+                {
+                    float atanOld = Mathf.Atan(oldDeltaY / oldDeltaX);
+                    float atanOldOut = Mathf.Atan(oldKeys[curr].outTangent);
+                    float atanOldIn = Mathf.Atan(oldKeys[next].inTangent);
+
+                    float deltaOut = atanOldOut - atanOld;
+                    float deltaIn = atanOldIn - atanOld;
+
+                    float atanNew = Mathf.Atan(newDeltaY / oldDeltaX);
+                    float atanNewOut = atanNew + deltaOut;
+                    float atanNewIn = atanNew + deltaIn;
+
+                    newKeys[curr].outTangent = Mathf.Tan(atanNewOut);
+                    newKeys[next].inTangent = Mathf.Tan(atanNewIn);
+                }
+
+
+
+            }
+            return newKeys;
+        }
+
+        public static Keyframe[] CorrectKeyTangents3XXX(Keyframe[] oldKeys, Keyframe[] newKeys)
+        {
+            for (int i = 0; i < newKeys.Length - 1; i++)
+            {
+                int curr = i;
+                int next = i + 1;
+
+                // Get TAN for old keys, get ratio between angle and TAN value
+                var oldDeltaX = Mathf.Abs(oldKeys[next].time - oldKeys[curr].time);
+                var oldDeltaY = Mathf.Abs(oldKeys[next].value - oldKeys[curr].value);
+                var oldTan = Mathf.Tan(oldDeltaY / oldDeltaX);
+                // Find how many degrees (in radians) the tangent was offset from default TAN(theta)
+                // For instance, maybe old tan was 60 degrees and tangent was set to 65. Delta = 5 degrees.
+                var oldDeltaOut = Mathf.Atan(oldKeys[curr].outTangent) - oldTan;
+                var oldDeltaIn = Mathf.Atan(oldKeys[next].inTangent) - oldTan;
+                //var oldRatioOut = oldKeys[curr].outTangent / oldTan;
+                //var oldRatioIn = oldKeys[next].inTangent / oldTan;
+                //
+                var newDeltaX = Mathf.Abs(newKeys[next].time - newKeys[curr].time);
+                var newDeltaY = Mathf.Abs(newKeys[next].value - newKeys[curr].value);
+                var tanOut = Mathf.Tan(newDeltaY / newDeltaX);
+                var tanIn = Mathf.Tan(newDeltaX / newDeltaY);
+                // Add degrees offset (in radians) to new TAN(theta)
+                // Conitnuing the example: if the old delta was 5 degrees, and our new tangent has a value of
+                // of 63.5 degres, we add the 5 degrees back to it.
+                var newTanOut = tanOut + oldDeltaOut;
+                var newTanIn = tanIn + oldDeltaIn;
+                //var newTanOut = newTan * oldRatioOut;
+                //var newTanIn = newTan * oldRatioIn;
+
+                // assign to keys
+                newKeys[curr].outTangent = Mathf.Atan(newTanOut);
+                newKeys[next].inTangent = Mathf.Atan(newTanIn);
+                //newKeys[curr].outTangent = newTanOut;
+                //newKeys[next].inTangent = newTanIn;
+            }
+            return newKeys;
+        }
+
         public static Keyframe[] GetRenormalizedKeyRange(Keyframe[] keys, float newMinTime, float newMaxTime)
         {
             // If no keys, return empty array
@@ -63,20 +155,11 @@ namespace Manifold.EditorTools
         public static Keyframe[] GetRenormalizedKeyRangeAndTangents(Keyframe[] keys, float newMinTime, float newMaxTime)
         {
             var newKeys = GetRenormalizedKeyRange(keys, newMinTime, newMaxTime);
-            for (int i = 0; i < newKeys.Length - 1; i++)
-            {
-                int curr = i;
-                int next = curr + 1;
-
-                var oldDeltaTime = GetDeltaTime(keys[curr], keys[next]);
-                var newDeltaTime = GetDeltaTime(newKeys[curr], newKeys[next]);
-                var deltaTime = newDeltaTime / oldDeltaTime;
-
-                newKeys[curr].outTangent /= deltaTime;
-                newKeys[next].inTangent /= deltaTime;
-            }
+            newKeys = CorrectKeyTangents2(keys, newKeys);
             return newKeys;
         }
+
+
 
         private static float GetDeltaTime(Keyframe a, Keyframe b)
         {
@@ -135,5 +218,45 @@ namespace Manifold.EditorTools
 
             return offsetKeys;
         }
+
+
+        //public static Keyframe[] SubdivideCurve(AnimationCurve animationCurve, int subdivisions)
+        //{
+        //    var keys = new List<Keyframe>();
+        //    for (int i = 0; i < animationCurve.length - 1; i++)
+        //    {
+        //        var key0 = animationCurve.keys[i + 0];
+        //        var key1 = animationCurve.keys[i + 1];
+
+        //        bool isDifferent =
+        //            key0.value != key1.value ||
+        //            key0.inTangent != key1.inTangent ||
+        //            key0.outTangent != key1.outTangent;
+
+        //        if (!isDifferent)
+        //            continue;
+
+        //        float startTime = key0.time;
+        //        float endTime = key1.time;
+        //        for (int subd = 0; subd < subdivisions; subd++)
+        //        {
+        //            float time = (float)subd / subdivisions;
+        //            float keyTime = Mathf.Lerp(startTime, endTime, time);
+        //            var value = animationCurve.Evaluate(keyTime);
+        //            var key = new Keyframe(keyTime, value);
+        //            keys.Add(key);
+        //        }
+        //    }
+
+        //    var tempCurve = new AnimationCurve(animationCurve.keys);
+        //    foreach (var key in keys)
+        //    {
+        //        int index = tempCurve.AddKey(key);
+        //        if (index > 0)
+        //            tempCurve.SmoothTangents(index, 1f / 3f);
+        //    }
+
+        //    return tempCurve.keys;
+        //}
     }
 }
