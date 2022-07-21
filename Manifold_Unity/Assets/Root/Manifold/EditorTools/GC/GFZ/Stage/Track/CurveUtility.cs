@@ -95,30 +95,31 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return distance;
         }
 
-        public static float3 CleanRotation(float3 lastEulers, float3 currEulers)
+        public static float3 CleanRotation(float3 lastEulers, float3 currEulers, float minDelta = 180f)
         {
-            var x = CleanRotation(lastEulers.x, currEulers.x);
-            var y = CleanRotation(lastEulers.y, currEulers.y);
-            var z = CleanRotation(lastEulers.z, currEulers.z);
+            var x = CleanRotation(lastEulers.x, currEulers.x, minDelta);
+            var y = CleanRotation(lastEulers.y, currEulers.y, minDelta);
+            var z = CleanRotation(lastEulers.z, currEulers.z, minDelta);
             return new float3(x, y, z);
         }
 
-        public static float CleanRotation(float lastAngle, float currAngle)
+        public static float CleanRotation(float lastAngle, float currAngle, float minDelta = 180f)
         {
-            const float minDelta = 180f;
+            //const float minDelta = 180f;
             float delta = currAngle - lastAngle;
 
             if (delta > minDelta)
             {
-                currAngle -= 360f;
+                currAngle -= minDelta * 2;
             }
             else if (delta < -minDelta)
             {
-                currAngle += 360;
+                currAngle += minDelta * 2;
             }
 
             return currAngle;
         }
+
     }
 
 }

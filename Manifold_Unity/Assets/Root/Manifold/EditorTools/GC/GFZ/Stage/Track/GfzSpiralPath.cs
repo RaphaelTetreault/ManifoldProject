@@ -80,36 +80,63 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         {
             switch (axes)
             {
-                case Axes.XZRight:
-                case Axes.XZLeft:
-                    return ComponentsToNormalXZ;
-
-                case Axes.YZUp:
-                case Axes.YZDown:
-                    return ComponentsToNormalYZ;
+                case Axes.XZRight: return ComponentsToNormalXZRight;
+                case Axes.XZLeft: return ComponentsToNormalXZLeft;
+                case Axes.YZUp: return ComponentsToNormalYZUp;
+                case Axes.YZDown: return ComponentsToNormalYZDown;
 
                 default:
                     throw new ArgumentException($"Invalid {nameof(Axes)} value.");
             }
         }
-
-        public Quaternion ComponentsToNormalXZ(float cos, float sin, float offset)
+        public Quaternion ComponentsToNormalXZRight(float cos, float sin, float angle)
         {
-            var rotationXZ = Quaternion.LookRotation(new(sin, 0, cos), Vector3.up);
-            var normalY = new Vector3(0, offset, 1).normalized;
-            var rotationY = Quaternion.LookRotation(normalY, Vector3.up);
-            var rotation = rotationXZ * rotationY;
+            var rotationX = Quaternion.AngleAxis(angle, Vector3.right);
+            var forwardXZ = new Vector3(sin, 0, cos).normalized;
+            var rotation = Quaternion.LookRotation(forwardXZ, Vector3.up);
+            rotation = rotationX * rotation;
             return rotation;
         }
-
-        public Quaternion ComponentsToNormalYZ(float cos, float sin, float offset)
+        public Quaternion ComponentsToNormalXZLeft(float cos, float sin, float angle)
+            => ComponentsToNormalXZRight(cos, -sin, angle);
+        public Quaternion ComponentsToNormalYZUp(float cos, float sin, float angle)
         {
             var rotationYZ = Quaternion.LookRotation(new(0, sin, cos), Vector3.right);
-            var normalX = new Vector3(offset, 1, 0).normalized;
-            var rotationY = Quaternion.LookRotation(normalX, Vector3.up);
-            var rotation = rotationYZ * rotationY;
+            var rotationX = Quaternion.AngleAxis(angle, Vector3.up);
+            var rotation = rotationYZ * rotationX;
             return rotation;
         }
+        public Quaternion ComponentsToNormalYZDown(float cos, float sin, float angle)
+            => ComponentsToNormalYZUp(cos, -sin, angle);
+
+        public Func<float, float, Keyframe, Vector3> ComponentsToRotation(Axes axes)
+        {
+            switch (axes)
+            {
+                case Axes.XZRight: return ComponentsToRotationXZRight;
+                case Axes.XZLeft:
+                case Axes.YZUp:
+                case Axes.YZDown:
+
+                default:
+                    throw new ArgumentException($"Invalid {nameof(Axes)} value.");
+            }
+        }
+        public Vector3 ComponentsToRotationXZRight(float cos, float sin, Keyframe keyframe)
+        {
+            float outTangent = keyframe.outTangent;
+            float atan = math.atan(outTangent) * Mathf.Rad2Deg;
+            float tan = math.tan(outTangent) * Mathf.Rad2Deg;
+            float angle = -(atan + tan) / 2f;
+            var rotationX = Quaternion.AngleAxis(angle, Vector3.right);
+
+            var forwardXZ = new Vector3(sin, 0, cos).normalized;
+            var rotationXZ = Quaternion.LookRotation(forwardXZ, Vector3.up);
+            
+            rotationXZ = rotationX * rotationXZ;
+            return rotationXZ.eulerAngles;
+        }
+
 
         public AnimationCurve3 CreateScaleCurvesXYZ(float maxTime)
         {
@@ -142,37 +169,48 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             var prevRotation = Vector3.zero;
 
             int nKeys = Mathf.CeilToInt(degrees * nKeysPer360Degrees / 360f);
-            float stepDegrees = degrees / nKeys;
+            //float stepDegrees = degrees / nKeys;
             for (int i = 0; i <= nKeys; i++)
             {
-                float percentage = i / (float)nKeys;
-                float stepDistance = percentage * degrees * Mathf.Deg2Rad;
+                double percentage = i / (double)nKeys;
+                double stepDistanceDegrees = percentage * degrees;
+                double stepDistanceRadians = stepDistanceDegrees * Mathf.Deg2Rad;
+                float time = (float)percentage;
+
+                // 
+                float radius = radiusCurve.Evaluate(time * maxTimeRadius);
+                double cos = Math.Cos(stepDistanceRadians);
+                double sin = Math.Sin(stepDistanceRadians);
 
                 // Compute position
-                float radius = radiusCurve.Evaluate(percentage * maxTimeRadius);
-                float cos = Mathf.Cos(stepDistance);
-                float sin = Mathf.Sin(stepDistance);
-                float componentA0 = cos * radius - initRadius;
-                float componentB0 = sin * radius;
-                float offset0 = offsetCurve.Evaluate(percentage * maxTimeOffset);
-                Vector3 spiralPosition0 = componentToSpiralFunction(componentA0, componentB0, offset0);
+                double componentA0 = cos * radius - initRadius;
+                double componentB0 = sin * radius;
+                float offset0 = offsetCurve.Evaluate(time * maxTimeOffset);
+                Vector3 spiralPosition0 = componentToSpiralFunction((float)componentA0, (float)componentB0, offset0);
                 Vector3 position0 = startPosition + spiralPosition0;
+                positionXYZ.AddKeys(time, position0);
 
                 // compute rotation
-                float timeEpsilon = percentage + 0.001f;
-                float offset1 = offsetCurve.Evaluate(timeEpsilon * maxTimeOffset);
-                float offsetDelta = offset1 - offset0;
-                // Convert normal to direction
-                Quaternion qRotation0 = componentToSprialNormal(cos, sin, offsetDelta);
-                Vector3 eRotation = CurveUtility.CleanRotation(prevRotation, qRotation0.eulerAngles);
-                Vector3 rotation0 = startRotation + eRotation;
-                prevRotation = eRotation;
-                // TODO: clean rotation
+                float outTangent = positionXYZ.y.keys[i].outTangent;
+                float angle = math.atan(outTangent) * Mathf.Rad2Deg;
+                float angle2 = math.tan(outTangent) * Mathf.Rad2Deg;
+                float middle = -(angle + angle2) / 2f;
+                Quaternion qRotation0 = componentToSprialNormal((float)cos, (float)sin, middle);
+                Vector3 eRotation = qRotation0.eulerAngles;
+                int fullRotations = Mathf.FloorToInt((float)stepDistanceDegrees / 360f);
 
-                // Add keys normalized
-                positionXYZ.AddKeys(percentage, position0);
-                rotationXYZ.AddKeys(percentage, rotation0);
+                var rx = CleanEulerRotation360(prevRotation.x, eRotation.x, 1);
+                eRotation.x = rx;
+                eRotation = CleanEulerRotation3(prevRotation, eRotation, fullRotations);
+
+                prevRotation = eRotation;
+                Vector3 rotation0 = startRotation + eRotation;
+                rotationXYZ.AddKeys(time, rotation0);
             }
+
+            //rotationXYZ.x.SmoothTangents(0, 1 / 3f);
+            rotationXYZ.y.SmoothTangents(0, 1 / 3f);
+
 
             // "Lazy" key time adjustment
             animationCurveTRS = new AnimationCurveTRS(positionXYZ, rotationXYZ, new());
@@ -192,6 +230,30 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     CreateScaleCurvesXYZ(curveLength));
 
             animationCurveTRS = trs;
+        }
+
+
+        public static float CleanEulerRotation360(float prev, float curr, float nFullRotationsCompleted)
+        {
+            float delta = curr - prev;
+            float offset = 360f * nFullRotationsCompleted;
+
+            // If the difference is lower than max range
+            if (delta > 180)
+                curr -= offset;
+            // if the difference is above the min range
+            else if (delta < -180)
+                curr += offset;
+
+            return curr;
+        }
+
+        public static float3 CleanEulerRotation3(float3 prev, float3 curr, float nFullRotationsCompleted)
+        {
+            var x = CleanEulerRotation360(prev.x, curr.x, nFullRotationsCompleted);
+            var y = CleanEulerRotation360(prev.y, curr.y, nFullRotationsCompleted);
+            var z = CleanEulerRotation360(prev.z, curr.z, nFullRotationsCompleted);
+            return new float3(x, y, z);
         }
 
     }
