@@ -3,7 +3,7 @@ using Unity.Mathematics;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
-    public static class CurveLengthUtility
+    public static class CurveUtility
     {
 
         /// <summary>
@@ -93,6 +93,31 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 distance += delta;
             }
             return distance;
+        }
+
+        public static float3 CleanRotation(float3 lastEulers, float3 currEulers)
+        {
+            var x = CleanRotation(lastEulers.x, currEulers.x);
+            var y = CleanRotation(lastEulers.y, currEulers.y);
+            var z = CleanRotation(lastEulers.z, currEulers.z);
+            return new float3(x, y, z);
+        }
+
+        public static float CleanRotation(float lastAngle, float currAngle)
+        {
+            const float minDelta = 180f;
+            float delta = currAngle - lastAngle;
+
+            if (delta > minDelta)
+            {
+                currAngle -= 360f;
+            }
+            else if (delta < -minDelta)
+            {
+                currAngle += 360;
+            }
+
+            return currAngle;
         }
     }
 

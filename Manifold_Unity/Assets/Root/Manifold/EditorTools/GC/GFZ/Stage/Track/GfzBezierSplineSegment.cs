@@ -457,31 +457,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return GetPositionRelative((float)time);
         }
 
-        public Vector3 CleanRotation(Vector3 lastEulers, Vector3 currEulers)
-        {
-            var x = CleanRotation(lastEulers.x, currEulers.x);
-            var y = CleanRotation(lastEulers.y, currEulers.y);
-            var z = CleanRotation(lastEulers.z, currEulers.z);
-            return new Vector3(x, y, z);
-        }
-
-        public float CleanRotation(float lastAngle, float currAngle)
-        {
-            const float minDelta = 180f;
-            float delta = currAngle - lastAngle;
-
-            if (delta > minDelta)
-            {
-                currAngle -= 360f;
-            }
-            else if (delta < -minDelta)
-            {
-                currAngle += 360;
-            }
-
-            return currAngle;
-        }
-
 
         public AnimationCurveTRS CreateTRS(int samplesBetweenControlsPoints = 32)
         {
@@ -489,7 +464,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
             // Entire curve approximate length to within 100m
             const int nStartIterDistance = 50;
-            double entireCurveApproximateLength = CurveLengthUtility.GetDistanceBetweenRepeated(this, 0, 1, nStartIterDistance, 2, 1);
+            double entireCurveApproximateLength = CurveUtility.GetDistanceBetweenRepeated(this, 0, 1, nStartIterDistance, 2, 1);
             int nApproximationIterations = (int)(entireCurveApproximateLength / 200);
 
             // Compute curve lengths between each bezier control point
@@ -516,7 +491,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     var t = (float)(s + 0) / samplesBetweenControlsPoints;
                     var position = GetPosition(t, i);
                     var rotation = GetOrientation(t, i).eulerAngles;
-                    rotation = CleanRotation(previousRotation, rotation);
+                    rotation = CurveUtility.CleanRotation(previousRotation, rotation);
                     previousRotation = rotation;
                     var time = (float)(currDistance + (t * currLength));
                     trs.Position.AddKeys(time, position);
@@ -532,7 +507,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 int i = numCurves - 1;
                 var position = GetPosition(t, i);
                 var rotation = GetOrientation(t, i).eulerAngles;
-                rotation = CleanRotation(previousRotation, rotation);
+                rotation = CurveUtility.CleanRotation(previousRotation, rotation);
                 trs.Position.AddKeys(t, position);
                 trs.Rotation.AddKeys(t, rotation);
             }
