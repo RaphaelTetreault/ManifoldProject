@@ -87,8 +87,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public override void InvokeUpdates()
         {
-            base.InvokeUpdates();
             ValidateMeshDisplay();
+            base.InvokeUpdates();
         }
 
         public void ValidateMeshDisplay()

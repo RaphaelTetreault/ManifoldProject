@@ -121,7 +121,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             EditorGUILayout.EndHorizontal();
 
             if (GUILayout.Button("Generate All Components"))
-                linePath.UpdateTRS();
+                linePath.InvokeUpdates();
 
             EditorGUILayout.PropertyField(animationCurveTRS);
         }

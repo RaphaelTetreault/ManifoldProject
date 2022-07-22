@@ -48,7 +48,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             EditorGUILayout.PropertyField(autoGenerateTRS);
 
             if (GUILayout.Button("Generate All Components"))
-                spiralPath.UpdateTRS();
+                spiralPath.InvokeUpdates();
 
             EditorGUILayout.PropertyField(animationCurveTRS);
         }

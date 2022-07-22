@@ -87,7 +87,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         /// <summary>
         /// Update the node's TRS when called.
         /// </summary>
-        new public abstract void UpdateTRS();
+        //new public abstract void UpdateTRS();
 
         public void UpateStartEndPoints()
         {

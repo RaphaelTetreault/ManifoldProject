@@ -14,7 +14,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         // for editors
         [SerializeField] protected bool autoGenerateTRS = true;
 
-
+        /// <summary>
+        /// TODO: evaluate this method, see if it should only return a copy, name it sensically, etc
+        /// </summary>
+        /// <param name="isGfzCoordinateSpace"></param>
+        /// <returns></returns>
         public abstract AnimationCurveTRS CreateAnimationCurveTRS(bool isGfzCoordinateSpace);
         public abstract TrackSegment CreateTrackSegment();
 

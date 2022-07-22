@@ -147,7 +147,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         }
 
-
         public override void UpdateTRS()
         {
             trs = CreateAnimationCurveTRS(false);
