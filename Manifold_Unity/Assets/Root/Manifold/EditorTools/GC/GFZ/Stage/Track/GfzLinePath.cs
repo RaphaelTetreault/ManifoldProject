@@ -19,7 +19,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         [SerializeField] private AnimationCurveTRS animationCurveTRS = new();
         //
         [SerializeField, Min(1f)] private float step = 10f;
-        //[SerializeField] private bool autoGenerateTRS = true;
         [SerializeField] private bool showGizmos = true;
 
         protected override AnimationCurveTRS TrackSegmentAnimationCurveTRS => animationCurveTRS;

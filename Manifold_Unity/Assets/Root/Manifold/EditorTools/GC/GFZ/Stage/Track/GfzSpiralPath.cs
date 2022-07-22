@@ -28,7 +28,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         [SerializeField] private UnityEngine.AnimationCurve scaleY = new(new(0, 1), new(1, 1));
         [SerializeField] private float degrees = 90f;
         [SerializeField] private int nKeysPer360Degrees = 36;
-        [SerializeField] private bool autoGenerateTRS = true;
         [SerializeField] private bool showGizmos = true;
         [SerializeField] private float gizmosStep = 10f;
         [SerializeField] private AnimationCurveTRS animationCurveTRS = new();
