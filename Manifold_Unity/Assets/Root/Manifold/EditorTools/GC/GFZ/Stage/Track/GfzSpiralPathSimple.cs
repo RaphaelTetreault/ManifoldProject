@@ -11,14 +11,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         [SerializeField] private AnimationCurve rollsCurve = new(new(0, 0), new(1, 0));
         [SerializeField] private AnimationCurve scaleX = new(new(0, 60), new(1, 60));
         [SerializeField] private AnimationCurve scaleY = new(new(0, 1), new(1, 1));
-        [SerializeField] private float radius0 = 200;
-        [SerializeField] private float radius1 = 200;
-        [SerializeField] private float offset1 = 0;
-        [SerializeField] private float degrees = 90f;
-        [SerializeField] private int nKeysPer360Degrees = 36;
-        [SerializeField] private bool autoGenerateTRS = true;
-        [SerializeField] private bool showGizmos = true;
-        [SerializeField] private float gizmosStep = 10f;
+        [SerializeField, Min(0)] private float radius0 = 200;
+        [SerializeField, Min(0)] private float radius1 = 200;
+        [SerializeField] private float axisOffset = 0;
+        [SerializeField, Min(1)] private float rotateDegrees = 90f;
+        [SerializeField, Min(8)] private int keysPer360Degrees = 36;
         [SerializeField] private AnimationCurveTRS animationCurveTRS = new();
 
         protected override AnimationCurveTRS TrackSegmentAnimationCurveTRS => animationCurveTRS;
@@ -77,7 +74,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             // Subtract slope, add degrees
             Vector3 rotation = GetRotation().eulerAngles;
             var rx = new Keyframe[] { new(0, rotation.x), new(0.001f, rotation.x - angleSlope), new(maxTime, rotation.x - angleSlope), };
-            var ry = new Keyframe[] { new(0, rotation.y), new(maxTime, rotation.y + degrees), };
+            var ry = new Keyframe[] { new(0, rotation.y), new(maxTime, rotation.y + rotateDegrees), };
             return (rx, ry);
         }
         public (Keyframe[] rx, Keyframe[] ry) ComponentsToRotationXZLeft(float angleSlope, float maxTime)
@@ -85,7 +82,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             // Add slope, subtract degrees
             Vector3 rotation = GetRotation().eulerAngles;
             var rx = new Keyframe[] { new(0, rotation.x), new(0.001f, rotation.x + angleSlope), new(maxTime, rotation.x + angleSlope), };
-            var ry = new Keyframe[] { new(0, rotation.y), new(maxTime, rotation.y - degrees), };
+            var ry = new Keyframe[] { new(0, rotation.y), new(maxTime, rotation.y - rotateDegrees), };
             return (rx, ry);
         }
 
@@ -93,7 +90,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         {
             //
             Vector3 rotation = GetRotation().eulerAngles;
-            var rx = new Keyframe[] { new(0, rotation.x), new(maxTime, rotation.x - degrees), };
+            var rx = new Keyframe[] { new(0, rotation.x), new(maxTime, rotation.x - rotateDegrees), };
             var ry = new Keyframe[] { new(0, rotation.y), new(0.001f, rotation.y - angleSlope), new(maxTime, rotation.y - angleSlope), };
             return (rx, ry);
         }
@@ -101,7 +98,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         {
             //
             Vector3 rotation = GetRotation().eulerAngles;
-            var rx = new Keyframe[] { new(0, rotation.x), new(maxTime, rotation.x + degrees), };
+            var rx = new Keyframe[] { new(0, rotation.x), new(maxTime, rotation.x + rotateDegrees), };
             var ry = new Keyframe[] { new(0, rotation.y), new(0.001f, rotation.y + angleSlope), new(maxTime, rotation.y + angleSlope), };
             return (rx, ry);
         }
@@ -121,7 +118,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return animationCurveTRS.Position.Evaluate(time);
         }
 
-        public void UpdateTRS()
+        public override void UpdateTRS()
         {
             var startPosition = GetPosition();
             var startRotation = GetRotation().eulerAngles;
@@ -137,15 +134,15 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             // Length of curve
             // Todo: archemides spiral calc?
             float radiusAverage = ((radius0 + radius1) / 2f);
-            float length = 2 * Mathf.PI * radiusAverage * (degrees / 360f);
-            float angleSlope = Mathf.Atan(offset1 / length) * Mathf.Rad2Deg;
+            float length = 2 * Mathf.PI * radiusAverage * (rotateDegrees / 360f);
+            float angleSlope = Mathf.Atan(axisOffset / length) * Mathf.Rad2Deg;
 
-            int nKeys = Mathf.CeilToInt(degrees * nKeysPer360Degrees / 360f);
+            int nKeys = Mathf.CeilToInt(rotateDegrees * keysPer360Degrees / 360f);
             for (int i = 0; i <= nKeys; i++)
             {
                 // Time / step
                 float time = i / (float)nKeys;
-                float stepDistanceDegrees = time * degrees;
+                float stepDistanceDegrees = time * rotateDegrees;
                 float stepDistanceRadians = (stepDistanceDegrees % 360) * Mathf.Deg2Rad; // mod to increase precision
 
                 // Compute radius point
@@ -155,7 +152,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 // Compute position
                 float componentA0 = cos * radius - radius0;
                 float componentB0 = sin * radius;
-                float offset = Mathf.Lerp(0, offset1, time);
+                float offset = Mathf.Lerp(0, axisOffset, time);
                 Vector3 spiralPosition0 = componentToSpiralFunction(componentA0, componentB0, offset);
                 Vector3 position = startPosition + orientation * spiralPosition0;
                 positionXYZ.AddKeys(time, position);
@@ -168,10 +165,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             // POSITION
             var kPosition = GetPosition();
             var keysPX = isYZ
-                ? new Keyframe[] { new(0, kPosition.x), new(length, kPosition.x + offset1), }
+                ? new Keyframe[] { new(0, kPosition.x), new(length, kPosition.x + axisOffset), }
                 : positionXYZ.x.GetRenormalizedKeyRangeAndTangents(0, length);
             var keysPY = isXZ
-                ? new Keyframe[] { new(0, kPosition.y), new(length, kPosition.y + offset1), }
+                ? new Keyframe[] { new(0, kPosition.y), new(length, kPosition.y + axisOffset), }
                 : positionXYZ.y.GetRenormalizedKeyRangeAndTangents(0, length);
             var keysPZ = positionXYZ.z.GetRenormalizedKeyRangeAndTangents(0, length);
 

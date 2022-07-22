@@ -11,12 +11,30 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
     [CustomEditor(typeof(GfzSpiralPathSimple))]
     internal class GfzSpiralPathSimpleEditor : Editor
     {
-        SerializedProperty value;
+        SerializedProperty axes;
+        SerializedProperty rollsCurve;
+        SerializedProperty scaleX;
+        SerializedProperty scaleY;
+        SerializedProperty radius0;
+        SerializedProperty radius1;
+        SerializedProperty axisOffset;
+        SerializedProperty rotateDegrees;
+        SerializedProperty keysPer360Degrees;
         SerializedProperty animationCurveTRS;
         SerializedProperty autoGenerateTRS;
 
+
         void OnEnable()
         {
+            axes = serializedObject.FindProperty(nameof(axes));
+            rollsCurve = serializedObject.FindProperty(nameof(rollsCurve));
+            scaleX = serializedObject.FindProperty(nameof(scaleX));
+            scaleY = serializedObject.FindProperty(nameof(scaleY));
+            radius0 = serializedObject.FindProperty(nameof(radius0));
+            radius1 = serializedObject.FindProperty(nameof(radius1));
+            axisOffset = serializedObject.FindProperty(nameof(axisOffset));
+            rotateDegrees = serializedObject.FindProperty(nameof(rotateDegrees));
+            keysPer360Degrees = serializedObject.FindProperty(nameof(keysPer360Degrees));
             animationCurveTRS = serializedObject.FindProperty(nameof(animationCurveTRS));
             autoGenerateTRS = serializedObject.FindProperty(nameof(autoGenerateTRS));
         }
@@ -29,6 +47,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             {
                 DrawUnityEditorDefaults(spiralPath);
                 EditorGUILayout.Separator();
+                DrawSourceFields(spiralPath);
+                EditorGUILayout.Separator();
                 DrawTrsGeneration(spiralPath);
             }
             serializedObject.ApplyModifiedProperties();
@@ -38,7 +58,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             EditorGUILayout.Separator();
 
             // Uncomment if you need to debug something
-            base.OnInspectorGUI();
+            //base.OnInspectorGUI();
         }
 
         private void DrawUnityEditorDefaults(GfzSpiralPathSimple spiralPath)
@@ -50,6 +70,36 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             GUI.enabled = true;
         }
 
+        public void DrawSourceFields(GfzSpiralPathSimple spiralPath)
+        {
+            GuiSimple.Label("Source Values", EditorStyles.boldLabel);
+            {
+                EditorGUI.indentLevel++;
+                GuiSimple.Label("Curve", EditorStyles.boldLabel);
+                {
+                    EditorGUI.indentLevel++;
+                    EditorGUILayout.PropertyField(axes);
+                    EditorGUILayout.PropertyField(rotateDegrees);
+                    EditorGUILayout.PropertyField(radius0);
+                    EditorGUILayout.PropertyField(radius1);
+                    EditorGUI.indentLevel--;
+                }
+                GuiSimple.Label("Rotation", EditorStyles.boldLabel);
+                {
+                    EditorGUI.indentLevel++;
+                    EditorGUILayout.PropertyField(rollsCurve);
+                    EditorGUI.indentLevel--;
+                }
+                GuiSimple.Label("Scale", EditorStyles.boldLabel);
+                {
+                    EditorGUI.indentLevel++;
+                    EditorGUILayout.PropertyField(scaleX);
+                    EditorGUILayout.PropertyField(scaleY);
+                    EditorGUI.indentLevel--;
+                }
+                EditorGUI.indentLevel--;
+            }
+        }
 
         public void DrawTrsGeneration(GfzSpiralPathSimple spiralPath)
         {

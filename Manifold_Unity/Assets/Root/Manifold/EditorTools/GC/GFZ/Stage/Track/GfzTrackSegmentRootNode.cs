@@ -1,18 +1,17 @@
 ﻿using Manifold.IO;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
+    [ExecuteInEditMode]
     public abstract class GfzTrackSegmentRootNode : GfzTrackSegmentNode
     {
         [field: SerializeField] public GfzTrackSegmentRootNode Prev { get; set; }
         [field: SerializeField] public GfzTrackSegmentRootNode Next { get; set; }
-        
+
+        // for editors
+        [SerializeField] private bool autoGenerateTRS = true;
+
         /// <summary>
         /// The final TRS to use as GFZ track segment
         /// </summary>
@@ -83,6 +82,33 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
             return trackSegmentRoot;
         }
+
+        public abstract void UpdateTRS();
+
+
+        private void Reset()
+        {
+            UpdateTRS();
+        }
+
+        private void OnValidate()
+        {
+            if (autoGenerateTRS)
+            {
+                UpdateTRS();
+                UpdateShapeMeshes();
+            }
+        }
+
+        private void Update()
+        {
+            if (autoGenerateTRS && transform.hasChanged)
+            {
+                UpdateTRS();
+                UpdateShapeMeshes();
+            }
+        }
+
 
     }
 }

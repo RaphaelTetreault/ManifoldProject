@@ -784,5 +784,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return segmentLength;
         }
 
+        public override void UpdateTRS()
+        {
+            throw new NotImplementedException();
+        }
+
     }
 }

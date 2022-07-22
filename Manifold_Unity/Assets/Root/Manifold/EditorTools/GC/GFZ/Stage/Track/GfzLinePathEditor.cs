@@ -144,7 +144,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
             var hacTRS = line.CreateHierarchichalAnimationCurveTRS(false);
             float length = line.GetLineLength();
-            int nSteps = (int)Mathf.Ceil(length / line.Step);
+            int nSteps = (int)Mathf.Ceil(length / step.floatValue);
             var matrices = new Matrix4x4[nSteps + 1];
             for (int i = 0; i <= nSteps; i++)
             {

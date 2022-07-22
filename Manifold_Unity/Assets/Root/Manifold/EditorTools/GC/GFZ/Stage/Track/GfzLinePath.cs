@@ -19,14 +19,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         [SerializeField] private AnimationCurveTRS animationCurveTRS = new();
         //
         [SerializeField, Min(1f)] private float step = 10f;
-        [SerializeField] private bool autoGenerateTRS = true;
+        //[SerializeField] private bool autoGenerateTRS = true;
         [SerializeField] private bool showGizmos = true;
-
-        public float EndPositionX { get => endPositionX; set => endPositionX = value; }
-        public float EndPositionY { get => endPositionY; set => endPositionY = value; }
-        public float EndPositionZ { get => endPositionZ; set => endPositionZ = value; }
-        public float Step { get => step; set => step = value; }
-        public AnimationCurveTRS AnimationCurveTRS { get => animationCurveTRS; private set => animationCurveTRS = value; }
 
         protected override AnimationCurveTRS TrackSegmentAnimationCurveTRS => animationCurveTRS;
 
@@ -89,31 +83,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return trs;
         }
 
-        //public override TrackSegment CreateTrackSegment()
-        //{
-        //    var trs = AnimationCurveTRS.CreateDeepCopy();
-
-        //    var trackSegmentRoot = new TrackSegment();
-        //    var trackSegmentRZ = new TrackSegment();
-        //    trackSegmentRoot.Children = new TrackSegment[] { trackSegmentRZ };
-        //    trackSegmentRZ.Children = CreateChildTrackSegments();
-
-        //    trackSegmentRoot.BranchIndex = trackSegmentRZ.BranchIndex = GetBranchIndex();
-
-        //    {
-        //        var trsXY = trs.CreateDeepCopy();
-        //        trsXY.Rotation.z = new UnityEngine.AnimationCurve();
-        //        trackSegmentRoot.AnimationCurveTRS = trsXY.ToTrackSegment();
-        //    }
-        //    {
-        //        var trsRZ = new AnimationCurveTRS();
-        //        trsRZ.Rotation.z = trs.Rotation.z;
-        //        trackSegmentRZ.AnimationCurveTRS = trsRZ.ToTrackSegment();
-        //    }
-
-        //    return trackSegmentRoot;
-        //}
-
         public override float GetSegmentLength()
         {
             var length = GetLineLength();
@@ -171,7 +140,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
         }
 
-        internal void UpdateTRS()
+        public override void UpdateTRS()
         {
             var maxTime = GetLineLength();
             var position = CreatePositionCurvesXYZ(maxTime);
@@ -219,21 +188,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
             return SmoothCircleTangent(curve, index, index - 1, true);
         }
-
-        private void Reset()
-        {
-            UpdateTRS();
-        }
-
-        private void Update()
-        {
-            if (autoGenerateTRS && transform.hasChanged)
-            {
-                UpdateTRS();
-                UpdateShapeMeshes();
-            }
-        }
-
 
         public void UpdateTrsPosition()
         {

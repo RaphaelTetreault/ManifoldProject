@@ -44,11 +44,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return trs;
         }
 
-        //public override TrackSegment CreateTrackSegment()
-        //{
-        //    throw new NotImplementedException();
-        //}
-
         public override float GetMaxTime()
         {
             return animationCurveTRS.GetMaxTime();
@@ -154,7 +149,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return animationCurveTRS.Position.Evaluate(time);
         }
 
-        public void UpdateTRS()
+        public override void UpdateTRS()
         {
             var startPosition = GetPosition();
             var startRotation = GetRotation().eulerAngles;
