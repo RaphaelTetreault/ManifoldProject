@@ -65,7 +65,14 @@ namespace Manifold.EditorTools.GC.GFZ.GMA
 
                     // Construct prefab path, save to asset database
                     var prefabPath = $"{outputDirectory}/pf_{model.Name}.prefab";
-                    CreatePrefabFromModel(mesh, meshMaterials, prefabPath);
+                    var prefab = CreatePrefabFromModel(mesh, meshMaterials, prefabPath);
+
+                    // tag model
+                    var sourceTag = prefab.AddComponent<GmaSourceTag>();
+                    sourceTag.FileName = gma.FileName;
+                    sourceTag.ModelName = model.Name;
+                    sourceTag.GcmfAddressRange = model.Gcmf.AddressRange;
+                    PrefabUtility.SavePrefabAsset(prefab);
                 }
             }
 
