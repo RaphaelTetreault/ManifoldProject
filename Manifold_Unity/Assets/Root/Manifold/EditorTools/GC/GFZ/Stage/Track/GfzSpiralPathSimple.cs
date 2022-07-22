@@ -56,9 +56,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         public Vector3 ComponentsToXYUp(float cos, float sin, float offset) => new Vector3(offset, -cos, sin);
         public Vector3 ComponentsToXYDown(float cos, float sin, float offset) => new Vector3(offset, +cos, sin);
 
-        // ideally this value would scale with the length of the curve.
-        private const float minDelta = 0.5f;
-        private const float percentSmooth = 0.05f;
         public Func<float, float, (Keyframe[], Keyframe[])> ComponentsToRotationKeys(SpiralAxes axes)
         {
             switch (axes)
@@ -73,7 +70,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         }
         public Keyframe[] GetSlopes(float rotation, float angleSlope, float maxTime)
         {
-            float smoothTime = percentSmooth * maxTime;
+            float relativeDistance = 0.10f * maxTime; // 10%
+            const float fixedDistance = 100f; // 100m
+            // Select whichever "distance" along path is shortest.
+            // Means smoothing for short curves is at 10% from ends, at 100m for long curves at ends.
+            float smoothTime = relativeDistance < fixedDistance ? relativeDistance : fixedDistance;
+
             var keys = new Keyframe[]
             {
                 new(0, rotation),
