@@ -3,7 +3,6 @@ using UnityEngine;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
-    [ExecuteInEditMode]
     public abstract class GfzTrackSegmentRootNode : GfzTrackSegmentNode
     {
         [field: SerializeField] public GfzTrackSegmentRootNode Prev { get; set; }
@@ -11,8 +10,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         [field: SerializeField] public Vector3 StartPosition { get; set; }
         [field: SerializeField] public Vector3 EndPosition { get; set; }
 
-        // for editors
-        [SerializeField] private bool autoGenerateTRS = true;
 
         /// <summary>
         /// The final TRS to use as GFZ track segment
@@ -85,30 +82,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return trackSegmentRoot;
         }
 
-        public abstract void UpdateTRS();
+        // TODO: make abstract node force impl.
 
-
-        private void Reset()
-        {
-            UpdateTRS();
-            UpateStartEndPoints();
-        }
-
-        private void OnValidate()
-        {
-            if (autoGenerateTRS)
-            {
-                UpdateAllRelatedToTRS();
-            }
-        }
-
-        private void Update()
-        {
-            if (autoGenerateTRS && transform.hasChanged)
-            {
-                UpdateAllRelatedToTRS();
-            }
-        }
+        /// <summary>
+        /// Update the node's TRS when called.
+        /// </summary>
+        new public abstract void UpdateTRS();
 
         public void UpateStartEndPoints()
         {
@@ -117,10 +96,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             EndPosition = trs.Position.Evaluate(trs.Position.GetMaxTime());
         }
 
-        public void UpdateAllRelatedToTRS()
+        public override void InvokeUpdates()
         {
-            UpdateTRS();
-            UpdateShapeMeshes();
+            base.InvokeUpdates();
             UpateStartEndPoints();
         }
 

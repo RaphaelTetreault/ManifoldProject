@@ -85,11 +85,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             MeshDisplay.transform.rotation = Quaternion.identity;
         }
 
-        private void Reset()
+        public override void InvokeUpdates()
         {
-            OnValidate();
+            base.InvokeUpdates();
+            ValidateMeshDisplay();
         }
-        protected virtual void OnValidate()
+
+        public void ValidateMeshDisplay()
         {
             if (MeshDisplay == null)
             {

@@ -7,8 +7,14 @@ using UnityEngine;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
+    [ExecuteInEditMode]
     public abstract class GfzTrackSegmentNode : MonoBehaviour
     {
+
+        // for editors
+        [SerializeField] protected bool autoGenerateTRS = true;
+
+
         public abstract AnimationCurveTRS CreateAnimationCurveTRS(bool isGfzCoordinateSpace);
         public abstract TrackSegment CreateTrackSegment();
 
@@ -160,22 +166,28 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return trackSegments;
         }
 
+        //public GfzTrackSegmentShapeNode[] GetShapeNodes()
+        //{
+        //    var shapeNodes = new List<GfzTrackSegmentShapeNode>();
+        //    var children = GetChildren();
+        //    foreach (var child in children)
+        //    {
+        //        bool childIsShape = child is GfzTrackSegmentShapeNode;
+        //        if (childIsShape)
+        //        {
+        //            shapeNodes.Add(child as GfzTrackSegmentShapeNode);
+        //        }
+
+        //        var childShapeNodes = child.GetShapeNodes();
+        //        shapeNodes.AddRange(childShapeNodes);
+        //    }
+        //    return shapeNodes.ToArray();
+        //}
+
         public GfzTrackSegmentShapeNode[] GetShapeNodes()
         {
-            var shapeNodes = new List<GfzTrackSegmentShapeNode>();
-            var children = GetChildren();
-            foreach (var child in children)
-            {
-                bool childIsShape = child is GfzTrackSegmentShapeNode;
-                if (childIsShape)
-                {
-                    shapeNodes.Add(child as GfzTrackSegmentShapeNode);
-                }
-
-                var childShapeNodes = child.GetShapeNodes();
-                shapeNodes.AddRange(childShapeNodes);
-            }
-            return shapeNodes.ToArray();
+            var shapes = GetComponentsInChildren<GfzTrackSegmentShapeNode>();
+            return shapes;
         }
 
         public void UpdateShapeMeshes()
@@ -200,5 +212,33 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             var scale = IsRoot() ? transform.lossyScale : transform.localScale;
             return scale;
         }
+
+
+        public virtual void UpdateTRS() { }
+        public virtual void InvokeUpdates()
+        {
+            UpdateTRS();
+            UpdateShapeMeshes();
+        }
+        protected virtual void Reset()
+        {
+            InvokeUpdates();
+        }
+        protected virtual void OnValidate()
+        {
+            if (autoGenerateTRS)
+            {
+                InvokeUpdates();
+            }
+        }
+        private void Update()
+        {
+            bool isSelected = UnityEditor.Selection.activeGameObject == this;
+            if (isSelected && autoGenerateTRS && transform.hasChanged)
+            {
+                InvokeUpdates();
+            }
+        }
+
     }
 }

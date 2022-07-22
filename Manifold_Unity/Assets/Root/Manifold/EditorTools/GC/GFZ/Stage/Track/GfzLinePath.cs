@@ -168,6 +168,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return keys;
         }
 
+        // TODO: make use of these. They compute required tangent to make smooth circle tangents,
+        //       useful for track corners?
         internal Keyframe[] SmoothCircleTangentToNext(UnityEngine.AnimationCurve curve, int index)
         {
             bool indexTooLow = index < 0;

@@ -13,14 +13,15 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             nodeInfoFoldout = EditorGUILayout.Foldout(nodeInfoFoldout, "Node Info");
             if (nodeInfoFoldout)
             {
-                GUI.enabled = false;
                 EditorGUI.indentLevel++;
+                GUI.enabled = false;
                 EditorGUILayout.ObjectField(nameof(rootNode.Prev), rootNode.Prev, typeof(GfzTrackSegmentRootNode), false);
                 EditorGUILayout.ObjectField(nameof(rootNode.Next), rootNode.Next, typeof(GfzTrackSegmentRootNode), false);
+                GuiSimple.Float("Segment Length", rootNode.GetSegmentLength());
+                GUI.enabled = true;
                 EditorGUILayout.Vector3Field(nameof(rootNode.StartPosition), rootNode.StartPosition);
                 EditorGUILayout.Vector3Field(nameof(rootNode.EndPosition), rootNode.EndPosition);
                 EditorGUI.indentLevel--;
-                GUI.enabled = true;
             }
         }
 

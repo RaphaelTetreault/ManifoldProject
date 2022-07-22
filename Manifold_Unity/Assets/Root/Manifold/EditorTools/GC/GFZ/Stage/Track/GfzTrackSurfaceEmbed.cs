@@ -58,11 +58,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
         }
 
-        protected override void OnValidate()
-        {
-            base.OnValidate();
-        }
-
         public override AnimationCurveTRS CreateAnimationCurveTRS(bool isGfzCoordinateSpace)
         {
             // NOTE to document:
@@ -80,11 +75,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             trs.Position.x = new UnityEngine.AnimationCurve(keysPX);
             trs.Scale.x = new UnityEngine.AnimationCurve(keysSX);
 
-            // Don't need this right? We flip p.z and r.y
-            //if (isGfzCoordinateSpace)
-            //    trs = trs.CreateGfzCoordinateSpace();
-
-            this.trs = trs;
+            if (isGfzCoordinateSpace)
+                trs = trs.CreateGfzCoordinateSpace();
 
             return trs;
         }
@@ -153,6 +145,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
             return trackSegment;
 
+        }
+
+
+        public override void UpdateTRS()
+        {
+            trs = CreateAnimationCurveTRS(false);
         }
 
     }
