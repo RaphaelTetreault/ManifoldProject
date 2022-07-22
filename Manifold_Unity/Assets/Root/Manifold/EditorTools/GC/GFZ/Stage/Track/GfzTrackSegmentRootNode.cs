@@ -98,9 +98,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         {
             if (autoGenerateTRS)
             {
-                UpdateTRS();
-                UpdateShapeMeshes();
-                UpateStartEndPoints();
+                UpdateAllRelatedToTRS();
             }
         }
 
@@ -108,9 +106,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         {
             if (autoGenerateTRS && transform.hasChanged)
             {
-                UpdateTRS();
-                UpdateShapeMeshes();
-                UpateStartEndPoints();
+                UpdateAllRelatedToTRS();
             }
         }
 
@@ -119,6 +115,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             var trs = TrackSegmentAnimationCurveTRS;
             StartPosition = trs.Position.Evaluate(0);
             EndPosition = trs.Position.Evaluate(trs.Position.GetMaxTime());
+        }
+
+        public void UpdateAllRelatedToTRS()
+        {
+            UpdateTRS();
+            UpdateShapeMeshes();
+            UpateStartEndPoints();
         }
 
     }
