@@ -117,7 +117,7 @@ namespace Manifold.EditorTools.GC.GFZ
                 var modeR = AnimationUtility.GetKeyRightTangentMode(animationCurve, i + 0);
                 var modeL = AnimationUtility.GetKeyLeftTangentMode(animationCurve, i + 1);
                 if (modeL != modeR)
-                    throw new ArgumentException("GFZ keyables must have same tangent mode between keyframes!");
+                    Debug.LogWarning("GFZ keyables must have same tangent mode between keyframes! There' may be errors in exported keys.");
 
                 // We only need to keep the key's right tangent mode - it'll apply to the current and next keys
                 // ie: key[n].right == key[n+1].left

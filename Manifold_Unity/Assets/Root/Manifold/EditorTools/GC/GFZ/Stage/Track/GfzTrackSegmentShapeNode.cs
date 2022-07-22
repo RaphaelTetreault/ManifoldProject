@@ -8,16 +8,9 @@ using UnityEngine.Rendering;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
-    [RequireComponent(typeof(MeshFilter))]
-    [RequireComponent(typeof(MeshRenderer))]
     public abstract class GfzTrackSegmentShapeNode : GfzTrackSegmentNode
     {
-        [field: Header("Mesh Properties")]
-        [field: SerializeField] public MeshFilter MeshFilter { get; protected set; }
-        [field: SerializeField] public MeshRenderer MeshRenderer { get; protected set; }
-        [field: SerializeField] public Mesh Mesh { get; protected set; }
-        [field: SerializeField] public UnityEngine.Material DefaultMaterial { get; protected set; }
-
+        [field: SerializeField] public MeshDisplay MeshDisplay { get; protected set; }
 
         public abstract Mesh CreateMesh();
         public abstract Gcmf CreateGcmf();
@@ -25,15 +18,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         public override float GetMaxTime()
         {
             return GetRoot().GetMaxTime();
-        }
-
-        protected virtual void OnValidate()
-        {
-            if (MeshRenderer == null)
-                MeshRenderer = GetComponent<MeshRenderer>();
-
-            if (MeshFilter == null)
-                MeshFilter = GetComponent<MeshFilter>();
         }
 
         public Mesh TristripsToMesh(Tristrip[] tristrips)
@@ -91,18 +75,31 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public void UpdateMesh()
         {
-            Mesh = CreateMesh();
+            var mesh = CreateMesh();
+            MeshDisplay.UpdateMesh(mesh);
 
-            if (MeshFilter != null)
-                MeshFilter.mesh = Mesh;
+            // Do no offset mesh display - mesh coords are in world space.
+            var scale = transform.lossyScale;
+            MeshDisplay.transform.localScale = new Vector3(1f / scale.x, 1f / scale.y, 1f / scale.z);
+            MeshDisplay.transform.position = Vector3.zero;
+            MeshDisplay.transform.rotation = Quaternion.identity;
+        }
 
-            if (MeshRenderer != null)
+        public override void InvokeUpdates()
+        {
+            ValidateMeshDisplay();
+            base.InvokeUpdates();
+        }
+
+        public void ValidateMeshDisplay()
+        {
+            if (MeshDisplay == null)
             {
-                int numTristrips = Mesh.subMeshCount;
-                var materials = new UnityEngine.Material[numTristrips];
-                for (int i = 0; i < materials.Length; i++)
-                    materials[i] = DefaultMaterial;
-                MeshRenderer.sharedMaterials = materials;
+                var meshDisplayGobj = new GameObject("Mesh Display");
+                meshDisplayGobj.transform.parent = this.transform;
+
+                var meshDisplay = meshDisplayGobj.AddComponent<MeshDisplay>();
+                MeshDisplay = meshDisplay;
             }
         }
 

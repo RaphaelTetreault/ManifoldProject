@@ -128,5 +128,13 @@ namespace Manifold.EditorTools
         public static Keyframe[] GetRenormalizedKeyRangeAndTangents(this AnimationCurve curve, float newMinTime, float newMaxTime)
             => KeyframeUtility.GetRenormalizedKeyRangeAndTangents(curve.keys, newMinTime, newMaxTime);
 
+        public static AnimationCurve SetKeyTangents(this AnimationCurve curve, float inOutTangents)
+            => new AnimationCurve(KeyframeUtility.SetKeyTangents(curve.keys, inOutTangents));
+
+        public static void SmoothTangents(this AnimationCurve curve, float weight = 1 / 3f)
+        {
+            for (int i = 0; i < curve.length; i++)
+                curve.SmoothTangents(i, weight);
+        }
     }
 }

@@ -42,7 +42,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 float distanceEnd = (float)(checkpointTimeEnd * segmentLength);
 
                 // Evaluate matrix hierarchy using normalized time
-                var matrix = hacTRS.EvaluateHierarchyMatrix(distanceStart);
+                var matrix = hacTRS.EvaluateAnimationMatrices(distanceStart);
                 var position = matrix.Position();
                 var rotation = matrix.Rotation();
                 var scale = matrix.Scale();
@@ -87,7 +87,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 var lastCheckpoint = checkpoints[lastIndex];
                 lastCheckpoint.CurveTimeEnd = (float)segmentLength;
 
-                var matrix = hacTRS.EvaluateHierarchyMatrix(segmentLength);
+                var matrix = hacTRS.EvaluateAnimationMatrices(segmentLength);
                 var origin = matrix.GetPosition();
                 var normal = matrix.rotation * backward;
 
@@ -132,7 +132,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             var startPosition = startMatrix.Position();
             var endPosition = endMatrix.Position();
 
-            bool isContinuousBetween = math.distance(endPosition, startPosition) < 0.01f; // 1cm
+            float distance = math.distance(endPosition, startPosition);
+            bool isContinuousBetween = distance < 0.1f; // 10cm
             return isContinuousBetween;
         }
 

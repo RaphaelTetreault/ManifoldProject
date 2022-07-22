@@ -7,8 +7,18 @@ using UnityEngine;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
+    [ExecuteInEditMode]
     public abstract class GfzTrackSegmentNode : MonoBehaviour
     {
+
+        // for editors
+        [SerializeField] protected bool autoGenerateTRS = true;
+
+        /// <summary>
+        /// TODO: evaluate this method, see if it should only return a copy, name it sensically, etc
+        /// </summary>
+        /// <param name="isGfzCoordinateSpace"></param>
+        /// <returns></returns>
         public abstract AnimationCurveTRS CreateAnimationCurveTRS(bool isGfzCoordinateSpace);
         public abstract TrackSegment CreateTrackSegment();
 
@@ -160,22 +170,80 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return trackSegments;
         }
 
+        //public GfzTrackSegmentShapeNode[] GetShapeNodes()
+        //{
+        //    var shapeNodes = new List<GfzTrackSegmentShapeNode>();
+        //    var children = GetChildren();
+        //    foreach (var child in children)
+        //    {
+        //        bool childIsShape = child is GfzTrackSegmentShapeNode;
+        //        if (childIsShape)
+        //        {
+        //            shapeNodes.Add(child as GfzTrackSegmentShapeNode);
+        //        }
+
+        //        var childShapeNodes = child.GetShapeNodes();
+        //        shapeNodes.AddRange(childShapeNodes);
+        //    }
+        //    return shapeNodes.ToArray();
+        //}
+
         public GfzTrackSegmentShapeNode[] GetShapeNodes()
         {
-            var shapeNodes = new List<GfzTrackSegmentShapeNode>();
-            var children = GetChildren();
-            foreach (var child in children)
-            {
-                bool childIsShape = child is GfzTrackSegmentShapeNode;
-                if (childIsShape)
-                {
-                    shapeNodes.Add(child as GfzTrackSegmentShapeNode);
-                }
-
-                var childShapeNodes = child.GetShapeNodes();
-                shapeNodes.AddRange(childShapeNodes);
-            }
-            return shapeNodes.ToArray();
+            var shapes = GetComponentsInChildren<GfzTrackSegmentShapeNode>();
+            return shapes;
         }
+
+        public void UpdateShapeMeshes()
+        {
+            var shapes = GetShapeNodes();
+            foreach (var shape in shapes)
+                shape.UpdateMesh();
+        }
+
+        public Vector3 GetPosition()
+        {
+            var position = IsRoot() ? transform.position : transform.localPosition;
+            return position;
+        }
+        public Quaternion GetRotation()
+        {
+            var position = IsRoot() ? transform.rotation : transform.localRotation;
+            return position;
+        }
+        public Vector3 GetScale()
+        {
+            var scale = IsRoot() ? transform.lossyScale : transform.localScale;
+            return scale;
+        }
+
+
+        public abstract void UpdateTRS();
+
+        public virtual void InvokeUpdates()
+        {
+            UpdateTRS();
+            UpdateShapeMeshes();
+        }
+        protected virtual void Reset()
+        {
+            InvokeUpdates();
+        }
+        protected virtual void OnValidate()
+        {
+            if (autoGenerateTRS)
+            {
+                InvokeUpdates();
+            }
+        }
+        private void Update()
+        {
+            bool isSelected = UnityEditor.Selection.activeGameObject == this;
+            if (isSelected && autoGenerateTRS && transform.hasChanged)
+            {
+                InvokeUpdates();
+            }
+        }
+
     }
 }

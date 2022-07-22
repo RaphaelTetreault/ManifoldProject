@@ -1,9 +1,4 @@
 ﻿using Manifold.IO;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage.Track
@@ -12,6 +7,14 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
     {
         [field: SerializeField] public GfzTrackSegmentRootNode Prev { get; set; }
         [field: SerializeField] public GfzTrackSegmentRootNode Next { get; set; }
+        [field: SerializeField] public Vector3 StartPosition { get; set; }
+        [field: SerializeField] public Vector3 EndPosition { get; set; }
+
+
+        /// <summary>
+        /// The final TRS to use as GFZ track segment
+        /// </summary>
+        protected abstract AnimationCurveTRS TrackSegmentAnimationCurveTRS { get; }
 
 
         public abstract float GetSegmentLength();
@@ -53,5 +56,51 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
             return distanceOffset;
         }
+
+        public sealed override GameCube.GFZ.Stage.TrackSegment CreateTrackSegment()
+        {
+            var trs = TrackSegmentAnimationCurveTRS.CreateDeepCopy();
+
+            var trackSegmentRoot = new GameCube.GFZ.Stage.TrackSegment();
+            var trackSegmentRZ = new GameCube.GFZ.Stage.TrackSegment();
+            trackSegmentRoot.Children = new GameCube.GFZ.Stage.TrackSegment[] { trackSegmentRZ };
+            trackSegmentRZ.Children = CreateChildTrackSegments();
+
+            trackSegmentRoot.BranchIndex = trackSegmentRZ.BranchIndex = GetBranchIndex();
+
+            {
+                var trsXY = trs.CreateDeepCopy();
+                trsXY.Rotation.z = new AnimationCurve();
+                trackSegmentRoot.AnimationCurveTRS = trsXY.ToTrackSegment();
+            }
+            {
+                var trsRZ = new AnimationCurveTRS();
+                trsRZ.Rotation.z = trs.Rotation.z;
+                trackSegmentRZ.AnimationCurveTRS = trsRZ.ToTrackSegment();
+            }
+
+            return trackSegmentRoot;
+        }
+
+        // TODO: make abstract node force impl.
+
+        /// <summary>
+        /// Update the node's TRS when called.
+        /// </summary>
+        //new public abstract void UpdateTRS();
+
+        public void UpateStartEndPoints()
+        {
+            var trs = TrackSegmentAnimationCurveTRS;
+            StartPosition = trs.Position.Evaluate(0);
+            EndPosition = trs.Position.Evaluate(trs.Position.GetMaxTime());
+        }
+
+        public override void InvokeUpdates()
+        {
+            base.InvokeUpdates();
+            UpateStartEndPoints();
+        }
+
     }
 }

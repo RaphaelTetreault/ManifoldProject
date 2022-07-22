@@ -51,9 +51,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         public override Mesh CreateMesh()
         {
             var tristrips = TristripGenerator.CreateTempTrackRoad(this, WidthDivisions, LengthDistance, false);
-            Mesh = TristripsToMesh(tristrips);
-            Mesh.name = $"Auto Gen - {this.name}";
-            return Mesh;
+            var mesh = TristripsToMesh(tristrips);
+            mesh.name = $"Auto Gen - {name}";
+            return mesh;
         }
 
         public override TrackSegment CreateTrackSegment()
@@ -63,9 +63,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             var trackSegment = new TrackSegment();
             trackSegment.OrderIndentifier = name;
             trackSegment.SegmentType = TrackSegmentType.IsTrack;
-            trackSegment.FallbackPosition = transform.localPosition;
-            trackSegment.FallbackRotation = transform.localRotation.eulerAngles;
-            trackSegment.FallbackScale = transform.localScale;
             trackSegment.BranchIndex = GetBranchIndex();
             trackSegment.SetRails(RailHeightLeft, RailHeightRight);
             trackSegment.Children = children;
@@ -73,7 +70,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return trackSegment;
         }
 
-
+        public override void UpdateTRS()
+        {
+            throw new System.NotImplementedException();
+        }
 
     }
 }

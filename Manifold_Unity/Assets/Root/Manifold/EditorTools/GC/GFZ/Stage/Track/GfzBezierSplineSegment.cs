@@ -22,8 +22,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         [SerializeField, HideInInspector]
         private bool isLoop = false;
-        [SerializeField, HideInInspector]
-        private bool autoGenTRS = false;
 
         //
         [SerializeField]
@@ -100,7 +98,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             points[index] = point;
             CallOnEdited();
         }
-
 
         public AnimationCurve CreateWidthsCurve()
         {
@@ -191,7 +188,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return position;
         }
 
-
         public Vector3 GetVelocity(float time01)
         {
             (float t, int i) = NormalizedTimeToTimeAndIndex(time01);
@@ -224,7 +220,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         {
             return GetVelocity(time, index).normalized;
         }
-
 
         public Quaternion GetOrientation(float time, int index)
         {
@@ -260,7 +255,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             var scale = GetScale(t, i);
             return scale;
         }
-
 
         public Matrix4x4 GetMatrix(float time, int index)
         {
@@ -393,7 +387,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
         }
 
-
         public void SetLoop(bool isLoop)
         {
             if (this.isLoop == isLoop)
@@ -457,31 +450,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return GetPositionRelative((float)time);
         }
 
-        public Vector3 CleanRotation(Vector3 lastEulers, Vector3 currEulers)
-        {
-            var x = CleanRotation(lastEulers.x, currEulers.x);
-            var y = CleanRotation(lastEulers.y, currEulers.y);
-            var z = CleanRotation(lastEulers.z, currEulers.z);
-            return new Vector3(x, y, z);
-        }
-
-        public float CleanRotation(float lastAngle, float currAngle)
-        {
-            const float minDelta = 180f;
-            float delta = currAngle - lastAngle;
-
-            if (delta > minDelta)
-            {
-                currAngle -= 360f;
-            }
-            else if (delta < -minDelta)
-            {
-                currAngle += 360;
-            }
-
-            return currAngle;
-        }
-
 
         public AnimationCurveTRS CreateTRS(int samplesBetweenControlsPoints = 32)
         {
@@ -489,7 +457,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
             // Entire curve approximate length to within 100m
             const int nStartIterDistance = 50;
-            double entireCurveApproximateLength = CurveLengthUtility.GetDistanceBetweenRepeated(this, 0, 1, nStartIterDistance, 2, 1);
+            double entireCurveApproximateLength = CurveUtility.GetDistanceBetweenRepeated(this, 0, 1, nStartIterDistance, 2, 1);
             int nApproximationIterations = (int)(entireCurveApproximateLength / 200);
 
             // Compute curve lengths between each bezier control point
@@ -516,7 +484,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     var t = (float)(s + 0) / samplesBetweenControlsPoints;
                     var position = GetPosition(t, i);
                     var rotation = GetOrientation(t, i).eulerAngles;
-                    rotation = CleanRotation(previousRotation, rotation);
+                    rotation = CurveUtility.CleanRotation(previousRotation, rotation);
                     previousRotation = rotation;
                     var time = (float)(currDistance + (t * currLength));
                     trs.Position.AddKeys(time, position);
@@ -532,7 +500,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 int i = numCurves - 1;
                 var position = GetPosition(t, i);
                 var rotation = GetOrientation(t, i).eulerAngles;
-                rotation = CleanRotation(previousRotation, rotation);
+                rotation = CurveUtility.CleanRotation(previousRotation, rotation);
                 trs.Position.AddKeys(t, position);
                 trs.Rotation.AddKeys(t, rotation);
             }
@@ -735,51 +703,19 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return trs;
         }
 
-        public override GameCube.GFZ.Stage.TrackSegment CreateTrackSegment()
-        {
-            var trs = animationCurveTRS.CreateDeepCopy();
-
-            // TRS 0: has all animation curves EXCEPT rotation Z
-            var trs0 = trs.CreateDeepCopy();
-            trs0.Rotation.z = new AnimationCurve();
-
-            // TRS 1: has ONLY rotation Z
-            var trs1 = new AnimationCurveTRS();
-            trs1.Rotation.z = trs.Rotation.z;
-
-            //
-            var children = CreateChildTrackSegments();
-
-            // Child is basically empty, only storing the rotation.z curve.
-            var trackSegmentChild = new GameCube.GFZ.Stage.TrackSegment();
-            trackSegmentChild.BranchIndex = GetBranchIndex();
-            trackSegmentChild.AnimationCurveTRS = trs1.ToTrackSegment();
-            trackSegmentChild.Children = children;
-
-            // Parent has all the other values, and has above as child element.
-            var trackSegmentParent = new GameCube.GFZ.Stage.TrackSegment();
-            trackSegmentParent.FallbackPosition = transform.localPosition;
-            trackSegmentParent.FallbackRotation = transform.localRotation.eulerAngles;
-            trackSegmentParent.FallbackScale = transform.localScale;
-            trackSegmentParent.BranchIndex = GetBranchIndex();
-            trackSegmentParent.AnimationCurveTRS = trs0.ToTrackSegment();
-            trackSegmentParent.Children = new GameCube.GFZ.Stage.TrackSegment[] { trackSegmentChild };
-
-            return trackSegmentParent;
-        }
+        protected override AnimationCurveTRS TrackSegmentAnimationCurveTRS => animationCurveTRS;
 
         public override float GetMaxTime()
         {
             return animationCurveTRS.GetMaxTime();
         }
 
-        // DEPRECATE
+        // DEPRECATE?
         public void CallOnEdited()
         {
-            if (autoGenTRS)
+            if (autoGenerateTRS)
             {
-                UpdateAnimationCurveTRS();
-                UpdateShapeNodeMeshes(GetShapeNodes());
+                InvokeUpdates();
             }
         }
 
@@ -798,13 +734,20 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             if (this != root)
                 throw new Exception("Bezier makes assumption that it is always root node!");
 
-            var segmentLength = SegmentLength;
-            if (segmentLength <= 0f)
-            {
-                var msg = "Distance is 0 which is invalid. TRS animation curves must define path.";
-                throw new System.ArgumentException(msg);
-            }
+            //var segmentLength = SegmentLength;
+            //if (segmentLength <= 0f)
+            //{
+            //    var msg = "Distance is 0 which is invalid. TRS animation curves must define path.";
+            //    throw new System.ArgumentException(msg);
+            //}
+            var segmentLength = animationCurveTRS.GetMaxTime();
+
             return segmentLength;
+        }
+
+        public override void UpdateTRS()
+        {
+            animationCurveTRS = CreateTRS();
         }
 
     }

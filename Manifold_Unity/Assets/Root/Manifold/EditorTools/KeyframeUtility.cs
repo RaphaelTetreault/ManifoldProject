@@ -14,7 +14,7 @@ namespace Manifold.EditorTools
         /// <param name="oldKeys"></param>
         /// <param name="newKeys"></param>
         /// <returns></returns>
-        public static Keyframe[] CorrectKeyTangents(Keyframe[] oldKeys, Keyframe[] newKeys)
+        public static Keyframe[] ScaleKeyTangents(Keyframe[] oldKeys, Keyframe[] newKeys)
         {
             for (int i = 0; i < newKeys.Length - 1; i++)
             {
@@ -27,6 +27,59 @@ namespace Manifold.EditorTools
 
                 newKeys[curr].outTangent /= deltaTime;
                 newKeys[next].inTangent /= deltaTime;
+            }
+            return newKeys;
+        }
+
+        public static Keyframe[] RecomputeKeyTangents(Keyframe[] oldKeys, Keyframe[] newKeys)
+        {
+            // one such error is that key tangents appear to be different, means borken tangents.
+            // Also, downward-slope tangents seem to be wrecked due to inversion?
+
+            for (int i = 0; i < newKeys.Length - 1; i++)
+            {
+                int curr = i;
+                int next = i + 1;
+
+                // Get TAN for old keys, get ratio between angle and TAN value
+                var oldDeltaX = Mathf.Abs(oldKeys[next].time - oldKeys[curr].time);
+                var oldDeltaY = Mathf.Abs(oldKeys[next].value - oldKeys[curr].value);
+                var oldTangent = Mathf.Tan(oldDeltaY / oldDeltaX);
+                var oldTangent2 = Mathf.Tan(oldDeltaX / oldDeltaY);
+                var oldArcTangent = Mathf.Atan(oldDeltaY / oldDeltaX);
+                var oldArcTangent2 = Mathf.Atan(oldDeltaX / oldDeltaY);
+
+                var oldTanDeg = oldTangent * Mathf.Rad2Deg;
+                var oldTan2Deg = oldTangent2 * Mathf.Rad2Deg;
+                var oldAtanDeg = oldArcTangent * Mathf.Rad2Deg;
+                var oldAtan2Deg = oldArcTangent2 * Mathf.Rad2Deg;
+                var oldTanOutDeg = oldKeys[curr].outTangent * Mathf.Rad2Deg;
+                var oldTanInDeg = oldKeys[next].inTangent * Mathf.Rad2Deg;
+
+
+                var newDeltaX = (newKeys[next].time - newKeys[curr].time);
+                var newDeltaY = (newKeys[next].value - newKeys[curr].value);
+
+                {
+                    float atanOld = Mathf.Atan(oldDeltaY / oldDeltaX);
+                    float atanOldOut = Mathf.Atan(oldKeys[curr].outTangent);
+                    float atanOldIn = Mathf.Atan(oldKeys[next].inTangent);
+
+                    float deltaOut = atanOldOut - atanOld;
+                    float deltaIn = atanOldIn - atanOld;
+
+                    float atanNew = Mathf.Atan(newDeltaY / newDeltaX);
+                    float atanNewOut = atanNew + deltaOut;
+                    float atanNewIn = atanNew + deltaIn;
+
+                    newKeys[curr].outTangent = Mathf.Tan(atanNewOut);
+                    newKeys[next].inTangent = Mathf.Tan(atanNewIn);
+                    newKeys[curr].outTangent = atanNewOut;
+                    newKeys[next].inTangent = atanNewIn;
+                }
+
+
+
             }
             return newKeys;
         }
@@ -63,20 +116,13 @@ namespace Manifold.EditorTools
         public static Keyframe[] GetRenormalizedKeyRangeAndTangents(Keyframe[] keys, float newMinTime, float newMaxTime)
         {
             var newKeys = GetRenormalizedKeyRange(keys, newMinTime, newMaxTime);
-            for (int i = 0; i < newKeys.Length - 1; i++)
-            {
-                int curr = i;
-                int next = curr + 1;
-
-                var oldDeltaTime = GetDeltaTime(keys[curr], keys[next]);
-                var newDeltaTime = GetDeltaTime(newKeys[curr], newKeys[next]);
-                var deltaTime = newDeltaTime / oldDeltaTime;
-
-                newKeys[curr].outTangent /= deltaTime;
-                newKeys[next].inTangent /= deltaTime;
-            }
+            newKeys = ScaleKeyTangents(keys, newKeys);
+            // TODO: use this, but first, fix
+            //newKeys = RecomputeKeyTangents(keys, newKeys);
             return newKeys;
         }
+
+
 
         private static float GetDeltaTime(Keyframe a, Keyframe b)
         {
@@ -135,5 +181,57 @@ namespace Manifold.EditorTools
 
             return offsetKeys;
         }
+
+        public static Keyframe[] SetKeyTangents(Keyframe[] keys, float inOutTangent)
+        {
+            var offsetKeys = new Keyframe[keys.Length];
+            for (int i = 0; i < keys.Length; i++)
+            {
+                offsetKeys[i] = keys[i];
+                offsetKeys[i].inTangent = inOutTangent;
+                offsetKeys[i].outTangent = inOutTangent;
+            }
+
+            return offsetKeys;
+        }
+
+        //public static Keyframe[] SubdivideCurve(AnimationCurve animationCurve, int subdivisions)
+        //{
+        //    var keys = new List<Keyframe>();
+        //    for (int i = 0; i < animationCurve.length - 1; i++)
+        //    {
+        //        var key0 = animationCurve.keys[i + 0];
+        //        var key1 = animationCurve.keys[i + 1];
+
+        //        bool isDifferent =
+        //            key0.value != key1.value ||
+        //            key0.inTangent != key1.inTangent ||
+        //            key0.outTangent != key1.outTangent;
+
+        //        if (!isDifferent)
+        //            continue;
+
+        //        float startTime = key0.time;
+        //        float endTime = key1.time;
+        //        for (int subd = 0; subd < subdivisions; subd++)
+        //        {
+        //            float time = (float)subd / subdivisions;
+        //            float keyTime = Mathf.Lerp(startTime, endTime, time);
+        //            var value = animationCurve.Evaluate(keyTime);
+        //            var key = new Keyframe(keyTime, value);
+        //            keys.Add(key);
+        //        }
+        //    }
+
+        //    var tempCurve = new AnimationCurve(animationCurve.keys);
+        //    foreach (var key in keys)
+        //    {
+        //        int index = tempCurve.AddKey(key);
+        //        if (index > 0)
+        //            tempCurve.SmoothTangents(index, 1f / 3f);
+        //    }
+
+        //    return tempCurve.keys;
+        //}
     }
 }
