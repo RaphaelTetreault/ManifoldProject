@@ -12,7 +12,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
     internal class GfzSpiralPathSimpleEditor : Editor
     {
         SerializedProperty axes;
-        SerializedProperty rollsCurve;
+        SerializedProperty rotationZ;
         SerializedProperty scaleX;
         SerializedProperty scaleY;
         SerializedProperty radius0;
@@ -27,7 +27,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         void OnEnable()
         {
             axes = serializedObject.FindProperty(nameof(axes));
-            rollsCurve = serializedObject.FindProperty(nameof(rollsCurve));
+            rotationZ = serializedObject.FindProperty(nameof(rotationZ));
             scaleX = serializedObject.FindProperty(nameof(scaleX));
             scaleY = serializedObject.FindProperty(nameof(scaleY));
             radius0 = serializedObject.FindProperty(nameof(radius0));
@@ -82,12 +82,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     EditorGUILayout.PropertyField(rotateDegrees);
                     EditorGUILayout.PropertyField(radius0);
                     EditorGUILayout.PropertyField(radius1);
+                    EditorGUILayout.PropertyField(axisOffset);
                     EditorGUI.indentLevel--;
                 }
                 GuiSimple.Label("Rotation", EditorStyles.boldLabel);
                 {
                     EditorGUI.indentLevel++;
-                    EditorGUILayout.PropertyField(rollsCurve);
+                    EditorGUILayout.PropertyField(rotationZ);
                     EditorGUI.indentLevel--;
                 }
                 GuiSimple.Label("Scale", EditorStyles.boldLabel);
@@ -109,7 +110,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             EditorGUILayout.PropertyField(autoGenerateTRS);
 
             if (GUILayout.Button("Generate All Components"))
+            {
                 spiralPath.UpdateTRS();
+                spiralPath.UpdateShapeMeshes();
+            }
 
             EditorGUILayout.PropertyField(animationCurveTRS);
         }

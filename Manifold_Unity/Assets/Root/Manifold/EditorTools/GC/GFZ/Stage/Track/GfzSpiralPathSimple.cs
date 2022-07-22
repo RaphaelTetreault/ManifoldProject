@@ -8,7 +8,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         IPositionEvaluable
     {
         [SerializeField] private SpiralAxes axes = SpiralAxes.XZRight;
-        [SerializeField] private AnimationCurve rollsCurve = new(new(0, 0), new(1, 0));
+        [SerializeField] private AnimationCurve rotationZ = new(new(0, 0), new(1, 0));
         [SerializeField] private AnimationCurve scaleX = new(new(0, 60), new(1, 60));
         [SerializeField] private AnimationCurve scaleY = new(new(0, 1), new(1, 1));
         [SerializeField, Min(0)] private float radius0 = 200;
@@ -56,7 +56,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         public Vector3 ComponentsToXYUp(float cos, float sin, float offset) => new Vector3(offset, -cos, sin);
         public Vector3 ComponentsToXYDown(float cos, float sin, float offset) => new Vector3(offset, +cos, sin);
 
-
+        // ideally this value would scale with the length of the curve.
+        private const float minDelta = 0.5f;
+        private const float percentSmooth = 0.05f;
         public Func<float, float, (Keyframe[], Keyframe[])> ComponentsToRotationKeys(SpiralAxes axes)
         {
             switch (axes)
@@ -69,37 +71,54 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     throw new ArgumentException($"Invalid {nameof(SpiralAxes)} value.");
             }
         }
+        public Keyframe[] GetSlopes(float rotation, float angleSlope, float maxTime)
+        {
+            float smoothTime = percentSmooth * maxTime;
+            var keys = new Keyframe[]
+            {
+                new(0, rotation),
+                new(maxTime - smoothTime, rotation + angleSlope),
+                new(smoothTime, rotation + angleSlope),
+                new(maxTime, rotation),
+            };
+            return keys;
+        }
+        public Keyframe[] GetDegrees(float rotation, float rotateDegrees, float maxTime)
+        {
+            var keys = new Keyframe[]
+            {
+                new(0, rotation),
+                new(maxTime, rotation + rotateDegrees),
+            };
+            return keys;
+        }
         public (Keyframe[] rx, Keyframe[] ry) ComponentsToRotationXZRight(float angleSlope, float maxTime)
         {
-            // Subtract slope, add degrees
             Vector3 rotation = GetRotation().eulerAngles;
-            var rx = new Keyframe[] { new(0, rotation.x), new(0.001f, rotation.x - angleSlope), new(maxTime, rotation.x - angleSlope), };
-            var ry = new Keyframe[] { new(0, rotation.y), new(maxTime, rotation.y + rotateDegrees), };
+            var rx = GetSlopes(rotation.x, -angleSlope, maxTime);
+            var ry = GetDegrees(rotation.y, +rotateDegrees, maxTime);
             return (rx, ry);
         }
         public (Keyframe[] rx, Keyframe[] ry) ComponentsToRotationXZLeft(float angleSlope, float maxTime)
         {
-            // Add slope, subtract degrees
             Vector3 rotation = GetRotation().eulerAngles;
-            var rx = new Keyframe[] { new(0, rotation.x), new(0.001f, rotation.x + angleSlope), new(maxTime, rotation.x + angleSlope), };
-            var ry = new Keyframe[] { new(0, rotation.y), new(maxTime, rotation.y - rotateDegrees), };
+            var rx = GetSlopes(rotation.x, +angleSlope, maxTime);
+            var ry = GetDegrees(rotation.y, -rotateDegrees, maxTime);
             return (rx, ry);
         }
 
         public (Keyframe[] rx, Keyframe[] ry) ComponentsToRotationYZUp(float angleSlope, float maxTime)
         {
-            //
             Vector3 rotation = GetRotation().eulerAngles;
-            var rx = new Keyframe[] { new(0, rotation.x), new(maxTime, rotation.x - rotateDegrees), };
-            var ry = new Keyframe[] { new(0, rotation.y), new(0.001f, rotation.y - angleSlope), new(maxTime, rotation.y - angleSlope), };
+            var rx = GetDegrees(rotation.x, -rotateDegrees, maxTime);
+            var ry = GetSlopes(rotation.y, -angleSlope, maxTime);
             return (rx, ry);
         }
         public (Keyframe[] rx, Keyframe[] ry) ComponentsToRotationYZDown(float angleSlope, float maxTime)
         {
-            //
             Vector3 rotation = GetRotation().eulerAngles;
-            var rx = new Keyframe[] { new(0, rotation.x), new(maxTime, rotation.x + rotateDegrees), };
-            var ry = new Keyframe[] { new(0, rotation.y), new(0.001f, rotation.y + angleSlope), new(maxTime, rotation.y + angleSlope), };
+            var rx = GetDegrees(rotation.x, +rotateDegrees, maxTime);
+            var ry = GetSlopes(rotation.y, +angleSlope, maxTime);
             return (rx, ry);
         }
 
@@ -126,7 +145,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
             var componentToSpiralFunction = ComponentsToSpiral(axes);
             var componentsToRotationKeys = ComponentsToRotationKeys(axes);
-            var maxTimeRolls = rollsCurve.GetMaxTime();
+            var maxTimeRolls = rotationZ.GetMaxTime();
 
             Quaternion orientation = GetRotation();
             Vector3 prevEulers = Vector3.zero;
@@ -174,7 +193,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
             // ROTATION
             (var keysRX, var keysRY) = componentsToRotationKeys(angleSlope, length);
-            var keysRZ = rollsCurve.GetRenormalizedKeyRangeAndTangents(0, length);
+            var keysRZ = rotationZ.GetRenormalizedKeyRangeAndTangents(0, length);
 
             // Create TRS
             var trs = new AnimationCurveTRS(
@@ -182,16 +201,23 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     new AnimationCurve3(keysRX, keysRY, keysRZ),
                     CreateScaleCurvesXYZ(length));
 
-            // make linear curves linear
             if (isXZ)
             {
+                // make Y curves linear
                 trs.Position.y.SmoothTangents();
                 trs.Rotation.y.SmoothTangents();
+                // Smooth first and last tangents, makes angle change much less noticible
+                trs.Rotation.x.SmoothTangents(0, 1 / 3f);
+                trs.Rotation.x.SmoothTangents(trs.Rotation.y.length - 1, 1 / 3f);
             }
             else if (isYZ)
             {
+                // make X curves linear
                 trs.Position.x.SmoothTangents();
                 trs.Rotation.x.SmoothTangents();
+                // Smooth first and last tangents, makes angle change much less noticible
+                trs.Rotation.y.SmoothTangents(0, 1 / 3f);
+                trs.Rotation.y.SmoothTangents(trs.Rotation.y.length-1, 1 / 3f);
             }
 
             animationCurveTRS = trs;
