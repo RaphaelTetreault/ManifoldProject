@@ -203,14 +203,18 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     new AnimationCurve3(keysRX, keysRY, keysRZ),
                     CreateScaleCurvesXYZ(length));
 
+            const float weight = 1 / 3f;
+
             if (isXZ)
             {
                 // make Y curves linear
                 trs.Position.y.SmoothTangents();
                 trs.Rotation.y.SmoothTangents();
                 // Smooth first and last tangents, makes angle change much less noticible
-                trs.Rotation.x.SmoothTangents(0, 1 / 3f);
-                trs.Rotation.x.SmoothTangents(trs.Rotation.y.length - 1, 1 / 3f);
+                trs.Rotation.x.SmoothTangents(0, weight);
+                trs.Rotation.x.SmoothTangents(trs.Rotation.y.length - 1, weight);
+                // Fix first key tangents
+                trs.Position.x.SmoothTangents(0, weight);
             }
             else if (isYZ)
             {
@@ -218,8 +222,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 trs.Position.x.SmoothTangents();
                 trs.Rotation.x.SmoothTangents();
                 // Smooth first and last tangents, makes angle change much less noticible
-                trs.Rotation.y.SmoothTangents(0, 1 / 3f);
-                trs.Rotation.y.SmoothTangents(trs.Rotation.y.length-1, 1 / 3f);
+                trs.Rotation.y.SmoothTangents(0, weight);
+                trs.Rotation.y.SmoothTangents(trs.Rotation.y.length-1, weight);
+                // Fix first key tangents
+                trs.Position.y.SmoothTangents(0, weight);
             }
 
             animationCurveTRS = trs;
