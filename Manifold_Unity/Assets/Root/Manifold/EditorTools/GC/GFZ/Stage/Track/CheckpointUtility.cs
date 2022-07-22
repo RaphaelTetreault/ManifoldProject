@@ -132,7 +132,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             var startPosition = startMatrix.Position();
             var endPosition = endMatrix.Position();
 
-            bool isContinuousBetween = math.distance(endPosition, startPosition) < 0.01f; // 1cm
+            float distance = math.distance(endPosition, startPosition);
+            bool isContinuousBetween = distance < 0.1f; // 10cm
             return isContinuousBetween;
         }
 

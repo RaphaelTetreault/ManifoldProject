@@ -67,6 +67,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             GUI.enabled = false;
             EditorGUILayout.ObjectField(nameof(spiralPath.Prev), spiralPath.Prev, typeof(GfzTrackSegmentRootNode), false);
             EditorGUILayout.ObjectField(nameof(spiralPath.Next), spiralPath.Next, typeof(GfzTrackSegmentRootNode), false);
+            EditorGUILayout.Vector3Field(nameof(spiralPath.StartPosition), spiralPath.StartPosition);
+            EditorGUILayout.Vector3Field(nameof(spiralPath.EndPosition), spiralPath.EndPosition);
             GUI.enabled = true;
         }
 

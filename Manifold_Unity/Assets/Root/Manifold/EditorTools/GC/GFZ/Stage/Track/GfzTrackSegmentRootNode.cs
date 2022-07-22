@@ -8,6 +8,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
     {
         [field: SerializeField] public GfzTrackSegmentRootNode Prev { get; set; }
         [field: SerializeField] public GfzTrackSegmentRootNode Next { get; set; }
+        [field: SerializeField] public Vector3 StartPosition { get; set; }
+        [field: SerializeField] public Vector3 EndPosition { get; set; }
 
         // for editors
         [SerializeField] private bool autoGenerateTRS = true;
@@ -89,6 +91,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         private void Reset()
         {
             UpdateTRS();
+            UpateStartEndPoints();
         }
 
         private void OnValidate()
@@ -97,6 +100,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             {
                 UpdateTRS();
                 UpdateShapeMeshes();
+                UpateStartEndPoints();
             }
         }
 
@@ -106,9 +110,16 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             {
                 UpdateTRS();
                 UpdateShapeMeshes();
+                UpateStartEndPoints();
             }
         }
 
+        public void UpateStartEndPoints()
+        {
+            var trs = TrackSegmentAnimationCurveTRS;
+            StartPosition = trs.Position.Evaluate(0);
+            EndPosition = trs.Position.Evaluate(trs.Position.GetMaxTime());
+        }
 
     }
 }
