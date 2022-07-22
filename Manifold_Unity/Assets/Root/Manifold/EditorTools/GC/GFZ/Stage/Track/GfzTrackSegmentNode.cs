@@ -218,7 +218,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         }
 
 
-        public virtual void UpdateTRS() { }
+        public abstract void UpdateTRS();
+
         public virtual void InvokeUpdates()
         {
             UpdateTRS();

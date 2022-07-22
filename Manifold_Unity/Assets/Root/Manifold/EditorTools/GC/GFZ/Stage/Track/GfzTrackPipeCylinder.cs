@@ -43,5 +43,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             throw new System.NotImplementedException();
         }
 
+        public override void UpdateTRS()
+        {
+            throw new System.NotImplementedException();
+        }
+
     }
 }

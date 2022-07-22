@@ -70,7 +70,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return trackSegment;
         }
 
-
+        public override void UpdateTRS()
+        {
+            throw new System.NotImplementedException();
+        }
 
     }
 }
