@@ -9,9 +9,8 @@ using UnityEngine;
 namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
     [CustomEditor(typeof(GfzSpiralPath))]
-    internal class GfzSpiralPathEditor : Editor
+    internal class GfzSpiralPathEditor : GfzRootNodeEditor
     {
-        SerializedProperty value;
         SerializedProperty animationCurveTRS;
         SerializedProperty autoGenerateTRS;
 
@@ -27,7 +26,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
             serializedObject.Update();
             {
-                DrawUnityEditorDefaults(spiralPath);
+                DrawDefaults(spiralPath);
                 EditorGUILayout.Separator();
                 DrawTrsGeneration(spiralPath);
             }
@@ -40,16 +39,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             // Uncomment if you need to debug something
             base.OnInspectorGUI();
         }
-
-        private void DrawUnityEditorDefaults(GfzSpiralPath spiralPath)
-        {
-            GuiSimple.DefaultScript("Script", spiralPath);
-            GUI.enabled = false;
-            EditorGUILayout.ObjectField(nameof(spiralPath.Prev), spiralPath.Prev, typeof(GfzTrackSegmentRootNode), false);
-            EditorGUILayout.ObjectField(nameof(spiralPath.Next), spiralPath.Next, typeof(GfzTrackSegmentRootNode), false);
-            GUI.enabled = true;
-        }
-
 
         public void DrawTrsGeneration(GfzSpiralPath spiralPath)
         {

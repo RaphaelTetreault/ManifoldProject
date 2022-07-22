@@ -7,7 +7,7 @@ using Manifold.Spline;
 namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
     [CustomEditor(typeof(GfzBezierSplineSegment))]
-    public class GfzBezierSplineSegmentEditor : Editor
+    internal class GfzBezierSplineSegmentEditor : GfzRootNodeEditor
     {
         private static readonly Color splineColor = Color.white;
         private static readonly Color[] modeColors = {
@@ -123,8 +123,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             // Some properties are modified via PropertyField. Set up for those values.
             serializedObject.Update();
 
-            // Default Script field for MonoBehaviour components
-            GuiSimple.DefaultScript(spline);
+            //
+            DrawDefaults(spline);
 
             // METADATA
             GuiSimple.Label("Track-Assigned Data", EditorStyles.boldLabel);

@@ -10,7 +10,7 @@ using UnityEngine.UIElements;
 namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
     [CustomEditor(typeof(GfzLinePath))]
-    internal class GfzLinePathEditor : Editor
+    internal class GfzLinePathEditor : GfzRootNodeEditor
     {
         // position
         SerializedProperty endPositionX;
@@ -51,7 +51,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
             serializedObject.Update();
             {
-                DrawUnityEditorDefaults(linePath);
+                DrawDefaults(linePath);
                 EditorGUILayout.Separator();
                 DrawGizmosFields(linePath);
                 EditorGUILayout.Separator();
@@ -63,15 +63,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
             // Uncomment if you need to debug something
             //base.OnInspectorGUI();
-        }
-
-        private void DrawUnityEditorDefaults(GfzLinePath linePath)
-        {
-            GuiSimple.DefaultScript("Script", linePath);
-            GUI.enabled = false;
-            EditorGUILayout.ObjectField(nameof(linePath.Prev), linePath.Prev, typeof(GfzTrackSegmentRootNode), false);
-            EditorGUILayout.ObjectField(nameof(linePath.Next), linePath.Next, typeof(GfzTrackSegmentRootNode), false);
-            GUI.enabled = true;
         }
 
         private void DrawGizmosFields(GfzLinePath linePath)

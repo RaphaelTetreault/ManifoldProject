@@ -9,8 +9,10 @@ using UnityEngine;
 namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
     [CustomEditor(typeof(GfzSpiralPathSimple))]
-    internal class GfzSpiralPathSimpleEditor : Editor
+    internal class GfzSpiralPathSimpleEditor : GfzRootNodeEditor
     {
+        [SerializeField] private static bool nodeInfoFoldout = false;
+
         SerializedProperty axes;
         SerializedProperty rotationZ;
         SerializedProperty scaleX;
@@ -22,7 +24,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         SerializedProperty keysPer360Degrees;
         SerializedProperty animationCurveTRS;
         SerializedProperty autoGenerateTRS;
-
 
         void OnEnable()
         {
@@ -45,7 +46,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
             serializedObject.Update();
             {
-                DrawUnityEditorDefaults(spiralPath);
+                DrawDefaults(spiralPath);
                 EditorGUILayout.Separator();
                 DrawSourceFields(spiralPath);
                 EditorGUILayout.Separator();
@@ -59,17 +60,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
             // Uncomment if you need to debug something
             //base.OnInspectorGUI();
-        }
-
-        private void DrawUnityEditorDefaults(GfzSpiralPathSimple spiralPath)
-        {
-            GuiSimple.DefaultScript("Script", spiralPath);
-            GUI.enabled = false;
-            EditorGUILayout.ObjectField(nameof(spiralPath.Prev), spiralPath.Prev, typeof(GfzTrackSegmentRootNode), false);
-            EditorGUILayout.ObjectField(nameof(spiralPath.Next), spiralPath.Next, typeof(GfzTrackSegmentRootNode), false);
-            EditorGUILayout.Vector3Field(nameof(spiralPath.StartPosition), spiralPath.StartPosition);
-            EditorGUILayout.Vector3Field(nameof(spiralPath.EndPosition), spiralPath.EndPosition);
-            GUI.enabled = true;
         }
 
         public void DrawSourceFields(GfzSpiralPathSimple spiralPath)
