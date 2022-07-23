@@ -100,7 +100,7 @@ namespace Manifold.EditorTools
             {
                 var key = keys[i];
                 var keyTimeNormalized = (key.time - currMinTime) / currTimeRange;
-                var newKeyTime = keyTimeNormalized * newTimeRange;
+                var newKeyTime = keyTimeNormalized * newTimeRange + newMinTime;
 
                 // In case timeRange is 0, resulting in div0
                 if (float.IsNaN(newKeyTime))

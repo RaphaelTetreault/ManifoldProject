@@ -416,17 +416,17 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             if (EditorGUI.EndChangeCheck())
             {
                 var outTangent = root.TransformPoint(bezier.outTangent);
-                EditInTangent(index, outTangent);
+                EditOutTangent(index, outTangent);
             }
 
             // LENGTH
             EditorGUI.BeginChangeCheck();
-            var outTangentLength = GuiSimple.Float(nameof(bezier.outTangent) + "Length", bezier.InTangentLocal.magnitude);
+            var outTangentLength = GuiSimple.Float(nameof(bezier.outTangent) + "Length", bezier.OutTangentLocal.magnitude);
             if (EditorGUI.EndChangeCheck())
             {
-                var outTangentLocal = bezier.InTangentLocal.normalized * outTangentLength;
+                var outTangentLocal = bezier.OutTangentLocal.normalized * outTangentLength;
                 var outTangent = root.TransformPoint(bezier.position + outTangentLocal);
-                EditInTangent(index, outTangent);
+                EditOutTangent(index, outTangent);
             }
 
             DrawWeights(index + 0);

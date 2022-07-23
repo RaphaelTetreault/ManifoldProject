@@ -83,7 +83,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 if (checkpointGenerators.Length != 1)
                 {
                     var msg =
-                        $"Track segment hierachy does not have exactly 1 {nameof(GfzCheckpointGenerator)} in it " +
+                        $"{rootTrackSegmentNode.name} does not have exactly 1 {nameof(GfzCheckpointGenerator)} in it " +
                         $"(it has {checkpointGenerators.Length}). Make sure it has exactly 1!";
                     throw new ArgumentException(msg);
                 }
