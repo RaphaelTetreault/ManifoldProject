@@ -12,7 +12,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
     public class GfzTrackSurfaceEmbed : GfzTrackSegmentShapeNode
     {
         [SerializeField] private SurfaceEmbedType type = SurfaceEmbedType.Recover;
-        [SerializeField, Min(1)] private int widthDivisions = 2;
+        [SerializeField, Min(1)] private int widthDivisions = 1;
         [SerializeField, Min(1f)] private float lengthDistance = 10f;
         [SerializeField, Range(0f, 1f)] private float from = 0f;
         [SerializeField, Range(0f, 1f)] private float to = 1f;
@@ -40,7 +40,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             switch (type)
             {
                 case SurfaceEmbedType.Recover: return new Color32(240, 25, 55, 255); // hot-pink (sampled from GFZ)
-                case SurfaceEmbedType.Damage: return new Color32(255, 0, 0, 255); // red
+                case SurfaceEmbedType.Damage: return new Color32(255, 95, 0, 255); // orange
                 case SurfaceEmbedType.Slip: return new Color32(109, 170, 210, 255); // blue (approximate, sampled from GFZ)
                 case SurfaceEmbedType.Dirt: return new Color32(52, 28, 8, 255); // brown (sampled from GFZ)
                 default:
