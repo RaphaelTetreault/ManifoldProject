@@ -7,30 +7,33 @@ using UnityEngine;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
-    public enum SurfaceEmbedType : byte
-    {
-        Recover,
-        Damage,
-        Slip,
-        Dirt,
-    }
 
 
     public class GfzTrackSurfaceEmbed : GfzTrackSegmentShapeNode
     {
-        [field: SerializeField, Min(1)] public int WidthDivisions { get; private set; } = 2;
-        [field: SerializeField, Min(1f)] public float LengthDistance { get; private set; } = 10f;
+        [SerializeField] private SurfaceEmbedType type = SurfaceEmbedType.Recover;
+        [SerializeField, Min(1)] private int widthDivisions = 2;
+        [SerializeField, Min(1f)] private float lengthDistance = 10f;
+        [SerializeField, Range(0f, 1f)] private float from = 0f;
+        [SerializeField, Range(0f, 1f)] private float to = 1f;
+        [SerializeField] private UnityEngine.AnimationCurve widthCurve = new UnityEngine.AnimationCurve(new(0, 0.5f), new(1, 0.5f));
+        [SerializeField] private UnityEngine.AnimationCurve offsetCurve = new UnityEngine.AnimationCurve(new(0, 0), new(1, 0));
+        [SerializeField] private AnimationCurveTRS animationCurveTRS = new();
 
-        [field: Header("Properties")]
-        [field: SerializeField] public SurfaceEmbedType Type { get; private set; } = SurfaceEmbedType.Recover;
-        [field: SerializeField, Range(0f, 1f)] public float From { get; private set; } = 0f;
-        [field: SerializeField, Range(0f, 1f)] public float To { get; private set; } = 1f;
-        [field: SerializeField] public UnityEngine.AnimationCurve Width { get; private set; } = new UnityEngine.AnimationCurve(new(0, 0.5f), new(1, 0.5f));
-        [field: SerializeField] public UnityEngine.AnimationCurve Offset { get; private set; } = new UnityEngine.AnimationCurve(new(0, 0), new(1, 0));
+        public enum SurfaceEmbedType : byte
+        {
+            Recover,
+            Damage,
+            Slip,
+            Dirt,
+        }
 
-        [field: Header("Debug")]
-        [field: SerializeField] public AnimationCurveTRS trs { get; private set; } = new();
-
+        public enum Jusification : byte
+        {
+            Center,
+            Left,
+            Right,
+        }
 
         public Color32 GetColor(SurfaceEmbedType type)
         {
@@ -67,10 +70,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             var maxTime = GetMaxTime();
             var trs = new AnimationCurveTRS();
 
-            var posx = new UnityEngine.AnimationCurve(Offset.keys);
-            var sclx = new UnityEngine.AnimationCurve(Width.keys);
-            var keysPX = posx.GetRenormalizedKeyRangeAndTangents(From * maxTime, To * maxTime);
-            var keysSX = sclx.GetRenormalizedKeyRangeAndTangents(From * maxTime, To * maxTime);
+            var posx = new UnityEngine.AnimationCurve(offsetCurve.keys);
+            var sclx = new UnityEngine.AnimationCurve(widthCurve.keys);
+            var keysPX = posx.GetRenormalizedKeyRangeAndTangents(from * maxTime, to * maxTime);
+            var keysSX = sclx.GetRenormalizedKeyRangeAndTangents(from * maxTime, to * maxTime);
 
             trs.Position.x = new UnityEngine.AnimationCurve(keysPX);
             trs.Scale.x = new UnityEngine.AnimationCurve(keysSX);
@@ -84,8 +87,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         public override Gcmf CreateGcmf()
         {
             // Make the vertex data
-            var color0 = GetColor(Type);
-            var trackMeshTristrips = TristripGenerator.CreateTempTrackRoadEmbed(this, WidthDivisions, LengthDistance, color0, true);
+            var color0 = GetColor(type);
+            var trackMeshTristrips = TristripGenerator.CreateTempTrackRoadEmbed(this, widthDivisions, lengthDistance, color0, true);
             // convert to GameCube format
             var dlists = TristripGenerator.TristripsToDisplayLists(trackMeshTristrips, GameCube.GFZ.GfzGX.VAT);
 
@@ -112,16 +115,16 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         {
             var hacTRS = CreateHierarchichalAnimationCurveTRS(false);
             var maxTime = hacTRS.GetRootMaxTime();
-            var min = From * maxTime;
-            var max = To * maxTime;
+            var min = from * maxTime;
+            var max = to * maxTime;
             Debug.Log($"MeshUnity -- Min: {min}, Max: {max}, MaxTime: {maxTime}");
-            var matrices = TristripGenerator.GenerateMatrixIntervals(hacTRS, LengthDistance, min, max);
+            var matrices = TristripGenerator.GenerateMatrixIntervals(hacTRS, lengthDistance, min, max);
 
             //
             var endpointA = new Vector3(-0.5f, 0.33f, 0f);
             var endpointB = new Vector3(+0.5f, 0.33f, 0f);
-            var color0 = GetColor(Type);
-            var tristrips = TristripGenerator.CreateTristrips(matrices, endpointA, endpointB, WidthDivisions, color0, Vector3.up, 0, true);
+            var color0 = GetColor(type);
+            var tristrips = TristripGenerator.CreateTristrips(matrices, endpointA, endpointB, widthDivisions, color0, Vector3.up, 0, true);
             var mesh = TristripsToMesh(tristrips);
             mesh.name = $"Auto Gen - {this.name}";
 
@@ -135,7 +138,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
             var trackSegment = new TrackSegment();
             trackSegment.SegmentType = TrackSegmentType.IsEmbed;
-            trackSegment.EmbeddedPropertyType = GetEmbedProperty(Type);
+            trackSegment.EmbeddedPropertyType = GetEmbedProperty(type);
             trackSegment.AnimationCurveTRS = trs.ToTrackSegment();
             trackSegment.BranchIndex = 0; // these kinds of embeds do not specify branch
             trackSegment.Children = children;
@@ -146,8 +149,38 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public override void UpdateTRS()
         {
-            trs = CreateAnimationCurveTRS(false);
+            animationCurveTRS = CreateAnimationCurveTRS(false);
         }
 
+        public void SetOffsets(Jusification jusification)
+        {
+            float scaler = JustificationToScalar(jusification);
+            // Anchor left/center/right
+            float anchor = 0.5f * scaler;
+            // Define how width is applied based on justification
+            float offset = -scaler;
+
+            var keys = widthCurve.keys;
+            for (int i = 0; i < keys.Length; i++)
+            {
+                var key = keys[i];
+                float halfWidth = key.value * 0.5f;
+                key.value = anchor + halfWidth * offset;
+                keys[i] = key;
+            }
+            offsetCurve = new UnityEngine.AnimationCurve(keys);
+            InvokeUpdates();
+        }
+
+        private float JustificationToScalar(Jusification jusification)
+        {
+            switch (jusification)
+            {
+                case Jusification.Center: return 0f;
+                case Jusification.Left: return -1f;
+                case Jusification.Right: return +1f;
+                default: throw new System.NotImplementedException();
+            }
+        }
     }
 }
