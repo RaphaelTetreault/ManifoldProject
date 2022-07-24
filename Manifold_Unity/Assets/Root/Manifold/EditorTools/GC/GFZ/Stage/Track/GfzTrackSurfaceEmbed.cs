@@ -166,6 +166,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 var key = keys[i];
                 float halfWidth = key.value * 0.5f;
                 key.value = anchor + halfWidth * offset;
+                key.inTangent *= offset;
+                key.outTangent *= offset;
                 keys[i] = key;
             }
             offsetCurve = new UnityEngine.AnimationCurve(keys);

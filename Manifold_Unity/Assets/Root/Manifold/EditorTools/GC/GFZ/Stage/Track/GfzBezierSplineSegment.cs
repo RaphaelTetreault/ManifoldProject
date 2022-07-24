@@ -473,6 +473,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 totalDistance += distance;
             }
 
+            //
+            Vector3 basePosition = GetPosition();
+
             var previousRotation = GetOrientation(0, 0).eulerAngles;
             double currDistance = 0;
             for (int i = 0; i < numCurves; i++)
@@ -482,7 +485,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 for (int s = 0; s < samplesBetweenControlsPoints; s++)
                 {
                     var t = (float)(s + 0) / samplesBetweenControlsPoints;
-                    var position = GetPosition(t, i);
+                    var position = GetPosition(t, i) + basePosition;
                     var rotation = GetOrientation(t, i).eulerAngles;
                     rotation = CurveUtility.CleanRotation(previousRotation, rotation);
                     previousRotation = rotation;
