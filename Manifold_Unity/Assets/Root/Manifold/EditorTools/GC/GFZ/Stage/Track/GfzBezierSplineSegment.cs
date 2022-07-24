@@ -458,7 +458,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             // Entire curve approximate length to within 100m
             const int nStartIterDistance = 50;
             double entireCurveApproximateLength = CurveUtility.GetDistanceBetweenRepeated(this, 0, 1, nStartIterDistance, 2, 1);
-            int nApproximationIterations = (int)(entireCurveApproximateLength / 200);
+            int nApproximationIterations = Mathf.CeilToInt((float)(entireCurveApproximateLength / 200));
 
             // Compute curve lengths between each bezier control point
             int numCurves = points.Count - 1;
