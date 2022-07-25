@@ -10,7 +10,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
     public abstract class GfzTrackSegmentShapeNode : GfzTrackSegmentNode
     {
-        [field: SerializeField] public MeshDisplay MeshDisplay { get; protected set; }
+        [field: SerializeField, ReadOnlyGUI] public MeshDisplay MeshDisplay { get; protected set; }
 
         public abstract Mesh CreateMesh();
         public abstract Gcmf CreateGcmf();
@@ -100,6 +100,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
                 var meshDisplay = meshDisplayGobj.AddComponent<MeshDisplay>();
                 MeshDisplay = meshDisplay;
+
+                // Hide this object in inspector
+                meshDisplay.HideGameObjectInEditor = true;
             }
         }
 

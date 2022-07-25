@@ -14,7 +14,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         [SerializeField, Min(0)] private float radius0 = 200;
         [SerializeField, Min(0)] private float radius1 = 200;
         [SerializeField] private float axisOffset = 0;
-        [SerializeField, Min(1)] private float rotateDegrees = 90f;
+        [SerializeField, Range(1f, 1080f)] private float rotateDegrees = 90f;
         [SerializeField, Min(8)] private int keysPer360Degrees = 36;
         [SerializeField] private AnimationCurveTRS animationCurveTRS = new();
 
