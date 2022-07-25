@@ -36,24 +36,15 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             // Get scene parameters for general info
             var sceneParams = GetGfzSceneParameters();
 
-            // This object contains the original scene deserialized. Use it in the meantime to get
-            // data for which I can't/don't want to construct.
-            //var gfzLegacyData = GameObject.FindObjectOfType<GfzLegacyData>();
-            //var oldScene = gfzLegacyData.Scene;
-
-            // 
-            //var internalName = sceneParams.GetGfzInternalName();
-            //var displayName = sceneParams.GetGfzDisplayName();
-
             // Before we do the work of exporting, see if the stage we are exporting (index/venue) align correctly.
             // If we export as Lightning but the index is, say, 1, index 1 belongs to Mute City. Warn of potential issues.
             bool isValidIndexForVenue = CourseUtility.GetVenue(sceneParams.courseIndex) == sceneParams.venue;
             if (!isValidIndexForVenue)
             {
+                var title = "Export Scene: Venue/Index Mismatch";
                 var msg =
                     $"The assigned venue '{sceneParams.venue}' and the stage index being used '{sceneParams.courseIndex}' " +
                     $"do not share the same venue. When loaded in-game, models will not load.";
-                var title = "Export Scene: Venue/Index Mismatch";
 
                 bool doExport = EditorUtility.DisplayDialog(title, msg, "Export Anyway");
                 if (!doExport)
@@ -64,30 +55,26 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
             // TODO: this should be in ColiScene
             GameCube.AmusementVision.GxGame compressFormat;
-            switch (format)
             {
-                case SerializeFormat.AX:
-                    compressFormat = GameCube.AmusementVision.GxGame.FZeroAX;
-                    break;
+                switch (format)
+                {
+                    case SerializeFormat.AX:
+                        compressFormat = GameCube.AmusementVision.GxGame.FZeroAX;
+                        break;
 
-                case SerializeFormat.GX:
-                    compressFormat = GameCube.AmusementVision.GxGame.FZeroGX;
-                    break;
+                    case SerializeFormat.GX:
+                        compressFormat = GameCube.AmusementVision.GxGame.FZeroGX;
+                        break;
 
-                default:
-                    throw new ArgumentException($"Invalid format '{format}' specified for serialization.");
+                    default:
+                        throw new ArgumentException($"Invalid format '{format}' specified for serialization.");
+                }
             }
 
             // If objects have been mirrored, mirror again before export
             var mirroredObjects = GameObject.FindObjectsOfType<GfzMirroredObject>();
             foreach (var mirroredObject in mirroredObjects)
                 mirroredObject.MirrorTransform();
-
-            //// TEST
-            //// Load the old stage to use it's data I don't know how to generate yet
-            ////var oldScene = ColiCourseIO.LoadScene(settings.StageDir + scene.FileName);
-
-            // TEST
 
             // Build a new scene!
             var scene = new Scene()
@@ -103,7 +90,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 Venue = sceneParams.venue,
                 CourseName = sceneParams.courseName,
             };
-
 
             // Get scene-wide parameters from SceneParameters
             {
@@ -182,9 +168,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             // Static Collider Meshes
             {
                 // TODO: generate from GFZ scene data
-
-                //var unknownColliders = GameObject.FindObjectsOfType<GfzUnknownCollider>(findInactive);
-                //scene.unknownColliders = GetGfzValues(unknownColliders
                 scene.unknownColliders = new UnknownCollider[0];
 
                 // Static Collider Matrix
@@ -192,8 +175,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 // Bind to other references
                 scene.staticColliderMeshManager.UnknownColliders = scene.unknownColliders;
                 scene.staticColliderMeshManager.StaticSceneObjects = scene.staticSceneObjects;
-                //scene.staticColliderMeshes.ComputeMatrixBoundsXZ();
-                scene.staticColliderMeshManager.MeshGridXZ = new GridXZ();
 
                 // Get data from scene
                 //scene.staticColliderMeshes = oldScene.staticColliderMeshes;
@@ -201,6 +182,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 // Point to existing references
                 scene.staticColliderMeshManager.UnknownColliders = scene.unknownColliders;
                 scene.staticColliderMeshManager.StaticSceneObjects = scene.staticSceneObjects is null ? new SceneObjectStatic[0] : scene.staticSceneObjects;
+
+                // Build tri/quads for static collider mesh
+                //scene.staticColliderMeshManager.ColliderTris = ;
+                scene.staticColliderMeshManager.ComputeMeshGridXZ();
             }
 
             // TRACK
@@ -222,6 +207,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 scene.trackMinHeight = track.TrackMinHeight;
 
                 // AI data
+                // 2022/01/25: currently save out only the terminating element.
                 // 2022/01/25: currently save out only the terminating element.
                 scene.embeddedPropertyAreas = track.EmbeddedPropertyAreas;
 
@@ -348,20 +334,20 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         public static SceneObject CreateSceneObject(string modelName)
         {
-                // Only 1 LOD for now
-                var lod = new SceneObjectLOD()
-                {
-                    Name = modelName,
-                    LodDistance = 0f,
-                };
+            // Only 1 LOD for now
+            var lod = new SceneObjectLOD()
+            {
+                Name = modelName,
+                LodDistance = 0f,
+            };
 
-                // Wrap it up
-                var sceneObject = new SceneObject()
-                {
-                    LodRenderFlags = 0,
-                    LODs = new SceneObjectLOD[] { lod },
-                    ColliderMesh = null,
-                };
+            // Wrap it up
+            var sceneObject = new SceneObject()
+            {
+                LodRenderFlags = 0,
+                LODs = new SceneObjectLOD[] { lod },
+                ColliderMesh = null,
+            };
 
             return sceneObject;
         }
@@ -401,7 +387,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                     var sceneObject = CreateSceneObject(modelName);
                     _sceneObjects.Add(sceneObject);
 
-                    //var transform = TransformConverter.ToGfzTransformMatrix3x4(shape.transform, Space.World, true);
                     var transform = new TransformMatrix3x4();
                     var sceneObjectDynamic = CreateSceneObjectDynamic(sceneObject, transform);
                     _dynamicSceneObjects.Add(sceneObjectDynamic);
@@ -416,6 +401,21 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             dynamicSceneObjects = _dynamicSceneObjects.ToArray();
 
             return gma;
+        }
+
+        public static ColliderTriangle[] GetColliderTriangles(out StaticColliderMeshGrid[] staticColliderMeshGrids)
+        {
+            // for each script in scene
+            //  get -> triangles, tri count (linear index order 0 to n), layer type
+            // then
+            //  build grid / cells
+            // then
+            //  recompute bounds of tri/quad
+            //  add tri/quad to logical bounds
+            //  fehking hell, also compute for large tri/quad if it crosses cells D:
+            //   you could probably know if you need to do this based on cell vs tri/quad size
+
+            throw new NotImplementedException();
         }
     }
 }
