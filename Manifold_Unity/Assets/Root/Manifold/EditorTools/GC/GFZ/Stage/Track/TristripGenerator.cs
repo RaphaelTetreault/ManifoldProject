@@ -459,7 +459,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         {
             if (points == null)
                 throw new System.ArgumentNullException(nameof(points));
-            if (length >= 0)
+            if (length <= 0)
                 throw new System.ArgumentOutOfRangeException(nameof(length));
 
             float radius = 0;
