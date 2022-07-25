@@ -289,5 +289,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         public static void MenuAnalyzeUnknownCollider() => MenuForward(AnalyzeUnknownCollider, tsvUnknownCollider);
 
 
+        [MenuItem(menu + "Static Collider Mesh Manager - Triangles")]
+        public static void MenuAnalyzeStaticColliderTriangles() => MenuForward(AnalyzeStaticColliderTriangles, tsvStaticColliderTriangles);
+        
+        [MenuItem(menu + "Static Collider Mesh Manager - Quads")]
+        public static void MenuAnalyzeStaticColliderQuads() => MenuForward(AnalyzeStaticColliderQuads, tsvStaticColliderQuads);
+
     }
 }
