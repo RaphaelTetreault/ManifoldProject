@@ -14,7 +14,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         [SerializeField, Min(0)] private float radius0 = 200;
         [SerializeField, Min(0)] private float radius1 = 200;
         [SerializeField] private float axisOffset = 0;
-        [SerializeField, Range(1f, 1080f)] private float rotateDegrees = 90f;
+        [SerializeField, Range(1f, 1800f)] private float rotateDegrees = 90f;
         [SerializeField, Min(8)] private int keysPer360Degrees = 36;
         [SerializeField] private AnimationCurveTRS animationCurveTRS = new();
 
@@ -226,6 +226,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 trs.Rotation.y.SmoothTangents(trs.Rotation.y.length-1, weight);
                 // Fix first key tangents
                 trs.Position.y.SmoothTangents(0, weight);
+
+                // Temp hack: make first key flat if not X rotation.
+                if (GetRotation().eulerAngles.x == 0f)
+                    trs.Position.y.SetKeyTangents(0f, 0);
             }
 
             animationCurveTRS = trs;

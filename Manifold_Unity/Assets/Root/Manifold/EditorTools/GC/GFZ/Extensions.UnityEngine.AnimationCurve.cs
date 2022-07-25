@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 namespace Manifold.EditorTools
@@ -130,6 +131,14 @@ namespace Manifold.EditorTools
 
         public static AnimationCurve SetKeyTangents(this AnimationCurve curve, float inOutTangents)
             => new AnimationCurve(KeyframeUtility.SetKeyTangents(curve.keys, inOutTangents));
+
+        public static void SetKeyTangents(this AnimationCurve curve, float inOutTangent, int index)
+        {
+            var key = curve.keys[index];
+            key.inTangent = inOutTangent;
+            key.outTangent = inOutTangent;
+            curve.MoveKey(index, key);
+        }
 
         public static void SmoothTangents(this AnimationCurve curve, float weight = 1 / 3f)
         {
