@@ -184,8 +184,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 scene.staticColliderMeshManager.StaticSceneObjects = scene.staticSceneObjects is null ? new SceneObjectStatic[0] : scene.staticSceneObjects;
 
                 // Build tri/quads for static collider mesh
-                //scene.staticColliderMeshManager.ColliderTris = ;
+                var staticColliders = GameObject.FindObjectsOfType<GfzStaticColliderMesh2>(false);
+                scene.staticColliderMeshManager.ColliderTris = GetColliderTriangles(staticColliders);
                 scene.staticColliderMeshManager.ComputeMeshGridXZ();
+                scene.staticColliderMeshManager.TriMeshGrids[3] = GetIndexListsAll(scene.staticColliderMeshManager); // 3 == dash
             }
 
             // TRACK
@@ -403,7 +405,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             return gma;
         }
 
-        public static ColliderTriangle[] GetColliderTriangles(out StaticColliderMeshGrid[] staticColliderMeshGrids)
+        public static ColliderTriangle[] GetColliderTriangles(GfzStaticColliderMesh2[] staticColliders)
         {
             // for each script in scene
             //  get -> triangles, tri count (linear index order 0 to n), layer type
@@ -415,7 +417,49 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             //  fehking hell, also compute for large tri/quad if it crosses cells D:
             //   you could probably know if you need to do this based on cell vs tri/quad size
 
-            throw new NotImplementedException();
+            int totalVertices = 0;
+            var colliderTrianglesList = new List<ColliderTriangle[]>();
+
+            // Get all triangles, count total
+            foreach (var staticCollider in staticColliders)
+            {
+                var triangles = staticCollider.CreateColliderTriangles();
+                colliderTrianglesList.Add(triangles);
+                totalVertices += triangles.Length;
+            };
+
+            int baseOffset = 0;
+            var allColliderTriangles = new ColliderTriangle[totalVertices];
+            foreach (var collection in colliderTrianglesList)
+            {
+                collection.CopyTo(allColliderTriangles, baseOffset);
+                baseOffset += collection.Length;
+            }
+
+            return allColliderTriangles;
         }
+
+        public static StaticColliderMeshGrid GetIndexListsAll(StaticColliderMeshManager scmm)
+        {
+            var indexGrid = new StaticColliderMeshGrid();
+            var indexLists = new IndexList[StaticColliderMeshGrid.kListCount];
+            for (int i = 0; i < indexLists.Length; i++)
+            {
+                var indexList = new IndexList();
+                indexList.Indexes = QuickIndexList(0, scmm.ColliderTris.Length);
+                indexLists[i] = indexList;
+            }
+            indexGrid.IndexLists = indexLists;
+            return indexGrid;
+        }
+
+        public static ushort[] QuickIndexList(int baseIndex, int count)
+        {
+            var indexes = new ushort[count];
+            for (int i = 0; i < count; i++)
+                indexes[i] = checked((ushort)(baseIndex + i));
+            return indexes;
+        }
+
     }
 }
