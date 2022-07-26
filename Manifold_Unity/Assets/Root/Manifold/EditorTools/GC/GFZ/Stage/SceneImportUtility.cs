@@ -313,7 +313,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                             var pathObject = CreateMetadataPathObj(courseMetadataTrigger);
                             pathObject.name = $"[{count.ToString(format)}] Lightning Path";
                             pathObject.transform.parent = root;
-                            pathObject.gizmosColor = Color.yellow;
+                            pathObject.GizmosColor = Color.yellow;
                         }
                         break;
                     case CourseMetadataType.OuterSpace_Meteor:
@@ -321,7 +321,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                             var pathObject = CreateMetadataPathObj(courseMetadataTrigger);
                             pathObject.name = $"[{count.ToString(format)}] Meteor Path";
                             pathObject.transform.parent = root;
-                            pathObject.gizmosColor = new Color32(255, 127, 0, 255); // orange
+                            pathObject.GizmosColor = new Color32(255, 127, 0, 255); // orange
                         }
                         break;
 
@@ -374,8 +374,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             to.rotation = data.Rotation;
 
             var objectPath = pathObject.AddComponent<GfzObjectPath>();
-            objectPath.from = from;
-            objectPath.to = to;
+            objectPath.From = from;
+            objectPath.To = to;
 
             return objectPath;
         }

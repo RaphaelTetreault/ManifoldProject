@@ -7,21 +7,16 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
     public sealed class GfzSceneObjectDynamic : MonoBehaviour,
         IGfzConvertable<SceneObjectDynamic>
     {
-        [SerializeField] [Hex] private int unk_0x00;
-        [SerializeField] [Hex] private int unk_0x04;
-        [SerializeField] private GfzSceneObject sceneObject;
-        [SerializeField] private GfzAnimationClip animationClip;
-        [SerializeField] private GfzTextureScroll textureScroll;
-        [SerializeField] private GfzSkeletalAnimator skeletalAnimator;
-
-        public GfzSceneObject GfzSceneObject => sceneObject;
-        public GfzAnimationClip AnimationClip => animationClip;
-        public GfzTextureScroll TextureScroll => textureScroll;
-        public GfzSkeletalAnimator SkeletalAnimator => skeletalAnimator;
+        [field: SerializeField, Hex] public int Unk_0x00 { get; private set; }
+        [field: SerializeField, Hex] public int Unk_0x04 { get; private set; }
+        [field: SerializeField] public GfzSceneObject SceneObject { get; private set; }
+        [field: SerializeField] public GfzAnimationClip AnimationClip { get; private set; }
+        [field: SerializeField] public GfzTextureScroll TextureScroll { get; private set; }
+        [field: SerializeField] public GfzSkeletalAnimator SkeletalAnimator { get; private set; }
 
         internal void SetSceneObject(GfzSceneObject sceneObject)
         {
-            this.sceneObject = sceneObject;
+            SceneObject = sceneObject;
         }
 
         public SceneObjectDynamic ExportGfz()
@@ -29,22 +24,22 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             var dynamicSceneObject = new SceneObjectDynamic();
 
             // Data from this structure
-            dynamicSceneObject.Unk0x00 = unk_0x00;
-            dynamicSceneObject.Unk0x04 = unk_0x04;
-            dynamicSceneObject.TransformTRXS = TransformConverter.ToGfzTransformTRXS(transform);
+            dynamicSceneObject.Unk0x00 = Unk_0x00;
+            dynamicSceneObject.Unk0x04 = Unk_0x04;
+            dynamicSceneObject.TransformTRXS = TransformConverter.ToGfzTransformTRXS(transform, Space.World);
 
             // Values from pointed classes
             // These functions should return null if necessary
-            dynamicSceneObject.SceneObject = sceneObject.ExportGfz(); // todo, unmangle references in generator
+            dynamicSceneObject.SceneObject = SceneObject.ExportGfz(); // todo, unmangle references in generator
 
-            if (animationClip != null)
-                dynamicSceneObject.AnimationClip = animationClip.ExportGfz();
+            if (AnimationClip != null)
+                dynamicSceneObject.AnimationClip = AnimationClip.ExportGfz();
 
-            if (textureScroll != null)
-                dynamicSceneObject.TextureScroll = textureScroll.ExportGfz();
+            if (TextureScroll != null)
+                dynamicSceneObject.TextureScroll = TextureScroll.ExportGfz();
 
-            if (skeletalAnimator != null)
-                dynamicSceneObject.SkeletalAnimator = skeletalAnimator.ExportGfz();
+            if (SkeletalAnimator != null)
+                dynamicSceneObject.SkeletalAnimator = SkeletalAnimator.ExportGfz();
 
             // This value only exists if we don't have an animation
             if (dynamicSceneObject.AnimationClip == null)
@@ -57,37 +52,37 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         {
             // SCENE OBJECT DYNAMIC
             {
-                unk_0x00 = dynamicSceneObject.Unk0x00;
-                unk_0x04 = dynamicSceneObject.Unk0x04;
+                Unk_0x00 = dynamicSceneObject.Unk0x00;
+                Unk_0x04 = dynamicSceneObject.Unk0x04;
 
                 // TRANSFORM
                 // Copy most reliable transform if available
                 if (dynamicSceneObject.TransformMatrix3x4 != null)
                 {
-                    transform.CopyGfzTransform(dynamicSceneObject.TransformMatrix3x4);
+                    transform.CopyGfzTransform(dynamicSceneObject.TransformMatrix3x4, Space.Self);
                 }
                 else
                 {
-                    transform.CopyGfzTransform(dynamicSceneObject.TransformTRXS);
+                    transform.CopyGfzTransform(dynamicSceneObject.TransformTRXS, Space.Self);
                 }
             }
 
             if (dynamicSceneObject.AnimationClip != null)
             {
-                animationClip = this.gameObject.AddComponent<GfzAnimationClip>();
-                animationClip.ImportGfz(dynamicSceneObject.AnimationClip);
+                AnimationClip = this.gameObject.AddComponent<GfzAnimationClip>();
+                AnimationClip.ImportGfz(dynamicSceneObject.AnimationClip);
             }
 
             if (dynamicSceneObject.TextureScroll != null)
             {
-                textureScroll = this.gameObject.AddComponent<GfzTextureScroll>();
-                textureScroll.ImportGfz(dynamicSceneObject.TextureScroll);
+                TextureScroll = this.gameObject.AddComponent<GfzTextureScroll>();
+                TextureScroll.ImportGfz(dynamicSceneObject.TextureScroll);
             }
 
             if (dynamicSceneObject.SkeletalAnimator != null)
             {
-                skeletalAnimator = this.gameObject.AddComponent<GfzSkeletalAnimator>();
-                skeletalAnimator.ImportGfz(dynamicSceneObject.SkeletalAnimator);
+                SkeletalAnimator = this.gameObject.AddComponent<GfzSkeletalAnimator>();
+                SkeletalAnimator.ImportGfz(dynamicSceneObject.SkeletalAnimator);
             }
 
             // Transform Matrix 3x4 is handled above and does not need a component

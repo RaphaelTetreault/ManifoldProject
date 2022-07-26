@@ -3,9 +3,6 @@ using UnityEngine;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage
 {
-    /// <summary>
-    /// 
-    /// </summary>
     public class GfzTimeExtensionTrigger : MonoBehaviour,
         IGfzConvertable<TimeExtensionTrigger>
     {
@@ -14,27 +11,20 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         /// </summary>
         public const float scale = 10f;
 
-        // INSPECTOR FIELDS
-        [SerializeField] private TimeExtensionOption type;
+        [field: SerializeField] public TimeExtensionOption Type { get; private set; }
 
-        // PROPERTIES
-        public TimeExtensionOption Type
-        {
-            get => type;
-            set => type = value;
-        }
 
         // METHODS
         public TimeExtensionTrigger ExportGfz()
         {
             // Convert unity transform to gfz transform
-            var transform = TransformConverter.ToGfzTransformTRXS(this.transform);
+            var transform = TransformConverter.ToGfzTransformTRXS(this.transform, Space.World);
             transform.Scale /= scale;
 
             var value = new TimeExtensionTrigger
             {
                 Transform = transform,
-                Option = type,
+                Option = Type,
             };
 
             return value;
@@ -42,9 +32,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         public void ImportGfz(TimeExtensionTrigger value)
         {
-            transform.CopyGfzTransform(value.Transform);
+            transform.CopyGfzTransform(value.Transform, Space.Self);
             transform.localScale *= scale;
-            type = value.Option;
+            Type = value.Option;
         }
     }
 }

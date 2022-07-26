@@ -1,22 +1,20 @@
 ﻿using GameCube.GFZ.Stage;
-using System;
 using UnityEngine;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage
 {
     public class GfzColliderMesh : MonoBehaviour,
         IGfzConvertable<ColliderMesh>
-        //IEquatable<GfzColliderMesh>
     {
         //[SerializeField] private MeshFilter colliderMesh; // <-- Would be ideal sometime if this were how it's done
-        [SerializeField] private bool exportColliderMesh;
-        [SerializeField] private ColliderMesh srcColliderMesh;
+        [field: SerializeField] public bool ExportColliderMesh { get; private set; }
+        [field: SerializeField] public ColliderMesh SrcColliderMesh { get; private set; }
 
         public ColliderMesh ExportGfz()
         {
-            if (exportColliderMesh)
+            if (ExportColliderMesh)
             {
-                return srcColliderMesh;
+                return SrcColliderMesh;
             }
             else
             {
@@ -29,15 +27,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             bool hasColliderMesh = colliderMesh != null;
             if (hasColliderMesh)
             {
-                srcColliderMesh = colliderMesh;
+                SrcColliderMesh = colliderMesh;
             }
-            exportColliderMesh = hasColliderMesh;
+            ExportColliderMesh = hasColliderMesh;
         }
-
-        //public bool Equals(GfzColliderMesh other)
-        //{
-        //    return other.srcColliderMesh == srcColliderMesh;
-        //}
     }
 
 }

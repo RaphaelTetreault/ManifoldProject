@@ -23,25 +23,18 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             AxStory1 = 1,
         }
 
-        // INSPECTOR FIELDS
-        [SerializeField] private CapsuleType type;
+        [field: SerializeField] public CapsuleType Type { get; private set; }
 
-        // PROPERTIES
-        public CapsuleType Type
-        {
-            get => type;
-            set => type = value;
-        }
 
         // METHODS
         public MiscellaneousTrigger ExportGfz()
         {
             // Convert unity transform to gfz transform
-            var transform = TransformConverter.ToGfzTransformTRXS(this.transform);
+            var transform = TransformConverter.ToGfzTransformTRXS(this.transform, Space.World);
 
             // Select which capsule type flag to use.
-            CourseMetadataType metadataType = (CourseMetadataType)(-1);
-            switch (type)
+            CourseMetadataType metadataType;
+            switch (Type)
             {
                 case CapsuleType.AxStory1:
                     metadataType = CourseMetadataType.Story1_CapsuleAX;
@@ -67,18 +60,18 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         public void ImportGfz(MiscellaneousTrigger value)
         {
-            transform.CopyGfzTransform(value.Transform);
+            transform.CopyGfzTransform(value.Transform, Space.Self);
             transform.localScale *= scale;
 
             // Select which capsule type flag to use.
             switch (value.MetadataType)
             {
                 case CourseMetadataType.Story1_CapsuleAX:
-                    type = CapsuleType.AxStory1;
+                    Type = CapsuleType.AxStory1;
                     break;
 
                 case CourseMetadataType.Story5_Capsule:
-                    type = CapsuleType.GxStory5;
+                    Type = CapsuleType.GxStory5;
                     break;
 
                 default:

@@ -1,6 +1,4 @@
 using GameCube.GFZ.Stage;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage
@@ -17,19 +15,17 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         /// </summary>
         public const float scale = 27.5f;
 
-        // INSPECTOR FIELDS
-        [SerializeField] private GfzSceneObject sceneObject;
+        [field: SerializeField] public GfzSceneObject SceneObject { get; private set; }
 
 
-        // METHODS
         public UnknownCollider ExportGfz()
         {
             // Convert unity transform to gfz transform
-            var transform = TransformConverter.ToGfzTransformTRXS(this.transform);
+            var transform = TransformConverter.ToGfzTransformTRXS(this.transform, Space.World);
 
             var value = new UnknownCollider
             {
-                SceneObject = sceneObject.ExportGfz(),
+                SceneObject = SceneObject.ExportGfz(),
                 Transform = transform
             };
 
@@ -38,13 +34,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         public void ImportGfz(UnknownCollider value)
         {
-            transform.CopyGfzTransform(value.Transform);
+            transform.CopyGfzTransform(value.Transform, Space.Self);
             transform.localScale *= scale;
 
             var gobj = GameObject.Find(value.SceneObject.Name);
-            sceneObject = gobj == null ? null : gobj.GetComponent<GfzSceneObject>();
+            SceneObject = gobj == null ? null : gobj.GetComponent<GfzSceneObject>();
             
-            if (sceneObject is null)
+            if (SceneObject is null)
             DebugConsole.Log("Hack fix did not work.");
         }
     }

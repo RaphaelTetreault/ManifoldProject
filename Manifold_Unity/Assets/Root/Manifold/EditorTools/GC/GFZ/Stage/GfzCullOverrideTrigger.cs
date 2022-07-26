@@ -3,9 +3,6 @@ using UnityEngine;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage
 {
-    /// <summary>
-    /// 
-    /// </summary>
     public class GfzCullOverrideTrigger : MonoBehaviour,
         IGfzConvertable<CullOverrideTrigger>
     {
@@ -14,35 +11,19 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         /// </summary>
         public const float scale = 10f;
 
-        // INSPECTOR FIELDS
-        [SerializeField] private EnumFlags32 unk_0x20;
-        //SerializeField] private EnumFlags16 unk_0x22;
-
-        // PROPERTIES
-        public EnumFlags32 Unk_0x20
-        {
-            get => unk_0x20;
-            set => unk_0x20 = value;
-        }
-        //public EnumFlags16 Unk_0x22
-        //{
-        //    get => unk_0x22;
-        //    set => unk_0x22 = value;
-        //}
+        [field: SerializeField] public EnumFlags32 Unk_0x20 { get; private set; }
 
 
-        // METHODS
         public CullOverrideTrigger ExportGfz()
         {
             // Convert unity transform to gfz transform
-            var transform = TransformConverter.ToGfzTransformTRXS(this.transform);
+            var transform = TransformConverter.ToGfzTransformTRXS(this.transform, Space.World);
             transform.Scale /= scale;
 
             var value = new CullOverrideTrigger
             {
                 Transform = transform,
-                Unk_0x20 = unk_0x20,
-                //unk_0x22 = unk_0x22,
+                Unk_0x20 = Unk_0x20,
             };
 
             return value;
@@ -50,10 +31,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         public void ImportGfz(CullOverrideTrigger value)
         {
-            transform.CopyGfzTransform(value.Transform);
+            transform.CopyGfzTransform(value.Transform, Space.Self);
             transform.localScale *= scale;
-            unk_0x20 = value.Unk_0x20;
-            //unk_0x22 = value.unk_0x22;
+            Unk_0x20 = value.Unk_0x20;
         }
 
     }

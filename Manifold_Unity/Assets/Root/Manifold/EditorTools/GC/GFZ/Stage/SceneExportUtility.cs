@@ -135,7 +135,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
                 // Init shared references before copying values out.
                 foreach (var gfzSceneObject in gfzSceneObjects)
-                    gfzSceneObject.InitSharedReference();
+                    gfzSceneObject.InitSharableReference();
 
                 // STATIC / DYNAMIC
                 scene.dynamicSceneObjects = GetGfzValues(gfzDynamicSceneObjects);

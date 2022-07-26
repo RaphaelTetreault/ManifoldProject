@@ -270,7 +270,9 @@ namespace Manifold.EditorTools.GC.GFZ.GMA
             // Convert float3[] to Vector3[]
             var _pos = new Vector3[pos.Length];
             for (int i = 0; i < pos.Length; i++)
+            {
                 _pos[i] = pos[i];
+            }
             return _pos;
         }
 
@@ -302,7 +304,9 @@ namespace Manifold.EditorTools.GC.GFZ.GMA
                 // Convert float3[] to Vector3[]
                 var _normals = new Vector3[normals.Length];
                 for (int i = 0; i < normals.Length; i++)
+                {
                     _normals[i] = normals[i];
+                }
                 return _normals;
             }
             else

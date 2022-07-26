@@ -17,46 +17,38 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             OuterSpace,
         }
 
-        [Header("Gizmos")]
-        public float gizmosRadius = 10f;
-        public Color gizmosColor = Color.white;
-        [Header("Path")]
-        public Transform from;
-        public Transform to;
-        [Header("Venue")]
-        public PathObjectVenue objectVenue;
+        [field: Header("Gizmos")]
+        [field: SerializeField] public float GizmosRadius { get; set; } = 10f;
+        [field: SerializeField] public Color GizmosColor { get; set; } = Color.white;
+        
+        [field: Header("Path")]
+        [field: SerializeField] public Transform From { get; set; }
+        [field: SerializeField] public Transform To { get; set; }
+        
+        [field:Header("Venue")]
+        [field: SerializeField] public PathObjectVenue OobjectVenue { get; private set; }
+
 
         private void OnDrawGizmos()
         {
-            Gizmos.color = gizmosColor;
-            Gizmos.DrawLine(from.position, to.position);
-            Gizmos.DrawSphere(from.position, gizmosRadius * .95f);
-            Gizmos.DrawWireSphere(from.position, gizmosRadius);
-            Gizmos.DrawSphere(to.position, gizmosRadius);
+            Gizmos.color = GizmosColor;
+            Gizmos.DrawLine(From.position, To.position);
+            Gizmos.DrawSphere(From.position, GizmosRadius * .95f);
+            Gizmos.DrawWireSphere(From.position, GizmosRadius);
+            Gizmos.DrawSphere(To.position, GizmosRadius);
         }
 
         // METHODS
         public MiscellaneousTrigger ExportGfz()
         {
-            //// Path object should only exist on Lightning or Outer Space
-            //var isValidVenue = venue == Venue.Lightning || venue == Venue.OuterSpace;
-            //if (!isValidVenue)
-            //    throw new System.FormatException($"Invalid venue {venue} for PathObject!");
-
-            //// Select which type based on venue
-            //var metadataType = venue == Venue.Lightning
-            //    ? CourseMetadataType.Lightning_Lightning
-            //    : CourseMetadataType.OuterSpace_Meteor;
-
-            var metadataType = objectVenue == PathObjectVenue.Lightning
+            var metadataType = OobjectVenue == PathObjectVenue.Lightning
                 ? CourseMetadataType.Lightning_Lightning
                 : CourseMetadataType.OuterSpace_Meteor;
 
             // Get transform values from "from" node
-            var transform = TransformConverter.ToGfzTransformTRXS(from);
+            var transform = TransformConverter.ToGfzTransformTRXS(From, Space.World);
             // The scale field is used as the "to" position
-            transform.Scale = to.position;
-
+            transform.Scale = To.position;
 
             var value = new MiscellaneousTrigger
             {

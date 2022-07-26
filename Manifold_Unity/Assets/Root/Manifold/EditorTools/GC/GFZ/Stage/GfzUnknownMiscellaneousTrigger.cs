@@ -1,13 +1,8 @@
 using GameCube.GFZ.Stage;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage
 {
-    /// <summary>
-    /// 
-    /// </summary>
     public class GfzUnknownMiscellaneousTrigger : MonoBehaviour,
         IGfzConvertable<MiscellaneousTrigger>
     {
@@ -20,7 +15,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         public MiscellaneousTrigger ExportGfz()
         {
             // Convert unity transform to gfz transform
-            var transform = TransformConverter.ToGfzTransformTRXS(this.transform);
+            var transform = TransformConverter.ToGfzTransformTRXS(this.transform, Space.World);
             transform.Scale /= scale;
 
             var value = new MiscellaneousTrigger
@@ -34,7 +29,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         public void ImportGfz(MiscellaneousTrigger value)
         {
-            transform.CopyGfzTransform(value.Transform);
+            transform.CopyGfzTransform(value.Transform, Space.Self);
             transform.localScale *= scale;
         }
 

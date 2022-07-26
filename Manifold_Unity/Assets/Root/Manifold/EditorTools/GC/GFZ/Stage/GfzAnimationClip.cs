@@ -54,26 +54,21 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             animationClip.Curves = new AnimationClipCurve[curves.Length];
             for (int i = 0; i < curves.Length; i++)
             {
+                var curve = curves[i].curve;
+
+                //// Invert coorindate spaces for rotation.x, rotation.y, position.z
+                //if (i == 3 || i == 4 || i == 8)
+                //    curve = curve.CreateInverted();
+
                 animationClip.Curves[i] = new AnimationClipCurve()
                 {
                     Unk_0x00 = curves[i].unk0x00,
                     Unk_0x04 = curves[i].unk0x04,
                     Unk_0x08 = curves[i].unk0x08,
                     Unk_0x0C = curves[i].unk0x0C,
-                    AnimationCurve = AnimationCurveConverter.ToGfz(curves[i].curve),
+                    AnimationCurve = AnimationCurveConverter.ToGfz(curve),
                 };
             }
-
-            //// Flip z positions
-            //var curvePositionZ = animationClip.curves[6].animationCurve;
-            //if (curvePositionZ != null)
-            //{
-            //    for (int i = 0; i < curvePositionZ.Length; i++)
-            //    {
-            //        var key = curvePositionZ.keyableAttributes[i];
-            //        key.value = -key.value;
-            //    }
-            //}
 
             return animationClip;
         }
@@ -87,22 +82,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             var curves = GetCurves;
             for (int i = 0; i < GameCube.GFZ.Stage.AnimationClip.kAnimationCurvesCount; i++)
             {
-                curves[i].unk0x00 = animationClip.Curves[i].Unk_0x00;
-                curves[i].unk0x04 = animationClip.Curves[i].Unk_0x04;
-                curves[i].unk0x08 = animationClip.Curves[i].Unk_0x08;
-                curves[i].unk0x0C = animationClip.Curves[i].Unk_0x0C;
-                curves[i].curve = AnimationCurveConverter.ToUnity(animationClip.Curves[i].AnimationCurve);
+                var curve = curves[i];
+                curve.unk0x00 = animationClip.Curves[i].Unk_0x00;
+                curve.unk0x04 = animationClip.Curves[i].Unk_0x04;
+                curve.unk0x08 = animationClip.Curves[i].Unk_0x08;
+                curve.unk0x0C = animationClip.Curves[i].Unk_0x0C;
+                curve.curve = AnimationCurveConverter.ToUnity(animationClip.Curves[i].AnimationCurve);
             }
-
-            //var curvePositionZ = curves[6].curve;
-            //if (curvePositionZ != null)
-            //{
-            //    for (int i = 0; i < curvePositionZ.length; i++)
-            //    {
-            //        var key = curvePositionZ.keys[i];
-            //        curvePositionZ.keys[i] = new Keyframe(key.time, -key.value);
-            //    }
-            //}
         }
 
     }

@@ -3,9 +3,6 @@ using UnityEngine;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage
 {
-    /// <summary>
-    /// 
-    /// </summary>
     public class GfzVisualEffectTrigger : MonoBehaviour,
         IGfzConvertable<VisualEffectTrigger>
     {
@@ -14,33 +11,20 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         /// </summary>
         public const float scale = 10f;
 
-        // INSPECTOR FIELDS
-        [SerializeField] private new TriggerableAnimation animation;
-        [SerializeField] private TriggerableVisualEffect visualEffect;
+        [field: SerializeField] public new TriggerableAnimation Animation { get; private set; }
+        [field: SerializeField] public TriggerableVisualEffect VisualEffect { get; private set; }
 
-        // PROPERTIES
-        public TriggerableAnimation Animation
-        {
-            get => animation;
-            set => animation = value;
-        }
-        public TriggerableVisualEffect VisualEffect
-        {
-            get => visualEffect;
-            set => visualEffect = value;
-        }
 
-        // METHODS
         public VisualEffectTrigger ExportGfz()
         {
             // Convert unity transform to gfz transform
-            var transform = TransformConverter.ToGfzTransformTRXS(this.transform);
+            var transform = TransformConverter.ToGfzTransformTRXS(this.transform, Space.World);
 
             var value = new VisualEffectTrigger
             {
                 Transform = transform,
-                Animation = animation,
-                VisualEffect = visualEffect,
+                Animation = Animation,
+                VisualEffect = VisualEffect,
             };
 
             return value;
@@ -48,10 +32,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         public void ImportGfz(VisualEffectTrigger value)
         {
-            transform.CopyGfzTransform(value.Transform);
+            transform.CopyGfzTransform(value.Transform, Space.Self);
             transform.localScale *= scale;
-            animation = value.Animation;
-            visualEffect = value.VisualEffect;
+            Animation = value.Animation;
+            VisualEffect = value.VisualEffect;
         }
     }
 }
