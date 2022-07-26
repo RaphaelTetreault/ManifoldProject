@@ -224,7 +224,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 foreach (var sceneObject in sceneObjects)
                 {
                     scene.SceneObjectLODs.AddRange(sceneObject.LODs);
-                    scene.SceneObjectNames.Add(sceneObject.Name); // wouldn't you need to put int all LOD names?
+                    scene.SceneObjectNames.Add(sceneObject.Name); // wouldn't you need to put in all LOD names?
                 }
                 scene.sceneObjects = sceneObjects.Concat(scene.sceneObjects).ToArray();
 
@@ -459,6 +459,15 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             for (int i = 0; i < count; i++)
                 indexes[i] = checked((ushort)(baseIndex + i));
             return indexes;
+        }
+
+        public static void AssignStaticColliderMeshManager(Scene scene)
+        {
+            // Build tri/quads for static collider mesh
+            var staticColliders = GameObject.FindObjectsOfType<GfzStaticColliderMesh2>(false);
+            scene.staticColliderMeshManager.ColliderTris = GetColliderTriangles(staticColliders);
+            scene.staticColliderMeshManager.ComputeMeshGridXZ();
+            scene.staticColliderMeshManager.TriMeshGrids[3] = GetIndexListsAll(scene.staticColliderMeshManager); // 3 == dash
         }
 
     }

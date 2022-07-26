@@ -28,17 +28,17 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         public ColliderTriangle[] CreateColliderTriangles()
         {
-            var mesh = MeshFilter.mesh;
+            var mesh = MeshFilter.sharedMesh;
             var triangles = new ColliderTriangle[mesh.triangles.Length / 3];
 
             var position = transform.position;
             var rotation = transform.rotation.eulerAngles;
-            var scale = transform.position;
-            //
+            var scale = transform.lossyScale;
+            ////
             position.z = -position.z;
             rotation.x = -rotation.x;
             rotation.y = -rotation.y;
-            //
+            ////
             var matrix = Matrix4x4.TRS(position, Quaternion.Euler(rotation), scale);
 
             for (int i = 0; i < triangles.Length; i++)
