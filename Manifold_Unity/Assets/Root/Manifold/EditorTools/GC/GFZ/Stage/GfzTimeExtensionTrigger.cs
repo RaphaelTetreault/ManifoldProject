@@ -42,7 +42,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         public void ImportGfz(TimeExtensionTrigger value)
         {
-            transform.CopyGfzTransformTRXS(value.Transform);
+            transform.CopyGfzTransform(value.Transform);
             transform.localScale *= scale;
             type = value.Option;
         }

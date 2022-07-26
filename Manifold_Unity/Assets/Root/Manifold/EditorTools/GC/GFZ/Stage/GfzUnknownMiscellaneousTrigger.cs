@@ -34,7 +34,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         public void ImportGfz(MiscellaneousTrigger value)
         {
-            transform.CopyGfzTransformTRXS(value.Transform);
+            transform.CopyGfzTransform(value.Transform);
             transform.localScale *= scale;
         }
 

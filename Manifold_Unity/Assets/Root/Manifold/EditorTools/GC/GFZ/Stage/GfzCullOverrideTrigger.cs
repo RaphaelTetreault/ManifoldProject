@@ -50,7 +50,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         public void ImportGfz(CullOverrideTrigger value)
         {
-            transform.CopyGfzTransformTRXS(value.Transform);
+            transform.CopyGfzTransform(value.Transform);
             transform.localScale *= scale;
             unk_0x20 = value.Unk_0x20;
             //unk_0x22 = value.unk_0x22;
