@@ -17,8 +17,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         public Vector2[] uv1 { get; set; }
         public Vector2[] uv2 { get; set; }
         public Color32[] color0 { get; set; }
-        public Color32[] color1 { get; set; }
-        public bool reverse { get; set; }
+        public bool isBackFacing { get; set; }
 
 
         public int TrianglesCount => ((positions.Length / 2) - 1) * 6;
@@ -42,7 +41,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 vertexBaseIndex++;
             }
 
-            if (reverse)
+            if (isBackFacing)
                 indexes = indexes.Reverse().ToArray();
 
             return indexes;

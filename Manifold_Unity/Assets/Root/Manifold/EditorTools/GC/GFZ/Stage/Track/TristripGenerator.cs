@@ -302,7 +302,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 //if (uvs > 2)
                 //    tristrip.uv2 = CreateUVs(matrices);
 
-                tristrip.reverse = reverse;
+                tristrip.isBackFacing = reverse;
             }
 
             return tristrips;
@@ -371,7 +371,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 var allVertices = new List<Vector3>();
                 foreach (var tristrip in trackMeshTristrips)
                     allVertices.AddRange(tristrip.positions);
-                var boundingSphere = CreateBoundingSphereFromPoints(allVertices);
+                var boundingSphere = CreateBoundingSphereFromPoints(allVertices, allVertices.Count);
 
                 var template = GfzAssetTemplates.MeshTemplates.DebugTemplates.CreateLitVertexColored();
                 var gcmf = template.Gcmf;
@@ -454,29 +454,30 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
         }
 
-        // http://www.technologicalutopia.com/sourcecode/xnageometry/boundingsphere.cs.htm
-        public static GameCube.GFZ.BoundingSphere CreateBoundingSphereFromPoints(IEnumerable<Vector3> points)
+        // Modified from: http://www.technologicalutopia.com/sourcecode/xnageometry/boundingsphere.cs.htm
+        public static GameCube.GFZ.BoundingSphere CreateBoundingSphereFromPoints(IEnumerable<Vector3> points, int length)
         {
             if (points == null)
-                throw new System.ArgumentNullException("points");
+                throw new System.ArgumentNullException(nameof(points));
+            if (length <= 0)
+                throw new System.ArgumentOutOfRangeException(nameof(length));
 
             float radius = 0;
             Vector3 center = new Vector3();
-            // First, we'll find the center of gravity for the point 'cloud'.
-            int num_points = 0; // The number of points (there MUST be a better way to get this instead of counting the number of points one by one?)
+            float lengthReciprocal = 1f / length;
 
-            foreach (Vector3 v in points)
+            // First, we'll find the center of gravity for the point 'cloud'.
+            foreach (var point in points)
             {
-                center += v;    // If we actually knew the number of points, we'd get better accuracy by adding v / num_points.
-                ++num_points;
+                Vector3 pointWeighted = point * lengthReciprocal;
+                center += pointWeighted;
             }
 
-            center /= num_points;
-
             // Calculate the radius of the needed sphere (it equals the distance between the center and the point further away).
-            foreach (Vector3 v in points)
+            foreach (var point in points)
             {
-                float distance = (v - center).magnitude;
+                Vector3 centerToPoint = point - center;
+                float distance = math.length(centerToPoint);
 
                 if (distance > radius)
                     radius = distance;

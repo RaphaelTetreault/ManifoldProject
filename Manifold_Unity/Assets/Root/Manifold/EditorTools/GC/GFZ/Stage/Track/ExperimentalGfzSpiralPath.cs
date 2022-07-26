@@ -12,7 +12,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
     public class ExperimentalGfzSpiralPath : GfzTrackSegmentRootNode,
         IPositionEvaluable
     {
-        [SerializeField] private SpiralAxes SpiralAxes = SpiralAxes.YZUp;
+        [SerializeField] private SpiralAxes SpiralAxes = SpiralAxes.VerticalUp;
         [SerializeField] private UnityEngine.AnimationCurve radiusCurve = new(new(0f, 30), new(1, 30));
         [SerializeField] private UnityEngine.AnimationCurve offsetCurve = new(new(0, 0), new(1, 0));
         [SerializeField] private UnityEngine.AnimationCurve rollsCurve = new(new(0, 0), new(1, 0));
@@ -47,10 +47,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         {
             switch (SpiralAxes)
             {
-                case SpiralAxes.XZRight: return ComponentsToXZRight;
-                case SpiralAxes.XZLeft: return ComponentsToXZLeft;
-                case SpiralAxes.YZUp: return ComponentsToXYUp;
-                case SpiralAxes.YZDown: return ComponentsToXYDown;
+                case SpiralAxes.HorizontalRight: return ComponentsToXZRight;
+                case SpiralAxes.HorizontalLeft: return ComponentsToXZLeft;
+                case SpiralAxes.VerticalUp: return ComponentsToXYUp;
+                case SpiralAxes.VerticalDown: return ComponentsToXYDown;
                 default:
                     throw new ArgumentException($"Invalid {nameof(SpiralAxes)} value.");
             }
@@ -65,10 +65,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         {
             switch (SpiralAxes)
             {
-                case SpiralAxes.XZRight: return ComponentsToNormalXZRight;
-                case SpiralAxes.XZLeft: return ComponentsToNormalXZLeft;
-                case SpiralAxes.YZUp: return ComponentsToNormalYZUp;
-                case SpiralAxes.YZDown: return ComponentsToNormalYZDown;
+                case SpiralAxes.HorizontalRight: return ComponentsToNormalXZRight;
+                case SpiralAxes.HorizontalLeft: return ComponentsToNormalXZLeft;
+                case SpiralAxes.VerticalUp: return ComponentsToNormalYZUp;
+                case SpiralAxes.VerticalDown: return ComponentsToNormalYZDown;
 
                 default:
                     throw new ArgumentException($"Invalid {nameof(SpiralAxes)} value.");
@@ -98,10 +98,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         {
             switch (SpiralAxes)
             {
-                case SpiralAxes.XZRight: return ComponentsToRotationXZRight;
-                case SpiralAxes.XZLeft:
-                case SpiralAxes.YZUp:
-                case SpiralAxes.YZDown:
+                case SpiralAxes.HorizontalRight: return ComponentsToRotationXZRight;
+                case SpiralAxes.HorizontalLeft:
+                case SpiralAxes.VerticalUp:
+                case SpiralAxes.VerticalDown:
 
                 default:
                     throw new ArgumentException($"Invalid {nameof(SpiralAxes)} value.");
