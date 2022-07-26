@@ -169,16 +169,25 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             var venueFolder = $"Assets/{importFromRoot}/bg/bg_{venueID}";
             var searchFolders = new string[] { initFolder, stageFolder, venueFolder };
 
+
             // Adds object with general info about the course.
             CreateGlobalParams(scene);
 
+            // Everything with a coordinate goes in here
+            var mirrorRoot = new GameObject("Scene Root (Mirror X)").transform;
+
             // Create scene objects, static objects, and dynamic objects
             var rootTransforms = CreateAllSceneObjects(scene, searchFolders);
-            CreateTrackTransformHierarchy(scene);
-            CreateTrackIndexChains(scene);
-            IncludeStaticMeshColliders(scene, stageFolder);
-            CreateGridXZVisual(scene);
-            CreateStaticMeshColliderManagerSphereBounds(scene);
+            foreach (var transform in rootTransforms)
+                transform.SetParent(mirrorRoot);
+
+            CreateTrackTransformHierarchy(scene).SetParent(mirrorRoot);
+            // TODO: convert to tag container
+            //TestTransformHeirarchy(rootSegments).SetParent(mirrorRoot);
+            CreateTrackIndexChains(scene).SetParent(mirrorRoot);
+            IncludeStaticMeshColliders(scene, stageFolder).SetParent(mirrorRoot);
+            CreateGridXZVisual(scene).SetParent(mirrorRoot);
+            CreateStaticMeshColliderManagerSphereBounds(scene).SetParent(mirrorRoot);
 
             // TRIGGERS
             {
@@ -200,12 +209,26 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                         child.gameObject.SetActive(false);
                     }
                 }
+                triggersRoot.SetParent(mirrorRoot);
             }
 
             // Hack AF, could use some cleaning
             var allRootSegments = GameObject.FindObjectsOfType<TagTrackSegment>();
             var rootSegments = allRootSegments.Where(x => x.depth == 0).Reverse().ToArray();
             var testTransforms = TestTransformHeirarchy(rootSegments);
+            //testTransforms.SetParent(mirrorRoot);
+            //testTransforms.gameObject.SetActive(false);
+
+            // Mirror all objects
+            // Now that everything is placed right, get rid of mirror root
+            var mirrorRootChildren = mirrorRoot.GetChildren();
+            foreach (var child in mirrorRootChildren)
+            {
+                var script = child.gameObject.AddComponent<GfzMirroredObject>();
+                child.SetParent(null);
+                script.MirrorTransform();
+            }
+            GameObject.DestroyImmediate(mirrorRoot.gameObject);
 
             // Finally, save the scene file
             EditorSceneManager.SaveScene(unityScene, scenePath, false);

@@ -71,6 +71,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 }
             }
 
+            // If objects have been mirrored, mirror again before export
+            var mirroredObjects = GameObject.FindObjectsOfType<GfzMirroredObject>();
+            foreach (var mirroredObject in mirroredObjects)
+                mirroredObject.MirrorTransform();
+
             // Build a new scene!
             var scene = new Scene()
             {
@@ -247,6 +252,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             LzUtility.CompressAvLzToDisk(outputFile, compressFormat, true);
             OSUtility.OpenDirectory(outputPath);
             Debug.Log($"Created course '{outputFile}'.");
+
+            // Undo mirroring
+            foreach (var mirroredObject in mirroredObjects)
+                mirroredObject.MirrorTransform();
 
             // LOG
             using (var writer = new StreamWriter(File.Create(outputFile + ".txt")))

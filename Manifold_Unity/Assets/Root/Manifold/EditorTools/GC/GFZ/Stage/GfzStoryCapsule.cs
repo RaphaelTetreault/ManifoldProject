@@ -67,7 +67,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         public void ImportGfz(MiscellaneousTrigger value)
         {
-            transform.CopyGfzTransform(value.Transform);
+            transform.CopyGfzTransformTRXS(value.Transform);
             transform.localScale *= scale;
 
             // Select which capsule type flag to use.

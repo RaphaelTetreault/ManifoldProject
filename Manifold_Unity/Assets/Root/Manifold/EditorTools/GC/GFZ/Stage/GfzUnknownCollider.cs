@@ -38,7 +38,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         public void ImportGfz(UnknownCollider value)
         {
-            transform.CopyGfzTransform(value.Transform);
+            transform.CopyGfzTransformTRXS(value.Transform);
             transform.localScale *= scale;
 
             var gobj = GameObject.Find(value.SceneObject.Name);

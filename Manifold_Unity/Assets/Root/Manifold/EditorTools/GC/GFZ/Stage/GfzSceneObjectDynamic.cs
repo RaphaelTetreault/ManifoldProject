@@ -64,13 +64,17 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 // Copy most reliable transform if available
                 if (dynamicSceneObject.TransformMatrix3x4 != null)
                 {
-                    transform.CopyGfzTransform(dynamicSceneObject.TransformMatrix3x4);
+                    transform.CopyGfzTransformMatrix3x4(dynamicSceneObject.TransformMatrix3x4);
                 }
                 else
                 {
-                    transform.CopyGfzTransform(dynamicSceneObject.TransformTRXS);
+                    transform.CopyGfzTransformTRXS(dynamicSceneObject.TransformTRXS);
                 }
             }
+
+            // Add scripts and import data
+            //sceneObject = this.gameObject.AddComponent<GfzSceneObject>();
+            //sceneObject.ImportGfz(dynamicSceneObject.sceneObject);
 
             if (dynamicSceneObject.AnimationClip != null)
             {
@@ -80,6 +84,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
             if (dynamicSceneObject.TextureScroll != null)
             {
+                //Debug.Log($"{nameof(TextureScroll)}");
+                //Debug.Log($"{name} has {nameof(TextureScroll)}");
                 textureScroll = this.gameObject.AddComponent<GfzTextureScroll>();
                 textureScroll.ImportGfz(dynamicSceneObject.TextureScroll);
             }
