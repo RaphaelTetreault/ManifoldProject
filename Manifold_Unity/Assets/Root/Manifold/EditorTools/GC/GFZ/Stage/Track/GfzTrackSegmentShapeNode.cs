@@ -107,7 +107,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         }
 
 
-        private void OnDrawGizmos()
+        private void OnDrawGizmosSelected ()
         {
             Gizmos.color = Color.red;
             Gizmos.DrawCube(transform.position, Vector3.one * 10f);
