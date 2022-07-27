@@ -12,6 +12,7 @@ using UnityEngine;
 using Unity.Mathematics;
 using System.Linq;
 
+using Manifold.EditorTools.GC.GFZ.GMA;
 using Manifold.EditorTools.GC.GFZ.Stage.Track;
 
 
@@ -215,10 +216,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
                 scene.CircuitType = track.CircuitType;
             }
-            // Inject TRACK models
+            // Inject TRACK models, + recover missing models
             {
                 // This creates the GMA archive and gives us the scene objects and dynamic scene objects for them
-                var trackModelsGma = CreateTrackModelsGma(out SceneObject[] sceneObjects, out SceneObjectDynamic[] dynamicSceneObjects);
+                var gma = CreateTrackModelsGma(out SceneObject[] sceneObjects, out SceneObjectDynamic[] dynamicSceneObjects);
 
                 // Add SceneObject's LODs and their name to archive
                 foreach (var sceneObject in sceneObjects)
@@ -232,11 +233,18 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 scene.dynamicSceneObjects = dynamicSceneObjects.Concat(scene.dynamicSceneObjects).ToArray();
 
                 // save gma
-                var gmaFileName = outputPath + $"st{scene.CourseIndex:00}.gma";
-                using (var writer = new EndianBinaryWriter(File.Create(gmaFileName), Gma.endianness))
-                    writer.Write(trackModelsGma);
-                LzUtility.CompressAvLzToDisk(gmaFileName, compressFormat, true);
-                Debug.Log($"Created models archive '{gmaFileName}'.");
+                var gmaFileName = $"st{scene.CourseIndex:00}.gma";
+                var gmaFilePath = outputPath + gmaFileName;
+
+                // Recover models we might be overwriting
+
+                var missingModels = RecoverMissingModelsFromStageGma(gmaFileName);
+                gma.Models = gma.Models.Concat(missingModels).ToArray();
+
+                using (var writer = new EndianBinaryWriter(File.Create(gmaFilePath), Gma.endianness))
+                    writer.Write(gma);
+                LzUtility.CompressAvLzToDisk(gmaFilePath, compressFormat, true);
+                Debug.Log($"Created models archive '{gmaFilePath}'.");
             }
 
             // TEMP until data is stored properly in GFZ unity components
@@ -305,10 +313,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         }
 
 
-        // Helper function that converts arrays of 
-        public static T[] GetGfzValues<T>(IGfzConvertable<T>[] unity)
+        // Helper function that converts arrays of unity-edtor values into their gfz conterpart
+        public static TGfzConvertable[] GetGfzValues<TGfzConvertable>(IGfzConvertable<TGfzConvertable>[] unity)
         {
-            var gfz = new T[unity.Length];
+            var gfz = new TGfzConvertable[unity.Length];
             for (int i = 0; i < unity.Length; i++)
                 gfz[i] = unity[i].ExportGfz();
 
@@ -364,7 +372,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             };
             return dynamicSceneObject;
         }
-
         public static Gma CreateTrackModelsGma(out SceneObject[] sceneObjects, out SceneObjectDynamic[] dynamicSceneObjects)
         {
             // get GfzTrack, use it to get children
@@ -404,6 +411,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
             return gma;
         }
+
+
+        #region STATIC COLLIDER MESH MANAGER
 
         public static ColliderTriangle[] GetColliderTriangles(GfzStaticColliderMesh2[] staticColliders)
         {
@@ -470,5 +480,47 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             scene.staticColliderMeshManager.TriMeshGrids[3] = GetIndexListsAll(scene.staticColliderMeshManager); // 3 == dash
         }
 
+        #endregion
+
+
+        public static Model[] RecoverMissingModelsFromStageGma(string missingFile)
+        {
+            string missingFileName = Path.GetFileNameWithoutExtension(missingFile);
+            var tags = GameObject.FindObjectsOfType<GmaSourceTag>();
+            var dictMissingModels = new Dictionary<string, GmaSourceTag>();
+
+            foreach (var tag in tags)
+            {
+                bool isMissingModelReference = tag.FileName == missingFileName;
+                if (!isMissingModelReference)
+                    continue;
+
+                if (!dictMissingModels.ContainsKey(tag.ModelName))
+                    dictMissingModels.Add(tag.ModelName, tag);
+            }
+
+            var models = new Model[dictMissingModels.Count];
+            var settings = GfzProjectWindow.GetSettings();
+            string inputPath = settings.SourceStageDirectory;
+            string filePath = inputPath + missingFile;
+
+            using (var reader = new EndianBinaryReader(File.OpenRead(filePath), Gma.endianness))
+            {
+                int i = 0;
+                foreach (var kvMissingModel in dictMissingModels)
+                {
+                    var missingModel = kvMissingModel.Value;
+                    reader.JumpToAddress(missingModel.GcmfAddressRange.startAddress);
+
+                    var model = new Model();
+                    model.Name = missingModel.ModelName;
+                    model.Gcmf = new Gcmf();
+                    model.Gcmf.Deserialize(reader);
+                    models[i++] = model;
+                }
+            }
+
+            return models;
+        }
     }
 }

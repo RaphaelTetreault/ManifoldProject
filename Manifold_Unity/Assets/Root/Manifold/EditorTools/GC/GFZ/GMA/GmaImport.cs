@@ -3,6 +3,7 @@
 
 using GameCube.GX;
 using GameCube.GFZ.GMA;
+using GameCube.GFZ.Stage;
 using Manifold.IO;
 using System;
 using System.IO;
@@ -78,6 +79,33 @@ namespace Manifold.EditorTools.GC.GFZ.GMA
 
             ProgressBar.Clear();
         }
+
+        public static void ImportGma(params string[] folders)
+        {
+            foreach (var directory in folders)
+                ImportGma(directory);
+        }
+
+        public static void ImportSingleStageGmas(int index)
+        {
+            var settings = GfzProjectWindow.GetSettings();
+            var importPath = settings.UnityWorkingDirectory;
+            var venueID = CourseUtility.GetVenueID(index).ToString().ToLower();
+            var initFolder = $"{importPath}/init";
+            var stageFolder = $"{importPath}/stage/st{index:00}";
+            var venueFolder = $"{importPath}/bg/bg_{venueID}";
+
+            ImportGma(initFolder, stageFolder, venueFolder);
+        }
+
+        [MenuItem(GfzMenuItems.GMA.ImportGmaSingleScene, priority = GfzMenuItems.GMA.ImportGmaSingleScenePriority)]
+        public static void ImportSingleStageGmas()
+        {
+            var settings = GfzProjectWindow.GetSettings();
+            var sceneIndex = settings.SingleSceneIndex;
+            ImportSingleStageGmas(sceneIndex);
+        }
+
 
         public static UnityEngine.Material[] HackApplyDefaultMaterial(Mesh mesh, UnityEngine.Material defaultMaterial)
         {
