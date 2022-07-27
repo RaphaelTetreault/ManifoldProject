@@ -14,7 +14,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         [field: SerializeField] public MeshRenderer MeshRenderer { get; protected set; }
         [field: SerializeField] public Mesh Mesh { get; protected set; }
         [field: SerializeField] public Material DefaultMaterial { get; protected set; }
-        [field: SerializeField] public bool HideGameObjectInEditor { get; set; }
+        [field: SerializeField] public bool HideGameObjectInEditor { get; protected set; }
 
 
         public void UpdateMesh(Mesh mesh)
@@ -45,6 +45,15 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
             if (DefaultMaterial == null)
                 DefaultMaterial = AssetDatabase.LoadAssetAtPath<Material>(DefaultMaterialPath);
+
+            // Hide this gameobject in 
+            if (HideGameObjectInEditor)
+                gameObject.hideFlags |= HideFlags.HideInHierarchy;
+        }
+
+        public void SetHideGameObjectInEditor(bool hideGameObjectInEditor)
+        {
+            HideGameObjectInEditor = hideGameObjectInEditor;
 
             // Hide this gameobject in 
             if (HideGameObjectInEditor)

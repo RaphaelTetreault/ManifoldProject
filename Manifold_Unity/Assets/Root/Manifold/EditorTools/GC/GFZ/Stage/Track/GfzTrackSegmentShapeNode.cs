@@ -102,7 +102,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 MeshDisplay = meshDisplay;
 
                 // Hide this object in inspector
-                meshDisplay.HideGameObjectInEditor = true;
+                meshDisplay.SetHideGameObjectInEditor(true);
             }
         }
 
