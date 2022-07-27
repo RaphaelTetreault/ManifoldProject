@@ -11,7 +11,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         IRailSegment
     {
         // Mesh stuff
-        [field: SerializeField, Min(1)] public int WidthDivisions { get; private set; } = 4;
+        [field: SerializeField, Min(1)] public int WidthDivisions { get; private set; } = 1;
         [field: SerializeField, Min(1f)] public float LengthDistance { get; private set; } = 10f;
 
         [field: Header("Road Properties")]
@@ -34,7 +34,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             var allVertices = new List<Vector3>();
             foreach (var tristrip in trackMeshTristrips)
                 allVertices.AddRange(tristrip.positions);
-            var boundingSphere = TristripGenerator.CreateBoundingSphereFromPoints(allVertices);
+            var boundingSphere = TristripGenerator.CreateBoundingSphereFromPoints(allVertices, allVertices.Count);
 
             // Note: this template is both sides, we do not YET need to sort front/back facing tristrips.
             var template = GfzAssetTemplates.MeshTemplates.DebugTemplates.CreateLitVertexColored();

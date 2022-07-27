@@ -7,14 +7,14 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
     public class GfzSpiralPathSimple : GfzTrackSegmentRootNode,
         IPositionEvaluable
     {
-        [SerializeField] private SpiralAxes axes = SpiralAxes.XZRight;
+        [SerializeField] private SpiralAxes axes = SpiralAxes.HorizontalRight;
         [SerializeField] private AnimationCurve rotationZ = new(new(0, 0), new(1, 0));
         [SerializeField] private AnimationCurve scaleX = new(new(0, 60), new(1, 60));
         [SerializeField] private AnimationCurve scaleY = new(new(0, 1), new(1, 1));
         [SerializeField, Min(0)] private float radius0 = 200;
         [SerializeField, Min(0)] private float radius1 = 200;
         [SerializeField] private float axisOffset = 0;
-        [SerializeField, Min(1)] private float rotateDegrees = 90f;
+        [SerializeField, Range(1f, 1800f)] private float rotateDegrees = 90f;
         [SerializeField, Min(8)] private int keysPer360Degrees = 36;
         [SerializeField] private AnimationCurveTRS animationCurveTRS = new();
 
@@ -43,10 +43,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         {
             switch (axes)
             {
-                case SpiralAxes.XZRight: return ComponentsToXZRight;
-                case SpiralAxes.XZLeft: return ComponentsToXZLeft;
-                case SpiralAxes.YZUp: return ComponentsToXYUp;
-                case SpiralAxes.YZDown: return ComponentsToXYDown;
+                case SpiralAxes.HorizontalRight: return ComponentsToXZRight;
+                case SpiralAxes.HorizontalLeft: return ComponentsToXZLeft;
+                case SpiralAxes.VerticalUp: return ComponentsToXYUp;
+                case SpiralAxes.VerticalDown: return ComponentsToXYDown;
                 default:
                     throw new ArgumentException($"Invalid {nameof(SpiralAxes)} value.");
             }
@@ -60,10 +60,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         {
             switch (axes)
             {
-                case SpiralAxes.XZRight: return ComponentsToRotationXZRight;
-                case SpiralAxes.XZLeft: return ComponentsToRotationXZLeft;
-                case SpiralAxes.YZUp: return ComponentsToRotationYZUp;
-                case SpiralAxes.YZDown: return ComponentsToRotationYZDown;
+                case SpiralAxes.HorizontalRight: return ComponentsToRotationXZRight;
+                case SpiralAxes.HorizontalLeft: return ComponentsToRotationXZLeft;
+                case SpiralAxes.VerticalUp: return ComponentsToRotationYZUp;
+                case SpiralAxes.VerticalDown: return ComponentsToRotationYZDown;
                 default:
                     throw new ArgumentException($"Invalid {nameof(SpiralAxes)} value.");
             }
@@ -145,12 +145,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             var startRotation = GetRotation().eulerAngles;
             var positionXYZ = new AnimationCurve3();
 
-            var componentToSpiralFunction = ComponentsToSpiral(axes);
+            var componentToSpiralPosition = ComponentsToSpiral(axes);
             var componentsToRotationKeys = ComponentsToRotationKeys(axes);
             var maxTimeRolls = rotationZ.GetMaxTime();
 
             Quaternion orientation = GetRotation();
             Vector3 prevEulers = Vector3.zero;
+            //Vector3 prevEulers = orientation.eulerAngles;
 
             // Length of curve
             // Todo: archemides spiral calc?
@@ -171,24 +172,22 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 float cos = Mathf.Cos(stepDistanceRadians);
                 float sin = Mathf.Sin(stepDistanceRadians);
                 // Compute position
-                float componentA0 = cos * radius - radius0;
-                float componentB0 = sin * radius;
+                float pCos = cos * radius - radius0;
+                float pSin = sin * radius;
                 float offset = Mathf.Lerp(0, axisOffset, time);
-                Vector3 spiralPosition0 = componentToSpiralFunction(componentA0, componentB0, offset);
-                Vector3 position = startPosition + orientation * spiralPosition0;
+                Vector3 spiralPosition = componentToSpiralPosition(pCos, pSin, offset);
+                Vector3 position = startPosition + orientation * spiralPosition;
                 positionXYZ.AddKeys(time, position);
             }
 
 
-            bool isXZ = axes == SpiralAxes.XZLeft || axes == SpiralAxes.XZRight;
-            bool isYZ = axes == SpiralAxes.YZUp || axes == SpiralAxes.YZDown;
+            bool isHorizontal = axes == SpiralAxes.HorizontalLeft || axes == SpiralAxes.HorizontalRight;
+            bool isVertical = axes == SpiralAxes.VerticalUp || axes == SpiralAxes.VerticalDown;
 
             // POSITION
             var kPosition = GetPosition();
-            var keysPX = isYZ
-                ? new Keyframe[] { new(0, kPosition.x), new(length, kPosition.x + axisOffset), }
-                : positionXYZ.x.GetRenormalizedKeyRangeAndTangents(0, length);
-            var keysPY = isXZ
+            var keysPX = positionXYZ.x.GetRenormalizedKeyRangeAndTangents(0, length);
+            var keysPY = isHorizontal
                 ? new Keyframe[] { new(0, kPosition.y), new(length, kPosition.y + axisOffset), }
                 : positionXYZ.y.GetRenormalizedKeyRangeAndTangents(0, length);
             var keysPZ = positionXYZ.z.GetRenormalizedKeyRangeAndTangents(0, length);
@@ -205,7 +204,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
             const float weight = 1 / 3f;
 
-            if (isXZ)
+            if (isHorizontal)
             {
                 // make Y curves linear
                 trs.Position.y.SmoothTangents();
@@ -216,7 +215,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 // Fix first key tangents
                 trs.Position.x.SmoothTangents(0, weight);
             }
-            else if (isYZ)
+            else if (isVertical)
             {
                 // make X curves linear
                 trs.Position.x.SmoothTangents();
@@ -226,6 +225,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 trs.Rotation.y.SmoothTangents(trs.Rotation.y.length-1, weight);
                 // Fix first key tangents
                 trs.Position.y.SmoothTangents(0, weight);
+
+                // Temp hack: make first key flat if not X rotation.
+                if (GetRotation().eulerAngles.x == 0f)
+                    trs.Position.y.SetKeyTangents(0f, 0);
             }
 
             animationCurveTRS = trs;

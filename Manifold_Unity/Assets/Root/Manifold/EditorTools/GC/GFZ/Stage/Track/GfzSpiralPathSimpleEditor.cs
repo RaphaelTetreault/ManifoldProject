@@ -54,10 +54,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
             serializedObject.ApplyModifiedProperties();
 
-            EditorGUILayout.Separator();
-            EditorGUILayout.Separator();
-            EditorGUILayout.Separator();
-
             // Uncomment if you need to debug something
             //base.OnInspectorGUI();
         }

@@ -48,7 +48,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
             // This value only exists if we don't have an animation
             if (dynamicSceneObject.AnimationClip == null)
-                dynamicSceneObject.TransformMatrix3x4 = TransformConverter.ToGfzTransformMatrix3x4(transform, Space.Self);
+                dynamicSceneObject.TransformMatrix3x4 = TransformConverter.ToGfzTransformMatrix3x4(transform, Space.World);
 
             return dynamicSceneObject;
         }

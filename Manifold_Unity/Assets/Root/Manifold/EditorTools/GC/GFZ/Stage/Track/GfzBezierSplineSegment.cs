@@ -49,9 +49,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         [SerializeField]
         private AnimationCurveTRS animationCurveTRS = new();
-        public AnimationCurveTRS AnimationCurveTRS => animationCurveTRS;
-
-        [field: SerializeField] public float SegmentLength { get; protected set; } = -1;
 
 
         public bool IsLoop
@@ -97,36 +94,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         {
             points[index] = point;
             CallOnEdited();
-        }
-
-        public AnimationCurve CreateWidthsCurve()
-        {
-            var curve = new AnimationCurve();
-            for (int i = 0; i < points.Count; i++)
-            {
-                var key = new Keyframe()
-                {
-                    time = i,
-                    value = points[i].width,
-                };
-                curve.AddKey(key);
-            }
-            return curve;
-        }
-
-        public AnimationCurve CreateRollsCurve()
-        {
-            var curve = new AnimationCurve();
-            for (int i = 0; i < points.Count; i++)
-            {
-                var key = new Keyframe()
-                {
-                    time = i,
-                    value = points[i].roll,
-                };
-                curve.AddKey(key);
-            }
-            return curve;
         }
 
         public (float time, int index) NormalizedTimeToTimeAndIndex(float t)
@@ -458,7 +425,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             // Entire curve approximate length to within 100m
             const int nStartIterDistance = 50;
             double entireCurveApproximateLength = CurveUtility.GetDistanceBetweenRepeated(this, 0, 1, nStartIterDistance, 2, 1);
-            int nApproximationIterations = (int)(entireCurveApproximateLength / 200);
+            int nApproximationIterations = Mathf.CeilToInt((float)(entireCurveApproximateLength / 200));
 
             // Compute curve lengths between each bezier control point
             int numCurves = points.Count - 1;
@@ -473,6 +440,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 totalDistance += distance;
             }
 
+            //
+            Vector3 basePosition = GetPosition();
+
             var previousRotation = GetOrientation(0, 0).eulerAngles;
             double currDistance = 0;
             for (int i = 0; i < numCurves; i++)
@@ -482,7 +452,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 for (int s = 0; s < samplesBetweenControlsPoints; s++)
                 {
                     var t = (float)(s + 0) / samplesBetweenControlsPoints;
-                    var position = GetPosition(t, i);
+                    var position = GetPosition(t, i) + basePosition;
                     var rotation = GetOrientation(t, i).eulerAngles;
                     rotation = CurveUtility.CleanRotation(previousRotation, rotation);
                     previousRotation = rotation;
@@ -532,7 +502,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         public void UpdateAnimationCurveTRS()
         {
             animationCurveTRS = CreateTRS();
-            SegmentLength = animationCurveTRS.GetMaxTime();
+            //SegmentLength = animationCurveTRS.GetMaxTime();
         }
 
         public double BezierApproximateDistance(IPositionEvaluable evaluable, double timeStart, double timeEnd, int nApproximationIterations)

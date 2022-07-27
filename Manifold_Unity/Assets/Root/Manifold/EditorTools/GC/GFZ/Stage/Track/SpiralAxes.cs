@@ -2,9 +2,9 @@
 {
     public enum SpiralAxes
     {
-        XZLeft,
-        XZRight,
-        YZUp,
-        YZDown,
+        HorizontalLeft,
+        HorizontalRight,
+        VerticalUp,
+        VerticalDown,
     }
 }
