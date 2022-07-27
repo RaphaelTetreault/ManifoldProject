@@ -237,7 +237,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 var gmaFilePath = outputPath + gmaFileName;
 
                 // Recover models we might be overwriting
-
                 var missingModels = RecoverMissingModelsFromStageGma(gmaFileName);
                 gma.Models = gma.Models.Concat(missingModels).ToArray();
 

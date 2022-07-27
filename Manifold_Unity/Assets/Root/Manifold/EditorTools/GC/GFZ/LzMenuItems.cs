@@ -8,6 +8,19 @@ namespace Manifold.EditorTools.GC.GFZ
 {
     public class LzMenuItems
     {
+        [MenuItem(GfzMenuItems.Lz.DecompressFromSource, priority = GfzMenuItems.Lz.DecompressFromSourcePriority)]
+        public static void DecompressAllAvLzFromSource()
+        {
+            var settings = GfzProjectWindow.GetSettings();
+            var rootPath = settings.SourceDirectory;
+
+            var title = "Decompressing LZ Files...";
+            var filePaths = Directory.GetFiles(rootPath, "*.lz", SearchOption.AllDirectories);
+            // Wrap the decompress function into something that comforms to the file action format
+            var decompressFile = (FileUtility.FileAction)((string filePath) => { LzUtility.DecompressAvLzToDisk(filePath, true); });
+            FileUtility.FileActionLoop(title, filePaths, decompressFile);
+        }
+
         /// <summary>
         /// Decompresses all F-Zero GX LZ files in selected folder and subfolders
         /// </summary>

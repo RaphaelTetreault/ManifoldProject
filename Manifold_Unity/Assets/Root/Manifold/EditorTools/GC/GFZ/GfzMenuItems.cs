@@ -33,10 +33,12 @@ namespace Manifold.EditorTools.GC.GFZ
         {
             public const string Menu = Const.Menu.Manifold + "LZ Compression Tools/";
             // LzMenuItems
-            public const string DecompressAllAvLz = Menu + "Decompress all LZ files in directory tree";
+            public const string DecompressFromSource = Menu + "Decompress all LZ files in source directory";
+            public const string DecompressAllAvLz = Menu + "Decompress all LZ files in select directory tree";
             public const string DecompressSingleAvLz = Menu + "Decompress single LZ file";
             public const string CompressSingleFileGx = Menu + "Compress single file with AV LZ (GX)";
             public const string CompressSingleFileAx = Menu + "Compress single file with AV LZ (AX)";
+            public const int DecompressFromSourcePriority = 0;
             public const int DecompressAllAvLzPriority = 1;
             public const int DecompressSingleAvLzPriority = 2;
             public const int CompressSingleFileGxPriority = 101;
