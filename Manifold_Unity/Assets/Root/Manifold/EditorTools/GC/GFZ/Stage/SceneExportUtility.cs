@@ -25,10 +25,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         public static void ExportSceneActive()
         {
             var format = SerializeFormat.GX;
-            ExportScene(format, true, true);
+            ExportScene(format, true);
         }
 
-        public static void ExportScene(SerializeFormat format, bool verbose, bool findInactive)
+        public static void ExportScene(SerializeFormat format, bool verbose)
         {
             var settings = GfzProjectWindow.GetSettings();
             var outputPath = settings.SceneExportPath;
@@ -103,14 +103,14 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
             // Triggers
             {
-                var arcadeCheckpointTriggers = GameObject.FindObjectsOfType<GfzTimeExtensionTrigger>(findInactive);
+                var arcadeCheckpointTriggers = GameObject.FindObjectsOfType<GfzTimeExtensionTrigger>();
                 scene.timeExtensionTriggers = GetGfzValues(arcadeCheckpointTriggers);
 
                 // This trigger type is a mess... Get all 3 representations, combine, assign.
                 // Collect all trigger types. They all get converted to the same GFZ base type.
-                var objectPaths = GameObject.FindObjectsOfType<GfzObjectPath>(findInactive);
-                var storyCapsules = GameObject.FindObjectsOfType<GfzStoryCapsule>(findInactive);
-                var unknownMetadataTriggers = GameObject.FindObjectsOfType<GfzUnknownMiscellaneousTrigger>(findInactive);
+                var objectPaths = GameObject.FindObjectsOfType<GfzObjectPath>();
+                var storyCapsules = GameObject.FindObjectsOfType<GfzStoryCapsule>();
+                var unknownMetadataTriggers = GameObject.FindObjectsOfType<GfzUnknownMiscellaneousTrigger>();
                 // Make a list, add range for each type
                 var courseMetadataTriggers = new List<MiscellaneousTrigger>();
                 courseMetadataTriggers.AddRange(GetGfzValues(objectPaths));
@@ -120,15 +120,15 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 scene.miscellaneousTriggers = courseMetadataTriggers.ToArray();
 
                 // This trigger type is a mess... Get all 3 representations, combine, assign.
-                var unknownTriggers = GameObject.FindObjectsOfType<GfzCullOverrideTrigger>(findInactive);
+                var unknownTriggers = GameObject.FindObjectsOfType<GfzCullOverrideTrigger>();
                 scene.cullOverrideTriggers = GetGfzValues(unknownTriggers);
 
                 // 
-                var visualEffectTriggers = GameObject.FindObjectsOfType<GfzVisualEffectTrigger>(findInactive);
+                var visualEffectTriggers = GameObject.FindObjectsOfType<GfzVisualEffectTrigger>();
                 scene.visualEffectTriggers = GetGfzValues(visualEffectTriggers);
 
                 // TODO:
-                var storyObjectTrigger = GameObject.FindObjectsOfType<GfzStoryObjectTrigger>(findInactive);
+                var storyObjectTrigger = GameObject.FindObjectsOfType<GfzStoryObjectTrigger>();
                 scene.storyObjectTriggers = GetGfzValues(storyObjectTrigger);
             }
 
