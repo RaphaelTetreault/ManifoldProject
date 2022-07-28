@@ -59,5 +59,28 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             if (HideGameObjectInEditor)
                 gameObject.hideFlags |= HideFlags.HideInHierarchy;
         }
+
+        [MenuItem("Manifold/Scene Tools/Unhide All")]
+        public static void UnhideAll()
+        {
+            var objs = FindObjectsOfType<MeshDisplay>(true);
+            foreach (var obj in objs)
+            {
+                obj.gameObject.hideFlags &= ~HideFlags.HideInHierarchy;
+                obj.HideGameObjectInEditor = false;
+            }
+        }
+
+        [MenuItem("Manifold/Scene Tools/Hide All")]
+        public static void HideAll()
+        {
+            var objs = FindObjectsOfType<MeshDisplay>(true);
+            foreach (var obj in objs)
+            {
+                obj.gameObject.hideFlags |= HideFlags.HideInHierarchy;
+                obj.HideGameObjectInEditor = false;
+            }
+        }
+
     }
 }
