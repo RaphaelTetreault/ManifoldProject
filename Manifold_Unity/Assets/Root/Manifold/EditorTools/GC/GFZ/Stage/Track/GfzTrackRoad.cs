@@ -49,16 +49,17 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             MeshTemplate topTemplate = GfzAssetTemplates.MeshTemplates.MuteCity.CreateRoadTop();
 
             //
-            var gcmf = MeshTemplate.CombineTemplates(railsTemplate, topTemplate);
+            var gcmf = MeshTemplate.CombineTemplates(topTemplate, railsTemplate);
             gcmf.BoundingSphere = globalBoundingSphere;
             //
-            gcmf.Submeshes[0].PrimaryFrontFacing = railsDlist;
-            gcmf.Submeshes[0].VertexAttributes = railsDlist[0].Attributes;
+            gcmf.Submeshes[0].PrimaryBackFacing = topDlist;
+            gcmf.Submeshes[0].VertexAttributes = topDlist[0].Attributes;
             gcmf.Submeshes[0].UnkAlphaOptions.Origin = globalBoundingSphere.origin;
             //
-            gcmf.Submeshes[1].PrimaryBackFacing = topDlist;
-            gcmf.Submeshes[1].VertexAttributes = topDlist[0].Attributes;
+            gcmf.Submeshes[1].PrimaryFrontFacing = railsDlist;
+            gcmf.Submeshes[1].VertexAttributes = railsDlist[0].Attributes;
             gcmf.Submeshes[1].UnkAlphaOptions.Origin = globalBoundingSphere.origin;
+
 
             return gcmf;
         }
