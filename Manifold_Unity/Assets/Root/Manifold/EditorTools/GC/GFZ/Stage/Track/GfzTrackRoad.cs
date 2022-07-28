@@ -68,6 +68,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         public override Mesh CreateMesh()
         {
             var tristrips = TristripGenerator.CreateTempTrackRoad(this, WidthDivisions, LengthDistance, false);
+            //var matrices = TristripGenerator.Road.SimpleMatrices(this, LengthDistance, true);
+            //var tristrips = TristripGenerator.Road.CreateMuteCityRoadTop(this, matrices, WidthDivisions);
             var mesh = TristripsToMesh(tristrips);
             mesh.name = $"Auto Gen - {name}";
             return mesh;

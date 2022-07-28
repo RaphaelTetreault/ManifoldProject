@@ -39,6 +39,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 var vertices = tristrip.positions;
                 var normals = tristrip.normals;
                 var triangles = tristrip.GetIndices(); // not offset
+                //var uv1 = tristrip.uv0 == null ? new Vector2[vertices.Length] : tristrip.uv0;
+                //var uv2 = tristrip.uv1;
+                //var uv3 = tristrip.uv2;
 
                 // Build submesh
                 submesh.baseVertex = mesh.vertexCount;

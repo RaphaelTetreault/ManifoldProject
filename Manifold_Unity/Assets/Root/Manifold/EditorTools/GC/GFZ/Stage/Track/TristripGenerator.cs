@@ -667,7 +667,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 var endpointA = new Vector3(-0.5f, 0, 0);
                 var endpointB = new Vector3(+0.5f, 0, 0);
                 var normal = Vector3.up;
-                var trackTopTristrips = CreateTristrips(matrices, endpointA, endpointB, nTristrips, null, normal, 0, true);
+                var trackTopTristrips = CreateTristrips(matrices, endpointA, endpointB, nTristrips, null, normal, 1, true);
 
                 return trackTopTristrips.ToArray();
             }
