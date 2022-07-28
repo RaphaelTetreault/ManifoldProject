@@ -134,23 +134,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             //
             DrawDefaults(spline);
 
-            // METADATA
-            GuiSimple.Label("Track-Assigned Data", EditorStyles.boldLabel);
-            {
-                GUI.enabled = false;
-                EditorGUILayout.ObjectField("Prev", spline.Prev, typeof(GfzTrackSegmentRootNode), allowSceneObjects: true);
-                EditorGUILayout.ObjectField("Next", spline.Next, typeof(GfzTrackSegmentRootNode), allowSceneObjects: true);
-                GUI.enabled = true;
-
-                if (GUILayout.Button($"Update Track Data"))
-                {
-                    var track = spline.GetComponentInParent<GfzTrack>();
-                    track.FindChildSegments();
-                    track.AssignContinuity();
-                }
-            }
-            EditorGUILayout.Separator();
-
             // TRS
             GuiSimple.Label("Animation Curve TRS", EditorStyles.boldLabel);
             {
@@ -406,6 +389,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
 
             DrawWeights(index - 1);
+            DrawAlignBezierTangents(index - 1, "Align with Previous");
         }
 
         private void DrawOutTangent(BezierPoint bezier, int index)
@@ -430,6 +414,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
 
             DrawWeights(index + 0);
+            DrawAlignBezierTangents(index + 0, "Align with Next");
         }
 
         private void DrawIndexToolbar()
@@ -478,20 +463,19 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         private void DrawWeights(int selectedIndex)
         {
+            const float oneQuarter = 1 / 4f;
+            const float oneThird = 1 / 3f;
+            const float oneHalf = 1 / 2f;
+
             GUILayout.BeginHorizontal();
             {
-                const float oneQuarter = 1 / 4f;
-                const float oneThird = 1 / 3f;
-                const float oneHalf = 1 / 2f;
-
-                var buttonWidth = GUILayout.Width(GuiSimple.GetElementsWidth(3));
-
-                GUI.enabled = IsValidIndex(selectedIndex);
-                if (GUILayout.Button($"Weight Tangents 1/4", buttonWidth))
+                EditorGUILayout.PrefixLabel("Auto Weight");
+                GUI.enabled = IsValidIndex(selectedIndex) && IsValidIndex(selectedIndex + 1);
+                if (GUILayout.Button($"1/4"))
                     SetBezierWeight(selectedIndex, selectedIndex + 1, oneQuarter, oneQuarter);
-                if (GUILayout.Button($"Weight Tangents 1/3", buttonWidth))
+                if (GUILayout.Button($"1/3"))
                     SetBezierWeight(selectedIndex, selectedIndex + 1, oneThird, oneThird);
-                if (GUILayout.Button($"Weight Tangents 1/2", buttonWidth))
+                if (GUILayout.Button($"1/2"))
                     SetBezierWeight(selectedIndex, selectedIndex + 1, oneHalf, oneHalf);
                 GUI.enabled = true;
             }
@@ -523,38 +507,41 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             EditorUtility.SetDirty(spline);
         }
 
-        public void EditInTangent(int index, Vector3 localPosition)
+        public void EditInTangent(int index, Vector3 localPosition, bool doRecord = true)
         {
             BezierPoint bezierPoint = spline.GetBezierPoint(index);
-
-            // 
             var inTangentPosition = localPosition;
 
             //
             string undoMessage = $"Move bézier point [{index}] in-tangent";
-            Undo.RecordObject(spline, undoMessage);
+            if (doRecord)
+                Undo.RecordObject(spline, undoMessage);
+
             bezierPoint.inTangent = root.InverseTransformPoint(inTangentPosition);
             bezierPoint.outTangent = GetTangentFromMode(bezierPoint, bezierPoint.inTangent, bezierPoint.outTangent);
             spline.SetBezierPoint(index, bezierPoint);
             ConnectEndsIfLoop(index, bezierPoint);
-            EditorUtility.SetDirty(spline);
+
+            if (doRecord)
+                EditorUtility.SetDirty(spline);
         }
 
-        public void EditOutTangent(int index, Vector3 localPosition)
+        public void EditOutTangent(int index, Vector3 localPosition, bool doRecord = true)
         {
             BezierPoint bezierPoint = spline.GetBezierPoint(index);
-
-            // 
             var outTangentPosition = localPosition;
 
-            //
             string undoMessage = $"Move bézier point [{index}] out-tangent";
-            Undo.RecordObject(spline, undoMessage);
+            if (doRecord)
+                Undo.RecordObject(spline, undoMessage);
+
             bezierPoint.outTangent = root.InverseTransformPoint(outTangentPosition);
             bezierPoint.inTangent = GetTangentFromMode(bezierPoint, bezierPoint.outTangent, bezierPoint.inTangent);
             spline.SetBezierPoint(index, bezierPoint);
             ConnectEndsIfLoop(index, bezierPoint);
-            EditorUtility.SetDirty(spline);
+
+            if (doRecord)
+                EditorUtility.SetDirty(spline);
         }
 
         public void ConnectEndsIfLoop(int index, BezierPoint bezierPoint)
@@ -752,6 +739,42 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 ConnectEndsIfLoop(index1, bezierPoint1);
             }
             EditorUtility.SetDirty(spline);
+        }
+
+        public void AlignBezierTangents(int index0, int index1)
+        {
+            var bezier0 = spline.GetBezierPoint(index0);
+            var bezier1 = spline.GetBezierPoint(index1);
+            Vector3 direction = (bezier1.position - bezier0.position).normalized;
+            Vector3 outTangent0 = direction * bezier0.OutTangentLocal.magnitude;
+            Vector3 inTangent1 = -direction * bezier1.InTangentLocal.magnitude;
+
+            Vector3 basePosition = spline.GetPosition();
+            outTangent0 += basePosition + bezier0.position;
+            inTangent1 += basePosition + bezier1.position;
+
+            string undoMessage = $"Align bézier tangents {index0} and {index1}";
+            Undo.RecordObject(spline, undoMessage);
+            {
+                EditOutTangent(index0, outTangent0, false);
+                EditInTangent(index1, inTangent1, false);
+            }
+            EditorUtility.SetDirty(spline);
+        }
+
+        private void DrawAlignBezierTangents(int selectedIndex, string buttonLabel)
+        {
+            GUILayout.BeginHorizontal();
+            {
+                EditorGUILayout.PrefixLabel("Auto Align");
+                GUI.enabled = IsValidIndex(selectedIndex) && IsValidIndex(selectedIndex + 1);
+                if (GUILayout.Button(buttonLabel))
+                {
+                    AlignBezierTangents(selectedIndex, selectedIndex + 1);
+                }
+                GUI.enabled = true;
+            }
+            GUILayout.EndHorizontal();
         }
 
     }

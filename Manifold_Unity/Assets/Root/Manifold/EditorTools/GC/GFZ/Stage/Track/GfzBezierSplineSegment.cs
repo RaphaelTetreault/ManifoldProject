@@ -468,7 +468,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             {
                 float t = (float)totalDistance;
                 int i = numCurves - 1;
-                var position = GetPosition(t, i);
+                var position = GetPosition(t, i) + basePosition;
                 var rotation = GetOrientation(t, i).eulerAngles;
                 rotation = CurveUtility.CleanRotation(previousRotation, rotation);
                 trs.Position.AddKeys(t, position);
