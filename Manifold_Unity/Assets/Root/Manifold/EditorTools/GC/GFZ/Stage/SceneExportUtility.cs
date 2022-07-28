@@ -364,7 +364,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         {
             var dynamicSceneObject = new SceneObjectDynamic()
             {
-                Unk0x00 = ObjectRenderFlags0x00.renderObject,
+                Unk0x00 = ObjectRenderFlags0x00.renderObject | ObjectRenderFlags0x00.ReceiveEfbShadow,
                 Unk0x04 = ObjectRenderFlags0x04._NULL,
                 SceneObject = sceneObject,
                 TransformMatrix3x4 = transform,
