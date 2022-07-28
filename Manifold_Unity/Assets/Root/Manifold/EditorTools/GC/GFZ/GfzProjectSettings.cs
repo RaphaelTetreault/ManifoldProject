@@ -37,6 +37,17 @@ namespace Manifold.EditorTools.GC.GFZ
         [field: SerializeField] public string Gfzj8pDir { get; private set; } = string.Empty;
 
 
+        [field: SerializeField] public Color32 DebugTrackSurface { get; private set; } = new Color32(128, 128, 128, 255);
+        [field: SerializeField] public Color32 DebugTrackUnderside { get; private set; } = new Color32(48, 48, 48, 255);
+        [field: SerializeField] public Color32 DebugTrackLeft { get; private set; } = new Color32(127, 255, 127, 255); // green
+        [field: SerializeField] public Color32 DebugTrackRight { get; private set; } = new Color32(255, 127, 127, 255); // red
+        [field: SerializeField] public Color32 DebugRailLeft { get; private set; } = new Color32(0, 255, 0, 255); // green
+        [field: SerializeField] public Color32 DebugRailRight { get; private set; } = new Color32(255, 0, 0, 255); // red
+        [field: SerializeField] public Color32 DebugWidthDivider { get; private set; } = new Color32(96, 96, 96, 255); // dark grey
+        [field: SerializeField] public Color32 DebugLaneDivider{ get; private set; } = new Color32(127, 255, 255, 255); // cyan
+
+
+
         // Easy accessors for common places
         public string SourceStageDirectory => $"{SourceDirectory}stage/";
         /// <summary>
@@ -87,7 +98,6 @@ namespace Manifold.EditorTools.GC.GFZ
             LogOutput = GuiSimple.BrowseFolder(LogOutput, "Log Output Directory", "Open Log Directory", DriveRootDirectory);
             AnalysisOutput = GuiSimple.BrowseFolder(AnalysisOutput, "Analysis Output Directory", "Open Analysis Directory", DriveRootDirectory);
             FileOutput = GuiSimple.BrowseFolder(FileOutput, "File/Binary Output Directory", "Open File Output Directory", DriveRootDirectory);
-
         }
 
         public void DrawTestTab()
@@ -100,6 +110,17 @@ namespace Manifold.EditorTools.GC.GFZ
             Gfzj8pDir = GuiSimple.BrowseFolder(Gfzj8pDir, "GFZJ8P Directory (AX-JP)", "Open F-Zero AX (JP) root folder with extracted files", DriveRootDirectory);
         }
 
+        public void DrawColors()
+        {
+            DebugTrackSurface = EditorGUILayout.ColorField(nameof(DebugTrackSurface), DebugTrackSurface);
+            DebugTrackUnderside = EditorGUILayout.ColorField(nameof(DebugTrackUnderside), DebugTrackUnderside);
+            DebugTrackLeft = EditorGUILayout.ColorField(nameof(DebugTrackLeft), DebugTrackLeft);
+            DebugTrackRight = EditorGUILayout.ColorField(nameof(DebugTrackRight), DebugTrackRight);
+            DebugRailLeft = EditorGUILayout.ColorField(nameof(DebugRailLeft), DebugRailLeft);
+            DebugRailRight = EditorGUILayout.ColorField(nameof(DebugRailRight), DebugRailRight);
+            DebugWidthDivider = EditorGUILayout.ColorField(nameof(DebugWidthDivider), DebugWidthDivider);
+            DebugLaneDivider = EditorGUILayout.ColorField(nameof(DebugLaneDivider), DebugLaneDivider);
+        }
 
         public static GfzProjectSettings Load(string fileName)
         {

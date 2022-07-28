@@ -3,6 +3,7 @@ using GameCube.GFZ.Stage;
 using Manifold.EditorTools;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage.Track
@@ -11,7 +12,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         IRailSegment
     {
         // Mesh stuff
-        [field: SerializeField, Min(1)] public int WidthDivisions { get; private set; } = 1;
+        [field: SerializeField, Range(1, 32)] public int WidthDivisions { get; private set; } = 1;
         [field: SerializeField, Min(1f)] public float LengthDistance { get; private set; } = 10f;
 
         [field: Header("Road Properties")]
@@ -26,27 +27,43 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         public override Gcmf CreateGcmf()
         {
             // Make the vertex data
-            var trackMeshTristrips = TristripGenerator.CreateTempTrackRoad(this, WidthDivisions, LengthDistance, true);
-            // convert to GameCube format
-            var dlists = TristripGenerator.TristripsToDisplayLists(trackMeshTristrips, GameCube.GFZ.GfzGX.VAT);
+            //var trackMeshTristrips = TristripGenerator.CreateTempTrackRoad(this, WidthDivisions, LengthDistance, true);
+            //var rails = TristripGenerator.Road.CreateMuteCityRailsOnlyUV(this, WidthDivisions, LengthDistance, true);
+            var matrices = TristripGenerator.Road.SimpleMatrices(this, LengthDistance, true);
+            var rails = TristripGenerator.Road.CreateMuteCityRails(this, matrices);
+            var top = TristripGenerator.Road.CreateMuteCityRoadTop(this, matrices, WidthDivisions);
 
+            var allTristrips = new List<Tristrip>();
+            allTristrips.AddRange(rails);
+            allTristrips.AddRange(top);
             // Compute bounding sphere
-            var allVertices = new List<Vector3>();
-            foreach (var tristrip in trackMeshTristrips)
-                allVertices.AddRange(tristrip.positions);
-            var boundingSphere = TristripGenerator.CreateBoundingSphereFromPoints(allVertices, allVertices.Count);
+            var globalBoundingSphere = TristripGenerator.CreateBoundingSphereFromTristrips(allTristrips);
+
+            // convert to GameCube format
+            var railsDlist = TristripGenerator.TristripsToDisplayLists(rails, GameCube.GFZ.GfzGX.VAT);
+            var topDlist = TristripGenerator.TristripsToDisplayLists(top, GameCube.GFZ.GfzGX.VAT);
 
             // Note: this template is both sides, we do not YET need to sort front/back facing tristrips.
-            var template = GfzAssetTemplates.MeshTemplates.DebugTemplates.CreateLitVertexColored();
-            var gcmf = template.Gcmf;
-            gcmf.BoundingSphere = boundingSphere;
-            gcmf.Submeshes[0].PrimaryDisplayListsTranslucid = dlists;
-            gcmf.Submeshes[0].VertexAttributes = dlists[0].Attributes; // hacky
-            gcmf.Submeshes[0].UnkAlphaOptions.Origin = boundingSphere.origin;
-            gcmf.PatchTevLayerIndexes();
+            //var template = GfzAssetTemplates.MeshTemplates.DebugTemplates.CreateLitVertexColored();
+            MeshTemplate railsTemplate = GfzAssetTemplates.MeshTemplates.MuteCity.CreateRail();
+            MeshTemplate topTemplate = GfzAssetTemplates.MeshTemplates.MuteCity.CreateRoadTop();
+
+            //
+            var gcmf = MeshTemplate.CombineTemplates(railsTemplate, topTemplate);
+            gcmf.BoundingSphere = globalBoundingSphere;
+            //
+            gcmf.Submeshes[0].PrimaryFrontFacing = railsDlist;
+            gcmf.Submeshes[0].VertexAttributes = railsDlist[0].Attributes;
+            gcmf.Submeshes[0].UnkAlphaOptions.Origin = globalBoundingSphere.origin;
+            //
+            gcmf.Submeshes[1].PrimaryBackFacing = topDlist;
+            gcmf.Submeshes[1].VertexAttributes = topDlist[0].Attributes;
+            gcmf.Submeshes[1].UnkAlphaOptions.Origin = globalBoundingSphere.origin;
 
             return gcmf;
         }
+
+
 
         public override Mesh CreateMesh()
         {

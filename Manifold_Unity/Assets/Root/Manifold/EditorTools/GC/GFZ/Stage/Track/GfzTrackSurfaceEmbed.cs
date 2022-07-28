@@ -100,10 +100,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
             // Note: this template is both sides, we do not YET need to sort front/back facing tristrips.
             var template = GfzAssetTemplates.MeshTemplates.DebugTemplates.CreateLitVertexColored();
-            var gcmf = template.Gcmf;
+            var gcmf = MeshTemplate.CombineTemplates(template);
             gcmf.Submeshes[0].RenderFlags |= RenderFlags.unlit;
             gcmf.BoundingSphere = boundingSphere;
-            gcmf.Submeshes[0].PrimaryDisplayListsTranslucid = dlists;
+            gcmf.Submeshes[0].PrimaryFrontFacing = dlists;
             gcmf.Submeshes[0].VertexAttributes = dlists[0].Attributes; // hacky
             gcmf.Submeshes[0].UnkAlphaOptions.Origin = boundingSphere.origin;
             gcmf.PatchTevLayerIndexes();

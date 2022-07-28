@@ -33,35 +33,24 @@ namespace Manifold.EditorTools.GC.GFZ
                         Unk0x10 = MatFlags0x10.unk1 | MatFlags0x10.unk3 | MatFlags0x10.unk5,
                     };
                     var unknownAlphaOptions = new UnkAlphaOptions();
-                    var submeshes = new Submesh[]
+                    var submesh = new Submesh()
                     {
-                        new Submesh ()
-                        {
-                            RenderFlags = RenderFlags.doubleSidedFaces,
-                            Material = material,
-                            UnkAlphaOptions = unknownAlphaOptions,
-                        },
-                    };
-                    var gcmf = new Gcmf
-                    {
-                        Attributes = 0,
-                        TextureConfigsCount = (ushort)tevLayers.Length,
-                        OpaqueMaterialCount = 1,
-                        TranslucidMaterialCount = 0,
-                        TevLayers = tevLayers,
-                        Submeshes = submeshes,
+                        RenderFlags = RenderFlags.doubleSidedFaces,
+                        Material = material,
+                        UnkAlphaOptions = unknownAlphaOptions,
                     };
 
                     var template = new MeshTemplate()
                     {
-                        Gcmf = gcmf,
+                        Opaque = 1,
+                        Submesh = submesh,
+                        TevLayers = tevLayers,
                         TextureHashes = textureHashes,
                         TextureScroll = textureScroll,
                     };
 
                     return template;
                 }
-
                 public static MeshTemplate CreateUnlitVertexColored()
                 {
                     // Not doing isSwappable, tpl index, config index
@@ -71,28 +60,18 @@ namespace Manifold.EditorTools.GC.GFZ
 
                     var material = new Material();
                     var unknownAlphaOptions = new UnkAlphaOptions();
-                    var submeshes = new Submesh[]
+                    var submesh = new Submesh()
                     {
-                        new Submesh ()
-                        {
-                            RenderFlags = RenderFlags.unlit | RenderFlags.doubleSidedFaces,
-                            Material = material,
-                            UnkAlphaOptions = unknownAlphaOptions,
-                        },
-                    };
-                    var gcmf = new Gcmf
-                    {
-                        Attributes = 0,
-                        TextureConfigsCount = (ushort)tevLayers.Length,
-                        OpaqueMaterialCount = 0,
-                        TranslucidMaterialCount = 1,
-                        TevLayers = tevLayers,
-                        Submeshes = submeshes,
+                        RenderFlags = RenderFlags.unlit | RenderFlags.doubleSidedFaces,
+                        Material = material,
+                        UnkAlphaOptions = unknownAlphaOptions,
                     };
 
                     var template = new MeshTemplate()
                     {
-                        Gcmf = gcmf,
+                        Opaque = 1,
+                        Submesh = submesh,
+                        TevLayers = tevLayers,
                         TextureHashes = textureHashes,
                         TextureScroll = textureScroll,
                     };
@@ -122,7 +101,7 @@ namespace Manifold.EditorTools.GC.GFZ
                         },
                         new TevLayer()
                         {
-                            Unk0x00 = TexFlags0x00.ENABLE_UV_SCROLL,
+                            Unk0x00 = 0, // TexFlags0x00.ENABLE_UV_SCROLL,
                             MipmapSetting = MipmapSetting.UNK_FLAG_5,
                             WrapMode = TextureWrapMode.repeatX | TextureWrapMode.repeatY,
                             LodBias = 0,
@@ -174,30 +153,95 @@ namespace Manifold.EditorTools.GC.GFZ
                         // origin?
                         Unk0x10 = BlendFactors.unk2 | BlendFactors.unk4,
                     };
-                    var submeshes = new Submesh[]
+                    var submesh = new Submesh()
                     {
-                        new Submesh ()
-                        {
-                            RenderFlags = RenderFlags.unlit | RenderFlags.doubleSidedFaces | RenderFlags.customBlendSource | RenderFlags.customBlendDestination,
-                            Material = material,
-                            UnkAlphaOptions = unknownAlphaOptions,
-                            // GX attributes
-                        },
-                    };
-                    var gcmf = new Gcmf
-                    {
-                        Attributes = 0,
-                        // bounding sphere
-                        TextureConfigsCount = (ushort)tevLayers.Length,
-                        OpaqueMaterialCount = 0,
-                        TranslucidMaterialCount = 1,
-                        TevLayers = tevLayers,
-                        Submeshes = submeshes,
+                        RenderFlags = RenderFlags.unlit | RenderFlags.doubleSidedFaces | RenderFlags.customBlendSource | RenderFlags.customBlendDestination,
+                        Material = material,
+                        UnkAlphaOptions = unknownAlphaOptions,
+                        // GX attributes
                     };
 
                     var template = new MeshTemplate()
                     {
-                        Gcmf = gcmf,
+                        Translucid = 1,
+                        Submesh = submesh,
+                        TevLayers = tevLayers,
+                        TextureHashes = textureHashes,
+                        TextureScroll = textureScroll,
+                    };
+
+                    return template;
+                }
+
+                public static MeshTemplate CreateRoadTop()
+                {
+                    // Not doing isSwappable, tpl index, config index
+                    var tevLayers = new TevLayer[]
+                    {
+                        new TevLayer()
+                        {
+                            Unk0x00 = 0,
+                            MipmapSetting = MipmapSetting.UNK_FLAG_1,
+                            WrapMode = TextureWrapMode.repeatX | TextureWrapMode.repeatY,
+                            LodBias = 0,
+                            AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
+                            Unk0x0C = 0,
+                            Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
+                            // TEMP
+                            TplTextureIndex = 2, // 41 is com
+                        },
+                    };
+                    var textureHashes = new string[]
+                    {
+                        "c148529dca41e47c9d2ff15fe0d294bb", // st01 tex 2 - mut unused
+                        //"083a0143d9afb40b27fcbe39bf95b50f", // st01 tex 41 - com
+                    };
+                    var textureScroll = new TextureScroll { Fields = new TextureScrollField[12] };
+                    textureScroll.Fields[0] = new TextureScrollField(0, 30);
+
+                    var material = new Material
+                    {
+                        MaterialColor = new GXColor(0xb2b2b2ff),
+                        AmbientColor = new GXColor(0x7f7f7fff),
+                        SpecularColor = new GXColor(0xFFFFFFFF),
+                        Unk0x10 = MatFlags0x10.unk1 | MatFlags0x10.unk3 | MatFlags0x10.unk5,
+                        Alpha = 255,
+                        TevLayerCount = (byte)tevLayers.Length,
+                        //MaterialDestination = 0, // Resolved based on display lists at serialize time
+                        UnkAlpha0x14 = -1,
+                        Unk0x15 = 0,
+                        TevLayerIndex0 = 0,
+                        TevLayerIndex1 = -1,
+                        TevLayerIndex2 = -1,
+                    };
+                    var unknownAlphaOptions = new UnkAlphaOptions()
+                    {
+                        // origin?
+                    };
+                    var submesh = new Submesh()
+                    {
+                        RenderFlags = 0,
+                        Material = material,
+                        UnkAlphaOptions = unknownAlphaOptions,
+                        // GX attributes
+                    };
+                    //var gcmf = new Gcmf
+                    //{
+                    //    Attributes = 0,
+                    //    // bounding sphere
+                    //    TextureConfigsCount = (ushort)tevLayers.Length,
+                    //    OpaqueMaterialCount = 1,
+                    //    TranslucidMaterialCount = 0,
+                    //    TevLayers = tevLayers,
+                    //    Submeshes = submeshes,
+                    //};
+
+                    var template = new MeshTemplate()
+                    {
+                        //Gcmf = gcmf,
+                        Opaque = 1,
+                        Submesh = submesh,
+                        TevLayers = tevLayers,
                         TextureHashes = textureHashes,
                         TextureScroll = textureScroll,
                     };
@@ -210,9 +254,54 @@ namespace Manifold.EditorTools.GC.GFZ
 
     public class MeshTemplate
     {
-        public Gcmf Gcmf { get; internal set; } = null;
+        public byte Opaque { get; internal set; }
+        public byte Translucid { get; internal set; }
+        public Submesh Submesh { get; internal set; } = null;
+        public TevLayer[] TevLayers { get; internal set; } = new TevLayer[0];
         public string[] TextureHashes { get; internal set; } = new string[0];
         public TextureScroll TextureScroll { get; internal set; } = null;
+
+        public static Gcmf CombineTemplates(params MeshTemplate[] templates)
+        {
+            ushort opaque = 0;
+            ushort translucid = 0;
+            var tevLayers = new List<TevLayer>();
+            var submeshes = new Submesh[templates.Length];
+            // todo: texture indexes and stuff
+
+            short tevLayerOffset = 0;
+            for (int i = 0; i < templates.Length; i++)
+            {
+                var template = templates[i];
+
+                // Collect tev layers
+                tevLayers.AddRange(template.TevLayers);
+                // MAYBE: auto assign tev layer here? ignore if -1?
+
+                // Offset material/mesh tev layers
+                template.Submesh.Material.OffsetTevLayerIndices(tevLayerOffset);
+                tevLayerOffset = (short)tevLayers.Count;
+                // collect submesh
+                submeshes[i] = template.Submesh;
+
+                // TEMP: sort how many opaque / translucid
+                opaque += template.Opaque;
+                translucid += template.Translucid;
+            }
+
+            // Solved elsewhere: attributes, bounding sphere
+            var gcmf = new Gcmf
+            {
+                TextureConfigsCount = (ushort)tevLayers.Count,
+                OpaqueMaterialCount = opaque,
+                TranslucidMaterialCount = translucid,
+                TevLayers = tevLayers.ToArray(),
+                Submeshes = submeshes,
+            };
+            gcmf.PatchTevLayerIndexes();
+
+            return gcmf;
+        }
     }
 
     public class GcmfTemplate

@@ -50,7 +50,7 @@ namespace Manifold.EditorTools.GC.GFZ
             // The current window instance in serializable format
             var window = new SerializedObject(this);
             // The window tab we want to look at
-            tabIndex = GUILayout.Toolbar(tabIndex, new string[] { "Settings", "Testing" });
+            tabIndex = GUILayout.Toolbar(tabIndex, new string[] { "Settings", "Graphics", "Testing" });
             EditorGUILayout.Space();
 
             switch (tabIndex)
@@ -63,13 +63,13 @@ namespace Manifold.EditorTools.GC.GFZ
 
                 case 1:
                     {
-                        settings.DrawTestTab();
+                        settings.DrawColors();
                     }
                     break;
 
                 case 2:
                     {
-
+                        settings.DrawTestTab();
                     }
                     break;
 
@@ -99,5 +99,6 @@ namespace Manifold.EditorTools.GC.GFZ
                 return GfzProjectSettings.Load(saveName);
             }
         }
+
     }
 }
