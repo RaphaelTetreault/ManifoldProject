@@ -13,7 +13,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
     {
         public enum PathObjectVenue
         {
-            Lightning,
+            Lightning = 1,
             OuterSpace,
         }
 

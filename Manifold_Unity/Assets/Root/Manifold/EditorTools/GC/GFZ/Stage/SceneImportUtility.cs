@@ -333,7 +333,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                     // Path data
                     case CourseMetadataType.Lightning_Lightning:
                         {
-                            var pathObject = CreateMetadataPathObj(courseMetadataTrigger);
+                            var pathObject = CreateMetadataPathObj(courseMetadataTrigger, CourseMetadataType.Lightning_Lightning);
                             pathObject.name = $"[{count.ToString(format)}] Lightning Path";
                             pathObject.transform.parent = root;
                             pathObject.gizmosColor = Color.yellow;
@@ -341,7 +341,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                         break;
                     case CourseMetadataType.OuterSpace_Meteor:
                         {
-                            var pathObject = CreateMetadataPathObj(courseMetadataTrigger);
+                            var pathObject = CreateMetadataPathObj(courseMetadataTrigger, CourseMetadataType.OuterSpace_Meteor);
                             pathObject.name = $"[{count.ToString(format)}] Meteor Path";
                             pathObject.transform.parent = root;
                             pathObject.gizmosColor = new Color32(255, 127, 0, 255); // orange
@@ -381,7 +381,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
             return root;
         }
-        private static GfzObjectPath CreateMetadataPathObj(MiscellaneousTrigger data)
+        private static GfzObjectPath CreateMetadataPathObj(MiscellaneousTrigger data, CourseMetadataType courseMetadataType)
         {
             var pathObject = new GameObject();
             var root = pathObject.transform;
@@ -399,6 +399,21 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             var objectPath = pathObject.AddComponent<GfzObjectPath>();
             objectPath.from = from;
             objectPath.to = to;
+
+            switch (courseMetadataType)
+            {
+                case CourseMetadataType.Lightning_Lightning:
+                    objectPath.objectVenue = GfzObjectPath.PathObjectVenue.Lightning;
+                    break;
+
+                case CourseMetadataType.OuterSpace_Meteor:
+                    objectPath.objectVenue = GfzObjectPath.PathObjectVenue.OuterSpace;
+                    break;
+
+                default:
+                    objectPath.objectVenue = 0;
+                    break;
+            }
 
             return objectPath;
         }
