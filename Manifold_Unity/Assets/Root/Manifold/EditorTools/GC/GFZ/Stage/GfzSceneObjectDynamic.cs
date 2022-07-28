@@ -7,8 +7,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
     public sealed class GfzSceneObjectDynamic : MonoBehaviour,
         IGfzConvertable<SceneObjectDynamic>
     {
-        [SerializeField] [Hex] private int unk_0x00;
-        [SerializeField] [Hex] private int unk_0x04;
+        [SerializeField] private ObjectRenderFlags0x00 unk_0x00;
+        [SerializeField] private ObjectRenderFlags0x04 unk_0x04;
         [SerializeField] private GfzSceneObject sceneObject;
         [SerializeField] private GfzAnimationClip animationClip;
         [SerializeField] private GfzTextureScroll textureScroll;
