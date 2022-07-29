@@ -1,3 +1,4 @@
+using GameCube.GFZ;
 using GameCube.GFZ.GMA;
 using GameCube.GFZ.Stage;
 using GameCube.GFZ.TPL;
@@ -10,6 +11,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 //
+using Unity.Mathematics;
 using Manifold.EditorTools.GC.GFZ.Stage.Track;
 
 namespace Manifold.EditorTools.GC.GFZ
@@ -504,14 +506,54 @@ namespace Manifold.EditorTools.GC.GFZ
             return attributes;
         }
 
-        private static GameCube.GFZ.BoundingSphere CreateBoundingSphere(Tristrip[][] tristripsCollections)
+        // Modified from: http://www.technologicalutopia.com/sourcecode/xnageometry/boundingsphere.cs.htm
+        private static GameCube.GFZ.BoundingSphere CreateBoundingSphereFromPoints(IEnumerable<UnityEngine.Vector3> points, int length)
+        {
+            if (points == null)
+                throw new System.ArgumentNullException(nameof(points));
+            if (length <= 0)
+                throw new System.ArgumentOutOfRangeException(nameof(length));
+
+            float radius = 0;
+            float3 center = new float3();
+            float lengthReciprocal = 1f / length;
+
+            // First, we'll find the center of gravity for the point 'cloud'.
+            foreach (var point in points)
+            {
+                float3 pointWeighted = point * lengthReciprocal;
+                center += pointWeighted;
+            }
+
+            // Calculate the radius of the needed sphere (it equals the distance between the center and the point further away).
+            foreach (var point in points)
+            {
+                float3 centerToPoint = (float3)point - center;
+                float distance = math.length(centerToPoint);
+
+                if (distance > radius)
+                    radius = distance;
+            }
+
+            return new BoundingSphere(center, radius);
+        }
+        private static BoundingSphere CreateBoundingSphereFromTristrips(IEnumerable<Tristrip> tristrips)
+        {
+            var points = new List<UnityEngine.Vector3>();
+            foreach (var tristrip in tristrips)
+                points.AddRange(tristrip.positions);
+
+            var boundingSphere = CreateBoundingSphereFromPoints(points, points.Count);
+            return boundingSphere;
+        }
+        private static BoundingSphere CreateBoundingSphere(Tristrip[][] tristripsCollections)
         {
             // Linearize tristrips
             var allTristrips = new List<Tristrip>();
             foreach (var tristrips in tristripsCollections)
                 allTristrips.AddRange(tristrips);
 
-            var boundingSphere = TristripGenerator.CreateBoundingSphereFromTristrips(allTristrips);
+            var boundingSphere = CreateBoundingSphereFromTristrips(allTristrips);
 
             return boundingSphere;
         }
