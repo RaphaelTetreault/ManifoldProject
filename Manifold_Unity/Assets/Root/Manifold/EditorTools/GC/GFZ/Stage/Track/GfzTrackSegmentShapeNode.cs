@@ -38,7 +38,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 var tristrip = tristrips[i];
                 var vertices = tristrip.positions;
                 var normals = tristrip.normals;
+                var colors = tristrip.color0.IsNullOrEmpty() ? ArrayUtility.DefaultArray(new Color32(255, 255, 255, 255), tristrip.VertexCount) : tristrip.color0;
                 var triangles = tristrip.GetIndices(); // not offset
+                //var uv1 = tristrip.uv0 == null ? new Vector2[vertices.Length] : tristrip.uv0;
+                //var uv2 = tristrip.uv1;
+                //var uv3 = tristrip.uv2;
 
                 // Build submesh
                 submesh.baseVertex = mesh.vertexCount;
@@ -54,7 +58,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 //var uv1Concat = mesh.uv.Concat(uv1).ToArray();
                 //var uv2Concat = mesh.uv2.Concat(uv2).ToArray();
                 //var uv3Concat = mesh.uv3.Concat(uv3).ToArray();
-                var colorsConcat = mesh.colors32.Concat(tristrip.color0).ToArray();
+                var colorsConcat = mesh.colors32.Concat(colors).ToArray();
                 //if (list.nbt != null)
                 //    mesh.tangents = list.nbt;
                 var trianglesConcat = mesh.triangles.Concat(triangles).ToArray();

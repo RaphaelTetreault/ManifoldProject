@@ -19,9 +19,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public void UpdateMesh(Mesh mesh)
         {
-            Mesh = mesh;
+            // Delete old meshh
+            DestroyImmediate(Mesh);
 
-            MeshFilter.mesh = mesh;
+            // Update to new mesh
+            Mesh = mesh;
+            MeshFilter.sharedMesh = mesh;
 
             int numTristrips = Mesh.subMeshCount;
             var materials = new Material[numTristrips];
@@ -60,7 +63,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 gameObject.hideFlags |= HideFlags.HideInHierarchy;
         }
 
-        [MenuItem("Manifold/Scene Tools/Unhide All")]
+        [MenuItem("Manifold/Mesh Tools/Unhide all MeshDisplay")]
         public static void UnhideAll()
         {
             var objs = FindObjectsOfType<MeshDisplay>(true);
@@ -71,7 +74,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
         }
 
-        [MenuItem("Manifold/Scene Tools/Hide All")]
+        [MenuItem("Manifold/Mesh Tools/Hide all MeshDisplay")]
         public static void HideAll()
         {
             var objs = FindObjectsOfType<MeshDisplay>(true);
@@ -79,6 +82,16 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             {
                 obj.gameObject.hideFlags |= HideFlags.HideInHierarchy;
                 obj.HideGameObjectInEditor = false;
+            }
+        }
+
+        [MenuItem(itemName: "Manifold/Mesh Tools/Force update meshes _F7")]
+        public static void UpdateMeshes()
+        {
+            var objs = FindObjectsOfType<GfzTrackSegmentShapeNode>();
+            foreach (var obj in objs)
+            {
+                obj.UpdateMesh();
             }
         }
 

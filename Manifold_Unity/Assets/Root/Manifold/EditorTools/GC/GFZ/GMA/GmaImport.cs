@@ -240,9 +240,9 @@ namespace Manifold.EditorTools.GC.GFZ.GMA
                     throw new Exception("Aborted import.");
                 }
 
-                if (submesh.PrimaryDisplayListsOpaque is not null)
+                if (submesh.PrimaryBackFacing is not null)
                 {
-                    foreach (var displayList in submesh.PrimaryDisplayListsOpaque)
+                    foreach (var displayList in submesh.PrimaryBackFacing)
                     {
                         var submeshDescriptor = CreateSubMesh(displayList, mesh, true);
                         submeshDescriptors[submeshIndex] = submeshDescriptor;
@@ -250,9 +250,9 @@ namespace Manifold.EditorTools.GC.GFZ.GMA
                     }
                 }
 
-                if (submesh.PrimaryDisplayListsTranslucid is not null)
+                if (submesh.PrimaryFrontFacing is not null)
                 {
-                    foreach (var displayList in submesh.PrimaryDisplayListsTranslucid)
+                    foreach (var displayList in submesh.PrimaryFrontFacing)
                     {
                         var submeshDescriptor = CreateSubMesh(displayList, mesh, false);
                         submeshDescriptors[submeshIndex] = submeshDescriptor;
@@ -260,9 +260,9 @@ namespace Manifold.EditorTools.GC.GFZ.GMA
                     }
                 }
 
-                if (submesh.SecondaryDisplayListsOpaque is not null)
+                if (submesh.SecondaryBackFacing is not null)
                 {
-                    foreach (var displayList in submesh.SecondaryDisplayListsOpaque)
+                    foreach (var displayList in submesh.SecondaryBackFacing)
                     {
                         var submeshDescriptor = CreateSubMesh(displayList, mesh, true);
                         submeshDescriptors[submeshIndex] = submeshDescriptor;
@@ -270,9 +270,9 @@ namespace Manifold.EditorTools.GC.GFZ.GMA
                     }
                 }
 
-                if (submesh.SecondaryDisplayListsTranslucid is not null)
+                if (submesh.SecondaryFrontFacing is not null)
                 {
-                    foreach (var displayList in submesh.SecondaryDisplayListsTranslucid)
+                    foreach (var displayList in submesh.SecondaryFrontFacing)
                     {
                         var submeshDescriptor = CreateSubMesh(displayList, mesh, false);
                         submeshDescriptors[submeshIndex] = submeshDescriptor;
@@ -431,14 +431,14 @@ namespace Manifold.EditorTools.GC.GFZ.GMA
 
             foreach (var submesh in model.Gcmf.Submeshes)
             {
-                if (submesh.PrimaryDisplayListsOpaque is not null)
-                    numSubmeshes += submesh.PrimaryDisplayListsOpaque.Length;
-                if (submesh.PrimaryDisplayListsTranslucid is not null)
-                    numSubmeshes += submesh.PrimaryDisplayListsTranslucid.Length;
-                if (submesh.SecondaryDisplayListsOpaque is not null)
-                    numSubmeshes += submesh.SecondaryDisplayListsOpaque.Length;
-                if (submesh.SecondaryDisplayListsTranslucid is not null)
-                    numSubmeshes += submesh.SecondaryDisplayListsTranslucid.Length;
+                if (submesh.PrimaryBackFacing is not null)
+                    numSubmeshes += submesh.PrimaryBackFacing.Length;
+                if (submesh.PrimaryFrontFacing is not null)
+                    numSubmeshes += submesh.PrimaryFrontFacing.Length;
+                if (submesh.SecondaryBackFacing is not null)
+                    numSubmeshes += submesh.SecondaryBackFacing.Length;
+                if (submesh.SecondaryFrontFacing is not null)
+                    numSubmeshes += submesh.SecondaryFrontFacing.Length;
             }
 
             return numSubmeshes;

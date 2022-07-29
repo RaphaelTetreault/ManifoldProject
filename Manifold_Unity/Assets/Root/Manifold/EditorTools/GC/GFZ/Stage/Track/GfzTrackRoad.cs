@@ -1,8 +1,10 @@
+using GameCube.GX;
 using GameCube.GFZ.GMA;
 using GameCube.GFZ.Stage;
 using Manifold.EditorTools;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage.Track
@@ -10,13 +12,16 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
     public class GfzTrackRoad : GfzTrackSegmentShapeNode,
         IRailSegment
     {
-        // Mesh stuff
-        [field: SerializeField, Min(1)] public int WidthDivisions { get; private set; } = 1;
+        [field: Header("Mesh Properties")]
+        [field: SerializeField] public MeshStyle MeshStyle { get; private set; }
+        [field: SerializeField, Range(1, 32)] public int WidthDivisions { get; private set; } = 1;
         [field: SerializeField, Min(1f)] public float LengthDistance { get; private set; } = 10f;
 
         [field: Header("Road Properties")]
         [field: SerializeField, Min(0f)] public float RailHeightLeft { get; private set; } = 3f;
         [field: SerializeField, Min(0f)] public float RailHeightRight { get; private set; } = 3f;
+
+
 
         public override AnimationCurveTRS CreateAnimationCurveTRS(bool isGfzCoordinateSpace)
         {
@@ -25,32 +30,75 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public override Gcmf CreateGcmf()
         {
-            // Make the vertex data
-            var trackMeshTristrips = TristripGenerator.CreateTempTrackRoad(this, WidthDivisions, LengthDistance, true);
-            // convert to GameCube format
-            var dlists = TristripGenerator.TristripsToDisplayLists(trackMeshTristrips, GameCube.GFZ.GfzGX.VAT);
-
-            // Compute bounding sphere
-            var allVertices = new List<Vector3>();
-            foreach (var tristrip in trackMeshTristrips)
-                allVertices.AddRange(tristrip.positions);
-            var boundingSphere = TristripGenerator.CreateBoundingSphereFromPoints(allVertices, allVertices.Count);
-
-            // Note: this template is both sides, we do not YET need to sort front/back facing tristrips.
-            var template = GfzAssetTemplates.MeshTemplates.DebugTemplates.CreateLitVertexColored();
-            var gcmf = template.Gcmf;
-            gcmf.BoundingSphere = boundingSphere;
-            gcmf.Submeshes[0].PrimaryDisplayListsTranslucid = dlists;
-            gcmf.Submeshes[0].VertexAttributes = dlists[0].Attributes; // hacky
-            gcmf.Submeshes[0].UnkAlphaOptions.Origin = boundingSphere.origin;
-            gcmf.PatchTevLayerIndexes();
-
+            var tristripsCollections = GetTristrips(MeshStyle, true);
+            var templates = GetGcmfTemplates(MeshStyle);
+            var gcmf = GcmfTemplate.CreateGcmf(templates, tristripsCollections);
             return gcmf;
+        }
+
+        public GcmfTemplate[] GetGcmfTemplates(MeshStyle meshStyle)
+        {
+            // NOTE: Always do alpha last
+            switch (meshStyle)
+            {
+                case MeshStyle.MuteCity:
+                    return new GcmfTemplate[]
+                    {
+                        GfzAssetTemplates.MeshTemplates.MuteCity.CreateRoadTop(),
+                        GfzAssetTemplates.MeshTemplates.MuteCity.CreateRoadBottom(),
+                        GfzAssetTemplates.MeshTemplates.MuteCity.CreateRoadSides(),
+                        GfzAssetTemplates.MeshTemplates.MuteCity.CreateLaneDividers(),
+                        GfzAssetTemplates.MeshTemplates.MuteCity.CreateRails(),
+                    };
+
+                default:
+                    return new GcmfTemplate[]
+                    {
+                        GfzAssetTemplates.MeshTemplates.DebugTemplates.CreateLitVertexColored(),
+                    };
+            }
+        }
+
+        public Tristrip[][] GetTristrips(MeshStyle meshStyle, bool isGfzCoordinateSpace)
+        {
+            var matrices = TristripGenerator.CreatePathMatrices(this, isGfzCoordinateSpace, LengthDistance);
+            var maxTime = GetRoot().GetMaxTime();
+
+            switch (meshStyle)
+            {
+                case MeshStyle.MuteCity:
+                    return new Tristrip[][]
+                    {
+                        TristripGenerator.Road.MuteCity.CreateRoadTop(matrices, maxTime, WidthDivisions),
+                        TristripGenerator.Road.MuteCity.CreateRoadBottom(matrices, maxTime, WidthDivisions),
+                        TristripGenerator.Road.MuteCity.CreateRoadSides(matrices, maxTime, 60f),
+                        TristripGenerator.Road.MuteCity.CreateLaneDividers(matrices, maxTime),
+                        TristripGenerator.Road.MuteCity.CreateRails(matrices, this),
+                    };
+
+                default:
+                    return new Tristrip[][]
+                    {
+                        TristripGenerator.Road.CreateDebug(matrices, this, WidthDivisions, LengthDistance, isGfzCoordinateSpace),
+                    };
+            }
+        }
+
+        public Tristrip[] GetTristripsLinear(MeshStyle meshStyle, bool isGfzCoordinateSpace)
+        {
+            var tristripsCollection = GetTristrips(meshStyle, isGfzCoordinateSpace);
+
+            var allTristrips = new List<Tristrip>();
+            foreach (var tristrips in tristripsCollection)
+                allTristrips.AddRange(tristrips);
+
+            return allTristrips.ToArray();
         }
 
         public override Mesh CreateMesh()
         {
-            var tristrips = TristripGenerator.CreateTempTrackRoad(this, WidthDivisions, LengthDistance, false);
+            var tristrips = GetTristripsLinear(MeshStyle, false);
+
             var mesh = TristripsToMesh(tristrips);
             mesh.name = $"Auto Gen - {name}";
             return mesh;
