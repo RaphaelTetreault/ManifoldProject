@@ -172,7 +172,6 @@ namespace Manifold.EditorTools.GC.GFZ
 
                     return template;
                 }
-
                 public static MeshTemplate CreateRoadTop()
                 {
                     // Not doing isSwappable, tpl index, config index
@@ -207,35 +206,19 @@ namespace Manifold.EditorTools.GC.GFZ
                         Unk0x10 = MatFlags0x10.unk1 | MatFlags0x10.unk3 | MatFlags0x10.unk5,
                         Alpha = 255,
                         TevLayerCount = (byte)tevLayers.Length,
-                        //MaterialDestination = 0, // Resolved based on display lists at serialize time
                         UnkAlpha0x14 = -1,
                         Unk0x15 = 0,
                         TevLayerIndex0 = 0,
                         TevLayerIndex1 = -1,
                         TevLayerIndex2 = -1,
                     };
-                    var unknownAlphaOptions = new UnkAlphaOptions()
-                    {
-                        // origin?
-                    };
+                    var unknownAlphaOptions = new UnkAlphaOptions() { };
                     var submesh = new Submesh()
                     {
                         RenderFlags = 0,
                         Material = material,
                         UnkAlphaOptions = unknownAlphaOptions,
-                        // GX attributes
                     };
-                    //var gcmf = new Gcmf
-                    //{
-                    //    Attributes = 0,
-                    //    // bounding sphere
-                    //    TextureConfigsCount = (ushort)tevLayers.Length,
-                    //    OpaqueMaterialCount = 1,
-                    //    TranslucidMaterialCount = 0,
-                    //    TevLayers = tevLayers,
-                    //    Submeshes = submeshes,
-                    //};
-
                     var template = new MeshTemplate()
                     {
                         //Gcmf = gcmf,
@@ -248,6 +231,123 @@ namespace Manifold.EditorTools.GC.GFZ
 
                     return template;
                 }
+                public static MeshTemplate CreateRoadBottom()
+                {
+                    // Not doing isSwappable, tpl index, config index
+                    var tevLayers = new TevLayer[]
+                    {
+                        new TevLayer()
+                        {
+                            Unk0x00 = 0,
+                            MipmapSetting = MipmapSetting.UNK_FLAG_1,
+                            WrapMode = TextureWrapMode.repeatX | TextureWrapMode.repeatY,
+                            LodBias = 0,
+                            AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
+                            Unk0x0C = 0,
+                            Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
+                            // TEMP
+                            TplTextureIndex = 11, // 41 is com
+                        },
+                    };
+                    var textureHashes = new string[]
+                    {
+                        "069afe4a631dbe56398811fb0ef0b8f0", // st01 tex 3
+                    };
+                    var textureScroll = new TextureScroll { Fields = new TextureScrollField[12] };
+                    textureScroll.Fields[0] = new TextureScrollField(0, 30);
+
+                    var material = new Material
+                    {
+                        MaterialColor = new GXColor(0xb2b2b2ff),
+                        AmbientColor = new GXColor(0x7f7f7fff),
+                        SpecularColor = new GXColor(0xFFFFFFFF),
+                        Unk0x10 = MatFlags0x10.unk1 | MatFlags0x10.unk3 | MatFlags0x10.unk5,
+                        Alpha = 255,
+                        TevLayerCount = (byte)tevLayers.Length,
+                        UnkAlpha0x14 = -1,
+                        Unk0x15 = 0,
+                        TevLayerIndex0 = 0,
+                        TevLayerIndex1 = -1,
+                        TevLayerIndex2 = -1,
+                    };
+                    var unknownAlphaOptions = new UnkAlphaOptions() { };
+                    var submesh = new Submesh()
+                    {
+                        RenderFlags = 0,
+                        Material = material,
+                        UnkAlphaOptions = unknownAlphaOptions,
+                    };
+                    var template = new MeshTemplate()
+                    {
+                        //Gcmf = gcmf,
+                        Opaque = 1,
+                        Submesh = submesh,
+                        TevLayers = tevLayers,
+                        TextureHashes = textureHashes,
+                        TextureScroll = textureScroll,
+                    };
+
+                    return template;
+                }
+                public static MeshTemplate CreateRoadSides()
+                {
+                    // Not doing isSwappable, tpl index, config index
+                    var tevLayers = new TevLayer[]
+                    {
+                        new TevLayer()
+                        {
+                            Unk0x00 = 0,
+                            MipmapSetting = MipmapSetting.UNK_FLAG_1,
+                            WrapMode = TextureWrapMode.repeatX | TextureWrapMode.repeatY,
+                            LodBias = 0,
+                            AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
+                            Unk0x0C = 0,
+                            Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
+                            // TEMP
+                            TplTextureIndex = 10,
+                        },
+                    };
+                    var textureHashes = new string[]
+                    {
+                        "069afe4a631dbe56398811fb0ef0b8f0", // st01 tex 3
+                    };
+                    var textureScroll = new TextureScroll { Fields = new TextureScrollField[12] };
+                    textureScroll.Fields[0] = new TextureScrollField(0, 30);
+
+                    var material = new Material
+                    {
+                        MaterialColor = new GXColor(0xb2b2b2ff),
+                        AmbientColor = new GXColor(0x7f7f7fff),
+                        SpecularColor = new GXColor(0xFFFFFFFF),
+                        Unk0x10 = MatFlags0x10.unk1 | MatFlags0x10.unk3 | MatFlags0x10.unk5,
+                        Alpha = 255,
+                        TevLayerCount = (byte)tevLayers.Length,
+                        UnkAlpha0x14 = -1,
+                        Unk0x15 = 0,
+                        TevLayerIndex0 = 0,
+                        TevLayerIndex1 = -1,
+                        TevLayerIndex2 = -1,
+                    };
+                    var unknownAlphaOptions = new UnkAlphaOptions() { };
+                    var submesh = new Submesh()
+                    {
+                        RenderFlags = 0,
+                        Material = material,
+                        UnkAlphaOptions = unknownAlphaOptions,
+                    };
+                    var template = new MeshTemplate()
+                    {
+                        //Gcmf = gcmf,
+                        Opaque = 1,
+                        Submesh = submesh,
+                        TevLayers = tevLayers,
+                        TextureHashes = textureHashes,
+                        TextureScroll = textureScroll,
+                    };
+
+                    return template;
+                }
+
             }
         }
     }

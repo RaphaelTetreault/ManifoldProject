@@ -37,12 +37,14 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             {
                 TristripGenerator.Road.CreateMuteCityRoadTop(this, matrices, WidthDivisions, maxTime),
                 TristripGenerator.Road.CreateMuteCityRoadBottom(this, matrices, WidthDivisions, maxTime),
+                TristripGenerator.Road.CreateMuteCityRoadSides(this, matrices, 60f, maxTime),
                 TristripGenerator.Road.CreateMuteCityRails(this, matrices),
             };
             var templates = new MeshTemplate[]
             {
                 GfzAssetTemplates.MeshTemplates.MuteCity.CreateRoadTop(),
-                GfzAssetTemplates.MeshTemplates.MuteCity.CreateRoadTop(),
+                GfzAssetTemplates.MeshTemplates.MuteCity.CreateRoadBottom(),
+                GfzAssetTemplates.MeshTemplates.MuteCity.CreateRoadSides(),
                 GfzAssetTemplates.MeshTemplates.MuteCity.CreateRail()
             };
 
