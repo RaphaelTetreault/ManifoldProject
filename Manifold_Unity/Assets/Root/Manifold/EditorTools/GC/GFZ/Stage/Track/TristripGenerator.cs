@@ -310,24 +310,15 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
         }
 
-
-        public static Tristrip[] CreateTempTrackRoad(GfzTrackSegmentNode node, int nTristrips, float maxStep, bool useGfzCoordSpace)
-            => Road.CreateDebug(node, nTristrips, maxStep, useGfzCoordSpace);
-
-
         public static class Road
         {
-            public static Tristrip[] CreateDebug(GfzTrackSegmentNode node, int nTristrips, float maxStep, bool useGfzCoordSpace)
+            public static Tristrip[] CreateDebug(Matrix4x4[] matrices, GfzTrackSegmentNode node, int nTristrips, float maxStep, bool useGfzCoordSpace)
             {
                 var allTriStrips = new List<Tristrip>();
                 var hacTRS = node.CreateHierarchichalAnimationCurveTRS(useGfzCoordSpace);
                 var segmentLength = hacTRS.GetSegmentLength();
-                var matrices = GenerateMatrixIntervals(hacTRS, maxStep);
 
-                //
                 var settings = GfzProjectWindow.GetSettings();
-
-                // For road, we strip height data
                 matrices = StripHeight(matrices);
 
                 // track top
@@ -457,7 +448,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 // TODO: for future elements, make this generic when possible. ie: reuse mesh between, say,
                 //          Mute City and Green Plant? etc.
 
-                public static Tristrip[] CreateRoadTop(Matrix4x4[] matrices, int nTristrips, float length)
+                public static Tristrip[] CreateRoadTop(Matrix4x4[] matrices, float length, int nTristrips)
                 {
                     var endpointA = new Vector3(-0.5f, 0, 0);
                     var endpointB = new Vector3(+0.5f, 0, 0);
@@ -477,7 +468,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     return tristrips;
                 }
 
-                public static Tristrip[] CreateRoadBottom(Matrix4x4[] matrices, int nTristrips, float length)
+                public static Tristrip[] CreateRoadBottom(Matrix4x4[] matrices, float length, int nTristrips)
                 {
                     var endpointA = new Vector3(-0.5f, -1.5f, 0);
                     var endpointB = new Vector3(+0.5f, -1.5f, 0);
@@ -498,7 +489,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     return tristrips;
                 }
 
-                public static Tristrip[] CreateRoadSides(Matrix4x4[] matrices, float width, float length)
+                public static Tristrip[] CreateRoadSides(Matrix4x4[] matrices, float length, float width)
                 {
                     var allTristrips = new List<Tristrip>();
 
