@@ -16,40 +16,32 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
     public static class TristripGenerator
     {
         public static Matrix4x4[] GenerateMatrixIntervals(HierarchichalAnimationCurveTRS hacTRS, float maxStep)
-        {
-            float segmentLength = hacTRS.GetSegmentLength();
-            float step = segmentLength / maxStep;
-            int totalIterations = (int)math.ceil(step);
-            var matrices = new Matrix4x4[totalIterations + 1]; // +1 since we do <= total, since we want 0 to 1 inclusve
-
-            for (int i = 0; i <= totalIterations; i++)
-            {
-                double percentage = i / (double)totalIterations;
-                double sampleTime = percentage * segmentLength;
-                var matrix = hacTRS.EvaluateAnimationMatrices(sampleTime);
-                matrices[i] = matrix;
-            }
-            return matrices;
-        }
+            => GenerateMatrixIntervals(hacTRS, maxStep, 0f, hacTRS.GetSegmentLength());
         public static Matrix4x4[] GenerateMatrixIntervals(HierarchichalAnimationCurveTRS hacTRS, float maxStep, float min, float max)
         {
-            //float maxTime = hacTRS.GetMaxTime();
-            float subLength = max - min;
-            float step = subLength / maxStep;
+            float range = max - min;
+            float step = range / maxStep;
             int totalIterations = (int)math.ceil(step);
             var matrices = new Matrix4x4[totalIterations + 1]; // +1 since we do <= total, since we want 0 to 1 inclusve
-
-            Debug.Log($"MeshGfz -- Min: {min}, Max: {max}, MaxTime: {-1}");
 
             for (int i = 0; i <= totalIterations; i++)
             {
                 double percentage = i / (double)totalIterations;
-                double sampleTime = min + percentage * subLength;
+                double sampleTime = min + percentage * range;
                 var matrix = hacTRS.EvaluateAnimationMatrices(sampleTime);
                 matrices[i] = matrix;
             }
             return matrices;
         }
+        public static Matrix4x4[] CreatePathMatrices(GfzTrackSegmentNode node, bool useGfzCoordSpace, float maxStep)
+            => CreatePathMatrices(node, useGfzCoordSpace, maxStep, 0f, node.GetMaxTime());
+        public static Matrix4x4[] CreatePathMatrices(GfzTrackSegmentNode node, bool useGfzCoordSpace, float maxStep, float min, float max)
+        {
+            var hacTRS = node.CreateHierarchichalAnimationCurveTRS(useGfzCoordSpace);
+            var matrices = GenerateMatrixIntervals(hacTRS, maxStep, min, max);
+            return matrices;
+        }
+
         public static Matrix4x4[] GetMatricesDefaultScale(Matrix4x4[] matrices, Vector3 scale)
         {
             var matricesDefaultScale = new Matrix4x4[matrices.Length];
@@ -437,111 +429,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
                 return allTriStrips.ToArray();
             }
-
-            //public static Tristrip[] CreateMuteCity(GfzTrackSegmentNode node, int nTristrips, float maxStep, bool useGfzCoordSpace)
-            //{
-            //    var allTriStrips = new List<Tristrip>();
-            //    var hacTRS = node.CreateHierarchichalAnimationCurveTRS(useGfzCoordSpace);
-            //    var matrices = GenerateMatrixIntervals(hacTRS, maxStep);
-
-            //    //
-            //    var settings = GfzProjectWindow.GetSettings();
-
-            //    // For road, we strip height data
-            //    matrices = StripHeight(matrices);
-
-            //    // TEX
-            //    // top: 1
-            //    // bot: 1
-            //    // embellishments l/r: 2
-            //    // left/right side: 1 (note: is also on top of track
-            //    // lane dividers: 1
-
-
-            //    // track top
-            //    {
-            //        var endpointA = new Vector3(-0.5f, 0, 0);
-            //        var endpointB = new Vector3(+0.5f, 0, 0);
-            //        var color0 = settings.DebugTrackSurface;
-            //        var normal = Vector3.up;
-            //        var trackTopTristrips = CreateTristrips(matrices, endpointA, endpointB, nTristrips, color0, normal, 1, true);
-            //        allTriStrips.AddRange(trackTopTristrips);
-            //    }
-
-            //    // track bottom
-            //    {
-            //        var endpointA = new Vector3(-0.5f, -1.5f, 0);
-            //        var endpointB = new Vector3(+0.5f, -1.5f, 0);
-            //        var color0 = settings.DebugTrackUnderside;
-            //        var normal = Vector3.down;
-            //        var trackBottomTristrips = CreateTristrips(matrices, endpointA, endpointB, nTristrips, color0, normal, 1, false);
-            //        allTriStrips.AddRange(trackBottomTristrips);
-            //    }
-
-            //    // track left
-            //    {
-            //        var endpointA = new Vector3(-0.5f, +0.0f, 0);
-            //        var endpointB = new Vector3(-0.5f, -1.5f, 0);
-            //        var color0 = settings.DebugTrackLeft;
-            //        var normal = Vector3.left;
-            //        var trackLeftTristrips = CreateTristrips(matrices, endpointA, endpointB, 1, color0, normal, 0, false);
-            //        allTriStrips.AddRange(trackLeftTristrips);
-            //    }
-
-            //    // track right
-            //    {
-            //        var endpointA = new Vector3(+0.5f, +0.0f, 0);
-            //        var endpointB = new Vector3(+0.5f, -1.5f, 0);
-            //        var color0 = settings.DebugTrackRight;
-            //        var normal = Vector3.right;
-            //        var trackRightTristrips = CreateTristrips(matrices, endpointA, endpointB, 1, color0, normal, 0, true);
-            //        allTriStrips.AddRange(trackRightTristrips);
-            //    }
-
-            //    var isTypeofRail = node is IRailSegment;
-            //    if (isTypeofRail)
-            //    {
-            //        var rails = node as IRailSegment;
-
-            //        // rail left
-            //        if (rails.RailHeightLeft > 0f)
-            //        {
-            //            var endpointA = new Vector3(-0.5f, +0.0f, 0);
-            //            var endpointB = new Vector3(-0.5f, rails.RailHeightLeft, 0);
-            //            var color0 = settings.DebugRailLeft;
-            //            var trackRightTristrips = CreateTristrips(matrices, endpointA, endpointB, 1, color0, null, 3, false);
-            //            allTriStrips.AddRange(trackRightTristrips);
-            //        }
-
-            //        // rail right
-            //        if (rails.RailHeightRight > 0f)
-            //        {
-            //            var endpointA = new Vector3(+0.5f, +0.0f, 0);
-            //            var endpointB = new Vector3(+0.5f, rails.RailHeightRight, 0);
-            //            var color0 = settings.DebugRailRight;
-            //            var trackRightTristrips = CreateTristrips(matrices, endpointA, endpointB, 1, color0, null, 3, true);
-            //            allTriStrips.AddRange(trackRightTristrips);
-            //        }
-            //    }
-
-            //    GetLaneDividers(matrices, settings.DebugLaneDivider, 1, allTriStrips);
-
-            //    return allTriStrips.ToArray();
-            //}
-
-            public static Matrix4x4[] CreatePathMatrices(GfzTrackSegmentNode node, float maxStep, bool useGfzCoordSpace)
-            {
-                var hacTRS = node.CreateHierarchichalAnimationCurveTRS(useGfzCoordSpace);
-                var matrices = GenerateMatrixIntervals(hacTRS, maxStep);
-                return matrices;
-            }
-            public static Matrix4x4[] CreatePathMatrices(GfzTrackSegmentNode node, float maxStep, float min, float max, bool useGfzCoordSpace)
-            {
-                var hacTRS = node.CreateHierarchichalAnimationCurveTRS(useGfzCoordSpace);
-                var matrices = GenerateMatrixIntervals(hacTRS, maxStep, min, max);
-                return matrices;
-            }
-
             public static Tristrip[] CreateEmbed(Matrix4x4[] matrices, GfzTrackSurfaceEmbed node, int nTristrips, float length)
             {
                 var endpointA = new Vector3(-0.5f, 0.33f, 0);
@@ -563,7 +450,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
                 return tristrips;
             }
-
 
             public static class MuteCity
             {

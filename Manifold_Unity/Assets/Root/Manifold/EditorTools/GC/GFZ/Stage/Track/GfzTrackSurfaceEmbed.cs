@@ -91,7 +91,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             var animKeys = animationCurveTRS.Position.x.keys;
             var min = animKeys[0].time;
             var max = animKeys[animKeys.Length - 1].time;
-            var matrices = TristripGenerator.Road.CreatePathMatrices(this, lengthDistance, min, max, true);
+            var matrices = TristripGenerator.CreatePathMatrices(this, true, lengthDistance, min, max);
 
             // Construct tristrips
             // Note: Always do alpha last

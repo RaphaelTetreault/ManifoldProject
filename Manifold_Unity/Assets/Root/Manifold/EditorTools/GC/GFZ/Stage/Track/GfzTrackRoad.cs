@@ -28,7 +28,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         public override Gcmf CreateGcmf()
         {
             // Get path matrices
-            var matrices = TristripGenerator.Road.CreatePathMatrices(this, LengthDistance, true);
+            var matrices = TristripGenerator.CreatePathMatrices(this, true, LengthDistance);
             var maxTime = GetRoot().GetMaxTime();
 
             // NOTE: Always do alpha last
