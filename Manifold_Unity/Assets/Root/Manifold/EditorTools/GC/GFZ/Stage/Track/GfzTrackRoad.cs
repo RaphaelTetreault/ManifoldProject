@@ -38,6 +38,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 TristripGenerator.Road.CreateMuteCityRoadTop(this, matrices, WidthDivisions, maxTime),
                 TristripGenerator.Road.CreateMuteCityRoadBottom(this, matrices, WidthDivisions, maxTime),
                 TristripGenerator.Road.CreateMuteCityRoadSides(this, matrices, 60f, maxTime),
+                TristripGenerator.Road.CreateMuteCityLaneDividers(this, matrices, maxTime),
                 TristripGenerator.Road.CreateMuteCityRails(this, matrices),
             };
             var templates = new MeshTemplate[]
@@ -45,7 +46,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 GfzAssetTemplates.MeshTemplates.MuteCity.CreateRoadTop(),
                 GfzAssetTemplates.MeshTemplates.MuteCity.CreateRoadBottom(),
                 GfzAssetTemplates.MeshTemplates.MuteCity.CreateRoadSides(),
-                GfzAssetTemplates.MeshTemplates.MuteCity.CreateRail()
+                GfzAssetTemplates.MeshTemplates.MuteCity.CreateLaneDividers(),
+                GfzAssetTemplates.MeshTemplates.MuteCity.CreateRail(),
             };
 
             // Create bounding sphere for mesh
@@ -71,6 +73,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
             for (int i = 0; i < gcmf.Submeshes.Length; i++)
             {
+                if (tristrips[i].Length == 0)
+                    continue;
+
                 var frontfacing = new List<Tristrip>();
                 var backfacing = new List<Tristrip>();
                 foreach (var tristrip in tristrips[i])

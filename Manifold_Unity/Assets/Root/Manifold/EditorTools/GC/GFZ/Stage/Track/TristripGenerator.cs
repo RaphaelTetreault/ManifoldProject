@@ -788,7 +788,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     var endpointB = new Vector3(-0.5f, -1.5f, 0);
                     var tristrips = CreateTristripsLine(matrices, endpointA, endpointB, Vector3.up, 1, false);
 
-                    float repetitions = math.ceil(length / 40f);
+                    float repetitions = math.ceil(length / 100f);
                     float modulus = float.PositiveInfinity;
                     for (int i = 0; i < tristrips.Length; i++)
                     {
@@ -893,6 +893,50 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 }
 
                 return allTristrips.ToArray();
+            }
+
+            public static Tristrip[] CreateMuteCityLaneDividers(GfzTrackSegmentNode node, Matrix4x4[] matrices, float length)
+            {
+                var matricesLeft = new Matrix4x4[matrices.Length];
+                var matricesRight = new Matrix4x4[matrices.Length];
+
+                var left = Matrix4x4.TRS(new(-0.475f, 0, 0), Quaternion.identity, Vector3.one);
+                var right = Matrix4x4.TRS(new(+0.475f, 0, 0), Quaternion.identity, Vector3.one);
+                for (int i = 0; i < matrices.Length; i++) {
+                    matricesLeft[i] = matrices[i] * left;
+                    matricesRight[i] = matrices[i] * right;
+                }
+
+                var matricesNoScale = GetMatricesDefaultScale(matrices, Vector3.one);
+                var matricesLeftNoScale = GetMatricesDefaultScale(matricesLeft, Vector3.one);
+                var matricesRightNoScale = GetMatricesDefaultScale(matricesRight, Vector3.one);
+
+                var tristrips = new Tristrip[]
+                {
+                    GetLaneDivider(matricesNoScale, length),
+                    GetLaneDivider(matricesLeftNoScale, length),
+                    GetLaneDivider(matricesRightNoScale, length),
+                };
+
+                return tristrips;
+            }
+
+            private static Tristrip GetLaneDivider(Matrix4x4[] matrices, float length)
+            {
+                var endpointA = new Vector3(-1.0f, 0.15f, 0);
+                var endpointB = new Vector3(+1.0f, 0.15f, 0);
+                var tristrips = CreateTristripsLine(matrices, endpointA, endpointB, Vector3.up, 1, true);
+
+                float repetitions = math.ceil(length / 20f);
+                for (int i = 0; i < tristrips.Length; i++)
+                {
+                    var tristrip = tristrips[i];
+                    float increment = repetitions / (tristrip.VertexCount / 2 - 1); // length of verts, but not both sides
+                    tristrip.tex0 = CreateUVsForward(tristrip.VertexCount, 0, 1, increment, float.PositiveInfinity);
+                }
+
+                // only one element!
+                return tristrips[0];
             }
 
             public static Tristrip[] CreateEmbed(GfzTrackSegmentNode node, Matrix4x4[] matrices, int nTristrips, float length, Color32 color0)

@@ -82,6 +82,7 @@ namespace Manifold.EditorTools.GC.GFZ
 
             public static class MuteCity
             {
+                // TODO: tev layers wrong -- you didn't really check!
                 public static MeshTemplate CreateRail()
                 {
                     // Not doing isSwappable, tpl index, config index
@@ -183,7 +184,7 @@ namespace Manifold.EditorTools.GC.GFZ
                             MipmapSetting = MipmapSetting.UNK_FLAG_1,
                             WrapMode = TextureWrapMode.repeatX | TextureWrapMode.repeatY,
                             LodBias = 0,
-                            AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
+                            AnisotropicFilter = GXAnisotropy.GX_ANISO_4,
                             Unk0x0C = 0,
                             Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
                             // TEMP
@@ -239,7 +240,7 @@ namespace Manifold.EditorTools.GC.GFZ
                         new TevLayer()
                         {
                             Unk0x00 = 0,
-                            MipmapSetting = MipmapSetting.UNK_FLAG_1,
+                            MipmapSetting = MipmapSetting.UNK_FLAG_4,
                             WrapMode = TextureWrapMode.repeatX | TextureWrapMode.repeatY,
                             LodBias = 0,
                             AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
@@ -300,7 +301,7 @@ namespace Manifold.EditorTools.GC.GFZ
                             MipmapSetting = MipmapSetting.UNK_FLAG_1,
                             WrapMode = TextureWrapMode.repeatX | TextureWrapMode.repeatY,
                             LodBias = 0,
-                            AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
+                            AnisotropicFilter = GXAnisotropy.GX_ANISO_4,
                             Unk0x0C = 0,
                             Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
                             // TEMP
@@ -347,7 +348,67 @@ namespace Manifold.EditorTools.GC.GFZ
 
                     return template;
                 }
+                public static MeshTemplate CreateLaneDividers()
+                {
+                    // Not doing isSwappable, tpl index, config index
+                    var tevLayers = new TevLayer[]
+                    {
+                        new TevLayer()
+                        {
+                            Unk0x00 = 0,
+                            MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
+                            WrapMode = TextureWrapMode.repeatX | TextureWrapMode.repeatY,
+                            LodBias = -10,
+                            AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
+                            Unk0x0C = 0,
+                            Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
+                            // TEMP
+                            TplTextureIndex = 12,
+                        },
+                    };
+                    var textureHashes = new string[]
+                    {
+                        "ca0853c45448b241aa2b03cbe2b93182", // st01 tex  3
+                    };
+                    var textureScroll = new TextureScroll { Fields = new TextureScrollField[12] };
+                    textureScroll.Fields[0] = new TextureScrollField(0, 30);
 
+                    var material = new Material
+                    {
+                        MaterialColor = new GXColor(0x697db2ff),
+                        AmbientColor = new GXColor(0x7f7f7fff),
+                        SpecularColor = new GXColor(0x00000000),
+                        Unk0x10 = 0,
+                        Alpha = 255,
+                        TevLayerCount = (byte)tevLayers.Length,
+                        UnkAlpha0x14 = 0,
+                        Unk0x15 = 0,
+                        TevLayerIndex0 = 0,
+                        TevLayerIndex1 = 1,
+                        TevLayerIndex2 = 2,
+                    };
+                    var unknownAlphaOptions = new UnkAlphaOptions()
+                    {
+                        Unk0x10 = BlendFactors.unk2 | BlendFactors.unk4,
+                    };
+                    var submesh = new Submesh()
+                    {
+                        RenderFlags = RenderFlags.unlit | RenderFlags.customBlendSource | RenderFlags.customBlendDestination,
+                        Material = material,
+                        UnkAlphaOptions = unknownAlphaOptions,
+                    };
+
+                    var template = new MeshTemplate()
+                    {
+                        Translucid = 1,
+                        Submesh = submesh,
+                        TevLayers = tevLayers,
+                        TextureHashes = textureHashes,
+                        TextureScroll = textureScroll,
+                    };
+
+                    return template;
+                }
             }
         }
     }
