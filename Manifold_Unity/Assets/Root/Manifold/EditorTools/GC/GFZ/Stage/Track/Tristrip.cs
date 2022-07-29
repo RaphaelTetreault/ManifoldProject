@@ -13,14 +13,15 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         public Vector3[] normals { get; set; }
         public Vector3[] binormals { get; set; }
         public Vector3[] tangents { get; set; }
-        public Vector2[] uv0 { get; set; }
-        public Vector2[] uv1 { get; set; }
-        public Vector2[] uv2 { get; set; }
+        public Vector2[] tex0 { get; set; }
+        public Vector2[] tex1 { get; set; }
+        public Vector2[] tex2 { get; set; }
         public Color32[] color0 { get; set; }
         public bool isBackFacing { get; set; }
 
 
         public int TrianglesCount => ((positions.Length / 2) - 1) * 6;
+        public int VertexCount => positions.Length;
 
         public int[] GetIndices()
         {
