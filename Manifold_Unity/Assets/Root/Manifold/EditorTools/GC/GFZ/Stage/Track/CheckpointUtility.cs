@@ -14,7 +14,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         public static Checkpoint[] CreateCheckpoints(GfzCheckpointGenerator gfzCheckpointGenerator, bool isGfzCoordinateSpace)
         {
             // Simplify access
-            GfzTrackSegmentNode trackSegmentNode = gfzCheckpointGenerator.TrackSegmentNode;
+            GfzSegmentNode trackSegmentNode = gfzCheckpointGenerator.TrackSegmentNode;
             float metersPerCheckpoint = gfzCheckpointGenerator.MetersPerCheckpoint;
 
             // Get the hierarchy to sample matrices from

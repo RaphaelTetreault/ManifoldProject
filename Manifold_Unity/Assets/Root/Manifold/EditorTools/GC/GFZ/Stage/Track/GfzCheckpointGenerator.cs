@@ -9,7 +9,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
 
         [field: Header("Checkpoint Config")]
-        [field: SerializeField] public GfzTrackSegmentNode TrackSegmentNode { get; private set; }
+        [field: SerializeField] public GfzSegmentNode TrackSegmentNode { get; private set; }
         [field: SerializeField, Min(5f)] public float MetersPerCheckpoint { get; private set; } = 100f;
         
         [field: Header("Debug")]
@@ -26,7 +26,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         {
             if (TrackSegmentNode is null)
             {
-                TrackSegmentNode = GetComponent<GfzTrackSegmentNode>();
+                TrackSegmentNode = GetComponent<GfzSegmentNode>();
             }
         }
     }

@@ -8,7 +8,7 @@ using UnityEngine.Rendering;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
-    public abstract class GfzTrackSegmentShapeNode : GfzTrackSegmentNode
+    public abstract class GfzSegmentShape : GfzSegmentNode
     {
         [field: SerializeField, ReadOnlyGUI] public MeshDisplay MeshDisplay { get; protected set; }
 

@@ -6,8 +6,8 @@ using Manifold.Spline;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
-    [CustomEditor(typeof(GfzBezierSplineSegment))]
-    internal class GfzBezierSplineSegmentEditor : GfzRootNodeEditor
+    [CustomEditor(typeof(GfzPathBezier))]
+    internal class GfzPathBezierEditor : GfzPathEditor
     {
         private static readonly Color splineColor = Color.white;
         private static readonly Color[] modeColors = {
@@ -26,7 +26,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         private int selectedIndex = -1;
         private SelectedPart selectedPart = SelectedPart.none;
-        private GfzBezierSplineSegment spline;
+        private GfzPathBezier spline;
         private Transform root;
         private Quaternion handleRotation;
 
@@ -65,7 +65,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         private void OnSceneGUI()
         {
             // Set up editor variables
-            spline = target as GfzBezierSplineSegment;
+            spline = target as GfzPathBezier;
             root = spline.transform;
             handleRotation = Tools.pivotRotation == PivotRotation.Local
                 ? root.rotation
@@ -125,8 +125,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public override void OnInspectorGUI()
         {
-            spline = target as GfzBezierSplineSegment;
-            var undoPrefix = $"'{target.name}'({nameof(GfzBezierSplineSegment)}):";
+            spline = target as GfzPathBezier;
+            var undoPrefix = $"'{target.name}'({nameof(GfzPathBezier)}):";
 
             // Some properties are modified via PropertyField. Set up for those values.
             serializedObject.Update();
@@ -142,7 +142,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 GUILayout.BeginHorizontal();
                 if (GUILayout.Button($"Generate Animation Curve TRS"))
                 {
-                    var objects = new List<GfzTrackSegmentNode>();
+                    var objects = new List<GfzSegmentNode>();
                     var shapes = spline.GetShapeNodes();
                     objects.AddRange(shapes);
                     objects.Add(spline);
@@ -157,7 +157,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
                 if (GUILayout.Button($"Update Child Meshes"))
                 {
-                    var objects = new List<GfzTrackSegmentNode>();
+                    var objects = new List<GfzSegmentNode>();
                     var shapes = spline.GetShapeNodes();
                     objects.AddRange(shapes);
                     var objectsArray = objects.ToArray();

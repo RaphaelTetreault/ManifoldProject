@@ -6,17 +6,30 @@ using UnityEngine;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
-    public class GfzTrackCapsulePipeCylinder : GfzTrackSegmentShapeNode
+    public class GfzShapeSquareCorner : GfzSegmentShape
     {
-        [Header("Pipe/Cylinder")]
-        [SerializeField] private PipeCylinderType type = PipeCylinderType.Pipe;
-
-
-        public PipeCylinderType Type
+        public enum CornerTurnDirection
         {
-            get => type;
-            set => type = value;
+            left = 1,
+            right = 2,
         }
+
+        [Header("Corner Properties")]
+        [SerializeField]
+        private CornerTurnDirection cornerDirection = CornerTurnDirection.right;
+
+        [Min(0f)]
+        [SerializeField]
+        private float railHeight = 5f;
+
+
+        public CornerTurnDirection TurnDirection
+        {
+            get => cornerDirection;
+            set => cornerDirection = value;
+        }
+        public float RailHeight { get => railHeight; set => railHeight = value; }
+
 
         public override AnimationCurveTRS CreateAnimationCurveTRS(bool isGfzCoordinateSpace)
         {
@@ -47,5 +60,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         {
             throw new System.NotImplementedException();
         }
+
     }
 }

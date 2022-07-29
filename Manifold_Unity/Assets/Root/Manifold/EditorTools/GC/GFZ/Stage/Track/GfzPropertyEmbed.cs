@@ -9,7 +9,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
 
 
-    public class GfzTrackSurfaceEmbed : GfzTrackSegmentShapeNode
+    public class GfzPropertyEmbed : GfzSegmentShape
     {
         [SerializeField] private SurfaceEmbedType type = SurfaceEmbedType.Recover;
         [SerializeField, Min(1)] private int widthDivisions = 1;

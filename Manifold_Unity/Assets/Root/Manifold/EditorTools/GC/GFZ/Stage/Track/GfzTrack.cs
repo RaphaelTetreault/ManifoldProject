@@ -12,8 +12,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
     /// </summary>
     public sealed class GfzTrack : MonoBehaviour
     {
-        [field: SerializeField] public GfzTrackSegmentRootNode FirstRoot { get; private set; }
-        [field: SerializeField] public GfzTrackSegmentRootNode[] AllRoots { get; private set; }
+        [field: SerializeField] public GfzPathSegment FirstRoot { get; private set; }
+        [field: SerializeField] public GfzPathSegment[] AllRoots { get; private set; }
         [field: SerializeField] public bool DoFind { get; private set; }
 
         public TrackMinHeight TrackMinHeight { get; private set; }
@@ -34,7 +34,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             AssignContinuity();
 
             if (this.AllRoots.Length == 0)
-                throw new MissingReferenceException($"No references to any {typeof(GfzTrackSegmentNode).Name}! Make sure references existin in inspector.");
+                throw new MissingReferenceException($"No references to any {typeof(GfzSegmentNode).Name}! Make sure references existin in inspector.");
 
             foreach (var seg in this.AllRoots)
             {
@@ -147,7 +147,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public void FindChildSegments()
         {
-            FirstRoot = GetComponentInChildren<GfzTrackSegmentRootNode>(false);
+            FirstRoot = GetComponentInChildren<GfzPathSegment>(false);
             AllRoots = GetAllRootSegments();
             Assert.IsTrue(FirstRoot is not null);
             Assert.IsTrue(FirstRoot == AllRoots[0]);
@@ -176,16 +176,16 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             allRootSegments[lastIndex].Next = allRootSegments[0];
         }
 
-        public GfzTrackSegmentRootNode[] GetAllRootSegments()
+        public GfzPathSegment[] GetAllRootSegments()
         {
-            var rootSegments = new List<GfzTrackSegmentRootNode>();
+            var rootSegments = new List<GfzPathSegment>();
             foreach (var child in transform.GetChildren())
             {
                 var isActive = child.gameObject.activeSelf;
                 if (!isActive)
                     continue;
 
-                var rootSegment = child.GetComponent<GfzTrackSegmentRootNode>();
+                var rootSegment = child.GetComponent<GfzPathSegment>();
                 var exists = rootSegment != null;
                 if (exists)
                     rootSegments.Add(rootSegment);

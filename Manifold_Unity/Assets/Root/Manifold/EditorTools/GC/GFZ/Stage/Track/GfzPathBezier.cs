@@ -10,7 +10,7 @@ using Manifold.Spline;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
-    public class GfzBezierSplineSegment : GfzTrackSegmentRootNode,
+    public class GfzPathBezier : GfzPathSegment,
         IPositionEvaluable
     {
         // TODO: maneage consts better
@@ -689,7 +689,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
         }
 
-        public void UpdateShapeNodeMeshes(GfzTrackSegmentShapeNode[] shapes)
+        public void UpdateShapeNodeMeshes(GfzSegmentShape[] shapes)
         {
             foreach (var shape in shapes)
             {

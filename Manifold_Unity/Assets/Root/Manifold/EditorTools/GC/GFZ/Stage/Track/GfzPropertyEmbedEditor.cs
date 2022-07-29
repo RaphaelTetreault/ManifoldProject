@@ -8,8 +8,8 @@ using UnityEngine;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
-    [CustomEditor(typeof(GfzTrackSurfaceEmbed))]
-    internal class GfzTrackSurfaceEmbedEditor : Editor
+    [CustomEditor(typeof(GfzPropertyEmbed))]
+    internal class GfzPropertyEmbedEditor : Editor
     {
         SerializedProperty type;
         SerializedProperty widthDivisions;
@@ -36,7 +36,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public override void OnInspectorGUI()
         {
-            var embed = target as GfzTrackSurfaceEmbed;
+            var embed = target as GfzPropertyEmbed;
 
             serializedObject.Update();
             {
@@ -50,7 +50,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             //base.OnInspectorGUI();
         }
 
-        public void DrawSourceFields(GfzTrackSurfaceEmbed embed)
+        public void DrawSourceFields(GfzPropertyEmbed embed)
         {
             GuiSimple.Label("Mesh", EditorStyles.boldLabel);
             {
@@ -73,7 +73,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             // always auto gen, yes?
         }
 
-        public void DrawOffsetShortcuts(GfzTrackSurfaceEmbed embed)
+        public void DrawOffsetShortcuts(GfzPropertyEmbed embed)
         {
             GUILayout.BeginHorizontal();
             EditorGUILayout.PrefixLabel("Justify Offset");
@@ -81,19 +81,19 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             {
                 Undo.RecordObject(embed, $"Justify embed left");
                 //embed.SetOffsets(-1f);
-                embed.SetOffsets(GfzTrackSurfaceEmbed.Jusification.Left);
+                embed.SetOffsets(GfzPropertyEmbed.Jusification.Left);
                 EditorUtility.SetDirty(embed);
             }
             if (GUILayout.Button("Center"))
             {
                 Undo.RecordObject(embed, $"Justify embed center");
-                embed.SetOffsets(GfzTrackSurfaceEmbed.Jusification.Center);
+                embed.SetOffsets(GfzPropertyEmbed.Jusification.Center);
                 EditorUtility.SetDirty(embed);
             }
             if (GUILayout.Button("Right "))
             {
                 Undo.RecordObject(embed, $"Justify embed right");
-                embed.SetOffsets(GfzTrackSurfaceEmbed.Jusification.Right);
+                embed.SetOffsets(GfzPropertyEmbed.Jusification.Right);
                 EditorUtility.SetDirty(embed);
             }
             GUILayout.EndHorizontal();

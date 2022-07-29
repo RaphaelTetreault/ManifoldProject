@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
-    public class GfzSpiralPathSimple : GfzTrackSegmentRootNode,
+    public class GfzPathSpiral : GfzPathSegment,
         IPositionEvaluable
     {
         [SerializeField] private SpiralAxes axes = SpiralAxes.HorizontalRight;

@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
-    public class GfzTrackRoad : GfzTrackSegmentShapeNode,
+    public class GfzShapeRoad : GfzSegmentShape,
         IRailSegment
     {
         [field: Header("Mesh Properties")]

@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
-    public class ExperimentalGfzSpiralPath : GfzTrackSegmentRootNode,
+    public class ExperimentalGfzSpiralPath : GfzPathSegment,
         IPositionEvaluable
     {
         [SerializeField] private SpiralAxes SpiralAxes = SpiralAxes.VerticalUp;

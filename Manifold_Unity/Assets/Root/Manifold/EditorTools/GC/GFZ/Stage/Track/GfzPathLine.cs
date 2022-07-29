@@ -7,7 +7,7 @@ using UnityEngine;
 namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
     [ExecuteInEditMode]
-    public class GfzLinePath : GfzTrackSegmentRootNode
+    public class GfzPathLine : GfzPathSegment
     {
         [SerializeField] private float endPositionX;
         [SerializeField] private float endPositionY;

@@ -9,8 +9,8 @@ using UnityEngine.UIElements;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
-    [CustomEditor(typeof(GfzLinePath))]
-    internal class GfzLinePathEditor : GfzRootNodeEditor
+    [CustomEditor(typeof(GfzPathLine))]
+    internal class GfzPathLineEditor : GfzPathEditor
     {
         // position
         SerializedProperty endPositionX;
@@ -47,7 +47,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public override void OnInspectorGUI()
         {
-            var linePath = target as GfzLinePath;
+            var linePath = target as GfzPathLine;
 
             serializedObject.Update();
             {
@@ -65,7 +65,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             //base.OnInspectorGUI();
         }
 
-        private void DrawGizmosFields(GfzLinePath linePath)
+        private void DrawGizmosFields(GfzPathLine linePath)
         {
             GuiSimple.Label("Gizmos", EditorStyles.boldLabel);
             EditorGUI.indentLevel++;
@@ -77,7 +77,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         }
 
 
-        private void DrawSourceFields(GfzLinePath linePath)
+        private void DrawSourceFields(GfzPathLine linePath)
         {
             GuiSimple.Label("Source Values", EditorStyles.boldLabel);
             EditorGUI.indentLevel++;
@@ -103,7 +103,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             EditorGUI.indentLevel--;
         }
 
-        public void DrawTrsGeneration(GfzLinePath linePath)
+        public void DrawTrsGeneration(GfzPathLine linePath)
         {
             var buttonWidths = GUILayout.Width(GuiSimple.GetElementsWidth(3));
 
@@ -131,7 +131,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             if (!showGizmos.boolValue)
                 return;
 
-            var line = target as GfzLinePath;
+            var line = target as GfzPathLine;
 
             var hacTRS = line.CreateHierarchichalAnimationCurveTRS(false);
             float length = line.GetLineLength();
@@ -178,21 +178,21 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
         }
 
-        public void GeneratePosition(GfzLinePath linePath)
+        public void GeneratePosition(GfzPathLine linePath)
         {
             Undo.RecordObject(linePath, $"Set line path position");
             linePath.UpdateTrsPosition();
             EditorUtility.SetDirty(linePath);
         }
 
-        public void GenerateRotation(GfzLinePath linePath)
+        public void GenerateRotation(GfzPathLine linePath)
         {
             Undo.RecordObject(linePath, $"Set line path rotation");
             linePath.UpdateTrsRotation();
             EditorUtility.SetDirty(linePath);
         }
 
-        public void GenerateScale(GfzLinePath linePath)
+        public void GenerateScale(GfzPathLine linePath)
         {
             Undo.RecordObject(linePath, $"Set line path scale");
             linePath.UpdateTrsScale();

@@ -9,7 +9,7 @@ using UnityEngine;
 namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
     [CustomEditor(typeof(ExperimentalGfzSpiralPath))]
-    internal class ExperimentalGfzSpiralPathEditor : GfzRootNodeEditor
+    internal class ExperimentalGfzSpiralPathEditor : GfzPathEditor
     {
         SerializedProperty animationCurveTRS;
         SerializedProperty autoGenerateTRS;

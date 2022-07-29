@@ -8,7 +8,7 @@ using UnityEngine;
 namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
     [ExecuteInEditMode]
-    public abstract class GfzTrackSegmentNode : MonoBehaviour
+    public abstract class GfzSegmentNode : MonoBehaviour
     {
 
         // for editors
@@ -55,15 +55,15 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return hasChildren;
         }
 
-        public GfzTrackSegmentRootNode GetRoot()
+        public GfzPathSegment GetRoot()
         {
             if (IsRoot())
             {
-                bool isRootType = this is GfzTrackSegmentRootNode;
+                bool isRootType = this is GfzPathSegment;
                 if (!isRootType)
-                    throw new System.Exception($"Root node is not of type {typeof(GfzTrackSegmentRootNode).Name}");
+                    throw new System.Exception($"Root node is not of type {typeof(GfzPathSegment).Name}");
 
-                var root = this as GfzTrackSegmentRootNode;
+                var root = this as GfzPathSegment;
                 return root;
             }
             else
@@ -75,7 +75,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
         }
 
-        public TGfzTrackSegmentNode GetParent<TGfzTrackSegmentNode>() where TGfzTrackSegmentNode : GfzTrackSegmentNode
+        public TGfzTrackSegmentNode GetParent<TGfzTrackSegmentNode>() where TGfzTrackSegmentNode : GfzSegmentNode
         {
             bool hasParent = transform.parent != null;
             if (hasParent)
@@ -87,13 +87,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 return null;
         }
 
-        public GfzTrackSegmentNode GetParent()
+        public GfzSegmentNode GetParent()
         {
-            var parent = GetParent<GfzTrackSegmentNode>();
+            var parent = GetParent<GfzSegmentNode>();
             return parent;
         }
 
-        public TGfzTrackSegmentNode[] GetChildren<TGfzTrackSegmentNode>() where TGfzTrackSegmentNode : GfzTrackSegmentNode
+        public TGfzTrackSegmentNode[] GetChildren<TGfzTrackSegmentNode>() where TGfzTrackSegmentNode : GfzSegmentNode
         {
             var children = new List<TGfzTrackSegmentNode>();
             foreach (var child in transform.GetChildren())
@@ -110,9 +110,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return children.ToArray();
         }
 
-        public GfzTrackSegmentNode[] GetChildren()
+        public GfzSegmentNode[] GetChildren()
         {
-            var children = GetChildren<GfzTrackSegmentNode>();
+            var children = GetChildren<GfzSegmentNode>();
             return children;
         }
 
@@ -188,9 +188,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         //    return shapeNodes.ToArray();
         //}
 
-        public GfzTrackSegmentShapeNode[] GetShapeNodes()
+        public GfzSegmentShape[] GetShapeNodes()
         {
-            var shapes = GetComponentsInChildren<GfzTrackSegmentShapeNode>();
+            var shapes = GetComponentsInChildren<GfzSegmentShape>();
             return shapes;
         }
 

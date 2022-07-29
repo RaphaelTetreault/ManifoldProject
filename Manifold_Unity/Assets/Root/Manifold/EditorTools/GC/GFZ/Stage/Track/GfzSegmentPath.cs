@@ -3,10 +3,10 @@ using UnityEngine;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
-    public abstract class GfzTrackSegmentRootNode : GfzTrackSegmentNode
+    public abstract class GfzPathSegment : GfzSegmentNode
     {
-        [field: SerializeField] public GfzTrackSegmentRootNode Prev { get; set; }
-        [field: SerializeField] public GfzTrackSegmentRootNode Next { get; set; }
+        [field: SerializeField] public GfzPathSegment Prev { get; set; }
+        [field: SerializeField] public GfzPathSegment Next { get; set; }
         [field: SerializeField] public Vector3 StartPosition { get; set; }
         [field: SerializeField] public Vector3 EndPosition { get; set; }
 

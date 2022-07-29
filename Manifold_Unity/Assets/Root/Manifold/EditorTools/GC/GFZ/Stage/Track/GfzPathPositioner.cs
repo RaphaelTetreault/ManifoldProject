@@ -10,7 +10,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
     public class GfzPathPositioner : MonoBehaviour
     {
-        [SerializeField] private GfzTrackSegmentNode segment;
+        [SerializeField] private GfzSegmentNode segment;
         [SerializeField, Range(-0.5f, +0.5f)] private float horizontalOffset;
         [SerializeField] private Vector3 positionOffset;
         [SerializeField] private Vector3 rotationOffset;
@@ -61,7 +61,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         private void OnValidate()
         {
             if (segment == null)
-                segment = GetComponentInParent<GfzTrackSegmentNode>();
+                segment = GetComponentInParent<GfzSegmentNode>();
         }
     }
 }

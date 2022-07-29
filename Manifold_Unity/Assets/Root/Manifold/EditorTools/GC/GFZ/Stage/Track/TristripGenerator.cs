@@ -33,9 +33,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
             return matrices;
         }
-        public static Matrix4x4[] CreatePathMatrices(GfzTrackSegmentNode node, bool useGfzCoordSpace, float maxStep)
+        public static Matrix4x4[] CreatePathMatrices(GfzSegmentNode node, bool useGfzCoordSpace, float maxStep)
             => CreatePathMatrices(node, useGfzCoordSpace, maxStep, 0f, node.GetMaxTime());
-        public static Matrix4x4[] CreatePathMatrices(GfzTrackSegmentNode node, bool useGfzCoordSpace, float maxStep, float min, float max)
+        public static Matrix4x4[] CreatePathMatrices(GfzSegmentNode node, bool useGfzCoordSpace, float maxStep, float min, float max)
         {
             var hacTRS = node.CreateHierarchichalAnimationCurveTRS(useGfzCoordSpace);
             var matrices = GenerateMatrixIntervals(hacTRS, maxStep, min, max);
@@ -312,7 +312,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public static class Road
         {
-            public static Tristrip[] CreateDebug(Matrix4x4[] matrices, GfzTrackSegmentNode node, int nTristrips, float maxStep, bool useGfzCoordSpace)
+            public static Tristrip[] CreateDebug(Matrix4x4[] matrices, GfzSegmentNode node, int nTristrips, float maxStep, bool useGfzCoordSpace)
             {
                 var allTriStrips = new List<Tristrip>();
                 var hacTRS = node.CreateHierarchichalAnimationCurveTRS(useGfzCoordSpace);
@@ -420,7 +420,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
                 return allTriStrips.ToArray();
             }
-            public static Tristrip[] CreateEmbed(Matrix4x4[] matrices, GfzTrackSurfaceEmbed node, int nTristrips, float length)
+            public static Tristrip[] CreateEmbed(Matrix4x4[] matrices, GfzPropertyEmbed node, int nTristrips, float length)
             {
                 var endpointA = new Vector3(-0.5f, 0.33f, 0);
                 var endpointB = new Vector3(+0.5f, 0.33f, 0);
@@ -565,7 +565,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     return allTristrips.ToArray();
                 }
 
-                public static Tristrip[] CreateRails(Matrix4x4[] matrices, GfzTrackRoad node)
+                public static Tristrip[] CreateRails(Matrix4x4[] matrices, GfzShapeRoad node)
                 {
                     var allTristrips = new List<Tristrip>();
 
