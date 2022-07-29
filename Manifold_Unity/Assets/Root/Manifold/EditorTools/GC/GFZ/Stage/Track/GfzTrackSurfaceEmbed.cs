@@ -84,7 +84,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return trs;
         }
 
-        public override Gcmf CreateGcmf()
+        public Gcmf CreateGcmfX()
         {
             // Make the vertex data
             var color0 = GetColor(type);
@@ -102,11 +102,50 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             var template = GfzAssetTemplates.MeshTemplates.DebugTemplates.CreateLitVertexColored();
             var gcmf = MeshTemplate.CombineTemplates(template);
             gcmf.Submeshes[0].RenderFlags |= RenderFlags.unlit;
+            gcmf.Submeshes[0].RenderFlags &= ~RenderFlags.doubleSidedFaces;
             gcmf.BoundingSphere = boundingSphere;
             gcmf.Submeshes[0].PrimaryFrontFacing = dlists;
             gcmf.Submeshes[0].VertexAttributes = dlists[0].Attributes; // hacky
             gcmf.Submeshes[0].UnkAlphaOptions.Origin = boundingSphere.origin;
             gcmf.PatchTevLayerIndexes();
+
+            return gcmf;
+        }
+
+        public override Gcmf CreateGcmf()
+        {
+            // Get path matrices
+            var animKeys = animationCurveTRS.Position.x.keys;
+            var min = animKeys[0].time;
+            var max = animKeys[animKeys.Length - 1].time;
+            var matrices = TristripGenerator.Road.SimpleMatrices(this, lengthDistance, min, max, true);
+            //var maxTime = GetRoot().GetMaxTime();
+
+            // Construct tristrips
+            // Note: Always do alpha last
+            var tristripsCollections = new Tristrip[][]
+            {
+                TristripGenerator.Road.CreateEmbed(this, matrices, widthDivisions, 0, GetColor(type)),
+            };
+            var templates = new MeshTemplate[]
+            {
+                GfzAssetTemplates.MeshTemplates.DebugTemplates.CreateUnlitVertexColored(),
+            };
+            templates[0].Submesh.RenderFlags &= ~RenderFlags.doubleSidedFaces;
+
+            // Create bounding sphere for mesh
+            var allTristrips = new List<Tristrip>();
+            foreach (var tristrips in tristripsCollections)
+                allTristrips.AddRange(tristrips);
+            var globalBoundingSphere = TristripGenerator.CreateBoundingSphereFromTristrips(allTristrips);
+
+            // Create GCMF. First, combine templates. Then, assign display lists. Finally, assign bounding sphere + origins.
+            var gcmf = MeshTemplate.CombineTemplates(templates);
+            // HELLA HACKED. Clean up!
+            GfzTrackRoad.AssignDisplayListsToGcmf(gcmf, tristripsCollections);
+            gcmf.BoundingSphere = globalBoundingSphere;
+            foreach (var submesh in gcmf.Submeshes)
+                submesh.UnkAlphaOptions.Origin = globalBoundingSphere.origin;
 
             return gcmf;
         }

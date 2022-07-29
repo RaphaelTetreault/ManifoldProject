@@ -64,7 +64,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return gcmf;
         }
 
-        public void AssignDisplayListsToGcmf(Gcmf gcmf, Tristrip[][] tristrips)
+        public static void AssignDisplayListsToGcmf(Gcmf gcmf, Tristrip[][] tristrips)
         {
             if (tristrips.Length != gcmf.Submeshes.Length)
                 throw new System.ArgumentException("lengths do not match!");

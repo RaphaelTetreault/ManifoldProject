@@ -153,7 +153,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 var endpointA = new Vector3(-0.5f, 0.33f, 0);
                 var endpointB = new Vector3(+0.5f, 0.33f, 0);
                 var normal = Vector3.up;
-                var trackTopTristrips = CreateTristrips(matrices, endpointA, endpointB, nTristrips, color0, normal, 3, true);
+                var trackTopTristrips = CreateTristrips(matrices, endpointA, endpointB, nTristrips, color0, normal, 0, true);
                 allTriStrips.AddRange(trackTopTristrips);
             }
 
@@ -723,6 +723,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 var matrices = GenerateMatrixIntervals(hacTRS, maxStep);
                 return matrices;
             }
+            public static Matrix4x4[] SimpleMatrices(GfzTrackSegmentNode node, float maxStep, float min, float max, bool useGfzCoordSpace)
+            {
+                var hacTRS = node.CreateHierarchichalAnimationCurveTRS(useGfzCoordSpace);
+                var matrices = GenerateMatrixIntervals(hacTRS, maxStep, min, max);
+                return matrices;
+            }
 
             // TEX
             // top: 1
@@ -889,90 +895,25 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 return allTristrips.ToArray();
             }
 
-            public static Tristrip[] CreateMuteCityRailsOnlyUV(GfzTrackSegmentNode node, int nTristrips, float maxStep, bool useGfzCoordSpace)
+            public static Tristrip[] CreateEmbed(GfzTrackSegmentNode node, Matrix4x4[] matrices, int nTristrips, float length, Color32 color0)
             {
-                var allTriStrips = new List<Tristrip>();
-                var hacTRS = node.CreateHierarchichalAnimationCurveTRS(useGfzCoordSpace);
-                var matrices = GenerateMatrixIntervals(hacTRS, maxStep);
+                var endpointA = new Vector3(-0.5f, 0.33f, 0);
+                var endpointB = new Vector3(+0.5f, 0.33f, 0);
+                var tristrips = CreateTristripsLine(matrices, endpointA, endpointB, Vector3.up, nTristrips, true);
 
-                // For road, we strip height data
-                matrices = StripHeight(matrices);
-
-                // TEX
-                // top: 1
-                // bot: 1
-                // embellishments l/r: 2
-                // left/right side: 1 (note: is also on top of track
-                // lane dividers: 1
-
-
-                //// track top
-                //{
-                //    var endpointA = new Vector3(-0.5f, 0, 0);
-                //    var endpointB = new Vector3(+0.5f, 0, 0);
-                //    var color0 = settings.DebugTrackSurface;
-                //    var normal = Vector3.up;
-                //    var trackTopTristrips = CreateTristrips(matrices, endpointA, endpointB, nTristrips, color0, normal, 0, true);
-                //    allTriStrips.AddRange(trackTopTristrips);
-                //}
-
-                //// track bottom
-                //{
-                //    var endpointA = new Vector3(-0.5f, -1.5f, 0);
-                //    var endpointB = new Vector3(+0.5f, -1.5f, 0);
-                //    var color0 = settings.DebugTrackUnderside;
-                //    var normal = Vector3.down;
-                //    var trackBottomTristrips = CreateTristrips(matrices, endpointA, endpointB, nTristrips, color0, normal, 0, false);
-                //    allTriStrips.AddRange(trackBottomTristrips);
-                //}
-
-                //// track left
-                //{
-                //    var endpointA = new Vector3(-0.5f, +0.0f, 0);
-                //    var endpointB = new Vector3(-0.5f, -1.5f, 0);
-                //    var color0 = settings.DebugTrackLeft;
-                //    var normal = Vector3.left;
-                //    var trackLeftTristrips = CreateTristrips(matrices, endpointA, endpointB, 1, color0, normal, 0, false);
-                //    allTriStrips.AddRange(trackLeftTristrips);
-                //}
-
-                //// track right
-                //{
-                //    var endpointA = new Vector3(+0.5f, +0.0f, 0);
-                //    var endpointB = new Vector3(+0.5f, -1.5f, 0);
-                //    var color0 = settings.DebugTrackRight;
-                //    var normal = Vector3.right;
-                //    var trackRightTristrips = CreateTristrips(matrices, endpointA, endpointB, 1, color0, normal, 0, true);
-                //    allTriStrips.AddRange(trackRightTristrips);
-                //}
-
-                var isTypeofRail = node is IRailSegment;
-                if (isTypeofRail)
+                //float repetitions = math.ceil(length / 80f);
+                //float modulus = float.PositiveInfinity;
+                for (int i = 0; i < tristrips.Length; i++)
                 {
-                    var rails = node as IRailSegment;
-
-                    // rail left
-                    if (rails.RailHeightLeft > 0f)
-                    {
-                        var endpointA = new Vector3(-0.5f, +0.0f, 0);
-                        var endpointB = new Vector3(-0.5f, rails.RailHeightLeft, 0);
-                        var trackRightTristrips = CreateTristrips(matrices, endpointA, endpointB, 1, null, null, 3, false);
-                        allTriStrips.AddRange(trackRightTristrips);
-                    }
-
-                    // rail right
-                    if (rails.RailHeightRight > 0f)
-                    {
-                        var endpointA = new Vector3(+0.5f, +0.0f, 0);
-                        var endpointB = new Vector3(+0.5f, rails.RailHeightRight, 0);
-                        var trackRightTristrips = CreateTristrips(matrices, endpointA, endpointB, 1, null, null, 3, true);
-                        allTriStrips.AddRange(trackRightTristrips);
-                    }
+                    var tristrip = tristrips[i];
+                    //float left = (i + 0) % 2;
+                    //float right = (i + 1) % 2;
+                    //float increment = repetitions / (tristrip.VertexCount / 2 - 1); // length of verts, but not both sides
+                    //tristrip.tex0 = CreateUVsForward(tristrip.VertexCount, left, right, increment, modulus);
+                    tristrip.color0 = ArrayUtility.DefaultArray(color0, tristrip.VertexCount);
                 }
 
-                //GetLaneDividers(matrices, settings.DebugLaneDivider, 0, allTriStrips);
-
-                return allTriStrips.ToArray();
+                return tristrips;
             }
 
         }
