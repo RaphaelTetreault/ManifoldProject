@@ -448,7 +448,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 // TODO: for future elements, make this generic when possible. ie: reuse mesh between, say,
                 //          Mute City and Green Plant? etc.
 
-                public static Tristrip[] CreateRoadTop(Matrix4x4[] matrices, float length, int nTristrips)
+                public static Tristrip[] CreateRoadTop(Matrix4x4[] matrices, float length, int nTristrips, int repeatUvX = 2)
                 {
                     var endpointA = new Vector3(-0.5f, 0, 0);
                     var endpointB = new Vector3(+0.5f, 0, 0);
@@ -459,6 +459,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     for (int i = 0; i < tristrips.Length; i++)
                     {
                         var tristrip = tristrips[i];
+                        //float left = ((i + 0f) / tristrips.Length * 2f * repeatUvX) % 2;
+                        //float right = ((i + 1f) / tristrips.Length * 2f * repeatUvX) % 2;
                         float left = (i + 0) % 2;
                         float right = (i + 1) % 2;
                         float increment = repetitions / (tristrip.VertexCount / 2 - 1); // length of verts, but not both sides
@@ -472,7 +474,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 {
                     var endpointA = new Vector3(-0.5f, -1.5f, 0);
                     var endpointB = new Vector3(+0.5f, -1.5f, 0);
-                    var tristrips = GenerateTristripsLine(matrices, endpointA, endpointB, Vector3.up, nTristrips, false);
+                    var tristrips = GenerateTristripsLine(matrices, endpointA, endpointB, Vector3.down, nTristrips, false);
 
                     float repetitions = math.ceil(length / 40f);
                     float modulus = float.PositiveInfinity;
@@ -483,12 +485,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                         float right = (i + 1) % 2;
                         float increment = repetitions / (tristrip.VertexCount / 2 - 1); // length of verts, but not both sides
                         tristrip.tex0 = CreateUVsForward(tristrip.VertexCount, left, right, increment, modulus);
-                        tristrip.color0 = ArrayUtility.DefaultArray(new Color32(128, 128, 128, 255), tristrip.VertexCount);
                     }
 
                     return tristrips;
                 }
 
+                // TDOO: width is for endcaps
                 public static Tristrip[] CreateRoadSides(Matrix4x4[] matrices, float length, float width)
                 {
                     var allTristrips = new List<Tristrip>();
@@ -497,7 +499,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     {
                         var endpointA = new Vector3(-0.5f, +0.0f, 0);
                         var endpointB = new Vector3(-0.5f, -1.5f, 0);
-                        var tristrips = GenerateTristripsLine(matrices, endpointA, endpointB, Vector3.up, 1, false);
+                        var tristrips = GenerateTristripsLine(matrices, endpointA, endpointB, Vector3.right, 1, false);
 
                         float repetitions = math.ceil(length / 100f);
                         float modulus = float.PositiveInfinity;
@@ -519,7 +521,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     {
                         var endpointA = new Vector3(+0.5f, +0.0f, 0);
                         var endpointB = new Vector3(+0.5f, -1.5f, 0);
-                        var tristrips = GenerateTristripsLine(matrices, endpointA, endpointB, Vector3.up, 1, true);
+                        var tristrips = GenerateTristripsLine(matrices, endpointA, endpointB, Vector3.left, 1, true);
 
                         float repetitions = math.ceil(length / 40f);
                         float modulus = float.PositiveInfinity;
@@ -587,7 +589,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     {
                         var endpointA = new Vector3(+0.5f, +0.0f, 0);
                         var endpointB = new Vector3(+0.5f, node.RailHeightRight, 0);
-                        var tristrips = GenerateTristripsLine(matrices, endpointA, endpointB, Vector3.right, 1, true);
+                        var tristrips = GenerateTristripsLine(matrices, endpointA, endpointB, Vector3.left, 1, true);
                         foreach (var tristrip in tristrips)
                         {
                             tristrip.tex0 = CreateUVsSideways(tristrip.VertexCount);
