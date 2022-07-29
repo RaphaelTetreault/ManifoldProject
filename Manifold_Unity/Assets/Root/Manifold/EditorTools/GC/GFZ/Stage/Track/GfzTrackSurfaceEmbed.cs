@@ -35,7 +35,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             Right,
         }
 
-        public Color32 GetColor(SurfaceEmbedType type)
+        public Color32 GetColor() => GetColor(type);
+        public static Color32 GetColor(SurfaceEmbedType type)
         {
             switch (type)
             {
@@ -84,69 +85,28 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return trs;
         }
 
-        public Gcmf CreateGcmfX()
-        {
-            // Make the vertex data
-            var color0 = GetColor(type);
-            var trackMeshTristrips = TristripGenerator.CreateTempTrackRoadEmbed(this, widthDivisions, lengthDistance, color0, true);
-            // convert to GameCube format
-            var dlists = TristripGenerator.TristripsToDisplayLists(trackMeshTristrips, GameCube.GFZ.GfzGX.VAT);
-
-            // Compute bounding sphere
-            var allVertices = new List<Vector3>();
-            foreach (var tristrip in trackMeshTristrips)
-                allVertices.AddRange(tristrip.positions);
-            var boundingSphere = TristripGenerator.CreateBoundingSphereFromPoints(allVertices, allVertices.Count);
-
-            // Note: this template is both sides, we do not YET need to sort front/back facing tristrips.
-            var template = GfzAssetTemplates.MeshTemplates.DebugTemplates.CreateLitVertexColored();
-            var gcmf = MeshTemplate.CombineTemplates(template);
-            gcmf.Submeshes[0].RenderFlags |= RenderFlags.unlit;
-            gcmf.Submeshes[0].RenderFlags &= ~RenderFlags.doubleSidedFaces;
-            gcmf.BoundingSphere = boundingSphere;
-            gcmf.Submeshes[0].PrimaryFrontFacing = dlists;
-            gcmf.Submeshes[0].VertexAttributes = dlists[0].Attributes; // hacky
-            gcmf.Submeshes[0].UnkAlphaOptions.Origin = boundingSphere.origin;
-            gcmf.PatchTevLayerIndexes();
-
-            return gcmf;
-        }
-
         public override Gcmf CreateGcmf()
         {
             // Get path matrices
             var animKeys = animationCurveTRS.Position.x.keys;
             var min = animKeys[0].time;
             var max = animKeys[animKeys.Length - 1].time;
-            var matrices = TristripGenerator.Road.SimpleMatrices(this, lengthDistance, min, max, true);
-            //var maxTime = GetRoot().GetMaxTime();
+            var matrices = TristripGenerator.Road.CreatePathMatrices(this, lengthDistance, min, max, true);
 
             // Construct tristrips
             // Note: Always do alpha last
             var tristripsCollections = new Tristrip[][]
             {
-                TristripGenerator.Road.CreateEmbed(this, matrices, widthDivisions, 0, GetColor(type)),
+                TristripGenerator.Road.CreateEmbed(matrices, this, widthDivisions, 0),
             };
-            var templates = new MeshTemplate[]
+            var templates = new GcmfTemplate[]
             {
                 GfzAssetTemplates.MeshTemplates.DebugTemplates.CreateUnlitVertexColored(),
             };
+            // Temp: remove double-sided. In the future, template will not have this flag.
             templates[0].Submesh.RenderFlags &= ~RenderFlags.doubleSidedFaces;
 
-            // Create bounding sphere for mesh
-            var allTristrips = new List<Tristrip>();
-            foreach (var tristrips in tristripsCollections)
-                allTristrips.AddRange(tristrips);
-            var globalBoundingSphere = TristripGenerator.CreateBoundingSphereFromTristrips(allTristrips);
-
-            // Create GCMF. First, combine templates. Then, assign display lists. Finally, assign bounding sphere + origins.
-            var gcmf = MeshTemplate.CombineTemplates(templates);
-            // HELLA HACKED. Clean up!
-            GfzTrackRoad.AssignDisplayListsToGcmf(gcmf, tristripsCollections);
-            gcmf.BoundingSphere = globalBoundingSphere;
-            foreach (var submesh in gcmf.Submeshes)
-                submesh.UnkAlphaOptions.Origin = globalBoundingSphere.origin;
-
+            var gcmf = GcmfTemplate.CreateGcmf(templates, tristripsCollections);
             return gcmf;
         }
 

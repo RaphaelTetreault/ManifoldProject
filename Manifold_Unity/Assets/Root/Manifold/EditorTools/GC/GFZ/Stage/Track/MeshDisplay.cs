@@ -19,9 +19,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public void UpdateMesh(Mesh mesh)
         {
-            Mesh = mesh;
+            // Delete old meshh
+            DestroyImmediate(Mesh);
 
-            MeshFilter.mesh = mesh;
+            // Update to new mesh
+            Mesh = mesh;
+            MeshFilter.sharedMesh = mesh;
 
             int numTristrips = Mesh.subMeshCount;
             var materials = new Material[numTristrips];

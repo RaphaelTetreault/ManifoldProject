@@ -28,71 +28,29 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         public override Gcmf CreateGcmf()
         {
             // Get path matrices
-            var matrices = TristripGenerator.Road.SimpleMatrices(this, LengthDistance, true);
+            var matrices = TristripGenerator.Road.CreatePathMatrices(this, LengthDistance, true);
             var maxTime = GetRoot().GetMaxTime();
 
-            // Construct tristrips
-            // Note: Always do alpha last
+            // NOTE: Always do alpha last
             var tristripsCollections = new Tristrip[][]
             {
-                TristripGenerator.Road.CreateMuteCityRoadTop(this, matrices, WidthDivisions, maxTime),
-                TristripGenerator.Road.CreateMuteCityRoadBottom(this, matrices, WidthDivisions, maxTime),
-                TristripGenerator.Road.CreateMuteCityRoadSides(this, matrices, 60f, maxTime),
-                TristripGenerator.Road.CreateMuteCityLaneDividers(this, matrices, maxTime),
-                TristripGenerator.Road.CreateMuteCityRails(this, matrices),
+                TristripGenerator.Road.MuteCity.CreateRoadTop(matrices, WidthDivisions, maxTime),
+                TristripGenerator.Road.MuteCity.CreateRoadBottom(matrices, WidthDivisions, maxTime),
+                TristripGenerator.Road.MuteCity.CreateRoadSides(matrices, 60f, maxTime),
+                TristripGenerator.Road.MuteCity.CreateLaneDividers(matrices, maxTime),
+                TristripGenerator.Road.MuteCity.CreateRails(matrices, this),
             };
-            var templates = new MeshTemplate[]
+            var templates = new GcmfTemplate[]
             {
                 GfzAssetTemplates.MeshTemplates.MuteCity.CreateRoadTop(),
                 GfzAssetTemplates.MeshTemplates.MuteCity.CreateRoadBottom(),
                 GfzAssetTemplates.MeshTemplates.MuteCity.CreateRoadSides(),
                 GfzAssetTemplates.MeshTemplates.MuteCity.CreateLaneDividers(),
-                GfzAssetTemplates.MeshTemplates.MuteCity.CreateRail(),
+                GfzAssetTemplates.MeshTemplates.MuteCity.CreateRails(),
             };
-
-            // Create bounding sphere for mesh
-            var allTristrips = new List<Tristrip>();
-            foreach (var tristrips in tristripsCollections)
-                allTristrips.AddRange(tristrips);
-            var globalBoundingSphere = TristripGenerator.CreateBoundingSphereFromTristrips(allTristrips);
-
-            // Create GCMF. First, combine templates. Then, assign display lists. Finally, assign bounding sphere + origins.
-            var gcmf = MeshTemplate.CombineTemplates(templates);
-            AssignDisplayListsToGcmf(gcmf, tristripsCollections);
-            gcmf.BoundingSphere = globalBoundingSphere;
-            foreach (var submesh in gcmf.Submeshes)
-                submesh.UnkAlphaOptions.Origin = globalBoundingSphere.origin;
-
+            var gcmf = GcmfTemplate.CreateGcmf(templates, tristripsCollections);
             return gcmf;
         }
-
-        public static void AssignDisplayListsToGcmf(Gcmf gcmf, Tristrip[][] tristrips)
-        {
-            if (tristrips.Length != gcmf.Submeshes.Length)
-                throw new System.ArgumentException("lengths do not match!");
-
-            for (int i = 0; i < gcmf.Submeshes.Length; i++)
-            {
-                if (tristrips[i].Length == 0)
-                    continue;
-
-                var frontfacing = new List<Tristrip>();
-                var backfacing = new List<Tristrip>();
-                foreach (var tristrip in tristrips[i])
-                {
-                    if (tristrip.isBackFacing)
-                        backfacing.Add(tristrip);
-                    else
-                        frontfacing.Add(tristrip);
-                }
-                var submesh = gcmf.Submeshes[i];
-                submesh.PrimaryFrontFacing = TristripGenerator.TristripsToDisplayLists(frontfacing.ToArray(), GameCube.GFZ.GfzGX.VAT);
-                submesh.PrimaryBackFacing = TristripGenerator.TristripsToDisplayLists(backfacing.ToArray(), GameCube.GFZ.GfzGX.VAT);
-                submesh.VertexAttributes = TristripGenerator.TristripToAttribute(tristrips[i]);
-            }
-        }
-
-
 
         public override Mesh CreateMesh()
         {
