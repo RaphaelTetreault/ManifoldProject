@@ -71,6 +71,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     EditorGUILayout.PropertyField(radius0);
                     EditorGUILayout.PropertyField(radius1);
                     EditorGUILayout.PropertyField(axisOffset);
+                    EditorGUILayout.PropertyField(keysPer360Degrees);
                     EditorGUI.indentLevel--;
                 }
                 GuiSimple.Label("Rotation", EditorStyles.boldLabel);

@@ -43,7 +43,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 case SurfaceEmbedType.Recover: return new Color32(240, 25, 55, 255); // hot-pink (sampled from GFZ)
                 case SurfaceEmbedType.Damage: return new Color32(255, 95, 0, 255); // orange
                 case SurfaceEmbedType.Slip: return new Color32(109, 170, 210, 255); // blue (approximate, sampled from GFZ)
-                case SurfaceEmbedType.Dirt: return new Color32(52, 28, 8, 255); // brown (sampled from GFZ)
+                case SurfaceEmbedType.Dirt: return new Color32(78, 42, 12, 255); // brown (1.5x brightness compared to GFZ)
+                //case SurfaceEmbedType.Dirt: return new Color32(52, 28, 8, 255); // brown (sampled from GFZ)
                 default:
                     throw new System.ArgumentException();
             }

@@ -127,7 +127,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             var rotation = isRoot
                 ? transform.rotation.eulerAngles
                 : transform.localRotation.eulerAngles;
-            
+
             var scale = isRoot
                 ? transform.lossyScale
                 : transform.localScale;
@@ -205,7 +205,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public virtual void InvokeUpdates()
         {
-            UpdateTRS();
+            if (autoGenerateTRS)
+                UpdateTRS();
+
             UpdateShapeMeshes();
         }
         protected virtual void Reset()
@@ -222,7 +224,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         private void Update()
         {
             bool isSelected = UnityEditor.Selection.activeGameObject == this.gameObject;
-            if (isSelected && autoGenerateTRS && transform.hasChanged)
+            if (isSelected && transform.hasChanged)
             {
                 InvokeUpdates();
             }
