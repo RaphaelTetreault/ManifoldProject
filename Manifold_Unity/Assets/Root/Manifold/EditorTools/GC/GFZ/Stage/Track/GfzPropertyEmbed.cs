@@ -115,7 +115,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             var maxTime = hacTRS.GetRootMaxTime();
             var min = from * maxTime;
             var max = to * maxTime;
-            Debug.Log($"MeshUnity -- Min: {min}, Max: {max}, MaxTime: {maxTime}");
+            //Debug.Log($"MeshUnity -- Min: {min}, Max: {max}, MaxTime: {maxTime}");
             var matrices = TristripGenerator.GenerateMatrixIntervals(hacTRS, lengthDistance, min, max);
 
             //

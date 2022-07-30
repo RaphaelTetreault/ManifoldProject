@@ -77,6 +77,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public TGfzTrackSegmentNode GetParent<TGfzTrackSegmentNode>() where TGfzTrackSegmentNode : GfzSegmentNode
         {
+            // Note: if this fails, the transform might be null?
             bool hasParent = transform.parent != null;
             if (hasParent)
             {
@@ -170,24 +171,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return trackSegments;
         }
 
-        //public GfzTrackSegmentShapeNode[] GetShapeNodes()
-        //{
-        //    var shapeNodes = new List<GfzTrackSegmentShapeNode>();
-        //    var children = GetChildren();
-        //    foreach (var child in children)
-        //    {
-        //        bool childIsShape = child is GfzTrackSegmentShapeNode;
-        //        if (childIsShape)
-        //        {
-        //            shapeNodes.Add(child as GfzTrackSegmentShapeNode);
-        //        }
-
-        //        var childShapeNodes = child.GetShapeNodes();
-        //        shapeNodes.AddRange(childShapeNodes);
-        //    }
-        //    return shapeNodes.ToArray();
-        //}
-
         public GfzSegmentShape[] GetShapeNodes()
         {
             var shapes = GetComponentsInChildren<GfzSegmentShape>();
@@ -238,7 +221,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         }
         private void Update()
         {
-            bool isSelected = UnityEditor.Selection.activeGameObject == this;
+            bool isSelected = UnityEditor.Selection.activeGameObject == this.gameObject;
             if (isSelected && autoGenerateTRS && transform.hasChanged)
             {
                 InvokeUpdates();

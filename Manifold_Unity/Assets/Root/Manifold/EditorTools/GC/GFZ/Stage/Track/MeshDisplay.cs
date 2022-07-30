@@ -19,9 +19,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public void UpdateMesh(Mesh mesh)
         {
-            // Delete old meshh
-            DestroyImmediate(Mesh);
-
             // Update to new mesh
             Mesh = mesh;
             MeshFilter.sharedMesh = mesh;

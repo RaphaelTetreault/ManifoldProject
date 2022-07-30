@@ -82,13 +82,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return trackSegmentRoot;
         }
 
-        // TODO: make abstract node force impl.
-
-        /// <summary>
-        /// Update the node's TRS when called.
-        /// </summary>
-        //new public abstract void UpdateTRS();
-
         public void UpateStartEndPoints()
         {
             var trs = TrackSegmentAnimationCurveTRS;
