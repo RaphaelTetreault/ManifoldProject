@@ -223,13 +223,16 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 // Smooth first and last tangents, makes angle change much less noticible
                 trs.Rotation.y.SmoothTangents(0, weight);
                 trs.Rotation.y.SmoothTangents(trs.Rotation.y.length-1, weight);
+                
                 // Fix first key tangents
                 trs.Position.y.SmoothTangents(0, weight);
-
-                // Temp hack: make first key flat if not X rotation.
-                if (GetRotation().eulerAngles.x == 0f)
-                    trs.Position.y.SetKeyTangents(0f, 0);
+                //// Temp hack: make first key flat if not X rotation.
+                //if (GetRotation().eulerAngles.x == 0f)
+                //    trs.Position.y.SetKeyTangents(0f, 0);
             }
+
+            trs.Position.z.SmoothTangents(0, weight);
+
 
             animationCurveTRS = trs;
         }
