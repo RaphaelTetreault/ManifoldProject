@@ -91,6 +91,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 Venue = sceneParams.venue,
                 CourseName = sceneParams.courseName,
             };
+            // Build a TPL..?
+            var textureHashesToIndex = new Dictionary<string, ushort>();
 
             // Get scene-wide parameters from SceneParameters
             {
@@ -219,7 +221,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             // Inject TRACK models, + recover missing models
             {
                 // This creates the GMA archive and gives us the scene objects and dynamic scene objects for them
-                var gma = CreateTrackModelsGma(out SceneObject[] sceneObjects, out SceneObjectDynamic[] dynamicSceneObjects);
+                // It will also add which texture hashes to dictionary, you still need to patch the TEV indexes after, though.
+                var gma = CreateTrackModelsGma(out SceneObject[] sceneObjects, out SceneObjectDynamic[] dynamicSceneObjects, ref textureHashesToIndex);
 
                 // Add SceneObject's LODs and their name to archive
                 foreach (var sceneObject in sceneObjects)
@@ -229,7 +232,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 }
                 scene.sceneObjects = sceneObjects.Concat(scene.sceneObjects).ToArray();
 
-                // add static / dynamic
+                // add dynamic (no statics needed)
                 scene.dynamicSceneObjects = dynamicSceneObjects.Concat(scene.dynamicSceneObjects).ToArray();
 
                 // save gma
@@ -360,7 +363,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
             return sceneObject;
         }
-        public static SceneObjectDynamic CreateSceneObjectDynamic(SceneObject sceneObject, TransformMatrix3x4 transform)
+        public static SceneObjectDynamic CreateSceneObjectDynamic()
         {
             var dynamicSceneObject = new SceneObjectDynamic()
             {
@@ -372,12 +375,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                     ObjectRenderFlags0x00.ReceiveEfbShadow,
                 
                 Unk0x04 = ObjectRenderFlags0x04._NULL,
-                SceneObject = sceneObject,
-                TransformMatrix3x4 = transform,
             };
             return dynamicSceneObject;
         }
-        public static Gma CreateTrackModelsGma(out SceneObject[] sceneObjects, out SceneObjectDynamic[] dynamicSceneObjects)
+        public static Gma CreateTrackModelsGma(
+            out SceneObject[] sceneObjects,
+            out SceneObjectDynamic[] dynamicSceneObjects,
+            ref Dictionary<string, ushort> textureHashesToIndex)
         {
             // get GfzTrack, use it to get children
             var track = GameObject.FindObjectOfType<GfzTrack>(false);
@@ -394,15 +398,17 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 var shapeNodes = rootTrackSegmentNode.GetShapeNodes();
                 foreach (var shape in shapeNodes)
                 {
-                    var gcmf = shape.CreateGcmf();
+                    var gcmf = shape.CreateGcmf(out GcmfTemplate[] gcmfTemplates, ref textureHashesToIndex);
                     var modelName = $"{shape.GetRoot().name}-{shape.name}-#{shapeIndex++}.{subIndex++}";
                     models.Add(new Model(modelName, gcmf));
 
                     var sceneObject = CreateSceneObject(modelName);
                     _sceneObjects.Add(sceneObject);
 
-                    var transform = new TransformMatrix3x4();
-                    var sceneObjectDynamic = CreateSceneObjectDynamic(sceneObject, transform);
+                    var sceneObjectDynamic = CreateSceneObjectDynamic();
+                    sceneObjectDynamic.SceneObject = sceneObject;
+                    sceneObjectDynamic.TransformMatrix3x4 = new();
+                    sceneObjectDynamic.TextureScroll = GcmfTemplate.CombineTextureScrolls(gcmfTemplates);
                     _dynamicSceneObjects.Add(sceneObjectDynamic);
                 }
             }
@@ -411,8 +417,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             var gma = new Gma();
             gma.Models = models.ToArray();
 
+            // OUT parameters
             sceneObjects = _sceneObjects.ToArray();
             dynamicSceneObjects = _dynamicSceneObjects.ToArray();
+
 
             return gma;
         }
@@ -488,6 +496,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         #endregion
 
 
+        // THIS WILL HAVE DICT FOR TEXTURES AS PARAM
         public static Model[] RecoverMissingModelsFromStageGma(string missingFile)
         {
             string missingFileName = Path.GetFileNameWithoutExtension(missingFile);
@@ -527,5 +536,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
             return models;
         }
+
+        public static void RecoverMissingModelTextureHashes()
+        {
+
+        }
+
     }
 }

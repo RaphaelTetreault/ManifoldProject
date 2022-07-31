@@ -87,6 +87,7 @@ namespace Manifold.EditorTools.GC.GFZ
             public static class MuteCity
             {
                 // TODO: tev layers wrong -- you didn't really check!
+
                 public static GcmfTemplate CreateRails()
                 {
                     // Not doing isSwappable, tpl index, config index
@@ -101,8 +102,6 @@ namespace Manifold.EditorTools.GC.GFZ
                             AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
                             Unk0x0C = 0,
                             Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
-                            // TEMP
-                            TplTextureIndex = 3,
                         },
                         new TevLayer()
                         {
@@ -113,8 +112,6 @@ namespace Manifold.EditorTools.GC.GFZ
                             AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
                             Unk0x0C = 0,
                             Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
-                            // TEMP
-                            TplTextureIndex = 40,
                         },
                         new TevLayer()
                         {
@@ -125,8 +122,6 @@ namespace Manifold.EditorTools.GC.GFZ
                             AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
                             Unk0x0C = 0,
                             Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
-                            // TEMP
-                            TplTextureIndex = 0,
                         },
                     };
                     var textureHashes = new string[]
@@ -149,9 +144,6 @@ namespace Manifold.EditorTools.GC.GFZ
                         //MaterialDestination = 0, // Resolved based on display lists at serialize time
                         UnkAlpha0x14 = 0,
                         Unk0x15 = 0,
-                        TevLayerIndex0 = 0,
-                        TevLayerIndex1 = 1,
-                        TevLayerIndex2 = 2,
                     };
                     var unknownAlphaOptions = new UnkAlphaOptions()
                     {
@@ -191,8 +183,6 @@ namespace Manifold.EditorTools.GC.GFZ
                             AnisotropicFilter = GXAnisotropy.GX_ANISO_4,
                             Unk0x0C = 0,
                             Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
-                            // TEMP
-                            TplTextureIndex = 2, // 41 is com
                         },
                     };
                     var textureHashes = new string[]
@@ -213,9 +203,6 @@ namespace Manifold.EditorTools.GC.GFZ
                         TevLayerCount = (byte)tevLayers.Length,
                         UnkAlpha0x14 = -1,
                         Unk0x15 = 0,
-                        TevLayerIndex0 = 0,
-                        TevLayerIndex1 = -1,
-                        TevLayerIndex2 = -1,
                     };
                     var unknownAlphaOptions = new UnkAlphaOptions() { };
                     var submesh = new Submesh()
@@ -226,7 +213,6 @@ namespace Manifold.EditorTools.GC.GFZ
                     };
                     var template = new GcmfTemplate()
                     {
-                        //Gcmf = gcmf,
                         Opaque = 1,
                         Submesh = submesh,
                         TevLayers = tevLayers,
@@ -250,8 +236,6 @@ namespace Manifold.EditorTools.GC.GFZ
                             AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
                             Unk0x0C = 0,
                             Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
-                            // TEMP
-                            TplTextureIndex = 11, // 41 is com
                         },
                     };
                     var textureHashes = new string[]
@@ -271,9 +255,6 @@ namespace Manifold.EditorTools.GC.GFZ
                         TevLayerCount = (byte)tevLayers.Length,
                         UnkAlpha0x14 = -1,
                         Unk0x15 = 0,
-                        TevLayerIndex0 = 0,
-                        TevLayerIndex1 = -1,
-                        TevLayerIndex2 = -1,
                     };
                     var unknownAlphaOptions = new UnkAlphaOptions() { };
                     var submesh = new Submesh()
@@ -284,7 +265,6 @@ namespace Manifold.EditorTools.GC.GFZ
                     };
                     var template = new GcmfTemplate()
                     {
-                        //Gcmf = gcmf,
                         Opaque = 1,
                         Submesh = submesh,
                         TevLayers = tevLayers,
@@ -308,8 +288,6 @@ namespace Manifold.EditorTools.GC.GFZ
                             AnisotropicFilter = GXAnisotropy.GX_ANISO_4,
                             Unk0x0C = 0,
                             Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
-                            // TEMP
-                            TplTextureIndex = 10,
                         },
                     };
                     var textureHashes = new string[]
@@ -329,9 +307,6 @@ namespace Manifold.EditorTools.GC.GFZ
                         TevLayerCount = (byte)tevLayers.Length,
                         UnkAlpha0x14 = -1,
                         Unk0x15 = 0,
-                        TevLayerIndex0 = 0,
-                        TevLayerIndex1 = -1,
-                        TevLayerIndex2 = -1,
                     };
                     var unknownAlphaOptions = new UnkAlphaOptions() { };
                     var submesh = new Submesh()
@@ -365,7 +340,6 @@ namespace Manifold.EditorTools.GC.GFZ
                             AnisotropicFilter = GXAnisotropy.GX_ANISO_4,
                             Unk0x0C = 61,
                             Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
-                            TplTextureIndex = 9, // TEMP
                         },
                         new TevLayer()
                         {
@@ -376,7 +350,6 @@ namespace Manifold.EditorTools.GC.GFZ
                             AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
                             Unk0x0C = 45,
                             Unk0x12 = TexFlags0x10.unk0 | TexFlags0x10.unk4 | TexFlags0x10.unk5,
-                            TplTextureIndex = 8, // TEMP
                         },
                     };
                     var textureHashes = new string[]
@@ -397,9 +370,6 @@ namespace Manifold.EditorTools.GC.GFZ
                         TevLayerCount = (byte)tevLayers.Length,
                         UnkAlpha0x14 = -1,
                         Unk0x15 = 0,
-                        TevLayerIndex0 = 0,
-                        TevLayerIndex1 = 1,
-                        TevLayerIndex2 = -1,
                     };
                     var unknownAlphaOptions = new UnkAlphaOptions() { };
                     var submesh = new Submesh()
@@ -420,7 +390,6 @@ namespace Manifold.EditorTools.GC.GFZ
 
                     return template;
                 }
-
                 public static GcmfTemplate CreateLaneDividers()
                 {
                     // Not doing isSwappable, tpl index, config index
@@ -435,8 +404,6 @@ namespace Manifold.EditorTools.GC.GFZ
                             AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
                             Unk0x0C = 0,
                             Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
-                            // TEMP
-                            TplTextureIndex = 12,
                         },
                     };
                     var textureHashes = new string[]
@@ -456,9 +423,6 @@ namespace Manifold.EditorTools.GC.GFZ
                         TevLayerCount = (byte)tevLayers.Length,
                         UnkAlpha0x14 = 0,
                         Unk0x15 = 0,
-                        TevLayerIndex0 = (short)(tevLayers.Length > 0 ? 0 : -1),
-                        TevLayerIndex1 = (short)(tevLayers.Length > 1 ? 1 : -1),
-                        TevLayerIndex2 = (short)(tevLayers.Length > 2 ? 2 : -1),
                     };
                     var unknownAlphaOptions = new UnkAlphaOptions()
                     {
@@ -496,7 +460,7 @@ namespace Manifold.EditorTools.GC.GFZ
         public TextureScroll TextureScroll { get; internal set; } = null;
 
 
-        private static Gcmf CombineTemplates(params GcmfTemplate[] templates)
+        private static Gcmf CreateFromTemplates(ref Dictionary<string, ushort> textureHashesToIndex, params GcmfTemplate[] templates)
         {
             ushort opaque = 0;
             ushort translucid = 0;
@@ -504,18 +468,27 @@ namespace Manifold.EditorTools.GC.GFZ
             var submeshes = new Submesh[templates.Length];
             // todo: texture indexes and stuff
 
-            short tevLayerOffset = 0;
+            ushort tevLayerOffset = 0;
             for (int i = 0; i < templates.Length; i++)
             {
                 var template = templates[i];
 
-                // Collect tev layers
+                // TEV LAYERS
+                for (ushort tevIndex = 0; tevIndex < template.TevLayers.Length; tevIndex++)
+                {
+                    // Get texture index
+                    string textureHash = template.TextureHashes[i];
+                    ushort textureIndex = GetTextureHashesIndex(textureHash, ref textureHashesToIndex);
+                    // Get TEV index for this GCMF
+                    ushort tevLayerIndex = checked((ushort)(tevIndex + tevLayerOffset));
+                    var tevLayer = template.TevLayers[tevIndex];
+                    // Assign indexes
+                    tevLayer.TplTextureIndex = textureIndex;
+                    tevLayer.TevLayerIndex = tevLayerIndex;
+                }
                 tevLayers.AddRange(template.TevLayers);
-                // MAYBE: auto assign tev layer here? ignore if -1?
+                tevLayerOffset = (ushort)tevLayers.Count;
 
-                // Offset material/mesh tev layers
-                template.Submesh.Material.OffsetTevLayerIndices(tevLayerOffset);
-                tevLayerOffset = (short)tevLayers.Count;
                 // collect submesh
                 submeshes[i] = template.Submesh;
 
@@ -627,10 +600,10 @@ namespace Manifold.EditorTools.GC.GFZ
             return boundingSphere;
         }
 
-        public static Gcmf CreateGcmf(GcmfTemplate[] templates, Tristrip[][] tristripsCollection)
+        public static Gcmf CreateGcmf(GcmfTemplate[] templates, Tristrip[][] tristripsCollection, ref Dictionary<string, ushort> textureHashesToIndex)
         {
             // Combine templates. This means we have all TEV layers and stuff in place
-            var gcmf = CombineTemplates(templates);
+            var gcmf = CreateFromTemplates(ref textureHashesToIndex, templates);
 
             // Assign display lists: now each submesh has it's geometry, too
             AssignDisplayListsToGcmf(gcmf, tristripsCollection);
@@ -643,6 +616,29 @@ namespace Manifold.EditorTools.GC.GFZ
 
             // We done!
             return gcmf;
+        }
+
+        public static TextureScroll CombineTextureScrolls(GcmfTemplate[] templates)
+        {
+            return null;
+        }
+
+        // Get the index of the texture for a future TPL. If texture exists, get existing index. If not, add to list, update index.
+        private static ushort GetTextureHashesIndex(string textureHash, ref Dictionary<string, ushort> textureHashToIndex)
+        {
+            bool hasTexture = textureHashToIndex.ContainsKey(textureHash);
+            if (hasTexture)
+            {
+                ushort index = textureHashToIndex[textureHash];
+                return index;
+            }
+            else
+            {
+                // The index of the texture is where we place it in the list
+                ushort index = checked((ushort)textureHashToIndex.Count);
+                textureHashToIndex.Add(textureHash, index);
+                return index;
+            }
         }
     }
 }

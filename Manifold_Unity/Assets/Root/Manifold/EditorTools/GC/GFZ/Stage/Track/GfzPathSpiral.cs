@@ -226,9 +226,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 
                 // Fix first key tangents
                 trs.Position.y.SmoothTangents(0, weight);
-                //// Temp hack: make first key flat if not X rotation.
-                //if (GetRotation().eulerAngles.x == 0f)
-                //    trs.Position.y.SetKeyTangents(0f, 0);
+                // Temp hack: make first key flat if not X rotation.
+                if (GetRotation().eulerAngles.x == 0f)
+                    trs.Position.y.SetKeyTangents(0, 0f);
             }
 
             trs.Position.z.SmoothTangents(0, weight);

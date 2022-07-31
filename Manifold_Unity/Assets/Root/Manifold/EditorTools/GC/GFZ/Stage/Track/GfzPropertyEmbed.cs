@@ -86,7 +86,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return trs;
         }
 
-        public override Gcmf CreateGcmf()
+        public override Gcmf CreateGcmf(out GcmfTemplate[] gcmfTemplates, ref Dictionary<string, ushort> textureHashesToIndex)
         {
             // Get path matrices
             var animKeys = animationCurveTRS.Position.x.keys;
@@ -99,14 +99,14 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             {
                 TristripGenerator.Road.CreateEmbed(matrices, this, widthDivisions, 0),
             };
-            var templates = new GcmfTemplate[]
+            gcmfTemplates = new GcmfTemplate[]
             {
                 GfzAssetTemplates.MeshTemplates.DebugTemplates.CreateUnlitVertexColored(),
             };
             // Temp: remove double-sided. In the future, template will not have this flag.
-            templates[0].Submesh.RenderFlags &= ~RenderFlags.doubleSidedFaces;
+            gcmfTemplates[0].Submesh.RenderFlags &= ~RenderFlags.doubleSidedFaces;
 
-            var gcmf = GcmfTemplate.CreateGcmf(templates, tristripsCollections);
+            var gcmf = GcmfTemplate.CreateGcmf(gcmfTemplates, tristripsCollections, ref textureHashesToIndex);
             return gcmf;
         }
 

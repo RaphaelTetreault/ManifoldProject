@@ -28,11 +28,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return new AnimationCurveTRS();
         }
 
-        public override Gcmf CreateGcmf()
+        public override Gcmf CreateGcmf(out GcmfTemplate[] gcmfTemplates, ref Dictionary<string, ushort> textureHashesToIndex)
         {
             var tristripsCollections = GetTristrips(MeshStyle, true);
-            var templates = GetGcmfTemplates(MeshStyle);
-            var gcmf = GcmfTemplate.CreateGcmf(templates, tristripsCollections);
+            gcmfTemplates = GetGcmfTemplates(MeshStyle);
+            var gcmf = GcmfTemplate.CreateGcmf(gcmfTemplates, tristripsCollections, ref textureHashesToIndex);
             return gcmf;
         }
 

@@ -36,7 +36,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             throw new System.NotImplementedException();
         }
 
-        public override Gcmf CreateGcmf()
+        public override Gcmf CreateGcmf(out GcmfTemplate[] gcmfTemplates, ref Dictionary<string, ushort> textureHashesToIndex)
         {
             throw new System.NotImplementedException();
         }

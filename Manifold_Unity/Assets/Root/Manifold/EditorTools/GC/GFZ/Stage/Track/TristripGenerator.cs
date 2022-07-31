@@ -668,7 +668,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     return allTristrips.ToArray();
                 }
 
-
                 public static Tristrip[] CreateRails(Matrix4x4[] matrices, GfzShapeRoad node)
                 {
                     var allTristrips = new List<Tristrip>();
