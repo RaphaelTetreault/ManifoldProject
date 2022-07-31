@@ -580,8 +580,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                         var endpointA = new Vector3(+0.0f, +0.5f, 0);
                         var endpointB = new Vector3(+1.5f, +0.5f, 0);
                         var endpointC = new Vector3(-1.5f, +0.5f, 0);
-                        var tristripsLeft = GenerateTristripsLine(matricesLeft, endpointA, endpointB, Vector3.right, 1, true);
-                        var tristripsRight = GenerateTristripsLine(matricesRight, endpointA, endpointC, Vector3.right, 1, false);
+                        var tristripsLeft = GenerateTristripsLine(matricesLeft, endpointA, endpointB, Vector3.up, 1, true);
+                        var tristripsRight = GenerateTristripsLine(matricesRight, endpointA, endpointC, Vector3.up, 1, false);
                         Assert.IsTrue(tristripsLeft.Length == tristripsRight.Length);
                         float repetitions = math.ceil(length / LengthSides);
                         for (int i = 0; i < tristripsLeft.Length; i++)
@@ -637,8 +637,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                         var rightOuter = new Vector3(-1.5f, +0.5f, 0);
                         var leftInner = new Vector3(+3.75f, +0.0f, 0);
                         var rightInner = new Vector3(-3.75f, +0.0f, 0);
-                        var tristripsLeft = GenerateTristripsLine(matricesLeft, leftOuter, leftInner, Vector3.right, 1, true);
-                        var tristripsRight = GenerateTristripsLine(matricesRight, rightOuter, rightInner, Vector3.right, 1, false);
+                        var normalLeft = Quaternion.Euler(0, 0, +6.34f) * new Vector3(0, 1); // with a x=2.25, y=0.5, angle is 6.34 degrees
+                        var normalRight= Quaternion.Euler(0, 0, -6.34f) * new Vector3(0, 1); // rotate normal, assign. TODO: need coord system??
+                        var tristripsLeft = GenerateTristripsLine(matricesLeft, leftOuter, leftInner, normalLeft, 1, true);
+                        var tristripsRight = GenerateTristripsLine(matricesRight, rightOuter, rightInner, normalRight, 1, false);
                         Assert.IsTrue(tristripsLeft.Length == tristripsRight.Length);
                         float repetitions = math.ceil(length / LengthSides);
                         for (int i = 0; i < tristripsLeft.Length; i++)
