@@ -498,7 +498,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                         //float left = (i + 0) % 2;
                         //float right = (i + 1) % 2;
                         float increment = repetitions / (tristrip.VertexCount / 2 - 1); // length of verts, but not both sides
-                        tristrip.tex0 = CreateUVsForward(tristrip.VertexCount, i+0, i+1, increment, modulus);
+                        tristrip.tex0 = CreateUVsForward(tristrip.VertexCount, i + 0, i + 1, increment, modulus);
                     }
 
                     return tristrips;
@@ -646,11 +646,19 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                             var tristripLeft = tristripsLeft[i];
                             var tristripRight = tristripsRight[i];
                             float increment = repetitions / (tristripLeft.VertexCount / 2 - 1); // length of verts, but not both sides
-                            var uvs = CreateUVsForward(tristripLeft.VertexCount, 0, 1, increment, float.PositiveInfinity);
-                            tristripLeft.tex0 = uvs;
-                            tristripLeft.tex1 = uvs;
-                            tristripRight.tex0 = uvs;
-                            tristripRight.tex1 = uvs;
+                            var uvs0 = CreateUVsForward(tristripLeft.VertexCount, 0, 1, increment, float.PositiveInfinity);
+
+                            // these uvs are double on each side
+                            var uvs1 = new Vector2[uvs0.Length];
+                            uvs0.CopyTo(uvs1, 0);
+                            for (int j = 0; j < uvs1.Length; j++)
+                                uvs1[j] *= 2f;
+
+                            tristripLeft.tex0 = uvs0;
+                            tristripLeft.tex1 = uvs1;
+
+                            tristripRight.tex0 = uvs0;
+                            tristripRight.tex1 = uvs1;
                         }
                         allTristrips.AddRange(tristripsLeft);
                         allTristrips.AddRange(tristripsRight);
