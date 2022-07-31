@@ -47,6 +47,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                         GfzAssetTemplates.MeshTemplates.MuteCity.CreateRoadTop(),
                         GfzAssetTemplates.MeshTemplates.MuteCity.CreateRoadBottom(),
                         GfzAssetTemplates.MeshTemplates.MuteCity.CreateRoadSides(),
+                        GfzAssetTemplates.MeshTemplates.MuteCity.CreateRoadEmbelishments(),
                         GfzAssetTemplates.MeshTemplates.MuteCity.CreateLaneDividers(),
                         GfzAssetTemplates.MeshTemplates.MuteCity.CreateRails(),
                     };
@@ -72,6 +73,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                         TristripGenerator.Road.MuteCity.CreateRoadTop(matrices, maxTime, WidthDivisions),
                         TristripGenerator.Road.MuteCity.CreateRoadBottom(matrices, maxTime, WidthDivisions),
                         TristripGenerator.Road.MuteCity.CreateRoadSides(matrices, maxTime, 60f),
+                        TristripGenerator.Road.MuteCity.CreateRoadEmbellishments(matrices, maxTime),
                         TristripGenerator.Road.MuteCity.CreateLaneDividers(matrices, maxTime),
                         TristripGenerator.Road.MuteCity.CreateRails(matrices, this),
                     };

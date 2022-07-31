@@ -186,7 +186,7 @@ namespace Manifold.EditorTools.GC.GFZ
                         {
                             Unk0x00 = 0,
                             MipmapSetting = MipmapSetting.UNK_FLAG_1,
-                            WrapMode = TextureWrapMode.repeatX | TextureWrapMode.repeatY,
+                            WrapMode = TextureWrapMode.mirrorX | TextureWrapMode.repeatY,
                             LodBias = 0,
                             AnisotropicFilter = GXAnisotropy.GX_ANISO_4,
                             Unk0x0C = 0,
@@ -352,6 +352,75 @@ namespace Manifold.EditorTools.GC.GFZ
 
                     return template;
                 }
+                public static GcmfTemplate CreateRoadEmbelishments()
+                {
+                    var tevLayers = new TevLayer[]
+                    {
+                        new TevLayer()
+                        {
+                            Unk0x00 = 0,
+                            MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
+                            WrapMode = TextureWrapMode.repeatY | TextureWrapMode.unk6 | TextureWrapMode.unk7,
+                            LodBias = -10,
+                            AnisotropicFilter = GXAnisotropy.GX_ANISO_4,
+                            Unk0x0C = 61,
+                            Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
+                            TplTextureIndex = 9, // TEMP
+                        },
+                        new TevLayer()
+                        {
+                            Unk0x00 = 0,
+                            MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
+                            WrapMode = TextureWrapMode.mirrorX | TextureWrapMode.mirrorY | TextureWrapMode.unk7,
+                            LodBias = -10,
+                            AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
+                            Unk0x0C = 45,
+                            Unk0x12 = TexFlags0x10.unk0 | TexFlags0x10.unk4 | TexFlags0x10.unk5,
+                            TplTextureIndex = 8, // TEMP
+                        },
+                    };
+                    var textureHashes = new string[]
+                    {
+                        "c9cfa4b1598de79c0e84fd414717d4ce", // st01 tex 9
+                        "fa50665c209e518204a61ba01f257a5b", // st01 tex 8
+                    };
+                    var textureScroll = new TextureScroll { Fields = new TextureScrollField[12] };
+                    textureScroll.Fields[0] = new TextureScrollField(0, 30);
+
+                    var material = new Material
+                    {
+                        MaterialColor = new GXColor(0xb2b2b2ff),
+                        AmbientColor = new GXColor(0x7f7f7fff),
+                        SpecularColor = new GXColor(0xFFFFFFFF),
+                        Unk0x10 = MatFlags0x10.unk1 | MatFlags0x10.unk3 | MatFlags0x10.unk5,
+                        Alpha = 255,
+                        TevLayerCount = (byte)tevLayers.Length,
+                        UnkAlpha0x14 = -1,
+                        Unk0x15 = 0,
+                        TevLayerIndex0 = 0,
+                        TevLayerIndex1 = 1,
+                        TevLayerIndex2 = -1,
+                    };
+                    var unknownAlphaOptions = new UnkAlphaOptions() { };
+                    var submesh = new Submesh()
+                    {
+                        RenderFlags = 0,
+                        Material = material,
+                        UnkAlphaOptions = unknownAlphaOptions,
+                    };
+                    var template = new GcmfTemplate()
+                    {
+                        //Gcmf = gcmf,
+                        Opaque = 1,
+                        Submesh = submesh,
+                        TevLayers = tevLayers,
+                        TextureHashes = textureHashes,
+                        TextureScroll = textureScroll,
+                    };
+
+                    return template;
+                }
+
                 public static GcmfTemplate CreateLaneDividers()
                 {
                     // Not doing isSwappable, tpl index, config index
@@ -472,7 +541,7 @@ namespace Manifold.EditorTools.GC.GFZ
         private static void AssignDisplayListsToGcmf(Gcmf gcmf, Tristrip[][] tristrips)
         {
             if (tristrips.Length != gcmf.Submeshes.Length)
-                throw new System.ArgumentException("lengths do not match!");
+                throw new System.ArgumentException("lengths do not match! Did you forget to assign equal tristrip and material templates?");
 
             for (int i = 0; i < gcmf.Submeshes.Length; i++)
             {

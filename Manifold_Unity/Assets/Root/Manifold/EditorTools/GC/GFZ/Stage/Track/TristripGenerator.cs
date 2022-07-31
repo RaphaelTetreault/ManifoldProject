@@ -55,6 +55,37 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
             return matricesDefaultScale;
         }
+        public static Matrix4x4[] ModifyMatrixScales(Matrix4x4[] matrices, Vector3 offset)
+        {
+            var matricesDefaultScale = new Matrix4x4[matrices.Length];
+            for (int i = 0; i < matricesDefaultScale.Length; i++)
+            {
+                var matrix = matrices[i];
+                var position = matrix.Position();
+                var rotation = matrix.Rotation();
+                var scale = matrix.Scale();
+                scale += offset;
+
+                matricesDefaultScale[i] = Matrix4x4.TRS(position, rotation, scale);
+            }
+            return matricesDefaultScale;
+        }
+        public static Matrix4x4[] GetNormalizedMatrixWithPositionOffset(Matrix4x4[] matrices, float direction)
+        {
+            var matricesDefaultScale = new Matrix4x4[matrices.Length];
+            for (int i = 0; i < matricesDefaultScale.Length; i++)
+            {
+                var matrix = matrices[i];
+                var position = matrix.Position();
+                var rotation = matrix.Rotation();
+                var scale = matrix.Scale();
+                var offset = rotation * new Vector3(scale.x * 0.5f * direction, 0, 0);
+
+                matricesDefaultScale[i] = Matrix4x4.TRS(position + offset, rotation, Vector3.one);
+            }
+            return matricesDefaultScale;
+        }
+
         public static Matrix4x4[] StripHeight(Matrix4x4[] matrices)
         {
             var matricesDefaultScale = new Matrix4x4[matrices.Length];
@@ -448,8 +479,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 // TODO: for future elements, make this generic when possible. ie: reuse mesh between, say,
                 //          Mute City and Green Plant? etc.
 
+                private const float LengthSides = 16f; // 16x1 texture, sooo?
+
                 public static Tristrip[] CreateRoadTop(Matrix4x4[] matrices, float length, int nTristrips, int repeatUvX = 2)
                 {
+                    var matricesInset = ModifyMatrixScales(matrices, new Vector3(-2.25f, 0, 0));
                     var endpointA = new Vector3(-0.5f, 0, 0);
                     var endpointB = new Vector3(+0.5f, 0, 0);
                     var tristrips = GenerateTristripsLine(matrices, endpointA, endpointB, Vector3.up, nTristrips, true);
@@ -461,10 +495,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                         var tristrip = tristrips[i];
                         //float left = ((i + 0f) / tristrips.Length * 2f * repeatUvX) % 2;
                         //float right = ((i + 1f) / tristrips.Length * 2f * repeatUvX) % 2;
-                        float left = (i + 0) % 2;
-                        float right = (i + 1) % 2;
+                        //float left = (i + 0) % 2;
+                        //float right = (i + 1) % 2;
                         float increment = repetitions / (tristrip.VertexCount / 2 - 1); // length of verts, but not both sides
-                        tristrip.tex0 = CreateUVsForward(tristrip.VertexCount, left, right, increment, modulus);
+                        tristrip.tex0 = CreateUVsForward(tristrip.VertexCount, i+0, i+1, increment, modulus);
                     }
 
                     return tristrips;
@@ -472,8 +506,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
                 public static Tristrip[] CreateRoadBottom(Matrix4x4[] matrices, float length, int nTristrips)
                 {
-                    var endpointA = new Vector3(-0.5f, -1.5f, 0);
-                    var endpointB = new Vector3(+0.5f, -1.5f, 0);
+                    var endpointA = new Vector3(-0.5f, -1.0f, 0);
+                    var endpointB = new Vector3(+0.5f, -1.0f, 0);
                     var tristrips = GenerateTristripsLine(matrices, endpointA, endpointB, Vector3.down, nTristrips, false);
 
                     float repetitions = math.ceil(length / 40f);
@@ -490,7 +524,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     return tristrips;
                 }
 
-                // TDOO: width is for endcaps
+                // TODO: width is for endcaps
                 public static Tristrip[] CreateRoadSides(Matrix4x4[] matrices, float length, float width)
                 {
                     var allTristrips = new List<Tristrip>();
@@ -498,32 +532,29 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     // left
                     {
                         var endpointA = new Vector3(-0.5f, +0.0f, 0);
-                        var endpointB = new Vector3(-0.5f, -1.5f, 0);
+                        var endpointB = new Vector3(-0.5f, -1.0f, 0);
                         var tristrips = GenerateTristripsLine(matrices, endpointA, endpointB, Vector3.right, 1, false);
 
-                        float repetitions = math.ceil(length / 100f);
+                        float repetitions = math.ceil(length / LengthSides);
                         float modulus = float.PositiveInfinity;
                         for (int i = 0; i < tristrips.Length; i++)
                         {
                             var tristrip = tristrips[i];
-                            float left = (i + 0) % 2;
-                            float right = (i + 1) % 2;
                             float increment = repetitions / (tristrip.VertexCount / 2 - 1); // length of verts, but not both sides
-                            tristrip.tex0 = CreateUVsForward(tristrip.VertexCount, left, right, increment, modulus);
+                            tristrip.tex0 = CreateUVsForward(tristrip.VertexCount, 0, 1, increment, modulus);
                             //tristrip.tex0 = CreateUVsSideways(tristrip.VertexCount, 0, 1, increment, modulus);
                         }
 
                         allTristrips.AddRange(tristrips);
                     }
-
                     // COPY PASTED. MAKE MODULAR?
                     // right
                     {
-                        var endpointA = new Vector3(+0.5f, +0.0f, 0);
-                        var endpointB = new Vector3(+0.5f, -1.5f, 0);
+                        var endpointA = new Vector3(+0.5f, +0.5f, 0);
+                        var endpointB = new Vector3(+0.5f, -1.0f, 0);
                         var tristrips = GenerateTristripsLine(matrices, endpointA, endpointB, Vector3.left, 1, true);
 
-                        float repetitions = math.ceil(length / 40f);
+                        float repetitions = math.ceil(length / LengthSides);
                         float modulus = float.PositiveInfinity;
                         for (int i = 0; i < tristrips.Length; i++)
                         {
@@ -538,8 +569,36 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                         allTristrips.AddRange(tristrips);
                     }
 
+                    // NOTE: you can pack like all of these into a single for loop, no?
+                    // so long as tristrip count matches.
+
+                    // tops
+                    var matricesLeft = GetNormalizedMatrixWithPositionOffset(matrices, -1f);
+                    var matricesRight = GetNormalizedMatrixWithPositionOffset(matrices, +1f);
+                    // top left
                     {
-                        var mtxOffset = Matrix4x4.TRS(new(0, -1.5f, 0), Quaternion.identity, Vector3.one);
+                        var endpointA = new Vector3(+0.0f, +0.5f, 0);
+                        var endpointB = new Vector3(+1.5f, +0.5f, 0);
+                        var endpointC = new Vector3(-1.5f, +0.5f, 0);
+                        var tristripsLeft = GenerateTristripsLine(matricesLeft, endpointA, endpointB, Vector3.right, 1, true);
+                        var tristripsRight = GenerateTristripsLine(matricesRight, endpointA, endpointC, Vector3.right, 1, false);
+                        Assert.IsTrue(tristripsLeft.Length == tristripsRight.Length);
+                        float repetitions = math.ceil(length / LengthSides);
+                        for (int i = 0; i < tristripsLeft.Length; i++)
+                        {
+                            var tristripLeft = tristripsLeft[i];
+                            var tristripRight = tristripsRight[i];
+                            float increment = repetitions / (tristripLeft.VertexCount / 2 - 1); // length of verts, but not both sides
+                            tristripLeft.tex0 = CreateUVsForward(tristripLeft.VertexCount, 0, 1, increment, float.PositiveInfinity);
+                            tristripRight.tex0 = CreateUVsForward(tristripRight.VertexCount, 0, 1, increment, float.PositiveInfinity);
+                        }
+                        allTristrips.AddRange(tristripsLeft);
+                        allTristrips.AddRange(tristripsRight);
+                    }
+
+                    // endcaps
+                    {
+                        var mtxOffset = Matrix4x4.TRS(new(0, -1.0f, 0), Quaternion.identity, Vector3.one);
                         var endpointA = new Vector3(-0.5f, +0.0f, 0);
                         var endpointB = new Vector3(+0.5f, +0.0f, 0);
                         {
@@ -565,6 +624,41 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     return allTristrips.ToArray();
                 }
 
+                public static Tristrip[] CreateRoadEmbellishments(Matrix4x4[] matrices, float length)
+                {
+                    var allTristrips = new List<Tristrip>();
+
+                    // tops
+                    var matricesLeft = GetNormalizedMatrixWithPositionOffset(matrices, -1f);
+                    var matricesRight = GetNormalizedMatrixWithPositionOffset(matrices, +1f);
+                    // top left
+                    {
+                        var leftOuter = new Vector3(+1.5f, +0.5f, 0);
+                        var rightOuter = new Vector3(-1.5f, +0.5f, 0);
+                        var leftInner = new Vector3(+2.25f, +0.0f, 0);
+                        var rightInner = new Vector3(-2.25f, +0.0f, 0);
+                        var tristripsLeft = GenerateTristripsLine(matricesLeft, leftOuter, leftInner, Vector3.right, 1, true);
+                        var tristripsRight = GenerateTristripsLine(matricesRight, rightOuter, rightInner, Vector3.right, 1, false);
+                        Assert.IsTrue(tristripsLeft.Length == tristripsRight.Length);
+                        float repetitions = math.ceil(length / LengthSides);
+                        for (int i = 0; i < tristripsLeft.Length; i++)
+                        {
+                            var tristripLeft = tristripsLeft[i];
+                            var tristripRight = tristripsRight[i];
+                            float increment = repetitions / (tristripLeft.VertexCount / 2 - 1); // length of verts, but not both sides
+                            var uvs = CreateUVsForward(tristripLeft.VertexCount, 0, 1, increment, float.PositiveInfinity);
+                            tristripLeft.tex0 = uvs;
+                            tristripLeft.tex1 = uvs;
+                            tristripRight.tex0 = uvs;
+                            tristripRight.tex1 = uvs;
+                        }
+                        allTristrips.AddRange(tristripsLeft);
+                        allTristrips.AddRange(tristripsRight);
+                    }
+                    return allTristrips.ToArray();
+                }
+
+
                 public static Tristrip[] CreateRails(Matrix4x4[] matrices, GfzShapeRoad node)
                 {
                     var allTristrips = new List<Tristrip>();
@@ -572,14 +666,15 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     // rail left
                     if (node.RailHeightLeft > 0f)
                     {
-                        var endpointA = new Vector3(-0.5f, +0.0f, 0);
-                        var endpointB = new Vector3(-0.5f, node.RailHeightLeft, 0);
+                        var endpointA = new Vector3(-0.5f, +1.0f, 0);
+                        var endpointB = new Vector3(-0.5f, node.RailHeightLeft - 1.0f, 0);
                         var tristrips = GenerateTristripsLine(matrices, endpointA, endpointB, Vector3.right, 1, true);
                         foreach (var tristrip in tristrips)
                         {
-                            tristrip.tex0 = CreateUVsSideways(tristrip.VertexCount);
-                            tristrip.tex1 = CreateUVsSideways(tristrip.VertexCount);
-                            tristrip.tex2 = CreateUVsSideways(tristrip.VertexCount);
+                            var uvs = CreateUVsSideways(tristrip.VertexCount);
+                            tristrip.tex0 = uvs;
+                            tristrip.tex1 = uvs;
+                            tristrip.tex2 = uvs;
                         }
                         allTristrips.AddRange(tristrips);
                     }
@@ -587,14 +682,15 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     // rail right
                     if (node.RailHeightRight > 0f)
                     {
-                        var endpointA = new Vector3(+0.5f, +0.0f, 0);
-                        var endpointB = new Vector3(+0.5f, node.RailHeightRight, 0);
+                        var endpointA = new Vector3(+0.5f, +0.75f, 0);
+                        var endpointB = new Vector3(+0.5f, node.RailHeightRight - 1.0f, 0);
                         var tristrips = GenerateTristripsLine(matrices, endpointA, endpointB, Vector3.left, 1, true);
                         foreach (var tristrip in tristrips)
                         {
-                            tristrip.tex0 = CreateUVsSideways(tristrip.VertexCount);
-                            tristrip.tex1 = CreateUVsSideways(tristrip.VertexCount);
-                            tristrip.tex2 = CreateUVsSideways(tristrip.VertexCount);
+                            var uvs = CreateUVsSideways(tristrip.VertexCount);
+                            tristrip.tex0 = uvs;
+                            tristrip.tex1 = uvs;
+                            tristrip.tex2 = uvs;
                         }
                         allTristrips.AddRange(tristrips);
                     }
@@ -604,26 +700,26 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
                 public static Tristrip[] CreateLaneDividers(Matrix4x4[] matrices, float length)
                 {
-                    var matricesLeft = new Matrix4x4[matrices.Length];
-                    var matricesRight = new Matrix4x4[matrices.Length];
+                    //var matricesLeft = new Matrix4x4[matrices.Length];
+                    //var matricesRight = new Matrix4x4[matrices.Length];
 
-                    var left = Matrix4x4.TRS(new(-0.475f, 0, 0), Quaternion.identity, Vector3.one);
-                    var right = Matrix4x4.TRS(new(+0.475f, 0, 0), Quaternion.identity, Vector3.one);
-                    for (int i = 0; i < matrices.Length; i++)
-                    {
-                        matricesLeft[i] = matrices[i] * left;
-                        matricesRight[i] = matrices[i] * right;
-                    }
+                    //var left = Matrix4x4.TRS(new(-0.475f, 0, 0), Quaternion.identity, Vector3.one);
+                    //var right = Matrix4x4.TRS(new(+0.475f, 0, 0), Quaternion.identity, Vector3.one);
+                    //for (int i = 0; i < matrices.Length; i++)
+                    //{
+                    //    matricesLeft[i] = matrices[i] * left;
+                    //    matricesRight[i] = matrices[i] * right;
+                    //}
 
                     var matricesNoScale = GetMatricesDefaultScale(matrices, Vector3.one);
-                    var matricesLeftNoScale = GetMatricesDefaultScale(matricesLeft, Vector3.one);
-                    var matricesRightNoScale = GetMatricesDefaultScale(matricesRight, Vector3.one);
+                    //var matricesLeftNoScale = GetMatricesDefaultScale(matricesLeft, Vector3.one);
+                    //var matricesRightNoScale = GetMatricesDefaultScale(matricesRight, Vector3.one);
 
                     var tristrips = new Tristrip[]
                     {
                     GetLaneDivider(matricesNoScale, length),
-                    GetLaneDivider(matricesLeftNoScale, length),
-                    GetLaneDivider(matricesRightNoScale, length),
+                    //GetLaneDivider(matricesLeftNoScale, length),
+                    //GetLaneDivider(matricesRightNoScale, length),
                     };
 
                     return tristrips;
