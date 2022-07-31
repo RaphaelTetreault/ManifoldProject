@@ -479,11 +479,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 // TODO: for future elements, make this generic when possible. ie: reuse mesh between, say,
                 //          Mute City and Green Plant? etc.
 
-                private const float LengthSides = 16f; // 16x1 texture, sooo?
+                private const float LengthSides = 64f; // 16x1 texture, sooo?
 
                 public static Tristrip[] CreateRoadTop(Matrix4x4[] matrices, float length, int nTristrips, int repeatUvX = 2)
                 {
-                    var matricesInset = ModifyMatrixScales(matrices, new Vector3(-2.25f, 0, 0));
+                    var matricesInset = ModifyMatrixScales(matrices, new Vector3(-3.75f, 0, 0));
                     var endpointA = new Vector3(-0.5f, 0, 0);
                     var endpointB = new Vector3(+0.5f, 0, 0);
                     var tristrips = GenerateTristripsLine(matrices, endpointA, endpointB, Vector3.up, nTristrips, true);
@@ -635,8 +635,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     {
                         var leftOuter = new Vector3(+1.5f, +0.5f, 0);
                         var rightOuter = new Vector3(-1.5f, +0.5f, 0);
-                        var leftInner = new Vector3(+2.25f, +0.0f, 0);
-                        var rightInner = new Vector3(-2.25f, +0.0f, 0);
+                        var leftInner = new Vector3(+3.75f, +0.0f, 0);
+                        var rightInner = new Vector3(-3.75f, +0.0f, 0);
                         var tristripsLeft = GenerateTristripsLine(matricesLeft, leftOuter, leftInner, Vector3.right, 1, true);
                         var tristripsRight = GenerateTristripsLine(matricesRight, rightOuter, rightInner, Vector3.right, 1, false);
                         Assert.IsTrue(tristripsLeft.Length == tristripsRight.Length);
