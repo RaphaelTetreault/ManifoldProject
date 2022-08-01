@@ -238,15 +238,19 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
 
                 // Create output
+                int courseIndex = scene.CourseIndex;
                 var fileName = $"st{scene.CourseIndex:00}";
                 var gmaFileName = $"{fileName}.gma";
                 var gmaFilePath = outputPath + gmaFileName;
                 var tplFileName = $"{fileName}.tpl";
                 var tplFilePath = outputPath + tplFileName;
 
+                //PrintTemp();
+                //throw new NotImplementedException();
+
                 // Recover models we might be overwriting
                 // TODO: just do that for every model?
-                var missingModels = RecoverMissingModelsFromStageGma(gmaFileName, ref textureHashesToIndex);
+                var missingModels = RecoverMissingModelsFromStageGma(scene.CourseIndex, ref textureHashesToIndex);
                 gma.Models = gma.Models.Concat(missingModels).ToArray();
 
                 // GMA
@@ -514,15 +518,21 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
 
         // THIS WILL HAVE DICT FOR TEXTURES AS PARAM
-        public static Model[] RecoverMissingModelsFromStageGma(string missingFile, ref Dictionary<string, ushort> textureHashesToIndex)
+        public static Model[] RecoverMissingModelsFromStageGma(int stageID, ref Dictionary<string, ushort> textureHashesToIndex)
         {
-            string missingFileName = Path.GetFileNameWithoutExtension(missingFile);
+            var venueID = CourseUtility.GetVenueID(stageID).ToString().ToLower();
+            var bg = $"bg_{venueID}";
+            const string race = "race";
+
+            //string missingFileName = Path.GetFileNameWithoutExtension(missingFile);
             var tags = GameObject.FindObjectsOfType<GmaSourceTag>();
             var dictMissingModels = new Dictionary<string, GmaSourceTag>();
 
             foreach (var tag in tags)
             {
-                bool isMissingModelReference = tag.FileName == missingFileName;
+                bool isMissingModelReference =
+                    tag.FileName != bg &&
+                    tag.FileName != race;
                 if (!isMissingModelReference)
                     continue;
 
@@ -532,27 +542,31 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
             var models = new Model[dictMissingModels.Count];
             var settings = GfzProjectWindow.GetSettings();
-            string inputPath = settings.SourceStageDirectory;
-            string filePath = inputPath + missingFile;
+            string inputPath = settings.SourceDirectory;
 
-            using (var reader = new EndianBinaryReader(File.OpenRead(filePath), Gma.endianness))
+            var missingModels = dictMissingModels.Values.ToArray();
+            for (int i = 0; i < missingModels.Length; i++)
             {
-                int i = 0;
-                foreach (var kvMissingModel in dictMissingModels)
+                var missingModel = missingModels[i];
+                var filePaths = Directory.GetFiles(inputPath, $"{missingModel.FileName}.gma", SearchOption.AllDirectories);
+                Assert.IsTrue(filePaths.Length == 1);
+                var filePath = filePaths[0];
+
+                using (var reader = new EndianBinaryReader(File.OpenRead(filePath), Gma.endianness))
                 {
-                    var missingModel = kvMissingModel.Value;
                     reader.JumpToAddress(missingModel.GcmfAddressRange.startAddress);
 
                     var model = new Model();
                     model.Name = missingModel.ModelName;
                     model.Gcmf = new Gcmf();
                     model.Gcmf.Deserialize(reader);
-                    models[i++] = model;
+                    models[i] = model;
+
+                    // TODO: don't be making arrays of size 1
+                    // Edit TPL texture indexes, add textures to output TPL
+                    RecoverMissingModelTextureHashes(missingModel.FileName, new Model[] { model }, ref textureHashesToIndex);
                 }
             }
-
-            // Edit TPL texture indexes, add textures to output TPL
-            RecoverMissingModelTextureHashes(missingFileName, models, ref textureHashesToIndex);
 
             return models;
         }
@@ -574,12 +588,34 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 for (int i = 0; i < tevLayers.Length; i++)
                 {
                     var tevLayer = tevLayers[i];
-                    string textureHash = textureHashes[i];
-                    ushort textureIndex = textureHashesToIndex[textureHash];
+                    var tplIndex = tevLayer.TplTextureIndex;
+                    string textureHash = textureHashes[tplIndex];
+
+                    ushort textureIndex = 0xFFFF;
+                    if (textureHashesToIndex.ContainsKey(textureHash))
+                    {
+                        textureIndex = textureHashesToIndex[textureHash];
+                    }
+                    else
+                    {
+                        textureIndex = (ushort)textureHashesToIndex.Count;
+                        textureHashesToIndex.Add(textureHash, textureIndex);
+                    }
                     tevLayer.TplTextureIndex = textureIndex;
                 }
             }
         }
+
+        public static void PrintTemp()
+        {
+            var settings = GfzProjectWindow.GetSettings();
+            string assetsWorkingDir = settings.AssetsWorkingDirectory;
+            // The structure which translates old TPL indexes into texture hashes
+            string textureHashToTextureInfoPath = assetsWorkingDir + "tpl/TPL-TextureHash-to-TextureInfo.asset";
+            var textureHashToTextureInfoAsset = AssetDatabase.LoadAssetAtPath<TextureHashToTextureInfo>(textureHashToTextureInfoPath);
+            textureHashToTextureInfoAsset.Print();
+        }
+
 
         public static MemoryStream WriteBodgeTplFromTextureHashes(string[] textureHashes)
         {
@@ -611,7 +647,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 foreach (var desc in descriptions)
                     writer.Write(desc);
 
-                var align =  writer.BaseStream.GetLengthOfAlignment(32); // fifo
+                var align = writer.BaseStream.GetLengthOfAlignment(32); // fifo
                 for (byte i = 0; i < align; i++)
                     writer.Write(i);
 
