@@ -2,6 +2,7 @@
 using GameCube.GFZ.GMA;
 using GameCube.GFZ.LZ;
 using GameCube.GFZ.Stage;
+using GameCube.GFZ.TPL;
 using Manifold.IO;
 using System;
 using System.Collections.Generic;
@@ -14,7 +15,7 @@ using System.Linq;
 
 using Manifold.EditorTools.GC.GFZ.GMA;
 using Manifold.EditorTools.GC.GFZ.Stage.Track;
-
+using Manifold.EditorTools.GC.GFZ.TPL;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage
 {
@@ -235,18 +236,41 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 // add dynamic (no statics needed)
                 scene.dynamicSceneObjects = dynamicSceneObjects.Concat(scene.dynamicSceneObjects).ToArray();
 
-                // save gma
-                var gmaFileName = $"st{scene.CourseIndex:00}.gma";
+
+                // Create output
+                var fileName = $"st{scene.CourseIndex:00}";
+                var gmaFileName = $"{fileName}.gma";
                 var gmaFilePath = outputPath + gmaFileName;
+                var tplFileName = $"{fileName}.tpl";
+                var tplFilePath = outputPath + tplFileName;
 
                 // Recover models we might be overwriting
-                var missingModels = RecoverMissingModelsFromStageGma(gmaFileName);
+                // TODO: just do that for every model?
+                var missingModels = RecoverMissingModelsFromStageGma(gmaFileName, ref textureHashesToIndex);
                 gma.Models = gma.Models.Concat(missingModels).ToArray();
 
+                // GMA
                 using (var writer = new EndianBinaryWriter(File.Create(gmaFilePath), Gma.endianness))
                     writer.Write(gma);
                 LzUtility.CompressAvLzToDisk(gmaFilePath, compressFormat, true);
                 Debug.Log($"Created models archive '{gmaFilePath}'.");
+
+                // HOLY FUCK just write the TPL!?
+                using (var writer = new StreamWriter(File.Create(tplFilePath)))
+                {
+                    foreach (var kv in textureHashesToIndex)
+                    {
+                        writer.WriteLine($"{kv.Value}, {kv.Key}");
+                    }
+                    writer.WriteLine();
+                    foreach (var model in gma.Models)
+                    {
+                        for (int i = 0; i < model.Gcmf.TevLayers.Length; i++)
+                        {
+                            writer.WriteLine($"{model.Name}, {model.Gcmf.TevLayers[i].TplTextureIndex}");
+                        }
+                    }
+                }
             }
 
             // TEMP until data is stored properly in GFZ unity components
@@ -497,7 +521,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
 
         // THIS WILL HAVE DICT FOR TEXTURES AS PARAM
-        public static Model[] RecoverMissingModelsFromStageGma(string missingFile)
+        public static Model[] RecoverMissingModelsFromStageGma(string missingFile, ref Dictionary<string, ushort> textureHashesToIndex)
         {
             string missingFileName = Path.GetFileNameWithoutExtension(missingFile);
             var tags = GameObject.FindObjectsOfType<GmaSourceTag>();
@@ -534,12 +558,58 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 }
             }
 
+            // Edit TPL texture indexes, add textures to output TPL
+            RecoverMissingModelTextureHashes(missingFileName, models, ref textureHashesToIndex);
+
             return models;
         }
 
-        public static void RecoverMissingModelTextureHashes()
+        private static void RecoverMissingModelTextureHashes(string sourceFile, Model[] models, ref Dictionary<string, ushort> textureHashesToIndex)
         {
+            var settings = GfzProjectWindow.GetSettings();
+            string inputPath = settings.AssetsWorkingDirectory;
 
+            // The structure which translates old TPL indexes into texture hashes
+            string fileToTextureHashPath = inputPath + "tpl/TPL-TextureDescription-to-Hash.asset";
+            var fileToTextureHashAsset = AssetDatabase.LoadAssetAtPath<TplTextureToTextureHash>(fileToTextureHashPath);
+            var fileToTextureHashDict = fileToTextureHashAsset.GetDictionary();
+            TplTextureHashes textureHashes = fileToTextureHashDict[sourceFile];
+
+            foreach (var model in models)
+            {
+                var tevLayers = model.Gcmf.TevLayers;
+                for (int i = 0; i < tevLayers.Length; i++)
+                {
+                    var tevLayer = tevLayers[i];
+                    string textureHash = textureHashes[i];
+                    ushort textureIndex = textureHashesToIndex[textureHash];
+                    tevLayer.TplTextureIndex = textureIndex;
+                }
+            }
+        }
+
+        public static Tpl WriteTplFromTextureHashes(IEnumerable<string> textureHashes)
+        {
+            var settings = GfzProjectWindow.GetSettings();
+            string inputPath = settings.AssetsWorkingDirectory;
+
+            // The structure which translates old TPL indexes into texture hashes
+            string textureHashToTextureInfoPath = inputPath + "tpl/TPL-TextureHash-to-TextureInfo.asset";
+            var textureHashToTextureInfoAsset = AssetDatabase.LoadAssetAtPath<TextureHashToTextureInfo>(textureHashToTextureInfoPath);
+            var textureHashToTextureInfoDict = textureHashToTextureInfoAsset.GetDictionary();
+
+            var tpl = new Tpl();
+
+            foreach (var textureHash in textureHashes)
+            {
+                TextureInfo textureInfo = textureHashToTextureInfoDict[textureHash];
+                // open file
+                // read contents
+                // add to tpl!
+            }
+
+            // retrun that!!!!!!
+            return tpl;
         }
 
     }

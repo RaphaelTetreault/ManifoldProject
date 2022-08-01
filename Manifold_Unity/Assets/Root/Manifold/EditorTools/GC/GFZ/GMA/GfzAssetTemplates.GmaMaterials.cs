@@ -53,6 +53,7 @@ namespace Manifold.EditorTools.GC.GFZ
                         TextureScroll = textureScroll,
                     };
 
+                    Assert.IsTrue(textureHashes.Length == tevLayers.Length);
                     return template;
                 }
                 public static GcmfTemplate CreateUnlitVertexColored()
@@ -167,6 +168,7 @@ namespace Manifold.EditorTools.GC.GFZ
                         TextureScroll = textureScroll,
                     };
 
+                    Assert.IsTrue(textureHashes.Length == tevLayers.Length);
                     return template;
                 }
                 public static GcmfTemplate CreateRoadTop()
@@ -220,6 +222,7 @@ namespace Manifold.EditorTools.GC.GFZ
                         TextureScroll = textureScroll,
                     };
 
+                    Assert.IsTrue(textureHashes.Length == tevLayers.Length);
                     return template;
                 }
                 public static GcmfTemplate CreateRoadBottom()
@@ -272,6 +275,7 @@ namespace Manifold.EditorTools.GC.GFZ
                         TextureScroll = textureScroll,
                     };
 
+                    Assert.IsTrue(textureHashes.Length == tevLayers.Length);
                     return template;
                 }
                 public static GcmfTemplate CreateRoadSides()
@@ -325,6 +329,7 @@ namespace Manifold.EditorTools.GC.GFZ
                         TextureScroll = textureScroll,
                     };
 
+                    Assert.IsTrue(textureHashes.Length == tevLayers.Length);
                     return template;
                 }
                 public static GcmfTemplate CreateRoadEmbelishments()
@@ -388,6 +393,7 @@ namespace Manifold.EditorTools.GC.GFZ
                         TextureScroll = textureScroll,
                     };
 
+                    Assert.IsTrue(textureHashes.Length == tevLayers.Length);
                     return template;
                 }
                 public static GcmfTemplate CreateLaneDividers()
@@ -434,7 +440,6 @@ namespace Manifold.EditorTools.GC.GFZ
                         Material = material,
                         UnkAlphaOptions = unknownAlphaOptions,
                     };
-
                     var template = new GcmfTemplate()
                     {
                         Translucid = 1,
@@ -444,6 +449,7 @@ namespace Manifold.EditorTools.GC.GFZ
                         TextureScroll = textureScroll,
                     };
 
+                    Assert.IsTrue(textureHashes.Length == tevLayers.Length);
                     return template;
                 }
             }
@@ -469,15 +475,16 @@ namespace Manifold.EditorTools.GC.GFZ
             // todo: texture indexes and stuff
 
             ushort tevLayerOffset = 0;
-            for (int i = 0; i < templates.Length; i++)
+            for (int templateIndex = 0; templateIndex < templates.Length; templateIndex++)
             {
-                var template = templates[i];
+                var template = templates[templateIndex];
+                var textureHashes = template.TextureHashes;
 
                 // TEV LAYERS
                 for (ushort tevIndex = 0; tevIndex < template.TevLayers.Length; tevIndex++)
                 {
-                    // Get texture index
-                    string textureHash = template.TextureHashes[i];
+                    // Get texture index//
+                    string textureHash = template.TextureHashes[tevIndex];
                     ushort textureIndex = GetTextureHashesIndex(textureHash, ref textureHashesToIndex);
                     // Get TEV index for this GCMF
                     ushort tevLayerIndex = checked((ushort)(tevIndex + tevLayerOffset));
@@ -490,7 +497,7 @@ namespace Manifold.EditorTools.GC.GFZ
                 tevLayerOffset = (ushort)tevLayers.Count;
 
                 // collect submesh
-                submeshes[i] = template.Submesh;
+                submeshes[templateIndex] = template.Submesh;
 
                 // TEMP: sort how many opaque / translucid
                 opaque += template.Opaque;
