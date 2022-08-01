@@ -255,22 +255,15 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 LzUtility.CompressAvLzToDisk(gmaFilePath, compressFormat, true);
                 Debug.Log($"Created models archive '{gmaFilePath}'.");
 
-                // HOLY FUCK just write the TPL!?
-                using (var writer = new StreamWriter(File.Create(tplFilePath)))
+                // Write out a hella bodged TPL. :eyes:
+                // TODO: finish CMPR serialization, write textures for real.
+                using (var writer = new BinaryWriter(File.Create(tplFilePath)))
                 {
-                    foreach (var kv in textureHashesToIndex)
-                    {
-                        writer.WriteLine($"{kv.Value}, {kv.Key}");
-                    }
-                    writer.WriteLine();
-                    foreach (var model in gma.Models)
-                    {
-                        for (int i = 0; i < model.Gcmf.TevLayers.Length; i++)
-                        {
-                            writer.WriteLine($"{model.Name}, {model.Gcmf.TevLayers[i].TplTextureIndex}");
-                        }
-                    }
+                    var textureHashes = textureHashesToIndex.Keys.ToArray();
+                    var stream = WriteBodgeTplFromTextureHashes(textureHashes);
+                    writer.Write(stream.ToArray());
                 }
+                LzUtility.CompressAvLzToDisk(tplFilePath, compressFormat, true);
             }
 
             // TEMP until data is stored properly in GFZ unity components
@@ -397,7 +390,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                     ObjectRenderFlags0x00.unk_RenderObject2 |
                     ObjectRenderFlags0x00.unk_RenderObject3 |
                     ObjectRenderFlags0x00.ReceiveEfbShadow,
-                
+
                 Unk0x04 = ObjectRenderFlags0x04._NULL,
             };
             return dynamicSceneObject;
@@ -588,28 +581,68 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             }
         }
 
-        public static Tpl WriteTplFromTextureHashes(IEnumerable<string> textureHashes)
+        public static MemoryStream WriteBodgeTplFromTextureHashes(string[] textureHashes)
         {
             var settings = GfzProjectWindow.GetSettings();
-            string inputPath = settings.AssetsWorkingDirectory;
+            string assetsWorkingDir = settings.AssetsWorkingDirectory;
 
             // The structure which translates old TPL indexes into texture hashes
-            string textureHashToTextureInfoPath = inputPath + "tpl/TPL-TextureHash-to-TextureInfo.asset";
+            string textureHashToTextureInfoPath = assetsWorkingDir + "tpl/TPL-TextureHash-to-TextureInfo.asset";
             var textureHashToTextureInfoAsset = AssetDatabase.LoadAssetAtPath<TextureHashToTextureInfo>(textureHashToTextureInfoPath);
             var textureHashToTextureInfoDict = textureHashToTextureInfoAsset.GetDictionary();
 
-            var tpl = new Tpl();
+            // Make a TPL, just copy texture data around
+            var descriptions = new List<TextureDescription>();
 
             foreach (var textureHash in textureHashes)
             {
                 TextureInfo textureInfo = textureHashToTextureInfoDict[textureHash];
-                // open file
-                // read contents
-                // add to tpl!
+                TextureDescription textureDescription = textureInfo.AsTextureDescription();
+                descriptions.Add(textureDescription);
             }
 
-            // retrun that!!!!!!
-            return tpl;
+            var stream = new MemoryStream();
+            using (var writer = new EndianBinaryWriter(stream, Tpl.endianness))
+            {
+                // Write count
+                writer.Write(descriptions.Count);
+
+                // write descriptions. Addrs are wrong.
+                foreach (var desc in descriptions)
+                    writer.Write(desc);
+
+                var align =  writer.BaseStream.GetLengthOfAlignment(32); // fifo
+                for (byte i = 0; i < align; i++)
+                    writer.Write(i);
+
+                //
+                var src = settings.SourceDirectory;
+                for (int i = 0; i < textureHashes.Length; i++)
+                {
+                    var textureHash = textureHashes[i];
+                    TextureInfo textureInfo = textureHashToTextureInfoDict[textureHash];
+
+                    var pattern = $"{textureInfo.SourceFileName}.tpl";
+                    var tplPaths = Directory.GetFiles(src, pattern, SearchOption.AllDirectories);
+                    Assert.IsTrue(tplPaths.Length == 1, pattern);
+                    var tplPath = tplPaths[0];
+                    using (var reader = new EndianBinaryReader(File.OpenRead(tplPath), Tpl.endianness))
+                    {
+                        // copy over data
+                        reader.JumpToAddress(textureInfo.AddressRange.startAddress);
+                        var bytes = reader.ReadBytes(textureInfo.AddressRange.Size);
+                        descriptions[i].TexturePtr = writer.BaseStream.Position;
+                        writer.Write(bytes);
+                    }
+                }
+
+                writer.JumpToAddress(4);
+                // write descriptions. Addrs are wrong.
+                foreach (var desc in descriptions)
+                    writer.Write(desc);
+            }
+
+            return stream;
         }
 
     }

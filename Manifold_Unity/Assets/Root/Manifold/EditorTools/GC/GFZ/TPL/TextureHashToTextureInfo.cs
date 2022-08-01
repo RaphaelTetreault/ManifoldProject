@@ -19,11 +19,11 @@ namespace Manifold.EditorTools.GC.GFZ.TPL
         /// <summary>
         /// All texture hashes stored in this object.
         /// </summary>
-        [field: SerializeField, HideInInspector] public string[] Hashes { get; internal set; }
+        [field: SerializeField, ReadOnlyGUI] public string[] Hashes { get; internal set; }
         /// <summary>
         /// Description of each hashed texture.
         /// </summary>
-        [field: SerializeField, HideInInspector] public TextureInfo[] TextureInfos { get; internal set; }
+        [field: SerializeField, ReadOnlyGUI] public TextureInfo[] TextureInfos { get; internal set; }
 
         public Dictionary<string, TextureInfo> ReconstructDictionary()
         {

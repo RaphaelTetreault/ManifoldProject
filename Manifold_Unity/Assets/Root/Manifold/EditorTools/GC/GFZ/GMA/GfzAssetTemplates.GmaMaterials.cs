@@ -189,8 +189,8 @@ namespace Manifold.EditorTools.GC.GFZ
                     };
                     var textureHashes = new string[]
                     {
-                        "c148529dca41e47c9d2ff15fe0d294bb", // st01 tex 2 - mut unused
-                        //"083a0143d9afb40b27fcbe39bf95b50f", // st01 tex 41 - com
+                        "b42318832be6f79480973fddd2b4e0ac", // st01 tex 2 - mut unused
+                        //"c8e2ea0bfdbbe3960ca2ec4c8af96b1c", // st01 tex 41 - com
                     };
                     var textureScroll = new TextureScroll { Fields = new TextureScrollField[12] };
                     textureScroll.Fields[0] = new TextureScrollField(0, 30);
@@ -243,7 +243,7 @@ namespace Manifold.EditorTools.GC.GFZ
                     };
                     var textureHashes = new string[]
                     {
-                        "069afe4a631dbe56398811fb0ef0b8f0", // st01 tex 3
+                        "bd3f966c9db76827c5db9a032d11dffa", // st01 tex 11
                     };
                     var textureScroll = new TextureScroll { Fields = new TextureScrollField[12] };
                     textureScroll.Fields[0] = new TextureScrollField(0, 30);
@@ -296,7 +296,7 @@ namespace Manifold.EditorTools.GC.GFZ
                     };
                     var textureHashes = new string[]
                     {
-                        "069afe4a631dbe56398811fb0ef0b8f0", // st01 tex 3
+                        "d34923c1e44fa9bd58283b123b4a708a", // st01 tex 10
                     };
                     var textureScroll = new TextureScroll { Fields = new TextureScrollField[12] };
                     textureScroll.Fields[0] = new TextureScrollField(0, 30);
@@ -359,8 +359,8 @@ namespace Manifold.EditorTools.GC.GFZ
                     };
                     var textureHashes = new string[]
                     {
-                        "c9cfa4b1598de79c0e84fd414717d4ce", // st01 tex 9
-                        "fa50665c209e518204a61ba01f257a5b", // st01 tex 8
+                        "533b7e7a43510b21a883b35e1120c60f", // st01 tex 9
+                        "b978ad119120a4cadd428707eefc2a5e", // st01 tex 8
                     };
                     var textureScroll = new TextureScroll { Fields = new TextureScrollField[12] };
                     textureScroll.Fields[0] = new TextureScrollField(0, 30);
@@ -414,7 +414,7 @@ namespace Manifold.EditorTools.GC.GFZ
                     };
                     var textureHashes = new string[]
                     {
-                        "ca0853c45448b241aa2b03cbe2b93182", // st01 tex 12
+                        "8d92bad8c4d1eb2e46aeb25b9e11e9cf", // st01 tex 12
                     };
                     var textureScroll = new TextureScroll { Fields = new TextureScrollField[12] };
                     textureScroll.Fields[0] = new TextureScrollField(0, 30);
@@ -478,7 +478,7 @@ namespace Manifold.EditorTools.GC.GFZ
             for (int templateIndex = 0; templateIndex < templates.Length; templateIndex++)
             {
                 var template = templates[templateIndex];
-                var textureHashes = template.TextureHashes;
+                //var textureHashes = template.TextureHashes;
 
                 // TEV LAYERS
                 for (ushort tevIndex = 0; tevIndex < template.TevLayers.Length; tevIndex++)
@@ -488,13 +488,21 @@ namespace Manifold.EditorTools.GC.GFZ
                     ushort textureIndex = GetTextureHashesIndex(textureHash, ref textureHashesToIndex);
                     // Get TEV index for this GCMF
                     ushort tevLayerIndex = checked((ushort)(tevIndex + tevLayerOffset));
-                    var tevLayer = template.TevLayers[tevIndex];
+                    TevLayer tevLayer = template.TevLayers[tevIndex];
                     // Assign indexes
                     tevLayer.TplTextureIndex = textureIndex;
                     tevLayer.TevLayerIndex = tevLayerIndex;
+
+                    if (tevIndex == 0)
+                        template.Submesh.Material.TevLayerIndex0 = (short)tevLayerIndex;
+                    else if (tevIndex == 1)
+                        template.Submesh.Material.TevLayerIndex1 = (short)tevLayerIndex;
+                    else if (tevIndex == 2)
+                        template.Submesh.Material.TevLayerIndex2 = (short)tevLayerIndex;
                 }
                 tevLayers.AddRange(template.TevLayers);
                 tevLayerOffset = (ushort)tevLayers.Count;
+                template.Submesh.Material.TevLayerCount = (byte)template.TevLayers.Length;
 
                 // collect submesh
                 submeshes[templateIndex] = template.Submesh;

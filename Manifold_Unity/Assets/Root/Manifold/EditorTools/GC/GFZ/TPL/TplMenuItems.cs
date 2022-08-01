@@ -46,6 +46,7 @@ namespace Manifold.EditorTools.GC.GFZ.TPL
             {
                 // Progress bar
                 {
+                    Debug.Log(inputPaths[tplCount]);
                     bool cancel = ProgressBar.ShowIndexed(tplCount, tplTotal, "TPL Test", inputPaths[tplCount]);
                     if (cancel)
                         break;
@@ -60,7 +61,7 @@ namespace Manifold.EditorTools.GC.GFZ.TPL
                 };
                 tplTextureHashes.Add(textureHashes);
 
-                // Iterate over all textures
+                // Iterate over all textures - foreach texture in tpl
                 Assert.IsTrue(tpl.TextureDescriptions.Length == tpl.TextureSeries.Length);
                 for (int i = 0; i < tpl.TextureDescriptions.Length; i++)
                 {
@@ -89,8 +90,17 @@ namespace Manifold.EditorTools.GC.GFZ.TPL
                         PixelHeight = textureDescription.Height,
                         TextureLevels = textureDescription.MipmapLevels,
                     };
-                    textureInfos.Add(textureInfo);
-                    textureInfoHashes.Add(hash);
+
+                    bool containsTexture = textureInfoHashes.Contains(hash);
+                    if (!containsTexture)
+                    {
+                        textureInfoHashes.Add(hash);
+                        textureInfos.Add(textureInfo);
+                    }
+                    //else
+                    //{
+                    //    Debug.Log($"Skipped {hash}");
+                    //}
                 }
             }
 
@@ -121,7 +131,7 @@ namespace Manifold.EditorTools.GC.GFZ.TPL
             var settings = GfzProjectWindow.GetSettings();
             var inputPath = settings.SourceDirectory;
             var inputPaths = Directory.GetFiles(inputPath, "*.tpl", SearchOption.AllDirectories);
-            
+
             var outputPath = EditorUtility.OpenFolderPanel("Select TPL Files Output Folder", "", "");
             if (string.IsNullOrEmpty(outputPath))
                 return;
@@ -142,7 +152,7 @@ namespace Manifold.EditorTools.GC.GFZ.TPL
 
                 int index = -1;
                 int digitsFormat = tpl.TextureSeries.Length.ToString().Length;
-                
+
                 var fileRoot = $"{outputPath}/{tpl.FileName}/";
                 Directory.CreateDirectory(fileRoot);
 
