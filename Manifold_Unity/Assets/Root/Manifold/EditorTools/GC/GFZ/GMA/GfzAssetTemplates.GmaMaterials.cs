@@ -146,7 +146,55 @@ namespace Manifold.EditorTools.GC.GFZ
                     Assert.IsTrue(textureHashes.Length == tevLayers.Length);
                     return template;
                 }
-                public static GcmfTemplate CreateDirtGX()
+                public static GcmfTemplate CreateDirtBaseAlpha()
+                {
+                    var tevLayers = new TevLayer[]
+                    {
+                        new TevLayer()
+                        {
+                            Unk0x00 = 0,
+                            MipmapSetting = MipmapSetting.UNK_FLAG_1,
+                            WrapMode = TextureWrapMode.repeatX | TextureWrapMode.repeatY,
+                            LodBias = 20,
+                            AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
+                            Unk0x0C = 0,
+                            Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
+                        },
+                    };
+                    var textureHashes = new string[]
+                    {
+                        "9e0082712ac9ef3bc7d0344fde1c52a4", // st03 tex 66, color brown
+                    };
+                    var material = new Material
+                    {
+                        MaterialColor = new GXColor(0xb2b2b2ff),
+                        AmbientColor = new GXColor(0x7f7f7fff),
+                        SpecularColor = new GXColor(0x00000000),
+                        Unk0x10 = 0,
+                        Alpha = 178,
+                        UnkAlpha0x14 = 1,
+                        Unk0x15 = 0,
+                    };
+                    var submesh = new Submesh()
+                    {
+                        RenderFlags = 0,
+                        Material = material,
+                        UnkAlphaOptions = new UnkAlphaOptions(),
+                    };
+
+                    var template = new GcmfTemplate()
+                    {
+                        IsTranslucid = true,
+                        Submesh = submesh,
+                        TevLayers = tevLayers,
+                        TextureHashes = textureHashes,
+                        TextureScrollFields = null,
+                    };
+
+                    Assert.IsTrue(textureHashes.Length == tevLayers.Length);
+                    return template;
+                }
+                public static GcmfTemplate CreateDirtNoise()
                 {
                     var tevLayers = new TevLayer[]
                     {
@@ -154,9 +202,9 @@ namespace Manifold.EditorTools.GC.GFZ
                         {
                             Unk0x00 = 0,
                             MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
-                            WrapMode = TextureWrapMode.repeatX | TextureWrapMode.repeatY | TextureWrapMode.unk6 | TextureWrapMode.unk7,
-                            LodBias = -10,
-                            AnisotropicFilter = GXAnisotropy.GX_ANISO_4,
+                            WrapMode = TextureWrapMode.repeatX | TextureWrapMode.repeatY | TextureWrapMode.unk7,
+                            LodBias = 0,
+                            AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
                             Unk0x0C = 0,
                             Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
                         },
@@ -164,21 +212,24 @@ namespace Manifold.EditorTools.GC.GFZ
                         {
                             Unk0x00 = TexFlags0x00.ENABLE_UV_SCROLL,
                             MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
-                            WrapMode = TextureWrapMode.repeatX | TextureWrapMode.unk7,
+                            WrapMode = TextureWrapMode.repeatX | TextureWrapMode.repeatY | TextureWrapMode.unk7,
                             LodBias = 0,
                             AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
-                            Unk0x0C = 0,
+                            Unk0x0C = 135,
                             Unk0x12 = TexFlags0x10.unk0 | TexFlags0x10.unk4 | TexFlags0x10.unk5,
                         },
                     };
                     var textureHashes = new string[]
                     {
-                        "f51a234a9db86230e837558f6271f8d1", // st03 tex 61, blue squares
-                        "c6994c636310879078862e84616a781c", // st03 tex 64, flash
+                        "da8e87b2702b9595c731149f6273c199", // st03 tex 59
+                        "da8e87b2702b9595c731149f6273c199", // st03 tex 59 (yes, again)
                     };
                     var textureScrollFields = new TextureScrollField[]
                     {
-                        new TextureScrollField(2, 0),
+                        new TextureScrollField(0.1f, 0.1f),
+                        new TextureScrollField(0.1f, 0.1f),
+                        new TextureScrollField(0.1f, 0.1f),
+                        new TextureScrollField(0.1f, 0.1f),
                     };
                     var material = new Material
                     {
@@ -209,6 +260,7 @@ namespace Manifold.EditorTools.GC.GFZ
                     Assert.IsTrue(textureHashes.Length == tevLayers.Length);
                     return template;
                 }
+
 
                 public static GcmfTemplate CreateSides() => MuteCity.CreateRoadSides();
             }
@@ -767,7 +819,7 @@ namespace Manifold.EditorTools.GC.GFZ
                 }
             }
 
-            if (index >= 4)
+            if (index > TextureScroll.kUsedCount)
             {
                 var msg = $"Maximum _used_ texture scroll fields exceeded. ({index}/{4})";
                 throw new System.ArgumentException(msg);

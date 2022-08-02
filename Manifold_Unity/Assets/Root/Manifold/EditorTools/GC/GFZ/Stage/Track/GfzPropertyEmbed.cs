@@ -146,6 +146,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     {
                         GfzAssetTemplates.MeshTemplates.General.CreateSlipGX(),
                     };
+                case SurfaceEmbedType.Dirt:
+                    return new GcmfTemplate[]
+                    {
+                        GfzAssetTemplates.MeshTemplates.General.CreateDirtNoise(),
+                        GfzAssetTemplates.MeshTemplates.General.CreateDirtBaseAlpha(),
+                    };
 
                 default:
                     return new GcmfTemplate[]
@@ -165,19 +171,23 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
             switch (embedType)
             {
-                case SurfaceEmbedType.Recover:
-                case SurfaceEmbedType.Damage:
+                //case SurfaceEmbedType.Recover:
+                //case SurfaceEmbedType.Damage:
                 case SurfaceEmbedType.Slip:
-                case SurfaceEmbedType.Dirt:
                     return new Tristrip[][]
                     {
                         TristripTemplates.General.CreateEmbed(matrices, this),
                     };
-
+                case SurfaceEmbedType.Dirt:
+                    return new Tristrip[][]
+                    {
+                        TristripTemplates.General.CreateEmbed(matrices, this),
+                        TristripTemplates.General.CreateEmbed(matrices, this, 1),
+                    };
                 default:
                     return new Tristrip[][]
                     {
-                        TristripTemplates.Road.CreateDebug(matrices, this, widthDivisions, lengthDistance, isGfzCoordinateSpace),
+                        TristripTemplates.Road.CreateDebugEmbed(matrices, this, widthDivisions, lengthDistance),
                     };
             }
         }

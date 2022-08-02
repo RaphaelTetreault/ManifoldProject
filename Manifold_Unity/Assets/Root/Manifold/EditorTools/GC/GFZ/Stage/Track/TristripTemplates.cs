@@ -13,13 +13,18 @@ namespace Manifold.EditorTools.GC.GFZ
     {
         public static class General
         {
-            public static Tristrip[] CreateEmbed(Matrix4x4[] matrices, GfzPropertyEmbed embed)
+            public static Tristrip[] CreateEmbed(Matrix4x4[] matrices, GfzPropertyEmbed embed, int overrideWidthDivisions = 0)
             {
                 // I want some kind of offset data on widths so I can map the textures on properly...
 
+                // Tesalate along width. Some embeds have no detail, so allow overriding
+                int nWidthDivisions = overrideWidthDivisions > 0
+                    ? overrideWidthDivisions
+                    : embed.WidthDivisions;
+
                 var edgeLeft = new Vector3(-0.5f, 0.40f, 0);
                 var edgeRight = new Vector3(+0.5f, 0.40f, 0);
-                var tristrips = GenerateTristripsLine(matrices, edgeLeft, edgeRight, Vector3.up, embed.WidthDivisions, true);
+                var tristrips = GenerateTristripsLine(matrices, edgeLeft, edgeRight, Vector3.up, nWidthDivisions, true);
 
                 float repetitions = math.ceil(embed.GetRangeLength() / 10f);
                 for (int i = 0; i < tristrips.Length; i++)
