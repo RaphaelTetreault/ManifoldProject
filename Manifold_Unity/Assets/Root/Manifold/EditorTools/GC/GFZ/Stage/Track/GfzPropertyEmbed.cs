@@ -19,6 +19,25 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         [SerializeField] private UnityEngine.AnimationCurve widthCurve = new UnityEngine.AnimationCurve(new(0, 0.5f), new(1, 0.5f));
         [SerializeField] private UnityEngine.AnimationCurve offsetCurve = new UnityEngine.AnimationCurve(new(0, 0), new(1, 0));
         [SerializeField] private AnimationCurveTRS animationCurveTRS = new();
+        //[SerializeField] private float range;
+
+        public SurfaceEmbedType Type { get => type; }
+        public int WidthDivisions { get => widthDivisions; }
+        public float LengthDistance { get => lengthDistance; }
+        public float From { get => from; }
+        public float To { get => to; }
+        public UnityEngine.AnimationCurve WidthCurve { get => widthCurve; }
+        public UnityEngine.AnimationCurve OffsetCurve { get => offsetCurve; }
+        public AnimationCurveTRS AnimationCurveTRS { get => animationCurveTRS; }
+        
+        public float GetRangeLength()
+        {
+            float length = GetRoot().GetSegmentLength();
+            float range = to - from;
+            float total = length *range;
+            return total;
+        }
+
 
         public enum SurfaceEmbedType : byte
         {
@@ -86,29 +105,83 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return trs;
         }
 
+        //public override Gcmf CreateGcmf(out GcmfTemplate[] gcmfTemplates, ref Dictionary<string, ushort> textureHashesToIndex)
+        //{
+        //    // Get path matrices
+        //    var animKeys = animationCurveTRS.Position.x.keys;
+        //    var min = animKeys[0].time;
+        //    var max = animKeys[animKeys.Length - 1].time;
+        //    var matrices = TristripGenerator.CreatePathMatrices(this, true, lengthDistance, min, max);
+
+        //    // NOTE: Always do alpha last
+        //    var tristripsCollections = new Tristrip[][]
+        //    {
+        //        TristripTemplates.Road.CreateDebugEmbed(matrices, this, widthDivisions, 0),
+        //    };
+        //    gcmfTemplates = new GcmfTemplate[]
+        //    {
+        //        GfzAssetTemplates.MeshTemplates.DebugTemplates.CreateUnlitVertexColored(),
+        //    };
+
+        //    var gcmf = GcmfTemplate.CreateGcmf(gcmfTemplates, tristripsCollections, ref textureHashesToIndex);
+        //    return gcmf;
+        //}
+
+
         public override Gcmf CreateGcmf(out GcmfTemplate[] gcmfTemplates, ref Dictionary<string, ushort> textureHashesToIndex)
         {
+            var tristripsCollections = GetTristrips(Type, true);
+            gcmfTemplates = GetGcmfTemplates(Type);
+            var gcmf = GcmfTemplate.CreateGcmf(gcmfTemplates, tristripsCollections, ref textureHashesToIndex);
+            return gcmf;
+        }
+
+        public GcmfTemplate[] GetGcmfTemplates(SurfaceEmbedType embedType)
+        {
+            // NOTE: Always do alpha last
+            switch (embedType)
+            {
+                case SurfaceEmbedType.Slip:
+                    return new GcmfTemplate[]
+                    {
+                        GfzAssetTemplates.MeshTemplates.General.CreateSlipGX(),
+                    };
+
+                default:
+                    return new GcmfTemplate[]
+                    {
+                        GfzAssetTemplates.MeshTemplates.DebugTemplates.CreateLitVertexColored(),
+                    };
+            }
+        }
+
+        public Tristrip[][] GetTristrips(SurfaceEmbedType embedType, bool isGfzCoordinateSpace)
+        {
             // Get path matrices
-            var animKeys = animationCurveTRS.Position.x.keys;
+            var animKeys = animationCurveTRS.Scale.x.keys;
             var min = animKeys[0].time;
             var max = animKeys[animKeys.Length - 1].time;
             var matrices = TristripGenerator.CreatePathMatrices(this, true, lengthDistance, min, max);
 
-            // NOTE: Always do alpha last
-            var tristripsCollections = new Tristrip[][]
+            switch (embedType)
             {
-                TristripGenerator.Road.CreateEmbed(matrices, this, widthDivisions, 0),
-            };
-            gcmfTemplates = new GcmfTemplate[]
-            {
-                GfzAssetTemplates.MeshTemplates.DebugTemplates.CreateUnlitVertexColored(),
-            };
-            // Temp: remove double-sided. In the future, template will not have this flag.
-            gcmfTemplates[0].Submesh.RenderFlags &= ~RenderFlags.doubleSidedFaces;
+                case SurfaceEmbedType.Recover:
+                case SurfaceEmbedType.Damage:
+                case SurfaceEmbedType.Slip:
+                case SurfaceEmbedType.Dirt:
+                    return new Tristrip[][]
+                    {
+                        TristripTemplates.General.CreateEmbed(matrices, this),
+                    };
 
-            var gcmf = GcmfTemplate.CreateGcmf(gcmfTemplates, tristripsCollections, ref textureHashesToIndex);
-            return gcmf;
+                default:
+                    return new Tristrip[][]
+                    {
+                        TristripTemplates.Road.CreateDebug(matrices, this, widthDivisions, lengthDistance, isGfzCoordinateSpace),
+                    };
+            }
         }
+
 
         public override Mesh CreateMesh()
         {

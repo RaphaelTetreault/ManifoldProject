@@ -70,18 +70,18 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 case MeshStyle.MuteCity:
                     return new Tristrip[][]
                     {
-                        TristripGenerator.Road.MuteCity.CreateRoadTop(matrices, maxTime, WidthDivisions),
-                        TristripGenerator.Road.MuteCity.CreateRoadBottom(matrices, maxTime, WidthDivisions),
-                        TristripGenerator.Road.MuteCity.CreateRoadSides(matrices, maxTime, 60f),
-                        TristripGenerator.Road.MuteCity.CreateRoadEmbellishments(matrices, maxTime),
-                        TristripGenerator.Road.MuteCity.CreateLaneDividers(matrices, maxTime),
-                        TristripGenerator.Road.MuteCity.CreateRails(matrices, this),
+                        TristripTemplates.Road.MuteCity.CreateRoadTop(matrices, maxTime, WidthDivisions),
+                        TristripTemplates.Road.MuteCity.CreateRoadBottom(matrices, maxTime, WidthDivisions),
+                        TristripTemplates.Road.MuteCity.CreateRoadSides(matrices, maxTime, 60f),
+                        TristripTemplates.Road.MuteCity.CreateRoadEmbellishments(matrices, maxTime),
+                        TristripTemplates.Road.MuteCity.CreateLaneDividers(matrices, maxTime),
+                        TristripTemplates.Road.MuteCity.CreateRails(matrices, this),
                     };
 
                 default:
                     return new Tristrip[][]
                     {
-                        TristripGenerator.Road.CreateDebug(matrices, this, WidthDivisions, LengthDistance, isGfzCoordinateSpace),
+                        TristripTemplates.Road.CreateDebug(matrices, this, WidthDivisions, LengthDistance, isGfzCoordinateSpace),
                     };
             }
         }

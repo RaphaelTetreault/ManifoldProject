@@ -61,7 +61,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 }
             }
 
-            // start at index 1, fiorst comparision would always be true
+            // start at index 1, first comparision would always be true
             // since it would compare to itself
             for (int i = 1; i < maxTimes.Count; i++)
             {
