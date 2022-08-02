@@ -486,7 +486,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     var matricesInset = ModifyMatrixScales(matrices, new Vector3(-3.75f, 0, 0));
                     var endpointA = new Vector3(-0.5f, 0, 0);
                     var endpointB = new Vector3(+0.5f, 0, 0);
-                    var tristrips = GenerateTristripsLine(matrices, endpointA, endpointB, Vector3.up, nTristrips, true);
+                    var tristrips = GenerateTristripsLine(matricesInset, endpointA, endpointB, Vector3.up, nTristrips, true);
 
                     float repetitions = math.ceil(length / 80f);
                     float modulus = float.PositiveInfinity;
@@ -531,7 +531,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
                     // left
                     {
-                        var endpointA = new Vector3(-0.5f, +0.0f, 0);
+                        var endpointA = new Vector3(-0.5f, +0.5f, 0);
                         var endpointB = new Vector3(-0.5f, -1.0f, 0);
                         var tristrips = GenerateTristripsLine(matrices, endpointA, endpointB, Vector3.right, 1, false);
 

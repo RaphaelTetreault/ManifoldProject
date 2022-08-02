@@ -35,7 +35,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
             // Values from pointed classes
             // These functions should return null if necessary
-            dynamicSceneObject.SceneObject = sceneObject.ExportGfz(); // todo, unmangle references in generator
+            dynamicSceneObject.SceneObject = sceneObject.ExportGfz();
+            if (dynamicSceneObject.SceneObject is null)
+                throw new System.ArgumentException(name + " SceneObjectDynamic's SceneObject reference is null.");
 
             if (animationClip != null)
                 dynamicSceneObject.AnimationClip = animationClip.ExportGfz();

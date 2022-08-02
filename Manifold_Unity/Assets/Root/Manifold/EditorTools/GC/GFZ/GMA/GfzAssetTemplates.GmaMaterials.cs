@@ -24,11 +24,8 @@ namespace Manifold.EditorTools.GC.GFZ
             {
                 public static GcmfTemplate CreateLitVertexColored()
                 {
-                    // Not doing isSwappable, tpl index, config index
                     var tevLayers = new TevLayer[0];
                     var textureHashes = new string[0];
-                    TextureScroll textureScroll = null;
-
                     var material = new Material()
                     {
                         MaterialColor = new GXColor(0xb2b2b2ff, ComponentType.GX_RGBA8),
@@ -46,11 +43,11 @@ namespace Manifold.EditorTools.GC.GFZ
 
                     var template = new GcmfTemplate()
                     {
-                        Opaque = 1,
+                        IsTranslucid = false,
                         Submesh = submesh,
                         TevLayers = tevLayers,
                         TextureHashes = textureHashes,
-                        TextureScroll = textureScroll,
+                        TextureScrollFields = null,
                     };
 
                     Assert.IsTrue(textureHashes.Length == tevLayers.Length);
@@ -61,7 +58,6 @@ namespace Manifold.EditorTools.GC.GFZ
                     // Not doing isSwappable, tpl index, config index
                     var tevLayers = new TevLayer[0];
                     var textureHashes = new string[0];
-                    TextureScroll textureScroll = null;
 
                     var material = new Material();
                     var unknownAlphaOptions = new UnkAlphaOptions();
@@ -74,11 +70,11 @@ namespace Manifold.EditorTools.GC.GFZ
 
                     var template = new GcmfTemplate()
                     {
-                        Opaque = 1,
+                        IsTranslucid = false,
                         Submesh = submesh,
                         TevLayers = tevLayers,
                         TextureHashes = textureHashes,
-                        TextureScroll = textureScroll,
+                        TextureScrollFields = null,
                     };
 
                     return template;
@@ -91,7 +87,6 @@ namespace Manifold.EditorTools.GC.GFZ
 
                 public static GcmfTemplate CreateRails()
                 {
-                    // Not doing isSwappable, tpl index, config index
                     var tevLayers = new TevLayer[]
                     {
                         new TevLayer()
@@ -106,8 +101,8 @@ namespace Manifold.EditorTools.GC.GFZ
                         },
                         new TevLayer()
                         {
-                            Unk0x00 = 0, // TexFlags0x00.ENABLE_UV_SCROLL,
-                            MipmapSetting = MipmapSetting.UNK_FLAG_5,
+                            Unk0x00 = TexFlags0x00.ENABLE_UV_SCROLL,
+                            MipmapSetting = MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_5,
                             WrapMode = TextureWrapMode.repeatX | TextureWrapMode.repeatY,
                             LodBias = 0,
                             AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
@@ -131,41 +126,38 @@ namespace Manifold.EditorTools.GC.GFZ
                         "9ed3039353de68dbbf59d8904f7bb00f", // st01 tex 40
                         "390204a0d91287427073649ec4efc80f", // st01 tex  0
                     };
-                    var textureScroll = new TextureScroll { Fields = new TextureScrollField[12] };
-                    textureScroll.Fields[0] = new TextureScrollField(0, 30);
-
+                    var textureScrollFields = new TextureScrollField[]
+                    {
+                        new TextureScrollField(0, 30),
+                    };
                     var material = new Material
                     {
-                        MaterialColor = new GameCube.GX.GXColor(0xb2b2b2ff),
-                        AmbientColor = new GameCube.GX.GXColor(0x7f7f7fff),
-                        SpecularColor = new GameCube.GX.GXColor(0x00000000),
+                        MaterialColor = new GXColor(0xb2b2b2ff),
+                        AmbientColor = new GXColor(0x7f7f7fff),
+                        SpecularColor = new GXColor(0x00000000),
                         Unk0x10 = 0,
                         Alpha = 255,
-                        TevLayerCount = (byte)tevLayers.Length,
-                        //MaterialDestination = 0, // Resolved based on display lists at serialize time
                         UnkAlpha0x14 = 0,
                         Unk0x15 = 0,
                     };
                     var unknownAlphaOptions = new UnkAlphaOptions()
                     {
-                        // origin?
                         Unk0x10 = BlendFactors.unk2 | BlendFactors.unk4,
                     };
                     var submesh = new Submesh()
                     {
-                        RenderFlags = RenderFlags.unlit | RenderFlags.doubleSidedFaces | RenderFlags.customBlendSource | RenderFlags.customBlendDestination,
+                        RenderFlags = RenderFlags.unlit | RenderFlags.doubleSidedFaces | RenderFlags.screenBlend | RenderFlags.additiveBlend,
                         Material = material,
                         UnkAlphaOptions = unknownAlphaOptions,
-                        // GX attributes
                     };
 
                     var template = new GcmfTemplate()
                     {
-                        Translucid = 1,
+                        IsTranslucid = true,
                         Submesh = submesh,
                         TevLayers = tevLayers,
                         TextureHashes = textureHashes,
-                        TextureScroll = textureScroll,
+                        TextureScrollFields = textureScrollFields,
                     };
 
                     Assert.IsTrue(textureHashes.Length == tevLayers.Length);
@@ -173,15 +165,14 @@ namespace Manifold.EditorTools.GC.GFZ
                 }
                 public static GcmfTemplate CreateRoadTop()
                 {
-                    // Not doing isSwappable, tpl index, config index
                     var tevLayers = new TevLayer[]
                     {
                         new TevLayer()
                         {
                             Unk0x00 = 0,
-                            MipmapSetting = MipmapSetting.UNK_FLAG_1,
-                            WrapMode = TextureWrapMode.mirrorX | TextureWrapMode.repeatY,
-                            LodBias = 0,
+                            MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
+                            WrapMode = TextureWrapMode.mirrorX | TextureWrapMode.repeatY | TextureWrapMode.unk6 | TextureWrapMode.unk7,
+                            LodBias = -10,
                             AnisotropicFilter = GXAnisotropy.GX_ANISO_4,
                             Unk0x0C = 0,
                             Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
@@ -192,9 +183,6 @@ namespace Manifold.EditorTools.GC.GFZ
                         "b42318832be6f79480973fddd2b4e0ac", // st01 tex 2 - mut unused
                         //"c8e2ea0bfdbbe3960ca2ec4c8af96b1c", // st01 tex 41 - com
                     };
-                    var textureScroll = new TextureScroll { Fields = new TextureScrollField[12] };
-                    textureScroll.Fields[0] = new TextureScrollField(0, 30);
-
                     var material = new Material
                     {
                         MaterialColor = new GXColor(0xb2b2b2ff),
@@ -202,24 +190,23 @@ namespace Manifold.EditorTools.GC.GFZ
                         SpecularColor = new GXColor(0xFFFFFFFF),
                         Unk0x10 = MatFlags0x10.unk1 | MatFlags0x10.unk3 | MatFlags0x10.unk5,
                         Alpha = 255,
-                        TevLayerCount = (byte)tevLayers.Length,
                         UnkAlpha0x14 = -1,
                         Unk0x15 = 0,
                     };
-                    var unknownAlphaOptions = new UnkAlphaOptions() { };
                     var submesh = new Submesh()
                     {
                         RenderFlags = 0,
                         Material = material,
-                        UnkAlphaOptions = unknownAlphaOptions,
+                        UnkAlphaOptions = new UnkAlphaOptions(),
                     };
+
                     var template = new GcmfTemplate()
                     {
-                        Opaque = 1,
+                        IsTranslucid = false,
                         Submesh = submesh,
                         TevLayers = tevLayers,
                         TextureHashes = textureHashes,
-                        TextureScroll = textureScroll,
+                        TextureScrollFields = null,
                     };
 
                     Assert.IsTrue(textureHashes.Length == tevLayers.Length);
@@ -227,17 +214,16 @@ namespace Manifold.EditorTools.GC.GFZ
                 }
                 public static GcmfTemplate CreateRoadBottom()
                 {
-                    // Not doing isSwappable, tpl index, config index
                     var tevLayers = new TevLayer[]
                     {
                         new TevLayer()
                         {
                             Unk0x00 = 0,
-                            MipmapSetting = MipmapSetting.UNK_FLAG_4,
-                            WrapMode = TextureWrapMode.repeatX | TextureWrapMode.repeatY,
-                            LodBias = 0,
-                            AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
-                            Unk0x0C = 0,
+                            MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
+                            WrapMode = TextureWrapMode.mirrorX | TextureWrapMode.repeatY | TextureWrapMode.unk6 | TextureWrapMode.unk7,
+                            LodBias = -10,
+                            AnisotropicFilter = GXAnisotropy.GX_ANISO_4,
+                            Unk0x0C = 216,
                             Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
                         },
                     };
@@ -245,9 +231,6 @@ namespace Manifold.EditorTools.GC.GFZ
                     {
                         "bd3f966c9db76827c5db9a032d11dffa", // st01 tex 11
                     };
-                    var textureScroll = new TextureScroll { Fields = new TextureScrollField[12] };
-                    textureScroll.Fields[0] = new TextureScrollField(0, 30);
-
                     var material = new Material
                     {
                         MaterialColor = new GXColor(0xb2b2b2ff),
@@ -255,24 +238,23 @@ namespace Manifold.EditorTools.GC.GFZ
                         SpecularColor = new GXColor(0xFFFFFFFF),
                         Unk0x10 = MatFlags0x10.unk1 | MatFlags0x10.unk3 | MatFlags0x10.unk5,
                         Alpha = 255,
-                        TevLayerCount = (byte)tevLayers.Length,
                         UnkAlpha0x14 = -1,
                         Unk0x15 = 0,
                     };
-                    var unknownAlphaOptions = new UnkAlphaOptions() { };
                     var submesh = new Submesh()
                     {
                         RenderFlags = 0,
                         Material = material,
-                        UnkAlphaOptions = unknownAlphaOptions,
+                        UnkAlphaOptions = new UnkAlphaOptions(),
                     };
+
                     var template = new GcmfTemplate()
                     {
-                        Opaque = 1,
+                        IsTranslucid = false,
                         Submesh = submesh,
                         TevLayers = tevLayers,
                         TextureHashes = textureHashes,
-                        TextureScroll = textureScroll,
+                        TextureScrollFields = null,
                     };
 
                     Assert.IsTrue(textureHashes.Length == tevLayers.Length);
@@ -280,15 +262,14 @@ namespace Manifold.EditorTools.GC.GFZ
                 }
                 public static GcmfTemplate CreateRoadSides()
                 {
-                    // Not doing isSwappable, tpl index, config index
                     var tevLayers = new TevLayer[]
                     {
                         new TevLayer()
                         {
                             Unk0x00 = 0,
-                            MipmapSetting = MipmapSetting.UNK_FLAG_1,
-                            WrapMode = TextureWrapMode.repeatX | TextureWrapMode.repeatY,
-                            LodBias = 0,
+                            MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
+                            WrapMode = TextureWrapMode.repeatY | TextureWrapMode.unk6 | TextureWrapMode.unk7,
+                            LodBias = -10,
                             AnisotropicFilter = GXAnisotropy.GX_ANISO_4,
                             Unk0x0C = 0,
                             Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
@@ -298,9 +279,6 @@ namespace Manifold.EditorTools.GC.GFZ
                     {
                         "d34923c1e44fa9bd58283b123b4a708a", // st01 tex 10
                     };
-                    var textureScroll = new TextureScroll { Fields = new TextureScrollField[12] };
-                    textureScroll.Fields[0] = new TextureScrollField(0, 30);
-
                     var material = new Material
                     {
                         MaterialColor = new GXColor(0xb2b2b2ff),
@@ -308,25 +286,22 @@ namespace Manifold.EditorTools.GC.GFZ
                         SpecularColor = new GXColor(0xFFFFFFFF),
                         Unk0x10 = MatFlags0x10.unk1 | MatFlags0x10.unk3 | MatFlags0x10.unk5,
                         Alpha = 255,
-                        TevLayerCount = (byte)tevLayers.Length,
                         UnkAlpha0x14 = -1,
                         Unk0x15 = 0,
                     };
-                    var unknownAlphaOptions = new UnkAlphaOptions() { };
                     var submesh = new Submesh()
                     {
                         RenderFlags = 0,
                         Material = material,
-                        UnkAlphaOptions = unknownAlphaOptions,
+                        UnkAlphaOptions = new UnkAlphaOptions(),
                     };
                     var template = new GcmfTemplate()
                     {
-                        //Gcmf = gcmf,
-                        Opaque = 1,
+                        IsTranslucid = false,
                         Submesh = submesh,
                         TevLayers = tevLayers,
                         TextureHashes = textureHashes,
-                        TextureScroll = textureScroll,
+                        TextureScrollFields = null,
                     };
 
                     Assert.IsTrue(textureHashes.Length == tevLayers.Length);
@@ -362,9 +337,6 @@ namespace Manifold.EditorTools.GC.GFZ
                         "533b7e7a43510b21a883b35e1120c60f", // st01 tex 9
                         "b978ad119120a4cadd428707eefc2a5e", // st01 tex 8
                     };
-                    var textureScroll = new TextureScroll { Fields = new TextureScrollField[12] };
-                    textureScroll.Fields[0] = new TextureScrollField(0, 30);
-
                     var material = new Material
                     {
                         MaterialColor = new GXColor(0xb2b2b2ff),
@@ -372,25 +344,23 @@ namespace Manifold.EditorTools.GC.GFZ
                         SpecularColor = new GXColor(0xFFFFFFFF),
                         Unk0x10 = MatFlags0x10.unk1 | MatFlags0x10.unk3 | MatFlags0x10.unk5,
                         Alpha = 255,
-                        TevLayerCount = (byte)tevLayers.Length,
                         UnkAlpha0x14 = -1,
                         Unk0x15 = 0,
                     };
-                    var unknownAlphaOptions = new UnkAlphaOptions() { };
                     var submesh = new Submesh()
                     {
                         RenderFlags = 0,
                         Material = material,
-                        UnkAlphaOptions = unknownAlphaOptions,
+                        UnkAlphaOptions = new UnkAlphaOptions(),
                     };
+
                     var template = new GcmfTemplate()
                     {
-                        //Gcmf = gcmf,
-                        Opaque = 1,
+                        IsTranslucid = false,
                         Submesh = submesh,
                         TevLayers = tevLayers,
                         TextureHashes = textureHashes,
-                        TextureScroll = textureScroll,
+                        TextureScrollFields = null,
                     };
 
                     Assert.IsTrue(textureHashes.Length == tevLayers.Length);
@@ -398,14 +368,13 @@ namespace Manifold.EditorTools.GC.GFZ
                 }
                 public static GcmfTemplate CreateLaneDividers()
                 {
-                    // Not doing isSwappable, tpl index, config index
                     var tevLayers = new TevLayer[]
                     {
                         new TevLayer()
                         {
                             Unk0x00 = 0,
                             MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
-                            WrapMode = TextureWrapMode.repeatX | TextureWrapMode.repeatY,
+                            WrapMode = TextureWrapMode.repeatY | TextureWrapMode.unk7,
                             LodBias = -10,
                             AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
                             Unk0x0C = 0,
@@ -416,9 +385,6 @@ namespace Manifold.EditorTools.GC.GFZ
                     {
                         "8d92bad8c4d1eb2e46aeb25b9e11e9cf", // st01 tex 12
                     };
-                    var textureScroll = new TextureScroll { Fields = new TextureScrollField[12] };
-                    textureScroll.Fields[0] = new TextureScrollField(0, 30);
-
                     var material = new Material
                     {
                         MaterialColor = new GXColor(0x697db2ff),
@@ -426,8 +392,7 @@ namespace Manifold.EditorTools.GC.GFZ
                         SpecularColor = new GXColor(0x00000000),
                         Unk0x10 = 0,
                         Alpha = 255,
-                        TevLayerCount = (byte)tevLayers.Length,
-                        UnkAlpha0x14 = 0,
+                        UnkAlpha0x14 = -1,
                         Unk0x15 = 0,
                     };
                     var unknownAlphaOptions = new UnkAlphaOptions()
@@ -436,17 +401,17 @@ namespace Manifold.EditorTools.GC.GFZ
                     };
                     var submesh = new Submesh()
                     {
-                        RenderFlags = RenderFlags.unlit | RenderFlags.customBlendSource | RenderFlags.customBlendDestination,
+                        RenderFlags = RenderFlags.unlit | RenderFlags.screenBlend | RenderFlags.additiveBlend,
                         Material = material,
                         UnkAlphaOptions = unknownAlphaOptions,
                     };
                     var template = new GcmfTemplate()
                     {
-                        Translucid = 1,
+                        IsTranslucid = true,
                         Submesh = submesh,
                         TevLayers = tevLayers,
                         TextureHashes = textureHashes,
-                        TextureScroll = textureScroll,
+                        TextureScrollFields = null,
                     };
 
                     Assert.IsTrue(textureHashes.Length == tevLayers.Length);
@@ -458,12 +423,11 @@ namespace Manifold.EditorTools.GC.GFZ
 
     public class GcmfTemplate
     {
-        public byte Opaque { get; internal set; }
-        public byte Translucid { get; internal set; }
+        public bool IsTranslucid { get; internal set; }
         public Submesh Submesh { get; internal set; } = null;
         public TevLayer[] TevLayers { get; internal set; } = new TevLayer[0];
         public string[] TextureHashes { get; internal set; } = new string[0];
-        public TextureScroll TextureScroll { get; internal set; } = null;
+        public TextureScrollField[] TextureScrollFields { get; internal set; } = null;
 
 
         private static Gcmf CreateFromTemplates(ref Dictionary<string, ushort> textureHashesToIndex, params GcmfTemplate[] templates)
@@ -508,8 +472,8 @@ namespace Manifold.EditorTools.GC.GFZ
                 submeshes[templateIndex] = template.Submesh;
 
                 // TEMP: sort how many opaque / translucid
-                opaque += template.Opaque;
-                translucid += template.Translucid;
+                opaque += (ushort)(template.IsTranslucid == false ? 1 : 0);
+                translucid += (ushort)(template.IsTranslucid == true ? 1 : 0);
             }
 
             // Solved elsewhere: attributes, bounding sphere
@@ -633,11 +597,6 @@ namespace Manifold.EditorTools.GC.GFZ
             return gcmf;
         }
 
-        public static TextureScroll CombineTextureScrolls(GcmfTemplate[] templates)
-        {
-            return null;
-        }
-
         // Get the index of the texture for a future TPL. If texture exists, get existing index. If not, add to list, update index.
         private static ushort GetTextureHashesIndex(string textureHash, ref Dictionary<string, ushort> textureHashToIndex)
         {
@@ -655,5 +614,39 @@ namespace Manifold.EditorTools.GC.GFZ
                 return index;
             }
         }
+
+        public static TextureScroll CombineTextureScrolls(GcmfTemplate[] templates)
+        {
+            int index = 0;
+            var textureScrollFields = new TextureScrollField[TextureScroll.kCount];
+            foreach (var template in templates)
+            {
+                if (template.TextureScrollFields == null)
+                    continue;
+
+                foreach (var field in template.TextureScrollFields)
+                    textureScrollFields[index++] = field;
+
+                if (index == TextureScroll.kCount)
+                {
+                    var msg = $"Maximum texture scroll fields exceeded. ({index}/{TextureScroll.kCount})";
+                    throw new System.ArgumentException(msg);
+                }
+            }
+
+            if (index >= 4)
+            {
+                var msg = $"Maximum _used_ texture scroll fields exceeded. ({index}/{4})";
+                throw new System.ArgumentException(msg);
+            }
+
+            var textureScrolls = new TextureScroll()
+            {
+                Fields = textureScrollFields,
+            };
+
+            return textureScrolls;
+        }
+
     }
 }

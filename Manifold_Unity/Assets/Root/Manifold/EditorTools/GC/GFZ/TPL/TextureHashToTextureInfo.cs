@@ -43,16 +43,5 @@ namespace Manifold.EditorTools.GC.GFZ.TPL
             return dictionary;
         }
 
-        public void Print()
-        {
-            using (var writer = new System.IO.StreamWriter(System.IO.File.Create("D:/tpl-log.txt")))
-            {
-                foreach (var val in Hashes)
-                {
-                    writer.WriteLine(val);
-                }
-            }
-        }
-
     }
 }

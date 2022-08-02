@@ -214,7 +214,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
                 // AI data
                 // 2022/01/25: currently save out only the terminating element.
-                // 2022/01/25: currently save out only the terminating element.
                 scene.embeddedPropertyAreas = track.EmbeddedPropertyAreas;
 
                 scene.CircuitType = track.CircuitType;
@@ -232,10 +231,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                     scene.SceneObjectNames.Add(sceneObject.Name); // wouldn't you need to put in all LOD names?
                 }
                 scene.sceneObjects = sceneObjects.Concat(scene.sceneObjects).ToArray();
-
                 // add dynamic (no statics needed)
                 scene.dynamicSceneObjects = dynamicSceneObjects.Concat(scene.dynamicSceneObjects).ToArray();
-
 
                 // Create output
                 int courseIndex = scene.CourseIndex;
@@ -244,9 +241,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 var gmaFilePath = outputPath + gmaFileName;
                 var tplFileName = $"{fileName}.tpl";
                 var tplFilePath = outputPath + tplFileName;
-
-                //PrintTemp();
-                //throw new NotImplementedException();
 
                 // Recover models we might be overwriting
                 // TODO: just do that for every model?
@@ -430,6 +424,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                     sceneObjectDynamic.SceneObject = sceneObject;
                     sceneObjectDynamic.TransformMatrix3x4 = new();
                     sceneObjectDynamic.TextureScroll = GcmfTemplate.CombineTextureScrolls(gcmfTemplates);
+                    sceneObjectDynamic.AssignTextureScrollFlags();
                     _dynamicSceneObjects.Add(sceneObjectDynamic);
                 }
             }
@@ -517,7 +512,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         #endregion
 
 
-        // THIS WILL HAVE DICT FOR TEXTURES AS PARAM
         public static Model[] RecoverMissingModelsFromStageGma(int stageID, ref Dictionary<string, ushort> textureHashesToIndex)
         {
             var venueID = CourseUtility.GetVenueID(stageID).ToString().ToLower();
@@ -605,17 +599,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 }
             }
         }
-
-        public static void PrintTemp()
-        {
-            var settings = GfzProjectWindow.GetSettings();
-            string assetsWorkingDir = settings.AssetsWorkingDirectory;
-            // The structure which translates old TPL indexes into texture hashes
-            string textureHashToTextureInfoPath = assetsWorkingDir + "tpl/TPL-TextureHash-to-TextureInfo.asset";
-            var textureHashToTextureInfoAsset = AssetDatabase.LoadAssetAtPath<TextureHashToTextureInfo>(textureHashToTextureInfoPath);
-            textureHashToTextureInfoAsset.Print();
-        }
-
 
         public static MemoryStream WriteBodgeTplFromTextureHashes(string[] textureHashes)
         {
