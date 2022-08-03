@@ -115,7 +115,7 @@ namespace Manifold.EditorTools.GC.GFZ
                     };
                     var textureScrollFields = new TextureScrollField[]
                     {
-                        new TextureScrollField(2, 0),
+                        new TextureScrollField(-2, 0),
                     };
                     var material = new Material
                     {
@@ -226,9 +226,6 @@ namespace Manifold.EditorTools.GC.GFZ
                     };
                     var textureScrollFields = new TextureScrollField[]
                     {
-                        new TextureScrollField(0.1f, 0.1f),
-                        new TextureScrollField(0.1f, 0.1f),
-                        new TextureScrollField(0.1f, 0.1f),
                         new TextureScrollField(0.1f, 0.1f),
                     };
                     var material = new Material

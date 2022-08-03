@@ -13,9 +13,9 @@ namespace Manifold.EditorTools.GC.GFZ
     {
         public static class General
         {
-            public static Tristrip[] CreateEmbed(Matrix4x4[] matrices, Matrix4x4[] parentMatrices, GfzPropertyEmbed embed, int overrideWidthDivisions = 0)
+            public static Tristrip[] CreateEmbed(Matrix4x4[] matrices, Matrix4x4[] parentMatrices, GfzPropertyEmbed embed, float uvMultiply = 1f, int overrideWidthDivisions = 0)
             {
-                // I want some kind of offset data on widths so I can map the textures on properly...
+                const int perUnit = 5;
 
                 // Tesalate along width. Some embeds have no detail, so allow overriding
                 int nWidthDivisions = overrideWidthDivisions > 0
@@ -27,41 +27,70 @@ namespace Manifold.EditorTools.GC.GFZ
                 var tristrips = GenerateTristripsLine(matrices, edgeLeft, edgeRight, Vector3.up, nWidthDivisions, true);
 
                 // Compute UV if it were across full width
-                float repetitions = math.ceil(embed.GetRangeLength() / 10f);
+                float segmentLength = embed.GetRangeLength();
+                float repetitions = math.ceil(segmentLength / perUnit);
+
                 int count = matrices.Length;
+                var halfWidthNormalized = new float[count];
+                var offsetsNormalized = new float[count];
+                var lengthNormalized = new float[count];
                 var halfWidth = new float[count];
                 var offsets = new float[count];
-                var length = new float[count];
+                var lengths = new float[count];
                 for (int i = 0; i < count; i++)
                 {
                     float percentage = i / (float)(count - 1);
                     float parentWidth = parentMatrices[i].lossyScale.x;
                     float embedWidth = embed.WidthCurve.EvaluateNormalized(percentage);
                     float embedOffset = embed.OffsetCurve.EvaluateNormalized(percentage);
-                    halfWidth[i] = embedWidth * 0.5f * parentWidth / 10f;
-                    offsets[i] = embedOffset * parentWidth / 10f;
-                    length[i] = percentage * repetitions;
+                    //
+                    halfWidthNormalized[i] = embedWidth * 0.5f;
+                    offsetsNormalized[i] = embedOffset;
+                    lengthNormalized[i] = percentage;
+                    //
+                    halfWidth[i] = halfWidthNormalized[i] * parentWidth / perUnit;
+                    offsets[i] = offsetsNormalized[i] * parentWidth / perUnit;
+                    lengths[i] = lengthNormalized[i] * repetitions;
                 }
 
                 for (int i = 0; i < tristrips.Length; i++)
                 {
                     var tristrip = tristrips[i];
-                    var uvs = new Vector2[tristrip.VertexCount];
-                    for (int j = 0; j < uvs.Length; j += 2)
+                    var uvs0 = new Vector2[tristrip.VertexCount];
+                    var uvs1 = new Vector2[tristrip.VertexCount];
+                    float percent0 = (float)(i + 0) / nWidthDivisions;
+                    float percent1 = (float)(i + 1) / nWidthDivisions;
+
+                    for (int j = 0; j < tristrip.VertexCount; j += 2)
                     {
                         int index = j / 2;
-                        float percent0 = (float)(i+0) / nWidthDivisions;
-                        float percent1 = (float)(i+1) / nWidthDivisions;
-                        float half = halfWidth[index];
-                        float offset = offsets[index];
-                        float uvLeft = Mathf.Lerp(offset-half, offset+half, percent0);
-                        float uvRight = Mathf.Lerp(offset-half, offset+half, percent1);
-                        float uvForward = length[index];
-                        uvs[j + 0] = new Vector2(uvLeft, uvForward);
-                        uvs[j + 1] = new Vector2(uvRight, uvForward);
+                        {
+                            float halfWidth0 = halfWidth[index];
+                            float offset0 = offsets[index];
+                            float min = offset0 - halfWidth0;
+                            float max = offset0 + halfWidth0;
+                            float uv0Left = Mathf.Lerp(min, max, percent0);
+                            float uv0Right = Mathf.Lerp(min, max, percent1);
+                            float uv0Length = lengths[index];
+                            uvs0[j + 0] = new Vector2(uv0Length, uv0Left);
+                            uvs0[j + 1] = new Vector2(uv0Length, uv0Right);
+                        }
+                        {
+                            float halfWidth1 = halfWidthNormalized[index];          // 0 to 1
+                            float offset1 = offsetsNormalized[index];               // -0.5 to 0.5
+                            float min = offset1 - halfWidth1 + 0.5f;                // Combined equals left/right UV between -0.5 and 0.5
+                            float max = offset1 + halfWidth1 + 0.5f;                // ... then we offset by 0.5 to get normal range 0 to 1.
+                            float uv1Left = Mathf.Lerp(min, max, percent0);         // For each tristrip, let us find the UV coordinates
+                            float uv1Right = Mathf.Lerp(min, max, percent1);        // ... which correspond to it's local left/right
+                            float uv1Forward = lengthNormalized[index];             // TODO: multiply? range rtight now is 0 to 1.
+                            uvs1[j + 0] = new Vector2(uv1Forward, uv1Left);         // .. long strips flash once, 3 small strips, togerther, flash 3 times.
+                            uvs1[j + 1] = new Vector2(uv1Forward, uv1Right);        // .. basically you would need a UV offset param? Equal to final UV on last one...
+                        }
+                        // used percent0/1, worked pretty well
                     }
 
-                    tristrip.tex0 = uvs;
+                    tristrip.tex0 = uvs0;
+                    tristrip.tex1 = uvs1;
                 }
 
                 return tristrips;
