@@ -362,7 +362,7 @@ namespace Manifold.EditorTools.GC.GFZ
 
                     var template = new GcmfTemplate()
                     {
-                        IsTranslucid = false,
+                        IsTranslucid = true,
                         Submesh = submesh,
                         TevLayers = tevLayers,
                         TextureHashes = textureHashes,
@@ -380,22 +380,37 @@ namespace Manifold.EditorTools.GC.GFZ
                         new TevLayer()
                         {
                             Unk0x00 = 0,
-                            MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
-                            WrapMode = TextureWrapMode.repeatX | TextureWrapMode.repeatY | TextureWrapMode.unk6 | TextureWrapMode.unk7,
-                            LodBias = -10,
-                            AnisotropicFilter = GXAnisotropy.GX_ANISO_4,
-                            Unk0x0C = 173,
+                            MipmapSetting = MipmapSetting.UNK_FLAG_1,
+                            WrapMode = TextureWrapMode.repeatY,
+                            LodBias = 0,
+                            AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
+                            Unk0x0C = 0,
                             Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
+                        },
+                        new TevLayer()
+                        {
+                            Unk0x00 = TexFlags0x00.ENABLE_UV_SCROLL,
+                            MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
+                            WrapMode = TextureWrapMode.repeatX | TextureWrapMode.repeatY | TextureWrapMode.unk7,
+                            LodBias = 0,
+                            AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
+                            Unk0x0C = 0,
+                            Unk0x12 = TexFlags0x10.unk0 | TexFlags0x10.unk4 | TexFlags0x10.unk5,
                         },
                     };
                     var textureHashes = new string[]
                     {
-                        "", // st01 tex 
+                        "22e2e87246525810b8f56b2dc0bc7e24", // st01 tex 6, lined gradient
+                        "2b67d7b296e0c2476ed7b6b5e4e19af9", // st01 tex 7, some alpha thing
+                    };
+                    var textureScrollFields = new TextureScrollField[]
+                    {
+                        new TextureScrollField(0f, -2f),
                     };
                     var material = new Material
                     {
-                        MaterialColor = new GXColor(0xffcc7fff),
-                        AmbientColor = new GXColor(0xffcc7fff),
+                        MaterialColor = new GXColor(0xb2b2b2ff),
+                        AmbientColor = new GXColor(0x7f7f7fff),
                         SpecularColor = new GXColor(0x00000000),
                         Unk0x10 = 0,
                         Alpha = 255,
@@ -404,7 +419,7 @@ namespace Manifold.EditorTools.GC.GFZ
                     };
                     var submesh = new Submesh()
                     {
-                        RenderFlags = RenderFlags.unlit | RenderFlags.noFog,
+                        RenderFlags = RenderFlags.unlit,
                         Material = material,
                         UnkAlphaOptions = new UnkAlphaOptions(),
                     };
@@ -415,73 +430,66 @@ namespace Manifold.EditorTools.GC.GFZ
                         Submesh = submesh,
                         TevLayers = tevLayers,
                         TextureHashes = textureHashes,
-                        TextureScrollFields = null,
+                        TextureScrollFields = textureScrollFields,
                     };
 
                     Assert.IsTrue(textureHashes.Length == tevLayers.Length);
                     return template;
                 }
-                public static GcmfTemplate CreateRecoverDarkOver()
+                public static GcmfTemplate CreateRecoverDarkOverAlpha()
                 {
                     var tevLayers = new TevLayer[]
                     {
                         new TevLayer()
                         {
                             Unk0x00 = 0,
-                            MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
-                            WrapMode = TextureWrapMode.repeatX | TextureWrapMode.repeatY | TextureWrapMode.unk6 | TextureWrapMode.unk7,
-                            LodBias = -10,
-                            AnisotropicFilter = GXAnisotropy.GX_ANISO_4,
-                            Unk0x0C = 0,
-                            Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
-                        },
-                        new TevLayer()
-                        {
-                            Unk0x00 = TexFlags0x00.ENABLE_UV_SCROLL,
-                            MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
-                            WrapMode = TextureWrapMode.repeatY | TextureWrapMode.unk7,
+                            MipmapSetting = MipmapSetting.UNK_FLAG_1,
+                            WrapMode = 0,
                             LodBias = 0,
                             AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
                             Unk0x0C = 0,
                             Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
                         },
+                        new TevLayer()
+                        {
+                            Unk0x00 = 0,
+                            MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2 | MipmapSetting.UNK_FLAG_5,
+                            WrapMode = TextureWrapMode.unk7,
+                            LodBias = 0,
+                            AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
+                            Unk0x0C = 184,
+                            Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
+                        },
                     };
                     var textureHashes = new string[]
                     {
-                        "", // st01 tex 
-                        "", // st01 tex 
-                    };
-                    var textureScrollFields = new TextureScrollField[]
-                    {
-                        new TextureScrollField(0.00f, 1.25f),
+                        "ad883f82349cecff410c061e1c2a6219", // st01 tex 16, red color
+                        "bd341ffeea1d7e2e13cebf13e280ba55", // st01 tex  4, alpha square
                     };
                     var material = new Material
                     {
-                        MaterialColor = new GXColor(0xffcc7fff),
-                        AmbientColor = new GXColor(0xffcc7fff),
+                        MaterialColor = new GXColor(0xffffffff),
+                        AmbientColor = new GXColor(0xffffffff),
                         SpecularColor = new GXColor(0x00000000),
                         Unk0x10 = 0,
-                        Alpha = 255,
+                        Alpha = 191,
                         UnkAlpha0x14 = -1,
                         Unk0x15 = 0,
                     };
                     var submesh = new Submesh()
                     {
-                        RenderFlags = RenderFlags.unlit | RenderFlags.noFog | RenderFlags.screenBlend | RenderFlags.additiveBlend,
+                        RenderFlags = 0,
                         Material = material,
-                        UnkAlphaOptions = new UnkAlphaOptions()
-                        {
-                            BlendFactors = BlendFactors.unk2 | BlendFactors.unk4
-                        },
+                        UnkAlphaOptions = new UnkAlphaOptions(),
                     };
 
                     var template = new GcmfTemplate()
                     {
-                        IsTranslucid = false,
+                        IsTranslucid = true,
                         Submesh = submesh,
                         TevLayers = tevLayers,
                         TextureHashes = textureHashes,
-                        TextureScrollFields = textureScrollFields,
+                        TextureScrollFields = null,
                     };
 
                     Assert.IsTrue(textureHashes.Length == tevLayers.Length);

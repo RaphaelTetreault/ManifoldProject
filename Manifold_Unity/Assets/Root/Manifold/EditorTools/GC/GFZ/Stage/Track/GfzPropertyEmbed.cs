@@ -158,6 +158,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                         GfzAssetTemplates.MeshTemplates.General.CreateLavaCrag(),
                         GfzAssetTemplates.MeshTemplates.General.CreateLavaAlpha(),
                     };
+                case SurfaceEmbedType.Recover:
+                    return new GcmfTemplate[]
+                    {
+                        GfzAssetTemplates.MeshTemplates.General.CreateRecoverDarkUnder(),
+                        GfzAssetTemplates.MeshTemplates.General.CreateRecoverDarkOverAlpha(),
+                    };
 
                 default:
                     return new GcmfTemplate[]
@@ -173,10 +179,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             var animKeys = animationCurveTRS.Scale.x.keys;
             var min = animKeys[0].time;
             var max = animKeys[animKeys.Length - 1].time;
-            var matrices = TristripGenerator.CreatePathMatrices(this, true, lengthDistance, min, max);
+            var matrices = TristripGenerator.CreatePathMatrices(this, isGfzCoordinateSpace, lengthDistance, min, max);
             //
             var parent = GetParent();
-            var parentMatrices = TristripGenerator.CreatePathMatrices(parent, true, lengthDistance, min, max);
+            var parentMatrices = TristripGenerator.CreatePathMatrices(parent, isGfzCoordinateSpace, lengthDistance, min, max);
 
             switch (embedType)
             {
@@ -194,6 +200,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                         TristripTemplates.General.CreateEmbed(matrices, parentMatrices, this, true, 1),
                     };
                 case SurfaceEmbedType.Damage:
+                    return new Tristrip[][]
+                    {
+                        TristripTemplates.General.CreateEmbed(matrices, parentMatrices, this, false),
+                        TristripTemplates.General.CreateEmbed(matrices, parentMatrices, this, true),
+                    };
+                case SurfaceEmbedType.Recover:
                     return new Tristrip[][]
                     {
                         TristripTemplates.General.CreateEmbed(matrices, parentMatrices, this, false),

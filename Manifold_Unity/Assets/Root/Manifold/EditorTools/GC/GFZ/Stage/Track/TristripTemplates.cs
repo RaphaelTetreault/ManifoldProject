@@ -115,6 +115,10 @@ namespace Manifold.EditorTools.GC.GFZ
                                 tristrip.tex0 = ScaleUVs(uvs0, 1/4f);
                             }
                             break;
+                        case GfzPropertyEmbed.SurfaceEmbedType.Recover:
+                            tristrip.tex0 = uvs0;
+                            tristrip.tex1 = uvs1;
+                            break;
 
                         default:
                             tristrip.tex0 = uvs0;
