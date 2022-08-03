@@ -32,7 +32,7 @@ namespace Manifold.EditorTools.GC.GFZ
                     length[i] = percentage;
                 }
             }
-            private static Vector2[][] CreateUVs(GfzPropertyEmbed embed, Tristrip[] tristrips, float[] halfWidth, float[] offsets, float[] lengths, float offsetOffset = 0f)
+            private static Vector2[][] CreateTrackSpaceUVs(GfzPropertyEmbed embed, Tristrip[] tristrips, float[] halfWidth, float[] offsets, float[] lengths, float offsetOffset = 0f)
             {
                 var allUVs = new Vector2[tristrips.Length][];
                 for (int i = 0; i < tristrips.Length; i++)
@@ -81,20 +81,19 @@ namespace Manifold.EditorTools.GC.GFZ
 
             public static Tristrip[] CreateSlip(Matrix4x4[] matrices, Matrix4x4[] parentMatrices, GfzPropertyEmbed embed)
             {
-                // Get tristrips
                 var tristrips = GenerateTristripsLine(matrices, edgeLeft, edgeRight, Vector3.up, embed.WidthDivisions, true);
 
-                // 
+                // Scaling parameters
+                const float scaleW = 5f; // makes ice look good, same as game
                 float segmentLength = embed.GetRangeLength();
-                float scaleL = math.ceil(segmentLength / 5f);
-
-                // Normalized values used to generate UVs from
+                float scaleL = math.ceil(segmentLength / scaleW);
+                // Normalized values used to generate UVs
                 GetNormalizedValues(embed, matrices.Length, out float[] halfWidths, out float[] offsets, out float[] lengths);
-                
-                var uvsNormalized = CreateUVs(embed, tristrips, halfWidths, offsets, lengths);
-                var uvs0 = ScaleByParentWidthAndCustomLength(uvsNormalized, parentMatrices, 1/5f, scaleL);
-                var uvs1 = CreateUVs(embed, tristrips, halfWidths, offsets, lengths, 0.5f);
-
+                // Create UVs
+                var uvsNormalized = CreateTrackSpaceUVs(embed, tristrips, halfWidths, offsets, lengths);
+                var uvs0 = ScaleByParentWidthAndCustomLength(uvsNormalized, parentMatrices, 1 / scaleW, scaleL);
+                var uvs1 = CreateTrackSpaceUVs(embed, tristrips, halfWidths, offsets, lengths, 0.5f);
+                // Assign UVS
                 for (int i = 0; i < tristrips.Length; i++)
                 {
                     tristrips[i].tex0 = uvs0[i];
@@ -103,6 +102,148 @@ namespace Manifold.EditorTools.GC.GFZ
 
                 return tristrips;
             }
+
+            public static Tristrip[] CreateDirtNoise(Matrix4x4[] matrices, Matrix4x4[] parentMatrices, GfzPropertyEmbed embed)
+            {
+                var tristrips = GenerateTristripsLine(matrices, edgeLeft, edgeRight, Vector3.up, embed.WidthDivisions, true);
+
+                // Scaling parameters
+                const float scaleW = 8f; // just a guess
+                float segmentLength = embed.GetRangeLength();
+                float scaleL = math.ceil(segmentLength / scaleW);
+                // Normalized values used to generate UVs
+                GetNormalizedValues(embed, matrices.Length, out float[] halfWidths, out float[] offsets, out float[] lengths);
+                // Create UVs
+                var uvsNormalized = CreateTrackSpaceUVs(embed, tristrips, halfWidths, offsets, lengths);
+                var uvs = ScaleByParentWidthAndCustomLength(uvsNormalized, parentMatrices, 1 / scaleW, scaleL);
+                // Assign UVS. Both layers use the same UVs
+                for (int i = 0; i < tristrips.Length; i++)
+                {
+                    tristrips[i].tex0 = uvs[i];
+                    tristrips[i].tex1 = uvs[i];
+                }
+
+                return tristrips;
+            }
+            public static Tristrip[] CreateDirtAlpha(Matrix4x4[] matrices)
+            {
+                var tristrips = GenerateTristripsLine(matrices, edgeLeft, edgeRight, Vector3.up, 1, true);
+
+                // This layer is just a color, so UVS can be whatever
+                for (int i = 0; i < tristrips.Length; i++)
+                {
+                    int nVertices = tristrips[i].VertexCount;
+                    tristrips[i].tex0 = new Vector2[nVertices];
+                }
+
+                return tristrips;
+            }
+
+            public static Tristrip[] CreateLavaCrag(Matrix4x4[] matrices, Matrix4x4[] parentMatrices, GfzPropertyEmbed embed)
+            {
+                var tristrips = GenerateTristripsLine(matrices, edgeLeft, edgeRight, Vector3.up, embed.WidthDivisions, true);
+
+                // Scaling parameters
+                const float scaleW = 25f; // a guess
+                float segmentLength = embed.GetRangeLength();
+                float scaleL = math.ceil(segmentLength / scaleW);
+                // Normalized values used to generate UVs
+                GetNormalizedValues(embed, matrices.Length, out float[] halfWidths, out float[] offsets, out float[] lengths);
+                // Create UVs
+                var uvsNormalized = CreateTrackSpaceUVs(embed, tristrips, halfWidths, offsets, lengths);
+                var uvs0 = ScaleByParentWidthAndCustomLength(uvsNormalized, parentMatrices, 1 / scaleW, scaleL);
+                // Assign UVS
+                for (int i = 0; i < tristrips.Length; i++)
+                {
+                    tristrips[i].tex0 = uvs0[i];
+                }
+
+                return tristrips;
+            }
+            public static Tristrip[] CreateLavaAlpha(Matrix4x4[] matrices, Matrix4x4[] parentMatrices, GfzPropertyEmbed embed)
+            {
+                var tristrips = GenerateTristripsLine(matrices, edgeLeft, edgeRight, Vector3.up, embed.WidthDivisions, true);
+
+                // Scaling parameters
+                const float scaleW0 = 15f; // red dot
+                const float scaleW1 = 40f; // scan lines.
+                float segmentLength = embed.GetRangeLength();
+                float scaleL0 = math.ceil(segmentLength / scaleW0);
+                float scaleL1 = math.ceil(segmentLength / scaleW1);
+                // Normalized values used to generate UVs
+                GetNormalizedValues(embed, matrices.Length, out float[] halfWidths, out float[] offsets, out float[] lengths);
+                // Create UVs
+                var uvsNormalized = CreateTrackSpaceUVs(embed, tristrips, halfWidths, offsets, lengths);
+                var uvs0 = ScaleByParentWidthAndCustomLength(uvsNormalized, parentMatrices, 1 / scaleW0, scaleL0);
+                var uvs1 = ScaleByParentWidthAndCustomLength(uvsNormalized, parentMatrices, 1 / scaleW1, scaleL1);
+                // Assign UVS. Both layers use the same UVs
+                for (int i = 0; i < tristrips.Length; i++)
+                {
+                    tristrips[i].tex0 = uvs0[i];
+                    // swap to change orientation from across width to across length
+                    var uvs1Swappped = SwapUV(uvs1[i]);
+                    tristrips[i].tex1 = uvs1Swappped;
+                }
+
+                return tristrips;
+            }
+
+            public static Tristrip[] CreateRecoverBase(Matrix4x4[] matrices, Matrix4x4[] parentMatrices, GfzPropertyEmbed embed)
+            {
+                var tristrips = GenerateTristripsLine(matrices, edgeLeft, edgeRight, Vector3.up, embed.WidthDivisions, true);
+
+                // Scaling parameters
+                const float scaleW = 10f; // 
+                float segmentLength = embed.GetRangeLength();
+                float repetitionsAlongLength = math.ceil(segmentLength / scaleW);
+                // Normalized values used to generate UVs
+                GetNormalizedValues(embed, matrices.Length, out float[] halfWidths, out float[] offsets, out float[] lengths);
+                // Create UVs
+                var uvsNormalized = CreateTrackSpaceUVs(embed, tristrips, halfWidths, offsets, lengths);
+                //var uvs0 = ScaleByParentWidthAndCustomLength(uvsNormalized, parentMatrices, 1 / scaleW, scaleL); ; // lined gradient
+                var uvs1 = CreateTrackSpaceUVs(embed, tristrips, halfWidths, offsets, lengths, 0.5f); // flashing white stripe
+                //
+                // Assign UVS. Both layers use the same UVs
+                for (int i = 0; i < tristrips.Length; i++)
+                {
+                    //var uvs0Scaled = ScaleUVs(uvs0[i], new Vector2(scaleL, 2));
+                    //var uvs0Swapped = SwapUV(uvs0Scaled);
+                    //tristrips[i].tex0 = uvs0Swapped;
+                    var uvs0 = CreateUVsForward(tristrips[i].VertexCount, 0f, 2f, repetitionsAlongLength);
+                    tristrips[i].tex0 = uvs0;
+
+                    // make flashing orient lengthwise, go forward
+                    var uvs1Swapped = SwapUV(uvs1[i]);
+                    tristrips[i].tex1 = uvs1Swapped;
+                }
+
+                return tristrips;
+            }
+            public static Tristrip[] CreateRecoverAlpha(Matrix4x4[] matrices, Matrix4x4[] parentMatrices, GfzPropertyEmbed embed)
+            {
+                var tristrips = GenerateTristripsLine(matrices, edgeLeft, edgeRight, Vector3.up, embed.WidthDivisions, true);
+
+                // Scaling parameters
+                const float scaleW0 = 1f; // red dot
+                const float scaleW1 = 1f; // scan lines. Negative to change direction, go towards start
+                float segmentLength = embed.GetRangeLength();
+                float scaleL = math.ceil(segmentLength / scaleW0);
+                // Normalized values used to generate UVs
+                GetNormalizedValues(embed, matrices.Length, out float[] halfWidths, out float[] offsets, out float[] lengths);
+                // Create UVs
+                var uvsNormalized = CreateTrackSpaceUVs(embed, tristrips, halfWidths, offsets, lengths);
+                var uvs0 = ScaleByParentWidthAndCustomLength(uvsNormalized, parentMatrices, 1 / scaleW0, scaleL);
+                var uvs1 = ScaleByParentWidthAndCustomLength(uvsNormalized, parentMatrices, 1 / scaleW1, scaleL);
+                // Assign UVS. Both layers use the same UVs
+                for (int i = 0; i < tristrips.Length; i++)
+                {
+                    tristrips[i].tex0 = uvs0[i];
+                    tristrips[i].tex1 = uvs1[i];
+                }
+
+                return tristrips;
+            }
+
 
             public static Tristrip[] CreateEmbed(Matrix4x4[] matrices, Matrix4x4[] parentMatrices, GfzPropertyEmbed embed, bool isLayer2, int overrideWidthDivisions = 0)
             {

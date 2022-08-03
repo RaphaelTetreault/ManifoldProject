@@ -338,7 +338,7 @@ namespace Manifold.EditorTools.GC.GFZ
                     };
                     var textureScrollFields = new TextureScrollField[]
                     {
-                        new TextureScrollField(0.00f, 1.25f),
+                        new TextureScrollField(0.00f, -1.25f),
                     };
                     var material = new Material
                     {
@@ -381,7 +381,7 @@ namespace Manifold.EditorTools.GC.GFZ
                         {
                             Unk0x00 = 0,
                             MipmapSetting = MipmapSetting.UNK_FLAG_1,
-                            WrapMode = TextureWrapMode.repeatY,
+                            WrapMode = TextureWrapMode.mirrorX | TextureWrapMode.repeatY,
                             LodBias = 0,
                             AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
                             Unk0x0C = 0,

@@ -162,7 +162,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     return new GcmfTemplate[]
                     {
                         GfzAssetTemplates.MeshTemplates.General.CreateRecoverDarkUnder(),
-                        GfzAssetTemplates.MeshTemplates.General.CreateRecoverDarkOverAlpha(),
+                        //GfzAssetTemplates.MeshTemplates.General.CreateRecoverDarkOverAlpha(),
                     };
 
                 default:
@@ -186,8 +186,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
             switch (embedType)
             {
-                //case SurfaceEmbedType.Recover:
-                //case SurfaceEmbedType.Damage:
                 case SurfaceEmbedType.Slip:
                     return new Tristrip[][]
                     {
@@ -196,20 +194,20 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 case SurfaceEmbedType.Dirt:
                     return new Tristrip[][]
                     {
-                        TristripTemplates.General.CreateEmbed(matrices, parentMatrices, this, false),
-                        TristripTemplates.General.CreateEmbed(matrices, parentMatrices, this, true, 1),
+                        TristripTemplates.General.CreateDirtNoise(matrices, parentMatrices, this),
+                        TristripTemplates.General.CreateDirtAlpha(matrices),
                     };
                 case SurfaceEmbedType.Damage:
                     return new Tristrip[][]
                     {
-                        TristripTemplates.General.CreateEmbed(matrices, parentMatrices, this, false),
-                        TristripTemplates.General.CreateEmbed(matrices, parentMatrices, this, true),
+                        TristripTemplates.General.CreateLavaCrag(matrices, parentMatrices, this),
+                        TristripTemplates.General.CreateLavaAlpha(matrices, parentMatrices, this),
                     };
                 case SurfaceEmbedType.Recover:
                     return new Tristrip[][]
                     {
-                        TristripTemplates.General.CreateEmbed(matrices, parentMatrices, this, false),
-                        TristripTemplates.General.CreateEmbed(matrices, parentMatrices, this, true),
+                        TristripTemplates.General.CreateRecoverBase(matrices, parentMatrices, this),
+                        //TristripTemplates.General.CreateEmbed(matrices, parentMatrices, this, true),
                     };
                 default:
                     return new Tristrip[][]

@@ -265,11 +265,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
             return uvs;
         }
-        public static Vector2[] CreateUVsForward(int verticesLength, float left = 0f, float right = 1f, float increment = 1f, float modulus = float.PositiveInfinity)
+        public static Vector2[] CreateUVsForward(int vertexCount, float left = 0f, float right = 1f, float increment = 1f, float modulus = float.PositiveInfinity)
         {
             float forwardValue = 0;
-            var uvs = new Vector2[verticesLength];
-            for (int i = 0; i < verticesLength; i += 2) // process 2 at a time
+            var uvs = new Vector2[vertexCount];
+            for (int i = 0; i < vertexCount; i += 2) // process 2 at a time
             {
                 uvs[i + 0] = new Vector2(left, forwardValue);
                 uvs[i + 1] = new Vector2(right, forwardValue);
