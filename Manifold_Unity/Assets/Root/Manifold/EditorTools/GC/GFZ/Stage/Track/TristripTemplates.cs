@@ -13,6 +13,97 @@ namespace Manifold.EditorTools.GC.GFZ
     {
         public static class General
         {
+            private static readonly Vector3 edgeLeft = new Vector3(-0.5f, 0.33f, 0);
+            private static readonly Vector3 edgeRight = new Vector3(+0.5f, 0.33f, 0);
+
+            private static void GetNormalizedValues(GfzPropertyEmbed embed, int count, out float[] halfWidth, out float[] offsets, out float[] length)
+            {
+                halfWidth = new float[count];
+                offsets = new float[count];
+                length = new float[count];
+
+                for (int i = 0; i < count; i++)
+                {
+                    float percentage = i / (float)(count - 1);
+                    float embedWidth = embed.WidthCurve.EvaluateNormalized(percentage);
+                    float embedOffset = embed.OffsetCurve.EvaluateNormalized(percentage);
+                    halfWidth[i] = embedWidth * 0.5f;
+                    offsets[i] = embedOffset;
+                    length[i] = percentage;
+                }
+            }
+            private static Vector2[][] CreateUVs(GfzPropertyEmbed embed, Tristrip[] tristrips, float[] halfWidth, float[] offsets, float[] lengths, float offsetOffset = 0f)
+            {
+                var allUVs = new Vector2[tristrips.Length][];
+                for (int i = 0; i < tristrips.Length; i++)
+                {
+                    var tristrip = tristrips[i];
+                    var uvs = new Vector2[tristrip.VertexCount];
+                    float percent0 = (float)(i + 0) / embed.WidthDivisions;
+                    float percent1 = (float)(i + 1) / embed.WidthDivisions;
+
+                    for (int j = 0; j < tristrip.VertexCount; j += 2)
+                    {
+                        int index = j / 2;
+                        float halfWidth0 = halfWidth[index];       // (0 to 0.5) * scaleW (width)
+                        float offset0 = offsets[index] + offsetOffset;             // (-0.5 to 0.5) * scaleW (width), some
+                        float min = offset0 - halfWidth0;                   // farthest left edge
+                        float max = offset0 + halfWidth0;                   // farthest right edge
+                        float uvLeft = Mathf.Lerp(min, max, percent0);
+                        float uvRight = Mathf.Lerp(min, max, percent1);
+                        float uvLength = lengths[index];           // (0 to 1) * scaleL (length)
+                        uvs[j + 0] = new Vector2(uvLength, uvLeft);
+                        uvs[j + 1] = new Vector2(uvLength, uvRight);
+                    }
+
+                    allUVs[i] = uvs;
+                }
+                return allUVs;
+            }
+            private static Vector2[][] ScaleByParentWidthAndCustomLength(Vector2[][] allUVs, Matrix4x4[] parentMatrices, float scaleW, float scaleL)
+            {
+                var newUVs = new Vector2[allUVs.Length][];
+                for (int tristripIndex = 0; tristripIndex < allUVs.Length; tristripIndex++)
+                {
+                    int count = allUVs[tristripIndex].Length;
+                    newUVs[tristripIndex] = new Vector2[count];
+                    for (int stepIndex = 0; stepIndex < count; stepIndex += 2)
+                    {
+                        int matrixIndex = stepIndex / 2;
+                        float parentWidth = parentMatrices[matrixIndex].lossyScale.x;
+                        Vector2 scale = new Vector2(scaleL, parentWidth * scaleW);
+                        newUVs[tristripIndex][stepIndex+0] = allUVs[tristripIndex][stepIndex+0] * scale;
+                        newUVs[tristripIndex][stepIndex+1] = allUVs[tristripIndex][stepIndex+1] * scale;
+                    }
+                }
+                return newUVs;
+            }
+
+            public static Tristrip[] CreateSlip(Matrix4x4[] matrices, Matrix4x4[] parentMatrices, GfzPropertyEmbed embed)
+            {
+                // Get tristrips
+                var tristrips = GenerateTristripsLine(matrices, edgeLeft, edgeRight, Vector3.up, embed.WidthDivisions, true);
+
+                // 
+                float segmentLength = embed.GetRangeLength();
+                float scaleL = math.ceil(segmentLength / 5f);
+
+                // Normalized values used to generate UVs from
+                GetNormalizedValues(embed, matrices.Length, out float[] halfWidths, out float[] offsets, out float[] lengths);
+                
+                var uvsNormalized = CreateUVs(embed, tristrips, halfWidths, offsets, lengths);
+                var uvs0 = ScaleByParentWidthAndCustomLength(uvsNormalized, parentMatrices, 1/5f, scaleL);
+                var uvs1 = CreateUVs(embed, tristrips, halfWidths, offsets, lengths, 0.5f);
+
+                for (int i = 0; i < tristrips.Length; i++)
+                {
+                    tristrips[i].tex0 = uvs0[i];
+                    tristrips[i].tex1 = uvs1[i];
+                }
+
+                return tristrips;
+            }
+
             public static Tristrip[] CreateEmbed(Matrix4x4[] matrices, Matrix4x4[] parentMatrices, GfzPropertyEmbed embed, bool isLayer2, int overrideWidthDivisions = 0)
             {
                 const int perUnit = 5;
@@ -64,6 +155,7 @@ namespace Manifold.EditorTools.GC.GFZ
                     for (int j = 0; j < tristrip.VertexCount; j += 2)
                     {
                         int index = j / 2;
+                        // UV in track-space coordinates
                         {
                             float halfWidth0 = halfWidth[index];                //      0 to  s.x/2
                             float offset0 = offsets[index];                     // -s.x/2 to +s.x/2
@@ -75,6 +167,8 @@ namespace Manifold.EditorTools.GC.GFZ
                             uvs0[j + 0] = new Vector2(uv0Length, uv0Left);      //
                             uvs0[j + 1] = new Vector2(uv0Length, uv0Right);     //
                         }
+
+                        // UV normalized space
                         if (embed.Type == GfzPropertyEmbed.SurfaceEmbedType.Slip ||
                             embed.Type == GfzPropertyEmbed.SurfaceEmbedType.Damage)
                         { // SLIP flashing
@@ -107,12 +201,12 @@ namespace Manifold.EditorTools.GC.GFZ
                         case GfzPropertyEmbed.SurfaceEmbedType.Damage:
                             if (isLayer2)
                             {
-                                tristrip.tex0 = ScaleUVs(uvs0, 1/2f); // red dot
-                                tristrip.tex1 = SwapUV(ScaleUVs(uvs1, -1/8f)); // lines
+                                tristrip.tex0 = ScaleUVs(uvs0, 1 / 2f); // red dot
+                                tristrip.tex1 = SwapUV(ScaleUVs(uvs1, -1 / 8f)); // lines
                             }
                             else
                             {
-                                tristrip.tex0 = ScaleUVs(uvs0, 1/4f);
+                                tristrip.tex0 = ScaleUVs(uvs0, 1 / 4f);
                             }
                             break;
                         case GfzPropertyEmbed.SurfaceEmbedType.Recover:
@@ -508,8 +602,8 @@ namespace Manifold.EditorTools.GC.GFZ
                     var tristrips = new Tristrip[]
                     {
                     GetLaneDivider(matricesNoScale, length),
-                    //GetLaneDivider(matricesLeftNoScale, length),
-                    //GetLaneDivider(matricesRightNoScale, length),
+                        //GetLaneDivider(matricesLeftNoScale, length),
+                        //GetLaneDivider(matricesRightNoScale, length),
                     };
 
                     return tristrips;

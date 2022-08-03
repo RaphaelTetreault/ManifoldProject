@@ -191,7 +191,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 case SurfaceEmbedType.Slip:
                     return new Tristrip[][]
                     {
-                        TristripTemplates.General.CreateEmbed(matrices, parentMatrices, this, false),
+                        TristripTemplates.General.CreateSlip(matrices, parentMatrices, this),
                     };
                 case SurfaceEmbedType.Dirt:
                     return new Tristrip[][]
