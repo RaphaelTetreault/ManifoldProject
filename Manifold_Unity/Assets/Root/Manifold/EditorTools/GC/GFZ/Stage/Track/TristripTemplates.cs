@@ -232,6 +232,9 @@ namespace Manifold.EditorTools.GC.GFZ
                     // make flashing orient lengthwise, go forward
                     var uvs1Swapped = SwapUV(uvs1[i]);
                     tristrips[i].tex1 = uvs1Swapped;
+
+                    // this is a thing, but does not seem to contribute to look
+                    //tristrips[i].color0 = ArrayUtility.DefaultArray(new Color32(0xb2, 0xb2, 0xb2, 255), tristrips[i].VertexCount);
                 }
 
                 return tristrips;
@@ -245,8 +248,6 @@ namespace Manifold.EditorTools.GC.GFZ
                 // Scaling parameters
                 float segmentLength = embed.GetRangeLength();
                 float repetitionsAlongLength = math.ceil(segmentLength / 20f);
-                if (repetitionsAlongLength % 2 == 1) //if odd 
-                    repetitionsAlongLength += 1;
 
                 // TODO: do not hardcode, expose as parameter
                 var uvs1 = CreateTristripScaledUVs(tristrips, 1f, repetitionsAlongLength); 
@@ -256,8 +257,10 @@ namespace Manifold.EditorTools.GC.GFZ
                 {
                     // just color
                     tristrips[i].tex0 = new Vector2[tristrips[i].VertexCount];
+
                     // alpha square
-                    tristrips[i].tex1 = uvs1[i];
+                    var uvs1Swapped = SwapUV(uvs1[i]);
+                    tristrips[i].tex1 = uvs1Swapped;
                 }
 
                 return tristrips;

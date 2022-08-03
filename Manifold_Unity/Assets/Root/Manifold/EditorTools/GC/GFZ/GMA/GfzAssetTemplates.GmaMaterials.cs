@@ -146,7 +146,7 @@ namespace Manifold.EditorTools.GC.GFZ
                     Assert.IsTrue(textureHashes.Length == tevLayers.Length);
                     return template;
                 }
-                public static GcmfTemplate CreateDirtBaseAlpha()
+                public static GcmfTemplate CreateDirtAlpha()
                 {
                     var tevLayers = new TevLayer[]
                     {
@@ -356,7 +356,7 @@ namespace Manifold.EditorTools.GC.GFZ
                         Material = material,
                         UnkAlphaOptions = new UnkAlphaOptions()
                         {
-                            BlendFactors = BlendFactors.unk2 | BlendFactors.unk4
+                            BlendFactors = BlendFactors.unk2_UseBlendMode | BlendFactors.unk4_UseBlendMode
                         },
                     };
 
@@ -373,7 +373,7 @@ namespace Manifold.EditorTools.GC.GFZ
                     return template;
                 }
 
-                public static GcmfTemplate CreateRecoverDarkUnder()
+                public static GcmfTemplate CreateRecoverBase()
                 {
                     var tevLayers = new TevLayer[]
                     {
@@ -381,7 +381,7 @@ namespace Manifold.EditorTools.GC.GFZ
                         {
                             Unk0x00 = 0,
                             MipmapSetting = MipmapSetting.UNK_FLAG_1,
-                            WrapMode = TextureWrapMode.mirrorX | TextureWrapMode.repeatY,
+                            WrapMode = TextureWrapMode.mirrorX | TextureWrapMode.repeatY, // I added mirror X
                             LodBias = 0,
                             AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
                             Unk0x0C = 0,
@@ -436,7 +436,7 @@ namespace Manifold.EditorTools.GC.GFZ
                     Assert.IsTrue(textureHashes.Length == tevLayers.Length);
                     return template;
                 }
-                public static GcmfTemplate CreateRecoverDarkOverAlpha()
+                public static GcmfTemplate CreateRecoverAlpha()
                 {
                     var tevLayers = new TevLayer[]
                     {
@@ -453,7 +453,7 @@ namespace Manifold.EditorTools.GC.GFZ
                         new TevLayer()
                         {
                             Unk0x00 = 0,
-                            MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2 | MipmapSetting.UNK_FLAG_5,
+                            MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2 | MipmapSetting.Unk5_AlphaMultiply,
                             WrapMode = TextureWrapMode.repeatX | TextureWrapMode.repeatY | TextureWrapMode.unk7,
                             LodBias = 0,
                             AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
@@ -463,7 +463,7 @@ namespace Manifold.EditorTools.GC.GFZ
                     };
                     var textureHashes = new string[]
                     {
-                        "ad883f82349cecff410c061e1c2a6219", // st01 tex 16, red color
+                        "ad883f82349cecff410c061e1c2a6219", // st01 tex 16, red-pink color
                         "bd341ffeea1d7e2e13cebf13e280ba55", // st01 tex  4, alpha square
                     };
                     var material = new Material
@@ -520,7 +520,7 @@ namespace Manifold.EditorTools.GC.GFZ
                         new TevLayer()
                         {
                             Unk0x00 = TexFlags0x00.ENABLE_UV_SCROLL,
-                            MipmapSetting = MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_5,
+                            MipmapSetting = MipmapSetting.UNK_FLAG_1 | MipmapSetting.Unk5_AlphaMultiply,
                             WrapMode = TextureWrapMode.repeatX | TextureWrapMode.repeatY,
                             LodBias = 0,
                             AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
@@ -530,7 +530,7 @@ namespace Manifold.EditorTools.GC.GFZ
                         new TevLayer()
                         {
                             Unk0x00 = 0,
-                            MipmapSetting = MipmapSetting.UNK_FLAG_5,
+                            MipmapSetting = MipmapSetting.Unk5_AlphaMultiply,
                             WrapMode = TextureWrapMode.repeatX | TextureWrapMode.repeatY,
                             LodBias = 0,
                             AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
@@ -560,7 +560,7 @@ namespace Manifold.EditorTools.GC.GFZ
                     };
                     var unknownAlphaOptions = new UnkAlphaOptions()
                     {
-                        BlendFactors = BlendFactors.unk2 | BlendFactors.unk4,
+                        BlendFactors = BlendFactors.unk2_UseBlendMode | BlendFactors.unk4_UseBlendMode,
                     };
                     var submesh = new Submesh()
                     {
@@ -814,15 +814,14 @@ namespace Manifold.EditorTools.GC.GFZ
                         UnkAlpha0x14 = -1,
                         Unk0x15 = 0,
                     };
-                    var unknownAlphaOptions = new UnkAlphaOptions()
-                    {
-                        BlendFactors = BlendFactors.unk2 | BlendFactors.unk4,
-                    };
                     var submesh = new Submesh()
                     {
                         RenderFlags = RenderFlags.unlit | RenderFlags.screenBlend | RenderFlags.additiveBlend,
                         Material = material,
-                        UnkAlphaOptions = unknownAlphaOptions,
+                        UnkAlphaOptions = new UnkAlphaOptions()
+                        {
+                            BlendFactors = BlendFactors.unk2_UseBlendMode | BlendFactors.unk4_UseBlendMode,
+                        },
                     };
                     var template = new GcmfTemplate()
                     {

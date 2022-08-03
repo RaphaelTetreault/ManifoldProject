@@ -105,29 +105,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return trs;
         }
 
-        //public override Gcmf CreateGcmf(out GcmfTemplate[] gcmfTemplates, ref Dictionary<string, ushort> textureHashesToIndex)
-        //{
-        //    // Get path matrices
-        //    var animKeys = animationCurveTRS.Position.x.keys;
-        //    var min = animKeys[0].time;
-        //    var max = animKeys[animKeys.Length - 1].time;
-        //    var matrices = TristripGenerator.CreatePathMatrices(this, true, lengthDistance, min, max);
-
-        //    // NOTE: Always do alpha last
-        //    var tristripsCollections = new Tristrip[][]
-        //    {
-        //        TristripTemplates.Road.CreateDebugEmbed(matrices, this, widthDivisions, 0),
-        //    };
-        //    gcmfTemplates = new GcmfTemplate[]
-        //    {
-        //        GfzAssetTemplates.MeshTemplates.DebugTemplates.CreateUnlitVertexColored(),
-        //    };
-
-        //    var gcmf = GcmfTemplate.CreateGcmf(gcmfTemplates, tristripsCollections, ref textureHashesToIndex);
-        //    return gcmf;
-        //}
-
-
         public override Gcmf CreateGcmf(out GcmfTemplate[] gcmfTemplates, ref Dictionary<string, ushort> textureHashesToIndex)
         {
             var tristripsCollections = GetTristrips(Type, true);
@@ -150,7 +127,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     return new GcmfTemplate[]
                     {
                         GfzAssetTemplates.MeshTemplates.General.CreateDirtNoise(),
-                        GfzAssetTemplates.MeshTemplates.General.CreateDirtBaseAlpha(),
+                        GfzAssetTemplates.MeshTemplates.General.CreateDirtAlpha(),
                     };
                 case SurfaceEmbedType.Damage:
                     return new GcmfTemplate[]
@@ -161,8 +138,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 case SurfaceEmbedType.Recover:
                     return new GcmfTemplate[]
                     {
-                        GfzAssetTemplates.MeshTemplates.General.CreateRecoverDarkUnder(),
-                        GfzAssetTemplates.MeshTemplates.General.CreateRecoverDarkOverAlpha(),
+                        GfzAssetTemplates.MeshTemplates.General.CreateRecoverBase(),
+                        GfzAssetTemplates.MeshTemplates.General.CreateRecoverAlpha(),
                     };
 
                 default:
