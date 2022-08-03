@@ -29,12 +29,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         public UnityEngine.AnimationCurve WidthCurve { get => widthCurve; }
         public UnityEngine.AnimationCurve OffsetCurve { get => offsetCurve; }
         public AnimationCurveTRS AnimationCurveTRS { get => animationCurveTRS; }
-        
+
         public float GetRangeLength()
         {
             float length = GetRoot().GetSegmentLength();
             float range = to - from;
-            float total = length *range;
+            float total = length * range;
             return total;
         }
 
@@ -168,6 +168,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             var min = animKeys[0].time;
             var max = animKeys[animKeys.Length - 1].time;
             var matrices = TristripGenerator.CreatePathMatrices(this, true, lengthDistance, min, max);
+            //
+            var parent = GetParent();
+            var parentMatrices = TristripGenerator.CreatePathMatrices(parent, true, lengthDistance, min, max);
 
             switch (embedType)
             {
@@ -176,13 +179,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 case SurfaceEmbedType.Slip:
                     return new Tristrip[][]
                     {
-                        TristripTemplates.General.CreateEmbed(matrices, this),
+                        TristripTemplates.General.CreateEmbed(matrices, parentMatrices, this),
                     };
                 case SurfaceEmbedType.Dirt:
                     return new Tristrip[][]
                     {
-                        TristripTemplates.General.CreateEmbed(matrices, this),
-                        TristripTemplates.General.CreateEmbed(matrices, this, 1),
+                        TristripTemplates.General.CreateEmbed(matrices, parentMatrices, this),
+                        TristripTemplates.General.CreateEmbed(matrices, parentMatrices, this, 1),
                     };
                 default:
                     return new Tristrip[][]
@@ -208,6 +211,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             var color0 = GetColor(type);
             var tristrips = TristripGenerator.CreateTristrips(matrices, endpointA, endpointB, widthDivisions, color0, Vector3.up, 0, true);
             var mesh = TristripsToMesh(tristrips);
+            //var tristrips = GetTristrips(Type, false);
+            //var mesh = TristripsToMesh(Tristrip.Linearize(tristrips));
             mesh.name = $"Auto Gen - {this.name}";
 
             return mesh;

@@ -13,7 +13,7 @@ namespace Manifold.EditorTools.GC.GFZ
     {
         public static class General
         {
-            public static Tristrip[] CreateEmbed(Matrix4x4[] matrices, GfzPropertyEmbed embed, int overrideWidthDivisions = 0)
+            public static Tristrip[] CreateEmbed(Matrix4x4[] matrices, Matrix4x4[] parentMatrices, GfzPropertyEmbed embed, int overrideWidthDivisions = 0)
             {
                 // I want some kind of offset data on widths so I can map the textures on properly...
 
@@ -26,12 +26,42 @@ namespace Manifold.EditorTools.GC.GFZ
                 var edgeRight = new Vector3(+0.5f, 0.40f, 0);
                 var tristrips = GenerateTristripsLine(matrices, edgeLeft, edgeRight, Vector3.up, nWidthDivisions, true);
 
+                // Compute UV if it were across full width
                 float repetitions = math.ceil(embed.GetRangeLength() / 10f);
+                int count = matrices.Length;
+                var halfWidth = new float[count];
+                var offsets = new float[count];
+                var length = new float[count];
+                for (int i = 0; i < count; i++)
+                {
+                    float percentage = i / (float)(count - 1);
+                    float parentWidth = parentMatrices[i].lossyScale.x;
+                    float embedWidth = embed.WidthCurve.EvaluateNormalized(percentage);
+                    float embedOffset = embed.OffsetCurve.EvaluateNormalized(percentage);
+                    halfWidth[i] = embedWidth * 0.5f * parentWidth / 10f;
+                    offsets[i] = embedOffset * parentWidth / 10f;
+                    length[i] = percentage * repetitions;
+                }
+
                 for (int i = 0; i < tristrips.Length; i++)
                 {
                     var tristrip = tristrips[i];
-                    float increment = repetitions / (tristrip.VertexCount / 2 - 1); // length of verts, but not both sides
-                    tristrip.tex0 = CreateUVsForward(tristrip.VertexCount, (i + 0) * 2f, (i + 1) * 2f, increment);
+                    var uvs = new Vector2[tristrip.VertexCount];
+                    for (int j = 0; j < uvs.Length; j += 2)
+                    {
+                        int index = j / 2;
+                        float percent0 = (float)(i+0) / nWidthDivisions;
+                        float percent1 = (float)(i+1) / nWidthDivisions;
+                        float half = halfWidth[index];
+                        float offset = offsets[index];
+                        float uvLeft = Mathf.Lerp(offset-half, offset+half, percent0);
+                        float uvRight = Mathf.Lerp(offset-half, offset+half, percent1);
+                        float uvForward = length[index];
+                        uvs[j + 0] = new Vector2(uvLeft, uvForward);
+                        uvs[j + 1] = new Vector2(uvRight, uvForward);
+                    }
+
+                    tristrip.tex0 = uvs;
                 }
 
                 return tristrips;
