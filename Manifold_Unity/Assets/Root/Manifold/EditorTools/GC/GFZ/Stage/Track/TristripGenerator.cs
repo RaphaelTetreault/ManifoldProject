@@ -278,6 +278,23 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
             return uvs;
         }
+        public static Vector2[] ScaleUVs(Vector2[] uvs, Vector2 scale)
+        {
+            var newUVs = new Vector2[uvs.Length];
+            for (int i = 0; i < uvs.Length; i++)
+                newUVs[i] = new Vector2(uvs[i].x * scale.x, uvs[i].y * scale.y);
+            return newUVs;
+        }
+        public static Vector2[] ScaleUVs(Vector2[] uvs, float scale)
+            => ScaleUVs(uvs, new Vector2(scale, scale));
+        public static Vector2[] SwapUV(Vector2[] uvs)
+        {
+            var newUVs = new Vector2[uvs.Length];
+            for (int i = 0; i < uvs.Length; i++)
+                newUVs[i] = new Vector2(uvs[i].y, uvs[i].x);
+            return newUVs;
+        }
+
 
         // Conversion from Unity to GFZ
         public static DisplayList[] TristripsToDisplayLists(Tristrip[] tristrips, VertexAttributeTable vat)

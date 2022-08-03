@@ -13,7 +13,7 @@ namespace Manifold.EditorTools.GC.GFZ
     {
         public static class General
         {
-            public static Tristrip[] CreateEmbed(Matrix4x4[] matrices, Matrix4x4[] parentMatrices, GfzPropertyEmbed embed, float uvMultiply = 1f, int overrideWidthDivisions = 0)
+            public static Tristrip[] CreateEmbed(Matrix4x4[] matrices, Matrix4x4[] parentMatrices, GfzPropertyEmbed embed, bool isLayer2, int overrideWidthDivisions = 0)
             {
                 const int perUnit = 5;
 
@@ -22,8 +22,8 @@ namespace Manifold.EditorTools.GC.GFZ
                     ? overrideWidthDivisions
                     : embed.WidthDivisions;
 
-                var edgeLeft = new Vector3(-0.5f, 0.40f, 0);
-                var edgeRight = new Vector3(+0.5f, 0.40f, 0);
+                var edgeLeft = new Vector3(-0.5f, 0.33f, 0);
+                var edgeRight = new Vector3(+0.5f, 0.33f, 0);
                 var tristrips = GenerateTristripsLine(matrices, edgeLeft, edgeRight, Vector3.up, nWidthDivisions, true);
 
                 // Compute UV if it were across full width
@@ -65,32 +65,63 @@ namespace Manifold.EditorTools.GC.GFZ
                     {
                         int index = j / 2;
                         {
-                            float halfWidth0 = halfWidth[index];
-                            float offset0 = offsets[index];
-                            float min = offset0 - halfWidth0;
-                            float max = offset0 + halfWidth0;
-                            float uv0Left = Mathf.Lerp(min, max, percent0);
-                            float uv0Right = Mathf.Lerp(min, max, percent1);
-                            float uv0Length = lengths[index];
-                            uvs0[j + 0] = new Vector2(uv0Length, uv0Left);
-                            uvs0[j + 1] = new Vector2(uv0Length, uv0Right);
+                            float halfWidth0 = halfWidth[index];                //      0 to  s.x/2
+                            float offset0 = offsets[index];                     // -s.x/2 to +s.x/2
+                            float min = offset0 - halfWidth0;                   // farthest left edge
+                            float max = offset0 + halfWidth0;                   // farthest right edge
+                            float uv0Left = Mathf.Lerp(min, max, percent0);     // 
+                            float uv0Right = Mathf.Lerp(min, max, percent1);    //
+                            float uv0Length = lengths[index];                   //
+                            uvs0[j + 0] = new Vector2(uv0Length, uv0Left);      //
+                            uvs0[j + 1] = new Vector2(uv0Length, uv0Right);     //
                         }
-                        {
-                            float halfWidth1 = halfWidthNormalized[index];          // 0 to 1
-                            float offset1 = offsetsNormalized[index];               // -0.5 to 0.5
-                            float min = offset1 - halfWidth1 + 0.5f;                // Combined equals left/right UV between -0.5 and 0.5
-                            float max = offset1 + halfWidth1 + 0.5f;                // ... then we offset by 0.5 to get normal range 0 to 1.
-                            float uv1Left = Mathf.Lerp(min, max, percent0);         // For each tristrip, let us find the UV coordinates
-                            float uv1Right = Mathf.Lerp(min, max, percent1);        // ... which correspond to it's local left/right
-                            float uv1Forward = lengthNormalized[index];             // TODO: multiply? range rtight now is 0 to 1.
-                            uvs1[j + 0] = new Vector2(uv1Forward, uv1Left);         // .. long strips flash once, 3 small strips, togerther, flash 3 times.
-                            uvs1[j + 1] = new Vector2(uv1Forward, uv1Right);        // .. basically you would need a UV offset param? Equal to final UV on last one...
+                        if (embed.Type == GfzPropertyEmbed.SurfaceEmbedType.Slip ||
+                            embed.Type == GfzPropertyEmbed.SurfaceEmbedType.Damage)
+                        { // SLIP flashing
+                            float halfWidth1 = halfWidthNormalized[index];      //  0   to 0.5
+                            float offset1 = offsetsNormalized[index];           // -0.5 to 0.5
+                            float min = offset1 - halfWidth1 + 0.5f;            // Combined equals left/right UV between -0.5 and 0.5
+                            float max = offset1 + halfWidth1 + 0.5f;            // ... then we offset by 0.5 to get normal range 0 to 1.
+                            float uv1Left = Mathf.Lerp(min, max, percent0);     // For each tristrip, let us find the UV coordinates
+                            float uv1Right = Mathf.Lerp(min, max, percent1);    // ... which correspond to it's local left/right
+                            float uv1Forward = lengthNormalized[index];         // TODO: multiply? range rtight now is 0 to 1.
+                            uvs1[j + 0] = new Vector2(uv1Forward, uv1Left);     // .. long strips flash once, 3 small strips, togerther, flash 3 times.
+                            uvs1[j + 1] = new Vector2(uv1Forward, uv1Right);    // .. basically you would need a UV offset param? Equal to final UV on last one...
                         }
-                        // used percent0/1, worked pretty well
                     }
 
-                    tristrip.tex0 = uvs0;
-                    tristrip.tex1 = uvs1;
+                    // THIS IS HACKY. DIRT DOES NOT USE UV on second tristrip, etc.
+                    switch (embed.Type)
+                    {
+                        case GfzPropertyEmbed.SurfaceEmbedType.Slip:
+                            tristrip.tex0 = uvs0;
+                            tristrip.tex1 = uvs1;
+                            break;
+                        case GfzPropertyEmbed.SurfaceEmbedType.Dirt:
+                            uvs0.CopyTo(uvs1, 0);
+                            for (int index = 0; index < uvs1.Length; index++)
+                                uvs1[index] *= 0.5f; // halve UV, make texture larger
+                            tristrip.tex0 = uvs0;
+                            tristrip.tex1 = uvs1;
+                            break;
+                        case GfzPropertyEmbed.SurfaceEmbedType.Damage:
+                            if (isLayer2)
+                            {
+                                tristrip.tex0 = ScaleUVs(uvs0, 1/2f); // red dot
+                                tristrip.tex1 = SwapUV(ScaleUVs(uvs1, -1/8f)); // lines
+                            }
+                            else
+                            {
+                                tristrip.tex0 = ScaleUVs(uvs0, 1/4f);
+                            }
+                            break;
+
+                        default:
+                            tristrip.tex0 = uvs0;
+                            tristrip.tex1 = uvs1;
+                            break;
+                    }
+
                 }
 
                 return tristrips;

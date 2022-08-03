@@ -200,7 +200,7 @@ namespace Manifold.EditorTools.GC.GFZ
                     {
                         new TevLayer()
                         {
-                            Unk0x00 = 0,
+                            Unk0x00 = 0, //TexFlags0x00.ENABLE_UV_SCROLL, // ,- should have this, but it wonky...
                             MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
                             WrapMode = TextureWrapMode.repeatX | TextureWrapMode.repeatY | TextureWrapMode.unk7,
                             LodBias = 0,
@@ -215,7 +215,7 @@ namespace Manifold.EditorTools.GC.GFZ
                             WrapMode = TextureWrapMode.repeatX | TextureWrapMode.repeatY | TextureWrapMode.unk7,
                             LodBias = 0,
                             AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
-                            Unk0x0C = 135,
+                            Unk0x0C = 0,
                             Unk0x12 = TexFlags0x10.unk0 | TexFlags0x10.unk4 | TexFlags0x10.unk5,
                         },
                     };
@@ -226,7 +226,7 @@ namespace Manifold.EditorTools.GC.GFZ
                     };
                     var textureScrollFields = new TextureScrollField[]
                     {
-                        new TextureScrollField(0.1f, 0.1f),
+                        new TextureScrollField(+1.0f, +1.0f),
                     };
                     var material = new Material
                     {
@@ -258,6 +258,235 @@ namespace Manifold.EditorTools.GC.GFZ
                     return template;
                 }
 
+                public static GcmfTemplate CreateLavaCrag()
+                {
+                    var tevLayers = new TevLayer[]
+                    {
+                        new TevLayer()
+                        {
+                            Unk0x00 = 0,
+                            MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
+                            WrapMode = TextureWrapMode.repeatX | TextureWrapMode.repeatY | TextureWrapMode.unk6 | TextureWrapMode.unk7,
+                            LodBias = -10,
+                            AnisotropicFilter = GXAnisotropy.GX_ANISO_4,
+                            Unk0x0C = 173,
+                            Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
+                        },
+                    };
+                    var textureHashes = new string[]
+                    {
+                        "a9d86932a581a0cbece8275ed6582246", // st43 tex 43, fire/metal
+                    };
+                    var material = new Material
+                    {
+                        MaterialColor = new GXColor(0xffcc7fff),
+                        AmbientColor = new GXColor(0xffcc7fff),
+                        SpecularColor = new GXColor(0x00000000),
+                        Unk0x10 = 0,
+                        Alpha = 255,
+                        UnkAlpha0x14 = -1,
+                        Unk0x15 = 0,
+                    };
+                    var submesh = new Submesh()
+                    {
+                        RenderFlags = RenderFlags.unlit | RenderFlags.noFog,
+                        Material = material,
+                        UnkAlphaOptions = new UnkAlphaOptions(),
+                    };
+
+                    var template = new GcmfTemplate()
+                    {
+                        IsTranslucid = false,
+                        Submesh = submesh,
+                        TevLayers = tevLayers,
+                        TextureHashes = textureHashes,
+                        TextureScrollFields = null,
+                    };
+
+                    Assert.IsTrue(textureHashes.Length == tevLayers.Length);
+                    return template;
+                }
+                public static GcmfTemplate CreateLavaAlpha()
+                {
+                    var tevLayers = new TevLayer[]
+                    {
+                        new TevLayer()
+                        {
+                            Unk0x00 = 0,
+                            MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
+                            WrapMode = TextureWrapMode.repeatX | TextureWrapMode.repeatY | TextureWrapMode.unk6 | TextureWrapMode.unk7,
+                            LodBias = -10,
+                            AnisotropicFilter = GXAnisotropy.GX_ANISO_4,
+                            Unk0x0C = 0,
+                            Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
+                        },
+                        new TevLayer()
+                        {
+                            Unk0x00 = TexFlags0x00.ENABLE_UV_SCROLL,
+                            MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
+                            WrapMode = TextureWrapMode.repeatY | TextureWrapMode.unk7,
+                            LodBias = 0,
+                            AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
+                            Unk0x0C = 0,
+                            Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
+                        },
+                    };
+                    var textureHashes = new string[]
+                    {
+                        "605ca32b9ef8ce5934f67645031b10ea", // st43 tex 31, red dot
+                        "befa86976ddfab6069ce2079503b23e3", // st43 tex 33, white/grey bars
+                    };
+                    var textureScrollFields = new TextureScrollField[]
+                    {
+                        new TextureScrollField(0.00f, 1.25f),
+                    };
+                    var material = new Material
+                    {
+                        MaterialColor = new GXColor(0xffcc7fff),
+                        AmbientColor = new GXColor(0xffcc7fff),
+                        SpecularColor = new GXColor(0x00000000),
+                        Unk0x10 = 0,
+                        Alpha = 255,
+                        UnkAlpha0x14 = -1,
+                        Unk0x15 = 0,
+                    };
+                    var submesh = new Submesh()
+                    {
+                        RenderFlags = RenderFlags.unlit | RenderFlags.noFog | RenderFlags.screenBlend | RenderFlags.additiveBlend,
+                        Material = material,
+                        UnkAlphaOptions = new UnkAlphaOptions()
+                        {
+                            BlendFactors = BlendFactors.unk2 | BlendFactors.unk4
+                        },
+                    };
+
+                    var template = new GcmfTemplate()
+                    {
+                        IsTranslucid = false,
+                        Submesh = submesh,
+                        TevLayers = tevLayers,
+                        TextureHashes = textureHashes,
+                        TextureScrollFields = textureScrollFields,
+                    };
+
+                    Assert.IsTrue(textureHashes.Length == tevLayers.Length);
+                    return template;
+                }
+
+                public static GcmfTemplate CreateRecoverDarkUnder()
+                {
+                    var tevLayers = new TevLayer[]
+                    {
+                        new TevLayer()
+                        {
+                            Unk0x00 = 0,
+                            MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
+                            WrapMode = TextureWrapMode.repeatX | TextureWrapMode.repeatY | TextureWrapMode.unk6 | TextureWrapMode.unk7,
+                            LodBias = -10,
+                            AnisotropicFilter = GXAnisotropy.GX_ANISO_4,
+                            Unk0x0C = 173,
+                            Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
+                        },
+                    };
+                    var textureHashes = new string[]
+                    {
+                        "", // st01 tex 
+                    };
+                    var material = new Material
+                    {
+                        MaterialColor = new GXColor(0xffcc7fff),
+                        AmbientColor = new GXColor(0xffcc7fff),
+                        SpecularColor = new GXColor(0x00000000),
+                        Unk0x10 = 0,
+                        Alpha = 255,
+                        UnkAlpha0x14 = -1,
+                        Unk0x15 = 0,
+                    };
+                    var submesh = new Submesh()
+                    {
+                        RenderFlags = RenderFlags.unlit | RenderFlags.noFog,
+                        Material = material,
+                        UnkAlphaOptions = new UnkAlphaOptions(),
+                    };
+
+                    var template = new GcmfTemplate()
+                    {
+                        IsTranslucid = false,
+                        Submesh = submesh,
+                        TevLayers = tevLayers,
+                        TextureHashes = textureHashes,
+                        TextureScrollFields = null,
+                    };
+
+                    Assert.IsTrue(textureHashes.Length == tevLayers.Length);
+                    return template;
+                }
+                public static GcmfTemplate CreateRecoverDarkOver()
+                {
+                    var tevLayers = new TevLayer[]
+                    {
+                        new TevLayer()
+                        {
+                            Unk0x00 = 0,
+                            MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
+                            WrapMode = TextureWrapMode.repeatX | TextureWrapMode.repeatY | TextureWrapMode.unk6 | TextureWrapMode.unk7,
+                            LodBias = -10,
+                            AnisotropicFilter = GXAnisotropy.GX_ANISO_4,
+                            Unk0x0C = 0,
+                            Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
+                        },
+                        new TevLayer()
+                        {
+                            Unk0x00 = TexFlags0x00.ENABLE_UV_SCROLL,
+                            MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
+                            WrapMode = TextureWrapMode.repeatY | TextureWrapMode.unk7,
+                            LodBias = 0,
+                            AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
+                            Unk0x0C = 0,
+                            Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
+                        },
+                    };
+                    var textureHashes = new string[]
+                    {
+                        "", // st01 tex 
+                        "", // st01 tex 
+                    };
+                    var textureScrollFields = new TextureScrollField[]
+                    {
+                        new TextureScrollField(0.00f, 1.25f),
+                    };
+                    var material = new Material
+                    {
+                        MaterialColor = new GXColor(0xffcc7fff),
+                        AmbientColor = new GXColor(0xffcc7fff),
+                        SpecularColor = new GXColor(0x00000000),
+                        Unk0x10 = 0,
+                        Alpha = 255,
+                        UnkAlpha0x14 = -1,
+                        Unk0x15 = 0,
+                    };
+                    var submesh = new Submesh()
+                    {
+                        RenderFlags = RenderFlags.unlit | RenderFlags.noFog | RenderFlags.screenBlend | RenderFlags.additiveBlend,
+                        Material = material,
+                        UnkAlphaOptions = new UnkAlphaOptions()
+                        {
+                            BlendFactors = BlendFactors.unk2 | BlendFactors.unk4
+                        },
+                    };
+
+                    var template = new GcmfTemplate()
+                    {
+                        IsTranslucid = false,
+                        Submesh = submesh,
+                        TevLayers = tevLayers,
+                        TextureHashes = textureHashes,
+                        TextureScrollFields = textureScrollFields,
+                    };
+
+                    Assert.IsTrue(textureHashes.Length == tevLayers.Length);
+                    return template;
+                }
 
                 public static GcmfTemplate CreateSides() => MuteCity.CreateRoadSides();
             }
@@ -323,7 +552,7 @@ namespace Manifold.EditorTools.GC.GFZ
                     };
                     var unknownAlphaOptions = new UnkAlphaOptions()
                     {
-                        Unk0x10 = BlendFactors.unk2 | BlendFactors.unk4,
+                        BlendFactors = BlendFactors.unk2 | BlendFactors.unk4,
                     };
                     var submesh = new Submesh()
                     {
@@ -579,7 +808,7 @@ namespace Manifold.EditorTools.GC.GFZ
                     };
                     var unknownAlphaOptions = new UnkAlphaOptions()
                     {
-                        Unk0x10 = BlendFactors.unk2 | BlendFactors.unk4,
+                        BlendFactors = BlendFactors.unk2 | BlendFactors.unk4,
                     };
                     var submesh = new Submesh()
                     {

@@ -152,6 +152,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                         GfzAssetTemplates.MeshTemplates.General.CreateDirtNoise(),
                         GfzAssetTemplates.MeshTemplates.General.CreateDirtBaseAlpha(),
                     };
+                case SurfaceEmbedType.Damage:
+                    return new GcmfTemplate[]
+                    {
+                        GfzAssetTemplates.MeshTemplates.General.CreateLavaCrag(),
+                        GfzAssetTemplates.MeshTemplates.General.CreateLavaAlpha(),
+                    };
 
                 default:
                     return new GcmfTemplate[]
@@ -179,13 +185,19 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 case SurfaceEmbedType.Slip:
                     return new Tristrip[][]
                     {
-                        TristripTemplates.General.CreateEmbed(matrices, parentMatrices, this),
+                        TristripTemplates.General.CreateEmbed(matrices, parentMatrices, this, false),
                     };
                 case SurfaceEmbedType.Dirt:
                     return new Tristrip[][]
                     {
-                        TristripTemplates.General.CreateEmbed(matrices, parentMatrices, this),
-                        TristripTemplates.General.CreateEmbed(matrices, parentMatrices, this, 1),
+                        TristripTemplates.General.CreateEmbed(matrices, parentMatrices, this, false),
+                        TristripTemplates.General.CreateEmbed(matrices, parentMatrices, this, true, 1),
+                    };
+                case SurfaceEmbedType.Damage:
+                    return new Tristrip[][]
+                    {
+                        TristripTemplates.General.CreateEmbed(matrices, parentMatrices, this, false),
+                        TristripTemplates.General.CreateEmbed(matrices, parentMatrices, this, true),
                     };
                 default:
                     return new Tristrip[][]
