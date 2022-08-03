@@ -162,7 +162,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     return new GcmfTemplate[]
                     {
                         GfzAssetTemplates.MeshTemplates.General.CreateRecoverDarkUnder(),
-                        //GfzAssetTemplates.MeshTemplates.General.CreateRecoverDarkOverAlpha(),
+                        GfzAssetTemplates.MeshTemplates.General.CreateRecoverDarkOverAlpha(),
                     };
 
                 default:
@@ -206,8 +206,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 case SurfaceEmbedType.Recover:
                     return new Tristrip[][]
                     {
-                        TristripTemplates.General.CreateRecoverBase(matrices, parentMatrices, this),
-                        //TristripTemplates.General.CreateEmbed(matrices, parentMatrices, this, true),
+                        TristripTemplates.General.CreateRecoverBase(matrices, this),
+                        TristripTemplates.General.CreateRecoverAlpha(matrices, this),
                     };
                 default:
                     return new Tristrip[][]

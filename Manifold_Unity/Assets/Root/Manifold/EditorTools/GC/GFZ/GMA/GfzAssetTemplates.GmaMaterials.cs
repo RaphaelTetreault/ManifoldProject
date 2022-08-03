@@ -454,7 +454,7 @@ namespace Manifold.EditorTools.GC.GFZ
                         {
                             Unk0x00 = 0,
                             MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2 | MipmapSetting.UNK_FLAG_5,
-                            WrapMode = TextureWrapMode.unk7,
+                            WrapMode = TextureWrapMode.repeatX | TextureWrapMode.repeatY | TextureWrapMode.unk7,
                             LodBias = 0,
                             AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
                             Unk0x0C = 184,
