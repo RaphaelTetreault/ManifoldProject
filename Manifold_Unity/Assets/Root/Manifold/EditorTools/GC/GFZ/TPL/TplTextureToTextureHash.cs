@@ -18,7 +18,7 @@ namespace Manifold.EditorTools.GC.GFZ.TPL
         /// <summary>
         /// Name of files whose texture hashes are recorded in the dictionary.
         /// </summary>
-        [field: SerializeField, HideInInspector] public string[] FileNames { get; internal set; }
+        [field: SerializeField, ReadOnlyGUI] public string[] FileNames { get; internal set; }
         /// <summary>
         /// Arrays of texture hashes, one for each file, contains multiple hashes sorted by index.
         /// </summary>
@@ -26,7 +26,7 @@ namespace Manifold.EditorTools.GC.GFZ.TPL
         /// To be consistent with GFZ TPLs, can have null entries. An entry that is null will return
         /// a null or empty string.
         /// </remarks>
-        [field: SerializeField, HideInInspector] public TplTextureHashes[] Hashes { get; internal set; }
+        [field: SerializeField, ReadOnlyGUI] public TplTextureHashes[] Hashes { get; internal set; }
 
         public Dictionary<string, TplTextureHashes> ReconstructDictionary()
         {

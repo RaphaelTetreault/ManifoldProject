@@ -47,5 +47,14 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
             return indexes;
         }
+
+
+        public static Tristrip[] Linearize(Tristrip[][] tristripsCollection)
+        {
+            var allTristrips = new List<Tristrip>();
+            foreach (var tristrips in tristripsCollection)
+                allTristrips.AddRange(tristrips);
+            return allTristrips.ToArray();
+        }
     }
 }

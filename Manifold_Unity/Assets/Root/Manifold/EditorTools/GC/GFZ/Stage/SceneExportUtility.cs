@@ -2,6 +2,7 @@
 using GameCube.GFZ.GMA;
 using GameCube.GFZ.LZ;
 using GameCube.GFZ.Stage;
+using GameCube.GFZ.TPL;
 using Manifold.IO;
 using System;
 using System.Collections.Generic;
@@ -14,7 +15,7 @@ using System.Linq;
 
 using Manifold.EditorTools.GC.GFZ.GMA;
 using Manifold.EditorTools.GC.GFZ.Stage.Track;
-
+using Manifold.EditorTools.GC.GFZ.TPL;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage
 {
@@ -24,13 +25,24 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         [MenuItem(GfzMenuItems.Stage.ExportActiveScene + " _F8", priority = GfzMenuItems.Stage.ExportActiveScenePriority)]
         public static void ExportSceneActive()
         {
-            var format = SerializeFormat.GX;
-            ExportScene(format, true);
+            try
+            {
+                ExportScene(true);
+            }
+            catch (Exception exception)
+            {
+                var mirroredObjects = GameObject.FindObjectsOfType<GfzMirroredObject>();
+                foreach (var mirroredObject in mirroredObjects)
+                    mirroredObject.SetAsMirroredState();
+
+                throw exception;
+            }
         }
 
-        public static void ExportScene(SerializeFormat format, bool verbose)
+        public static void ExportScene(bool verbose)
         {
             var settings = GfzProjectWindow.GetSettings();
+            var format = settings.SerializeFormat;
             var outputPath = settings.SceneExportPath;
             var activeScene = EditorSceneManager.GetActiveScene();
 
@@ -91,6 +103,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 Venue = sceneParams.venue,
                 CourseName = sceneParams.courseName,
             };
+            // Build a TPL..?
+            var textureHashesToIndex = new Dictionary<string, ushort>();
 
             // Get scene-wide parameters from SceneParameters
             {
@@ -211,7 +225,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
                 // AI data
                 // 2022/01/25: currently save out only the terminating element.
-                // 2022/01/25: currently save out only the terminating element.
                 scene.embeddedPropertyAreas = track.EmbeddedPropertyAreas;
 
                 scene.CircuitType = track.CircuitType;
@@ -219,7 +232,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             // Inject TRACK models, + recover missing models
             {
                 // This creates the GMA archive and gives us the scene objects and dynamic scene objects for them
-                var gma = CreateTrackModelsGma(out SceneObject[] sceneObjects, out SceneObjectDynamic[] dynamicSceneObjects);
+                // It will also add which texture hashes to dictionary, you still need to patch the TEV indexes after, though.
+                var gma = CreateTrackModelsGma(out SceneObject[] sceneObjects, out SceneObjectDynamic[] dynamicSceneObjects, ref textureHashesToIndex);
 
                 // Add SceneObject's LODs and their name to archive
                 foreach (var sceneObject in sceneObjects)
@@ -228,22 +242,37 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                     scene.SceneObjectNames.Add(sceneObject.Name); // wouldn't you need to put in all LOD names?
                 }
                 scene.sceneObjects = sceneObjects.Concat(scene.sceneObjects).ToArray();
-
-                // add static / dynamic
+                // add dynamic (no statics needed)
                 scene.dynamicSceneObjects = dynamicSceneObjects.Concat(scene.dynamicSceneObjects).ToArray();
 
-                // save gma
-                var gmaFileName = $"st{scene.CourseIndex:00}.gma";
+                // Create output
+                int courseIndex = scene.CourseIndex;
+                var fileName = $"st{scene.CourseIndex:00}";
+                var gmaFileName = $"{fileName}.gma";
                 var gmaFilePath = outputPath + gmaFileName;
+                var tplFileName = $"{fileName}.tpl";
+                var tplFilePath = outputPath + tplFileName;
 
                 // Recover models we might be overwriting
-                var missingModels = RecoverMissingModelsFromStageGma(gmaFileName);
+                // TODO: just do that for every model?
+                var missingModels = RecoverMissingModelsFromStageGma(scene.CourseIndex, ref textureHashesToIndex);
                 gma.Models = gma.Models.Concat(missingModels).ToArray();
 
+                // GMA
                 using (var writer = new EndianBinaryWriter(File.Create(gmaFilePath), Gma.endianness))
                     writer.Write(gma);
                 LzUtility.CompressAvLzToDisk(gmaFilePath, compressFormat, true);
                 Debug.Log($"Created models archive '{gmaFilePath}'.");
+
+                // Write out a hella bodged TPL. :eyes:
+                // TODO: finish CMPR serialization, write textures for real.
+                using (var writer = new BinaryWriter(File.Create(tplFilePath)))
+                {
+                    var textureHashes = textureHashesToIndex.Keys.ToArray();
+                    var stream = WriteBodgeTplFromTextureHashes(textureHashes);
+                    writer.Write(stream.ToArray());
+                }
+                LzUtility.CompressAvLzToDisk(tplFilePath, compressFormat, true);
             }
 
             // TEMP until data is stored properly in GFZ unity components
@@ -360,7 +389,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
             return sceneObject;
         }
-        public static SceneObjectDynamic CreateSceneObjectDynamic(SceneObject sceneObject, TransformMatrix3x4 transform)
+        public static SceneObjectDynamic CreateSceneObjectDynamic()
         {
             var dynamicSceneObject = new SceneObjectDynamic()
             {
@@ -370,14 +399,15 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                     ObjectRenderFlags0x00.unk_RenderObject2 |
                     ObjectRenderFlags0x00.unk_RenderObject3 |
                     ObjectRenderFlags0x00.ReceiveEfbShadow,
-                
+
                 Unk0x04 = ObjectRenderFlags0x04._NULL,
-                SceneObject = sceneObject,
-                TransformMatrix3x4 = transform,
             };
             return dynamicSceneObject;
         }
-        public static Gma CreateTrackModelsGma(out SceneObject[] sceneObjects, out SceneObjectDynamic[] dynamicSceneObjects)
+        public static Gma CreateTrackModelsGma(
+            out SceneObject[] sceneObjects,
+            out SceneObjectDynamic[] dynamicSceneObjects,
+            ref Dictionary<string, ushort> textureHashesToIndex)
         {
             // get GfzTrack, use it to get children
             var track = GameObject.FindObjectOfType<GfzTrack>(false);
@@ -394,15 +424,18 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 var shapeNodes = rootTrackSegmentNode.GetShapeNodes();
                 foreach (var shape in shapeNodes)
                 {
-                    var gcmf = shape.CreateGcmf();
+                    var gcmf = shape.CreateGcmf(out GcmfTemplate[] gcmfTemplates, ref textureHashesToIndex);
                     var modelName = $"{shape.GetRoot().name}-{shape.name}-#{shapeIndex++}.{subIndex++}";
                     models.Add(new Model(modelName, gcmf));
 
                     var sceneObject = CreateSceneObject(modelName);
                     _sceneObjects.Add(sceneObject);
 
-                    var transform = new TransformMatrix3x4();
-                    var sceneObjectDynamic = CreateSceneObjectDynamic(sceneObject, transform);
+                    var sceneObjectDynamic = CreateSceneObjectDynamic();
+                    sceneObjectDynamic.SceneObject = sceneObject;
+                    sceneObjectDynamic.TransformMatrix3x4 = new();
+                    sceneObjectDynamic.TextureScroll = GcmfTemplate.CombineTextureScrolls(gcmfTemplates);
+                    sceneObjectDynamic.AssignTextureScrollFlags();
                     _dynamicSceneObjects.Add(sceneObjectDynamic);
                 }
             }
@@ -411,8 +444,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             var gma = new Gma();
             gma.Models = models.ToArray();
 
+            // OUT parameters
             sceneObjects = _sceneObjects.ToArray();
             dynamicSceneObjects = _dynamicSceneObjects.ToArray();
+
 
             return gma;
         }
@@ -488,15 +523,21 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         #endregion
 
 
-        public static Model[] RecoverMissingModelsFromStageGma(string missingFile)
+        public static Model[] RecoverMissingModelsFromStageGma(int stageID, ref Dictionary<string, ushort> textureHashesToIndex)
         {
-            string missingFileName = Path.GetFileNameWithoutExtension(missingFile);
+            var venueID = CourseUtility.GetVenueID(stageID).ToString().ToLower();
+            var bg = $"bg_{venueID}";
+            const string race = "race";
+
+            //string missingFileName = Path.GetFileNameWithoutExtension(missingFile);
             var tags = GameObject.FindObjectsOfType<GmaSourceTag>();
             var dictMissingModels = new Dictionary<string, GmaSourceTag>();
 
             foreach (var tag in tags)
             {
-                bool isMissingModelReference = tag.FileName == missingFileName;
+                bool isMissingModelReference =
+                    tag.FileName != bg &&
+                    tag.FileName != race;
                 if (!isMissingModelReference)
                     continue;
 
@@ -506,26 +547,160 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
             var models = new Model[dictMissingModels.Count];
             var settings = GfzProjectWindow.GetSettings();
-            string inputPath = settings.SourceStageDirectory;
-            string filePath = inputPath + missingFile;
+            string inputPath = settings.SourceDirectory;
 
-            using (var reader = new EndianBinaryReader(File.OpenRead(filePath), Gma.endianness))
+            var missingModels = dictMissingModels.Values.ToArray();
+            for (int i = 0; i < missingModels.Length; i++)
             {
-                int i = 0;
-                foreach (var kvMissingModel in dictMissingModels)
+                var missingModel = missingModels[i];
+                var filePaths = Directory.GetFiles(inputPath, $"{missingModel.FileName}.gma", SearchOption.AllDirectories);
+                Assert.IsTrue(filePaths.Length == 1);
+                var filePath = filePaths[0];
+
+                using (var reader = new EndianBinaryReader(File.OpenRead(filePath), Gma.endianness))
                 {
-                    var missingModel = kvMissingModel.Value;
                     reader.JumpToAddress(missingModel.GcmfAddressRange.startAddress);
 
                     var model = new Model();
                     model.Name = missingModel.ModelName;
                     model.Gcmf = new Gcmf();
                     model.Gcmf.Deserialize(reader);
-                    models[i++] = model;
+                    models[i] = model;
+
+                    // TODO: don't be making arrays of size 1
+                    // Edit TPL texture indexes, add textures to output TPL
+                    RecoverMissingModelTextureHashes(missingModel.FileName, new Model[] { model }, ref textureHashesToIndex);
                 }
             }
 
             return models;
+        }
+
+        private static void RecoverMissingModelTextureHashes(string sourceFile, Model[] models, ref Dictionary<string, ushort> textureHashesToIndex)
+        {
+            var settings = GfzProjectWindow.GetSettings();
+            string inputPath = settings.AssetsWorkingDirectory;
+
+            // The structure which translates old TPL indexes into texture hashes
+            string fileToTextureHashPath = inputPath + "tpl/TPL-TextureDescription-to-Hash.asset";
+            var fileToTextureHashAsset = AssetDatabase.LoadAssetAtPath<TplTextureToTextureHash>(fileToTextureHashPath);
+            if (fileToTextureHashAsset == null)
+            {
+                MessageHasNoTplHashReferenceObjects();
+                fileToTextureHashAsset = AssetDatabase.LoadAssetAtPath<TplTextureToTextureHash>(fileToTextureHashPath);
+            }
+            var fileToTextureHashDict = fileToTextureHashAsset.GetDictionary();
+            TplTextureHashes textureHashes = fileToTextureHashDict[sourceFile];
+
+            foreach (var model in models)
+            {
+                var tevLayers = model.Gcmf.TevLayers;
+                for (int i = 0; i < tevLayers.Length; i++)
+                {
+                    var tevLayer = tevLayers[i];
+                    var tplIndex = tevLayer.TplTextureIndex;
+                    string textureHash = textureHashes[tplIndex];
+
+                    ushort textureIndex = 0xFFFF;
+                    if (textureHashesToIndex.ContainsKey(textureHash))
+                    {
+                        textureIndex = textureHashesToIndex[textureHash];
+                    }
+                    else
+                    {
+                        textureIndex = (ushort)textureHashesToIndex.Count;
+                        textureHashesToIndex.Add(textureHash, textureIndex);
+                    }
+                    tevLayer.TplTextureIndex = textureIndex;
+                }
+            }
+        }
+
+        public static MemoryStream WriteBodgeTplFromTextureHashes(string[] textureHashes)
+        {
+            var settings = GfzProjectWindow.GetSettings();
+            string assetsWorkingDir = settings.AssetsWorkingDirectory;
+
+            // The structure which translates old TPL indexes into texture hashes
+            string textureHashToTextureInfoPath = assetsWorkingDir + "tpl/TPL-TextureHash-to-TextureInfo.asset";
+            var textureHashToTextureInfoAsset = AssetDatabase.LoadAssetAtPath<TextureHashToTextureInfo>(textureHashToTextureInfoPath);
+            if (textureHashToTextureInfoAsset == null)
+            {
+                MessageHasNoTplHashReferenceObjects();
+                textureHashToTextureInfoAsset = AssetDatabase.LoadAssetAtPath<TextureHashToTextureInfo>(textureHashToTextureInfoPath);
+            }
+            var textureHashToTextureInfoDict = textureHashToTextureInfoAsset.GetDictionary();
+
+            // Make a TPL, just copy texture data around
+            var descriptions = new List<TextureDescription>();
+
+            foreach (var textureHash in textureHashes)
+            {
+                TextureInfo textureInfo = textureHashToTextureInfoDict[textureHash];
+                TextureDescription textureDescription = textureInfo.AsTextureDescription();
+                descriptions.Add(textureDescription);
+            }
+
+            var stream = new MemoryStream();
+            using (var writer = new EndianBinaryWriter(stream, Tpl.endianness))
+            {
+                // Write count
+                writer.Write(descriptions.Count);
+
+                // write descriptions. Addrs are wrong.
+                foreach (var desc in descriptions)
+                    writer.Write(desc);
+
+                var align = writer.BaseStream.GetLengthOfAlignment(32); // fifo
+                for (byte i = 0; i < align; i++)
+                    writer.Write(i);
+
+                //
+                var src = settings.SourceDirectory;
+                for (int i = 0; i < textureHashes.Length; i++)
+                {
+                    var textureHash = textureHashes[i];
+                    TextureInfo textureInfo = textureHashToTextureInfoDict[textureHash];
+
+                    var pattern = $"{textureInfo.SourceFileName}.tpl";
+                    var tplPaths = Directory.GetFiles(src, pattern, SearchOption.AllDirectories);
+                    Assert.IsTrue(tplPaths.Length == 1, pattern);
+                    var tplPath = tplPaths[0];
+                    using (var reader = new EndianBinaryReader(File.OpenRead(tplPath), Tpl.endianness))
+                    {
+                        // copy over data
+                        reader.JumpToAddress(textureInfo.AddressRange.startAddress);
+                        var bytes = reader.ReadBytes(textureInfo.AddressRange.Size);
+                        descriptions[i].TexturePtr = writer.BaseStream.Position;
+                        writer.Write(bytes);
+                    }
+                }
+
+                writer.JumpToAddress(4);
+                // write descriptions. Addrs are wrong.
+                foreach (var desc in descriptions)
+                    writer.Write(desc);
+            }
+
+            return stream;
+        }
+
+        public static void MessageHasNoTplHashReferenceObjects()
+        {
+            const string title = "Missing TPL Hash Reference Object";
+            string message =
+                $"You do not have a {typeof(TextureHashToTextureInfo).Name} or {nameof(TplTextureToTextureHash)} " +
+                $"scriptable object in your assets folder. Would you like to build it now?";
+
+            bool doAction = EditorUtility.DisplayDialog(title, message, "Yes", "No");
+            if (doAction)
+            {
+                TplMenuItems.BuildHashReferenceObject();
+            }
+            else
+            {
+                throw new NullReferenceException(title);
+            }
         }
     }
 }

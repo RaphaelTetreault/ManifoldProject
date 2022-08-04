@@ -12,5 +12,19 @@ namespace Manifold.EditorTools.GC.GFZ.TPL
         [field: SerializeField] public ushort PixelWidth { get; internal set; }
         [field: SerializeField] public ushort PixelHeight { get; internal set; }
         [field: SerializeField] public ushort TextureLevels { get; internal set; }
+
+        public GameCube.GFZ.TPL.TextureDescription AsTextureDescription()
+        {
+            var description = new GameCube.GFZ.TPL.TextureDescription()
+            {
+                TextureFormat = TextureFormat,
+                Width = PixelWidth,
+                Height = PixelHeight,
+                IsNull = false,
+                MipmapLevels = TextureLevels,
+                AddressRange = AddressRange,
+            };
+            return description;
+        }
     }
 }

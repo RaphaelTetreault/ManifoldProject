@@ -13,7 +13,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         [field: SerializeField, ReadOnlyGUI] public MeshDisplay MeshDisplay { get; protected set; }
 
         public abstract Mesh CreateMesh();
-        public abstract Gcmf CreateGcmf();
+        public abstract Gcmf CreateGcmf(out GcmfTemplate[] gcmfTemplates, ref Dictionary<string, ushort> textureHashesToIndex);
 
         public override float GetMaxTime()
         {

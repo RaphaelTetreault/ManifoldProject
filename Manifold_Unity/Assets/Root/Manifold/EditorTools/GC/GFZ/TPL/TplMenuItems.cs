@@ -17,8 +17,18 @@ namespace Manifold.EditorTools.GC.GFZ.TPL
         /// Imports all textures and mipmaps and creates scriptable objects which hold references
         /// between textures and their source TPLs via texture hashes.
         /// </summary>
-        [MenuItem("Manifold/TPL/Import all textures and mipmaps (with hash reference objects)")]
-        public static void SobjsBasedTpls()
+        //[MenuItem("Manifold/TPL/Import all textures and mipmaps (with hash reference objects)")]
+        [MenuItem(GfzMenuItems.TPL.BuildHashReferenceObject, priority = GfzMenuItems.TPL.Priority.BuildHashReferenceObject)]
+        public static void BuildHashReferenceObject() => SobjsBasedTpls(false, false);
+
+        [MenuItem(GfzMenuItems.TPL.ImportTexturesNoMipmips, priority = GfzMenuItems.TPL.Priority.ImportTexturesNoMipmips)]
+        public static void ImportTexturesNoMipmips() => SobjsBasedTpls(true, false);
+
+        [MenuItem(GfzMenuItems.TPL.ImportTexturesWithMipmips, priority = GfzMenuItems.TPL.Priority.ImportTexturesWithMipmips)]
+        public static void ImportTexturesWithMipmips() => SobjsBasedTpls(true, true);
+
+
+        public static void SobjsBasedTpls(bool saveTexture, bool doMipmaps)
         {
             var settings = GfzProjectWindow.GetSettings();
             var inputPath = settings.SourceDirectory;
@@ -46,7 +56,8 @@ namespace Manifold.EditorTools.GC.GFZ.TPL
             {
                 // Progress bar
                 {
-                    bool cancel = ProgressBar.ShowIndexed(tplCount, tplTotal, "TPL Test", inputPaths[tplCount]);
+                    Debug.Log(inputPaths[tplCount]);
+                    bool cancel = ProgressBar.ShowIndexed(tplCount, tplTotal, "Reading TPL Files", inputPaths[tplCount]);
                     if (cancel)
                         break;
                     tplCount++;
@@ -60,7 +71,7 @@ namespace Manifold.EditorTools.GC.GFZ.TPL
                 };
                 tplTextureHashes.Add(textureHashes);
 
-                // Iterate over all textures
+                // Iterate over all textures - foreach texture in tpl
                 Assert.IsTrue(tpl.TextureDescriptions.Length == tpl.TextureSeries.Length);
                 for (int i = 0; i < tpl.TextureDescriptions.Length; i++)
                 {
@@ -72,7 +83,7 @@ namespace Manifold.EditorTools.GC.GFZ.TPL
                         continue;
 
                     // Save all textures in TPL
-                    var filePaths = SaveTextures(textureSeries, textureRootOutputPath, false);
+                    var filePaths = GetTextureHash(textureSeries, textureRootOutputPath, saveTexture, false, doMipmaps);
                     var hash = Path.GetFileNameWithoutExtension(filePaths[0]);
 
                     // Set TPL hash for this index. If skipped due to above `continue`, stays null.
@@ -89,8 +100,17 @@ namespace Manifold.EditorTools.GC.GFZ.TPL
                         PixelHeight = textureDescription.Height,
                         TextureLevels = textureDescription.MipmapLevels,
                     };
-                    textureInfos.Add(textureInfo);
-                    textureInfoHashes.Add(hash);
+
+                    bool containsTexture = textureInfoHashes.Contains(hash);
+                    if (!containsTexture)
+                    {
+                        textureInfoHashes.Add(hash);
+                        textureInfos.Add(textureInfo);
+                    }
+                    //else
+                    //{
+                    //    Debug.Log($"Skipped {hash}");
+                    //}
                 }
             }
 
@@ -115,13 +135,13 @@ namespace Manifold.EditorTools.GC.GFZ.TPL
             AssetDatabase.Refresh();
         }
 
-        [MenuItem("Manifold/TPL/Convert TPL Textures - Main Textures Only")]
+        [MenuItem("Manifold/TPL/Test - Save textures to select folder (no mipmaps)")]
         public static void ImportMainTexturesOnly()
         {
             var settings = GfzProjectWindow.GetSettings();
             var inputPath = settings.SourceDirectory;
             var inputPaths = Directory.GetFiles(inputPath, "*.tpl", SearchOption.AllDirectories);
-            
+
             var outputPath = EditorUtility.OpenFolderPanel("Select TPL Files Output Folder", "", "");
             if (string.IsNullOrEmpty(outputPath))
                 return;
@@ -134,7 +154,7 @@ namespace Manifold.EditorTools.GC.GFZ.TPL
             {
                 // Progress bar
                 {
-                    bool cancel = ProgressBar.ShowIndexed(tplCount, tplTotal, "TPL Test", inputPaths[tplCount]);
+                    bool cancel = ProgressBar.ShowIndexed(tplCount, tplTotal, "Reading TPL Files", inputPaths[tplCount]);
                     if (cancel)
                         break;
                     tplCount++;
@@ -142,7 +162,7 @@ namespace Manifold.EditorTools.GC.GFZ.TPL
 
                 int index = -1;
                 int digitsFormat = tpl.TextureSeries.Length.ToString().Length;
-                
+
                 var fileRoot = $"{outputPath}/{tpl.FileName}/";
                 Directory.CreateDirectory(fileRoot);
 
@@ -210,7 +230,7 @@ namespace Manifold.EditorTools.GC.GFZ.TPL
             return builder.ToString();
         }
 
-        private static string[] SaveTextures(TextureSeries textureSeries, string rootPath, bool overwrite)
+        private static string[] GetTextureHash(TextureSeries textureSeries, string rootPath, bool saveTextures, bool overwrite, bool doMipmaps)
         {
             var outputNames = new string[textureSeries.Length];
 
@@ -218,17 +238,24 @@ namespace Manifold.EditorTools.GC.GFZ.TPL
             byte[] png = mainTex.EncodeToPNG();
             var name = HashToString(md5.ComputeHash(png, 0, png.Length));
             var filePath = $"{rootPath}{name}.png";
-            SaveData(filePath, png, overwrite);
             outputNames[0] = filePath;
 
-            for (int i = 1; i < textureSeries.Length; i++)
+            if (saveTextures)
             {
-                var mipmap = CreateTexture2D(textureSeries[i].Texture);
-                var mipmapPng = mipmap.EncodeToPNG();
-                var mipmapName = $"{name}_mipmap{i}";
-                filePath = $"{rootPath}{mipmapName}.png";
-                SaveData(filePath, mipmapPng, overwrite);
-                outputNames[i] = filePath;
+                SaveData(filePath, png, overwrite);
+
+                if (doMipmaps)
+                {
+                    for (int i = 1; i < textureSeries.Length; i++)
+                    {
+                        var mipmap = CreateTexture2D(textureSeries[i].Texture);
+                        var mipmapPng = mipmap.EncodeToPNG();
+                        var mipmapName = $"{name}_mipmap{i}";
+                        filePath = $"{rootPath}{mipmapName}.png";
+                        SaveData(filePath, mipmapPng, overwrite);
+                        outputNames[i] = filePath;
+                    }
+                }
             }
 
             return outputNames;

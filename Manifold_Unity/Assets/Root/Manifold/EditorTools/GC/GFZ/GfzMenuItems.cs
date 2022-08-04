@@ -68,5 +68,21 @@ namespace Manifold.EditorTools.GC.GFZ
             public const int ExportActiveScenePriority = 101;
         }
 
+        public static class TPL
+        {
+            public const string Menu = Const.Menu.Manifold + "TPL/";
+            // SceneImportUtility
+            public const string BuildHashReferenceObject = Menu + "Build hash reference objects";
+            public const string ImportTexturesNoMipmips = Menu + "Import textures (no mipmaps, build hash reference objects)";
+            public const string ImportTexturesWithMipmips = Menu + "Import textures with no mipmaps (build hash reference objects)";
+
+            public static class Priority
+            {
+                public const int BuildHashReferenceObject = 1;
+                public const int ImportTexturesNoMipmips = 2;
+                public const int ImportTexturesWithMipmips = 3;
+            }
+        }
+
     }
 }

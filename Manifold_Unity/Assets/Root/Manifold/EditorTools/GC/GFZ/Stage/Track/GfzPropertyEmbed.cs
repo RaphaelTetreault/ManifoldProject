@@ -11,7 +11,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
     public class GfzPropertyEmbed : GfzSegmentShape
     {
-        [SerializeField] private SurfaceEmbedType type = SurfaceEmbedType.Recover;
+        [SerializeField] private SurfaceEmbedType type = SurfaceEmbedType.RecoverLight;
         [SerializeField, Min(1)] private int widthDivisions = 1;
         [SerializeField, Min(1f)] private float lengthDistance = 10f;
         [SerializeField, Range(0f, 1f)] private float from = 0f;
@@ -19,13 +19,48 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         [SerializeField] private UnityEngine.AnimationCurve widthCurve = new UnityEngine.AnimationCurve(new(0, 0.5f), new(1, 0.5f));
         [SerializeField] private UnityEngine.AnimationCurve offsetCurve = new UnityEngine.AnimationCurve(new(0, 0), new(1, 0));
         [SerializeField] private AnimationCurveTRS animationCurveTRS = new();
+        //[SerializeField] private float range;
+        [SerializeField] private bool includeTrimLeft = true;
+        [SerializeField] private bool includeTrimRight = true;
+        [SerializeField] private bool includeTrimStart = true;
+        [SerializeField] private bool includeTrimEnd = true;
+        [SerializeField] private Vector2 repeatFlashingUV = Vector2.one;
+        [SerializeField] private Vector2 repeatFlashingUVOffset = Vector2.zero;
+
+
+        public SurfaceEmbedType Type { get => type; }
+        public int WidthDivisions { get => widthDivisions; }
+        public float LengthDistance { get => lengthDistance; }
+        public float From { get => from; }
+        public float To { get => to; }
+        public UnityEngine.AnimationCurve WidthCurve { get => widthCurve; }
+        public UnityEngine.AnimationCurve OffsetCurve { get => offsetCurve; }
+        public AnimationCurveTRS AnimationCurveTRS { get => animationCurveTRS; }
+        public bool IncludeTrimLeft { get => includeTrimLeft; set => includeTrimLeft = value; }
+        public bool IncludeTrimRight { get => includeTrimRight; set => includeTrimRight = value; }
+        public bool IncludeTrimStart { get => includeTrimStart; set => includeTrimStart = value; }
+        public bool IncludeTrimEnd { get => includeTrimEnd; set => includeTrimEnd = value; }
+        public Vector2 RepeatFlashingUV { get => repeatFlashingUV; set => repeatFlashingUV = value; }
+        public Vector2 RepeatFlashingUVOffset { get => repeatFlashingUVOffset; set => repeatFlashingUVOffset = value; }
+
+
+        public float GetRangeLength()
+        {
+            float length = GetRoot().GetSegmentLength();
+            float range = to - from;
+            float total = length * range;
+            return total;
+        }
+
 
         public enum SurfaceEmbedType : byte
         {
-            Recover,
-            Damage,
-            Slip,
-            Dirt,
+            RecoverLight = 0,
+            RecoverDark = 5,
+            SlipGX = 2,
+            SlipAX = 4,
+            Dirt = 3,
+            Lava = 1,
         }
 
         public enum Jusification : byte
@@ -40,10 +75,18 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         {
             switch (type)
             {
-                case SurfaceEmbedType.Recover: return new Color32(240, 25, 55, 255); // hot-pink (sampled from GFZ)
-                case SurfaceEmbedType.Damage: return new Color32(255, 95, 0, 255); // orange
-                case SurfaceEmbedType.Slip: return new Color32(109, 170, 210, 255); // blue (approximate, sampled from GFZ)
-                case SurfaceEmbedType.Dirt: return new Color32(78, 42, 12, 255); // brown (1.5x brightness compared to GFZ)
+                case SurfaceEmbedType.RecoverLight:
+                    return new Color32(240, 50, 110, 255); // hot-pink (sampled from GFZ)
+                case SurfaceEmbedType.RecoverDark:
+                    return new Color32(240, 25, 55, 255); // hot-pink (sampled from GFZ)
+                case SurfaceEmbedType.Lava:
+                    return new Color32(255, 95, 0, 255); // orange
+                case SurfaceEmbedType.SlipGX:
+                    return new Color32(109, 170, 210, 255); // GX blue (approximate, sampled from GFZ)
+                case SurfaceEmbedType.SlipAX:
+                    return new Color32(54, 99, 164, 255); // AX blue (approximate, sampled from GFZ)
+                case SurfaceEmbedType.Dirt:
+                    return new Color32(78, 42, 12, 255); // brown (1.5x brightness compared to GFZ)
                 //case SurfaceEmbedType.Dirt: return new Color32(52, 28, 8, 255); // brown (sampled from GFZ)
                 default:
                     throw new System.ArgumentException();
@@ -54,10 +97,16 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         {
             switch (type)
             {
-                case SurfaceEmbedType.Recover: return TrackEmbeddedPropertyType.IsRecover;
-                case SurfaceEmbedType.Damage: return TrackEmbeddedPropertyType.IsDamage;
-                case SurfaceEmbedType.Slip: return TrackEmbeddedPropertyType.IsSlip;
-                case SurfaceEmbedType.Dirt: return TrackEmbeddedPropertyType.IsDirt;
+                case SurfaceEmbedType.RecoverLight:
+                case SurfaceEmbedType.RecoverDark:
+                    return TrackEmbeddedPropertyType.IsRecover;
+                case SurfaceEmbedType.Lava:
+                    return TrackEmbeddedPropertyType.IsDamage;
+                case SurfaceEmbedType.SlipGX:
+                case SurfaceEmbedType.SlipAX:
+                    return TrackEmbeddedPropertyType.IsSlip;
+                case SurfaceEmbedType.Dirt:
+                    return TrackEmbeddedPropertyType.IsDirt;
                 default:
                     throw new System.ArgumentException();
             }
@@ -86,29 +135,131 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return trs;
         }
 
-        public override Gcmf CreateGcmf()
+        public override Gcmf CreateGcmf(out GcmfTemplate[] gcmfTemplates, ref Dictionary<string, ushort> textureHashesToIndex)
         {
-            // Get path matrices
-            var animKeys = animationCurveTRS.Position.x.keys;
-            var min = animKeys[0].time;
-            var max = animKeys[animKeys.Length - 1].time;
-            var matrices = TristripGenerator.CreatePathMatrices(this, true, lengthDistance, min, max);
-
-            // NOTE: Always do alpha last
-            var tristripsCollections = new Tristrip[][]
-            {
-                TristripGenerator.Road.CreateEmbed(matrices, this, widthDivisions, 0),
-            };
-            var templates = new GcmfTemplate[]
-            {
-                GfzAssetTemplates.MeshTemplates.DebugTemplates.CreateUnlitVertexColored(),
-            };
-            // Temp: remove double-sided. In the future, template will not have this flag.
-            templates[0].Submesh.RenderFlags &= ~RenderFlags.doubleSidedFaces;
-
-            var gcmf = GcmfTemplate.CreateGcmf(templates, tristripsCollections);
+            var tristripsCollections = GetTristrips(Type, true);
+            gcmfTemplates = GetGcmfTemplates(Type);
+            var gcmf = GcmfTemplate.CreateGcmf(gcmfTemplates, tristripsCollections, ref textureHashesToIndex);
             return gcmf;
         }
+
+        public GcmfTemplate[] GetGcmfTemplates(SurfaceEmbedType embedType)
+        {
+            // NOTE: Always do alpha last
+            switch (embedType)
+            {
+                case SurfaceEmbedType.SlipGX:
+                    return new GcmfTemplate[]
+                    {
+                        GfzAssetTemplates.MeshTemplates.General.CreateTrim(),
+                        GfzAssetTemplates.MeshTemplates.General.CreateSlipGX(),
+                    };
+                case SurfaceEmbedType.SlipAX:
+                    return new GcmfTemplate[]
+                    {
+                        GfzAssetTemplates.MeshTemplates.General.CreateTrim(),
+                        GfzAssetTemplates.MeshTemplates.General.CreateSlipAX(),
+                    };
+                case SurfaceEmbedType.Dirt:
+                    return new GcmfTemplate[]
+                    {
+                        GfzAssetTemplates.MeshTemplates.General.CreateTrim(),
+                        GfzAssetTemplates.MeshTemplates.General.CreateDirtNoise(),
+                        GfzAssetTemplates.MeshTemplates.General.CreateDirtAlpha(),
+                    };
+                case SurfaceEmbedType.Lava:
+                    return new GcmfTemplate[]
+                    {
+                        GfzAssetTemplates.MeshTemplates.General.CreateTrim(),
+                        GfzAssetTemplates.MeshTemplates.General.CreateLavaCrag(),
+                        GfzAssetTemplates.MeshTemplates.General.CreateLavaAlpha(),
+                    };
+                case SurfaceEmbedType.RecoverLight:
+                    return new GcmfTemplate[]
+                    {
+                        GfzAssetTemplates.MeshTemplates.General.CreateTrim(),
+                        GfzAssetTemplates.MeshTemplates.General.CreateRecoverLightSubBase(),
+                        GfzAssetTemplates.MeshTemplates.General.CreateRecoverLightBase(),
+                        GfzAssetTemplates.MeshTemplates.General.CreateRecoverLightAlpha(),
+                    };
+                case SurfaceEmbedType.RecoverDark:
+                    return new GcmfTemplate[]
+                    {
+                        GfzAssetTemplates.MeshTemplates.General.CreateTrim(),
+                        GfzAssetTemplates.MeshTemplates.General.CreateRecoverDarkBase(),
+                        GfzAssetTemplates.MeshTemplates.General.CreateRecoverDarkAlpha(),
+                    };
+
+                default:
+                    return new GcmfTemplate[]
+                    {
+                        GfzAssetTemplates.MeshTemplates.DebugTemplates.CreateLitVertexColored(),
+                    };
+            }
+        }
+
+        public Tristrip[][] GetTristrips(SurfaceEmbedType embedType, bool isGfzCoordinateSpace)
+        {
+            // Get path matrices
+            var animKeys = animationCurveTRS.Scale.x.keys;
+            var min = animKeys[0].time;
+            var max = animKeys[animKeys.Length - 1].time;
+            var matrices = TristripGenerator.CreatePathMatrices(this, isGfzCoordinateSpace, lengthDistance, min, max);
+            //
+            var parent = GetParent();
+            var parentMatrices = TristripGenerator.CreatePathMatrices(parent, isGfzCoordinateSpace, lengthDistance, min, max);
+
+            switch (embedType)
+            {
+                case SurfaceEmbedType.SlipGX:
+                    return new Tristrip[][]
+                    {
+                        TristripTemplates.General.CreateTrim(matrices, this),
+                        TristripTemplates.General.CreateSlipGX(matrices, parentMatrices, this),
+                    };
+                case SurfaceEmbedType.SlipAX:
+                    return new Tristrip[][]
+                    {
+                        TristripTemplates.General.CreateTrim(matrices, this),
+                        TristripTemplates.General.CreateSlipAX(matrices, parentMatrices, this),
+                    };
+                case SurfaceEmbedType.Dirt:
+                    return new Tristrip[][]
+                    {
+                        TristripTemplates.General.CreateTrim(matrices, this),
+                        TristripTemplates.General.CreateDirtNoise(matrices, parentMatrices, this),
+                        TristripTemplates.General.CreateDirtAlpha(matrices, this),
+                    };
+                case SurfaceEmbedType.Lava:
+                    return new Tristrip[][]
+                    {
+                        TristripTemplates.General.CreateTrim(matrices, this),
+                        TristripTemplates.General.CreateLavaCrag(matrices, parentMatrices, this),
+                        TristripTemplates.General.CreateLavaAlpha(matrices, parentMatrices, this),
+                    };
+                case SurfaceEmbedType.RecoverLight:
+                    return new Tristrip[][]
+                    {
+                        TristripTemplates.General.CreateTrim(matrices, this),
+                        TristripTemplates.General.CreateRecoverBase(matrices, this),
+                        TristripTemplates.General.CreateRecoverBase(matrices, this),
+                        TristripTemplates.General.CreateRecoverAlpha(matrices, this),
+                    };
+                case SurfaceEmbedType.RecoverDark:
+                    return new Tristrip[][]
+                    {
+                        TristripTemplates.General.CreateTrim(matrices, this),
+                        TristripTemplates.General.CreateRecoverBase(matrices, this),
+                        TristripTemplates.General.CreateRecoverAlpha(matrices, this),
+                    };
+                default:
+                    return new Tristrip[][]
+                    {
+                        TristripTemplates.Road.CreateDebugEmbed(matrices, this, widthDivisions, lengthDistance),
+                    };
+            }
+        }
+
 
         public override Mesh CreateMesh()
         {
@@ -125,6 +276,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             var color0 = GetColor(type);
             var tristrips = TristripGenerator.CreateTristrips(matrices, endpointA, endpointB, widthDivisions, color0, Vector3.up, 0, true);
             var mesh = TristripsToMesh(tristrips);
+            //var tristrips = GetTristrips(Type, false);
+            //var mesh = TristripsToMesh(Tristrip.Linearize(tristrips));
             mesh.name = $"Auto Gen - {this.name}";
 
             return mesh;

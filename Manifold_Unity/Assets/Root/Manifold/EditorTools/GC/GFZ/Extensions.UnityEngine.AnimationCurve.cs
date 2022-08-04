@@ -31,32 +31,34 @@ namespace Manifold.EditorTools
         /// <exception cref="System.ArgumentException"></exception>
         public static float EvaluateNormalized(this AnimationCurve curve, float normalizedTime)
         {
-            var isNormalized = normalizedTime >= 0f && normalizedTime <= 1f;
-            if (!isNormalized)
-            {
-                var msg = $"Argument {nameof(normalizedTime)} is not within 0 and 1 (both inclusive)! {nameof(normalizedTime)} = {normalizedTime}";
-                //throw new System.ArgumentException(msg);
-                DebugConsole.Log(msg);
-            }
+            //var isNormalized = normalizedTime >= 0f && normalizedTime <= 1f;
+            //if (!isNormalized)
+            //{
+            //    var msg = $"Argument {nameof(normalizedTime)} is not within 0 and 1 (both inclusive)! {nameof(normalizedTime)} = {normalizedTime}";
+            //    //throw new System.ArgumentException(msg);
+            //    DebugConsole.Log(msg);
+            //}
 
-            var hasKeys = curve.keys.Length > 0;
-            if (!hasKeys)
-            {
-                var msg = $"Curve is empty! Cannot evaluate.";
-                throw new System.ArgumentException(msg);
-            }
+            //var hasKeys = curve.keys.Length > 0;
+            //if (!hasKeys)
+            //{
+            //    var msg = $"Curve is empty! Cannot evaluate.";
+            //    throw new System.ArgumentException(msg);
+            //}
 
-            var minTime = GetMinTime(curve);
-            var minTimeIsZero = minTime == 0f;
-            if (!minTimeIsZero)
-            {
-                var msg = $"Min time value of curve is not 0f! AnimationCurve.keys[0].time = {minTime}";
-                throw new System.ArgumentException(msg);
-            }
+            //var minTime = GetMinTime(curve);
+            //var minTimeIsZero = minTime == 0f;
+            //if (!minTimeIsZero)
+            //{
+            //    var msg = $"Min time value of curve is not 0f! AnimationCurve.keys[0].time = {minTime}";
+            //    throw new System.ArgumentException(msg);
+            //}
 
-            var maxTime = GetMaxTime(curve);
-            var time = maxTime * normalizedTime;
-            var value = curve.Evaluate(time);
+            float minTime = GetMinTime(curve);
+            float maxTime = GetMaxTime(curve);
+            float range = maxTime - minTime;
+            float time = normalizedTime * range + minTime;
+            float value = curve.Evaluate(time);
             return value;
         }
 
@@ -132,7 +134,7 @@ namespace Manifold.EditorTools
         public static AnimationCurve SetKeyTangents(this AnimationCurve curve, float inOutTangents)
             => new AnimationCurve(KeyframeUtility.SetKeyTangents(curve.keys, inOutTangents));
 
-        public static void SetKeyTangents(this AnimationCurve curve, float inOutTangent, int index)
+        public static void SetKeyTangents(this AnimationCurve curve, int index, float inOutTangent)
         {
             var key = curve.keys[index];
             key.inTangent = inOutTangent;

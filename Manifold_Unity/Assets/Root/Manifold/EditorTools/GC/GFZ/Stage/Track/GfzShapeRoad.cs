@@ -16,10 +16,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         [field: SerializeField] public MeshStyle MeshStyle { get; private set; }
         [field: SerializeField, Range(1, 32)] public int WidthDivisions { get; private set; } = 1;
         [field: SerializeField, Min(1f)] public float LengthDistance { get; private set; } = 10f;
+        [field: SerializeField, Min(1f)] public float TexRepeatWidthTop { get; private set; } = 4f;
+        [field: SerializeField, Min(1f)] public float TexRepeatWidthBottom { get; private set; } = 4f;
 
         [field: Header("Road Properties")]
         [field: SerializeField, Min(0f)] public float RailHeightLeft { get; private set; } = 3f;
         [field: SerializeField, Min(0f)] public float RailHeightRight { get; private set; } = 3f;
+        [field: SerializeField, Range(0, 1)] public int LaneDividers { get; private set; } = 1;
 
 
 
@@ -28,11 +31,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return new AnimationCurveTRS();
         }
 
-        public override Gcmf CreateGcmf()
+        public override Gcmf CreateGcmf(out GcmfTemplate[] gcmfTemplates, ref Dictionary<string, ushort> textureHashesToIndex)
         {
             var tristripsCollections = GetTristrips(MeshStyle, true);
-            var templates = GetGcmfTemplates(MeshStyle);
-            var gcmf = GcmfTemplate.CreateGcmf(templates, tristripsCollections);
+            gcmfTemplates = GetGcmfTemplates(MeshStyle);
+            var gcmf = GcmfTemplate.CreateGcmf(gcmfTemplates, tristripsCollections, ref textureHashesToIndex);
             return gcmf;
         }
 
@@ -70,18 +73,18 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 case MeshStyle.MuteCity:
                     return new Tristrip[][]
                     {
-                        TristripGenerator.Road.MuteCity.CreateRoadTop(matrices, maxTime, WidthDivisions),
-                        TristripGenerator.Road.MuteCity.CreateRoadBottom(matrices, maxTime, WidthDivisions),
-                        TristripGenerator.Road.MuteCity.CreateRoadSides(matrices, maxTime, 60f),
-                        TristripGenerator.Road.MuteCity.CreateRoadEmbellishments(matrices, maxTime),
-                        TristripGenerator.Road.MuteCity.CreateLaneDividers(matrices, maxTime),
-                        TristripGenerator.Road.MuteCity.CreateRails(matrices, this),
+                        TristripTemplates.Road.MuteCity.CreateRoadTop(matrices, this, maxTime),
+                        TristripTemplates.Road.MuteCity.CreateRoadBottom(matrices, this, maxTime),
+                        TristripTemplates.Road.MuteCity.CreateRoadTrim(matrices, this, maxTime),
+                        TristripTemplates.Road.MuteCity.CreateRoadEmbellishments(matrices, this, maxTime),
+                        TristripTemplates.Road.MuteCity.CreateLaneDividers(matrices, this, maxTime),
+                        TristripTemplates.Road.MuteCity.CreateRails(matrices, this),
                     };
 
                 default:
                     return new Tristrip[][]
                     {
-                        TristripGenerator.Road.CreateDebug(matrices, this, WidthDivisions, LengthDistance, isGfzCoordinateSpace),
+                        TristripTemplates.Road.CreateDebug(matrices, this, WidthDivisions, LengthDistance, isGfzCoordinateSpace),
                     };
             }
         }
