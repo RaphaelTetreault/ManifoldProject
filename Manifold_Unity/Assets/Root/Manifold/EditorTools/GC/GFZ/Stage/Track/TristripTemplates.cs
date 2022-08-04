@@ -466,7 +466,7 @@ namespace Manifold.EditorTools.GC.GFZ
 
                 public static Tristrip[] CreateRoadTop(Matrix4x4[] matrices, GfzShapeRoad road, float length)
                 {
-                    var matricesInset = ModifyMatrixScales(matrices, new Vector3(-3.75f, 0, 0));
+                    var matricesInset = ModifyMatrixScales(matrices, new Vector3(-3.75f * 2, 0, 0));
                     var endpointA = new Vector3(-0.5f, 0, 0);
                     var endpointB = new Vector3(+0.5f, 0, 0);
                     var tristrips = GenerateTristripsLine(matricesInset, endpointA, endpointB, Vector3.up, road.WidthDivisions, true);
@@ -565,9 +565,17 @@ namespace Manifold.EditorTools.GC.GFZ
 
                     // endcaps
                     {
-                        var mtxOffset = Matrix4x4.TRS(new(0, -1.0f, 0), Quaternion.identity, Vector3.one);
-                        var endpointA = new Vector3(-0.5f, +0.0f, 0);
-                        var endpointB = new Vector3(+0.5f, +0.0f, 0);
+                        var mtxOffset = Matrix4x4.TRS(new(0, -1.5f, 0), Quaternion.identity, Vector3.one);
+                        var endpointA = new Vector3(-0.5f, +0.5f, 0);
+                        var endpointB = new Vector3(+0.5f, +0.5f, 0);
+
+                        var from = road.GetRoot().Prev.CreateHierarchichalAnimationCurveTRS(false);
+                        var self = road.GetRoot().CreateHierarchichalAnimationCurveTRS(false);
+                        var to = road.GetRoot().Next.CreateHierarchichalAnimationCurveTRS(false);
+                        bool isContinuousFrom = CheckpointUtility.IsContinuousBetweenFromTo(from, self);
+                        bool isContinuousTo = CheckpointUtility.IsContinuousBetweenFromTo(self, to);
+                        
+                        if (!isContinuousFrom)
                         {
                             var mtx0 = matrices[0];
                             var mtx1 = mtx0 * mtxOffset;
@@ -577,6 +585,8 @@ namespace Manifold.EditorTools.GC.GFZ
 
                             allTristrips.AddRange(tristrips);
                         }
+
+                        if (!isContinuousTo)
                         {
                             var mtx0 = matrices[matrices.Length - 1];
                             var mtx1 = mtx0 * mtxOffset;
