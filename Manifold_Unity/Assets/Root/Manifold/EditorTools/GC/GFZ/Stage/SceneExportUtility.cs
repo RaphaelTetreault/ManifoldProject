@@ -25,13 +25,24 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         [MenuItem(GfzMenuItems.Stage.ExportActiveScene + " _F8", priority = GfzMenuItems.Stage.ExportActiveScenePriority)]
         public static void ExportSceneActive()
         {
-            var format = SerializeFormat.GX;
-            ExportScene(format, true);
+            try
+            {
+                ExportScene(true);
+            }
+            catch (Exception exception)
+            {
+                var mirroredObjects = GameObject.FindObjectsOfType<GfzMirroredObject>();
+                foreach (var mirroredObject in mirroredObjects)
+                    mirroredObject.SetAsMirroredState();
+
+                throw exception;
+            }
         }
 
-        public static void ExportScene(SerializeFormat format, bool verbose)
+        public static void ExportScene(bool verbose)
         {
             var settings = GfzProjectWindow.GetSettings();
+            var format = settings.SerializeFormat;
             var outputPath = settings.SceneExportPath;
             var activeScene = EditorSceneManager.GetActiveScene();
 

@@ -14,5 +14,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             transform.localScale = new Vector3(scale.x, scale.y, -scale.z);
         }
 
+        public void SetAsMirroredState()
+        {
+            var scale = transform.localScale;
+            transform.localScale = new Vector3(scale.x, scale.y, -Mathf.Abs(scale.z));
+        }
+
     }
 }
