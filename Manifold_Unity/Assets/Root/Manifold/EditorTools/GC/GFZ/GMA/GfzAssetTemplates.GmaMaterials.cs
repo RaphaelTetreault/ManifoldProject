@@ -438,7 +438,7 @@ namespace Manifold.EditorTools.GC.GFZ
                     return template;
                 }
 
-                public static GcmfTemplate CreateRecoverBase()
+                public static GcmfTemplate CreateRecoverDarkBase()
                 {
                     var tevLayers = new TevLayer[]
                     {
@@ -501,7 +501,7 @@ namespace Manifold.EditorTools.GC.GFZ
                     Assert.IsTrue(textureHashes.Length == tevLayers.Length);
                     return template;
                 }
-                public static GcmfTemplate CreateRecoverAlpha()
+                public static GcmfTemplate CreateRecoverDarkAlpha()
                 {
                     var tevLayers = new TevLayer[]
                     {
@@ -561,12 +561,66 @@ namespace Manifold.EditorTools.GC.GFZ
                     return template;
                 }
 
-                public static GcmfTemplate CreateTrim()
+                public static GcmfTemplate CreateRecoverLightSubBase()
                 {
-                    return MuteCity.CreateRoadSides();
-                }
+                    var tevLayers = new TevLayer[]
+                    {
+                        new TevLayer()
+                        {
+                            Unk0x00 = 0,
+                            MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
+                            WrapMode = TextureWrapMode.mirrorX | TextureWrapMode.repeatY | TextureWrapMode.unk7,
+                            LodBias = 0,
+                            AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
+                            Unk0x0C = 0,
+                            Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
+                        },
+                    };
+                    var textureHashes = new string[]
+                    {
+                        "b42318832be6f79480973fddd2b4e0ac", // st05 tex 15, mut usused (neat)
+                    };
+                    var material = new Material
+                    {
+                        MaterialColor = new GXColor(0xb2b2b2ff),
+                        AmbientColor = new GXColor(0x7f7f7fff),
+                        SpecularColor = new GXColor(0x00000000),
+                        Unk0x10 = 0,
+                        Alpha = 255,
+                        UnkAlpha0x14 = -1,
+                        Unk0x15 = 0,
+                    };
+                    var submesh = new Submesh()
+                    {
+                        RenderFlags = RenderFlags.unlit | RenderFlags.customMaterialUseAmbientColor,
+                        Material = material,
+                        UnkAlphaOptions = new UnkAlphaOptions(),
+                    };
 
-                public static GcmfTemplate CreateSides() => MuteCity.CreateRoadSides();
+                    var template = new GcmfTemplate()
+                    {
+                        IsTranslucid = false,
+                        Submesh = submesh,
+                        TevLayers = tevLayers,
+                        TextureHashes = textureHashes,
+                        TextureScrollFields = null,
+                    };
+
+                    Assert.IsTrue(textureHashes.Length == tevLayers.Length);
+                    return template;
+                }
+                public static GcmfTemplate CreateRecoverLightBase()
+                {
+                    // Only difference is a few render flags
+                    var template = CreateRecoverDarkBase();
+                    template.Submesh.RenderFlags |= RenderFlags.screenBlend | RenderFlags.additiveBlend;
+                    template.Submesh.UnkAlphaOptions.BlendFactors |= BlendFactors.unk2_UseBlendMode | BlendFactors.unk4_UseBlendMode;
+
+                    return template;
+                }
+                public static GcmfTemplate CreateRecoverLightAlpha() => CreateRecoverDarkAlpha();
+
+                public static GcmfTemplate CreateTrim() => MuteCity.CreateRoadSides();
             }
 
             public static class MuteCity

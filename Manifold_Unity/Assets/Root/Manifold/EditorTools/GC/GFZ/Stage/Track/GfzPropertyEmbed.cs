@@ -11,7 +11,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
     public class GfzPropertyEmbed : GfzSegmentShape
     {
-        [SerializeField] private SurfaceEmbedType type = SurfaceEmbedType.Recover;
+        [SerializeField] private SurfaceEmbedType type = SurfaceEmbedType.RecoverLight;
         [SerializeField, Min(1)] private int widthDivisions = 1;
         [SerializeField, Min(1f)] private float lengthDistance = 10f;
         [SerializeField, Range(0f, 1f)] private float from = 0f;
@@ -43,6 +43,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         public Vector2 RepeatFlashingUV { get => repeatFlashingUV; set => repeatFlashingUV = value; }
         public Vector2 RepeatFlashingUVOffset { get => repeatFlashingUVOffset; set => repeatFlashingUVOffset = value; }
 
+
         public float GetRangeLength()
         {
             float length = GetRoot().GetSegmentLength();
@@ -54,11 +55,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public enum SurfaceEmbedType : byte
         {
-            Recover = 0,
-            Damage = 1,
+            RecoverLight = 0,
+            RecoverDark = 5,
             SlipGX = 2,
             SlipAX = 4,
             Dirt = 3,
+            Lava = 1,
         }
 
         public enum Jusification : byte
@@ -73,9 +75,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         {
             switch (type)
             {
-                case SurfaceEmbedType.Recover:
+                case SurfaceEmbedType.RecoverLight:
+                    return new Color32(240, 50, 110, 255); // hot-pink (sampled from GFZ)
+                case SurfaceEmbedType.RecoverDark:
                     return new Color32(240, 25, 55, 255); // hot-pink (sampled from GFZ)
-                case SurfaceEmbedType.Damage:
+                case SurfaceEmbedType.Lava:
                     return new Color32(255, 95, 0, 255); // orange
                 case SurfaceEmbedType.SlipGX:
                     return new Color32(109, 170, 210, 255); // GX blue (approximate, sampled from GFZ)
@@ -93,9 +97,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         {
             switch (type)
             {
-                case SurfaceEmbedType.Recover:
+                case SurfaceEmbedType.RecoverLight:
+                case SurfaceEmbedType.RecoverDark:
                     return TrackEmbeddedPropertyType.IsRecover;
-                case SurfaceEmbedType.Damage:
+                case SurfaceEmbedType.Lava:
                     return TrackEmbeddedPropertyType.IsDamage;
                 case SurfaceEmbedType.SlipGX:
                 case SurfaceEmbedType.SlipAX:
@@ -162,19 +167,27 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                         GfzAssetTemplates.MeshTemplates.General.CreateDirtNoise(),
                         GfzAssetTemplates.MeshTemplates.General.CreateDirtAlpha(),
                     };
-                case SurfaceEmbedType.Damage:
+                case SurfaceEmbedType.Lava:
                     return new GcmfTemplate[]
                     {
                         GfzAssetTemplates.MeshTemplates.General.CreateTrim(),
                         GfzAssetTemplates.MeshTemplates.General.CreateLavaCrag(),
                         GfzAssetTemplates.MeshTemplates.General.CreateLavaAlpha(),
                     };
-                case SurfaceEmbedType.Recover:
+                case SurfaceEmbedType.RecoverLight:
                     return new GcmfTemplate[]
                     {
                         GfzAssetTemplates.MeshTemplates.General.CreateTrim(),
-                        GfzAssetTemplates.MeshTemplates.General.CreateRecoverBase(),
-                        GfzAssetTemplates.MeshTemplates.General.CreateRecoverAlpha(),
+                        GfzAssetTemplates.MeshTemplates.General.CreateRecoverLightSubBase(),
+                        GfzAssetTemplates.MeshTemplates.General.CreateRecoverLightBase(),
+                        GfzAssetTemplates.MeshTemplates.General.CreateRecoverLightAlpha(),
+                    };
+                case SurfaceEmbedType.RecoverDark:
+                    return new GcmfTemplate[]
+                    {
+                        GfzAssetTemplates.MeshTemplates.General.CreateTrim(),
+                        GfzAssetTemplates.MeshTemplates.General.CreateRecoverDarkBase(),
+                        GfzAssetTemplates.MeshTemplates.General.CreateRecoverDarkAlpha(),
                     };
 
                 default:
@@ -217,14 +230,22 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                         TristripTemplates.General.CreateDirtNoise(matrices, parentMatrices, this),
                         TristripTemplates.General.CreateDirtAlpha(matrices, this),
                     };
-                case SurfaceEmbedType.Damage:
+                case SurfaceEmbedType.Lava:
                     return new Tristrip[][]
                     {
                         TristripTemplates.General.CreateTrim(matrices, this),
                         TristripTemplates.General.CreateLavaCrag(matrices, parentMatrices, this),
                         TristripTemplates.General.CreateLavaAlpha(matrices, parentMatrices, this),
                     };
-                case SurfaceEmbedType.Recover:
+                case SurfaceEmbedType.RecoverLight:
+                    return new Tristrip[][]
+                    {
+                        TristripTemplates.General.CreateTrim(matrices, this),
+                        TristripTemplates.General.CreateRecoverBase(matrices, this),
+                        TristripTemplates.General.CreateRecoverBase(matrices, this),
+                        TristripTemplates.General.CreateRecoverAlpha(matrices, this),
+                    };
+                case SurfaceEmbedType.RecoverDark:
                     return new Tristrip[][]
                     {
                         TristripTemplates.General.CreateTrim(matrices, this),
