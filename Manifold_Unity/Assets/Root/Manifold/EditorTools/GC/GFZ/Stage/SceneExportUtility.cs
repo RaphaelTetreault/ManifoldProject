@@ -573,6 +573,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             // The structure which translates old TPL indexes into texture hashes
             string fileToTextureHashPath = inputPath + "tpl/TPL-TextureDescription-to-Hash.asset";
             var fileToTextureHashAsset = AssetDatabase.LoadAssetAtPath<TplTextureToTextureHash>(fileToTextureHashPath);
+            if (fileToTextureHashAsset == null)
+            {
+                MessageHasNoTplHashReferenceObjects();
+                fileToTextureHashAsset = AssetDatabase.LoadAssetAtPath<TplTextureToTextureHash>(fileToTextureHashPath);
+            }
             var fileToTextureHashDict = fileToTextureHashAsset.GetDictionary();
             TplTextureHashes textureHashes = fileToTextureHashDict[sourceFile];
 
@@ -608,6 +613,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             // The structure which translates old TPL indexes into texture hashes
             string textureHashToTextureInfoPath = assetsWorkingDir + "tpl/TPL-TextureHash-to-TextureInfo.asset";
             var textureHashToTextureInfoAsset = AssetDatabase.LoadAssetAtPath<TextureHashToTextureInfo>(textureHashToTextureInfoPath);
+            if (textureHashToTextureInfoAsset == null)
+            {
+                MessageHasNoTplHashReferenceObjects();
+                textureHashToTextureInfoAsset = AssetDatabase.LoadAssetAtPath<TextureHashToTextureInfo>(textureHashToTextureInfoPath);
+            }
             var textureHashToTextureInfoDict = textureHashToTextureInfoAsset.GetDictionary();
 
             // Make a TPL, just copy texture data around
@@ -664,5 +674,22 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             return stream;
         }
 
+        public static void MessageHasNoTplHashReferenceObjects()
+        {
+            const string title = "Missing TPL Hash Reference Object";
+            string message =
+                $"You do not have a {typeof(TextureHashToTextureInfo).Name} or {nameof(TplTextureToTextureHash)} " +
+                $"scriptable object in your assets folder. Would you like to build it now?";
+
+            bool doAction = EditorUtility.DisplayDialog(title, message, "Yes", "No");
+            if (doAction)
+            {
+                TplMenuItems.BuildHashReferenceObject();
+            }
+            else
+            {
+                throw new NullReferenceException(title);
+            }
+        }
     }
 }
