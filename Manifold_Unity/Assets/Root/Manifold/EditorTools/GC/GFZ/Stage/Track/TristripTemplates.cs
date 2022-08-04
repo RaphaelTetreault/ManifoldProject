@@ -15,7 +15,7 @@ namespace Manifold.EditorTools.GC.GFZ
         {
             private static readonly Vector3 edgeLeft = new Vector3(-0.5f, kEmbedHeight, 0);
             private static readonly Vector3 edgeRight = new Vector3(+0.5f, kEmbedHeight, 0);
-            private const float kEmbedHeight = 0.4f;
+            private const float kEmbedHeight = 0.35f;
             private const float kHealHeight = 0.05f;
             private const float kTrimOffset = 0.75f;
             private const float kTrimRepetitions = 64f;
@@ -89,7 +89,7 @@ namespace Manifold.EditorTools.GC.GFZ
                 return newUVs;
             }
 
-            public static Tristrip[] CreateSlip(Matrix4x4[] matrices, Matrix4x4[] parentMatrices, GfzPropertyEmbed embed)
+            public static Tristrip[] CreateSlipGX(Matrix4x4[] matrices, Matrix4x4[] parentMatrices, GfzPropertyEmbed embed)
             {
                 var tristrips = GenerateTristripsLine(matrices, edgeLeft, edgeRight, Vector3.up, embed.WidthDivisions, true);
 
@@ -108,7 +108,38 @@ namespace Manifold.EditorTools.GC.GFZ
                 {
                     tristrips[i].tex0 = uvs0[i]; // blue squares
 
-                    var tex1 = ScaleUVs(uvs1[i], new Vector2(embed.RepeatFlashingUV, 1f));
+                    var tex1 = ScaleUVs(uvs1[i], embed.RepeatFlashingUV);
+                    tex1 = OffsetUVs(tex1, embed.RepeatFlashingUVOffset);
+                    tristrips[i].tex1 = tex1; // flashing
+                }
+
+                return tristrips;
+            }
+            public static Tristrip[] CreateSlipAX(Matrix4x4[] matrices, Matrix4x4[] parentMatrices, GfzPropertyEmbed embed)
+            {
+                var tristrips = GenerateTristripsLine(matrices, edgeLeft, edgeRight, Vector3.up, embed.WidthDivisions, true);
+
+                // Scaling parameters
+                float segmentLength = embed.GetRangeLength();
+                float repetitionsAlongLength = math.ceil(segmentLength / 64f);
+                // Normalized values used to generate UVs
+                GetNormalizedValues(embed, matrices.Length, out float[] halfWidths, out float[] offsets, out float[] lengths);
+                // Create UVs
+                var uvsNormalized = CreateTrackSpaceUVs(embed, tristrips, halfWidths, offsets, lengths);
+                var uvs0 = ScaleByParentWidthAndCustomLength(uvsNormalized, parentMatrices, 1 / 64f, repetitionsAlongLength);
+                var uvs1 = CreateTrackSpaceUVs(embed, tristrips, halfWidths, offsets, lengths, 0.5f);
+                // Scale
+                //for (int i = 0; i < lengths.Length; i++)
+                //    lengths[i] *= repetitionsAlongLength;
+                //var uvs0 = CreateTrackSpaceUVs(embed, tristrips, halfWidths, offsets, lengths);
+
+                // Assign UVS
+                for (int i = 0; i < tristrips.Length; i++)
+                {
+                    tristrips[i].tex0 = uvs0[i]; // blue squares
+
+                    var tex1 = ScaleUVs(uvs1[i], embed.RepeatFlashingUV);
+                    tex1 = OffsetUVs(tex1, embed.RepeatFlashingUVOffset);
                     tristrips[i].tex1 = tex1; // flashing
                 }
 
@@ -194,7 +225,8 @@ namespace Manifold.EditorTools.GC.GFZ
                 {
                     tristrips[i].tex0 = uvs0[i]; // red dots
 
-                    var tex1 = ScaleUVs(uvs1[i], new Vector2(embed.RepeatFlashingUV, 1f));
+                    var tex1 = ScaleUVs(uvs1[i], embed.RepeatFlashingUV);
+                    tex1 = OffsetUVs(tex1, embed.RepeatFlashingUVOffset);
                     tristrips[i].tex1 = SwapUV(tex1); // scan line effect
                 }
 
@@ -218,7 +250,8 @@ namespace Manifold.EditorTools.GC.GFZ
                 {
                     tristrips[i].tex0 = uvs0[i];
 
-                    var tex1 = ScaleUVs(uvs1[i], new Vector2(embed.RepeatFlashingUV, 1f));
+                    var tex1 = ScaleUVs(uvs1[i], embed.RepeatFlashingUV);
+                    tex1 = OffsetUVs(tex1, embed.RepeatFlashingUVOffset);
                     tristrips[i].tex1 = SwapUV(tex1);
                 }
 
@@ -260,13 +293,13 @@ namespace Manifold.EditorTools.GC.GFZ
 
                 if (embed.IncludeTrimLeft)
                 {
-                    var normal = Quaternion.Euler(0, 0, -angleLeftRight) * Vector3.up;
+                    var normal = Quaternion.Euler(0, 0, +angleLeftRight) * Vector3.up;
                     var leftTristrips = CreateTrimSide(matrices, normal, -1, kTrimOffset, repetitionsAlongLength);
                     allTristrips.AddRange(leftTristrips);
                 }
                 if (embed.IncludeTrimRight)
                 {
-                    var normal = Quaternion.Euler(0, 0, +angleLeftRight) * Vector3.up;
+                    var normal = Quaternion.Euler(0, 0, -angleLeftRight) * Vector3.up;
                     var leftTristrips = CreateTrimSide(matrices, normal, +1, kTrimOffset, repetitionsAlongLength);
                     allTristrips.AddRange(leftTristrips);
                 }
@@ -690,6 +723,9 @@ namespace Manifold.EditorTools.GC.GFZ
 
                 public static Tristrip[] CreateLaneDividers(Matrix4x4[] matrices, GfzShapeRoad road, float length)
                 {
+                    if (road.LaneDividers < 0)
+                        return new Tristrip[0];
+
                     //var matricesLeft = new Matrix4x4[matrices.Length];
                     //var matricesRight = new Matrix4x4[matrices.Length];
 
@@ -716,8 +752,8 @@ namespace Manifold.EditorTools.GC.GFZ
                 }
                 private static Tristrip GetLaneDivider(Matrix4x4[] matrices, float length)
                 {
-                    var endpointA = new Vector3(-1.0f, 0.02f, 0);
-                    var endpointB = new Vector3(+1.0f, 0.02f, 0);
+                    var endpointA = new Vector3(-1.0f, 0.04f, 0);
+                    var endpointB = new Vector3(+1.0f, 0.04f, 0);
                     var tristrips = GenerateTristripsLine(matrices, endpointA, endpointB, Vector3.up, 1, true);
 
                     float repetitionsAlongLength = math.ceil(length / kLengthLaneDivider);

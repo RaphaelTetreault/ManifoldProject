@@ -146,6 +146,71 @@ namespace Manifold.EditorTools.GC.GFZ
                     Assert.IsTrue(textureHashes.Length == tevLayers.Length);
                     return template;
                 }
+                public static GcmfTemplate CreateSlipAX()
+                {
+                    var tevLayers = new TevLayer[]
+                    {
+                        new TevLayer()
+                        {
+                            Unk0x00 = 0,
+                            MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
+                            WrapMode = TextureWrapMode.mirrorX | TextureWrapMode.repeatY | TextureWrapMode.unk6 | TextureWrapMode.unk7,
+                            LodBias = -10,
+                            AnisotropicFilter = GXAnisotropy.GX_ANISO_4,
+                            Unk0x0C = 0,
+                            Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
+                        },
+                        new TevLayer()
+                        {
+                            Unk0x00 = TexFlags0x00.ENABLE_UV_SCROLL,
+                            MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
+                            WrapMode = TextureWrapMode.repeatX | TextureWrapMode.mirrorY | TextureWrapMode.unk7,
+                            LodBias = 0,
+                            AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
+                            Unk0x0C = 187,
+                            Unk0x12 = TexFlags0x10.unk0 | TexFlags0x10.unk4 | TexFlags0x10.unk5,
+                        },
+                    };
+                    var textureHashes = new string[]
+                    {
+                        "e68fb000589f037b307321f4c44d2f48", // st32 tex 41, large blue squares grid
+                        "2e09bff156282e7acc1090c9fc12afa2", // st32 tex 42, flash
+                    };
+                    var textureScrollFields = new TextureScrollField[]
+                    {
+                        new TextureScrollField(2, 0),
+                    };
+                    var material = new Material
+                    {
+                        MaterialColor = new GXColor(0xb2b2b2ff),
+                        AmbientColor = new GXColor(0x7f7f7fff),
+                        SpecularColor = new GXColor(0x00000000),
+                        Unk0x10 = 0,
+                        Alpha = 255,
+                        UnkAlpha0x14 = -1,
+                        Unk0x15 = 0,
+                    };
+                    var submesh = new Submesh()
+                    {
+                        RenderFlags = 0,
+                        Material = material,
+                        UnkAlphaOptions = new UnkAlphaOptions(),
+                    };
+
+                    var template = new GcmfTemplate()
+                    {
+                        IsTranslucid = false,
+                        Submesh = submesh,
+                        TevLayers = tevLayers,
+                        TextureHashes = textureHashes,
+                        TextureScrollFields = textureScrollFields,
+                    };
+
+                    Assert.IsTrue(textureHashes.Length == tevLayers.Length);
+                    return template;
+                }
+
+
                 public static GcmfTemplate CreateDirtAlpha()
                 {
                     var tevLayers = new TevLayer[]

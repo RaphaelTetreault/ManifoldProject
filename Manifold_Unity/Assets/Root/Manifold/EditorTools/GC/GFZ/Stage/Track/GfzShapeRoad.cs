@@ -22,6 +22,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         [field: Header("Road Properties")]
         [field: SerializeField, Min(0f)] public float RailHeightLeft { get; private set; } = 3f;
         [field: SerializeField, Min(0f)] public float RailHeightRight { get; private set; } = 3f;
+        [field: SerializeField, Range(0, 1)] public int LaneDividers { get; private set; } = 1;
 
 
 

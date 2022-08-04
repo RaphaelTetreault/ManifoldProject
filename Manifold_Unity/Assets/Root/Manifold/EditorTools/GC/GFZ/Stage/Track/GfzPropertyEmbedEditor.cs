@@ -27,6 +27,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         SerializedProperty includeTrimStart;
         SerializedProperty includeTrimEnd;
         SerializedProperty repeatFlashingUV;
+        SerializedProperty repeatFlashingUVOffset;
 
         void OnEnable()
         {
@@ -45,6 +46,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             includeTrimStart = serializedObject.FindProperty(nameof(includeTrimStart));
             includeTrimEnd = serializedObject.FindProperty(nameof(includeTrimEnd));
             repeatFlashingUV = serializedObject.FindProperty(nameof(repeatFlashingUV));
+            repeatFlashingUVOffset = serializedObject.FindProperty(nameof(repeatFlashingUVOffset));
         }
 
         public override void OnInspectorGUI()
@@ -86,6 +88,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 EditorGUILayout.PropertyField(includeTrimStart);
                 EditorGUILayout.PropertyField(includeTrimEnd);
                 EditorGUILayout.PropertyField(repeatFlashingUV);
+                EditorGUILayout.PropertyField(repeatFlashingUVOffset);
                 EditorGUI.indentLevel--;
             }
         }
