@@ -131,8 +131,8 @@ namespace Manifold.EditorTools.GC.GFZ
                 // Assign UVS. Both layers use the same UVs
                 for (int i = 0; i < tristrips.Length; i++)
                 {
-                    tristrips[i].tex0 = uvs[i];
-                    tristrips[i].tex1 = uvs[i];
+                    tristrips[i].tex0 = uvs[i]; // noise 1
+                    tristrips[i].tex1 = uvs[i]; // noise 2
                 }
 
                 return tristrips;
@@ -189,11 +189,13 @@ namespace Manifold.EditorTools.GC.GFZ
                 var uvsNormalized = CreateTrackSpaceUVs(embed, tristrips, halfWidths, offsets, lengths);
                 var uvs0 = ScaleByParentWidthAndCustomLength(uvsNormalized, parentMatrices, 1 / scaleW0, scaleL0);
                 var uvs1 = ScaleByParentWidthAndCustomLength(uvsNormalized, parentMatrices, 1 / scaleW1, scaleL1);
-                // Assign UVS. Both layers use the same UVs
+
                 for (int i = 0; i < tristrips.Length; i++)
                 {
-                    tristrips[i].tex0 = uvs0[i];
-                    tristrips[i].tex1 = SwapUV(uvs1[i]);
+                    tristrips[i].tex0 = uvs0[i]; // red dots
+
+                    var tex1 = ScaleUVs(uvs1[i], new Vector2(embed.RepeatFlashingUV, 1f));
+                    tristrips[i].tex1 = SwapUV(tex1); // scan line effect
                 }
 
                 return tristrips;
@@ -215,7 +217,9 @@ namespace Manifold.EditorTools.GC.GFZ
                 for (int i = 0; i < tristrips.Length; i++)
                 {
                     tristrips[i].tex0 = uvs0[i];
-                    tristrips[i].tex1 = SwapUV(uvs1[i]);
+
+                    var tex1 = ScaleUVs(uvs1[i], new Vector2(embed.RepeatFlashingUV, 1f));
+                    tristrips[i].tex1 = SwapUV(tex1);
                 }
 
                 return tristrips;
