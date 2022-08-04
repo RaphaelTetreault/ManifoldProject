@@ -100,7 +100,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
             return matricesDefaultScale;
         }
-
         public static Matrix4x4[] StripHeight(Matrix4x4[] matrices)
         {
             var matricesDefaultScale = new Matrix4x4[matrices.Length];
@@ -306,6 +305,43 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             var newUVs = new Vector2[uvs.Length];
             for (int i = 0; i < uvs.Length; i++)
                 newUVs[i] = new Vector2(uvs[i].y, uvs[i].x);
+            return newUVs;
+        }
+
+        public static Vector2[][] CreateTristripScaledUVs(Tristrip[] tristrips, float widthRepeats, float lengthRepeats)
+        {
+            var allUVs = new Vector2[tristrips.Length][];
+            for (int i = 0; i < tristrips.Length; i++)
+            {
+                var tristrip = tristrips[i];
+                var uvs = new Vector2[tristrip.VertexCount];
+                float uvLeft = (float)(i + 0) / tristrips.Length * widthRepeats;
+                float uvRight = (float)(i + 1) / tristrips.Length * widthRepeats;
+
+                for (int j = 0; j < tristrip.VertexCount; j += 2)
+                {
+                    float percentForward = (j / 2f / (tristrip.VertexCount / 2 - 1));
+                    float uvLength = percentForward * lengthRepeats;
+                    uvs[j + 0] = new Vector2(uvLeft, uvLength);
+                    uvs[j + 1] = new Vector2(uvRight, uvLength);
+                }
+
+                allUVs[i] = uvs;
+            }
+            return allUVs;
+        }
+        public static Vector2[][] SwapUV(Vector2[][] uvs)
+        {
+            var newUVs = new Vector2[uvs.Length][];
+            for (int i = 0; i < uvs.Length; i++)
+            {
+                newUVs[i] = new Vector2[uvs[i].Length];
+                for (int j = 0; j < uvs[i].Length; j++)
+                {
+                    newUVs[i][j] = new Vector2(uvs[i][j].y, uvs[i][j].x);
+                }
+            }
+
             return newUVs;
         }
 

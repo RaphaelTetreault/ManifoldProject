@@ -16,6 +16,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         [field: SerializeField] public MeshStyle MeshStyle { get; private set; }
         [field: SerializeField, Range(1, 32)] public int WidthDivisions { get; private set; } = 1;
         [field: SerializeField, Min(1f)] public float LengthDistance { get; private set; } = 10f;
+        [field: SerializeField, Min(1f)] public float TexRepeatWidthTop { get; private set; } = 4f;
+        [field: SerializeField, Min(1f)] public float TexRepeatWidthBottom { get; private set; } = 4f;
 
         [field: Header("Road Properties")]
         [field: SerializeField, Min(0f)] public float RailHeightLeft { get; private set; } = 3f;
@@ -70,11 +72,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 case MeshStyle.MuteCity:
                     return new Tristrip[][]
                     {
-                        TristripTemplates.Road.MuteCity.CreateRoadTop(matrices, maxTime, WidthDivisions),
-                        TristripTemplates.Road.MuteCity.CreateRoadBottom(matrices, maxTime, WidthDivisions),
-                        TristripTemplates.Road.MuteCity.CreateRoadSides(matrices, maxTime, 60f),
-                        TristripTemplates.Road.MuteCity.CreateRoadEmbellishments(matrices, maxTime),
-                        TristripTemplates.Road.MuteCity.CreateLaneDividers(matrices, maxTime),
+                        TristripTemplates.Road.MuteCity.CreateRoadTop(matrices, this, maxTime),
+                        TristripTemplates.Road.MuteCity.CreateRoadBottom(matrices, this, maxTime),
+                        TristripTemplates.Road.MuteCity.CreateRoadTrim(matrices, this, maxTime),
+                        TristripTemplates.Road.MuteCity.CreateRoadEmbellishments(matrices, this, maxTime),
+                        TristripTemplates.Road.MuteCity.CreateLaneDividers(matrices, this, maxTime),
                         TristripTemplates.Road.MuteCity.CreateRails(matrices, this),
                     };
 

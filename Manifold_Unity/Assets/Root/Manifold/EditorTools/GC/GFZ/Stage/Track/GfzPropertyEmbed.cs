@@ -24,6 +24,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         [SerializeField] private bool includeTrimRight = true;
         [SerializeField] private bool includeTrimStart = true;
         [SerializeField] private bool includeTrimEnd = true;
+        [SerializeField] private float repeatFlashingUV = 1;
 
 
         public SurfaceEmbedType Type { get => type; }
@@ -38,6 +39,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         public bool IncludeTrimRight { get => includeTrimRight; set => includeTrimRight = value; }
         public bool IncludeTrimStart { get => includeTrimStart; set => includeTrimStart = value; }
         public bool IncludeTrimEnd { get => includeTrimEnd; set => includeTrimEnd = value; }
+        public float RepeatFlashingUV { get => repeatFlashingUV; set => repeatFlashingUV = value; }
 
         public float GetRangeLength()
         {

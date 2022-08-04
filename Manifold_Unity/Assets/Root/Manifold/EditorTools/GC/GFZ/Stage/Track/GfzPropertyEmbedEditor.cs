@@ -21,6 +21,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         SerializedProperty autoGenerateTRS;
         SerializedProperty animationCurveTRS;
 
+        // Tex/mesh options
+        SerializedProperty includeTrimLeft;
+        SerializedProperty includeTrimRight;
+        SerializedProperty includeTrimStart;
+        SerializedProperty includeTrimEnd;
+        SerializedProperty repeatFlashingUV;
+
         void OnEnable()
         {
             type = serializedObject.FindProperty(nameof(type));
@@ -32,6 +39,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             offsetCurve = serializedObject.FindProperty(nameof(offsetCurve));
             autoGenerateTRS = serializedObject.FindProperty(nameof(autoGenerateTRS));
             animationCurveTRS = serializedObject.FindProperty(nameof(animationCurveTRS));
+
+            includeTrimLeft = serializedObject.FindProperty(nameof(includeTrimLeft));
+            includeTrimRight = serializedObject.FindProperty(nameof(includeTrimRight));
+            includeTrimStart = serializedObject.FindProperty(nameof(includeTrimStart));
+            includeTrimEnd = serializedObject.FindProperty(nameof(includeTrimEnd));
+            repeatFlashingUV = serializedObject.FindProperty(nameof(repeatFlashingUV));
         }
 
         public override void OnInspectorGUI()
@@ -52,13 +65,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public void DrawSourceFields(GfzPropertyEmbed embed)
         {
-            GuiSimple.Label("Mesh", EditorStyles.boldLabel);
-            {
-                EditorGUI.indentLevel++;
-                EditorGUILayout.PropertyField(widthDivisions);
-                EditorGUILayout.PropertyField(lengthDistance);
-                EditorGUI.indentLevel--;
-            }
             GuiSimple.Label("Property Embed", EditorStyles.boldLabel);
             {
                 EditorGUI.indentLevel++;
@@ -70,7 +76,18 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 DrawOffsetShortcuts(embed);
                 EditorGUI.indentLevel--;
             }
-            // always auto gen, yes?
+            GuiSimple.Label("Mesh", EditorStyles.boldLabel);
+            {
+                EditorGUI.indentLevel++;
+                EditorGUILayout.PropertyField(widthDivisions);
+                EditorGUILayout.PropertyField(lengthDistance);
+                EditorGUILayout.PropertyField(includeTrimLeft);
+                EditorGUILayout.PropertyField(includeTrimRight);
+                EditorGUILayout.PropertyField(includeTrimStart);
+                EditorGUILayout.PropertyField(includeTrimEnd);
+                EditorGUILayout.PropertyField(repeatFlashingUV);
+                EditorGUI.indentLevel--;
+            }
         }
 
         public void DrawOffsetShortcuts(GfzPropertyEmbed embed)
