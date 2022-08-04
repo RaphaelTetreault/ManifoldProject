@@ -13,8 +13,12 @@ namespace Manifold.EditorTools.GC.GFZ
     {
         public static class General
         {
-            private static readonly Vector3 edgeLeft = new Vector3(-0.5f, 0.33f, 0);
-            private static readonly Vector3 edgeRight = new Vector3(+0.5f, 0.33f, 0);
+            private static readonly Vector3 edgeLeft = new Vector3(-0.5f, kEmbedHeight, 0);
+            private static readonly Vector3 edgeRight = new Vector3(+0.5f, kEmbedHeight, 0);
+            private const float kEmbedHeight = 0.33f;
+            private const float kHealHeight = 0.07f;
+            private const float kTrimOffset = 1.0f;
+            private const float kTrimRepetitions = 32f;
 
             private static void GetNormalizedValues(GfzPropertyEmbed embed, int count, out float[] halfWidth, out float[] offsets, out float[] length)
             {
@@ -147,9 +151,9 @@ namespace Manifold.EditorTools.GC.GFZ
 
                 return tristrips;
             }
-            public static Tristrip[] CreateDirtAlpha(Matrix4x4[] matrices)
+            public static Tristrip[] CreateDirtAlpha(Matrix4x4[] matrices, GfzPropertyEmbed embed)
             {
-                var tristrips = GenerateTristripsLine(matrices, edgeLeft, edgeRight, Vector3.up, 1, true);
+                var tristrips = GenerateTristripsLine(matrices, edgeLeft, edgeRight, Vector3.up, embed.WidthDivisions, true);
 
                 // This layer is just a color, so UVS can be whatever
                 for (int i = 0; i < tristrips.Length; i++)
@@ -157,6 +161,7 @@ namespace Manifold.EditorTools.GC.GFZ
                     int nVertices = tristrips[i].VertexCount;
                     tristrips[i].tex0 = new Vector2[nVertices];
                 }
+                // ... do you even need UVs?
 
                 return tristrips;
             }
@@ -241,8 +246,8 @@ namespace Manifold.EditorTools.GC.GFZ
             }
             public static Tristrip[] CreateRecoverAlpha(Matrix4x4[] matrices, GfzPropertyEmbed embed)
             {
-                var edgeLeft = General.edgeLeft + new Vector3(0, 0.07f, 0);
-                var edgeRight = General.edgeRight + new Vector3(0, 0.07f, 0);
+                var edgeLeft = General.edgeLeft + Vector3.up * kHealHeight;
+                var edgeRight = General.edgeRight + Vector3.up * kHealHeight;
                 var tristrips = GenerateTristripsLine(matrices, edgeLeft, edgeRight, Vector3.up, embed.WidthDivisions, true);
 
                 // Scaling parameters
@@ -250,7 +255,7 @@ namespace Manifold.EditorTools.GC.GFZ
                 float repetitionsAlongLength = math.ceil(segmentLength / 20f);
 
                 // TODO: do not hardcode, expose as parameter
-                var uvs1 = CreateTristripScaledUVs(tristrips, 1f, repetitionsAlongLength); 
+                var uvs1 = CreateTristripScaledUVs(tristrips, 1f, repetitionsAlongLength);
 
                 // Assign UVS. Both layers use the same UVs
                 for (int i = 0; i < tristrips.Length; i++)
@@ -264,6 +269,88 @@ namespace Manifold.EditorTools.GC.GFZ
                 }
 
                 return tristrips;
+            }
+
+            public static Tristrip[] CreateTrim(Matrix4x4[] matrices, GfzPropertyEmbed embed)
+            {
+                var allTristrips = new List<Tristrip>();
+
+                float angleLeftRight = Mathf.Tan(kEmbedHeight / kTrimOffset) * Mathf.Rad2Deg;
+                // Scaling parameters
+                float segmentLength = embed.GetRangeLength();
+                float repetitionsAlongLength = math.ceil(segmentLength / kTrimRepetitions); // TODO: parameter, not hard coded (or const instead?)
+
+                if (embed.IncludeTrimLeft)
+                {
+                    var normal = Quaternion.Euler(0, 0, -angleLeftRight) * Vector3.up;
+                    var leftTristrips = CreateTrimSide(matrices, normal, -1, kTrimOffset, repetitionsAlongLength);
+                    allTristrips.AddRange(leftTristrips);
+                }
+                if (embed.IncludeTrimRight)
+                {
+                    var normal = Quaternion.Euler(0, 0, +angleLeftRight) * Vector3.up;
+                    var leftTristrips = CreateTrimSide(matrices, normal, +1, kTrimOffset, repetitionsAlongLength);
+                    allTristrips.AddRange(leftTristrips);
+                }
+
+                var trimEndcapTristrips = CreateTrimEndcaps(matrices, embed, kTrimOffset);
+                allTristrips.AddRange(trimEndcapTristrips);
+
+                return allTristrips.ToArray();
+            }
+
+            private static Tristrip[] CreateTrimSide(Matrix4x4[] matrices, Vector3 defaultNormal, float directionLR, float width, float repetitionsAlongLength)
+            {
+                var offsetMatrices = GetNormalizedMatrixWithPositionOffset(matrices, directionLR);
+
+                var outerEdge = new Vector3(width * directionLR, 0, 0);
+                var innerEdge = new Vector3(0, kEmbedHeight, 0);
+                bool isBackFacing = directionLR > 0;
+                var tristrips = GenerateTristripsLine(offsetMatrices, innerEdge, outerEdge, defaultNormal, 1, isBackFacing);
+
+                var uvs = CreateTristripScaledUVs(tristrips, 1, repetitionsAlongLength);
+                for (int i = 0; i < tristrips.Length; i++)
+                {
+                    var uvs0Swapped = SwapUV(uvs[i]);
+                    tristrips[i].tex0 = uvs0Swapped;
+                }
+
+                return tristrips;
+            }
+            private static Tristrip[] CreateTrimEndcaps(Matrix4x4[] matrices, GfzPropertyEmbed embed, float width)
+            {
+                var allTristrips = new List<Tristrip>();
+
+                //var matricesTop = ModifyMatrixScales(matrices, new Vector3(0, kEmbedHeight, 0)); // raise to top
+                var matricesTop = ModifyMatrixPositions(matrices, new Vector3(0, kEmbedHeight, 0));
+                var matricesBottom = ModifyMatrixScales(matrices, new Vector3(width * 2f, 0, 0)); // widen base
+                int index0 = 0;
+                int index1 = matrices.Length - 1;
+
+                var endpointA = new Vector3(-0.5f, 0, 0);
+                var endpointB = new Vector3(+0.5f, 0, 0);
+
+                if (embed.IncludeTrimStart)
+                {
+                    var mtx0 = matricesTop[index0];
+                    var mtx1 = matricesBottom[index0];
+                    var tristrips = GenerateTristripsLine(new Matrix4x4[] { mtx0, mtx1 }, endpointA, endpointB, Vector3.back, embed.WidthDivisions, false);
+                    foreach (var tristrip in tristrips)
+                        tristrip.tex0 = CreateUVsSideways(tristrip.VertexCount);
+                    allTristrips.AddRange(tristrips);
+                }
+
+                if (embed.IncludeTrimEnd)
+                {
+                    var mtx0 = matricesTop[index1];
+                    var mtx1 = matricesBottom[index1];
+                    var tristrips = GenerateTristripsLine(new Matrix4x4[] { mtx0, mtx1 }, endpointA, endpointB, Vector3.forward, embed.WidthDivisions, true);
+                    foreach (var tristrip in tristrips)
+                        tristrip.tex0 = CreateUVsSideways(tristrip.VertexCount);
+                    allTristrips.AddRange(tristrips);
+                }
+
+                return allTristrips.ToArray();
             }
         }
 

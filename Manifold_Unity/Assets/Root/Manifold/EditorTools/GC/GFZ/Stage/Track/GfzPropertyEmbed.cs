@@ -20,6 +20,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         [SerializeField] private UnityEngine.AnimationCurve offsetCurve = new UnityEngine.AnimationCurve(new(0, 0), new(1, 0));
         [SerializeField] private AnimationCurveTRS animationCurveTRS = new();
         //[SerializeField] private float range;
+        [SerializeField] private bool includeTrimLeft = true;
+        [SerializeField] private bool includeTrimRight = true;
+        [SerializeField] private bool includeTrimStart = true;
+        [SerializeField] private bool includeTrimEnd = true;
+
 
         public SurfaceEmbedType Type { get => type; }
         public int WidthDivisions { get => widthDivisions; }
@@ -29,6 +34,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         public UnityEngine.AnimationCurve WidthCurve { get => widthCurve; }
         public UnityEngine.AnimationCurve OffsetCurve { get => offsetCurve; }
         public AnimationCurveTRS AnimationCurveTRS { get => animationCurveTRS; }
+        public bool IncludeTrimLeft { get => includeTrimLeft; set => includeTrimLeft = value; }
+        public bool IncludeTrimRight { get => includeTrimRight; set => includeTrimRight = value; }
+        public bool IncludeTrimStart { get => includeTrimStart; set => includeTrimStart = value; }
+        public bool IncludeTrimEnd { get => includeTrimEnd; set => includeTrimEnd = value; }
 
         public float GetRangeLength()
         {
@@ -121,23 +130,27 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 case SurfaceEmbedType.Slip:
                     return new GcmfTemplate[]
                     {
+                        GfzAssetTemplates.MeshTemplates.General.CreateTrim(),
                         GfzAssetTemplates.MeshTemplates.General.CreateSlipGX(),
                     };
                 case SurfaceEmbedType.Dirt:
                     return new GcmfTemplate[]
                     {
+                        GfzAssetTemplates.MeshTemplates.General.CreateTrim(),
                         GfzAssetTemplates.MeshTemplates.General.CreateDirtNoise(),
                         GfzAssetTemplates.MeshTemplates.General.CreateDirtAlpha(),
                     };
                 case SurfaceEmbedType.Damage:
                     return new GcmfTemplate[]
                     {
+                        GfzAssetTemplates.MeshTemplates.General.CreateTrim(),
                         GfzAssetTemplates.MeshTemplates.General.CreateLavaCrag(),
                         GfzAssetTemplates.MeshTemplates.General.CreateLavaAlpha(),
                     };
                 case SurfaceEmbedType.Recover:
                     return new GcmfTemplate[]
                     {
+                        GfzAssetTemplates.MeshTemplates.General.CreateTrim(),
                         GfzAssetTemplates.MeshTemplates.General.CreateRecoverBase(),
                         GfzAssetTemplates.MeshTemplates.General.CreateRecoverAlpha(),
                     };
@@ -166,23 +179,27 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 case SurfaceEmbedType.Slip:
                     return new Tristrip[][]
                     {
+                        TristripTemplates.General.CreateTrim(matrices, this),
                         TristripTemplates.General.CreateSlip(matrices, parentMatrices, this),
                     };
                 case SurfaceEmbedType.Dirt:
                     return new Tristrip[][]
                     {
+                        TristripTemplates.General.CreateTrim(matrices, this),
                         TristripTemplates.General.CreateDirtNoise(matrices, parentMatrices, this),
-                        TristripTemplates.General.CreateDirtAlpha(matrices),
+                        TristripTemplates.General.CreateDirtAlpha(matrices, this),
                     };
                 case SurfaceEmbedType.Damage:
                     return new Tristrip[][]
                     {
+                        TristripTemplates.General.CreateTrim(matrices, this),
                         TristripTemplates.General.CreateLavaCrag(matrices, parentMatrices, this),
                         TristripTemplates.General.CreateLavaAlpha(matrices, parentMatrices, this),
                     };
                 case SurfaceEmbedType.Recover:
                     return new Tristrip[][]
                     {
+                        TristripTemplates.General.CreateTrim(matrices, this),
                         TristripTemplates.General.CreateRecoverBase(matrices, this),
                         TristripTemplates.General.CreateRecoverAlpha(matrices, this),
                     };

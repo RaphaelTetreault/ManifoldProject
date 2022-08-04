@@ -496,6 +496,11 @@ namespace Manifold.EditorTools.GC.GFZ
                     return template;
                 }
 
+                public static GcmfTemplate CreateTrim()
+                {
+                    return MuteCity.CreateRoadSides();
+                }
+
                 public static GcmfTemplate CreateSides() => MuteCity.CreateRoadSides();
             }
 
