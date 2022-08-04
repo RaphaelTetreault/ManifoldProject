@@ -15,8 +15,8 @@ namespace Manifold.EditorTools.GC.GFZ
         {
             private static readonly Vector3 edgeLeft = new Vector3(-0.5f, kEmbedHeight, 0);
             private static readonly Vector3 edgeRight = new Vector3(+0.5f, kEmbedHeight, 0);
-            private const float kEmbedHeight = 0.35f;
-            private const float kHealHeight = 0.05f;
+            private const float kEmbedHeight = 0.30f;
+            private const float kHealHeight = 0.10f;
             private const float kTrimOffset = 0.75f;
             private const float kTrimRepetitions = 64f;
             private const float kEmbedFlashSlipReps = 20f;
@@ -159,11 +159,12 @@ namespace Manifold.EditorTools.GC.GFZ
                 // Create UVs
                 var uvsNormalized = CreateTrackSpaceUVs(embed, tristrips, halfWidths, offsets, lengths);
                 var uvs = ScaleByParentWidthAndCustomLength(uvsNormalized, parentMatrices, 1 / scaleW, scaleL);
-                // Assign UVS. Both layers use the same UVs
+                Vector2 uvs1Offset = new Vector2(0.5f, 0.33f) * kEmbedFlashDirtReps;
+                // Assign UVS.
                 for (int i = 0; i < tristrips.Length; i++)
                 {
                     tristrips[i].tex0 = uvs[i]; // noise 1
-                    tristrips[i].tex1 = uvs[i]; // noise 2
+                    tristrips[i].tex1 = OffsetUVs(ScaleUVs(uvs[i], -1), uvs1Offset); // noise 2, mirrored, offset
                 }
 
                 return tristrips;

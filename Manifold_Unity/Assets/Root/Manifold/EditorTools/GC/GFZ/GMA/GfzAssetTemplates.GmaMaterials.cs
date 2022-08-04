@@ -210,7 +210,6 @@ namespace Manifold.EditorTools.GC.GFZ
                     return template;
                 }
 
-
                 public static GcmfTemplate CreateDirtAlpha()
                 {
                     var tevLayers = new TevLayer[]
@@ -218,7 +217,7 @@ namespace Manifold.EditorTools.GC.GFZ
                         new TevLayer()
                         {
                             Unk0x00 = 0,
-                            MipmapSetting = MipmapSetting.UNK_FLAG_1,
+                            MipmapSetting = MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
                             WrapMode = TextureWrapMode.repeatX | TextureWrapMode.repeatY,
                             LodBias = 20,
                             AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
@@ -265,7 +264,7 @@ namespace Manifold.EditorTools.GC.GFZ
                     {
                         new TevLayer()
                         {
-                            Unk0x00 = 0, //TexFlags0x00.ENABLE_UV_SCROLL, // ,- should have this, but it wonky...
+                            Unk0x00 = TexFlags0x00.ENABLE_UV_SCROLL,
                             MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
                             WrapMode = TextureWrapMode.repeatX | TextureWrapMode.repeatY | TextureWrapMode.unk7,
                             LodBias = 0,
@@ -291,7 +290,7 @@ namespace Manifold.EditorTools.GC.GFZ
                     };
                     var textureScrollFields = new TextureScrollField[]
                     {
-                        new TextureScrollField(+1.0f, +1.0f),
+                        new TextureScrollField(+1.0f, +2.0f), //frick, mixed up u and v
                     };
                     var material = new Material
                     {
@@ -625,8 +624,6 @@ namespace Manifold.EditorTools.GC.GFZ
 
             public static class MuteCity
             {
-                // TODO: tev layers wrong -- you didn't really check!
-
                 public static GcmfTemplate CreateRails()
                 {
                     var tevLayers = new TevLayer[]

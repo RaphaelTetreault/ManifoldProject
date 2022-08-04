@@ -305,6 +305,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 newUVs[i] = new Vector2(uvs[i].x + offset.x, uvs[i].y + offset.y);
             return newUVs;
         }
+        public static Vector2[] OffsetUVs(Vector2[] uvs, float offset)
+            => OffsetUVs(uvs, new Vector2(offset, offset));
 
         public static Vector2[] ScaleUVs(Vector2[] uvs, float scale)
             => ScaleUVs(uvs, new Vector2(scale, scale));
