@@ -3,12 +3,15 @@ using GameCube.GFZ.Stage;
 using GameCube.GX;
 using Manifold.IO;
 
+// NOTE: Always do alpha templates last!
+
+
 namespace Manifold.EditorTools.GC.GFZ
 {
     public static class GcmfTemplates
     {
 
-        public static class DebugTemplates
+        public static class Debug
         {
             public static GcmfTemplate CreateLitVertexColored()
             {
@@ -612,6 +615,7 @@ namespace Manifold.EditorTools.GC.GFZ
 
         public static class MuteCity
         {
+
             public static GcmfTemplate RoadRails()
             {
                 var tevLayers = new TevLayer[]
@@ -944,6 +948,19 @@ namespace Manifold.EditorTools.GC.GFZ
                 Assert.IsTrue(textureHashes.Length == tevLayers.Length);
                 return template;
             }
+
+            public static GcmfTemplate[] Road()
+            {
+                return new GcmfTemplate[]
+                {
+                    RoadTop(),
+                    RoadBottom(),
+                    RoadSides(),
+                    RoadEmbelishments(),
+                    RoadLaneDividers(),
+                    RoadRails(),
+                };
+            }
         }
 
         public static class MuteCityCOM
@@ -966,7 +983,7 @@ namespace Manifold.EditorTools.GC.GFZ
                         {
                             Unk0x00 = 0,
                             MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
-                            WrapMode = TextureWrapMode.mirrorX | TextureWrapMode.repeatY | TextureWrapMode.unk6 | TextureWrapMode.unk7,
+                            WrapMode = TextureWrapMode.mirrorX | TextureWrapMode.mirrorY | TextureWrapMode.unk6 | TextureWrapMode.unk7,
                             LodBias = -10,
                             AnisotropicFilter = GXAnisotropy.GX_ANISO_4,
                             Unk0x0C = 14,
@@ -1007,7 +1024,36 @@ namespace Manifold.EditorTools.GC.GFZ
                 Assert.IsTrue(textureHashes.Length == tevLayers.Length);
                 return template;
             }
-
+            public static GcmfTemplate RoadTopNoDividers()
+            {
+                // Remove second tex/tev which is the dividers
+                var template = RoadTopEmbeddedDividers();
+                template.TextureHashes = new string[] { template.TextureHashes[0] };
+                template.TevLayers = new TevLayer[] { template.TevLayers[0] };
+                return template;
+            }
+            public static GcmfTemplate[] Road()
+            {
+                return new GcmfTemplate[]
+                {
+                    RoadTopEmbeddedDividers(),
+                    MuteCity.RoadBottom(),
+                    MuteCity.RoadSides(),
+                    MuteCity.RoadEmbelishments(),
+                    MuteCity.RoadRails(),
+                };
+            }
+            public static GcmfTemplate[] RoadNoDividers()
+            {
+                return new GcmfTemplate[]
+                {
+                    RoadTopNoDividers(),
+                    MuteCity.RoadBottom(),
+                    MuteCity.RoadSides(),
+                    MuteCity.RoadEmbelishments(),
+                    MuteCity.RoadRails(),
+                };
+            }
         }
     }
 }

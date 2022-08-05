@@ -39,35 +39,14 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return gcmf;
         }
 
-        public GcmfTemplate[] GetGcmfTemplates(RoadMeshStyle meshStyle)
+        public GcmfTemplate[] GetGcmfTemplates(RoadMeshStyle roadMeshStyle)
         {
-            // NOTE: Always do alpha last
-            switch (meshStyle)
+            switch (roadMeshStyle)
             {
-                case RoadMeshStyle.MuteCity:
-                    return new GcmfTemplate[]
-                    {
-                        GcmfTemplates.MuteCity.RoadTop(),
-                        GcmfTemplates.MuteCity.RoadBottom(),
-                        GcmfTemplates.MuteCity.RoadSides(),
-                        GcmfTemplates.MuteCity.RoadEmbelishments(),
-                        GcmfTemplates.MuteCity.RoadLaneDividers(),
-                        GcmfTemplates.MuteCity.RoadRails(),
-                    };
-                case RoadMeshStyle.MuteCityCOM:
-                    return new GcmfTemplate[]
-                    {
-                        GcmfTemplates.MuteCityCOM.RoadTopEmbeddedDividers(),
-                        GcmfTemplates.MuteCity.RoadBottom(),
-                        GcmfTemplates.MuteCity.RoadSides(),
-                        GcmfTemplates.MuteCity.RoadEmbelishments(),
-                        GcmfTemplates.MuteCity.RoadRails(),
-                    };
-                default:
-                    return new GcmfTemplate[]
-                    {
-                        GcmfTemplates.DebugTemplates.CreateLitVertexColored(),
-                    };
+                case RoadMeshStyle.MuteCity: return GcmfTemplates.MuteCity.Road();
+                case RoadMeshStyle.MuteCityCom: return GcmfTemplates.MuteCityCOM.Road();
+                case RoadMeshStyle.MuteCityComNoDividers: return GcmfTemplates.MuteCityCOM.RoadNoDividers();
+                default: return new GcmfTemplate[] { GcmfTemplates.Debug.CreateLitVertexColored() };
             }
         }
 
@@ -88,10 +67,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                         TristripTemplates.Road.MuteCity.CreateLaneDividers(matrices, this, maxTime),
                         TristripTemplates.Road.MuteCity.CreateRails(matrices, this),
                     };
-                case RoadMeshStyle.MuteCityCOM:
+                case RoadMeshStyle.MuteCityCom:
+                case RoadMeshStyle.MuteCityComNoDividers:
                     return new Tristrip[][]
                     {
-                        TristripTemplates.Road.MuteCity.CreateRoadTop(matrices, this, maxTime),
+                        TristripTemplates.Road.MuteCityCOM.Top(matrices, this, maxTime),
                         TristripTemplates.Road.MuteCity.CreateRoadBottom(matrices, this, maxTime),
                         TristripTemplates.Road.MuteCity.CreateRoadTrim(matrices, this, maxTime),
                         TristripTemplates.Road.MuteCity.CreateRoadEmbellishments(matrices, this, maxTime),

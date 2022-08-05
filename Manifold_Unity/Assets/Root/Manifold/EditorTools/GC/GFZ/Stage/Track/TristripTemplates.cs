@@ -151,14 +151,14 @@ namespace Manifold.EditorTools.GC.GFZ
                 var tristrips = GenerateTristripsLine(matrices, edgeLeft, edgeRight, Vector3.up, embed.WidthDivisions, true);
 
                 // Scaling parameters
-                const float scaleW = 1/8f; // just a guess
+                const float scaleW = 8f; // just a guess
                 float segmentLength = embed.GetRangeLength();
                 float scaleL = math.ceil(segmentLength / scaleW);
                 // Normalized values used to generate UVs
                 GetNormalizedValues(embed, matrices.Length, out float[] halfWidths, out float[] offsets, out float[] lengths);
                 // Create UVs
                 var uvsNormalized = CreateTrackSpaceUVs(embed, tristrips, halfWidths, offsets, lengths);
-                var uvs = ScaleByParentWidthAndCustomLength(uvsNormalized, parentMatrices, scaleW, scaleL);
+                var uvs = ScaleByParentWidthAndCustomLength(uvsNormalized, parentMatrices, 1 / scaleW, scaleL);
                 Vector2 uvs1Offset = new Vector2(0.5f, 0.33f) * kEmbedFlashDirtReps;
                 // Assign UVS.
                 for (int i = 0; i < tristrips.Length; i++)
@@ -497,10 +497,10 @@ namespace Manifold.EditorTools.GC.GFZ
                 //          Mute City and Green Plant? etc.
 
                 // TODO: de-hardcode these, put in road as param
-                private const float kLengthTrim = 64f;
-                private const float kLengthRoadTop = 80f;
-                private const float kLengthRoadBottom = kLengthRoadTop / 2f;
-                private const float kLengthLaneDivider = kLengthRoadTop / 4f;
+                public const float kLengthTrim = 60f;
+                public const float kLengthRoadTop = 80f;
+                public const float kLengthRoadBottom = kLengthRoadTop / 2f;
+                public const float kLengthLaneDivider = kLengthRoadTop / 4f;
 
                 public static Tristrip[] CreateRoadTop(Matrix4x4[] matrices, GfzShapeRoad road, float length)
                 {
@@ -612,7 +612,7 @@ namespace Manifold.EditorTools.GC.GFZ
                         var to = road.GetRoot().Next.CreateHierarchichalAnimationCurveTRS(false);
                         bool isContinuousFrom = CheckpointUtility.IsContinuousBetweenFromTo(from, self);
                         bool isContinuousTo = CheckpointUtility.IsContinuousBetweenFromTo(self, to);
-                        
+
                         if (!isContinuousFrom)
                         {
                             var mtx0 = matrices[0];
@@ -652,8 +652,8 @@ namespace Manifold.EditorTools.GC.GFZ
                         var rightOuter = new Vector3(-1.5f, +0.5f, 0);
                         var leftInner = new Vector3(+3.75f, +0.0f, 0);
                         var rightInner = new Vector3(-3.75f, +0.0f, 0);
-                        var normalLeft = Quaternion.Euler(0, 0, +6.34f) * new Vector3(0, 1); // with a x=2.25, y=0.5, angle is 6.34 degrees
-                        var normalRight = Quaternion.Euler(0, 0, -6.34f) * new Vector3(0, 1); // rotate normal, assign. TODO: need coord system??
+                        var normalLeft = Quaternion.Euler(0, 0, +6.34f) * Vector3.up; // with a x=2.25, y=0.5, angle is 6.34 degrees
+                        var normalRight = Quaternion.Euler(0, 0, -6.34f) * Vector3.up; // rotate normal, assign. TODO: need coord system??
                         var tristripsLeft = GenerateTristripsLine(matricesLeft, leftOuter, leftInner, normalLeft, 1, true);
                         var tristripsRight = GenerateTristripsLine(matricesRight, rightOuter, rightInner, normalRight, 1, false);
                         Assert.IsTrue(tristripsLeft.Length == tristripsRight.Length);
@@ -664,6 +664,7 @@ namespace Manifold.EditorTools.GC.GFZ
                             var tristripRight = tristripsRight[i];
                             float increment = repetitions / (tristripLeft.VertexCount / 2 - 1); // length of verts, but not both sides
                             var uvs0 = CreateUVsForward(tristripLeft.VertexCount, 0, 1, increment);
+                            uvs0 = OffsetUVs(uvs0, new Vector2(0, 0.5f)); // offset so light part is not cut off at ends. !! has to match COM road !!
 
                             // these uvs are double on each side
                             var uvs1 = new Vector2[uvs0.Length];
@@ -767,6 +768,41 @@ namespace Manifold.EditorTools.GC.GFZ
                 }
             }
 
+            public static class MuteCityCOM
+            {
+                public const float RoadTexStride = 32f;
+
+                public static Tristrip[] Top(Matrix4x4[] matrices, GfzShapeRoad road, float length)
+                {
+                    var matricesInset = ModifyMatrixScales(matrices, new Vector3(-3.75f * 2, 0, 0));
+                    var endpointA = new Vector3(-0.5f, 0, 0);
+                    var endpointB = new Vector3(+0.5f, 0, 0);
+                    var tristrips = GenerateTristripsLine(matricesInset, endpointA, endpointB, Vector3.up, road.WidthDivisions, true);
+
+                    float repetitionsRoadTexture = math.ceil(length / RoadTexStride);
+                    var uvs0 = CreateTristripScaledUVs(tristrips, 8, repetitionsRoadTexture);
+
+                    float repetitionsLaneDividers = Round(math.ceil(length / (MuteCity.kLengthTrim/2)), 2); // div-by-2 due to mirroring (need 2 reps for fulll texture)
+                    Vector2[][] uvs1 = CreateTristripScaledUVs(tristrips, 2, repetitionsLaneDividers);
+                    Vector2 offset1 = new Vector2(0, 1);
+
+                    for (int i = 0; i < tristrips.Length; i++)
+                    {
+                        tristrips[i].tex0 = uvs0[i];
+                        tristrips[i].tex1 = OffsetUVs(uvs1[i], offset1);
+                    }
+
+                    return tristrips;
+                }
+
+            }
+
+
+            private static float Round(float value, float roundToNearest)
+            {
+                var newValue = math.ceil(value / roundToNearest) * roundToNearest;
+                return newValue;
+            }
         }
 
     }
