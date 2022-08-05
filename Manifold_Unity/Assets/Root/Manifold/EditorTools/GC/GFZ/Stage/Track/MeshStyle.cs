@@ -1,8 +1,9 @@
 ﻿namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
-    public enum MeshStyle
+    public enum RoadMeshStyle
     {
-        Debug,
-        MuteCity,
+        Debug = 0,
+        MuteCity = 1,
+        MuteCityCOM = 2,
     }
 }

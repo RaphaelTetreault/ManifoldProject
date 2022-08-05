@@ -151,14 +151,14 @@ namespace Manifold.EditorTools.GC.GFZ
                 var tristrips = GenerateTristripsLine(matrices, edgeLeft, edgeRight, Vector3.up, embed.WidthDivisions, true);
 
                 // Scaling parameters
-                const float scaleW = 8f; // just a guess
+                const float scaleW = 1/8f; // just a guess
                 float segmentLength = embed.GetRangeLength();
                 float scaleL = math.ceil(segmentLength / scaleW);
                 // Normalized values used to generate UVs
                 GetNormalizedValues(embed, matrices.Length, out float[] halfWidths, out float[] offsets, out float[] lengths);
                 // Create UVs
                 var uvsNormalized = CreateTrackSpaceUVs(embed, tristrips, halfWidths, offsets, lengths);
-                var uvs = ScaleByParentWidthAndCustomLength(uvsNormalized, parentMatrices, 1 / scaleW, scaleL);
+                var uvs = ScaleByParentWidthAndCustomLength(uvsNormalized, parentMatrices, scaleW, scaleL);
                 Vector2 uvs1Offset = new Vector2(0.5f, 0.33f) * kEmbedFlashDirtReps;
                 // Assign UVS.
                 for (int i = 0; i < tristrips.Length; i++)

@@ -13,7 +13,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         IRailSegment
     {
         [field: Header("Mesh Properties")]
-        [field: SerializeField] public MeshStyle MeshStyle { get; private set; }
+        [field: SerializeField] public RoadMeshStyle MeshStyle { get; private set; }
         [field: SerializeField, Range(1, 32)] public int WidthDivisions { get; private set; } = 1;
         [field: SerializeField, Min(1f)] public float LengthDistance { get; private set; } = 10f;
         [field: SerializeField, Min(1f)] public float TexRepeatWidthTop { get; private set; } = 4f;
@@ -39,38 +39,46 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return gcmf;
         }
 
-        public GcmfTemplate[] GetGcmfTemplates(MeshStyle meshStyle)
+        public GcmfTemplate[] GetGcmfTemplates(RoadMeshStyle meshStyle)
         {
             // NOTE: Always do alpha last
             switch (meshStyle)
             {
-                case MeshStyle.MuteCity:
+                case RoadMeshStyle.MuteCity:
                     return new GcmfTemplate[]
                     {
-                        GfzAssetTemplates.MeshTemplates.MuteCity.CreateRoadTop(),
-                        GfzAssetTemplates.MeshTemplates.MuteCity.CreateRoadBottom(),
-                        GfzAssetTemplates.MeshTemplates.MuteCity.CreateRoadSides(),
-                        GfzAssetTemplates.MeshTemplates.MuteCity.CreateRoadEmbelishments(),
-                        GfzAssetTemplates.MeshTemplates.MuteCity.CreateLaneDividers(),
-                        GfzAssetTemplates.MeshTemplates.MuteCity.CreateRails(),
+                        GcmfTemplates.MuteCity.RoadTop(),
+                        GcmfTemplates.MuteCity.RoadBottom(),
+                        GcmfTemplates.MuteCity.RoadSides(),
+                        GcmfTemplates.MuteCity.RoadEmbelishments(),
+                        GcmfTemplates.MuteCity.RoadLaneDividers(),
+                        GcmfTemplates.MuteCity.RoadRails(),
                     };
-
+                case RoadMeshStyle.MuteCityCOM:
+                    return new GcmfTemplate[]
+                    {
+                        GcmfTemplates.MuteCityCOM.RoadTopEmbeddedDividers(),
+                        GcmfTemplates.MuteCity.RoadBottom(),
+                        GcmfTemplates.MuteCity.RoadSides(),
+                        GcmfTemplates.MuteCity.RoadEmbelishments(),
+                        GcmfTemplates.MuteCity.RoadRails(),
+                    };
                 default:
                     return new GcmfTemplate[]
                     {
-                        GfzAssetTemplates.MeshTemplates.DebugTemplates.CreateLitVertexColored(),
+                        GcmfTemplates.DebugTemplates.CreateLitVertexColored(),
                     };
             }
         }
 
-        public Tristrip[][] GetTristrips(MeshStyle meshStyle, bool isGfzCoordinateSpace)
+        public Tristrip[][] GetTristrips(RoadMeshStyle meshStyle, bool isGfzCoordinateSpace)
         {
             var matrices = TristripGenerator.CreatePathMatrices(this, isGfzCoordinateSpace, LengthDistance);
             var maxTime = GetRoot().GetMaxTime();
 
             switch (meshStyle)
             {
-                case MeshStyle.MuteCity:
+                case RoadMeshStyle.MuteCity:
                     return new Tristrip[][]
                     {
                         TristripTemplates.Road.MuteCity.CreateRoadTop(matrices, this, maxTime),
@@ -78,6 +86,15 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                         TristripTemplates.Road.MuteCity.CreateRoadTrim(matrices, this, maxTime),
                         TristripTemplates.Road.MuteCity.CreateRoadEmbellishments(matrices, this, maxTime),
                         TristripTemplates.Road.MuteCity.CreateLaneDividers(matrices, this, maxTime),
+                        TristripTemplates.Road.MuteCity.CreateRails(matrices, this),
+                    };
+                case RoadMeshStyle.MuteCityCOM:
+                    return new Tristrip[][]
+                    {
+                        TristripTemplates.Road.MuteCity.CreateRoadTop(matrices, this, maxTime),
+                        TristripTemplates.Road.MuteCity.CreateRoadBottom(matrices, this, maxTime),
+                        TristripTemplates.Road.MuteCity.CreateRoadTrim(matrices, this, maxTime),
+                        TristripTemplates.Road.MuteCity.CreateRoadEmbellishments(matrices, this, maxTime),
                         TristripTemplates.Road.MuteCity.CreateRails(matrices, this),
                     };
 
@@ -89,7 +106,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
         }
 
-        public Tristrip[] GetTristripsLinear(MeshStyle meshStyle, bool isGfzCoordinateSpace)
+        public Tristrip[] GetTristripsLinear(RoadMeshStyle meshStyle, bool isGfzCoordinateSpace)
         {
             var tristripsCollection = GetTristrips(meshStyle, isGfzCoordinateSpace);
 

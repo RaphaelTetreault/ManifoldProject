@@ -151,49 +151,49 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 case SurfaceEmbedType.SlipGX:
                     return new GcmfTemplate[]
                     {
-                        GfzAssetTemplates.MeshTemplates.General.CreateTrim(),
-                        GfzAssetTemplates.MeshTemplates.General.CreateSlipGX(),
+                        GcmfTemplates.General.CreateTrim(),
+                        GcmfTemplates.General.CreateSlipGX(),
                     };
                 case SurfaceEmbedType.SlipAX:
                     return new GcmfTemplate[]
                     {
-                        GfzAssetTemplates.MeshTemplates.General.CreateTrim(),
-                        GfzAssetTemplates.MeshTemplates.General.CreateSlipAX(),
+                        GcmfTemplates.General.CreateTrim(),
+                        GcmfTemplates.General.CreateSlipAX(),
                     };
                 case SurfaceEmbedType.Dirt:
                     return new GcmfTemplate[]
                     {
-                        GfzAssetTemplates.MeshTemplates.General.CreateTrim(),
-                        GfzAssetTemplates.MeshTemplates.General.CreateDirtNoise(),
-                        GfzAssetTemplates.MeshTemplates.General.CreateDirtAlpha(),
+                        GcmfTemplates.General.CreateTrim(),
+                        GcmfTemplates.General.CreateDirtNoise(),
+                        GcmfTemplates.General.CreateDirtAlpha(),
                     };
                 case SurfaceEmbedType.Lava:
                     return new GcmfTemplate[]
                     {
-                        GfzAssetTemplates.MeshTemplates.General.CreateTrim(),
-                        GfzAssetTemplates.MeshTemplates.General.CreateLavaCrag(),
-                        GfzAssetTemplates.MeshTemplates.General.CreateLavaAlpha(),
+                        GcmfTemplates.General.CreateTrim(),
+                        GcmfTemplates.General.CreateLavaCrag(),
+                        GcmfTemplates.General.CreateLavaAlpha(),
                     };
                 case SurfaceEmbedType.RecoverLight:
                     return new GcmfTemplate[]
                     {
-                        GfzAssetTemplates.MeshTemplates.General.CreateTrim(),
-                        GfzAssetTemplates.MeshTemplates.General.CreateRecoverLightSubBase(),
-                        GfzAssetTemplates.MeshTemplates.General.CreateRecoverLightBase(),
-                        GfzAssetTemplates.MeshTemplates.General.CreateRecoverLightAlpha(),
+                        GcmfTemplates.General.CreateTrim(),
+                        GcmfTemplates.General.CreateRecoverLightSubBase(),
+                        GcmfTemplates.General.CreateRecoverLightBase(),
+                        GcmfTemplates.General.CreateRecoverLightAlpha(),
                     };
                 case SurfaceEmbedType.RecoverDark:
                     return new GcmfTemplate[]
                     {
-                        GfzAssetTemplates.MeshTemplates.General.CreateTrim(),
-                        GfzAssetTemplates.MeshTemplates.General.CreateRecoverDarkBase(),
-                        GfzAssetTemplates.MeshTemplates.General.CreateRecoverDarkAlpha(),
+                        GcmfTemplates.General.CreateTrim(),
+                        GcmfTemplates.General.CreateRecoverDarkBase(),
+                        GcmfTemplates.General.CreateRecoverDarkAlpha(),
                     };
 
                 default:
                     return new GcmfTemplate[]
                     {
-                        GfzAssetTemplates.MeshTemplates.DebugTemplates.CreateLitVertexColored(),
+                        GcmfTemplates.DebugTemplates.CreateLitVertexColored(),
                     };
             }
         }
