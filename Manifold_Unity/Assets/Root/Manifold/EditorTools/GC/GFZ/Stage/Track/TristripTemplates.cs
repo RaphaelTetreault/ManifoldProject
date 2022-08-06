@@ -725,7 +725,7 @@ namespace Manifold.EditorTools.GC.GFZ
 
                 public static Tristrip[] CreateLaneDividers(Matrix4x4[] matrices, GfzShapeRoad road, float length)
                 {
-                    if (road.LaneDividers < 0)
+                    if (!road.HasLaneDividers)
                         return new Tristrip[0];
 
                     //var matricesLeft = new Matrix4x4[matrices.Length];
