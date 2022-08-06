@@ -5,6 +5,5 @@
         Debug = 0,
         MuteCity = 1,
         MuteCityCom = 2,
-        MuteCityComNoDividers = 3,
     }
 }

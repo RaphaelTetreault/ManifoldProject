@@ -28,6 +28,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         SerializedProperty includeTrimEnd;
         SerializedProperty repeatFlashingUV;
         SerializedProperty repeatFlashingUVOffset;
+        SerializedProperty scrollSpeed;
 
         void OnEnable()
         {
@@ -45,8 +46,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             includeTrimRight = serializedObject.FindProperty(nameof(includeTrimRight));
             includeTrimStart = serializedObject.FindProperty(nameof(includeTrimStart));
             includeTrimEnd = serializedObject.FindProperty(nameof(includeTrimEnd));
+
             repeatFlashingUV = serializedObject.FindProperty(nameof(repeatFlashingUV));
             repeatFlashingUVOffset = serializedObject.FindProperty(nameof(repeatFlashingUVOffset));
+            scrollSpeed = serializedObject.FindProperty(nameof(scrollSpeed));
         }
 
         public override void OnInspectorGUI()
@@ -87,8 +90,14 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 EditorGUILayout.PropertyField(includeTrimRight);
                 EditorGUILayout.PropertyField(includeTrimStart);
                 EditorGUILayout.PropertyField(includeTrimEnd);
+                EditorGUI.indentLevel--;
+            }
+            GuiSimple.Label("UV Texture Scrolling", EditorStyles.boldLabel);
+            {
+                EditorGUI.indentLevel++;
                 EditorGUILayout.PropertyField(repeatFlashingUV);
                 EditorGUILayout.PropertyField(repeatFlashingUVOffset);
+                EditorGUILayout.PropertyField(scrollSpeed);
                 EditorGUI.indentLevel--;
             }
         }

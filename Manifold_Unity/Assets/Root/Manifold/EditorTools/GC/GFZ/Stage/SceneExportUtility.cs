@@ -229,77 +229,85 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
                 scene.CircuitType = track.CircuitType;
             }
+
+
+
+
             // Inject TRACK models, + recover missing models
+            // This creates the GMA archive and gives us the scene objects and dynamic scene objects for them
+            // It will also add which texture hashes to dictionary, you still need to patch the TEV indexes after, though.
+            var gma = CreateTrackModelsGma(out SceneObject[] sceneObjects, out SceneObjectDynamic[] dynamicSceneObjects, ref textureHashesToIndex);
+
+            // Add SceneObject's LODs and their name to archive
+            foreach (var sceneObject in sceneObjects)
             {
-                // This creates the GMA archive and gives us the scene objects and dynamic scene objects for them
-                // It will also add which texture hashes to dictionary, you still need to patch the TEV indexes after, though.
-                var gma = CreateTrackModelsGma(out SceneObject[] sceneObjects, out SceneObjectDynamic[] dynamicSceneObjects, ref textureHashesToIndex);
-
-                // Add SceneObject's LODs and their name to archive
-                foreach (var sceneObject in sceneObjects)
-                {
-                    scene.SceneObjectLODs.AddRange(sceneObject.LODs);
-                    scene.SceneObjectNames.Add(sceneObject.Name); // wouldn't you need to put in all LOD names?
-                }
-                scene.sceneObjects = sceneObjects.Concat(scene.sceneObjects).ToArray();
-                // add dynamic (no statics needed)
-                scene.dynamicSceneObjects = dynamicSceneObjects.Concat(scene.dynamicSceneObjects).ToArray();
-
-                // Create output
-                int courseIndex = scene.CourseIndex;
-                var fileName = $"st{scene.CourseIndex:00}";
-                var gmaFileName = $"{fileName}.gma";
-                var gmaFilePath = outputPath + gmaFileName;
-                var tplFileName = $"{fileName}.tpl";
-                var tplFilePath = outputPath + tplFileName;
-
-                // Recover models we might be overwriting
-                // TODO: just do that for every model?
-                var missingModels = RecoverMissingModelsFromStageGma(scene.CourseIndex, ref textureHashesToIndex);
-                gma.Models = gma.Models.Concat(missingModels).ToArray();
-
-                // GMA
-                using (var writer = new EndianBinaryWriter(File.Create(gmaFilePath), Gma.endianness))
-                    writer.Write(gma);
-                LzUtility.CompressAvLzToDisk(gmaFilePath, compressFormat, true);
-                Debug.Log($"Created models archive '{gmaFilePath}'.");
-
-                // Write out a hella bodged TPL. :eyes:
-                // TODO: finish CMPR serialization, write textures for real.
-                using (var writer = new BinaryWriter(File.Create(tplFilePath)))
-                {
-                    var textureHashes = textureHashesToIndex.Keys.ToArray();
-                    var stream = WriteBodgeTplFromTextureHashes(textureHashes);
-                    writer.Write(stream.ToArray());
-                }
-                LzUtility.CompressAvLzToDisk(tplFilePath, compressFormat, true);
+                scene.SceneObjectLODs.AddRange(sceneObject.LODs);
+                scene.SceneObjectNames.Add(sceneObject.Name); // wouldn't you need to put in all LOD names?
             }
+            scene.sceneObjects = sceneObjects.Concat(scene.sceneObjects).ToArray();
+            // add dynamic (no statics needed)
+            scene.dynamicSceneObjects = dynamicSceneObjects.Concat(scene.dynamicSceneObjects).ToArray();
+
+            // Create output
+            int courseIndex = scene.CourseIndex;
+            var fileName = $"st{scene.CourseIndex:00}";
+            var gmaFileName = $"{fileName}.gma";
+            var gmaFilePath = outputPath + gmaFileName;
+            var tplFileName = $"{fileName}.tpl";
+            var tplFilePath = outputPath + tplFileName;
+
+            // Recover models we might be overwriting
+            // TODO: just do that for every model?
+            var missingModels = RecoverMissingModelsFromStageGma(scene.CourseIndex, ref textureHashesToIndex);
+            gma.Models = gma.Models.Concat(missingModels).ToArray();
+
+            // GMA
+            using (var writer = new EndianBinaryWriter(File.Create(gmaFilePath), Gma.endianness))
+                writer.Write(gma);
+            LzUtility.CompressAvLzToDisk(gmaFilePath, compressFormat, true);
+            Debug.Log($"Created models archive '{gmaFilePath}'.");
+
+            // Write out a hella bodged TPL. :eyes:
+            // TODO: finish CMPR serialization, write textures for real.
+            using (var writer = new BinaryWriter(File.Create(tplFilePath)))
+            {
+                var textureHashes = textureHashesToIndex.Keys.ToArray();
+                var stream = WriteBodgeTplFromTextureHashes(textureHashes);
+                writer.Write(stream.ToArray());
+            }
+            LzUtility.CompressAvLzToDisk(tplFilePath, compressFormat, true);
+
+
+
 
             // TEMP until data is stored properly in GFZ unity components
             MakeTrueNulls(scene);
 
             // Save out file and LZ'ed file
-            var outputFile = outputPath + scene.FileName;
-            using (var writer = new EndianBinaryWriter(File.Create(outputFile), Scene.endianness))
+            var sceneFilePath = outputPath + scene.FileName;
+            using (var writer = new EndianBinaryWriter(File.Create(sceneFilePath), Scene.endianness))
             {
                 writer.Write(scene);
                 writer.Flush();
             }
-            LzUtility.CompressAvLzToDisk(outputFile, compressFormat, true);
+            LzUtility.CompressAvLzToDisk(sceneFilePath, compressFormat, true);
             OSUtility.OpenDirectory(outputPath);
-            Debug.Log($"Created course '{outputFile}'.");
+            Debug.Log($"Created course '{sceneFilePath}'.");
 
             // Undo mirroring
             foreach (var mirroredObject in mirroredObjects)
                 mirroredObject.MirrorTransform();
 
             // LOG
-            using (var writer = new StreamWriter(File.Create(outputFile + ".txt")))
+            using (var writer = new StreamWriter(File.Create(sceneFilePath + ".txt")))
             {
                 var builder = new System.Text.StringBuilder();
                 scene.PrintMultiLine(builder);
                 writer.Write(builder.ToString());
             }
+
+            //
+            MessageCheckFileSizes(scene.CourseIndex, gmaFilePath, tplFilePath, sceneFilePath);
         }
 
 
@@ -522,6 +530,21 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         #endregion
 
+        public static (string gma, string tpl) GetBgGmaTplPaths(int stageID)
+        {
+            var venueID = CourseUtility.GetVenueID(stageID).ToString().ToLower();
+            var bg = $"bg_{venueID}";
+
+            var settings = GfzProjectWindow.GetSettings();
+            string inputPath = settings.SourceDirectory;
+
+            var bgGma = Directory.GetFiles(inputPath, $"{bg}.gma", SearchOption.AllDirectories);
+            var bgTpl = Directory.GetFiles(inputPath, $"{bg}.tpl", SearchOption.AllDirectories);
+            Assert.IsTrue(bgGma.Length == 1);
+            Assert.IsTrue(bgTpl.Length == 1);
+
+            return (bgGma[0], bgTpl[0]);
+        }
 
         public static Model[] RecoverMissingModelsFromStageGma(int stageID, ref Dictionary<string, ushort> textureHashesToIndex)
         {
@@ -701,6 +724,45 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             {
                 throw new NullReferenceException(title);
             }
+        }
+
+        public static void MessageCheckFileSizes(int sceneIndex, params string[] filePaths)
+        {
+            (string bgGmaFilePath, string bgTplFilePath) = GetBgGmaTplPaths(sceneIndex);
+
+            var all = new List<string>();
+            all.Add(bgGmaFilePath);
+            all.Add(bgTplFilePath);
+            all.AddRange(filePaths);
+
+            MessageCheckFileSizes(all.ToArray());
+        }
+
+        public static void MessageCheckFileSizes(params string[] filePaths)
+        {
+            int totalBytes = 0;
+            for (int i = 0; i < filePaths.Length; i++)
+            {
+                string filePath = filePaths[i];
+                using (var reader = new BinaryReader(File.OpenRead(filePath)))
+                {
+                    int length = (int)reader.BaseStream.Length;
+                    totalBytes += length;
+                    Debug.Log($"{filePath}: {length:n0} bytes.");
+                }
+            }
+
+            const int oneMegaByte = 1_000_000;
+            const int memBudgetBytes = 6_400_000; // 6,402,016: stats from GFZJ, Mute City 
+            const float memBudgetMB = (float)memBudgetBytes / (float)oneMegaByte;
+            float sizeInMB = totalBytes / (float)oneMegaByte;
+            float percentOfAllocation = totalBytes / (float)memBudgetBytes * 100f;
+            Debug.Log($"Total bytes: {totalBytes:n0}");
+            Debug.Log($"Approximate memory budget: {sizeInMB:n1} of {memBudgetMB:n1} MB ({percentOfAllocation:n0}%)");
+            if (percentOfAllocation > 95)
+                Debug.LogWarning($"Consider reducing track mesh polycount, cleaning up path keyframes, and/or hiding/deleting unused objects/triggers.");
+            if (percentOfAllocation > 100)
+                Debug.LogError($"Expect background-archive models to not load in or the game to crash.");
         }
     }
 }

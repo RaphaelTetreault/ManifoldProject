@@ -14,7 +14,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
     {
         [field: Header("Mesh Properties")]
         [field: SerializeField] public RoadMeshStyle MeshStyle { get; private set; }
-        [field: SerializeField, Range(1, 32)] public int WidthDivisions { get; private set; } = 1;
+        [field: SerializeField, Range(1, 32)] public int WidthDivisions { get; private set; } = 4;
         [field: SerializeField, Min(1f)] public float LengthDistance { get; private set; } = 10f;
         [field: SerializeField, Min(1f)] public float TexRepeatWidthTop { get; private set; } = 4f;
         [field: SerializeField, Min(1f)] public float TexRepeatWidthBottom { get; private set; } = 4f;
@@ -22,7 +22,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         [field: Header("Road Properties")]
         [field: SerializeField, Min(0f)] public float RailHeightLeft { get; private set; } = 3f;
         [field: SerializeField, Min(0f)] public float RailHeightRight { get; private set; } = 3f;
-        [field: SerializeField, Range(0, 1)] public int LaneDividers { get; private set; } = 1;
+        [field: SerializeField] public bool HasLaneDividers { get; private set; } = true;
 
 
 
@@ -43,10 +43,17 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         {
             switch (roadMeshStyle)
             {
-                case RoadMeshStyle.MuteCity: return GcmfTemplates.MuteCity.Road();
-                case RoadMeshStyle.MuteCityCom: return GcmfTemplates.MuteCityCOM.Road();
-                case RoadMeshStyle.MuteCityComNoDividers: return GcmfTemplates.MuteCityCOM.RoadNoDividers();
-                default: return new GcmfTemplate[] { GcmfTemplates.Debug.CreateLitVertexColored() };
+                case RoadMeshStyle.MuteCity:
+                    return GcmfTemplates.MuteCity.Road();
+
+                case RoadMeshStyle.MuteCityCom:
+                    if (HasLaneDividers)
+                        return GcmfTemplates.MuteCityCOM.Road();
+                    else
+                        return GcmfTemplates.MuteCityCOM.RoadNoDividers();
+
+                default:
+                    return new GcmfTemplate[] { GcmfTemplates.Debug.CreateLitVertexColored() };
             }
         }
 
@@ -68,7 +75,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                         TristripTemplates.Road.MuteCity.CreateRails(matrices, this),
                     };
                 case RoadMeshStyle.MuteCityCom:
-                case RoadMeshStyle.MuteCityComNoDividers:
                     return new Tristrip[][]
                     {
                         TristripTemplates.Road.MuteCityCOM.Top(matrices, this, maxTime),

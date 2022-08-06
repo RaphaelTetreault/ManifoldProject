@@ -26,6 +26,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         [SerializeField] private bool includeTrimEnd = true;
         [SerializeField] private Vector2 repeatFlashingUV = Vector2.one;
         [SerializeField] private Vector2 repeatFlashingUVOffset = Vector2.zero;
+        [SerializeField] private Vector2 scrollSpeed = Vector2.one;
 
 
         public SurfaceEmbedType Type { get => type; }
@@ -42,6 +43,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         public bool IncludeTrimEnd { get => includeTrimEnd; set => includeTrimEnd = value; }
         public Vector2 RepeatFlashingUV { get => repeatFlashingUV; set => repeatFlashingUV = value; }
         public Vector2 RepeatFlashingUVOffset { get => repeatFlashingUVOffset; set => repeatFlashingUVOffset = value; }
+        //public Vector2 RepeatFlashingUVOffsetScaled { get => repeatFlashingUV * repeatFlashingUVOffset; }
 
 
         public float GetRangeLength()
@@ -139,8 +141,24 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         {
             var tristripsCollections = GetTristrips(Type, true);
             gcmfTemplates = GetGcmfTemplates(Type);
+            ScaleTextureScrollFields(gcmfTemplates);
             var gcmf = GcmfTemplate.CreateGcmf(gcmfTemplates, tristripsCollections, ref textureHashesToIndex);
             return gcmf;
+        }
+
+        public void ScaleTextureScrollFields(GcmfTemplate[] gcmfTemplates)
+        {
+            foreach (var gcmfTemplate in gcmfTemplates)
+            {
+                if (gcmfTemplate.TextureScrollFields == null)
+                    continue;
+
+                foreach (var textureScrollField in gcmfTemplate.TextureScrollFields)
+                {
+                    textureScrollField.u *= scrollSpeed.x;
+                    textureScrollField.v *= scrollSpeed.y;
+                }
+            }
         }
 
         public GcmfTemplate[] GetGcmfTemplates(SurfaceEmbedType embedType)
