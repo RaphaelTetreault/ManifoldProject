@@ -117,8 +117,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
             // Triggers
             {
-                var arcadeCheckpointTriggers = GameObject.FindObjectsOfType<GfzTimeExtensionTrigger>();
-                scene.timeExtensionTriggers = GetGfzValues(arcadeCheckpointTriggers);
+                var timeExtensionTriggers = GameObject.FindObjectsOfType<GfzTimeExtensionTrigger>();
+                scene.timeExtensionTriggers = GetGfzValues(timeExtensionTriggers);
 
                 // This trigger type is a mess... Get all 3 representations, combine, assign.
                 // Collect all trigger types. They all get converted to the same GFZ base type.

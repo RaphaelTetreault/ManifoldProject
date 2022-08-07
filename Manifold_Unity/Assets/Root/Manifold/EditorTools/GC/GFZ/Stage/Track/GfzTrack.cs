@@ -129,7 +129,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             //
             var checkpointMatrixBoundsXZ = CheckpointGrid.GetMatrixBoundsXZ(allCheckpoints);
             var trackCheckpointMatrix = new CheckpointGrid();
-            trackCheckpointMatrix.GenerateIndexes(checkpointMatrixBoundsXZ, allCheckpoints);
+            trackCheckpointMatrix.GenerateIndexesBlanks(checkpointMatrixBoundsXZ, allCheckpoints);
 
             //
             TrackMinHeight = trackMinHeight;

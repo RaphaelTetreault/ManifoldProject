@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
+    [CanEditMultipleObjects]
     [CustomEditor(typeof(GfzCheckpointGenerator))]
     public class GfzCheckpointGeneratorEditor : Editor
     {
