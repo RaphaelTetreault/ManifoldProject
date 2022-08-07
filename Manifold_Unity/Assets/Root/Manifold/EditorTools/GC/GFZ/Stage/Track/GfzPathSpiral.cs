@@ -18,6 +18,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         [SerializeField, Min(8)] private int keysPer360Degrees = 36;
         [SerializeField] private AnimationCurveTRS animationCurveTRS = new();
 
+        // Rather than linear interpolation, do smooth cubic interpolation
+        private static readonly AnimationCurve RadiiCubicSmooth = new AnimationCurve(new(0, 0), new (1, 1));
+
         protected override AnimationCurveTRS TrackSegmentAnimationCurveTRS => animationCurveTRS;
 
         public override AnimationCurveTRS CreateAnimationCurveTRS(bool isGfzCoordinateSpace)
@@ -139,6 +142,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return animationCurveTRS.Position.Evaluate(time);
         }
 
+        public float CubicLerp(float a, float b, float time01)
+        {
+            float cubicTime = RadiiCubicSmooth.Evaluate(time01);
+            float value = Mathf.Lerp(a, b, cubicTime);
+            return value;
+        }
+
         public override void UpdateTRS()
         {
             var startPosition = GetPosition();
@@ -168,7 +178,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 float stepDistanceRadians = (stepDistanceDegrees % 360) * Mathf.Deg2Rad; // mod to increase precision
 
                 // Compute radius point
-                float radius = Mathf.Lerp(radius0, radius1, time);
+                float radius = CubicLerp(radius0, radius1, time);
                 float cos = Mathf.Cos(stepDistanceRadians);
                 float sin = Mathf.Sin(stepDistanceRadians);
                 // Compute position
