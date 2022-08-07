@@ -37,6 +37,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
                 throw exception;
             }
+
+            //ExportScene(true);
         }
 
         public static void ExportScene(bool verbose)

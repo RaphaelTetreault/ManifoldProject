@@ -79,8 +79,16 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
                 // CREATE CHECKPOINTS
                 var checkpointGenerators = rootTrackSegmentNode.GetComponentsInChildren<GfzCheckpointGenerator>();
-                // For now, should only have 1
-                if (checkpointGenerators.Length != 1)
+
+                // If the user is missing the component, just add it
+                if (checkpointGenerators.Length == 0)
+                {
+                    var generator = rootTrackSegmentNode.gameObject.AddComponent<GfzCheckpointGenerator>();
+                    checkpointGenerators = new GfzCheckpointGenerator[] { generator };
+                    Debug.Log($"Added a {nameof(GfzCheckpointGenerator)} to {rootTrackSegmentNode.name}.");
+                }
+                // Otherwise, we expect only 1
+                else if (checkpointGenerators.Length != 1)
                 {
                     var msg =
                         $"{rootTrackSegmentNode.name} does not have exactly 1 {nameof(GfzCheckpointGenerator)} in it " +
@@ -174,6 +182,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             int lastIndex = allRootSegments.Length - 1;
             allRootSegments[0].Prev = allRootSegments[lastIndex];
             allRootSegments[lastIndex].Next = allRootSegments[0];
+        }
+
+        public void RefreshSegmentNodes()
+        {
+            FindChildSegments();
+            AssignContinuity();
         }
 
         public GfzPathSegment[] GetAllRootSegments()

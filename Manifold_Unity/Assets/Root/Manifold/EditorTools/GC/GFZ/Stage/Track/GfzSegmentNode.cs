@@ -205,6 +205,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public virtual void InvokeUpdates()
         {
+            UpdateTrackSegmentNodes();
+
             if (autoGenerateTRS)
                 UpdateTRS();
 
@@ -230,5 +232,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
         }
 
+        private void UpdateTrackSegmentNodes()
+        {
+            var track = GetComponentInParent<GfzTrack>();
+            if (track != null)
+            {
+                track.RefreshSegmentNodes();
+            }
+        }
     }
 }
