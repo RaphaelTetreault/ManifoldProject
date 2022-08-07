@@ -113,8 +113,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         private void OnDrawGizmosSelected ()
         {
+            var pos = CreateHierarchichalAnimationCurveTRS(false).EvaluateHierarchyPosition(0);
             Gizmos.color = Color.red;
-            Gizmos.DrawCube(transform.position, Vector3.one * 10f);
+            Gizmos.DrawSphere(pos, 10f);
         }
 
 
