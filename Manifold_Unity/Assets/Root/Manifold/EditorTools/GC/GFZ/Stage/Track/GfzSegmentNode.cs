@@ -26,13 +26,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         public HierarchichalAnimationCurveTRS CreateHierarchichalAnimationCurveTRS(bool isGfzCoordinateSpace)
         {
             var parentHacTRS = GetParentHacTRS(isGfzCoordinateSpace, out bool isRoot);
-            var staticMatrix = GetStaticMatrix(isGfzCoordinateSpace, isRoot);
+            //var staticMatrix = GetStaticMatrix(isGfzCoordinateSpace, isRoot);
             var animTRS = CreateAnimationCurveTRS(isGfzCoordinateSpace);
 
             var hacTRS = new HierarchichalAnimationCurveTRS()
             {
                 Parent = parentHacTRS,
-                StaticMatrix = staticMatrix,
+                //StaticMatrix = staticMatrix,
                 AnimationCurveTRS = animTRS,
             };
 
@@ -205,6 +205,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public virtual void InvokeUpdates()
         {
+            UpdateTrackSegmentNodes();
+
             if (autoGenerateTRS)
                 UpdateTRS();
 
@@ -230,5 +232,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
         }
 
+        private void UpdateTrackSegmentNodes()
+        {
+            var track = GetComponentInParent<GfzTrack>();
+            if (track != null)
+            {
+                track.RefreshSegmentNodes();
+            }
+        }
     }
 }

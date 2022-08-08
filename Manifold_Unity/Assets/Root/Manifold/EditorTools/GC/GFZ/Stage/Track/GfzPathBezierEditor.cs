@@ -40,6 +40,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         SerializedProperty outterLineThickness;
         SerializedProperty animationCurveTRS;
         SerializedProperty autoGenerateTRS;
+        SerializedProperty keysBetweenBezierPoints;
 
         private bool IsValidIndex(int selectedIndex)
         {
@@ -60,6 +61,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
             animationCurveTRS = serializedObject.FindProperty(nameof(animationCurveTRS));
             autoGenerateTRS = serializedObject.FindProperty(nameof(autoGenerateTRS));
+            keysBetweenBezierPoints = serializedObject.FindProperty(nameof(keysBetweenBezierPoints));
         }
 
         private void OnSceneGUI()
@@ -138,6 +140,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             GuiSimple.Label("Animation Curve TRS", EditorStyles.boldLabel);
             {
                 EditorGUILayout.PropertyField(autoGenerateTRS);
+                EditorGUILayout.PropertyField(keysBetweenBezierPoints);
 
                 GUILayout.BeginHorizontal();
                 if (GUILayout.Button($"Generate Animation Curve TRS"))
@@ -245,6 +248,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
 
             // SETTINGS
+            EditorGUILayout.Space();
             settingsTabFoldout = EditorGUILayout.Foldout(settingsTabFoldout, "Settings", EditorStyles.foldoutHeader);
             //GuiSimple.Label("Editor Settings", EditorStyles.boldLabel);
             if (settingsTabFoldout)
@@ -256,7 +260,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 EditorGUILayout.PropertyField(viewDirectionScale);
                 EditorGUILayout.PropertyField(viewDirectionArrowsPerCurve);
             }
-            EditorGUILayout.Space();
 
             // Uncomment for debugging
             //DrawDefaultInspector();
@@ -302,10 +305,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
             // WIDTH
             EditorGUILayout.Space();
-            GuiSimple.Label("Scale.X", EditorStyles.boldLabel);
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.PrefixLabel("Scale.X");
             EditorGUI.indentLevel++;
             EditorGUI.BeginChangeCheck();
-            bezier.width = GuiSimple.Float(nameof(bezier.width), bezier.width);
+            bezier.width = EditorGUILayout.FloatField(bezier.width);
             if (EditorGUI.EndChangeCheck())
             {
                 Undo.RecordObject(spline, $"Set bézier point [{selectedIndex}] width");
@@ -313,7 +317,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 EditorUtility.SetDirty(spline);
             }
             EditorGUI.BeginChangeCheck();
-            bezier.widthTangentMode = GuiSimple.EnumPopup(nameof(bezier.widthTangentMode), bezier.widthTangentMode);
+            bezier.widthTangentMode = (AnimationUtility.TangentMode)EditorGUILayout.EnumPopup(bezier.widthTangentMode);
             if (EditorGUI.EndChangeCheck())
             {
                 Undo.RecordObject(spline, $"Set bézier point [{selectedIndex}] width tangent mode");
@@ -321,13 +325,14 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 EditorUtility.SetDirty(spline);
             }
             EditorGUI.indentLevel--;
+            EditorGUILayout.EndHorizontal();
 
             // HEIGHT
-            EditorGUILayout.Space();
-            GuiSimple.Label("Scale.Y", EditorStyles.boldLabel);
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.PrefixLabel("Scale.Y");
             EditorGUI.indentLevel++;
             EditorGUI.BeginChangeCheck();
-            bezier.height = GuiSimple.Float(nameof(bezier.height), bezier.height);
+            bezier.height = EditorGUILayout.FloatField(bezier.height);
             if (EditorGUI.EndChangeCheck())
             {
                 Undo.RecordObject(spline, $"Set bézier point [{selectedIndex}] height");
@@ -335,7 +340,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 EditorUtility.SetDirty(spline);
             }
             EditorGUI.BeginChangeCheck();
-            bezier.heightTangentMode = GuiSimple.EnumPopup(nameof(bezier.heightTangentMode), bezier.heightTangentMode);
+            bezier.heightTangentMode = (AnimationUtility.TangentMode)EditorGUILayout.EnumPopup(bezier.heightTangentMode);
             if (EditorGUI.EndChangeCheck())
             {
                 Undo.RecordObject(spline, $"Set bézier point [{selectedIndex}] height tangent mode");
@@ -343,13 +348,14 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 EditorUtility.SetDirty(spline);
             }
             EditorGUI.indentLevel--;
+            EditorGUILayout.EndHorizontal();
 
             // ROLL
-            EditorGUILayout.Space();
-            GuiSimple.Label("Rotation.Z", EditorStyles.boldLabel);
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.PrefixLabel("Rotation.Z");
             EditorGUI.indentLevel++;
             EditorGUI.BeginChangeCheck();
-            bezier.roll = GuiSimple.Float(nameof(bezier.roll), bezier.roll);
+            bezier.roll = EditorGUILayout.FloatField(bezier.roll);
             if (EditorGUI.EndChangeCheck())
             {
                 Undo.RecordObject(spline, $"Set bézier point [{selectedIndex}] roll tangent mode");
@@ -357,7 +363,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 EditorUtility.SetDirty(spline);
             }
             EditorGUI.BeginChangeCheck();
-            bezier.rollTangentMode = GuiSimple.EnumPopup(nameof(bezier.rollTangentMode), bezier.rollTangentMode);
+            bezier.rollTangentMode = (AnimationUtility.TangentMode)EditorGUILayout.EnumPopup(bezier.rollTangentMode);
             if (EditorGUI.EndChangeCheck())
             {
                 Undo.RecordObject(spline, $"Set bézier point [{selectedIndex}] roll tangent mode");
@@ -365,6 +371,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 EditorUtility.SetDirty(spline);
             }
             //EditorGUI.indentLevel--;
+            EditorGUILayout.EndHorizontal();
         }
 
         private void DrawInTangent(BezierPoint bezier, int index)

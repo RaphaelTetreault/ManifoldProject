@@ -765,7 +765,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                     cube.name = $"time {t:0.000}";
                     cube.transform.parent = subgroup.transform;
 
-                    var mtx = GetMatrixRecursive(trackSegment, t);
+                    var mtx = GetMatrixRecursive(trackSegment, t, -1f);
                     cube.transform.localPosition = mtx.Position();
                     cube.transform.localRotation = mtx.Rotation();
                     var scale = mtx.Scale();
@@ -777,9 +777,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             return root.transform;
         }
 
-        public static Matrix4x4 GetMatrixRecursive(TagTrackSegment trackSegment, float time)
+        public static Matrix4x4 GetMatrixRecursive(TagTrackSegment trackSegment, float timeNormalized, float parentMaxTime)
         {
-            var selfAnimationMtx = GetAnimationMatrix(trackSegment, time);
+            var selfAnimationMtx = GetAnimationMatrix(trackSegment, timeNormalized, parentMaxTime, out float selfMaxTime);
             //var staticMtx = GetStaticMatrix(trackSegment);
             //var mtx = animationMtx * staticMtx;
 
@@ -827,7 +827,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                     //}
                     //else
                     //{
-                        childAnimationMatrix = GetMatrixRecursive(child, time);
+                        childAnimationMatrix = GetMatrixRecursive(child, timeNormalized, selfMaxTime);
                     //}
 
                     return selfAnimationMtx * childAnimationMatrix;
@@ -847,47 +847,56 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         //    return staticMtx;
         //}
 
-        public static Matrix4x4 GetAnimationMatrix(TagTrackSegment trackSegment, float timeNormalized)
+        public static Matrix4x4 GetAnimationMatrix(TagTrackSegment trackSegment, float timeNormalized, float parentMaxTime, out float selfMaxTime)
         {
-            // Get max times
             var curves = trackSegment.curves;
-            float3 tp = new float3(
+            selfMaxTime = Max(
+                parentMaxTime,
                 GetCurveMaxTime(curves.Position.x),
                 GetCurveMaxTime(curves.Position.y),
-                GetCurveMaxTime(curves.Position.z));
-            float3 tr = new float3(
+                GetCurveMaxTime(curves.Position.z),
                 GetCurveMaxTime(curves.Rotation.x),
                 GetCurveMaxTime(curves.Rotation.y),
-                GetCurveMaxTime(curves.Rotation.z));
-            float3 ts = new float3(
+                GetCurveMaxTime(curves.Rotation.z),
                 GetCurveMaxTime(curves.Scale.x),
                 GetCurveMaxTime(curves.Scale.y),
                 GetCurveMaxTime(curves.Scale.z));
-            var t = timeNormalized;
+            var t = timeNormalized * selfMaxTime;
 
             float3 position = new float3(
-                curves.Position.x.EvaluateDefault(t * tp.x, trackSegment.fallbackPosition.x),
-                curves.Position.y.EvaluateDefault(t * tp.y, trackSegment.fallbackPosition.y),
-                -curves.Position.z.EvaluateDefault(t * tp.z, trackSegment.fallbackPosition.z));
+                curves.Position.x.EvaluateDefault(t, trackSegment.fallbackPosition.x),
+                curves.Position.y.EvaluateDefault(t, trackSegment.fallbackPosition.y),
+                -curves.Position.z.EvaluateDefault(t, trackSegment.fallbackPosition.z));
             float3 rotation = new float3(
-                -curves.Rotation.x.EvaluateDefault(t * tr.x, trackSegment.fallbackRotation.x),
-                -curves.Rotation.y.EvaluateDefault(t * tr.y, trackSegment.fallbackRotation.y),
-                curves.Rotation.z.EvaluateDefault(t * tr.z, trackSegment.fallbackRotation.z));
+                -curves.Rotation.x.EvaluateDefault(t, trackSegment.fallbackRotation.x),
+                -curves.Rotation.y.EvaluateDefault(t, trackSegment.fallbackRotation.y),
+                curves.Rotation.z.EvaluateDefault(t, trackSegment.fallbackRotation.z));
             float3 scale = new float3(
-                curves.Scale.x.EvaluateDefault(t * ts.x, trackSegment.fallbackScale.x),
-                curves.Scale.y.EvaluateDefault(t * ts.y, trackSegment.fallbackScale.y),
-                curves.Scale.z.EvaluateDefault(t * ts.z, trackSegment.fallbackScale.z));
+                curves.Scale.x.EvaluateDefault(t, trackSegment.fallbackScale.x),
+                curves.Scale.y.EvaluateDefault(t, trackSegment.fallbackScale.y),
+                curves.Scale.z.EvaluateDefault(t, trackSegment.fallbackScale.z));
 
             var rx = Quaternion.Euler(rotation.x, 0, 0);
             var ry = Quaternion.Euler(0, rotation.y, 0);
             var rz = Quaternion.Euler(0, 0, rotation.z);
-            //var qr = rx * ry * rz;
             var qr = rz * ry * rx;
-            //var qr = rz * rx * ry;
 
-            //var animationMtx = Matrix4x4.TRS(position, Quaternion.Euler(rotation), scale);
             var animationMtx = Matrix4x4.TRS(position, qr, scale);
             return animationMtx;
+        }
+
+        private static float Max(params float[] maxValues)
+        {
+            float maximum = float.NegativeInfinity;
+            foreach (var maxValue in maxValues)
+            {
+                bool isGreaterTahnCurrent = maxValue > maximum;
+                if (isGreaterTahnCurrent)
+                {
+                    maximum = maxValue;
+                }
+            }
+            return maximum;
         }
 
         public static float GetCurveMaxTime(UnityEngine.AnimationCurve curve)

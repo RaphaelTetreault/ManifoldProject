@@ -448,8 +448,8 @@ namespace Manifold.EditorTools.GC.GFZ
                 for (int i = 0; i < intervals; i++)
                 {
                     var time = (i * intervalsInverse) * segmentLength;
-                    var matrix0 = hacTRS.EvaluateAnimationMatrices(time);
-                    var matrix1 = hacTRS.EvaluateAnimationMatrices(time + 3f);// 3 units forward
+                    var matrix0 = hacTRS.EvaluateHierarchyMatrix(time);
+                    var matrix1 = hacTRS.EvaluateHierarchyMatrix(time + 3f);// 3 units forward
                     var matrices01 = new Matrix4x4[] { matrix0, matrix1 };
 
                     var endpointA = new Vector3(-0.5f, +0.10f, 0);
