@@ -97,21 +97,28 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public void ValidateMeshDisplay()
         {
+            // If null, see if we have a child already. Important check on Reset().
             if (MeshDisplay == null)
-            {
-                var meshDisplayGobj = new GameObject("Mesh Display");
-                meshDisplayGobj.transform.parent = this.transform;
+                MeshDisplay = GetComponentInChildren<MeshDisplay>();
 
-                var meshDisplay = meshDisplayGobj.AddComponent<MeshDisplay>();
-                MeshDisplay = meshDisplay;
-
-                // Hide this object in inspector
-                meshDisplay.SetHideGameObjectInEditor(true);
-            }
+            // If not, it is still null, so make an instance.
+            if (MeshDisplay == null)
+                CreateMeshDisplay();
         }
 
+        private void CreateMeshDisplay()
+        {
+            var meshDisplayGobj = new GameObject("Mesh Display");
+            meshDisplayGobj.transform.parent = this.transform;
 
-        private void OnDrawGizmosSelected ()
+            var meshDisplay = meshDisplayGobj.AddComponent<MeshDisplay>();
+            MeshDisplay = meshDisplay;
+
+            // Hide this object in inspector
+            meshDisplay.SetHideGameObjectInEditor(true);
+        }
+
+        private void OnDrawGizmosSelected()
         {
             var pos = CreateHierarchichalAnimationCurveTRS(false).EvaluateHierarchyPosition(0);
             Gizmos.color = Color.red;

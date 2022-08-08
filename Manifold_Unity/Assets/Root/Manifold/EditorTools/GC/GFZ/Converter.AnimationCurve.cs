@@ -191,6 +191,24 @@ namespace Manifold.EditorTools.GC.GFZ
             return curve.Evaluate(time);
         }
 
+        public static void SetGfzTangentModes(this UnityEngine.AnimationCurve curve, AnimationUtility.TangentMode[] modes)
+        {
+            for (int i = 0; i < curve.length - 1; i++)
+            {
+                var mode = modes[i];
+                AnimationUtility.SetKeyRightTangentMode(curve, i + 0, mode);
+                AnimationUtility.SetKeyLeftTangentMode(curve, i + 1, mode);
+            }
+        }
+        public static void EnforceGfzTangentModes(this UnityEngine.AnimationCurve curve)
+        {
+            for (int i = 0; i < curve.length - 1; i++)
+            {
+                var mode = AnimationUtility.GetKeyRightTangentMode(curve, i);
+                AnimationUtility.SetKeyRightTangentMode(curve, i + 0, mode);
+                AnimationUtility.SetKeyLeftTangentMode(curve, i + 1, mode);
+            }
+        }
 
     }
 }

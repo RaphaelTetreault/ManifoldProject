@@ -341,6 +341,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 keys[i] = key;
             }
             offsetCurve = new UnityEngine.AnimationCurve(keys);
+            offsetCurve.EnforceGfzTangentModes();
             InvokeUpdates();
         }
 

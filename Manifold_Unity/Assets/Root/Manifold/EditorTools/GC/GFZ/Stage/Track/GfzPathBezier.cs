@@ -498,13 +498,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 var points = this.points.ToArray();
                 // ROTATION.Z
                 (float[] rolls, var rollModes) = GetRolls(points);
-                trs.Rotation.z = CreateCurve(rolls, rollModes, distances);
+                trs.Rotation.z = CreateCurve(rolls, rollModes, distances, samplesBetweenControlsPoints);
                 // SCALE.X
                 (float[] widths, var widthModes) = GetWidths(points);
-                trs.Scale.x = CreateCurve(widths, widthModes, distances);
+                trs.Scale.x = CreateCurve(widths, widthModes, distances, samplesBetweenControlsPoints);
                 // SCALE.Y
                 (float[] heights, var heightModes) = GetHeights(points);
-                trs.Scale.y = CreateCurve(heights, heightModes, distances);
+                trs.Scale.y = CreateCurve(heights, heightModes, distances, samplesBetweenControlsPoints);
                 // SCALE.Z, const scale of 1f
                 var key0 = new Keyframe(0, 1f);
                 var key1 = new Keyframe((float)totalDistance, 1f);
@@ -616,7 +616,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return animationCurve;
         }
 
-        public AnimationCurve CreateCurve(float[] values, AnimationUtility.TangentMode[] modes, double[] distances)
+        public AnimationCurve CreateCurve(float[] values, AnimationUtility.TangentMode[] modes, double[] distances, int subdivisions)
         {
             float time = 0f;
             var curve = new AnimationCurve();
@@ -637,14 +637,15 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             // Set tange mode for all keys.
             // GFZ has tangent modes between keys, not on left/right of keys.
             // The below assigns it as so.
-            for (int i = 0; i < curve.length - 1; i++)
-            {
-                var mode = modes[i];
-                AnimationUtility.SetKeyRightTangentMode(curve, i + 0, mode);
-                AnimationUtility.SetKeyLeftTangentMode(curve, i + 1, mode);
-            }
+            curve.SetGfzTangentModes(modes);
+            //for (int i = 0; i < curve.length - 1; i++)
+            //{
+            //    var mode = modes[i];
+            //    AnimationUtility.SetKeyRightTangentMode(curve, i + 0, mode);
+            //    AnimationUtility.SetKeyLeftTangentMode(curve, i + 1, mode);
+            //}
 
-            curve = SubdivideCurve(curve, 32);
+            curve = SubdivideCurve(curve, subdivisions);
 
             return curve;
         }
