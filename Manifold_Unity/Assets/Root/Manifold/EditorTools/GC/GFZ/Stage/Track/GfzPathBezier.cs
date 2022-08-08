@@ -47,6 +47,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         [SerializeField]
         private float outterLineThickness = 2f;
 
+        [Range(1, 32)]
+        [SerializeField]
+        private int keysBetweenBezierPoints = 8;
+
         [SerializeField]
         private AnimationCurveTRS animationCurveTRS = new();
 
@@ -191,6 +195,18 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         public Quaternion GetOrientation(float time, int index)
         {
             var xy = Quaternion.LookRotation(GetDirection(time, index));
+            return xy;
+
+            //var z = Quaternion.Euler(0, 0, 0);
+            //var orientation = xy * z;
+            // Re-orient as per transform orientation
+            //orientation = orientation * transform.rotation;
+            //return orientation;
+        }
+        public Quaternion GetOrientation(float time, int index, Vector3 up)
+        {
+            var direction = GetDirection(time, index);
+            var xy = Quaternion.LookRotation(direction, up);
             return xy;
 
             //var z = Quaternion.Euler(0, 0, 0);
@@ -374,8 +390,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             CallOnEdited();
         }
 
-        public void Reset()
+        protected override void Reset()
         {
+            base.Reset();
+
             points = new List<BezierPoint>()
             {
                 // Mandatory first node
@@ -418,7 +436,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         }
 
 
-        public AnimationCurveTRS CreateTRS(int samplesBetweenControlsPoints = 32)
+        public AnimationCurveTRS CreateTRS(int samplesBetweenControlsPoints = 16)
         {
             var trs = new AnimationCurveTRS();
 
@@ -443,7 +461,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             //
             Vector3 basePosition = GetPosition();
 
-            var previousRotation = GetOrientation(0, 0).eulerAngles;
+            Vector3 previousRotation = GetOrientation(0, 0).eulerAngles;
             double currDistance = 0;
             for (int i = 0; i < numCurves; i++)
             {
@@ -501,7 +519,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public void UpdateAnimationCurveTRS()
         {
-            animationCurveTRS = CreateTRS();
+            animationCurveTRS = CreateTRS(keysBetweenBezierPoints);
             //SegmentLength = animationCurveTRS.GetMaxTime();
         }
 
@@ -717,7 +735,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public override void UpdateTRS()
         {
-            animationCurveTRS = CreateTRS();
+            animationCurveTRS = CreateTRS(keysBetweenBezierPoints);
         }
 
     }

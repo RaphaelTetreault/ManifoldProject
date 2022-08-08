@@ -15,12 +15,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         /// <param name="powerBase"></param>
         /// <param name="powerExp"></param>
         /// <returns></returns>
-        public static double GetDistanceBetweenRepeated(IPositionEvaluable evaluable, double timeStart, double timeEnd, float minDelta = 0.01f,  int powerBase = 2, int powerExp = 1)
+        public static double GetDistanceBetweenRepeated(IPositionEvaluable evaluable, double timeStart, double timeEnd, float minDelta = 0.01f, int powerBase = 2, int powerExp = 1)
         {
             const int powerExpMin = 1;
             const int powerExpMax = 20;
             if (powerExp < powerExpMin || powerExp >= powerExpMax)
-                throw new ArgumentOutOfRangeException($"{nameof(powerExp)} must be between {powerExpMin} and {powerExpMax-2}");
+                throw new ArgumentOutOfRangeException($"{nameof(powerExp)} must be between {powerExpMin} and {powerExpMax - 2}");
 
             // Limit on how many cycles we can do
             const int maxIterations = 1 << powerExpMax; // 2^20 = 1,048,576
@@ -97,9 +97,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public static float3 CleanRotation(float3 lastEulers, float3 currEulers, float minDelta = 180f)
         {
-            var x = CleanRotation(lastEulers.x, currEulers.x, minDelta);
-            var y = CleanRotation(lastEulers.y, currEulers.y, minDelta);
-            var z = CleanRotation(lastEulers.z, currEulers.z, minDelta);
+            var x = CleanRotation2(lastEulers.x, currEulers.x, minDelta);
+            var y = CleanRotation2(lastEulers.y, currEulers.y, minDelta);
+            var z = CleanRotation2(lastEulers.z, currEulers.z, minDelta);
             return new float3(x, y, z);
         }
 
@@ -117,6 +117,28 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 currAngle += minDelta * 2;
             }
 
+            return currAngle;
+        }
+
+        public static float CleanRotation2(float lastAngle, float currAngle, float minDelta = 180f)
+        {
+            float delta = currAngle - lastAngle;
+            float sign = math.sign(delta);
+            float absDelta = math.abs(delta);
+
+            bool doAdjustment = absDelta > minDelta;
+            if (doAdjustment)
+            {
+                bool isPosition = sign > 0;
+                if (isPosition)
+                {
+                    currAngle -= 360f;
+                }
+                else
+                {
+                    currAngle += 360f;
+                }
+            }
             return currAngle;
         }
 
