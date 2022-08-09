@@ -52,6 +52,18 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     else
                         return GcmfTemplates.MuteCityCOM.RoadNoDividers();
 
+                case RoadMeshStyle.OuterSpace:
+                    return new GcmfTemplate[]
+                    {
+                        GcmfTemplates.Debug.CreateLitVertexColored(),
+                        GcmfTemplates.Debug.CreateLitVertexColored(),
+                        GcmfTemplates.Debug.CreateLitVertexColored(),
+                        GcmfTemplates.Debug.CreateLitVertexColored(),
+                        GcmfTemplates.Debug.CreateLitVertexColored(),
+                        GcmfTemplates.Debug.CreateLitVertexColored(),
+                        GcmfTemplates.Debug.CreateLitVertexColored(),
+                    };
+
                 default:
                     return new GcmfTemplate[] { GcmfTemplates.Debug.CreateLitVertexColored() };
             }
@@ -82,6 +94,17 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                         TristripTemplates.Road.MuteCity.CreateRoadTrim(matrices, this, maxTime),
                         TristripTemplates.Road.MuteCity.CreateRoadEmbellishments(matrices, this, maxTime),
                         TristripTemplates.Road.MuteCity.CreateRails(matrices, this),
+                    };
+                case RoadMeshStyle.OuterSpace:
+                    return new Tristrip[][]
+                    {
+                        TristripTemplates.Road.OuterSpace.Top(matrices, this),
+                        TristripTemplates.Road.OuterSpace.Bottom(matrices, this),
+                        TristripTemplates.Road.OuterSpace.Sides(matrices, this),
+                        TristripTemplates.Road.OuterSpace.CurbFlat(matrices, this),
+                        TristripTemplates.Road.OuterSpace.CurbAngle(matrices, this),
+                        TristripTemplates.Road.OuterSpace.RailsAngle(matrices, this),
+                        TristripTemplates.Road.OuterSpace.RailsLights(matrices, this),
                     };
 
                 default:

@@ -211,14 +211,17 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
             return tristrips;
         }
-        public static Tristrip[] GenerateTristripsLine(Matrix4x4[] matrices, Vector3 endpointA, Vector3 endpointB, Vector3 normal, int nTristrips, bool isBackFacing)
+        public static Tristrip[] GenerateTristripsLine(Matrix4x4[] matrices, Vector3 endpointA, Vector3 endpointB, Vector3 normal, int nTristrips, bool isBackFacing, bool isDoubleSided = false)
         {
             var vertices = CreateVerticesLine(nTristrips, endpointA, endpointB);
             var normals = ArrayUtility.DefaultArray(normal, vertices.Length);
             var tristrips = GenerateTristrips(matrices, vertices, normals);
 
             foreach (var tristrip in tristrips)
+            {
                 tristrip.isBackFacing = isBackFacing;
+                tristrip.isDoubleSided = isDoubleSided;
+            }
 
             return tristrips;
         }
