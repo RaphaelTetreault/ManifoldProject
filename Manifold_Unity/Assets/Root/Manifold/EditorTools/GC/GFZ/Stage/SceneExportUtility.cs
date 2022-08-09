@@ -29,13 +29,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             {
                 ExportScene(true);
             }
-            catch (Exception exception)
+            catch
             {
                 var mirroredObjects = GameObject.FindObjectsOfType<GfzMirroredObject>();
                 foreach (var mirroredObject in mirroredObjects)
                     mirroredObject.SetAsMirroredState();
 
-                throw exception;
+                throw;
             }
 
             //ExportScene(true);
