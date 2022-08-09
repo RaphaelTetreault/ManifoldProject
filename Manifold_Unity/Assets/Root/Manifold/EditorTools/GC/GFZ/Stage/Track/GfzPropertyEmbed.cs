@@ -7,8 +7,6 @@ using UnityEngine;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
-
-
     public class GfzPropertyEmbed : GfzSegmentShape
     {
         [SerializeField] private SurfaceEmbedType type = SurfaceEmbedType.RecoverLight;
@@ -59,8 +57,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         {
             RecoverLight = 0,
             RecoverDark = 5,
-            SlipGX = 2,
-            SlipAX = 4,
+            SlipLight = 2,
+            SlipDark = 4,
             Dirt = 3,
             Lava = 1,
         }
@@ -83,9 +81,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     return new Color32(240, 25, 55, 255); // hot-pink (sampled from GFZ)
                 case SurfaceEmbedType.Lava:
                     return new Color32(255, 95, 0, 255); // orange
-                case SurfaceEmbedType.SlipGX:
+                case SurfaceEmbedType.SlipLight:
                     return new Color32(109, 170, 210, 255); // GX blue (approximate, sampled from GFZ)
-                case SurfaceEmbedType.SlipAX:
+                case SurfaceEmbedType.SlipDark:
                     return new Color32(54, 99, 164, 255); // AX blue (approximate, sampled from GFZ)
                 case SurfaceEmbedType.Dirt:
                     return new Color32(78, 42, 12, 255); // brown (1.5x brightness compared to GFZ)
@@ -104,8 +102,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     return TrackEmbeddedPropertyType.IsRecover;
                 case SurfaceEmbedType.Lava:
                     return TrackEmbeddedPropertyType.IsDamage;
-                case SurfaceEmbedType.SlipGX:
-                case SurfaceEmbedType.SlipAX:
+                case SurfaceEmbedType.SlipLight:
+                case SurfaceEmbedType.SlipDark:
                     return TrackEmbeddedPropertyType.IsSlip;
                 case SurfaceEmbedType.Dirt:
                     return TrackEmbeddedPropertyType.IsDirt;
@@ -166,13 +164,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             // NOTE: Always do alpha last
             switch (embedType)
             {
-                case SurfaceEmbedType.SlipGX:
+                case SurfaceEmbedType.SlipLight:
                     return new GcmfTemplate[]
                     {
                         GcmfTemplates.General.CreateTrim(),
                         GcmfTemplates.General.CreateSlipGX(),
                     };
-                case SurfaceEmbedType.SlipAX:
+                case SurfaceEmbedType.SlipDark:
                     return new GcmfTemplate[]
                     {
                         GcmfTemplates.General.CreateTrim(),
@@ -229,13 +227,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
             switch (embedType)
             {
-                case SurfaceEmbedType.SlipGX:
+                case SurfaceEmbedType.SlipLight:
                     return new Tristrip[][]
                     {
                         TristripTemplates.General.CreateTrim(matrices, this),
                         TristripTemplates.General.CreateSlipGX(matrices, parentMatrices, this),
                     };
-                case SurfaceEmbedType.SlipAX:
+                case SurfaceEmbedType.SlipDark:
                     return new Tristrip[][]
                     {
                         TristripTemplates.General.CreateTrim(matrices, this),
