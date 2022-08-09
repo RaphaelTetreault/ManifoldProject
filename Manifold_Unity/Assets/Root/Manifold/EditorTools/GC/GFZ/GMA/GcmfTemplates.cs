@@ -1055,5 +1055,61 @@ namespace Manifold.EditorTools.GC.GFZ
                 };
             }
         }
+
+
+        public static class Aeropolis
+        {
+
+        }
+
+        public static class BigBlue
+        {
+
+        }
+
+        public static class CasinoPalace
+        {
+
+        }
+
+        public static class CosmoTerminal
+        {
+
+        }
+
+        public static class FireField
+        {
+
+        }
+
+        public static class GreenPlant
+        {
+
+        }
+
+        public static class Lightning
+        {
+
+        }
+
+        public static class OuterSpace
+        {
+
+        }
+
+        public static class PhantomRoad
+        {
+
+        }
+
+        public static class PortTown
+        {
+
+        }
+
+        public static class SandOcean
+        {
+
+        }
     }
 }

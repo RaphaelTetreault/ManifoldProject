@@ -62,6 +62,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                         GcmfTemplates.Debug.CreateLitVertexColored(),
                         GcmfTemplates.Debug.CreateLitVertexColored(),
                         GcmfTemplates.Debug.CreateLitVertexColored(),
+                        GcmfTemplates.Debug.CreateLitVertexColored(),
+                        GcmfTemplates.Debug.CreateLitVertexColored(),
                     };
 
                 default:
@@ -103,6 +105,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                         TristripTemplates.Road.OuterSpace.Sides(matrices, this),
                         TristripTemplates.Road.OuterSpace.CurbFlat(matrices, this),
                         TristripTemplates.Road.OuterSpace.CurbAngle(matrices, this),
+                        TristripTemplates.Road.OuterSpace.LaneDividerTop(matrices, this),
+                        TristripTemplates.Road.OuterSpace.LaneDividerSides(matrices, this),
                         TristripTemplates.Road.OuterSpace.RailsAngle(matrices, this),
                         TristripTemplates.Road.OuterSpace.RailsLights(matrices, this),
                     };

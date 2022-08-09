@@ -595,6 +595,20 @@ namespace Manifold.EditorTools.GC.GFZ
             }
 
 
+            public static Vector3 SurfaceNormalTOA(float opposite, float adjacent, Vector3 normal, bool isClockwise)
+            {
+                float angleRad = Mathf.Tan(opposite / adjacent);
+                float angleDeg = angleRad * Mathf.Rad2Deg;
+
+                // Clockwise rotation is ngative about the Z axis
+                if (isClockwise)
+                    angleDeg = -angleDeg;
+
+                Quaternion rotation = Quaternion.Euler(0, 0, angleDeg);
+                Vector3 rotatedNormal = rotation * normal;
+                return rotatedNormal;
+            }
+
 
             public static class MuteCity
             {
@@ -948,6 +962,10 @@ namespace Manifold.EditorTools.GC.GFZ
             {
                 const float kTrackThickness = 2f;
                 const float kSideInset = 2f;
+                const float kLaneDividerTop = 4f / 3f; // 1.33
+                const float kLaneDividerTopHalf = kLaneDividerTop / 2f;
+                const float kLaneDividerSide = 10f / 3f; // 3.33
+                const float kLaneDividerSideHalf = kLaneDividerSide / 2f;
 
                 /// <summary>
                 /// 
@@ -964,7 +982,6 @@ namespace Manifold.EditorTools.GC.GFZ
                     var mid0 = new Vector3(railHeight * side, railHeight + 0.5f);
                     var mid1 = new Vector3(railHeight * side, railHeight + 0.5f + gapHeight);
                     var top = new Vector3(0f, railHeight * 2 + 0.5f + gapHeight);
-                    // TODO: normals
                     Vector3 normalBottom = Quaternion.Euler(0, 0, 45 * side) * Vector3.up;
                     Vector3 normalTop = Quaternion.Euler(0, 0, 135 * side) * Vector3.up;
 
@@ -992,13 +1009,18 @@ namespace Manifold.EditorTools.GC.GFZ
                 }
                 private static void OuterSpaceSlantedSide(Matrix4x4[] matrices, float direction, float inset, float thickness, Vector3 normal, List<Tristrip> railTristrips)
                 {
-                    var matricesSide = GetNormalizedMatrixWithPositionOffset(matrices, direction);
                     var top = new Vector3(0.5f * -direction, +kCurbHeight, 0);
                     var bottom = new Vector3((0.5f + inset) * -direction, -thickness, 0);
-                    var tristrips = GenerateTristripsLine(matricesSide, top, bottom, normal, 1, direction > 0);
+                    var tristrips = GenerateTristripsLine(matrices, top, bottom, normal, 1, direction > 0);
                     railTristrips.AddRange(tristrips);
                 }
-
+                private static void OuterSpaceLaneDividerSide(Matrix4x4[] matrices, float direction, Vector3 normal, List<Tristrip> railTristrips)
+                {
+                    var innerSide = new Vector3(kLaneDividerTopHalf * direction, kCurbHeight, 0);
+                    var outerSide = new Vector3(kLaneDividerSideHalf * direction, 0, 0);
+                    var tristrips = GenerateTristripsLine(matrices, innerSide, outerSide, normal, 1, direction > 0);
+                    railTristrips.AddRange(tristrips);
+                }
 
                 public static Tristrip[] Top(Matrix4x4[] matrices, GfzShapeRoad road)
                 {
@@ -1096,6 +1118,28 @@ namespace Manifold.EditorTools.GC.GFZ
                     }
 
                     return railTristrips.ToArray();
+                }
+
+                public static Tristrip[] LaneDividerSides(Matrix4x4[] matrices, GfzShapeRoad road)
+                {
+                    var laneDividerSidesTristrips = new List<Tristrip>();
+                    var matricesDefault = GetMatricesDefaultScale(matrices, Vector3.one);
+                    float opposite = kCurbHeight;
+                    float adjacent = kLaneDividerSide - kLaneDividerTop;
+                    var normalLeft = SurfaceNormalTOA(opposite, adjacent, Vector3.up, false);
+                    var normalRight = SurfaceNormalTOA(opposite, adjacent, Vector3.up, true);
+                    OuterSpaceLaneDividerSide(matricesDefault, -1, normalLeft, laneDividerSidesTristrips);
+                    OuterSpaceLaneDividerSide(matricesDefault, +1, normalRight, laneDividerSidesTristrips);
+                    return laneDividerSidesTristrips.ToArray();
+                }
+
+                public static Tristrip[] LaneDividerTop(Matrix4x4[] matrices, GfzShapeRoad road)
+                {
+                    var matricesDefault = GetMatricesDefaultScale(matrices, Vector3.one);
+                    var left = new Vector3(-kLaneDividerTopHalf, kCurbHeight, 0); // left
+                    var right = new Vector3(+kLaneDividerTopHalf, kCurbHeight, 0); // right
+                    var tristrips = GenerateTristripsLine(matricesDefault, left, right, Vector3.up, 1, true);
+                    return tristrips;
                 }
             }
 
