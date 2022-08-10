@@ -51,22 +51,22 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             // Get scene parameters for general info
             var sceneParams = GetGfzSceneParameters();
 
-            // Before we do the work of exporting, see if the stage we are exporting (index/venue) align correctly.
-            // If we export as Lightning but the index is, say, 1, index 1 belongs to Mute City. Warn of potential issues.
-            bool isValidIndexForVenue = CourseUtility.GetVenue(sceneParams.courseIndex) == sceneParams.venue;
-            if (!isValidIndexForVenue)
-            {
-                var title = "Export Scene: Venue/Index Mismatch";
-                var msg =
-                    $"The assigned venue '{sceneParams.venue}' and the stage index being used '{sceneParams.courseIndex}' " +
-                    $"do not share the same venue. When loaded in-game, models will not load.";
+            //// Before we do the work of exporting, see if the stage we are exporting (index/venue) align correctly.
+            //// If we export as Lightning but the index is, say, 1, index 1 belongs to Mute City. Warn of potential issues.
+            //bool isValidIndexForVenue = CourseUtility.GetVenue(sceneParams.courseIndex) == sceneParams.venue;
+            //if (!isValidIndexForVenue)
+            //{
+            //    var title = "Export Scene: Venue/Index Mismatch";
+            //    var msg =
+            //        $"The assigned venue '{sceneParams.venue}' and the stage index being used '{sceneParams.courseIndex}' " +
+            //        $"do not share the same venue. When loaded in-game, models will not load.";
 
-                bool doExport = EditorUtility.DisplayDialog(title, msg, "Export Anyway");
-                if (!doExport)
-                {
-                    return;
-                }
-            }
+            //    bool doExport = EditorUtility.DisplayDialog(title, msg, "Export Anyway");
+            //    if (!doExport)
+            //    {
+            //        return;
+            //    }
+            //}
 
             // TODO: this should be in ColiScene
             GameCube.AmusementVision.GxGame compressFormat;
