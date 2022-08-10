@@ -392,7 +392,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         protected override void Reset()
         {
-            base.Reset();
+            //base.Reset();
 
             points = new List<BezierPoint>()
             {
