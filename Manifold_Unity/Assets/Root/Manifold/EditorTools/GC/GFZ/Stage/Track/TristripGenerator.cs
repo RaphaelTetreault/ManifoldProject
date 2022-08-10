@@ -226,6 +226,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return tristrips;
         }
 
+
         public static Vector3[] CreateVerticesLine(int nTristrips, Vector3 endpointA, Vector3 endpointB)
         {
             // Sample left and right vertices
@@ -282,24 +283,58 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
             return uvs;
         }
+        // DEPRECATE! Do full length rather than increment?
         public static Vector2[] CreateUVsForward(int vertexCount, float left = 0f, float right = 1f, float increment = 1f)
         {
             float forwardValue = 0;
             var uvs = new Vector2[vertexCount];
             for (int i = 0; i < vertexCount; i += 2) // process 2 at a time
             {
-                uvs[i + 0] = new Vector2(left , forwardValue);
+                uvs[i + 0] = new Vector2(left, forwardValue);
                 uvs[i + 1] = new Vector2(right, forwardValue);
                 forwardValue += increment;
             }
             return uvs;
         }
+
+
+        public static Vector2[] CreateUVsForwardLength(int vertexCount, float left, float right, float length)
+        {
+            var uvs = new Vector2[vertexCount];
+            for (int i = 0; i < vertexCount; i += 2) // process 2 at a time
+            {
+                float percentage = (i / ((float)vertexCount - 2));
+                float forwardValue = percentage * length;
+                uvs[i + 0] = new Vector2(left, forwardValue);
+                uvs[i + 1] = new Vector2(right, forwardValue);
+            }
+            return uvs;
+        }
+        public static Vector2[] CreateUVsSidewaysLength(int vertexCount, float bottom, float top, float length)
+        {
+            var uvs = new Vector2[vertexCount];
+            for (int i = 0; i < vertexCount; i += 2) // process 2 at a time
+            {
+                float percentage = (i / ((float)vertexCount - 2));
+                float forwardValue = percentage * length;
+                uvs[i + 0] = new Vector2(forwardValue, bottom);
+                uvs[i + 1] = new Vector2(forwardValue, top);
+            }
+            return uvs;
+        }
+
+        // TODO: deprecate, just do array copy then mutate copy
         public static Vector2[] ScaleUVs(Vector2[] uvs, Vector2 scale)
         {
             var newUVs = new Vector2[uvs.Length];
             for (int i = 0; i < uvs.Length; i++)
                 newUVs[i] = new Vector2(uvs[i].x * scale.x, uvs[i].y * scale.y);
             return newUVs;
+        }
+        public static void MutateScaleUVs(Vector2[] uvs, Vector2 scale)
+        {
+            for (int i = 0; i < uvs.Length; i++)
+                uvs[i] = new Vector2(uvs[i].x * scale.x, uvs[i].y * scale.y);
         }
         public static Vector2[] OffsetUVs(Vector2[] uvs, Vector2 offset)
         {
@@ -313,7 +348,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public static Vector2[] ScaleUVs(Vector2[] uvs, float scale)
             => ScaleUVs(uvs, new Vector2(scale, scale));
-        public static Vector2[] SwapUV(Vector2[] uvs)
+        public static Vector2[] SwizzleUVs(Vector2[] uvs)
         {
             var newUVs = new Vector2[uvs.Length];
             for (int i = 0; i < uvs.Length; i++)

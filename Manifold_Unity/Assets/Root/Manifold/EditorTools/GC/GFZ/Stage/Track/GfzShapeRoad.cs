@@ -55,15 +55,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 case RoadMeshStyle.OuterSpace:
                     return new GcmfTemplate[]
                     {
-                        GcmfTemplates.Debug.CreateLitVertexColored(),
-                        GcmfTemplates.Debug.CreateLitVertexColored(),
-                        GcmfTemplates.Debug.CreateLitVertexColored(),
-                        GcmfTemplates.Debug.CreateLitVertexColored(),
-                        GcmfTemplates.Debug.CreateLitVertexColored(),
-                        GcmfTemplates.Debug.CreateLitVertexColored(),
-                        GcmfTemplates.Debug.CreateLitVertexColored(),
-                        GcmfTemplates.Debug.CreateLitVertexColored(),
-                        GcmfTemplates.Debug.CreateLitVertexColored(),
+                        GcmfTemplates.OuterSpace.Top(),
+                        GcmfTemplates.OuterSpace.BottomAndSides(),
+                        GcmfTemplates.OuterSpace.CurbAndLaneDividerTop(),
+                        GcmfTemplates.OuterSpace.CurbAndLaneDividerSlope(),
+                        GcmfTemplates.OuterSpace.RailsAngle(),
+                        GcmfTemplates.OuterSpace.RailsLights(),
                     };
 
                 default:
@@ -100,15 +97,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 case RoadMeshStyle.OuterSpace:
                     return new Tristrip[][]
                     {
-                        TristripTemplates.Road.OuterSpace.Top(matrices, this),
-                        TristripTemplates.Road.OuterSpace.Bottom(matrices, this),
-                        TristripTemplates.Road.OuterSpace.Sides(matrices, this),
-                        TristripTemplates.Road.OuterSpace.CurbFlat(matrices, this),
-                        TristripTemplates.Road.OuterSpace.CurbAngle(matrices, this),
-                        TristripTemplates.Road.OuterSpace.LaneDividerTop(matrices, this),
-                        TristripTemplates.Road.OuterSpace.LaneDividerSides(matrices, this),
-                        TristripTemplates.Road.OuterSpace.RailsAngle(matrices, this),
-                        TristripTemplates.Road.OuterSpace.RailsLights(matrices, this),
+                        TristripTemplates.Road.OuterSpace.Top(matrices, this, maxTime),
+                        TristripTemplates.Road.OuterSpace.BottomAndSides(matrices, this, maxTime),
+                        TristripTemplates.Road.OuterSpace.CurbAndLaneDividerFlat(matrices, this, maxTime),
+                        TristripTemplates.Road.OuterSpace.CurbAndLaneDividerSlants(matrices, this, maxTime),
+                        TristripTemplates.Road.OuterSpace.RailsAngle(matrices, this, maxTime),
+                        TristripTemplates.Road.OuterSpace.RailsLights(matrices, this, maxTime),
                     };
 
                 default:

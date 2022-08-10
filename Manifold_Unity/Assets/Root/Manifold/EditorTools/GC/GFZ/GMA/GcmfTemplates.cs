@@ -96,7 +96,7 @@ namespace Manifold.EditorTools.GC.GFZ
                             LodBias = 0,
                             AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
                             Unk0x0C = 0,
-                            Unk0x12 = TexFlags0x10.CheapAlphaOnSelf | TexFlags0x10.unk4 | TexFlags0x10.unk5,
+                            Unk0x12 = TexFlags0x10.unk0_AlphaScreenSelf | TexFlags0x10.unk4 | TexFlags0x10.unk5,
                         },
                 };
                 var textureHashes = new string[]
@@ -159,7 +159,7 @@ namespace Manifold.EditorTools.GC.GFZ
                             LodBias = 0,
                             AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
                             Unk0x0C = 187,
-                            Unk0x12 = TexFlags0x10.CheapAlphaOnSelf | TexFlags0x10.unk4 | TexFlags0x10.unk5,
+                            Unk0x12 = TexFlags0x10.unk0_AlphaScreenSelf | TexFlags0x10.unk4 | TexFlags0x10.unk5,
                         },
                 };
                 var textureHashes = new string[]
@@ -271,7 +271,7 @@ namespace Manifold.EditorTools.GC.GFZ
                             LodBias = 0,
                             AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
                             Unk0x0C = 0,
-                            Unk0x12 = TexFlags0x10.CheapAlphaOnSelf | TexFlags0x10.unk4 | TexFlags0x10.unk5,
+                            Unk0x12 = TexFlags0x10.unk0_AlphaScreenSelf | TexFlags0x10.unk4 | TexFlags0x10.unk5,
                         },
                 };
                 var textureHashes = new string[]
@@ -450,7 +450,7 @@ namespace Manifold.EditorTools.GC.GFZ
                             LodBias = 0,
                             AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
                             Unk0x0C = 0,
-                            Unk0x12 = TexFlags0x10.CheapAlphaOnSelf | TexFlags0x10.unk4 | TexFlags0x10.unk5,
+                            Unk0x12 = TexFlags0x10.unk0_AlphaScreenSelf | TexFlags0x10.unk4 | TexFlags0x10.unk5,
                         },
                 };
                 var textureHashes = new string[]
@@ -615,7 +615,6 @@ namespace Manifold.EditorTools.GC.GFZ
 
         public static class MuteCity
         {
-
             public static GcmfTemplate RoadRails()
             {
                 var tevLayers = new TevLayer[]
@@ -861,7 +860,7 @@ namespace Manifold.EditorTools.GC.GFZ
                             LodBias = -10,
                             AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
                             Unk0x0C = 45,
-                            Unk0x12 = TexFlags0x10.CheapAlphaOnSelf | TexFlags0x10.unk4 | TexFlags0x10.unk5,
+                            Unk0x12 = TexFlags0x10.unk0_AlphaScreenSelf | TexFlags0x10.unk4 | TexFlags0x10.unk5,
                         },
                 };
                 var textureHashes = new string[]
@@ -987,7 +986,7 @@ namespace Manifold.EditorTools.GC.GFZ
                             LodBias = -10,
                             AnisotropicFilter = GXAnisotropy.GX_ANISO_4,
                             Unk0x0C = 14,
-                            Unk0x12 = TexFlags0x10.CheapAlphaOnSelf | TexFlags0x10.unk4 | TexFlags0x10.unk5,
+                            Unk0x12 = TexFlags0x10.unk0_AlphaScreenSelf | TexFlags0x10.unk4 | TexFlags0x10.unk5,
                         },
                 };
                 var textureHashes = new string[]
@@ -1094,6 +1093,297 @@ namespace Manifold.EditorTools.GC.GFZ
 
         public static class OuterSpace
         {
+            public static GcmfTemplate[] Road()
+            {
+                return new GcmfTemplate[]
+                {
+                    Top(),
+                };
+            }
+
+
+            public static GcmfTemplate Top()
+            {
+                // ST32 road1 submesh 0, tevs 3, 4, 5
+                var tevLayers = new TevLayer[]
+                {
+                    new TevLayer()
+                    {
+                        MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
+                        WrapMode = TextureWrapMode.repeatY | TextureWrapMode.unk6 | TextureWrapMode.unk7, // I added mirror y (not x due to swizzle)
+                        LodBias = -10,
+                        AnisotropicFilter = GXAnisotropy.GX_ANISO_4,
+                        Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
+                    },
+                    new TevLayer()
+                    {
+                        MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
+                        WrapMode = TextureWrapMode.mirrorX | TextureWrapMode.repeatY | TextureWrapMode.unk6 | TextureWrapMode.unk7,
+                        LodBias = -10,
+                        AnisotropicFilter = GXAnisotropy.GX_ANISO_4,
+                        Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
+                    },
+                    new TevLayer()
+                    {
+                        MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
+                        WrapMode = TextureWrapMode.mirrorX | TextureWrapMode.repeatY | TextureWrapMode.unk6 | TextureWrapMode.unk7,
+                        LodBias = 0,
+                        AnisotropicFilter = GXAnisotropy.GX_ANISO_4,
+                        Unk0x12 = TexFlags0x10.unk0_AlphaScreenSelf | TexFlags0x10.unk4 | TexFlags0x10.unk5,
+                    },
+                };
+                var textureHashes = new string[]
+                {
+                    "be583cee8cc59ff4aeb60955f7e7aeb5", // st32 tex 56, light beam?
+                    "7b6c73bfe0da891ca1abe2d94204daf5", // st32 tex 25, metal texture
+                    "6a2145909267e408d686325e8655a6ee", // st32 tex 24, square fade?
+                };
+                var material = new Material
+                {
+                    MaterialColor = new GXColor(0xb2b2b2ff),
+                    AmbientColor = new GXColor(0x7f7f7fff),
+                    SpecularColor = new GXColor(0x00000000),
+                    Unk0x10 = 0,
+                    Alpha = 255,
+                    UnkAlpha0x14 = -1,
+                };
+                var submesh = new Submesh()
+                {
+                    RenderFlags = 0,
+                    Material = material,
+                    UnkAlphaOptions = new UnkAlphaOptions(),
+                };
+                var template = new GcmfTemplate()
+                {
+                    IsTranslucid = false,
+                    Submesh = submesh,
+                    TevLayers = tevLayers,
+                    TextureHashes = textureHashes,
+                    TextureScrollFields = null,
+                };
+
+                return template;
+            }
+            public static GcmfTemplate BottomAndSides()
+            {
+                // ST32 road1 submesh 6, tevs 11
+                var tevLayers = new TevLayer[]
+                {
+                    new TevLayer()
+                    {
+                        MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
+                        WrapMode = TextureWrapMode.mirrorX | TextureWrapMode.repeatY | TextureWrapMode.unk6 | TextureWrapMode.unk7,
+                        LodBias = -10,
+                        AnisotropicFilter = GXAnisotropy.GX_ANISO_4,
+                        Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
+                    },
+                };
+                var textureHashes = new string[]
+                {
+                    "7b6c73bfe0da891ca1abe2d94204daf5", // st32 tex 25, metal texture
+                };
+                var material = new Material
+                {
+                    MaterialColor = new GXColor(0xb2b2b2ff),
+                    AmbientColor = new GXColor(0x7f7f7fff),
+                    SpecularColor = new GXColor(0x00000000),
+                    Unk0x10 = 0,
+                    Alpha = 255,
+                    UnkAlpha0x14 = -1,
+                };
+                var submesh = new Submesh()
+                {
+                    RenderFlags = RenderFlags.customMaterialUseAmbientColor,
+                    Material = material,
+                    UnkAlphaOptions = new UnkAlphaOptions(),
+                };
+                var template = new GcmfTemplate()
+                {
+                    IsTranslucid = false,
+                    Submesh = submesh,
+                    TevLayers = tevLayers,
+                    TextureHashes = textureHashes,
+                    TextureScrollFields = null,
+                };
+
+                return template;
+            }
+            public static GcmfTemplate CurbAndLaneDividerTop() // TODO: remove normals? - UV will prob be 2X, 1Y
+            {
+                // ST32 road1 submesh 1, tevs 6
+                var tevLayers = new TevLayer[]
+                {
+                    new TevLayer()
+                    {
+                        MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
+                        WrapMode = TextureWrapMode.mirrorX | TextureWrapMode.repeatY | TextureWrapMode.unk6 | TextureWrapMode.unk7,
+                        LodBias = -10,
+                        AnisotropicFilter = GXAnisotropy.GX_ANISO_4,
+                        Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
+                    },
+                };
+                var textureHashes = new string[]
+                {
+                    "ab7dfb30ab250cf8a1226c8b1c146c11", // st32 tex 34, divider left-half
+                };
+                var material = new Material
+                {
+                    MaterialColor = new GXColor(0xb2b2b2ff),
+                    AmbientColor = new GXColor(0x7f7f7fff),
+                    SpecularColor = new GXColor(0x00000000),
+                    Unk0x10 = 0,
+                    Alpha = 255,
+                    UnkAlpha0x14 = -1,
+                };
+                var submesh = new Submesh()
+                {
+                    RenderFlags = RenderFlags.unlit,
+                    Material = material,
+                    UnkAlphaOptions = new UnkAlphaOptions(),
+                };
+                var template = new GcmfTemplate()
+                {
+                    IsTranslucid = false,
+                    Submesh = submesh,
+                    TevLayers = tevLayers,
+                    TextureHashes = textureHashes,
+                    TextureScrollFields = null,
+                };
+
+                return template;
+            }
+            public static GcmfTemplate CurbAndLaneDividerSlope() // no X repeat, just good ol 1:1
+            {
+                // ST32 road1 submesh 2, tevs 7
+                var tevLayers = new TevLayer[]
+                {
+                    new TevLayer()
+                    {
+                        MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
+                        WrapMode = TextureWrapMode.repeatY | TextureWrapMode.unk6 | TextureWrapMode.unk7,
+                        LodBias = -10,
+                        AnisotropicFilter = GXAnisotropy.GX_ANISO_4,
+                        Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
+                    },
+                };
+                var textureHashes = new string[]
+                {
+                    "5668bb625fa4251d17f7c108f6e200d6", // st32 tex 35, white light divider
+                };
+                var material = new Material
+                {
+                    MaterialColor = new GXColor(0xb2b2b2ff),
+                    AmbientColor = new GXColor(0x7f7f7fff),
+                    SpecularColor = new GXColor(0x00000000),
+                    Unk0x10 = 0,
+                    Alpha = 255,
+                    UnkAlpha0x14 = -1,
+                };
+                var submesh = new Submesh()
+                {
+                    RenderFlags = RenderFlags.unlit,
+                    Material = material,
+                    UnkAlphaOptions = new UnkAlphaOptions(),
+                };
+                var template = new GcmfTemplate()
+                {
+                    IsTranslucid = false,
+                    Submesh = submesh,
+                    TevLayers = tevLayers,
+                    TextureHashes = textureHashes,
+                    TextureScrollFields = null,
+                };
+
+                return template;
+            }
+            public static GcmfTemplate RailsAngle() // no X repeat
+            {
+                // ST32 road1 submesh 4, tevs 9
+                var tevLayers = new TevLayer[]
+                {
+                    new TevLayer()
+                    {
+                        MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
+                        WrapMode = TextureWrapMode.repeatY | TextureWrapMode.unk6 | TextureWrapMode.unk7,
+                        LodBias = -10,
+                        AnisotropicFilter = GXAnisotropy.GX_ANISO_4,
+                        Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
+                    },
+                };
+                var textureHashes = new string[]
+                {
+                    "9728c49f6eb82c13dc6e3c0c4135459f", // st32 tex 80, metal with yellow lights/ends
+                };
+                var material = new Material
+                {
+                    MaterialColor = new GXColor(0xffffffff),
+                    AmbientColor = new GXColor(0x7f7f7fff),
+                    SpecularColor = new GXColor(0x00000000),
+                    Unk0x10 = 0,
+                    Alpha = 255,
+                    UnkAlpha0x14 = -1,
+                };
+                var submesh = new Submesh()
+                {
+                    RenderFlags = RenderFlags.unlit | RenderFlags.doubleSidedFaces,
+                    Material = material,
+                    UnkAlphaOptions = new UnkAlphaOptions(),
+                };
+                var template = new GcmfTemplate()
+                {
+                    IsTranslucid = false,
+                    Submesh = submesh,
+                    TevLayers = tevLayers,
+                    TextureHashes = textureHashes,
+                    TextureScrollFields = null,
+                };
+
+                return template;
+            }
+            public static GcmfTemplate RailsLights() // no X repeat
+            {
+                // ST32 road1 submesh 5, tevs 10
+                var tevLayers = new TevLayer[]
+                {
+                    new TevLayer()
+                    {
+                        MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
+                        WrapMode = TextureWrapMode.repeatY | TextureWrapMode.unk6 | TextureWrapMode.unk7,
+                        LodBias = -10,
+                        AnisotropicFilter = GXAnisotropy.GX_ANISO_4,
+                        Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
+                    },
+                };
+                var textureHashes = new string[]
+                {
+                    "5668bb625fa4251d17f7c108f6e200d6", // st32 tex 35, white lights
+                };
+                var material = new Material
+                {
+                    MaterialColor = new GXColor(0xffffffff),
+                    AmbientColor = new GXColor(0x7f7f7fff),
+                    SpecularColor = new GXColor(0x00000000),
+                    Unk0x10 = 0,
+                    Alpha = 255,
+                    UnkAlpha0x14 = -1,
+                };
+                var submesh = new Submesh()
+                {
+                    RenderFlags = RenderFlags.unlit | RenderFlags.doubleSidedFaces,
+                    Material = material,
+                    UnkAlphaOptions = new UnkAlphaOptions(),
+                };
+                var template = new GcmfTemplate()
+                {
+                    IsTranslucid = false,
+                    Submesh = submesh,
+                    TevLayers = tevLayers,
+                    TextureHashes = textureHashes,
+                    TextureScrollFields = null,
+                };
+
+                return template;
+            }
 
         }
 
