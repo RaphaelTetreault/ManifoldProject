@@ -18,6 +18,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         public Vector2[] tex2 { get; set; }
         public Color32[] color0 { get; set; }
         public bool isBackFacing { get; set; }
+        public bool isDoubleSided { get; set; }
 
 
         public int TrianglesCount => ((positions.Length / 2) - 1) * 6;
@@ -44,6 +45,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
             if (isBackFacing)
                 indexes = indexes.Reverse().ToArray();
+
+            if (isDoubleSided)
+            {
+                var invertedIndexes = indexes.Reverse().ToArray();
+                indexes = indexes.Concat(invertedIndexes).ToArray();
+            }
 
             return indexes;
         }

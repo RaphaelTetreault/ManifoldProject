@@ -89,7 +89,7 @@ namespace Manifold.EditorTools.GC.GFZ
                 return newUVs;
             }
 
-            public static Tristrip[] CreateSlipGX(Matrix4x4[] matrices, Matrix4x4[] parentMatrices, GfzPropertyEmbed embed)
+            public static Tristrip[] CreateSlipLight(Matrix4x4[] matrices, Matrix4x4[] parentMatrices, GfzPropertyEmbed embed)
             {
                 var tristrips = GenerateTristripsLine(matrices, edgeLeft, edgeRight, Vector3.up, embed.WidthDivisions, true);
 
@@ -115,7 +115,7 @@ namespace Manifold.EditorTools.GC.GFZ
 
                 return tristrips;
             }
-            public static Tristrip[] CreateSlipAX(Matrix4x4[] matrices, Matrix4x4[] parentMatrices, GfzPropertyEmbed embed)
+            public static Tristrip[] CreateSlipDarkWide(Matrix4x4[] matrices, Matrix4x4[] parentMatrices, GfzPropertyEmbed embed)
             {
                 var tristrips = GenerateTristripsLine(matrices, edgeLeft, edgeRight, Vector3.up, embed.WidthDivisions, true);
 
@@ -128,12 +128,6 @@ namespace Manifold.EditorTools.GC.GFZ
                 var uvsNormalized = CreateTrackSpaceUVs(embed, tristrips, halfWidths, offsets, lengths);
                 var uvs0 = ScaleByParentWidthAndCustomLength(uvsNormalized, parentMatrices, 1 / 64f, repetitionsAlongLength);
                 var uvs1 = CreateTrackSpaceUVs(embed, tristrips, halfWidths, offsets, lengths, 0.5f);
-                // Scale
-                //for (int i = 0; i < lengths.Length; i++)
-                //    lengths[i] *= repetitionsAlongLength;
-                //var uvs0 = CreateTrackSpaceUVs(embed, tristrips, halfWidths, offsets, lengths);
-
-                // Assign UVS
                 for (int i = 0; i < tristrips.Length; i++)
                 {
                     tristrips[i].tex0 = uvs0[i]; // blue squares
@@ -142,6 +136,15 @@ namespace Manifold.EditorTools.GC.GFZ
                     tex1 = OffsetUVs(tex1, embed.RepeatFlashingUVOffset);
                     tristrips[i].tex1 = tex1; // flashing
                 }
+
+                return tristrips;
+            }
+            public static Tristrip[] CreateSlipDarkThin(Matrix4x4[] matrices, Matrix4x4[] parentMatrices, GfzPropertyEmbed embed)
+            {
+                var tristrips = CreateSlipDarkWide(matrices, parentMatrices, embed);
+                // Shrink UVs by 4 since tex is 1/4 width
+                foreach (var tristrip in tristrips)
+                    MutateScaleUVs(tristrip.tex0, new Vector2(1, 4));
 
                 return tristrips;
             }
@@ -228,7 +231,7 @@ namespace Manifold.EditorTools.GC.GFZ
 
                     var tex1 = ScaleUVs(uvs1[i], embed.RepeatFlashingUV);
                     tex1 = OffsetUVs(tex1, embed.RepeatFlashingUVOffset);
-                    tristrips[i].tex1 = SwapUV(tex1); // scan line effect
+                    tristrips[i].tex1 = SwizzleUVs(tex1); // scan line effect
                 }
 
                 return tristrips;
@@ -253,7 +256,7 @@ namespace Manifold.EditorTools.GC.GFZ
 
                     var tex1 = ScaleUVs(uvs1[i], embed.RepeatFlashingUV);
                     tex1 = OffsetUVs(tex1, embed.RepeatFlashingUVOffset);
-                    tristrips[i].tex1 = SwapUV(tex1);
+                    tristrips[i].tex1 = SwizzleUVs(tex1);
                 }
 
                 return tristrips;
@@ -489,6 +492,113 @@ namespace Manifold.EditorTools.GC.GFZ
 
                 return tristrips;
             }
+            private static float RoundUp(float value, float roundToNearest)
+            {
+                var newValue = math.ceil(value / roundToNearest) * roundToNearest;
+                return newValue;
+            }
+            public static Vector3 SurfaceNormalTOA(float opposite, float adjacent, Vector3 normal, bool isClockwise)
+            {
+                float angleRad = Mathf.Tan(opposite / adjacent);
+                float angleDeg = angleRad * Mathf.Rad2Deg;
+
+                // Clockwise rotation is ngative about the Z axis
+                if (isClockwise)
+                    angleDeg = -angleDeg;
+
+                Quaternion rotation = Quaternion.Euler(0, 0, angleDeg);
+                Vector3 rotatedNormal = rotation * normal;
+                return rotatedNormal;
+            }
+
+
+            public const float kCurbHeight = 0.5f;
+            public const float kCurbSlantOuter = 1.5f;
+            public const float kCurbSlantInner = kCurbSlantOuter + 2.25f; // 3.75f
+
+            // TODO: parameterize vertices for future modulation
+            /// <summary>
+            /// Standard road surface.
+            /// </summary>
+            /// <remarks>
+            /// Used by: Mute City, Mute City COM, ...
+            /// </remarks>
+            /// <param name="matrices"></param>
+            /// <param name="widthDivisions"></param>
+            /// <returns></returns>
+            internal static Tristrip[] StandardTop(Matrix4x4[] matrices, int widthDivisions, float inset = 3.75f)
+            {
+                var matricesInset = ModifyMatrixScales(matrices, new Vector3(inset * -2f, 0, 0));
+                var endpointA = new Vector3(-0.5f, 0, 0); // left
+                var endpointB = new Vector3(+0.5f, 0, 0); // right
+                var tristrips = GenerateTristripsLine(matricesInset, endpointA, endpointB, Vector3.up, widthDivisions, true);
+                return tristrips;
+            }
+            /// <summary>
+            /// Standard road top with TEX0 UV-mapping
+            /// </summary>
+            /// <param name="matrices"></param>
+            /// <param name="widthDivisions"></param>
+            /// <param name="repititionsAlongWidth"></param>
+            /// <param name="repetitionsAlongLength"></param>
+            /// <returns></returns>
+
+            internal static Tristrip[] StandardBottom(Matrix4x4[] matrices, int widthDivisions, float thickness, float inset = 0f)
+            {
+                var matricesInset = ModifyMatrixScales(matrices, new Vector3(inset * -2f, thickness - 1f, 0));
+                var endpointA = new Vector3(-0.5f, -1f, 0); // left
+                var endpointB = new Vector3(+0.5f, -1f, 0); // right
+                var tristrips = GenerateTristripsLine(matricesInset, endpointA, endpointB, Vector3.down, widthDivisions, false);
+                return tristrips;
+            }
+
+            public static Tristrip[] StandardCurbSlant(Matrix4x4[] matrices)
+            {
+                var allTristrips = new List<Tristrip>();
+                var matricesLeft = GetNormalizedMatrixWithPositionOffset(matrices, -1f);
+                var matricesRight = GetNormalizedMatrixWithPositionOffset(matrices, +1f);
+
+                var outerLeft = new Vector3(+kCurbSlantOuter, kCurbHeight, 0);
+                var outerRight = new Vector3(-kCurbSlantOuter, kCurbHeight, 0);
+                var innerLeft = new Vector3(+kCurbSlantInner, 0.0f, 0);
+                var innerRight = new Vector3(-kCurbSlantInner, 0.0f, 0);
+                // TODO: use TAN to solve for angle, parameterize slant size
+                var normalLeft = Quaternion.Euler(0, 0, +6.34f) * Vector3.up; // with a x=2.25, y=0.5, angle is 6.34 degrees
+                var normalRight = Quaternion.Euler(0, 0, -6.34f) * Vector3.up; // rotate normal, assign. TODO: need coord system??
+
+                var tristripsLeft = GenerateTristripsLine(matricesLeft, outerLeft, innerLeft, normalLeft, 1, true);
+                var tristripsRight = GenerateTristripsLine(matricesRight, outerRight, innerRight, normalRight, 1, false);
+                allTristrips.AddRange(tristripsLeft);
+                allTristrips.AddRange(tristripsRight);
+
+                return allTristrips.ToArray();
+            }
+
+            public static Tristrip[] StandardCurbFlat(Matrix4x4[] matrices)
+            {
+                var allTristrips = new List<Tristrip>();
+                var matricesLeft = GetNormalizedMatrixWithPositionOffset(matrices, -1f);
+                var matricesRight = GetNormalizedMatrixWithPositionOffset(matrices, +1f);
+
+                var outerLeft = new Vector3(0, kCurbHeight, 0);
+                var outerRight = new Vector3(0, kCurbHeight, 0);
+                var innerLeft = new Vector3(+kCurbSlantOuter, kCurbHeight, 0);
+                var innerRight = new Vector3(-kCurbSlantOuter, kCurbHeight, 0);
+
+                var tristripsLeft = GenerateTristripsLine(matricesLeft, outerLeft, innerLeft, Vector3.up, 1, true);
+                var tristripsRight = GenerateTristripsLine(matricesRight, outerRight, innerRight, Vector3.up, 1, false);
+                allTristrips.AddRange(tristripsLeft);
+                allTristrips.AddRange(tristripsRight);
+
+                return allTristrips.ToArray();
+            }
+
+            public static Tristrip[] StandardSlant(Matrix4x4[] matrices)
+            {
+                // TODO: maybe provide angle of slant and length?
+                throw new System.NotImplementedException();
+            }
+
 
             public static class MuteCity
             {
@@ -782,7 +892,7 @@ namespace Manifold.EditorTools.GC.GFZ
                     float repetitionsRoadTexture = math.ceil(length / RoadTexStride);
                     var uvs0 = CreateTristripScaledUVs(tristrips, 8, repetitionsRoadTexture);
 
-                    float repetitionsLaneDividers = Round(math.ceil(length / (MuteCity.kLengthTrim/2)), 2); // div-by-2 due to mirroring (need 2 reps for fulll texture)
+                    float repetitionsLaneDividers = RoundUp(math.ceil(length / (MuteCity.kLengthTrim / 2)), 2); // div-by-2 due to mirroring (need 2 reps for full texture)
                     Vector2[][] uvs1 = CreateTristripScaledUVs(tristrips, 2, repetitionsLaneDividers);
                     Vector2 offset1 = new Vector2(0, 1);
 
@@ -797,13 +907,375 @@ namespace Manifold.EditorTools.GC.GFZ
 
             }
 
-
-            private static float Round(float value, float roundToNearest)
+            public static class Aeropolis
             {
-                var newValue = math.ceil(value / roundToNearest) * roundToNearest;
-                return newValue;
-            }
-        }
 
+            }
+
+            public static class BigBlue
+            {
+                public static Tristrip[] Top(Matrix4x4[] matrices, GfzShapeRoad road)
+                {
+                    var tristrips = StandardTop(matrices, road.WidthDivisions);
+
+                    //return tristrips;
+                    throw new System.NotImplementedException();
+                }
+            }
+
+            public static class CasinoPalace
+            {
+
+            }
+
+            public static class CosmoTerminal
+            {
+
+            }
+
+            public static class FireField
+            {
+
+            }
+
+            public static class GreenPlant
+            {
+
+            }
+
+            public static class Lightning
+            {
+
+            }
+
+            public static class OuterSpace
+            {
+                const float kTrackThickness = 2f;
+                const float kSideInset = 2f;
+                const float kLaneDividerHeight = kCurbHeight / 2f; // hack, is actually 0.5f / kCurbHeight
+                const float kLaneDividerTop = 4f / 3f; // 1.33
+                const float kLaneDividerTopHalf = kLaneDividerTop / 2f;
+                const float kLaneDividerSide = 10f / 3f; // 3.33
+                const float kLaneDividerSideHalf = kLaneDividerSide / 2f;
+
+                const float RoadTexStride = 32f;
+
+                /// <summary>
+                /// 
+                /// </summary>
+                /// <param name="matrices">Matrices to position railings</param>
+                /// <param name="side">-1f left, +1f right</param>
+                /// <param name="height">Full height of rail</param>
+                /// <param name="railTristrips">List to add tristrips to</param>
+                private static void RailAngle(Matrix4x4[] matrices, float side, float height, List<Tristrip> railTristrips)
+                {
+                    float railHeight = height * 0.40f;
+                    float gapHeight = height * 0.10f;
+                    var bottom = new Vector3(0f, 0.5f);
+                    var mid0 = new Vector3(railHeight * side, railHeight + 0.5f);
+                    var mid1 = new Vector3(railHeight * side, railHeight + 0.5f + gapHeight);
+                    var top = new Vector3(0f, railHeight * 2 + 0.5f + gapHeight);
+                    Vector3 normalBottom = Quaternion.Euler(0, 0, 45 * side) * Vector3.up;
+                    Vector3 normalTop = Quaternion.Euler(0, 0, 135 * side) * Vector3.up;
+
+                    var tristripsBottom = GenerateTristripsLine(matrices, bottom, mid0, normalBottom, 1, false, true);
+                    var tristripsTop = GenerateTristripsLine(matrices, mid1, top, normalTop, 1, false, true);
+                    railTristrips.AddRange(tristripsBottom);
+                    railTristrips.AddRange(tristripsTop);
+                }
+                private static void RailLights(Matrix4x4[] matrices, float side, float height, List<Tristrip> railTristrips)
+                {
+                    float railHeight = height * 0.40f;
+                    float gapHeight = height * 0.10f;
+                    var bottom0 = new Vector3(railHeight * side, railHeight + 0.5f);
+                    var bottom1 = new Vector3(railHeight * side, railHeight + 0.5f + gapHeight);
+                    var top0 = new Vector3(0f, railHeight * 2 + 0.5f + gapHeight);
+                    var top1 = new Vector3(gapHeight * -side, railHeight * 2 + 0.5f + gapHeight * 2);
+                    // TODO: normals
+                    Vector3 normalBottom = Vector3.left * side;
+                    Vector3 normalTop = Quaternion.Euler(0, 0, 135 * side) * Vector3.up;
+
+                    var tristripsBottom = GenerateTristripsLine(matrices, bottom0, bottom1, normalBottom, 1, false, true);
+                    var tristripsTop = GenerateTristripsLine(matrices, top0, top1, normalTop, 1, false, true);
+                    railTristrips.AddRange(tristripsBottom);
+                    railTristrips.AddRange(tristripsTop);
+                }
+                private static void OuterSpaceSlantedSide(Matrix4x4[] matrices, float direction, float inset, float thickness, Vector3 normal, List<Tristrip> railTristrips)
+                {
+                    var top = new Vector3(0, +kCurbHeight, 0);
+                    var bottom = new Vector3(inset * -direction, -thickness, 0);
+                    var tristrips = GenerateTristripsLine(matrices, top, bottom, normal, 1, direction > 0);
+                    railTristrips.AddRange(tristrips);
+                }
+                private static void OuterSpaceLaneDividerSide(Matrix4x4[] matrices, float direction, Vector3 normal, List<Tristrip> railTristrips)
+                {
+                    var innerSide = new Vector3(kLaneDividerTopHalf * direction, kLaneDividerHeight, 0);
+                    var outerSide = new Vector3(kLaneDividerSideHalf * direction, 0, 0);
+                    var tristrips = GenerateTristripsLine(matrices, innerSide, outerSide, normal, 1, direction > 0);
+                    railTristrips.AddRange(tristrips);
+                }
+
+                public static Tristrip[] Top(Matrix4x4[] matrices, GfzShapeRoad road, float segmentLength)
+                {
+                    var tristrips = StandardTop(matrices, road.WidthDivisions);
+
+                    float repetitionsRoadTexture = math.ceil(segmentLength / RoadTexStride);
+                    float repetitionsRoadBloom = math.ceil(segmentLength / 100f);
+                    var uvs0 = CreateTristripScaledUVs(tristrips, 6, repetitionsRoadTexture); // metal
+                    var uvs1 = CreateTristripScaledUVs(tristrips, 1, repetitionsRoadBloom); // screen
+                    var uvs2 = CreateTristripScaledUVs(tristrips, 6, repetitionsRoadTexture); // metal bump map
+                    for (int i = 0; i < tristrips.Length; i++)
+                    {
+                        tristrips[i].tex0 = uvs0[i];
+                        tristrips[i].tex1 = uvs1[i];
+                        tristrips[i].tex2 = uvs2[i];
+
+                        //// comput tangent and binormal
+                        //int vertexCount = tristrips[i].VertexCount;
+                        //tristrips[i].tangents = new Vector3[vertexCount];
+                        //tristrips[i].binormals = new Vector3[vertexCount];
+                        //for (int j = 0; j < tristrips[i].VertexCount; j += 2)
+                        //{
+                        //    int index = j / 2;
+                        //    var matrix = matrices[index];
+                        //    var rotation = matrix.rotation;
+                        //    tristrips[i].tangents[j] = rotation * Vector3.right;
+                        //    tristrips[i].binormals[j] = math.cross(tristrips[i].tangents[j], tristrips[i].normals[j]);
+                        //}
+                    }
+
+                    return tristrips;
+                }
+
+                private static Tristrip[] Bottom(Matrix4x4[] matrices, GfzShapeRoad road, float segmentLength)
+                {
+                    var tristrips = StandardBottom(matrices, road.WidthDivisions, kTrackThickness, kSideInset);
+
+                    float repetitionsRoadTexture = math.ceil(segmentLength / RoadTexStride);
+                    var uvs0 = CreateTristripScaledUVs(tristrips, 4, repetitionsRoadTexture); // metal
+                    for (int i = 0; i < tristrips.Length; i++)
+                        tristrips[i].tex0 = uvs0[i];
+
+                    return tristrips;
+                }
+
+                private static Tristrip[] Sides(Matrix4x4[] matrices, GfzShapeRoad road, float segmentLength)
+                {
+                    var sidesTristrips = new List<Tristrip>();
+
+                    var matricesLeft = GetNormalizedMatrixWithPositionOffset(matrices, -1f);
+                    var matricesRight = GetNormalizedMatrixWithPositionOffset(matrices, +1f);
+                    OuterSpaceSlantedSide(matricesLeft, -1, kSideInset, kTrackThickness, Vector3.left, sidesTristrips);
+                    OuterSpaceSlantedSide(matricesRight, +1, kSideInset, kTrackThickness, Vector3.right, sidesTristrips);
+
+                    var sidesTristripsArray = sidesTristrips.ToArray();
+                    float repetitionsRoadTexture = math.ceil(segmentLength / RoadTexStride);
+                    var uvsLeft = CreateTristripScaledUVs(sidesTristripsArray, -0.1f, repetitionsRoadTexture); // metal
+                    var uvsRight = CreateTristripScaledUVs(sidesTristripsArray, +0.1f, repetitionsRoadTexture); // metal
+
+                    // Kind of a hack, but assign mirrored UVS based on side. Perhaps do this in the fucntion?
+                    for (int i = 0; i < sidesTristripsArray.Length; i++)
+                        sidesTristripsArray[i].tex0 = i == 0 ? uvsLeft[0] : uvsRight[0];
+
+                    return sidesTristripsArray;
+                }
+
+                private static Tristrip[] CurbFlat(Matrix4x4[] matrices, GfzShapeRoad road, float segmentLength)
+                {
+                    var tristrips = StandardCurbFlat(matrices);
+                    // UVs same across all of this type, done in checkpoint function.
+                    return tristrips;
+                }
+
+                private static Tristrip[] CurbAngle(Matrix4x4[] matrices, GfzShapeRoad road, float segmentLength)
+                {
+                    var tristrips = StandardCurbSlant(matrices);
+                    // UVs same across all of this type, done in checkpoint function.
+                    return tristrips;
+                }
+
+                public static Tristrip[] RailsAngle(Matrix4x4[] matrices, GfzShapeRoad road, float segmentLength)
+                {
+                    // Rail slants are EACH 40% of railHeight, are at 45 degree angles
+                    var railTristrips = new List<Tristrip>();
+
+                    if (road.RailHeightLeft > 0f)
+                    {
+                        const float leftSide = -1f;
+                        var matricesLeft = GetNormalizedMatrixWithPositionOffset(matrices, leftSide);
+                        RailAngle(matricesLeft, leftSide, road.RailHeightLeft, railTristrips);
+                    }
+
+                    if (road.RailHeightRight > 0f)
+                    {
+                        const float rightSide = +1f;
+                        var matricesRight = GetNormalizedMatrixWithPositionOffset(matrices, rightSide);
+                        RailAngle(matricesRight, rightSide, road.RailHeightRight, railTristrips);
+                    }
+
+                    // apply UVs, all generic
+                    float repetitionsRoadTexture = math.ceil(segmentLength / RoadTexStride);
+                    foreach (var tristrip in railTristrips)
+                        tristrip.tex0 = CreateUVsForwardLength(tristrip.VertexCount, 0, 1, repetitionsRoadTexture);
+
+                    return railTristrips.ToArray();
+                }
+
+                public static Tristrip[] RailsLights(Matrix4x4[] matrices, GfzShapeRoad road, float segmentLength)
+                {
+                    // Rail slants are EACH 40% of railHeight, are at 45 degree angles
+                    var railTristrips = new List<Tristrip>();
+
+                    if (road.RailHeightLeft > 0f)
+                    {
+                        const float leftSide = -1f;
+                        var matricesLeft = GetNormalizedMatrixWithPositionOffset(matrices, leftSide);
+                        RailLights(matricesLeft, leftSide, road.RailHeightLeft, railTristrips);
+                    }
+
+                    if (road.RailHeightRight > 0f)
+                    {
+                        const float rightSide = +1f;
+                        var matricesRight = GetNormalizedMatrixWithPositionOffset(matrices, rightSide);
+                        RailLights(matricesRight, rightSide, road.RailHeightRight, railTristrips);
+                    }
+
+                    // apply UVs, all generic
+                    float repetitionsRoadTexture = math.ceil(segmentLength / RoadTexStride);
+                    foreach (var tristrip in railTristrips)
+                        tristrip.tex0 = CreateUVsForwardLength(tristrip.VertexCount, 0, 1, repetitionsRoadTexture);
+
+                    return railTristrips.ToArray();
+                }
+
+                private static Tristrip[] LaneDividerSides(Matrix4x4[] matrices, GfzShapeRoad road, float segmentLength)
+                {
+                    if (!road.HasLaneDividers)
+                        return new Tristrip[0];
+
+                    var laneDividerSidesTristrips = new List<Tristrip>();
+                    var matricesDefault = GetMatricesDefaultScale(matrices, Vector3.one);
+                    float opposite = kLaneDividerHeight;
+                    float adjacent = kLaneDividerSide - kLaneDividerTop;
+                    var normalLeft = SurfaceNormalTOA(opposite, adjacent, Vector3.up, false);
+                    var normalRight = SurfaceNormalTOA(opposite, adjacent, Vector3.up, true);
+                    OuterSpaceLaneDividerSide(matricesDefault, -1, normalLeft, laneDividerSidesTristrips);
+                    OuterSpaceLaneDividerSide(matricesDefault, +1, normalRight, laneDividerSidesTristrips);
+                    // UVs same across all of this type, done in checkpoint function.
+                    return laneDividerSidesTristrips.ToArray();
+                }
+
+                private static Tristrip[] LaneDividerTop(Matrix4x4[] matrices, GfzShapeRoad road, float segmentLength)
+                {
+                    if (!road.HasLaneDividers)
+                        return new Tristrip[0];
+
+                    var matricesDefault = GetMatricesDefaultScale(matrices, Vector3.one);
+                    var left = new Vector3(-kLaneDividerTopHalf, kLaneDividerHeight, 0); // left
+                    var right = new Vector3(+kLaneDividerTopHalf, kLaneDividerHeight, 0); // right
+                    var tristrips = GenerateTristripsLine(matricesDefault, left, right, Vector3.up, 1, true);
+                    // UVs same across all of this type, done in checkpoint function.
+                    return tristrips;
+                }
+
+                public static Tristrip[] CurbAndLaneDividerSlants(Matrix4x4[] matrices, GfzShapeRoad road, float segmentLength)
+                {
+                    var allTristrips = new List<Tristrip>();
+                    allTristrips.AddRange(CurbAngle(matrices, road, segmentLength));
+                    allTristrips.AddRange(LaneDividerSides(matrices, road, segmentLength));
+
+                    // UVs are simple 0-1 along width, every desired length repeat
+                    float repetitionsRoadTexture = math.ceil(segmentLength / RoadTexStride);
+                    for (int i = 0; i < allTristrips.Count; i++)
+                        allTristrips[i].tex0 = CreateUVsForwardLength(allTristrips[i].VertexCount, 0, 1, repetitionsRoadTexture);
+
+                    return allTristrips.ToArray();
+                }
+
+                public static Tristrip[] CurbAndLaneDividerFlat(Matrix4x4[] matrices, GfzShapeRoad road, float segmentLength)
+                {
+                    var allTristrips = new List<Tristrip>();
+                    allTristrips.AddRange(CurbFlat(matrices, road, segmentLength));
+                    allTristrips.AddRange(LaneDividerTop(matrices, road, segmentLength));
+
+                    // UVs are simple 0-1 along width, every desired length repeat
+                    float repetitionsRoadTexture = math.ceil(segmentLength / RoadTexStride);
+                    for (int i = 0; i < allTristrips.Count; i++)
+                    {
+                        var uvs = CreateUVsForwardLength(allTristrips[i].VertexCount, 0, 1, repetitionsRoadTexture);
+                        MutateScaleUVs(uvs, new Vector2(2, 1)); // requires mirroring X, so double X
+                        allTristrips[i].tex0 = uvs;
+                    }
+
+                    return allTristrips.ToArray();
+                }
+
+                public static Tristrip[] BottomAndSides(Matrix4x4[] matrices, GfzShapeRoad road, float segmentLength)
+                {
+                    var allTristrips = new List<Tristrip>();
+                    allTristrips.AddRange(Bottom(matrices, road, segmentLength));
+                    allTristrips.AddRange(Sides(matrices, road, segmentLength));
+                    // UVs are different between these, so resolved in their respective functions.
+                    return allTristrips.ToArray();
+                }
+
+                // UGLY copy paste. You should make a generic encap function...
+                public static Tristrip[] EndCaps(Matrix4x4[] matrices, GfzShapeRoad road, float segmentLength)
+                {
+                    var allTristrips = new List<Tristrip>();
+
+                    var mtxOffset = Matrix4x4.TRS(new(0, -kTrackThickness - kCurbHeight, 0), Quaternion.identity, Vector3.one);
+                    var endpointA = new Vector3(-0.5f, kCurbHeight, 0);
+                    var endpointB = new Vector3(+0.5f, kCurbHeight, 0);
+
+                    var from = road.GetRoot().Prev.CreateHierarchichalAnimationCurveTRS(false);
+                    var self = road.GetRoot().CreateHierarchichalAnimationCurveTRS(false);
+                    var to = road.GetRoot().Next.CreateHierarchichalAnimationCurveTRS(false);
+                    bool isContinuousFrom = CheckpointUtility.IsContinuousBetweenFromTo(from, self);
+                    bool isContinuousTo = CheckpointUtility.IsContinuousBetweenFromTo(self, to);
+
+                    if (!isContinuousFrom)
+                    {
+                        var mtx0 = matrices[0];
+                        var mtx1 = mtx0 * mtxOffset;
+                        var tristrips = GenerateTristripsLine(new Matrix4x4[] { mtx0, mtx1 }, endpointA, endpointB, Vector3.back, 1, false);
+                        foreach (var tristrip in tristrips)
+                            tristrip.tex0 = CreateUVsSideways(tristrip.VertexCount);
+
+                        allTristrips.AddRange(tristrips);
+                    }
+
+                    if (!isContinuousTo)
+                    {
+                        var mtx0 = matrices[matrices.Length - 1];
+                        var mtx1 = mtx0 * mtxOffset;
+                        var tristrips = GenerateTristripsLine(new Matrix4x4[] { mtx0, mtx1 }, endpointA, endpointB, Vector3.forward, 1, true);
+                        foreach (var tristrip in tristrips)
+                            tristrip.tex0 = CreateUVsSideways(tristrip.VertexCount);
+
+                        allTristrips.AddRange(tristrips);
+                    }
+
+                    return allTristrips.ToArray();
+                }
+
+            }
+
+            public static class PhantomRoad
+            {
+
+            }
+
+            public static class PortTown
+            {
+
+            }
+
+            public static class SandOcean
+            {
+
+            }
+
+        }
     }
 }

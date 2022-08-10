@@ -52,6 +52,18 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     else
                         return GcmfTemplates.MuteCityCOM.RoadNoDividers();
 
+                case RoadMeshStyle.OuterSpace:
+                    return new GcmfTemplate[]
+                    {
+                        GcmfTemplates.OuterSpace.Top(),
+                        GcmfTemplates.OuterSpace.BottomAndSides(),
+                        GcmfTemplates.OuterSpace.CurbAndLaneDividerTop(),
+                        GcmfTemplates.OuterSpace.CurbAndLaneDividerSlope(),
+                        GcmfTemplates.OuterSpace.RailsAngle(),
+                        GcmfTemplates.OuterSpace.RailsLights(),
+                        GcmfTemplates.OuterSpace.EndCap(),
+                    };
+
                 default:
                     return new GcmfTemplate[] { GcmfTemplates.Debug.CreateLitVertexColored() };
             }
@@ -82,6 +94,17 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                         TristripTemplates.Road.MuteCity.CreateRoadTrim(matrices, this, maxTime),
                         TristripTemplates.Road.MuteCity.CreateRoadEmbellishments(matrices, this, maxTime),
                         TristripTemplates.Road.MuteCity.CreateRails(matrices, this),
+                    };
+                case RoadMeshStyle.OuterSpace:
+                    return new Tristrip[][]
+                    {
+                        TristripTemplates.Road.OuterSpace.Top(matrices, this, maxTime),
+                        TristripTemplates.Road.OuterSpace.BottomAndSides(matrices, this, maxTime),
+                        TristripTemplates.Road.OuterSpace.CurbAndLaneDividerFlat(matrices, this, maxTime),
+                        TristripTemplates.Road.OuterSpace.CurbAndLaneDividerSlants(matrices, this, maxTime),
+                        TristripTemplates.Road.OuterSpace.RailsAngle(matrices, this, maxTime),
+                        TristripTemplates.Road.OuterSpace.RailsLights(matrices, this, maxTime),
+                        TristripTemplates.Road.OuterSpace.EndCaps(matrices, this, maxTime),
                     };
 
                 default:
