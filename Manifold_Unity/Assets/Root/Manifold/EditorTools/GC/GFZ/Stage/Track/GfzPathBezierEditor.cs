@@ -306,10 +306,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             // WIDTH
             EditorGUILayout.Space();
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.PrefixLabel("Scale.X");
             EditorGUI.indentLevel++;
             EditorGUI.BeginChangeCheck();
-            bezier.width = EditorGUILayout.FloatField(bezier.width);
+            bezier.width = EditorGUILayout.FloatField("Scale.X", bezier.width);
             if (EditorGUI.EndChangeCheck())
             {
                 Undo.RecordObject(spline, $"Set bézier point [{selectedIndex}] width");
@@ -329,10 +328,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
             // HEIGHT
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.PrefixLabel("Scale.Y");
             EditorGUI.indentLevel++;
             EditorGUI.BeginChangeCheck();
-            bezier.height = EditorGUILayout.FloatField(bezier.height);
+            bezier.height = EditorGUILayout.FloatField("Scale.Y", bezier.height);
             if (EditorGUI.EndChangeCheck())
             {
                 Undo.RecordObject(spline, $"Set bézier point [{selectedIndex}] height");
@@ -352,10 +350,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
             // ROLL
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.PrefixLabel("Rotation.Z");
             EditorGUI.indentLevel++;
             EditorGUI.BeginChangeCheck();
-            bezier.roll = EditorGUILayout.FloatField(bezier.roll);
+            bezier.roll = EditorGUILayout.FloatField("Rotation.Z", bezier.roll);
             if (EditorGUI.EndChangeCheck())
             {
                 Undo.RecordObject(spline, $"Set bézier point [{selectedIndex}] roll tangent mode");
