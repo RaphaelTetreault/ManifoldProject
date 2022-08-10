@@ -1385,6 +1385,50 @@ namespace Manifold.EditorTools.GC.GFZ
 
                 return template;
             }
+            public static GcmfTemplate EndCap() 
+            {
+                // ST32 road1 submesh 9, tevs 15
+                var tevLayers = new TevLayer[]
+                {
+                    new TevLayer()
+                    {
+                        MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
+                        WrapMode = TextureWrapMode.mirrorX | TextureWrapMode.unk6 | TextureWrapMode.unk7,
+                        LodBias = -10,
+                        AnisotropicFilter = GXAnisotropy.GX_ANISO_4,
+                        Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
+                    },
+                };
+                var textureHashes = new string[]
+                {
+                    "7b6c73bfe0da891ca1abe2d94204daf5", // st32 tex 25, metal
+                };
+                var material = new Material
+                {
+                    MaterialColor = new GXColor(0xffffffff),
+                    AmbientColor = new GXColor(0x7f7f7fff),
+                    SpecularColor = new GXColor(0x00000000),
+                    Unk0x10 = 0,
+                    Alpha = 255,
+                    UnkAlpha0x14 = -1,
+                };
+                var submesh = new Submesh()
+                {
+                    RenderFlags = RenderFlags.unlit,
+                    Material = material,
+                    UnkAlphaOptions = new UnkAlphaOptions(),
+                };
+                var template = new GcmfTemplate()
+                {
+                    IsTranslucid = false,
+                    Submesh = submesh,
+                    TevLayers = tevLayers,
+                    TextureHashes = textureHashes,
+                    TextureScrollFields = null,
+                };
+
+                return template;
+            }
 
         }
 

@@ -61,6 +61,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                         GcmfTemplates.OuterSpace.CurbAndLaneDividerSlope(),
                         GcmfTemplates.OuterSpace.RailsAngle(),
                         GcmfTemplates.OuterSpace.RailsLights(),
+                        GcmfTemplates.OuterSpace.EndCap(),
                     };
 
                 default:
@@ -103,6 +104,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                         TristripTemplates.Road.OuterSpace.CurbAndLaneDividerSlants(matrices, this, maxTime),
                         TristripTemplates.Road.OuterSpace.RailsAngle(matrices, this, maxTime),
                         TristripTemplates.Road.OuterSpace.RailsLights(matrices, this, maxTime),
+                        TristripTemplates.Road.OuterSpace.EndCaps(matrices, this, maxTime),
                     };
 
                 default:

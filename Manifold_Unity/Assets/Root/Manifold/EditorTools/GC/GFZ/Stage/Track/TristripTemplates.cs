@@ -1228,6 +1228,47 @@ namespace Manifold.EditorTools.GC.GFZ
                     // UVs are different between these, so resolved in their respective functions.
                     return allTristrips.ToArray();
                 }
+
+                // UGLY copy paste. You should make a generic encap function...
+                public static Tristrip[] EndCaps(Matrix4x4[] matrices, GfzShapeRoad road, float segmentLength)
+                {
+                    var allTristrips = new List<Tristrip>();
+
+                    var mtxOffset = Matrix4x4.TRS(new(0, -kTrackThickness - kCurbHeight, 0), Quaternion.identity, Vector3.one);
+                    var endpointA = new Vector3(-0.5f, kCurbHeight, 0);
+                    var endpointB = new Vector3(+0.5f, kCurbHeight, 0);
+
+                    var from = road.GetRoot().Prev.CreateHierarchichalAnimationCurveTRS(false);
+                    var self = road.GetRoot().CreateHierarchichalAnimationCurveTRS(false);
+                    var to = road.GetRoot().Next.CreateHierarchichalAnimationCurveTRS(false);
+                    bool isContinuousFrom = CheckpointUtility.IsContinuousBetweenFromTo(from, self);
+                    bool isContinuousTo = CheckpointUtility.IsContinuousBetweenFromTo(self, to);
+
+                    if (!isContinuousFrom)
+                    {
+                        var mtx0 = matrices[0];
+                        var mtx1 = mtx0 * mtxOffset;
+                        var tristrips = GenerateTristripsLine(new Matrix4x4[] { mtx0, mtx1 }, endpointA, endpointB, Vector3.back, 1, false);
+                        foreach (var tristrip in tristrips)
+                            tristrip.tex0 = CreateUVsSideways(tristrip.VertexCount);
+
+                        allTristrips.AddRange(tristrips);
+                    }
+
+                    if (!isContinuousTo)
+                    {
+                        var mtx0 = matrices[matrices.Length - 1];
+                        var mtx1 = mtx0 * mtxOffset;
+                        var tristrips = GenerateTristripsLine(new Matrix4x4[] { mtx0, mtx1 }, endpointA, endpointB, Vector3.forward, 1, true);
+                        foreach (var tristrip in tristrips)
+                            tristrip.tex0 = CreateUVsSideways(tristrip.VertexCount);
+
+                        allTristrips.AddRange(tristrips);
+                    }
+
+                    return allTristrips.ToArray();
+                }
+
             }
 
             public static class PhantomRoad
