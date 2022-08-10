@@ -74,7 +74,7 @@ namespace Manifold.EditorTools.GC.GFZ
 
         public static class General
         {
-            public static GcmfTemplate CreateSlipGX()
+            public static GcmfTemplate CreateSlipLight()
             {
                 var tevLayers = new TevLayer[]
                 {
@@ -137,7 +137,7 @@ namespace Manifold.EditorTools.GC.GFZ
                 Assert.IsTrue(textureHashes.Length == tevLayers.Length);
                 return template;
             }
-            public static GcmfTemplate CreateSlipAX()
+            public static GcmfTemplate CreateSlipDarkWide()
             {
                 var tevLayers = new TevLayer[]
                 {
@@ -200,6 +200,13 @@ namespace Manifold.EditorTools.GC.GFZ
                 Assert.IsTrue(textureHashes.Length == tevLayers.Length);
                 return template;
             }
+            public static GcmfTemplate CreateSlipDarkThin()
+            {
+                var template = CreateSlipDarkWide();
+                template.TextureHashes[0] = "47ea52d2505a54463089d5838c690c84"; // same blue but thin
+                return template;
+            }
+
 
             public static GcmfTemplate CreateDirtAlpha()
             {

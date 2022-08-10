@@ -89,7 +89,7 @@ namespace Manifold.EditorTools.GC.GFZ
                 return newUVs;
             }
 
-            public static Tristrip[] CreateSlipGX(Matrix4x4[] matrices, Matrix4x4[] parentMatrices, GfzPropertyEmbed embed)
+            public static Tristrip[] CreateSlipLight(Matrix4x4[] matrices, Matrix4x4[] parentMatrices, GfzPropertyEmbed embed)
             {
                 var tristrips = GenerateTristripsLine(matrices, edgeLeft, edgeRight, Vector3.up, embed.WidthDivisions, true);
 
@@ -115,7 +115,7 @@ namespace Manifold.EditorTools.GC.GFZ
 
                 return tristrips;
             }
-            public static Tristrip[] CreateSlipAX(Matrix4x4[] matrices, Matrix4x4[] parentMatrices, GfzPropertyEmbed embed)
+            public static Tristrip[] CreateSlipDarkWide(Matrix4x4[] matrices, Matrix4x4[] parentMatrices, GfzPropertyEmbed embed)
             {
                 var tristrips = GenerateTristripsLine(matrices, edgeLeft, edgeRight, Vector3.up, embed.WidthDivisions, true);
 
@@ -128,12 +128,6 @@ namespace Manifold.EditorTools.GC.GFZ
                 var uvsNormalized = CreateTrackSpaceUVs(embed, tristrips, halfWidths, offsets, lengths);
                 var uvs0 = ScaleByParentWidthAndCustomLength(uvsNormalized, parentMatrices, 1 / 64f, repetitionsAlongLength);
                 var uvs1 = CreateTrackSpaceUVs(embed, tristrips, halfWidths, offsets, lengths, 0.5f);
-                // Scale
-                //for (int i = 0; i < lengths.Length; i++)
-                //    lengths[i] *= repetitionsAlongLength;
-                //var uvs0 = CreateTrackSpaceUVs(embed, tristrips, halfWidths, offsets, lengths);
-
-                // Assign UVS
                 for (int i = 0; i < tristrips.Length; i++)
                 {
                     tristrips[i].tex0 = uvs0[i]; // blue squares
@@ -142,6 +136,15 @@ namespace Manifold.EditorTools.GC.GFZ
                     tex1 = OffsetUVs(tex1, embed.RepeatFlashingUVOffset);
                     tristrips[i].tex1 = tex1; // flashing
                 }
+
+                return tristrips;
+            }
+            public static Tristrip[] CreateSlipDarkThin(Matrix4x4[] matrices, Matrix4x4[] parentMatrices, GfzPropertyEmbed embed)
+            {
+                var tristrips = CreateSlipDarkWide(matrices, parentMatrices, embed);
+                // Shrink UVs by 4 since tex is 1/4 width
+                foreach (var tristrip in tristrips)
+                    MutateScaleUVs(tristrip.tex0, new Vector2(1, 4));
 
                 return tristrips;
             }
@@ -494,7 +497,19 @@ namespace Manifold.EditorTools.GC.GFZ
                 var newValue = math.ceil(value / roundToNearest) * roundToNearest;
                 return newValue;
             }
+            public static Vector3 SurfaceNormalTOA(float opposite, float adjacent, Vector3 normal, bool isClockwise)
+            {
+                float angleRad = Mathf.Tan(opposite / adjacent);
+                float angleDeg = angleRad * Mathf.Rad2Deg;
 
+                // Clockwise rotation is ngative about the Z axis
+                if (isClockwise)
+                    angleDeg = -angleDeg;
+
+                Quaternion rotation = Quaternion.Euler(0, 0, angleDeg);
+                Vector3 rotatedNormal = rotation * normal;
+                return rotatedNormal;
+            }
 
 
             public const float kCurbHeight = 0.5f;
@@ -527,16 +542,6 @@ namespace Manifold.EditorTools.GC.GFZ
             /// <param name="repititionsAlongWidth"></param>
             /// <param name="repetitionsAlongLength"></param>
             /// <returns></returns>
-            internal static Tristrip[] StandardTopTex0(Matrix4x4[] matrices, int widthDivisions, float repititionsAlongWidth, float repetitionsAlongLength, float inset = 3.75f)
-            {
-                var tristrips = StandardTop(matrices, widthDivisions, inset);
-
-                var uvs = CreateTristripScaledUVs(tristrips, repititionsAlongWidth, repetitionsAlongLength);
-                for (int i = 0; i < tristrips.Length; i++)
-                    tristrips[i].tex0 = uvs[i];
-
-                return tristrips;
-            }
 
             internal static Tristrip[] StandardBottom(Matrix4x4[] matrices, int widthDivisions, float thickness, float inset = 0f)
             {
@@ -592,21 +597,6 @@ namespace Manifold.EditorTools.GC.GFZ
             {
                 // TODO: maybe provide angle of slant and length?
                 throw new System.NotImplementedException();
-            }
-
-
-            public static Vector3 SurfaceNormalTOA(float opposite, float adjacent, Vector3 normal, bool isClockwise)
-            {
-                float angleRad = Mathf.Tan(opposite / adjacent);
-                float angleDeg = angleRad * Mathf.Rad2Deg;
-
-                // Clockwise rotation is ngative about the Z axis
-                if (isClockwise)
-                    angleDeg = -angleDeg;
-
-                Quaternion rotation = Quaternion.Euler(0, 0, angleDeg);
-                Vector3 rotatedNormal = rotation * normal;
-                return rotatedNormal;
             }
 
 
