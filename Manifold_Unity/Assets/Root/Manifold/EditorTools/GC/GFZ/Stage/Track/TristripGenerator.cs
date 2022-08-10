@@ -412,6 +412,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
                 Copy(tristrip.positions, ref dlist.pos);
                 Copy(tristrip.normals, ref dlist.nrm);
+                Copy(tristrip.binormals, ref dlist.bnm);
+                Copy(tristrip.tangents, ref dlist.tan);
                 Copy(tristrip.tex0, ref dlist.tex0);
                 Copy(tristrip.tex1, ref dlist.tex1);
                 Copy(tristrip.tex2, ref dlist.tex2);

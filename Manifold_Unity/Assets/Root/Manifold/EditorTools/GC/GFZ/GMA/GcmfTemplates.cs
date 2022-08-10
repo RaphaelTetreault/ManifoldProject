@@ -1110,14 +1110,6 @@ namespace Manifold.EditorTools.GC.GFZ
                     new TevLayer()
                     {
                         MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
-                        WrapMode = TextureWrapMode.repeatY | TextureWrapMode.unk6 | TextureWrapMode.unk7, // I added mirror y (not x due to swizzle)
-                        LodBias = -10,
-                        AnisotropicFilter = GXAnisotropy.GX_ANISO_4,
-                        Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
-                    },
-                    new TevLayer()
-                    {
-                        MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
                         WrapMode = TextureWrapMode.mirrorX | TextureWrapMode.repeatY | TextureWrapMode.unk6 | TextureWrapMode.unk7,
                         LodBias = -10,
                         AnisotropicFilter = GXAnisotropy.GX_ANISO_4,
@@ -1131,12 +1123,21 @@ namespace Manifold.EditorTools.GC.GFZ
                         AnisotropicFilter = GXAnisotropy.GX_ANISO_4,
                         Unk0x12 = TexFlags0x10.unk0_AlphaScreenSelf | TexFlags0x10.unk4 | TexFlags0x10.unk5,
                     },
+                    new TevLayer()
+                    {
+                        MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2 | MipmapSetting.UNK_FLAG_4,
+                        //WrapMode = TextureWrapMode.UseNBT | TextureWrapMode.mirrorX | TextureWrapMode.repeatY | TextureWrapMode.unk7,
+                        WrapMode = TextureWrapMode.mirrorX | TextureWrapMode.repeatY | TextureWrapMode.unk7,
+                        LodBias = -10,
+                        AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
+                        Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
+                    },
                 };
                 var textureHashes = new string[]
                 {
-                    "be583cee8cc59ff4aeb60955f7e7aeb5", // st32 tex 56, light beam?
                     "7b6c73bfe0da891ca1abe2d94204daf5", // st32 tex 25, metal texture
                     "6a2145909267e408d686325e8655a6ee", // st32 tex 24, square fade?
+                    "0a35eeea7d0065271d570f61544b9c6d", // st32 tex 27, metal detail / bump
                 };
                 var material = new Material
                 {
