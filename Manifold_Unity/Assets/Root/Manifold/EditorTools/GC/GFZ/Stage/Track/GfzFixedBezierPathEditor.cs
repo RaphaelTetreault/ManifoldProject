@@ -67,7 +67,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             var editorTarget = target as GfzFixedBezierPath;
 
             serializedObject.Update();
-
             Handles.color = Color.red;
             for (int i = 0; i < editorTarget.ControlPointsLength; i++)
             {
@@ -87,32 +86,30 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     switch (selectMode)
                     {
                         case SelectMode.PositionHandle: PositionHandle(editorTarget, i); break;
-                        case SelectMode.RotationHandle: RotationHandle(editorTarget, i); break;
+                        case SelectMode.RotationHandle: EulerRotationHandle(editorTarget, i); break;
                     }
                 }
-
-                CaptureEvent();
+                CaptureEditorEvent();
             }
-
             serializedObject.ApplyModifiedProperties();
         }
 
-        private void CaptureEvent()
+        private void CaptureEditorEvent()
         {
             Event e = Event.current;
             switch (e.type)
             {
-                case EventType.MouseDown:
-                    Debug.Log("MouseDown");
-                    break;
+                //case EventType.MouseDown:
+                //    Debug.Log("MouseDown");
+                //    break;
 
-                case EventType.MouseUp:
-                    Debug.Log("MouseUp");
-                    break;
+                //case EventType.MouseUp:
+                //    Debug.Log("MouseUp");
+                //    break;
 
-                case EventType.MouseDrag:
-                    Debug.Log("MouseDrag");
-                    break;
+                //case EventType.MouseDrag:
+                //    Debug.Log("MouseDrag");
+                //    break;
 
                 case EventType.KeyDown:
                     if (e.keyCode == KeyCode.W)
@@ -127,17 +124,20 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
         }
 
-        private bool PositionHandle(Vector3 position, Quaternion orientation, out Vector3 editedPosition)
-        {
-            EditorGUI.BeginChangeCheck();
-            Vector3 result = Handles.DoPositionHandle(position, orientation);
-            bool didUserMoveHandle = EditorGUI.EndChangeCheck();
-
-            editedPosition = didUserMoveHandle ? result : Vector3.zero;
-            return didUserMoveHandle;
-        }
+        /// <summary>
+        /// Maps <paramref name="controlPoint"/> to underlying function.
+        /// </summary>
+        /// <param name="controlPoint"></param>
+        /// <param name="editedPosition"></param>
+        /// <returns></returns>
         private bool PositionHandle(FixedBezierPoint controlPoint, out Vector3 editedPosition)
-            => PositionHandle(controlPoint.position, controlPoint.Orientation, out editedPosition);
+            => HandlesUtility.PositionHandle(controlPoint.position, controlPoint.Orientation, out editedPosition);
+       
+        /// <summary>
+        /// Create a position handle for the current <paramref name="tool"/>.
+        /// </summary>
+        /// <param name="tool"></param>
+        /// <param name="index"></param>
         private void PositionHandle(GfzFixedBezierPath tool, int index)
         {
             var controlPoint = tool.GetControlPoint(index);
@@ -149,52 +149,34 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
         }
 
-        private bool RotationHandle(Vector3 position, Quaternion orientation, out Quaternion editedOrientation)
-        {
-            EditorGUI.BeginChangeCheck();
-            Quaternion result = Handles.DoRotationHandle(orientation, position);
-            bool didUserMoveHandle = EditorGUI.EndChangeCheck();
+        /// <summary>
+        /// Maps <paramref name="controlPoint"/> to underlying function.
+        /// </summary>
+        /// <param name="controlPoint"></param>
+        /// <param name="eulerDelta"></param>
+        /// <returns></returns>
+        private bool EulerRotationHandle(FixedBezierPoint controlPoint, out Vector3 eulerDelta)
+            => HandlesUtility.EulerRotationHandle(controlPoint.position, controlPoint.Orientation, out eulerDelta);
 
-            editedOrientation = didUserMoveHandle ? result : Quaternion.identity;
-            return didUserMoveHandle;
-        }
-        private bool RotationHandle(FixedBezierPoint controlPoint, out Quaternion editedOrientation)
-            => RotationHandle(controlPoint.position, controlPoint.Orientation, out editedOrientation);
-        private void RotationHandle(GfzFixedBezierPath tool, int index)
+        /// <summary>
+        /// Create a euler rotation handle for the current <paramref name="tool"/>.
+        /// </summary>
+        /// <param name="tool"></param>
+        /// <param name="index"></param>
+        private void EulerRotationHandle(GfzFixedBezierPath tool, int index)
         {
             var controlPoint = tool.GetControlPoint(index);
-            bool didUserMoveHandle = RotationHandle(controlPoint, out Quaternion editedOrientation);
+            bool didUserMoveHandle = EulerRotationHandle(controlPoint, out Vector3 eulerDelta);
             if (didUserMoveHandle)
             {
-                Vector3 eulerOriginal = controlPoint.Orientation.eulerAngles;
-                Vector3 eulerEdited = editedOrientation.eulerAngles;
-                Vector3 eulerDelta = eulerEdited - eulerOriginal;
-                Vector3 eulerDeltaClean = CleanRotation(eulerDelta);
-                //Debug.Log($"og {eulerOriginal} :: edit {eulerEdited} :: delta {eulerDelta} :: {eulerDeltaClean}");
-                controlPoint.EulerOrientation += eulerDeltaClean;
+                controlPoint.EulerOrientation += eulerDelta;
                 tool.SetControlPoint(index, controlPoint);
             }
         }
 
-        private float CleanRotation(float value)
-        {
-            bool wrapsPositive = value > +180;
-            bool wrapsNegative = value < -180;
-            if (wrapsPositive)
-                value -= 360;
-            if (wrapsNegative)
-                value += 360;
-            return value;
-        }
-        private Vector3 CleanRotation(Vector3 vector3)
-        {
-            Vector3 cleanRotation = new Vector3(
-                CleanRotation(vector3.x),
-                CleanRotation(vector3.y),
-                CleanRotation(vector3.z));
-            return cleanRotation;
-        }
-
+        /// <summary>
+        /// Hides the Transform component editor gizmos when selecting a control point.
+        /// </summary>
         private void AssignToolVisibility()
         {
             // https://forum.unity.com/threads/hiding-default-transform-handles.86760/
