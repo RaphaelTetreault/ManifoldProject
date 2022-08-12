@@ -102,11 +102,25 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             // Add distance for new control point, compute distance
             distancesBetweenControlPoints.Insert(index, -1f);
             UpdateCurveDistanceTouchingControlPoint(index);
+            UpdateLinearDistanceTouchingControlPoint(index);
         }
         public void InsertBefore(int index, FixedBezierPoint controlPoint)
             => InsertControlPoint(index, controlPoint);
         public void InsertAfter(int index, FixedBezierPoint controlPoint)
-            => InsertControlPoint(index + 1, controlPoint);
+        {
+            // insert point before last
+            var currControlPoint = GetControlPoint(index);
+            InsertControlPoint(index, currControlPoint);
+
+            // replace next with what we want
+            int nextIndex = index + 1;
+            SetControlPoint(nextIndex, controlPoint);
+
+            // Update distances
+            UpdateCurveDistanceTouchingControlPoint(nextIndex);
+            UpdateLinearDistanceTouchingControlPoint(nextIndex);
+        }
+            //=> InsertControlPoint(index + 1, controlPoint);
         public void InsertBetween(int index0, int index1)
         {
             var controlPoint0 = GetControlPoint(index0);
@@ -140,14 +154,14 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 EulerOrientation = eulerOrientation,
             };
             // Method will resolve distances between control points.
-            InsertAfter(index0, newControlPoint);
+            InsertControlPoint(index1, newControlPoint);
         }
 
         public void RemoveControlPoint(int index)
         {
-            bool canRemovePoints = controlPoints.Count > 2;
+            bool cannotRemovePoints = controlPoints.Count <= 2;
             bool isInvalidIndex = !IsValidIndex(index);
-            if (canRemovePoints && isInvalidIndex)
+            if (cannotRemovePoints || isInvalidIndex)
                 return;
 
             // Remove control point
@@ -155,6 +169,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             // Remove distance and recompute
             distancesBetweenControlPoints.RemoveAt(index);
             UpdateCurveDistanceTouchingControlPoint(index);
+            UpdateLinearDistanceTouchingControlPoint(index);
         }
         public void RemoveAt(int index)
             => RemoveControlPoint(index);
@@ -226,7 +241,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         /// Compute distances
         /// </summary>
         /// <param name="index"></param>
-        public void UpdateLinearDistanceTouchingControlPoint(int index)
+        public void UpdateLinearDistanceFromControlPointToNext(int index)
         {
             int index0 = index + 0;
             int index1 = index + 1;
@@ -246,7 +261,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             SetControlPoint(index0, controlPoint0);
             SetControlPoint(index1, controlPoint1);
         }
-
+        public void UpdateLinearDistanceTouchingControlPoint(int index)
+        {
+            UpdateLinearDistanceFromControlPointToNext(index); // this to next 
+            UpdateLinearDistanceFromControlPointToNext(index - 1); // previous to this
+        }
         private float ComputeApproximateDistance(int index)
         {
             var controlPoint0 = GetControlPoint(index);
@@ -274,6 +293,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         {
             bool isLargeEnough = index >= 0;
             bool isSmallEnough = index < ControlPointsLength;
+            bool isValidIndex = isLargeEnough & isSmallEnough;
+            return isValidIndex;
+        }
+        private bool IsValidInsertIndex(int index)
+        {
+            bool isLargeEnough = index >= 0;
+            bool isSmallEnough = index <= ControlPointsLength;
             bool isValidIndex = isLargeEnough & isSmallEnough;
             return isValidIndex;
         }

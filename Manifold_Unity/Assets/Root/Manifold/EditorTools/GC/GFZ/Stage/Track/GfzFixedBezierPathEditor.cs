@@ -65,6 +65,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
             DrawDefaults(editorTarget);
             EditorGUILayout.Separator();
+            DrawControlPointSelect(editorTarget, index);
+            EditorGUILayout.Separator();
             DrawCurrentControlPoint(editorTarget, index);
             EditorGUILayout.Separator();
             DrawAnimationData();
@@ -72,33 +74,66 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             //base.OnInspectorGUI();
         }
 
-        private void ButtonInsertBetween(GfzFixedBezierPath editorTarget, int index0, int index1, string buttonLabel)
+        private void DrawButtonFields(GfzFixedBezierPath editorTarget, int index)
         {
-            if (GUILayout.Button(buttonLabel))
+            EditorGUILayout.BeginHorizontal();
+            DrawButtonInsertBefore(editorTarget, index);
+            DrawButtonInsertAfter(editorTarget, index);
+            DrawButtonDelete(editorTarget, index);
+            EditorGUILayout.EndHorizontal();
+        }
+        private void InsertBetween(GfzFixedBezierPath editorTarget, int index0, int index1)
+        {
+            string undoMessage = $"Insert bezier point between {index0} and {index1}";
+            Undo.RecordObject(editorTarget, undoMessage);
             {
-                string undoMessage = $"Insert bezier point between {index0} and {index1}";
-                Undo.RecordObject(editorTarget, undoMessage);
-                {
-                    editorTarget.InsertBetween(index0, index1);
-                }
-                EditorUtility.SetDirty(editorTarget);
+                editorTarget.InsertBetween(index0, index1);
+            }
+            EditorUtility.SetDirty(editorTarget);
+        }
+        private void DrawButtonInsertBefore(GfzFixedBezierPath editorTarget, int index)
+        {
+            if (!GUILayout.Button("Insert Before"))
+                return;
+
+            int indexPrev = index - 1;
+            bool indexPrevIsValid = editorTarget.IsValidIndex(indexPrev);
+            if (indexPrevIsValid)
+            {
+                InsertBetween(editorTarget, indexPrev, index);
+            }
+            else
+            {
+                InsertBefore(editorTarget, index);
             }
         }
-        private void ButtonInsertBefore(GfzFixedBezierPath editorTarget, int index)
+        private void DrawButtonInsertAfter(GfzFixedBezierPath editorTarget, int index)
         {
-            int index0 = index - 1;
-            int index1 = index;
-            ButtonInsertBetween(editorTarget, index0, index1, "Insert Before");
-        }
-        private void ButtonInsertAfter(GfzFixedBezierPath editorTarget, int index)
-        {
-            int index0 = index;
-            int index1 = index + 1;
-            ButtonInsertBetween(editorTarget, index0, index1, "Insert After");
-        }
+            if (!GUILayout.Button("Insert After"))
+                return;
 
-        private void ButtonDelete(GfzFixedBezierPath editorTarget, int index)
+            int indexNext = index + 1;
+            bool indexNextIsValid = editorTarget.IsValidIndex(indexNext);
+            if (indexNextIsValid)
+            {
+                InsertBetween(editorTarget, index, indexNext);
+            }
+            else
+            {
+                InsertAfter(editorTarget, index);
+            }
+
+            serializedObject.Update();
+            selectedIndex.intValue += 1;
+            serializedObject.ApplyModifiedProperties();
+        }
+        private void DrawButtonDelete(GfzFixedBezierPath editorTarget, int index)
         {
+            bool canDeleteControlPoints = editorTarget.ControlPointsLength > 2;
+            GUI.color = canDeleteControlPoints
+                ? new Color32(255, 128, 128, 255)
+                : Color.grey;
+
             if (GUILayout.Button("Delete"))
             {
                 string undoMessage = $"Delete bezier point {index}";
@@ -108,12 +143,37 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 }
                 EditorUtility.SetDirty(editorTarget);
             }
+            GUI.color = Color.white;
+        }
+        private void InsertBefore(GfzFixedBezierPath editorTarget, int index)
+        {
+            string undoMessage = $"Insert bezier point before {index}";
+            Undo.RecordObject(editorTarget, undoMessage);
+            {
+                var controlPoint = editorTarget.GetControlPoint(index);
+                Vector3 offset = controlPoint.Orientation * Vector3.back * 500f;
+                controlPoint.position += offset;
+                editorTarget.InsertBefore(index, controlPoint);
+            }
+            EditorUtility.SetDirty(editorTarget);
+        }
+        private void InsertAfter(GfzFixedBezierPath editorTarget, int index)
+        {
+            string undoMessage = $"Insert bezier point before {index}";
+            Undo.RecordObject(editorTarget, undoMessage);
+            {
+                var controlPoint = editorTarget.GetControlPoint(index);
+                Vector3 offset = controlPoint.Orientation * Vector3.forward * 500f;
+                controlPoint.position += offset;
+                editorTarget.InsertAfter(index, controlPoint);
+            }
+            EditorUtility.SetDirty(editorTarget);
         }
 
 
         private void DrawCurrentControlPoint(GfzFixedBezierPath editorTarget, int index)
         {
-            EditorGUILayout.LabelField($"Bezier Control Point {index}", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField($"Bezier Control Point", EditorStyles.boldLabel);
             DrawCurrentControlPointPosition(editorTarget, index);
             DrawCurrentControlPointOrientation(editorTarget, index);
             DrawPositionKeyFlags(editorTarget, index);
@@ -212,7 +272,49 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         private void DrawControlPointSelect(GfzFixedBezierPath editorTarget, int index)
         {
+            serializedObject.Update();
+            EditorGUILayout.LabelField($"Selected Bezier Control Point {index}", EditorStyles.boldLabel);
+            DrawIndexToolbar(editorTarget, index);
+            DrawButtonFields(editorTarget, index);
+            serializedObject.ApplyModifiedProperties();
+        }
+        private void DrawIndexToolbar(GfzFixedBezierPath editorTarget, int index)
+        {
+            int nControlPoints = editorTarget.ControlPointsLength;
+            int rows = Mathf.CeilToInt(nControlPoints / 10f);
+            for (int r = 0; r < rows; r++)
+            {
+                int rowBaseCurr = (r + 0) * 10;
+                int rowBaseNext = (r + 1) * 10;
 
+                // Generate a label for each toolbar cell
+                List<string> labels = new List<string>(10);
+                for (int c = rowBaseCurr; c < rowBaseNext; c++)
+                {
+                    bool isValidLabelIndex = editorTarget.IsValidIndex(c);
+                    string label = isValidLabelIndex ? c.ToString() : string.Empty;
+                    labels.Add(label);
+                }
+
+                // See if selected index applies to this row
+                bool withinRowLower = index >= rowBaseCurr;
+                bool withinRowUpper = index < rowBaseNext;
+                // Get index, -1 if not for this row
+                int indexForThisRow = withinRowLower && withinRowUpper ? index : -1;
+                // Display toolbar, get index returned (-1 if non-applicable row)
+                int selectedIndex = GUILayout.Toolbar(indexForThisRow, labels.ToArray());
+                // Get true index
+                selectedIndex += rowBaseCurr;
+
+                // Set index if valid. If invalid row, we have result = -1, so this doesn't run.
+                bool isValidIndex = editorTarget.IsValidIndex(selectedIndex);
+                bool valueChanged = index != selectedIndex;
+                if (isValidIndex && valueChanged)
+                {
+                    this.selectedIndex.intValue = selectedIndex;
+                    GUI.FocusControl(null);
+                }
+            }
         }
 
         #endregion
