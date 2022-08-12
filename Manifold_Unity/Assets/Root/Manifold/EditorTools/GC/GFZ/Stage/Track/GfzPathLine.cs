@@ -21,7 +21,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         [SerializeField, Min(1f)] private float step = 10f;
         [SerializeField] private bool showGizmos = true;
 
-        protected override AnimationCurveTRS TrackSegmentAnimationCurveTRS => animationCurveTRS;
+        //protected override AnimationCurveTRS TrackSegmentAnimationCurveTRS => animationCurveTRS;
 
 
         private static UnityEngine.AnimationCurve CreateDefaultCurve(float defaultValue = 0)
@@ -74,7 +74,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return length;
         }
 
-        public override AnimationCurveTRS CreateAnimationCurveTRS(bool isGfzCoordinateSpace)
+        public override AnimationCurveTRS CopyAnimationCurveTRS(bool isGfzCoordinateSpace)
         {
             var trs = isGfzCoordinateSpace
                 ? animationCurveTRS.CreateGfzCoordinateSpace()

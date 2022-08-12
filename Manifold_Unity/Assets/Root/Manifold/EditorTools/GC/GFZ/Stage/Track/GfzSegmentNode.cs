@@ -19,7 +19,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         /// </summary>
         /// <param name="isGfzCoordinateSpace"></param>
         /// <returns></returns>
-        public abstract AnimationCurveTRS CreateAnimationCurveTRS(bool isGfzCoordinateSpace);
+        public abstract AnimationCurveTRS CopyAnimationCurveTRS(bool isGfzCoordinateSpace);
         public abstract TrackSegment CreateTrackSegment();
 
         // TODO? Consider adding children to construction?
@@ -27,7 +27,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         {
             var parentHacTRS = GetParentHacTRS(isGfzCoordinateSpace, out bool isRoot);
             //var staticMatrix = GetStaticMatrix(isGfzCoordinateSpace, isRoot);
-            var animTRS = CreateAnimationCurveTRS(isGfzCoordinateSpace);
+            var animTRS = CopyAnimationCurveTRS(isGfzCoordinateSpace);
 
             var hacTRS = new HierarchichalAnimationCurveTRS()
             {

@@ -14,7 +14,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         /// <summary>
         /// The final TRS to use as GFZ track segment
         /// </summary>
-        protected abstract AnimationCurveTRS TrackSegmentAnimationCurveTRS { get; }
+        //protected abstract AnimationCurveTRS TrackSegmentAnimationCurveTRS { get; }
 
 
         public abstract float GetSegmentLength();
@@ -59,7 +59,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public sealed override GameCube.GFZ.Stage.TrackSegment CreateTrackSegment()
         {
-            var trs = TrackSegmentAnimationCurveTRS.CreateDeepCopy();
+            var trs = CopyAnimationCurveTRS(true);
 
             var trackSegmentRoot = new GameCube.GFZ.Stage.TrackSegment();
             var trackSegmentRZ = new GameCube.GFZ.Stage.TrackSegment();
@@ -82,9 +82,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return trackSegmentRoot;
         }
 
-        public void UpateStartEndPoints()
+        public void UpdateStartEndPoints()
         {
-            var trs = TrackSegmentAnimationCurveTRS;
+            var trs = CopyAnimationCurveTRS(false);
             StartPosition = trs.Position.Evaluate(0);
             EndPosition = trs.Position.Evaluate(trs.Position.GetMaxTime());
         }
@@ -92,7 +92,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         public override void InvokeUpdates()
         {
             base.InvokeUpdates();
-            UpateStartEndPoints();
+            UpdateStartEndPoints();
         }
 
     }

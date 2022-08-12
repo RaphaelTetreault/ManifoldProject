@@ -683,7 +683,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return (rolls, rollModes);
         }
 
-        public override AnimationCurveTRS CreateAnimationCurveTRS(bool isGfzCoordinateSpace)
+        public override AnimationCurveTRS CopyAnimationCurveTRS(bool isGfzCoordinateSpace)
         {
             var trs = isGfzCoordinateSpace
                 ? animationCurveTRS.CreateGfzCoordinateSpace()
@@ -692,7 +692,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return trs;
         }
 
-        protected override AnimationCurveTRS TrackSegmentAnimationCurveTRS => animationCurveTRS;
+        //protected override AnimationCurveTRS TrackSegmentAnimationCurveTRS => animationCurveTRS;
 
         public override float GetMaxTime()
         {

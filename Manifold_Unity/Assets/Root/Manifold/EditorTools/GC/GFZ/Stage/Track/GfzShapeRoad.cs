@@ -26,7 +26,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
 
 
-        public override AnimationCurveTRS CreateAnimationCurveTRS(bool isGfzCoordinateSpace)
+        public override AnimationCurveTRS CopyAnimationCurveTRS(bool isGfzCoordinateSpace)
         {
             return new AnimationCurveTRS();
         }

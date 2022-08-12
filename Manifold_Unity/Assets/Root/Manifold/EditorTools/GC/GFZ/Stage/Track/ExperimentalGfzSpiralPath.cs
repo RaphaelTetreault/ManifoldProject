@@ -22,9 +22,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         [SerializeField, Min(8)] private int nKeysPer360Degrees = 36;
         [SerializeField] private AnimationCurveTRS animationCurveTRS = new();
 
-        protected override AnimationCurveTRS TrackSegmentAnimationCurveTRS => animationCurveTRS;
+        //protected override AnimationCurveTRS TrackSegmentAnimationCurveTRS => animationCurveTRS;
 
-        public override AnimationCurveTRS CreateAnimationCurveTRS(bool isGfzCoordinateSpace)
+        public override AnimationCurveTRS CopyAnimationCurveTRS(bool isGfzCoordinateSpace)
         {
             var trs = isGfzCoordinateSpace
                 ? animationCurveTRS.CreateGfzCoordinateSpace()

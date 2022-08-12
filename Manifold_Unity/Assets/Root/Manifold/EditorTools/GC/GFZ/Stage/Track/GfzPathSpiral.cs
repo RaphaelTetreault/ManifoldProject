@@ -21,9 +21,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         // Rather than linear interpolation, do smooth cubic interpolation
         private static readonly AnimationCurve RadiiCubicSmooth = new AnimationCurve(new(0, 0), new (1, 1));
 
-        protected override AnimationCurveTRS TrackSegmentAnimationCurveTRS => animationCurveTRS;
+        //protected override AnimationCurveTRS TrackSegmentAnimationCurveTRS => animationCurveTRS;
 
-        public override AnimationCurveTRS CreateAnimationCurveTRS(bool isGfzCoordinateSpace)
+        public override AnimationCurveTRS CopyAnimationCurveTRS(bool isGfzCoordinateSpace)
         {
             var trs = isGfzCoordinateSpace
                 ? animationCurveTRS.CreateGfzCoordinateSpace()

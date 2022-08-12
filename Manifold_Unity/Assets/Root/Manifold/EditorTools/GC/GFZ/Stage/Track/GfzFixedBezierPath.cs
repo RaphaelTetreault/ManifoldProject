@@ -13,51 +13,15 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         [SerializeField] private int selectedIndex = 1;
         [SerializeField] private AnimationCurveTRS animationCurveTRS = new();
 
-        protected override AnimationCurveTRS TrackSegmentAnimationCurveTRS => animationCurveTRS;
+        //protected override AnimationCurveTRS TrackSegmentAnimationCurveTRS => animationCurveTRS;
         public int ControlPointsLength => controlPoints.Count;
 
-        public override AnimationCurveTRS CreateAnimationCurveTRS(bool isGfzCoordinateSpace)
+        public override AnimationCurveTRS CopyAnimationCurveTRS(bool isGfzCoordinateSpace)
         {
-            float distance = 0f;
-            var trs = new AnimationCurveTRS();
-
-            for (int i = 0; i < ControlPointsLength; i++)
-            {
-                var controlPoint = controlPoints[i];
-                Vector3 position = transform.TransformPoint(controlPoint.position);
-                Vector3 rotation = controlPoint.EulerOrientation + transform.rotation.eulerAngles;
-                Vector3 scale = controlPoint.scale;
-
-                // POSITION
-                if (controlPoint.keyPosition.x)
-                    trs.Position.x.AddKey(distance, position.x);
-                if (controlPoint.keyPosition.y)
-                    trs.Position.y.AddKey(distance, position.y);
-                if (controlPoint.keyPosition.z)
-                    trs.Position.z.AddKey(distance, position.z);
-
-                // ROTATION
-                if (controlPoint.keyOrientation.x)
-                    trs.Rotation.x.AddKey(distance, rotation.x);
-                if (controlPoint.keyOrientation.y)
-                    trs.Rotation.y.AddKey(distance, rotation.y);
-                if (controlPoint.keyOrientation.z)
-                    trs.Rotation.z.AddKey(distance, rotation.z);
-
-                // SCALE
-                if (controlPoint.keyScale.x)
-                    trs.Scale.x.AddKey(distance, scale.x);
-                if (controlPoint.keyScale.y)
-                    trs.Scale.y.AddKey(new Keyframe(distance, scale.y));
-                
-                // Move keysframes along distance
-                if (i < distancesBetweenControlPoints.Count)
-                    distance += distancesBetweenControlPoints[i];
-            }
-
+            var trs = isGfzCoordinateSpace
+                ? animationCurveTRS.CreateGfzCoordinateSpace()
+                : animationCurveTRS.CreateDeepCopy();
             return trs;
-            // TODO: make the TRS here
-            //return animationCurveTRS;
         }
 
         public override float GetMaxTime()
@@ -75,7 +39,79 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public override void UpdateTRS()
         {
-            animationCurveTRS = CreateAnimationCurveTRS(false);
+            float distance = 0f;
+            var trs = new AnimationCurveTRS();
+
+            for (int i = 0; i < ControlPointsLength; i++)
+            {
+                var controlPoint0 = controlPoints[i+0];
+
+                Vector3 rotation = controlPoint0.EulerOrientation + transform.rotation.eulerAngles;
+                //Vector3 rotation1 = controlPoint1.EulerOrientation + transform.rotation.eulerAngles;
+                Vector3 scale = controlPoint0.scale;
+                //Vector3 scale1 = controlPoint1.scale;
+
+
+
+
+
+                //// POSITION
+                //if (controlPoint.keyPosition.x)
+                //    trs.Position.x.AddKey(new Keyframe(distance, position.x, 0, 0));
+                //if (controlPoint.keyPosition.y)
+                //    trs.Position.y.AddKey(new Keyframe(distance, position.y, 0, 0));
+                //if (controlPoint.keyPosition.z)
+                //    trs.Position.z.AddKey(new Keyframe(distance, position.z, 0, 0));
+
+                // ROTATION
+                if (controlPoint0.keyOrientation.x)
+                    trs.Rotation.x.AddKey(new Keyframe(distance, rotation.x, 0, 0));
+                if (controlPoint0.keyOrientation.y)
+                    trs.Rotation.y.AddKey(new Keyframe(distance, rotation.y, 0, 0));
+                if (controlPoint0.keyOrientation.z)
+                    trs.Rotation.z.AddKey(new Keyframe(distance, rotation.z, 0, 0));
+
+                // SCALE
+                if (controlPoint0.keyScale.x)
+                    trs.Scale.x.AddKey(new Keyframe(distance, scale.x, 0, 0));
+                if (controlPoint0.keyScale.y)
+                    trs.Scale.y.AddKey(new Keyframe(distance, scale.y, 0, 0));
+
+
+
+                // Move keysframes along distance
+                if (i < distancesBetweenControlPoints.Count)
+                {
+                    var controlPoint1 = controlPoints[i + 1];
+                    Vector3 p0 = transform.TransformPoint(controlPoint0.position);
+                    Vector3 p1 = transform.TransformPoint(controlPoint0.OutTangentPosition);
+                    Vector3 p2 = transform.TransformPoint(controlPoint1.InTangentPosition);
+                    Vector3 p3 = transform.TransformPoint(controlPoint1.position);
+
+                    float currLength = distance + distancesBetweenControlPoints[i];
+                    for (int j = 0; j < 8; j++)
+                    {
+                        float percent = j / 8f;
+                        float time = distance + currLength * percent;
+
+                        Vector3 position = Bezier.GetPoint(p0, p1, p2, p3, percent);
+
+                        // POSITION
+                        if (controlPoint0.keyPosition.x)
+                            trs.Position.x.AddKey(new Keyframe(time, position.x));
+                        if (controlPoint0.keyPosition.y)
+                            trs.Position.y.AddKey(new Keyframe(time, position.y));
+                        if (controlPoint0.keyPosition.z)
+                            trs.Position.z.AddKey(new Keyframe(time, position.z));
+                    }
+
+                    distance += distancesBetweenControlPoints[i];
+
+                }
+                else { }
+            }
+
+            animationCurveTRS = trs;
         }
 
 
@@ -110,7 +146,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             UpdateCurveDistanceTouchingControlPoint(nextIndex);
             UpdateLinearDistanceTouchingControlPoint(nextIndex);
         }
-            //=> InsertControlPoint(index + 1, controlPoint);
+        //=> InsertControlPoint(index + 1, controlPoint);
         public void InsertBetween(int index0, int index1)
         {
             var controlPoint0 = GetControlPoint(index0);
@@ -139,7 +175,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
             var scale = Vector2.Lerp(controlPoint0.scale, controlPoint1.scale, 0.5f);
 
-                // Make a new control point and insert it.
+            // Make a new control point and insert it.
             var newControlPoint = new FixedBezierPoint()
             {
                 position = position,
@@ -167,7 +203,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         public void RemoveAt(int index)
             => RemoveControlPoint(index);
 
-        
+
         public static List<FixedBezierPoint> DefaultControlPoints()
         {
             float defaultScale = 90; // TODO make centralized
@@ -203,7 +239,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             // Create default control points
             controlPoints = DefaultControlPoints();
             // Make distances between control points
-            distancesBetweenControlPoints = new List<float>(new float[controlPoints.Count-1]);
+            distancesBetweenControlPoints = new List<float>(new float[controlPoints.Count - 1]);
             UpdateCurveDistanceTouchingControlPoint(0);
             UpdateLinearDistanceTouchingControlPoint(0);
         }
@@ -309,7 +345,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 var position = matrix.Position();
                 var rotation = matrix.rotation;
                 var scale = matrix.lossyScale + Vector3.one;
-                Gizmos.DrawMesh(mesh, 0, transform.TransformPoint(position), transform.rotation * rotation, scale);
+                Gizmos.DrawMesh(mesh, 0, position, rotation, scale);
             }
         }
     }
