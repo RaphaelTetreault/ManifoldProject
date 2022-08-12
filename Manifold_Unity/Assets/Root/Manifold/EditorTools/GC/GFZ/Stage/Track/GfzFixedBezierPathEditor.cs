@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Unity.Mathematics;
 using UnityEditor;
 using UnityEngine;
+using Manifold.Spline;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
@@ -54,14 +56,168 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         }
 
 
+        #region OnInspectorGUI
+
         public override void OnInspectorGUI()
         {
             var editorTarget = target as GfzFixedBezierPath;
+            int index = selectedIndex.intValue;
 
             DrawDefaults(editorTarget);
+            EditorGUILayout.Separator();
+            DrawCurrentControlPoint(editorTarget, index);
+            EditorGUILayout.Separator();
+            DrawAnimationData();
             //
-            base.OnInspectorGUI();
+            //base.OnInspectorGUI();
         }
+
+        private void ButtonInsertBetween(GfzFixedBezierPath editorTarget, int index0, int index1, string buttonLabel)
+        {
+            if (GUILayout.Button(buttonLabel))
+            {
+                string undoMessage = $"Insert bezier point between {index0} and {index1}";
+                Undo.RecordObject(editorTarget, undoMessage);
+                {
+                    editorTarget.InsertBetween(index0, index1);
+                }
+                EditorUtility.SetDirty(editorTarget);
+            }
+        }
+        private void ButtonInsertBefore(GfzFixedBezierPath editorTarget, int index)
+        {
+            int index0 = index - 1;
+            int index1 = index;
+            ButtonInsertBetween(editorTarget, index0, index1, "Insert Before");
+        }
+        private void ButtonInsertAfter(GfzFixedBezierPath editorTarget, int index)
+        {
+            int index0 = index;
+            int index1 = index + 1;
+            ButtonInsertBetween(editorTarget, index0, index1, "Insert After");
+        }
+
+        private void ButtonDelete(GfzFixedBezierPath editorTarget, int index)
+        {
+            if (GUILayout.Button("Delete"))
+            {
+                string undoMessage = $"Delete bezier point {index}";
+                Undo.RecordObject(editorTarget, undoMessage);
+                {
+                    editorTarget.RemoveAt(index);
+                }
+                EditorUtility.SetDirty(editorTarget);
+            }
+        }
+
+
+        private void DrawCurrentControlPoint(GfzFixedBezierPath editorTarget, int index)
+        {
+            EditorGUILayout.LabelField($"Bezier Control Point {index}", EditorStyles.boldLabel);
+            DrawCurrentControlPointPosition(editorTarget, index);
+            DrawCurrentControlPointOrientation(editorTarget, index);
+            DrawPositionKeyFlags(editorTarget, index);
+            DrawOrientationKeyFlags(editorTarget, index);
+        }
+        private void DrawCurrentControlPointPosition(GfzFixedBezierPath editorTarget, int index)
+        {
+            var controlPoint = editorTarget.GetControlPoint(index);
+            Vector3 position = WorldPosition(controlPoint);
+
+            EditorGUI.BeginChangeCheck();
+            Vector3 result = GuiSimple.Vector3(nameof(controlPoint.position), position);
+            if (EditorGUI.EndChangeCheck())
+            {
+                string undoMessage = $"Change bezier point {index} position";
+                Undo.RecordObject(editorTarget, undoMessage);
+                {
+                    controlPoint.position = LocalPosition(result);
+                    editorTarget.SetControlPoint(index, controlPoint);
+                }
+                EditorUtility.SetDirty(editorTarget);
+            }
+        }
+        private void DrawCurrentControlPointOrientation(GfzFixedBezierPath editorTarget, int index)
+        {
+            var controlPoint = editorTarget.GetControlPoint(index);
+            Vector3 baseOrientation = transform.rotation.eulerAngles;
+            Vector3 orientation = controlPoint.EulerOrientation + baseOrientation;
+
+            EditorGUI.BeginChangeCheck();
+            Vector3 result = GuiSimple.Vector3(nameof(controlPoint.EulerOrientation), orientation);
+            if (EditorGUI.EndChangeCheck())
+            {
+                string undoMessage = $"Change bezier point {index} euler orientation";
+                Undo.RecordObject(editorTarget, undoMessage);
+                {
+                    controlPoint.EulerOrientation = result - baseOrientation;
+                    editorTarget.SetControlPoint(index, controlPoint);
+                }
+                EditorUtility.SetDirty(editorTarget);
+            }
+        }
+        private void DrawPositionKeyFlags(GfzFixedBezierPath editorTarget, int index)
+        {
+            var controlPoint = editorTarget.GetControlPoint(index);
+            string name = nameof(controlPoint.keyPosition);
+            bool changed = Bool3Field(name, controlPoint.keyPosition, out bool3 edited);
+            if (changed)
+            {
+                string undoMessage = $"Change bezier point {index} position keying";
+                Undo.RecordObject(editorTarget, undoMessage);
+                {
+                    controlPoint.keyPosition = edited;
+                    editorTarget.SetControlPoint(index, controlPoint);
+                }
+                EditorUtility.SetDirty(editorTarget);
+            }
+        }
+        private void DrawOrientationKeyFlags(GfzFixedBezierPath editorTarget, int index)
+        {
+            var controlPoint = editorTarget.GetControlPoint(index);
+            string name = nameof(controlPoint.keyOrientation);
+            bool changed = Bool3Field(name, controlPoint.keyOrientation, out bool3 edited);
+            if (changed)
+            {
+                string undoMessage = $"Change bezier point {index} orientation keying";
+                Undo.RecordObject(editorTarget, undoMessage);
+                {
+                    controlPoint.keyOrientation = edited;
+                    editorTarget.SetControlPoint(index, controlPoint);
+                }
+                EditorUtility.SetDirty(editorTarget);
+            }
+        }
+        private bool Bool3Field(string label, bool3 value, out bool3 edited)
+        {
+            EditorGUI.BeginChangeCheck();
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.PrefixLabel(GuiSimple.Labelize(label));
+            bool resultX = GUILayout.Toggle(value.x, "X");
+            bool resultY = GUILayout.Toggle(value.y, "Y");
+            bool resultZ = GUILayout.Toggle(value.z, "Z");
+            EditorGUILayout.EndHorizontal();
+            bool changed = EditorGUI.EndChangeCheck();
+            edited = new bool3(resultX, resultY, resultZ);
+            return changed;
+        }
+
+
+        private void DrawAnimationData()
+        {
+            EditorGUILayout.LabelField("Animation Data", EditorStyles.boldLabel);
+            EditorGUILayout.PropertyField(autoGenerateTRS);
+            EditorGUILayout.PropertyField(animationCurveTRS);
+        }
+
+        private void DrawControlPointSelect(GfzFixedBezierPath editorTarget, int index)
+        {
+
+        }
+
+        #endregion
+
+        #region OnSceneGUI
 
         private void OnSceneGUI()
         {
@@ -145,6 +301,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 Handles.DrawLine(start, startTangent, 3f);
                 Handles.DrawLine(end, endTangent, 3f);
                 Handles.DrawDottedLine(startTangent, endTangent, 3f);
+
+                Vector3 center = Bezier.GetPoint(start, startTangent, endTangent, end, 0.5f);
+                Handles.DrawSolidDisc(center, Vector3.up, 10f);
+                Handles.DrawSolidDisc(center, Vector3.right, 10f);
+                Handles.DrawSolidDisc(center, Vector3.forward, 10f);
             }
         }
 
@@ -230,5 +391,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             bool hideUnityTransformHandle = IsValidIndex(selectedIndex);
             Tools.hidden = hideUnityTransformHandle;
         }
+
+        #endregion
+
     }
 }

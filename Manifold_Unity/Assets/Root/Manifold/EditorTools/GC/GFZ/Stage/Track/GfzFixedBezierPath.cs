@@ -107,7 +107,41 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             => InsertControlPoint(index, controlPoint);
         public void InsertAfter(int index, FixedBezierPoint controlPoint)
             => InsertControlPoint(index + 1, controlPoint);
+        public void InsertBetween(int index0, int index1)
+        {
+            var controlPoint0 = GetControlPoint(index0);
+            var controlPoint1 = GetControlPoint(index1);
 
+            // Compute position
+            var p0 = controlPoint0.position;
+            var p1 = controlPoint0.OutTangentPosition;
+            var p2 = controlPoint1.InTangentPosition;
+            var p3 = controlPoint1.position;
+            var position = Bezier.GetPoint(p0, p1, p2, p3, 0.5f);
+
+            // Compute orientation
+            var eulerCurve = new AnimationCurve3();
+            eulerCurve.AddKeys(0, controlPoint0.EulerOrientation);
+            eulerCurve.AddKeys(1, controlPoint1.EulerOrientation);
+            //var animCurveX = new AnimationCurve(new(0, controlPoint0.EulerOrientation.x), new(1, controlPoint1.EulerOrientation.x));
+            //var animCurveY = new AnimationCurve(new(0, controlPoint0.EulerOrientation.y), new(1, controlPoint1.EulerOrientation.y));
+            //var animCurveZ = new AnimationCurve(new(0, controlPoint0.EulerOrientation.z), new(1, controlPoint1.EulerOrientation.z));
+            //var orientation = math.lerp(controlPoint0.EulerOrientation, controlPoint1.EulerOrientation, 0.5f);
+            //var orientation = new Vector3(
+            //    animCurveX.Evaluate(0.5f),
+            //    animCurveY.Evaluate(0.5f),
+            //    animCurveZ.Evaluate(0.5f));
+            var eulerOrientation = eulerCurve.Evaluate(0.5f);
+
+                // Make a new control point and insert it.
+            var newControlPoint = new FixedBezierPoint()
+            {
+                position = position,
+                EulerOrientation = eulerOrientation,
+            };
+            // Method will resolve distances between control points.
+            InsertAfter(index0, newControlPoint);
+        }
 
         public void RemoveControlPoint(int index)
         {
@@ -122,10 +156,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             distancesBetweenControlPoints.RemoveAt(index);
             UpdateCurveDistanceTouchingControlPoint(index);
         }
-        public void RemoveBefore(int index)
+        public void RemoveAt(int index)
             => RemoveControlPoint(index);
-        public void RemoveAfter(int index)
-            => RemoveControlPoint(index + 1);
+
         
         public static List<FixedBezierPoint> DefaultControlPoints()
         {
