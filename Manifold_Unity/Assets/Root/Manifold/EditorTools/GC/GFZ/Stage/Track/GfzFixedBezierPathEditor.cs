@@ -16,7 +16,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             PositionHandle,
             RotationHandle,
         }
-
+        private readonly Color32 HandlesButtonColor = new Color32(255, 0, 0, 196);
+        private readonly Color32 HandlesButtonColorSelected = new Color32(255, 0, 0, 128);
 
         SerializedProperty controlPoints;
         SerializedProperty selectedIndex;
@@ -24,7 +25,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         SerializedProperty autoGenerateTRS;
         Transform transform;
 
-        private SelectMode selectMode = SelectMode.PositionHandle;
+        private static SelectMode selectMode = SelectMode.PositionHandle;
 
         private bool IsValidIndex(int selectedIndex)
         {
@@ -32,7 +33,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             bool isValidIndex = selectedIndex >= 0 && selectedIndex < nControlPoints;
             return isValidIndex;
         }
-
 
         void OnEnable()
         {
@@ -68,48 +68,20 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             var editorTarget = target as GfzFixedBezierPath;
 
             serializedObject.Update();
-            Handles.color = Color.red;
-            for (int i = 0; i < editorTarget.ControlPointsLength; i++)
             {
-                var controlPoint = editorTarget.GetControlPoint(i);
-
-                var position = WorldPosition(controlPoint);
-                var orientation = WorldOrientation(controlPoint);
-                bool isPressed = Handles.Button(position, orientation, 20f, 30f, Handles.DotHandleCap);
-                if (isPressed)
-                {
-                    selectedIndex.intValue = i;
-                    //Debug.Log(i);
-                }
+                CaptureHandleClicked(editorTarget);
+                CaptureHandleMove(editorTarget);
+                CaptureKeyboardEvents();
+                DrawBezierPath(editorTarget);
             }
-
-            int index = selectedIndex.intValue;
-            switch (selectMode)
-            {
-                case SelectMode.PositionHandle: PositionHandle(editorTarget, index); break;
-                case SelectMode.RotationHandle: EulerRotationHandle(editorTarget, index); break;
-            }
-            CaptureEditorEvent();
             serializedObject.ApplyModifiedProperties();
         }
 
-        private void CaptureEditorEvent()
+        private void CaptureKeyboardEvents()
         {
             Event e = Event.current;
             switch (e.type)
             {
-                //case EventType.MouseDown:
-                //    Debug.Log("MouseDown");
-                //    break;
-
-                //case EventType.MouseUp:
-                //    Debug.Log("MouseUp");
-                //    break;
-
-                //case EventType.MouseDrag:
-                //    Debug.Log("MouseDrag");
-                //    break;
-
                 case EventType.KeyDown:
                     if (e.keyCode == KeyCode.W)
                     {
@@ -122,7 +94,59 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     break;
             }
         }
+        private void CaptureHandleClicked(GfzFixedBezierPath editorTarget)
+        {
+            for (int i = 0; i < editorTarget.ControlPointsLength; i++)
+            {
+                var controlPoint = editorTarget.GetControlPoint(i);
+                var position = WorldPosition(controlPoint);
+                var orientation = WorldOrientation(controlPoint);
 
+                Handles.color = selectedIndex.intValue == i
+                    ? HandlesButtonColorSelected
+                    : HandlesButtonColor;
+
+                bool isPressed = Handles.Button(position, orientation, 20f, 30f, Handles.DotHandleCap);
+                if (isPressed)
+                {
+                    string undoMessage = $"Select bezier point {i}";
+                    Undo.RecordObject(editorTarget, undoMessage);
+                    {
+                        selectedIndex.intValue = i;
+                        //Debug.Log(i);
+                    }
+                    EditorUtility.SetDirty(editorTarget);
+                }
+            }
+        }
+        private void CaptureHandleMove(GfzFixedBezierPath editorTarget)
+        {
+            int index = selectedIndex.intValue;
+            switch (selectMode)
+            {
+                case SelectMode.PositionHandle: PositionHandle(editorTarget, index); break;
+                case SelectMode.RotationHandle: EulerRotationHandle(editorTarget, index); break;
+            }
+        }
+        private void DrawBezierPath(GfzFixedBezierPath editorTarget)
+        {
+            // Iterate on in-between-beziers rather than on control points
+            Handles.color = Color.grey;
+            for (int i = 0; i < editorTarget.ControlPointsLength - 1; i++)
+            {
+                var controlPoint0 = editorTarget.GetControlPoint(i + 0);
+                var controlPoint1 = editorTarget.GetControlPoint(i + 1);
+                Vector3 start = WorldPosition(controlPoint0);
+                Vector3 end = WorldPosition(controlPoint1);
+                Vector3 startTangent = transform.TransformPoint(controlPoint0.OutTangentPosition); // maybe add helper?
+                Vector3 endTangent = transform.TransformPoint(controlPoint1.InTangentPosition); // maybe add helper?
+                Handles.DrawBezier(start, end, startTangent, endTangent, Color.black, null, 5f);
+
+                Handles.DrawLine(start, startTangent, 3f);
+                Handles.DrawLine(end, endTangent, 3f);
+                Handles.DrawDottedLine(startTangent, endTangent, 3f);
+            }
+        }
 
         private Vector3 WorldPosition(FixedBezierPoint controlPoint)
         {
@@ -147,40 +171,52 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         }
 
         /// <summary>
-        /// Create a position handle for the current <paramref name="tool"/>.
+        /// Create a position handle for the current <paramref name="editorTarget"/>.
         /// </summary>
-        /// <param name="tool"></param>
+        /// <param name="editorTarget"></param>
         /// <param name="index"></param>
-        private void PositionHandle(GfzFixedBezierPath tool, int index)
+        private void PositionHandle(GfzFixedBezierPath editorTarget, int index)
         {
-            var controlPoint = tool.GetControlPoint(index);
+            var controlPoint = editorTarget.GetControlPoint(index);
             Vector3 position = WorldPosition(controlPoint);
             Quaternion orientation = WorldOrientation(controlPoint);
 
             bool didUserMoveHandle = HandlesUtility.PositionHandle(position, orientation, out Vector3 editedPosition);
             if (didUserMoveHandle)
             {
-                controlPoint.position = LocalPosition(editedPosition);
-                tool.SetControlPoint(index, controlPoint);
+                string undoMessage = $"Move bezier point {index}";
+                Undo.RecordObject(editorTarget, undoMessage);
+                {
+                    controlPoint.position = LocalPosition(editedPosition);
+                    editorTarget.SetControlPoint(index, controlPoint);
+                    editorTarget.UpdateLinearDistanceTouchingControlPoint(index);
+                    editorTarget.UpdateCurveDistanceTouchingControlPoint(index);
+                }
+                EditorUtility.SetDirty(editorTarget);
             }
         }
 
         /// <summary>
-        /// Create a euler rotation handle for the current <paramref name="tool"/>.
+        /// Create a euler rotation handle for the current <paramref name="editorTarget"/>.
         /// </summary>
-        /// <param name="tool"></param>
+        /// <param name="editorTarget"></param>
         /// <param name="index"></param>
-        private void EulerRotationHandle(GfzFixedBezierPath tool, int index)
+        private void EulerRotationHandle(GfzFixedBezierPath editorTarget, int index)
         {
-            var controlPoint = tool.GetControlPoint(index);
+            var controlPoint = editorTarget.GetControlPoint(index);
             Vector3 position = WorldPosition(controlPoint);
             Quaternion orientation = WorldOrientation(controlPoint);
 
             bool didUserMoveHandle = HandlesUtility.EulerRotationHandle(position, orientation, out Vector3 eulerDelta);
             if (didUserMoveHandle)
             {
-                controlPoint.EulerOrientation += eulerDelta;
-                tool.SetControlPoint(index, controlPoint);
+                string undoMessage = $"Rotate bezier point {index}";
+                Undo.RecordObject(editorTarget, undoMessage);
+                {
+                    controlPoint.EulerOrientation += eulerDelta;
+                    editorTarget.SetControlPoint(index, controlPoint);
+                }
+                EditorUtility.SetDirty(editorTarget);
             }
         }
 
