@@ -41,6 +41,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 Vector3 eulerEdited = editedOrientation.eulerAngles;
                 Vector3 eulerDelta = eulerEdited - eulerOriginal;
                 Vector3 eulerDeltaClean = CleanRotation(eulerDelta);
+                Debug.Log($"og:{eulerOriginal}, edit:{eulerEdited}, delta:{eulerDelta}, clean:{eulerDeltaClean}");
                 eulerOrientationDelta = eulerDeltaClean;
             }
             return didUserMoveHandle;
@@ -50,10 +51,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         {
             bool wrapsPositive = value > +180;
             bool wrapsNegative = value < -180;
+
             if (wrapsPositive)
                 value -= 360;
             if (wrapsNegative)
                 value += 360;
+
             return value;
         }
 
@@ -63,6 +66,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 CleanRotation(vector3.x),
                 CleanRotation(vector3.y),
                 CleanRotation(vector3.z));
+
+            // Maybe handle something whe we have two 180 values?
+
             return cleanRotation;
         }
     }

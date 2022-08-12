@@ -6,52 +6,6 @@ using Manifold.Spline;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
-    [System.Serializable]
-    public struct FixedBezierPoint
-    {
-        public const float Weight = 1f / 3f;
-
-        public Vector3 position;
-        [SerializeField] private Vector3 eulerOrientation;
-        [SerializeField] private Quaternion orientation;
-        public float linearDistanceIn;
-        public float linearDistanceOut;
-        public bool3 keyPosition;
-        public bool3 keyOrientation;
-
-        public Quaternion Orientation
-        {
-            get
-            {
-                return orientation;
-            }
-            set
-            {
-                orientation = value;
-                eulerOrientation = orientation.eulerAngles;
-            }
-        }
-        public Vector3 EulerOrientation
-        {
-            get
-            {
-                return eulerOrientation;
-            }
-            set
-            {
-                eulerOrientation = value;
-                orientation = Quaternion.Euler(eulerOrientation);
-            }
-        }
-
-        public float LengthIn => linearDistanceIn * Weight;
-        public float LengthOut => linearDistanceOut * Weight;
-        public Vector3 InTangent => Orientation * Vector3.back * LengthIn;
-        public Vector3 OutTangent => Orientation * Vector3.forward * LengthOut;
-        public Vector3 InTangentPosition => InTangent + position;
-        public Vector3 OutTangentPosition => OutTangent + position;
-    }
-
     public class GfzFixedBezierPath : GfzPathSegment
     {
         [SerializeField] private List<FixedBezierPoint> controlPoints;
@@ -59,15 +13,51 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         [SerializeField] private int selectedIndex = 1;
         [SerializeField] private AnimationCurveTRS animationCurveTRS = new();
 
-
         protected override AnimationCurveTRS TrackSegmentAnimationCurveTRS => animationCurveTRS;
-        //internal FixedBezierPoint[] ControlPoints => controlPoints.ToArray();
         public int ControlPointsLength => controlPoints.Count;
 
         public override AnimationCurveTRS CreateAnimationCurveTRS(bool isGfzCoordinateSpace)
         {
+            float distance = 0f;
+            var trs = new AnimationCurveTRS();
+
+            for (int i = 0; i < ControlPointsLength; i++)
+            {
+                var controlPoint = controlPoints[i];
+                Vector3 position = transform.TransformPoint(controlPoint.position);
+                Vector3 rotation = controlPoint.EulerOrientation + transform.rotation.eulerAngles;
+                Vector3 scale = controlPoint.scale;
+
+                // POSITION
+                if (controlPoint.keyPosition.x)
+                    trs.Position.x.AddKey(distance, position.x);
+                if (controlPoint.keyPosition.y)
+                    trs.Position.y.AddKey(distance, position.y);
+                if (controlPoint.keyPosition.z)
+                    trs.Position.z.AddKey(distance, position.z);
+
+                // ROTATION
+                if (controlPoint.keyOrientation.x)
+                    trs.Rotation.x.AddKey(distance, rotation.x);
+                if (controlPoint.keyOrientation.y)
+                    trs.Rotation.y.AddKey(distance, rotation.y);
+                if (controlPoint.keyOrientation.z)
+                    trs.Rotation.z.AddKey(distance, rotation.z);
+
+                // SCALE
+                if (controlPoint.keyScale.x)
+                    trs.Scale.x.AddKey(distance, scale.x);
+                if (controlPoint.keyScale.y)
+                    trs.Scale.y.AddKey(new Keyframe(distance, scale.y));
+                
+                // Move keysframes along distance
+                if (i < distancesBetweenControlPoints.Count)
+                    distance += distancesBetweenControlPoints[i];
+            }
+
+            return trs;
             // TODO: make the TRS here
-            return animationCurveTRS;
+            //return animationCurveTRS;
         }
 
         public override float GetMaxTime()
@@ -147,11 +137,14 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             //    animCurveZ.Evaluate(0.5f));
             var eulerOrientation = eulerCurve.Evaluate(0.5f);
 
+            var scale = Vector2.Lerp(controlPoint0.scale, controlPoint1.scale, 0.5f);
+
                 // Make a new control point and insert it.
             var newControlPoint = new FixedBezierPoint()
             {
                 position = position,
                 EulerOrientation = eulerOrientation,
+                scale = scale,
             };
             // Method will resolve distances between control points.
             InsertControlPoint(index1, newControlPoint);
@@ -177,19 +170,24 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         
         public static List<FixedBezierPoint> DefaultControlPoints()
         {
+            float defaultScale = 90; // TODO make centralized
             var controlPoint0 = new FixedBezierPoint()
             {
                 position = new Vector3(0, 0, 0),
                 Orientation = Quaternion.identity,
+                scale = Vector2.one * defaultScale,
                 keyPosition = new bool3(true),
                 keyOrientation = new bool3(true),
+                keyScale = new bool2(true),
             };
             var controlPoint1 = new FixedBezierPoint()
             {
                 position = new Vector3(0, 0, 500),
                 Orientation = Quaternion.identity,
+                scale = Vector2.one * defaultScale,
                 keyPosition = new bool3(true),
                 keyOrientation = new bool3(true),
+                keyScale = new bool2(true),
             };
             var list = new List<FixedBezierPoint>();
             list.Add(controlPoint0);
@@ -296,12 +294,23 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             bool isValidIndex = isLargeEnough & isSmallEnough;
             return isValidIndex;
         }
-        private bool IsValidInsertIndex(int index)
+
+        private void OnDrawGizmosSelected()
         {
-            bool isLargeEnough = index >= 0;
-            bool isSmallEnough = index <= ControlPointsLength;
-            bool isValidIndex = isLargeEnough & isSmallEnough;
-            return isValidIndex;
+            var mesh = Resources.GetBuiltinResource<Mesh>("Cube.fbx");
+            float length = GetSegmentLength();
+
+            Gizmos.color = Color.green;
+            for (int i = 0; i < 8; i++)
+            {
+                float time = i / 8f;
+                var matrix = animationCurveTRS.EvaluateMatrix(time * length);
+
+                var position = matrix.Position();
+                var rotation = matrix.rotation;
+                var scale = matrix.lossyScale + Vector3.one;
+                Gizmos.DrawMesh(mesh, 0, transform.TransformPoint(position), transform.rotation * rotation, scale);
+            }
         }
     }
 }

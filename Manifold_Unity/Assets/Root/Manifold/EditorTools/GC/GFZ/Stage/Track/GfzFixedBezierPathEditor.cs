@@ -63,15 +63,17 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             var editorTarget = target as GfzFixedBezierPath;
             int index = selectedIndex.intValue;
 
-            DrawDefaults(editorTarget);
-            EditorGUILayout.Separator();
-            DrawControlPointSelect(editorTarget, index);
-            EditorGUILayout.Separator();
-            DrawCurrentControlPoint(editorTarget, index);
-            EditorGUILayout.Separator();
-            DrawAnimationData();
-            //
-            //base.OnInspectorGUI();
+            serializedObject.Update();
+            {
+                DrawDefaults(editorTarget);
+                EditorGUILayout.Separator();
+                DrawControlPointSelect(editorTarget, index);
+                EditorGUILayout.Separator();
+                DrawCurrentControlPoint(editorTarget, index);
+                EditorGUILayout.Separator();
+                DrawAnimationData();
+            }
+            serializedObject.ApplyModifiedProperties();
         }
 
         private void DrawButtonFields(GfzFixedBezierPath editorTarget, int index)
@@ -123,9 +125,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 InsertAfter(editorTarget, index);
             }
 
-            serializedObject.Update();
+            //serializedObject.Update();
             selectedIndex.intValue += 1;
-            serializedObject.ApplyModifiedProperties();
+            //serializedObject.ApplyModifiedProperties();
         }
         private void DrawButtonDelete(GfzFixedBezierPath editorTarget, int index)
         {
@@ -170,14 +172,15 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             EditorUtility.SetDirty(editorTarget);
         }
 
-
         private void DrawCurrentControlPoint(GfzFixedBezierPath editorTarget, int index)
         {
             EditorGUILayout.LabelField($"Bezier Control Point", EditorStyles.boldLabel);
             DrawCurrentControlPointPosition(editorTarget, index);
             DrawCurrentControlPointOrientation(editorTarget, index);
+            DrawCurrentControlPointScale(editorTarget, index);
             DrawPositionKeyFlags(editorTarget, index);
             DrawOrientationKeyFlags(editorTarget, index);
+            DrawScaleKeyFlags(editorTarget, index);
         }
         private void DrawCurrentControlPointPosition(GfzFixedBezierPath editorTarget, int index)
         {
@@ -216,6 +219,25 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 EditorUtility.SetDirty(editorTarget);
             }
         }
+        private void DrawCurrentControlPointScale(GfzFixedBezierPath editorTarget, int index)
+        {
+            var controlPoint = editorTarget.GetControlPoint(index);
+            Vector2 scale = controlPoint.scale;
+
+            EditorGUI.BeginChangeCheck();
+            Vector2 result = GuiSimple.Vector2(nameof(scale), scale);
+            if (EditorGUI.EndChangeCheck())
+            {
+                string undoMessage = $"Change bezier point {index} euler orientation";
+                Undo.RecordObject(editorTarget, undoMessage);
+                {
+                    controlPoint.scale = result;
+                    editorTarget.SetControlPoint(index, controlPoint);
+                }
+                EditorUtility.SetDirty(editorTarget);
+            }
+        }
+
         private void DrawPositionKeyFlags(GfzFixedBezierPath editorTarget, int index)
         {
             var controlPoint = editorTarget.GetControlPoint(index);
@@ -248,6 +270,22 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 EditorUtility.SetDirty(editorTarget);
             }
         }
+        private void DrawScaleKeyFlags(GfzFixedBezierPath editorTarget, int index)
+        {
+            var controlPoint = editorTarget.GetControlPoint(index);
+            string name = nameof(controlPoint.keyScale);
+            bool changed = Bool2Field(name, controlPoint.keyScale, out bool2 edited);
+            if (changed)
+            {
+                string undoMessage = $"Change bezier point {index} scale keying";
+                Undo.RecordObject(editorTarget, undoMessage);
+                {
+                    controlPoint.keyScale = edited;
+                    editorTarget.SetControlPoint(index, controlPoint);
+                }
+                EditorUtility.SetDirty(editorTarget);
+            }
+        }
         private bool Bool3Field(string label, bool3 value, out bool3 edited)
         {
             EditorGUI.BeginChangeCheck();
@@ -261,7 +299,21 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             edited = new bool3(resultX, resultY, resultZ);
             return changed;
         }
-
+        private bool Bool2Field(string label, bool2 value, out bool2 edited)
+        {
+            EditorGUI.BeginChangeCheck();
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.PrefixLabel(GuiSimple.Labelize(label));
+            bool resultX = GUILayout.Toggle(value.x, "X");
+            bool resultY = GUILayout.Toggle(value.y, "Y");
+            GUI.color = new Color32(0, 0, 0, 0);
+            GUILayout.Toggle(false, "Z");
+            GUI.color = Color.white;
+            EditorGUILayout.EndHorizontal();
+            bool changed = EditorGUI.EndChangeCheck();
+            edited = new bool2(resultX, resultY);
+            return changed;
+        }
 
         private void DrawAnimationData()
         {
@@ -272,11 +324,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         private void DrawControlPointSelect(GfzFixedBezierPath editorTarget, int index)
         {
-            serializedObject.Update();
+            //serializedObject.Update();
             EditorGUILayout.LabelField($"Selected Bezier Control Point {index}", EditorStyles.boldLabel);
             DrawIndexToolbar(editorTarget, index);
             DrawButtonFields(editorTarget, index);
-            serializedObject.ApplyModifiedProperties();
+            //serializedObject.ApplyModifiedProperties();
         }
         private void DrawIndexToolbar(GfzFixedBezierPath editorTarget, int index)
         {

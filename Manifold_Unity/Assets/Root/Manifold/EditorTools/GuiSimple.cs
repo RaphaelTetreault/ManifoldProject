@@ -54,7 +54,11 @@ namespace Manifold.EditorTools
             var label = ObjectNames.NicifyVariableName(name);
             return EditorGUILayout.Vector3Field(label, value);
         }
-
+        public static Vector2 Vector2(string name, Vector2 value)
+        {
+            var label = ObjectNames.NicifyVariableName(name);
+            return EditorGUILayout.Vector2Field(label, value);
+        }
 
         public static TEnum EnumPopup<TEnum>(string name, TEnum @enum) where TEnum : Enum
         {
