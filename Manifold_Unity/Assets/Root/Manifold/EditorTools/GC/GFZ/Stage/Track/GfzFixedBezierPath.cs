@@ -13,6 +13,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         [SerializeField] private List<float> distancesBetweenControlPoints;
         [SerializeField] private int selectedIndex = 1;
         [SerializeField] private AnimationCurveTRS animationCurveTRS = new();
+        [SerializeField] private int keyPerPosition = 4;
+        [SerializeField] private int keyPerRotation = 4;
 
         public int ControlPointsLength => controlPoints.Count;
 
@@ -56,12 +58,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
                 var controlPoint1 = controlPoints[i + 1];
 
-                const int interps = 16;
-                const float interpsf = interps;
-
-                for (int j = 1; j < interps; j++)
+                for (int j = 1; j < keyPerPosition; j++)
                 {
-                    float time01 = j / interpsf;
+                    float time01 = j / (float)keyPerPosition;
                     float timeDistance = distance + time01 * distancesBetweenControlPoints[i];
 
                     Vector3 p0 = transform.TransformPoint(controlPoint0.position);
@@ -95,7 +94,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 //}
                 //
 
-                var rots = GetRotationArray(controlPoint0, controlPoint1);
+                var rots = GetRotationArray(controlPoint0, controlPoint1, 4);
                 for (int j = 0; j < rots.Length; j++)
                 {
                     float time01 = j / (float)rots.Length;
@@ -106,11 +105,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 distance += distancesBetweenControlPoints[i];
             }
 
+            trs.CleanDuplicateKeys();
             animationCurveTRS = trs;
         }
 
 
-        private Vector3[] GetRotations(Quaternion startOrientation, Vector3 startEuler, Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3, int nSamples)
+        private Vector3[] SampleRotations(Quaternion startOrientation, Vector3 startEuler, Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3, int nSamples)
         {
             Vector3[] temp = new Vector3[nSamples];
 
@@ -134,29 +134,21 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return temp;
         }
 
-        private Vector3[] GetRotationArray(FixedBezierPoint controlPoint0, FixedBezierPoint controlPoint1)
+        private Vector3[] GetRotationArray(FixedBezierPoint controlPoint0, FixedBezierPoint controlPoint1, int nSamples)
         {
-            Vector3[] rotationOut = GetRotations(
+            Vector3[] rotation = SampleRotations(
                 controlPoint0.Orientation, controlPoint0.EulerOrientation,
                 controlPoint0.position, controlPoint0.OutTangentPosition,
                 controlPoint1.InTangentPosition, controlPoint1.position,
-                16);
+                nSamples);
 
-            //Vector3[] rotationIn = GetRotations(
-            //    controlPoint1.Orientation, controlPoint1.EulerOrientation,
-            //    controlPoint1.position, controlPoint1.InTangentPosition,
-            //    controlPoint0.position, controlPoint0.OutTangentPosition,
-            //    16);
-
-            Vector3[] rotation = new Vector3[16];
             var smoothLerp = new AnimationCurve(new(0,0), new(1,1));
-            for (int i = 0; i < 16; i++)
+            for (int i = 0; i < nSamples; i++)
             {
-                float percentage = i / (16 - 1f);
+                float percentage = i / (nSamples - 1f);
                 float time = smoothLerp.Evaluate(percentage);
-                //rotation[i] = Vector3.Lerp(rotationOut[i], controlPoint1.EulerOrientation, time);
-                //rotation[i] = Vector3.Lerp(rotationOut[i], rotationIn[i], time);
-                rotation[i] = rotationOut[i];
+                float rotationZ = Mathf.Lerp(controlPoint0.EulerOrientation.z, controlPoint1.EulerOrientation.z, percentage);
+                rotation[i] .z = rotationZ;
             }
 
             return rotation;
