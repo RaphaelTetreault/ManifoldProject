@@ -63,17 +63,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             var editorTarget = target as GfzFixedBezierPath;
             int index = selectedIndex.intValue;
 
-            serializedObject.Update();
-            {
-                DrawDefaults(editorTarget);
-                EditorGUILayout.Separator();
-                DrawControlPointSelect(editorTarget, index);
-                EditorGUILayout.Separator();
-                DrawCurrentControlPoint(editorTarget, index);
-                EditorGUILayout.Separator();
-                DrawAnimationData();
-            }
-            serializedObject.ApplyModifiedProperties();
+            DrawDefaults(editorTarget);
+            EditorGUILayout.Separator();
+            DrawControlPointSelect(editorTarget, index);
+            EditorGUILayout.Separator();
+            DrawCurrentControlPoint(editorTarget, index);
+            EditorGUILayout.Separator();
+            DrawAnimationData();
         }
 
         private void DrawButtonFields(GfzFixedBezierPath editorTarget, int index)
@@ -115,8 +111,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 return;
 
             int indexNext = index + 1;
+            bool indexIsValid = editorTarget.IsValidIndex(index);
             bool indexNextIsValid = editorTarget.IsValidIndex(indexNext);
-            if (indexNextIsValid)
+
+            if (indexNextIsValid && indexIsValid)
             {
                 InsertBetween(editorTarget, index, indexNext);
             }
@@ -125,9 +123,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 InsertAfter(editorTarget, index);
             }
 
-            //serializedObject.Update();
+            serializedObject.Update();
             selectedIndex.intValue += 1;
-            //serializedObject.ApplyModifiedProperties();
+            serializedObject.ApplyModifiedProperties();
         }
         private void DrawButtonDelete(GfzFixedBezierPath editorTarget, int index)
         {
@@ -317,18 +315,20 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         private void DrawAnimationData()
         {
+            serializedObject.Update();
             EditorGUILayout.LabelField("Animation Data", EditorStyles.boldLabel);
             EditorGUILayout.PropertyField(autoGenerateTRS);
             EditorGUILayout.PropertyField(animationCurveTRS);
+            serializedObject.ApplyModifiedProperties();
         }
 
         private void DrawControlPointSelect(GfzFixedBezierPath editorTarget, int index)
         {
-            //serializedObject.Update();
+            serializedObject.Update();
             EditorGUILayout.LabelField($"Selected Bezier Control Point {index}", EditorStyles.boldLabel);
             DrawIndexToolbar(editorTarget, index);
             DrawButtonFields(editorTarget, index);
-            //serializedObject.ApplyModifiedProperties();
+            serializedObject.ApplyModifiedProperties();
         }
         private void DrawIndexToolbar(GfzFixedBezierPath editorTarget, int index)
         {

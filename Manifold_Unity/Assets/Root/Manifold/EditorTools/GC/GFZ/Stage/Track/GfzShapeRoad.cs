@@ -71,7 +71,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public Tristrip[][] GetTristrips(RoadMeshStyle meshStyle, bool isGfzCoordinateSpace)
         {
-            var matrices = TristripGenerator.CreatePathMatrices(this, isGfzCoordinateSpace, LengthDistance);
+            var originalMatrice = TristripGenerator.CreatePathMatrices(this, isGfzCoordinateSpace, LengthDistance);
+            var matrices = TristripGenerator.StripHeight(originalMatrice);
             var maxTime = GetRoot().GetMaxTime();
 
             switch (meshStyle)

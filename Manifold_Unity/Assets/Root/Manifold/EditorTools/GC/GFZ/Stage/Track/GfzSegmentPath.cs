@@ -59,7 +59,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public sealed override GameCube.GFZ.Stage.TrackSegment CreateTrackSegment()
         {
-            var trs = CopyAnimationCurveTRS(true);
+            var trs = CopyAnimationCurveTRS(false);
 
             var trackSegmentRoot = new GameCube.GFZ.Stage.TrackSegment();
             var trackSegmentRZ = new GameCube.GFZ.Stage.TrackSegment();

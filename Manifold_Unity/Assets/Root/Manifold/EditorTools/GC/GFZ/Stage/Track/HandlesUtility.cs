@@ -37,12 +37,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             bool didUserMoveHandle = RotationHandle(position, orientation, out Quaternion editedOrientation);
             if (didUserMoveHandle)
             {
-                Vector3 eulerOriginal = orientation.eulerAngles;
-                Vector3 eulerEdited = editedOrientation.eulerAngles;
-                Vector3 eulerDelta = eulerEdited - eulerOriginal;
-                Vector3 eulerDeltaClean = CleanRotation(eulerDelta);
-                Debug.Log($"og:{eulerOriginal}, edit:{eulerEdited}, delta:{eulerDelta}, clean:{eulerDeltaClean}");
-                eulerOrientationDelta = eulerDeltaClean;
+                eulerOrientationDelta = GetEulerDelta(orientation, editedOrientation);
             }
             return didUserMoveHandle;
         }
@@ -70,6 +65,16 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             // Maybe handle something whe we have two 180 values?
 
             return cleanRotation;
+        }
+
+        public static Vector3 GetEulerDelta(Quaternion orientation, Quaternion newOrientation)
+        {
+            Vector3 eulerOriginal = orientation.eulerAngles;
+            Vector3 eulerEdited = newOrientation.eulerAngles;
+            Vector3 eulerDelta = eulerEdited - eulerOriginal;
+            Vector3 eulerDeltaClean = CleanRotation(eulerDelta);
+            //Debug.Log($"og:{eulerOriginal}, edit:{eulerEdited}, delta:{eulerDelta}, clean:{eulerDeltaClean}");
+            return eulerDeltaClean;
         }
     }
 }
