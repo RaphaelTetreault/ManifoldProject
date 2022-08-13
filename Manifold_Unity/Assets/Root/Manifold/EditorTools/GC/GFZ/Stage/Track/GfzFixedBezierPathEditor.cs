@@ -24,6 +24,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         SerializedProperty controlPoints;
         SerializedProperty selectedIndex;
         SerializedProperty animationCurveTRS;
+        SerializedProperty keysBetweenControlPoints;
         SerializedProperty autoGenerateTRS;
         Transform transform;
 
@@ -42,6 +43,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             controlPoints = serializedObject.FindProperty(nameof(controlPoints));
             selectedIndex = serializedObject.FindProperty(nameof(selectedIndex));
             animationCurveTRS = serializedObject.FindProperty(nameof(animationCurveTRS));
+            keysBetweenControlPoints = serializedObject.FindProperty(nameof(keysBetweenControlPoints));
             autoGenerateTRS = serializedObject.FindProperty(nameof(autoGenerateTRS));
 
             // Make sure to call after getting serialized properties
@@ -73,11 +75,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             DrawAnimationData();
 
             AssignToolVisibility();
-
-            //EditorGUILayout.Separator();
-            //EditorGUILayout.Separator();
-            //EditorGUILayout.Separator();
-            //base.DrawDefaultInspector();
         }
 
         private void DrawButtonFields(GfzFixedBezierPath editorTarget, int index)
@@ -88,15 +85,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             DrawButtonDelete(editorTarget, index);
             EditorGUILayout.EndHorizontal();
         }
-        private void InsertBetween(GfzFixedBezierPath editorTarget, int index0, int index1)
-        {
-            string undoMessage = $"Insert bezier point between {index0} and {index1}";
-            Undo.RecordObject(editorTarget, undoMessage);
-            {
-                editorTarget.InsertBetween(index0, index1);
-            }
-            EditorUtility.SetDirty(editorTarget);
-        }
         private void DrawButtonInsertBefore(GfzFixedBezierPath editorTarget, int index)
         {
             if (!GUILayout.Button("Insert Before"))
@@ -106,11 +94,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             bool indexPrevIsValid = editorTarget.IsValidIndex(indexPrev);
             if (indexPrevIsValid)
             {
-                InsertBetween(editorTarget, indexPrev, index);
+                ActionInsertBetween(editorTarget, indexPrev, index);
             }
             else
             {
-                InsertBefore(editorTarget, index);
+                ActionInsertBefore(editorTarget, index);
             }
         }
         private void DrawButtonInsertAfter(GfzFixedBezierPath editorTarget, int index)
@@ -124,11 +112,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
             if (indexNextIsValid && indexIsValid)
             {
-                InsertBetween(editorTarget, index, indexNext);
+                ActionInsertBetween(editorTarget, index, indexNext);
             }
             else
             {
-                InsertAfter(editorTarget, index);
+                ActionInsertAfter(editorTarget, index);
             }
 
             serializedObject.Update();
@@ -148,7 +136,16 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
             GUI.color = Color.white;
         }
-        private void InsertBefore(GfzFixedBezierPath editorTarget, int index)
+        private void ActionInsertBetween(GfzFixedBezierPath editorTarget, int index0, int index1)
+        {
+            string undoMessage = $"Insert bezier point between {index0} and {index1}";
+            Undo.RecordObject(editorTarget, undoMessage);
+            {
+                editorTarget.InsertBetween(index0, index1);
+            }
+            EditorUtility.SetDirty(editorTarget);
+        }
+        private void ActionInsertBefore(GfzFixedBezierPath editorTarget, int index)
         {
             string undoMessage = $"Insert bezier point before {index}";
             Undo.RecordObject(editorTarget, undoMessage);
@@ -160,7 +157,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
             EditorUtility.SetDirty(editorTarget);
         }
-        private void InsertAfter(GfzFixedBezierPath editorTarget, int index)
+        private void ActionInsertAfter(GfzFixedBezierPath editorTarget, int index)
         {
             string undoMessage = $"Insert bezier point before {index}";
             Undo.RecordObject(editorTarget, undoMessage);
@@ -174,7 +171,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         }
         private void DeselectControlPoint()
         {
-            if (GUILayout.Button("Deselect Control Point"))
+            if (GUILayout.Button("Edit Transform"))
             {
                 selectedIndex.intValue = -1;
             }
@@ -205,8 +202,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             DrawCurrentControlPointPosition(editorTarget, index);
             DrawCurrentControlPointOrientation(editorTarget, index);
             DrawCurrentControlPointScale(editorTarget, index);
-            DrawPositionKeyFlags(editorTarget, index);
-            DrawOrientationKeyFlags(editorTarget, index);
             DrawScaleKeyFlags(editorTarget, index);
         }
         private void DrawCurrentControlPointPosition(GfzFixedBezierPath editorTarget, int index)
@@ -265,43 +260,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
         }
 
-        private void DrawPositionKeyFlags(GfzFixedBezierPath editorTarget, int index)
-        {
-            var controlPoint = editorTarget.GetControlPoint(index);
-            string name = nameof(controlPoint.keyPosition);
-            bool changed = Bool3Field(name, controlPoint.keyPosition, out bool3 edited);
-            if (changed)
-            {
-                string undoMessage = $"Change bezier point {index} position keying";
-                Undo.RecordObject(editorTarget, undoMessage);
-                {
-                    controlPoint.keyPosition = edited;
-                    editorTarget.SetControlPoint(index, controlPoint);
-                }
-                EditorUtility.SetDirty(editorTarget);
-            }
-        }
-        private void DrawOrientationKeyFlags(GfzFixedBezierPath editorTarget, int index)
-        {
-            var controlPoint = editorTarget.GetControlPoint(index);
-            string name = nameof(controlPoint.keyOrientation);
-            bool changed = Bool3Field(name, controlPoint.keyOrientation, out bool3 edited);
-            if (changed)
-            {
-                string undoMessage = $"Change bezier point {index} orientation keying";
-                Undo.RecordObject(editorTarget, undoMessage);
-                {
-                    controlPoint.keyOrientation = edited;
-                    editorTarget.SetControlPoint(index, controlPoint);
-                }
-                EditorUtility.SetDirty(editorTarget);
-            }
-        }
         private void DrawScaleKeyFlags(GfzFixedBezierPath editorTarget, int index)
         {
             var controlPoint = editorTarget.GetControlPoint(index);
             string name = nameof(controlPoint.keyScale);
-            bool changed = Bool2Field(name, controlPoint.keyScale, out bool2 edited);
+            bool changed = GuiSimple.Bool2(name, controlPoint.keyScale, out bool2 edited);
             if (changed)
             {
                 string undoMessage = $"Change bezier point {index} scale keying";
@@ -313,40 +276,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 EditorUtility.SetDirty(editorTarget);
             }
         }
-        private bool Bool3Field(string label, bool3 value, out bool3 edited)
-        {
-            EditorGUI.BeginChangeCheck();
-            EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.PrefixLabel(GuiSimple.Labelize(label));
-            bool resultX = GUILayout.Toggle(value.x, "X");
-            bool resultY = GUILayout.Toggle(value.y, "Y");
-            bool resultZ = GUILayout.Toggle(value.z, "Z");
-            EditorGUILayout.EndHorizontal();
-            bool changed = EditorGUI.EndChangeCheck();
-            edited = new bool3(resultX, resultY, resultZ);
-            return changed;
-        }
-        private bool Bool2Field(string label, bool2 value, out bool2 edited)
-        {
-            EditorGUI.BeginChangeCheck();
-            EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.PrefixLabel(GuiSimple.Labelize(label));
-            bool resultX = GUILayout.Toggle(value.x, "X");
-            bool resultY = GUILayout.Toggle(value.y, "Y");
-            GUI.color = new Color32(0, 0, 0, 0);
-            GUILayout.Toggle(false, "Z");
-            GUI.color = Color.white;
-            EditorGUILayout.EndHorizontal();
-            bool changed = EditorGUI.EndChangeCheck();
-            edited = new bool2(resultX, resultY);
-            return changed;
-        }
-
         private void DrawAnimationData()
         {
             serializedObject.Update();
             EditorGUILayout.LabelField("Animation Data", EditorStyles.boldLabel);
             EditorGUILayout.PropertyField(autoGenerateTRS);
+            EditorGUILayout.PropertyField(keysBetweenControlPoints);
             EditorGUILayout.PropertyField(animationCurveTRS);
             serializedObject.ApplyModifiedProperties();
         }

@@ -13,8 +13,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         [SerializeField] private List<float> distancesBetweenControlPoints;
         [SerializeField] private int selectedIndex = 1;
         [SerializeField] private AnimationCurveTRS animationCurveTRS = new();
-        [SerializeField] private int keysBetweenPositions2 = 8;
-        [SerializeField] private int keysBetweenRotations2 = 8;
+        [SerializeField, Range(0, 32)] private int keysBetweenControlPoints = 4;
 
         public int SelectedIndex { get => selectedIndex; set => selectedIndex = value; }
 
@@ -56,8 +55,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 Vector3 scale = controlPoint0.scale;
                 trs.Position.AddKeys(distance, position);
                 trs.Rotation.AddKeys(distance, rotation);
-                trs.Scale.x.AddKey(new(distance, scale.x, 0, 0));
-                trs.Scale.y.AddKey(new(distance, scale.y, 0, 0));
+                if (controlPoint0.keyScale.x)
+                    trs.Scale.x.AddKey(new(distance, scale.x, 0, 0));
+                if (controlPoint0.keyScale.y)
+                    trs.Scale.y.AddKey(new(distance, scale.y, 0, 0));
 
                 if (i == distancesBetweenControlPoints.Count)
                     break;
@@ -66,22 +67,17 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 var controlPoint1 = controlPoints[i + 1];
                 float distanceBetween = distancesBetweenControlPoints[i];
 
+                // Bezier point times
+                float[] times = GetTimes(controlPoint0, controlPoint1, keysBetweenControlPoints + 1, 8);
                 // POSITIONS
-                var positions = GetPositionKeys(controlPoint0, controlPoint1, keysBetweenPositions2);
-                //var positions = GetPositionKeys2(controlPoint0, controlPoint1, keysBetweenPositions2, distanceBetween);
-                //var positions = GetPositionKeys(controlPoint0, controlPoint1, keysBetweenPositions2);
-                for (int j = 0; j < positions.Length; j++)
+                var positions = GetPositionKeys(controlPoint0, controlPoint1, keysBetweenControlPoints + 1, times);
+                var rotations = GetRotationKeys(controlPoint0, controlPoint1, keysBetweenControlPoints + 1, times);
+
+                for (int j = 1; j < times.Length; j++)
                 {
-                    float time01 = j / (float)positions.Length;
+                    float time01 = j / (float)times.Length;
                     float timeDistance = distance + time01 * distanceBetween;
                     trs.Position.AddKeys(timeDistance, positions[j]);
-                }
-                // ROTATIONS
-                var rotations = GetRotationKeys(controlPoint0, controlPoint1, keysBetweenRotations2);
-                for (int j = 0; j < rotations.Length; j++)
-                {
-                    float time01 = j / (float)rotations.Length;
-                    float timeDistance = distance + time01 * distanceBetween;
                     trs.Rotation.AddKeys(timeDistance, rotations[j]);
                 }
 
@@ -121,7 +117,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
             return rotations;
         }
-        private Vector3[] GetRotationKeys(FixedBezierPoint controlPoint0, FixedBezierPoint controlPoint1, int nSamples)
+        private Vector3[] GetRotationKeys(FixedBezierPoint controlPoint0, FixedBezierPoint controlPoint1, int nSamples, float[] times)
         {
             Quaternion orientation = transform.rotation * controlPoint0.Orientation;
             Vector3 eulerOrientation = controlPoint0.EulerOrientation + transform.eulerAngles;
@@ -129,26 +125,24 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             Vector3 p1 = transform.TransformPoint(controlPoint0.OutTangentPosition);
             Vector3 p2 = transform.TransformPoint(controlPoint1.InTangentPosition);
             Vector3 p3 = transform.TransformPoint(controlPoint1.position);
-            float[] times = GetTimes(controlPoint0, controlPoint1, nSamples, 8);
 
+            times = GetTimes(controlPoint0, controlPoint1, nSamples, times.Length);
             Vector3[] rotationKeys = SampleRotations(orientation, eulerOrientation, p0, p1, p2, p3, nSamples, times);
 
             // Patch rotation Z keys
-            var smoothLerp = new AnimationCurve(new(0, 0), new(1, 1));
             for (int i = 0; i < nSamples; i++)
             {
-                float percentage = i / (nSamples - 1f);
-                float time = smoothLerp.Evaluate(percentage);
+                //float percentage = i / (nSamples - 1f);
+                //float time = smoothLerp.Evaluate(percentage);
+                float time = times[i];
                 float rotationZ = Mathf.Lerp(controlPoint0.EulerOrientation.z, controlPoint1.EulerOrientation.z, time);
                 rotationKeys[i].z = rotationZ;
             }
 
             return rotationKeys;
         }
-        private Vector3[] GetPositionKeys(FixedBezierPoint controlPoint0, FixedBezierPoint controlPoint1, int nSamples)
+        private Vector3[] GetPositionKeys(FixedBezierPoint controlPoint0, FixedBezierPoint controlPoint1, int nSamples, float[] times)
         {
-            var times = GetTimes(controlPoint0, controlPoint1, nSamples, 8);
-
             // compute true points
             Vector3[] positionsBetween = new Vector3[nSamples];
             for (int i = 0; i < nSamples; i++)
@@ -259,12 +253,18 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             // Compute scale
             var scale = Vector2.Lerp(controlPoint0.scale, controlPoint1.scale, 0.5f);
 
+            // keying
+            var keyScale = new bool2(
+                controlPoint0.keyScale.x | controlPoint1.keyScale.x,
+                controlPoint0.keyScale.y | controlPoint1.keyScale.y);
+
             // Make a new control point and insert it.
             var newControlPoint = new FixedBezierPoint()
             {
                 position = position,
                 EulerOrientation = eulerOrientation,
                 scale = scale,
+                keyScale = keyScale,
             };
             // Method will resolve distances between control points.
             InsertControlPoint(index1, newControlPoint);
