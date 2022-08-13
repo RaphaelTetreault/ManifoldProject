@@ -47,6 +47,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 Vector3 position = WorldPosition(controlPoint0.position);
                 Vector3 rotation = WorldOrientation(controlPoint0.EulerOrientation);
                 Vector3 scale = controlPoint0.scale;
+
                 trs.Position.AddKeys(distance, position);
                 trs.Rotation.AddKeys(distance, rotation);
                 if (controlPoint0.keyScale.x)
@@ -127,7 +128,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             for (int i = 0; i < nSamples; i++)
             {
                 float time = times[i];
-                float rotationZ = Mathf.Lerp(controlPoint0.EulerOrientation.z, controlPoint1.EulerOrientation.z, time);
+                var eulerOrientation0 = WorldOrientation(controlPoint0.EulerOrientation);
+                var eulerOrientation1 = WorldOrientation(controlPoint1.EulerOrientation);
+                float rotationZ = Mathf.Lerp(eulerOrientation0.z, eulerOrientation1.z, time);
                 rotationKeys[i].z = rotationZ;
             }
 
