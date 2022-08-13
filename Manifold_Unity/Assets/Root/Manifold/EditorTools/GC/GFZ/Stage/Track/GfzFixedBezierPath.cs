@@ -57,7 +57,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 trs.Position.AddKeys(distance, position);
                 trs.Rotation.AddKeys(distance, rotation);
                 trs.Scale.x.AddKey(new(distance, scale.x, 0, 0));
-                trs.Scale.x.AddKey(new(distance, scale.y, 0, 0));
+                trs.Scale.y.AddKey(new(distance, scale.y, 0, 0));
 
                 if (i == distancesBetweenControlPoints.Count)
                     break;
@@ -67,7 +67,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 float distanceBetween = distancesBetweenControlPoints[i];
 
                 // POSITIONS
-                var positions = GetPositionKeys2(controlPoint0, controlPoint1, keysBetweenPositions2, distanceBetween);
+                var positions = GetPositionKeys3(controlPoint0, controlPoint1, keysBetweenPositions2);
+                //var positions = GetPositionKeys2(controlPoint0, controlPoint1, keysBetweenPositions2, distanceBetween);
                 //var positions = GetPositionKeys(controlPoint0, controlPoint1, keysBetweenPositions2);
                 for (int j = 0; j < positions.Length; j++)
                 {
@@ -152,8 +153,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 Vector3 p1 = transform.TransformPoint(controlPoint0.OutTangentPosition);
                 Vector3 p2 = transform.TransformPoint(controlPoint1.InTangentPosition);
                 Vector3 p3 = transform.TransformPoint(controlPoint1.position);
-                var velocity = Bezier.GetFirstDerivative(p0, p1, p2, p3, time01);
-                Debug.Log($"{velocity} -- {math.length(velocity)}");
                 positions[i] = Bezier.GetPoint(p0, p1, p2, p3, time01);
             }
             return positions;
@@ -172,34 +171,77 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 Vector3 p2 = transform.TransformPoint(controlPoint1.InTangentPosition);
                 Vector3 p3 = transform.TransformPoint(controlPoint1.position);
                 Vector3 bezierPoint = Bezier.GetPoint(p0, p1, p2, p3, time01);
-                Vector3 bezierLocal = (bezierPoint - basePosition);
-                float magnitude = bezierLocal.magnitude;
-                float length = ditancePerSample * i;
-                float ratio = magnitude / length; 
-                positions[i] = basePosition + (bezierLocal / ratio);
-                //positions[i] = bezierPoint; // basePosition + (bezierLocal / ratio);
+                //Vector3 bezierLocal = (bezierPoint - basePosition);
+                //float magnitude = bezierLocal.magnitude;
+                //float length = ditancePerSample * i;
+                //float ratio = magnitude / length; 
+                //positions[i] = basePosition + (bezierLocal / ratio);
+                positions[i] = bezierPoint;
             }
 
-            //float length = 0f;
-            //for (int i = 0; i < positions.Length - 1; i++)
-            //{
-            //    var p0 = positions[i];
-            //    var p1 = positions[i + 1];
-            //    float delta = Vector3.Distance(p0, p1);
-            //    length += delta;
-            //}
+            float length = 0f;
+            for (int i = 0; i < positions.Length - 1; i++)
+            {
+                var p0 = positions[i];
+                var p1 = positions[i + 1];
+                float delta = Vector3.Distance(p0, p1);
+                length += delta;
+            }
 
-            //for (int i = 0; i < positions.Length; i++)
-            //{
-            //    var position = positions[i];
-            //    Vector3 localDelta = position - basePosition;
-            //    float localMagnitude = localDelta.magnitude;
-            //    float trueMagnitude = length / (nSamples - 1) * i;
-            //    float conversionRatio = localMagnitude / trueMagnitude; 
-            //    positions[i] = basePosition + localDelta / conversionRatio;
-            //}
+            for (int i = 0; i < positions.Length; i++)
+            {
+                var position = positions[i];
+                Vector3 localDelta = position - basePosition;
+                float localMagnitude = localDelta.magnitude;
+                float trueMagnitude = (length / nSamples-1) * (i+1);
+                float conversionRatio = localMagnitude / trueMagnitude; 
+                positions[i] = basePosition + localDelta / conversionRatio;
+            }
 
             return positions;
+        }
+        private Vector3[] GetPositionKeys3(FixedBezierPoint controlPoint0, FixedBezierPoint controlPoint1, int nSamples)
+        {
+            int iterations = nSamples + 2; // +2 fors start and end points
+            float[] cumulativeDistances = new float[iterations];
+            float totalDistance = 0f;
+            for (int i = 1; i < iterations - 1; i++)
+            {
+                Vector3 p0 = transform.TransformPoint(controlPoint0.position);
+                Vector3 p1 = transform.TransformPoint(controlPoint0.OutTangentPosition);
+                Vector3 p2 = transform.TransformPoint(controlPoint1.InTangentPosition);
+                Vector3 p3 = transform.TransformPoint(controlPoint1.position);
+
+                // offset start
+                cumulativeDistances[i] = totalDistance;
+
+                // sample between bezier points 16 times to get approx length
+                for (int j = 0; j < 16; j++)
+                {
+                    float time0 = (i + ((j+0) / 16f)) / (iterations-1f); //
+                    float time1 = (i + ((j+1) / 16f)) / (iterations-1f); //
+                    Vector3 point0 = Bezier.GetPoint(p0, p1, p2, p3, time0);
+                    Vector3 point1 = Bezier.GetPoint(p0, p1, p2, p3, time1);
+                    float delta = Vector3.Distance(point0, point1);
+                    cumulativeDistances[i] += delta;
+                }
+
+                totalDistance = cumulativeDistances[i];
+            }
+
+            // compute true points
+            Vector3[] positionsBetween = new Vector3[nSamples];
+            for (int i = 0; i < nSamples; i++)
+            {
+                Vector3 p0 = transform.TransformPoint(controlPoint0.position);
+                Vector3 p1 = transform.TransformPoint(controlPoint0.OutTangentPosition);
+                Vector3 p2 = transform.TransformPoint(controlPoint1.InTangentPosition);
+                Vector3 p3 = transform.TransformPoint(controlPoint1.position);
+                float time = cumulativeDistances[i] / totalDistance;
+                positionsBetween[i] = Bezier.GetPoint(p0, p1, p2, p3, time);
+            }
+
+            return positionsBetween;
         }
 
         // THE CORE
