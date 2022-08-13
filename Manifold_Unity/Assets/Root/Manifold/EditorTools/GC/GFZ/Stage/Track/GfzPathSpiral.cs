@@ -197,9 +197,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             // POSITION
             var kPosition = GetPosition();
             var keysPX = positionXYZ.x.GetRenormalizedKeyRangeAndTangents(0, length);
-            var keysPY = isHorizontal
-                ? new Keyframe[] { new(0, kPosition.y), new(length, kPosition.y + axisOffset), }
-                : positionXYZ.y.GetRenormalizedKeyRangeAndTangents(0, length);
+            var keysPY = positionXYZ.y.GetRenormalizedKeyRangeAndTangents(0, length);
             var keysPZ = positionXYZ.z.GetRenormalizedKeyRangeAndTangents(0, length);
 
             // ROTATION
