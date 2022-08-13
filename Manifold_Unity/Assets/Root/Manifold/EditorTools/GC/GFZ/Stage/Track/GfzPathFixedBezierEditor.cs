@@ -10,8 +10,8 @@ using Manifold.Spline;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
-    [CustomEditor(typeof(GfzFixedBezierPath))]
-    internal sealed class GfzFixedBezierPathEditor : GfzPathEditor
+    [CustomEditor(typeof(GfzPathFixedBezier))]
+    internal sealed class GfzPathFixedBezierEditor : GfzPathEditor
     {
         internal enum SelectMode
         {
@@ -39,7 +39,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         void OnEnable()
         {
-            transform = (target as GfzFixedBezierPath).transform;
+            transform = (target as GfzPathFixedBezier).transform;
             controlPoints = serializedObject.FindProperty(nameof(controlPoints));
             selectedIndex = serializedObject.FindProperty(nameof(selectedIndex));
             animationCurveTRS = serializedObject.FindProperty(nameof(animationCurveTRS));
@@ -61,7 +61,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public override void OnInspectorGUI()
         {
-            var editorTarget = target as GfzFixedBezierPath;
+            var editorTarget = target as GfzPathFixedBezier;
             int index = selectedIndex.intValue;
 
             DrawDefaults(editorTarget);
@@ -77,7 +77,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             AssignToolVisibility();
         }
 
-        private void DrawButtonFields(GfzFixedBezierPath editorTarget, int index)
+        private void DrawButtonFields(GfzPathFixedBezier editorTarget, int index)
         {
             EditorGUILayout.BeginHorizontal();
             DrawButtonInsertBefore(editorTarget, index);
@@ -85,7 +85,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             DrawButtonDelete(editorTarget, index);
             EditorGUILayout.EndHorizontal();
         }
-        private void DrawButtonInsertBefore(GfzFixedBezierPath editorTarget, int index)
+        private void DrawButtonInsertBefore(GfzPathFixedBezier editorTarget, int index)
         {
             if (!GUILayout.Button("Insert Before"))
                 return;
@@ -101,7 +101,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 ActionInsertBefore(editorTarget, index);
             }
         }
-        private void DrawButtonInsertAfter(GfzFixedBezierPath editorTarget, int index)
+        private void DrawButtonInsertAfter(GfzPathFixedBezier editorTarget, int index)
         {
             if (!GUILayout.Button("Insert After"))
                 return;
@@ -123,7 +123,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             selectedIndex.intValue += 1;
             serializedObject.ApplyModifiedProperties();
         }
-        private void DrawButtonDelete(GfzFixedBezierPath editorTarget, int index)
+        private void DrawButtonDelete(GfzPathFixedBezier editorTarget, int index)
         {
             bool canDeleteControlPoints = editorTarget.ControlPointsLength > 2;
             GUI.color = canDeleteControlPoints
@@ -136,7 +136,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
             GUI.color = Color.white;
         }
-        private void ActionInsertBetween(GfzFixedBezierPath editorTarget, int index0, int index1)
+        private void ActionInsertBetween(GfzPathFixedBezier editorTarget, int index0, int index1)
         {
             string undoMessage = $"Insert bezier point between {index0} and {index1}";
             Undo.RecordObject(editorTarget, undoMessage);
@@ -145,7 +145,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
             EditorUtility.SetDirty(editorTarget);
         }
-        private void ActionInsertBefore(GfzFixedBezierPath editorTarget, int index)
+        private void ActionInsertBefore(GfzPathFixedBezier editorTarget, int index)
         {
             string undoMessage = $"Insert bezier point before {index}";
             Undo.RecordObject(editorTarget, undoMessage);
@@ -157,7 +157,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
             EditorUtility.SetDirty(editorTarget);
         }
-        private void ActionInsertAfter(GfzFixedBezierPath editorTarget, int index)
+        private void ActionInsertAfter(GfzPathFixedBezier editorTarget, int index)
         {
             string undoMessage = $"Insert bezier point before {index}";
             Undo.RecordObject(editorTarget, undoMessage);
@@ -177,7 +177,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
         }
 
-        private void ActionDelete(GfzFixedBezierPath editorTarget, int index)
+        private void ActionDelete(GfzPathFixedBezier editorTarget, int index)
         {
             string undoMessage = $"Delete bezier point {index}";
             Undo.RecordObject(editorTarget, undoMessage);
@@ -188,7 +188,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             EditorUtility.SetDirty(editorTarget);
         }
 
-        private void DrawCurrentControlPoint(GfzFixedBezierPath editorTarget, int index)
+        private void DrawCurrentControlPoint(GfzPathFixedBezier editorTarget, int index)
         {
             EditorGUILayout.LabelField($"Bezier Control Point", EditorStyles.boldLabel);
 
@@ -204,7 +204,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             DrawCurrentControlPointScale(editorTarget, index);
             DrawScaleKeyFlags(editorTarget, index);
         }
-        private void DrawCurrentControlPointPosition(GfzFixedBezierPath editorTarget, int index)
+        private void DrawCurrentControlPointPosition(GfzPathFixedBezier editorTarget, int index)
         {
             var controlPoint = editorTarget.GetControlPoint(index);
             Vector3 position = WorldPosition(controlPoint);
@@ -222,7 +222,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 EditorUtility.SetDirty(editorTarget);
             }
         }
-        private void DrawCurrentControlPointOrientation(GfzFixedBezierPath editorTarget, int index)
+        private void DrawCurrentControlPointOrientation(GfzPathFixedBezier editorTarget, int index)
         {
             var controlPoint = editorTarget.GetControlPoint(index);
             Vector3 baseOrientation = transform.rotation.eulerAngles;
@@ -241,7 +241,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 EditorUtility.SetDirty(editorTarget);
             }
         }
-        private void DrawCurrentControlPointScale(GfzFixedBezierPath editorTarget, int index)
+        private void DrawCurrentControlPointScale(GfzPathFixedBezier editorTarget, int index)
         {
             var controlPoint = editorTarget.GetControlPoint(index);
             Vector2 scale = controlPoint.scale;
@@ -260,7 +260,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
         }
 
-        private void DrawScaleKeyFlags(GfzFixedBezierPath editorTarget, int index)
+        private void DrawScaleKeyFlags(GfzPathFixedBezier editorTarget, int index)
         {
             var controlPoint = editorTarget.GetControlPoint(index);
             string name = nameof(controlPoint.keyScale);
@@ -286,7 +286,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             serializedObject.ApplyModifiedProperties();
         }
 
-        private void DrawControlPointSelect(GfzFixedBezierPath editorTarget, int index)
+        private void DrawControlPointSelect(GfzPathFixedBezier editorTarget, int index)
         {
             serializedObject.Update();
             EditorGUILayout.LabelField($"Selected Bezier Control Point {index}", EditorStyles.boldLabel);
@@ -295,7 +295,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             DrawIndexToolbar(editorTarget, index);
             serializedObject.ApplyModifiedProperties();
         }
-        private void DrawIndexToolbar(GfzFixedBezierPath editorTarget, int index)
+        private void DrawIndexToolbar(GfzPathFixedBezier editorTarget, int index)
         {
             int nControlPoints = editorTarget.ControlPointsLength;
             int rows = Mathf.CeilToInt(nControlPoints / 10f);
@@ -346,7 +346,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         private void OnSceneGUI()
         {
-            var editorTarget = target as GfzFixedBezierPath;
+            var editorTarget = target as GfzPathFixedBezier;
             int index = selectedIndex.intValue;
 
             DrawBezierPath(editorTarget, index);
@@ -365,7 +365,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             //editorTarget.InvokeUpdates();
         }
 
-        private void CaptureKeyboardEvents(GfzFixedBezierPath editorTarget, int index)
+        private void CaptureKeyboardEvents(GfzPathFixedBezier editorTarget, int index)
         {
             Event e = Event.current;
             switch (e.type)
@@ -394,7 +394,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     break;
             }
         }
-        private void CaptureHandleClicked(GfzFixedBezierPath editorTarget, int index)
+        private void CaptureHandleClicked(GfzPathFixedBezier editorTarget, int index)
         {
             for (int i = 0; i < editorTarget.ControlPointsLength; i++)
             {
@@ -423,7 +423,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 }
             }
         }
-        private void CaptureHandleMove(GfzFixedBezierPath editorTarget, int index)
+        private void CaptureHandleMove(GfzPathFixedBezier editorTarget, int index)
         {
             switch (selectMode)
             {
@@ -436,7 +436,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     break;
             }
         }
-        private void DrawBezierPath(GfzFixedBezierPath editorTarget, int index)
+        private void DrawBezierPath(GfzPathFixedBezier editorTarget, int index)
         {
             Color32 colorInactive = new Color32(128, 64, 64, 196);
             Color32 colorActive = Color.red;
@@ -504,7 +504,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         /// </summary>
         /// <param name="editorTarget"></param>
         /// <param name="index"></param>
-        private void PositionHandle(GfzFixedBezierPath editorTarget, int index)
+        private void PositionHandle(GfzPathFixedBezier editorTarget, int index)
         {
             var controlPoint = editorTarget.GetControlPoint(index);
             Vector3 position = WorldPosition(controlPoint);
@@ -530,7 +530,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         /// </summary>
         /// <param name="editorTarget"></param>
         /// <param name="index"></param>
-        private void EulerRotationHandle(GfzFixedBezierPath editorTarget, int index)
+        private void EulerRotationHandle(GfzPathFixedBezier editorTarget, int index)
         {
             var controlPoint = editorTarget.GetControlPoint(index);
             Vector3 position = WorldPosition(controlPoint);

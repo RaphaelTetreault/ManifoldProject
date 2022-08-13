@@ -7,7 +7,7 @@ using Manifold.Spline;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
-    public class GfzFixedBezierPath : GfzPathSegment
+    public class GfzPathFixedBezier : GfzPathSegment
     {
         [SerializeField] private List<FixedBezierPoint> controlPoints;
         [SerializeField] private List<float> distancesBetweenControlPoints;
