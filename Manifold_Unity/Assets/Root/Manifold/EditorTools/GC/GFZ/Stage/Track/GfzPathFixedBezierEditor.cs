@@ -13,13 +13,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
     [CustomEditor(typeof(GfzPathFixedBezier))]
     internal sealed class GfzPathFixedBezierEditor : GfzPathEditor
     {
-        internal enum SelectMode
-        {
-            PositionHandle,
-            RotationHandle,
-        }
         private readonly Color32 HandlesButtonColor = new Color32(255, 0, 0, 196);
         private readonly Color32 HandlesButtonColorSelected = new Color32(255, 0, 0, 128);
+        private readonly Color32 HandleColorInactive = new Color32(128, 64, 64, 196);
+        private readonly Color32 HandleColorActive = Color.red;
+        private readonly Color32 BezierPathColor = Color.black;
+        private readonly Color32 DeleteButtonColor = new Color32(255, 128, 128, 255);
 
         SerializedProperty controlPoints;
         SerializedProperty selectedIndex;
@@ -27,8 +26,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         SerializedProperty keysBetweenControlPoints;
         SerializedProperty autoGenerateTRS;
         Transform transform;
-
-        private static SelectMode selectMode = SelectMode.PositionHandle;
 
         private bool IsValidIndex(int selectedIndex)
         {
@@ -126,9 +123,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         private void DrawButtonDelete(GfzPathFixedBezier editorTarget, int index)
         {
             bool canDeleteControlPoints = editorTarget.ControlPointsLength > 2;
-            GUI.color = canDeleteControlPoints
-                ? new Color32(255, 128, 128, 255)
-                : Color.grey;
+            GUI.color = canDeleteControlPoints ? DeleteButtonColor : Color.grey;
 
             if (GUILayout.Button("Delete"))
             {
@@ -171,7 +166,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         }
         private void DeselectControlPoint()
         {
-            if (GUILayout.Button("Edit Transform"))
+            if (GUILayout.Button("Select GameObject Transform Handles"))
             {
                 selectedIndex.intValue = -1;
             }
@@ -355,14 +350,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             if (isInvalidIndex)
                 return;
 
-            //
+            // Run GUI/editor code
             serializedObject.Update();
             CaptureHandleClicked(editorTarget, index);
             CaptureHandleMove(editorTarget, index);
             CaptureKeyboardEvents(editorTarget, index);
             serializedObject.ApplyModifiedProperties();
-
-            //editorTarget.InvokeUpdates();
         }
 
         private void CaptureKeyboardEvents(GfzPathFixedBezier editorTarget, int index)
@@ -371,14 +364,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             switch (e.type)
             {
                 case EventType.KeyDown:
-                    if (e.keyCode == KeyCode.W)
-                    {
-                        selectMode = SelectMode.PositionHandle;
-                    }
-                    if (e.keyCode == KeyCode.E)
-                    {
-                        selectMode = SelectMode.RotationHandle;
-                    }
                     if (e.keyCode == KeyCode.Backspace)
                     {
                         ActionDelete(editorTarget, index);
@@ -407,11 +392,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 if (isSelected)
                     continue;
 
-                Handles.color = selectedIndex.intValue == i
-                    ? HandlesButtonColorSelected
-                    : HandlesButtonColor;
+                float handleSize = HandleUtility.GetHandleSize(position);
+                float smoothHandleSize = handleSize * 0.5f;
+                float size = smoothHandleSize * (1 / 2f);
 
-                bool isPressed = Handles.Button(position, orientation, 20f, 30f, Handles.DotHandleCap);
+                Handles.color = isSelected ? HandlesButtonColorSelected : HandlesButtonColor;
+                bool isPressed = Handles.Button(position, orientation, size, size, Handles.DotHandleCap);
                 if (isPressed)
                 {
                     string undoMessage = $"Select bezier point {i}";
@@ -425,21 +411,20 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         }
         private void CaptureHandleMove(GfzPathFixedBezier editorTarget, int index)
         {
-            switch (selectMode)
+            switch (Tools.current)
             {
-                case SelectMode.PositionHandle:
+                default:
+                case Tool.Move:
                     PositionHandle(editorTarget, index);
                     break;
 
-                case SelectMode.RotationHandle:
+                case Tool.Rotate:
                     EulerRotationHandle(editorTarget, index);
                     break;
             }
         }
         private void DrawBezierPath(GfzPathFixedBezier editorTarget, int index)
         {
-            Color32 colorInactive = new Color32(128, 64, 64, 196);
-            Color32 colorActive = Color.red;
             Vector3 cameraForward = SceneView.GetAllSceneCameras()[0].transform.forward;
 
             // Iterate on in-between-beziers rather than on control points
@@ -449,26 +434,26 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 var controlPoint1 = editorTarget.GetControlPoint(i + 1);
                 Vector3 start = WorldPosition(controlPoint0);
                 Vector3 end = WorldPosition(controlPoint1);
-                Vector3 startTangent = transform.TransformPoint(controlPoint0.OutTangentPosition); // maybe add helper?
-                Vector3 endTangent = transform.TransformPoint(controlPoint1.InTangentPosition); // maybe add helper?
-                Handles.DrawBezier(start, end, startTangent, endTangent, Color.black, null, 5f);
+                Vector3 startTangent = WorldPosition(controlPoint0.OutTangentPosition);
+                Vector3 endTangent = WorldPosition(controlPoint1.InTangentPosition);
+                Handles.DrawBezier(start, end, startTangent, endTangent, BezierPathColor, null, 5f);
 
                 bool isInSelected = i == index - 1;
                 bool isOutSelected = i == index;
-                Handles.color = isOutSelected ? colorActive : colorInactive;
+                Handles.color = isOutSelected ? HandleColorActive : HandleColorInactive;
                 Handles.DrawLine(start, startTangent, 3f);
-                Handles.color = isInSelected ? colorActive : colorInactive;
+                Handles.color = isInSelected ? HandleColorActive : HandleColorInactive;
                 Handles.DrawLine(end, endTangent, 3f);
 
                 // Draw circle where handle/button would normally be
                 if (isOutSelected)
                 {
-                    Handles.color = colorActive;
+                    Handles.color = HandleColorActive;
                     Handles.DrawSolidDisc(start, cameraForward, 15f);
                 }
 
                 // Dotted line between tangents
-                Handles.color = Color.black;
+                Handles.color = BezierPathColor;
                 Handles.DrawDottedLine(startTangent, endTangent, 3f);
 
                 // Circle at midway point
@@ -482,21 +467,20 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             var worldPosition = transform.TransformPoint(controlPoint.position);
             return worldPosition;
         }
+        private Vector3 WorldPosition(Vector3 position)
+        {
+            var worldPosition = transform.TransformPoint(position);
+            return worldPosition;
+        }
         private Vector3 LocalPosition(Vector3 position)
         {
             var localPosition = transform.InverseTransformPoint(position);
             return localPosition;
         }
-
         private Quaternion WorldOrientation(FixedBezierPoint controlPoint)
         {
             var worldOrientation = transform.rotation * controlPoint.Orientation;
             return worldOrientation;
-        }
-        private Quaternion LocalOrientation(Quaternion orientation)
-        {
-            var localOrientation = Quaternion.Inverse(transform.rotation) * orientation;
-            return localOrientation;
         }
 
         /// <summary>
@@ -506,9 +490,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         /// <param name="index"></param>
         private void PositionHandle(GfzPathFixedBezier editorTarget, int index)
         {
+            bool isLocalSpace = Tools.pivotRotation == PivotRotation.Local;
+
             var controlPoint = editorTarget.GetControlPoint(index);
             Vector3 position = WorldPosition(controlPoint);
-            Quaternion orientation = WorldOrientation(controlPoint);
+            Quaternion orientation = isLocalSpace ? WorldOrientation(controlPoint) : Quaternion.identity;
 
             bool didUserMoveHandle = HandlesUtility.PositionHandle(position, orientation, out Vector3 editedPosition);
             if (didUserMoveHandle)
