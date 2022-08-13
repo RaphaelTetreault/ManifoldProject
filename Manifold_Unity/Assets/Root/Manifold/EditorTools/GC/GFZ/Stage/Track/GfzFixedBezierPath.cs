@@ -13,10 +13,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         [SerializeField] private List<float> distancesBetweenControlPoints;
         [SerializeField] private int selectedIndex = 1;
         [SerializeField] private AnimationCurveTRS animationCurveTRS = new();
-        [SerializeField] private int keyPerPosition = 4;
-        [SerializeField] private int keyPerRotation = 4;
+        [SerializeField] private int keysBetweenPositions2 = 8;
+        [SerializeField] private int keysBetweenRotations2 = 8;
+
+        public int SelectedIndex { get => selectedIndex; set => selectedIndex = value; }
 
         public int ControlPointsLength => controlPoints.Count;
+        public int DistancesBetweenLength => distancesBetweenControlPoints.Count;
 
         public override AnimationCurveTRS CopyAnimationCurveTRS(bool isGfzCoordinateSpace)
         {
@@ -46,60 +49,39 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
             for (int i = 0; i < ControlPointsLength; i++)
             {
+                //
                 var controlPoint0 = controlPoints[i];
                 Vector3 position = transform.TransformPoint(controlPoint0.position);
-                Vector3 rotation = controlPoint0.EulerOrientation;// + transform.rotation.eulerAngles;
+                Vector3 rotation = controlPoint0.EulerOrientation + transform.rotation.eulerAngles;
                 Vector3 scale = controlPoint0.scale;
-
-                trs.AddKeys(distance, position, rotation, scale);
+                trs.Position.AddKeys(distance, position);
+                trs.Rotation.AddKeys(distance, rotation);
+                trs.Scale.x.AddKey(new(distance, scale.x, 0, 0));
+                trs.Scale.x.AddKey(new(distance, scale.y, 0, 0));
 
                 if (i == distancesBetweenControlPoints.Count)
                     break;
 
-                var controlPoint1 = controlPoints[i + 1];
-
-                for (int j = 1; j < keyPerPosition; j++)
-                {
-                    float time01 = j / (float)keyPerPosition;
-                    float timeDistance = distance + time01 * distancesBetweenControlPoints[i];
-
-                    Vector3 p0 = transform.TransformPoint(controlPoint0.position);
-                    Vector3 p1 = transform.TransformPoint(controlPoint0.OutTangentPosition);
-                    Vector3 p2 = transform.TransformPoint(controlPoint1.InTangentPosition);
-                    Vector3 p3 = transform.TransformPoint(controlPoint1.position);
-                    Vector3 point = Bezier.GetPoint(p0, p1, p2, p3, time01);
-                    trs.Position.AddKeys(timeDistance, point);
-                }
-
-                //Vector3 lastUp = controlPoint0.Orientation * Vector3.up;
-                //Quaternion lastQuaternion = controlPoint0.Orientation;
-                //Vector3 eulerOrientation = rotation;
-                //for (int j = 1; j < interps; j++)
-                //{
-                //    float time01 = j / interpsf;
-                //    float timeDistance = distance + time01 * distancesBetweenControlPoints[i];
-
-                //    Vector3 p0 = transform.TransformPoint(controlPoint0.position);
-                //    Vector3 p1 = transform.TransformPoint(controlPoint0.OutTangentPosition);
-                //    Vector3 p2 = transform.TransformPoint(controlPoint1.InTangentPosition);
-                //    Vector3 p3 = transform.TransformPoint(controlPoint1.position);
-                //    Vector3 velocity = Bezier.GetFirstDerivative(p0, p1, p2, p3, time01);
-                //    Quaternion direction = Quaternion.LookRotation(velocity.normalized, lastUp);
-                //    Vector3 eulerDelta = HandlesUtility.GetEulerDelta(direction, lastQuaternion);
-
-                //    eulerOrientation -= eulerDelta;
-                //    lastQuaternion = Quaternion.Euler(eulerOrientation);
-                //    lastUp = lastQuaternion * Vector3.up;
-                //    trs.Rotation.AddKeys(timeDistance, eulerOrientation);
-                //}
                 //
+                var controlPoint1 = controlPoints[i + 1];
+                float distanceBetween = distancesBetweenControlPoints[i];
 
-                var rots = GetRotationArray(controlPoint0, controlPoint1, 4);
-                for (int j = 0; j < rots.Length; j++)
+                // POSITIONS
+                var positions = GetPositionKeys2(controlPoint0, controlPoint1, keysBetweenPositions2, distanceBetween);
+                //var positions = GetPositionKeys(controlPoint0, controlPoint1, keysBetweenPositions2);
+                for (int j = 0; j < positions.Length; j++)
                 {
-                    float time01 = j / (float)rots.Length;
-                    float timeDistance = distance + time01 * distancesBetweenControlPoints[i];
-                    trs.Rotation.AddKeys(timeDistance, rots[j]);
+                    float time01 = j / (float)positions.Length;
+                    float timeDistance = distance + time01 * distanceBetween;
+                    trs.Position.AddKeys(timeDistance, positions[j]);
+                }
+                // ROTATIONS
+                var rotations = GetRotationKeys(controlPoint0, controlPoint1, keysBetweenRotations2);
+                for (int j = 0; j < rotations.Length; j++)
+                {
+                    float time01 = j / (float)rotations.Length;
+                    float timeDistance = distance + time01 * distanceBetween;
+                    trs.Rotation.AddKeys(timeDistance, rotations[j]);
                 }
 
                 distance += distancesBetweenControlPoints[i];
@@ -112,48 +94,113 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         private Vector3[] SampleRotations(Quaternion startOrientation, Vector3 startEuler, Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3, int nSamples)
         {
-            Vector3[] temp = new Vector3[nSamples];
+            Vector3[] rotations = new Vector3[nSamples];
 
             Vector3 lastUp = startOrientation * Vector3.up;
             Quaternion lastQuaternion = startOrientation;
             Vector3 eulerOrientation = startEuler;
-            for (int j = 1; j < nSamples; j++)
+            for (int i = 0; i < nSamples; i++)
             {
-                float time01 = j / (float)nSamples;
+                // percent between 0 and 1, exclusive both ends
+                float percentage = (i + 1) / (float)(nSamples + 1);
 
-                Vector3 velocity = Bezier.GetFirstDerivative(p0, p1, p2, p3, time01);
+                // Get rotation value and get the delta
+                Vector3 velocity = Bezier.GetFirstDerivative(p0, p1, p2, p3, percentage);
                 Quaternion direction = Quaternion.LookRotation(velocity.normalized, lastUp);
                 Vector3 eulerDelta = HandlesUtility.GetEulerDelta(direction, lastQuaternion);
 
+                // update rotation data
                 eulerOrientation -= eulerDelta;
                 lastQuaternion = Quaternion.Euler(eulerOrientation);
                 lastUp = lastQuaternion * Vector3.up;
-                
-                temp[j] = eulerOrientation; 
+
+                // store this rotation as a key
+                rotations[i] = eulerOrientation;
             }
-            return temp;
+            return rotations;
         }
-
-        private Vector3[] GetRotationArray(FixedBezierPoint controlPoint0, FixedBezierPoint controlPoint1, int nSamples)
+        private Vector3[] GetRotationKeys(FixedBezierPoint controlPoint0, FixedBezierPoint controlPoint1, int nSamples)
         {
-            Vector3[] rotation = SampleRotations(
-                controlPoint0.Orientation, controlPoint0.EulerOrientation,
-                controlPoint0.position, controlPoint0.OutTangentPosition,
-                controlPoint1.InTangentPosition, controlPoint1.position,
-                nSamples);
+            Quaternion orientation = transform.rotation * controlPoint0.Orientation;
+            Vector3 eulerOrientation = controlPoint0.EulerOrientation + transform.eulerAngles;
+            Vector3 p0 = transform.TransformPoint(controlPoint0.position);
+            Vector3 p1 = transform.TransformPoint(controlPoint0.OutTangentPosition);
+            Vector3 p2 = transform.TransformPoint(controlPoint1.InTangentPosition);
+            Vector3 p3 = transform.TransformPoint(controlPoint1.position);
 
-            var smoothLerp = new AnimationCurve(new(0,0), new(1,1));
+            Vector3[] rotationKeys = SampleRotations(orientation, eulerOrientation, p0, p1, p2, p3, nSamples);
+
+            // Patch rotation Z keys
+            var smoothLerp = new AnimationCurve(new(0, 0), new(1, 1));
             for (int i = 0; i < nSamples; i++)
             {
                 float percentage = i / (nSamples - 1f);
                 float time = smoothLerp.Evaluate(percentage);
-                float rotationZ = Mathf.Lerp(controlPoint0.EulerOrientation.z, controlPoint1.EulerOrientation.z, percentage);
-                rotation[i] .z = rotationZ;
+                float rotationZ = Mathf.Lerp(controlPoint0.EulerOrientation.z, controlPoint1.EulerOrientation.z, time);
+                rotationKeys[i].z = rotationZ;
             }
 
-            return rotation;
+            return rotationKeys;
         }
+        private Vector3[] GetPositionKeys(FixedBezierPoint controlPoint0, FixedBezierPoint controlPoint1, int nSamples)
+        {
+            Vector3[] positions = new Vector3[nSamples];
+            for (int i = 0; i < nSamples; i++)
+            {
+                float time01 = (i + 1) / (float)(nSamples + 1);
+                Vector3 p0 = transform.TransformPoint(controlPoint0.position);
+                Vector3 p1 = transform.TransformPoint(controlPoint0.OutTangentPosition);
+                Vector3 p2 = transform.TransformPoint(controlPoint1.InTangentPosition);
+                Vector3 p3 = transform.TransformPoint(controlPoint1.position);
+                var velocity = Bezier.GetFirstDerivative(p0, p1, p2, p3, time01);
+                Debug.Log($"{velocity} -- {math.length(velocity)}");
+                positions[i] = Bezier.GetPoint(p0, p1, p2, p3, time01);
+            }
+            return positions;
+        }
+        private Vector3[] GetPositionKeys2(FixedBezierPoint controlPoint0, FixedBezierPoint controlPoint1, int nSamples, float distance)
+        {
+            Vector3 basePosition = transform.TransformPoint(controlPoint0.position);
+            float ditancePerSample = (distance / nSamples);
 
+            Vector3[] positions = new Vector3[nSamples];
+            for (int i = 0; i < nSamples; i++)
+            {
+                float time01 = (i + 1) / (float)(nSamples + 1);
+                Vector3 p0 = transform.TransformPoint(controlPoint0.position);
+                Vector3 p1 = transform.TransformPoint(controlPoint0.OutTangentPosition);
+                Vector3 p2 = transform.TransformPoint(controlPoint1.InTangentPosition);
+                Vector3 p3 = transform.TransformPoint(controlPoint1.position);
+                Vector3 bezierPoint = Bezier.GetPoint(p0, p1, p2, p3, time01);
+                Vector3 bezierLocal = (bezierPoint - basePosition);
+                float magnitude = bezierLocal.magnitude;
+                float length = ditancePerSample * i;
+                float ratio = magnitude / length; 
+                positions[i] = basePosition + (bezierLocal / ratio);
+                //positions[i] = bezierPoint; // basePosition + (bezierLocal / ratio);
+            }
+
+            //float length = 0f;
+            //for (int i = 0; i < positions.Length - 1; i++)
+            //{
+            //    var p0 = positions[i];
+            //    var p1 = positions[i + 1];
+            //    float delta = Vector3.Distance(p0, p1);
+            //    length += delta;
+            //}
+
+            //for (int i = 0; i < positions.Length; i++)
+            //{
+            //    var position = positions[i];
+            //    Vector3 localDelta = position - basePosition;
+            //    float localMagnitude = localDelta.magnitude;
+            //    float trueMagnitude = length / (nSamples - 1) * i;
+            //    float conversionRatio = localMagnitude / trueMagnitude; 
+            //    positions[i] = basePosition + localDelta / conversionRatio;
+            //}
+
+            return positions;
+        }
 
         // THE CORE
         public void InsertControlPoint(int index, FixedBezierPoint controlPoint)
@@ -199,19 +246,17 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             var position = Bezier.GetPoint(p0, p1, p2, p3, 0.5f);
 
             // Compute orientation
-            var eulerCurve = new AnimationCurve3();
-            eulerCurve.AddKeys(0, controlPoint0.EulerOrientation);
-            eulerCurve.AddKeys(1, controlPoint1.EulerOrientation);
-            //var animCurveX = new AnimationCurve(new(0, controlPoint0.EulerOrientation.x), new(1, controlPoint1.EulerOrientation.x));
-            //var animCurveY = new AnimationCurve(new(0, controlPoint0.EulerOrientation.y), new(1, controlPoint1.EulerOrientation.y));
-            //var animCurveZ = new AnimationCurve(new(0, controlPoint0.EulerOrientation.z), new(1, controlPoint1.EulerOrientation.z));
-            //var orientation = math.lerp(controlPoint0.EulerOrientation, controlPoint1.EulerOrientation, 0.5f);
-            //var orientation = new Vector3(
-            //    animCurveX.Evaluate(0.5f),
-            //    animCurveY.Evaluate(0.5f),
-            //    animCurveZ.Evaluate(0.5f));
-            var eulerOrientation = eulerCurve.Evaluate(0.5f);
+            var orientation0 = controlPoint0.Orientation;
+            var velocity = Bezier.GetFirstDerivative(p0, p1, p2, p3, 0.5f);
+            var up = orientation0 * Vector3.up;
+            var lookRotation = Quaternion.LookRotation(velocity, up);
+            var delta = HandlesUtility.GetEulerDelta(orientation0, lookRotation);
+            var startEuler = controlPoint0.EulerOrientation;
+            var eulerOrientation = startEuler + delta;
+            var rotationZ = Mathf.Lerp(controlPoint0.EulerOrientation.z, controlPoint1.EulerOrientation.z, 0.5f);
+            eulerOrientation.z = rotationZ;
 
+            // Compute scale
             var scale = Vector2.Lerp(controlPoint0.scale, controlPoint1.scale, 0.5f);
 
             // Make a new control point and insert it.
@@ -225,7 +270,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             InsertControlPoint(index1, newControlPoint);
         }
 
-        public void RemoveControlPoint(int index)
+        private void RemoveControlPoint(int index)
         {
             bool cannotRemovePoints = controlPoints.Count <= 2;
             bool isInvalidIndex = !IsValidIndex(index);
@@ -235,9 +280,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             // Remove control point
             controlPoints.RemoveAt(index);
             // Remove distance and recompute
-            distancesBetweenControlPoints.RemoveAt(index);
-            UpdateCurveDistanceTouchingControlPoint(index);
-            UpdateLinearDistanceTouchingControlPoint(index);
+            int indexToRemove = index >= DistancesBetweenLength ? index - 1 : index; // since we have one element less, edge case
+            distancesBetweenControlPoints.RemoveAt(indexToRemove);
+            UpdateCurveDistanceTouchingControlPoint(indexToRemove);
+            UpdateLinearDistanceTouchingControlPoint(indexToRemove);
         }
         public void RemoveAt(int index)
             => RemoveControlPoint(index);

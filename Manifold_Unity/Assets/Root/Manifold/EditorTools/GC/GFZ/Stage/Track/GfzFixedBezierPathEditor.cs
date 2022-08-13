@@ -67,9 +67,19 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             EditorGUILayout.Separator();
             DrawControlPointSelect(editorTarget, index);
             EditorGUILayout.Separator();
+            // Clamp in case we deleted a control point and index becomes invalid
+            index = Mathf.Clamp(index, -1, editorTarget.DistancesBetweenLength);
             DrawCurrentControlPoint(editorTarget, index);
             EditorGUILayout.Separator();
             DrawAnimationData();
+
+            if (true)
+            {
+                EditorGUILayout.Separator();
+                EditorGUILayout.Separator();
+                EditorGUILayout.Separator();
+                base.DrawDefaultInspector();
+            }
         }
 
         private void DrawButtonFields(GfzFixedBezierPath editorTarget, int index)
@@ -140,8 +150,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 Undo.RecordObject(editorTarget, undoMessage);
                 {
                     editorTarget.RemoveAt(index);
+                    editorTarget.SelectedIndex--;
                 }
                 EditorUtility.SetDirty(editorTarget);
+
             }
             GUI.color = Color.white;
         }
@@ -169,10 +181,25 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
             EditorUtility.SetDirty(editorTarget);
         }
+        private void DeselectControlPoint()
+        {
+            if (GUILayout.Button("Deselect Control Point"))
+            {
+                selectedIndex.intValue = -1;
+            }
+        }
 
         private void DrawCurrentControlPoint(GfzFixedBezierPath editorTarget, int index)
         {
             EditorGUILayout.LabelField($"Bezier Control Point", EditorStyles.boldLabel);
+            
+            bool isInvalidIndex = !editorTarget.IsValidIndex(index);
+            if (isInvalidIndex)
+            {
+                EditorGUILayout.HelpBox("Select a node to view properties.", MessageType.None);
+                return;
+            }
+
             DrawCurrentControlPointPosition(editorTarget, index);
             DrawCurrentControlPointOrientation(editorTarget, index);
             DrawCurrentControlPointScale(editorTarget, index);
@@ -326,8 +353,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         {
             serializedObject.Update();
             EditorGUILayout.LabelField($"Selected Bezier Control Point {index}", EditorStyles.boldLabel);
-            DrawIndexToolbar(editorTarget, index);
+            DeselectControlPoint();
             DrawButtonFields(editorTarget, index);
+            DrawIndexToolbar(editorTarget, index);
             serializedObject.ApplyModifiedProperties();
         }
         private void DrawIndexToolbar(GfzFixedBezierPath editorTarget, int index)
@@ -351,10 +379,16 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 // See if selected index applies to this row
                 bool withinRowLower = index >= rowBaseCurr;
                 bool withinRowUpper = index < rowBaseNext;
-                // Get index, -1 if not for this row
-                int indexForThisRow = withinRowLower && withinRowUpper ? index : -1;
+                bool isInRange = withinRowLower && withinRowUpper;
+                // Get index in range 0-9, -1 if not for this row
+                int indexForThisRow = isInRange ? index % 10 : -1;
                 // Display toolbar, get index returned (-1 if non-applicable row)
                 int selectedIndex = GUILayout.Toolbar(indexForThisRow, labels.ToArray());
+
+                // only continue if we whould
+                if (selectedIndex < 0)
+                    continue;
+
                 // Get true index
                 selectedIndex += rowBaseCurr;
 
@@ -377,12 +411,17 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         {
             var editorTarget = target as GfzFixedBezierPath;
 
+            DrawBezierPath(editorTarget);
+
+            bool isInvalidIndex = !editorTarget.IsValidIndex(selectedIndex.intValue);
+            if (isInvalidIndex)
+                return;
+
             serializedObject.Update();
             {
                 CaptureHandleClicked(editorTarget);
                 CaptureHandleMove(editorTarget);
                 CaptureKeyboardEvents();
-                DrawBezierPath(editorTarget);
             }
             serializedObject.ApplyModifiedProperties();
         }
