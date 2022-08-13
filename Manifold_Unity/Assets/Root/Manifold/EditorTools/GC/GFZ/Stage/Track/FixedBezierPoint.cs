@@ -15,8 +15,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         public Vector2 scale;
         public float linearDistanceIn;
         public float linearDistanceOut;
-        public bool3 keyPosition;
-        public bool3 keyOrientation;
         public bool2 keyScale;
 
         public Quaternion Orientation

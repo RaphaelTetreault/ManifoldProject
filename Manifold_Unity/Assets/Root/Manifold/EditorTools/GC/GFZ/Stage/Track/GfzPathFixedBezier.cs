@@ -11,7 +11,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         [SerializeField] private List<float> distancesBetweenControlPoints;
         [SerializeField] private int selectedIndex = 1;
         [SerializeField] private AnimationCurveTRS animationCurveTRS = new();
-        [SerializeField, Range(0, 16)] private int keysBetweenControlPoints = 6;
+        [SerializeField, Range(0, 16)] private int keysBetweenControlPoints = 8;
 
         public int SelectedIndex { get => selectedIndex; set => selectedIndex = value; }
         public int ControlPointsLength => controlPoints.Count;
@@ -395,8 +395,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 position = new Vector3(0, 0, 0),
                 Orientation = Quaternion.identity,
                 scale = Vector2.one * defaultScale,
-                keyPosition = new bool3(true),
-                keyOrientation = new bool3(true),
                 keyScale = new bool2(true),
             };
             var controlPoint1 = new FixedBezierPoint()
@@ -404,8 +402,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 position = new Vector3(0, 0, 500),
                 Orientation = Quaternion.identity,
                 scale = Vector2.one * defaultScale,
-                keyPosition = new bool3(true),
-                keyOrientation = new bool3(true),
                 keyScale = new bool2(true),
             };
             var list = new List<FixedBezierPoint>();
