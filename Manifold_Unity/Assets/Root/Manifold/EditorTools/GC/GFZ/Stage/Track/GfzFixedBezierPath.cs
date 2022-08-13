@@ -193,8 +193,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 var position = positions[i];
                 Vector3 localDelta = position - basePosition;
                 float localMagnitude = localDelta.magnitude;
-                float trueMagnitude = (length / nSamples-1) * (i+1);
-                float conversionRatio = localMagnitude / trueMagnitude; 
+                float trueMagnitude = (length / nSamples - 1) * (i + 1);
+                float conversionRatio = localMagnitude / trueMagnitude;
                 positions[i] = basePosition + localDelta / conversionRatio;
             }
 
@@ -218,8 +218,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 // sample between bezier points 16 times to get approx length
                 for (int j = 0; j < 16; j++)
                 {
-                    float time0 = (i + ((j+0) / 16f)) / (iterations-1f); //
-                    float time1 = (i + ((j+1) / 16f)) / (iterations-1f); //
+                    float time0 = (i + ((j + 0) / 16f)) / (iterations - 1f); //
+                    float time1 = (i + ((j + 1) / 16f)) / (iterations - 1f); //
                     Vector3 point0 = Bezier.GetPoint(p0, p1, p2, p3, time0);
                     Vector3 point1 = Bezier.GetPoint(p0, p1, p2, p3, time1);
                     float delta = Vector3.Distance(point0, point1);
@@ -458,22 +458,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return isValidIndex;
         }
 
-        //private void OnDrawGizmosSelected()
-        //{
-        //    var mesh = Resources.GetBuiltinResource<Mesh>("Cube.fbx");
-        //    float length = GetSegmentLength();
-
-        //    Gizmos.color = Color.green;
-        //    for (int i = 0; i < 8; i++)
-        //    {
-        //        float time = i / 8f;
-        //        var matrix = animationCurveTRS.EvaluateMatrix(time * length);
-
-        //        var position = matrix.Position();
-        //        var rotation = matrix.rotation;
-        //        var scale = matrix.lossyScale + Vector3.one;
-        //        Gizmos.DrawMesh(mesh, 0, position, rotation, scale);
-        //    }
-        //}
+        public void IncrementSelectedIndex()
+        {
+            selectedIndex = Mathf.Clamp(selectedIndex + 1, 0, ControlPointsLength);
+        }
+        public void DecrementSelectedIndex()
+        {
+            selectedIndex = Mathf.Clamp(selectedIndex - 1, 0, ControlPointsLength);
+        }
     }
 }

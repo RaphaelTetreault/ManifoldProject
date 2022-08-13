@@ -38,10 +38,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         void OnEnable()
         {
+            transform = (target as GfzFixedBezierPath).transform;
             controlPoints = serializedObject.FindProperty(nameof(controlPoints));
             selectedIndex = serializedObject.FindProperty(nameof(selectedIndex));
-            transform = (target as GfzFixedBezierPath).transform;
-
             animationCurveTRS = serializedObject.FindProperty(nameof(animationCurveTRS));
             autoGenerateTRS = serializedObject.FindProperty(nameof(autoGenerateTRS));
 
@@ -73,13 +72,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             EditorGUILayout.Separator();
             DrawAnimationData();
 
-            if (true)
-            {
-                EditorGUILayout.Separator();
-                EditorGUILayout.Separator();
-                EditorGUILayout.Separator();
-                base.DrawDefaultInspector();
-            }
+            AssignToolVisibility();
+
+            //EditorGUILayout.Separator();
+            //EditorGUILayout.Separator();
+            //EditorGUILayout.Separator();
+            //base.DrawDefaultInspector();
         }
 
         private void DrawButtonFields(GfzFixedBezierPath editorTarget, int index)
@@ -146,14 +144,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
             if (GUILayout.Button("Delete"))
             {
-                string undoMessage = $"Delete bezier point {index}";
-                Undo.RecordObject(editorTarget, undoMessage);
-                {
-                    editorTarget.RemoveAt(index);
-                    editorTarget.SelectedIndex--;
-                }
-                EditorUtility.SetDirty(editorTarget);
-
+                ActionDelete(editorTarget, index);
             }
             GUI.color = Color.white;
         }
@@ -189,10 +180,21 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
         }
 
+        private void ActionDelete(GfzFixedBezierPath editorTarget, int index)
+        {
+            string undoMessage = $"Delete bezier point {index}";
+            Undo.RecordObject(editorTarget, undoMessage);
+            {
+                editorTarget.RemoveAt(index);
+                editorTarget.SelectedIndex--;
+            }
+            EditorUtility.SetDirty(editorTarget);
+        }
+
         private void DrawCurrentControlPoint(GfzFixedBezierPath editorTarget, int index)
         {
             EditorGUILayout.LabelField($"Bezier Control Point", EditorStyles.boldLabel);
-            
+
             bool isInvalidIndex = !editorTarget.IsValidIndex(index);
             if (isInvalidIndex)
             {
@@ -410,23 +412,24 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         private void OnSceneGUI()
         {
             var editorTarget = target as GfzFixedBezierPath;
+            int index = selectedIndex.intValue;
 
-            DrawBezierPath(editorTarget);
+            DrawBezierPath(editorTarget, index);
 
             bool isInvalidIndex = !editorTarget.IsValidIndex(selectedIndex.intValue);
             if (isInvalidIndex)
                 return;
 
-            serializedObject.Update();
+            //serializedObject.Update();
             {
-                CaptureHandleClicked(editorTarget);
+                CaptureHandleClicked(editorTarget, index);
                 CaptureHandleMove(editorTarget);
-                CaptureKeyboardEvents();
+                CaptureKeyboardEvents(editorTarget, index);
             }
-            serializedObject.ApplyModifiedProperties();
+            //serializedObject.ApplyModifiedProperties();
         }
 
-        private void CaptureKeyboardEvents()
+        private void CaptureKeyboardEvents(GfzFixedBezierPath editorTarget, int index)
         {
             Event e = Event.current;
             switch (e.type)
@@ -440,16 +443,33 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     {
                         selectMode = SelectMode.RotationHandle;
                     }
+                    if (e.keyCode == KeyCode.Backspace)
+                    {
+                        ActionDelete(editorTarget, index);
+                    }
+                    if (e.keyCode == KeyCode.Plus || e.keyCode == KeyCode.KeypadPlus || e.keyCode == KeyCode.Equals)
+                    {
+                        editorTarget.IncrementSelectedIndex();
+                    }
+                    if (e.keyCode == KeyCode.Minus || e.keyCode == KeyCode.KeypadMinus)
+                    {
+                        editorTarget.DecrementSelectedIndex();
+                    }
                     break;
             }
         }
-        private void CaptureHandleClicked(GfzFixedBezierPath editorTarget)
+        private void CaptureHandleClicked(GfzFixedBezierPath editorTarget, int index)
         {
             for (int i = 0; i < editorTarget.ControlPointsLength; i++)
             {
                 var controlPoint = editorTarget.GetControlPoint(i);
                 var position = WorldPosition(controlPoint);
                 var orientation = WorldOrientation(controlPoint);
+
+                // if selected, skip drawing button
+                bool isSelected = i == index;
+                if (isSelected)
+                    continue;
 
                 Handles.color = selectedIndex.intValue == i
                     ? HandlesButtonColorSelected
@@ -462,7 +482,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     Undo.RecordObject(editorTarget, undoMessage);
                     {
                         selectedIndex.intValue = i;
-                        //Debug.Log(i);
                     }
                     EditorUtility.SetDirty(editorTarget);
                 }
@@ -477,10 +496,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 case SelectMode.RotationHandle: EulerRotationHandle(editorTarget, index); break;
             }
         }
-        private void DrawBezierPath(GfzFixedBezierPath editorTarget)
+        private void DrawBezierPath(GfzFixedBezierPath editorTarget, int index)
         {
+            Color32 colorInactive = new Color32(128, 64, 64, 196);
+            Color32 colorActive = Color.red;
+            Vector3 cameraForward = SceneView.GetAllSceneCameras()[0].transform.forward;
+
             // Iterate on in-between-beziers rather than on control points
-            Handles.color = Color.grey;
             for (int i = 0; i < editorTarget.ControlPointsLength - 1; i++)
             {
                 var controlPoint0 = editorTarget.GetControlPoint(i + 0);
@@ -491,14 +513,27 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 Vector3 endTangent = transform.TransformPoint(controlPoint1.InTangentPosition); // maybe add helper?
                 Handles.DrawBezier(start, end, startTangent, endTangent, Color.black, null, 5f);
 
+                bool isInSelected = i == index - 1;
+                bool isOutSelected = i == index;
+                Handles.color = isOutSelected ? colorActive : colorInactive;
                 Handles.DrawLine(start, startTangent, 3f);
+                Handles.color = isInSelected ? colorActive : colorInactive;
                 Handles.DrawLine(end, endTangent, 3f);
+                
+                // Draw circle where handle/button would normally be
+                if (isOutSelected)
+                {
+                    Handles.color = colorActive;
+                    Handles.DrawSolidDisc(start, cameraForward, 15f);
+                }
+
+                // Dotted line between tangents
+                Handles.color = Color.black;
                 Handles.DrawDottedLine(startTangent, endTangent, 3f);
 
+                // Circle at midway point
                 Vector3 center = Bezier.GetPoint(start, startTangent, endTangent, end, 0.5f);
-                Handles.DrawSolidDisc(center, Vector3.up, 10f);
-                Handles.DrawSolidDisc(center, Vector3.right, 10f);
-                Handles.DrawSolidDisc(center, Vector3.forward, 10f);
+                Handles.DrawSolidDisc(center, cameraForward, 10f);
             }
         }
 
