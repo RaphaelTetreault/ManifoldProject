@@ -67,7 +67,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 float distanceBetween = distancesBetweenControlPoints[i];
 
                 // POSITIONS
-                var positions = GetPositionKeys3(controlPoint0, controlPoint1, keysBetweenPositions2);
+                var positions = GetPositionKeys(controlPoint0, controlPoint1, keysBetweenPositions2);
                 //var positions = GetPositionKeys2(controlPoint0, controlPoint1, keysBetweenPositions2, distanceBetween);
                 //var positions = GetPositionKeys(controlPoint0, controlPoint1, keysBetweenPositions2);
                 for (int j = 0; j < positions.Length; j++)
@@ -93,7 +93,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         }
 
 
-        private Vector3[] SampleRotations(Quaternion startOrientation, Vector3 startEuler, Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3, int nSamples)
+        private Vector3[] SampleRotations(Quaternion startOrientation, Vector3 startEuler, Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3, int nSamples, float[] times)
         {
             Vector3[] rotations = new Vector3[nSamples];
 
@@ -103,10 +103,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             for (int i = 0; i < nSamples; i++)
             {
                 // percent between 0 and 1, exclusive both ends
-                float percentage = (i + 1) / (float)(nSamples + 1);
+                //float percentage = (i + 1) / (float)(nSamples + 1);
+                float time = times[i];
 
                 // Get rotation value and get the delta
-                Vector3 velocity = Bezier.GetFirstDerivative(p0, p1, p2, p3, percentage);
+                Vector3 velocity = Bezier.GetFirstDerivative(p0, p1, p2, p3, time);
                 Quaternion direction = Quaternion.LookRotation(velocity.normalized, lastUp);
                 Vector3 eulerDelta = HandlesUtility.GetEulerDelta(direction, lastQuaternion);
 
@@ -128,8 +129,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             Vector3 p1 = transform.TransformPoint(controlPoint0.OutTangentPosition);
             Vector3 p2 = transform.TransformPoint(controlPoint1.InTangentPosition);
             Vector3 p3 = transform.TransformPoint(controlPoint1.position);
+            float[] times = GetTimes(controlPoint0, controlPoint1, nSamples, 8);
 
-            Vector3[] rotationKeys = SampleRotations(orientation, eulerOrientation, p0, p1, p2, p3, nSamples);
+            Vector3[] rotationKeys = SampleRotations(orientation, eulerOrientation, p0, p1, p2, p3, nSamples, times);
 
             // Patch rotation Z keys
             var smoothLerp = new AnimationCurve(new(0, 0), new(1, 1));
@@ -145,62 +147,24 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         }
         private Vector3[] GetPositionKeys(FixedBezierPoint controlPoint0, FixedBezierPoint controlPoint1, int nSamples)
         {
-            Vector3[] positions = new Vector3[nSamples];
+            var times = GetTimes(controlPoint0, controlPoint1, nSamples, 8);
+
+            // compute true points
+            Vector3[] positionsBetween = new Vector3[nSamples];
             for (int i = 0; i < nSamples; i++)
             {
-                float time01 = (i + 1) / (float)(nSamples + 1);
                 Vector3 p0 = transform.TransformPoint(controlPoint0.position);
                 Vector3 p1 = transform.TransformPoint(controlPoint0.OutTangentPosition);
                 Vector3 p2 = transform.TransformPoint(controlPoint1.InTangentPosition);
                 Vector3 p3 = transform.TransformPoint(controlPoint1.position);
-                positions[i] = Bezier.GetPoint(p0, p1, p2, p3, time01);
+                float time = times[i];
+                positionsBetween[i] = Bezier.GetPoint(p0, p1, p2, p3, time);
             }
-            return positions;
+
+            return positionsBetween;
         }
-        private Vector3[] GetPositionKeys2(FixedBezierPoint controlPoint0, FixedBezierPoint controlPoint1, int nSamples, float distance)
-        {
-            Vector3 basePosition = transform.TransformPoint(controlPoint0.position);
-            float ditancePerSample = (distance / nSamples);
 
-            Vector3[] positions = new Vector3[nSamples];
-            for (int i = 0; i < nSamples; i++)
-            {
-                float time01 = (i + 1) / (float)(nSamples + 1);
-                Vector3 p0 = transform.TransformPoint(controlPoint0.position);
-                Vector3 p1 = transform.TransformPoint(controlPoint0.OutTangentPosition);
-                Vector3 p2 = transform.TransformPoint(controlPoint1.InTangentPosition);
-                Vector3 p3 = transform.TransformPoint(controlPoint1.position);
-                Vector3 bezierPoint = Bezier.GetPoint(p0, p1, p2, p3, time01);
-                //Vector3 bezierLocal = (bezierPoint - basePosition);
-                //float magnitude = bezierLocal.magnitude;
-                //float length = ditancePerSample * i;
-                //float ratio = magnitude / length; 
-                //positions[i] = basePosition + (bezierLocal / ratio);
-                positions[i] = bezierPoint;
-            }
-
-            float length = 0f;
-            for (int i = 0; i < positions.Length - 1; i++)
-            {
-                var p0 = positions[i];
-                var p1 = positions[i + 1];
-                float delta = Vector3.Distance(p0, p1);
-                length += delta;
-            }
-
-            for (int i = 0; i < positions.Length; i++)
-            {
-                var position = positions[i];
-                Vector3 localDelta = position - basePosition;
-                float localMagnitude = localDelta.magnitude;
-                float trueMagnitude = (length / nSamples - 1) * (i + 1);
-                float conversionRatio = localMagnitude / trueMagnitude;
-                positions[i] = basePosition + localDelta / conversionRatio;
-            }
-
-            return positions;
-        }
-        private Vector3[] GetPositionKeys3(FixedBezierPoint controlPoint0, FixedBezierPoint controlPoint1, int nSamples)
+        private float[] GetTimes(FixedBezierPoint controlPoint0, FixedBezierPoint controlPoint1, int nSamples, int nSubSamples)
         {
             int iterations = nSamples + 2; // +2 fors start and end points
             float[] cumulativeDistances = new float[iterations];
@@ -215,11 +179,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 // offset start
                 cumulativeDistances[i] = totalDistance;
 
-                // sample between bezier points 16 times to get approx length
-                for (int j = 0; j < 16; j++)
+                // sample between bezier points X times to get approx length
+                // subsamples = n times to sample between
+                for (int j = 0; j < nSubSamples; j++)
                 {
-                    float time0 = (i + ((j + 0) / 16f)) / (iterations - 1f); //
-                    float time1 = (i + ((j + 1) / 16f)) / (iterations - 1f); //
+                    float time0 = (i + ((j + 0) / (float)nSubSamples)) / (iterations - 1f); //
+                    float time1 = (i + ((j + 1) / (float)nSubSamples)) / (iterations - 1f); //
                     Vector3 point0 = Bezier.GetPoint(p0, p1, p2, p3, time0);
                     Vector3 point1 = Bezier.GetPoint(p0, p1, p2, p3, time1);
                     float delta = Vector3.Distance(point0, point1);
@@ -230,18 +195,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
 
             // compute true points
-            Vector3[] positionsBetween = new Vector3[nSamples];
+            float[] times = new float[nSamples];
             for (int i = 0; i < nSamples; i++)
-            {
-                Vector3 p0 = transform.TransformPoint(controlPoint0.position);
-                Vector3 p1 = transform.TransformPoint(controlPoint0.OutTangentPosition);
-                Vector3 p2 = transform.TransformPoint(controlPoint1.InTangentPosition);
-                Vector3 p3 = transform.TransformPoint(controlPoint1.position);
-                float time = cumulativeDistances[i] / totalDistance;
-                positionsBetween[i] = Bezier.GetPoint(p0, p1, p2, p3, time);
-            }
+                times[i] = cumulativeDistances[i] / totalDistance;
 
-            return positionsBetween;
+            return times;
         }
 
         // THE CORE
@@ -460,11 +418,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public void IncrementSelectedIndex()
         {
-            selectedIndex = Mathf.Clamp(selectedIndex + 1, 0, ControlPointsLength);
+            selectedIndex = Mathf.Clamp(selectedIndex + 1, 0, ControlPointsLength - 1);
         }
         public void DecrementSelectedIndex()
         {
-            selectedIndex = Mathf.Clamp(selectedIndex - 1, 0, ControlPointsLength);
+            selectedIndex = Mathf.Clamp(selectedIndex - 1, 0, ControlPointsLength - 1);
         }
     }
 }

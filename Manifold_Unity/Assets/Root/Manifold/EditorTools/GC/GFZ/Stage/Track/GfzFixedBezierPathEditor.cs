@@ -426,6 +426,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             CaptureHandleMove(editorTarget, index);
             CaptureKeyboardEvents(editorTarget, index);
             serializedObject.ApplyModifiedProperties();
+
+            //editorTarget.InvokeUpdates();
         }
 
         private void CaptureKeyboardEvents(GfzFixedBezierPath editorTarget, int index)
