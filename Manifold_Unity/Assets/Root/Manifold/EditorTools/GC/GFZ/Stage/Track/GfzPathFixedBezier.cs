@@ -1,9 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEditor;
-using UnityEngine;
-using Unity.Mathematics;
 using Manifold.Spline;
+using System.Collections.Generic;
+using Unity.Mathematics;
+using UnityEngine;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
@@ -16,7 +14,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         [SerializeField, Range(0, 16)] private int keysBetweenControlPoints = 6;
 
         public int SelectedIndex { get => selectedIndex; set => selectedIndex = value; }
-
         public int ControlPointsLength => controlPoints.Count;
         public int DistancesBetweenLength => distancesBetweenControlPoints.Count;
 
@@ -27,12 +24,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 : animationCurveTRS.CreateDeepCopy();
             return trs;
         }
-
         public override float GetMaxTime()
         {
             return animationCurveTRS.GetMaxTime();
         }
-
         public override float GetSegmentLength()
         {
             float segmentLength = 0f;
@@ -40,7 +35,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 segmentLength += distance;
             return segmentLength;
         }
-
         public override void UpdateTRS()
         {
             float distance = 0f;
@@ -132,8 +126,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             // Patch rotation Z keys
             for (int i = 0; i < nSamples; i++)
             {
-                //float percentage = i / (nSamples - 1f);
-                //float time = smoothLerp.Evaluate(percentage);
                 float time = times[i];
                 float rotationZ = Mathf.Lerp(controlPoint0.EulerOrientation.z, controlPoint1.EulerOrientation.z, time);
                 rotationKeys[i].z = rotationZ;
@@ -196,7 +188,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
             return times;
         }
-
 
         public FixedBezierPoint GetControlPoint(int index)
         {
