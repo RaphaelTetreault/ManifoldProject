@@ -420,13 +420,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             if (isInvalidIndex)
                 return;
 
-            //serializedObject.Update();
-            {
-                CaptureHandleClicked(editorTarget, index);
-                CaptureHandleMove(editorTarget);
-                CaptureKeyboardEvents(editorTarget, index);
-            }
-            //serializedObject.ApplyModifiedProperties();
+            //
+            serializedObject.Update();
+            CaptureHandleClicked(editorTarget, index);
+            CaptureHandleMove(editorTarget, index);
+            CaptureKeyboardEvents(editorTarget, index);
+            serializedObject.ApplyModifiedProperties();
         }
 
         private void CaptureKeyboardEvents(GfzFixedBezierPath editorTarget, int index)
@@ -487,13 +486,17 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 }
             }
         }
-        private void CaptureHandleMove(GfzFixedBezierPath editorTarget)
+        private void CaptureHandleMove(GfzFixedBezierPath editorTarget, int index)
         {
-            int index = selectedIndex.intValue;
             switch (selectMode)
             {
-                case SelectMode.PositionHandle: PositionHandle(editorTarget, index); break;
-                case SelectMode.RotationHandle: EulerRotationHandle(editorTarget, index); break;
+                case SelectMode.PositionHandle:
+                    PositionHandle(editorTarget, index);
+                    break;
+
+                case SelectMode.RotationHandle:
+                    EulerRotationHandle(editorTarget, index);
+                    break;
             }
         }
         private void DrawBezierPath(GfzFixedBezierPath editorTarget, int index)
@@ -519,7 +522,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 Handles.DrawLine(start, startTangent, 3f);
                 Handles.color = isInSelected ? colorActive : colorInactive;
                 Handles.DrawLine(end, endTangent, 3f);
-                
+
                 // Draw circle where handle/button would normally be
                 if (isOutSelected)
                 {
