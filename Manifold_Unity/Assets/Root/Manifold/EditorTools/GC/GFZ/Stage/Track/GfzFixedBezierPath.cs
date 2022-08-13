@@ -13,7 +13,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         [SerializeField] private List<float> distancesBetweenControlPoints;
         [SerializeField] private int selectedIndex = 1;
         [SerializeField] private AnimationCurveTRS animationCurveTRS = new();
-        [SerializeField, Range(0, 32)] private int keysBetweenControlPoints = 4;
+        [SerializeField, Range(0, 16)] private int keysBetweenControlPoints = 6;
 
         public int SelectedIndex { get => selectedIndex; set => selectedIndex = value; }
 
@@ -48,10 +48,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
             for (int i = 0; i < ControlPointsLength; i++)
             {
-                //
+                // Get control point and key information
                 var controlPoint0 = controlPoints[i];
-                Vector3 position = transform.TransformPoint(controlPoint0.position);
-                Vector3 rotation = controlPoint0.EulerOrientation + transform.rotation.eulerAngles;
+                Vector3 position = WorldPosition(controlPoint0.position);
+                Vector3 rotation = WorldOrientation(controlPoint0.EulerOrientation);
                 Vector3 scale = controlPoint0.scale;
                 trs.Position.AddKeys(distance, position);
                 trs.Rotation.AddKeys(distance, rotation);
@@ -60,22 +60,23 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 if (controlPoint0.keyScale.y)
                     trs.Scale.y.AddKey(new(distance, scale.y, 0, 0));
 
+                // If there is no "next" control point, end here
                 if (i == distancesBetweenControlPoints.Count)
                     break;
 
-                //
+                // Get the next control point, distance between cp0 and cp1
                 var controlPoint1 = controlPoints[i + 1];
                 float distanceBetween = distancesBetweenControlPoints[i];
 
                 // Bezier point times
-                float[] times = GetTimes(controlPoint0, controlPoint1, keysBetweenControlPoints + 1, 8);
-                // POSITIONS
-                var positions = GetPositionKeys(controlPoint0, controlPoint1, keysBetweenControlPoints + 1, times);
-                var rotations = GetRotationKeys(controlPoint0, controlPoint1, keysBetweenControlPoints + 1, times);
+                float[] scaledBezierTimes = GetWeightedBezierTimes(controlPoint0, controlPoint1, keysBetweenControlPoints + 1, 8);
+                var positions = GetPositionKeys(controlPoint0, controlPoint1, keysBetweenControlPoints + 1, scaledBezierTimes);
+                var rotations = GetRotationKeys(controlPoint0, controlPoint1, keysBetweenControlPoints + 1, scaledBezierTimes);
 
-                for (int j = 1; j < times.Length; j++)
+                // Add as keys with corrected time
+                for (int j = 1; j < scaledBezierTimes.Length; j++)
                 {
-                    float time01 = j / (float)times.Length;
+                    float time01 = j / (float)scaledBezierTimes.Length;
                     float timeDistance = distance + time01 * distanceBetween;
                     trs.Position.AddKeys(timeDistance, positions[j]);
                     trs.Rotation.AddKeys(timeDistance, rotations[j]);
@@ -84,6 +85,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 distance += distancesBetweenControlPoints[i];
             }
 
+            // Clean keys and we're done
             trs.CleanDuplicateKeys();
             animationCurveTRS = trs;
         }
@@ -98,8 +100,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             Vector3 eulerOrientation = startEuler;
             for (int i = 0; i < nSamples; i++)
             {
-                // percent between 0 and 1, exclusive both ends
-                //float percentage = (i + 1) / (float)(nSamples + 1);
                 float time = times[i];
 
                 // Get rotation value and get the delta
@@ -120,13 +120,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         private Vector3[] GetRotationKeys(FixedBezierPoint controlPoint0, FixedBezierPoint controlPoint1, int nSamples, float[] times)
         {
             Quaternion orientation = transform.rotation * controlPoint0.Orientation;
-            Vector3 eulerOrientation = controlPoint0.EulerOrientation + transform.eulerAngles;
-            Vector3 p0 = transform.TransformPoint(controlPoint0.position);
-            Vector3 p1 = transform.TransformPoint(controlPoint0.OutTangentPosition);
-            Vector3 p2 = transform.TransformPoint(controlPoint1.InTangentPosition);
-            Vector3 p3 = transform.TransformPoint(controlPoint1.position);
+            Vector3 eulerOrientation = WorldOrientation(controlPoint0.EulerOrientation);
+            Vector3 p0 = WorldPosition(controlPoint0.position);
+            Vector3 p1 = WorldPosition(controlPoint0.OutTangentPosition);
+            Vector3 p2 = WorldPosition(controlPoint1.InTangentPosition);
+            Vector3 p3 = WorldPosition(controlPoint1.position);
 
-            times = GetTimes(controlPoint0, controlPoint1, nSamples, times.Length);
+            times = GetWeightedBezierTimes(controlPoint0, controlPoint1, nSamples, times.Length);
             Vector3[] rotationKeys = SampleRotations(orientation, eulerOrientation, p0, p1, p2, p3, nSamples, times);
 
             // Patch rotation Z keys
@@ -147,10 +147,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             Vector3[] positionsBetween = new Vector3[nSamples];
             for (int i = 0; i < nSamples; i++)
             {
-                Vector3 p0 = transform.TransformPoint(controlPoint0.position);
-                Vector3 p1 = transform.TransformPoint(controlPoint0.OutTangentPosition);
-                Vector3 p2 = transform.TransformPoint(controlPoint1.InTangentPosition);
-                Vector3 p3 = transform.TransformPoint(controlPoint1.position);
+                Vector3 p0 = WorldPosition(controlPoint0.position);
+                Vector3 p1 = WorldPosition(controlPoint0.OutTangentPosition);
+                Vector3 p2 = WorldPosition(controlPoint1.InTangentPosition);
+                Vector3 p3 = WorldPosition(controlPoint1.position);
                 float time = times[i];
                 positionsBetween[i] = Bezier.GetPoint(p0, p1, p2, p3, time);
             }
@@ -158,17 +158,18 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return positionsBetween;
         }
 
-        private float[] GetTimes(FixedBezierPoint controlPoint0, FixedBezierPoint controlPoint1, int nSamples, int nSubSamples)
+        private float[] GetWeightedBezierTimes(FixedBezierPoint controlPoint0, FixedBezierPoint controlPoint1, int nSamples, int nSubSamples)
         {
             int iterations = nSamples + 2; // +2 fors start and end points
             float[] cumulativeDistances = new float[iterations];
             float totalDistance = 0f;
             for (int i = 1; i < iterations - 1; i++)
             {
-                Vector3 p0 = transform.TransformPoint(controlPoint0.position);
-                Vector3 p1 = transform.TransformPoint(controlPoint0.OutTangentPosition);
-                Vector3 p2 = transform.TransformPoint(controlPoint1.InTangentPosition);
-                Vector3 p3 = transform.TransformPoint(controlPoint1.position);
+                // no need for world positions since we care about (non-scaled) deltas
+                Vector3 p0 = controlPoint0.position;
+                Vector3 p1 = controlPoint0.OutTangentPosition;
+                Vector3 p2 = controlPoint1.InTangentPosition;
+                Vector3 p3 = controlPoint1.position;
 
                 // offset start
                 cumulativeDistances[i] = totalDistance;
@@ -196,7 +197,16 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return times;
         }
 
-        // THE CORE
+
+        public FixedBezierPoint GetControlPoint(int index)
+        {
+            return controlPoints[index];
+        }
+        public void SetControlPoint(int index, FixedBezierPoint controlPoint)
+        {
+            controlPoints[index] = controlPoint;
+        }
+
         public void InsertControlPoint(int index, FixedBezierPoint controlPoint)
         {
             bool isInvalidIndex = !IsValidIndex(index);
@@ -226,7 +236,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             UpdateCurveDistanceTouchingControlPoint(nextIndex);
             UpdateLinearDistanceTouchingControlPoint(nextIndex);
         }
-        //=> InsertControlPoint(index + 1, controlPoint);
         public void InsertBetween(int index0, int index1)
         {
             var controlPoint0 = GetControlPoint(index0);
@@ -255,8 +264,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
             // keying
             var keyScale = new bool2(
-                controlPoint0.keyScale.x | controlPoint1.keyScale.x,
-                controlPoint0.keyScale.y | controlPoint1.keyScale.y);
+                controlPoint0.keyScale.x & controlPoint1.keyScale.x,
+                controlPoint0.keyScale.y & controlPoint1.keyScale.y);
 
             // Make a new control point and insert it.
             var newControlPoint = new FixedBezierPoint()
@@ -287,58 +296,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         }
         public void RemoveAt(int index)
             => RemoveControlPoint(index);
-
-
-        public static List<FixedBezierPoint> DefaultControlPoints()
-        {
-            float defaultScale = 90; // TODO make centralized
-            var controlPoint0 = new FixedBezierPoint()
-            {
-                position = new Vector3(0, 0, 0),
-                Orientation = Quaternion.identity,
-                scale = Vector2.one * defaultScale,
-                keyPosition = new bool3(true),
-                keyOrientation = new bool3(true),
-                keyScale = new bool2(true),
-            };
-            var controlPoint1 = new FixedBezierPoint()
-            {
-                position = new Vector3(0, 0, 500),
-                Orientation = Quaternion.identity,
-                scale = Vector2.one * defaultScale,
-                keyPosition = new bool3(true),
-                keyOrientation = new bool3(true),
-                keyScale = new bool2(true),
-            };
-            var list = new List<FixedBezierPoint>();
-            list.Add(controlPoint0);
-            list.Add(controlPoint1);
-
-            return list;
-        }
-
-        protected override void Reset()
-        {
-            base.Reset();
-
-            // Create default control points
-            controlPoints = DefaultControlPoints();
-            // Make distances between control points
-            distancesBetweenControlPoints = new List<float>(new float[controlPoints.Count - 1]);
-            UpdateCurveDistanceTouchingControlPoint(0);
-            UpdateLinearDistanceTouchingControlPoint(0);
-        }
-
-
-        public void SetControlPoint(int index, FixedBezierPoint controlPoint)
-        {
-            controlPoints[index] = controlPoint;
-        }
-        public FixedBezierPoint GetControlPoint(int index)
-        {
-            return controlPoints[index];
-        }
-
 
         private void UpdateCurveDistanceFromControlPointToNext(int index)
         {
@@ -423,6 +380,57 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         public void DecrementSelectedIndex()
         {
             selectedIndex = Mathf.Clamp(selectedIndex - 1, 0, ControlPointsLength - 1);
+        }
+
+        public Vector3 WorldPosition(Vector3 position)
+        {
+            var worldPosition = transform.TransformPoint(position);
+            return worldPosition;
+        }
+        public Vector3 WorldOrientation(Vector3 eulerOrientation)
+        {
+            var worldOrientation = eulerOrientation + transform.eulerAngles;
+            return worldOrientation;
+        }
+
+        public static List<FixedBezierPoint> DefaultControlPoints()
+        {
+            float defaultScale = CourseConst.AverageCourseWidth;
+            var controlPoint0 = new FixedBezierPoint()
+            {
+                position = new Vector3(0, 0, 0),
+                Orientation = Quaternion.identity,
+                scale = Vector2.one * defaultScale,
+                keyPosition = new bool3(true),
+                keyOrientation = new bool3(true),
+                keyScale = new bool2(true),
+            };
+            var controlPoint1 = new FixedBezierPoint()
+            {
+                position = new Vector3(0, 0, 500),
+                Orientation = Quaternion.identity,
+                scale = Vector2.one * defaultScale,
+                keyPosition = new bool3(true),
+                keyOrientation = new bool3(true),
+                keyScale = new bool2(true),
+            };
+            var list = new List<FixedBezierPoint>();
+            list.Add(controlPoint0);
+            list.Add(controlPoint1);
+
+            return list;
+        }
+
+        protected override void Reset()
+        {
+            base.Reset();
+
+            // Create default control points
+            controlPoints = DefaultControlPoints();
+            // Make distances between control points
+            distancesBetweenControlPoints = new List<float>(new float[controlPoints.Count - 1]);
+            UpdateCurveDistanceTouchingControlPoint(0);
+            UpdateLinearDistanceTouchingControlPoint(0);
         }
     }
 }
