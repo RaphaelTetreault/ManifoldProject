@@ -12,7 +12,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
     /// </summary>
     public sealed class GfzTrack : MonoBehaviour
     {
-        [field: SerializeField] public GfzPathSegment FirstRoot { get; private set; }
+        [field: SerializeField] public bool FirstElementIsLastSegment { get; private set; }
+        [field: SerializeField, ReadOnlyGUI] public GfzPathSegment FirstRoot { get; private set; }
+        [field: SerializeField, ReadOnlyGUI] public GfzPathSegment LastRoot { get; private set; }
         [field: SerializeField] public GfzPathSegment[] AllRoots { get; private set; }
         [field: SerializeField] public bool DoFind { get; private set; }
 
@@ -48,6 +50,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     throw new Exception($"Segment {seg.name} is disabled! Can only export active segments.");
                 }
             }
+
+
 
             // Track metadata
             var trackMinHeight = new TrackMinHeight();
@@ -155,10 +159,20 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public void FindChildSegments()
         {
-            FirstRoot = GetComponentInChildren<GfzPathSegment>(false);
             AllRoots = GetAllRootSegments();
-            Assert.IsTrue(FirstRoot is not null);
-            Assert.IsTrue(FirstRoot == AllRoots[0]);
+
+            // Reorder elements if first is meant to be last element
+            if (FirstElementIsLastSegment)
+            {
+                var ordered = new List<GfzPathSegment>();
+                ordered.AddRange(AllRoots[1..]);
+                ordered.Add(LastRoot);
+                AllRoots = ordered.ToArray();
+            }
+
+            FirstRoot = AllRoots[0];
+            int lastIndex = AllRoots.Length - 1;
+            LastRoot = AllRoots[lastIndex];
         }
 
         public void AssignContinuity()
