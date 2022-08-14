@@ -134,6 +134,14 @@ namespace Manifold.EditorTools
         public static AnimationCurve SetKeyTangents(this AnimationCurve curve, float inOutTangents)
             => new AnimationCurve(KeyframeUtility.SetKeyTangents(curve.keys, inOutTangents));
 
+        public static void SetKeyTangent(this AnimationCurve curve, int index, float inOutTangents)
+        {
+            var key = curve.keys[index];
+            key.inTangent = inOutTangents;
+            key.outTangent = inOutTangents;
+            curve.MoveKey(index, key);
+        }
+
         public static void SetKeyTangents(this AnimationCurve curve, int index, float inOutTangent)
         {
             var key = curve.keys[index];

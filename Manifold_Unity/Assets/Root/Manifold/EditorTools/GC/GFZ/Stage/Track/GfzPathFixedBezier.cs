@@ -74,11 +74,17 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     float time01 = j / (float)scaledBezierTimes.Length;
                     float timeDistance = distance + time01 * distanceBetween;
                     trs.Position.AddKeys(timeDistance, positions[j]);
-                    trs.Rotation.AddKeys(timeDistance, rotations[j]);
+                    //trs.Rotation.AddKeys(timeDistance, rotations[j]);
+                    trs.Rotation.x.AddKey(timeDistance, rotations[j].x);
+                    trs.Rotation.y.AddKey(timeDistance, rotations[j].y);
                 }
 
                 distance += distancesBetweenControlPoints[i];
             }
+
+            // Flatten first and last Z rotation keys
+            trs.Rotation.z.SetKeyTangent(0, 0);
+            trs.Rotation.z.SetKeyTangent(trs.Rotation.z.length-1, 0);
 
             // Clean keys and we're done
             trs.CleanDuplicateKeys();
