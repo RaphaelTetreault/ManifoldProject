@@ -9,10 +9,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
     {
         [SerializeField] private SpiralAxes axes = SpiralAxes.HorizontalRight;
         [SerializeField] private AnimationCurve rotationZ = new(new(0, 0), new(1, 0));
-        [SerializeField] private AnimationCurve scaleX = new(new(0, 60), new(1, 60));
+        [SerializeField] private AnimationCurve scaleX = new(new(0, 60), new(1, CourseConst.AverageCourseWidth));
         [SerializeField] private AnimationCurve scaleY = new(new(0, 1), new(1, 1));
-        [SerializeField, Min(0)] private float radius0 = 200;
-        [SerializeField, Min(0)] private float radius1 = 200;
+        [SerializeField, Min(0)] private float radius0 = CourseConst.GoodAverageLength / 2f;
+        [SerializeField, Min(0)] private float radius1 = CourseConst.GoodAverageLength / 2f;
         [SerializeField] private float axisOffset = 0;
         [SerializeField, Range(1f, 1800f)] private float rotateDegrees = 90f;
         [SerializeField, Min(8)] private int keysPer360Degrees = 36;
