@@ -33,6 +33,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         void OnEnable()
         {
+            // Not sure why this triggers sometimes, so stop function if null?
+            if (target == null)
+                return;
+
             transform = (target as GfzPathFixedBezier).transform;
             controlPoints = serializedObject.FindProperty(nameof(controlPoints));
             selectedIndex = serializedObject.FindProperty(nameof(selectedIndex));
@@ -60,7 +64,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
             DrawDefaults(editorTarget);
             EditorGUILayout.Separator();
-            DrawControlPointSelect(editorTarget, index);
+            DrawControlPointSelector(editorTarget, index);
             EditorGUILayout.Separator();
             // Clamp in case we deleted a control point and index becomes invalid
             index = Mathf.Clamp(index, -1, editorTarget.DistancesBetweenLength);
@@ -69,6 +73,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             DrawAnimationData();
 
             AssignToolVisibility();
+
+            base.DrawDefaultInspector();
         }
 
         private void DrawButtonFields(GfzPathFixedBezier editorTarget, int index)
@@ -191,19 +197,29 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 return;
             }
 
-            DrawCurrentControlPointPosition(editorTarget, index);
-            DrawCurrentControlPointOrientation(editorTarget, index);
-            DrawCurrentControlPointScale(editorTarget, index);
-            DrawScaleKeyFlags(editorTarget, index);
+            bool updatedPosition = DrawCurrentControlPointPosition(editorTarget, index);
+            bool updatedOrientation = DrawCurrentControlPointOrientation(editorTarget, index);
+            bool updatedScale = DrawCurrentControlPointScale(editorTarget, index);
+            bool updatedScaleKeys = DrawScaleKeyFlags(editorTarget, index);
+
+            bool changedLength = updatedPosition || updatedOrientation;
+            if (changedLength)
+            {
+                serializedObject.Update();
+                editorTarget.UpdateLinearDistanceTouchingControlPoint(index);
+                editorTarget.UpdateCurveDistanceTouchingControlPoint(index);
+                serializedObject.ApplyModifiedProperties();
+            }
         }
-        private void DrawCurrentControlPointPosition(GfzPathFixedBezier editorTarget, int index)
+        private bool DrawCurrentControlPointPosition(GfzPathFixedBezier editorTarget, int index)
         {
             var controlPoint = editorTarget.GetControlPoint(index);
             Vector3 position = WorldPosition(controlPoint);
 
             EditorGUI.BeginChangeCheck();
             Vector3 result = GuiSimple.Vector3(nameof(controlPoint.position), position);
-            if (EditorGUI.EndChangeCheck())
+            bool changed = EditorGUI.EndChangeCheck();
+            if (changed)
             {
                 string undoMessage = $"Change bezier point {index} position";
                 Undo.RecordObject(editorTarget, undoMessage);
@@ -213,8 +229,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 }
                 EditorUtility.SetDirty(editorTarget);
             }
+            return changed;
         }
-        private void DrawCurrentControlPointOrientation(GfzPathFixedBezier editorTarget, int index)
+        private bool DrawCurrentControlPointOrientation(GfzPathFixedBezier editorTarget, int index)
         {
             var controlPoint = editorTarget.GetControlPoint(index);
             Vector3 baseOrientation = transform.rotation.eulerAngles;
@@ -222,7 +239,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
             EditorGUI.BeginChangeCheck();
             Vector3 result = GuiSimple.Vector3(nameof(controlPoint.EulerOrientation), orientation);
-            if (EditorGUI.EndChangeCheck())
+            bool changed = EditorGUI.EndChangeCheck();
+            if (changed)
             {
                 string undoMessage = $"Change bezier point {index} euler orientation";
                 Undo.RecordObject(editorTarget, undoMessage);
@@ -232,15 +250,17 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 }
                 EditorUtility.SetDirty(editorTarget);
             }
+            return changed;
         }
-        private void DrawCurrentControlPointScale(GfzPathFixedBezier editorTarget, int index)
+        private bool DrawCurrentControlPointScale(GfzPathFixedBezier editorTarget, int index)
         {
             var controlPoint = editorTarget.GetControlPoint(index);
             Vector2 scale = controlPoint.scale;
 
             EditorGUI.BeginChangeCheck();
             Vector2 result = GuiSimple.Vector2(nameof(scale), scale);
-            if (EditorGUI.EndChangeCheck())
+            bool changed = EditorGUI.EndChangeCheck();
+            if (changed)
             {
                 string undoMessage = $"Change bezier point {index} euler orientation";
                 Undo.RecordObject(editorTarget, undoMessage);
@@ -250,9 +270,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 }
                 EditorUtility.SetDirty(editorTarget);
             }
+            return changed;
         }
 
-        private void DrawScaleKeyFlags(GfzPathFixedBezier editorTarget, int index)
+        private bool DrawScaleKeyFlags(GfzPathFixedBezier editorTarget, int index)
         {
             var controlPoint = editorTarget.GetControlPoint(index);
             string name = nameof(controlPoint.keyScale);
@@ -267,6 +288,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 }
                 EditorUtility.SetDirty(editorTarget);
             }
+            return changed;
         }
         private void DrawAnimationData()
         {
@@ -278,7 +300,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             serializedObject.ApplyModifiedProperties();
         }
 
-        private void DrawControlPointSelect(GfzPathFixedBezier editorTarget, int index)
+        private void DrawControlPointSelector(GfzPathFixedBezier editorTarget, int index)
         {
             serializedObject.Update();
             EditorGUILayout.LabelField($"Selected Bezier Control Point {index}", EditorStyles.boldLabel);

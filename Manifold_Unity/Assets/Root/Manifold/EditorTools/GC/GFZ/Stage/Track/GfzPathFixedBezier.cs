@@ -419,14 +419,14 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         protected override void Reset()
         {
-            base.Reset();
-
             // Create default control points
             controlPoints = DefaultControlPoints();
             // Make distances between control points
             distancesBetweenControlPoints = new List<float>(new float[controlPoints.Count - 1]);
             UpdateCurveDistanceTouchingControlPoint(0);
             UpdateLinearDistanceTouchingControlPoint(0);
+
+            base.Reset();
         }
     }
 }
