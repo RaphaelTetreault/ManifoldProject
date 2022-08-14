@@ -197,12 +197,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 return;
             }
 
-            bool updatedPosition = DrawCurrentControlPointPosition(editorTarget, index);
-            bool updatedOrientation = DrawCurrentControlPointOrientation(editorTarget, index);
-            bool updatedScale = DrawCurrentControlPointScale(editorTarget, index);
-            bool updatedScaleKeys = DrawScaleKeyFlags(editorTarget, index);
+            bool updatedPos = DrawCurrentControlPointPosition(editorTarget, index);
+            bool updatedRot = DrawCurrentControlPointOrientation(editorTarget, index);
+            DrawCurrentControlPointScale(editorTarget, index);
+            DrawScaleKeyFlags(editorTarget, index);
 
-            bool changedLength = updatedPosition || updatedOrientation;
+            bool changedLength = updatedPos || updatedRot;
             if (changedLength)
             {
                 serializedObject.Update();
