@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEditor;
 
@@ -54,12 +55,45 @@ namespace Manifold.EditorTools
             var label = ObjectNames.NicifyVariableName(name);
             return EditorGUILayout.Vector3Field(label, value);
         }
-
+        public static Vector2 Vector2(string name, Vector2 value)
+        {
+            var label = ObjectNames.NicifyVariableName(name);
+            return EditorGUILayout.Vector2Field(label, value);
+        }
 
         public static TEnum EnumPopup<TEnum>(string name, TEnum @enum) where TEnum : Enum
         {
             var label = ObjectNames.NicifyVariableName(name);
             return (TEnum)EditorGUILayout.EnumPopup(label, @enum);
+        }
+
+        public static bool Bool3(string label, bool3 value, out bool3 edited)
+        {
+            EditorGUI.BeginChangeCheck();
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.PrefixLabel(Labelize(label));
+            bool resultX = GUILayout.Toggle(value.x, "X");
+            bool resultY = GUILayout.Toggle(value.y, "Y");
+            bool resultZ = GUILayout.Toggle(value.z, "Z");
+            EditorGUILayout.EndHorizontal();
+            bool changed = EditorGUI.EndChangeCheck();
+            edited = new bool3(resultX, resultY, resultZ);
+            return changed;
+        }
+        public static bool Bool2(string label, bool2 value, out bool2 edited)
+        {
+            EditorGUI.BeginChangeCheck();
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.PrefixLabel(Labelize(label));
+            bool resultX = GUILayout.Toggle(value.x, "X");
+            bool resultY = GUILayout.Toggle(value.y, "Y");
+            GUI.color = new Color32(0, 0, 0, 0);
+            GUILayout.Toggle(false, "Z");
+            GUI.color = Color.white;
+            EditorGUILayout.EndHorizontal();
+            bool changed = EditorGUI.EndChangeCheck();
+            edited = new bool2(resultX, resultY);
+            return changed;
         }
 
 

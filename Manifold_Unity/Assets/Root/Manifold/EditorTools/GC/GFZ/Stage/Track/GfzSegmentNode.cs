@@ -19,7 +19,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         /// </summary>
         /// <param name="isGfzCoordinateSpace"></param>
         /// <returns></returns>
-        public abstract AnimationCurveTRS CreateAnimationCurveTRS(bool isGfzCoordinateSpace);
+        public abstract AnimationCurveTRS CopyAnimationCurveTRS(bool isGfzCoordinateSpace);
         public abstract TrackSegment CreateTrackSegment();
 
         // TODO? Consider adding children to construction?
@@ -27,7 +27,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         {
             var parentHacTRS = GetParentHacTRS(isGfzCoordinateSpace, out bool isRoot);
             //var staticMatrix = GetStaticMatrix(isGfzCoordinateSpace, isRoot);
-            var animTRS = CreateAnimationCurveTRS(isGfzCoordinateSpace);
+            var animTRS = CopyAnimationCurveTRS(isGfzCoordinateSpace);
 
             var hacTRS = new HierarchichalAnimationCurveTRS()
             {
@@ -117,33 +117,33 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return children;
         }
 
-        public Matrix4x4 GetStaticMatrix(bool useGfzCoordinateSpace, bool isRoot)
-        {
-            // If no parent, use world space, if child, use local space
-            var position = isRoot
-                ? transform.position
-                : transform.localPosition;
+        //public Matrix4x4 GetStaticMatrix(bool useGfzCoordinateSpace, bool isRoot)
+        //{
+        //    // If no parent, use world space, if child, use local space
+        //    var position = isRoot
+        //        ? transform.position
+        //        : transform.localPosition;
 
-            var rotation = isRoot
-                ? transform.rotation.eulerAngles
-                : transform.localRotation.eulerAngles;
+        //    var rotation = isRoot
+        //        ? transform.rotation.eulerAngles
+        //        : transform.localRotation.eulerAngles;
 
-            var scale = isRoot
-                ? transform.lossyScale
-                : transform.localScale;
+        //    var scale = isRoot
+        //        ? transform.lossyScale
+        //        : transform.localScale;
 
-            // If GFZ, flip Z coordinate space
-            if (useGfzCoordinateSpace)
-            {
-                position.z = -position.z;
-                rotation.x = -rotation.x;
-                rotation.y = -rotation.y;
-            }
+        //    // If GFZ, flip Z coordinate space
+        //    if (useGfzCoordinateSpace)
+        //    {
+        //        position.z = -position.z;
+        //        rotation.x = -rotation.x;
+        //        rotation.y = -rotation.y;
+        //    }
 
-            var matrix = Matrix4x4.TRS(position, Quaternion.Euler(rotation), scale);
+        //    var matrix = Matrix4x4.TRS(position, Quaternion.Euler(rotation), scale);
 
-            return matrix;
-        }
+        //    return matrix;
+        //}
 
         public HierarchichalAnimationCurveTRS GetParentHacTRS(bool isGfzCoordinateSpace, out bool isRoot)
         {

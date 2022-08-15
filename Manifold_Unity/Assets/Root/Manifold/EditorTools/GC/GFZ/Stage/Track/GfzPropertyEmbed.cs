@@ -115,7 +115,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
         }
 
-        public override AnimationCurveTRS CreateAnimationCurveTRS(bool isGfzCoordinateSpace)
+        public override AnimationCurveTRS CopyAnimationCurveTRS(bool isGfzCoordinateSpace)
         {
             // NOTE to document:
             // Looks like GFZ uses the max time range on this node, so if other "blank"
@@ -317,7 +317,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         public override TrackSegment CreateTrackSegment()
         {
             var children = CreateChildTrackSegments();
-            var trs = CreateAnimationCurveTRS(false);
+            var trs = CopyAnimationCurveTRS(false);
 
             var trackSegment = new TrackSegment();
             trackSegment.SegmentType = TrackSegmentType.IsEmbed;
@@ -332,7 +332,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public override void UpdateTRS()
         {
-            animationCurveTRS = CreateAnimationCurveTRS(false);
+            animationCurveTRS = CopyAnimationCurveTRS(false);
         }
 
         public void SetOffsets(Jusification jusification)

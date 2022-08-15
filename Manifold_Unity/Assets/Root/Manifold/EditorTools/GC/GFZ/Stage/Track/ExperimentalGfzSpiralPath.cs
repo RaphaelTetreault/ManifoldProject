@@ -12,7 +12,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
     public class ExperimentalGfzSpiralPath : GfzPathSegment,
         IPositionEvaluable
     {
-        [SerializeField] private SpiralAxes SpiralAxes = SpiralAxes.VerticalUp;
+        [SerializeField] private SpiralAxes SpiralAxes = SpiralAxes.HorizontalRight;
         [SerializeField] private UnityEngine.AnimationCurve radiusCurve = new(new(0f, 30), new(1, 30));
         [SerializeField] private UnityEngine.AnimationCurve offsetCurve = new(new(0, 0), new(1, 0));
         [SerializeField] private UnityEngine.AnimationCurve rollsCurve = new(new(0, 0), new(1, 0));
@@ -22,9 +22,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         [SerializeField, Min(8)] private int nKeysPer360Degrees = 36;
         [SerializeField] private AnimationCurveTRS animationCurveTRS = new();
 
-        protected override AnimationCurveTRS TrackSegmentAnimationCurveTRS => animationCurveTRS;
+        //protected override AnimationCurveTRS TrackSegmentAnimationCurveTRS => animationCurveTRS;
 
-        public override AnimationCurveTRS CreateAnimationCurveTRS(bool isGfzCoordinateSpace)
+        public override AnimationCurveTRS CopyAnimationCurveTRS(bool isGfzCoordinateSpace)
         {
             var trs = isGfzCoordinateSpace
                 ? animationCurveTRS.CreateGfzCoordinateSpace()
