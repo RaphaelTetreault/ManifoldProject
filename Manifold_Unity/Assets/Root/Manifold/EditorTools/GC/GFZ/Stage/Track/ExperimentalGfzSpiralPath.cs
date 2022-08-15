@@ -12,7 +12,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
     public class ExperimentalGfzSpiralPath : GfzPathSegment,
         IPositionEvaluable
     {
-        [SerializeField] private SpiralAxes SpiralAxes = SpiralAxes.VerticalUp;
+        [SerializeField] private SpiralAxes SpiralAxes = SpiralAxes.HorizontalRight;
         [SerializeField] private UnityEngine.AnimationCurve radiusCurve = new(new(0f, 30), new(1, 30));
         [SerializeField] private UnityEngine.AnimationCurve offsetCurve = new(new(0, 0), new(1, 0));
         [SerializeField] private UnityEngine.AnimationCurve rollsCurve = new(new(0, 0), new(1, 0));

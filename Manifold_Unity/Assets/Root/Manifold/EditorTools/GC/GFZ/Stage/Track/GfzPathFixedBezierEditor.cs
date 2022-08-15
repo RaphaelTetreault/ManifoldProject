@@ -73,8 +73,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             DrawAnimationData();
 
             AssignToolVisibility();
-
-            base.DrawDefaultInspector();
         }
 
         private void DrawButtonFields(GfzPathFixedBezier editorTarget, int index)
