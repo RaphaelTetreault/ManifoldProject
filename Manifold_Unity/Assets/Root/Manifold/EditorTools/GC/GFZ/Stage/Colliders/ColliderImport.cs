@@ -355,7 +355,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Colliders
             {
                 // Get base data
                 var triangle = triangles[triIndex];
-                var vertices = triangle.GetVerts();
+                var vertices = triangle.GetVertices();
                 var vertTotal = vertices.Length;
 
                 // Iterate over each vertex (thus, 3 times per triangle)
@@ -410,7 +410,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Colliders
             {
                 // Get base data
                 var quad = colliderQuads[quadIndex];
-                var vertices = quad.GetVerts();
+                var vertices = quad.GetVertices();
                 var vertTotal = 6; // 2 triangles, 3 verts each
 
                 // Add vertices for quad as 2 triangles

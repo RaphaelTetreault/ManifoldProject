@@ -57,7 +57,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 triangle.Vertex0 = matrix.MultiplyPoint(mesh.vertices[v0]);
                 triangle.Vertex1 = matrix.MultiplyPoint(mesh.vertices[v1]);
                 triangle.Vertex2 = matrix.MultiplyPoint(mesh.vertices[v2]);
-                triangle.ComputePlaneDistance();
+                triangle.UpdatePlaneDistance();
                 triangles[i] = triangle;
             }
 
