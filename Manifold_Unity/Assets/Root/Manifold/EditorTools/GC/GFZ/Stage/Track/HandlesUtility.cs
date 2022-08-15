@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Unity.Mathematics;
 using UnityEditor;
 using UnityEngine;
 
@@ -62,7 +63,36 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 CleanRotation(vector3.y),
                 CleanRotation(vector3.z));
 
-            // Maybe handle something whe we have two 180 values?
+            // TEMP: worked, but euler handling elsewhere made it buggy
+            //var absCleanRotation = math.abs(cleanRotation);
+            //bool xIs180 = absCleanRotation.x > 179.995f;
+            //bool yIs180 = absCleanRotation.y > 179.995f;
+            //bool zIs180 = absCleanRotation.z > 179.995f;
+
+            //if (xIs180 || yIs180 || zIs180)
+            //    Debug.Log($"old: {cleanRotation}");
+
+            //// XY
+            //if (xIs180 && yIs180)
+            //{
+            //    cleanRotation.x = 0;
+            //    cleanRotation.y = 0;
+            //    cleanRotation.z = -cleanRotation.z;
+            //}
+            //// XZ
+            //if (xIs180 && zIs180)
+            //{
+            //    cleanRotation.x = 0;
+            //    cleanRotation.y = -cleanRotation.y;
+            //    cleanRotation.z = 0;
+            //}
+            ////YZ
+            //if (yIs180 && yIs180)
+            //{
+            //    cleanRotation.x = -cleanRotation.x;
+            //    cleanRotation.y = 0;
+            //    cleanRotation.z = 0;
+            //}
 
             return cleanRotation;
         }
@@ -76,5 +106,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             //Debug.Log($"og:{eulerOriginal}, edit:{eulerEdited}, delta:{eulerDelta}, clean:{eulerDeltaClean}");
             return eulerDeltaClean;
         }
+
     }
 }
