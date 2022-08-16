@@ -38,7 +38,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             var offset = Matrix4x4.TRS(positionOffset, Quaternion.Euler(rotationOffset), scaleOffset);
 
             int startIndex = removeFirst ? 1 : 0;
-            int endIndex = removeLast ? matrices.Length - 1 : matrices.Length;
+            int endIndex = removeLast ? matrices.Length - 2 : matrices.Length - 1;
             for (int i = startIndex; i < endIndex; i++)
             {
                 var child = GameObject.Instantiate(prefab, transform);
