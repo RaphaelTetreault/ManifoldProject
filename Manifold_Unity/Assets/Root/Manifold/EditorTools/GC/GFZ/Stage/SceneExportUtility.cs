@@ -201,10 +201,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 scene.staticColliderMeshManager.StaticSceneObjects = scene.staticSceneObjects is null ? new SceneObjectStatic[0] : scene.staticSceneObjects;
 
                 // Build tri/quads for static collider mesh
-                var staticColliders = GameObject.FindObjectsOfType<GfzStaticColliderMesh2>(false);
-                scene.staticColliderMeshManager.ColliderTris = GetColliderTriangles(staticColliders);
+                scene.staticColliderMeshManager.ColliderTris = GetColliderTriangles(format, out ushort[][] layerIndexes);
                 scene.staticColliderMeshManager.ComputeMeshGridXZ();
-                scene.staticColliderMeshManager.TriMeshGrids[3] = GetIndexListsAll(scene.staticColliderMeshManager); // 3 == dash
+                for (int i = 0; i < layerIndexes.Length; i++)
+                {
+                    var indexes = layerIndexes[i];
+                    scene.staticColliderMeshManager.TriMeshGrids[i] = GetIndexListsAll(indexes);
+                }
             }
 
             // TRACK
@@ -465,7 +468,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         #region STATIC COLLIDER MESH MANAGER
 
-        public static ColliderTriangle[] GetColliderTriangles(GfzStaticColliderMesh2[] staticColliders)
+        public static ColliderTriangle[] GetColliderTriangles(SerializeFormat format, out ushort[][] layerIndexes)
         {
             // for each script in scene
             //  get -> triangles, tri count (linear index order 0 to n), layer type
@@ -477,20 +480,50 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             //  fehking hell, also compute for large tri/quad if it crosses cells D:
             //   you could probably know if you need to do this based on cell vs tri/quad size
 
-            int totalVertices = 0;
-            var colliderTrianglesList = new List<ColliderTriangle[]>();
+            // All scripts in scene which are tagged as collidable
+            var staticColliders = GameObject.FindObjectsOfType<GfzStaticColliderMesh2>(false);
+            // List to hold all collider triangle (each mesh is separate array in list)
+            var colliderTriangleArrays = new List<ColliderTriangle[]>();
+            // List to hold all indexes used per collider type.
+            var triangleTypeLayerIndexes = GetIndexLists(format);
+            int numberOfLayers = triangleTypeLayerIndexes.Length;
 
             // Get all triangles, count total
+            int totalTriangles = 0;
             foreach (var staticCollider in staticColliders)
             {
                 var triangles = staticCollider.CreateColliderTriangles();
-                colliderTrianglesList.Add(triangles);
-                totalVertices += triangles.Length;
+                colliderTriangleArrays.Add(triangles);
+
+                // Check to see what flags are used to 
+                for (int layerIndex = 0; layerIndex < numberOfLayers; layerIndex++)
+                {
+                    // See if this object asks to be part of this layer
+                    bool usesLayer = (((uint)staticCollider.ColliderType >> layerIndex) & 1) > 0;
+                    if (!usesLayer)
+                        continue;
+
+                    // If so, add an index to the recorded triangle
+                    for (int i = 0; i < triangles.Length; i++)
+                    {
+                        ushort index = checked((ushort)(totalTriangles + i));
+                        triangleTypeLayerIndexes[layerIndex].Add(index);
+                    }
+                }
+
+                // Increment base index for triangles
+                totalTriangles += triangles.Length;
             };
 
+            // Place all indexes for each layer into the output array
+            layerIndexes = new ushort[numberOfLayers][];
+            for (int i = 0; i < layerIndexes.Length; i++)
+                layerIndexes[i] = triangleTypeLayerIndexes[i].ToArray();
+
+            // Concatenate all arrays into a single array
             int baseOffset = 0;
-            var allColliderTriangles = new ColliderTriangle[totalVertices];
-            foreach (var collection in colliderTrianglesList)
+            var allColliderTriangles = new ColliderTriangle[totalTriangles];
+            foreach (var collection in colliderTriangleArrays)
             {
                 collection.CopyTo(allColliderTriangles, baseOffset);
                 baseOffset += collection.Length;
@@ -499,35 +532,31 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             return allColliderTriangles;
         }
 
-        public static StaticColliderMeshGrid GetIndexListsAll(StaticColliderMeshManager scmm)
+        public static List<ushort>[] GetIndexLists(SerializeFormat format)
+        {
+            int numLists = format == SerializeFormat.GX
+                ? StaticColliderMeshManager.kCountGxSurfaceTypes
+                : StaticColliderMeshManager.kCountAxSurfaceTypes;
+
+            var indexListsForEachType = new List<ushort>[numLists];
+            for (int i = 0; i < numLists; i++)
+                indexListsForEachType[i] = new List<ushort>();
+
+            return indexListsForEachType;
+        }
+
+        public static StaticColliderMeshGrid GetIndexListsAll(ushort[] indexes)
         {
             var indexGrid = new StaticColliderMeshGrid();
             var indexLists = new IndexList[StaticColliderMeshGrid.kListCount];
             for (int i = 0; i < indexLists.Length; i++)
             {
                 var indexList = new IndexList();
-                indexList.Indexes = QuickIndexList(0, scmm.ColliderTris.Length);
+                indexList.Indexes = indexes;
                 indexLists[i] = indexList;
             }
             indexGrid.IndexLists = indexLists;
             return indexGrid;
-        }
-
-        public static ushort[] QuickIndexList(int baseIndex, int count)
-        {
-            var indexes = new ushort[count];
-            for (int i = 0; i < count; i++)
-                indexes[i] = checked((ushort)(baseIndex + i));
-            return indexes;
-        }
-
-        public static void AssignStaticColliderMeshManager(Scene scene)
-        {
-            // Build tri/quads for static collider mesh
-            var staticColliders = GameObject.FindObjectsOfType<GfzStaticColliderMesh2>(false);
-            scene.staticColliderMeshManager.ColliderTris = GetColliderTriangles(staticColliders);
-            scene.staticColliderMeshManager.ComputeMeshGridXZ();
-            scene.staticColliderMeshManager.TriMeshGrids[3] = GetIndexListsAll(scene.staticColliderMeshManager); // 3 == dash
         }
 
         #endregion
