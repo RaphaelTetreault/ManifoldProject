@@ -250,7 +250,19 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
                 // LOD names
                 foreach (var lod in lods)
-                    scene.SceneObjectNames.Add(lod.Name);
+                {
+                    bool containsName = scene.SceneObjectNames.Contains(lod.Name);
+                    if (containsName)
+                    {
+                        int elementIndex = scene.SceneObjectNames.IndexOf(lod.Name);
+                        var existingName = scene.SceneObjectNames.ElementAt(elementIndex);
+                        lod.Name = existingName;
+                    }
+                    else
+                    {
+                        scene.SceneObjectNames.Add(lod.Name);
+                    }
+                }
             }
             scene.SceneObjectNames = scene.SceneObjectNames.OrderBy(x => x.Value).ToList();
             scene.staticSceneObjects = new SceneObjectStatic[0];
