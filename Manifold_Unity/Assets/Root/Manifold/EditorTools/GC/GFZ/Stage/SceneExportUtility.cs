@@ -37,8 +37,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
                 throw;
             }
-
-            //ExportScene(true);
         }
 
         public static void ExportScene(bool verbose)
@@ -71,8 +69,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 CourseName = sceneParams.courseName,
             };
             var compressFormat = GetCompressFormat(scene.Format);
-            // Build a TPL..?
-            //var textureHashesToIndex = new Dictionary<string, ushort>();
             var tplTextureContainer = new TplTextureContainer();
 
             // Get scene-wide parameters from SceneParameters
@@ -389,7 +385,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         {
             // get GfzTrack, use it to get children
             var track = GameObject.FindObjectOfType<GfzTrack>(false);
-            track.FindChildSegments();
+            track.RefreshSegmentNodes();
 
             var models = new List<Model>();
             var _sceneObjects = new List<SceneObject>();
@@ -398,12 +394,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             int shapeIndex = 0;
             foreach (var rootTrackSegmentNode in track.AllRoots)
             {
-                int subIndex = 0;
                 var shapeNodes = rootTrackSegmentNode.GetShapeNodes();
+                int subIndex = 0;
                 foreach (var shape in shapeNodes)
                 {
                     var gcmf = shape.CreateGcmf(out GcmfTemplate[] gcmfTemplates, tpl);
-                    var modelName = $"{shape.GetRoot().name}-{shape.name}-#{shapeIndex++}.{subIndex++}";
+                    var modelName = $"{shape.GetRoot().name}-{shape.name}-#{shapeIndex}.{subIndex++}";
                     models.Add(new Model(modelName, gcmf));
 
                     var sceneObject = CreateSceneObject(modelName);
@@ -416,6 +412,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                     sceneObjectDynamic.AssignTextureScrollFlags();
                     _dynamicSceneObjects.Add(sceneObjectDynamic);
                 }
+                shapeIndex++;
             }
 
             // Create single GMA for model, comprised on many GCMFs (display lists and materials)

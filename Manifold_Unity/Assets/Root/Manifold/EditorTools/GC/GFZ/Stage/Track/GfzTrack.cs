@@ -157,7 +157,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             CircuitType = CircuitType.ClosedCircuit;
         }
 
-        public void FindChildSegments()
+        private void FindChildSegments()
         {
             AllRoots = GetAllRootSegments();
 
@@ -175,7 +175,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             LastRoot = AllRoots[lastIndex];
         }
 
-        public void AssignContinuity()
+        private void AssignContinuity()
         {
             var allRootSegments = GetAllRootSegments();
 
