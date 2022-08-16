@@ -70,6 +70,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             };
             var compressFormat = GetCompressFormat(scene.Format);
             var tplTextureContainer = new TplTextureContainer();
+            var modelList = new List<Model>();
+            var sceneObjectsList = new List<SceneObject>();
+            var sceneObjectDynamicsList = new List<SceneObjectDynamic>();
 
             // Get scene-wide parameters from SceneParameters
             {
@@ -122,27 +125,24 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 foreach (var gfzSceneObject in gfzSceneObjects)
                     gfzSceneObject.InitSharedReference();
 
-                // STATIC / DYNAMIC
-                scene.dynamicSceneObjects = GetGfzValues(gfzDynamicSceneObjects);
-                scene.staticSceneObjects = GetGfzValues(gfzStaticSceneObjects);
-                scene.sceneObjects = GetGfzValues(gfzSceneObjects);
-
-                // LODs
-                foreach (var sceneObject in scene.sceneObjects)
+                // Get dynamic scene objects
+                var dynamicSceneObjects = GetGfzValues(gfzDynamicSceneObjects);
+                sceneObjectDynamicsList.AddRange(dynamicSceneObjects);
+                // Get their scene object reference
+                foreach (var gfzDynamicSceneObject in gfzDynamicSceneObjects)
                 {
-                    scene.SceneObjectLODs.AddRange(sceneObject.LODs);
+                    var gfzSceneObject = gfzDynamicSceneObject.GfzSceneObject;
+                    if (gfzSceneObject == null)
+                    {
+                        throw new Exception($"SceneObject reference is null! {gfzDynamicSceneObject.name}");
+                    }
+                    var sceneObject = gfzSceneObject.ExportGfz();
+                    sceneObjectsList.Add(sceneObject);
                 }
 
-                // CString names
-                // TODO: share references
-                var sceneObjectNames = new List<ShiftJisCString>();
-                sceneObjectNames.Add("");
-                foreach (var thing in scene.SceneObjectLODs)
-                {
-                    scene.SceneObjectNames.Add(thing.Name);
-                }
-                // alphabetize, store
-                scene.SceneObjectNames = scene.SceneObjectNames.OrderBy(x => x.Value).ToList();
+                // Collect and insert models wanted into the gma.
+                var missingModels = RecoverMissingModelsFromStageGma(scene.CourseIndex, tplTextureContainer);
+                modelList.AddRange(missingModels);
             }
 
             // Static Collider Meshes
@@ -199,23 +199,61 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 scene.CircuitType = track.CircuitType;
             }
 
+            // Add temp models... in the future, have more proper pipeline with generic base class
+            {
+                var tempMeshes = GameObject.FindObjectsOfType<GfzTempMesh>();
+                int index = 0;
+                foreach (var tempMesh in tempMeshes)
+                {
+                    // TODO: don't rename, reference same model!
+                    string name = $"temp#{index++}_{tempMesh.name}";
 
+                    var sceneObject = CreateSceneObject(name);
+                    var sceneObjectDynamic = CreateSceneObjectDynamic();
+                    sceneObjectDynamic.SceneObject = sceneObject;
+                    sceneObjectDynamic.TransformMatrix3x4 = new();
 
+                    sceneObjectsList.Add(sceneObject);
+                    sceneObjectDynamicsList.Add(sceneObjectDynamic);
+
+                    //
+                    var gcmf = tempMesh.CreateGcmf(tplTextureContainer);
+                    var model = new Model()
+                    {
+                        Name = name,
+                        Gcmf = gcmf,
+                    };
+                    modelList.Add(model);
+                }
+            }
 
             // Inject TRACK models, + recover missing models
             // This creates the GMA archive and gives us the scene objects and dynamic scene objects for them
             // It will also add which texture hashes need to be in TPL
-            var gma = CreateTrackModelsGma(tplTextureContainer, out SceneObject[] sceneObjects, out SceneObjectDynamic[] dynamicSceneObjects);
+            var trackModels = CreateTrackModels(tplTextureContainer, out SceneObject[] trackSceneObjects, out SceneObjectDynamic[] trackDynamicSceneObjects);
+            modelList.AddRange(trackModels);
+            sceneObjectsList.AddRange(trackSceneObjects);
+            sceneObjectDynamicsList.AddRange(trackDynamicSceneObjects);
 
-            // Add SceneObject's LODs and their name to archive
-            foreach (var sceneObject in sceneObjects)
+            // Make GMA
+            var gma = new Gma();
+            gma.Models = modelList.ToArray();
+
+            // Finalize scene objects
+            scene.sceneObjects = sceneObjectsList.ToArray();
+            scene.dynamicSceneObjects = sceneObjectDynamicsList.ToArray();
+            foreach (var sceneObject in scene.sceneObjects)
             {
-                scene.SceneObjectLODs.AddRange(sceneObject.LODs);
-                scene.SceneObjectNames.Add(sceneObject.Name); // wouldn't you need to put in all LOD names?
+                // LODs
+                var lods = sceneObject.LODs;
+                scene.SceneObjectLODs.AddRange(lods);
+
+                // LOD names
+                foreach (var lod in lods)
+                    scene.SceneObjectNames.Add(lod.Name);
             }
-            scene.sceneObjects = sceneObjects.Concat(scene.sceneObjects).ToArray();
-            // add dynamic (no statics needed)
-            scene.dynamicSceneObjects = dynamicSceneObjects.Concat(scene.dynamicSceneObjects).ToArray();
+            scene.SceneObjectNames = scene.SceneObjectNames.OrderBy(x => x.Value).ToList();
+            scene.staticSceneObjects = new SceneObjectStatic[0];
 
             // Create output
             int courseIndex = scene.CourseIndex;
@@ -225,17 +263,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             var tplFileName = $"{fileName}.tpl";
             var tplFilePath = outputPath + tplFileName;
 
-            // Recover models we might be overwriting
-            // TODO: just do that for every model?
-            var missingModels = RecoverMissingModelsFromStageGma(scene.CourseIndex, tplTextureContainer);
-            gma.Models = gma.Models.Concat(missingModels).ToArray();
-
             // GMA
             using (var writer = new EndianBinaryWriter(File.Create(gmaFilePath), Gma.endianness))
                 writer.Write(gma);
             LzUtility.CompressAvLzToDisk(gmaFilePath, compressFormat, true);
             Debug.Log($"Created models archive '{gmaFilePath}'.");
 
+            // TPL
             // Write out a hella bodged TPL. :eyes:
             // TODO: finish CMPR serialization, write textures for real.
             using (var writer = new BinaryWriter(File.Create(tplFilePath)))
@@ -246,12 +280,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             }
             LzUtility.CompressAvLzToDisk(tplFilePath, compressFormat, true);
 
-
-
-
+            // SCENE
             // TEMP until data is stored properly in GFZ unity components
             MakeTrueNulls(scene);
-
             // Save out file and LZ'ed file
             var sceneFilePath = outputPath + scene.FileName;
             using (var writer = new EndianBinaryWriter(File.Create(sceneFilePath), Scene.endianness))
@@ -275,7 +306,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 writer.Write(builder.ToString());
             }
 
-            //
+            // User info
             MessageCheckFileSizes(scene.CourseIndex, gmaFilePath, tplFilePath, sceneFilePath);
         }
 
@@ -381,7 +412,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             };
             return dynamicSceneObject;
         }
-        public static Gma CreateTrackModelsGma(TplTextureContainer tpl, out SceneObject[] sceneObjects, out SceneObjectDynamic[] dynamicSceneObjects)
+        public static Model[] CreateTrackModels(TplTextureContainer tpl, out SceneObject[] sceneObjects, out SceneObjectDynamic[] dynamicSceneObjects)
         {
             // get GfzTrack, use it to get children
             var track = GameObject.FindObjectOfType<GfzTrack>(false);
@@ -415,16 +446,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 shapeIndex++;
             }
 
-            // Create single GMA for model, comprised on many GCMFs (display lists and materials)
-            var gma = new Gma();
-            gma.Models = models.ToArray();
-
             // OUT parameters
             sceneObjects = _sceneObjects.ToArray();
             dynamicSceneObjects = _dynamicSceneObjects.ToArray();
-
-
-            return gma;
+            // Return models
+            return models.ToArray();
         }
 
 
