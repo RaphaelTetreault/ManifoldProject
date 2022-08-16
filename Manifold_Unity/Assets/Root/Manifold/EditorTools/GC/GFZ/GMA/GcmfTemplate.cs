@@ -2,6 +2,7 @@
 using GameCube.GFZ.GMA;
 using GameCube.GFZ.Stage;
 using GameCube.GX;
+using Manifold.EditorTools.GC.GFZ.TPL;
 using Manifold.EditorTools.GC.GFZ.Stage.Track;
 using System.Collections.Generic;
 using Unity.Mathematics;
@@ -17,7 +18,7 @@ namespace Manifold.EditorTools.GC.GFZ
         public TextureScrollField[] TextureScrollFields { get; internal set; } = null;
 
 
-        private static Gcmf CreateFromTemplates(ref Dictionary<string, ushort> textureHashesToIndex, params GcmfTemplate[] templates)
+        private static Gcmf CreateFromTemplates(TplTextureContainer tplTextures, params GcmfTemplate[] templates)
         {
             ushort opaque = 0;
             ushort translucid = 0;
@@ -36,7 +37,7 @@ namespace Manifold.EditorTools.GC.GFZ
                 {
                     // Get texture index//
                     string textureHash = template.TextureHashes[tevIndex];
-                    ushort textureIndex = GetTextureHashesIndex(textureHash, ref textureHashesToIndex);
+                    ushort textureIndex = GetTextureHashesIndex(textureHash, tplTextures);
                     // Get TEV index for this GCMF
                     ushort tevLayerIndex = checked((ushort)(tevIndex + tevLayerOffset));
                     TevLayer tevLayer = template.TevLayers[tevIndex];
@@ -166,10 +167,12 @@ namespace Manifold.EditorTools.GC.GFZ
             return boundingSphere;
         }
 
-        public static Gcmf CreateGcmf(GcmfTemplate[] templates, Tristrip[][] tristripsCollection, ref Dictionary<string, ushort> textureHashesToIndex)
+        public static Gcmf CreateGcmf(GcmfTemplate[] gcmfTemplates, Tristrip[][] tristripsCollection, TplTextureContainer tpl)
         {
+            // TODO: assert GcmfTemplates.length == tristripsCollection.length
+
             // Combine templates. This means we have all TEV layers and stuff in place
-            var gcmf = CreateFromTemplates(ref textureHashesToIndex, templates);
+            var gcmf = CreateFromTemplates(tpl, gcmfTemplates);
 
             // Assign display lists: now each submesh has it's geometry, too
             AssignDisplayListsToGcmf(gcmf, tristripsCollection);
@@ -185,21 +188,12 @@ namespace Manifold.EditorTools.GC.GFZ
         }
 
         // Get the index of the texture for a future TPL. If texture exists, get existing index. If not, add to list, update index.
-        private static ushort GetTextureHashesIndex(string textureHash, ref Dictionary<string, ushort> textureHashToIndex)
+        private static ushort GetTextureHashesIndex(string textureHash, TplTextureContainer tpl)
         {
-            bool hasTexture = textureHashToIndex.ContainsKey(textureHash);
-            if (hasTexture)
-            {
-                ushort index = textureHashToIndex[textureHash];
-                return index;
-            }
-            else
-            {
-                // The index of the texture is where we place it in the list
-                ushort index = checked((ushort)textureHashToIndex.Count);
-                textureHashToIndex.Add(textureHash, index);
-                return index;
-            }
+            ushort index = tpl.ContainsHash(textureHash)
+                ? tpl.GetTextureHashIndex(textureHash)
+                : tpl.AddTextureHash(textureHash);
+            return index;
         }
 
         public static TextureScroll CombineTextureScrolls(GcmfTemplate[] templates)
