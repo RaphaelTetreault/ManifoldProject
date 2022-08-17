@@ -25,18 +25,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         [MenuItem(GfzMenuItems.Stage.ExportActiveScene + " _F8", priority = GfzMenuItems.Stage.ExportActiveScenePriority)]
         public static void ExportSceneActive()
         {
-            try
-            {
-                ExportScene(true);
-            }
-            catch
-            {
-                var mirroredObjects = GameObject.FindObjectsOfType<GfzMirroredObject>();
-                foreach (var mirroredObject in mirroredObjects)
-                    mirroredObject.SetAsMirroredState();
-
-                throw;
-            }
+            ExportScene(true);
         }
 
         public static void ExportScene(bool verbose)
@@ -48,11 +37,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
             // Get scene parameters for general info
             var sceneParams = GetGfzSceneParameters();
-
-            // If objects have been mirrored, mirror again before export
-            var mirroredObjects = GameObject.FindObjectsOfType<GfzMirroredObject>();
-            foreach (var mirroredObject in mirroredObjects)
-                mirroredObject.MirrorTransform();
 
             // Build a new scene!
             var scene = new Scene()
@@ -304,10 +288,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             LzUtility.CompressAvLzToDisk(sceneFilePath, compressFormat, true);
             OSUtility.OpenDirectory(outputPath);
             Debug.Log($"Created course '{sceneFilePath}'.");
-
-            // Undo mirroring
-            foreach (var mirroredObject in mirroredObjects)
-                mirroredObject.MirrorTransform();
 
             // LOG
             using (var writer = new StreamWriter(File.Create(sceneFilePath + ".txt")))

@@ -17,7 +17,7 @@ namespace Manifold.EditorTools.GC.GFZ
             public const string Menu = Const.Menu.Manifold + "GMA/";
             // GmaImport
             public const string ImportGma = Menu + "Import all models from Source Folder";
-            public const string ImportGmaSingleScene = Menu + "Import models from Source Folder for single scene";
+            public const string ImportGmaSingleScene = Menu + "Import only scene models from Source Folder";
             public const string ImportGmaAllRegions = Menu + "Test - Import all models from all regions";
             public const int ImportGmaPriority = 1;
             public const int ImportGmaSingleScenePriority = 2;

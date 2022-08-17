@@ -7,22 +7,30 @@ namespace Manifold.EditorTools.GC.GFZ
 {
     public static class TransformConverter
     {
-        private static Vector3 MirrorPosition(Vector3 position)
+        public static Vector3 MirrorPosition(Vector3 position)
         {
             position.z = -position.z;
             return position;
         }
-        private static Vector3 MirrorRotation(Vector3 rotation)
+        public static Vector3 MirrorRotation(Vector3 rotation)
         {
             rotation.x = -rotation.x;
             rotation.y = -rotation.y;
             return rotation;
         }
-        private static Quaternion MirrorRotation(Quaternion rotation)
+        public static Quaternion MirrorRotation(Quaternion rotation)
         {
             rotation.x = -rotation.x;
             rotation.y = -rotation.y;
             return rotation;
+        }
+        public static Vector3 ApplyParentScale(Vector3 scale, Transform parent)
+        {
+            Vector3 parentScale = parent.lossyScale;
+            scale.x /= parentScale.x;
+            scale.y /= parentScale.y;
+            scale.z /= parentScale.z;
+            return scale;
         }
 
 

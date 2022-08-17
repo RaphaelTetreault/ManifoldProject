@@ -260,8 +260,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Colliders
                 //
                 var submeshes = new SubMeshDescriptor[]
                 {
-                        trianglesSubmesh,
-                        quadSubmesh,
+                    trianglesSubmesh,
+                    quadSubmesh,
                 };
                 // Set each submesh in the mesh
                 mesh.subMeshCount = submeshes.Length;
@@ -375,6 +375,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Colliders
                 allIndexes.AddRange(backfaceIndexes);
             }
 
+            for (int i = 0; i < allVertices.Count; i++)
+                allVertices[i] = TransformConverter.MirrorPosition(allVertices[i]);
+            for (int i = 0; i < allNormals.Count; i++)
+                allNormals[i] = TransformConverter.MirrorPosition(allNormals[i]);
+
             // Build submesh
             var triSubmesh = new SubMeshDescriptor();
             triSubmesh.baseVertex = mesh.vertexCount;
@@ -436,6 +441,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Colliders
                 Array.Reverse(backfaceIndexes);
                 allIndexes.AddRange(backfaceIndexes);
             }
+
+            for (int i = 0; i < allVertices.Count; i++)
+                allVertices[i] = TransformConverter.MirrorPosition(allVertices[i]);
+            for (int i = 0; i < allNormals.Count; i++)
+                allNormals[i] = TransformConverter.MirrorPosition(allNormals[i]);
 
             // Build submesh
             var quadSubmesh = new SubMeshDescriptor();
