@@ -187,6 +187,15 @@ namespace Manifold.EditorTools.GC.GFZ
             return gcmf;
         }
 
+        public static Gcmf CreateGcmf(GcmfTemplate gcmfTemplate, Tristrip[] tristripCollection, TplTextureContainer tpl)
+        {
+            var templates = new GcmfTemplate[] { gcmfTemplate };
+            var tristrips = new Tristrip[][] { tristripCollection };
+            var gcmf = CreateGcmf(templates, tristrips, tpl);
+            return gcmf;
+        }
+
+
         // Get the index of the texture for a future TPL. If texture exists, get existing index. If not, add to list, update index.
         private static ushort GetTextureHashesIndex(string textureHash, TplTextureContainer tpl)
         {

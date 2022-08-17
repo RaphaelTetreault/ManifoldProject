@@ -11,6 +11,48 @@ namespace Manifold.EditorTools.GC.GFZ
 {
     public static class TristripTemplates
     {
+        public static Vector3 SurfaceNormalTOA(float opposite, float adjacent, Vector3 normal, bool isClockwise)
+        {
+            float angleRad = Mathf.Tan(opposite / adjacent);
+            float angleDeg = angleRad * Mathf.Rad2Deg;
+
+            // Clockwise rotation is ngative about the Z axis
+            if (isClockwise)
+                angleDeg = -angleDeg;
+
+            Quaternion rotation = Quaternion.Euler(0, 0, angleDeg);
+            Vector3 rotatedNormal = rotation * normal;
+            return rotatedNormal;
+        }
+        public static Vector3[] NormalsFromTristripVertices(Tristrip tristrip)
+        {
+            Vector3[] normals = new Vector3[tristrip.VertexCount];
+            for (int i = 0; i < tristrip.VertexCount - 2; i++)
+            {
+                var v0 = tristrip.positions[i+0];
+                var v1 = tristrip.positions[i+1];
+                var v2 = tristrip.positions[i+2];
+                var v0v1 = v1 - v0; // direction vector v0 -> v1
+                var v0v2 = v2 - v0; // direction vector v0 -> v2
+                var cross = math.cross(v0v1, v0v2);
+                var normal = math.normalize(cross);
+                normals[i] = normal;
+            }
+
+            // TODO: compute last 2 normals
+            //int beforeLast0 = tristrip.VertexCount - 1;
+            //int beforeLast1 = tristrip.VertexCount - 2;
+            //int beforeLast2 = tristrip.VertexCount - 3;
+            //var blv0 = tristrip.positions[beforeLast0];
+            //var blv1 = tristrip.positions[beforeLast1];
+            //var blv2 = tristrip.positions[beforeLast2];
+            //normals[beforeLast0] = math.normalize(math.cross());
+            //normals[beforeLast1] = math.normalize(math.cross());
+
+            return normals;
+        }
+
+
         public static class General
         {
             private static readonly Vector3 edgeLeft = new Vector3(-0.5f, kEmbedHeight, 0);
@@ -88,6 +130,10 @@ namespace Manifold.EditorTools.GC.GFZ
                 }
                 return newUVs;
             }
+
+
+
+
 
             public static Tristrip[] CreateSlipLight(Matrix4x4[] matrices, Matrix4x4[] parentMatrices, GfzPropertyEmbed embed)
             {
@@ -496,19 +542,6 @@ namespace Manifold.EditorTools.GC.GFZ
             {
                 var newValue = math.ceil(value / roundToNearest) * roundToNearest;
                 return newValue;
-            }
-            public static Vector3 SurfaceNormalTOA(float opposite, float adjacent, Vector3 normal, bool isClockwise)
-            {
-                float angleRad = Mathf.Tan(opposite / adjacent);
-                float angleDeg = angleRad * Mathf.Rad2Deg;
-
-                // Clockwise rotation is ngative about the Z axis
-                if (isClockwise)
-                    angleDeg = -angleDeg;
-
-                Quaternion rotation = Quaternion.Euler(0, 0, angleDeg);
-                Vector3 rotatedNormal = rotation * normal;
-                return rotatedNormal;
             }
 
 
@@ -1277,5 +1310,147 @@ namespace Manifold.EditorTools.GC.GFZ
             }
 
         }
+
+        public static class Objects
+        {
+            const float height = 0.5f;
+            const float inset = 1f;
+
+            public static Tristrip[] DashPlateBoard(float width, float length)
+            {
+                var metrics = new DashPlateMetrics(width, length, height, inset);
+                var top = DashPlateBoardTop(metrics);
+                var sides = DashPlateBoardSides(metrics);
+                var tristrips = new Tristrip[] { top, sides };
+                return tristrips;
+            }
+            public static Tristrip[] DashPlateCircle()
+            {
+                throw new System.NotImplementedException();
+            }
+            public static Tristrip[] DashPlateSign()
+            {
+                throw new System.NotImplementedException();
+            }
+
+            public static Tristrip[] JumpPlate()
+            {
+                throw new System.NotImplementedException();
+            }
+
+
+            private static Tristrip DashPlateBoardTop(DashPlateMetrics dashPlateMetrics)
+            {
+                float insideWidth = dashPlateMetrics.InsideWidth; // box sides
+                float insideLength = dashPlateMetrics.InsideLength; // box forward corners
+                float insideLengthTip = dashPlateMetrics.InsideLengthTip; // box tip
+                float height = dashPlateMetrics.Height;
+
+                var tristrip = new Tristrip();
+                tristrip.positions = new Vector3[]
+                {
+                    new(+insideWidth, height, -insideLength), // lower right
+                    new(-insideWidth, height, -insideLength), // lower left
+                    new(+insideWidth, height, +insideLength), // upper right
+                    new(-insideWidth, height, +insideLength), // upper left
+                    new(           0, height, +insideLengthTip), // triangle tip
+                };
+                tristrip.tex0 = new Vector2[]
+                {
+                    new(1, 0), // lower right
+                    new(0, 0), // lower left
+                    new(1, DashPlateMetrics.boxPercent), // upper right
+                    new(0, DashPlateMetrics.boxPercent), // upper left
+                    new(0.5f, DashPlateMetrics.tipPercent), // triangle tip
+                };
+                tristrip.tex1 = ArrayUtility.CopyArray(tristrip.tex0); // same UVs
+                tristrip.normals = ArrayUtility.DefaultArray(Vector3.up, tristrip.positions.Length);
+
+                return tristrip;
+            }
+            private static Tristrip DashPlateBoardSides(DashPlateMetrics dashPlateMetrics)
+            {
+                float outsideWidth = dashPlateMetrics.OutsideWidth; // 
+                float outsideLength = dashPlateMetrics.OutsideLength; // 
+                float outsideLengthTip = dashPlateMetrics.OutsideLengthTip; // box tip
+                float insideWidth = dashPlateMetrics.InsideWidth; // box side
+                float insideLength = dashPlateMetrics.InsideLength; // box forward corners
+                float insideLengthTip = dashPlateMetrics.InsideLengthTip; // box tip
+                float height = dashPlateMetrics.Height;
+
+                // setting vertices in counter-clockwise direction from bottom center
+                var tristrip = new Tristrip();
+                tristrip.positions = new Vector3[]
+                {
+                    // RIGHT SIDE
+                    new(            0,      0, -outsideLength), // outside center bottom
+                    new(            0, height, - insideLength), // inside center bottom
+                    new(+outsideWidth,      0, -outsideLength), // outside right bottom
+                    new(+ insideWidth, height, - insideLength), // inside right bottom
+                    new(+outsideWidth,      0, +outsideLength), // outside right top
+                    new(+ insideWidth, height, + insideLength), // inside right top
+                    // TOP
+                    new(            0,      0, +outsideLengthTip), // outside triangle tip
+                    new(            0, height, + insideLengthTip), // outside triangle tip
+                    // LEFT SIDE
+                    new(-outsideWidth,      0, +outsideLength), // outside left top
+                    new(- insideWidth, height, + insideLength), // inside left top
+                    new(-outsideWidth,      0, -outsideLength), // outside left bottom
+                    new(- insideWidth, height, - insideLength), // inside left bottom
+                    new(            0,      0, -outsideLength), // outside center bottom
+                    new(            0, height, - insideLength), // inside center bottom
+                };
+                tristrip.tex0 = new Vector2[]
+                {
+                    // TODO: center sides should have 2 reps
+
+                    // RIGHT
+                    new(0.5f, 0),
+                    new(0.5f, 1),
+                    new(1, 0),
+                    new(1, 1),
+                    new(0, 0),
+                    new(0, 1),
+                    // TOP
+                    new(0.5f, 0),
+                    new(0.5f, 1),
+                    // LEFT
+                    new(1, 0),
+                    new(1, 1),
+                    new(0, 0),
+                    new(0, 1), 
+                    new(0.5f, 0),
+                    new(0.5f, 1),
+                };
+                tristrip.normals = NormalsFromTristripVertices(tristrip);
+
+                return tristrip;
+            }
+            internal struct DashPlateMetrics
+            {
+                public const float boxPercent = 0.8f;
+                public const float tipPercent = 1f;
+
+                public float OutsideWidth { get; }
+                public float OutsideLength { get; }
+                public float OutsideLengthTip => OutsideLength;
+                public float InsideWidth { get; }
+                public float InsideLength { get; }
+                public float InsideLengthTip { get; }
+                public float Height { get; }
+
+                public DashPlateMetrics(float width, float length, float height, float inset)
+                {
+                    OutsideWidth = width * 0.5f;
+                    OutsideLength = length * 0.5f;
+                    InsideWidth = OutsideWidth - inset; // box sides
+                    InsideLength = (OutsideLength * boxPercent) - inset; // box forward corners
+                    InsideLengthTip = OutsideLength - inset; // box tip
+                    Height = height;
+                }
+            }
+
+        }
+
     }
 }

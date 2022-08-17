@@ -268,7 +268,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             scene.staticSceneObjects = new SceneObjectStatic[0];
 
             // Create output
-            int courseIndex = scene.CourseIndex;
             var fileName = $"st{scene.CourseIndex:00}";
             var gmaFileName = $"{fileName}.gma";
             var gmaFilePath = outputPath + gmaFileName;

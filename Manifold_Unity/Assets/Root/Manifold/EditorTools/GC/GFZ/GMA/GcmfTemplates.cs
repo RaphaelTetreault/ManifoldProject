@@ -10,6 +10,26 @@ namespace Manifold.EditorTools.GC.GFZ
 {
     public static class GcmfTemplates
     {
+        public static class Objects
+        {
+            public static GcmfTemplate DashPlateBoard()
+            {
+                throw new System.NotImplementedException();
+            }
+            public static GcmfTemplate DashPlateCircle()
+            {
+                throw new System.NotImplementedException();
+            }
+            public static GcmfTemplate DashPlateSign()
+            {
+                throw new System.NotImplementedException();
+            }
+
+            public static GcmfTemplate JumpPlate()
+            {
+                throw new System.NotImplementedException();
+            }
+        }
 
         public static class Debug
         {
