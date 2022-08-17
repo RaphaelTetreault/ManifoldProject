@@ -31,7 +31,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             // Data from this structure
             dynamicSceneObject.Unk0x00 = unk_0x00;
             dynamicSceneObject.Unk0x04 = unk_0x04;
-            dynamicSceneObject.TransformTRXS = TransformConverter.ToGfzTransformTRXS(transform);
+            dynamicSceneObject.TransformTRXS = TransformConverter.ToGfzTransformTRXS(transform, Space.World);
 
             // Values from pointed classes
             // These functions should return null if necessary
@@ -50,7 +50,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
             // This value only exists if we don't have an animation
             if (dynamicSceneObject.AnimationClip == null)
-                dynamicSceneObject.TransformMatrix3x4 = TransformConverter.ToGfzTransformMatrix3x4(transform, Space.World);
+                dynamicSceneObject.TransformMatrix3x4 = TransformConverter.ToGfzTransformMatrix3x4(transform, Space.Self);
 
             return dynamicSceneObject;
         }
@@ -66,11 +66,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 // Copy most reliable transform if available
                 if (dynamicSceneObject.TransformMatrix3x4 != null)
                 {
-                    transform.CopyGfzTransformMatrix3x4(dynamicSceneObject.TransformMatrix3x4);
+                    transform.CopyTransform(dynamicSceneObject.TransformMatrix3x4);
                 }
                 else
                 {
-                    transform.CopyGfzTransformTRXS(dynamicSceneObject.TransformTRXS);
+                    transform.CopyTransform(dynamicSceneObject.TransformTRXS);
                 }
             }
 

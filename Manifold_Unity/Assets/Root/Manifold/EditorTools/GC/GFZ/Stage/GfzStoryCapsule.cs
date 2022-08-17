@@ -37,7 +37,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         public MiscellaneousTrigger ExportGfz()
         {
             // Convert unity transform to gfz transform
-            var transform = TransformConverter.ToGfzTransformTRXS(this.transform);
+            var transform = TransformConverter.ToGfzTransformTRXS(this.transform, Space.World);
 
             // Select which capsule type flag to use.
             CourseMetadataType metadataType = (CourseMetadataType)(-1);
@@ -67,7 +67,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         public void ImportGfz(MiscellaneousTrigger value)
         {
-            transform.CopyGfzTransformTRXS(value.Transform);
+            transform.CopyTransform(value.Transform);
             transform.localScale *= scale;
 
             // Select which capsule type flag to use.

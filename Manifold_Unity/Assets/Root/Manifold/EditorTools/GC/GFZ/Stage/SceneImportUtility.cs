@@ -221,14 +221,14 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
             // Mirror all objects
             // Now that everything is placed right, get rid of mirror root
-            var mirrorRootChildren = mirrorRoot.GetChildren();
-            foreach (var child in mirrorRootChildren)
-            {
-                var script = child.gameObject.AddComponent<GfzMirroredObject>();
-                child.SetParent(null);
-                script.MirrorTransform();
-            }
-            GameObject.DestroyImmediate(mirrorRoot.gameObject);
+            //var mirrorRootChildren = mirrorRoot.GetChildren();
+            //foreach (var child in mirrorRootChildren)
+            //{
+            //    var script = child.gameObject.AddComponent<GfzMirroredObject>();
+            //    child.SetParent(null);
+            //    script.MirrorTransform();
+            //}
+            //GameObject.DestroyImmediate(mirrorRoot.gameObject);
 
             // Finally, save the scene file
             EditorSceneManager.SaveScene(unityScene, scenePath, false);
