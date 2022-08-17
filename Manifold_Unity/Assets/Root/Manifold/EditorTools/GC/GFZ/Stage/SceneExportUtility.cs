@@ -55,6 +55,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             var compressFormat = GetCompressFormat(scene.Format);
             var tplTextureContainer = new TplTextureContainer();
             var modelList = new List<Model>();
+            var gfzSceneObjectsList = new List<GfzSceneObject>();
             var sceneObjectsList = new List<SceneObject>();
             var sceneObjectDynamicsList = new List<SceneObjectDynamic>();
 
@@ -120,8 +121,15 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                     {
                         throw new Exception($"SceneObject reference is null! {gfzDynamicSceneObject.name}");
                     }
-                    var sceneObject = gfzSceneObject.ExportGfz();
-                    sceneObjectsList.Add(sceneObject);
+
+                    // Only add items once
+                    bool containsSceneObject = gfzSceneObjectsList.Contains(gfzSceneObject);
+                    if (!containsSceneObject)
+                    {
+                        var sceneObject = gfzSceneObject.ExportGfz();
+                        sceneObjectsList.Add(sceneObject);
+                        gfzSceneObjectsList.Add(gfzSceneObject);
+                    }
                 }
 
                 // Collect and insert models wanted into the gma.
