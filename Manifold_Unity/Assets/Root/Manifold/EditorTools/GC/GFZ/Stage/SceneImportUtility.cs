@@ -1112,6 +1112,18 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 // Bind reference
                 var gfzSceneObject = sceneObjectDict[dynamicSceneObject.SceneObject];
                 script.SetSceneObject(gfzSceneObject);
+
+                // Set mesh on collider if it exists
+                if (gfzSceneObject.ColliderMesh != null)
+                {
+                    var mesh = assetInstance.GetComponent<MeshFilter>().sharedMesh;
+                    gfzSceneObject.TryAssignColliderMesh(mesh);
+
+                    var debugger = assetInstance.AddComponent<GfzColliderMeshDebugger>();
+                    debugger.ColliderMesh = gfzSceneObject.ColliderMesh;
+                    //x.ColliderMesh = x.GetComponent<MeshFilter>();
+                    //x.ImportGfz(sceneObject.SceneObject.ColliderMesh);
+                }
             }
 
             return dynamicsRoot;

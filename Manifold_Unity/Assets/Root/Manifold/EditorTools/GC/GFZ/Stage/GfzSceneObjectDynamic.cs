@@ -75,9 +75,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             }
 
             // Add scripts and import data
-            //sceneObject = this.gameObject.AddComponent<GfzSceneObject>();
-            //sceneObject.ImportGfz(dynamicSceneObject.sceneObject);
-
             if (dynamicSceneObject.AnimationClip != null)
             {
                 animationClip = this.gameObject.AddComponent<GfzAnimationClip>();
@@ -86,8 +83,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
             if (dynamicSceneObject.TextureScroll != null)
             {
-                //Debug.Log($"{nameof(TextureScroll)}");
-                //Debug.Log($"{name} has {nameof(TextureScroll)}");
                 textureScroll = this.gameObject.AddComponent<GfzTextureScroll>();
                 textureScroll.ImportGfz(dynamicSceneObject.TextureScroll);
             }

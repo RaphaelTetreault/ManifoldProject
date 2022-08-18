@@ -1,5 +1,6 @@
 ﻿using GameCube.GFZ.Stage;
 using System;
+using UnityEditor;
 using UnityEngine;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage
@@ -14,6 +15,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         public GfzSceneObjectLODs GfzSceneObjectLODs => sceneObjectLODs;
         public GfzColliderMesh ColliderMesh => colliderMesh;
+
 
         // This stuff is so that each call to Export gives the same reference
         private SceneObject SceneObjectReference { get; set; }
@@ -44,6 +46,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             {
                 colliderMesh = this.gameObject.AddComponent<GfzColliderMesh>();
                 colliderMesh.ImportGfz(sceneObject.ColliderMesh);
+                // NOTE: let dynamics assign mesh... convoluted otherwise
             }
         }
 
@@ -54,6 +57,16 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             //var hasCollider = other.colliderMesh.Equals(colliderMesh);
 
             return hasFlags && hasLODs; //&& hasCollider;
+        }
+
+        public void TryAssignColliderMesh(Mesh mesh)
+        {
+            // If no collider mesh or already assigned, skip
+            if (colliderMesh == null || colliderMesh.ColliderMesh != null)
+                return;
+
+            colliderMesh.ColliderMesh = gameObject.AddComponent<MeshFilter>();
+            colliderMesh.ColliderMesh.sharedMesh = mesh;
         }
     }
 }

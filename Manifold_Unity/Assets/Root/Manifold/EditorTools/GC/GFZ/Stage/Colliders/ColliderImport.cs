@@ -148,8 +148,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Colliders
                     var prefab = GmaImport.CreatePrefabFromModel(mesh, materials, prefabPath);
 
                     // Edit then save again
-                    var script = prefab.AddComponent<GfzObjectColliderMesh>();
-                    script.ColliderMesh = script.GetComponent<MeshFilter>();
+                    //var script = prefab.AddComponent<GfzColliderMeshDebugger>();
+                    //script.ColliderMesh = script.GetComponent<MeshFilter>();
+                    //script.ImportGfz(sceneObject.SceneObject.ColliderMesh);
                     PrefabUtility.SavePrefabAsset(prefab);
                 }
             }
