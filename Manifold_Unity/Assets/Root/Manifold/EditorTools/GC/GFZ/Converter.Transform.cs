@@ -12,6 +12,7 @@ namespace Manifold.EditorTools.GC.GFZ
             position.z = -position.z;
             return position;
         }
+        public static Vector3 MirrorNormal(Vector3 normal) => MirrorPosition(normal);
         public static Vector3 MirrorRotation(Vector3 rotation)
         {
             rotation.x = -rotation.x;

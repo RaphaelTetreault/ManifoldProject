@@ -2,22 +2,19 @@
 
 namespace Manifold.EditorTools.GC.GFZ.Stage
 {
-    [System.Flags]
     public enum StaticColliderMeshPropertyFlags
     {
-        driveable = 1 << StaticColliderMeshProperty.driveable,
+        driveableWithCamera = 1 << StaticColliderMeshProperty.driveable,
+        driveableNoCamera = 1 << StaticColliderMeshProperty.wall,
         recover = 1 << StaticColliderMeshProperty.recover,
-        wall = 1 << StaticColliderMeshProperty.wall,
-        dash = 1 << StaticColliderMeshProperty.dash,
-        jump = 1 << StaticColliderMeshProperty.jump,
+        damage = 1 << StaticColliderMeshProperty.damage,
         slip = 1 << StaticColliderMeshProperty.ice,
         dirt = 1 << StaticColliderMeshProperty.dirt,
-        damage = 1 << StaticColliderMeshProperty.damage,
-        outOfBounds = 1 << StaticColliderMeshProperty.outOfBounds,
-        deathGround = 1 << StaticColliderMeshProperty.deathGround,
-        death1 = 1 << StaticColliderMeshProperty.death1,
-        death2 = 1 << StaticColliderMeshProperty.death2,
-        death3 = 1 << StaticColliderMeshProperty.death3,
-        death4 = 1 << StaticColliderMeshProperty.death4,
+        dash = 1 << StaticColliderMeshProperty.dash,
+        jump = 1 << StaticColliderMeshProperty.jump, outOfBounds = 1 << StaticColliderMeshProperty.outOfBounds,
+        deathCollider = 1 << StaticColliderMeshProperty.deathGround,
+        deathTrigger = (1 << StaticColliderMeshProperty.death1) + (1 << StaticColliderMeshProperty.death2),
+        unknown = (1 << StaticColliderMeshProperty.death3) + (1 << StaticColliderMeshProperty.death4),
+        unknownAndDeathTrigger = unknown + deathTrigger,
     }
 }

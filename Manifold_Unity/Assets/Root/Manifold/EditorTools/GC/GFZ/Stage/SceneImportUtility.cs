@@ -714,7 +714,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 var instance = GameObject.Instantiate(asset, root.transform);
                 instance.name = meshName;
 
-                var script = instance.AddComponent<GfzStaticColliderMesh>();
+                var script = instance.AddComponent<GfzStaticColliderMeshVisualizer>();
                 script.Property = property;
                 script.ColliderMesh = instance.GetComponent<MeshFilter>();
             }

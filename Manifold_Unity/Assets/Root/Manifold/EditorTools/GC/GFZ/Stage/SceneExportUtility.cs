@@ -193,12 +193,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
             // Add temp models... in the future, have more proper pipeline with generic base class
             {
-                var tempMeshes = GameObject.FindObjectsOfType<GfzTempMesh>();
+                var debugMeshes = GameObject.FindObjectsOfType<GfzDebugMesh>();
                 int index = 0;
-                foreach (var tempMesh in tempMeshes)
+                foreach (var debugMesh in debugMeshes)
                 {
-                    // TODO: don't rename, reference same model!
-                    string name = $"temp#{index++}_{tempMesh.name}";
+                    string name = $"temp#{index++}_{debugMesh.name}";
 
                     var sceneObject = CreateSceneObject(name);
                     var sceneObjectDynamic = CreateSceneObjectDynamic();
@@ -208,8 +207,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                     sceneObjectsList.Add(sceneObject);
                     sceneObjectDynamicsList.Add(sceneObjectDynamic);
 
-                    //
-                    var gcmf = tempMesh.CreateGcmf(tplTextureContainer);
+                    var gcmf = debugMesh.CreateGcmf(tplTextureContainer);
                     var model = new Model()
                     {
                         Name = name,
@@ -458,7 +456,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         public static ColliderTriangle[] GetColliderTriangles(SerializeFormat format, out ushort[][] layerIndexes)
         {
             // All scripts in scene which are tagged as collidable
-            var staticColliders = GameObject.FindObjectsOfType<GfzStaticColliderMesh2>(false);
+            var staticColliders = GameObject.FindObjectsOfType<GfzStaticColliderMesh>(false);
             // List to hold all collider triangle (each mesh is separate array in list)
             var colliderTriangleArrays = new List<ColliderTriangle[]>();
             // List to hold all indexes used per collider type.

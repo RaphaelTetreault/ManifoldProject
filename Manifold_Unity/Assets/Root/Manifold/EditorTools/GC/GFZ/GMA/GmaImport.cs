@@ -337,7 +337,7 @@ namespace Manifold.EditorTools.GC.GFZ.GMA
                 // Convert float3[] to Vector3[]
                 var _normals = new Vector3[normals.Length];
                 for (int i = 0; i < normals.Length; i++)
-                    _normals[i] = TransformConverter.MirrorPosition(normals[i]);
+                    _normals[i] = TransformConverter.MirrorNormal(normals[i]);
                 return _normals;
             }
             else
