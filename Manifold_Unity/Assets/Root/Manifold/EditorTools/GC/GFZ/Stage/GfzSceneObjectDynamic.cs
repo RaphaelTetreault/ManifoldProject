@@ -98,13 +98,25 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         public void OnDrawGizmosSelected()
         {
-            if (sceneObject == null)
-                return;
-            if (sceneObject.ColliderMesh == null)
-                return;
+            if (sceneObject != null && sceneObject.ColliderMesh != null)
+            {
+                sceneObject.ColliderMesh.OnDrawGizmosSelected();
+                sceneObject.ColliderMesh.DrawMesh(transform);
+            }
+        }
 
-            sceneObject.ColliderMesh.OnDrawGizmosSelected();
-            sceneObject.ColliderMesh.DrawMesh(transform);
+
+        private void Reset()
+        {
+            OnValidate();
+        }
+        private void OnValidate()
+        {
+            if (animationClip == null)
+                animationClip = GetComponent<GfzAnimationClip>();
+
+            if (textureScroll == null)
+                textureScroll = GetComponent<GfzTextureScroll>();
         }
 
     }
