@@ -53,7 +53,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 : CourseMetadataType.OuterSpace_Meteor;
 
             // Get transform values from "from" node
-            var transform = TransformConverter.ToGfzTransformTRXS(from);
+            var transform = TransformConverter.ToGfzTransformTRXS(from, Space.World);
             // The scale field is used as the "to" position
             transform.Scale = to.position;
 

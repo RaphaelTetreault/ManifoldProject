@@ -1,6 +1,6 @@
 using GameCube.GFZ.GMA;
 using GameCube.GFZ.Stage;
-using Manifold;
+using Manifold.EditorTools.GC.GFZ.TPL;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -138,12 +138,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return trs;
         }
 
-        public override Gcmf CreateGcmf(out GcmfTemplate[] gcmfTemplates, ref Dictionary<string, ushort> textureHashesToIndex)
+        public override Gcmf CreateGcmf(out GcmfTemplate[] gcmfTemplates, TplTextureContainer tpl)
         {
             var tristripsCollections = GetTristrips(Type, true);
             gcmfTemplates = GetGcmfTemplates(Type);
             ScaleTextureScrollFields(gcmfTemplates);
-            var gcmf = GcmfTemplate.CreateGcmf(gcmfTemplates, tristripsCollections, ref textureHashesToIndex);
+            var gcmf = GcmfTemplate.CreateGcmf(gcmfTemplates, tristripsCollections, tpl);
             return gcmf;
         }
 

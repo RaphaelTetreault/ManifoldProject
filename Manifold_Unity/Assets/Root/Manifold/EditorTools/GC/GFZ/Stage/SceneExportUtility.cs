@@ -25,20 +25,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         [MenuItem(GfzMenuItems.Stage.ExportActiveScene + " _F8", priority = GfzMenuItems.Stage.ExportActiveScenePriority)]
         public static void ExportSceneActive()
         {
-            try
-            {
-                ExportScene(true);
-            }
-            catch
-            {
-                var mirroredObjects = GameObject.FindObjectsOfType<GfzMirroredObject>();
-                foreach (var mirroredObject in mirroredObjects)
-                    mirroredObject.SetAsMirroredState();
-
-                throw;
-            }
-
-            //ExportScene(true);
+            ExportScene(true);
         }
 
         public static void ExportScene(bool verbose)
@@ -50,46 +37,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
             // Get scene parameters for general info
             var sceneParams = GetGfzSceneParameters();
-
-            //// Before we do the work of exporting, see if the stage we are exporting (index/venue) align correctly.
-            //// If we export as Lightning but the index is, say, 1, index 1 belongs to Mute City. Warn of potential issues.
-            //bool isValidIndexForVenue = CourseUtility.GetVenue(sceneParams.courseIndex) == sceneParams.venue;
-            //if (!isValidIndexForVenue)
-            //{
-            //    var title = "Export Scene: Venue/Index Mismatch";
-            //    var msg =
-            //        $"The assigned venue '{sceneParams.venue}' and the stage index being used '{sceneParams.courseIndex}' " +
-            //        $"do not share the same venue. When loaded in-game, models will not load.";
-
-            //    bool doExport = EditorUtility.DisplayDialog(title, msg, "Export Anyway");
-            //    if (!doExport)
-            //    {
-            //        return;
-            //    }
-            //}
-
-            // TODO: this should be in ColiScene
-            GameCube.AmusementVision.GxGame compressFormat;
-            {
-                switch (format)
-                {
-                    case SerializeFormat.AX:
-                        compressFormat = GameCube.AmusementVision.GxGame.FZeroAX;
-                        break;
-
-                    case SerializeFormat.GX:
-                        compressFormat = GameCube.AmusementVision.GxGame.FZeroGX;
-                        break;
-
-                    default:
-                        throw new ArgumentException($"Invalid format '{format}' specified for serialization.");
-                }
-            }
-
-            // If objects have been mirrored, mirror again before export
-            var mirroredObjects = GameObject.FindObjectsOfType<GfzMirroredObject>();
-            foreach (var mirroredObject in mirroredObjects)
-                mirroredObject.MirrorTransform();
 
             // Build a new scene!
             var scene = new Scene()
@@ -105,8 +52,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 Venue = sceneParams.venue,
                 CourseName = sceneParams.courseName,
             };
-            // Build a TPL..?
-            var textureHashesToIndex = new Dictionary<string, ushort>();
+            var compressFormat = GetCompressFormat(scene.Format);
+            var tplTextureContainer = new TplTextureContainer();
+            var modelList = new List<Model>();
+            var gfzSceneObjectsList = new List<GfzSceneObject>();
+            var sceneObjectsList = new List<SceneObject>();
+            var sceneObjectDynamicsList = new List<SceneObjectDynamic>();
 
             // Get scene-wide parameters from SceneParameters
             {
@@ -159,27 +110,31 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 foreach (var gfzSceneObject in gfzSceneObjects)
                     gfzSceneObject.InitSharedReference();
 
-                // STATIC / DYNAMIC
-                scene.dynamicSceneObjects = GetGfzValues(gfzDynamicSceneObjects);
-                scene.staticSceneObjects = GetGfzValues(gfzStaticSceneObjects);
-                scene.sceneObjects = GetGfzValues(gfzSceneObjects);
-
-                // LODs
-                foreach (var sceneObject in scene.sceneObjects)
+                // Get dynamic scene objects
+                var dynamicSceneObjects = GetGfzValues(gfzDynamicSceneObjects);
+                sceneObjectDynamicsList.AddRange(dynamicSceneObjects);
+                // Get their scene object reference
+                foreach (var gfzDynamicSceneObject in gfzDynamicSceneObjects)
                 {
-                    scene.SceneObjectLODs.AddRange(sceneObject.LODs);
+                    var gfzSceneObject = gfzDynamicSceneObject.GfzSceneObject;
+                    if (gfzSceneObject == null)
+                    {
+                        throw new Exception($"SceneObject reference is null! {gfzDynamicSceneObject.name}");
+                    }
+
+                    // Only add items once
+                    bool containsSceneObject = gfzSceneObjectsList.Contains(gfzSceneObject);
+                    if (!containsSceneObject)
+                    {
+                        var sceneObject = gfzSceneObject.ExportGfz();
+                        sceneObjectsList.Add(sceneObject);
+                        gfzSceneObjectsList.Add(gfzSceneObject);
+                    }
                 }
 
-                // CString names
-                // TODO: share references
-                var sceneObjectNames = new List<ShiftJisCString>();
-                sceneObjectNames.Add("");
-                foreach (var thing in scene.SceneObjectLODs)
-                {
-                    scene.SceneObjectNames.Add(thing.Name);
-                }
-                // alphabetize, store
-                scene.SceneObjectNames = scene.SceneObjectNames.OrderBy(x => x.Value).ToList();
+                // Collect and insert models wanted into the gma.
+                var missingModels = RecoverMissingModelsFromStageGma(scene.CourseIndex, tplTextureContainer);
+                modelList.AddRange(missingModels);
             }
 
             // Static Collider Meshes
@@ -201,10 +156,14 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 scene.staticColliderMeshManager.StaticSceneObjects = scene.staticSceneObjects is null ? new SceneObjectStatic[0] : scene.staticSceneObjects;
 
                 // Build tri/quads for static collider mesh
-                var staticColliders = GameObject.FindObjectsOfType<GfzStaticColliderMesh2>(false);
-                scene.staticColliderMeshManager.ColliderTris = GetColliderTriangles(staticColliders);
+                scene.staticColliderMeshManager.ColliderTris = GetColliderTriangles(format, out ushort[][] layerIndexes);
                 scene.staticColliderMeshManager.ComputeMeshGridXZ();
-                scene.staticColliderMeshManager.TriMeshGrids[3] = GetIndexListsAll(scene.staticColliderMeshManager); // 3 == dash
+                for (int i = 0; i < layerIndexes.Length; i++)
+                {
+                    var indexes = layerIndexes[i];
+                    scene.staticColliderMeshManager.TriMeshGrids[i] = GetIndexListsAll(indexes);
+                }
+                // TODO: function in scmm which assigns triangles to cells automatically
             }
 
             // TRACK
@@ -232,36 +191,78 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 scene.CircuitType = track.CircuitType;
             }
 
+            // Add temp models... in the future, have more proper pipeline with generic base class
+            {
+                var debugMeshes = GameObject.FindObjectsOfType<GfzDebugMesh>();
+                int index = 0;
+                foreach (var debugMesh in debugMeshes)
+                {
+                    string name = $"temp#{index++}_{debugMesh.name}";
 
+                    var sceneObject = CreateSceneObject(name);
+                    var sceneObjectDynamic = CreateSceneObjectDynamic();
+                    sceneObjectDynamic.SceneObject = sceneObject;
+                    sceneObjectDynamic.TransformMatrix3x4 = new();
 
+                    sceneObjectsList.Add(sceneObject);
+                    sceneObjectDynamicsList.Add(sceneObjectDynamic);
+
+                    var gcmf = debugMesh.CreateGcmf(tplTextureContainer);
+                    var model = new Model()
+                    {
+                        Name = name,
+                        Gcmf = gcmf,
+                    };
+                    modelList.Add(model);
+                }
+            }
 
             // Inject TRACK models, + recover missing models
             // This creates the GMA archive and gives us the scene objects and dynamic scene objects for them
-            // It will also add which texture hashes to dictionary, you still need to patch the TEV indexes after, though.
-            var gma = CreateTrackModelsGma(out SceneObject[] sceneObjects, out SceneObjectDynamic[] dynamicSceneObjects, ref textureHashesToIndex);
+            // It will also add which texture hashes need to be in TPL
+            var trackModels = CreateTrackModels(tplTextureContainer, out SceneObject[] trackSceneObjects, out SceneObjectDynamic[] trackDynamicSceneObjects);
+            modelList.AddRange(trackModels);
+            sceneObjectsList.AddRange(trackSceneObjects);
+            sceneObjectDynamicsList.AddRange(trackDynamicSceneObjects);
 
-            // Add SceneObject's LODs and their name to archive
-            foreach (var sceneObject in sceneObjects)
+            // Make GMA
+            var gma = new Gma();
+            gma.Models = modelList.ToArray();
+
+            // Finalize scene objects
+            scene.sceneObjects = sceneObjectsList.ToArray();
+            scene.dynamicSceneObjects = sceneObjectDynamicsList.ToArray();
+            foreach (var sceneObject in scene.sceneObjects)
             {
-                scene.SceneObjectLODs.AddRange(sceneObject.LODs);
-                scene.SceneObjectNames.Add(sceneObject.Name); // wouldn't you need to put in all LOD names?
+                // LODs
+                var lods = sceneObject.LODs;
+                scene.SceneObjectLODs.AddRange(lods);
+
+                // LOD names
+                foreach (var lod in lods)
+                {
+                    bool containsName = scene.SceneObjectNames.Contains(lod.Name);
+                    if (containsName)
+                    {
+                        int elementIndex = scene.SceneObjectNames.IndexOf(lod.Name);
+                        var existingName = scene.SceneObjectNames.ElementAt(elementIndex);
+                        lod.Name = existingName;
+                    }
+                    else
+                    {
+                        scene.SceneObjectNames.Add(lod.Name);
+                    }
+                }
             }
-            scene.sceneObjects = sceneObjects.Concat(scene.sceneObjects).ToArray();
-            // add dynamic (no statics needed)
-            scene.dynamicSceneObjects = dynamicSceneObjects.Concat(scene.dynamicSceneObjects).ToArray();
+            scene.SceneObjectNames = scene.SceneObjectNames.OrderBy(x => x.Value).ToList();
+            scene.staticSceneObjects = new SceneObjectStatic[0];
 
             // Create output
-            int courseIndex = scene.CourseIndex;
             var fileName = $"st{scene.CourseIndex:00}";
             var gmaFileName = $"{fileName}.gma";
             var gmaFilePath = outputPath + gmaFileName;
             var tplFileName = $"{fileName}.tpl";
             var tplFilePath = outputPath + tplFileName;
-
-            // Recover models we might be overwriting
-            // TODO: just do that for every model?
-            var missingModels = RecoverMissingModelsFromStageGma(scene.CourseIndex, ref textureHashesToIndex);
-            gma.Models = gma.Models.Concat(missingModels).ToArray();
 
             // GMA
             using (var writer = new EndianBinaryWriter(File.Create(gmaFilePath), Gma.endianness))
@@ -269,22 +270,20 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             LzUtility.CompressAvLzToDisk(gmaFilePath, compressFormat, true);
             Debug.Log($"Created models archive '{gmaFilePath}'.");
 
+            // TPL
             // Write out a hella bodged TPL. :eyes:
             // TODO: finish CMPR serialization, write textures for real.
             using (var writer = new BinaryWriter(File.Create(tplFilePath)))
             {
-                var textureHashes = textureHashesToIndex.Keys.ToArray();
+                var textureHashes = tplTextureContainer.GetTextureHashes();
                 var stream = WriteBodgeTplFromTextureHashes(textureHashes);
                 writer.Write(stream.ToArray());
             }
             LzUtility.CompressAvLzToDisk(tplFilePath, compressFormat, true);
 
-
-
-
+            // SCENE
             // TEMP until data is stored properly in GFZ unity components
             MakeTrueNulls(scene);
-
             // Save out file and LZ'ed file
             var sceneFilePath = outputPath + scene.FileName;
             using (var writer = new EndianBinaryWriter(File.Create(sceneFilePath), Scene.endianness))
@@ -296,10 +295,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             OSUtility.OpenDirectory(outputPath);
             Debug.Log($"Created course '{sceneFilePath}'.");
 
-            // Undo mirroring
-            foreach (var mirroredObject in mirroredObjects)
-                mirroredObject.MirrorTransform();
-
             // LOG
             using (var writer = new StreamWriter(File.Create(sceneFilePath + ".txt")))
             {
@@ -308,7 +303,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 writer.Write(builder.ToString());
             }
 
-            //
+            // User info
             MessageCheckFileSizes(scene.CourseIndex, gmaFilePath, tplFilePath, sceneFilePath);
         }
 
@@ -414,14 +409,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             };
             return dynamicSceneObject;
         }
-        public static Gma CreateTrackModelsGma(
-            out SceneObject[] sceneObjects,
-            out SceneObjectDynamic[] dynamicSceneObjects,
-            ref Dictionary<string, ushort> textureHashesToIndex)
+        public static Model[] CreateTrackModels(TplTextureContainer tpl, out SceneObject[] sceneObjects, out SceneObjectDynamic[] dynamicSceneObjects)
         {
             // get GfzTrack, use it to get children
             var track = GameObject.FindObjectOfType<GfzTrack>(false);
-            track.FindChildSegments();
+            track.RefreshSegmentNodes();
 
             var models = new List<Model>();
             var _sceneObjects = new List<SceneObject>();
@@ -430,12 +422,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             int shapeIndex = 0;
             foreach (var rootTrackSegmentNode in track.AllRoots)
             {
-                int subIndex = 0;
                 var shapeNodes = rootTrackSegmentNode.GetShapeNodes();
+                int subIndex = 0;
                 foreach (var shape in shapeNodes)
                 {
-                    var gcmf = shape.CreateGcmf(out GcmfTemplate[] gcmfTemplates, ref textureHashesToIndex);
-                    var modelName = $"{shape.GetRoot().name}-{shape.name}-#{shapeIndex++}.{subIndex++}";
+                    var gcmf = shape.CreateGcmf(out GcmfTemplate[] gcmfTemplates, tpl);
+                    var modelName = $"{shape.GetRoot().name}-{shape.name}-#{shapeIndex}.{subIndex++}";
                     models.Add(new Model(modelName, gcmf));
 
                     var sceneObject = CreateSceneObject(modelName);
@@ -448,49 +440,72 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                     sceneObjectDynamic.AssignTextureScrollFlags();
                     _dynamicSceneObjects.Add(sceneObjectDynamic);
                 }
+                shapeIndex++;
             }
-
-            // Create single GMA for model, comprised on many GCMFs (display lists and materials)
-            var gma = new Gma();
-            gma.Models = models.ToArray();
 
             // OUT parameters
             sceneObjects = _sceneObjects.ToArray();
             dynamicSceneObjects = _dynamicSceneObjects.ToArray();
-
-
-            return gma;
+            // Return models
+            return models.ToArray();
         }
 
 
         #region STATIC COLLIDER MESH MANAGER
 
-        public static ColliderTriangle[] GetColliderTriangles(GfzStaticColliderMesh2[] staticColliders)
+        public static ColliderTriangle[] GetColliderTriangles(SerializeFormat format, out ushort[][] layerIndexes)
         {
-            // for each script in scene
-            //  get -> triangles, tri count (linear index order 0 to n), layer type
-            // then
-            //  build grid / cells
-            // then
-            //  recompute bounds of tri/quad
-            //  add tri/quad to logical bounds
-            //  fehking hell, also compute for large tri/quad if it crosses cells D:
-            //   you could probably know if you need to do this based on cell vs tri/quad size
-
-            int totalVertices = 0;
-            var colliderTrianglesList = new List<ColliderTriangle[]>();
+            // All scripts in scene which are tagged as collidable
+            var staticColliders = GameObject.FindObjectsOfType<GfzStaticColliderMesh>(false);
+            // List to hold all collider triangle (each mesh is separate array in list)
+            var colliderTriangleArrays = new List<ColliderTriangle[]>();
+            // List to hold all indexes used per collider type.
+            var triangleTypeLayerIndexes = GetIndexLists(format);
+            int numberOfLayers = triangleTypeLayerIndexes.Length;
 
             // Get all triangles, count total
+            int totalTriangles = 0;
             foreach (var staticCollider in staticColliders)
             {
                 var triangles = staticCollider.CreateColliderTriangles();
-                colliderTrianglesList.Add(triangles);
-                totalVertices += triangles.Length;
+                colliderTriangleArrays.Add(triangles);
+
+                // Check to see what flags are used to 
+                for (int layerIndex = 0; layerIndex < numberOfLayers; layerIndex++)
+                {
+                    // See if this collider asks to be part of this layer
+                    bool usesLayer = (((uint)staticCollider.ColliderType >> layerIndex) & 1) > 0;
+                    if (!usesLayer)
+                        continue;
+
+                    // If so, add an index to the recorded triangle
+                    for (int i = 0; i < triangles.Length; i++)
+                    {
+                        ushort index = checked((ushort)(totalTriangles + i));
+                        triangleTypeLayerIndexes[layerIndex].Add(index);
+                    }
+                }
+
+                // Increment base index for triangles
+                totalTriangles += triangles.Length;
             };
 
+
+            // Place all indexes for each layer into the output array
+            layerIndexes = new ushort[numberOfLayers][];
+            for (int i = 0; i < layerIndexes.Length; i++)
+            {
+                // Cap all index layers with 0xFFFF like game does
+                if (triangleTypeLayerIndexes[i].Count > 0)
+                    triangleTypeLayerIndexes[i].Add(0xFFFF);
+                // make array
+                layerIndexes[i] = triangleTypeLayerIndexes[i].ToArray();
+            }
+
+            // Concatenate all arrays into a single array
             int baseOffset = 0;
-            var allColliderTriangles = new ColliderTriangle[totalVertices];
-            foreach (var collection in colliderTrianglesList)
+            var allColliderTriangles = new ColliderTriangle[totalTriangles];
+            foreach (var collection in colliderTriangleArrays)
             {
                 collection.CopyTo(allColliderTriangles, baseOffset);
                 baseOffset += collection.Length;
@@ -499,35 +514,31 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             return allColliderTriangles;
         }
 
-        public static StaticColliderMeshGrid GetIndexListsAll(StaticColliderMeshManager scmm)
+        public static List<ushort>[] GetIndexLists(SerializeFormat format)
+        {
+            int numLists = format == SerializeFormat.GX
+                ? StaticColliderMeshManager.kCountGxSurfaceTypes
+                : StaticColliderMeshManager.kCountAxSurfaceTypes;
+
+            var indexListsForEachType = new List<ushort>[numLists];
+            for (int i = 0; i < numLists; i++)
+                indexListsForEachType[i] = new List<ushort>();
+
+            return indexListsForEachType;
+        }
+
+        public static StaticColliderMeshGrid GetIndexListsAll(ushort[] indexes)
         {
             var indexGrid = new StaticColliderMeshGrid();
             var indexLists = new IndexList[StaticColliderMeshGrid.kListCount];
             for (int i = 0; i < indexLists.Length; i++)
             {
                 var indexList = new IndexList();
-                indexList.Indexes = QuickIndexList(0, scmm.ColliderTris.Length);
+                indexList.Indexes = indexes;
                 indexLists[i] = indexList;
             }
             indexGrid.IndexLists = indexLists;
             return indexGrid;
-        }
-
-        public static ushort[] QuickIndexList(int baseIndex, int count)
-        {
-            var indexes = new ushort[count];
-            for (int i = 0; i < count; i++)
-                indexes[i] = checked((ushort)(baseIndex + i));
-            return indexes;
-        }
-
-        public static void AssignStaticColliderMeshManager(Scene scene)
-        {
-            // Build tri/quads for static collider mesh
-            var staticColliders = GameObject.FindObjectsOfType<GfzStaticColliderMesh2>(false);
-            scene.staticColliderMeshManager.ColliderTris = GetColliderTriangles(staticColliders);
-            scene.staticColliderMeshManager.ComputeMeshGridXZ();
-            scene.staticColliderMeshManager.TriMeshGrids[3] = GetIndexListsAll(scene.staticColliderMeshManager); // 3 == dash
         }
 
         #endregion
@@ -548,7 +559,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             return (bgGma[0], bgTpl[0]);
         }
 
-        public static Model[] RecoverMissingModelsFromStageGma(int stageID, ref Dictionary<string, ushort> textureHashesToIndex)
+        public static Model[] RecoverMissingModelsFromStageGma(int stageID, TplTextureContainer textureHashesToIndex)
         {
             var venueID = CourseUtility.GetVenueID(stageID).ToString().ToLower();
             var bg = $"bg_{venueID}";
@@ -594,14 +605,14 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
                     // TODO: don't be making arrays of size 1
                     // Edit TPL texture indexes, add textures to output TPL
-                    RecoverMissingModelTextureHashes(missingModel.FileName, new Model[] { model }, ref textureHashesToIndex);
+                    RecoverMissingModelTextureHashes(missingModel.FileName, new Model[] { model }, textureHashesToIndex);
                 }
             }
 
             return models;
         }
 
-        private static void RecoverMissingModelTextureHashes(string sourceFile, Model[] models, ref Dictionary<string, ushort> textureHashesToIndex)
+        private static void RecoverMissingModelTextureHashes(string sourceFile, Model[] models, TplTextureContainer tplTemplate)
         {
             var settings = GfzProjectWindow.GetSettings();
             string inputPath = settings.AssetsWorkingDirectory;
@@ -626,16 +637,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                     var tplIndex = tevLayer.TplTextureIndex;
                     string textureHash = textureHashes[tplIndex];
 
-                    ushort textureIndex = 0xFFFF;
-                    if (textureHashesToIndex.ContainsKey(textureHash))
-                    {
-                        textureIndex = textureHashesToIndex[textureHash];
-                    }
-                    else
-                    {
-                        textureIndex = (ushort)textureHashesToIndex.Count;
-                        textureHashesToIndex.Add(textureHash, textureIndex);
-                    }
+                    ushort textureIndex = tplTemplate.ContainsHash(textureHash)
+                        ? tplTemplate.GetTextureHashIndex(textureHash)
+                        : tplTemplate.AddTextureHash(textureHash);
+
                     tevLayer.TplTextureIndex = textureIndex;
                 }
             }
@@ -766,5 +771,21 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             if (percentOfAllocation > 100)
                 Debug.LogError($"Expect background-archive models to not load in or the game to crash.");
         }
+
+        public static GameCube.AmusementVision.GxGame GetCompressFormat(SerializeFormat serializeFormat)
+        {
+            switch (serializeFormat)
+            {
+                case SerializeFormat.AX:
+                    return GameCube.AmusementVision.GxGame.FZeroAX;
+
+                case SerializeFormat.GX:
+                    return GameCube.AmusementVision.GxGame.FZeroGX;
+
+                default:
+                    throw new ArgumentException($"Invalid format '{serializeFormat}' specified for serialization.");
+            }
+        }
+
     }
 }

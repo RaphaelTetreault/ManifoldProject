@@ -38,9 +38,9 @@ namespace Manifold.EditorTools.GC.GFZ.GMA
                 ImportGma(dir);
         }
 
-        public static void ImportGma(string rootDirectory)
+        public static void ImportGma(string rootDirectory, string pattern = "*.gma")
         {
-            var filePaths = Directory.GetFiles(rootDirectory, "*.gma", SearchOption.AllDirectories);
+            var filePaths = Directory.GetFiles(rootDirectory, pattern, SearchOption.AllDirectories);
             var gmas = BinarySerializableIO.LoadFile<Gma>(filePaths);
 
             // Go up a directory
@@ -86,24 +86,24 @@ namespace Manifold.EditorTools.GC.GFZ.GMA
                 ImportGma(directory);
         }
 
-        public static void ImportSingleStageGmas(int index)
+        public static void ImportSceneGmasOnly(int index)
         {
             var settings = GfzProjectWindow.GetSettings();
-            var importPath = settings.UnityWorkingDirectory;
-            var venueID = CourseUtility.GetVenueID(index).ToString().ToLower();
-            var initFolder = $"{importPath}/init";
-            var stageFolder = $"{importPath}/stage/st{index:00}";
-            var venueFolder = $"{importPath}/bg/bg_{venueID}";
+            var importPath = settings.SourceDirectory;
+            //var venueID = CourseUtility.GetVenueID(index).ToString().ToLower();
+            //var initFolder = $"{importPath}/init";
+            var stageFolder = $"{importPath}/stage/";
+            var venueFolder = $"{importPath}/bg/";
 
-            ImportGma(initFolder, stageFolder, venueFolder);
+            ImportGma(stageFolder, venueFolder);
         }
 
         [MenuItem(GfzMenuItems.GMA.ImportGmaSingleScene, priority = GfzMenuItems.GMA.ImportGmaSingleScenePriority)]
-        public static void ImportSingleStageGmas()
+        public static void ImportSceneGmasOnly()
         {
             var settings = GfzProjectWindow.GetSettings();
             var sceneIndex = settings.SingleSceneIndex;
-            ImportSingleStageGmas(sceneIndex);
+            ImportSceneGmasOnly(sceneIndex);
         }
 
 
@@ -244,7 +244,7 @@ namespace Manifold.EditorTools.GC.GFZ.GMA
                 {
                     foreach (var displayList in submesh.PrimaryBackFacing)
                     {
-                        var submeshDescriptor = CreateSubMesh(displayList, mesh, true);
+                        var submeshDescriptor = CreateSubMesh(displayList, mesh, false);
                         submeshDescriptors[submeshIndex] = submeshDescriptor;
                         submeshIndex++;
                     }
@@ -254,7 +254,7 @@ namespace Manifold.EditorTools.GC.GFZ.GMA
                 {
                     foreach (var displayList in submesh.PrimaryFrontFacing)
                     {
-                        var submeshDescriptor = CreateSubMesh(displayList, mesh, false);
+                        var submeshDescriptor = CreateSubMesh(displayList, mesh, true);
                         submeshDescriptors[submeshIndex] = submeshDescriptor;
                         submeshIndex++;
                     }
@@ -264,7 +264,7 @@ namespace Manifold.EditorTools.GC.GFZ.GMA
                 {
                     foreach (var displayList in submesh.SecondaryBackFacing)
                     {
-                        var submeshDescriptor = CreateSubMesh(displayList, mesh, true);
+                        var submeshDescriptor = CreateSubMesh(displayList, mesh, false);
                         submeshDescriptors[submeshIndex] = submeshDescriptor;
                         submeshIndex++;
                     }
@@ -274,7 +274,7 @@ namespace Manifold.EditorTools.GC.GFZ.GMA
                 {
                     foreach (var displayList in submesh.SecondaryFrontFacing)
                     {
-                        var submeshDescriptor = CreateSubMesh(displayList, mesh, false);
+                        var submeshDescriptor = CreateSubMesh(displayList, mesh, true);
                         submeshDescriptors[submeshIndex] = submeshDescriptor;
                         submeshIndex++;
                     }
@@ -305,7 +305,7 @@ namespace Manifold.EditorTools.GC.GFZ.GMA
             // Convert float3[] to Vector3[]
             var _pos = new Vector3[pos.Length];
             for (int i = 0; i < pos.Length; i++)
-                _pos[i] = pos[i];
+                _pos[i] = TransformConverter.MirrorPosition(pos[i]);
             return _pos;
         }
 
@@ -337,7 +337,7 @@ namespace Manifold.EditorTools.GC.GFZ.GMA
                 // Convert float3[] to Vector3[]
                 var _normals = new Vector3[normals.Length];
                 for (int i = 0; i < normals.Length; i++)
-                    _normals[i] = normals[i];
+                    _normals[i] = TransformConverter.MirrorNormal(normals[i]);
                 return _normals;
             }
             else

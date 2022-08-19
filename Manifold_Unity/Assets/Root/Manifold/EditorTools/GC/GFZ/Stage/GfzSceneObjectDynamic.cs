@@ -31,7 +31,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             // Data from this structure
             dynamicSceneObject.Unk0x00 = unk_0x00;
             dynamicSceneObject.Unk0x04 = unk_0x04;
-            dynamicSceneObject.TransformTRXS = TransformConverter.ToGfzTransformTRXS(transform);
+            dynamicSceneObject.TransformTRXS = TransformConverter.ToGfzTransformTRXS(transform, Space.World);
 
             // Values from pointed classes
             // These functions should return null if necessary
@@ -66,18 +66,15 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 // Copy most reliable transform if available
                 if (dynamicSceneObject.TransformMatrix3x4 != null)
                 {
-                    transform.CopyGfzTransformMatrix3x4(dynamicSceneObject.TransformMatrix3x4);
+                    transform.CopyTransform(dynamicSceneObject.TransformMatrix3x4);
                 }
                 else
                 {
-                    transform.CopyGfzTransformTRXS(dynamicSceneObject.TransformTRXS);
+                    transform.CopyTransform(dynamicSceneObject.TransformTRXS);
                 }
             }
 
             // Add scripts and import data
-            //sceneObject = this.gameObject.AddComponent<GfzSceneObject>();
-            //sceneObject.ImportGfz(dynamicSceneObject.sceneObject);
-
             if (dynamicSceneObject.AnimationClip != null)
             {
                 animationClip = this.gameObject.AddComponent<GfzAnimationClip>();
@@ -86,8 +83,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
             if (dynamicSceneObject.TextureScroll != null)
             {
-                //Debug.Log($"{nameof(TextureScroll)}");
-                //Debug.Log($"{name} has {nameof(TextureScroll)}");
                 textureScroll = this.gameObject.AddComponent<GfzTextureScroll>();
                 textureScroll.ImportGfz(dynamicSceneObject.TextureScroll);
             }
@@ -99,6 +94,29 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             }
 
             // Transform Matrix 3x4 is handled above and does not need a component
+        }
+
+        public void OnDrawGizmosSelected()
+        {
+            if (sceneObject != null && sceneObject.ColliderMesh != null)
+            {
+                sceneObject.ColliderMesh.OnDrawGizmosSelected();
+                sceneObject.ColliderMesh.DrawMesh(transform);
+            }
+        }
+
+
+        private void Reset()
+        {
+            OnValidate();
+        }
+        private void OnValidate()
+        {
+            if (animationClip == null)
+                animationClip = GetComponent<GfzAnimationClip>();
+
+            if (textureScroll == null)
+                textureScroll = GetComponent<GfzTextureScroll>();
         }
 
     }

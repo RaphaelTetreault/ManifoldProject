@@ -1,5 +1,6 @@
 using GameCube.GFZ.GMA;
 using GameCube.GFZ.Stage;
+using Manifold.EditorTools.GC.GFZ.TPL;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +14,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         [field: SerializeField, ReadOnlyGUI] public MeshDisplay MeshDisplay { get; protected set; }
 
         public abstract Mesh CreateMesh();
-        public abstract Gcmf CreateGcmf(out GcmfTemplate[] gcmfTemplates, ref Dictionary<string, ushort> textureHashesToIndex);
+        public abstract Gcmf CreateGcmf(out GcmfTemplate[] gcmfTemplates, TplTextureContainer tpl);
 
         public override float GetMaxTime()
         {

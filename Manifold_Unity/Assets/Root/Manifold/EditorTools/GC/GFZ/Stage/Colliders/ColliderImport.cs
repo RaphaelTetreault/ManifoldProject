@@ -148,8 +148,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Colliders
                     var prefab = GmaImport.CreatePrefabFromModel(mesh, materials, prefabPath);
 
                     // Edit then save again
-                    var script = prefab.AddComponent<GfzObjectColliderMesh>();
-                    script.ColliderMesh = script.GetComponent<MeshFilter>();
+                    //var script = prefab.AddComponent<GfzColliderMeshDebugger>();
+                    //script.ColliderMesh = script.GetComponent<MeshFilter>();
+                    //script.ImportGfz(sceneObject.SceneObject.ColliderMesh);
                     PrefabUtility.SavePrefabAsset(prefab);
                 }
             }
@@ -260,8 +261,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Colliders
                 //
                 var submeshes = new SubMeshDescriptor[]
                 {
-                        trianglesSubmesh,
-                        quadSubmesh,
+                    trianglesSubmesh,
+                    quadSubmesh,
                 };
                 // Set each submesh in the mesh
                 mesh.subMeshCount = submeshes.Length;
@@ -355,7 +356,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Colliders
             {
                 // Get base data
                 var triangle = triangles[triIndex];
-                var vertices = triangle.GetVerts();
+                var vertices = triangle.GetVertices();
                 var vertTotal = vertices.Length;
 
                 // Iterate over each vertex (thus, 3 times per triangle)
@@ -374,6 +375,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Colliders
                 Array.Reverse(backfaceIndexes);
                 allIndexes.AddRange(backfaceIndexes);
             }
+
+            for (int i = 0; i < allVertices.Count; i++)
+                allVertices[i] = TransformConverter.MirrorPosition(allVertices[i]);
+            for (int i = 0; i < allNormals.Count; i++)
+                allNormals[i] = TransformConverter.MirrorPosition(allNormals[i]);
 
             // Build submesh
             var triSubmesh = new SubMeshDescriptor();
@@ -410,7 +416,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Colliders
             {
                 // Get base data
                 var quad = colliderQuads[quadIndex];
-                var vertices = quad.GetVerts();
+                var vertices = quad.GetVertices();
                 var vertTotal = 6; // 2 triangles, 3 verts each
 
                 // Add vertices for quad as 2 triangles
@@ -437,13 +443,18 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Colliders
                 allIndexes.AddRange(backfaceIndexes);
             }
 
+            for (int i = 0; i < allVertices.Count; i++)
+                allVertices[i] = TransformConverter.MirrorPosition(allVertices[i]);
+            for (int i = 0; i < allNormals.Count; i++)
+                allNormals[i] = TransformConverter.MirrorPosition(allNormals[i]);
+
             // Build submesh
             var quadSubmesh = new SubMeshDescriptor();
             quadSubmesh.baseVertex = mesh.vertexCount;
             quadSubmesh.firstVertex = mesh.vertexCount;
             quadSubmesh.indexCount = allIndexes.Count;
             quadSubmesh.indexStart = mesh.triangles.Length;
-            quadSubmesh.topology = MeshTopology.Triangles;
+            quadSubmesh.topology = MeshTopology.Triangles; // TODO: use quads and quad indices
             quadSubmesh.vertexCount = allVertices.Count;
 
             //

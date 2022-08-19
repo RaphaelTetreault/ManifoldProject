@@ -37,9 +37,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             Vector3 hOffset = horizontalOffset * Vector3.right;
             var offset = Matrix4x4.TRS(positionOffset, Quaternion.Euler(rotationOffset), scaleOffset);
 
-            for (int i = 0; i < matrices.Length; i++)
+            int startIndex = removeFirst ? 1 : 0;
+            int endIndex = removeLast ? matrices.Length - 2 : matrices.Length - 1;
+            for (int i = startIndex; i < endIndex; i++)
             {
                 var child = GameObject.Instantiate(prefab, transform);
+                child.SetActive(true);
                 var matrix = matrices[i];
                 var h = matrix.MultiplyPoint(hOffset);
                 matrix = Matrix4x4.TRS(Vector3.zero, matrix.rotation, Vector3.one); // remove scale

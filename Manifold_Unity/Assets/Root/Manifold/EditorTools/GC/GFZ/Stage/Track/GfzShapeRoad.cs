@@ -1,7 +1,7 @@
 using GameCube.GX;
 using GameCube.GFZ.GMA;
 using GameCube.GFZ.Stage;
-using Manifold.EditorTools;
+using Manifold.EditorTools.GC.GFZ.TPL;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,11 +31,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return new AnimationCurveTRS();
         }
 
-        public override Gcmf CreateGcmf(out GcmfTemplate[] gcmfTemplates, ref Dictionary<string, ushort> textureHashesToIndex)
+        public override Gcmf CreateGcmf(out GcmfTemplate[] gcmfTemplates, TplTextureContainer tpl)
         {
             var tristripsCollections = GetTristrips(MeshStyle, true);
             gcmfTemplates = GetGcmfTemplates(MeshStyle);
-            var gcmf = GcmfTemplate.CreateGcmf(gcmfTemplates, tristripsCollections, ref textureHashesToIndex);
+            var gcmf = GcmfTemplate.CreateGcmf(gcmfTemplates, tristripsCollections, tpl);
             return gcmf;
         }
 

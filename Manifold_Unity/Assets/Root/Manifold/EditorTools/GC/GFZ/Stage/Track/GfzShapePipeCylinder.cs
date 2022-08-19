@@ -1,6 +1,6 @@
 using GameCube.GFZ.GMA;
 using GameCube.GFZ.Stage;
-using System.Collections;
+using Manifold.EditorTools.GC.GFZ.TPL;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -23,7 +23,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             throw new System.NotImplementedException();
         }
 
-        public override Gcmf CreateGcmf(out GcmfTemplate[] gcmfTemplates, ref Dictionary<string, ushort> textureHashesToIndex)
+        public override Gcmf CreateGcmf(out GcmfTemplate[] gcmfTemplates, TplTextureContainer tpl)
         {
             throw new System.NotImplementedException();
         }
