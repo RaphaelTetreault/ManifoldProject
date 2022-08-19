@@ -1118,11 +1118,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 {
                     var mesh = assetInstance.GetComponent<MeshFilter>().sharedMesh;
                     gfzSceneObject.TryAssignColliderMesh(mesh);
-
-                    var debugger = assetInstance.AddComponent<GfzColliderMeshDebugger>();
-                    debugger.ColliderMesh = gfzSceneObject.ColliderMesh;
-                    //x.ColliderMesh = x.GetComponent<MeshFilter>();
-                    //x.ImportGfz(sceneObject.SceneObject.ColliderMesh);
                 }
             }
 
