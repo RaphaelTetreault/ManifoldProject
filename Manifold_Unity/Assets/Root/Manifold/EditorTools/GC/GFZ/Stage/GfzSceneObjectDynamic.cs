@@ -96,5 +96,16 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             // Transform Matrix 3x4 is handled above and does not need a component
         }
 
+        public void OnDrawGizmosSelected()
+        {
+            if (sceneObject == null)
+                return;
+            if (sceneObject.ColliderMesh == null)
+                return;
+
+            sceneObject.ColliderMesh.OnDrawGizmosSelected();
+            sceneObject.ColliderMesh.DrawMesh(transform);
+        }
+
     }
 }

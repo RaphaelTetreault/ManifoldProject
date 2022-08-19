@@ -116,7 +116,7 @@ namespace Manifold.EditorTools.GC.GFZ
         }
 
         // Modified from: http://www.technologicalutopia.com/sourcecode/xnageometry/boundingsphere.cs.htm
-        private static GameCube.GFZ.BoundingSphere CreateBoundingSphereFromPoints(IEnumerable<UnityEngine.Vector3> points, int length)
+        private static BoundingSphere CreateBoundingSphereFromPoints(IEnumerable<UnityEngine.Vector3> points, int length)
         {
             if (points == null)
                 throw new System.ArgumentNullException(nameof(points));

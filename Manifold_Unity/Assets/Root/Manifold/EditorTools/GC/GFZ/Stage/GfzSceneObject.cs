@@ -62,11 +62,21 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         public void TryAssignColliderMesh(Mesh mesh)
         {
             // If no collider mesh or already assigned, skip
-            if (colliderMesh == null || colliderMesh.ColliderMesh != null)
+            if (colliderMesh == null)
                 return;
 
-            colliderMesh.ColliderMesh = gameObject.AddComponent<MeshFilter>();
-            colliderMesh.ColliderMesh.sharedMesh = mesh;
+            colliderMesh.ColliderMesh= mesh;
+        }
+
+        private void Reset()
+        {
+            OnValidate();
+        }
+
+        private void OnValidate()
+        {
+            if (colliderMesh == null)
+                colliderMesh = GetComponent<GfzColliderMesh>();
         }
     }
 }

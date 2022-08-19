@@ -19,5 +19,14 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             ColliderMesh.DrawMesh(transform);
         }
 
+        private void Reset()
+        {
+            OnValidate();
+        }
+        private void OnValidate()
+        {
+            if (ColliderMesh == null)
+                ColliderMesh = GetComponent<GfzColliderMesh>();
+        }
     }
 }

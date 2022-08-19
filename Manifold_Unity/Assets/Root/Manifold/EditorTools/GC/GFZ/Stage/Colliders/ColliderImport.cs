@@ -454,7 +454,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Colliders
             quadSubmesh.firstVertex = mesh.vertexCount;
             quadSubmesh.indexCount = allIndexes.Count;
             quadSubmesh.indexStart = mesh.triangles.Length;
-            quadSubmesh.topology = MeshTopology.Triangles;
+            quadSubmesh.topology = MeshTopology.Triangles; // TODO: use quads and quad indices
             quadSubmesh.vertexCount = allVertices.Count;
 
             //
