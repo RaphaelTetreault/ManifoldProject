@@ -171,18 +171,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return trackSegments;
         }
 
-        public GfzSegmentShape[] GetShapeNodes()
-        {
-            var shapes = GetComponentsInChildren<GfzSegmentShape>();
-            return shapes;
-        }
 
-        public void UpdateShapeMeshes()
-        {
-            var shapes = GetShapeNodes();
-            foreach (var shape in shapes)
-                shape.UpdateMesh();
-        }
 
         public Vector3 GetPosition()
         {
@@ -201,6 +190,38 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         }
 
 
+
+        public GfzSegmentShape[] GetShapeNodes()
+        {
+            var shapes = GetComponentsInChildren<GfzSegmentShape>();
+            return shapes;
+        }
+        public GfzPathPositionedBase[] GetUpdateables()
+        {
+            var updateables = GameObject.FindObjectsOfType<GfzPathPositionedBase>(false);
+            return updateables;
+        }
+
+        public void UpdateShapeMeshes()
+        {
+            var shapes = GetShapeNodes();
+            foreach (var shape in shapes)
+                shape.UpdateMesh();
+        }
+        public void UpdateUpdateables()
+        {
+            var root = GetRoot();
+            var updateables = root.GetUpdateables();
+            foreach (var updateable in updateables)
+            {
+                var updateableRoot = updateable.SegmentNode.GetRoot();
+                if (updateableRoot == root)
+                {
+                    updateable.OnUpdate();
+                }
+            }
+        }
+
         public abstract void UpdateTRS();
 
         public virtual void InvokeUpdates()
@@ -211,6 +232,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 UpdateTRS();
 
             UpdateShapeMeshes();
+            UpdateUpdateables();
         }
         protected virtual void Reset()
         {

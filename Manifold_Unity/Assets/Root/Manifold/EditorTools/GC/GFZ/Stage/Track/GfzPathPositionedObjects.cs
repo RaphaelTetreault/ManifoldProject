@@ -1,40 +1,29 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEditor;
 using UnityEngine;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
-    public class GfzPathPositioner : MonoBehaviour
+    public class GfzPathPositionedObjects : GfzPathPositionedBase
     {
-        [SerializeField] private GfzSegmentNode segment;
-        [SerializeField, Range(-0.5f, +0.5f)] private float horizontalOffset;
-        [SerializeField] private Vector3 positionOffset;
-        [SerializeField] private Vector3 rotationOffset;
-        [SerializeField] private Vector3 scaleOffset = Vector3.one;
-        [SerializeField] private GameObject prefab;
+        [SerializeField, Range(-0.5f, +0.5f)] private float horizontaPosition;
+        [SerializeField, Range(0f, 1f)] private float lengthPositionFrom = 0f;
+        [SerializeField, Range(0f, 1f)] private float lengthPositionTo = 1f;
         [SerializeField, Min(1)] private int totalInstances = 1;
-        [SerializeField, Min(1)] private float maxStep = 1;
-        [SerializeField, Range(0f, 1f)] private float from = 0f;
-        [SerializeField, Range(0f, 1f)] private float to = 1f;
         [SerializeField] private bool removeFirst;
         [SerializeField] private bool removeLast;
 
-        public void CreateObjects()
+        public override void CreateObjects()
         {
             DeleteObjects();
 
             var hacTRS = segment.CreateHierarchichalAnimationCurveTRS(false);
-            float rangeMin = from * segment.GetMaxTime();
-            float rangeMax = to * segment.GetMaxTime();
+            float rangeMin = lengthPositionFrom * segment.GetMaxTime();
+            float rangeMax = lengthPositionTo * segment.GetMaxTime();
             float range = rangeMax - rangeMin;
             float maxStep = range / totalInstances;
             var matrices = TristripGenerator.GenerateMatrixIntervals(hacTRS, maxStep, rangeMin, rangeMax);
 
-            Vector3 hOffset = horizontalOffset * Vector3.right;
+            Vector3 hOffset = horizontaPosition * Vector3.right;
             var offset = Matrix4x4.TRS(positionOffset, Quaternion.Euler(rotationOffset), scaleOffset);
 
             int startIndex = removeFirst ? 1 : 0;
@@ -51,20 +40,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 child.transform.rotation = matrix.rotation;
                 child.transform.localScale = matrix.lossyScale;
             }
-        }
-
-        public void DeleteObjects()
-        {
-            foreach (var child in transform.GetChildren())
-            {
-                DestroyImmediate(child.gameObject);
-            }
-        }
-
-        private void OnValidate()
-        {
-            if (segment == null)
-                segment = GetComponentInParent<GfzSegmentNode>();
         }
     }
 }

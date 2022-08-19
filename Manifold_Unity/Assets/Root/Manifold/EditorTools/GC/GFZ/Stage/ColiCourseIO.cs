@@ -241,8 +241,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 // Assign scene to temp, get initial hash
                 sceneWrite = coliScene;
                 var logInit = new TextLogger($"{logPath}log-init-{coliScene.FileName}.txt");
-                LogSceneData(logInit, coliScene);
-                logInit.Close();
+                {
+                    var builder = new System.Text.StringBuilder();
+                    sceneWrite.PrintMultiLine(builder);
+                    logInit.Write(builder.ToString());
+                    logInit.Close();
+                }
 
                 for (int i = 0; i < 2; i++)
                 {
@@ -261,8 +265,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                     fsw.Close();
                     buffer.Seek(0, SeekOrigin.Begin);
                     //
-                    LogSceneData(logWrite, sceneWrite);
-                    logWrite.Close();
+                    {
+                        var builder = new System.Text.StringBuilder();
+                        sceneWrite.PrintMultiLine(builder);
+                        logWrite.Write(builder.ToString());
+                        logWrite.Close();
+                    }
                     // Reset buffer address
                     buffer.Seek(0, SeekOrigin.Begin);
                     // Create new scene to read buffer into
@@ -280,8 +288,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                     fsr.Close();
                     buffer.Seek(0, SeekOrigin.Begin);
                     //
-                    LogSceneData(logRead, sceneRead);
-                    logRead.Close();
+                    {
+                        var builder = new System.Text.StringBuilder();
+                        sceneWrite.PrintMultiLine(builder);
+                        logRead.Write(builder.ToString());
+                        logRead.Close();
+                    }
                     //
                     sceneWrite = sceneRead;
                 }

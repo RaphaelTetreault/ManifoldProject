@@ -6,8 +6,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
     public class GfzAnimationClip : MonoBehaviour,
         IGfzConvertable<GameCube.GFZ.Stage.AnimationClip>
     {
-        [SerializeField] private float unk_0x00;
-        [SerializeField] private float unk_0x04;
+        [SerializeField] private float unk_0x00; // guess: anim start time?
+        [SerializeField] private float unk_0x04; // max anim time in frames (60 per second)
         [SerializeField] private EnumFlags32 unk_layer_0x18;
         [SerializeField]
         private GfzAnimationClipCurve
