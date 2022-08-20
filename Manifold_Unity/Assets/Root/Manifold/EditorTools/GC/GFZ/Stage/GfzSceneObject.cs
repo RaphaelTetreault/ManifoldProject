@@ -6,8 +6,8 @@ using UnityEngine;
 namespace Manifold.EditorTools.GC.GFZ.Stage
 {
     public class GfzSceneObject : MonoBehaviour,
-        IGfzConvertable<SceneObject>,
-        IEquatable<GfzSceneObject>
+        IGfzConvertable<SceneObject>//,
+        //IEquatable<GfzSceneObject>
     {
         [SerializeField] private LodRenderFlags lodRenderFlags;
         [SerializeField] private GfzSceneObjectLODs sceneObjectLODs;
@@ -50,14 +50,14 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             }
         }
 
-        public bool Equals(GfzSceneObject other)
-        {
-            var hasFlags = other.lodRenderFlags == lodRenderFlags;
-            var hasLODs = other.sceneObjectLODs.Equals(sceneObjectLODs);
-            //var hasCollider = other.colliderMesh.Equals(colliderMesh);
+        //public bool Equals(GfzSceneObject other)
+        //{
+        //    var hasFlags = other.lodRenderFlags == lodRenderFlags;
+        //    var hasLODs = other.sceneObjectLODs.Equals(sceneObjectLODs);
+        //    //var hasCollider = other.colliderMesh.Equals(colliderMesh);
 
-            return hasFlags && hasLODs; //&& hasCollider;
-        }
+        //    return hasFlags && hasLODs; //&& hasCollider;
+        //}
 
         public void TryAssignColliderMesh(Mesh mesh)
         {
