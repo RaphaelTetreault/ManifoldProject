@@ -12,7 +12,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         {
             DeleteObjects();
 
-            var hacTRS = segment.CreateHierarchichalAnimationCurveTRS(false);
+            var hacTRS = segment.GetRoot().CreateHierarchichalAnimationCurveTRS(false);
             float time = LengthPosition * hacTRS.GetMaxTime();
             var pathMatrix = hacTRS.EvaluateHierarchyMatrix(time);
             var offsetMatrix = Matrix4x4.TRS(positionOffset, Quaternion.Euler(rotationOffset), scaleOffset);

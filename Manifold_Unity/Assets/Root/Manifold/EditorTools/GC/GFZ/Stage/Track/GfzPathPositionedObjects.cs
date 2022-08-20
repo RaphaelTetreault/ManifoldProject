@@ -16,7 +16,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         {
             DeleteObjects();
 
-            var hacTRS = segment.CreateHierarchichalAnimationCurveTRS(false);
+            var hacTRS = segment.GetRoot().CreateHierarchichalAnimationCurveTRS(false);
             float rangeMin = lengthPositionFrom * segment.GetMaxTime();
             float rangeMax = lengthPositionTo * segment.GetMaxTime();
             float range = rangeMax - rangeMin;

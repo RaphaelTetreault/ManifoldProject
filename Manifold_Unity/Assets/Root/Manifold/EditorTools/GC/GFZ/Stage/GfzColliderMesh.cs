@@ -11,7 +11,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         [SerializeField] private Mesh colliderMesh;
         [SerializeField] private Color32 gizmosColor = new Color32(255, 64, 64, 128);
         [Header("Other Data")]
-        [SerializeField] private EnumFlags32 unk_0x00; // flags
+        [SerializeField] private EnumFlags32 unk_0x00; // flags: 13=wall, 15=mine
         [SerializeField] private GameCube.GFZ.BoundingSphere boundingSphere; // flags
 
         public Mesh ColliderMesh { get => colliderMesh; set => colliderMesh = value; }
