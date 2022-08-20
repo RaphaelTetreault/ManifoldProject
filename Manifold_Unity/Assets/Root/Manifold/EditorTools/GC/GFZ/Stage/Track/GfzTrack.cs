@@ -161,18 +161,19 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         {
             AllRoots = GetAllRootSegments();
 
+            FirstRoot = AllRoots[0];
+            int lastIndex = AllRoots.Length - 1;
+            LastRoot = AllRoots[lastIndex];
+
             // Reorder elements if first is meant to be last element
             if (FirstElementIsLastSegment)
             {
                 var ordered = new List<GfzPathSegment>();
-                ordered.AddRange(AllRoots[1..]);
-                ordered.Add(LastRoot);
+                var subset = AllRoots[1..];
+                ordered.AddRange(subset);
+                ordered.Add(FirstRoot);
                 AllRoots = ordered.ToArray();
             }
-
-            FirstRoot = AllRoots[0];
-            int lastIndex = AllRoots.Length - 1;
-            LastRoot = AllRoots[lastIndex];
         }
 
         private void AssignContinuity()
