@@ -171,6 +171,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
             // Adds object with general info about the course.
             CreateGlobalParams(scene);
+            CreateFogParams(scene);
 
             var rootTransforms = CreateAllSceneObjects(scene, searchFolders);
 
@@ -1184,29 +1185,40 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             sceneParams.staticColliderMeshesActive = scene.StaticColliderMeshManagerActive;
             sceneParams.circuitType = scene.CircuitType;
 
+            return sceneParamsObj.transform;
+        }
+
+        public static Transform CreateFogParams(Scene scene)
+        {
+            var sceneParamsObj = new GameObject("Fog Parameters");
+            var gfzFog = sceneParamsObj.AddComponent<GfzFog>();
+            gfzFog.Venue = CourseUtility.GetVenue(scene.CourseIndex);
+
             // Copy fog parameters over
             var fog = scene.fog;
-            sceneParams.exportCustomFog = true; // whatever we import, use that
-            sceneParams.fogInterpolation = fog.Interpolation;
-            sceneParams.fogNear = fog.FogRange.near;
-            sceneParams.fogFar = fog.FogRange.far;
             var color = fog.ColorRGB;
-            sceneParams.color = new Color(color.x, color.y, color.z);
+            gfzFog.Interpolation = fog.Interpolation;
+            gfzFog.Near = fog.FogRange.near;
+            gfzFog.Far = fog.FogRange.far;
+            gfzFog.Color = new Color(color.x, color.y, color.z);
+            gfzFog.Mode = GfzFog.FogExportMode.CustomFog;
 
             if (scene.fogCurves != null)
             {
                 var fogCurves = scene.fogCurves;
                 // Convert from GFZ anim curves to Unity anim curves
-                sceneParams.fogCurveNear = fogCurves.FogCurveNear.ToUnity();
-                sceneParams.fogCurveFar = fogCurves.FogCurveFar.ToUnity();
-                sceneParams.fogCurveR = fogCurves.FogCurveR.ToUnity();
-                sceneParams.fogCurveG = fogCurves.FogCurveG.ToUnity();
-                sceneParams.fogCurveB = fogCurves.FogCurveB.ToUnity();
+                gfzFog.CurveNear = fogCurves.FogCurveNear.ToUnity();
+                gfzFog.CurveFar = fogCurves.FogCurveFar.ToUnity();
+                gfzFog.CurveR = fogCurves.FogCurveR.ToUnity();
+                gfzFog.CurveG = fogCurves.FogCurveG.ToUnity();
+                gfzFog.CurveB = fogCurves.FogCurveB.ToUnity();
+                gfzFog.Mode = GfzFog.FogExportMode.CustomFogCurves;
             }
+
+            gfzFog.SceneParameters = GameObject.FindObjectOfType<GfzSceneParameters>();
 
             return sceneParamsObj.transform;
         }
+
     }
-
-
 }

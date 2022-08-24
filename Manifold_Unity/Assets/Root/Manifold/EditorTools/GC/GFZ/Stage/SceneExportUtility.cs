@@ -63,9 +63,26 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             {
                 // Construct range from 2 parameters
                 scene.UnkRange0x00 = new ViewRange(sceneParams.rangeNear, sceneParams.rangeFar);
-                // Use functions to get fog parameters
-                scene.fog = sceneParams.ToGfzFog();
-                scene.fogCurves = sceneParams.ToGfzFogCurves();
+            }
+
+            // FOG
+            {
+                var gfzFogs = GameObject.FindObjectsOfType<GfzFog>();
+                bool hasAtLeastOneFiogParameter = gfzFogs.Length > 0;
+                if (hasAtLeastOneFiogParameter)
+                {
+                    if (gfzFogs.Length > 1)
+                    {
+                        // TODO: SOME WARNING
+                    }
+
+                    // Select the first (hopefully only)
+                    var gfzFog = gfzFogs[0];
+
+                    // Use functions to get fog parameters
+                    scene.fog = gfzFog.ToGfzFog();
+                    scene.fogCurves = gfzFog.ToGfzFogCurves();
+                }
             }
 
             // Triggers
