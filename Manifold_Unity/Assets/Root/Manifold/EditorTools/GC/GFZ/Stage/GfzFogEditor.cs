@@ -110,6 +110,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             EditorGUILayout.PropertyField(curveG);
             EditorGUILayout.PropertyField(curveB);
             EditorGUILayout.PropertyField(curveA);
+            EditorGUILayout.Separator();
+            EditorGUILayout.LabelField("Custom Fog Fallback Values", EditorStyles.boldLabel);
+            EditorGUILayout.PropertyField(near);
+            EditorGUILayout.PropertyField(far);
+            EditorGUILayout.PropertyField(color);
         }
         private void DrawFogSceneVenue(GfzFog editorTarget)
         {
