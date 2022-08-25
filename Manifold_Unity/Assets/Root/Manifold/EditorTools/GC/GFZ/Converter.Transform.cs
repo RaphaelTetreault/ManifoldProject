@@ -35,17 +35,43 @@ namespace Manifold.EditorTools.GC.GFZ
         }
 
 
+        public static Matrix4x4 ToUnity(TransformTRXS trxs)
+        {
+            var position = MirrorPosition(trxs.Position);
+            var scale = trxs.Scale;
+
+            // HACK: you need to fix the BS going on with compressed rotations...
+            var qx = Quaternion.Euler(new Vector3(trxs.RotationEuler.x, 0, 0));
+            var qy = Quaternion.Euler(new Vector3(0, trxs.RotationEuler.y, 0));
+            var qz = Quaternion.Euler(new Vector3(0, 0, trxs.RotationEuler.z));
+            var rotation = qz * qy * qx;
+            rotation = MirrorRotation(rotation);
+
+            var matrix = Matrix4x4.TRS(position, rotation, scale);
+            return matrix;
+        }
+        public static Matrix4x4 ToUnity(TransformMatrix3x4 mtx3x4)
+        {
+            var position = MirrorPosition(mtx3x4.Position);
+            var rotation = MirrorRotation(mtx3x4.Matrix.ToUnityMatrix4x4().rotation); // 'quaternion' is... lacking
+            var scale = mtx3x4.Scale;
+            var matrix = Matrix4x4.TRS(position, rotation, scale);
+            return matrix;
+        }
+
         public static void CopyTransform(this Transform to, TransformTRXS from)
         {
-            to.localPosition = MirrorPosition(from.Position);
-            to.localRotation = MirrorRotation(from.Rotation);
-            to.localScale = from.Scale;
+            var matrix = ToUnity(from);
+            to.localPosition = matrix.Position();
+            to.localRotation = matrix.rotation;
+            to.localScale = matrix.lossyScale;
         }
         public static void CopyTransform(this Transform to, TransformMatrix3x4 from)
         {
-            to.localPosition = MirrorPosition(from.Position);
-            to.localRotation = MirrorRotation(from.Matrix.ToUnityMatrix4x4().rotation); // 'quaternion' is... lacking
-            to.localScale = from.Scale;
+            var matrix = ToUnity(from);
+            to.localPosition = matrix.Position();
+            to.localRotation = matrix.rotation;
+            to.localScale = matrix.lossyScale;
         }
 
         public static void CopyTransform(this TransformTRXS to, Transform from, Space space)

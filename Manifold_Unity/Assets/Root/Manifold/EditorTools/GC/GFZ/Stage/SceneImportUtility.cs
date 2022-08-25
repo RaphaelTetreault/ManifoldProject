@@ -1163,9 +1163,14 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 if (gfzAnimationClip == null)
                     continue;
 
-                var position = sceneObjectDynamic.TransformTRXS.Position;
-                var rotation = ((Quaternion)sceneObjectDynamic.TransformTRXS.Rotation).eulerAngles;
-                var scale = sceneObjectDynamic.TransformTRXS.Scale;
+                // Get Unity coordinates
+                var matrix = TransformConverter.ToUnity(sceneObjectDynamic.TransformTRXS);
+                var position = matrix.Position();
+                var rotation = matrix.rotation.eulerAngles;
+                var scale = matrix.lossyScale;
+                //TransformConverter.MirrorPosition(position);
+                //TransformConverter.MirrorRotation(rotation);
+
                 var positionX = ToUnity(gfzAnimationClip.PositionX.AnimationCurve, position.x);
                 var positionY = ToUnity(gfzAnimationClip.PositionY.AnimationCurve, position.y);
                 var positionZ = ToUnity(gfzAnimationClip.PositionZ.AnimationCurve, position.z);
@@ -1176,9 +1181,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 var scaleY = ToUnity(gfzAnimationClip.ScaleY.AnimationCurve, scale.y);
                 var scaleZ = ToUnity(gfzAnimationClip.ScaleZ.AnimationCurve, scale.z);
 
-                Mirror(positionZ);
-                Mirror(rotationX);
-                Mirror(rotationY);
+                //Mirror(positionZ);
+                //Mirror(rotationX);
+                //Mirror(rotationY);
 
                 var t = typeof(Transform);
                 var animationClip = new UnityEngine.AnimationClip();
