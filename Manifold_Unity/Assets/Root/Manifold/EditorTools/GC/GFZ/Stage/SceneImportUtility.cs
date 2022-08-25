@@ -16,92 +16,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 {
     public static class SceneImportUtility
     {
-        // todo: make title consistent across progress bars.
-        public static string ExecuteText => "Import COLI as Unity Scene";
-
-        //[MenuItem(GfzMenuItems.Stage.Menu + "Midiman", priority = GfzMenuItems.Stage.ImportSingleSelectPriority + 1)]
-        public static void ExportMidiman()
-        {
-            var settings = GfzProjectWindow.GetSettings();
-            var inputPath = settings.SourceStageDirectory;
-            var outputPath = settings.LogOutput;
-            foreach (var scene in ColiCourseIO.LoadAllStages(inputPath, "???"))
-            {
-                var path = outputPath + scene.FileName + ".tsv";
-                using (var writer = new StreamWriter(File.Create(path)))
-                {
-                    foreach (var model in scene.dynamicSceneObjects)
-                    {
-                        var name = model.Name;
-                        var hasMatrix = model.TransformMatrix3x4 is not null;
-                        var pos = hasMatrix ? model.TransformMatrix3x4.Position : model.TransformTRXS.Position;
-                        var rot = hasMatrix ? model.TransformMatrix3x4.RotationEuler : model.TransformTRXS.RotationEuler;
-                        var scl = hasMatrix ? model.TransformMatrix3x4.Scale : model.TransformTRXS.Scale;
-
-                        writer.WriteNextCol(name);
-                        writer.WriteNextCol(pos.x);
-                        writer.WriteNextCol(pos.y);
-                        writer.WriteNextCol(pos.z);
-                        writer.WriteNextCol(rot.x);
-                        writer.WriteNextCol(rot.y);
-                        writer.WriteNextCol(rot.z);
-                        writer.WriteNextCol(scl.x);
-                        writer.WriteNextCol(scl.y);
-                        writer.WriteNextCol(scl.z);
-                        writer.WriteNextRow();
-                    }
-                }
-            }
-            EditorUtility.ClearProgressBar();
-        }
-
-        //[MenuItem(GfzMenuItems.Stage.Menu + "Midiman2", priority = GfzMenuItems.Stage.ImportSingleSelectPriority + 2)]
-        public static void ExportMidiman2()
-        {
-            var settings = GfzProjectWindow.GetSettings();
-            var inputPath = settings.SourceStageDirectory;
-            var outputPath = settings.LogOutput;
-            foreach (var scene in ColiCourseIO.LoadAllStages(inputPath, "???"))
-            {
-                var path = outputPath + scene.FileName + ".tsv";
-                using (var writer = new StreamWriter(File.Create(path)))
-                {
-                    int trackNodeIndex = 0;
-                    foreach (var trackNode in scene.trackNodes)
-                    {
-                        int checkpointIndex = 0;
-                        foreach (var checkpoint in trackNode.Checkpoints)
-                        {
-                            var name = $"Checkpoint {trackNodeIndex}.{checkpointIndex}";
-                            var pos0 = checkpoint.PlaneStart.origin;
-                            var rot0 = Quaternion.LookRotation(checkpoint.PlaneStart.normal, Vector3.up).eulerAngles;
-                            var pos1 = checkpoint.PlaneEnd.origin;
-                            var rot1 = Quaternion.LookRotation(checkpoint.PlaneEnd.normal, Vector3.up).eulerAngles;
-
-                            writer.WriteNextCol(name);
-                            writer.WriteNextCol(pos0.x);
-                            writer.WriteNextCol(pos0.y);
-                            writer.WriteNextCol(pos0.z);
-                            writer.WriteNextCol(rot0.x);
-                            writer.WriteNextCol(rot0.y);
-                            writer.WriteNextCol(rot0.z);
-                            writer.WriteNextCol(pos1.x);
-                            writer.WriteNextCol(pos1.y);
-                            writer.WriteNextCol(pos1.z);
-                            writer.WriteNextCol(rot1.x);
-                            writer.WriteNextCol(rot1.y);
-                            writer.WriteNextCol(rot1.z);
-                            writer.WriteNextRow();
-                            checkpointIndex++;
-                        }
-                        trackNodeIndex++;
-                    }
-                }
-            }
-            EditorUtility.ClearProgressBar();
-        }
-
-
         [MenuItem(GfzMenuItems.Stage.ImportAll, priority = GfzMenuItems.Stage.ImportAllPriority)]
         public static void ImportAll()
         {
@@ -172,6 +86,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             // Adds object with general info about the course.
             CreateGlobalParams(scene);
             CreateFogParams(scene);
+
+            CreateAnimationClips(scene);
 
             var rootTransforms = CreateAllSceneObjects(scene, searchFolders);
 
@@ -805,7 +721,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                     //}
                     //else
                     //{
-                        childAnimationMatrix = GetMatrixRecursive(child, timeNormalized, selfMaxTime);
+                    childAnimationMatrix = GetMatrixRecursive(child, timeNormalized, selfMaxTime);
                     //}
 
                     return selfAnimationMtx * childAnimationMatrix;
@@ -1094,7 +1010,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 var info = $"[{count.ToString(digitsFormat)}/{total}] {objectName}";
                 var progress = (float)count / total;
                 var cancel = EditorUtility.DisplayCancelableProgressBar(title, info, progress);
-                count++;
 
                 // Find the asset path from database
                 var assetPath = GetAssetPath(prefabName, searchFolders);
@@ -1120,6 +1035,19 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                     var mesh = assetInstance.GetComponent<MeshFilter>().sharedMesh;
                     gfzSceneObject.TryAssignColliderMesh(mesh);
                 }
+
+                // ANIMATION
+                if (script.AnimationClip != null)
+                {
+                    // Absolute hack. Consolidate nameing with main function below
+                    var settings = GfzProjectWindow.GetSettings();
+                    var outputPath = settings.AssetsWorkingDirectory;
+                    string filePath = $"{outputPath}stage/st{scene.CourseIndex:00}/anim_{objectName}-{count}.anim";
+                    var clip = AssetDatabase.LoadAssetAtPath<UnityEngine.AnimationClip>(filePath);
+                    script.AnimationClip.AssignAnimation(clip);
+                }
+
+                count++;
             }
 
             return dynamicsRoot;
@@ -1218,6 +1146,73 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             gfzFog.SceneParameters = GameObject.FindObjectOfType<GfzSceneParameters>();
 
             return sceneParamsObj.transform;
+        }
+
+
+        public static void CreateAnimationClips(Scene scene)
+        {
+            var settings = GfzProjectWindow.GetSettings();
+            var outputPath = settings.AssetsWorkingDirectory;
+
+            int index = -1;
+            foreach (var sceneObjectDynamic in scene.dynamicSceneObjects)
+            {
+                index++;
+
+                var gfzAnimationClip = sceneObjectDynamic.AnimationClip;
+                if (gfzAnimationClip == null)
+                    continue;
+
+                var position = sceneObjectDynamic.TransformTRXS.Position;
+                var rotation = ((Quaternion)sceneObjectDynamic.TransformTRXS.Rotation).eulerAngles;
+                var scale = sceneObjectDynamic.TransformTRXS.Scale;
+                var positionX = ToUnity(gfzAnimationClip.PositionX.AnimationCurve, position.x);
+                var positionY = ToUnity(gfzAnimationClip.PositionY.AnimationCurve, position.y);
+                var positionZ = ToUnity(gfzAnimationClip.PositionZ.AnimationCurve, position.z);
+                var rotationX = ToUnity(gfzAnimationClip.RotationX.AnimationCurve, rotation.x);
+                var rotationY = ToUnity(gfzAnimationClip.RotationY.AnimationCurve, rotation.y);
+                var rotationZ = ToUnity(gfzAnimationClip.RotationZ.AnimationCurve, rotation.z);
+                var scaleX = ToUnity(gfzAnimationClip.ScaleX.AnimationCurve, scale.x);
+                var scaleY = ToUnity(gfzAnimationClip.ScaleY.AnimationCurve, scale.y);
+                var scaleZ = ToUnity(gfzAnimationClip.ScaleZ.AnimationCurve, scale.z);
+
+                Mirror(positionZ);
+                Mirror(rotationX);
+                Mirror(rotationY);
+
+                var t = typeof(Transform);
+                var animationClip = new UnityEngine.AnimationClip();
+                AnimationUtility.SetEditorCurve(animationClip, EditorCurveBinding.FloatCurve("", t, "m_LocalPosition.x"), positionX);
+                AnimationUtility.SetEditorCurve(animationClip, EditorCurveBinding.FloatCurve("", t, "m_LocalPosition.y"), positionY);
+                AnimationUtility.SetEditorCurve(animationClip, EditorCurveBinding.FloatCurve("", t, "m_LocalPosition.z"), positionZ);
+                AnimationUtility.SetEditorCurve(animationClip, EditorCurveBinding.FloatCurve("", t, "localEulerAnglesRaw.x"), rotationX);
+                AnimationUtility.SetEditorCurve(animationClip, EditorCurveBinding.FloatCurve("", t, "localEulerAnglesRaw.y"), rotationY);
+                AnimationUtility.SetEditorCurve(animationClip, EditorCurveBinding.FloatCurve("", t, "localEulerAnglesRaw.z"), rotationZ);
+                AnimationUtility.SetEditorCurve(animationClip, EditorCurveBinding.FloatCurve("", t, "m_LocalScale.x"), scaleX);
+                AnimationUtility.SetEditorCurve(animationClip, EditorCurveBinding.FloatCurve("", t, "m_LocalScale.y"), scaleY);
+                AnimationUtility.SetEditorCurve(animationClip, EditorCurveBinding.FloatCurve("", t, "m_LocalScale.z"), scaleZ);
+
+                string filePath = $"{outputPath}stage/st{scene.CourseIndex:00}/anim_{sceneObjectDynamic.Name}-{index}.anim";
+                AssetDatabaseUtility.CreateAsset(animationClip, filePath);
+            }
+        }
+
+        private static UnityEngine.AnimationCurve ToUnity(GameCube.GFZ.Stage.AnimationCurve animationClip, float fallback)
+        {
+            if (animationClip == null || animationClip.Length == 0)
+                return new UnityEngine.AnimationCurve(new Keyframe[] { new(0, fallback) });
+
+            return AnimationCurveConverter.ToUnity(animationClip);
+        }
+
+        private static void Mirror(UnityEngine.AnimationCurve animationCurve)
+        {
+            for (int i = 0; i < animationCurve.length; i++)
+            {
+                var key = animationCurve.keys[i];
+                key.value = -key.value;
+                animationCurve.MoveKey(i, key);
+            }
         }
 
     }

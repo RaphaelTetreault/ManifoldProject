@@ -6,6 +6,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
     public class GfzAnimationClip : MonoBehaviour,
         IGfzConvertable<GameCube.GFZ.Stage.AnimationClip>
     {
+        [SerializeField] private new Animation animation;
+        [SerializeField] private UnityEngine.AnimationClip animationClip;
         [SerializeField] private float unk_0x00; // guess: anim start time?
         [SerializeField] private float unk_0x04; // max anim time in frames (60 per second)
         [SerializeField] private EnumFlags32 unk_layer_0x18;
@@ -103,6 +105,16 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             //        curvePositionZ.keys[i] = new Keyframe(key.time, -key.value);
             //    }
             //}
+        }
+
+        public void AssignAnimation(UnityEngine.AnimationClip animationClip)
+        {
+            this.animationClip = animationClip;
+
+            animation = gameObject.AddComponent<Animation>();
+            animation.clip = animationClip;
+            animation.clip.legacy = true;
+            animation.AddClip(animationClip, animationClip.name);
         }
 
     }

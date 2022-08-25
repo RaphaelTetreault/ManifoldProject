@@ -1,5 +1,6 @@
 using GameCube.GFZ.Stage;
 using Manifold.EditorTools.Attributes;
+using UnityEditor;
 using UnityEngine;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage
