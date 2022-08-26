@@ -230,6 +230,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             var min = animKeys[0].time;
             var max = animKeys[animKeys.Length - 1].time;
             var matrices = TristripGenerator.CreatePathMatrices(this, isGfzCoordinateSpace, lengthDistance, min, max);
+            matrices = TristripGenerator.StripHeight(matrices);
             //
             var parent = GetParent();
             var parentMatrices = TristripGenerator.CreatePathMatrices(parent, isGfzCoordinateSpace, lengthDistance, min, max);

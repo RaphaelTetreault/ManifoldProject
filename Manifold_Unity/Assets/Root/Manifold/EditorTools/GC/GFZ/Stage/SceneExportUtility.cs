@@ -35,6 +35,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             var outputPath = settings.SceneExportPath;
             var activeScene = EditorSceneManager.GetActiveScene();
 
+            //
+            bool noWorkingFilesPathSpecified = string.IsNullOrEmpty(settings.WorkingFilesDirectory);
+            if (noWorkingFilesPathSpecified)
+                throw new ArgumentException($"Cannot export. No {nameof(settings.WorkingFilesDirectory)} specifided in settings.");
+
             // Get scene parameters for general info
             var sceneParams = GetGfzSceneParameters();
 
