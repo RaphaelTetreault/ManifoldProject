@@ -1032,8 +1032,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                 // Set mesh on collider if it exists
                 if (gfzSceneObject.ColliderMesh != null)
                 {
-                    var mesh = assetInstance.GetComponent<MeshFilter>().sharedMesh;
-                    gfzSceneObject.TryAssignColliderMesh(mesh);
+                    var meshFilter = assetInstance.GetComponent<MeshFilter>();
+                    if (meshFilter != null)
+                    {
+                        var mesh = meshFilter.sharedMesh;
+                        gfzSceneObject.TryAssignColliderMesh(mesh);
+                    }
                 }
 
                 // ANIMATION

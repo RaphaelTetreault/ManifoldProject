@@ -59,6 +59,8 @@ namespace Manifold.EditorTools.GC.GFZ.GMA
 
                 foreach (var model in gma.Models)
                 {
+                    Debug.Log($"{gma.FileName} - {model.Name}");
+
                     // Get mesh and materials
                     var mesh = CreateSingleMeshFromModel(model, outputDirectory, "Importing Model");
                     var tempMaterial = AssetDatabase.LoadAssetAtPath<UnityEngine.Material>(DefaultMaterialAssetPath);
