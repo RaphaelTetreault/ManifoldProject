@@ -78,6 +78,16 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return submeshes;
         }
 
+        public Tristrip[] CombinedTristrips(Tristrip[][] tristripsCollection)
+        {
+            var allTristrips = new List<Tristrip>();
+            foreach (var tristrips in tristripsCollection)
+                allTristrips.AddRange(tristrips);
+
+            return allTristrips.ToArray();
+        }
+
+
         public void UpdateMesh()
         {
             var mesh = CreateMesh();

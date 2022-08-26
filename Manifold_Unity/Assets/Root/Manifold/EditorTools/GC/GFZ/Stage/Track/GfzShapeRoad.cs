@@ -116,20 +116,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
         }
 
-        public Tristrip[] GetTristripsLinear(RoadMeshStyle meshStyle, bool isGfzCoordinateSpace)
-        {
-            var tristripsCollection = GetTristrips(meshStyle, isGfzCoordinateSpace);
-
-            var allTristrips = new List<Tristrip>();
-            foreach (var tristrips in tristripsCollection)
-                allTristrips.AddRange(tristrips);
-
-            return allTristrips.ToArray();
-        }
-
         public override Mesh CreateMesh()
         {
-            var tristrips = GetTristripsLinear(MeshStyle, false);
+            var tristripsCollection = GetTristrips(MeshStyle, false);
+            var tristrips = CombinedTristrips(tristripsCollection);
 
             var mesh = TristripsToMesh(tristrips);
             mesh.name = $"Auto Gen - {name}";

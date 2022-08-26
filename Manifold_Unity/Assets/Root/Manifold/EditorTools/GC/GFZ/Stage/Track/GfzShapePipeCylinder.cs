@@ -10,42 +10,117 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
     {
         [Header("Pipe/Cylinder")]
         [SerializeField] private PipeCylinderType type = PipeCylinderType.Pipe;
-
+        [SerializeField] private PipeStyle pipeStyle;
+        [SerializeField] private CylinderStyle cylinderStyle;
+        [SerializeField, Min(1f)] private float lengthDistance = 10f;
 
         public PipeCylinderType Type
         {
             get => type;
             set => type = value;
         }
+        public enum PipeStyle
+        {
+            Debug,
+        }
+        public enum CylinderStyle
+        {
+            Debug,
+        }
 
         public override AnimationCurveTRS CopyAnimationCurveTRS(bool isGfzCoordinateSpace)
         {
-            throw new System.NotImplementedException();
+            return new AnimationCurveTRS();
         }
 
         public override Gcmf CreateGcmf(out GcmfTemplate[] gcmfTemplates, TplTextureContainer tpl)
         {
-            throw new System.NotImplementedException();
+            bool isPipe = type == PipeCylinderType.Pipe;
+
+            var tristripsCollections = isPipe
+                ? GetPipeTristrips(pipeStyle, true)
+                : GetCylinderTristrips(cylinderStyle, true);
+            gcmfTemplates = isPipe
+                ? GetPipeGcmfTemplates(pipeStyle)
+                : GetCylinderGcmfTemplates(cylinderStyle);
+
+            var gcmf = GcmfTemplate.CreateGcmf(gcmfTemplates, tristripsCollections, tpl);
+            return gcmf;
         }
 
-        public override float GetMaxTime()
+        public GcmfTemplate[] GetPipeGcmfTemplates(PipeStyle pipeStyle)
         {
-            throw new System.NotImplementedException();
+            switch (pipeStyle)
+            {
+                default:
+                    return new GcmfTemplate[] { GcmfTemplates.Debug.CreateLitVertexColored() };
+            }
+        }
+        public GcmfTemplate[] GetCylinderGcmfTemplates(CylinderStyle cylinderStyle)
+        {
+            switch (cylinderStyle)
+            {
+                default:
+                    return new GcmfTemplate[] { GcmfTemplates.Debug.CreateLitVertexColored() };
+            }
+        }
+
+        public Tristrip[][] GetPipeTristrips(PipeStyle pipeStyle, bool isGfzCoordinateSpace)
+        {
+            var originalMatrice = TristripGenerator.CreatePathMatrices(this, isGfzCoordinateSpace, lengthDistance);
+            var matrices = TristripGenerator.StripHeight(originalMatrice);
+            var maxTime = GetRoot().GetMaxTime();
+
+            switch (pipeStyle)
+            {
+                default:
+                    return new Tristrip[][]
+                    {
+                        //TristripTemplates.Road.CreateDebug(matrices, this, WidthDivisions, LengthDistance, isGfzCoordinateSpace),
+                    };
+            }
+        }
+        public Tristrip[][] GetCylinderTristrips(CylinderStyle cylinderStyle, bool isGfzCoordinateSpace)
+        {
+            var originalMatrice = TristripGenerator.CreatePathMatrices(this, isGfzCoordinateSpace, lengthDistance);
+            var matrices = TristripGenerator.StripHeight(originalMatrice);
+            var maxTime = GetRoot().GetMaxTime();
+
+            switch (cylinderStyle)
+            {
+                default:
+                    return new Tristrip[][]
+                    {
+                        //TristripTemplates.Road.CreateDebug(matrices, this, WidthDivisions, LengthDistance, isGfzCoordinateSpace),
+                    };
+            }
         }
 
         public override Mesh CreateMesh()
         {
-            throw new System.NotImplementedException();
+            var tristrips = new Tristrip[0];
+
+            var mesh = TristripsToMesh(tristrips);
+            mesh.name = $"Auto Gen - {name}";
+            return mesh;
         }
 
         public override TrackSegment CreateTrackSegment()
         {
-            throw new System.NotImplementedException();
+            var children = CreateChildTrackSegments();
+
+            var trackSegment = new TrackSegment();
+            trackSegment.OrderIndentifier = name;
+            trackSegment.SegmentType = TrackSegmentType.IsTrack;
+            trackSegment.BranchIndex = GetBranchIndex();
+            trackSegment.Children = children;
+
+            return trackSegment;
         }
 
         public override void UpdateTRS()
         {
-            throw new System.NotImplementedException();
+            // do nothing :)
         }
 
     }

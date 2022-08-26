@@ -216,16 +216,20 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             var vertices = CreateVerticesLine(nTristrips, endpointA, endpointB);
             var normals = ArrayUtility.DefaultArray(normal, vertices.Length);
             var tristrips = GenerateTristrips(matrices, vertices, normals);
-
-            foreach (var tristrip in tristrips)
-            {
-                tristrip.isBackFacing = isBackFacing;
-                tristrip.isDoubleSided = isDoubleSided;
-            }
+            AssignTristripMetadata(tristrips, isBackFacing, isDoubleSided);
 
             return tristrips;
         }
+        public static Tristrip[] GenerateCircle(Matrix4x4[] matrices, bool normalOutwards, int nTristrips)
+        {
+            var vertices = CreateCircleVertices(nTristrips);
+            var normals = CreateCircleNormals(vertices, normalOutwards);
+            MutateScaleVertices(vertices, 0.5f);
+            var tristrips = GenerateTristrips(matrices, vertices, normals);
+            AssignTristripMetadata(tristrips, !normalOutwards, false);
 
+            return tristrips;
+        }
 
         public static Vector3[] CreateVerticesLine(int nTristrips, Vector3 endpointA, Vector3 endpointB)
         {
@@ -237,6 +241,25 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 vertices[i] = Vector3.Lerp(endpointA, endpointB, percentage);
             }
             return vertices;
+        }
+        public static Vector3[] CreateCircleVertices(int nTristrips)
+        {
+            Vector3[] vertices = new Vector3[nTristrips + 1];
+            for (int i = 0; i <= nTristrips; i++) // loop wraps and reconnects final vertices
+            {
+                float percentage = i / (float)nTristrips;
+                float theta = percentage * Mathf.PI * 2f;
+                float x = Mathf.Sin(theta);
+                float y = Mathf.Cos(theta);
+                Vector3 point = new Vector3(x, y, 0);
+                vertices[i] = point;
+            }
+            return vertices;
+        }
+        public static void MutateScaleVertices(Vector3[] vertices, float scale)
+        {
+            for (int i = 0; i < vertices.Length; i++)
+                vertices[i] *= scale;
         }
         /// <summary>
         /// 
@@ -255,6 +278,18 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 normals[index + 0] = matrices[i].rotation * defaultNormal;
                 normals[index + 1] = matrices[i].rotation * defaultNormal;
             }
+            return normals;
+        }
+        public static Vector3[] CreateCircleNormals(Vector3[] vertices, bool isCylinder)
+        {
+            // NOTE: this method assumes input is sin/cos and thus _is_ the normal, too.
+            // The only it does is potentially invert the normals.
+
+            float scale = isCylinder ? 1f : -1f;
+            Vector3[] normals = new Vector3[vertices.Length];
+            for (int i = 0; i < vertices.Length; i++)
+                normals[i] = vertices[i] * scale;
+
             return normals;
         }
         public static Vector2[] CreateUVsSideways(int verticesLength)
@@ -458,5 +493,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
         }
 
+        private static void AssignTristripMetadata(Tristrip[] tristrips, bool isBackFacing, bool isDoubleSided)
+        {
+            foreach (var tristrip in tristrips)
+            {
+                tristrip.isBackFacing = isBackFacing;
+                tristrip.isDoubleSided = isDoubleSided;
+            }
+        }
     }
 }
