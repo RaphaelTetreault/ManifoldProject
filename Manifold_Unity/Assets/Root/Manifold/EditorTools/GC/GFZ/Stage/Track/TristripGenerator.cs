@@ -220,12 +220,19 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
             return tristrips;
         }
-        public static Tristrip[] GenerateCircle(Matrix4x4[] matrices, bool normalOutwards, int nTristrips)
+        public static Tristrip[] GenerateCircle(Matrix4x4[] matrices, bool normalOutwards, int nTristrips, bool isGfzCoordinateSpace)
         {
             var vertices = CreateCircleVertices(nTristrips);
-            var normals = CreateCircleNormals(vertices, normalOutwards);
             MutateScaleVertices(vertices, 0.5f);
-            var tristrips = GenerateTristrips(matrices, vertices, normals);
+            // Temp: maybe break out function, remove forced normal parameter?
+            var blankNormals = ArrayUtility.DefaultArray(Vector3.zero, vertices.Length);
+            var tristrips = GenerateTristrips(matrices, vertices, blankNormals);
+
+            GenericNormalsFromTristripVerticesSmooth(tristrips, true, isGfzCoordinateSpace);
+            //foreach (var tristrip in tristrips)
+            //tristrip.normals = GenericNormalsFromTristripVertices(tristrip, isGfzCoordinateSpace);
+            //CreateCircleNormals(matrices, tristrip, normalOutwards);
+
             AssignTristripMetadata(tristrips, normalOutwards, false);
 
             return tristrips;
@@ -280,18 +287,100 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
             return normals;
         }
-        public static Vector3[] CreateCircleNormals(Vector3[] vertices, bool isCylinder)
+        public static Vector3[] CreateCircleNormals(Matrix4x4[] matrices, Tristrip tristrip, bool isCylinder)
         {
             // NOTE: this method assumes input is sin/cos and thus _is_ the normal, too.
             // The only it does is potentially invert the normals.
 
-            float scale = isCylinder ? 1f : -1f;
+            float direction = isCylinder ? 1f : -1f;
+            Vector3[] vertices = tristrip.positions;
             Vector3[] normals = new Vector3[vertices.Length];
-            for (int i = 0; i < vertices.Length; i++)
-                normals[i] = vertices[i] * scale;
+            for (int i = 0; i < matrices.Length; i++)
+            {
+                int index0 = i * 2;
+                int index1 = index0 + 1;
+                Matrix4x4 matrix = Matrix4x4.TRS(matrices[i].Position(), matrices[i].rotation, Vector3.one).inverse;
+                float3 direction0 = matrix.MultiplyPoint(vertices[index0]);
+                float3 direction1 = matrix.MultiplyPoint(vertices[index1]);
+                normals[index0] = math.normalize(direction0);
+                normals[index1] = math.normalize(direction1);
+            }
+            tristrip.normals = normals;
 
             return normals;
         }
+        public static Vector3[] GenericNormalsFromTristripVertices(Tristrip tristrip, bool isGfzCoordinateSpace)
+        {
+            Vector3[] normals = new Vector3[tristrip.VertexCount];
+            for (int i = 0; i < normals.Length - 2; i += 2) // two at a time
+            {
+                int index0 = i + 0;
+                int index1 = i + 1;
+                int index2 = i + 2;
+                Vector3 vertex0 = tristrip.positions[index0];
+                Vector3 vertex1 = tristrip.positions[index1];
+                Vector3 vertex2 = tristrip.positions[index2];
+                Vector3 dir01 = vertex1 - vertex0;
+                Vector3 dir02 = vertex2 - vertex0;
+                Vector3 normal = isGfzCoordinateSpace ? math.cross(dir01, dir02) : math.cross(dir02, dir01);
+                normal = math.normalize(normal);
+                normals[index0] = normal;
+                normals[index1] = normal;
+            }
+
+            {
+                Vector3 vertex0 = tristrip.positions[normals.Length-2];
+                Vector3 vertex1 = tristrip.positions[normals.Length-1];
+                Vector3 vertex2 = tristrip.positions[normals.Length-3];
+                Vector3 dir01 = vertex1 - vertex0;
+                Vector3 dir02 = vertex2 - vertex0;
+                Vector3 normal = isGfzCoordinateSpace ? math.cross(dir02, dir01) : math.cross(dir01, dir02);
+                normal = math.normalize(normal);
+                normals[normals.Length - 2] = normal;
+                normals[normals.Length - 1] = normal;
+            }
+
+            return normals;
+        }
+        public static void GenericNormalsFromTristripVerticesSmooth(Tristrip[] tristrips, bool smoothFirstLast, bool isGfzCoordinateSpace)
+        {
+            foreach (var tristrip in tristrips)
+            {
+                tristrip.normals = GenericNormalsFromTristripVertices(tristrip, isGfzCoordinateSpace);
+            }
+
+            // Averages normals on shared vertices between tristrips
+            for (int i = 0; i < tristrips.Length - 1; i++)
+            {
+                var tristrip0 = tristrips[i + 0];
+                var tristrip1 = tristrips[i + 1];
+                for (int j = 0; j < tristrip0.normals.Length; j += 2)
+                {
+                    Vector3 normal0 = tristrip0.normals[j + 1];
+                    Vector3 normal1 = tristrip1.normals[j + 0];
+                    Vector3 average = (normal0 + normal1) * 0.5f;
+                    tristrip0.normals[j + 1] = average;
+                    tristrip1.normals[j + 0] = average;
+                }
+            }
+
+            if (smoothFirstLast)
+            {
+                int firstIndex = 0;
+                int lastIndex = tristrips.Length - 1;
+                var lastTristrip = tristrips[lastIndex];
+                var firstTristrip = tristrips[firstIndex];
+                for (int j = 0; j < lastTristrip.normals.Length; j += 2)
+                {
+                    Vector3 normal0 = lastTristrip.normals[j + 1];
+                    Vector3 normal1 = firstTristrip.normals[j + 0];
+                    Vector3 average = (normal0 + normal1) * 0.5f;
+                    lastTristrip.normals[j + 1] = average;
+                    firstTristrip.normals[j + 0] = average;
+                }
+            }
+        }
+
         public static Vector2[] CreateUVsSideways(int verticesLength)
         {
             int baseIndex = 0;

@@ -1386,15 +1386,15 @@ namespace Manifold.EditorTools.GC.GFZ
                 return tristrip;
             }
 
-            public static Tristrip[] DebugInside(Matrix4x4[] matrices, GfzShapePipeCylinder pipe)
+            public static Tristrip[] DebugInside(Matrix4x4[] matrices, GfzShapePipeCylinder pipe, bool isGfzCoordinateSpace)
             {
-                var inner = GenerateCircle(matrices, false, pipe.SubdivisionsInside);
+                var inner = GenerateCircle(matrices, false, pipe.SubdivisionsInside, isGfzCoordinateSpace);
                 return inner;
             }
-            public static Tristrip[] DebugOutside(Matrix4x4[] matrices, GfzShapePipeCylinder pipe)
+            public static Tristrip[] DebugOutside(Matrix4x4[] matrices, GfzShapePipeCylinder pipe, bool isGfzCoordinateSpace)
             {
                 var grownMatrices = ModifyMatrixScales(matrices, Vector3.one * 5);
-                var outer = GenerateCircle(grownMatrices, true, pipe.SubdivisionsOutside);
+                var outer = GenerateCircle(grownMatrices, true, pipe.SubdivisionsOutside, isGfzCoordinateSpace);
                 return outer;
             }
             public static Tristrip[] DebugRingEndcap(Matrix4x4[] matrices, GfzShapePipeCylinder pipe)
@@ -1455,9 +1455,9 @@ namespace Manifold.EditorTools.GC.GFZ
                 return tristrip;
             }
 
-            public static Tristrip[] Debug(Matrix4x4[] matrices, GfzShapePipeCylinder cylinder)
+            public static Tristrip[] Debug(Matrix4x4[] matrices, GfzShapePipeCylinder cylinder, bool isGfzCoordinateSpace)
             {
-                var tristrips = GenerateCircle(matrices, true, cylinder.SubdivisionsInside);
+                var tristrips = GenerateCircle(matrices, true, cylinder.SubdivisionsInside, isGfzCoordinateSpace);
                 return tristrips;
             }
             public static Tristrip[] DebugEndcap(Matrix4x4[] matrices, GfzShapePipeCylinder pipe)
@@ -1468,18 +1468,28 @@ namespace Manifold.EditorTools.GC.GFZ
                 if (!isContinuousFrom)
                 {
                     var matrix = matrices[0];
-                    var normal = matrix.rotation * Vector3.back;
-                    var tristrip = Endcap(matrix, pipe.SubdivisionsInside, normal, false);
-                    tristrips.Add(tristrip);
+                    var scale = matrix.lossyScale;
+                    bool hasValidScale = scale.x != 0 && scale.y != 0;
+                    if (hasValidScale)
+                    {
+                        var normal = matrix.rotation * Vector3.back;
+                        var tristrip = Endcap(matrix, pipe.SubdivisionsInside, normal, false);
+                        tristrips.Add(tristrip);
+                    }
                 }
 
                 if (!isContinuousTo)
                 {
                     int lastIndex = matrices.Length - 1;
                     var matrix = matrices[lastIndex];
-                    var normal = matrix.rotation * Vector3.forward;
-                    var tristrip = Endcap(matrix, pipe.SubdivisionsInside, normal, true);
-                    tristrips.Add(tristrip);
+                    var scale = matrix.lossyScale;
+                    bool hasValidScale = scale.x != 0 && scale.y != 0;
+                    if (hasValidScale)
+                    {
+                        var normal = matrix.rotation * Vector3.forward;
+                        var tristrip = Endcap(matrix, pipe.SubdivisionsInside, normal, true);
+                        tristrips.Add(tristrip);
+                    }
                 }
 
                 return tristrips.ToArray();

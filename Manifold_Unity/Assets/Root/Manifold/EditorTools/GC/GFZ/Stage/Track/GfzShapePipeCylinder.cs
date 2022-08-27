@@ -100,8 +100,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 default:
                     return new Tristrip[][]
                     {
-                        TristripTemplates.Pipe.DebugInside(matrices, this),
-                        TristripTemplates.Pipe.DebugOutside(matrices, this),
+                        TristripTemplates.Pipe.DebugInside(matrices, this, isGfzCoordinateSpace),
+                        TristripTemplates.Pipe.DebugOutside(matrices, this, isGfzCoordinateSpace),
                         TristripTemplates.Pipe.DebugRingEndcap(matrices, this),
                     };
             }
@@ -116,7 +116,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 default:
                     return new Tristrip[][]
                     {
-                        TristripTemplates.Cylinder.Debug(matrices, this),
+                        TristripTemplates.Cylinder.Debug(matrices, this, isGfzCoordinateSpace),
                         TristripTemplates.Cylinder.DebugEndcap(matrices, this),
                     };
             }
