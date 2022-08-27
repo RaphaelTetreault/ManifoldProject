@@ -12,7 +12,14 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         [SerializeField] private PipeCylinderType type = PipeCylinderType.Pipe;
         [SerializeField] private PipeStyle pipeStyle;
         [SerializeField] private CylinderStyle cylinderStyle;
-        [SerializeField, Min(1f)] private float lengthDistance = 10f;
+        [SerializeField, Min(2f)] private float lengthDistance = 20f;
+        [SerializeField, Min(8)] private int subdivisionsInside = 32;
+        [SerializeField, Min(6)] private int subdivisionsOutside = 16;
+
+
+        public int SubdivisionsInside => subdivisionsInside;
+        public int SubdivisionsOutside => subdivisionsOutside;
+
 
         public PipeCylinderType Type
         {
@@ -35,25 +42,31 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public override Gcmf CreateGcmf(out GcmfTemplate[] gcmfTemplates, TplTextureContainer tpl)
         {
-            bool isPipe = type == PipeCylinderType.Pipe;
-
-            var tristripsCollections = isPipe
-                ? GetPipeTristrips(pipeStyle, true)
-                : GetCylinderTristrips(cylinderStyle, true);
-            gcmfTemplates = isPipe
-                ? GetPipeGcmfTemplates(pipeStyle)
-                : GetCylinderGcmfTemplates(cylinderStyle);
-
+            var tristripsCollections = GetTristrips(true);
+            gcmfTemplates = GetGcmfTemplates();
             var gcmf = GcmfTemplate.CreateGcmf(gcmfTemplates, tristripsCollections, tpl);
             return gcmf;
         }
 
+        public GcmfTemplate[] GetGcmfTemplates()
+        {
+            bool isPipe = type == PipeCylinderType.Pipe;
+            var gcmfTemplates = isPipe
+                ? GetPipeGcmfTemplates(pipeStyle)
+                : GetCylinderGcmfTemplates(cylinderStyle);
+            return gcmfTemplates;
+        }
         public GcmfTemplate[] GetPipeGcmfTemplates(PipeStyle pipeStyle)
         {
             switch (pipeStyle)
             {
                 default:
-                    return new GcmfTemplate[] { GcmfTemplates.Debug.CreateLitVertexColored() };
+                    return new GcmfTemplate[]
+                    {
+                        GcmfTemplates.Debug.CreateLitVertexColored(),
+                        GcmfTemplates.Debug.CreateLitVertexColored(),
+                        GcmfTemplates.Debug.CreateLitVertexColored(),
+                    };
             }
         }
         public GcmfTemplate[] GetCylinderGcmfTemplates(CylinderStyle cylinderStyle)
@@ -61,14 +74,25 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             switch (cylinderStyle)
             {
                 default:
-                    return new GcmfTemplate[] { GcmfTemplates.Debug.CreateLitVertexColored() };
+                    return new GcmfTemplate[]
+                    {
+                        GcmfTemplates.Debug.CreateLitVertexColored(),
+                        GcmfTemplates.Debug.CreateLitVertexColored(),
+                    };
             }
         }
 
+        public Tristrip[][] GetTristrips(bool isGfzCoordinateSpace)
+        {
+            bool isPipe = type == PipeCylinderType.Pipe;
+            var tristrips = isPipe
+                ? GetPipeTristrips(pipeStyle, isGfzCoordinateSpace)
+                : GetCylinderTristrips(cylinderStyle, isGfzCoordinateSpace);
+            return tristrips;
+        }
         public Tristrip[][] GetPipeTristrips(PipeStyle pipeStyle, bool isGfzCoordinateSpace)
         {
-            var originalMatrice = TristripGenerator.CreatePathMatrices(this, isGfzCoordinateSpace, lengthDistance);
-            var matrices = TristripGenerator.StripHeight(originalMatrice);
+            var matrices = TristripGenerator.CreatePathMatrices(this, isGfzCoordinateSpace, lengthDistance);
             var maxTime = GetRoot().GetMaxTime();
 
             switch (pipeStyle)
@@ -76,14 +100,15 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 default:
                     return new Tristrip[][]
                     {
-                        //TristripTemplates.Road.CreateDebug(matrices, this, WidthDivisions, LengthDistance, isGfzCoordinateSpace),
+                        TristripTemplates.Pipe.DebugInside(matrices, this),
+                        TristripTemplates.Pipe.DebugOutside(matrices, this),
+                        TristripTemplates.Pipe.DebugRingEndcap(matrices, this),
                     };
             }
         }
         public Tristrip[][] GetCylinderTristrips(CylinderStyle cylinderStyle, bool isGfzCoordinateSpace)
         {
-            var originalMatrice = TristripGenerator.CreatePathMatrices(this, isGfzCoordinateSpace, lengthDistance);
-            var matrices = TristripGenerator.StripHeight(originalMatrice);
+            var matrices = TristripGenerator.CreatePathMatrices(this, isGfzCoordinateSpace, lengthDistance);
             var maxTime = GetRoot().GetMaxTime();
 
             switch (cylinderStyle)
@@ -91,15 +116,16 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 default:
                     return new Tristrip[][]
                     {
-                        //TristripTemplates.Road.CreateDebug(matrices, this, WidthDivisions, LengthDistance, isGfzCoordinateSpace),
+                        TristripTemplates.Cylinder.Debug(matrices, this),
+                        TristripTemplates.Cylinder.DebugEndcap(matrices, this),
                     };
             }
         }
 
         public override Mesh CreateMesh()
         {
-            var tristrips = new Tristrip[0];
-
+            var tristripsColletion = GetTristrips(false);
+            var tristrips = CombinedTristrips(tristripsColletion);
             var mesh = TristripsToMesh(tristrips);
             mesh.name = $"Auto Gen - {name}";
             return mesh;
@@ -109,9 +135,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         {
             var children = CreateChildTrackSegments();
 
+            // Set flag on if cylinder
+            var typeFlags = type == PipeCylinderType.Cylinder ? TrackPipeCylinderFlags.IsCylinderNotPipe : 0;
+
             var trackSegment = new TrackSegment();
             trackSegment.OrderIndentifier = name;
-            trackSegment.SegmentType = TrackSegmentType.IsTrack;
+            trackSegment.SegmentType = TrackSegmentType.IsPipeOrCylinder;
+            trackSegment.PipeCylinderFlags = typeFlags;
             trackSegment.BranchIndex = GetBranchIndex();
             trackSegment.Children = children;
 

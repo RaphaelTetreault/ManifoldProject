@@ -29,9 +29,9 @@ namespace Manifold.EditorTools.GC.GFZ
             Vector3[] normals = new Vector3[tristrip.VertexCount];
             for (int i = 0; i < tristrip.VertexCount - 2; i++)
             {
-                var v0 = tristrip.positions[i+0];
-                var v1 = tristrip.positions[i+1];
-                var v2 = tristrip.positions[i+2];
+                var v0 = tristrip.positions[i + 0];
+                var v1 = tristrip.positions[i + 1];
+                var v2 = tristrip.positions[i + 2];
                 var v0v1 = v1 - v0; // direction vector v0 -> v1
                 var v0v2 = v2 - v0; // direction vector v0 -> v2
                 var cross = math.cross(v0v1, v0v2);
@@ -51,7 +51,50 @@ namespace Manifold.EditorTools.GC.GFZ
 
             return normals;
         }
+        public static void GetContinuity(GfzSegmentNode node, out bool isContinuousFrom, out bool isContinuousTo)
+        {
+            var root = node.GetRoot();
+            var prev = root.Prev;
+            var next = root.Next;
 
+            var from = prev.CreateHierarchichalAnimationCurveTRS(false);
+            var self = root.CreateHierarchichalAnimationCurveTRS(false);
+            var to = next.CreateHierarchichalAnimationCurveTRS(false);
+
+            isContinuousFrom = CheckpointUtility.IsContinuousBetweenFromTo(from, self);
+            isContinuousTo = CheckpointUtility.IsContinuousBetweenFromTo(self, to);
+
+            var rootShapes = root.GetShapeNodes();
+            var prevShapes = prev.GetShapeNodes();
+            var nextShapes = next.GetShapeNodes();
+
+            // Do a check to see if the two segments are the same shape. If not,
+            // force continuity to false.
+            foreach (var shape in rootShapes)
+            {
+                var selfType = shape.GetType();
+
+                foreach (var prevShape in prevShapes)
+                {
+                    var prevType = prevShape.GetType();
+                    if (prevType != selfType)
+                    {
+                        isContinuousFrom = false;
+                        break;
+                    }
+                }
+
+                foreach (var nextShape in nextShapes)
+                {
+                    var nextType = nextShape.GetType();
+                    if (nextType != selfType)
+                    {
+                        isContinuousTo = false;
+                        break;
+                    }
+                }
+            }
+        }
 
         public static class General
         {
@@ -1261,11 +1304,13 @@ namespace Manifold.EditorTools.GC.GFZ
                     var endpointA = new Vector3(-0.5f, kCurbHeight, 0);
                     var endpointB = new Vector3(+0.5f, kCurbHeight, 0);
 
-                    var from = road.GetRoot().Prev.CreateHierarchichalAnimationCurveTRS(false);
-                    var self = road.GetRoot().CreateHierarchichalAnimationCurveTRS(false);
-                    var to = road.GetRoot().Next.CreateHierarchichalAnimationCurveTRS(false);
-                    bool isContinuousFrom = CheckpointUtility.IsContinuousBetweenFromTo(from, self);
-                    bool isContinuousTo = CheckpointUtility.IsContinuousBetweenFromTo(self, to);
+                    //var from = road.GetRoot().Prev.CreateHierarchichalAnimationCurveTRS(false);
+                    //var self = road.GetRoot().CreateHierarchichalAnimationCurveTRS(false);
+                    //var to = road.GetRoot().Next.CreateHierarchichalAnimationCurveTRS(false);
+                    //bool isContinuousFrom = CheckpointUtility.IsContinuousBetweenFromTo(from, self);
+                    //bool isContinuousTo = CheckpointUtility.IsContinuousBetweenFromTo(self, to);
+                    GetContinuity(road, out bool isContinuousFrom, out bool isContinuousTo);
+
 
                     if (!isContinuousFrom)
                     {
@@ -1309,6 +1354,136 @@ namespace Manifold.EditorTools.GC.GFZ
 
             }
 
+        }
+
+        public static class Pipe
+        {
+            private static Tristrip CircleEndcap(Matrix4x4 matrix, int nTristrips, Vector3 normal, bool isBackFacing)
+            {
+                var innerMatrix = matrix;
+                var outerMatrix = Matrix4x4.TRS(matrix.Position(), matrix.rotation, matrix.lossyScale + Vector3.one * 5);
+
+                var vertices = CreateCircleVertices(nTristrips);
+                MutateScaleVertices(vertices, 0.5f);
+
+                var tristrip = new Tristrip();
+                int vertexCount = vertices.Length * 2;
+                tristrip.positions = new Vector3[vertexCount];
+                tristrip.normals = ArrayUtility.DefaultArray(normal, vertexCount);
+                for (int i = 0; i < vertices.Length; i++)
+                {
+                    int index0 = i * 2;
+                    int index1 = index0 + 1;
+                    Vector3 vertex = vertices[i];
+                    tristrip.positions[index0] = innerMatrix.MultiplyPoint(vertex);
+                    tristrip.positions[index1] = outerMatrix.MultiplyPoint(vertex);
+                }
+
+                // Make array to assign data
+                var tristrips = new Tristrip[] { tristrip };
+                AssignTristripMetadata(tristrips, isBackFacing, false);
+
+                return tristrip;
+            }
+
+            public static Tristrip[] DebugInside(Matrix4x4[] matrices, GfzShapePipeCylinder pipe)
+            {
+                var inner = GenerateCircle(matrices, false, pipe.SubdivisionsInside);
+                return inner;
+            }
+            public static Tristrip[] DebugOutside(Matrix4x4[] matrices, GfzShapePipeCylinder pipe)
+            {
+                var grownMatrices = ModifyMatrixScales(matrices, Vector3.one * 5);
+                var outer = GenerateCircle(grownMatrices, true, pipe.SubdivisionsOutside);
+                return outer;
+            }
+            public static Tristrip[] DebugRingEndcap(Matrix4x4[] matrices, GfzShapePipeCylinder pipe)
+            {
+                var tristrips = new List<Tristrip>();
+                GetContinuity(pipe, out bool isContinuousFrom, out bool isContinuousTo);
+
+                if (!isContinuousFrom)
+                {
+                    var matrix = matrices[0];
+                    var normal = matrix.rotation * Vector3.back;
+                    var tristrip = CircleEndcap(matrix, pipe.SubdivisionsInside, normal, false);
+                    tristrips.Add(tristrip);
+                }
+
+                if (!isContinuousTo)
+                {
+                    int lastIndex = matrices.Length - 1;
+                    var matrix = matrices[lastIndex];
+                    var normal = matrix.rotation * Vector3.forward;
+                    var tristrip = CircleEndcap(matrix, pipe.SubdivisionsInside, normal, true);
+                    tristrips.Add(tristrip);
+                }
+
+                return tristrips.ToArray();
+            }
+        }
+
+        public static class Cylinder
+        {
+            private static Tristrip Endcap(Matrix4x4 matrix, int nTristrips, Vector3 normal, bool isBackFacing)
+            {
+                var vertices = CreateCircleVertices(nTristrips);
+                MutateScaleVertices(vertices, 0.5f);
+
+                var tristrip = new Tristrip();
+                int vertexCount = vertices.Length - 1;
+                tristrip.positions = new Vector3[vertexCount];
+                tristrip.normals = ArrayUtility.DefaultArray(normal, vertexCount);
+
+                for (int i = 0; i < vertexCount; i++)
+                {
+                    bool isEven = i % 2 == 0;
+                    int halfI = i / 2;
+                    int index = isEven
+                        ? vertexCount - halfI
+                        : halfI;
+
+                    Vector3 vertex = vertices[index];
+                    vertex = matrix.MultiplyPoint(vertex);
+                    tristrip.positions[i] = vertex;
+                }
+
+                // Make array to assign data
+                var tristrips = new Tristrip[] { tristrip };
+                AssignTristripMetadata(tristrips, isBackFacing, false);
+
+                return tristrip;
+            }
+
+            public static Tristrip[] Debug(Matrix4x4[] matrices, GfzShapePipeCylinder cylinder)
+            {
+                var tristrips = GenerateCircle(matrices, true, cylinder.SubdivisionsInside);
+                return tristrips;
+            }
+            public static Tristrip[] DebugEndcap(Matrix4x4[] matrices, GfzShapePipeCylinder pipe)
+            {
+                var tristrips = new List<Tristrip>();
+                GetContinuity(pipe, out bool isContinuousFrom, out bool isContinuousTo);
+
+                if (!isContinuousFrom)
+                {
+                    var matrix = matrices[0];
+                    var normal = matrix.rotation * Vector3.back;
+                    var tristrip = Endcap(matrix, pipe.SubdivisionsInside, normal, false);
+                    tristrips.Add(tristrip);
+                }
+
+                if (!isContinuousTo)
+                {
+                    int lastIndex = matrices.Length - 1;
+                    var matrix = matrices[lastIndex];
+                    var normal = matrix.rotation * Vector3.forward;
+                    var tristrip = Endcap(matrix, pipe.SubdivisionsInside, normal, true);
+                    tristrips.Add(tristrip);
+                }
+
+                return tristrips.ToArray();
+            }
         }
 
         public static class Objects
@@ -1418,7 +1593,7 @@ namespace Manifold.EditorTools.GC.GFZ
                     new(1, 0),
                     new(1, 1),
                     new(0, 0),
-                    new(0, 1), 
+                    new(0, 1),
                     new(0.5f, 0),
                     new(0.5f, 1),
                 };

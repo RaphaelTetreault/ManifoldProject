@@ -226,7 +226,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             var normals = CreateCircleNormals(vertices, normalOutwards);
             MutateScaleVertices(vertices, 0.5f);
             var tristrips = GenerateTristrips(matrices, vertices, normals);
-            AssignTristripMetadata(tristrips, !normalOutwards, false);
+            AssignTristripMetadata(tristrips, normalOutwards, false);
 
             return tristrips;
         }
@@ -493,7 +493,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
         }
 
-        private static void AssignTristripMetadata(Tristrip[] tristrips, bool isBackFacing, bool isDoubleSided)
+        public static void AssignTristripMetadata(Tristrip[] tristrips, bool isBackFacing, bool isDoubleSided)
         {
             foreach (var tristrip in tristrips)
             {
