@@ -328,6 +328,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 normals[index1] = normal;
             }
 
+            // Compute normals for last vertices on tristrip
             {
                 Vector3 vertex0 = tristrip.positions[normals.Length-2];
                 Vector3 vertex1 = tristrip.positions[normals.Length-1];

@@ -29,10 +29,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         public enum PipeStyle
         {
             Debug,
+            MuteCity,
         }
         public enum CylinderStyle
         {
             Debug,
+            MuteCityCOM,
         }
 
         public override AnimationCurveTRS CopyAnimationCurveTRS(bool isGfzCoordinateSpace)
@@ -60,6 +62,14 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         {
             switch (pipeStyle)
             {
+                case PipeStyle.MuteCity:
+                    return new GcmfTemplate[]
+                    {
+                        GcmfTemplates.MuteCityCOM.RoadTopNoDividers(),
+                        GcmfTemplates.Debug.CreateLitVertexColored(),
+                        GcmfTemplates.Debug.CreateLitVertexColored(),
+                    };
+
                 default:
                     return new GcmfTemplate[]
                     {
@@ -73,6 +83,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         {
             switch (cylinderStyle)
             {
+                case CylinderStyle.MuteCityCOM:
+                    return new GcmfTemplate[]
+                    {
+                        GcmfTemplates.MuteCityCOM.RoadTopNoDividers(),
+                        GcmfTemplates.Debug.CreateLitVertexColored(),
+                    };
+
                 default:
                     return new GcmfTemplate[]
                     {
@@ -97,6 +114,14 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
             switch (pipeStyle)
             {
+                case PipeStyle.MuteCity:
+                    return new Tristrip[][]
+                    {
+                        TristripTemplates.Pipe.GenericInsideOneTexture(matrices, this, maxTime, isGfzCoordinateSpace),
+                        TristripTemplates.Pipe.DebugOutside(matrices, this, isGfzCoordinateSpace),
+                        TristripTemplates.Pipe.DebugRingEndcap(matrices, this),
+                    };
+
                 default:
                     return new Tristrip[][]
                     {
@@ -113,6 +138,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
             switch (cylinderStyle)
             {
+                case CylinderStyle.MuteCityCOM:
+                    return new Tristrip[][]
+                    {
+                        TristripTemplates.Cylinder.GenericOneTexture(matrices, this, maxTime, isGfzCoordinateSpace),
+                        TristripTemplates.Cylinder.DebugEndcap(matrices, this),
+                    };
+
                 default:
                     return new Tristrip[][]
                     {

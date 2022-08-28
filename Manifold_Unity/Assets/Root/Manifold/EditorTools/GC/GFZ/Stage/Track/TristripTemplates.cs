@@ -11,6 +11,14 @@ namespace Manifold.EditorTools.GC.GFZ
 {
     public static class TristripTemplates
     {
+        #region CONSTANTS
+
+        const float RoadTexStride = 32f;
+
+        #endregion
+
+
+
         public static Vector3 SurfaceNormalTOA(float opposite, float adjacent, Vector3 normal, bool isClockwise)
         {
             float angleRad = Mathf.Tan(opposite / adjacent);
@@ -1421,6 +1429,18 @@ namespace Manifold.EditorTools.GC.GFZ
 
                 return tristrips.ToArray();
             }
+
+            public static Tristrip[] GenericInsideOneTexture(Matrix4x4[] matrices, GfzShapePipeCylinder cylinder, float segmentLength, bool isGfzCoordinateSpace)
+            {
+                var tristrips = DebugInside(matrices, cylinder, isGfzCoordinateSpace);
+
+                float repetitionsRoadTexture = math.ceil(segmentLength / RoadTexStride);
+                var uvs0 = CreateTristripScaledUVs(tristrips, 8, repetitionsRoadTexture);
+                for (int i = 0; i < tristrips.Length; i++)
+                    tristrips[i].tex0 = uvs0[i];
+
+                return tristrips;
+            }
         }
 
         public static class Cylinder
@@ -1493,6 +1513,18 @@ namespace Manifold.EditorTools.GC.GFZ
                 }
 
                 return tristrips.ToArray();
+            }
+
+            public static Tristrip[] GenericOneTexture(Matrix4x4[] matrices, GfzShapePipeCylinder cylinder, float segmentLength, bool isGfzCoordinateSpace)
+            {
+                var tristrips = Debug(matrices, cylinder, isGfzCoordinateSpace);
+
+                float repetitionsRoadTexture = math.ceil(segmentLength / RoadTexStride);
+                var uvs0 = CreateTristripScaledUVs(tristrips, 8, repetitionsRoadTexture);
+                for (int i = 0; i < tristrips.Length; i++)
+                    tristrips[i].tex0 = uvs0[i];
+
+                return tristrips;
             }
         }
 
