@@ -18,6 +18,19 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             set => type = value;
         }
 
+        public override ShapeID ShapeIdentifier
+        {
+            get
+            {
+                bool isPipe = type == PipeCylinderType.Pipe;
+
+                if (isPipe)
+                    return ShapeID.pipe;
+                else
+                    return ShapeID.cylinder;
+            }
+        }
+
         public override AnimationCurveTRS CopyAnimationCurveTRS(bool isGfzCoordinateSpace)
         {
             throw new System.NotImplementedException();

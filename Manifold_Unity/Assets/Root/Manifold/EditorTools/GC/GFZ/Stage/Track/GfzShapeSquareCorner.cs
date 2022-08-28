@@ -23,6 +23,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         private float railHeight = 5f;
 
 
+        public override ShapeID ShapeIdentifier => ShapeID.road;
+
+
         public CornerTurnDirection TurnDirection
         {
             get => cornerDirection;

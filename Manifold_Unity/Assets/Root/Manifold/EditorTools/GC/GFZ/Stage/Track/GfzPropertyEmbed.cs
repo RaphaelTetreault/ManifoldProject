@@ -27,6 +27,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         [SerializeField] private Vector2 scrollSpeed = Vector2.one;
 
 
+        public override ShapeID ShapeIdentifier => ShapeID.embed;
+
+
         public SurfaceEmbedType Type { get => type; }
         public int WidthDivisions { get => widthDivisions; }
         public float LengthDistance { get => lengthDistance; }

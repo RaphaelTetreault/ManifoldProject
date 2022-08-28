@@ -24,7 +24,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         [field: SerializeField, Min(0f)] public float RailHeightRight { get; private set; } = 3f;
         [field: SerializeField] public bool HasLaneDividers { get; private set; } = true;
 
-
+        public override ShapeID ShapeIdentifier => ShapeID.road;
 
         public override AnimationCurveTRS CopyAnimationCurveTRS(bool isGfzCoordinateSpace)
         {
@@ -116,20 +116,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
         }
 
-        public Tristrip[] GetTristripsLinear(RoadMeshStyle meshStyle, bool isGfzCoordinateSpace)
-        {
-            var tristripsCollection = GetTristrips(meshStyle, isGfzCoordinateSpace);
-
-            var allTristrips = new List<Tristrip>();
-            foreach (var tristrips in tristripsCollection)
-                allTristrips.AddRange(tristrips);
-
-            return allTristrips.ToArray();
-        }
-
         public override Mesh CreateMesh()
         {
-            var tristrips = GetTristripsLinear(MeshStyle, false);
+            var tristripsCollection = GetTristrips(MeshStyle, false);
+            var tristrips = CombinedTristrips(tristripsCollection);
 
             var mesh = TristripsToMesh(tristrips);
             mesh.name = $"Auto Gen - {name}";

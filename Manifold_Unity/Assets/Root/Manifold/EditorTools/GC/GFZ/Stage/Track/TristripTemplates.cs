@@ -11,6 +11,14 @@ namespace Manifold.EditorTools.GC.GFZ
 {
     public static class TristripTemplates
     {
+        #region CONSTANTS
+
+        const float RoadTexStride = 32f;
+
+        #endregion
+
+
+
         public static Vector3 SurfaceNormalTOA(float opposite, float adjacent, Vector3 normal, bool isClockwise)
         {
             float angleRad = Mathf.Tan(opposite / adjacent);
@@ -29,9 +37,9 @@ namespace Manifold.EditorTools.GC.GFZ
             Vector3[] normals = new Vector3[tristrip.VertexCount];
             for (int i = 0; i < tristrip.VertexCount - 2; i++)
             {
-                var v0 = tristrip.positions[i+0];
-                var v1 = tristrip.positions[i+1];
-                var v2 = tristrip.positions[i+2];
+                var v0 = tristrip.positions[i + 0];
+                var v1 = tristrip.positions[i + 1];
+                var v2 = tristrip.positions[i + 2];
                 var v0v1 = v1 - v0; // direction vector v0 -> v1
                 var v0v2 = v2 - v0; // direction vector v0 -> v2
                 var cross = math.cross(v0v1, v0v2);
@@ -51,7 +59,51 @@ namespace Manifold.EditorTools.GC.GFZ
 
             return normals;
         }
+        public static void GetContinuity(GfzSegmentNode node, out bool isContinuousFrom, out bool isContinuousTo)
+        {
+            var root = node.GetRoot();
+            var prev = root.Prev;
+            var next = root.Next;
 
+            var from = prev.CreateHierarchichalAnimationCurveTRS(false);
+            var self = root.CreateHierarchichalAnimationCurveTRS(false);
+            var to = next.CreateHierarchichalAnimationCurveTRS(false);
+
+            isContinuousFrom = CheckpointUtility.IsContinuousBetweenFromTo(from, self);
+            isContinuousTo = CheckpointUtility.IsContinuousBetweenFromTo(self, to);
+
+            var rootShapes = root.GetShapeNodes();
+            var prevShapes = prev.GetShapeNodes();
+            var nextShapes = next.GetShapeNodes();
+
+            // Do a check to see if the two segments are the same shape. If not,
+            // force continuity to false.
+            foreach (var shape in rootShapes)
+            {
+                if (shape.ShapeIdentifier == GfzSegmentShape.ShapeID.embed)
+                    continue;
+
+                bool canBeContinuousFrom = CompareShapeIDs(shape, prevShapes);
+                bool canBeContinuousTo = CompareShapeIDs(shape, nextShapes);
+                isContinuousFrom &= canBeContinuousFrom;
+                isContinuousTo &= canBeContinuousTo;
+            }
+        }
+        private static bool CompareShapeIDs(GfzSegmentShape selfShape, GfzSegmentShape[] shapes)
+        {
+            foreach (var shape in shapes)
+            {
+                // Skip embeds
+                if (shape.ShapeIdentifier == GfzSegmentShape.ShapeID.embed)
+                    continue;
+
+                // See if from-to are the same archetype
+                // TODO: handle branches properly if one branch were to be a different type from another.
+                if (shape.ShapeIdentifier != selfShape.ShapeIdentifier)
+                    return false;
+            }
+            return true;
+        }
 
         public static class General
         {
@@ -791,12 +843,12 @@ namespace Manifold.EditorTools.GC.GFZ
                     var matricesRight = GetNormalizedMatrixWithPositionOffset(matrices, +1f);
                     // top left
                     {
-                        var leftOuter = new Vector3(+1.5f, +0.5f, 0);
-                        var rightOuter = new Vector3(-1.5f, +0.5f, 0);
-                        var leftInner = new Vector3(+3.75f, +0.0f, 0);
-                        var rightInner = new Vector3(-3.75f, +0.0f, 0);
-                        var normalLeft = Quaternion.Euler(0, 0, +6.34f) * Vector3.up; // with a x=2.25, y=0.5, angle is 6.34 degrees
-                        var normalRight = Quaternion.Euler(0, 0, -6.34f) * Vector3.up; // rotate normal, assign. TODO: need coord system??
+                        var leftOuter = new Vector3(+kCurbSlantOuter, kCurbHeight, 0);
+                        var rightOuter = new Vector3(-kCurbSlantOuter, kCurbHeight, 0);
+                        var leftInner = new Vector3(+kCurbSlantInner, 0.0f, 0);
+                        var rightInner = new Vector3(-kCurbSlantInner, 0.0f, 0);
+                        var normalLeft = SurfaceNormalTOA(kCurbHeight, kCurbSlantInner - kCurbSlantOuter, Vector3.up, true);
+                        var normalRight = SurfaceNormalTOA(kCurbHeight, kCurbSlantInner - kCurbSlantOuter, Vector3.up, false);
                         var tristripsLeft = GenerateTristripsLine(matricesLeft, leftOuter, leftInner, normalLeft, 1, true);
                         var tristripsRight = GenerateTristripsLine(matricesRight, rightOuter, rightInner, normalRight, 1, false);
                         Assert.IsTrue(tristripsLeft.Length == tristripsRight.Length);
@@ -1189,7 +1241,7 @@ namespace Manifold.EditorTools.GC.GFZ
                     var laneDividerSidesTristrips = new List<Tristrip>();
                     var matricesDefault = GetMatricesDefaultScale(matrices, Vector3.one);
                     float opposite = kLaneDividerHeight;
-                    float adjacent = kLaneDividerSide - kLaneDividerTop;
+                    float adjacent = (kLaneDividerSide - kLaneDividerTop) / 2f;
                     var normalLeft = SurfaceNormalTOA(opposite, adjacent, Vector3.up, false);
                     var normalRight = SurfaceNormalTOA(opposite, adjacent, Vector3.up, true);
                     OuterSpaceLaneDividerSide(matricesDefault, -1, normalLeft, laneDividerSidesTristrips);
@@ -1261,11 +1313,13 @@ namespace Manifold.EditorTools.GC.GFZ
                     var endpointA = new Vector3(-0.5f, kCurbHeight, 0);
                     var endpointB = new Vector3(+0.5f, kCurbHeight, 0);
 
-                    var from = road.GetRoot().Prev.CreateHierarchichalAnimationCurveTRS(false);
-                    var self = road.GetRoot().CreateHierarchichalAnimationCurveTRS(false);
-                    var to = road.GetRoot().Next.CreateHierarchichalAnimationCurveTRS(false);
-                    bool isContinuousFrom = CheckpointUtility.IsContinuousBetweenFromTo(from, self);
-                    bool isContinuousTo = CheckpointUtility.IsContinuousBetweenFromTo(self, to);
+                    //var from = road.GetRoot().Prev.CreateHierarchichalAnimationCurveTRS(false);
+                    //var self = road.GetRoot().CreateHierarchichalAnimationCurveTRS(false);
+                    //var to = road.GetRoot().Next.CreateHierarchichalAnimationCurveTRS(false);
+                    //bool isContinuousFrom = CheckpointUtility.IsContinuousBetweenFromTo(from, self);
+                    //bool isContinuousTo = CheckpointUtility.IsContinuousBetweenFromTo(self, to);
+                    GetContinuity(road, out bool isContinuousFrom, out bool isContinuousTo);
+
 
                     if (!isContinuousFrom)
                     {
@@ -1309,6 +1363,170 @@ namespace Manifold.EditorTools.GC.GFZ
 
             }
 
+        }
+
+        public static class Pipe
+        {
+            private static Tristrip CircleEndcap(Matrix4x4 matrix, int nTristrips, Vector3 normal, bool isBackFacing)
+            {
+                var innerMatrix = matrix;
+                var outerMatrix = Matrix4x4.TRS(matrix.Position(), matrix.rotation, matrix.lossyScale + Vector3.one * 5);
+
+                var vertices = CreateCircleVertices(nTristrips);
+                MutateScaleVertices(vertices, 0.5f);
+
+                var tristrip = new Tristrip();
+                int vertexCount = vertices.Length * 2;
+                tristrip.positions = new Vector3[vertexCount];
+                tristrip.normals = ArrayUtility.DefaultArray(normal, vertexCount);
+                for (int i = 0; i < vertices.Length; i++)
+                {
+                    int index0 = i * 2;
+                    int index1 = index0 + 1;
+                    Vector3 vertex = vertices[i];
+                    tristrip.positions[index0] = innerMatrix.MultiplyPoint(vertex);
+                    tristrip.positions[index1] = outerMatrix.MultiplyPoint(vertex);
+                }
+
+                // Make array to assign data
+                var tristrips = new Tristrip[] { tristrip };
+                AssignTristripMetadata(tristrips, isBackFacing, false);
+
+                return tristrip;
+            }
+
+            public static Tristrip[] DebugInside(Matrix4x4[] matrices, GfzShapePipeCylinder pipe, bool isGfzCoordinateSpace)
+            {
+                var inner = GenerateCircle(matrices, false, pipe.SubdivisionsInside, isGfzCoordinateSpace);
+                return inner;
+            }
+            public static Tristrip[] DebugOutside(Matrix4x4[] matrices, GfzShapePipeCylinder pipe, bool isGfzCoordinateSpace)
+            {
+                var grownMatrices = ModifyMatrixScales(matrices, Vector3.one * 5);
+                var outer = GenerateCircle(grownMatrices, true, pipe.SubdivisionsOutside, isGfzCoordinateSpace);
+                return outer;
+            }
+            public static Tristrip[] DebugRingEndcap(Matrix4x4[] matrices, GfzShapePipeCylinder pipe)
+            {
+                var tristrips = new List<Tristrip>();
+                GetContinuity(pipe, out bool isContinuousFrom, out bool isContinuousTo);
+
+                if (!isContinuousFrom)
+                {
+                    var matrix = matrices[0];
+                    var normal = matrix.rotation * Vector3.back;
+                    var tristrip = CircleEndcap(matrix, pipe.SubdivisionsInside, normal, false);
+                    tristrips.Add(tristrip);
+                }
+
+                if (!isContinuousTo)
+                {
+                    int lastIndex = matrices.Length - 1;
+                    var matrix = matrices[lastIndex];
+                    var normal = matrix.rotation * Vector3.forward;
+                    var tristrip = CircleEndcap(matrix, pipe.SubdivisionsInside, normal, true);
+                    tristrips.Add(tristrip);
+                }
+
+                return tristrips.ToArray();
+            }
+
+            public static Tristrip[] GenericInsideOneTexture(Matrix4x4[] matrices, GfzShapePipeCylinder cylinder, float segmentLength, bool isGfzCoordinateSpace)
+            {
+                var tristrips = DebugInside(matrices, cylinder, isGfzCoordinateSpace);
+
+                float repetitionsRoadTexture = math.ceil(segmentLength / RoadTexStride);
+                var uvs0 = CreateTristripScaledUVs(tristrips, 8, repetitionsRoadTexture);
+                for (int i = 0; i < tristrips.Length; i++)
+                    tristrips[i].tex0 = uvs0[i];
+
+                return tristrips;
+            }
+        }
+
+        public static class Cylinder
+        {
+            private static Tristrip Endcap(Matrix4x4 matrix, int nTristrips, Vector3 normal, bool isBackFacing)
+            {
+                var vertices = CreateCircleVertices(nTristrips);
+                MutateScaleVertices(vertices, 0.5f);
+
+                var tristrip = new Tristrip();
+                int vertexCount = vertices.Length - 1;
+                tristrip.positions = new Vector3[vertexCount];
+                tristrip.normals = ArrayUtility.DefaultArray(normal, vertexCount);
+
+                for (int i = 0; i < vertexCount; i++)
+                {
+                    bool isEven = i % 2 == 0;
+                    int halfI = i / 2;
+                    int index = isEven
+                        ? vertexCount - halfI
+                        : halfI;
+
+                    Vector3 vertex = vertices[index];
+                    vertex = matrix.MultiplyPoint(vertex);
+                    tristrip.positions[i] = vertex;
+                }
+
+                // Make array to assign data
+                var tristrips = new Tristrip[] { tristrip };
+                AssignTristripMetadata(tristrips, isBackFacing, false);
+
+                return tristrip;
+            }
+
+            public static Tristrip[] Debug(Matrix4x4[] matrices, GfzShapePipeCylinder cylinder, bool isGfzCoordinateSpace)
+            {
+                var tristrips = GenerateCircle(matrices, true, cylinder.SubdivisionsInside, isGfzCoordinateSpace);
+                return tristrips;
+            }
+            public static Tristrip[] DebugEndcap(Matrix4x4[] matrices, GfzShapePipeCylinder pipe)
+            {
+                var tristrips = new List<Tristrip>();
+                GetContinuity(pipe, out bool isContinuousFrom, out bool isContinuousTo);
+
+                if (!isContinuousFrom)
+                {
+                    var matrix = matrices[0];
+                    var scale = matrix.lossyScale;
+                    bool hasValidScale = scale.x != 0 && scale.y != 0;
+                    if (hasValidScale)
+                    {
+                        var normal = matrix.rotation * Vector3.back;
+                        var tristrip = Endcap(matrix, pipe.SubdivisionsInside, normal, false);
+                        tristrips.Add(tristrip);
+                    }
+                }
+
+                if (!isContinuousTo)
+                {
+                    int lastIndex = matrices.Length - 1;
+                    var matrix = matrices[lastIndex];
+                    var scale = matrix.lossyScale;
+                    bool hasValidScale = scale.x != 0 && scale.y != 0;
+                    if (hasValidScale)
+                    {
+                        var normal = matrix.rotation * Vector3.forward;
+                        var tristrip = Endcap(matrix, pipe.SubdivisionsInside, normal, true);
+                        tristrips.Add(tristrip);
+                    }
+                }
+
+                return tristrips.ToArray();
+            }
+
+            public static Tristrip[] GenericOneTexture(Matrix4x4[] matrices, GfzShapePipeCylinder cylinder, float segmentLength, bool isGfzCoordinateSpace)
+            {
+                var tristrips = Debug(matrices, cylinder, isGfzCoordinateSpace);
+
+                float repetitionsRoadTexture = math.ceil(segmentLength / RoadTexStride);
+                var uvs0 = CreateTristripScaledUVs(tristrips, 8, repetitionsRoadTexture);
+                for (int i = 0; i < tristrips.Length; i++)
+                    tristrips[i].tex0 = uvs0[i];
+
+                return tristrips;
+            }
         }
 
         public static class Objects
@@ -1418,7 +1636,7 @@ namespace Manifold.EditorTools.GC.GFZ
                     new(1, 0),
                     new(1, 1),
                     new(0, 0),
-                    new(0, 1), 
+                    new(0, 1),
                     new(0.5f, 0),
                     new(0.5f, 1),
                 };

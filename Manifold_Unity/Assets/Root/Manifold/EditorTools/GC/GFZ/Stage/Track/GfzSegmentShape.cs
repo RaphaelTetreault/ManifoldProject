@@ -13,6 +13,16 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
     {
         [field: SerializeField, ReadOnlyGUI] public MeshDisplay MeshDisplay { get; protected set; }
 
+        public enum ShapeID
+        {
+            road,
+            pipe,
+            cylinder,
+            embed,
+        }
+        public abstract ShapeID ShapeIdentifier { get; }
+
+
         public abstract Mesh CreateMesh();
         public abstract Gcmf CreateGcmf(out GcmfTemplate[] gcmfTemplates, TplTextureContainer tpl);
 
@@ -77,6 +87,16 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
             return submeshes;
         }
+
+        public Tristrip[] CombinedTristrips(Tristrip[][] tristripsCollection)
+        {
+            var allTristrips = new List<Tristrip>();
+            foreach (var tristrips in tristripsCollection)
+                allTristrips.AddRange(tristrips);
+
+            return allTristrips.ToArray();
+        }
+
 
         public void UpdateMesh()
         {

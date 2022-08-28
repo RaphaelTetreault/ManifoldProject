@@ -1050,6 +1050,12 @@ namespace Manifold.EditorTools.GC.GFZ
                 Assert.IsTrue(textureHashes.Length == tevLayers.Length);
                 return template;
             }
+            /// <summary>
+            /// 
+            /// </summary>
+            /// <remarks>
+            /// One texture.
+            /// </remarks>
             public static GcmfTemplate RoadTopNoDividers()
             {
                 // Remove second tex/tev which is the dividers
