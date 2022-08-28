@@ -843,12 +843,12 @@ namespace Manifold.EditorTools.GC.GFZ
                     var matricesRight = GetNormalizedMatrixWithPositionOffset(matrices, +1f);
                     // top left
                     {
-                        var leftOuter = new Vector3(+1.5f, +0.5f, 0);
-                        var rightOuter = new Vector3(-1.5f, +0.5f, 0);
-                        var leftInner = new Vector3(+3.75f, +0.0f, 0);
-                        var rightInner = new Vector3(-3.75f, +0.0f, 0);
-                        var normalLeft = Quaternion.Euler(0, 0, +6.34f) * Vector3.up; // with a x=2.25, y=0.5, angle is 6.34 degrees
-                        var normalRight = Quaternion.Euler(0, 0, -6.34f) * Vector3.up; // rotate normal, assign. TODO: need coord system??
+                        var leftOuter = new Vector3(+kCurbSlantOuter, kCurbHeight, 0);
+                        var rightOuter = new Vector3(-kCurbSlantOuter, kCurbHeight, 0);
+                        var leftInner = new Vector3(+kCurbSlantInner, 0.0f, 0);
+                        var rightInner = new Vector3(-kCurbSlantInner, 0.0f, 0);
+                        var normalLeft = SurfaceNormalTOA(kCurbHeight, kCurbSlantInner - kCurbSlantOuter, Vector3.up, true);
+                        var normalRight = SurfaceNormalTOA(kCurbHeight, kCurbSlantInner - kCurbSlantOuter, Vector3.up, false);
                         var tristripsLeft = GenerateTristripsLine(matricesLeft, leftOuter, leftInner, normalLeft, 1, true);
                         var tristripsRight = GenerateTristripsLine(matricesRight, rightOuter, rightInner, normalRight, 1, false);
                         Assert.IsTrue(tristripsLeft.Length == tristripsRight.Length);
@@ -1241,7 +1241,7 @@ namespace Manifold.EditorTools.GC.GFZ
                     var laneDividerSidesTristrips = new List<Tristrip>();
                     var matricesDefault = GetMatricesDefaultScale(matrices, Vector3.one);
                     float opposite = kLaneDividerHeight;
-                    float adjacent = kLaneDividerSide - kLaneDividerTop;
+                    float adjacent = (kLaneDividerSide - kLaneDividerTop) / 2f;
                     var normalLeft = SurfaceNormalTOA(opposite, adjacent, Vector3.up, false);
                     var normalRight = SurfaceNormalTOA(opposite, adjacent, Vector3.up, true);
                     OuterSpaceLaneDividerSide(matricesDefault, -1, normalLeft, laneDividerSidesTristrips);
