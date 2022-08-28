@@ -1550,25 +1550,6 @@ namespace Manifold.EditorTools.GC.GFZ
                 return allTristrips.ToArray();
             }
 
-            // DELETE COPY PASTE
-            public static Tristrip[] DebugOutside(Matrix4x4[] matricesLeft, Matrix4x4[] matricesRight, Matrix4x4[] matricesTop, Matrix4x4[] matricesBottom, GfzShapeCapsule capsule, bool isGfzCoordinateSpace)
-            {
-                Vector3 left = Vector3.left * 0.5f;
-                Vector3 right = Vector3.right * 0.5f;
-                Vector3 up = Vector3.up;
-
-                // TODO: change smoothing!? Have it out as separate function, concat tristrips in right order, then smooth that!?
-                var sideLeft = GenerateCircle(matricesLeft, true, capsule.SubdivideSemiCircle, false, isGfzCoordinateSpace, 0, 180);
-                var sideRight = GenerateCircle(matricesRight, true, capsule.SubdivideSemiCircle, false, isGfzCoordinateSpace, 180, 360);
-                var sideTop = GenerateTristripsLine(matricesTop, left, right, up, capsule.SubdivideLine, false, false);
-                var sideBot = GenerateTristripsLine(matricesBottom, left, right, up, capsule.SubdivideLine, false, false);
-                var allTristrips = new List<Tristrip>();
-                allTristrips.AddRange(sideLeft);
-                allTristrips.AddRange(sideRight);//, sideTop, sideBot);
-                allTristrips.AddRange(sideTop);//, sideTop, sideBot);
-                allTristrips.AddRange(sideBot);//, sideTop, sideBot);
-                return allTristrips.ToArray();
-            }
         }
 
         public static class Objects

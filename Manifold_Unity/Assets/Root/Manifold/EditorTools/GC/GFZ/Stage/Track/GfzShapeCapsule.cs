@@ -15,7 +15,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         [SerializeField, Min(2)] private int lengthDistance = 20;
         [SerializeField, Min(4)] private int subdivideSemiCircle = 16;
         [SerializeField, Min(1)] private int subdivideLinee = 1;
-        [SerializeField] private UnityEngine.AnimationCurve capsuleWidth = new(new(0, 45), new(1, 45));
+        [SerializeField] private UnityEngine.AnimationCurve capsuleWidth = new(new(0, 1), new(1, 1));
 
         public int SubdivideSemiCircle => subdivideSemiCircle;
         public int SubdivideLine => subdivideLinee;
@@ -170,7 +170,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 default:
                     return new Tristrip[][]
                     {
-                        TristripTemplates.CapsulePipe.DebugOutside(matricesLeft, matricesRight, matricesTop, matricesBottom, this, isGfzCoordinateSpace),
+                        //TristripTemplates.CapsulePipe.DebugOutside(matricesLeft, matricesRight, matricesTop, matricesBottom, this, isGfzCoordinateSpace),
                         //TristripTemplates.Cylinder.DebugEndcap(matrices, this),
                     };
             }
@@ -198,8 +198,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             capsule.EmbeddedPropertyType = TrackEmbeddedPropertyType.IsCapsulePipe;
             //capsule.PipeCylinderFlags = typeFlags;
             capsule.BranchIndex = GetBranchIndex();
-            //capsule.AnimationCurveTRS = capsuleTRS.ToTrackSegment();
-            capsule.FallbackPosition = new Unity.Mathematics.float3(30f/90f, 0, 0);
+            capsule.AnimationCurveTRS = capsuleTRS.ToTrackSegment();
+            //capsule.FallbackPosition = new Unity.Mathematics.float3(60f/90f, 0, 0);
 
             var matrix = new TrackSegment();
             matrix.OrderIndentifier = name + "_matrix";
@@ -225,15 +225,16 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             float direction = isLeftSide ? 0.5f : -0.5f;
             for (int i = 0; i < matrices.Length; i++)
             {
-                float percentage = i / (matrices.Length - 1);
-                float width = animationCurve.EvaluateNormalized(percentage);
-                Vector3 widthOffset = new Vector3(width * direction, 0, 0);
-
                 var matrix = matrices[i];
                 var position = matrix.Position();
                 var rotation = matrix.rotation;
                 var scale = matrix.lossyScale;
+
+                float percentage = i / (matrices.Length - 1f);
+                float width = animationCurve.EvaluateNormalized(percentage) * 2;
+                Vector3 widthOffset = new Vector3(width * direction * scale.x, 0, 0);
                 position += rotation * widthOffset;
+                scale = new Vector3(scale.y, scale.y, 1);
 
                 offsetMatrices[i] = Matrix4x4.TRS(position, rotation, scale);
             }
@@ -254,15 +255,15 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 var rotation = matrix.rotation;
                 var scale = matrix.lossyScale;
 
-                float percentage = i / (matrices.Length - 1);
+                float percentage = i / (matrices.Length - 1f);
 
                 //
-                float width = animationCurve.EvaluateNormalized(percentage);
+                float width = animationCurve.EvaluateNormalized(percentage) * 2;
                 Vector3 heightOffset = new Vector3(0, scale.y * direction, 0);
 
                 position += rotation * heightOffset;
                 rotation = rotation * rotationOffset;
-                scale = new Vector3(width, scale.y, scale.z);
+                scale = new Vector3(width * scale.x, scale.y, scale.z);
 
                 offsetMatrices[i] = Matrix4x4.TRS(position, rotation, scale);
             }
