@@ -220,16 +220,16 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
             return tristrips;
         }
-        public static Tristrip[] GenerateCircle(Matrix4x4[] matrices, bool normalOutwards, int nTristrips, bool isGfzCoordinateSpace)
+        public static Tristrip[] GenerateCircle(Matrix4x4[] matrices, bool normalOutwards, int nTristrips, bool smoothEnds, bool isGfzCoordinateSpace, float angleFrom = 0, float angleTo = 360)
         {
-            var vertices = CreateCircleVertices(nTristrips);
+            var vertices = CreateCircleVertices(nTristrips, angleFrom, angleTo);
             MutateScaleVertices(vertices, 0.5f);
             // Temp: maybe break out function, remove forced normal parameter?
             var blankNormals = ArrayUtility.DefaultArray(Vector3.zero, vertices.Length);
             var tristrips = GenerateTristrips(matrices, vertices, blankNormals);
 
             bool invertNormals = !normalOutwards;
-            GenericNormalsFromTristripVerticesSmooth(tristrips, invertNormals, isGfzCoordinateSpace);
+            GenericNormalsFromTristripVerticesSmooth(tristrips, invertNormals, smoothEnds, isGfzCoordinateSpace);
             //foreach (var tristrip in tristrips)
             //tristrip.normals = GenericNormalsFromTristripVertices(tristrip, isGfzCoordinateSpace);
             //CreateCircleNormals(matrices, tristrip, normalOutwards);
@@ -250,13 +250,17 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
             return vertices;
         }
-        public static Vector3[] CreateCircleVertices(int nTristrips)
+        public static Vector3[] CreateCircleVertices(int nTristrips, float angleFrom = 0, float angleTo = 360)
         {
+            float from = angleFrom * Mathf.Deg2Rad;
+            float to = angleTo * Mathf.Deg2Rad;
+
             Vector3[] vertices = new Vector3[nTristrips + 1];
             for (int i = 0; i <= nTristrips; i++) // loop wraps and reconnects final vertices
             {
                 float percentage = i / (float)nTristrips;
-                float theta = percentage * Mathf.PI * 2f;
+                float theta = math.lerp(from, to, percentage);
+                //float theta = percentage * Mathf.PI * 2f;
                 float x = Mathf.Sin(theta);
                 float y = Mathf.Cos(theta);
                 Vector3 point = new Vector3(x, y, 0);
@@ -347,7 +351,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
             return normals;
         }
-        public static void GenericNormalsFromTristripVerticesSmooth(Tristrip[] tristrips, bool invertNormals, bool isGfzCoordinateSpace)
+        public static void GenericNormalsFromTristripVerticesSmooth(Tristrip[] tristrips, bool invertNormals, bool smoothEnds, bool isGfzCoordinateSpace)
         {
             foreach (var tristrip in tristrips)
             {
@@ -369,6 +373,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 }
             }
 
+            if (smoothEnds)
             {
                 int firstIndex = 0;
                 int lastIndex = tristrips.Length - 1;

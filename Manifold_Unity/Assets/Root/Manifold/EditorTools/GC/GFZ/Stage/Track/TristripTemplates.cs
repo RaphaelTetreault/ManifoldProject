@@ -1397,13 +1397,13 @@ namespace Manifold.EditorTools.GC.GFZ
 
             public static Tristrip[] DebugInside(Matrix4x4[] matrices, GfzShapePipeCylinder pipe, bool isGfzCoordinateSpace)
             {
-                var inner = GenerateCircle(matrices, false, pipe.SubdivisionsInside, isGfzCoordinateSpace);
+                var inner = GenerateCircle(matrices, false, pipe.SubdivisionsInside, true, isGfzCoordinateSpace);
                 return inner;
             }
             public static Tristrip[] DebugOutside(Matrix4x4[] matrices, GfzShapePipeCylinder pipe, bool isGfzCoordinateSpace)
             {
                 var grownMatrices = ModifyMatrixScales(matrices, Vector3.one * 5);
-                var outer = GenerateCircle(grownMatrices, true, pipe.SubdivisionsOutside, isGfzCoordinateSpace);
+                var outer = GenerateCircle(grownMatrices, true, pipe.SubdivisionsOutside, true, isGfzCoordinateSpace);
                 return outer;
             }
             public static Tristrip[] DebugRingEndcap(Matrix4x4[] matrices, GfzShapePipeCylinder pipe)
@@ -1478,7 +1478,7 @@ namespace Manifold.EditorTools.GC.GFZ
 
             public static Tristrip[] Debug(Matrix4x4[] matrices, GfzShapePipeCylinder cylinder, bool isGfzCoordinateSpace)
             {
-                var tristrips = GenerateCircle(matrices, true, cylinder.SubdivisionsInside, isGfzCoordinateSpace);
+                var tristrips = GenerateCircle(matrices, true, cylinder.SubdivisionsInside, true, isGfzCoordinateSpace);
                 return tristrips;
             }
             public static Tristrip[] DebugEndcap(Matrix4x4[] matrices, GfzShapePipeCylinder pipe)
@@ -1526,6 +1526,48 @@ namespace Manifold.EditorTools.GC.GFZ
                     tristrips[i].tex0 = uvs0[i];
 
                 return tristrips;
+            }
+        }
+
+        public static class CapsulePipe
+        {
+            public static Tristrip[] DebugInside(Matrix4x4[] matricesLeft, Matrix4x4[] matricesRight, Matrix4x4[] matricesTop, Matrix4x4[] matricesBottom, GfzShapeCapsule capsule, bool isGfzCoordinateSpace)
+            {
+                Vector3 left = Vector3.left * 0.5f;
+                Vector3 right = Vector3.right * 0.5f;
+                Vector3 up = Vector3.up;
+
+                // TODO: change smoothing!? Have it out as separate function, concat tristrips in right order, then smooth that!?
+                var sideLeft = GenerateCircle(matricesLeft, false, capsule.SubdivideSemiCircle, false, isGfzCoordinateSpace, 0, 180);
+                var sideRight = GenerateCircle(matricesRight, false, capsule.SubdivideSemiCircle, false, isGfzCoordinateSpace, 180, 360);
+                var sideTop = GenerateTristripsLine(matricesTop, left, right, up, capsule.SubdivideLine, true, false);
+                var sideBot = GenerateTristripsLine(matricesBottom, left, right, up, capsule.SubdivideLine, true, false);
+                var allTristrips = new List<Tristrip>();
+                allTristrips.AddRange(sideLeft);
+                allTristrips.AddRange(sideRight);//, sideTop, sideBot);
+                allTristrips.AddRange(sideTop);//, sideTop, sideBot);
+                allTristrips.AddRange(sideBot);//, sideTop, sideBot);
+                return allTristrips.ToArray();
+            }
+
+            // DELETE COPY PASTE
+            public static Tristrip[] DebugOutside(Matrix4x4[] matricesLeft, Matrix4x4[] matricesRight, Matrix4x4[] matricesTop, Matrix4x4[] matricesBottom, GfzShapeCapsule capsule, bool isGfzCoordinateSpace)
+            {
+                Vector3 left = Vector3.left * 0.5f;
+                Vector3 right = Vector3.right * 0.5f;
+                Vector3 up = Vector3.up;
+
+                // TODO: change smoothing!? Have it out as separate function, concat tristrips in right order, then smooth that!?
+                var sideLeft = GenerateCircle(matricesLeft, true, capsule.SubdivideSemiCircle, false, isGfzCoordinateSpace, 0, 180);
+                var sideRight = GenerateCircle(matricesRight, true, capsule.SubdivideSemiCircle, false, isGfzCoordinateSpace, 180, 360);
+                var sideTop = GenerateTristripsLine(matricesTop, left, right, up, capsule.SubdivideLine, false, false);
+                var sideBot = GenerateTristripsLine(matricesBottom, left, right, up, capsule.SubdivideLine, false, false);
+                var allTristrips = new List<Tristrip>();
+                allTristrips.AddRange(sideLeft);
+                allTristrips.AddRange(sideRight);//, sideTop, sideBot);
+                allTristrips.AddRange(sideTop);//, sideTop, sideBot);
+                allTristrips.AddRange(sideBot);//, sideTop, sideBot);
+                return allTristrips.ToArray();
             }
         }
 
