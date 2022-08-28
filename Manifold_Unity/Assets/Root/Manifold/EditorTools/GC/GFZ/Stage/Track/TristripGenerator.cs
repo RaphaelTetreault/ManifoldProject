@@ -228,7 +228,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             var blankNormals = ArrayUtility.DefaultArray(Vector3.zero, vertices.Length);
             var tristrips = GenerateTristrips(matrices, vertices, blankNormals);
 
-            GenericNormalsFromTristripVerticesSmooth(tristrips, true, isGfzCoordinateSpace);
+            bool invertNormals = !normalOutwards;
+            GenericNormalsFromTristripVerticesSmooth(tristrips, invertNormals, isGfzCoordinateSpace);
             //foreach (var tristrip in tristrips)
             //tristrip.normals = GenericNormalsFromTristripVertices(tristrip, isGfzCoordinateSpace);
             //CreateCircleNormals(matrices, tristrip, normalOutwards);
@@ -309,8 +310,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
             return normals;
         }
-        public static Vector3[] GenericNormalsFromTristripVertices(Tristrip tristrip, bool isGfzCoordinateSpace)
+        public static Vector3[] GenericNormalsFromTristripVertices(Tristrip tristrip, bool invertNormals, bool isGfzCoordinateSpace)
         {
+            bool doInvertNormals = invertNormals ^ isGfzCoordinateSpace;
+
+
             Vector3[] normals = new Vector3[tristrip.VertexCount];
             for (int i = 0; i < normals.Length - 2; i += 2) // two at a time
             {
@@ -322,7 +326,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 Vector3 vertex2 = tristrip.positions[index2];
                 Vector3 dir01 = vertex1 - vertex0;
                 Vector3 dir02 = vertex2 - vertex0;
-                Vector3 normal = isGfzCoordinateSpace ? math.cross(dir01, dir02) : math.cross(dir02, dir01);
+                Vector3 normal = doInvertNormals ? math.cross(dir01, dir02) : math.cross(dir02, dir01);
                 normal = math.normalize(normal);
                 normals[index0] = normal;
                 normals[index1] = normal;
@@ -335,7 +339,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 Vector3 vertex2 = tristrip.positions[normals.Length-3];
                 Vector3 dir01 = vertex1 - vertex0;
                 Vector3 dir02 = vertex2 - vertex0;
-                Vector3 normal = isGfzCoordinateSpace ? math.cross(dir02, dir01) : math.cross(dir01, dir02);
+                Vector3 normal = doInvertNormals ? math.cross(dir02, dir01) : math.cross(dir01, dir02);
                 normal = math.normalize(normal);
                 normals[normals.Length - 2] = normal;
                 normals[normals.Length - 1] = normal;
@@ -343,11 +347,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
             return normals;
         }
-        public static void GenericNormalsFromTristripVerticesSmooth(Tristrip[] tristrips, bool smoothFirstLast, bool isGfzCoordinateSpace)
+        public static void GenericNormalsFromTristripVerticesSmooth(Tristrip[] tristrips, bool invertNormals, bool isGfzCoordinateSpace)
         {
             foreach (var tristrip in tristrips)
             {
-                tristrip.normals = GenericNormalsFromTristripVertices(tristrip, isGfzCoordinateSpace);
+                tristrip.normals = GenericNormalsFromTristripVertices(tristrip, invertNormals, isGfzCoordinateSpace);
             }
 
             // Averages normals on shared vertices between tristrips
@@ -365,7 +369,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 }
             }
 
-            if (smoothFirstLast)
             {
                 int firstIndex = 0;
                 int lastIndex = tristrips.Length - 1;

@@ -24,7 +24,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         [field: SerializeField, Min(0f)] public float RailHeightRight { get; private set; } = 3f;
         [field: SerializeField] public bool HasLaneDividers { get; private set; } = true;
 
-
+        public override ShapeID ShapeIdentifier => ShapeID.road;
 
         public override AnimationCurveTRS CopyAnimationCurveTRS(bool isGfzCoordinateSpace)
         {

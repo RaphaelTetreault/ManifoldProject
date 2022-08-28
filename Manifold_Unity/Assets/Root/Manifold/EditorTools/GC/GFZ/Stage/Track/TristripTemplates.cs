@@ -80,28 +80,29 @@ namespace Manifold.EditorTools.GC.GFZ
             // force continuity to false.
             foreach (var shape in rootShapes)
             {
-                var selfType = shape.GetType();
+                if (shape.ShapeIdentifier == GfzSegmentShape.ShapeID.embed)
+                    continue;
 
-                foreach (var prevShape in prevShapes)
-                {
-                    var prevType = prevShape.GetType();
-                    if (prevType != selfType)
-                    {
-                        isContinuousFrom = false;
-                        break;
-                    }
-                }
-
-                foreach (var nextShape in nextShapes)
-                {
-                    var nextType = nextShape.GetType();
-                    if (nextType != selfType)
-                    {
-                        isContinuousTo = false;
-                        break;
-                    }
-                }
+                bool canBeContinuousFrom = CompareShapeIDs(shape, prevShapes);
+                bool canBeContinuousTo = CompareShapeIDs(shape, nextShapes);
+                isContinuousFrom &= canBeContinuousFrom;
+                isContinuousTo &= canBeContinuousTo;
             }
+        }
+        private static bool CompareShapeIDs(GfzSegmentShape selfShape, GfzSegmentShape[] shapes)
+        {
+            foreach (var shape in shapes)
+            {
+                // Skip embeds
+                if (shape.ShapeIdentifier == GfzSegmentShape.ShapeID.embed)
+                    continue;
+
+                // See if from-to are the same archetype
+                // TODO: handle branches properly if one branch were to be a different type from another.
+                if (shape.ShapeIdentifier != selfShape.ShapeIdentifier)
+                    return false;
+            }
+            return true;
         }
 
         public static class General
