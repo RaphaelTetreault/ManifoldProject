@@ -403,9 +403,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     position = new Vector3(0f, 0f, 0f),
                     inTangent = new Vector3(0f, 0f, -100f),
                     outTangent = new Vector3(0f, 0f, 100f),
-                    width = 64f,
+                    width = CourseConst.AverageCourseWidth,
                     widthTangentMode = AnimationUtility.TangentMode.Free,
-                    height = 1f,
+                    height = CourseConst.AverageCourseWidth,
                     heightTangentMode = AnimationUtility.TangentMode.Free,
                     roll = 0f,
                     rollTangentMode = AnimationUtility.TangentMode.Free,
@@ -418,9 +418,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     position = new Vector3(0f, 0f, 400f),
                     inTangent = new Vector3(0f, 0f, 300f),
                     outTangent = new Vector3(0f, 0f, 500f),
-                    width = 64f,
+                    width = CourseConst.AverageCourseWidth,
                     widthTangentMode = AnimationUtility.TangentMode.Free,
-                    height = 1f,
+                    height = CourseConst.AverageCourseWidth,
                     heightTangentMode = AnimationUtility.TangentMode.Free,
                     roll = 0f,
                     rollTangentMode = AnimationUtility.TangentMode.Free,
@@ -508,7 +508,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 // SCALE.Z, const scale of 1f
                 var key0 = new Keyframe(0, 1f);
                 var key1 = new Keyframe((float)totalDistance, 1f);
-                trs.Scale.y = new AnimationCurve(key0, key1);
                 trs.Scale.z = new AnimationCurve(key0, key1);
             }
 
