@@ -552,6 +552,7 @@ namespace Manifold.EditorTools.GC.GFZ
                     var matrix0 = hacTRS.EvaluateHierarchyMatrix(time);
                     var matrix1 = hacTRS.EvaluateHierarchyMatrix(time + 3f);// 3 units forward
                     var matrices01 = new Matrix4x4[] { matrix0, matrix1 };
+                    matrices01 = StripHeight(matrices01);
 
                     var endpointA = new Vector3(-0.5f, +0.10f, 0);
                     var endpointB = new Vector3(+0.5f, +0.10f, 0);
