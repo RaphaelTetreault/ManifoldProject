@@ -201,14 +201,14 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             // 0.5f since this is the left/right position of the circle-ends radii centers.
             // This results in the track transform's scale.x being 1:1 with the width of the capsule.
 
-            var matrix = new TrackSegment();
-            matrix.OrderIndentifier = name + "_matrix";
-            matrix.SegmentType = TrackSegmentType.IsMatrix;
-            matrix.BranchIndex = GetBranchIndex();
-            matrix.Children = new TrackSegment[] { capsule };
-            matrix.PipeCylinderFlags = typeFlags;
+            //var matrix = new TrackSegment();
+            //matrix.OrderIndentifier = name + "_matrix";
+            //matrix.SegmentType = TrackSegmentType.IsMatrix;
+            //matrix.BranchIndex = GetBranchIndex();
+            //matrix.Children = new TrackSegment[] { capsule };
+            //matrix.PipeCylinderFlags = typeFlags;
 
-            return matrix;
+            return capsule;
         }
 
 
@@ -216,7 +216,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         {
             // do nothing :)
         }
-
 
 
         private static Matrix4x4[] SemiCirclesMatrices(Matrix4x4[] matrices, UnityEngine.AnimationCurve animationCurve, bool isLeftSide)
