@@ -73,8 +73,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             // FOG
             {
                 var gfzFogs = GameObject.FindObjectsOfType<GfzFog>();
-                bool hasAtLeastOneFiogParameter = gfzFogs.Length > 0;
-                if (hasAtLeastOneFiogParameter)
+                bool hasAtLeastOneFogParameter = gfzFogs.Length > 0;
+                if (hasAtLeastOneFogParameter)
                 {
                     if (gfzFogs.Length > 1)
                     {
@@ -87,6 +87,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                     // Use functions to get fog parameters
                     scene.fog = gfzFog.ToGfzFog();
                     scene.fogCurves = gfzFog.ToGfzFogCurves();
+                }
+                else
+                {
+                    scene.fog = new Fog();
                 }
             }
 
