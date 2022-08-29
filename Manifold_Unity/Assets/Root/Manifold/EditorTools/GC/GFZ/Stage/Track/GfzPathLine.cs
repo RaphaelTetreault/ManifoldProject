@@ -15,7 +15,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         [SerializeField] private UnityEngine.AnimationCurve rotationY = CreateDefaultCurve();
         [SerializeField] private UnityEngine.AnimationCurve rotationZ = CreateDefaultCurve();
         [SerializeField] private UnityEngine.AnimationCurve scaleX = CreateDefaultCurve(CourseConst.AverageCourseWidth);
-        [SerializeField] private UnityEngine.AnimationCurve scaleY = CreateDefaultCurve(1);
+        [SerializeField] private UnityEngine.AnimationCurve scaleY = CreateDefaultCurve(CourseConst.AverageCourseWidth);
         [SerializeField] private AnimationCurveTRS animationCurveTRS = new();
         //
         [SerializeField, Min(1f)] private float step = 10f;
