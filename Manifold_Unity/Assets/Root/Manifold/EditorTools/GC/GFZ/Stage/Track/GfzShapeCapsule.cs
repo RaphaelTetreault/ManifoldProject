@@ -196,10 +196,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             capsule.OrderIndentifier = name + "_capsule";
             capsule.SegmentType = TrackSegmentType.IsEmbed;
             capsule.EmbeddedPropertyType = TrackEmbeddedPropertyType.IsCapsulePipe;
-            //capsule.PipeCylinderFlags = typeFlags;
             capsule.BranchIndex = GetBranchIndex();
-            capsule.AnimationCurveTRS = capsuleTRS.ToTrackSegment();
-            //capsule.FallbackPosition = new Unity.Mathematics.float3(60f/90f, 0, 0);
+            capsule.FallbackPosition = new Unity.Mathematics.float3(0.5f, 0, 0);
+            // 0.5f since this is the left/right position of the circle-ends radii centers.
+            // This results in the track transform's scale.x being 1:1 with the width of the capsule.
 
             var matrix = new TrackSegment();
             matrix.OrderIndentifier = name + "_matrix";
@@ -230,9 +230,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 var rotation = matrix.rotation;
                 var scale = matrix.lossyScale;
 
-                float percentage = i / (matrices.Length - 1f);
-                float width = animationCurve.EvaluateNormalized(percentage) * 2;
-                Vector3 widthOffset = new Vector3(width * direction * scale.x, 0, 0);
+                Vector3 widthOffset = new Vector3(scale.x * direction, 0, 0);
                 position += rotation * widthOffset;
                 scale = new Vector3(scale.y, scale.y, 1);
 
@@ -242,10 +240,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         }
         private static Matrix4x4[] LineMatricesPosition(Matrix4x4[] matrices, UnityEngine.AnimationCurve animationCurve, bool isTop)
         {
+            float direction = isTop ? 0.5f : -0.5f;
             Quaternion rotationOffset = isTop
                 ? Quaternion.Euler(new Vector3(0, 0, 180))
                 : Quaternion.identity;
-            float direction = isTop ? 0.5f : -0.5f;
 
             var offsetMatrices = new Matrix4x4[matrices.Length];
             for (int i = 0; i < matrices.Length; i++)
@@ -255,15 +253,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 var rotation = matrix.rotation;
                 var scale = matrix.lossyScale;
 
-                float percentage = i / (matrices.Length - 1f);
-
-                //
-                float width = animationCurve.EvaluateNormalized(percentage) * 2;
                 Vector3 heightOffset = new Vector3(0, scale.y * direction, 0);
 
                 position += rotation * heightOffset;
                 rotation = rotation * rotationOffset;
-                scale = new Vector3(width * scale.x, scale.y, scale.z);
 
                 offsetMatrices[i] = Matrix4x4.TRS(position, rotation, scale);
             }
