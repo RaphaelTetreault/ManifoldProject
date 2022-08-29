@@ -9,10 +9,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
     public class GfzShapeCapsule : GfzSegmentShape
     {
         [Header("Pipe/Cylinder")]
-        [SerializeField] private PipeCylinderType type = PipeCylinderType.Pipe;
-        [SerializeField] private PipeStyle pipeStyle;
-        [SerializeField] private CylinderStyle cylinderStyle;
-        [SerializeField, Min(2)] private int lengthDistance = 20;
+        [SerializeField] private CapsuleStyle capsuleStyle;
+        [SerializeField, Min(2)] private int lengthDistance = 25;
         [SerializeField, Min(4)] private int subdivideSemiCircle = 16;
         [SerializeField, Min(1)] private int subdivideLinee = 1;
         [SerializeField] private UnityEngine.AnimationCurve capsuleWidth = new(new(0, 1), new(1, 1));
@@ -20,35 +18,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         public int SubdivideSemiCircle => subdivideSemiCircle;
         public int SubdivideLine => subdivideLinee;
 
-        public enum PipeStyle
+        public enum CapsuleStyle
         {
             Debug,
             MuteCity,
         }
-        public enum CylinderStyle
-        {
-            Debug,
-            MuteCityCOM,
-        }
 
-        public PipeCylinderType Type
-        {
-            get => type;
-            set => type = value;
-        }
-
-        public override ShapeID ShapeIdentifier
-        {
-            get
-            {
-                bool isPipe = type == PipeCylinderType.Pipe;
-
-                if (isPipe)
-                    return ShapeID.pipe;
-                else
-                    return ShapeID.cylinder;
-            }
-        }
+        public override ShapeID ShapeIdentifier => ShapeID.pipe;
 
         public override AnimationCurveTRS CopyAnimationCurveTRS(bool isGfzCoordinateSpace)
         {
@@ -65,116 +41,61 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public GcmfTemplate[] GetGcmfTemplates()
         {
-            bool isPipe = type == PipeCylinderType.Pipe;
-            var gcmfTemplates = isPipe
-                ? GetPipeGcmfTemplates(pipeStyle)
-                : GetCylinderGcmfTemplates(cylinderStyle);
-            return gcmfTemplates;
-        }
-        public GcmfTemplate[] GetPipeGcmfTemplates(PipeStyle pipeStyle)
-        {
-            switch (pipeStyle)
             {
-                //case PipeStyle.MuteCity:
-                //    return new GcmfTemplate[]
-                //    {
-                //        GcmfTemplates.MuteCityCOM.RoadTopNoDividers(),
-                //        GcmfTemplates.Debug.CreateLitVertexColored(),
-                //        GcmfTemplates.Debug.CreateLitVertexColored(),
-                //    };
+                switch (capsuleStyle)
+                {
+                    case CapsuleStyle.MuteCity:
+                        return new GcmfTemplate[]
+                        {
+                            GcmfTemplates.MuteCity.RoadTop(),
+                            GcmfTemplates.MuteCityCOM.RoadTopNoDividers(),
+                            GcmfTemplates.Debug.CreateLitVertexColored(),
+                            GcmfTemplates.Debug.CreateLitVertexColored(),
+                        };
 
-                default:
-                    return new GcmfTemplate[]
-                    {
-                        GcmfTemplates.Debug.CreateLitVertexColored(),
-                        //GcmfTemplates.Debug.CreateLitVertexColored(),
-                        //GcmfTemplates.Debug.CreateLitVertexColored(),
-                    };
-            }
-        }
-        public GcmfTemplate[] GetCylinderGcmfTemplates(CylinderStyle cylinderStyle)
-        {
-            switch (cylinderStyle)
-            {
-                //case CylinderStyle.MuteCityCOM:
-                //    return new GcmfTemplate[]
-                //    {
-                //        GcmfTemplates.MuteCityCOM.RoadTopNoDividers(),
-                //        GcmfTemplates.Debug.CreateLitVertexColored(),
-                //    };
-
-                default:
-                    return new GcmfTemplate[]
-                    {
-                        GcmfTemplates.Debug.CreateLitVertexColored(),
-                        //GcmfTemplates.Debug.CreateLitVertexColored(),
-                    };
+                    default:
+                        return new GcmfTemplate[]
+                        {
+                            GcmfTemplates.Debug.CreateLitVertexColored(),
+                            GcmfTemplates.Debug.CreateLitVertexColored(),
+                            GcmfTemplates.Debug.CreateLitVertexColored(),
+                        };
+                }
             }
         }
 
         public Tristrip[][] GetTristrips(bool isGfzCoordinateSpace)
         {
-            bool isPipe = type == PipeCylinderType.Pipe;
-            var tristrips = isPipe
-                ? GetPipeTristrips(pipeStyle, isGfzCoordinateSpace)
-                : GetCylinderTristrips(cylinderStyle, isGfzCoordinateSpace);
-            return tristrips;
-        }
-        public Tristrip[][] GetPipeTristrips(PipeStyle pipeStyle, bool isGfzCoordinateSpace)
-        {
             var matrices = TristripGenerator.CreatePathMatrices(this, isGfzCoordinateSpace, lengthDistance);
             var matricesLeft = SemiCirclesMatrices(matrices, capsuleWidth, true);
             var matricesRight = SemiCirclesMatrices(matrices, capsuleWidth, false);
             var matricesTop = LineMatricesPosition(matrices, capsuleWidth, true);
             var matricesBottom = LineMatricesPosition(matrices, capsuleWidth, false);
-            var maxTime = GetRoot().GetMaxTime();
+            var segmentLength = GetRoot().GetMaxTime();
 
-            switch (pipeStyle)
+            switch (capsuleStyle)
             {
-                //case PipeStyle.MuteCity:
-                //return new Tristrip[][]
-                //{
-                //    TristripTemplates.Pipe.GenericInsideOneTexture(matrices, this, maxTime, isGfzCoordinateSpace),
-                //    TristripTemplates.Pipe.DebugOutside(matrices, this, isGfzCoordinateSpace),
-                //    TristripTemplates.Pipe.DebugRingEndcap(matrices, this),
-                //};
+                case CapsuleStyle.MuteCity:
+                    return new Tristrip[][]
+                    {
+                        TristripTemplates.CapsulePipe.SemiCirclesTex0(matricesLeft, matricesRight, this, segmentLength, isGfzCoordinateSpace, 12),
+                        TristripTemplates.CapsulePipe.LinesTex0(matricesTop, matricesBottom, this, segmentLength, 8),
+                        TristripTemplates.CapsulePipe.DebugOutside(matricesLeft, matricesRight, matricesTop, matricesBottom, this, isGfzCoordinateSpace),
+                        TristripTemplates.CapsulePipe.DebugEndcap(matricesLeft, matricesRight, this),
+                    };
 
                 default:
                     return new Tristrip[][]
                     {
                         TristripTemplates.CapsulePipe.DebugInside(matricesLeft, matricesRight, matricesTop, matricesBottom, this, isGfzCoordinateSpace),
+                        TristripTemplates.CapsulePipe.DebugOutside(matricesLeft, matricesRight, matricesTop, matricesBottom, this, isGfzCoordinateSpace),
+                        TristripTemplates.CapsulePipe.DebugEndcap(matricesLeft, matricesRight, this),
                         //TristripTemplates.Pipe.DebugOutside(matrices, this, isGfzCoordinateSpace),
                         //TristripTemplates.Pipe.DebugRingEndcap(matrices, this),
                     };
             }
         }
-        public Tristrip[][] GetCylinderTristrips(CylinderStyle cylinderStyle, bool isGfzCoordinateSpace)
-        {
-            var matrices = TristripGenerator.CreatePathMatrices(this, isGfzCoordinateSpace, lengthDistance);
-            var matricesLeft = SemiCirclesMatrices(matrices, capsuleWidth, true);
-            var matricesRight = SemiCirclesMatrices(matrices, capsuleWidth, false);
-            var matricesTop = LineMatricesPosition(matrices, capsuleWidth, true);
-            var matricesBottom = LineMatricesPosition(matrices, capsuleWidth, false);
-            var maxTime = GetRoot().GetMaxTime();
 
-
-            switch (cylinderStyle)
-            {
-                //case CylinderStyle.MuteCityCOM:
-                //    return new Tristrip[][]
-                //    {
-                //        TristripTemplates.Cylinder.GenericOneTexture(matrices, this, maxTime, isGfzCoordinateSpace),
-                //        TristripTemplates.Cylinder.DebugEndcap(matrices, this),
-                //    };
-
-                default:
-                    return new Tristrip[][]
-                    {
-                        //TristripTemplates.CapsulePipe.DebugOutside(matricesLeft, matricesRight, matricesTop, matricesBottom, this, isGfzCoordinateSpace),
-                        //TristripTemplates.Cylinder.DebugEndcap(matrices, this),
-                    };
-            }
-        }
 
         public override Mesh CreateMesh()
         {
@@ -187,8 +108,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public override TrackSegment CreateTrackSegment()
         {
-            var typeFlags = type == PipeCylinderType.Cylinder ? TrackPipeCylinderFlags.IsCylinderNotPipe : 0;
-
             var capsuleTRS = new AnimationCurveTRS();
             capsuleTRS.Position.x = CreateWidthCurve(capsuleWidth, GetMaxTime());
 
@@ -200,13 +119,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             capsule.FallbackPosition = new Unity.Mathematics.float3(0.5f, 0, 0);
             // 0.5f since this is the left/right position of the circle-ends radii centers.
             // This results in the track transform's scale.x being 1:1 with the width of the capsule.
-
-            //var matrix = new TrackSegment();
-            //matrix.OrderIndentifier = name + "_matrix";
-            //matrix.SegmentType = TrackSegmentType.IsMatrix;
-            //matrix.BranchIndex = GetBranchIndex();
-            //matrix.Children = new TrackSegment[] { capsule };
-            //matrix.PipeCylinderFlags = typeFlags;
 
             return capsule;
         }

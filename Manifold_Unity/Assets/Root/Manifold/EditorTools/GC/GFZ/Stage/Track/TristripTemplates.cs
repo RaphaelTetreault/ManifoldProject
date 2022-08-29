@@ -433,7 +433,7 @@ namespace Manifold.EditorTools.GC.GFZ
                 var allTristrips = new List<Tristrip>();
 
                 //var matricesTop = ModifyMatrixScales(matrices, new Vector3(0, kEmbedHeight, 0)); // raise to top
-                var matricesTop = ModifyMatrixPositions(matrices, new Vector3(0, kEmbedHeight, 0));
+                var matricesTop = ModifyMatrixScaledPositions(matrices, new Vector3(0, kEmbedHeight, 0));
                 var matricesBottom = ModifyMatrixScales(matrices, new Vector3(width * 2f, 0, 0)); // widen base
                 int index0 = 0;
                 int index1 = matrices.Length - 1;
@@ -1373,7 +1373,6 @@ namespace Manifold.EditorTools.GC.GFZ
                 var outerMatrix = Matrix4x4.TRS(matrix.Position(), matrix.rotation, matrix.lossyScale + Vector3.one * 5);
 
                 var vertices = CreateCircleVertices(nTristrips);
-                MutateScaleVertices(vertices, 0.5f);
 
                 var tristrip = new Tristrip();
                 int vertexCount = vertices.Length * 2;
@@ -1397,13 +1396,13 @@ namespace Manifold.EditorTools.GC.GFZ
 
             public static Tristrip[] DebugInside(Matrix4x4[] matrices, GfzShapePipeCylinder pipe, bool isGfzCoordinateSpace)
             {
-                var inner = GenerateCircle(matrices, false, pipe.SubdivisionsInside, true, isGfzCoordinateSpace);
+                var inner = GenerateCircleWithNormals(matrices, false, pipe.SubdivisionsInside, true, isGfzCoordinateSpace);
                 return inner;
             }
             public static Tristrip[] DebugOutside(Matrix4x4[] matrices, GfzShapePipeCylinder pipe, bool isGfzCoordinateSpace)
             {
                 var grownMatrices = ModifyMatrixScales(matrices, Vector3.one * 5);
-                var outer = GenerateCircle(grownMatrices, true, pipe.SubdivisionsOutside, true, isGfzCoordinateSpace);
+                var outer = GenerateCircleWithNormals(grownMatrices, true, pipe.SubdivisionsOutside, true, isGfzCoordinateSpace);
                 return outer;
             }
             public static Tristrip[] DebugRingEndcap(Matrix4x4[] matrices, GfzShapePipeCylinder pipe)
@@ -1449,7 +1448,6 @@ namespace Manifold.EditorTools.GC.GFZ
             private static Tristrip Endcap(Matrix4x4 matrix, int nTristrips, Vector3 normal, bool isBackFacing)
             {
                 var vertices = CreateCircleVertices(nTristrips);
-                MutateScaleVertices(vertices, 0.5f);
 
                 var tristrip = new Tristrip();
                 int vertexCount = vertices.Length - 1;
@@ -1478,7 +1476,7 @@ namespace Manifold.EditorTools.GC.GFZ
 
             public static Tristrip[] Debug(Matrix4x4[] matrices, GfzShapePipeCylinder cylinder, bool isGfzCoordinateSpace)
             {
-                var tristrips = GenerateCircle(matrices, true, cylinder.SubdivisionsInside, true, isGfzCoordinateSpace);
+                var tristrips = GenerateCircleWithNormals(matrices, true, cylinder.SubdivisionsInside, true, isGfzCoordinateSpace);
                 return tristrips;
             }
             public static Tristrip[] DebugEndcap(Matrix4x4[] matrices, GfzShapePipeCylinder pipe)
@@ -1531,25 +1529,207 @@ namespace Manifold.EditorTools.GC.GFZ
 
         public static class CapsulePipe
         {
+            const float capsuleThickness = 5f;
+            const float capsuleThicknessHalf = capsuleThickness / 2f;
+
             public static Tristrip[] DebugInside(Matrix4x4[] matricesLeft, Matrix4x4[] matricesRight, Matrix4x4[] matricesTop, Matrix4x4[] matricesBottom, GfzShapeCapsule capsule, bool isGfzCoordinateSpace)
             {
                 Vector3 left = Vector3.left * 0.5f;
                 Vector3 right = Vector3.right * 0.5f;
                 Vector3 up = Vector3.up;
 
-                // TODO: change smoothing!? Have it out as separate function, concat tristrips in right order, then smooth that!?
-                var sideLeft = GenerateCircle(matricesLeft, false, capsule.SubdivideSemiCircle, false, isGfzCoordinateSpace, 0, 180);
-                var sideRight = GenerateCircle(matricesRight, false, capsule.SubdivideSemiCircle, false, isGfzCoordinateSpace, 180, 360);
-                var sideTop = GenerateTristripsLine(matricesTop, left, right, up, capsule.SubdivideLine, true, false);
-                var sideBot = GenerateTristripsLine(matricesBottom, left, right, up, capsule.SubdivideLine, true, false);
+                // Create all tristrips. We build in 4 sections: 2 semi-circles, 2 line segments.
+                var sideLeft = GenerateCircle(matricesLeft, true, capsule.SubdivideSemiCircle, 180, 0);
+                var sideRight = GenerateCircle(matricesRight, true, capsule.SubdivideSemiCircle, 360, 180);
+                var sideTop = GenerateTristripsLine(matricesTop, left, right, up, capsule.SubdivideLine, true);
+                var sideBot = GenerateTristripsLine(matricesBottom, left, right, up, capsule.SubdivideLine, true);
+
+                // Combine all tristrips. Order matters! For the normalization smoothing to work, tristrips need
+                // to be sequential so overlapping normals overlap the correct normals.
                 var allTristrips = new List<Tristrip>();
+                allTristrips.AddRange(sideTop);
+                allTristrips.AddRange(sideRight);
+                allTristrips.AddRange(sideBot);
                 allTristrips.AddRange(sideLeft);
-                allTristrips.AddRange(sideRight);//, sideTop, sideBot);
-                allTristrips.AddRange(sideTop);//, sideTop, sideBot);
-                allTristrips.AddRange(sideBot);//, sideTop, sideBot);
-                return allTristrips.ToArray();
+                var tristripsArray = allTristrips.ToArray();
+
+                // Add normals based on vertices. Smooth normals.
+                SetNormalsFromTristripVertices(tristripsArray, false, true, isGfzCoordinateSpace);
+
+                return tristripsArray;
+            }
+            public static Tristrip[] DebugOutside(Matrix4x4[] matricesLeft, Matrix4x4[] matricesRight, Matrix4x4[] matricesTop, Matrix4x4[] matricesBottom, GfzShapeCapsule capsule, bool isGfzCoordinateSpace)
+            {
+                Vector3 left = Vector3.left * 0.5f;
+                Vector3 right = Vector3.right * 0.5f;
+                Vector3 up = Vector3.up;
+
+                Vector3 scaleMod = Vector3.one * capsuleThickness;
+                matricesLeft = ModifyMatrixScales(matricesLeft, scaleMod);
+                matricesRight = ModifyMatrixScales(matricesRight, scaleMod);
+                matricesTop = ModifyMatrixPositions(matricesTop, Vector3.down * capsuleThicknessHalf);
+                matricesBottom = ModifyMatrixPositions(matricesBottom, Vector3.down * capsuleThicknessHalf);
+
+                //
+                var SubdivideSemiCircle = capsule.SubdivideSemiCircle / 2;
+                int SubdivideLine = 1;// capsule.SubdivideLine / 2;
+
+                // Create all tristrips. We build in 4 sections: 2 semi-circles, 2 line segments.
+                var sideLeft = GenerateCircle(matricesLeft, true, SubdivideSemiCircle, 0, 180);
+                var sideRight = GenerateCircle(matricesRight, true, SubdivideSemiCircle, 180, 360);
+                var sideTop = GenerateTristripsLine(matricesTop, right, left, up, SubdivideLine, true);
+                var sideBot = GenerateTristripsLine(matricesBottom, right, left, up, SubdivideLine, true);
+
+                // Combine all tristrips. Order matters! For the normalization smoothing to work, tristrips need
+                // to be sequential so overlapping normals overlap the correct normals.
+                var allTristrips = new List<Tristrip>();
+                allTristrips.AddRange(sideTop);
+                allTristrips.AddRange(sideLeft);
+                allTristrips.AddRange(sideBot);
+                allTristrips.AddRange(sideRight);
+                var tristripsArray = allTristrips.ToArray();
+
+                // Add normals based on vertices. Smooth normals.
+                SetNormalsFromTristripVertices(tristripsArray, false, true, isGfzCoordinateSpace);
+
+                return tristripsArray;
+            }
+            public static Tristrip[] DebugEndcap(Matrix4x4[] matricesLeft, Matrix4x4[] matricesRight, GfzShapeCapsule capsule)
+            {
+                var tristrips = new List<Tristrip>();
+                GetContinuity(capsule, out bool isContinuousFrom, out bool isContinuousTo);
+
+                if (!isContinuousFrom)
+                {
+                    const int index = 0;
+                    var mtxLeft = matricesLeft[index];
+                    var mtxRight = matricesRight[index];
+                    var normal = mtxLeft.rotation * Vector3.back;
+                    var tristrip = CircleEndcapNoTexture(mtxLeft, mtxRight, capsule.SubdivideSemiCircle, normal, false);
+                    tristrips.Add(tristrip);
+                }
+
+                if (!isContinuousTo)
+                {
+                    int lastIndex = matricesLeft.Length - 1;
+                    var mtxLeft = matricesLeft[lastIndex];
+                    var mtxRight = matricesRight[lastIndex];
+                    var normal = mtxLeft.rotation * Vector3.forward;
+                    var tristrip = CircleEndcapNoTexture(mtxLeft, mtxRight, capsule.SubdivideSemiCircle, normal, true);
+                    tristrips.Add(tristrip);
+                }
+
+                return tristrips.ToArray();
             }
 
+            private static Tristrip CircleEndcapNoTexture(Matrix4x4 mtxLeft, Matrix4x4 mtxRight, int nTristrips, Vector3 normal, bool isBackFacing)
+            {
+                // Create left and right semi-circle inner and outer matrices.
+                Vector3 scaleMod = Vector3.one * capsuleThickness;
+                Matrix4x4 innerMatrixLeft = mtxLeft;
+                Matrix4x4 outerMatrixLeft = Matrix4x4.TRS(mtxLeft.Position(), mtxLeft.rotation, mtxLeft.lossyScale + scaleMod);
+                Matrix4x4 innerMatrixRight = mtxRight;
+                Matrix4x4 outerMatrixRight = Matrix4x4.TRS(mtxRight.Position(), mtxRight.rotation, mtxRight.lossyScale + scaleMod);
+                
+                // Create vertices for those two sides.
+                var vertsLeft = CreateCircleVertices(nTristrips, 0, 180);
+                var vertsRight = CreateCircleVertices(nTristrips, 180, 360);
+
+                // Connect those vertices. Note that betwen the first and second semi-circle, we end up
+                // connecting them because of the tripstrip format. Close loop bu adding first 2 vertices
+                // at the end of the list.
+                var verticesLeft = CreateTristripVerts(vertsLeft, innerMatrixLeft, outerMatrixLeft);
+                var verticesRight = CreateTristripVerts(vertsRight, innerMatrixRight, outerMatrixRight);
+                var allVerts = new List<Vector3>();
+                allVerts.AddRange(verticesLeft);
+                allVerts.AddRange(verticesRight);
+                allVerts.Add(verticesLeft[0]);
+                allVerts.Add(verticesLeft[1]);
+
+                // Construct tristrip.
+                var tristrip = new Tristrip();
+                tristrip.positions = allVerts.ToArray();
+                tristrip.normals = ArrayUtility.DefaultArray(normal, tristrip.VertexCount);
+
+                // Make array and assign metadata.
+                var tristrips = new Tristrip[] { tristrip };
+                AssignTristripMetadata(tristrips, isBackFacing, false);
+
+                return tristrip;
+            }
+            private static Vector3[] CreateTristripVerts(Vector3[] vertices, Matrix4x4 innerMatrix, Matrix4x4 outerMatrix)
+            {
+                int length = vertices.Length;
+                Vector3[] positions = new Vector3[length * 2];
+                for (int i = 0; i < length; i++)
+                {
+                    int index0 = i * 2;
+                    int index1 = index0 + 1;
+                    Vector3 vertex = vertices[i];
+                    positions[index0] = innerMatrix.MultiplyPoint(vertex);
+                    positions[index1] = outerMatrix.MultiplyPoint(vertex);
+                }
+                return positions;
+            }
+
+            public static Tristrip[] SemiCirclesNoTexture(Matrix4x4[] matricesLeft, Matrix4x4[] matricesRight, GfzShapeCapsule capsule, bool isGfzCoordinateSpace)
+            {
+                // Create all tristrips.
+                var sideLeft = GenerateCircle(matricesLeft, true, capsule.SubdivideSemiCircle, 180, 0);
+                var sideRight = GenerateCircle(matricesRight, true, capsule.SubdivideSemiCircle, 360, 180);
+
+                // Combine all tristrips.
+                var allTristrips = new List<Tristrip>();
+                allTristrips.AddRange(sideRight);
+                allTristrips.AddRange(sideLeft);
+                var tristripsArray = allTristrips.ToArray();
+
+                // Add normals based on vertices. Smooth normals.
+                SetNormalsFromTristripVertices(tristripsArray, false, true, isGfzCoordinateSpace);
+
+                return tristripsArray;
+            }
+            public static Tristrip[] SemiCirclesTex0(Matrix4x4[] matricesLeft, Matrix4x4[] matricesRight, GfzShapeCapsule capsule, float segmentLength, bool isGfzCoordinateSpace, int texRepetitions = 8)
+            {
+                var tristrips = SemiCirclesNoTexture(matricesLeft, matricesRight, capsule, isGfzCoordinateSpace);
+
+                float repetitionsRoadTexture = math.ceil(segmentLength / RoadTexStride);
+                var uvs0 = CreateTristripScaledUVs(tristrips, texRepetitions, repetitionsRoadTexture);
+                for (int i = 0; i < tristrips.Length; i++)
+                    tristrips[i].tex0 = uvs0[i];
+
+                return tristrips;
+            }
+
+            public static Tristrip[] LinesNoTexture(Matrix4x4[] matricesTop, Matrix4x4[] matricesBottom, GfzShapeCapsule capsule)
+            {
+                Vector3 left = Vector3.left * 0.5f;
+                Vector3 right = Vector3.right * 0.5f;
+                Vector3 up = Vector3.up;
+
+                // Create all tristrips.
+                var sideTop = GenerateTristripsLine(matricesTop, left, right, up, capsule.SubdivideLine, true);
+                var sideBot = GenerateTristripsLine(matricesBottom, left, right, up, capsule.SubdivideLine, true);
+
+                // Combine all tristrips.
+                var allTristrips = new List<Tristrip>();
+                allTristrips.AddRange(sideTop);
+                allTristrips.AddRange(sideBot);
+                var tristripsArray = allTristrips.ToArray();
+
+                return tristripsArray;
+            }
+            public static Tristrip[] LinesTex0(Matrix4x4[] matricesTop, Matrix4x4[] matricesBottom, GfzShapeCapsule capsule, float segmentLength, int texRepetitions = 4)
+            {
+                var tristrips = LinesNoTexture(matricesTop, matricesBottom, capsule);
+
+                float repetitionsRoadTexture = math.ceil(segmentLength / RoadTexStride);
+                var uvs0 = CreateTristripScaledUVs(tristrips, texRepetitions, repetitionsRoadTexture);
+                for (int i = 0; i < tristrips.Length; i++)
+                    tristrips[i].tex0 = uvs0[i];
+
+                return tristrips;
+            }
         }
 
         public static class Objects

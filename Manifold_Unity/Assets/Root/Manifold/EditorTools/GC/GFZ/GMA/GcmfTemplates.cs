@@ -737,8 +737,8 @@ namespace Manifold.EditorTools.GC.GFZ
                 };
                 var textureHashes = new string[]
                 {
-                        "b42318832be6f79480973fddd2b4e0ac", // st01 tex 2 - mut unused
-                                                            //"c8e2ea0bfdbbe3960ca2ec4c8af96b1c", // st01 tex 41 - com
+                    "b42318832be6f79480973fddd2b4e0ac", // st01 tex 2 - mut unused
+                    //"c8e2ea0bfdbbe3960ca2ec4c8af96b1c", // st01 tex 41 - com
                 };
                 var material = new Material
                 {
@@ -999,7 +999,7 @@ namespace Manifold.EditorTools.GC.GFZ
                         {
                             Unk0x00 = 0,
                             MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
-                            WrapMode = TextureWrapMode.mirrorX | TextureWrapMode.repeatY | TextureWrapMode.unk6 | TextureWrapMode.unk7,
+                            WrapMode = TextureWrapMode.mirrorX | TextureWrapMode.mirrorY | TextureWrapMode.unk6 | TextureWrapMode.unk7,
                             LodBias = -20,
                             AnisotropicFilter = GXAnisotropy.GX_ANISO_4,
                             Unk0x0C = 0,
