@@ -8,15 +8,19 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
     public class GfzShapeCapsule : GfzSegmentShape
     {
-        [Header("Pipe/Cylinder")]
-        [SerializeField] private CapsuleStyle capsuleStyle;
-        [SerializeField, Min(2)] private int lengthDistance = 25;
-        [SerializeField, Min(4)] private int subdivideSemiCircle = 16;
-        [SerializeField, Min(1)] private int subdivideLinee = 1;
-        [SerializeField] private UnityEngine.AnimationCurve capsuleWidth = new(new(0, 1), new(1, 1));
+        [Header("Capsule")]
+        [SerializeField] private CapsuleStyle capsuleStyle = CapsuleStyle.MuteCity;
+        [SerializeField, Min(2)] private int lengthDistanceInside = 25;
+        [SerializeField, Min(2)] private int lengthDistanceOutside = 50;
+        [SerializeField, Min(4)] private int subdivideSemiCircleInside = 16;
+        [SerializeField, Min(2)] private int subdivideSemiCircleOutside = 6;
+        [SerializeField, Min(1)] private int subdivideLineInside = 4;
+        [SerializeField, Min(1)] private int subdivideLineOutside = 1;
 
-        public int SubdivideSemiCircle => subdivideSemiCircle;
-        public int SubdivideLine => subdivideLinee;
+        public int SubdivideSemiCircleInside => subdivideSemiCircleInside;
+        public int SubdivideSemiCircleOutside => subdivideSemiCircleOutside;
+        public int SubdivideLineInside => subdivideLineInside;
+        public int SubdivideLineOutside => subdivideLineOutside;
 
         public enum CapsuleStyle
         {
@@ -66,12 +70,19 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public Tristrip[][] GetTristrips(bool isGfzCoordinateSpace)
         {
-            var matrices = TristripGenerator.CreatePathMatrices(this, isGfzCoordinateSpace, lengthDistance);
-            var matricesLeft = SemiCirclesMatrices(matrices, capsuleWidth, true);
-            var matricesRight = SemiCirclesMatrices(matrices, capsuleWidth, false);
-            var matricesTop = LineMatricesPosition(matrices, capsuleWidth, true);
-            var matricesBottom = LineMatricesPosition(matrices, capsuleWidth, false);
+            var matrices = TristripGenerator.CreatePathMatrices(this, isGfzCoordinateSpace, lengthDistanceInside);
+            var matricesLeft = SemiCirclesMatrices(matrices, true);
+            var matricesRight = SemiCirclesMatrices(matrices, false);
+            var matricesTop = LineMatricesPosition(matrices, true);
+            var matricesBottom = LineMatricesPosition(matrices, false);
             var segmentLength = GetRoot().GetMaxTime();
+
+            // diff distance
+            var xmatrices = TristripGenerator.CreatePathMatrices(this, isGfzCoordinateSpace, lengthDistanceOutside);
+            var xmatricesLeft = SemiCirclesMatrices(xmatrices, true);
+            var xmatricesRight = SemiCirclesMatrices(xmatrices, false);
+            var xmatricesTop = LineMatricesPosition(xmatrices, true);
+            var xmatricesBottom = LineMatricesPosition(xmatrices, false);
 
             switch (capsuleStyle)
             {
@@ -80,7 +91,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     {
                         TristripTemplates.CapsulePipe.SemiCirclesTex0(matricesLeft, matricesRight, this, segmentLength, isGfzCoordinateSpace, 12),
                         TristripTemplates.CapsulePipe.LinesTex0(matricesTop, matricesBottom, this, segmentLength, 8),
-                        TristripTemplates.CapsulePipe.DebugOutside(matricesLeft, matricesRight, matricesTop, matricesBottom, this, isGfzCoordinateSpace),
+                        TristripTemplates.CapsulePipe.DebugOutside(xmatricesLeft, xmatricesRight, xmatricesTop, xmatricesBottom, this, isGfzCoordinateSpace),
                         TristripTemplates.CapsulePipe.DebugEndcap(matricesLeft, matricesRight, this),
                     };
 
@@ -88,7 +99,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     return new Tristrip[][]
                     {
                         TristripTemplates.CapsulePipe.DebugInside(matricesLeft, matricesRight, matricesTop, matricesBottom, this, isGfzCoordinateSpace),
-                        TristripTemplates.CapsulePipe.DebugOutside(matricesLeft, matricesRight, matricesTop, matricesBottom, this, isGfzCoordinateSpace),
+                        TristripTemplates.CapsulePipe.DebugOutside(xmatricesLeft, xmatricesRight, xmatricesTop, xmatricesBottom, this, isGfzCoordinateSpace),
                         TristripTemplates.CapsulePipe.DebugEndcap(matricesLeft, matricesRight, this),
                         //TristripTemplates.Pipe.DebugOutside(matrices, this, isGfzCoordinateSpace),
                         //TristripTemplates.Pipe.DebugRingEndcap(matrices, this),
@@ -108,9 +119,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public override TrackSegment CreateTrackSegment()
         {
-            var capsuleTRS = new AnimationCurveTRS();
-            capsuleTRS.Position.x = CreateWidthCurve(capsuleWidth, GetMaxTime());
-
             var capsule = new TrackSegment();
             capsule.OrderIndentifier = name + "_capsule";
             capsule.SegmentType = TrackSegmentType.IsEmbed;
@@ -130,7 +138,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         }
 
 
-        private static Matrix4x4[] SemiCirclesMatrices(Matrix4x4[] matrices, UnityEngine.AnimationCurve animationCurve, bool isLeftSide)
+        private static Matrix4x4[] SemiCirclesMatrices(Matrix4x4[] matrices, bool isLeftSide)
         {
             var offsetMatrices = new Matrix4x4[matrices.Length];
             float direction = isLeftSide ? 0.5f : -0.5f;
@@ -149,7 +157,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
             return offsetMatrices;
         }
-        private static Matrix4x4[] LineMatricesPosition(Matrix4x4[] matrices, UnityEngine.AnimationCurve animationCurve, bool isTop)
+        private static Matrix4x4[] LineMatricesPosition(Matrix4x4[] matrices, bool isTop)
         {
             float direction = isTop ? 0.5f : -0.5f;
             Quaternion rotationOffset = isTop

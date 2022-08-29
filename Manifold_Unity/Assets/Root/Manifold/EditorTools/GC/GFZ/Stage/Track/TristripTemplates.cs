@@ -1529,7 +1529,7 @@ namespace Manifold.EditorTools.GC.GFZ
 
         public static class CapsulePipe
         {
-            const float capsuleThickness = 5f;
+            const float capsuleThickness = 15f;
             const float capsuleThicknessHalf = capsuleThickness / 2f;
 
             public static Tristrip[] DebugInside(Matrix4x4[] matricesLeft, Matrix4x4[] matricesRight, Matrix4x4[] matricesTop, Matrix4x4[] matricesBottom, GfzShapeCapsule capsule, bool isGfzCoordinateSpace)
@@ -1539,10 +1539,10 @@ namespace Manifold.EditorTools.GC.GFZ
                 Vector3 up = Vector3.up;
 
                 // Create all tristrips. We build in 4 sections: 2 semi-circles, 2 line segments.
-                var sideLeft = GenerateCircle(matricesLeft, true, capsule.SubdivideSemiCircle, 180, 0);
-                var sideRight = GenerateCircle(matricesRight, true, capsule.SubdivideSemiCircle, 360, 180);
-                var sideTop = GenerateTristripsLine(matricesTop, left, right, up, capsule.SubdivideLine, true);
-                var sideBot = GenerateTristripsLine(matricesBottom, left, right, up, capsule.SubdivideLine, true);
+                var sideLeft = GenerateCircle(matricesLeft, true, capsule.SubdivideSemiCircleInside, 180, 0);
+                var sideRight = GenerateCircle(matricesRight, true, capsule.SubdivideSemiCircleInside, 360, 180);
+                var sideTop = GenerateTristripsLine(matricesTop, left, right, up, capsule.SubdivideLineInside, true);
+                var sideBot = GenerateTristripsLine(matricesBottom, left, right, up, capsule.SubdivideLineInside, true);
 
                 // Combine all tristrips. Order matters! For the normalization smoothing to work, tristrips need
                 // to be sequential so overlapping normals overlap the correct normals.
@@ -1570,15 +1570,11 @@ namespace Manifold.EditorTools.GC.GFZ
                 matricesTop = ModifyMatrixPositions(matricesTop, Vector3.down * capsuleThicknessHalf);
                 matricesBottom = ModifyMatrixPositions(matricesBottom, Vector3.down * capsuleThicknessHalf);
 
-                //
-                var SubdivideSemiCircle = capsule.SubdivideSemiCircle / 2;
-                int SubdivideLine = 1;// capsule.SubdivideLine / 2;
-
                 // Create all tristrips. We build in 4 sections: 2 semi-circles, 2 line segments.
-                var sideLeft = GenerateCircle(matricesLeft, true, SubdivideSemiCircle, 0, 180);
-                var sideRight = GenerateCircle(matricesRight, true, SubdivideSemiCircle, 180, 360);
-                var sideTop = GenerateTristripsLine(matricesTop, right, left, up, SubdivideLine, true);
-                var sideBot = GenerateTristripsLine(matricesBottom, right, left, up, SubdivideLine, true);
+                var sideLeft = GenerateCircle(matricesLeft, true, capsule.SubdivideSemiCircleOutside, 0, 180);
+                var sideRight = GenerateCircle(matricesRight, true, capsule.SubdivideSemiCircleOutside, 180, 360);
+                var sideTop = GenerateTristripsLine(matricesTop, right, left, up, capsule.SubdivideLineOutside, true);
+                var sideBot = GenerateTristripsLine(matricesBottom, right, left, up, capsule.SubdivideLineOutside, true);
 
                 // Combine all tristrips. Order matters! For the normalization smoothing to work, tristrips need
                 // to be sequential so overlapping normals overlap the correct normals.
@@ -1605,7 +1601,7 @@ namespace Manifold.EditorTools.GC.GFZ
                     var mtxLeft = matricesLeft[index];
                     var mtxRight = matricesRight[index];
                     var normal = mtxLeft.rotation * Vector3.back;
-                    var tristrip = CircleEndcapNoTexture(mtxLeft, mtxRight, capsule.SubdivideSemiCircle, normal, false);
+                    var tristrip = CircleEndcapNoTexture(mtxLeft, mtxRight, capsule.SubdivideSemiCircleInside, normal, false);
                     tristrips.Add(tristrip);
                 }
 
@@ -1615,7 +1611,7 @@ namespace Manifold.EditorTools.GC.GFZ
                     var mtxLeft = matricesLeft[lastIndex];
                     var mtxRight = matricesRight[lastIndex];
                     var normal = mtxLeft.rotation * Vector3.forward;
-                    var tristrip = CircleEndcapNoTexture(mtxLeft, mtxRight, capsule.SubdivideSemiCircle, normal, true);
+                    var tristrip = CircleEndcapNoTexture(mtxLeft, mtxRight, capsule.SubdivideSemiCircleInside, normal, true);
                     tristrips.Add(tristrip);
                 }
 
@@ -1675,8 +1671,8 @@ namespace Manifold.EditorTools.GC.GFZ
             public static Tristrip[] SemiCirclesNoTexture(Matrix4x4[] matricesLeft, Matrix4x4[] matricesRight, GfzShapeCapsule capsule, bool isGfzCoordinateSpace)
             {
                 // Create all tristrips.
-                var sideLeft = GenerateCircle(matricesLeft, true, capsule.SubdivideSemiCircle, 180, 0);
-                var sideRight = GenerateCircle(matricesRight, true, capsule.SubdivideSemiCircle, 360, 180);
+                var sideLeft = GenerateCircle(matricesLeft, true, capsule.SubdivideSemiCircleInside, 180, 0);
+                var sideRight = GenerateCircle(matricesRight, true, capsule.SubdivideSemiCircleInside, 360, 180);
 
                 // Combine all tristrips.
                 var allTristrips = new List<Tristrip>();
@@ -1708,8 +1704,8 @@ namespace Manifold.EditorTools.GC.GFZ
                 Vector3 up = Vector3.up;
 
                 // Create all tristrips.
-                var sideTop = GenerateTristripsLine(matricesTop, left, right, up, capsule.SubdivideLine, true);
-                var sideBot = GenerateTristripsLine(matricesBottom, left, right, up, capsule.SubdivideLine, true);
+                var sideTop = GenerateTristripsLine(matricesTop, left, right, up, capsule.SubdivideLineInside, true);
+                var sideBot = GenerateTristripsLine(matricesBottom, left, right, up, capsule.SubdivideLineInside, true);
 
                 // Combine all tristrips.
                 var allTristrips = new List<Tristrip>();

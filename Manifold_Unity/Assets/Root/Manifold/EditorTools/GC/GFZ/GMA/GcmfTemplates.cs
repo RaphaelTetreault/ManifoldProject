@@ -33,6 +33,12 @@ namespace Manifold.EditorTools.GC.GFZ
 
         public static class Debug
         {
+            public static GcmfTemplate CreateLitVertexColoredDoubleSided()
+            {
+                var template = CreateLitVertexColored();
+                template.Submesh.RenderFlags = RenderFlags.doubleSidedFaces;
+                return template;
+            }
             public static GcmfTemplate CreateLitVertexColored()
             {
                 var tevLayers = new TevLayer[0];
@@ -47,7 +53,7 @@ namespace Manifold.EditorTools.GC.GFZ
                 var unknownAlphaOptions = new UnkAlphaOptions();
                 var submesh = new Submesh()
                 {
-                    RenderFlags = RenderFlags.doubleSidedFaces,
+                    RenderFlags = 0,
                     Material = material,
                     UnkAlphaOptions = unknownAlphaOptions,
                 };

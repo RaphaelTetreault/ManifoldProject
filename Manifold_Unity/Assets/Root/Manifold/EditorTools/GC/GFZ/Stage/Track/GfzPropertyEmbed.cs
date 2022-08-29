@@ -221,7 +221,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 default:
                     return new GcmfTemplate[]
                     {
-                        GcmfTemplates.Debug.CreateLitVertexColored(),
+                        GcmfTemplates.Debug.CreateLitVertexColoredDoubleSided(),
                     };
             }
         }
