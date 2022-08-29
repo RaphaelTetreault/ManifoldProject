@@ -79,16 +79,16 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     return new GcmfTemplate[]
                     {
                         GcmfTemplates.MuteCityCOM.RoadTopNoDividers(),
-                        GcmfTemplates.Debug.CreateLitVertexColored(),
-                        GcmfTemplates.Debug.CreateLitVertexColored(),
+                        GcmfTemplates.Debug.CreateLitVertexColoredDoubleSided(),
+                        GcmfTemplates.Debug.CreateLitVertexColoredDoubleSided(),
                     };
 
                 default:
                     return new GcmfTemplate[]
                     {
-                        GcmfTemplates.Debug.CreateLitVertexColored(),
-                        GcmfTemplates.Debug.CreateLitVertexColored(),
-                        GcmfTemplates.Debug.CreateLitVertexColored(),
+                        GcmfTemplates.Debug.CreateLitVertexColoredDoubleSided(),
+                        GcmfTemplates.Debug.CreateLitVertexColoredDoubleSided(),
+                        GcmfTemplates.Debug.CreateLitVertexColoredDoubleSided(),
                     };
             }
         }
@@ -100,14 +100,14 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     return new GcmfTemplate[]
                     {
                         GcmfTemplates.MuteCityCOM.RoadTopNoDividers(),
-                        GcmfTemplates.Debug.CreateLitVertexColored(),
+                        GcmfTemplates.Debug.CreateLitVertexColoredDoubleSided(),
                     };
 
                 default:
                     return new GcmfTemplate[]
                     {
-                        GcmfTemplates.Debug.CreateLitVertexColored(),
-                        GcmfTemplates.Debug.CreateLitVertexColored(),
+                        GcmfTemplates.Debug.CreateLitVertexColoredDoubleSided(),
+                        GcmfTemplates.Debug.CreateLitVertexColoredDoubleSided(),
                     };
             }
         }

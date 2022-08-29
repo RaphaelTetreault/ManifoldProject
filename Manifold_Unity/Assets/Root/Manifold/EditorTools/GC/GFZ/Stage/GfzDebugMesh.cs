@@ -65,7 +65,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         private GcmfTemplate[] GetGcmfTemplates()
         {
             return new GcmfTemplate[] {
-            GcmfTemplates.Debug.CreateLitVertexColored(),
+            GcmfTemplates.Debug.CreateLitVertexColoredDoubleSided(),
             };
         }
 
