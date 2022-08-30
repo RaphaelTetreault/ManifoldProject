@@ -1451,17 +1451,17 @@ namespace Manifold.EditorTools.GC.GFZ
                 var vertices = CreateCircleVertices(nTristrips);
 
                 var tristrip = new Tristrip();
-                int vertexCount = vertices.Length - 1;
-                tristrip.positions = new Vector3[vertexCount];
-                tristrip.normals = ArrayUtility.DefaultArray(normal, vertexCount);
+                int vertexCount = vertices.Length;
+                tristrip.positions = new Vector3[vertices.Length];
+                tristrip.normals = ArrayUtility.DefaultArray(normal, vertices.Length);
 
-                for (int i = 0; i < vertexCount; i++)
+                for (int i = 0; i < vertexCount - 1; i++)
                 {
                     bool isEven = i % 2 == 0;
                     int halfI = i / 2;
                     int index = isEven
-                        ? vertexCount - halfI
-                        : halfI;
+                        ? vertexCount - halfI - 1
+                        : halfI + 1;
 
                     Vector3 vertex = vertices[index];
                     vertex = matrix.MultiplyPoint(vertex);
