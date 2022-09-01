@@ -898,9 +898,6 @@ namespace Manifold.EditorTools.GC.GFZ
 
                 public static Tristrip[] CreateLaneDividers(Matrix4x4[] matrices, GfzShapeRoad road, float length)
                 {
-                    if (!road.HasLaneDividers)
-                        return new Tristrip[0];
-
                     var matricesLeft = ModifyMatrixScaledPositions(matrices, Vector3.left * 0.5f);
                     var matricesRight = ModifyMatrixScaledPositions(matrices, Vector3.right * 0.5f);
                     matricesLeft = ModifyMatrixPositions(matricesLeft, Vector3.right * (kCurbSlantInner + 1f));
@@ -910,12 +907,18 @@ namespace Manifold.EditorTools.GC.GFZ
                     var matricesLeftNoScale = GetMatricesDefaultScale(matricesLeft, Vector3.one * 0.75f);
                     var matricesRightNoScale = GetMatricesDefaultScale(matricesRight, Vector3.one * 0.75f);
 
-                    var tristrips = new Tristrip[]
-                    {
-                        GetLaneDivider(matricesNoScale, length),
-                        GetLaneDivider(matricesLeftNoScale, length),
-                        GetLaneDivider(matricesRightNoScale, length),
-                    };
+                    var tristrips = road.HasLaneDividers
+                        ? new Tristrip[]
+                        {
+                            GetLaneDivider(matricesNoScale, length),
+                            GetLaneDivider(matricesLeftNoScale, length),
+                            GetLaneDivider(matricesRightNoScale, length),
+                        }
+                        : new Tristrip[]
+                        {
+                            GetLaneDivider(matricesLeftNoScale, length),
+                            GetLaneDivider(matricesRightNoScale, length),
+                        };
 
                     return tristrips;
                 }
