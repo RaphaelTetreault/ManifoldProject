@@ -669,7 +669,7 @@ namespace Manifold.EditorTools.GC.GFZ
                 public const float kLengthTrim = RoadTexStride * 2;
                 public const float kLengthRoadTop = RoadTexStride;
                 public const float kLengthRoadBottom = RoadTexStride;
-                public const float kLengthLaneDivider = RoadTexStride / 2f;
+                public const float kLengthLaneDivider = RoadTexStride;
 
                 public static Tristrip[] CreateRoadTop(Matrix4x4[] matrices, GfzShapeRoad road, float length)
                 {
@@ -901,26 +901,20 @@ namespace Manifold.EditorTools.GC.GFZ
                     if (!road.HasLaneDividers)
                         return new Tristrip[0];
 
-                    //var matricesLeft = new Matrix4x4[matrices.Length];
-                    //var matricesRight = new Matrix4x4[matrices.Length];
-
-                    //var left = Matrix4x4.TRS(new(-0.475f, 0, 0), Quaternion.identity, Vector3.one);
-                    //var right = Matrix4x4.TRS(new(+0.475f, 0, 0), Quaternion.identity, Vector3.one);
-                    //for (int i = 0; i < matrices.Length; i++)
-                    //{
-                    //    matricesLeft[i] = matrices[i] * left;
-                    //    matricesRight[i] = matrices[i] * right;
-                    //}
+                    var matricesLeft = ModifyMatrixScaledPositions(matrices, Vector3.left * 0.5f);
+                    var matricesRight = ModifyMatrixScaledPositions(matrices, Vector3.right * 0.5f);
+                    matricesLeft = ModifyMatrixPositions(matricesLeft, Vector3.right * (kCurbSlantInner + 1f));
+                    matricesRight = ModifyMatrixPositions(matricesRight, Vector3.left * (kCurbSlantInner + 1f));
 
                     var matricesNoScale = GetMatricesDefaultScale(matrices, Vector3.one);
-                    //var matricesLeftNoScale = GetMatricesDefaultScale(matricesLeft, Vector3.one);
-                    //var matricesRightNoScale = GetMatricesDefaultScale(matricesRight, Vector3.one);
+                    var matricesLeftNoScale = GetMatricesDefaultScale(matricesLeft, Vector3.one * 0.75f);
+                    var matricesRightNoScale = GetMatricesDefaultScale(matricesRight, Vector3.one * 0.75f);
 
                     var tristrips = new Tristrip[]
                     {
                         GetLaneDivider(matricesNoScale, length),
-                        //GetLaneDivider(matricesLeftNoScale, length),
-                        //GetLaneDivider(matricesRightNoScale, length),
+                        GetLaneDivider(matricesLeftNoScale, length),
+                        GetLaneDivider(matricesRightNoScale, length),
                     };
 
                     return tristrips;
