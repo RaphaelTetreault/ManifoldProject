@@ -32,8 +32,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public void InitTrackData()
         {
-            FindChildSegments();
-            AssignContinuity();
+            RefreshSegmentNodes();
 
             if (this.AllRoots.Length == 0)
                 throw new MissingReferenceException($"No references to any {typeof(GfzSegmentNode).Name}! Make sure references existin in inspector.");
@@ -157,13 +156,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             CircuitType = CircuitType.ClosedCircuit;
         }
 
-        private void FindChildSegments()
+        private void SortRootSegments()
         {
             AllRoots = GetAllRootSegments();
-
-            FirstRoot = AllRoots[0];
-            int lastIndex = AllRoots.Length - 1;
-            LastRoot = AllRoots[lastIndex];
 
             // Reorder elements if first is meant to be last element
             if (FirstElementIsLastSegment)
@@ -171,38 +166,41 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 var ordered = new List<GfzPathSegment>();
                 var subset = AllRoots[1..];
                 ordered.AddRange(subset);
-                ordered.Add(FirstRoot);
+                ordered.Add(AllRoots[0]); // first is made last
                 AllRoots = ordered.ToArray();
             }
+
+            // Metadata / visual sanity check
+            FirstRoot = AllRoots[0];
+            int lastIndex = AllRoots.Length - 1;
+            LastRoot = AllRoots[lastIndex];
         }
 
-        private void AssignContinuity()
+        private void AssignPrevNextContinuity()
         {
-            var allRootSegments = GetAllRootSegments();
-
-            bool hasSegments = allRootSegments.Length > 0;
+            bool hasSegments = AllRoots.Length > 0;
             if (!hasSegments)
                 return;
 
-            for (int i = 0; i < allRootSegments.Length - 1; i++)
+            for (int i = 0; i < AllRoots.Length - 1; i++)
             {
-                var curr = allRootSegments[i + 0];
-                var next = allRootSegments[i + 1];
+                var curr = AllRoots[i + 0];
+                var next = AllRoots[i + 1];
 
                 curr.Next = next;
                 next.Prev = curr;
             }
 
             // Patch the first/last indexes which wrap around
-            int lastIndex = allRootSegments.Length - 1;
-            allRootSegments[0].Prev = allRootSegments[lastIndex];
-            allRootSegments[lastIndex].Next = allRootSegments[0];
+            int lastIndex = AllRoots.Length - 1;
+            AllRoots[0].Prev = AllRoots[lastIndex];
+            AllRoots[lastIndex].Next = AllRoots[0];
         }
 
         public void RefreshSegmentNodes()
         {
-            FindChildSegments();
-            AssignContinuity();
+            SortRootSegments();
+            AssignPrevNextContinuity();
         }
 
         public GfzPathSegment[] GetAllRootSegments()
@@ -226,8 +224,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         {
             if (DoFind)
             {
-                FindChildSegments();
-                AssignContinuity();
+                RefreshSegmentNodes();
                 DoFind = false;
             }
         }
