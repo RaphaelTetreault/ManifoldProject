@@ -21,12 +21,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         public bool isDoubleSided { get; set; }
 
 
-        public int TrianglesCount => ((positions.Length / 2) - 1) * 6;
+        public int TriangleIndexesCount => ((positions.Length / 2) - 1) * 6;
         public int VertexCount => positions.Length;
 
         public int[] GetIndices()
         {
-            int nTriangles = TrianglesCount;
+            int nTriangles = TriangleIndexesCount;
             int[] indexes = new int[nTriangles];
 
             // Process 1 triangle at a time

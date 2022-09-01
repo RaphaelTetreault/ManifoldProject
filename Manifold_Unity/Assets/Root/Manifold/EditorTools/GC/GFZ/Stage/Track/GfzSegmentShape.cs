@@ -41,52 +41,84 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public static SubMeshDescriptor[] SubmeshesFromTristrips(Mesh mesh, Tristrip[] tristrips)
         {
-            var submeshes = new SubMeshDescriptor[tristrips.Length];
-            for (int i = 0; i < submeshes.Length; i++)
+            // To keep track of which vertex/index we're at in the mesh
+            int vertexBase = 0;
+            int indexesBase = 0;
+
+            // Count all vertices and indexes used for this mesh
+            int allVertexCount = 0;
+            int allIndexesCount = 0;
+            foreach (var tristrip in tristrips)
             {
-                var submesh = new SubMeshDescriptor();
-
-                var tristrip = tristrips[i];
-                var vertices = tristrip.positions;
-                var normals = tristrip.normals;
-                var colors = tristrip.color0.IsNullOrEmpty() ? ArrayUtility.DefaultArray(new Color32(255, 255, 255, 255), tristrip.VertexCount) : tristrip.color0;
-                var triangles = tristrip.GetIndices(); // not offset
-                //var uv1 = tristrip.uv0 == null ? new Vector2[vertices.Length] : tristrip.uv0;
-                //var uv2 = tristrip.uv1;
-                //var uv3 = tristrip.uv2;
-
-                // Build submesh
-                submesh.baseVertex = mesh.vertexCount;
-                submesh.firstVertex = mesh.vertexCount;
-                submesh.indexCount = triangles.Length;
-                submesh.indexStart = mesh.triangles.Length;
-                submesh.topology = MeshTopology.Triangles;
-                submesh.vertexCount = vertices.Length;
-
-                // Append to mesh
-                var verticesConcat = mesh.vertices.Concat(vertices).ToArray();
-                var normalsConcat = mesh.normals.Concat(normals).ToArray();
-                //var uv1Concat = mesh.uv.Concat(uv1).ToArray();
-                //var uv2Concat = mesh.uv2.Concat(uv2).ToArray();
-                //var uv3Concat = mesh.uv3.Concat(uv3).ToArray();
-                var colorsConcat = mesh.colors32.Concat(colors).ToArray();
-                //if (list.nbt != null)
-                //    mesh.tangents = list.nbt;
-                var trianglesConcat = mesh.triangles.Concat(triangles).ToArray();
-
-                // Assign values to mesh
-                mesh.vertices = verticesConcat;
-                mesh.normals = normalsConcat;
-                //mesh.uv = uv1Concat;
-                //mesh.uv2 = uv2Concat;
-                //mesh.uv3 = uv3Concat;
-                mesh.colors32 = colorsConcat;
-                mesh.triangles = trianglesConcat;
-
-                submeshes[i] = submesh;
+                allVertexCount += tristrip.VertexCount;
+                allIndexesCount += tristrip.TriangleIndexesCount;
             }
-            return submeshes;
+
+            // Init arrays for all of that data
+            var allPositions = new Vector3[allVertexCount];
+            var allNormals = new Vector3[allVertexCount];
+            var allColors = new Color32[allVertexCount];
+            var allTex0 = new Vector2[allVertexCount];
+            var allTex1 = new Vector2[allVertexCount];
+            var allTex2 = new Vector2[allVertexCount];
+            var allIndices = new int[allIndexesCount];
+
+            var submeshDescriptors = new SubMeshDescriptor[tristrips.Length];
+            for (int i = 0; i < submeshDescriptors.Length; i++)
+            {
+                var submeshDescriptor = new SubMeshDescriptor();
+
+                // Get tristrip and relevant info
+                var tristrip = tristrips[i];
+                int vertexCount = tristrip.VertexCount;
+                int indexesCount = tristrip.TriangleIndexesCount;
+
+                // Initi data for submesh. Missing data is replaced with defaults.
+                var positions = tristrip.positions;
+                var normals = tristrip.normals;
+                var color0 = tristrip.color0.IsNullOrEmpty() ? ArrayUtility.DefaultArray(new Color32(255, 255, 255, 255), tristrip.VertexCount) : tristrip.color0;
+                var tex0 = tristrip.tex0 == null ? new Vector2[positions.Length] : tristrip.tex0;
+                var tex1 = tristrip.tex1 == null ? new Vector2[positions.Length] : tristrip.tex1;
+                var tex2 = tristrip.tex2 == null ? new Vector2[positions.Length] : tristrip.tex2;
+                var indices = tristrip.GetIndices();
+
+                // Set submesh base vertex and base index information
+                submeshDescriptor.baseVertex = vertexBase;
+                submeshDescriptor.firstVertex = vertexBase;
+                submeshDescriptor.indexCount = indexesCount;
+                submeshDescriptor.indexStart = indexesBase;
+                submeshDescriptor.topology = MeshTopology.Triangles;
+                submeshDescriptor.vertexCount = vertexCount;
+                
+                // Copy all the data to the full mesh arrays
+                positions.CopyTo(allPositions, vertexBase);
+                normals.CopyTo(allNormals, vertexBase);
+                tex0.CopyTo(allTex0, vertexBase);
+                tex1.CopyTo(allTex1, vertexBase);
+                tex2.CopyTo(allTex2, vertexBase);
+                color0.CopyTo(allColors, vertexBase);
+                indices.CopyTo(allIndices, indexesBase);
+
+                // Increment base values
+                vertexBase += vertexCount;
+                indexesBase += indexesCount;
+
+                // Assign submesh descriptor
+                submeshDescriptors[i] = submeshDescriptor;
+            }
+
+            // Finally, assign complete data to mesh
+            mesh.vertices = allPositions;
+            mesh.normals = allNormals;
+            mesh.uv = allTex0;
+            mesh.uv2 = allTex1;
+            mesh.uv3 = allTex2;
+            mesh.colors32 = allColors;
+            mesh.triangles = allIndices;
+
+            return submeshDescriptors;
         }
+
 
         public Tristrip[] CombinedTristrips(Tristrip[][] tristripsCollection)
         {
