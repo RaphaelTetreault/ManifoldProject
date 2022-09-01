@@ -13,6 +13,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         public const string shadersAssetsPath = "Assets/Root/Manifold/EditorTools/GC/GFZ/Shaders/";
         public const string shaderTex1Opaque = shadersAssetsPath + "UnlitTex1Opaque.shader";
         public const string shadergraphOp1Tex = shadersAssetsPath + "tex0opaque.shadergraph";
+        public const string shadergraphTl1Tex = shadersAssetsPath + "tl_1Tex.shadergraph";
         public const string shadergraphOp2TexAdd = shadersAssetsPath + "op_2TexScreen.shadergraph";
         public const string shadergraphMutRails = shadersAssetsPath + "mut_rails.shadergraph";
 
@@ -102,6 +103,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 CreateRoadSides();
                 CreateRoadEmbelishments();
                 CreateRoadRails();
+                CreateRoadLaneDividers();
             }
 
             public static string CreateRoadTop() => CreateMaterial(shadergraphOp1Tex, GcmfTemplates.MuteCity.RoadTop());
@@ -109,6 +111,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             public static string CreateRoadSides() => CreateMaterial(shadergraphOp1Tex, GcmfTemplates.MuteCity.RoadSides());
             public static string CreateRoadEmbelishments() => CreateMaterial(shadergraphOp2TexAdd, GcmfTemplates.MuteCity.RoadEmbelishments());
             public static string CreateRoadRails() => CreateMaterial(shadergraphMutRails, GcmfTemplates.MuteCity.RoadRails());
+            public static string CreateRoadLaneDividers() => CreateMaterial(shadergraphTl1Tex, GcmfTemplates.MuteCity.RoadLaneDividers());
         }
         public static class MuteCityCOM
         {

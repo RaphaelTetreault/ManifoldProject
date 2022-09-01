@@ -977,6 +977,7 @@ namespace Manifold.EditorTools.GC.GFZ
                 };
                 var template = new GcmfTemplate()
                 {
+                    Name = baseName + nameof(RoadLaneDividers),
                     IsTranslucid = true,
                     Submesh = submesh,
                     TevLayers = tevLayers,

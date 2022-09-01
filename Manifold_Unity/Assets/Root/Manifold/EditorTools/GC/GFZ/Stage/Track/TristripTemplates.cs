@@ -666,10 +666,10 @@ namespace Manifold.EditorTools.GC.GFZ
                 //          Mute City and Green Plant? etc.
 
                 // TODO: de-hardcode these, put in road as param
-                public const float kLengthTrim = 60f;
-                public const float kLengthRoadTop = 80f;
-                public const float kLengthRoadBottom = kLengthRoadTop / 2f;
-                public const float kLengthLaneDivider = kLengthRoadTop / 4f;
+                public const float kLengthTrim = RoadTexStride * 2;
+                public const float kLengthRoadTop = RoadTexStride;
+                public const float kLengthRoadBottom = RoadTexStride;
+                public const float kLengthLaneDivider = RoadTexStride / 2f;
 
                 public static Tristrip[] CreateRoadTop(Matrix4x4[] matrices, GfzShapeRoad road, float length)
                 {
@@ -717,6 +717,7 @@ namespace Manifold.EditorTools.GC.GFZ
                             var tristrip = tristrips[i];
                             float increment = repetitions / (tristrip.VertexCount / 2 - 1); // length of verts, but not both sides
                             tristrip.tex0 = CreateUVsForward(tristrip.VertexCount, 0, 1, increment);
+                            tristrip.tex0 = OffsetUVs(tristrip.tex0, new Vector2(0.5f * 0, 0.5f * increment));
                             //tristrip.tex0 = CreateUVsSideways(tristrip.VertexCount, 0, 1, increment, modulus);
                         }
 
@@ -737,6 +738,7 @@ namespace Manifold.EditorTools.GC.GFZ
                             float right = (i + 1) % 2;
                             float increment = repetitions / (tristrip.VertexCount / 2 - 1); // length of verts, but not both sides
                             tristrip.tex0 = CreateUVsForward(tristrip.VertexCount, left, right, increment);
+                            tristrip.tex0 = OffsetUVs(tristrip.tex0, new Vector2(0.5f * 0, 0.5f * increment));
                             //tristrip.tex0 = CreateUVsSideways(tristrip.VertexCount, 0, 1, increment, modulus);
                         }
 
@@ -765,6 +767,8 @@ namespace Manifold.EditorTools.GC.GFZ
                             float increment = repetitions / (tristripLeft.VertexCount / 2 - 1); // length of verts, but not both sides
                             tristripLeft.tex0 = CreateUVsForward(tristripLeft.VertexCount, 0, 1, increment);
                             tristripRight.tex0 = CreateUVsForward(tristripRight.VertexCount, 0, 1, increment);
+                            tristripLeft.tex0 = OffsetUVs(tristripLeft.tex0, new Vector2(0.5f * 0, 0.5f * increment));
+                            tristripRight.tex0 = OffsetUVs(tristripRight.tex0, new Vector2(0.5f * 0, 0.5f * increment));
                         }
                         allTristrips.AddRange(tristripsLeft);
                         allTristrips.AddRange(tristripsRight);
