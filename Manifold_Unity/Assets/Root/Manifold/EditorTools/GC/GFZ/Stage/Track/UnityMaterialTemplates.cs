@@ -12,7 +12,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
     {
         public const string shadersAssetsPath = "Assets/Root/Manifold/EditorTools/GC/GFZ/Shaders/";
         public const string shaderTex1Opaque = shadersAssetsPath + "UnlitTex1Opaque.shader";
-        public const string shadergraphTex1Opaque = shadersAssetsPath + "tex0opaque.shadergraph";
+        public const string shadergraphOp1Tex = shadersAssetsPath + "tex0opaque.shadergraph";
+        public const string shadergraphOp2TexAdd = shadersAssetsPath + "op_2TexScreen.shadergraph";
+        public const string shadergraphMutRails = shadersAssetsPath + "mut_rails.shadergraph";
 
 
         [MenuItem("Manifold/Materials Test")]
@@ -57,13 +59,18 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 var texture = AssetDatabase.LoadAssetAtPath<Texture2D>(texturePath);
                 material.SetTexture($"_Tex{i}", texture);
             }
+
+            var alpha = gcmfTemplate.Submesh.Material.Alpha / 255f;
+            material.SetFloat($"_Alpha", alpha);
+
             return material;
         }
-        private static string CreateMaterial(string shader, GcmfTemplate gcmfTemplate, string name)
+        private static string CreateMaterial(string shader, GcmfTemplate gcmfTemplate)
         {
             var material = CreateFromGcmfTemplate(shader, gcmfTemplate);
             // Save material
-            string materialPath = GetMaterialsPath() + name;
+            string materialName = $"mat_{gcmfTemplate.Name}.mat";
+            string materialPath = GetMaterialsPath() + materialName;
             AssetDatabaseUtility.CreateAsset(material, materialPath);
             //
             return materialPath;
@@ -90,21 +97,29 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         {
             public static void CreateAllMaterials()
             {
-                CreateRoadMaterial();
+                CreateRoadTop();
+                CreateRoadBottom();
+                CreateRoadSides();
+                CreateRoadEmbelishments();
+                CreateRoadRails();
             }
 
-            public static string CreateRoadMaterial(string name = "mat_mut_road_a.mat")
-                => CreateMaterial(shadergraphTex1Opaque, GcmfTemplates.MuteCity.RoadTop(), name);
+            public static string CreateRoadTop() => CreateMaterial(shadergraphOp1Tex, GcmfTemplates.MuteCity.RoadTop());
+            public static string CreateRoadBottom() => CreateMaterial(shadergraphOp1Tex, GcmfTemplates.MuteCity.RoadBottom());
+            public static string CreateRoadSides() => CreateMaterial(shadergraphOp1Tex, GcmfTemplates.MuteCity.RoadSides());
+            public static string CreateRoadEmbelishments() => CreateMaterial(shadergraphOp2TexAdd, GcmfTemplates.MuteCity.RoadEmbelishments());
+            public static string CreateRoadRails() => CreateMaterial(shadergraphMutRails, GcmfTemplates.MuteCity.RoadRails());
         }
         public static class MuteCityCOM
         {
             public static void CreateAllMaterials()
             {
-                CreateRoadMaterial();
+                CreateRoadTopNoDividers();
+                CreateRoadTopEmbeddedDividers();
             }
 
-            public static string CreateRoadMaterial(string name = "mat_com_road_b.mat")
-                => CreateMaterial(shadergraphTex1Opaque, GcmfTemplates.MuteCityCOM.RoadTopNoDividers(), name);
+            public static string CreateRoadTopNoDividers() => CreateMaterial(shadergraphOp1Tex, GcmfTemplates.MuteCityCOM.RoadTopNoDividers());
+            public static string CreateRoadTopEmbeddedDividers() => CreateMaterial(shadergraphOp2TexAdd, GcmfTemplates.MuteCityCOM.RoadTopEmbeddedDividers());
         }
 
     }
