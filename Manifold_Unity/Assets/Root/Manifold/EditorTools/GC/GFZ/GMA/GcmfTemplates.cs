@@ -648,6 +648,8 @@ namespace Manifold.EditorTools.GC.GFZ
 
         public static class MuteCity
         {
+            const string baseName = "mut_";
+
             public static GcmfTemplate RoadRails()
             {
                 var tevLayers = new TevLayer[]
@@ -765,6 +767,7 @@ namespace Manifold.EditorTools.GC.GFZ
 
                 var template = new GcmfTemplate()
                 {
+                    Name = baseName + "road_a",
                     IsTranslucid = false,
                     Submesh = submesh,
                     TevLayers = tevLayers,
@@ -997,6 +1000,8 @@ namespace Manifold.EditorTools.GC.GFZ
 
         public static class MuteCityCOM
         {
+            const string baseName = "com_";
+
             public static GcmfTemplate RoadTopEmbeddedDividers()
             {
                 var tevLayers = new TevLayer[]
@@ -1046,6 +1051,7 @@ namespace Manifold.EditorTools.GC.GFZ
 
                 var template = new GcmfTemplate()
                 {
+                    Name = baseName + "road_b",
                     IsTranslucid = false,
                     Submesh = submesh,
                     TevLayers = tevLayers,

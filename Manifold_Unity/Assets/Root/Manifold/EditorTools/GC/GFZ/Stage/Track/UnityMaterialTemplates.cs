@@ -12,6 +12,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
     {
         public const string shadersAssetsPath = "Assets/Root/Manifold/EditorTools/GC/GFZ/Shaders/";
         public const string shaderTex1Opaque = shadersAssetsPath + "UnlitTex1Opaque.shader";
+        public const string shadergraphTex1Opaque = shadersAssetsPath + "tex0opaque.shadergraph";
 
 
         [MenuItem("Manifold/Materials Test")]
@@ -54,7 +55,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 string textureName = gcmfTemplate.TextureHashes[i];
                 string texturePath = textureDirectory + textureName + ".png";
                 var texture = AssetDatabase.LoadAssetAtPath<Texture2D>(texturePath);
-                material.SetTexture("_MainTex", texture);
+                material.SetTexture($"_Tex{i}", texture);
             }
             return material;
         }
@@ -68,6 +69,23 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return materialPath;
         }
 
+        public static Material LoadMaterial(GcmfTemplate gcmfTemplate)
+        {
+            string basePath = GetAssetsPath();
+            string assetName = gcmfTemplate.Name;
+            string assetPath = $"{basePath}/mat/mat_{assetName}.mat";
+            var material = AssetDatabase.LoadAssetAtPath<Material>(assetPath);
+            return material;
+        }
+        public static Material[] LoadMaterials(GcmfTemplate[] gcmfTemplates)
+        {
+            var materials = new Material[gcmfTemplates.Length];
+            for (int i = 0; i < materials.Length; i++)
+                materials[i] = LoadMaterial(gcmfTemplates[i]);
+
+            return materials;
+        }
+
         public static class MuteCity
         {
             public static void CreateAllMaterials()
@@ -76,7 +94,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
 
             public static string CreateRoadMaterial(string name = "mat_mut_road_a.mat")
-                => CreateMaterial(shaderTex1Opaque, GcmfTemplates.MuteCity.RoadTop(), name);
+                => CreateMaterial(shadergraphTex1Opaque, GcmfTemplates.MuteCity.RoadTop(), name);
         }
         public static class MuteCityCOM
         {
@@ -86,7 +104,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
 
             public static string CreateRoadMaterial(string name = "mat_com_road_b.mat")
-                => CreateMaterial(shaderTex1Opaque, GcmfTemplates.MuteCityCOM.RoadTopNoDividers(), name);
+                => CreateMaterial(shadergraphTex1Opaque, GcmfTemplates.MuteCityCOM.RoadTopNoDividers(), name);
         }
 
     }

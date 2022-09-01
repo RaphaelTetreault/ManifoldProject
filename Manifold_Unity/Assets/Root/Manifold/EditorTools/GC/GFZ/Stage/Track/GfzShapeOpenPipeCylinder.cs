@@ -41,12 +41,17 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             throw new System.NotImplementedException();
         }
 
-        public override Mesh CreateMesh()
+        public override Mesh CreateMesh(out int[] materialsCount)
         {
             throw new System.NotImplementedException();
         }
 
         public override TrackSegment CreateTrackSegment()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override GcmfTemplate[] GetGcmfTemplates()
         {
             throw new System.NotImplementedException();
         }

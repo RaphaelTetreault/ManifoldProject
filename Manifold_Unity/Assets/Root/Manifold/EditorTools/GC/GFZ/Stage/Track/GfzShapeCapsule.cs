@@ -43,28 +43,26 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return gcmf;
         }
 
-        public GcmfTemplate[] GetGcmfTemplates()
+        public override GcmfTemplate[] GetGcmfTemplates()
         {
+            switch (capsuleStyle)
             {
-                switch (capsuleStyle)
-                {
-                    case CapsuleStyle.MuteCity:
-                        return new GcmfTemplate[]
-                        {
-                            GcmfTemplates.MuteCity.RoadTop(),
-                            GcmfTemplates.MuteCityCOM.RoadTopNoDividers(),
-                            GcmfTemplates.Debug.CreateLitVertexColored(),
-                            GcmfTemplates.Debug.CreateLitVertexColored(),
-                        };
+                case CapsuleStyle.MuteCity:
+                    return new GcmfTemplate[]
+                    {
+                        GcmfTemplates.MuteCity.RoadTop(),
+                        GcmfTemplates.MuteCityCOM.RoadTopNoDividers(),
+                        GcmfTemplates.Debug.CreateLitVertexColored(),
+                        GcmfTemplates.Debug.CreateLitVertexColored(),
+                    };
 
-                    default:
-                        return new GcmfTemplate[]
-                        {
-                            GcmfTemplates.Debug.CreateLitVertexColored(),
-                            GcmfTemplates.Debug.CreateLitVertexColored(),
-                            GcmfTemplates.Debug.CreateLitVertexColored(),
-                        };
-                }
+                default:
+                    return new GcmfTemplate[]
+                    {
+                        GcmfTemplates.Debug.CreateLitVertexColored(),
+                        GcmfTemplates.Debug.CreateLitVertexColored(),
+                        GcmfTemplates.Debug.CreateLitVertexColored(),
+                    };
             }
         }
 
@@ -107,11 +105,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
         }
 
-
-        public override Mesh CreateMesh()
+        public override Mesh CreateMesh(out int[] materialsCount)
         {
             var tristripsColletion = GetTristrips(false);
             var tristrips = CombinedTristrips(tristripsColletion);
+            materialsCount = TristripsToMaterialCount(tristripsColletion);
             var mesh = TristripsToMesh(tristrips);
             mesh.name = $"Auto Gen - {name}";
             return mesh;
@@ -130,7 +128,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
             return capsule;
         }
-
 
         public override void UpdateTRS()
         {

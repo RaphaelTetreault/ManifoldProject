@@ -34,14 +34,14 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         public override Gcmf CreateGcmf(out GcmfTemplate[] gcmfTemplates, TplTextureContainer tpl)
         {
             var tristripsCollections = GetTristrips(MeshStyle, true);
-            gcmfTemplates = GetGcmfTemplates(MeshStyle);
+            gcmfTemplates = GetGcmfTemplates();
             var gcmf = GcmfTemplate.CreateGcmf(gcmfTemplates, tristripsCollections, tpl);
             return gcmf;
         }
 
-        public GcmfTemplate[] GetGcmfTemplates(RoadMeshStyle roadMeshStyle)
+        public override GcmfTemplate[] GetGcmfTemplates()
         {
-            switch (roadMeshStyle)
+            switch (MeshStyle)
             {
                 case RoadMeshStyle.MuteCity:
                     return GcmfTemplates.MuteCity.Road();
@@ -116,10 +116,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
         }
 
-        public override Mesh CreateMesh()
+        public override Mesh CreateMesh(out int[] materialsCount)
         {
             var tristripsCollection = GetTristrips(MeshStyle, false);
             var tristrips = CombinedTristrips(tristripsCollection);
+            materialsCount = TristripsToMaterialCount(tristripsCollection);
 
             var mesh = TristripsToMesh(tristrips);
             mesh.name = $"Auto Gen - {name}";

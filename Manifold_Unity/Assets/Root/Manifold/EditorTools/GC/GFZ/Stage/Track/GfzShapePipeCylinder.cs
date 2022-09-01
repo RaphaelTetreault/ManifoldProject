@@ -63,7 +63,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return gcmf;
         }
 
-        public GcmfTemplate[] GetGcmfTemplates()
+        public override GcmfTemplate[] GetGcmfTemplates()
         {
             bool isPipe = type == PipeCylinderType.Pipe;
             var gcmfTemplates = isPipe
@@ -167,10 +167,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
         }
 
-        public override Mesh CreateMesh()
+        public override Mesh CreateMesh(out int[] materialsCount)
         {
             var tristripsColletion = GetTristrips(false);
             var tristrips = CombinedTristrips(tristripsColletion);
+            materialsCount = TristripsToMaterialCount(tristripsColletion);
             var mesh = TristripsToMesh(tristrips);
             mesh.name = $"Auto Gen - {name}";
             return mesh;

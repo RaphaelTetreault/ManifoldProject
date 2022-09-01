@@ -23,7 +23,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         public abstract ShapeID ShapeIdentifier { get; }
 
 
-        public abstract Mesh CreateMesh();
+        public abstract Mesh CreateMesh(out int[] mat);
+        public abstract GcmfTemplate[] GetGcmfTemplates();
         public abstract Gcmf CreateGcmf(out GcmfTemplate[] gcmfTemplates, TplTextureContainer tpl);
 
         public override float GetMaxTime()
@@ -119,7 +120,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return submeshDescriptors;
         }
 
-
         public Tristrip[] CombinedTristrips(Tristrip[][] tristripsCollection)
         {
             var allTristrips = new List<Tristrip>();
@@ -128,12 +128,37 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
             return allTristrips.ToArray();
         }
+        public int[] TristripsToMaterialCount(Tristrip[][] tristripsCollection)
+        {
+            int[] materialsCount = new int[tristripsCollection.Length];
+            for (int i = 0; i < materialsCount.Length; i++)
+                materialsCount[i] = tristripsCollection[i].Length;
+            return materialsCount;
+        }
+
+        public UnityEngine.Material[] GetSharedMaterials(int[] materialsCount)
+        {
+            var gcmfTemplates = GetGcmfTemplates();
+            var materials = UnityMaterialTemplates.LoadMaterials(gcmfTemplates);
+
+            var materialsPerSubmesh = new List<UnityEngine.Material>();
+            for(int i = 0; i < materials.Length; i++)
+            {
+                var material = materials[i];
+                int count = materialsCount[i];
+                var materialsArray = ArrayUtility.DefaultArray(material, count);
+                materialsPerSubmesh.AddRange(materialsArray);
+            }
+
+            return materialsPerSubmesh.ToArray();
+        }
 
 
         public void UpdateMesh()
         {
-            var mesh = CreateMesh();
-            MeshDisplay.UpdateMesh(mesh);
+            var mesh = CreateMesh(out int[] materialsCount);
+            var sharedMaterials = GetSharedMaterials(materialsCount);
+            MeshDisplay.UpdateMesh(mesh, sharedMaterials);
 
             // Do no offset mesh display - mesh coords are in world space.
             var scale = transform.lossyScale;

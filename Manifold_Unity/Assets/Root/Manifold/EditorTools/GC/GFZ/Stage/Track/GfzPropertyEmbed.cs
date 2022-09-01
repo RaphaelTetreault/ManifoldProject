@@ -144,7 +144,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         public override Gcmf CreateGcmf(out GcmfTemplate[] gcmfTemplates, TplTextureContainer tpl)
         {
             var tristripsCollections = GetTristrips(Type, true);
-            gcmfTemplates = GetGcmfTemplates(Type);
+            gcmfTemplates = GetGcmfTemplates();
             ScaleTextureScrollFields(gcmfTemplates);
             var gcmf = GcmfTemplate.CreateGcmf(gcmfTemplates, tristripsCollections, tpl);
             return gcmf;
@@ -165,10 +165,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
         }
 
-        public GcmfTemplate[] GetGcmfTemplates(SurfaceEmbedType embedType)
+        public override GcmfTemplate[] GetGcmfTemplates()
         {
             // NOTE: Always do alpha last
-            switch (embedType)
+            switch (type)
             {
                 case SurfaceEmbedType.SlipLight:
                     return new GcmfTemplate[]
@@ -296,7 +296,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         }
 
 
-        public override Mesh CreateMesh()
+        public override Mesh CreateMesh(out int[] materialsCount)
         {
             var hacTRS = CreateHierarchichalAnimationCurveTRS(false);
             var maxTime = hacTRS.GetRootMaxTime();
@@ -311,6 +311,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             var color0 = GetColor(type);
             var tristrips = TristripGenerator.CreateTristrips(matrices, endpointA, endpointB, widthDivisions, color0, Vector3.up, 0, true);
             var mesh = TristripsToMesh(tristrips);
+            materialsCount = new int[1]; // TODO:
             //var tristrips = GetTristrips(Type, false);
             //var mesh = TristripsToMesh(Tristrip.Linearize(tristrips));
             mesh.name = $"Auto Gen - {this.name}";

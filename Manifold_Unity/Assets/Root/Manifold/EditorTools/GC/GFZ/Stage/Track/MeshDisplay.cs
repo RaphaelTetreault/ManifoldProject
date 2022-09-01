@@ -29,6 +29,20 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 materials[i] = DefaultMaterial;
             MeshRenderer.sharedMaterials = materials;
         }
+        public void UpdateMesh(Mesh mesh, Material[] sharedMaterials)
+        {
+            Mesh = mesh;
+            MeshFilter.sharedMesh = mesh;
+
+            for (int i = 0; i < sharedMaterials.Length; i++)
+            {
+                if (sharedMaterials[i] == null)
+                {
+                    sharedMaterials[i] = DefaultMaterial;
+                }
+            }
+            MeshRenderer.sharedMaterials = sharedMaterials;
+        }
 
         private void Reset()
         {
