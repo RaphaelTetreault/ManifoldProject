@@ -32,33 +32,6 @@ namespace Manifold.EditorTools.GC.GFZ
             Vector3 rotatedNormal = rotation * normal;
             return rotatedNormal;
         }
-        public static Vector3[] NormalsFromTristripVertices(Tristrip tristrip)
-        {
-            Vector3[] normals = new Vector3[tristrip.VertexCount];
-            for (int i = 0; i < tristrip.VertexCount - 2; i++)
-            {
-                var v0 = tristrip.positions[i + 0];
-                var v1 = tristrip.positions[i + 1];
-                var v2 = tristrip.positions[i + 2];
-                var v0v1 = v1 - v0; // direction vector v0 -> v1
-                var v0v2 = v2 - v0; // direction vector v0 -> v2
-                var cross = math.cross(v0v1, v0v2);
-                var normal = math.normalize(cross);
-                normals[i] = normal;
-            }
-
-            // TODO: compute last 2 normals
-            //int beforeLast0 = tristrip.VertexCount - 1;
-            //int beforeLast1 = tristrip.VertexCount - 2;
-            //int beforeLast2 = tristrip.VertexCount - 3;
-            //var blv0 = tristrip.positions[beforeLast0];
-            //var blv1 = tristrip.positions[beforeLast1];
-            //var blv2 = tristrip.positions[beforeLast2];
-            //normals[beforeLast0] = math.normalize(math.cross());
-            //normals[beforeLast1] = math.normalize(math.cross());
-
-            return normals;
-        }
         public static void GetContinuity(GfzSegmentNode node, out bool isContinuousFrom, out bool isContinuousTo)
         {
             var root = node.GetRoot();
@@ -1840,7 +1813,7 @@ namespace Manifold.EditorTools.GC.GFZ
                     new(0.5f, 0),
                     new(0.5f, 1),
                 };
-                tristrip.normals = NormalsFromTristripVertices(tristrip);
+                tristrip.normals = TristripGenerator.GenericNormalsFromTristripVertices(tristrip,false, true); // TODO: pass in proper coord space
 
                 return tristrip;
             }
