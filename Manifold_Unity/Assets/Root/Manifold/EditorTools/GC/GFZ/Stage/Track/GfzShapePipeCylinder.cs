@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
-    public class GfzShapePipeCylinder : GfzSegmentShape
+    public class GfzShapePipeCylinder : GfzShape
     {
         [Header("Pipe/Cylinder")]
         [SerializeField] private PipeCylinderType type = PipeCylinderType.Pipe;
@@ -53,14 +53,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         public override AnimationCurveTRS CopyAnimationCurveTRS(bool isGfzCoordinateSpace)
         {
             return new AnimationCurveTRS();
-        }
-
-        public override Gcmf CreateGcmf(out GcmfTemplate[] gcmfTemplates, TplTextureContainer tpl)
-        {
-            var tristripsCollections = GetTristrips(true);
-            gcmfTemplates = GetGcmfTemplates();
-            var gcmf = GcmfTemplate.CreateGcmf(gcmfTemplates, tristripsCollections, tpl);
-            return gcmf;
         }
 
         public override GcmfTemplate[] GetGcmfTemplates()
@@ -112,7 +104,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
         }
 
-        public Tristrip[][] GetTristrips(bool isGfzCoordinateSpace)
+        public override Tristrip[][] GetTristrips(bool isGfzCoordinateSpace)
         {
             bool isPipe = type == PipeCylinderType.Pipe;
             var tristrips = isPipe
@@ -167,15 +159,15 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
         }
 
-        public override Mesh CreateMesh(out int[] materialsCount)
-        {
-            var tristripsColletion = GetTristrips(false);
-            var tristrips = CombinedTristrips(tristripsColletion);
-            materialsCount = TristripsToMaterialCount(tristripsColletion);
-            var mesh = TristripsToMesh(tristrips);
-            mesh.name = $"Auto Gen - {name}";
-            return mesh;
-        }
+        //public override Mesh CreateMesh(out int[] materialsCount)
+        //{
+        //    var tristripsColletion = GetTristrips(false);
+        //    var tristrips = CombinedTristrips(tristripsColletion);
+        //    materialsCount = TristripsToMaterialCount(tristripsColletion);
+        //    var mesh = TristripsToMesh(tristrips);
+        //    mesh.name = $"Auto Gen - {name}";
+        //    return mesh;
+        //}
 
         public override TrackSegment CreateTrackSegment()
         {

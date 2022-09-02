@@ -12,7 +12,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
     public abstract class GfzPropertyObject : MonoBehaviour
     {
-        [SerializeField] private GfzSegmentShape Shape;
+        [SerializeField] private GfzShape Shape;
         [SerializeField] private MeshDisplay MeshDisplay;
         [SerializeField, Range(0f, 1f)] private float positionWidth = 0.5f;
         [SerializeField, Range(0f, 1f)] private float positionLength = 0f;
@@ -69,7 +69,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         private void OnValidate()
         {
             if (Shape == null)
-                Shape = GetComponent<GfzSegmentShape>();
+                Shape = GetComponent<GfzShape>();
 
             if (MeshDisplay != null)
             {

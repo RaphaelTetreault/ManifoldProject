@@ -9,7 +9,7 @@ using UnityEngine.Rendering;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
-    public abstract class GfzSegmentShape : GfzSegmentNode
+    public abstract class GfzShape : GfzSegmentNode
     {
         [field: SerializeField, ReadOnlyGUI] public MeshDisplay MeshDisplay { get; protected set; }
 
@@ -23,9 +23,26 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         public abstract ShapeID ShapeIdentifier { get; }
 
 
-        public abstract Mesh CreateMesh(out int[] mat);
+        public virtual Mesh CreateMesh(out int[] materialsCount)
+        {
+            var tristripsCollection = GetTristrips(false);
+            var tristrips = CombinedTristrips(tristripsCollection);
+            materialsCount = TristripsToMaterialCount(tristripsCollection);
+
+            var mesh = TristripsToMesh(tristrips);
+            mesh.name = $"Auto Gen - {name}";
+            return mesh;
+        }
+        public virtual Gcmf CreateGcmf(out GcmfTemplate[] gcmfTemplates, TplTextureContainer tpl)
+        {
+            var tristripsCollections = GetTristrips(true);
+            gcmfTemplates = GetGcmfTemplates();
+            var gcmf = GcmfTemplate.CreateGcmf(gcmfTemplates, tristripsCollections, tpl);
+            return gcmf;
+        }
+
+        public abstract Tristrip[][] GetTristrips(bool isGfzCoordinateSpace);
         public abstract GcmfTemplate[] GetGcmfTemplates();
-        public abstract Gcmf CreateGcmf(out GcmfTemplate[] gcmfTemplates, TplTextureContainer tpl);
 
         public override float GetMaxTime()
         {

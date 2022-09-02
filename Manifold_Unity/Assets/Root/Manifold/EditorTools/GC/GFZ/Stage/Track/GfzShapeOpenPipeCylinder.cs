@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
-    public class GfzShapeOpenPipeCylinder : GfzSegmentShape
+    public class GfzShapeOpenPipeCylinder : GfzShape
     {
         [Header("Half-Pipe / Half-Cylinder")]
         [SerializeField] private PipeCylinderType type = PipeCylinderType.Pipe;
@@ -36,12 +36,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             throw new System.NotImplementedException();
         }
 
-        public override Gcmf CreateGcmf(out GcmfTemplate[] gcmfTemplates, TplTextureContainer tpl)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public override Mesh CreateMesh(out int[] materialsCount)
+        public override Tristrip[][] GetTristrips(bool isGfzCoordinateSpace)
         {
             throw new System.NotImplementedException();
         }

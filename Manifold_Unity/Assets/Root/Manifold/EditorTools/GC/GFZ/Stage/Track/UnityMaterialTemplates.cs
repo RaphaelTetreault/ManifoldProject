@@ -21,6 +21,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         [MenuItem("Manifold/Materials Test")]
         public static void CreateAllMaterials()
         {
+            General.CreateAllMaterials();
             MuteCity.CreateAllMaterials();
             MuteCityCOM.CreateAllMaterials();
         }
@@ -94,6 +95,37 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return materials;
         }
 
+        public class General
+        {
+            public static void CreateAllMaterials()
+            {
+                CreateSlipLight();
+                CreateSlipDarkThin();
+                CreateSlipDarkWide();
+                CreateRecoverLightAlpha();
+                CreateRecoverLightBase();
+                CreateRecoverLightSubBase();
+                CreateRecoverDarkAlpha();
+                CreateRecoverDarkBase();
+                CreateLavaAlpha();
+                CreateLavaCrag();
+                CreateDirtAlpha();
+                CreateDirtNoise();
+            }
+            public static string CreateSlipLight() => CreateMaterial(shadergraphOp1Tex, GcmfTemplates.General.SlipLight());
+            public static string CreateSlipDarkThin() => CreateMaterial(shadergraphOp1Tex, GcmfTemplates.General.SlipDarkThin());
+            public static string CreateSlipDarkWide() => CreateMaterial(shadergraphOp1Tex, GcmfTemplates.General.SlipDarkWide());
+            public static string CreateRecoverLightAlpha() => CreateMaterial(shadergraphOp1Tex, GcmfTemplates.General.RecoverLightAlpha());
+            public static string CreateRecoverLightBase() => CreateMaterial(shadergraphOp1Tex, GcmfTemplates.General.RecoverLightBase());
+            public static string CreateRecoverLightSubBase() => CreateMaterial(shadergraphOp1Tex, GcmfTemplates.General.RecoverLightSubBase());
+            public static string CreateRecoverDarkAlpha() => CreateMaterial(shadergraphOp1Tex, GcmfTemplates.General.RecoverDarkAlpha());
+            public static string CreateRecoverDarkBase() => CreateMaterial(shadergraphOp1Tex, GcmfTemplates.General.RecoverDarkBase());
+            public static string CreateLavaAlpha() => CreateMaterial(shadergraphOp1Tex, GcmfTemplates.General.LavaAlpha());
+            public static string CreateLavaCrag() => CreateMaterial(shadergraphOp1Tex, GcmfTemplates.General.LavaCrag());
+            public static string CreateDirtAlpha() => CreateMaterial(shadergraphOp1Tex, GcmfTemplates.General.DirtAlpha());
+            public static string CreateDirtNoise() => CreateMaterial(shadergraphOp1Tex, GcmfTemplates.General.DirtNoise());
+            public static string CreateTrim() => CreateMaterial(shadergraphOp1Tex, GcmfTemplates.General.Trim());
+        }
         public static class MuteCity
         {
             public static void CreateAllMaterials()

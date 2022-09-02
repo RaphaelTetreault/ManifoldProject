@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
-    public class GfzPropertyEmbed : GfzSegmentShape
+    public class GfzPropertyEmbed : GfzShape
     {
         [SerializeField] private SurfaceEmbedType type = SurfaceEmbedType.RecoverLight;
         [SerializeField, Min(1)] private int widthDivisions = 1;
@@ -143,7 +143,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public override Gcmf CreateGcmf(out GcmfTemplate[] gcmfTemplates, TplTextureContainer tpl)
         {
-            var tristripsCollections = GetTristrips(Type, true);
+            var tristripsCollections = GetTristrips(true);
             gcmfTemplates = GetGcmfTemplates();
             ScaleTextureScrollFields(gcmfTemplates);
             var gcmf = GcmfTemplate.CreateGcmf(gcmfTemplates, tristripsCollections, tpl);
@@ -173,49 +173,49 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 case SurfaceEmbedType.SlipLight:
                     return new GcmfTemplate[]
                     {
-                        GcmfTemplates.General.CreateTrim(),
-                        GcmfTemplates.General.CreateSlipLight(),
+                        GcmfTemplates.General.Trim(),
+                        GcmfTemplates.General.SlipLight(),
                     };
                 case SurfaceEmbedType.SlipDarkThin:
                     return new GcmfTemplate[]
                     {
-                        GcmfTemplates.General.CreateTrim(),
-                        GcmfTemplates.General.CreateSlipDarkThin(),
+                        GcmfTemplates.General.Trim(),
+                        GcmfTemplates.General.SlipDarkThin(),
                     };
                 case SurfaceEmbedType.SlipDarkWide:
                     return new GcmfTemplate[]
                     {
-                        GcmfTemplates.General.CreateTrim(),
-                        GcmfTemplates.General.CreateSlipDarkWide(),
+                        GcmfTemplates.General.Trim(),
+                        GcmfTemplates.General.SlipDarkWide(),
                     };
                 case SurfaceEmbedType.Dirt:
                     return new GcmfTemplate[]
                     {
-                        GcmfTemplates.General.CreateTrim(),
-                        GcmfTemplates.General.CreateDirtNoise(),
-                        GcmfTemplates.General.CreateDirtAlpha(),
+                        GcmfTemplates.General.Trim(),
+                        GcmfTemplates.General.DirtNoise(),
+                        GcmfTemplates.General.DirtAlpha(),
                     };
                 case SurfaceEmbedType.Lava:
                     return new GcmfTemplate[]
                     {
-                        GcmfTemplates.General.CreateTrim(),
-                        GcmfTemplates.General.CreateLavaCrag(),
-                        GcmfTemplates.General.CreateLavaAlpha(),
+                        GcmfTemplates.General.Trim(),
+                        GcmfTemplates.General.LavaCrag(),
+                        GcmfTemplates.General.LavaAlpha(),
                     };
                 case SurfaceEmbedType.RecoverLight:
                     return new GcmfTemplate[]
                     {
-                        GcmfTemplates.General.CreateTrim(),
-                        GcmfTemplates.General.CreateRecoverLightSubBase(),
-                        GcmfTemplates.General.CreateRecoverLightBase(),
-                        GcmfTemplates.General.CreateRecoverLightAlpha(),
+                        GcmfTemplates.General.Trim(),
+                        GcmfTemplates.General.RecoverLightSubBase(),
+                        GcmfTemplates.General.RecoverLightBase(),
+                        GcmfTemplates.General.RecoverLightAlpha(),
                     };
                 case SurfaceEmbedType.RecoverDark:
                     return new GcmfTemplate[]
                     {
-                        GcmfTemplates.General.CreateTrim(),
-                        GcmfTemplates.General.CreateRecoverDarkBase(),
-                        GcmfTemplates.General.CreateRecoverDarkAlpha(),
+                        GcmfTemplates.General.Trim(),
+                        GcmfTemplates.General.RecoverDarkBase(),
+                        GcmfTemplates.General.RecoverDarkAlpha(),
                     };
 
                 default:
@@ -226,7 +226,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
         }
 
-        public Tristrip[][] GetTristrips(SurfaceEmbedType embedType, bool isGfzCoordinateSpace)
+        public override Tristrip[][] GetTristrips(bool isGfzCoordinateSpace)
         {
             // Get path matrices
             var animKeys = animationCurveTRS.Scale.x.keys;
@@ -238,7 +238,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             var parent = GetParent();
             var parentMatrices = TristripGenerator.CreatePathMatrices(parent, isGfzCoordinateSpace, lengthDistance, min, max);
 
-            switch (embedType)
+            switch (type)
             {
                 case SurfaceEmbedType.SlipLight:
                     return new Tristrip[][]
@@ -296,28 +296,28 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         }
 
 
-        public override Mesh CreateMesh(out int[] materialsCount)
-        {
-            var hacTRS = CreateHierarchichalAnimationCurveTRS(false);
-            var maxTime = hacTRS.GetRootMaxTime();
-            var min = from * maxTime;
-            var max = to * maxTime;
-            //Debug.Log($"MeshUnity -- Min: {min}, Max: {max}, MaxTime: {maxTime}");
-            var matrices = TristripGenerator.GenerateMatrixIntervals(hacTRS, lengthDistance, min, max);
+        //public override Mesh CreateMesh(out int[] materialsCount)
+        //{
+        //    var hacTRS = CreateHierarchichalAnimationCurveTRS(false);
+        //    var maxTime = hacTRS.GetRootMaxTime();
+        //    var min = from * maxTime;
+        //    var max = to * maxTime;
+        //    //Debug.Log($"MeshUnity -- Min: {min}, Max: {max}, MaxTime: {maxTime}");
+        //    var matrices = TristripGenerator.GenerateMatrixIntervals(hacTRS, lengthDistance, min, max);
 
-            //
-            var endpointA = new Vector3(-0.5f, 0.33f, 0f);
-            var endpointB = new Vector3(+0.5f, 0.33f, 0f);
-            var color0 = GetColor(type);
-            var tristrips = TristripGenerator.CreateTristrips(matrices, endpointA, endpointB, widthDivisions, color0, Vector3.up, 0, true);
-            var mesh = TristripsToMesh(tristrips);
-            materialsCount = new int[1]; // TODO:
-            //var tristrips = GetTristrips(Type, false);
-            //var mesh = TristripsToMesh(Tristrip.Linearize(tristrips));
-            mesh.name = $"Auto Gen - {this.name}";
+        //    //
+        //    var endpointA = new Vector3(-0.5f, 0.33f, 0f);
+        //    var endpointB = new Vector3(+0.5f, 0.33f, 0f);
+        //    var color0 = GetColor(type);
+        //    var tristrips = TristripGenerator.CreateTristrips(matrices, endpointA, endpointB, widthDivisions, color0, Vector3.up, 0, true);
+        //    var mesh = TristripsToMesh(tristrips);
+        //    materialsCount = new int[1]; // TODO:
+        //    //var tristrips = GetTristrips(Type, false);
+        //    //var mesh = TristripsToMesh(Tristrip.Linearize(tristrips));
+        //    mesh.name = $"Auto Gen - {this.name}";
 
-            return mesh;
-        }
+        //    return mesh;
+        //}
 
         public override TrackSegment CreateTrackSegment()
         {

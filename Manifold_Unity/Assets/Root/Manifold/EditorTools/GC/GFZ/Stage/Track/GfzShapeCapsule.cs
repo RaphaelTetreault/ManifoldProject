@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
-    public class GfzShapeCapsule : GfzSegmentShape
+    public class GfzShapeCapsule : GfzShape
     {
         [Header("Capsule")]
         [SerializeField] private CapsuleStyle capsuleStyle = CapsuleStyle.MuteCity;
@@ -35,14 +35,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return new AnimationCurveTRS();
         }
 
-        public override Gcmf CreateGcmf(out GcmfTemplate[] gcmfTemplates, TplTextureContainer tpl)
-        {
-            var tristripsCollections = GetTristrips(true);
-            gcmfTemplates = GetGcmfTemplates();
-            var gcmf = GcmfTemplate.CreateGcmf(gcmfTemplates, tristripsCollections, tpl);
-            return gcmf;
-        }
-
         public override GcmfTemplate[] GetGcmfTemplates()
         {
             switch (capsuleStyle)
@@ -66,7 +58,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
         }
 
-        public Tristrip[][] GetTristrips(bool isGfzCoordinateSpace)
+        public override Tristrip[][] GetTristrips(bool isGfzCoordinateSpace)
         {
             var matrices = TristripGenerator.CreatePathMatrices(this, isGfzCoordinateSpace, lengthDistanceInside);
             var matricesLeft = SemiCirclesMatrices(matrices, true);
@@ -103,16 +95,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                         //TristripTemplates.Pipe.DebugRingEndcap(matrices, this),
                     };
             }
-        }
-
-        public override Mesh CreateMesh(out int[] materialsCount)
-        {
-            var tristripsColletion = GetTristrips(false);
-            var tristrips = CombinedTristrips(tristripsColletion);
-            materialsCount = TristripsToMaterialCount(tristripsColletion);
-            var mesh = TristripsToMesh(tristrips);
-            mesh.name = $"Auto Gen - {name}";
-            return mesh;
         }
 
         public override TrackSegment CreateTrackSegment()
@@ -177,12 +159,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 offsetMatrices[i] = Matrix4x4.TRS(position, rotation, scale);
             }
             return offsetMatrices;
-        }
-        private static UnityEngine.AnimationCurve CreateWidthCurve(UnityEngine.AnimationCurve animationCurve, float maxTime)
-        {
-            var keys = animationCurve.GetRenormalizedKeyRangeAndTangents(0, maxTime);
-            var newAnimationCurve = new UnityEngine.AnimationCurve(keys);
-            return newAnimationCurve;
         }
 
     }

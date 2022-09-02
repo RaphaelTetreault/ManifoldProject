@@ -99,7 +99,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         [MenuItem(itemName: "Manifold/Mesh Tools/Force update meshes _F7")]
         public static void UpdateMeshes()
         {
-            var objs = FindObjectsOfType<GfzSegmentShape>();
+            var objs = FindObjectsOfType<GfzShape>();
             foreach (var obj in objs)
             {
                 obj.UpdateMesh();

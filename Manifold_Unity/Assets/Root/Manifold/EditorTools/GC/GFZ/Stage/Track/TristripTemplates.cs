@@ -53,7 +53,7 @@ namespace Manifold.EditorTools.GC.GFZ
             // force continuity to false.
             foreach (var shape in rootShapes)
             {
-                if (shape.ShapeIdentifier == GfzSegmentShape.ShapeID.embed)
+                if (shape.ShapeIdentifier == GfzShape.ShapeID.embed)
                     continue;
 
                 bool canBeContinuousFrom = CompareShapeIDs(shape, prevShapes);
@@ -62,12 +62,12 @@ namespace Manifold.EditorTools.GC.GFZ
                 isContinuousTo &= canBeContinuousTo;
             }
         }
-        private static bool CompareShapeIDs(GfzSegmentShape selfShape, GfzSegmentShape[] shapes)
+        private static bool CompareShapeIDs(GfzShape selfShape, GfzShape[] shapes)
         {
             foreach (var shape in shapes)
             {
                 // Skip embeds
-                if (shape.ShapeIdentifier == GfzSegmentShape.ShapeID.embed)
+                if (shape.ShapeIdentifier == GfzShape.ShapeID.embed)
                     continue;
 
                 // See if from-to are the same archetype
@@ -907,20 +907,19 @@ namespace Manifold.EditorTools.GC.GFZ
                     var matricesLeftNoScale = GetMatricesDefaultScale(matricesLeft, Vector3.one * 0.75f);
                     var matricesRightNoScale = GetMatricesDefaultScale(matricesRight, Vector3.one * 0.75f);
 
-                    var tristrips = road.HasLaneDividers
-                        ? new Tristrip[]
-                        {
-                            GetLaneDivider(matricesNoScale, length),
-                            GetLaneDivider(matricesLeftNoScale, length),
-                            GetLaneDivider(matricesRightNoScale, length),
-                        }
-                        : new Tristrip[]
-                        {
-                            GetLaneDivider(matricesLeftNoScale, length),
-                            GetLaneDivider(matricesRightNoScale, length),
-                        };
+                    var allTristrips = new List<Tristrip>();
+                    var leftTristrip = GetLaneDivider(matricesLeftNoScale, length);
+                    var rightTristrip = GetLaneDivider(matricesRightNoScale, length);
+                    allTristrips.Add(leftTristrip);
+                    allTristrips.Add(rightTristrip);
 
-                    return tristrips;
+                    if (road.HasLaneDividers)
+                    {
+                        var centerTristrip = GetLaneDivider(matricesNoScale, length);
+                        allTristrips.Add(centerTristrip);
+                    }
+
+                    return allTristrips.ToArray();
                 }
                 private static Tristrip GetLaneDivider(Matrix4x4[] matrices, float length)
                 {
@@ -931,7 +930,10 @@ namespace Manifold.EditorTools.GC.GFZ
                     float repetitionsAlongLength = math.ceil(length / kLengthLaneDivider);
                     var uvs = CreateTristripScaledUVs(tristrips, 1, repetitionsAlongLength);
                     for (int i = 0; i < tristrips.Length; i++)
+                    {
+                        //uvs[i] = ScaleUVs(uvs[i], new Vector2(1, 2));
                         tristrips[i].tex0 = uvs[i];
+                    }
 
                     // only one element!
                     return tristrips[0];
