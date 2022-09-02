@@ -1068,7 +1068,7 @@ namespace Manifold.EditorTools.GC.GFZ
 
                 var template = new GcmfTemplate()
                 {
-                    Name = baseName + nameof(RoadTopNoDividers),
+                    Name = baseName + nameof(RoadTopEmbeddedDividers),
                     IsTranslucid = false,
                     Submesh = submesh,
                     TevLayers = tevLayers,
@@ -1089,8 +1089,11 @@ namespace Manifold.EditorTools.GC.GFZ
             {
                 // Remove second tex/tev which is the dividers
                 var template = RoadTopEmbeddedDividers();
+                template.Name = baseName + nameof(RoadTopNoDividers);
                 template.TextureHashes = new string[] { template.TextureHashes[0] };
                 template.TevLayers = new TevLayer[] { template.TevLayers[0] };
+
+
                 return template;
             }
             public static GcmfTemplate[] Road()
