@@ -84,5 +84,17 @@ namespace Manifold.EditorTools.GC.GFZ
             }
         }
 
+        public static class Materials
+        {
+            public const string Menu = Const.Menu.Manifold + "Materials/";
+            // UnityMaterialTempaltes
+            public const string CreateEditorMaterials = Menu + "Create editor materials from textures";
+
+            public static class Priority
+            {
+                public const int CreateEditorMaterials = 1;
+            }
+        }
+
     }
 }

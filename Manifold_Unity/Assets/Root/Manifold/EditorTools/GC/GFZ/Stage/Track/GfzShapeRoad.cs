@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
-    public class GfzShapeRoad : GfzSegmentShape,
+    public class GfzShapeRoad : GfzShape,
         IRailSegment
     {
         [field: Header("Mesh Properties")]
@@ -33,15 +33,15 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public override Gcmf CreateGcmf(out GcmfTemplate[] gcmfTemplates, TplTextureContainer tpl)
         {
-            var tristripsCollections = GetTristrips(MeshStyle, true);
-            gcmfTemplates = GetGcmfTemplates(MeshStyle);
+            var tristripsCollections = GetTristrips(true);
+            gcmfTemplates = GetGcmfTemplates();
             var gcmf = GcmfTemplate.CreateGcmf(gcmfTemplates, tristripsCollections, tpl);
             return gcmf;
         }
 
-        public GcmfTemplate[] GetGcmfTemplates(RoadMeshStyle roadMeshStyle)
+        public override GcmfTemplate[] GetGcmfTemplates()
         {
-            switch (roadMeshStyle)
+            switch (MeshStyle)
             {
                 case RoadMeshStyle.MuteCity:
                     return GcmfTemplates.MuteCity.Road();
@@ -69,13 +69,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
         }
 
-        public Tristrip[][] GetTristrips(RoadMeshStyle meshStyle, bool isGfzCoordinateSpace)
+        public override Tristrip[][] GetTristrips(bool isGfzCoordinateSpace)
         {
             var originalMatrice = TristripGenerator.CreatePathMatrices(this, isGfzCoordinateSpace, LengthDistance);
             var matrices = TristripGenerator.StripHeight(originalMatrice);
             var maxTime = GetRoot().GetMaxTime();
 
-            switch (meshStyle)
+            switch (MeshStyle)
             {
                 case RoadMeshStyle.MuteCity:
                     return new Tristrip[][]
@@ -114,16 +114,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                         TristripTemplates.Road.CreateDebug(matrices, this, WidthDivisions, LengthDistance, isGfzCoordinateSpace),
                     };
             }
-        }
-
-        public override Mesh CreateMesh()
-        {
-            var tristripsCollection = GetTristrips(MeshStyle, false);
-            var tristrips = CombinedTristrips(tristripsCollection);
-
-            var mesh = TristripsToMesh(tristrips);
-            mesh.name = $"Auto Gen - {name}";
-            return mesh;
         }
 
         public override TrackSegment CreateTrackSegment()

@@ -24,7 +24,7 @@ namespace Manifold.EditorTools.GC.GFZ
             float angleRad = Mathf.Tan(opposite / adjacent);
             float angleDeg = angleRad * Mathf.Rad2Deg;
 
-            // Clockwise rotation is ngative about the Z axis
+            // Clockwise rotation is negative about the Z axis
             if (isClockwise)
                 angleDeg = -angleDeg;
 
@@ -53,7 +53,7 @@ namespace Manifold.EditorTools.GC.GFZ
             // force continuity to false.
             foreach (var shape in rootShapes)
             {
-                if (shape.ShapeIdentifier == GfzSegmentShape.ShapeID.embed)
+                if (shape.ShapeIdentifier == GfzShape.ShapeID.embed)
                     continue;
 
                 bool canBeContinuousFrom = CompareShapeIDs(shape, prevShapes);
@@ -62,12 +62,12 @@ namespace Manifold.EditorTools.GC.GFZ
                 isContinuousTo &= canBeContinuousTo;
             }
         }
-        private static bool CompareShapeIDs(GfzSegmentShape selfShape, GfzSegmentShape[] shapes)
+        private static bool CompareShapeIDs(GfzShape selfShape, GfzShape[] shapes)
         {
             foreach (var shape in shapes)
             {
                 // Skip embeds
-                if (shape.ShapeIdentifier == GfzSegmentShape.ShapeID.embed)
+                if (shape.ShapeIdentifier == GfzShape.ShapeID.embed)
                     continue;
 
                 // See if from-to are the same archetype
@@ -622,8 +622,8 @@ namespace Manifold.EditorTools.GC.GFZ
                 var innerLeft = new Vector3(+kCurbSlantInner, 0.0f, 0);
                 var innerRight = new Vector3(-kCurbSlantInner, 0.0f, 0);
                 // TODO: use TAN to solve for angle, parameterize slant size
-                var normalLeft = Quaternion.Euler(0, 0, +6.34f) * Vector3.up; // with a x=2.25, y=0.5, angle is 6.34 degrees
-                var normalRight = Quaternion.Euler(0, 0, -6.34f) * Vector3.up; // rotate normal, assign. TODO: need coord system??
+                var normalLeft = SurfaceNormalTOA(kCurbHeight, kCurbSlantOuter, Vector3.up, true);//Quaternion.Euler(0, 0, +6.34f) * Vector3.up; // with a x=2.25, y=0.5, angle is 6.34 degrees
+                var normalRight = SurfaceNormalTOA(kCurbHeight, kCurbSlantOuter, Vector3.up, false);//Quaternion.Euler(0, 0, -6.34f) * Vector3.up; // rotate normal, assign. TODO: need coord system??
 
                 var tristripsLeft = GenerateTristripsLine(matricesLeft, outerLeft, innerLeft, normalLeft, 1, true);
                 var tristripsRight = GenerateTristripsLine(matricesRight, outerRight, innerRight, normalRight, 1, false);
@@ -666,10 +666,10 @@ namespace Manifold.EditorTools.GC.GFZ
                 //          Mute City and Green Plant? etc.
 
                 // TODO: de-hardcode these, put in road as param
-                public const float kLengthTrim = 60f;
-                public const float kLengthRoadTop = 80f;
-                public const float kLengthRoadBottom = kLengthRoadTop / 2f;
-                public const float kLengthLaneDivider = kLengthRoadTop / 4f;
+                public const float kLengthTrim = RoadTexStride * 2;
+                public const float kLengthRoadTop = RoadTexStride;
+                public const float kLengthRoadBottom = RoadTexStride;
+                public const float kLengthLaneDivider = RoadTexStride;
 
                 public static Tristrip[] CreateRoadTop(Matrix4x4[] matrices, GfzShapeRoad road, float length)
                 {
@@ -717,6 +717,7 @@ namespace Manifold.EditorTools.GC.GFZ
                             var tristrip = tristrips[i];
                             float increment = repetitions / (tristrip.VertexCount / 2 - 1); // length of verts, but not both sides
                             tristrip.tex0 = CreateUVsForward(tristrip.VertexCount, 0, 1, increment);
+                            tristrip.tex0 = OffsetUVs(tristrip.tex0, new Vector2(0.5f * 0, 0.5f * increment));
                             //tristrip.tex0 = CreateUVsSideways(tristrip.VertexCount, 0, 1, increment, modulus);
                         }
 
@@ -737,6 +738,7 @@ namespace Manifold.EditorTools.GC.GFZ
                             float right = (i + 1) % 2;
                             float increment = repetitions / (tristrip.VertexCount / 2 - 1); // length of verts, but not both sides
                             tristrip.tex0 = CreateUVsForward(tristrip.VertexCount, left, right, increment);
+                            tristrip.tex0 = OffsetUVs(tristrip.tex0, new Vector2(0.5f * 0, 0.5f * increment));
                             //tristrip.tex0 = CreateUVsSideways(tristrip.VertexCount, 0, 1, increment, modulus);
                         }
 
@@ -765,6 +767,8 @@ namespace Manifold.EditorTools.GC.GFZ
                             float increment = repetitions / (tristripLeft.VertexCount / 2 - 1); // length of verts, but not both sides
                             tristripLeft.tex0 = CreateUVsForward(tristripLeft.VertexCount, 0, 1, increment);
                             tristripRight.tex0 = CreateUVsForward(tristripRight.VertexCount, 0, 1, increment);
+                            tristripLeft.tex0 = OffsetUVs(tristripLeft.tex0, new Vector2(0.5f * 0, 0.5f * increment));
+                            tristripRight.tex0 = OffsetUVs(tristripRight.tex0, new Vector2(0.5f * 0, 0.5f * increment));
                         }
                         allTristrips.AddRange(tristripsLeft);
                         allTristrips.AddRange(tristripsRight);
@@ -894,32 +898,28 @@ namespace Manifold.EditorTools.GC.GFZ
 
                 public static Tristrip[] CreateLaneDividers(Matrix4x4[] matrices, GfzShapeRoad road, float length)
                 {
-                    if (!road.HasLaneDividers)
-                        return new Tristrip[0];
-
-                    //var matricesLeft = new Matrix4x4[matrices.Length];
-                    //var matricesRight = new Matrix4x4[matrices.Length];
-
-                    //var left = Matrix4x4.TRS(new(-0.475f, 0, 0), Quaternion.identity, Vector3.one);
-                    //var right = Matrix4x4.TRS(new(+0.475f, 0, 0), Quaternion.identity, Vector3.one);
-                    //for (int i = 0; i < matrices.Length; i++)
-                    //{
-                    //    matricesLeft[i] = matrices[i] * left;
-                    //    matricesRight[i] = matrices[i] * right;
-                    //}
+                    var matricesLeft = ModifyMatrixScaledPositions(matrices, Vector3.left * 0.5f);
+                    var matricesRight = ModifyMatrixScaledPositions(matrices, Vector3.right * 0.5f);
+                    matricesLeft = ModifyMatrixPositions(matricesLeft, Vector3.right * (kCurbSlantInner + 1f));
+                    matricesRight = ModifyMatrixPositions(matricesRight, Vector3.left * (kCurbSlantInner + 1f));
 
                     var matricesNoScale = GetMatricesDefaultScale(matrices, Vector3.one);
-                    //var matricesLeftNoScale = GetMatricesDefaultScale(matricesLeft, Vector3.one);
-                    //var matricesRightNoScale = GetMatricesDefaultScale(matricesRight, Vector3.one);
+                    var matricesLeftNoScale = GetMatricesDefaultScale(matricesLeft, Vector3.one * 0.75f);
+                    var matricesRightNoScale = GetMatricesDefaultScale(matricesRight, Vector3.one * 0.75f);
 
-                    var tristrips = new Tristrip[]
+                    var allTristrips = new List<Tristrip>();
+                    var leftTristrip = GetLaneDivider(matricesLeftNoScale, length);
+                    var rightTristrip = GetLaneDivider(matricesRightNoScale, length);
+                    allTristrips.Add(leftTristrip);
+                    allTristrips.Add(rightTristrip);
+
+                    if (road.HasLaneDividers)
                     {
-                        GetLaneDivider(matricesNoScale, length),
-                        //GetLaneDivider(matricesLeftNoScale, length),
-                        //GetLaneDivider(matricesRightNoScale, length),
-                    };
+                        var centerTristrip = GetLaneDivider(matricesNoScale, length);
+                        allTristrips.Add(centerTristrip);
+                    }
 
-                    return tristrips;
+                    return allTristrips.ToArray();
                 }
                 private static Tristrip GetLaneDivider(Matrix4x4[] matrices, float length)
                 {
@@ -930,7 +930,10 @@ namespace Manifold.EditorTools.GC.GFZ
                     float repetitionsAlongLength = math.ceil(length / kLengthLaneDivider);
                     var uvs = CreateTristripScaledUVs(tristrips, 1, repetitionsAlongLength);
                     for (int i = 0; i < tristrips.Length; i++)
+                    {
+                        //uvs[i] = ScaleUVs(uvs[i], new Vector2(1, 2));
                         tristrips[i].tex0 = uvs[i];
+                    }
 
                     // only one element!
                     return tristrips[0];
@@ -1028,8 +1031,8 @@ namespace Manifold.EditorTools.GC.GFZ
                 /// <param name="railTristrips">List to add tristrips to</param>
                 private static void RailAngle(Matrix4x4[] matrices, float side, float height, List<Tristrip> railTristrips)
                 {
-                    float railHeight = height * 0.40f;
-                    float gapHeight = height * 0.10f;
+                    float railHeight = height * 0.40f; // 40% has 2)
+                    float gapHeight = height * 0.10f; // 10% (has 2)
                     var bottom = new Vector3(0f, 0.5f);
                     var mid0 = new Vector3(railHeight * side, railHeight + 0.5f);
                     var mid1 = new Vector3(railHeight * side, railHeight + 0.5f + gapHeight);
@@ -1089,7 +1092,7 @@ namespace Manifold.EditorTools.GC.GFZ
                         tristrips[i].tex1 = uvs1[i];
                         tristrips[i].tex2 = uvs2[i];
 
-                        //// comput tangent and binormal
+                        //// compute tangent and binormal
                         //int vertexCount = tristrips[i].VertexCount;
                         //tristrips[i].tangents = new Vector3[vertexCount];
                         //tristrips[i].binormals = new Vector3[vertexCount];

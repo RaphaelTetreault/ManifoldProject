@@ -11,6 +11,7 @@ namespace Manifold.EditorTools.GC.GFZ
 {
     public class GcmfTemplate
     {
+        public string Name { get; internal set; }
         public bool IsTranslucid { get; internal set; }
         public Submesh Submesh { get; internal set; } = null;
         public TevLayer[] TevLayers { get; internal set; } = new TevLayer[0];

@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
-    public class GfzShapeSquareCorner : GfzSegmentShape
+    public class GfzShapeSquareCorner : GfzShape
     {
         public enum CornerTurnDirection
         {
@@ -39,22 +39,22 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             throw new System.NotImplementedException();
         }
 
-        public override Gcmf CreateGcmf(out GcmfTemplate[] gcmfTemplates, TplTextureContainer tpl)
-        {
-            throw new System.NotImplementedException();
-        }
-
         public override float GetMaxTime()
         {
             throw new System.NotImplementedException();
         }
 
-        public override Mesh CreateMesh()
+        public override Tristrip[][] GetTristrips(bool isGfzCoordinateSpace)
         {
             throw new System.NotImplementedException();
         }
 
         public override TrackSegment CreateTrackSegment()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override GcmfTemplate[] GetGcmfTemplates()
         {
             throw new System.NotImplementedException();
         }

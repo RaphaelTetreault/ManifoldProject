@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
-    public class GfzShapeCapsule : GfzSegmentShape
+    public class GfzShapeCapsule : GfzShape
     {
         [Header("Capsule")]
         [SerializeField] private CapsuleStyle capsuleStyle = CapsuleStyle.MuteCity;
@@ -35,40 +35,30 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return new AnimationCurveTRS();
         }
 
-        public override Gcmf CreateGcmf(out GcmfTemplate[] gcmfTemplates, TplTextureContainer tpl)
+        public override GcmfTemplate[] GetGcmfTemplates()
         {
-            var tristripsCollections = GetTristrips(true);
-            gcmfTemplates = GetGcmfTemplates();
-            var gcmf = GcmfTemplate.CreateGcmf(gcmfTemplates, tristripsCollections, tpl);
-            return gcmf;
-        }
-
-        public GcmfTemplate[] GetGcmfTemplates()
-        {
+            switch (capsuleStyle)
             {
-                switch (capsuleStyle)
-                {
-                    case CapsuleStyle.MuteCity:
-                        return new GcmfTemplate[]
-                        {
-                            GcmfTemplates.MuteCity.RoadTop(),
-                            GcmfTemplates.MuteCityCOM.RoadTopNoDividers(),
-                            GcmfTemplates.Debug.CreateLitVertexColored(),
-                            GcmfTemplates.Debug.CreateLitVertexColored(),
-                        };
+                case CapsuleStyle.MuteCity:
+                    return new GcmfTemplate[]
+                    {
+                        GcmfTemplates.MuteCity.RoadTop(),
+                        GcmfTemplates.MuteCityCOM.RoadTopNoDividers(),
+                        GcmfTemplates.Debug.CreateLitVertexColored(),
+                        GcmfTemplates.Debug.CreateLitVertexColored(),
+                    };
 
-                    default:
-                        return new GcmfTemplate[]
-                        {
-                            GcmfTemplates.Debug.CreateLitVertexColored(),
-                            GcmfTemplates.Debug.CreateLitVertexColored(),
-                            GcmfTemplates.Debug.CreateLitVertexColored(),
-                        };
-                }
+                default:
+                    return new GcmfTemplate[]
+                    {
+                        GcmfTemplates.Debug.CreateLitVertexColored(),
+                        GcmfTemplates.Debug.CreateLitVertexColored(),
+                        GcmfTemplates.Debug.CreateLitVertexColored(),
+                    };
             }
         }
 
-        public Tristrip[][] GetTristrips(bool isGfzCoordinateSpace)
+        public override Tristrip[][] GetTristrips(bool isGfzCoordinateSpace)
         {
             var matrices = TristripGenerator.CreatePathMatrices(this, isGfzCoordinateSpace, lengthDistanceInside);
             var matricesLeft = SemiCirclesMatrices(matrices, true);
@@ -107,16 +97,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
         }
 
-
-        public override Mesh CreateMesh()
-        {
-            var tristripsColletion = GetTristrips(false);
-            var tristrips = CombinedTristrips(tristripsColletion);
-            var mesh = TristripsToMesh(tristrips);
-            mesh.name = $"Auto Gen - {name}";
-            return mesh;
-        }
-
         public override TrackSegment CreateTrackSegment()
         {
             var capsule = new TrackSegment();
@@ -130,7 +110,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
             return capsule;
         }
-
 
         public override void UpdateTRS()
         {
@@ -180,12 +159,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 offsetMatrices[i] = Matrix4x4.TRS(position, rotation, scale);
             }
             return offsetMatrices;
-        }
-        private static UnityEngine.AnimationCurve CreateWidthCurve(UnityEngine.AnimationCurve animationCurve, float maxTime)
-        {
-            var keys = animationCurve.GetRenormalizedKeyRangeAndTangents(0, maxTime);
-            var newAnimationCurve = new UnityEngine.AnimationCurve(keys);
-            return newAnimationCurve;
         }
 
     }

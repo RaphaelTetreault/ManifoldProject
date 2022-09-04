@@ -707,7 +707,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
         }
 
-        public void UpdateShapeNodeMeshes(GfzSegmentShape[] shapes)
+        public void UpdateShapeNodeMeshes(GfzShape[] shapes)
         {
             foreach (var shape in shapes)
             {

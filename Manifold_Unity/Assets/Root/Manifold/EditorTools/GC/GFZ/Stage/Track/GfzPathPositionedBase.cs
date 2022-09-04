@@ -21,6 +21,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         {
             foreach (var child in transform.GetChildren())
             {
+                if (!child.gameObject.activeSelf)
+                    continue;
+
                 StartCoroutine(DestroyGameObject(child.gameObject));
             }
         }

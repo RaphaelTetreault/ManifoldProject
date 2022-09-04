@@ -29,6 +29,20 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 materials[i] = DefaultMaterial;
             MeshRenderer.sharedMaterials = materials;
         }
+        public void UpdateMesh(Mesh mesh, Material[] sharedMaterials)
+        {
+            Mesh = mesh;
+            MeshFilter.sharedMesh = mesh;
+
+            for (int i = 0; i < sharedMaterials.Length; i++)
+            {
+                if (sharedMaterials[i] == null)
+                {
+                    sharedMaterials[i] = DefaultMaterial;
+                }
+            }
+            MeshRenderer.sharedMaterials = sharedMaterials;
+        }
 
         private void Reset()
         {
@@ -85,7 +99,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         [MenuItem(itemName: "Manifold/Mesh Tools/Force update meshes _F7")]
         public static void UpdateMeshes()
         {
-            var objs = FindObjectsOfType<GfzSegmentShape>();
+            var objs = FindObjectsOfType<GfzShape>();
             foreach (var obj in objs)
             {
                 obj.UpdateMesh();

@@ -100,35 +100,37 @@ namespace Manifold.EditorTools.GC.GFZ
 
         public static class General
         {
-            public static GcmfTemplate CreateSlipLight()
+            const string baseName = "embed_";
+
+            public static GcmfTemplate SlipLight()
             {
                 var tevLayers = new TevLayer[]
                 {
-                        new TevLayer()
-                        {
-                            Unk0x00 = 0,
-                            MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
-                            WrapMode = TextureWrapMode.repeatX | TextureWrapMode.repeatY | TextureWrapMode.unk6 | TextureWrapMode.unk7,
-                            LodBias = -10,
-                            AnisotropicFilter = GXAnisotropy.GX_ANISO_4,
-                            Unk0x0C = 0,
-                            Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
-                        },
-                        new TevLayer()
-                        {
-                            Unk0x00 = TexFlags0x00.ENABLE_UV_SCROLL,
-                            MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
-                            WrapMode = TextureWrapMode.repeatX | TextureWrapMode.unk7,
-                            LodBias = 0,
-                            AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
-                            Unk0x0C = 0,
-                            Unk0x12 = TexFlags0x10.unk0_AlphaScreenSelf | TexFlags0x10.unk4 | TexFlags0x10.unk5,
-                        },
+                    new TevLayer()
+                    {
+                        Unk0x00 = 0,
+                        MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
+                        WrapMode = TextureWrapMode.repeatX | TextureWrapMode.repeatY | TextureWrapMode.unk6 | TextureWrapMode.unk7,
+                        LodBias = -10,
+                        AnisotropicFilter = GXAnisotropy.GX_ANISO_4,
+                        Unk0x0C = 0,
+                        Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
+                    },
+                    new TevLayer()
+                    {
+                        Unk0x00 = TexFlags0x00.ENABLE_UV_SCROLL,
+                        MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
+                        WrapMode = TextureWrapMode.repeatX | TextureWrapMode.unk7,
+                        LodBias = 0,
+                        AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
+                        Unk0x0C = 0,
+                        Unk0x12 = TexFlags0x10.unk0_AlphaScreenSelf | TexFlags0x10.unk4 | TexFlags0x10.unk5,
+                    },
                 };
                 var textureHashes = new string[]
                 {
-                        "f51a234a9db86230e837558f6271f8d1", // st03 tex 61, blue squares
-                        "c6994c636310879078862e84616a781c", // st03 tex 64, flash
+                    "f51a234a9db86230e837558f6271f8d1", // st03 tex 61, blue squares
+                    "c6994c636310879078862e84616a781c", // st03 tex 64, flash
                 };
                 var textureScrollFields = new TextureScrollField[]
                 {
@@ -153,6 +155,7 @@ namespace Manifold.EditorTools.GC.GFZ
 
                 var template = new GcmfTemplate()
                 {
+                    Name = baseName + nameof(SlipLight),
                     IsTranslucid = false,
                     Submesh = submesh,
                     TevLayers = tevLayers,
@@ -163,35 +166,35 @@ namespace Manifold.EditorTools.GC.GFZ
                 Assert.IsTrue(textureHashes.Length == tevLayers.Length);
                 return template;
             }
-            public static GcmfTemplate CreateSlipDarkWide()
+            public static GcmfTemplate SlipDarkWide()
             {
                 var tevLayers = new TevLayer[]
                 {
-                        new TevLayer()
-                        {
-                            Unk0x00 = 0,
-                            MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
-                            WrapMode = TextureWrapMode.mirrorX | TextureWrapMode.repeatY | TextureWrapMode.unk6 | TextureWrapMode.unk7,
-                            LodBias = -10,
-                            AnisotropicFilter = GXAnisotropy.GX_ANISO_4,
-                            Unk0x0C = 0,
-                            Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
-                        },
-                        new TevLayer()
-                        {
-                            Unk0x00 = TexFlags0x00.ENABLE_UV_SCROLL,
-                            MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
-                            WrapMode = TextureWrapMode.repeatX | TextureWrapMode.mirrorY | TextureWrapMode.unk7,
-                            LodBias = 0,
-                            AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
-                            Unk0x0C = 187,
-                            Unk0x12 = TexFlags0x10.unk0_AlphaScreenSelf | TexFlags0x10.unk4 | TexFlags0x10.unk5,
-                        },
+                    new TevLayer()
+                    {
+                        Unk0x00 = 0,
+                        MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
+                        WrapMode = TextureWrapMode.mirrorX | TextureWrapMode.repeatY | TextureWrapMode.unk6 | TextureWrapMode.unk7,
+                        LodBias = -10,
+                        AnisotropicFilter = GXAnisotropy.GX_ANISO_4,
+                        Unk0x0C = 0,
+                        Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
+                    },
+                    new TevLayer()
+                    {
+                        Unk0x00 = TexFlags0x00.ENABLE_UV_SCROLL,
+                        MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
+                        WrapMode = TextureWrapMode.repeatX | TextureWrapMode.mirrorY | TextureWrapMode.unk7,
+                        LodBias = 0,
+                        AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
+                        Unk0x0C = 187,
+                        Unk0x12 = TexFlags0x10.unk0_AlphaScreenSelf | TexFlags0x10.unk4 | TexFlags0x10.unk5,
+                    },
                 };
                 var textureHashes = new string[]
                 {
-                        "e68fb000589f037b307321f4c44d2f48", // st32 tex 41, large blue squares grid
-                        "2e09bff156282e7acc1090c9fc12afa2", // st32 tex 42, flash
+                    "e68fb000589f037b307321f4c44d2f48", // st32 tex 41, large blue squares grid
+                    "2e09bff156282e7acc1090c9fc12afa2", // st32 tex 42, flash
                 };
                 var textureScrollFields = new TextureScrollField[]
                 {
@@ -216,6 +219,7 @@ namespace Manifold.EditorTools.GC.GFZ
 
                 var template = new GcmfTemplate()
                 {
+                    Name = baseName + nameof(SlipDarkWide),
                     IsTranslucid = false,
                     Submesh = submesh,
                     TevLayers = tevLayers,
@@ -226,32 +230,33 @@ namespace Manifold.EditorTools.GC.GFZ
                 Assert.IsTrue(textureHashes.Length == tevLayers.Length);
                 return template;
             }
-            public static GcmfTemplate CreateSlipDarkThin()
+            public static GcmfTemplate SlipDarkThin()
             {
-                var template = CreateSlipDarkWide();
+                var template = SlipDarkWide();
                 template.TextureHashes[0] = "47ea52d2505a54463089d5838c690c84"; // same blue but thin
+                template.Name = baseName + nameof(SlipDarkThin);
+
                 return template;
             }
 
-
-            public static GcmfTemplate CreateDirtAlpha()
+            public static GcmfTemplate DirtAlpha()
             {
                 var tevLayers = new TevLayer[]
                 {
-                        new TevLayer()
-                        {
-                            Unk0x00 = 0,
-                            MipmapSetting = MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
-                            WrapMode = TextureWrapMode.repeatX | TextureWrapMode.repeatY,
-                            LodBias = 20,
-                            AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
-                            Unk0x0C = 0,
-                            Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
-                        },
+                    new TevLayer()
+                    {
+                        Unk0x00 = 0,
+                        MipmapSetting = MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
+                        WrapMode = TextureWrapMode.repeatX | TextureWrapMode.repeatY,
+                        LodBias = 20,
+                        AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
+                        Unk0x0C = 0,
+                        Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
+                    },
                 };
                 var textureHashes = new string[]
                 {
-                        "9e0082712ac9ef3bc7d0344fde1c52a4", // st03 tex 66, color brown
+                    "9e0082712ac9ef3bc7d0344fde1c52a4", // st03 tex 66, color brown
                 };
                 var material = new Material
                 {
@@ -272,6 +277,7 @@ namespace Manifold.EditorTools.GC.GFZ
 
                 var template = new GcmfTemplate()
                 {
+                    Name = baseName + nameof(DirtAlpha),
                     IsTranslucid = true,
                     Submesh = submesh,
                     TevLayers = tevLayers,
@@ -282,35 +288,35 @@ namespace Manifold.EditorTools.GC.GFZ
                 Assert.IsTrue(textureHashes.Length == tevLayers.Length);
                 return template;
             }
-            public static GcmfTemplate CreateDirtNoise()
+            public static GcmfTemplate DirtNoise()
             {
                 var tevLayers = new TevLayer[]
                 {
-                        new TevLayer()
-                        {
-                            Unk0x00 = TexFlags0x00.ENABLE_UV_SCROLL,
-                            MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
-                            WrapMode = TextureWrapMode.repeatX | TextureWrapMode.repeatY | TextureWrapMode.unk7,
-                            LodBias = 0,
-                            AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
-                            Unk0x0C = 0,
-                            Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
-                        },
-                        new TevLayer()
-                        {
-                            Unk0x00 = TexFlags0x00.ENABLE_UV_SCROLL,
-                            MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
-                            WrapMode = TextureWrapMode.repeatX | TextureWrapMode.repeatY | TextureWrapMode.unk7,
-                            LodBias = 0,
-                            AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
-                            Unk0x0C = 0,
-                            Unk0x12 = TexFlags0x10.unk0_AlphaScreenSelf | TexFlags0x10.unk4 | TexFlags0x10.unk5,
-                        },
+                    new TevLayer()
+                    {
+                        Unk0x00 = TexFlags0x00.ENABLE_UV_SCROLL,
+                        MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
+                        WrapMode = TextureWrapMode.repeatX | TextureWrapMode.repeatY | TextureWrapMode.unk7,
+                        LodBias = 0,
+                        AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
+                        Unk0x0C = 0,
+                        Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
+                    },
+                    new TevLayer()
+                    {
+                        Unk0x00 = TexFlags0x00.ENABLE_UV_SCROLL,
+                        MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
+                        WrapMode = TextureWrapMode.repeatX | TextureWrapMode.repeatY | TextureWrapMode.unk7,
+                        LodBias = 0,
+                        AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
+                        Unk0x0C = 0,
+                        Unk0x12 = TexFlags0x10.unk0_AlphaScreenSelf | TexFlags0x10.unk4 | TexFlags0x10.unk5,
+                    },
                 };
                 var textureHashes = new string[]
                 {
-                        "da8e87b2702b9595c731149f6273c199", // st03 tex 59
-                        "da8e87b2702b9595c731149f6273c199", // st03 tex 59 (yes, again)
+                    "da8e87b2702b9595c731149f6273c199", // st03 tex 59
+                    "da8e87b2702b9595c731149f6273c199", // st03 tex 59 (yes, again)
                 };
                 var textureScrollFields = new TextureScrollField[]
                 {
@@ -335,6 +341,7 @@ namespace Manifold.EditorTools.GC.GFZ
 
                 var template = new GcmfTemplate()
                 {
+                    Name = baseName + nameof(DirtNoise),
                     IsTranslucid = false,
                     Submesh = submesh,
                     TevLayers = tevLayers,
@@ -346,24 +353,24 @@ namespace Manifold.EditorTools.GC.GFZ
                 return template;
             }
 
-            public static GcmfTemplate CreateLavaCrag()
+            public static GcmfTemplate LavaCrag()
             {
                 var tevLayers = new TevLayer[]
                 {
-                        new TevLayer()
-                        {
-                            Unk0x00 = 0,
-                            MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
-                            WrapMode = TextureWrapMode.repeatX | TextureWrapMode.repeatY | TextureWrapMode.unk6 | TextureWrapMode.unk7,
-                            LodBias = -10,
-                            AnisotropicFilter = GXAnisotropy.GX_ANISO_4,
-                            Unk0x0C = 173,
-                            Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
-                        },
+                    new TevLayer()
+                    {
+                        Unk0x00 = 0,
+                        MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
+                        WrapMode = TextureWrapMode.repeatX | TextureWrapMode.repeatY | TextureWrapMode.unk6 | TextureWrapMode.unk7,
+                        LodBias = -10,
+                        AnisotropicFilter = GXAnisotropy.GX_ANISO_4,
+                        Unk0x0C = 173,
+                        Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
+                    },
                 };
                 var textureHashes = new string[]
                 {
-                        "a9d86932a581a0cbece8275ed6582246", // st43 tex 43, fire/metal
+                    "a9d86932a581a0cbece8275ed6582246", // st43 tex 43, fire/metal
                 };
                 var material = new Material
                 {
@@ -384,6 +391,7 @@ namespace Manifold.EditorTools.GC.GFZ
 
                 var template = new GcmfTemplate()
                 {
+                    Name = baseName + nameof(LavaCrag),
                     IsTranslucid = false,
                     Submesh = submesh,
                     TevLayers = tevLayers,
@@ -394,35 +402,35 @@ namespace Manifold.EditorTools.GC.GFZ
                 Assert.IsTrue(textureHashes.Length == tevLayers.Length);
                 return template;
             }
-            public static GcmfTemplate CreateLavaAlpha()
+            public static GcmfTemplate LavaAlpha()
             {
                 var tevLayers = new TevLayer[]
                 {
-                        new TevLayer()
-                        {
-                            Unk0x00 = 0,
-                            MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
-                            WrapMode = TextureWrapMode.repeatX | TextureWrapMode.repeatY | TextureWrapMode.unk6 | TextureWrapMode.unk7,
-                            LodBias = -10,
-                            AnisotropicFilter = GXAnisotropy.GX_ANISO_4,
-                            Unk0x0C = 0,
-                            Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
-                        },
-                        new TevLayer()
-                        {
-                            Unk0x00 = TexFlags0x00.ENABLE_UV_SCROLL,
-                            MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
-                            WrapMode = TextureWrapMode.repeatY | TextureWrapMode.unk7,
-                            LodBias = 0,
-                            AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
-                            Unk0x0C = 0,
-                            Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
-                        },
+                    new TevLayer()
+                    {
+                        Unk0x00 = 0,
+                        MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
+                        WrapMode = TextureWrapMode.repeatX | TextureWrapMode.repeatY | TextureWrapMode.unk6 | TextureWrapMode.unk7,
+                        LodBias = -10,
+                        AnisotropicFilter = GXAnisotropy.GX_ANISO_4,
+                        Unk0x0C = 0,
+                        Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
+                    },
+                    new TevLayer()
+                    {
+                        Unk0x00 = TexFlags0x00.ENABLE_UV_SCROLL,
+                        MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
+                        WrapMode = TextureWrapMode.repeatY | TextureWrapMode.unk7,
+                        LodBias = 0,
+                        AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
+                        Unk0x0C = 0,
+                        Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
+                    },
                 };
                 var textureHashes = new string[]
                 {
-                        "605ca32b9ef8ce5934f67645031b10ea", // st43 tex 31, red dot
-                        "befa86976ddfab6069ce2079503b23e3", // st43 tex 33, white/grey bars
+                    "605ca32b9ef8ce5934f67645031b10ea", // st43 tex 31, red dot
+                    "befa86976ddfab6069ce2079503b23e3", // st43 tex 33, white/grey bars
                 };
                 var textureScrollFields = new TextureScrollField[]
                 {
@@ -450,6 +458,7 @@ namespace Manifold.EditorTools.GC.GFZ
 
                 var template = new GcmfTemplate()
                 {
+                    Name = baseName + nameof(LavaAlpha),
                     IsTranslucid = true,
                     Submesh = submesh,
                     TevLayers = tevLayers,
@@ -461,35 +470,35 @@ namespace Manifold.EditorTools.GC.GFZ
                 return template;
             }
 
-            public static GcmfTemplate CreateRecoverDarkBase()
+            public static GcmfTemplate RecoverDarkBase()
             {
                 var tevLayers = new TevLayer[]
                 {
-                        new TevLayer()
-                        {
-                            Unk0x00 = 0,
-                            MipmapSetting = MipmapSetting.UNK_FLAG_1,
-                            WrapMode = TextureWrapMode.mirrorX | TextureWrapMode.repeatY, // I added mirror X
-                            LodBias = 0,
-                            AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
-                            Unk0x0C = 0,
-                            Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
-                        },
-                        new TevLayer()
-                        {
-                            Unk0x00 = TexFlags0x00.ENABLE_UV_SCROLL,
-                            MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
-                            WrapMode = TextureWrapMode.repeatX | TextureWrapMode.repeatY | TextureWrapMode.unk7,
-                            LodBias = 0,
-                            AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
-                            Unk0x0C = 0,
-                            Unk0x12 = TexFlags0x10.unk0_AlphaScreenSelf | TexFlags0x10.unk4 | TexFlags0x10.unk5,
-                        },
+                    new TevLayer()
+                    {
+                        Unk0x00 = 0,
+                        MipmapSetting = MipmapSetting.UNK_FLAG_1,
+                        WrapMode = TextureWrapMode.mirrorX | TextureWrapMode.repeatY, // I added mirror X
+                        LodBias = 0,
+                        AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
+                        Unk0x0C = 0,
+                        Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
+                    },
+                    new TevLayer()
+                    {
+                        Unk0x00 = TexFlags0x00.ENABLE_UV_SCROLL,
+                        MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
+                        WrapMode = TextureWrapMode.repeatX | TextureWrapMode.repeatY | TextureWrapMode.unk7,
+                        LodBias = 0,
+                        AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
+                        Unk0x0C = 0,
+                        Unk0x12 = TexFlags0x10.unk0_AlphaScreenSelf | TexFlags0x10.unk4 | TexFlags0x10.unk5,
+                    },
                 };
                 var textureHashes = new string[]
                 {
-                        "22e2e87246525810b8f56b2dc0bc7e24", // st01 tex 6, lined gradient
-                        "2b67d7b296e0c2476ed7b6b5e4e19af9", // st01 tex 7, some alpha thing
+                    "22e2e87246525810b8f56b2dc0bc7e24", // st01 tex 6, lined gradient
+                    "2b67d7b296e0c2476ed7b6b5e4e19af9", // st01 tex 7, some alpha thing
                 };
                 var textureScrollFields = new TextureScrollField[]
                 {
@@ -514,6 +523,7 @@ namespace Manifold.EditorTools.GC.GFZ
 
                 var template = new GcmfTemplate()
                 {
+                    Name = baseName + nameof(RecoverDarkBase),
                     IsTranslucid = false,
                     Submesh = submesh,
                     TevLayers = tevLayers,
@@ -524,35 +534,35 @@ namespace Manifold.EditorTools.GC.GFZ
                 Assert.IsTrue(textureHashes.Length == tevLayers.Length);
                 return template;
             }
-            public static GcmfTemplate CreateRecoverDarkAlpha()
+            public static GcmfTemplate RecoverDarkAlpha()
             {
                 var tevLayers = new TevLayer[]
                 {
-                        new TevLayer()
-                        {
-                            Unk0x00 = 0,
-                            MipmapSetting = MipmapSetting.UNK_FLAG_1,
-                            WrapMode = 0,
-                            LodBias = 0,
-                            AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
-                            Unk0x0C = 0,
-                            Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
-                        },
-                        new TevLayer()
-                        {
-                            Unk0x00 = 0,
-                            MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2 | MipmapSetting.Unk5_AlphaMultiply,
-                            WrapMode = TextureWrapMode.repeatX | TextureWrapMode.repeatY | TextureWrapMode.unk7,
-                            LodBias = 0,
-                            AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
-                            Unk0x0C = 184,
-                            Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
-                        },
+                    new TevLayer()
+                    {
+                        Unk0x00 = 0,
+                        MipmapSetting = MipmapSetting.UNK_FLAG_1,
+                        WrapMode = 0,
+                        LodBias = 0,
+                        AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
+                        Unk0x0C = 0,
+                        Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
+                    },
+                    new TevLayer()
+                    {
+                        Unk0x00 = 0,
+                        MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2 | MipmapSetting.Unk5_AlphaMultiply,
+                        WrapMode = TextureWrapMode.repeatX | TextureWrapMode.repeatY | TextureWrapMode.unk7,
+                        LodBias = 0,
+                        AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
+                        Unk0x0C = 184,
+                        Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
+                    },
                 };
                 var textureHashes = new string[]
                 {
-                        "ad883f82349cecff410c061e1c2a6219", // st01 tex 16, red-pink color
-                        "bd341ffeea1d7e2e13cebf13e280ba55", // st01 tex  4, alpha square
+                    "ad883f82349cecff410c061e1c2a6219", // st01 tex 16, red-pink color
+                    "bd341ffeea1d7e2e13cebf13e280ba55", // st01 tex  4, alpha square
                 };
                 var material = new Material
                 {
@@ -573,6 +583,7 @@ namespace Manifold.EditorTools.GC.GFZ
 
                 var template = new GcmfTemplate()
                 {
+                    Name = baseName + nameof(RecoverDarkAlpha),
                     IsTranslucid = true,
                     Submesh = submesh,
                     TevLayers = tevLayers,
@@ -584,24 +595,24 @@ namespace Manifold.EditorTools.GC.GFZ
                 return template;
             }
 
-            public static GcmfTemplate CreateRecoverLightSubBase()
+            public static GcmfTemplate RecoverLightSubBase()
             {
                 var tevLayers = new TevLayer[]
                 {
-                        new TevLayer()
-                        {
-                            Unk0x00 = 0,
-                            MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
-                            WrapMode = TextureWrapMode.mirrorX | TextureWrapMode.repeatY | TextureWrapMode.unk7,
-                            LodBias = 0,
-                            AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
-                            Unk0x0C = 0,
-                            Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
-                        },
+                    new TevLayer()
+                    {
+                        Unk0x00 = 0,
+                        MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
+                        WrapMode = TextureWrapMode.mirrorX | TextureWrapMode.repeatY | TextureWrapMode.unk7,
+                        LodBias = 0,
+                        AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
+                        Unk0x0C = 0,
+                        Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
+                    },
                 };
                 var textureHashes = new string[]
                 {
-                        "b42318832be6f79480973fddd2b4e0ac", // st05 tex 15, mut usused (neat)
+                    "b42318832be6f79480973fddd2b4e0ac", // st05 tex 15, mut usused (neat)
                 };
                 var material = new Material
                 {
@@ -622,6 +633,7 @@ namespace Manifold.EditorTools.GC.GFZ
 
                 var template = new GcmfTemplate()
                 {
+                    Name = baseName + nameof(RecoverLightSubBase),
                     IsTranslucid = false,
                     Submesh = submesh,
                     TevLayers = tevLayers,
@@ -632,62 +644,65 @@ namespace Manifold.EditorTools.GC.GFZ
                 Assert.IsTrue(textureHashes.Length == tevLayers.Length);
                 return template;
             }
-            public static GcmfTemplate CreateRecoverLightBase()
+            public static GcmfTemplate RecoverLightBase()
             {
                 // Only difference is a few render flags
-                var template = CreateRecoverDarkBase();
+                var template = RecoverDarkBase();
+                template.Name = baseName + nameof(RecoverLightBase);
                 template.Submesh.RenderFlags |= RenderFlags.screenBlend | RenderFlags.additiveBlend;
                 template.Submesh.UnkAlphaOptions.BlendFactors |= BlendFactors.unk2_UseBlendMode | BlendFactors.unk4_UseBlendMode;
 
                 return template;
             }
-            public static GcmfTemplate CreateRecoverLightAlpha() => CreateRecoverDarkAlpha();
+            public static GcmfTemplate RecoverLightAlpha() => RecoverDarkAlpha();
 
-            public static GcmfTemplate CreateTrim() => MuteCity.RoadSides();
+            public static GcmfTemplate Trim() => MuteCity.RoadSides();
         }
 
         public static class MuteCity
         {
+            const string baseName = "mut_";
+
             public static GcmfTemplate RoadRails()
             {
                 var tevLayers = new TevLayer[]
                 {
-                        new TevLayer()
-                        {
-                            Unk0x00 = 0,
-                            MipmapSetting = MipmapSetting.UNK_FLAG_1,
-                            WrapMode = TextureWrapMode.repeatX | TextureWrapMode.repeatY,
-                            LodBias = 0,
-                            AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
-                            Unk0x0C = 0,
-                            Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
-                        },
-                        new TevLayer()
-                        {
-                            Unk0x00 = TexFlags0x00.ENABLE_UV_SCROLL,
-                            MipmapSetting = MipmapSetting.UNK_FLAG_1 | MipmapSetting.Unk5_AlphaMultiply,
-                            WrapMode = TextureWrapMode.repeatX | TextureWrapMode.repeatY,
-                            LodBias = 0,
-                            AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
-                            Unk0x0C = 0,
-                            Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
-                        },
-                        new TevLayer()
-                        {
-                            Unk0x00 = 0,
-                            MipmapSetting = MipmapSetting.Unk5_AlphaMultiply,
-                            WrapMode = TextureWrapMode.repeatX | TextureWrapMode.repeatY,
-                            LodBias = 0,
-                            AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
-                            Unk0x0C = 0,
-                            Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
-                        },
+                    new TevLayer()
+                    {
+                        Unk0x00 = 0,
+                        MipmapSetting = MipmapSetting.UNK_FLAG_1,
+                        WrapMode = TextureWrapMode.repeatX | TextureWrapMode.repeatY,
+                        LodBias = 0,
+                        AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
+                        Unk0x0C = 0,
+                        Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
+                    },
+                    new TevLayer()
+                    {
+                        Unk0x00 = TexFlags0x00.ENABLE_UV_SCROLL,
+                        MipmapSetting = MipmapSetting.UNK_FLAG_1 | MipmapSetting.Unk5_AlphaMultiply,
+                        WrapMode = TextureWrapMode.repeatX | TextureWrapMode.repeatY,
+                        LodBias = 0,
+                        AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
+                        Unk0x0C = 0,
+                        Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
+                    },
+                    new TevLayer()
+                    {
+                        Unk0x00 = 0,
+                        MipmapSetting = MipmapSetting.Unk5_AlphaMultiply,
+                        WrapMode = TextureWrapMode.repeatX | TextureWrapMode.repeatY,
+                        LodBias = 0,
+                        AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
+                        Unk0x0C = 0,
+                        Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
+                    },
                 };
                 var textureHashes = new string[]
                 {
-                        "ca0853c45448b241aa2b03cbe2b93182", // st01 tex  3
-                        "9ed3039353de68dbbf59d8904f7bb00f", // st01 tex 40
-                        "390204a0d91287427073649ec4efc80f", // st01 tex  0
+                    "ca0853c45448b241aa2b03cbe2b93182", // st01 tex  3
+                    "9ed3039353de68dbbf59d8904f7bb00f", // st01 tex 40
+                    "390204a0d91287427073649ec4efc80f", // st01 tex  0
                 };
                 var textureScrollFields = new TextureScrollField[]
                 {
@@ -716,6 +731,7 @@ namespace Manifold.EditorTools.GC.GFZ
 
                 var template = new GcmfTemplate()
                 {
+                    Name = baseName + nameof(RoadRails),
                     IsTranslucid = true,
                     Submesh = submesh,
                     TevLayers = tevLayers,
@@ -730,16 +746,16 @@ namespace Manifold.EditorTools.GC.GFZ
             {
                 var tevLayers = new TevLayer[]
                 {
-                        new TevLayer()
-                        {
-                            Unk0x00 = 0,
-                            MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
-                            WrapMode = TextureWrapMode.mirrorX | TextureWrapMode.repeatY | TextureWrapMode.unk6 | TextureWrapMode.unk7,
-                            LodBias = -10,
-                            AnisotropicFilter = GXAnisotropy.GX_ANISO_4,
-                            Unk0x0C = 0,
-                            Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
-                        },
+                    new TevLayer()
+                    {
+                        Unk0x00 = 0,
+                        MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
+                        WrapMode = TextureWrapMode.mirrorX | TextureWrapMode.repeatY | TextureWrapMode.unk6 | TextureWrapMode.unk7,
+                        LodBias = -10,
+                        AnisotropicFilter = GXAnisotropy.GX_ANISO_4,
+                        Unk0x0C = 0,
+                        Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
+                    },
                 };
                 var textureHashes = new string[]
                 {
@@ -765,6 +781,7 @@ namespace Manifold.EditorTools.GC.GFZ
 
                 var template = new GcmfTemplate()
                 {
+                    Name = baseName + nameof(RoadTop),
                     IsTranslucid = false,
                     Submesh = submesh,
                     TevLayers = tevLayers,
@@ -779,20 +796,20 @@ namespace Manifold.EditorTools.GC.GFZ
             {
                 var tevLayers = new TevLayer[]
                 {
-                        new TevLayer()
-                        {
-                            Unk0x00 = 0,
-                            MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
-                            WrapMode = TextureWrapMode.mirrorX | TextureWrapMode.repeatY | TextureWrapMode.unk6 | TextureWrapMode.unk7,
-                            LodBias = -10,
-                            AnisotropicFilter = GXAnisotropy.GX_ANISO_4,
-                            Unk0x0C = 216,
-                            Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
-                        },
+                    new TevLayer()
+                    {
+                        Unk0x00 = 0,
+                        MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
+                        WrapMode = TextureWrapMode.mirrorX | TextureWrapMode.repeatY | TextureWrapMode.unk6 | TextureWrapMode.unk7,
+                        LodBias = -10,
+                        AnisotropicFilter = GXAnisotropy.GX_ANISO_4,
+                        Unk0x0C = 216,
+                        Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
+                    },
                 };
                 var textureHashes = new string[]
                 {
-                        "bd3f966c9db76827c5db9a032d11dffa", // st01 tex 11
+                    "bd3f966c9db76827c5db9a032d11dffa", // st01 tex 11
                 };
                 var material = new Material
                 {
@@ -813,6 +830,7 @@ namespace Manifold.EditorTools.GC.GFZ
 
                 var template = new GcmfTemplate()
                 {
+                    Name = baseName + nameof(RoadBottom),
                     IsTranslucid = false,
                     Submesh = submesh,
                     TevLayers = tevLayers,
@@ -828,20 +846,20 @@ namespace Manifold.EditorTools.GC.GFZ
             {
                 var tevLayers = new TevLayer[]
                 {
-                        new TevLayer()
-                        {
-                            Unk0x00 = 0,
-                            MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
-                            WrapMode = TextureWrapMode.repeatY | TextureWrapMode.unk6 | TextureWrapMode.unk7,
-                            LodBias = -10,
-                            AnisotropicFilter = GXAnisotropy.GX_ANISO_4,
-                            Unk0x0C = 0,
-                            Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
-                        },
+                    new TevLayer()
+                    {
+                        Unk0x00 = 0,
+                        MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
+                        WrapMode = TextureWrapMode.repeatY | TextureWrapMode.unk6 | TextureWrapMode.unk7,
+                        LodBias = -10,
+                        AnisotropicFilter = GXAnisotropy.GX_ANISO_4,
+                        Unk0x0C = 0,
+                        Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
+                    },
                 };
                 var textureHashes = new string[]
                 {
-                        "d34923c1e44fa9bd58283b123b4a708a", // st01 tex 10
+                    "d34923c1e44fa9bd58283b123b4a708a", // st01 tex 10
                 };
                 var material = new Material
                 {
@@ -861,6 +879,7 @@ namespace Manifold.EditorTools.GC.GFZ
                 };
                 var template = new GcmfTemplate()
                 {
+                    Name = baseName + nameof(RoadSides),
                     IsTranslucid = false,
                     Submesh = submesh,
                     TevLayers = tevLayers,
@@ -875,31 +894,31 @@ namespace Manifold.EditorTools.GC.GFZ
             {
                 var tevLayers = new TevLayer[]
                 {
-                        new TevLayer()
-                        {
-                            Unk0x00 = 0,
-                            MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
-                            WrapMode = TextureWrapMode.repeatY | TextureWrapMode.unk6 | TextureWrapMode.unk7,
-                            LodBias = -10,
-                            AnisotropicFilter = GXAnisotropy.GX_ANISO_4,
-                            Unk0x0C = 61,
-                            Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
-                        },
-                        new TevLayer()
-                        {
-                            Unk0x00 = 0,
-                            MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
-                            WrapMode = TextureWrapMode.mirrorX | TextureWrapMode.mirrorY | TextureWrapMode.unk7,
-                            LodBias = -10,
-                            AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
-                            Unk0x0C = 45,
-                            Unk0x12 = TexFlags0x10.unk0_AlphaScreenSelf | TexFlags0x10.unk4 | TexFlags0x10.unk5,
-                        },
+                    new TevLayer()
+                    {
+                        Unk0x00 = 0,
+                        MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
+                        WrapMode = TextureWrapMode.repeatY | TextureWrapMode.unk6 | TextureWrapMode.unk7,
+                        LodBias = -10,
+                        AnisotropicFilter = GXAnisotropy.GX_ANISO_4,
+                        Unk0x0C = 61,
+                        Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
+                    },
+                    new TevLayer()
+                    {
+                        Unk0x00 = 0,
+                        MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
+                        WrapMode = TextureWrapMode.mirrorX | TextureWrapMode.mirrorY | TextureWrapMode.unk7,
+                        LodBias = -10,
+                        AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
+                        Unk0x0C = 45,
+                        Unk0x12 = TexFlags0x10.unk0_AlphaScreenSelf | TexFlags0x10.unk4 | TexFlags0x10.unk5,
+                    },
                 };
                 var textureHashes = new string[]
                 {
-                        "533b7e7a43510b21a883b35e1120c60f", // st01 tex 9
-                        "b978ad119120a4cadd428707eefc2a5e", // st01 tex 8
+                    "533b7e7a43510b21a883b35e1120c60f", // st01 tex 9
+                    "b978ad119120a4cadd428707eefc2a5e", // st01 tex 8
                 };
                 var material = new Material
                 {
@@ -920,6 +939,7 @@ namespace Manifold.EditorTools.GC.GFZ
 
                 var template = new GcmfTemplate()
                 {
+                    Name = baseName + nameof(RoadEmbelishments),
                     IsTranslucid = false,
                     Submesh = submesh,
                     TevLayers = tevLayers,
@@ -934,20 +954,20 @@ namespace Manifold.EditorTools.GC.GFZ
             {
                 var tevLayers = new TevLayer[]
                 {
-                        new TevLayer()
-                        {
-                            Unk0x00 = 0,
-                            MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
-                            WrapMode = TextureWrapMode.repeatY | TextureWrapMode.unk7,
-                            LodBias = -10,
-                            AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
-                            Unk0x0C = 0,
-                            Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
-                        },
+                    new TevLayer()
+                    {
+                        Unk0x00 = 0,
+                        MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
+                        WrapMode = TextureWrapMode.repeatY | TextureWrapMode.unk7,
+                        LodBias = -10,
+                        AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
+                        Unk0x0C = 0,
+                        Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
+                    },
                 };
                 var textureHashes = new string[]
                 {
-                        "8d92bad8c4d1eb2e46aeb25b9e11e9cf", // st01 tex 12
+                    "8d92bad8c4d1eb2e46aeb25b9e11e9cf", // st01 tex 12
                 };
                 var material = new Material
                 {
@@ -970,6 +990,7 @@ namespace Manifold.EditorTools.GC.GFZ
                 };
                 var template = new GcmfTemplate()
                 {
+                    Name = baseName + nameof(RoadLaneDividers),
                     IsTranslucid = true,
                     Submesh = submesh,
                     TevLayers = tevLayers,
@@ -997,35 +1018,37 @@ namespace Manifold.EditorTools.GC.GFZ
 
         public static class MuteCityCOM
         {
+            const string baseName = "com_";
+
             public static GcmfTemplate RoadTopEmbeddedDividers()
             {
                 var tevLayers = new TevLayer[]
                 {
-                        new TevLayer()
-                        {
-                            Unk0x00 = 0,
-                            MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
-                            WrapMode = TextureWrapMode.mirrorX | TextureWrapMode.mirrorY | TextureWrapMode.unk6 | TextureWrapMode.unk7,
-                            LodBias = -20,
-                            AnisotropicFilter = GXAnisotropy.GX_ANISO_4,
-                            Unk0x0C = 0,
-                            Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
-                        },
-                        new TevLayer()
-                        {
-                            Unk0x00 = 0,
-                            MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
-                            WrapMode = TextureWrapMode.mirrorX | TextureWrapMode.mirrorY | TextureWrapMode.unk6 | TextureWrapMode.unk7,
-                            LodBias = -10,
-                            AnisotropicFilter = GXAnisotropy.GX_ANISO_4,
-                            Unk0x0C = 14,
-                            Unk0x12 = TexFlags0x10.unk0_AlphaScreenSelf | TexFlags0x10.unk4 | TexFlags0x10.unk5,
-                        },
+                    new TevLayer()
+                    {
+                        Unk0x00 = 0,
+                        MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
+                        WrapMode = TextureWrapMode.mirrorX | TextureWrapMode.mirrorY | TextureWrapMode.unk6 | TextureWrapMode.unk7,
+                        LodBias = -20,
+                        AnisotropicFilter = GXAnisotropy.GX_ANISO_4,
+                        Unk0x0C = 0,
+                        Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
+                    },
+                    new TevLayer()
+                    {
+                        Unk0x00 = 0,
+                        MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
+                        WrapMode = TextureWrapMode.mirrorX | TextureWrapMode.mirrorY | TextureWrapMode.unk6 | TextureWrapMode.unk7,
+                        LodBias = -10,
+                        AnisotropicFilter = GXAnisotropy.GX_ANISO_4,
+                        Unk0x0C = 14,
+                        Unk0x12 = TexFlags0x10.unk0_AlphaScreenSelf | TexFlags0x10.unk4 | TexFlags0x10.unk5,
+                    },
                 };
                 var textureHashes = new string[]
                 {
-                        "c8e2ea0bfdbbe3960ca2ec4c8af96b1c", // st03 tex 75, com surface
-                        "ca22dae46426901c8fa217e9112edcaa", // st03 tex 76, com divider width span
+                    "c8e2ea0bfdbbe3960ca2ec4c8af96b1c", // st03 tex 75, com surface
+                    "ca22dae46426901c8fa217e9112edcaa", // st03 tex 76, com divider width span
                 };
                 var material = new Material
                 {
@@ -1046,6 +1069,7 @@ namespace Manifold.EditorTools.GC.GFZ
 
                 var template = new GcmfTemplate()
                 {
+                    Name = baseName + nameof(RoadTopEmbeddedDividers),
                     IsTranslucid = false,
                     Submesh = submesh,
                     TevLayers = tevLayers,
@@ -1066,8 +1090,11 @@ namespace Manifold.EditorTools.GC.GFZ
             {
                 // Remove second tex/tev which is the dividers
                 var template = RoadTopEmbeddedDividers();
+                template.Name = baseName + nameof(RoadTopNoDividers);
                 template.TextureHashes = new string[] { template.TextureHashes[0] };
                 template.TevLayers = new TevLayer[] { template.TevLayers[0] };
+
+
                 return template;
             }
             public static GcmfTemplate[] Road()
@@ -1132,6 +1159,8 @@ namespace Manifold.EditorTools.GC.GFZ
 
         public static class OuterSpace
         {
+            const string baseName = "met_";
+
             public static GcmfTemplate[] Road()
             {
                 return new GcmfTemplate[]
@@ -1195,6 +1224,7 @@ namespace Manifold.EditorTools.GC.GFZ
                 };
                 var template = new GcmfTemplate()
                 {
+                    Name = baseName + nameof(Top),
                     IsTranslucid = false,
                     Submesh = submesh,
                     TevLayers = tevLayers,
@@ -1239,6 +1269,7 @@ namespace Manifold.EditorTools.GC.GFZ
                 };
                 var template = new GcmfTemplate()
                 {
+                    Name = baseName + nameof(BottomAndSides),
                     IsTranslucid = false,
                     Submesh = submesh,
                     TevLayers = tevLayers,
@@ -1283,6 +1314,7 @@ namespace Manifold.EditorTools.GC.GFZ
                 };
                 var template = new GcmfTemplate()
                 {
+                    Name = baseName + nameof(CurbAndLaneDividerTop),
                     IsTranslucid = false,
                     Submesh = submesh,
                     TevLayers = tevLayers,
@@ -1327,6 +1359,7 @@ namespace Manifold.EditorTools.GC.GFZ
                 };
                 var template = new GcmfTemplate()
                 {
+                    Name = baseName + nameof(CurbAndLaneDividerSlope),
                     IsTranslucid = false,
                     Submesh = submesh,
                     TevLayers = tevLayers,
@@ -1371,6 +1404,7 @@ namespace Manifold.EditorTools.GC.GFZ
                 };
                 var template = new GcmfTemplate()
                 {
+                    Name = baseName + nameof(RailsAngle),
                     IsTranslucid = false,
                     Submesh = submesh,
                     TevLayers = tevLayers,
@@ -1415,6 +1449,7 @@ namespace Manifold.EditorTools.GC.GFZ
                 };
                 var template = new GcmfTemplate()
                 {
+                    Name = baseName + nameof(RailsLights),
                     IsTranslucid = false,
                     Submesh = submesh,
                     TevLayers = tevLayers,
@@ -1424,7 +1459,7 @@ namespace Manifold.EditorTools.GC.GFZ
 
                 return template;
             }
-            public static GcmfTemplate EndCap() 
+            public static GcmfTemplate EndCap()
             {
                 // ST32 road1 submesh 9, tevs 15
                 var tevLayers = new TevLayer[]
@@ -1459,6 +1494,7 @@ namespace Manifold.EditorTools.GC.GFZ
                 };
                 var template = new GcmfTemplate()
                 {
+                    Name = baseName + nameof(EndCap),
                     IsTranslucid = false,
                     Submesh = submesh,
                     TevLayers = tevLayers,

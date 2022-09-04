@@ -162,9 +162,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
 
 
-        public GfzSegmentShape[] GetShapeNodes()
+        public GfzShape[] GetShapeNodes()
         {
-            var shapes = GetComponentsInChildren<GfzSegmentShape>();
+            var shapes = GetComponentsInChildren<GfzShape>();
             return shapes;
         }
         public GfzPathPositionedBase[] GetUpdateables()
