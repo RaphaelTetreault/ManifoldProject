@@ -622,8 +622,8 @@ namespace Manifold.EditorTools.GC.GFZ
                 var innerLeft = new Vector3(+kCurbSlantInner, 0.0f, 0);
                 var innerRight = new Vector3(-kCurbSlantInner, 0.0f, 0);
                 // TODO: use TAN to solve for angle, parameterize slant size
-                var normalLeft = Quaternion.Euler(0, 0, +6.34f) * Vector3.up; // with a x=2.25, y=0.5, angle is 6.34 degrees
-                var normalRight = Quaternion.Euler(0, 0, -6.34f) * Vector3.up; // rotate normal, assign. TODO: need coord system??
+                var normalLeft = SurfaceNormalTOA(kCurbHeight, kCurbSlantOuter, Vector3.up, true);//Quaternion.Euler(0, 0, +6.34f) * Vector3.up; // with a x=2.25, y=0.5, angle is 6.34 degrees
+                var normalRight = SurfaceNormalTOA(kCurbHeight, kCurbSlantOuter, Vector3.up, false);//Quaternion.Euler(0, 0, -6.34f) * Vector3.up; // rotate normal, assign. TODO: need coord system??
 
                 var tristripsLeft = GenerateTristripsLine(matricesLeft, outerLeft, innerLeft, normalLeft, 1, true);
                 var tristripsRight = GenerateTristripsLine(matricesRight, outerRight, innerRight, normalRight, 1, false);
@@ -1031,8 +1031,8 @@ namespace Manifold.EditorTools.GC.GFZ
                 /// <param name="railTristrips">List to add tristrips to</param>
                 private static void RailAngle(Matrix4x4[] matrices, float side, float height, List<Tristrip> railTristrips)
                 {
-                    float railHeight = height * 0.40f;
-                    float gapHeight = height * 0.10f;
+                    float railHeight = height * 0.40f; // 40% has 2)
+                    float gapHeight = height * 0.10f; // 10% (has 2)
                     var bottom = new Vector3(0f, 0.5f);
                     var mid0 = new Vector3(railHeight * side, railHeight + 0.5f);
                     var mid1 = new Vector3(railHeight * side, railHeight + 0.5f + gapHeight);
@@ -1092,7 +1092,7 @@ namespace Manifold.EditorTools.GC.GFZ
                         tristrips[i].tex1 = uvs1[i];
                         tristrips[i].tex2 = uvs2[i];
 
-                        //// comput tangent and binormal
+                        //// compute tangent and binormal
                         //int vertexCount = tristrips[i].VertexCount;
                         //tristrips[i].tangents = new Vector3[vertexCount];
                         //tristrips[i].binormals = new Vector3[vertexCount];

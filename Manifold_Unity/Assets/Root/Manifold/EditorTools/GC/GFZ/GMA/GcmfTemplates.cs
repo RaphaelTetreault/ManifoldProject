@@ -1159,6 +1159,8 @@ namespace Manifold.EditorTools.GC.GFZ
 
         public static class OuterSpace
         {
+            const string baseName = "met_";
+
             public static GcmfTemplate[] Road()
             {
                 return new GcmfTemplate[]
@@ -1222,6 +1224,7 @@ namespace Manifold.EditorTools.GC.GFZ
                 };
                 var template = new GcmfTemplate()
                 {
+                    Name = baseName + nameof(Top),
                     IsTranslucid = false,
                     Submesh = submesh,
                     TevLayers = tevLayers,
@@ -1266,6 +1269,7 @@ namespace Manifold.EditorTools.GC.GFZ
                 };
                 var template = new GcmfTemplate()
                 {
+                    Name = baseName + nameof(BottomAndSides),
                     IsTranslucid = false,
                     Submesh = submesh,
                     TevLayers = tevLayers,
@@ -1310,6 +1314,7 @@ namespace Manifold.EditorTools.GC.GFZ
                 };
                 var template = new GcmfTemplate()
                 {
+                    Name = baseName + nameof(CurbAndLaneDividerTop),
                     IsTranslucid = false,
                     Submesh = submesh,
                     TevLayers = tevLayers,
@@ -1354,6 +1359,7 @@ namespace Manifold.EditorTools.GC.GFZ
                 };
                 var template = new GcmfTemplate()
                 {
+                    Name = baseName + nameof(CurbAndLaneDividerSlope),
                     IsTranslucid = false,
                     Submesh = submesh,
                     TevLayers = tevLayers,
@@ -1398,6 +1404,7 @@ namespace Manifold.EditorTools.GC.GFZ
                 };
                 var template = new GcmfTemplate()
                 {
+                    Name = baseName + nameof(RailsAngle),
                     IsTranslucid = false,
                     Submesh = submesh,
                     TevLayers = tevLayers,
@@ -1442,6 +1449,7 @@ namespace Manifold.EditorTools.GC.GFZ
                 };
                 var template = new GcmfTemplate()
                 {
+                    Name = baseName + nameof(RailsLights),
                     IsTranslucid = false,
                     Submesh = submesh,
                     TevLayers = tevLayers,
@@ -1486,6 +1494,7 @@ namespace Manifold.EditorTools.GC.GFZ
                 };
                 var template = new GcmfTemplate()
                 {
+                    Name = baseName + nameof(EndCap),
                     IsTranslucid = false,
                     Submesh = submesh,
                     TevLayers = tevLayers,

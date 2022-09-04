@@ -41,6 +41,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         // MUTE CITY
         public const string mutRoadRails = shadersAssetsPath + "mut_rails.shadergraph";
+        // Outer Space
+        public const string metRoadTop = shadersAssetsPath + "met_top.shadergraph";
 
 
         [MenuItem(GfzMenuItems.Materials.CreateEditorMaterials, priority = GfzMenuItems.Materials.Priority.CreateEditorMaterials)]
@@ -49,6 +51,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             General.CreateAllMaterials();
             MuteCity.CreateAllMaterials();
             MuteCityCOM.CreateAllMaterials();
+            OuterSpace.CreateAllMaterials();
         }
 
         private static string GetAssetsPath()
@@ -180,6 +183,28 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
             public static string CreateRoadTopNoDividers() => CreateMaterial(shadergraph_mt_1Tex, GcmfTemplates.MuteCityCOM.RoadTopNoDividers());
             public static string CreateRoadTopEmbeddedDividers() => CreateMaterial(shadergraph_mt_2TexAdd, GcmfTemplates.MuteCityCOM.RoadTopEmbeddedDividers());
+        }
+
+        public static class OuterSpace
+        {
+            public static void CreateAllMaterials()
+            {
+                BottomAndSides();
+                CurbAndLaneDividerSlope();
+                CurbAndLaneDividerTop();
+                EndCap();
+                RailsAngle();
+                RailsLights();
+                Top();
+            }
+
+            public static string BottomAndSides() => CreateMaterial(shadergraph_mt_1Tex, GcmfTemplates.OuterSpace.BottomAndSides());
+            public static string CurbAndLaneDividerSlope() => CreateMaterial(shadergraph_mt_1Tex, GcmfTemplates.OuterSpace.CurbAndLaneDividerSlope());
+            public static string CurbAndLaneDividerTop() => CreateMaterial(shadergraph_mt_1Tex, GcmfTemplates.OuterSpace.CurbAndLaneDividerTop());
+            public static string EndCap() => CreateMaterial(shadergraph_mt_1Tex, GcmfTemplates.OuterSpace.EndCap());
+            public static string RailsAngle() => CreateMaterial(shadergraph_mt_1Tex, GcmfTemplates.OuterSpace.RailsAngle());
+            public static string RailsLights() => CreateMaterial(shadergraph_mt_1Tex, GcmfTemplates.OuterSpace.RailsLights());
+            public static string Top() => CreateMaterial(metRoadTop, GcmfTemplates.OuterSpace.Top());
         }
 
     }
