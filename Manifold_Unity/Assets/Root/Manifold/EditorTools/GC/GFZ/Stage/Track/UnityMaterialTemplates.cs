@@ -12,9 +12,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
     {
         public const string shadersAssetsPath = "Assets/Root/Manifold/EditorTools/GC/GFZ/Shaders/";
         
+        // Generic Opaque Materials
         public const string shadergraph_mt_1Tex = shadersAssetsPath + "mt_1Tex.shadergraph";
         public const string shadergraph_mt_2TexAdd = shadersAssetsPath + "mt_2TexAdd.shadergraph";
         public const string shadergraph_mt_2TexMulitply = shadersAssetsPath + "mt_2TexMultiply.shadergraph";
+        // Generic Translucid Materials
         public const string shadergraph_tl_1Tex = shadersAssetsPath + "tl_1Tex.shadergraph";
         public const string shadergraph_tl_1TexAlpha = shadersAssetsPath + "tl_2TexAlpha.shadergraph";
         public const string shadergraph_tl_2TexMultiplyAdditive = shadersAssetsPath + "tl_2TexMultiplyAdditive.shadergraph";
@@ -41,7 +43,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         public const string mutRoadRails = shadersAssetsPath + "mut_rails.shadergraph";
 
 
-        [MenuItem("Manifold/Materials Test")]
+        [MenuItem(GfzMenuItems.Materials.CreateEditorMaterials, priority = GfzMenuItems.Materials.Priority.CreateEditorMaterials)]
         public static void CreateAllMaterials()
         {
             General.CreateAllMaterials();
