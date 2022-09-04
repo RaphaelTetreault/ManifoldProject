@@ -11,11 +11,34 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
     public static class UnityMaterialTemplates
     {
         public const string shadersAssetsPath = "Assets/Root/Manifold/EditorTools/GC/GFZ/Shaders/";
-        public const string shaderTex1Opaque = shadersAssetsPath + "UnlitTex1Opaque.shader";
-        public const string shadergraphOp1Tex = shadersAssetsPath + "tex0opaque.shadergraph";
-        public const string shadergraphTl1Tex = shadersAssetsPath + "tl_1Tex.shadergraph";
-        public const string shadergraphOp2TexAdd = shadersAssetsPath + "op_2TexScreen.shadergraph";
-        public const string shadergraphMutRails = shadersAssetsPath + "mut_rails.shadergraph";
+        
+        public const string shadergraph_mt_1Tex = shadersAssetsPath + "mt_1Tex.shadergraph";
+        public const string shadergraph_mt_2TexAdd = shadersAssetsPath + "mt_2TexAdd.shadergraph";
+        public const string shadergraph_mt_2TexMulitply = shadersAssetsPath + "mt_2TexMultiply.shadergraph";
+        public const string shadergraph_tl_1Tex = shadersAssetsPath + "tl_1Tex.shadergraph";
+        public const string shadergraph_tl_1TexAlpha = shadersAssetsPath + "tl_2TexAlpha.shadergraph";
+        public const string shadergraph_tl_2TexMultiplyAdditive = shadersAssetsPath + "tl_2TexMultiplyAdditive.shadergraph";
+        public const string shadergraph_tl_2TexMultiplyMultiply = shadersAssetsPath + "tl_2TexMultiplyMultiply.shadergraph";
+
+        // RECOVER
+        public const string embedRecoverLightAlpha = shadergraph_tl_2TexMultiplyAdditive;
+        public const string embedRecoverLightBase = shadergraph_tl_2TexMultiplyAdditive;
+        public const string embedRecoverLightSubBase = shadergraph_mt_1Tex;
+        public const string embedRecoverDarkAlpha = shadergraph_tl_2TexMultiplyAdditive;
+        public const string embedRecoverDarkBase = shadergraph_mt_1Tex;
+        // DIRT
+        public const string embedDirtAlpha = shadergraph_tl_1Tex;
+        public const string embedDirtNoise = shadergraph_mt_1Tex; // looks better than 2 tex multiply
+        // LAVA
+        public const string embedLavaAlpha = shadergraph_tl_2TexMultiplyAdditive;
+        public const string embedLavaCarg = shadergraph_mt_1Tex;
+        // SLIP
+        public const string embedSlipLight = shadergraph_mt_2TexAdd;
+        public const string embedSlipDarkThin = shadergraph_mt_2TexAdd;
+        public const string embedSlipDarkWide = shadergraph_mt_2TexAdd;
+
+        // MUTE CITY
+        public const string mutRoadRails = shadersAssetsPath + "mut_rails.shadergraph";
 
 
         [MenuItem("Manifold/Materials Test")]
@@ -112,19 +135,19 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 CreateDirtAlpha();
                 CreateDirtNoise();
             }
-            public static string CreateSlipLight() => CreateMaterial(shadergraphOp1Tex, GcmfTemplates.General.SlipLight());
-            public static string CreateSlipDarkThin() => CreateMaterial(shadergraphOp1Tex, GcmfTemplates.General.SlipDarkThin());
-            public static string CreateSlipDarkWide() => CreateMaterial(shadergraphOp1Tex, GcmfTemplates.General.SlipDarkWide());
-            public static string CreateRecoverLightAlpha() => CreateMaterial(shadergraphOp1Tex, GcmfTemplates.General.RecoverLightAlpha());
-            public static string CreateRecoverLightBase() => CreateMaterial(shadergraphOp1Tex, GcmfTemplates.General.RecoverLightBase());
-            public static string CreateRecoverLightSubBase() => CreateMaterial(shadergraphOp1Tex, GcmfTemplates.General.RecoverLightSubBase());
-            public static string CreateRecoverDarkAlpha() => CreateMaterial(shadergraphOp1Tex, GcmfTemplates.General.RecoverDarkAlpha());
-            public static string CreateRecoverDarkBase() => CreateMaterial(shadergraphOp1Tex, GcmfTemplates.General.RecoverDarkBase());
-            public static string CreateLavaAlpha() => CreateMaterial(shadergraphOp1Tex, GcmfTemplates.General.LavaAlpha());
-            public static string CreateLavaCrag() => CreateMaterial(shadergraphOp1Tex, GcmfTemplates.General.LavaCrag());
-            public static string CreateDirtAlpha() => CreateMaterial(shadergraphOp1Tex, GcmfTemplates.General.DirtAlpha());
-            public static string CreateDirtNoise() => CreateMaterial(shadergraphOp1Tex, GcmfTemplates.General.DirtNoise());
-            public static string CreateTrim() => CreateMaterial(shadergraphOp1Tex, GcmfTemplates.General.Trim());
+            public static string CreateSlipLight() => CreateMaterial(embedSlipLight, GcmfTemplates.General.SlipLight());
+            public static string CreateSlipDarkThin() => CreateMaterial(embedSlipDarkThin, GcmfTemplates.General.SlipDarkThin());
+            public static string CreateSlipDarkWide() => CreateMaterial(embedSlipDarkWide, GcmfTemplates.General.SlipDarkWide());
+            public static string CreateRecoverLightAlpha() => CreateMaterial(embedRecoverLightAlpha, GcmfTemplates.General.RecoverLightAlpha());
+            public static string CreateRecoverLightBase() => CreateMaterial(embedRecoverLightBase, GcmfTemplates.General.RecoverLightBase());
+            public static string CreateRecoverLightSubBase() => CreateMaterial(embedRecoverLightSubBase, GcmfTemplates.General.RecoverLightSubBase());
+            public static string CreateRecoverDarkAlpha() => CreateMaterial(embedRecoverDarkAlpha, GcmfTemplates.General.RecoverDarkAlpha());
+            public static string CreateRecoverDarkBase() => CreateMaterial(embedRecoverDarkBase, GcmfTemplates.General.RecoverDarkBase());
+            public static string CreateLavaAlpha() => CreateMaterial(embedLavaAlpha, GcmfTemplates.General.LavaAlpha());
+            public static string CreateLavaCrag() => CreateMaterial(embedLavaCarg, GcmfTemplates.General.LavaCrag());
+            public static string CreateDirtAlpha() => CreateMaterial(embedDirtAlpha, GcmfTemplates.General.DirtAlpha());
+            public static string CreateDirtNoise() => CreateMaterial(embedDirtNoise, GcmfTemplates.General.DirtNoise());
+            public static string CreateTrim() => CreateMaterial(shadergraph_mt_1Tex, GcmfTemplates.General.Trim());
         }
         public static class MuteCity
         {
@@ -138,12 +161,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 CreateRoadLaneDividers();
             }
 
-            public static string CreateRoadTop() => CreateMaterial(shadergraphOp1Tex, GcmfTemplates.MuteCity.RoadTop());
-            public static string CreateRoadBottom() => CreateMaterial(shadergraphOp1Tex, GcmfTemplates.MuteCity.RoadBottom());
-            public static string CreateRoadSides() => CreateMaterial(shadergraphOp1Tex, GcmfTemplates.MuteCity.RoadSides());
-            public static string CreateRoadEmbelishments() => CreateMaterial(shadergraphOp2TexAdd, GcmfTemplates.MuteCity.RoadEmbelishments());
-            public static string CreateRoadRails() => CreateMaterial(shadergraphMutRails, GcmfTemplates.MuteCity.RoadRails());
-            public static string CreateRoadLaneDividers() => CreateMaterial(shadergraphTl1Tex, GcmfTemplates.MuteCity.RoadLaneDividers());
+            public static string CreateRoadTop() => CreateMaterial(shadergraph_mt_1Tex, GcmfTemplates.MuteCity.RoadTop());
+            public static string CreateRoadBottom() => CreateMaterial(shadergraph_mt_1Tex, GcmfTemplates.MuteCity.RoadBottom());
+            public static string CreateRoadSides() => CreateMaterial(shadergraph_mt_1Tex, GcmfTemplates.MuteCity.RoadSides());
+            public static string CreateRoadEmbelishments() => CreateMaterial(shadergraph_mt_2TexAdd, GcmfTemplates.MuteCity.RoadEmbelishments());
+            public static string CreateRoadRails() => CreateMaterial(mutRoadRails, GcmfTemplates.MuteCity.RoadRails());
+            public static string CreateRoadLaneDividers() => CreateMaterial(shadergraph_tl_1Tex, GcmfTemplates.MuteCity.RoadLaneDividers());
         }
         public static class MuteCityCOM
         {
@@ -153,8 +176,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 CreateRoadTopEmbeddedDividers();
             }
 
-            public static string CreateRoadTopNoDividers() => CreateMaterial(shadergraphOp1Tex, GcmfTemplates.MuteCityCOM.RoadTopNoDividers());
-            public static string CreateRoadTopEmbeddedDividers() => CreateMaterial(shadergraphOp2TexAdd, GcmfTemplates.MuteCityCOM.RoadTopEmbeddedDividers());
+            public static string CreateRoadTopNoDividers() => CreateMaterial(shadergraph_mt_1Tex, GcmfTemplates.MuteCityCOM.RoadTopNoDividers());
+            public static string CreateRoadTopEmbeddedDividers() => CreateMaterial(shadergraph_mt_2TexAdd, GcmfTemplates.MuteCityCOM.RoadTopEmbeddedDividers());
         }
 
     }

@@ -474,31 +474,31 @@ namespace Manifold.EditorTools.GC.GFZ
             {
                 var tevLayers = new TevLayer[]
                 {
-                        new TevLayer()
-                        {
-                            Unk0x00 = 0,
-                            MipmapSetting = MipmapSetting.UNK_FLAG_1,
-                            WrapMode = TextureWrapMode.mirrorX | TextureWrapMode.repeatY, // I added mirror X
-                            LodBias = 0,
-                            AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
-                            Unk0x0C = 0,
-                            Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
-                        },
-                        new TevLayer()
-                        {
-                            Unk0x00 = TexFlags0x00.ENABLE_UV_SCROLL,
-                            MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
-                            WrapMode = TextureWrapMode.repeatX | TextureWrapMode.repeatY | TextureWrapMode.unk7,
-                            LodBias = 0,
-                            AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
-                            Unk0x0C = 0,
-                            Unk0x12 = TexFlags0x10.unk0_AlphaScreenSelf | TexFlags0x10.unk4 | TexFlags0x10.unk5,
-                        },
+                    new TevLayer()
+                    {
+                        Unk0x00 = 0,
+                        MipmapSetting = MipmapSetting.UNK_FLAG_1,
+                        WrapMode = TextureWrapMode.mirrorX | TextureWrapMode.repeatY, // I added mirror X
+                        LodBias = 0,
+                        AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
+                        Unk0x0C = 0,
+                        Unk0x12 = TexFlags0x10.unk4 | TexFlags0x10.unk5,
+                    },
+                    new TevLayer()
+                    {
+                        Unk0x00 = TexFlags0x00.ENABLE_UV_SCROLL,
+                        MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
+                        WrapMode = TextureWrapMode.repeatX | TextureWrapMode.repeatY | TextureWrapMode.unk7,
+                        LodBias = 0,
+                        AnisotropicFilter = GXAnisotropy.GX_ANISO_1,
+                        Unk0x0C = 0,
+                        Unk0x12 = TexFlags0x10.unk0_AlphaScreenSelf | TexFlags0x10.unk4 | TexFlags0x10.unk5,
+                    },
                 };
                 var textureHashes = new string[]
                 {
-                        "22e2e87246525810b8f56b2dc0bc7e24", // st01 tex 6, lined gradient
-                        "2b67d7b296e0c2476ed7b6b5e4e19af9", // st01 tex 7, some alpha thing
+                    "22e2e87246525810b8f56b2dc0bc7e24", // st01 tex 6, lined gradient
+                    "2b67d7b296e0c2476ed7b6b5e4e19af9", // st01 tex 7, some alpha thing
                 };
                 var textureScrollFields = new TextureScrollField[]
                 {
@@ -648,6 +648,7 @@ namespace Manifold.EditorTools.GC.GFZ
             {
                 // Only difference is a few render flags
                 var template = RecoverDarkBase();
+                template.Name = baseName + nameof(RecoverLightBase);
                 template.Submesh.RenderFlags |= RenderFlags.screenBlend | RenderFlags.additiveBlend;
                 template.Submesh.UnkAlphaOptions.BlendFactors |= BlendFactors.unk2_UseBlendMode | BlendFactors.unk4_UseBlendMode;
 

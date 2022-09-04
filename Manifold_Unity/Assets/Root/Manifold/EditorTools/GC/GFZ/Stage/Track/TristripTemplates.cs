@@ -24,7 +24,7 @@ namespace Manifold.EditorTools.GC.GFZ
             float angleRad = Mathf.Tan(opposite / adjacent);
             float angleDeg = angleRad * Mathf.Rad2Deg;
 
-            // Clockwise rotation is ngative about the Z axis
+            // Clockwise rotation is negative about the Z axis
             if (isClockwise)
                 angleDeg = -angleDeg;
 
