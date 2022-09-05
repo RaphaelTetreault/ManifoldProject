@@ -1,5 +1,6 @@
 ﻿using GameCube.GFZ.TPL;
 using Manifold.IO;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
@@ -26,9 +27,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
     public static class TrackCreateMenuItems
     {
-
         /// <summary>
-        /// Add GfzTrack Component as child.
+        /// Add GfzTrack Component.
         /// </summary>
         [MenuItem(GfzMenuItems.TrackCreate.AddTrack, priority = 1)]
         public static void AddTrack()
@@ -79,15 +79,19 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         }
 
-        // Add GfzPathSegment Component as child.
+        // Add GfzPathSegment Extended Component as child.
         public static void AddGfzPath(GFZPathType pathType, GFZRoadType roadType)
         {
-            int idx = -1; // TODO: GET index
+            int idx = -1;
+            GameObject track;
 
-            GameObject track = GameObject.FindObjectOfType<GfzTrack>().gameObject;
-
-            if (track == null)
+            try
             {
+                track = GameObject.FindObjectOfType<GfzTrack>().gameObject;
+            } catch(Exception e) {
+                string[] menuPaths = GfzMenuItems.TrackCreate.AddTrack.Split("/");
+                Debug.LogError($"GfzTrack object not exist.\r\nGenerate Track by {menuPaths[0]} > {menuPaths[1]} > {menuPaths[2]}");
+                Debug.Log(e.Message);
                 return;
             }
 
