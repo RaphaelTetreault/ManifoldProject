@@ -69,7 +69,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             foreach (var tristrip in tristrips)
             {
                 allVertexCount += tristrip.VertexCount;
-                allIndexesCount += tristrip.TriangleIndexesCount;
+                allIndexesCount += tristrip.MeshIndexesCount;
             }
 
             // Init arrays for all of that data
@@ -89,7 +89,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 // Get tristrip and relevant info
                 var tristrip = tristrips[i];
                 int vertexCount = tristrip.VertexCount;
-                int indexesCount = tristrip.TriangleIndexesCount;
+                int indexesCount = tristrip.MeshIndexesCount;
 
                 // Initi data for submesh. Missing data is replaced with defaults.
                 var positions = tristrip.positions;

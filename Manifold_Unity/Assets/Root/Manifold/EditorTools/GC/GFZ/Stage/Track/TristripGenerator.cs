@@ -328,6 +328,16 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
             return tristrips;
         }
+
+        public static Tristrip[] GenerateHorizontalLineWithNormals(Matrix4x4[] matrices, Vector3 endpointA, Vector3 endpointB, Vector3 normal, int nTristrips)
+        {
+            var vertices = CreateLineVertices(nTristrips, endpointA, endpointB);
+            var normals = ArrayUtility.DefaultArray(normal, vertices.Length);
+            var tristrips = CreateTristrips(matrices, vertices, normals);
+            return tristrips;
+        }
+
+
         public static Tristrip[] GenerateCircle(Matrix4x4[] matrices, bool normalOutwards, int nTristrips, float angleFrom = 0, float angleTo = 360)
         {
             // Create tristrips vedrtices (positions)
@@ -350,10 +360,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
             return tristrips;
         }
-        //public static Tristrip[] GenerateVerticalLine()
-        //{
 
-        //}
 
 
 

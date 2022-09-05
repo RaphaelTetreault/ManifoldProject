@@ -20,6 +20,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
 
         public int TriangleIndexesCount => ((positions.Length / 2) - 1) * 6;
+        public int MeshIndexesCount => isDoubleSided ? TriangleIndexesCount * 2 : TriangleIndexesCount;
         public int VertexCount => positions.Length;
 
         public int[] GetIndices()
@@ -41,13 +42,14 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 vertexBaseIndex++;
             }
 
-            if (isBackFacing)
-                indexes = indexes.Reverse().ToArray();
-
             if (isDoubleSided)
             {
                 var invertedIndexes = indexes.Reverse().ToArray();
                 indexes = indexes.Concat(invertedIndexes).ToArray();
+            }
+            else if (isBackFacing)
+            {
+                indexes = indexes.Reverse().ToArray();
             }
 
             return indexes;
