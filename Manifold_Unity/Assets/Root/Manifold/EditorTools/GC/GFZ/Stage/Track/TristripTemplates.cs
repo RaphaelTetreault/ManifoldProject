@@ -704,7 +704,7 @@ namespace Manifold.EditorTools.GC.GFZ
                 Vector3 OffsetTop = matrix.rotation * new Vector3(matrix.lossyScale.x * 0.5f, 0, 0);
                 Vector3 OffsetBot = matrix.rotation * new Vector3(-insetBottom, -thickness, 0);
                 Matrix4x4 matrixTopLeft = Matrix4x4.TRS(matrix.Position() + OffsetTop, matrix.rotation, Vector3.one);
-                Matrix4x4 matrixTopRight = Matrix4x4.TRS(matrix.Position() -  OffsetTop, matrix.rotation, Vector3.one);
+                Matrix4x4 matrixTopRight = Matrix4x4.TRS(matrix.Position() - OffsetTop, matrix.rotation, Vector3.one);
                 Matrix4x4 matrixBotLeft = Matrix4x4.TRS(matrixTopLeft.Position() + OffsetBot, matrix.rotation, new Vector3(1,0,0));
                 Matrix4x4 matrixBotRight = Matrix4x4.TRS(matrixTopRight.Position() + OffsetBot, matrix.rotation, new Vector3(1, 0, 0));
 
