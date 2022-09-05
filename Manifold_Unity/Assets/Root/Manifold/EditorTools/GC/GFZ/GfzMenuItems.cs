@@ -74,7 +74,7 @@ namespace Manifold.EditorTools.GC.GFZ
             // SceneImportUtility
             public const string BuildHashReferenceObject = Menu + "Build hash reference objects";
             public const string ImportTexturesNoMipmips = Menu + "Import textures (no mipmaps, build hash reference objects)";
-            public const string ImportTexturesWithMipmips = Menu + "Import textures with no mipmaps (build hash reference objects)";
+            public const string ImportTexturesWithMipmips = Menu + "Import textures with mipmaps (build hash reference objects)";
 
             public static class Priority
             {
