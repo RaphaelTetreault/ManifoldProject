@@ -703,8 +703,8 @@ namespace Manifold.EditorTools.GC.GFZ
             {
                 Vector3 OffsetTop = new Vector3(matrix.lossyScale.x * 0.5f, 0, 0);
                 Vector3 OffsetBot = new Vector3(-insetBottom, -thickness, 0);
-                Matrix4x4 matrixTopLeft = Matrix4x4.TRS(matrix.Position() + OffsetTop, matrix.rotation, Vector3.one);
-                Matrix4x4 matrixTopRight = Matrix4x4.TRS(matrix.Position() - OffsetTop, matrix.rotation, Vector3.one);
+                Matrix4x4 matrixTopLeft = Matrix4x4.TRS(matrix.Position() + matrix.rotation * OffsetTop, matrix.rotation, Vector3.one);
+                Matrix4x4 matrixTopRight = Matrix4x4.TRS(matrix.Position() - matrix.rotation * OffsetTop, matrix.rotation, Vector3.one);
                 Matrix4x4 matrixBotLeft = Matrix4x4.TRS(matrixTopLeft.Position() + OffsetBot, matrix.rotation, new Vector3(1, 0, 0));
                 Matrix4x4 matrixBotRight = Matrix4x4.TRS(matrixTopRight.Position() + OffsetBot, matrix.rotation, new Vector3(1, 0, 0));
 
@@ -744,7 +744,7 @@ namespace Manifold.EditorTools.GC.GFZ
                 // Construct tristrip.
                 var tristrip = new Tristrip();
                 tristrip.positions = positions;
-                tristrip.normals = ArrayUtility.DefaultArray(normal, tristrip.VertexCount);
+                tristrip.normals = ArrayUtility.DefaultArray(matrix.rotation * normal, tristrip.VertexCount);
                 tristrip.isBackFacing = Vector3.Dot(Vector3.back, normal) < 0;
 
                 var tristrips = new Tristrip[] { tristrip };
@@ -754,8 +754,8 @@ namespace Manifold.EditorTools.GC.GFZ
             {
                 Vector3 OffsetTop = new Vector3(matrix.lossyScale.x * 0.5f, 0, 0);
                 Vector3 OffsetBot = new Vector3(0, -thickness, 0);
-                Matrix4x4 matrixLeftTop = Matrix4x4.TRS(matrix.Position() + OffsetTop, matrix.rotation, Vector3.one);
-                Matrix4x4 matrixRightTop = Matrix4x4.TRS(matrix.Position() - OffsetTop, matrix.rotation, Vector3.one);
+                Matrix4x4 matrixLeftTop = Matrix4x4.TRS(matrix.Position() + matrix.rotation * OffsetTop, matrix.rotation, Vector3.one);
+                Matrix4x4 matrixRightTop = Matrix4x4.TRS(matrix.Position() - matrix.rotation * OffsetTop, matrix.rotation, Vector3.one);
                 Matrix4x4 matrixLeftBot = Matrix4x4.TRS(matrixLeftTop.Position() + OffsetBot, matrix.rotation, new Vector3(1, 0, 0));
                 Matrix4x4 matrixRightBot = Matrix4x4.TRS(matrixRightTop.Position() + OffsetBot, matrix.rotation, new Vector3(1, 0, 0));
 
@@ -770,7 +770,7 @@ namespace Manifold.EditorTools.GC.GFZ
                 // Construct tristrip.
                 var tristrip = new Tristrip();
                 tristrip.positions = positions;
-                tristrip.normals = ArrayUtility.DefaultArray(normal, tristrip.VertexCount);
+                tristrip.normals = ArrayUtility.DefaultArray(matrix.rotation * normal, tristrip.VertexCount);
                 tristrip.isBackFacing = Vector3.Dot(Vector3.back, normal) < 0;
 
                 var tristrips = new Tristrip[] { tristrip };
