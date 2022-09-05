@@ -28,16 +28,15 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
     public static class TrackCreateMenuItems
     {
         /// <summary>
-        /// Add GfzTrack Component
+        ///  Generate GfzTrack Component
         /// </summary>
         [MenuItem(GfzMenuItems.TrackCreate.AddTrack, priority = 1)]
-        public static void AddTrack()
+        public static void GenerateTrack()
         {
             GameObject track = new GameObject("Track");
             Undo.RegisterCreatedObjectUndo(track, "Add Track");
 
             Undo.AddComponent<GfzTrack>(track);
-            //track.AddComponent<GfzTrack>();
 
             return;
         }
@@ -104,10 +103,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             {
                 track = GameObject.FindObjectOfType<GfzTrack>().gameObject;
             } catch(Exception e) {
-                string[] menuPaths = GfzMenuItems.TrackCreate.AddTrack.Split("/");
-                Debug.LogError($"GfzTrack object not exist.\r\nGenerate Track by {menuPaths[0]} > {menuPaths[1]} > {menuPaths[2]}");
-                Debug.Log(e.Message);
-                return;
+                Debug.LogWarning($"GfzTrack object not exist.\r\nAuto Generate Track");
+                Debug.Log($"Actual Exception: {e.Message}");
+                GenerateTrack();
+                track = GameObject.FindObjectOfType<GfzTrack>().gameObject;
             }
 
             // Generate GfzPathSegment GameObject
@@ -152,8 +151,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             pathSegment.transform.parent = track.transform;
             Undo.RegisterCreatedObjectUndo(pathSegment, $"Generate {pathName}");
 
-            AddGfzShape(roadType, roadShape);
             AddGfzPath(pathType, pathSegment);
+            AddGfzShape(roadType, roadShape);
 
             return;
         }
@@ -200,19 +199,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         [MenuItem(GfzMenuItems.TrackCreate.AddCapsuleRoad + GfzMenuItems.TrackCreate.AddBezierOld, priority = 999)]
         public static void AddPathBezierOldCapsuleRoad() => GenerateGfzPath(GFZPathType.BEZIER_OLD, GFZRoadType.CAPSULE);
 
-
-        [MenuItem(GfzMenuItems.TrackCreate.Menu + "Example/Create GameObject")]
-        static void CreateGameObject()
-        {
-            // Create GameObject hierarchy.
-            GameObject go = new GameObject("my GameObject");
-            GameObject child = new GameObject();
-            go.transform.position = new Vector3(5, 5, 5);
-            child.transform.parent = go.transform;
-
-            // Register root object for undo.
-            Undo.RegisterCreatedObjectUndo(go, "Create object");
-        }
 
     }
 }
