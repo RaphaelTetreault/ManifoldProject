@@ -80,7 +80,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 case RoadMeshStyle.MuteCity:
                     return new Tristrip[][]
                     {
-                        TristripTemplates.Road.MuteCity.CreateRoadTop(matrices, this, maxTime),
+                        TristripTemplates.Road.MuteCity.Top(matrices, this, maxTime),
                         TristripTemplates.Road.MuteCity.CreateRoadBottom(matrices, this, maxTime),
                         TristripTemplates.Road.MuteCity.CreateRoadTrim(matrices, this, maxTime),
                         TristripTemplates.Road.MuteCity.CreateRoadEmbellishments(matrices, this, maxTime),
