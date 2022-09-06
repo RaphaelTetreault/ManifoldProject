@@ -60,12 +60,22 @@ namespace Manifold.EditorTools.GC.GFZ
             public const string ImportAll = Menu + "Import All Stages";
             public const string ImportSingle = Menu + "Import Stage (Single)";
             public const string ImportSingleSelect = Menu + "Import Stage (Single, Select File)";
-            public const int ImportAllPriority = 1;
-            public const int ImportSinglePriority = 2;
-            public const int ImportSingleSelectPriority = 3;
+            public const string TestPatchEnemyLine = Menu + "Test Patch Enemy Line";
+            public const string TestDecryptEnemyLine = Menu + "Test Decrypt Enemy Line";
+
             // SceneExportUtility
             public const string ExportActiveScene = Menu + "Export (Active Scene)";
-            public const int ExportActiveScenePriority = 101;
+
+            public static class Priority
+            {
+                public const int ImportAll = 1;
+                public const int ImportSingle = 2;
+                public const int ImportSingleSelect = 3;
+                public const int TestPatchEnemyLine = 4;
+                public const int TestDecryptEnemyLine = 5;
+                //
+                public const int ExportActiveScene = 101;
+            }
         }
 
         public static class TPL

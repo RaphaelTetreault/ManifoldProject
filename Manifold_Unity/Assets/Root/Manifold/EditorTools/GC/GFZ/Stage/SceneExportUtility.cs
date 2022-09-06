@@ -3,6 +3,7 @@ using GameCube.GFZ.GMA;
 using GameCube.GFZ.LZ;
 using GameCube.GFZ.Stage;
 using GameCube.GFZ.TPL;
+using GameCube.GFZ.REL;
 using Manifold.IO;
 using System;
 using System.Collections.Generic;
@@ -21,8 +22,58 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 {
     public static class SceneExportUtility
     {
+        [MenuItem(GfzMenuItems.Stage.TestPatchEnemyLine + " _F7", priority = GfzMenuItems.Stage.Priority.TestPatchEnemyLine)]
+        public static void TestPatchEnemyLine()
+        {
+            var settings = GfzProjectWindow.GetSettings();
 
-        [MenuItem(GfzMenuItems.Stage.ExportActiveScene + " _F8", priority = GfzMenuItems.Stage.ExportActiveScenePriority)]
+            // ENCRYPTED CALL
+            string encryptedFile = settings.SourceDirectory + "enemy_line/line__.bin";
+            if (File.Exists(encryptedFile))
+            {
+                EnemyLineUtility.TestPatchEncrypted(encryptedFile);
+            }
+            else
+            {
+                Debug.LogError($"Could not find file: {encryptedFile}");
+            }
+
+            // DECRYPTED CALL
+            string decryptedFile = settings.WorkingFilesDirectory + "enemy_line/line__.rel";
+            if (File.Exists(decryptedFile))
+            {
+                EnemyLineUtility.TestPatchEncrypted(encryptedFile);
+            }
+            else
+            {
+                Debug.LogError($"Could not find file: {decryptedFile}");
+            }
+        }
+        [MenuItem(GfzMenuItems.Stage.TestDecryptEnemyLine, priority = GfzMenuItems.Stage.Priority.TestDecryptEnemyLine)]
+        public static void TestDecryptEnemyLine()
+        {
+            var settings = GfzProjectWindow.GetSettings();
+            string encryptedFile = settings.SourceDirectory + "enemy_line/line__.bin";
+            if (File.Exists(encryptedFile))
+            {
+                var line = File.Open(encryptedFile, FileMode.Open);
+                var decryptedLine = EnemyLineUtility.Decrypt(line);
+
+                string decryptedFile = settings.WorkingFilesDirectory + "enemy_line/line__.rel";
+                using (var writer = new BinaryWriter(File.Create(decryptedFile, encryptedFile.Length)))
+                {
+                    writer.Write(decryptedLine.ToArray());
+                    Debug.Log($"Decrypted '{encryptedFile}' and wrote file '{decryptedFile}'");
+                }
+            }
+            else
+            {
+                Debug.LogError($"Could not find file: {encryptedFile}");
+            }
+        }
+
+
+        [MenuItem(GfzMenuItems.Stage.ExportActiveScene + " _F8", priority = GfzMenuItems.Stage.Priority.ExportActiveScene)]
         public static void ExportSceneActive()
         {
             ExportScene(true);
