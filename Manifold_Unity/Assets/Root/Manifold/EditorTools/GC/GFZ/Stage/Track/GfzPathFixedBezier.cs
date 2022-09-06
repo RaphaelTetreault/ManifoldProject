@@ -405,7 +405,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             };
             var controlPoint1 = new FixedBezierPoint()
             {
-                position = new Vector3(0, 0, 500),
+                position = new Vector3(0, 0, CourseConst.GoodAverageLength),
                 Orientation = Quaternion.identity,
                 scale = Vector2.one * defaultScale,
                 keyScale = new bool2(true),
@@ -415,6 +415,20 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             list.Add(controlPoint1);
 
             return list;
+        }
+
+        public void SetControlPoints(Vector3 position, Quaternion orientation)
+        {
+            var controlPoints = DefaultControlPoints().ToArray();
+            controlPoints[0].position = position;
+            controlPoints[1].position = position + (orientation * Vector3.forward * CourseConst.GoodAverageLength);
+            controlPoints[0].Orientation = orientation;
+            controlPoints[1].Orientation = orientation;
+            this.controlPoints = new List<FixedBezierPoint>(controlPoints);
+        }
+        public void SetControlPoints(FixedBezierPoint[] controlPoints)
+        {
+            this.controlPoints = new List<FixedBezierPoint>(controlPoints);
         }
 
         protected override void Reset()
