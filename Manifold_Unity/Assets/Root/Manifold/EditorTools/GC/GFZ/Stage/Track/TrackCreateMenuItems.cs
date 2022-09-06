@@ -27,8 +27,16 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
     public static class TrackCreateMenuItems
     {
+        const string NamePathBezier = "bezier";
+        const string NamePathLine = "line";
+        const string NamePathSpiral = "spiral";
+
+        const string NameRoadNormal = "road";
+        const string NameRoadCylindePipe = "circle";
+        const string NameRoadCupsule = "capsule";
+
         /// <summary>
-        ///  Generate GfzTrack Component
+        ///  Generate GfzTrack component
         /// </summary>
         [MenuItem(GfzMenuItems.TrackCreate.AddTrack, priority = 1)]
         public static void GenerateTrack()
@@ -42,7 +50,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         }
 
         /// <summary>
-        /// Add GfzPathSegment extended Component
+        /// Add GfzPathSegment extended component
         /// </summary>
         /// <param name="pathType"></param>
         /// <param name="obj"></param>
@@ -68,7 +76,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         }
 
         /// <summary>
-        /// Aling to Previous Generated PathSegment
+        /// Aling to previous Generated PathSegment
         /// </summary>
         /// <param name="pathType"></param>
         /// <param name="track"></param>
@@ -174,17 +182,17 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     GfzPathFixedBezier[] gfzPathFixedBeziers = GameObject.FindObjectsOfType<GfzPathFixedBezier>();
                     GfzPathBezier[] gfzPathBeziers = GameObject.FindObjectsOfType<GfzPathBezier>();
                     idx = gfzPathFixedBeziers.Length + gfzPathBeziers.Length;
-                    pathName = $"bezier ({idx})";
+                    pathName = $"{NamePathBezier} ({idx})";
                     break;
                 case GFZPathType.LINE:
                     GfzPathLine[] gfzPathLines = GameObject.FindObjectsOfType<GfzPathLine>();
                     idx = gfzPathLines.Length;
-                    pathName = $"line ({idx})";
+                    pathName = $"{NamePathLine} ({idx})";
                     break;
                 case GFZPathType.SPIRAL:
                     GfzPathSpiral[] gfzPathSpirals = GameObject.FindObjectsOfType<GfzPathSpiral>();
                     idx = gfzPathSpirals.Length;
-                    pathName = $"spiral ({idx})";
+                    pathName = $"{NamePathSpiral} ({idx})";
                     break;
             }
             GameObject pathSegment = new GameObject(pathName);
@@ -193,13 +201,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             switch (roadType)
             {
                 case GFZRoadType.NORMAL:
-                    roadName = "road";
+                    roadName = NameRoadNormal;
                     break;
                 case GFZRoadType.CIRCLE:
-                    roadName = "circle";
+                    roadName = NameRoadCylindePipe;
                     break;
                 case GFZRoadType.CAPSULE:
-                    roadName = "capsule";
+                    roadName = NameRoadCupsule;
                     break;
             }
             GameObject roadShape = new GameObject(roadName);
