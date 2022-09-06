@@ -102,7 +102,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         }
 
 
-        [MenuItem(GfzMenuItems.Stage.ImportAll, priority = GfzMenuItems.Stage.ImportAllPriority)]
+        [MenuItem(GfzMenuItems.Stage.ImportAll, priority = GfzMenuItems.Stage.Priority.ImportAll)]
         public static void ImportAll()
         {
             var settings = GfzProjectWindow.GetSettings();
@@ -116,7 +116,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             AssetDatabase.Refresh();
         }
 
-        [MenuItem(GfzMenuItems.Stage.ImportSingle, priority = GfzMenuItems.Stage.ImportSinglePriority)]
+        [MenuItem(GfzMenuItems.Stage.ImportSingle, priority = GfzMenuItems.Stage.Priority.ImportSingle)]
         public static void ImportSingle()
         {
             var settings = GfzProjectWindow.GetSettings();
@@ -130,7 +130,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             AssetDatabase.Refresh();
         }
 
-        [MenuItem(GfzMenuItems.Stage.ImportSingleSelect, priority = GfzMenuItems.Stage.ImportSingleSelectPriority)]
+        [MenuItem(GfzMenuItems.Stage.ImportSingleSelect, priority = GfzMenuItems.Stage.Priority.ImportSingleSelect)]
         public static void ImportSingleSelect()
         {
             var settings = GfzProjectWindow.GetSettings();
