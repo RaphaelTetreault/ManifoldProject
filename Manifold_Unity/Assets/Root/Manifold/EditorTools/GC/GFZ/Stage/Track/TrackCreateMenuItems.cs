@@ -85,12 +85,24 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             switch (pathType)
             {
                 case GFZPathType.BEZIER_OLD:
-                    // Todo;
+                    GfzPathBezier bezier = obj.GetComponent<GfzPathBezier>();
+                    // ControlPoint0
+                    BezierPoint controlPoint = bezier.GetBezierPoint(0);
+                    controlPoint.position = matrix.Position();
+                    controlPoint.outTangent = matrix.Position() + (matrix.rotation * Vector3.forward * 100f);
+                    controlPoint.roll = matrix.RotationEuler().z;
+                    bezier.SetBezierPoint(0, controlPoint);
+                    // ControlPoint1
+                    controlPoint = bezier.GetBezierPoint(1);
+                    controlPoint.position = matrix.Position() + (matrix.rotation * Vector3.forward * CourseConst.GoodAverageLength);
+                    controlPoint.inTangent = matrix.Position() + (matrix.rotation * Vector3.forward * (CourseConst.GoodAverageLength - 100f));
+                    controlPoint.roll = matrix.RotationEuler().z;
+                    bezier.SetBezierPoint(1, controlPoint);
                     break;
                 case GFZPathType.BEZIER:
                     Undo.RecordObject(obj, $"Change FixedBezier {obj.name}");
-                    GfzPathFixedBezier bezier = obj.GetComponent<GfzPathFixedBezier>();
-                    bezier.SetControlPoints(matrix.Position(), matrix.rotation);
+                    GfzPathFixedBezier fixedBezier = obj.GetComponent<GfzPathFixedBezier>();
+                    fixedBezier.SetControlPoints(matrix.Position(), matrix.rotation);
                     break;
                 case GFZPathType.LINE:
                 case GFZPathType.SPIRAL:
