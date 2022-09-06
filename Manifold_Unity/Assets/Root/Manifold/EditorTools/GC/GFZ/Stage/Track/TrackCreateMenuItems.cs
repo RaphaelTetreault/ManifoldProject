@@ -97,16 +97,16 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         public static void GenerateGfzPath(GFZPathType pathType, GFZRoadType roadType)
         {
             int idx = -1;
-            GameObject track;
+            GfzTrack track;
 
             try
             {
-                track = GameObject.FindObjectOfType<GfzTrack>().gameObject;
+                track = GameObject.FindObjectOfType<GfzTrack>();
             } catch(Exception e) {
                 Debug.LogWarning($"GfzTrack object not exist.\r\nAuto Generate Track");
                 Debug.Log($"Actual Exception: {e.Message}");
                 GenerateTrack();
-                track = GameObject.FindObjectOfType<GfzTrack>().gameObject;
+                track = GameObject.FindObjectOfType<GfzTrack>();
             }
 
             // Generate GfzPathSegment GameObject
@@ -123,7 +123,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 case GFZPathType.LINE:
                     GfzPathLine[] gfzPathLines = GameObject.FindObjectsOfType<GfzPathLine>();
                     idx = gfzPathLines.Length;
-                    pathName = $"ilne ({idx})";
+                    pathName = $"line ({idx})";
                     break;
                 case GFZPathType.SPIRAL:
                     GfzPathSpiral[] gfzPathSpirals = GameObject.FindObjectsOfType<GfzPathSpiral>();
@@ -132,6 +132,25 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     break;
             }
             GameObject pathSegment = new GameObject(pathName);
+            if(track.AllRoots.Length > 0)
+            {
+                track.RefreshSegmentNodes();
+                GfzPathSegment last = track.AllRoots[track.AllRoots.Length - 1];
+                AnimationCurveTRS trs = last.CopyAnimationCurveTRS(false);
+
+                Vector3 pos = new Vector3(
+                    trs.Position.x[trs.Position.x.length -1].value,
+                    trs.Position.y[trs.Position.y.length -1].value,
+                    trs.Position.z[trs.Position.z.length -1].value);
+                pathSegment.transform.position = pos;
+
+                Quaternion q = Quaternion.Euler(
+                    trs.Rotation.x[trs.Rotation.x.length - 1].value,
+                    trs.Rotation.y[trs.Rotation.y.length - 1].value,
+                    trs.Rotation.z[trs.Rotation.z.length - 1].value);
+                pathSegment.transform.rotation = q;
+
+            }
 
             string roadName = "";
             switch (roadType)
@@ -148,7 +167,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
             GameObject roadShape = new GameObject(roadName);
             roadShape.transform.parent = pathSegment.transform;
-            pathSegment.transform.parent = track.transform;
+            pathSegment.transform.parent = track.gameObject.transform;
             Undo.RegisterCreatedObjectUndo(pathSegment, $"Generate {pathName}");
 
             AddGfzPath(pathType, pathSegment);
