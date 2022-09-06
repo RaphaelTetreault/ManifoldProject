@@ -13,21 +13,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         [SerializeField] private AnimationCurveTRS animationCurveTRS = new();
         [SerializeField, Range(0, 16)] private int keysBetweenControlPoints = 8;
 
-        public GfzPathFixedBezier() { }
-        public GfzPathFixedBezier(Vector3 position, Quaternion orientation)
-        {
-            var controlPoints = DefaultControlPoints().ToArray();
-            controlPoints[0].position = position;
-            controlPoints[1].position = position + (orientation * Vector3.forward * CourseConst.GoodAverageLength);
-            controlPoints[0].Orientation = orientation;
-            controlPoints[1].Orientation = orientation;
-            this.controlPoints = new List<FixedBezierPoint>(controlPoints);
-        }
-        public GfzPathFixedBezier(FixedBezierPoint[] controlPoints)
-        {
-            this.controlPoints = new List<FixedBezierPoint>(controlPoints);
-        }
-
         public int SelectedIndex { get => selectedIndex; set => selectedIndex = value; }
         public int ControlPointsLength => controlPoints.Count;
         public int DistancesBetweenLength => distancesBetweenControlPoints.Count;
@@ -430,6 +415,20 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             list.Add(controlPoint1);
 
             return list;
+        }
+
+        public void SetControlPoints(Vector3 position, Quaternion orientation)
+        {
+            var controlPoints = DefaultControlPoints().ToArray();
+            controlPoints[0].position = position;
+            controlPoints[1].position = position + (orientation * Vector3.forward * CourseConst.GoodAverageLength);
+            controlPoints[0].Orientation = orientation;
+            controlPoints[1].Orientation = orientation;
+            this.controlPoints = new List<FixedBezierPoint>(controlPoints);
+        }
+        public void SetControlPoints(FixedBezierPoint[] controlPoints)
+        {
+            this.controlPoints = new List<FixedBezierPoint>(controlPoints);
         }
 
         protected override void Reset()
