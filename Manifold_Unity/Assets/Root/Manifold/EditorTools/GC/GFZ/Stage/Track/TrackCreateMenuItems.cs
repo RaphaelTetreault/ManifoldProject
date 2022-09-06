@@ -136,19 +136,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             {
                 track.RefreshSegmentNodes();
                 GfzPathSegment last = track.AllRoots[track.AllRoots.Length - 1];
-                AnimationCurveTRS trs = last.CopyAnimationCurveTRS(false);
-
-                Vector3 pos = new Vector3(
-                    trs.Position.x[trs.Position.x.length -1].value,
-                    trs.Position.y[trs.Position.y.length -1].value,
-                    trs.Position.z[trs.Position.z.length -1].value);
-                pathSegment.transform.position = pos;
-
-                Quaternion q = Quaternion.Euler(
-                    trs.Rotation.x[trs.Rotation.x.length - 1].value,
-                    trs.Rotation.y[trs.Rotation.y.length - 1].value,
-                    trs.Rotation.z[trs.Rotation.z.length - 1].value);
-                pathSegment.transform.rotation = q;
+                var hacTRS = last.CreateHierarchichalAnimationCurveTRS(false);
+                float maxTime = hacTRS.GetMaxTime();
+                var matrix = hacTRS.AnimationCurveTRS.EvaluateMatrix(maxTime);
+                pathSegment.transform.position = matrix.Position();
+                pathSegment.transform.rotation = matrix.rotation;
 
             }
 
