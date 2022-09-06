@@ -815,7 +815,7 @@ namespace Manifold.EditorTools.GC.GFZ
             {
                 float scaleX = matrix.lossyScale.x;
                 float upper = (scaleX - insetTop) / scaleX * 0.5f;
-                float lower = (scaleX - insetBottom) / scaleX * 0.5f;
+                float lower = (scaleX - insetBottom * 2) / scaleX * 0.5f;
 
                 Vector2[] uvs0 = new Vector2[]
                 {
