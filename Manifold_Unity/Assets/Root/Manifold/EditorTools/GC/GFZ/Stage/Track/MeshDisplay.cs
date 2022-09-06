@@ -10,11 +10,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         public const string DefaultMaterialPath = "Assets/Root/Manifold/EditorTools/GC/GFZ/Materials/mat_VertexColor.mat";
 
         [field: Header("Mesh Properties")]
-        [field: SerializeField] public MeshFilter MeshFilter { get; protected set; }
-        [field: SerializeField] public MeshRenderer MeshRenderer { get; protected set; }
-        [field: SerializeField] public Mesh Mesh { get; protected set; }
+        [field: SerializeField, ReadOnlyGUI] public MeshFilter MeshFilter { get; protected set; }
+        [field: SerializeField, ReadOnlyGUI] public MeshRenderer MeshRenderer { get; protected set; }
+        [field: SerializeField, ReadOnlyGUI] public Mesh Mesh { get; protected set; }
         [field: SerializeField] public Material DefaultMaterial { get; protected set; }
-        [field: SerializeField] public bool HideGameObjectInEditor { get; protected set; }
 
 
         public void UpdateMesh(Mesh mesh)
@@ -59,52 +58,27 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
             if (DefaultMaterial == null)
                 DefaultMaterial = AssetDatabase.LoadAssetAtPath<Material>(DefaultMaterialPath);
-
-            // Hide this gameobject in 
-            if (HideGameObjectInEditor)
-                gameObject.hideFlags |= HideFlags.HideInHierarchy;
         }
 
-        public void SetHideGameObjectInEditor(bool hideGameObjectInEditor)
-        {
-            HideGameObjectInEditor = hideGameObjectInEditor;
-
-            // Hide this gameobject in 
-            if (HideGameObjectInEditor)
-                gameObject.hideFlags |= HideFlags.HideInHierarchy;
-        }
-
-        [MenuItem("Manifold/Mesh Tools/Unhide all MeshDisplay")]
-        public static void UnhideAll()
+        [MenuItem(GfzMenuItems.Stage.DeleteOldMeshDisplay, priority = GfzMenuItems.Stage.Priority.DeleteOldMeshDisplay)]
+        public static void DeleteOldMeshDisplays()
         {
             var objs = FindObjectsOfType<MeshDisplay>(true);
             foreach (var obj in objs)
             {
-                obj.gameObject.hideFlags &= ~HideFlags.HideInHierarchy;
-                obj.HideGameObjectInEditor = false;
+                if (obj.name == "Mesh Display")
+                {
+                    DestroyImmediate(obj.gameObject);
+                }
             }
-        }
 
-        [MenuItem("Manifold/Mesh Tools/Hide all MeshDisplay")]
-        public static void HideAll()
-        {
-            var objs = FindObjectsOfType<MeshDisplay>(true);
-            foreach (var obj in objs)
+            var shapes = FindObjectsOfType<GfzShape>(true);
+            foreach (var shape in shapes)
             {
-                obj.gameObject.hideFlags |= HideFlags.HideInHierarchy;
-                obj.HideGameObjectInEditor = false;
+                shape.ValidateMeshDisplay();
+                shape.UpdateMesh();
+                EditorUtility.SetDirty(shape);
             }
         }
-
-        [MenuItem(itemName: "Manifold/Mesh Tools/Force update meshes")]
-        public static void UpdateMeshes()
-        {
-            var objs = FindObjectsOfType<GfzShape>();
-            foreach (var obj in objs)
-            {
-                obj.UpdateMesh();
-            }
-        }
-
     }
 }

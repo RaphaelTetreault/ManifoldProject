@@ -27,6 +27,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         {
             var tristripsCollection = GetTristrips(false);
             var tristrips = CombinedTristrips(tristripsCollection);
+            OffsetTristripsForUnityMesh(tristrips);
             materialsCount = TristripsToMaterialCount(tristripsCollection);
 
             var mesh = TristripsToMesh(tristrips);
@@ -107,7 +108,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 submeshDescriptor.indexStart = indexesBase;
                 submeshDescriptor.topology = MeshTopology.Triangles;
                 submeshDescriptor.vertexCount = vertexCount;
-                
+
                 // Copy all the data to the full mesh arrays
                 positions.CopyTo(allPositions, vertexBase);
                 normals.CopyTo(allNormals, vertexBase);
@@ -159,7 +160,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             var materials = UnityMaterialTemplates.LoadMaterials(gcmfTemplates);
 
             var materialsPerSubmesh = new List<UnityEngine.Material>();
-            for(int i = 0; i < materials.Length; i++)
+            for (int i = 0; i < materials.Length; i++)
             {
                 var material = materials[i];
                 int count = materialsCount[i];
@@ -176,12 +177,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             var mesh = CreateMesh(out int[] materialsCount);
             var sharedMaterials = GetSharedMaterials(materialsCount);
             MeshDisplay.UpdateMesh(mesh, sharedMaterials);
-
-            // Do no offset mesh display - mesh coords are in world space.
-            var scale = transform.lossyScale;
-            MeshDisplay.transform.localScale = new Vector3(1f / scale.x, 1f / scale.y, 1f / scale.z);
-            MeshDisplay.transform.position = Vector3.zero;
-            MeshDisplay.transform.rotation = Quaternion.identity;
         }
 
         public override void InvokeUpdates()
@@ -194,7 +189,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         {
             // If null, see if we have a child already. Important check on Reset().
             if (MeshDisplay == null)
-                MeshDisplay = GetComponentInChildren<MeshDisplay>();
+                MeshDisplay = GetComponent<MeshDisplay>();
 
             // If not, it is still null, so make an instance.
             if (MeshDisplay == null)
@@ -203,14 +198,32 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         private void CreateMeshDisplay()
         {
-            var meshDisplayGobj = new GameObject("Mesh Display");
-            meshDisplayGobj.transform.parent = this.transform;
-
-            var meshDisplay = meshDisplayGobj.AddComponent<MeshDisplay>();
+            var meshDisplay = gameObject.AddComponent<MeshDisplay>();
             MeshDisplay = meshDisplay;
+        }
 
-            // Hide this object in inspector
-            meshDisplay.SetHideGameObjectInEditor(true);
+        /// <summary>
+        /// Transforms all tristrip vertices into local space for use in Unity
+        /// </summary>
+        /// <param name="tristrips"></param>
+        private void OffsetTristripsForUnityMesh(Tristrip[] tristrips)
+        {
+            var matrix = Matrix4x4.TRS(transform.position, transform.rotation, transform.lossyScale);
+            matrix = matrix.inverse;
+
+            foreach (var tristrip in tristrips)
+            {
+                for (int i = 0; i < tristrip.positions.Length; i++)
+                {
+                    var position = tristrip.positions[i];
+                    tristrip.positions[i] = matrix.MultiplyPoint(position);
+                }
+                for (int i = 0; i < tristrip.normals.Length; i++)
+                {
+                    var normal = tristrip.normals[i];
+                    tristrip.normals[i] = matrix.rotation * normal;
+                }
+            }
         }
 
         private void OnDrawGizmosSelected()
@@ -220,6 +233,16 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             Gizmos.DrawSphere(pos, 10f);
         }
 
+
+        private void OnEnable()
+        {
+            transform.hideFlags |= HideFlags.HideInInspector;
+        }
+
+        private void OnDestroy()
+        {
+            transform.hideFlags &= ~HideFlags.HideInInspector;
+        }
 
     }
 }
