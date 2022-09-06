@@ -11,7 +11,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         [SerializeField] protected Vector3 positionOffset;
         [SerializeField] protected Vector3 rotationOffset;
         [SerializeField] protected Vector3 scaleOffset = Vector3.one;
-        private bool waitForDelete = false;
 
         public GfzSegmentNode SegmentNode => segment;
 
