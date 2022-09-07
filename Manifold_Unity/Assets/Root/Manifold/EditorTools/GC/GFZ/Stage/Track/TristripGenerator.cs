@@ -360,7 +360,26 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
             return tristrips;
         }
+        public static Tristrip[] GenerateSemiCircleWithNormals(Matrix4x4[] matrices, bool normalOutwards, int nTristrips, bool smoothEnds, bool isGfzCoordinateSpace, float angleFrom = 0, float angleTo = 360)
+        {
+            for (int i = 0; i < matrices.Length; i++)
+            {
+                var matrix = matrices[i];
+                var scaleX = matrix.lossyScale.x;
+                var scaleY = matrix.lossyScale.y;
+                float ratio = scaleY / scaleX;
+            }
 
+
+
+            var tristrips = GenerateCircle(matrices, normalOutwards, nTristrips, angleFrom, angleTo);
+
+            // Add normals based on vertices. Smooth normals.
+            bool invertNormals = !normalOutwards;
+            SetNormalsFromTristripVertices(tristrips, invertNormals, smoothEnds, isGfzCoordinateSpace);
+
+            return tristrips;
+        }
 
 
 

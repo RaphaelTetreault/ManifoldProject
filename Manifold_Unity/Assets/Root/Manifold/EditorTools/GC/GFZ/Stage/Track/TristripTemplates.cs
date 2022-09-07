@@ -1855,9 +1855,15 @@ namespace Manifold.EditorTools.GC.GFZ
             public static Tristrip[] GenericFlatToSemiCircleNoTex(Matrix4x4[] matrices, GfzShapeOpenPipeCylinder open, bool isGfzCoordinateSpace)
             {
                 int nTristrips = 16;
-                var semiCircle = GenerateCircleWithNormals(matrices, false, nTristrips, false, isGfzCoordinateSpace, 90, 270);
-                var line = GenerateHorizontalLineWithNormals(matrices, LineLeft, LineRight, Vector3.up, nTristrips, true);
-                var tristrips = CombineAverage(semiCircle, line);
+                var tristrips = GenerateCircleWithNormals(matrices, false, nTristrips, false, isGfzCoordinateSpace, 270, 90);
+                AssignTristripMetadata(tristrips, true, false);
+                return tristrips;
+            }
+            public static Tristrip[] GenericSemiCircleToCircleNoTex(Matrix4x4[] matrices, GfzShapeOpenPipeCylinder open, bool isGfzCoordinateSpace)
+            {
+                int nTristrips = 16;
+                var tristrips = GenerateCircleWithNormals(matrices, false, nTristrips, false, isGfzCoordinateSpace, 270, 90);
+                AssignTristripMetadata(tristrips, true, false);
                 return tristrips;
             }
         }
