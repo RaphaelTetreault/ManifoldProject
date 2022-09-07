@@ -1,5 +1,6 @@
 ﻿using Manifold.IO;
 using Manifold.EditorTools.GC.GFZ.Stage.Track;
+using System;
 using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEditor;
@@ -14,6 +15,9 @@ namespace Manifold.EditorTools.GC.GFZ
         #region CONSTANTS
 
         const float RoadTexStride = 32f;
+
+        static readonly Vector3 LineLeft = new Vector3(-0.5f, 0, 0);
+        static readonly Vector3 LineRight = new Vector3(+0.5f, 0, 0);
 
         #endregion
 
@@ -1813,6 +1817,53 @@ namespace Manifold.EditorTools.GC.GFZ
 
                 return tristrips;
             }
+        }
+
+
+        public static Tristrip[] CombineAverage(Tristrip[] tristripsA, Tristrip[] tristripsB)
+        {
+            if (tristripsA.Length != tristripsB.Length)
+                throw new ArgumentException("Tristrip lengths do not match!");
+
+            var tristripsCombined = new Tristrip[tristripsA.Length];
+            for (int i = 0; i < tristripsCombined.Length; i++)
+            {
+                var tristrip = tristripsCombined[i];
+                var tristripA = tristripsA[i];
+                var tristripB = tristripsB[i];
+
+                if (tristripA.VertexCount != tristripB.VertexCount)
+                    throw new ArgumentException("Tristrip vertex lengths do not match!");
+                tristrip.positions = new Vector3[tristripA.VertexCount];
+                tristrip.normals = new Vector3[tristripA.VertexCount];
+
+                for (int j = 0; j < tristrip.VertexCount; j++)
+                {
+                    var position = tristripA.positions[j] * 0.5f + tristripB.positions[j] * 0.5f;
+                    var normal = tristripA.normals[j] * 0.5f + tristripB.normals[j] * 0.5f;
+                    tristrip.positions[j] = position;
+                    tristrip.normals[j] = normal;
+                }
+            }
+
+            return tristripsCombined;
+        }
+
+        public static class OpenPipe
+        {
+            public static Tristrip[] GenericFlatToSemiCircleNoTex(Matrix4x4[] matrices, GfzShapeOpenPipeCylinder open, bool isGfzCoordinateSpace)
+            {
+                int nTristrips = 16;
+                var semiCircle = GenerateCircleWithNormals(matrices, false, nTristrips, false, isGfzCoordinateSpace, 90, 270);
+                var line = GenerateHorizontalLineWithNormals(matrices, LineLeft, LineRight, Vector3.up, nTristrips, true);
+                var tristrips = CombineAverage(semiCircle, line);
+                return tristrips;
+            }
+        }
+
+        public static class OpenCylinder
+        {
+
         }
 
         public static class Objects
