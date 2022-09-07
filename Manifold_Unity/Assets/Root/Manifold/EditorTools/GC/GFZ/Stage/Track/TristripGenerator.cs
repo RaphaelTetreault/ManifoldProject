@@ -360,20 +360,38 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
             return tristrips;
         }
-        public static Tristrip[] GenerateSemiCircleWithNormals(Matrix4x4[] matrices, bool normalOutwards, int nTristrips, bool smoothEnds, bool isGfzCoordinateSpace, float angleFrom = 0, float angleTo = 360)
+        public static Tristrip[] GenerateOpenCircleWithNormals(Matrix4x4[] matrices, bool normalOutwards, int nTristrips, bool smoothEnds, bool isGfzCoordinateSpace)
         {
+            int vertexCount = matrices.Length * 2;
+            var tristrips = new Tristrip[nTristrips];
+            for (int i = 0; i < tristrips.Length; i++)
+            {
+                tristrips[i] = new Tristrip();
+                tristrips[i].positions = new Vector3[vertexCount];
+            }
+
             for (int i = 0; i < matrices.Length; i++)
             {
                 var matrix = matrices[i];
                 var scaleX = matrix.lossyScale.x;
                 var scaleY = matrix.lossyScale.y;
                 float ratio = scaleY / scaleX;
+                bool isFirstHalf = ratio <= 0.5f;
+                float angleFrom = isFirstHalf ? 270 : math.lerp(270, 360, ratio);
+                float angleTo = isFirstHalf ? 90 : math.lerp(90, 0, ratio);
+
+                var vertices = CreateCircleVertices(nTristrips, angleFrom, angleTo);
+
+                for (int j = 0; j < vertices.Length - 1; j++)
+                {
+                    var vertex0 = vertices[j];
+                    var vertex1 = vertices[j + 1];
+                    int index0 = i * 2;
+                    int index1 = index0 + 1;
+                    tristrips[j].positions[index0] = matrix.MultiplyPoint(vertex0);
+                    tristrips[j].positions[index1] = matrix.MultiplyPoint(vertex1);
+                }
             }
-
-
-
-            var tristrips = GenerateCircle(matrices, normalOutwards, nTristrips, angleFrom, angleTo);
-
             // Add normals based on vertices. Smooth normals.
             bool invertNormals = !normalOutwards;
             SetNormalsFromTristripVertices(tristrips, invertNormals, smoothEnds, isGfzCoordinateSpace);
