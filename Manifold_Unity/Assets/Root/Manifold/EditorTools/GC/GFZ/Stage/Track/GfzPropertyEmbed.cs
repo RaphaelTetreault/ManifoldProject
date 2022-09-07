@@ -321,7 +321,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public override TrackSegment CreateTrackSegment()
         {
-            var children = CreateChildTrackSegments();
+            //var children = CreateChildTrackSegments();
             var trs = CopyAnimationCurveTRS(false);
 
             var trackSegment = new TrackSegment();
@@ -329,7 +329,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             trackSegment.EmbeddedPropertyType = GetEmbedProperty(type);
             trackSegment.AnimationCurveTRS = trs.ToTrackSegment();
             trackSegment.BranchIndex = 0; // these kinds of embeds do not specify branch
-            trackSegment.Children = children;
+            //trackSegment.Children = children;
 
             return trackSegment;
 

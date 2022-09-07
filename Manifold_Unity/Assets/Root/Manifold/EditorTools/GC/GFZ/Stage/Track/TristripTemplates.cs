@@ -1856,7 +1856,7 @@ namespace Manifold.EditorTools.GC.GFZ
             {
                 int nTristrips = 32;
                 //var tristrips = GenerateCircleWithNormals(matrices, false, nTristrips, false, isGfzCoordinateSpace, 270, 90);
-                var tristrips = GenerateOpenCircleWithNormals(matrices, false, nTristrips, false, isGfzCoordinateSpace);
+                var tristrips = GenerateOpenCircleWithNormals(matrices, open.scaleY, true, nTristrips, false, isGfzCoordinateSpace);
                 AssignTristripMetadata(tristrips, true, false);
                 return tristrips;
             }

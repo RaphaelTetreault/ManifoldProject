@@ -16,7 +16,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         [SerializeField, Min(2f)] private float lengthDistance = 20f;
         [SerializeField, Min(8)] private int subdivisionsInside = 32;
         [SerializeField, Min(6)] private int subdivisionsOutside = 16;
+        [SerializeField] private AnimationCurveTRS trs;
 
+        public UnityEngine.AnimationCurve scaleY => new UnityEngine.AnimationCurve(trs.Scale.y.GetRenormalizedKeyRangeAndTangents(0, GetRoot().GetMaxTime()));
 
         public enum OpenPipeStyle
         {
@@ -49,6 +51,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public override AnimationCurveTRS CopyAnimationCurveTRS(bool isGfzCoordinateSpace)
         {
+            //var temp = trs.CreateDeepCopy();
+            //trs.Scale.y = new UnityEngine.AnimationCurve(trs.Scale.y.GetRenormalizedKeyRangeAndTangents(0, GetRoot().GetMaxTime()));
+            //return temp;
+
             return new AnimationCurveTRS();
         }
 
@@ -166,12 +172,18 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             leafEmbed.SegmentType = TrackSegmentType.IsEmbed;
             leafEmbed.PipeCylinderFlags = TrackPipeCylinderFlags.IsOpenPipeOrCylinder;
             leafEmbed.BranchIndex = GetBranchIndex();
+            leafEmbed.AnimationCurveTRS = trs.ToTrackSegment();
+            leafEmbed.Children = CreateChildTrackSegments();
+
             // can define rail height... but ignored
 
             var rootEmbed = new TrackSegment();
-            rootEmbed.OrderIndentifier = name = "_root";
+            rootEmbed.OrderIndentifier = name + "_root";
             rootEmbed.SegmentType = TrackSegmentType.IsEmbed;
             rootEmbed.EmbeddedPropertyType = TrackEmbeddedPropertyType.IsOpenPipeOrCylinder;
+            rootEmbed.PerimeterFlags = TrackPerimeterFlags.hasRailHeightLeft | TrackPerimeterFlags.hasRailHeightRight;
+            rootEmbed.RailHeightLeft = 3;
+            rootEmbed.RailHeightRight = 3;
             rootEmbed.PipeCylinderFlags = typeFlags; // DEFINES IF PIPE OR CYLINDER
             rootEmbed.BranchIndex = GetBranchIndex();
             rootEmbed.Children = new TrackSegment[] { leafEmbed };

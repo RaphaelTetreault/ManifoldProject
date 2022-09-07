@@ -360,7 +360,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
             return tristrips;
         }
-        public static Tristrip[] GenerateOpenCircleWithNormals(Matrix4x4[] matrices, bool normalOutwards, int nTristrips, bool smoothEnds, bool isGfzCoordinateSpace)
+        public static Tristrip[] GenerateOpenCircleWithNormals(Matrix4x4[] matrices, UnityEngine.AnimationCurve gapCurve, bool normalOutwards, int nTristrips, bool smoothEnds, bool isGfzCoordinateSpace)
         {
             int vertexCount = matrices.Length * 2;
             var tristrips = new Tristrip[nTristrips];
@@ -375,10 +375,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 var matrix = matrices[i];
                 var scaleX = matrix.lossyScale.x;
                 var scaleY = matrix.lossyScale.y;
-                float ratio = scaleY / scaleX;
-                bool isFirstHalf = ratio <= 0.5f;
-                float angleFrom = isFirstHalf ? 270 : math.lerp(270, 360, ratio);
-                float angleTo = isFirstHalf ? 90 : math.lerp(90, 0, ratio);
+                //float ratio = scaleY / scaleX;
+                var time = i / (matrices.Length - 1f);
+                var ratio = gapCurve.EvaluateNormalized(time);
+                //bool isFirstHalf = ratio <= 0.5f;
+                float angleFrom =  math.lerp(180, 360, ratio);
+                float angleTo =  math.lerp(180, 0, ratio);
 
                 var vertices = CreateCircleVertices(nTristrips, angleFrom, angleTo);
 

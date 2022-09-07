@@ -169,6 +169,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             trackSegment.SegmentType = TrackSegmentType.IsPipeOrCylinder;
             trackSegment.PipeCylinderFlags = typeFlags;
             trackSegment.BranchIndex = GetBranchIndex();
+            trackSegment.Children = CreateChildTrackSegments();
 
             return trackSegment;
         }
