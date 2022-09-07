@@ -56,14 +56,30 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             string encryptedFile = settings.SourceDirectory + "enemy_line/line__.bin";
             if (File.Exists(encryptedFile))
             {
-                var line = File.Open(encryptedFile, FileMode.Open);
-                var decryptedLine = EnemyLineUtility.Decrypt(line);
+                FileStream line = File.Open(encryptedFile, FileMode.Open);
+
+                //bool isJPN = set true if JPN file hash
+                var decryptedLine = EnemyLineUtility.Decrypt(line/*, isJPN*/);
+                line.Close();
 
                 string decryptedFile = settings.WorkingFilesDirectory + "enemy_line/line__.rel";
-                using (var writer = new BinaryWriter(File.Create(decryptedFile, encryptedFile.Length)))
+                using (var writer = new BinaryWriter(File.Create(decryptedFile + ".lz", encryptedFile.Length)))
                 {
                     writer.Write(decryptedLine.ToArray());
-                    Debug.Log($"Decrypted '{encryptedFile}' and wrote file '{decryptedFile}'");
+                    Debug.Log($"Decrypted '{encryptedFile}' and wrote file '{decryptedFile+".lz"}'");
+                }
+                
+                var decompressedFile = new MemoryStream();
+                using (var inputFile = File.Open(decryptedFile + ".lz", FileMode.Open, FileAccess.Read, FileShare.Read))
+                {
+                    GameCube.AmusementVision.LZ.Lz.Unpack(inputFile, decompressedFile);
+                }
+
+                using (var writer = new BinaryWriter(File.Create(decryptedFile, (int)decompressedFile.Length)))
+                {
+                    writer.Write(decompressedFile.ToArray());
+                    Debug.Log($"Unpacked '{decryptedFile+".lz"}' and wrote file '{decompressedFile}'");
+                    decompressedFile.Flush();
                 }
             }
             else
