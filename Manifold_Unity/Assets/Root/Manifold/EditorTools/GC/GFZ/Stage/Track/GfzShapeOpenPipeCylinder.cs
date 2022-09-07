@@ -76,8 +76,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     return new GcmfTemplate[]
                     {
                         GcmfTemplates.Debug.CreateLitVertexColoredDoubleSided(),
-                        GcmfTemplates.Debug.CreateLitVertexColoredDoubleSided(),
-                        GcmfTemplates.Debug.CreateLitVertexColoredDoubleSided(),
+                        //GcmfTemplates.Debug.CreateLitVertexColoredDoubleSided(),
+                        //GcmfTemplates.Debug.CreateLitVertexColoredDoubleSided(),
                     };
             }
         }
@@ -96,7 +96,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     return new GcmfTemplate[]
                     {
                         GcmfTemplates.Debug.CreateLitVertexColoredDoubleSided(),
-                        GcmfTemplates.Debug.CreateLitVertexColoredDoubleSided(),
+                        //GcmfTemplates.Debug.CreateLitVertexColoredDoubleSided(),
                     };
             }
         }

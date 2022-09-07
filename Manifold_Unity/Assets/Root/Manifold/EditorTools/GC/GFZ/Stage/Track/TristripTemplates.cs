@@ -1828,9 +1828,10 @@ namespace Manifold.EditorTools.GC.GFZ
             var tristripsCombined = new Tristrip[tristripsA.Length];
             for (int i = 0; i < tristripsCombined.Length; i++)
             {
-                var tristrip = tristripsCombined[i];
+                tristripsCombined[i] = new Tristrip();
                 var tristripA = tristripsA[i];
                 var tristripB = tristripsB[i];
+                var tristrip = tristripsCombined[i];
 
                 if (tristripA.VertexCount != tristripB.VertexCount)
                     throw new ArgumentException("Tristrip vertex lengths do not match!");
