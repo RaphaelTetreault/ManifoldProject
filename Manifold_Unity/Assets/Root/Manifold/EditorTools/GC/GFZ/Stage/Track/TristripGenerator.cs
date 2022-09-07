@@ -373,14 +373,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             for (int i = 0; i < matrices.Length; i++)
             {
                 var matrix = matrices[i];
-                var scaleX = matrix.lossyScale.x;
-                var scaleY = matrix.lossyScale.y;
-                //float ratio = scaleY / scaleX;
+
                 var time = i / (matrices.Length - 1f);
                 var ratio = gapCurve.EvaluateNormalized(time);
-                //bool isFirstHalf = ratio <= 0.5f;
-                float angleFrom =  math.lerp(180, 360, ratio);
-                float angleTo =  math.lerp(180, 0, ratio);
+
+                float angleFrom = math.lerp(180, 360, ratio);
+                float angleTo = math.lerp(180, 0, ratio);
 
                 var vertices = CreateCircleVertices(nTristrips, angleFrom, angleTo);
 
