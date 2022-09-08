@@ -565,11 +565,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return uvs;
         }
 
-        public static Vector2[] UvStripSideways(Tristrip tristrip, float repetitions, float left = 0f, float right = 1f)
-            => UvStripSideways(tristrip.VertexCount, repetitions, left, right);
-        public static Vector2[] UvStripSideways(int vertexCount, float repetitions, float left = 0f, float right = 1f)
+        public static Vector2[] UvStripSideways(Tristrip tristrip, float repetitions, float bottom = 0f, float top = 1f)
+            => UvStripSideways(tristrip.VertexCount, repetitions, bottom, top);
+        public static Vector2[] UvStripSideways(int vertexCount, float repetitions, float bottom = 0f, float top = 1f)
         {
-            var uvs = UvStripForward(vertexCount, repetitions, left, right);
+            var uvs = UvStripForward(vertexCount, repetitions, bottom, top);
             MutateSwizzleUVs(uvs);
             return uvs;
         }

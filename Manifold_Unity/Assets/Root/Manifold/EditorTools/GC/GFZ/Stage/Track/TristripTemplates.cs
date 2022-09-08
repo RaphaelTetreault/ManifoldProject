@@ -855,6 +855,7 @@ namespace Manifold.EditorTools.GC.GFZ
                 public const float kThickness = 1f;
                 public const float kInsetTop = kCurbSlantInner;
                 public const float kInsetBottom = 0f;
+                public const float kRailMinHeight = 1.1667f;
 
                 public static Tristrip[] Top(Matrix4x4[] matrices, GfzShapeRoad road, float length)
                 {
@@ -983,6 +984,46 @@ namespace Manifold.EditorTools.GC.GFZ
                     return allTristrips.ToArray();
                 }
 
+                private static void GetMuteCityRailRanges(float railHeight, out float railLowerMin, out float railLowerMax, out float railUpperMin, out float railUpperMax)
+                {
+                    float height = railHeight - kRailMinHeight;
+                    railLowerMin = kRailMinHeight; // height * 0.000f
+                    railLowerMax = kRailMinHeight + height * 0.375f;
+                    railUpperMin = kRailMinHeight + height * 0.625f;
+                    railUpperMax = kRailMinHeight + height; // * 1.000f;
+                }
+
+                private static Tristrip[] CreateRailWithUVs(Matrix4x4[] matrices, GfzShapeRoad road, bool isLeftSide)
+                {
+                    float side = isLeftSide ? -0.5f : 0.5f;
+                    float railHeight = isLeftSide ? road.RailHeightLeft : road.RailHeightRight;
+
+                    GetMuteCityRailRanges(railHeight, out float railLowerMin, out float railLowerMax, out float railUpperMin, out float railUpperMax);
+                    var lowerEndpointA = new Vector3(side, railLowerMin, 0);
+                    var lowerEndpointB = new Vector3(side, railLowerMax, 0);
+                    var upperEndpointA = new Vector3(side, railUpperMin, 0);
+                    var upperEndpointB = new Vector3(side, railUpperMax, 0);
+                    var lower = GenerateHorizontalLineWithNormals(matrices, lowerEndpointA, lowerEndpointB, Vector3.right, 1, true, true);
+                    var upper = GenerateHorizontalLineWithNormals(matrices, upperEndpointA, upperEndpointB, Vector3.right, 1, true, true);
+
+                    var uvsLower = UvStripSideways(lower[0], 1, 0, 0.35f);
+                    var uvsUpper = UvStripSideways(lower[0], 1, 0.652f, 0.99f);
+                    //
+                    lower[0].tex0 = uvsLower;
+                    lower[0].tex1 = uvsLower;
+                    lower[0].tex2 = uvsLower;
+                    //
+                    upper[0].tex0 = uvsUpper;
+                    upper[0].tex1 = uvsUpper;
+                    upper[0].tex2 = uvsUpper;
+
+                    var allTristrips = new List<Tristrip>();
+                    allTristrips.AddRange(lower);
+                    allTristrips.AddRange(upper);
+
+                    return allTristrips.ToArray();
+                }
+
                 public static Tristrip[] CreateRails(Matrix4x4[] matrices, GfzShapeRoad road)
                 {
                     var allTristrips = new List<Tristrip>();
@@ -990,33 +1031,15 @@ namespace Manifold.EditorTools.GC.GFZ
                     // rail left
                     if (road.RailHeightLeft > 0f)
                     {
-                        var endpointA = new Vector3(-0.5f, +1.0f, 0);
-                        var endpointB = new Vector3(-0.5f, road.RailHeightLeft - 1.0f, 0);
-                        var tristrips = GenerateHorizontalLineWithNormals(matrices, endpointA, endpointB, Vector3.right, 1, true, true);
-                        foreach (var tristrip in tristrips)
-                        {
-                            var uvs = UvStripSideways(tristrip, 1);
-                            tristrip.tex0 = uvs;
-                            tristrip.tex1 = uvs;
-                            tristrip.tex2 = uvs;
-                        }
-                        allTristrips.AddRange(tristrips);
+                        var railTristripsLeft = CreateRailWithUVs(matrices, road, true);
+                        allTristrips.AddRange(railTristripsLeft);
                     }
 
                     // rail right
                     if (road.RailHeightRight > 0f)
                     {
-                        var endpointA = new Vector3(+0.5f, +1.0f, 0);
-                        var endpointB = new Vector3(+0.5f, road.RailHeightRight - 1.0f, 0);
-                        var tristrips = GenerateHorizontalLineWithNormals(matrices, endpointA, endpointB, Vector3.left, 1, true, true);
-                        foreach (var tristrip in tristrips)
-                        {
-                            var uvs = UvStripSideways(tristrip, 1);
-                            tristrip.tex0 = uvs;
-                            tristrip.tex1 = uvs;
-                            tristrip.tex2 = uvs;
-                        }
-                        allTristrips.AddRange(tristrips);
+                        var railTristripsLeft = CreateRailWithUVs(matrices, road, false);
+                        allTristrips.AddRange(railTristripsLeft);
                     }
 
                     return allTristrips.ToArray();
