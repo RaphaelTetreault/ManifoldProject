@@ -360,7 +360,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
             return tristrips;
         }
-        public static Tristrip[] GenerateOpenCircleWithNormals(Matrix4x4[] matrices, UnityEngine.AnimationCurve gapCurve, bool normalOutwards, int nTristrips, bool smoothEnds, bool isGfzCoordinateSpace)
+        public static Tristrip[] GenerateOpenCircleWithNormals(Matrix4x4[] matrices, UnityEngine.AnimationCurve gapCurve, int nTristrips, bool isPipe,  bool smoothEnds, bool isGfzCoordinateSpace)
         {
             int vertexCount = matrices.Length * 2;
             var tristrips = new Tristrip[nTristrips];
@@ -370,15 +370,20 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 tristrips[i].positions = new Vector3[vertexCount];
             }
 
+            // When pipe, 180+-180; when cylinder, 0+-180.
+            int baseAngle = isPipe ? 180 : 0;
+            int from = baseAngle + 180;
+            int to = baseAngle - 180;
+
             for (int i = 0; i < matrices.Length; i++)
             {
                 var matrix = matrices[i];
 
                 var time = i / (matrices.Length - 1f);
-                var ratio = gapCurve.EvaluateNormalized(time);
-
-                float angleFrom = math.lerp(180, 360, ratio);
-                float angleTo = math.lerp(180, 0, ratio);
+                var ratio = math.clamp(gapCurve.EvaluateNormalized(time), 0f, 1f);
+                
+                float angleFrom = math.lerp(baseAngle, from, ratio);
+                float angleTo = math.lerp(baseAngle, to, ratio);
 
                 var vertices = CreateCircleVertices(nTristrips, angleFrom, angleTo);
 
@@ -393,13 +398,43 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 }
             }
             // Add normals based on vertices. Smooth normals.
-            bool invertNormals = !normalOutwards;
+            bool invertNormals = !isPipe;
             SetNormalsFromTristripVertices(tristrips, invertNormals, smoothEnds, isGfzCoordinateSpace);
 
             return tristrips;
         }
 
+        public static Tristrip OpenCircleEndCap(Matrix4x4 matrix, int nTristrips, Vector3 normal, float angleFrom, float angleTo, bool isBackFacing)
+        {
+            var vertices = CreateCircleVertices(nTristrips, angleFrom, angleTo);
 
+            var tristrip = new Tristrip();
+            int vertexCount = vertices.Length;
+            tristrip.positions = new Vector3[vertices.Length];
+            tristrip.normals = ArrayUtility.DefaultArray(normal, vertices.Length);
+
+            for (int i = 0; i < vertexCount; i++)
+            {
+                bool isEven = i % 2 == 0;
+                int halfI = i / 2;
+                int index = isEven
+                    ? vertexCount - halfI - 1
+                    : halfI;
+                //int index = isEven
+                //    ? middleIndex - (halfI + 0)
+                //    : middleIndex + (halfI + 1);
+
+                Vector3 vertex = vertices[index];
+                vertex = matrix.MultiplyPoint(vertex);
+                tristrip.positions[i] = vertex;
+            }
+
+            // Make array to assign data
+            var tristrips = new Tristrip[] { tristrip };
+            AssignTristripMetadata(tristrips, isBackFacing, false);
+
+            return tristrip;
+        }
 
         public static Vector3[] CreateLineVertices(int nTristrips, Vector3 endpointA, Vector3 endpointB)
         {

@@ -709,7 +709,7 @@ namespace Manifold.EditorTools.GC.GFZ
                 Vector3 OffsetBot = matrix.rotation * new Vector3(-insetBottom, -thickness, 0);
                 Matrix4x4 matrixTopLeft = Matrix4x4.TRS(matrix.Position() + OffsetTop, matrix.rotation, Vector3.one);
                 Matrix4x4 matrixTopRight = Matrix4x4.TRS(matrix.Position() - OffsetTop, matrix.rotation, Vector3.one);
-                Matrix4x4 matrixBotLeft = Matrix4x4.TRS(matrixTopLeft.Position() + OffsetBot, matrix.rotation, new Vector3(1,0,0));
+                Matrix4x4 matrixBotLeft = Matrix4x4.TRS(matrixTopLeft.Position() + OffsetBot, matrix.rotation, new Vector3(1, 0, 0));
                 Matrix4x4 matrixBotRight = Matrix4x4.TRS(matrixTopRight.Position() + OffsetBot, matrix.rotation, new Vector3(1, 0, 0));
 
                 var curbOuterLeftTop = new Vector3(+0.0f, kCurbHeight, 0);
@@ -1536,6 +1536,7 @@ namespace Manifold.EditorTools.GC.GFZ
 
         public static class Cylinder
         {
+            // DEPRECATE and use TristripGen.CircleEndCap
             private static Tristrip Endcap(Matrix4x4 matrix, int nTristrips, Vector3 normal, bool isBackFacing)
             {
                 var vertices = CreateCircleVertices(nTristrips);
@@ -1856,7 +1857,7 @@ namespace Manifold.EditorTools.GC.GFZ
             {
                 int nTristrips = 32;
                 //var tristrips = GenerateCircleWithNormals(matrices, false, nTristrips, false, isGfzCoordinateSpace, 270, 90);
-                var tristrips = GenerateOpenCircleWithNormals(matrices, open.scaleY, true, nTristrips, false, isGfzCoordinateSpace);
+                var tristrips = GenerateOpenCircleWithNormals(matrices, open.OpennessCurveDenormalized, nTristrips, true, false, isGfzCoordinateSpace);
                 AssignTristripMetadata(tristrips, true, false);
                 return tristrips;
             }
@@ -1865,7 +1866,90 @@ namespace Manifold.EditorTools.GC.GFZ
 
         public static class OpenCylinder
         {
+            private static (float from, float to) FromTo(GfzShapeOpenPipeCylinder open, bool isStart, bool isPipe)
+            {
+                // When pipe, 180+-180; when cylinder, 0+-180.
+                int baseAngle = isPipe ? 180 : 0;
+                int angleFrom = baseAngle + 180;
+                int angleTo = baseAngle - 180;
+                var curve = open.OpennessCurveDenormalized;
+                float time = isStart ? 0 : curve.GetMaxTime();
+                float ratio = math.clamp(curve.EvaluateNormalized(time), 0f, 1f);
+                float from = math.lerp(baseAngle, angleFrom, ratio);
+                float to = math.lerp(baseAngle, angleTo, ratio);
+                return (from, to);
+            }
+            public static Tristrip OpenCircleEndCap(Matrix4x4 matrix, int nTristrips, Vector3 normal, float angleFrom, float angleTo, bool isBackFacing)
+            {
+                var vertices = CreateCircleVertices(nTristrips, angleFrom, angleTo);
 
+                var tristrip = new Tristrip();
+                int vertexCount = vertices.Length;
+                tristrip.positions = new Vector3[vertices.Length];
+                tristrip.normals = ArrayUtility.DefaultArray(normal, vertices.Length);
+
+                for (int i = 0; i < vertexCount; i++)
+                {
+                    bool isEven = i % 2 == 0;
+                    int halfI = i / 2;
+                    int index = isEven
+                        ? vertexCount - halfI - 1
+                        : halfI;
+                    //int index = isEven
+                    //    ? middleIndex - (halfI + 0)
+                    //    : middleIndex + (halfI + 1);
+
+                    Vector3 vertex = vertices[index];
+                    vertex = matrix.MultiplyPoint(vertex);
+                    tristrip.positions[i] = vertex;
+                }
+
+                // Make array to assign data
+                var tristrips = new Tristrip[] { tristrip };
+                AssignTristripMetadata(tristrips, isBackFacing, false);
+
+                return tristrip;
+            }
+
+            public static Tristrip[] GenericOpenCylinderNoTex(Matrix4x4[] matrices, GfzShapeOpenPipeCylinder open, bool isGfzCoordinateSpace)
+            {
+                int nTristrips = 32;
+                //var tristrips = GenerateCircleWithNormals(matrices, false, nTristrips, false, isGfzCoordinateSpace, 270, 90);
+                var tristrips = GenerateOpenCircleWithNormals(matrices, open.OpennessCurveDenormalized, nTristrips, false, false, isGfzCoordinateSpace);
+                AssignTristripMetadata(tristrips, false, false);
+                return tristrips;
+            }
+            public static Tristrip[] GenericOpenCylinderBottomCapNoTex(Matrix4x4[] matrices, GfzShapeOpenPipeCylinder open, bool isGfzCoordinateSpace)
+            {
+                // By doing 1 strip we do the ends :ok_hand:
+                // Inversion of space only affects the normals direction
+                var tristrips = GenerateOpenCircleWithNormals(matrices, open.OpennessCurveDenormalized, 1, false, false, !isGfzCoordinateSpace);
+                AssignTristripMetadata(tristrips, true, false);
+                return tristrips;
+            }
+            public static Tristrip[] GenericOpenCylinderEndCapNoTex(Matrix4x4[] matrices, GfzShapeOpenPipeCylinder open, bool isGfzCoordinateSpace)
+            {
+                var allTristrips = new List<Tristrip>();
+
+                // By doing 1 strip we do the ends :ok_hand:
+                // Inversion of space only affects the normals direction
+                {
+                    var matrix = matrices[0];
+                    (float from, float to) = FromTo(open, true, false);
+                    var tristrip = OpenCircleEndCap(matrix, 32, Vector3.back, from, to, true);
+                    allTristrips.Add(tristrip);
+                }
+                {
+                    var matrix = matrices[matrices.Length - 1];
+                    (float from, float to) = FromTo(open, false, false);
+                    var tristrip = OpenCircleEndCap(matrix, 32, Vector3.forward, from, to, false);
+                    allTristrips.Add(tristrip);
+                }
+
+                var tristrips = allTristrips.ToArray();
+                //AssignTristripMetadata(tristrips, true, false);
+                return tristrips;
+            }
         }
 
         public static class Objects

@@ -16,9 +16,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         [SerializeField, Min(2f)] private float lengthDistance = 20f;
         [SerializeField, Min(8)] private int subdivisionsInside = 32;
         [SerializeField, Min(6)] private int subdivisionsOutside = 16;
-        [SerializeField] private AnimationCurveTRS trs;
+        [SerializeField] private UnityEngine.AnimationCurve opennessCurve = new(new(0, 0.5f), new(1, 1));
 
-        public UnityEngine.AnimationCurve scaleY => new UnityEngine.AnimationCurve(trs.Scale.y.GetRenormalizedKeyRangeAndTangents(0, GetRoot().GetMaxTime()));
+        public UnityEngine.AnimationCurve OpennessCurveDenormalized => new UnityEngine.AnimationCurve(opennessCurve.GetRenormalizedKeyRangeAndTangents(0, GetRoot().GetMaxTime()));
 
         public enum OpenPipeStyle
         {
@@ -102,7 +102,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     return new GcmfTemplate[]
                     {
                         GcmfTemplates.Debug.CreateLitVertexColoredDoubleSided(),
-                        //GcmfTemplates.Debug.CreateLitVertexColoredDoubleSided(),
+                        GcmfTemplates.Debug.CreateLitVertexColoredDoubleSided(),
+                        GcmfTemplates.Debug.CreateLitVertexColoredDoubleSided(),
                     };
             }
         }
@@ -156,8 +157,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 default:
                     return new Tristrip[][]
                     {
-                        TristripTemplates.OpenPipe.GenericFlatToSemiCircleNoTex(matrices, this, isGfzCoordinateSpace),
-                        //TristripTemplates.Cylinder.DebugEndcap(matrices, this),
+                        TristripTemplates.OpenCylinder.GenericOpenCylinderNoTex(matrices, this, isGfzCoordinateSpace),
+                        TristripTemplates.OpenCylinder.GenericOpenCylinderBottomCapNoTex(matrices, this, isGfzCoordinateSpace),
+                        TristripTemplates.OpenCylinder.GenericOpenCylinderEndCapNoTex(matrices, this, isGfzCoordinateSpace),
                     };
             }
         }
@@ -166,6 +168,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         {
             // Set flag on if cylinder
             var typeFlags = type == PipeCylinderType.Cylinder ? TrackPipeCylinderFlags.IsCylinderNotPipe : 0;
+            // TRS is empty but with Scale.Y acting as the "openness" curve
+            var trs = new AnimationCurveTRS();
+            trs.Scale.y = OpennessCurveDenormalized;
 
             var leafEmbed = new TrackSegment();
             leafEmbed.OrderIndentifier = name + "_leaf";
