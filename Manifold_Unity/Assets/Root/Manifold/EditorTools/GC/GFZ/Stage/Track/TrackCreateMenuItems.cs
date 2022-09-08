@@ -25,14 +25,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         Capsule
     }
 
-    public enum GFZPropertyEmbedType
-    {
-        Recover,
-        Slip,
-        Dirt,
-        Lava
-    }
-
     public static class TrackCreateMenuItems
     {
         const string NamePathBezier = "bezier";
