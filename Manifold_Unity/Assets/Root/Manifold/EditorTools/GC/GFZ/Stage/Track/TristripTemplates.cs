@@ -441,13 +441,14 @@ namespace Manifold.EditorTools.GC.GFZ
                 var endpointA = new Vector3(-0.5f, 0, 0);
                 var endpointB = new Vector3(+0.5f, 0, 0);
 
+                // TODO: use trapezoid endcap for this?
                 if (embed.IncludeTrimStart)
                 {
                     var mtx0 = matricesTop[index0];
                     var mtx1 = matricesBottom[index0];
                     var tristrips = GenerateHorizontalLineWithNormals(new Matrix4x4[] { mtx0, mtx1 }, endpointA, endpointB, Vector3.back, embed.WidthDivisions, false);
                     foreach (var tristrip in tristrips)
-                        tristrip.tex0 = CreateUVsSideways(tristrip.VertexCount);
+                        tristrip.tex0 = UvStripSideways(tristrip, 1);
                     allTristrips.AddRange(tristrips);
                 }
 
@@ -457,7 +458,7 @@ namespace Manifold.EditorTools.GC.GFZ
                     var mtx1 = matricesBottom[index1];
                     var tristrips = GenerateHorizontalLineWithNormals(new Matrix4x4[] { mtx0, mtx1 }, endpointA, endpointB, Vector3.forward, embed.WidthDivisions, true);
                     foreach (var tristrip in tristrips)
-                        tristrip.tex0 = CreateUVsSideways(tristrip.VertexCount);
+                        tristrip.tex0 = UvStripSideways(tristrip, 1);
                     allTristrips.AddRange(tristrips);
                 }
 
@@ -902,9 +903,8 @@ namespace Manifold.EditorTools.GC.GFZ
                     // Sides
                     // HACK: you reuse the same UVs but generate enough for 2 strips :/
                     var sides = StandardSides(matrices, 0, 0, kCurbHeight, kThickness);
-                    var sidesUvs0 = CreateTristripScaledUVs(sides, sides.Length, repetitions);
                     for (int i = 0; i < sides.Length; i++)
-                        sides[i].tex0 = sidesUvs0[0];
+                        sides[i].tex0 = UvStripForward(sides[i], repetitions);
 
                     // EndCaps
                     {
@@ -960,8 +960,9 @@ namespace Manifold.EditorTools.GC.GFZ
                         {
                             var tristripLeft = tristripsLeft[i];
                             var tristripRight = tristripsRight[i];
-                            float increment = repetitions / (tristripLeft.VertexCount / 2 - 1); // length of verts, but not both sides
-                            var uvs0 = CreateUVsForward(tristripLeft.VertexCount, 0, 1, increment);
+                            //float increment = repetitions / (tristripLeft.VertexCount / 2 - 1); // length of verts, but not both sides
+                            //var uvs0 = CreateUVsForward(tristripLeft.VertexCount, 0, 1, increment);
+                            var uvs0 = UvStripForward(tristripLeft, repetitions);
                             uvs0 = OffsetUVs(uvs0, new Vector2(0, 0.5f)); // offset so light part is not cut off at ends. !! has to match COM road !!
 
                             // these uvs are double on each side
@@ -994,7 +995,7 @@ namespace Manifold.EditorTools.GC.GFZ
                         var tristrips = GenerateHorizontalLineWithNormals(matrices, endpointA, endpointB, Vector3.right, 1, true, true);
                         foreach (var tristrip in tristrips)
                         {
-                            var uvs = CreateUVsSideways(tristrip.VertexCount);
+                            var uvs = UvStripSideways(tristrip, 1);
                             tristrip.tex0 = uvs;
                             tristrip.tex1 = uvs;
                             tristrip.tex2 = uvs;
@@ -1005,12 +1006,12 @@ namespace Manifold.EditorTools.GC.GFZ
                     // rail right
                     if (road.RailHeightRight > 0f)
                     {
-                        var endpointA = new Vector3(+0.5f, +0.75f, 0);
+                        var endpointA = new Vector3(+0.5f, +1.0f, 0);
                         var endpointB = new Vector3(+0.5f, road.RailHeightRight - 1.0f, 0);
                         var tristrips = GenerateHorizontalLineWithNormals(matrices, endpointA, endpointB, Vector3.left, 1, true, true);
                         foreach (var tristrip in tristrips)
                         {
-                            var uvs = CreateUVsSideways(tristrip.VertexCount);
+                            var uvs = UvStripSideways(tristrip, 1);
                             tristrip.tex0 = uvs;
                             tristrip.tex1 = uvs;
                             tristrip.tex2 = uvs;
@@ -1309,7 +1310,7 @@ namespace Manifold.EditorTools.GC.GFZ
                     // apply UVs, all generic
                     float repetitionsRoadTexture = math.ceil(segmentLength / RoadTexStride);
                     foreach (var tristrip in railTristrips)
-                        tristrip.tex0 = CreateUVsForwardLength(tristrip.VertexCount, 0, 1, repetitionsRoadTexture);
+                        tristrip.tex0 = UvStripForward(tristrip, repetitionsRoadTexture);
 
                     return railTristrips.ToArray();
                 }
@@ -1336,7 +1337,7 @@ namespace Manifold.EditorTools.GC.GFZ
                     // apply UVs, all generic
                     float repetitionsRoadTexture = math.ceil(segmentLength / RoadTexStride);
                     foreach (var tristrip in railTristrips)
-                        tristrip.tex0 = CreateUVsForwardLength(tristrip.VertexCount, 0, 1, repetitionsRoadTexture);
+                        tristrip.tex0 = UvStripForward(tristrip, repetitionsRoadTexture);
 
                     return railTristrips.ToArray();
                 }
@@ -1380,7 +1381,7 @@ namespace Manifold.EditorTools.GC.GFZ
                     // UVs are simple 0-1 along width, every desired length repeat
                     float repetitionsRoadTexture = math.ceil(segmentLength / RoadTexStride);
                     for (int i = 0; i < allTristrips.Count; i++)
-                        allTristrips[i].tex0 = CreateUVsForwardLength(allTristrips[i].VertexCount, 0, 1, repetitionsRoadTexture);
+                        allTristrips[i].tex0 = UvStripForward(allTristrips[i], repetitionsRoadTexture);
 
                     return allTristrips.ToArray();
                 }
@@ -1395,7 +1396,7 @@ namespace Manifold.EditorTools.GC.GFZ
                     float repetitionsRoadTexture = math.ceil(segmentLength / RoadTexStride);
                     for (int i = 0; i < allTristrips.Count; i++)
                     {
-                        var uvs = CreateUVsForwardLength(allTristrips[i].VertexCount, 0, 1, repetitionsRoadTexture);
+                        var uvs = UvStripForward(allTristrips[i], repetitionsRoadTexture);
                         MutateScaleUVs(uvs, new Vector2(2, 1)); // requires mirroring X, so double X
                         allTristrips[i].tex0 = uvs;
                     }
