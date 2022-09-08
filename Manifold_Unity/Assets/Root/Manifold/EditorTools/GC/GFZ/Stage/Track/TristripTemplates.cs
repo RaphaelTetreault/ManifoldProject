@@ -900,10 +900,11 @@ namespace Manifold.EditorTools.GC.GFZ
                     }
 
                     // Sides
+                    // HACK: you reuse the same UVs but generate enough for 2 strips :/
                     var sides = StandardSides(matrices, 0, 0, kCurbHeight, kThickness);
                     var sidesUvs0 = CreateTristripScaledUVs(sides, sides.Length, repetitions);
                     for (int i = 0; i < sides.Length; i++)
-                        sides[i].tex0 = sidesUvs0[i];
+                        sides[i].tex0 = sidesUvs0[0];
 
                     // EndCaps
                     {
@@ -1818,37 +1819,6 @@ namespace Manifold.EditorTools.GC.GFZ
 
                 return tristrips;
             }
-        }
-
-
-        public static Tristrip[] CombineAverage(Tristrip[] tristripsA, Tristrip[] tristripsB)
-        {
-            if (tristripsA.Length != tristripsB.Length)
-                throw new ArgumentException("Tristrip lengths do not match!");
-
-            var tristripsCombined = new Tristrip[tristripsA.Length];
-            for (int i = 0; i < tristripsCombined.Length; i++)
-            {
-                tristripsCombined[i] = new Tristrip();
-                var tristripA = tristripsA[i];
-                var tristripB = tristripsB[i];
-                var tristrip = tristripsCombined[i];
-
-                if (tristripA.VertexCount != tristripB.VertexCount)
-                    throw new ArgumentException("Tristrip vertex lengths do not match!");
-                tristrip.positions = new Vector3[tristripA.VertexCount];
-                tristrip.normals = new Vector3[tristripA.VertexCount];
-
-                for (int j = 0; j < tristrip.VertexCount; j++)
-                {
-                    var position = tristripA.positions[j] * 0.5f + tristripB.positions[j] * 0.5f;
-                    var normal = tristripA.normals[j] * 0.5f + tristripB.normals[j] * 0.5f;
-                    tristrip.positions[j] = position;
-                    tristrip.normals[j] = normal;
-                }
-            }
-
-            return tristripsCombined;
         }
 
         public static class OpenPipe
