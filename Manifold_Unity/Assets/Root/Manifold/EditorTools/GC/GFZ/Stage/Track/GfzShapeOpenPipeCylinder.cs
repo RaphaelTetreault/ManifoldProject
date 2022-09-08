@@ -9,7 +9,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
     public class GfzShapeOpenPipeCylinder : GfzShape
     {
-        [Header("Half-Pipe / Half-Cylinder")]
+        [Header("Open-Pipe / Open-Cylinder")]
         [SerializeField] private PipeCylinderType type = PipeCylinderType.Pipe;
         [SerializeField] private OpenPipeStyle pipeStyle;
         [SerializeField] private OpenCylinderStyle cylinderStyle;
@@ -18,7 +18,15 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         [SerializeField, Min(6)] private int subdivisionsOutside = 16;
         [SerializeField] private UnityEngine.AnimationCurve opennessCurve = new(new(0, 0.5f), new(1, 1));
 
+        public PipeCylinderType Type1 { get => type; set => type = value; }
+        public OpenPipeStyle PipeStyle { get => pipeStyle; set => pipeStyle = value; }
+        public OpenCylinderStyle CylinderStyle { get => cylinderStyle; set => cylinderStyle = value; }
+        public float LengthDistance { get => lengthDistance; set => lengthDistance = value; }
+        public int SubdivisionsInside { get => subdivisionsInside; set => subdivisionsInside = value; }
+        public int SubdivisionsOutside { get => subdivisionsOutside; set => subdivisionsOutside = value; }
+
         public UnityEngine.AnimationCurve OpennessCurveDenormalized => new UnityEngine.AnimationCurve(opennessCurve.GetRenormalizedKeyRangeAndTangents(0, GetRoot().GetMaxTime()));
+
 
         public enum OpenPipeStyle
         {
@@ -27,13 +35,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         public enum OpenCylinderStyle
         {
 
-        }
-
-
-        public PipeCylinderType Type
-        {
-            get => type;
-            set => type = value;
         }
 
         public override ShapeID ShapeIdentifier
@@ -48,6 +49,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     return ShapeID.cylinder;
             }
         }
+
+
 
         public override AnimationCurveTRS CopyAnimationCurveTRS(bool isGfzCoordinateSpace)
         {

@@ -1855,8 +1855,7 @@ namespace Manifold.EditorTools.GC.GFZ
         {
             public static Tristrip[] GenericFlatToSemiCircleNoTex(Matrix4x4[] matrices, GfzShapeOpenPipeCylinder open, bool isGfzCoordinateSpace)
             {
-                int nTristrips = 32;
-                //var tristrips = GenerateCircleWithNormals(matrices, false, nTristrips, false, isGfzCoordinateSpace, 270, 90);
+                int nTristrips = open.SubdivisionsInside;
                 var tristrips = GenerateOpenCircleWithNormals(matrices, open.OpennessCurveDenormalized, nTristrips, true, false, isGfzCoordinateSpace);
                 AssignTristripMetadata(tristrips, true, false);
                 return tristrips;
@@ -1866,7 +1865,7 @@ namespace Manifold.EditorTools.GC.GFZ
 
         public static class OpenCylinder
         {
-            private static (float from, float to) FromTo(GfzShapeOpenPipeCylinder open, bool isStart, bool isPipe)
+            private static void AngleFromTo(GfzShapeOpenPipeCylinder open, bool isStart, bool isPipe, out float from, out float to)
             {
                 // When pipe, 180+-180; when cylinder, 0+-180.
                 int baseAngle = isPipe ? 180 : 0;
@@ -1875,29 +1874,26 @@ namespace Manifold.EditorTools.GC.GFZ
                 var curve = open.OpennessCurveDenormalized;
                 float time = isStart ? 0 : curve.GetMaxTime();
                 float ratio = math.clamp(curve.EvaluateNormalized(time), 0f, 1f);
-                float from = math.lerp(baseAngle, angleFrom, ratio);
-                float to = math.lerp(baseAngle, angleTo, ratio);
-                return (from, to);
+
+                from = math.lerp(baseAngle, angleFrom, ratio);
+                to = math.lerp(baseAngle, angleTo, ratio);
             }
             public static Tristrip OpenCircleEndCap(Matrix4x4 matrix, int nTristrips, Vector3 normal, float angleFrom, float angleTo, bool isBackFacing)
             {
                 var vertices = CreateCircleVertices(nTristrips, angleFrom, angleTo);
 
                 var tristrip = new Tristrip();
-                int vertexCount = vertices.Length;
-                tristrip.positions = new Vector3[vertices.Length];
-                tristrip.normals = ArrayUtility.DefaultArray(normal, vertices.Length);
+                int vertexCount = vertices.Length + 1;
+                tristrip.positions = new Vector3[vertexCount];
+                tristrip.normals = ArrayUtility.DefaultArray(normal, vertexCount);
 
                 for (int i = 0; i < vertexCount; i++)
                 {
                     bool isEven = i % 2 == 0;
                     int halfI = i / 2;
                     int index = isEven
-                        ? vertexCount - halfI - 1
+                        ? vertexCount - halfI - 2
                         : halfI;
-                    //int index = isEven
-                    //    ? middleIndex - (halfI + 0)
-                    //    : middleIndex + (halfI + 1);
 
                     Vector3 vertex = vertices[index];
                     vertex = matrix.MultiplyPoint(vertex);
@@ -1913,8 +1909,7 @@ namespace Manifold.EditorTools.GC.GFZ
 
             public static Tristrip[] GenericOpenCylinderNoTex(Matrix4x4[] matrices, GfzShapeOpenPipeCylinder open, bool isGfzCoordinateSpace)
             {
-                int nTristrips = 32;
-                //var tristrips = GenerateCircleWithNormals(matrices, false, nTristrips, false, isGfzCoordinateSpace, 270, 90);
+                int nTristrips = open.SubdivisionsOutside;
                 var tristrips = GenerateOpenCircleWithNormals(matrices, open.OpennessCurveDenormalized, nTristrips, false, false, isGfzCoordinateSpace);
                 AssignTristripMetadata(tristrips, false, false);
                 return tristrips;
@@ -1931,18 +1926,21 @@ namespace Manifold.EditorTools.GC.GFZ
             {
                 var allTristrips = new List<Tristrip>();
 
-                // By doing 1 strip we do the ends :ok_hand:
-                // Inversion of space only affects the normals direction
+                GetContinuity(open, out bool isContinuousFrom, out bool isContinuousTo);
+
+                if (!isContinuousFrom)
                 {
                     var matrix = matrices[0];
-                    (float from, float to) = FromTo(open, true, false);
-                    var tristrip = OpenCircleEndCap(matrix, 32, Vector3.back, from, to, true);
+                    AngleFromTo(open, true, false, out float angleFrom, out float angleTo);
+                    var tristrip = OpenCircleEndCap(matrix, open.SubdivisionsOutside, Vector3.back, angleFrom, angleTo, true);
                     allTristrips.Add(tristrip);
                 }
+
+                if (!isContinuousTo)
                 {
                     var matrix = matrices[matrices.Length - 1];
-                    (float from, float to) = FromTo(open, false, false);
-                    var tristrip = OpenCircleEndCap(matrix, 32, Vector3.forward, from, to, false);
+                    AngleFromTo(open, false, false, out float angleFrom, out float angleTo);
+                    var tristrip = OpenCircleEndCap(matrix, open.SubdivisionsOutside, Vector3.forward, angleFrom, angleTo, false);
                     allTristrips.Add(tristrip);
                 }
 

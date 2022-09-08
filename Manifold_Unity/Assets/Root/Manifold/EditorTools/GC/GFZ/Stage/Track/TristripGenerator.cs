@@ -404,38 +404,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return tristrips;
         }
 
-        public static Tristrip OpenCircleEndCap(Matrix4x4 matrix, int nTristrips, Vector3 normal, float angleFrom, float angleTo, bool isBackFacing)
-        {
-            var vertices = CreateCircleVertices(nTristrips, angleFrom, angleTo);
-
-            var tristrip = new Tristrip();
-            int vertexCount = vertices.Length;
-            tristrip.positions = new Vector3[vertices.Length];
-            tristrip.normals = ArrayUtility.DefaultArray(normal, vertices.Length);
-
-            for (int i = 0; i < vertexCount; i++)
-            {
-                bool isEven = i % 2 == 0;
-                int halfI = i / 2;
-                int index = isEven
-                    ? vertexCount - halfI - 1
-                    : halfI;
-                //int index = isEven
-                //    ? middleIndex - (halfI + 0)
-                //    : middleIndex + (halfI + 1);
-
-                Vector3 vertex = vertices[index];
-                vertex = matrix.MultiplyPoint(vertex);
-                tristrip.positions[i] = vertex;
-            }
-
-            // Make array to assign data
-            var tristrips = new Tristrip[] { tristrip };
-            AssignTristripMetadata(tristrips, isBackFacing, false);
-
-            return tristrip;
-        }
-
         public static Vector3[] CreateLineVertices(int nTristrips, Vector3 endpointA, Vector3 endpointB)
         {
             // Sample left and right vertices
