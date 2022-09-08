@@ -902,7 +902,6 @@ namespace Manifold.EditorTools.GC.GFZ
                     }
 
                     // Sides
-                    // HACK: you reuse the same UVs but generate enough for 2 strips :/
                     var sides = StandardSides(matrices, 0, 0, kCurbHeight, kThickness);
                     for (int i = 0; i < sides.Length; i++)
                         sides[i].tex0 = UvStripForward(sides[i], repetitions);
@@ -942,55 +941,41 @@ namespace Manifold.EditorTools.GC.GFZ
                 {
                     var allTristrips = new List<Tristrip>();
 
-                    // tops
                     var matricesLeft = GetNormalizedMatrixWithPositionOffset(matrices, -1f);
                     var matricesRight = GetNormalizedMatrixWithPositionOffset(matrices, +1f);
-                    // top left
-                    {
-                        var leftOuter = new Vector3(+kCurbSlantOuter, kCurbHeight, 0);
-                        var rightOuter = new Vector3(-kCurbSlantOuter, kCurbHeight, 0);
-                        var leftInner = new Vector3(+kCurbSlantInner, 0.0f, 0);
-                        var rightInner = new Vector3(-kCurbSlantInner, 0.0f, 0);
-                        var normalLeft = SurfaceNormalTOA(kCurbHeight, kCurbSlantInner - kCurbSlantOuter, Vector3.up, true);
-                        var normalRight = SurfaceNormalTOA(kCurbHeight, kCurbSlantInner - kCurbSlantOuter, Vector3.up, false);
-                        var tristripsLeft = GenerateHorizontalLineWithNormals(matricesLeft, leftOuter, leftInner, normalLeft, 1, true);
-                        var tristripsRight = GenerateHorizontalLineWithNormals(matricesRight, rightOuter, rightInner, normalRight, 1, false);
-                        Assert.IsTrue(tristripsLeft.Length == tristripsRight.Length);
-                        float repetitions = math.ceil(length / kLengthTrim);
-                        for (int i = 0; i < tristripsLeft.Length; i++)
-                        {
-                            var tristripLeft = tristripsLeft[i];
-                            var tristripRight = tristripsRight[i];
-                            //float increment = repetitions / (tristripLeft.VertexCount / 2 - 1); // length of verts, but not both sides
-                            //var uvs0 = CreateUVsForward(tristripLeft.VertexCount, 0, 1, increment);
-                            var uvs0 = UvStripForward(tristripLeft, repetitions);
-                            uvs0 = OffsetUVs(uvs0, new Vector2(0, 0.5f)); // offset so light part is not cut off at ends. !! has to match COM road !!
 
-                            // these uvs are double on each side
-                            var uvs1 = new Vector2[uvs0.Length];
-                            uvs0.CopyTo(uvs1, 0);
-                            for (int j = 0; j < uvs1.Length; j++)
-                                uvs1[j] *= 2f;
+                    var leftOuter = new Vector3(+kCurbSlantOuter, kCurbHeight, 0);
+                    var rightOuter = new Vector3(-kCurbSlantOuter, kCurbHeight, 0);
+                    var leftInner = new Vector3(+kCurbSlantInner, 0.0f, 0);
+                    var rightInner = new Vector3(-kCurbSlantInner, 0.0f, 0);
+                    var normalLeft = SurfaceNormalTOA(kCurbHeight, kCurbSlantInner - kCurbSlantOuter, Vector3.up, true);
+                    var normalRight = SurfaceNormalTOA(kCurbHeight, kCurbSlantInner - kCurbSlantOuter, Vector3.up, false);
+                    var tristripsLeft = GenerateHorizontalLineWithNormals(matricesLeft, leftOuter, leftInner, normalLeft, 1, true);
+                    var tristripsRight = GenerateHorizontalLineWithNormals(matricesRight, rightOuter, rightInner, normalRight, 1, false);
+                    
+                    float repetitions = math.ceil(length / kLengthTrim);
+                    int vertexCount = tristripsLeft[0].VertexCount;
+                    var uvs0 = UvStripForward(vertexCount, repetitions);
+                    uvs0 = OffsetUVs(uvs0, new Vector2(0, 0.5f)); // offset so light part is not cut off at ends. !! has to match COM road !!
+                    var uvs1 = ScaleUVs(uvs0, 2f); // trim light, these uvs are double on each side due to mirroring
 
-                            tristripLeft.tex0 = uvs0;
-                            tristripLeft.tex1 = uvs1;
+                    tristripsLeft[0].tex0 = uvs0;
+                    tristripsLeft[0].tex1 = uvs1;
+                    tristripsRight[0].tex0 = uvs0;
+                    tristripsRight[0].tex1 = uvs1;
 
-                            tristripRight.tex0 = uvs0;
-                            tristripRight.tex1 = uvs1;
-                        }
-                        allTristrips.AddRange(tristripsLeft);
-                        allTristrips.AddRange(tristripsRight);
-                    }
+                    allTristrips.AddRange(tristripsLeft);
+                    allTristrips.AddRange(tristripsRight);
                     return allTristrips.ToArray();
                 }
 
                 private static void GetMuteCityRailRanges(float railHeight, out float railLowerMin, out float railLowerMax, out float railUpperMin, out float railUpperMax)
                 {
-                    float height = railHeight - kRailMinHeight;
-                    railLowerMin = kRailMinHeight; // height * 0.000f
-                    railLowerMax = kRailMinHeight + height * 0.375f;
-                    railUpperMin = kRailMinHeight + height * 0.625f;
-                    railUpperMax = kRailMinHeight + height; // * 1.000f;
+                    float trueRailHeight = railHeight - kRailMinHeight;
+                    railLowerMin = kRailMinHeight; // trueRailHeight * 0.000f
+                    railLowerMax = kRailMinHeight + trueRailHeight * 0.375f; // hand tuned UVs just for MC rails
+                    railUpperMin = kRailMinHeight + trueRailHeight * 0.625f;
+                    railUpperMax = kRailMinHeight + trueRailHeight; // * 1.000f;
                 }
 
                 private static Tristrip[] CreateRailWithUVs(Matrix4x4[] matrices, GfzShapeRoad road, bool isLeftSide)
@@ -1007,7 +992,7 @@ namespace Manifold.EditorTools.GC.GFZ
                     var upper = GenerateHorizontalLineWithNormals(matrices, upperEndpointA, upperEndpointB, Vector3.right, 1, true, true);
 
                     var uvsLower = UvStripSideways(lower[0], 1, 0, 0.35f);
-                    var uvsUpper = UvStripSideways(lower[0], 1, 0.652f, 0.99f);
+                    var uvsUpper = UvStripSideways(upper[0], 1, 0.652f, 0.99f);
                     //
                     lower[0].tex0 = uvsLower;
                     lower[0].tex1 = uvsLower;
