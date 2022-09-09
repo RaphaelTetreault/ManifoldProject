@@ -85,7 +85,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     return new GcmfTemplate[]
                     {
                         GcmfTemplates.Debug.CreateLitVertexColoredDoubleSided(),
-                        //GcmfTemplates.Debug.CreateLitVertexColoredDoubleSided(),
+                        GcmfTemplates.Debug.CreateLitVertexColoredDoubleSided(),
                         //GcmfTemplates.Debug.CreateLitVertexColoredDoubleSided(),
                     };
             }
@@ -135,12 +135,14 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 //    };
 
                 default:
-                    return new Tristrip[][]
-                    {
-                        TristripTemplates.OpenPipe.GenericFlatToSemiCircleNoTex(matrices, this, isGfzCoordinateSpace),
-                        //TristripTemplates.Pipe.DebugOutside(matrices, this, isGfzCoordinateSpace),
-                        //TristripTemplates.Pipe.DebugRingEndcap(matrices, this),
-                    };
+                    return TristripTemplates.OpenPipe.GenericOpenPipe2Piece(matrices, this, isGfzCoordinateSpace);
+                    //return new Tristrip[][]
+                    //{
+                    //    //TristripTemplates.OpenPipe.GenericFlatToSemiCircleSubsectionNoTex(matrices, this, isGfzCoordinateSpace),
+                    //    TristripTemplates.OpenPipe.GenericFlatToSemiCircleNoTex(matrices, this, isGfzCoordinateSpace),
+                    //    //TristripTemplates.Pipe.DebugOutside(matrices, this, isGfzCoordinateSpace),
+                    //    //TristripTemplates.Pipe.DebugRingEndcap(matrices, this),
+                    //};
             }
         }
         public Tristrip[][] GetCylinderTristrips(OpenCylinderStyle cylinderStyle, bool isGfzCoordinateSpace)

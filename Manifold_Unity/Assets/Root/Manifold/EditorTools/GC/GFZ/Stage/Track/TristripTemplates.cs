@@ -1832,7 +1832,7 @@ namespace Manifold.EditorTools.GC.GFZ
 
         public static class OpenPipe
         {
-            public static Tristrip[] GenericFlatToSemiCircleNoTex(Matrix4x4[] matrices, GfzShapeOpenPipeCylinder open, bool isGfzCoordinateSpace)
+            public static Tristrip[] GenericOpenPipeNoTex(Matrix4x4[] matrices, GfzShapeOpenPipeCylinder open, bool isGfzCoordinateSpace)
             {
                 int nTristrips = open.SubdivisionsInside;
                 var tristrips = GenerateOpenCircleWithNormals(matrices, open.OpennessCurveDenormalized, nTristrips, true, false, isGfzCoordinateSpace);
@@ -1840,6 +1840,25 @@ namespace Manifold.EditorTools.GC.GFZ
                 return tristrips;
             }
 
+            public static Tristrip[][] GenericOpenPipe2Piece(Matrix4x4[] matrices, GfzShapeOpenPipeCylinder open, bool isGfzCoordinateSpace)
+            {
+                var tristrips = GenericOpenPipeNoTex(matrices, open, isGfzCoordinateSpace);
+
+                var leftEdgeTristrips = SelectTristrips(tristrips, 0.0f, 0.1f, true, false);
+                var rightEdgeTristrips = SelectTristrips(tristrips, 0.9f, 1.0f, false, true);
+                var edgeTristrips = ConcatTristrips(leftEdgeTristrips, rightEdgeTristrips);
+                ApplyColor0(edgeTristrips, new Color32(255, 0, 0, 255));
+                //
+                var centerTristrips = SelectTristrips(tristrips, 0.1f, 0.9f, true, true);
+
+                var allTristrips = new Tristrip[][]
+                {
+                    edgeTristrips,
+                    centerTristrips,
+                };
+
+                return allTristrips;
+            }
         }
 
         public static class OpenCylinder

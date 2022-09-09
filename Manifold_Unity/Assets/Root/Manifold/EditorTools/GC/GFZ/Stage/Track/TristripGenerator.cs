@@ -388,12 +388,53 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
                 var vertices = CreateCircleVertices(nTristrips, angleFrom, angleTo);
 
+                int index0 = i * 2;
+                int index1 = index0 + 1;
                 for (int j = 0; j < vertices.Length - 1; j++)
                 {
                     var vertex0 = vertices[j];
                     var vertex1 = vertices[j + 1];
-                    int index0 = i * 2;
-                    int index1 = index0 + 1;
+                    tristrips[j].positions[index0] = matrix.MultiplyPoint(vertex0);
+                    tristrips[j].positions[index1] = matrix.MultiplyPoint(vertex1);
+                }
+            }
+            // Add normals based on vertices. Smooth normals.
+            bool invertNormals = !isPipe;
+            SetNormalsFromTristripVertices(tristrips, invertNormals, smoothEnds, isGfzCoordinateSpace);
+
+            return tristrips;
+        }
+
+        public static Tristrip[] GenerateOpenCircleWithNormals2(Matrix4x4[] matrices, UnityEngine.AnimationCurve gapCurve, float from, float to, int nTristrips, bool isPipe, bool smoothEnds, bool isGfzCoordinateSpace)
+        {
+            int vertexCount = matrices.Length * 2;
+            var tristrips = new Tristrip[nTristrips];
+            for (int i = 0; i < tristrips.Length; i++)
+            {
+                tristrips[i] = new Tristrip();
+                tristrips[i].positions = new Vector3[vertexCount];
+            }
+
+            float baseAngle = isPipe ? 180 : 0;
+            for (int i = 0; i < matrices.Length; i++)
+            {
+                var matrix = matrices[i];
+
+                var time = i / (matrices.Length - 1f);
+                var ratio = math.clamp(gapCurve.EvaluateNormalized(time), 0f, 1f);
+
+                // defines angle for semi-circle
+                float angleFrom = math.lerp(baseAngle, from, ratio);
+                float angleTo = math.lerp(baseAngle, to, ratio);
+
+                var vertices = CreateCircleVertices(nTristrips, angleFrom, angleTo);
+
+                int index0 = i * 2;
+                int index1 = index0 + 1;
+                for (int j = 0; j < vertices.Length - 1; j++)
+                {
+                    var vertex0 = vertices[j];
+                    var vertex1 = vertices[j + 1];
                     tristrips[j].positions[index0] = matrix.MultiplyPoint(vertex0);
                     tristrips[j].positions[index1] = matrix.MultiplyPoint(vertex1);
                 }
@@ -726,6 +767,51 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 tristrip.isBackFacing = isBackFacing;
                 tristrip.isDoubleSided = isDoubleSided;
             }
+        }
+
+        /// <summary>
+        /// Concatenate multiple Tristrip[] together into a single Tristrip[]
+        /// </summary>
+        /// <param name="tristripArrays"></param>
+        /// <returns></returns>
+        public static Tristrip[] ConcatTristrips(params Tristrip[][] tristripArrays)
+        {
+            int count = 0;
+            for (int i = 0; i < tristripArrays.Length; i++)
+                count += tristripArrays[i].Length;
+            var tristripsConcat = new Tristrip[count];
+
+            int baseIndex = 0;
+            for (int i = 0; i < tristripArrays.Length; i++)
+            {
+                var tristrips = tristripArrays[i];
+                tristrips.CopyTo(tristripsConcat, baseIndex);
+                baseIndex += tristrips.Length;
+            }
+
+            return tristripsConcat;
+        }
+
+
+        public static Tristrip[] SelectTristrips(Tristrip[] tristrips, float percentFrom, float percentTo, bool inclusiveFrom, bool inclusiveTo)
+        {
+            int maxIndex = tristrips.Length - 1;
+            float first = percentFrom * maxIndex;
+            float last = percentTo * maxIndex;
+            int firstIndex = (int)(inclusiveFrom ? math.floor(first) : math.ceil(first));
+            int lastIndex = (int)(inclusiveTo ? math.ceil(last) : math.floor(last));
+            var subselection = tristrips.CopyRange(firstIndex, lastIndex);
+            return subselection;
+        }
+        public static Tristrip[] SelectTritrips(Tristrip[] tristrips, int indexFrom, int indexTo)
+        {
+            var subselection = tristrips.CopyRange(indexFrom, indexTo);
+            return subselection;
+        }
+        public static void ApplyColor0(Tristrip[] tristrips, Color32 color)
+        {
+            foreach (var tristrip in tristrips)
+                tristrip.color0 = ArrayUtility.DefaultArray(color, tristrip.VertexCount);
         }
     }
 }
