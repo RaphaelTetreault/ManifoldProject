@@ -1849,7 +1849,7 @@ namespace Manifold.EditorTools.GC.GFZ
                 var edgeTristrips = ConcatTristrips(leftEdgeTristrips, rightEdgeTristrips);
                 ApplyColor0(edgeTristrips, new Color32(255, 0, 0, 255));
                 //
-                var centerTristrips = SelectTristrips(tristrips, 0.1f, 0.9f, true, true);
+                var centerTristrips = SelectTristrips(tristrips, 0.1f, 0.9f, false, false);
 
                 var allTristrips = new Tristrip[][]
                 {
@@ -1858,6 +1858,21 @@ namespace Manifold.EditorTools.GC.GFZ
                 };
 
                 return allTristrips;
+            }
+
+            public static Tristrip[] DebugOpenPipe(Matrix4x4[] matrices, GfzShapeOpenPipeCylinder open, bool isGfzCoordinateSpace)
+            {
+                var tristrips = GenericOpenPipeNoTex(matrices, open, isGfzCoordinateSpace);
+
+                var leftEdgeTristrips = SelectTristrips(tristrips, 0.0f, 0.1f, true, false);
+                var rightEdgeTristrips = SelectTristrips(tristrips, 0.9f, 1.0f, false, true);
+                var edgeTristrips = ConcatTristrips(leftEdgeTristrips, rightEdgeTristrips);
+                ApplyColor0(edgeTristrips, new Color32(255, 0, 0, 255));
+
+                var centerTristrips = SelectTristrips(tristrips, 0.1f, 0.9f, false, false);
+                ApplyColor0(centerTristrips, new Color32(255, 255, 255, 255));
+
+                return tristrips;
             }
         }
 
@@ -1944,6 +1959,21 @@ namespace Manifold.EditorTools.GC.GFZ
 
                 var tristrips = allTristrips.ToArray();
                 //AssignTristripMetadata(tristrips, true, false);
+                return tristrips;
+            }
+
+            public static Tristrip[] DebugOpenCylinder(Matrix4x4[] matrices, GfzShapeOpenPipeCylinder open, bool isGfzCoordinateSpace)
+            {
+                var tristrips = GenericOpenCylinderNoTex(matrices, open, isGfzCoordinateSpace);
+
+                var leftEdgeTristrips = SelectTristrips(tristrips, 0.0f, 0.1f, true, false);
+                var rightEdgeTristrips = SelectTristrips(tristrips, 0.9f, 1.0f, false, true);
+                var edgeTristrips = ConcatTristrips(leftEdgeTristrips, rightEdgeTristrips);
+                ApplyColor0(edgeTristrips, new Color32(255, 0, 0, 255));
+                
+                var centerTristrips = SelectTristrips(tristrips, 0.1f, 0.9f, true, true);
+                ApplyColor0(centerTristrips, new Color32(255, 255, 255, 255));
+
                 return tristrips;
             }
         }
