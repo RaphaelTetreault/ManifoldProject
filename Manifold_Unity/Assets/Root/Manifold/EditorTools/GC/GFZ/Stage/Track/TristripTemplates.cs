@@ -1839,7 +1839,6 @@ namespace Manifold.EditorTools.GC.GFZ
                 AssignTristripMetadata(tristrips, true, false);
                 return tristrips;
             }
-
             public static Tristrip[][] GenericOpenPipe2Piece(Matrix4x4[] matrices, GfzShapeOpenPipeCylinder open, bool isGfzCoordinateSpace)
             {
                 var tristrips = GenericOpenPipeNoTex(matrices, open, isGfzCoordinateSpace);
@@ -1859,7 +1858,6 @@ namespace Manifold.EditorTools.GC.GFZ
 
                 return allTristrips;
             }
-
             public static Tristrip[] DebugOpenPipe(Matrix4x4[] matrices, GfzShapeOpenPipeCylinder open, bool isGfzCoordinateSpace)
             {
                 var tristrips = GenericOpenPipeNoTex(matrices, open, isGfzCoordinateSpace);
@@ -1873,6 +1871,48 @@ namespace Manifold.EditorTools.GC.GFZ
                 ApplyColor0(centerTristrips, new Color32(255, 255, 255, 255));
 
                 return tristrips;
+            }
+
+            public static class MuteCityCOM
+            {
+                public static Tristrip[][] OpenPipe(Matrix4x4[] matrices, GfzShapeOpenPipeCylinder open, float segmentLength, bool isGfzCoordinateSpace)
+                {
+                    float repetitions = math.ceil(segmentLength / RoadTexStride);
+
+                    float edge = 0.05f;
+                    float min = edge;
+                    float max = 1f - edge;
+
+                    var tristrips = GenericOpenPipeNoTex(matrices, open, isGfzCoordinateSpace);
+                    var leftEdgeTristrips = SelectTristrips(tristrips, 0, min, true, false);
+                    var rightEdgeTristrips = SelectTristrips(tristrips, max, 1, false, true);
+                    var edgeTristrips = ConcatTristrips(leftEdgeTristrips, rightEdgeTristrips);
+                    var centerTristrips = SelectTristrips(tristrips, min, max, false, false);
+
+                    ApplyTex0(leftEdgeTristrips, CreateTristripScaledUVs(leftEdgeTristrips, 1, repetitions));
+                    ApplyTex0(rightEdgeTristrips, CreateTristripScaledUVs(rightEdgeTristrips, 1, repetitions));
+                    ApplyTex1(edgeTristrips, ScaleUV(CopyTex0(edgeTristrips), Vector2.one * 2));
+                    var uvtemp = CreateTristripScaledUVs(tristrips, 8, repetitions)[2..30];
+                    ApplyTex0(centerTristrips, uvtemp);
+
+                    var allTristrips = new Tristrip[][]
+                    {
+                        edgeTristrips,
+                        centerTristrips,
+                    };
+
+                    return allTristrips;
+                }
+                public static GcmfTemplate[] OpenPipeMaterials()
+                {
+                    var materials = new GcmfTemplate[]
+                    {
+                        GcmfTemplates.MuteCity.RoadEmbelishments(),
+                        GcmfTemplates.MuteCityCOM.RoadTopNoDividers(),
+
+                    };
+                    return materials;
+                }
             }
         }
 
@@ -1971,10 +2011,61 @@ namespace Manifold.EditorTools.GC.GFZ
                 var edgeTristrips = ConcatTristrips(leftEdgeTristrips, rightEdgeTristrips);
                 ApplyColor0(edgeTristrips, new Color32(255, 0, 0, 255));
                 
-                var centerTristrips = SelectTristrips(tristrips, 0.1f, 0.9f, true, true);
+                var centerTristrips = SelectTristrips(tristrips, 0.1f, 0.9f, false, false);
                 ApplyColor0(centerTristrips, new Color32(255, 255, 255, 255));
 
                 return tristrips;
+            }
+
+            public static class MuteCityCOM
+            {
+                public static Tristrip[][] OpenCylinder(Matrix4x4[] matrices, GfzShapeOpenPipeCylinder open, float segmentLength, bool isGfzCoordinateSpace)
+                {
+                    float repetitions = math.ceil(segmentLength / RoadTexStride);
+                    var tristrips = GenericOpenCylinderNoTex(matrices, open, isGfzCoordinateSpace);
+
+                    float edge = 0.05f;
+                    float min = edge;
+                    float max = 1f - edge;
+
+                    int centerFirst = (int)math.floor(tristrips.Length * min);
+                    int centerLast = (int)math.floor(tristrips.Length * max);
+
+                    var leftEdgeTristrips = SelectTristrips(tristrips, 0, min, true, false);
+                    var rightEdgeTristrips = SelectTristrips(tristrips, max, 1, false, true);
+                    var edgeTristrips = ConcatTristrips(leftEdgeTristrips, rightEdgeTristrips);
+                    var centerTristrips = SelectTristrips(tristrips, min, max, false, false);
+                    var bottomTristrips = GenericOpenCylinderBottomCapNoTex(matrices, open, isGfzCoordinateSpace);
+                    var endcapTristrips = GenericOpenCylinderEndCapNoTex(matrices, open, isGfzCoordinateSpace);
+
+                    ApplyTex0(leftEdgeTristrips, CreateTristripScaledUVs(leftEdgeTristrips, 1, repetitions));
+                    ApplyTex0(rightEdgeTristrips, CreateTristripScaledUVs(rightEdgeTristrips, 1, repetitions));
+                    ApplyTex1(edgeTristrips, ScaleUV(CopyTex0(edgeTristrips), Vector2.one * 2));
+                    ApplyTex0(centerTristrips, CreateTristripScaledUVs(tristrips, 8, repetitions)[centerFirst..centerLast]);
+                    ApplyTex0(bottomTristrips, ScaleUV(CreateTristripScaledUVs(bottomTristrips, 1, repetitions), new Vector2(2, 1)));
+
+                    var allTristrips = new Tristrip[][]
+                    {
+                        edgeTristrips,
+                        centerTristrips,
+                        bottomTristrips,
+                        endcapTristrips,
+                    };
+
+                    return allTristrips;
+                }
+                public static GcmfTemplate[] OpenCylinderMaterials()
+                {
+                    var materials = new GcmfTemplate[]
+                    {
+                        GcmfTemplates.MuteCity.RoadEmbelishments(),
+                        GcmfTemplates.MuteCityCOM.RoadTopNoDividers(),
+                        GcmfTemplates.MuteCity.RoadBottom(),
+                        GcmfTemplates.Debug.CreateUnlitVertexColored(),
+
+                    };
+                    return materials;
+                }
             }
         }
 

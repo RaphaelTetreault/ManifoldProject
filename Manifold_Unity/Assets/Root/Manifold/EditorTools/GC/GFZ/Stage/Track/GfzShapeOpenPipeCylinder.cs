@@ -30,11 +30,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public enum OpenPipeStyle
         {
-
+            MuteCityCOM,
         }
         public enum OpenCylinderStyle
         {
-
+            MuteCityCOM,
         }
 
         public override ShapeID ShapeIdentifier
@@ -73,13 +73,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         {
             switch (pipeStyle)
             {
-                //case PipeStyle.MuteCity:
-                //    return new GcmfTemplate[]
-                //    {
-                //        GcmfTemplates.MuteCityCOM.RoadTopNoDividers(),
-                //        GcmfTemplates.Debug.CreateLitVertexColoredDoubleSided(),
-                //        GcmfTemplates.Debug.CreateLitVertexColoredDoubleSided(),
-                //    };
+                case OpenPipeStyle.MuteCityCOM: return TristripTemplates.OpenPipe.MuteCityCOM.OpenPipeMaterials();
 
                 default:
                     return new GcmfTemplate[]
@@ -94,12 +88,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         {
             switch (cylinderStyle)
             {
-                //case CylinderStyle.MuteCityCOM:
-                //    return new GcmfTemplate[]
-                //    {
-                //        GcmfTemplates.MuteCityCOM.RoadTopNoDividers(),
-                //        GcmfTemplates.Debug.CreateLitVertexColoredDoubleSided(),
-                //    };
+                case OpenCylinderStyle.MuteCityCOM: return TristripTemplates.OpenCylinder.MuteCityCOM.OpenCylinderMaterials();
 
                 default:
                     return new GcmfTemplate[]
@@ -126,13 +115,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
             switch (pipeStyle)
             {
-                //case OpenPipeStyle.MuteCity:
-                //    return new Tristrip[][]
-                //    {
-                //        TristripTemplates.Pipe.GenericInsideOneTexture(matrices, this, maxTime, isGfzCoordinateSpace),
-                //        TristripTemplates.Pipe.DebugOutside(matrices, this, isGfzCoordinateSpace),
-                //        TristripTemplates.Pipe.DebugRingEndcap(matrices, this),
-                //    };
+                case OpenPipeStyle.MuteCityCOM: return TristripTemplates.OpenPipe.MuteCityCOM.OpenPipe(matrices, this, maxTime, isGfzCoordinateSpace);
 
                 default:
                     //return TristripTemplates.OpenPipe.GenericOpenPipe2Piece(matrices, this, isGfzCoordinateSpace);
@@ -149,12 +132,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
             switch (cylinderStyle)
             {
-                //case OpenCylinderStyle.MuteCityCOM:
-                //    return new Tristrip[][]
-                //    {
-                //        TristripTemplates.Cylinder.GenericOneTexture(matrices, this, maxTime, isGfzCoordinateSpace),
-                //        TristripTemplates.Cylinder.DebugEndcap(matrices, this),
-                //    };
+                case OpenCylinderStyle.MuteCityCOM: return TristripTemplates.OpenCylinder.MuteCityCOM.OpenCylinder(matrices, this, maxTime, isGfzCoordinateSpace);
 
                 default:
                     return new Tristrip[][]

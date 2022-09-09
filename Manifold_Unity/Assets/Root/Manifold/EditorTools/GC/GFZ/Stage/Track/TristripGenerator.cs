@@ -656,7 +656,43 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 uvs[i] = new Vector2(uvs[i].y, uvs[i].x);
         }
 
+        private static void MutateArray<T>(T[] array, T value, System.Func<T, T, T> function)
+        {
+            for (int i = 0; i < array.Length; i++)
+                function(array[i], value);
+        }
+        private static void MutateArray2D<T>(T[][] array2D, T value, System.Action<T[], T> function)
+        {
+            for (int i = 0; i < array2D.Length; i++)
+                function(array2D[i], value);
+        }
+        private static T[] ModifyArrayCopy<T>(T[] array, T value, System.Func<T, T, T> function)
+        {
+            var newArray = new T[array.Length];
+            for (int i = 0; i < array.Length; i++)
+                newArray[i] = function(array[i], value);
+            return newArray;
+        }
+        private static T[][] ModifyArray2DCopy<T>(T[][] array2D, T value, System.Func<T[], T, T[]> function)
+        {
+            var newArray2D = new T[array2D.Length][];
+            for (int i = 0; i < array2D.Length; i++)
+                newArray2D[i] = function(array2D[i], value);
+            return newArray2D;
+        }
 
+        private static Vector2 ScaleUV(Vector2 uv, Vector2 scale)
+        {
+            return new Vector2(uv.x * scale.x, uv.y * scale.y);
+        }
+        public static Vector2[] ScaleUV(Vector2[] uvs, Vector2 scale) => ModifyArrayCopy(uvs, scale, ScaleUV);
+        public static Vector2[][] ScaleUV(Vector2[][] uvs, Vector2 scale) => ModifyArray2DCopy(uvs, scale, ScaleUV);
+        public static void MutateScaleUV(Vector2[] uvs, Vector2 scale) => MutateArray(uvs, scale, ScaleUV);
+        public static void MutateScaleUV(Vector2[][] uvs, Vector2 scale) => MutateArray2D(uvs, scale, MutateScaleUV);
+        public static Vector2[] ScaleUV(Vector2[] uvs, float scale) => ScaleUV(uvs, new Vector2(scale, scale));
+        public static Vector2[][] ScaleUV(Vector2[][] uvs, float scale) => ScaleUV(uvs, new Vector2(scale, scale));
+        public static void MutateScaleUV(Vector2[] uvs, float scale) => ScaleUV(uvs, new Vector2(scale, scale));
+        public static void MutateScaleUV(Vector2[][] uvs, float scale) => ScaleUV(uvs, new Vector2(scale, scale));
 
         public static Vector2[][] CreateTristripScaledUVs(Tristrip[] tristrips, float widthRepeats, float lengthRepeats)
         {
@@ -813,5 +849,44 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             foreach (var tristrip in tristrips)
                 tristrip.color0 = ArrayUtility.DefaultArray(color, tristrip.VertexCount);
         }
+
+        public static void ApplyTex0(Tristrip[] tristrips, Vector2[][] uvs)
+        {
+            for (int i = 0; i < tristrips.Length; i++)
+                tristrips[i].tex0 = uvs[i];
+        }
+        public static void ApplyTex1(Tristrip[] tristrips, Vector2[][] uvs)
+        {
+            for (int i = 0; i < tristrips.Length; i++)
+                tristrips[i].tex1 = uvs[i];
+        }
+        public static void ApplyTex2(Tristrip[] tristrips, Vector2[][] uvs)
+        {
+            for (int i = 0; i < tristrips.Length; i++)
+                tristrips[i].tex2 = uvs[i];
+        }
+
+        public static Vector2[][] CopyTex0(Tristrip[] tristrips)
+        {
+            Vector2[][] uvs = new Vector2[tristrips.Length][];
+            for (int i = 0; i < uvs.Length; i++)
+                uvs[i] = ArrayUtility.CopyArray(tristrips[i].tex0);
+            return uvs;
+        }
+        public static Vector2[][] GetTex1(Tristrip[] tristrips)
+        {
+            Vector2[][] uvs = new Vector2[tristrips.Length][];
+            for (int i = 0; i < uvs.Length; i++)
+                uvs[i] = ArrayUtility.CopyArray(tristrips[i].tex1);
+            return uvs;
+        }
+        public static Vector2[][] GetTex2(Tristrip[] tristrips)
+        {
+            Vector2[][] uvs = new Vector2[tristrips.Length][];
+            for (int i = 0; i < uvs.Length; i++)
+                uvs[i] = ArrayUtility.CopyArray(tristrips[i].tex2);
+            return uvs;
+        }
+
     }
 }
