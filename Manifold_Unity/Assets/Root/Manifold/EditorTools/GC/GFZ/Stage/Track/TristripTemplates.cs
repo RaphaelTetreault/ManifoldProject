@@ -1878,28 +1878,32 @@ namespace Manifold.EditorTools.GC.GFZ
                 public static Tristrip[][] OpenPipe(Matrix4x4[] matrices, GfzShapeOpenPipeCylinder open, float segmentLength, bool isGfzCoordinateSpace)
                 {
                     float repetitions = math.ceil(segmentLength / RoadTexStride);
+                    var tristrips = GenericOpenPipeNoTex(matrices, open, isGfzCoordinateSpace);
 
                     float edge = 0.05f;
                     float min = edge;
                     float max = 1f - edge;
+                    int edgeIndexL = math.max((int)math.floor(tristrips.Length * min), 1);
+                    int edgeIndexR = math.min((int)math.ceil(tristrips.Length * max), tristrips.Length - 1);
 
-                    var tristrips = GenericOpenPipeNoTex(matrices, open, isGfzCoordinateSpace);
-                    var leftEdgeTristrips = SelectTristrips(tristrips, 0, min, true, false);
-                    var rightEdgeTristrips = SelectTristrips(tristrips, max, 1, false, true);
+                    var leftEdgeTristrips = tristrips[..edgeIndexL];
+                    var rightEdgeTristrips = tristrips[edgeIndexR..];
                     var edgeTristrips = ConcatTristrips(leftEdgeTristrips, rightEdgeTristrips);
-                    var centerTristrips = SelectTristrips(tristrips, min, max, false, false);
+                    var centerTristrips = tristrips[edgeIndexL..edgeIndexR];
 
                     ApplyTex0(leftEdgeTristrips, CreateTristripScaledUVs(leftEdgeTristrips, 1, repetitions));
                     ApplyTex0(rightEdgeTristrips, CreateTristripScaledUVs(rightEdgeTristrips, 1, repetitions));
                     ApplyTex1(edgeTristrips, ScaleUV(CopyTex0(edgeTristrips), Vector2.one * 2));
-                    var uvtemp = CreateTristripScaledUVs(tristrips, 8, repetitions)[2..30];
-                    ApplyTex0(centerTristrips, uvtemp);
+                    ApplyTex0(centerTristrips, CreateTristripScaledUVs(tristrips, 8, repetitions)[edgeIndexL..edgeIndexR]);
 
                     var allTristrips = new Tristrip[][]
                     {
                         edgeTristrips,
                         centerTristrips,
                     };
+
+                    foreach (var tristrip in tristrips)
+                        tristrip.isDoubleSided = true;
 
                     return allTristrips;
                 }
@@ -1909,8 +1913,10 @@ namespace Manifold.EditorTools.GC.GFZ
                     {
                         GcmfTemplates.MuteCity.RoadEmbelishments(),
                         GcmfTemplates.MuteCityCOM.RoadTopNoDividers(),
-
                     };
+                    foreach (var mat in materials)
+                        mat.Submesh.RenderFlags |= GameCube.GFZ.GMA.RenderFlags.doubleSidedFaces;
+
                     return materials;
                 }
             }
@@ -2027,21 +2033,20 @@ namespace Manifold.EditorTools.GC.GFZ
                     float edge = 0.05f;
                     float min = edge;
                     float max = 1f - edge;
+                    int edgeIndexL = math.max((int)math.floor(tristrips.Length * min), 1);
+                    int edgeIndexR = math.min((int)math.ceil(tristrips.Length * max), tristrips.Length - 1);
 
-                    int centerFirst = (int)math.floor(tristrips.Length * min);
-                    int centerLast = (int)math.floor(tristrips.Length * max);
-
-                    var leftEdgeTristrips = SelectTristrips(tristrips, 0, min, true, false);
-                    var rightEdgeTristrips = SelectTristrips(tristrips, max, 1, false, true);
+                    var leftEdgeTristrips = tristrips[..edgeIndexL];
+                    var rightEdgeTristrips = tristrips[edgeIndexR..];
                     var edgeTristrips = ConcatTristrips(leftEdgeTristrips, rightEdgeTristrips);
-                    var centerTristrips = SelectTristrips(tristrips, min, max, false, false);
+                    var centerTristrips = tristrips[edgeIndexL..edgeIndexR];
                     var bottomTristrips = GenericOpenCylinderBottomCapNoTex(matrices, open, isGfzCoordinateSpace);
                     var endcapTristrips = GenericOpenCylinderEndCapNoTex(matrices, open, isGfzCoordinateSpace);
 
                     ApplyTex0(leftEdgeTristrips, CreateTristripScaledUVs(leftEdgeTristrips, 1, repetitions));
                     ApplyTex0(rightEdgeTristrips, CreateTristripScaledUVs(rightEdgeTristrips, 1, repetitions));
                     ApplyTex1(edgeTristrips, ScaleUV(CopyTex0(edgeTristrips), Vector2.one * 2));
-                    ApplyTex0(centerTristrips, CreateTristripScaledUVs(tristrips, 8, repetitions)[centerFirst..centerLast]);
+                    ApplyTex0(centerTristrips, CreateTristripScaledUVs(tristrips, 8, repetitions)[edgeIndexL..edgeIndexR]); //...?
                     ApplyTex0(bottomTristrips, ScaleUV(CreateTristripScaledUVs(bottomTristrips, 1, repetitions), new Vector2(2, 1)));
 
                     var allTristrips = new Tristrip[][]
