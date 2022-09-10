@@ -175,21 +175,28 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public void UpdateShapeMeshes()
         {
+            if (!isActiveAndEnabled)
+                return;
+
             var shapes = GetShapeNodes();
             foreach (var shape in shapes)
                 shape.UpdateMesh();
         }
         public void UpdateUpdateables()
         {
+            if (!isActiveAndEnabled)
+                return;
+
             var root = GetRoot();
             var updateables = root.GetUpdateables();
             foreach (var updateable in updateables)
             {
+                if (updateable.SegmentNode == null)
+                    continue;
+
                 var updateableRoot = updateable.SegmentNode.GetRoot();
                 if (updateableRoot == root)
-                {
                     updateable.OnUpdate();
-                }
             }
         }
 

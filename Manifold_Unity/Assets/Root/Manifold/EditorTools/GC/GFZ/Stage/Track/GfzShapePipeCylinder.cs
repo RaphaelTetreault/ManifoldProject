@@ -159,20 +159,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
         }
 
-        //public override Mesh CreateMesh(out int[] materialsCount)
-        //{
-        //    var tristripsColletion = GetTristrips(false);
-        //    var tristrips = CombinedTristrips(tristripsColletion);
-        //    materialsCount = TristripsToMaterialCount(tristripsColletion);
-        //    var mesh = TristripsToMesh(tristrips);
-        //    mesh.name = $"Auto Gen - {name}";
-        //    return mesh;
-        //}
-
         public override TrackSegment CreateTrackSegment()
         {
-            var children = CreateChildTrackSegments();
-
             // Set flag on if cylinder
             var typeFlags = type == PipeCylinderType.Cylinder ? TrackPipeCylinderFlags.IsCylinderNotPipe : 0;
 
@@ -181,7 +169,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             trackSegment.SegmentType = TrackSegmentType.IsPipeOrCylinder;
             trackSegment.PipeCylinderFlags = typeFlags;
             trackSegment.BranchIndex = GetBranchIndex();
-            trackSegment.Children = children;
+            trackSegment.Children = CreateChildTrackSegments();
 
             return trackSegment;
         }

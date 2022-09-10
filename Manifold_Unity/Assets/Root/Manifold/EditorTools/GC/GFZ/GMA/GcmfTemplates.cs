@@ -80,7 +80,7 @@ namespace Manifold.EditorTools.GC.GFZ
                 var unknownAlphaOptions = new UnkAlphaOptions();
                 var submesh = new Submesh()
                 {
-                    RenderFlags = RenderFlags.unlit | RenderFlags.doubleSidedFaces,
+                    RenderFlags = RenderFlags.unlit,
                     Material = material,
                     UnkAlphaOptions = unknownAlphaOptions,
                 };

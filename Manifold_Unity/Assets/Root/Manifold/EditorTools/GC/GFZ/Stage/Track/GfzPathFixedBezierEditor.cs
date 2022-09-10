@@ -78,9 +78,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         private void DrawButtonFields(GfzPathFixedBezier editorTarget, int index)
         {
             EditorGUILayout.BeginHorizontal();
+            GUI.enabled = IsValidIndex(index);
             DrawButtonInsertBefore(editorTarget, index);
             DrawButtonInsertAfter(editorTarget, index);
             DrawButtonDelete(editorTarget, index);
+            GUI.enabled = true;
             EditorGUILayout.EndHorizontal();
         }
         private void DrawButtonInsertBefore(GfzPathFixedBezier editorTarget, int index)

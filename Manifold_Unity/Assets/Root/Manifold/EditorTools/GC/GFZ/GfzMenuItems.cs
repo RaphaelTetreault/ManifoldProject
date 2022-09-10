@@ -62,19 +62,22 @@ namespace Manifold.EditorTools.GC.GFZ
             public const string ImportSingleSelect = Menu + "Import Stage (Single, Select File)";
             public const string TestPatchEnemyLine = Menu + "Test Patch Enemy Line";
             public const string TestDecryptEnemyLine = Menu + "Test Decrypt Enemy Line";
-
             // SceneExportUtility
             public const string ExportActiveScene = Menu + "Export (Active Scene)";
+            // MeshDisplay
+            public const string DeleteOldMeshDisplay = Menu + "Delete old MeshDisplays";
 
             public static class Priority
             {
-                public const int ImportAll = 1;
-                public const int ImportSingle = 2;
-                public const int ImportSingleSelect = 3;
-                public const int TestPatchEnemyLine = 4;
-                public const int TestDecryptEnemyLine = 5;
+                public const int ImportAll = 2;
+                public const int ImportSingle = 3;
+                public const int ImportSingleSelect = 4;
+                public const int TestPatchEnemyLine = 202;
+                public const int TestDecryptEnemyLine = 203;
                 //
-                public const int ExportActiveScene = 101;
+                public const int ExportActiveScene = 1;
+                //
+                public const int DeleteOldMeshDisplay = 101;
             }
         }
 

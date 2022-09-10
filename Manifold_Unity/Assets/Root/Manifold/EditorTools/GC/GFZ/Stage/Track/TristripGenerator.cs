@@ -131,6 +131,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         }
 
         // TODO: deprecate, make simple "unlit" tristrip method
+        [System.Obsolete]
         public static Tristrip[] CreateTristrips(Matrix4x4[] matrices, Vector3 endpointA, Vector3 endpointB, int nTristrips, Color32? color0, Vector3? normal, int uvs, bool isBackFacing)
         {
             var vertices = CreateLineVertices(nTristrips, endpointA, endpointB);
@@ -360,9 +361,90 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
             return tristrips;
         }
+        public static Tristrip[] GenerateOpenCircleWithNormals(Matrix4x4[] matrices, UnityEngine.AnimationCurve gapCurve, int nTristrips, bool isPipe,  bool smoothEnds, bool isGfzCoordinateSpace)
+        {
+            int vertexCount = matrices.Length * 2;
+            var tristrips = new Tristrip[nTristrips];
+            for (int i = 0; i < tristrips.Length; i++)
+            {
+                tristrips[i] = new Tristrip();
+                tristrips[i].positions = new Vector3[vertexCount];
+            }
 
+            // When pipe, 180+-180; when cylinder, 0+-180.
+            int baseAngle = isPipe ? 180 : 0;
+            int from = baseAngle + 180;
+            int to = baseAngle - 180;
 
+            for (int i = 0; i < matrices.Length; i++)
+            {
+                var matrix = matrices[i];
 
+                var time = i / (matrices.Length - 1f);
+                var ratio = math.clamp(gapCurve.EvaluateNormalized(time), 0f, 1f);
+                
+                float angleFrom = math.lerp(baseAngle, from, ratio);
+                float angleTo = math.lerp(baseAngle, to, ratio);
+
+                var vertices = CreateCircleVertices(nTristrips, angleFrom, angleTo);
+
+                int index0 = i * 2;
+                int index1 = index0 + 1;
+                for (int j = 0; j < vertices.Length - 1; j++)
+                {
+                    var vertex0 = vertices[j];
+                    var vertex1 = vertices[j + 1];
+                    tristrips[j].positions[index0] = matrix.MultiplyPoint(vertex0);
+                    tristrips[j].positions[index1] = matrix.MultiplyPoint(vertex1);
+                }
+            }
+            // Add normals based on vertices. Smooth normals.
+            bool invertNormals = !isPipe;
+            SetNormalsFromTristripVertices(tristrips, invertNormals, smoothEnds, isGfzCoordinateSpace);
+
+            return tristrips;
+        }
+
+        public static Tristrip[] GenerateOpenCircleWithNormals2(Matrix4x4[] matrices, UnityEngine.AnimationCurve gapCurve, float from, float to, int nTristrips, bool isPipe, bool smoothEnds, bool isGfzCoordinateSpace)
+        {
+            int vertexCount = matrices.Length * 2;
+            var tristrips = new Tristrip[nTristrips];
+            for (int i = 0; i < tristrips.Length; i++)
+            {
+                tristrips[i] = new Tristrip();
+                tristrips[i].positions = new Vector3[vertexCount];
+            }
+
+            float baseAngle = isPipe ? 180 : 0;
+            for (int i = 0; i < matrices.Length; i++)
+            {
+                var matrix = matrices[i];
+
+                var time = i / (matrices.Length - 1f);
+                var ratio = math.clamp(gapCurve.EvaluateNormalized(time), 0f, 1f);
+
+                // defines angle for semi-circle
+                float angleFrom = math.lerp(baseAngle, from, ratio);
+                float angleTo = math.lerp(baseAngle, to, ratio);
+
+                var vertices = CreateCircleVertices(nTristrips, angleFrom, angleTo);
+
+                int index0 = i * 2;
+                int index1 = index0 + 1;
+                for (int j = 0; j < vertices.Length - 1; j++)
+                {
+                    var vertex0 = vertices[j];
+                    var vertex1 = vertices[j + 1];
+                    tristrips[j].positions[index0] = matrix.MultiplyPoint(vertex0);
+                    tristrips[j].positions[index1] = matrix.MultiplyPoint(vertex1);
+                }
+            }
+            // Add normals based on vertices. Smooth normals.
+            bool invertNormals = !isPipe;
+            SetNormalsFromTristripVertices(tristrips, invertNormals, smoothEnds, isGfzCoordinateSpace);
+
+            return tristrips;
+        }
 
         public static Vector3[] CreateLineVertices(int nTristrips, Vector3 endpointA, Vector3 endpointB)
         {
@@ -506,22 +588,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
             return uvs;
         }
-        public static Vector2[] CreateUVsSideways(int verticesLength, float bottom = 0f, float top = 1f, float increment = 1f, float modulus = float.PositiveInfinity)
+
+        public static Vector2[] UvStripForward(Tristrip tristrip, float repetitions, float left = 0f, float right = 1f)
+            => UvStripForward(tristrip.VertexCount, repetitions, left, right);
+        public static Vector2[] UvStripForward(int vertexCount, float repetitions, float left = 0f, float right = 1f)
         {
-            float forwardValue = 0;
-            var uvs = new Vector2[verticesLength];
-            for (int i = 0; i < verticesLength; i += 2) // process 2 at a time
-            {
-                uvs[i + 0] = new Vector2(forwardValue, bottom);
-                uvs[i + 1] = new Vector2(forwardValue, top);
-                forwardValue += increment;
-                forwardValue %= modulus;
-            }
-            return uvs;
-        }
-        // DEPRECATE! Do full length rather than increment?
-        public static Vector2[] CreateUVsForward(int vertexCount, float left = 0f, float right = 1f, float increment = 1f)
-        {
+            float increment = repetitions / (vertexCount / 2 - 1);
+
             float forwardValue = 0;
             var uvs = new Vector2[vertexCount];
             for (int i = 0; i < vertexCount; i += 2) // process 2 at a time
@@ -533,64 +606,93 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return uvs;
         }
 
-
-        public static Vector2[] CreateUVsForwardLength(int vertexCount, float left, float right, float length)
+        public static Vector2[] UvStripSideways(Tristrip tristrip, float repetitions, float bottom = 0f, float top = 1f)
+            => UvStripSideways(tristrip.VertexCount, repetitions, bottom, top);
+        public static Vector2[] UvStripSideways(int vertexCount, float repetitions, float bottom = 0f, float top = 1f)
         {
-            var uvs = new Vector2[vertexCount];
-            for (int i = 0; i < vertexCount; i += 2) // process 2 at a time
-            {
-                float percentage = (i / ((float)vertexCount - 2));
-                float forwardValue = percentage * length;
-                uvs[i + 0] = new Vector2(left, forwardValue);
-                uvs[i + 1] = new Vector2(right, forwardValue);
-            }
-            return uvs;
-        }
-        public static Vector2[] CreateUVsSidewaysLength(int vertexCount, float bottom, float top, float length)
-        {
-            var uvs = new Vector2[vertexCount];
-            for (int i = 0; i < vertexCount; i += 2) // process 2 at a time
-            {
-                float percentage = (i / ((float)vertexCount - 2));
-                float forwardValue = percentage * length;
-                uvs[i + 0] = new Vector2(forwardValue, bottom);
-                uvs[i + 1] = new Vector2(forwardValue, top);
-            }
+            var uvs = UvStripForward(vertexCount, repetitions, bottom, top);
+            MutateSwizzleUVs(uvs);
             return uvs;
         }
 
-        // TODO: deprecate, just do array copy then mutate copy
+        public static Vector2[] OffsetUVs(Vector2[] uvs, Vector2 offset)
+        {
+            var uvCopy = ArrayUtility.CopyArray(uvs);
+            MutateOffsetUVs(uvCopy, offset);
+            return uvCopy;
+        }
+        public static Vector2[] OffsetUVs(Vector2[] uvs, float offset)
+            => OffsetUVs(uvs, new Vector2(offset, offset));
         public static Vector2[] ScaleUVs(Vector2[] uvs, Vector2 scale)
         {
-            var newUVs = new Vector2[uvs.Length];
-            for (int i = 0; i < uvs.Length; i++)
-                newUVs[i] = new Vector2(uvs[i].x * scale.x, uvs[i].y * scale.y);
-            return newUVs;
+            var uvCopy = ArrayUtility.CopyArray(uvs);
+            MutateScaleUVs(uvCopy, scale);
+            return uvCopy;
         }
+        public static Vector2[] ScaleUVs(Vector2[] uvs, float scale)
+            => ScaleUVs(uvs, new Vector2(scale, scale));
+        public static Vector2[] SwizzleUVs(Vector2[] uvs)
+        {
+            var uvCopy = ArrayUtility.CopyArray(uvs);
+            MutateSwizzleUVs(uvCopy);
+            return uvCopy;
+        }
+
         public static void MutateScaleUVs(Vector2[] uvs, Vector2 scale)
         {
             for (int i = 0; i < uvs.Length; i++)
                 uvs[i] = new Vector2(uvs[i].x * scale.x, uvs[i].y * scale.y);
         }
-        public static Vector2[] OffsetUVs(Vector2[] uvs, Vector2 offset)
+        public static void MutateOffsetUVs(Vector2[] uvs, Vector2 offset)
         {
-            var newUVs = new Vector2[uvs.Length];
             for (int i = 0; i < uvs.Length; i++)
-                newUVs[i] = new Vector2(uvs[i].x + offset.x, uvs[i].y + offset.y);
-            return newUVs;
+                uvs[i] = new Vector2(uvs[i].x + offset.x, uvs[i].y + offset.y);
         }
-        public static Vector2[] OffsetUVs(Vector2[] uvs, float offset)
-            => OffsetUVs(uvs, new Vector2(offset, offset));
+        public static void MutateOffsetUVs(Vector2[] uvs, float offset)
+            => MutateOffsetUVs(uvs, new Vector2(offset, offset));
+        public static void MutateSwizzleUVs(Vector2[] uvs)
+        {
+            for (int i = 0; i < uvs.Length; i++)
+                uvs[i] = new Vector2(uvs[i].y, uvs[i].x);
+        }
 
-        public static Vector2[] ScaleUVs(Vector2[] uvs, float scale)
-            => ScaleUVs(uvs, new Vector2(scale, scale));
-        public static Vector2[] SwizzleUVs(Vector2[] uvs)
+        private static void MutateArray<T>(T[] array, T value, System.Func<T, T, T> function)
         {
-            var newUVs = new Vector2[uvs.Length];
-            for (int i = 0; i < uvs.Length; i++)
-                newUVs[i] = new Vector2(uvs[i].y, uvs[i].x);
-            return newUVs;
+            for (int i = 0; i < array.Length; i++)
+                function(array[i], value);
         }
+        private static void MutateArray2D<T>(T[][] array2D, T value, System.Action<T[], T> function)
+        {
+            for (int i = 0; i < array2D.Length; i++)
+                function(array2D[i], value);
+        }
+        private static T[] ModifyArrayCopy<T>(T[] array, T value, System.Func<T, T, T> function)
+        {
+            var newArray = new T[array.Length];
+            for (int i = 0; i < array.Length; i++)
+                newArray[i] = function(array[i], value);
+            return newArray;
+        }
+        private static T[][] ModifyArray2DCopy<T>(T[][] array2D, T value, System.Func<T[], T, T[]> function)
+        {
+            var newArray2D = new T[array2D.Length][];
+            for (int i = 0; i < array2D.Length; i++)
+                newArray2D[i] = function(array2D[i], value);
+            return newArray2D;
+        }
+
+        private static Vector2 ScaleUV(Vector2 uv, Vector2 scale)
+        {
+            return new Vector2(uv.x * scale.x, uv.y * scale.y);
+        }
+        public static Vector2[] ScaleUV(Vector2[] uvs, Vector2 scale) => ModifyArrayCopy(uvs, scale, ScaleUV);
+        public static Vector2[][] ScaleUV(Vector2[][] uvs, Vector2 scale) => ModifyArray2DCopy(uvs, scale, ScaleUV);
+        public static void MutateScaleUV(Vector2[] uvs, Vector2 scale) => MutateArray(uvs, scale, ScaleUV);
+        public static void MutateScaleUV(Vector2[][] uvs, Vector2 scale) => MutateArray2D(uvs, scale, MutateScaleUV);
+        public static Vector2[] ScaleUV(Vector2[] uvs, float scale) => ScaleUV(uvs, new Vector2(scale, scale));
+        public static Vector2[][] ScaleUV(Vector2[][] uvs, float scale) => ScaleUV(uvs, new Vector2(scale, scale));
+        public static void MutateScaleUV(Vector2[] uvs, float scale) => ScaleUV(uvs, new Vector2(scale, scale));
+        public static void MutateScaleUV(Vector2[][] uvs, float scale) => ScaleUV(uvs, new Vector2(scale, scale));
 
         public static Vector2[][] CreateTristripScaledUVs(Tristrip[] tristrips, float widthRepeats, float lengthRepeats)
         {
@@ -702,5 +804,89 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 tristrip.isDoubleSided = isDoubleSided;
             }
         }
+
+        /// <summary>
+        /// Concatenate multiple Tristrip[] together into a single Tristrip[]
+        /// </summary>
+        /// <param name="tristripArrays"></param>
+        /// <returns></returns>
+        public static Tristrip[] ConcatTristrips(params Tristrip[][] tristripArrays)
+        {
+            int count = 0;
+            for (int i = 0; i < tristripArrays.Length; i++)
+                count += tristripArrays[i].Length;
+            var tristripsConcat = new Tristrip[count];
+
+            int baseIndex = 0;
+            for (int i = 0; i < tristripArrays.Length; i++)
+            {
+                var tristrips = tristripArrays[i];
+                tristrips.CopyTo(tristripsConcat, baseIndex);
+                baseIndex += tristrips.Length;
+            }
+
+            return tristripsConcat;
+        }
+
+
+        public static Tristrip[] SelectTristrips(Tristrip[] tristrips, float percentFrom, float percentTo, bool inclusiveFrom, bool inclusiveTo)
+        {
+            int maxIndex = tristrips.Length - 1;
+            float first = percentFrom * maxIndex;
+            float last = percentTo * maxIndex;
+            int firstIndex = (int)(inclusiveFrom ? math.floor(first) : math.ceil(first));
+            int lastIndex = (int)(inclusiveTo ? math.ceil(last) : math.floor(last));
+            var subselection = tristrips.CopyRange(firstIndex, lastIndex);
+            return subselection;
+        }
+        public static Tristrip[] SelectTritrips(Tristrip[] tristrips, int indexFrom, int indexTo)
+        {
+            var subselection = tristrips.CopyRange(indexFrom, indexTo);
+            return subselection;
+        }
+        public static void ApplyColor0(Tristrip[] tristrips, Color32 color)
+        {
+            foreach (var tristrip in tristrips)
+                tristrip.color0 = ArrayUtility.DefaultArray(color, tristrip.VertexCount);
+        }
+
+        public static void ApplyTex0(Tristrip[] tristrips, Vector2[][] uvs)
+        {
+            for (int i = 0; i < tristrips.Length; i++)
+                tristrips[i].tex0 = uvs[i];
+        }
+        public static void ApplyTex1(Tristrip[] tristrips, Vector2[][] uvs)
+        {
+            for (int i = 0; i < tristrips.Length; i++)
+                tristrips[i].tex1 = uvs[i];
+        }
+        public static void ApplyTex2(Tristrip[] tristrips, Vector2[][] uvs)
+        {
+            for (int i = 0; i < tristrips.Length; i++)
+                tristrips[i].tex2 = uvs[i];
+        }
+
+        public static Vector2[][] CopyTex0(Tristrip[] tristrips)
+        {
+            Vector2[][] uvs = new Vector2[tristrips.Length][];
+            for (int i = 0; i < uvs.Length; i++)
+                uvs[i] = ArrayUtility.CopyArray(tristrips[i].tex0);
+            return uvs;
+        }
+        public static Vector2[][] GetTex1(Tristrip[] tristrips)
+        {
+            Vector2[][] uvs = new Vector2[tristrips.Length][];
+            for (int i = 0; i < uvs.Length; i++)
+                uvs[i] = ArrayUtility.CopyArray(tristrips[i].tex1);
+            return uvs;
+        }
+        public static Vector2[][] GetTex2(Tristrip[] tristrips)
+        {
+            Vector2[][] uvs = new Vector2[tristrips.Length][];
+            for (int i = 0; i < uvs.Length; i++)
+                uvs[i] = ArrayUtility.CopyArray(tristrips[i].tex2);
+            return uvs;
+        }
+
     }
 }
