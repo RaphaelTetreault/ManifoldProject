@@ -118,14 +118,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public override TrackSegment CreateTrackSegment()
         {
-            var children = CreateChildTrackSegments();
-
             var trackSegment = new TrackSegment();
             trackSegment.OrderIndentifier = name;
             trackSegment.SegmentType = TrackSegmentType.IsTrack;
             trackSegment.BranchIndex = GetBranchIndex();
             trackSegment.SetRails(RailHeightLeft, RailHeightRight);
-            trackSegment.Children = children;
+            trackSegment.Children = CreateChildTrackSegments(); ;
 
             return trackSegment;
         }
