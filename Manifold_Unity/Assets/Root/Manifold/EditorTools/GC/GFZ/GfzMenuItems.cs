@@ -115,8 +115,9 @@ namespace Manifold.EditorTools.GC.GFZ
             public const string AddTrack = Menu + "Add Track";
 
             public const string AddNormalRoad = Menu + "Road/";
-            public const string AddCylinderPipeRoad = Menu + "Cylinde or Pipe/";
+            public const string AddCylinderPipeRoad = Menu + "Pipe or Cylinde/";
             public const string AddCapsuleRoad = Menu + "Capsule/";
+            public const string AddOpenPipeCylinderRoad = Menu + "Pipe or Cylinder (Open)/";
 
 
             public const string AddBezier = "Add Bezier";
