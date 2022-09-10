@@ -105,6 +105,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             capsule.EmbeddedPropertyType = TrackEmbeddedPropertyType.IsCapsulePipe;
             capsule.BranchIndex = GetBranchIndex();
             capsule.FallbackPosition = new Unity.Mathematics.float3(0.5f, 0, 0);
+            capsule.Children = CreateChildTrackSegments();
             // 0.5f since this is the left/right position of the circle-ends radii centers.
             // This results in the track transform's scale.x being 1:1 with the width of the capsule.
 

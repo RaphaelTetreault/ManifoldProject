@@ -21,7 +21,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             for (int i = 0; i < mesh.subMeshCount; i++)
             {
                 var submesh = mesh.GetSubMesh(i);
-                Debug.Log(submesh.topology);
+                //Debug.Log(submesh.topology);
             }
 
             var triangles = new ColliderTriangle[mesh.triangles.Length / 3];
