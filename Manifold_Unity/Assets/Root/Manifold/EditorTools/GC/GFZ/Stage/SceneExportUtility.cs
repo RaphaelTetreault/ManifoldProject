@@ -544,6 +544,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             int totalTriangles = 0;
             foreach (var staticCollider in staticColliders)
             {
+                //staticCollider.CreateColliderOptimized(out ColliderTriangle[] triangles, out ColliderQuad[] quads);
                 var triangles = staticCollider.CreateColliderTriangles();
                 colliderTriangleArrays.Add(triangles);
 
