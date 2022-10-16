@@ -58,6 +58,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         //[MenuItem(GfzMenuItems.Stage.TestPatchEnemyLine + " _F7", priority = GfzMenuItems.Stage.Priority.TestPatchEnemyLine)]
         public static void PatchEnemyLineFromSceneParameters()
         {
+            Debug.Log("Abort patching line__.bin. (This is not an issue.)");
+            return;
+
             var enemyLineInfo = GetEnemyLineInfo();
             var settings = GfzProjectWindow.GetSettings();
             string workingFile = Path.Combine(settings.WorkingFilesDirectory, enemyLineInfo.WorkingFile);
@@ -125,7 +128,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             }
         }
 
-        [MenuItem(GfzMenuItems.Stage.TestDecryptEnemyLine, priority = GfzMenuItems.Stage.Priority.TestDecryptEnemyLine)]
+        [MenuItem(GfzMenuItems.Stage.DecryptEnemyLine, priority = GfzMenuItems.Stage.Priority.TestDecryptEnemyLine)]
         public static void DecryptEnemyLine()
         {
             var enemyLineInfo = GetEnemyLineInfo();

@@ -93,7 +93,7 @@ namespace Manifold.EditorTools.GC.GFZ
             public const string ImportSingle = Menu + "Import Stage (Single)";
             public const string ImportSingleSelect = Menu + "Import Stage (Single, Select File)";
             public const string TestPatchEnemyLine = Menu + "Test Patch Enemy Line";
-            public const string TestDecryptEnemyLine = Menu + "Test Decrypt Enemy Line";
+            public const string DecryptEnemyLine = Menu + "Decrypt Enemy Line";
             // SceneExportUtility
             public const string ExportActiveScene = Menu + "Export (Active Scene)";
             // MeshDisplay
