@@ -1183,7 +1183,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             sceneParams.venue = CourseUtility.GetVenue(scene.CourseIndex);
             // TODO: embed course name in file, use that if it exists.
             sceneParams.courseName = CourseUtility.GetCourseName(scene.CourseIndex);
-            sceneParams.courseIndex = scene.CourseIndex;
+            sceneParams.courseIndex = (byte)scene.CourseIndex;
             sceneParams.author = "Amusement Vision";
             // Other data
             sceneParams.staticColliderMeshesActive = scene.StaticColliderMeshManagerActive;
