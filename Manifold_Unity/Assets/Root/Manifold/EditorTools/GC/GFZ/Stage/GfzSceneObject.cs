@@ -12,6 +12,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         [SerializeField] private LodRenderFlags lodRenderFlags;
         [SerializeField] private GfzSceneObjectLODs sceneObjectLODs;
         [SerializeField] private GfzColliderMesh colliderMesh;
+        [SerializeField, ReadOnlyGUI] private string assetSource;
 
         public GfzSceneObjectLODs GfzSceneObjectLODs => sceneObjectLODs;
         public GfzColliderMesh ColliderMesh => colliderMesh;
