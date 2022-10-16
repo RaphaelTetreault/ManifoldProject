@@ -50,6 +50,12 @@ namespace Manifold.EditorTools.GC.GFZ
             Vector3 rotatedNormal = rotation * normal;
             return rotatedNormal;
         }
+        public static float GetTexRepetitions(float segmentLength, float texLength)
+        {
+            float repetitionsAlongLength = math.ceil(segmentLength / texLength);
+            return repetitionsAlongLength;
+        }
+
 
         public static void GetContinuity(GfzSegmentNode node, out bool isContinuousFrom, out bool isContinuousTo)
         {
@@ -406,16 +412,16 @@ namespace Manifold.EditorTools.GC.GFZ
                     allTristrips.AddRange(leftTristrips);
                 }
 
-                var trimEndcapTristrips = CreateTrimEndcaps(matrices, embed, kTrimOffset);
+                var trimEndcapTristrips = CreateTrimEndcaps(matrices, embed, kTrimOffset, kTrimRepetitions);
                 allTristrips.AddRange(trimEndcapTristrips);
 
                 return allTristrips.ToArray();
             }
-            private static Tristrip[] CreateTrimSide(Matrix4x4[] matrices, Vector3 defaultNormal, float directionLR, float width, float repetitionsAlongLength)
+            private static Tristrip[] CreateTrimSide(Matrix4x4[] matrices, Vector3 defaultNormal, float directionLR, float protrusion, float repetitionsAlongLength)
             {
                 var offsetMatrices = GetNormalizedMatrixWithPositionOffset(matrices, directionLR);
 
-                var outerEdge = new Vector3(width * directionLR, 0, 0);
+                var outerEdge = new Vector3(protrusion * directionLR, 0, 0);
                 var innerEdge = new Vector3(0, kEmbedHeight, 0);
                 bool isBackFacing = directionLR > 0;
                 var tristrips = GenerateHorizontalLineWithNormals(offsetMatrices, innerEdge, outerEdge, defaultNormal, 1, isBackFacing);
@@ -426,39 +432,43 @@ namespace Manifold.EditorTools.GC.GFZ
                     tristrips[i].tex0 = uvs[i];
                 }
 
+                // Make first/last vert protrude outwards a bit
+                var mtx0 = matrices[0];
+                var mtx1 = matrices[matrices.Length-1];
+                tristrips[0].positions[1] += mtx0.rotation * (Vector3.back * Mathf.Abs(protrusion));
+                tristrips[0].positions[matrices.Length*2-1] += mtx1.rotation * (Vector3.forward * Mathf.Abs(protrusion));
+
                 return tristrips;
             }
-            private static Tristrip[] CreateTrimEndcaps(Matrix4x4[] matrices, GfzPropertyEmbed embed, float width)
+            private static Tristrip[] CreateTrimEndcaps(Matrix4x4[] matrices, GfzPropertyEmbed embed, float protrusion, float texLength)
             {
                 var allTristrips = new List<Tristrip>();
 
-                //var matricesTop = ModifyMatrixScales(matrices, new Vector3(0, kEmbedHeight, 0)); // raise to top
-                var matricesTop = ModifyMatrixScaledPositions(matrices, new Vector3(0, kEmbedHeight, 0));
-                var matricesBottom = ModifyMatrixScales(matrices, new Vector3(width * 2f, 0, 0)); // widen base
-                int index0 = 0;
-                int index1 = matrices.Length - 1;
-
-                var endpointA = new Vector3(-0.5f, 0, 0);
-                var endpointB = new Vector3(+0.5f, 0, 0);
-
-                // TODO: use trapezoid endcap for this?
                 if (embed.IncludeTrimStart)
                 {
-                    var mtx0 = matricesTop[index0];
-                    var mtx1 = matricesBottom[index0];
-                    var tristrips = GenerateHorizontalLineWithNormals(new Matrix4x4[] { mtx0, mtx1 }, endpointA, endpointB, Vector3.back, embed.WidthDivisions, false);
-                    foreach (var tristrip in tristrips)
-                        tristrip.tex0 = UvStripSideways(tristrip, 1);
+                    int index0 = 0;
+                    var mtx0 = matrices[index0];
+                    var tristrips = Road.StandardTrapezoidEndCapUV(mtx0, 0, -protrusion, kEmbedHeight, 0, Vector3.back, Vector2.one);
+                    // Hacky UV fix
+                    float texReps = GetTexRepetitions(mtx0.lossyScale.x, texLength);
+                    tristrips[0].tex0 = OffsetUV(tristrips[0].tex0, new Vector2(0, 0.5f));
+                    tristrips[0].tex0 = ScaleUV(tristrips[0].tex0, new Vector2(1, texReps));
+                    for (int i = 1; i < tristrips[0].positions.Length; i += 2)
+                        tristrips[0].positions[i] += mtx0.rotation * Vector3.back * Mathf.Abs(protrusion);
                     allTristrips.AddRange(tristrips);
                 }
 
                 if (embed.IncludeTrimEnd)
                 {
-                    var mtx0 = matricesTop[index1];
-                    var mtx1 = matricesBottom[index1];
-                    var tristrips = GenerateHorizontalLineWithNormals(new Matrix4x4[] { mtx0, mtx1 }, endpointA, endpointB, Vector3.forward, embed.WidthDivisions, true);
-                    foreach (var tristrip in tristrips)
-                        tristrip.tex0 = UvStripSideways(tristrip, 1);
+                    int index1 = matrices.Length - 1;
+                    var mtx1 = matrices[index1];
+                    var tristrips = Road.StandardTrapezoidEndCapUV(mtx1, 0, -protrusion, kEmbedHeight, 0, Vector3.forward, Vector2.one);
+                    // Hacky UV fix
+                    float texReps = GetTexRepetitions(mtx1.lossyScale.x, texLength);
+                    tristrips[0].tex0 = OffsetUV(tristrips[0].tex0, new Vector2(0, 0.5f));
+                    tristrips[0].tex0 = ScaleUV(tristrips[0].tex0, new Vector2(1, texReps));
+                    for (int i = 1; i < tristrips[0].positions.Length; i += 2)
+                        tristrips[0].positions[i] += mtx1.rotation * Vector3.forward * Mathf.Abs(protrusion);
                     allTristrips.AddRange(tristrips);
                 }
 

@@ -694,6 +694,21 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         public static void MutateScaleUV(Vector2[] uvs, float scale) => ScaleUV(uvs, new Vector2(scale, scale));
         public static void MutateScaleUV(Vector2[][] uvs, float scale) => ScaleUV(uvs, new Vector2(scale, scale));
 
+        private static Vector2 OffsetUV(Vector2 uv, Vector2 offset)
+        {
+            return new Vector2(uv.x + offset.x, uv.y + offset.y);
+        }
+        public static Vector2[] OffsetUV(Vector2[] uvs, Vector2 offset) => ModifyArrayCopy(uvs, offset, OffsetUV);
+        public static Vector2[][] OffsetUV(Vector2[][] uvs, Vector2 offset) => ModifyArray2DCopy(uvs, offset, OffsetUV);
+        public static void MutateOffsetUV(Vector2[] uvs, Vector2 offset) => MutateArray(uvs, offset, OffsetUV);
+        public static void MutateOffsetUV(Vector2[][] uvs, Vector2 offset) => MutateArray2D(uvs, offset, MutateOffsetUV);
+        public static Vector2[] OffsetUV(Vector2[] uvs, float offset) => OffsetUV(uvs, new Vector2(offset, offset));
+        public static Vector2[][] OffsetUV(Vector2[][] uvs, float offset) => OffsetUV(uvs, new Vector2(offset, offset));
+        public static void MutateOffsetUV(Vector2[] uvs, float offset) => OffsetUV(uvs, new Vector2(offset, offset));
+        public static void MutateOffsetUV(Vector2[][] uvs, float offset) => OffsetUV(uvs, new Vector2(offset, offset));
+
+
+
         public static Vector2[][] CreateTristripScaledUVs(Tristrip[] tristrips, float widthRepeats, float lengthRepeats)
         {
             var allUVs = new Vector2[tristrips.Length][];
