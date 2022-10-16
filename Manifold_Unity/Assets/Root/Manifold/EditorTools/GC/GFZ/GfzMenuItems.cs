@@ -109,5 +109,26 @@ namespace Manifold.EditorTools.GC.GFZ
             }
         }
 
+        public static class TrackCreate
+        {
+            public const string Menu = Const.Menu.Manifold + "Track Create/";
+            public const string AddTrack = Menu + "Add Track";
+
+            public const string AddNormalRoad = Menu + "Road/";
+            public const string AddCylinderPipeRoad = Menu + "Pipe or Cylinde/";
+            public const string AddCapsuleRoad = Menu + "Capsule/";
+            public const string AddOpenPipeCylinderRoad = Menu + "Pipe or Cylinder (Open)/";
+
+
+            public const string AddBezier = "Add Bezier";
+            public const string AddLine = "Add Line";
+            public const string AddSpiral = "Add Spiral";
+            public const string AddBezierOld = "Add Bezier (Legacy)"; // Legacy
+
+
+            public const string AddPropertyEmbed = Menu + "Add Property Embed";
+
+        }
+
     }
 }
