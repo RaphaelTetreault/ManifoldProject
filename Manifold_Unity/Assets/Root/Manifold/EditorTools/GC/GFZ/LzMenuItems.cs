@@ -8,7 +8,7 @@ namespace Manifold.EditorTools.GC.GFZ
 {
     public class LzMenuItems
     {
-        [MenuItem(GfzMenuItems.Lz.DecompressFromSource, priority = GfzMenuItems.Lz.DecompressFromSourcePriority)]
+        [MenuItem(GfzMenuItems.Lz.DecompressFromSource, priority = GfzMenuItems.Lz.Priority.DecompressFromSource)]
         public static void DecompressAllAvLzFromSource()
         {
             var settings = GfzProjectWindow.GetSettings();
@@ -24,7 +24,7 @@ namespace Manifold.EditorTools.GC.GFZ
         /// <summary>
         /// Decompresses all F-Zero GX LZ files in selected folder and subfolders
         /// </summary>
-        [MenuItem(GfzMenuItems.Lz.DecompressAllAvLz, priority = GfzMenuItems.Lz.DecompressAllAvLzPriority)]
+        [MenuItem(GfzMenuItems.Lz.DecompressAllAvLz, priority = GfzMenuItems.Lz.Priority.DecompressAllAvLz)]
         public static void DecompressAllAvLz()
         {
             var rootPath = EditorUtility.OpenFolderPanel("Select GFZ Root Folder", "", "");
@@ -36,7 +36,7 @@ namespace Manifold.EditorTools.GC.GFZ
             FileUtility.FileActionLoop(title, filePaths, decompressFile);
         }
 
-        [MenuItem(GfzMenuItems.Lz.DecompressSingleAvLz, priority = GfzMenuItems.Lz.DecompressSingleAvLzPriority)]
+        [MenuItem(GfzMenuItems.Lz.DecompressSingleAvLz, priority = GfzMenuItems.Lz.Priority.DecompressSingleAvLz)]
         public static void DecompressSingleAvLz()
         {
             var filePath = EditorUtility.OpenFilePanel("Select GFZ Root Folder", "", "");
@@ -45,11 +45,11 @@ namespace Manifold.EditorTools.GC.GFZ
             LzUtility.DecompressAvLzToDisk(filePath, true);
         }
 
-        [MenuItem(GfzMenuItems.Lz.CompressSingleFileGx, priority = GfzMenuItems.Lz.CompressSingleFileGxPriority)]
+        [MenuItem(GfzMenuItems.Lz.CompressSingleFileGx, priority = GfzMenuItems.Lz.Priority.CompressSingleFileGx)]
         public static void CompressSingleFileGX()
             => CompressSingleFile("Open File to Compress to LZ (F-Zero GX)", GxGame.FZeroGX);
 
-        [MenuItem(GfzMenuItems.Lz.CompressSingleFileAx, priority = GfzMenuItems.Lz.CompressSingleFileAxPriority)]
+        [MenuItem(GfzMenuItems.Lz.CompressSingleFileAx, priority = GfzMenuItems.Lz.Priority.CompressSingleFileAx)]
         public static void CompressSingleFileAX()
             => CompressSingleFile("Open File to Compress to LZ (F-Zero AX)", GxGame.FZeroAX);
 

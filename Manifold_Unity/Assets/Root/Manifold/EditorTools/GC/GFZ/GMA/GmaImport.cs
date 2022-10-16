@@ -21,7 +21,7 @@ namespace Manifold.EditorTools.GC.GFZ.GMA
         private const string DefaultMaterialAssetPath = MaterialsFolder + "mat_VertexColor.mat";
 
 
-        [MenuItem(GfzMenuItems.GMA.ImportGma, priority = GfzMenuItems.GMA.ImportGmaPriority)]
+        [MenuItem(GfzMenuItems.GMA.ImportGma, priority = GfzMenuItems.GMA.Priority.ImportGma)]
         public static void ImportGma()
         {
             var settings = GfzProjectWindow.GetSettings();
@@ -29,7 +29,7 @@ namespace Manifold.EditorTools.GC.GFZ.GMA
             ImportGma(rootDirectory);
         }
 
-        [MenuItem(GfzMenuItems.GMA.ImportGmaAllRegions, priority = GfzMenuItems.GMA.ImportGmaAllRegionsPriority)]
+        [MenuItem(GfzMenuItems.GMA.ImportGmaAllRegions, priority = GfzMenuItems.GMA.Priority.ImportGmaAllRegions)]
         public static void ImportGmaAllRegions()
         {
             var settings = GfzProjectWindow.GetSettings();
@@ -100,7 +100,7 @@ namespace Manifold.EditorTools.GC.GFZ.GMA
             ImportGma(stageFolder, venueFolder);
         }
 
-        [MenuItem(GfzMenuItems.GMA.ImportGmaSingleScene, priority = GfzMenuItems.GMA.ImportGmaSingleScenePriority)]
+        [MenuItem(GfzMenuItems.GMA.ImportGmaSingleScene, priority = GfzMenuItems.GMA.Priority.ImportGmaSingleScene)]
         public static void ImportSceneGmasOnly()
         {
             var settings = GfzProjectWindow.GetSettings();

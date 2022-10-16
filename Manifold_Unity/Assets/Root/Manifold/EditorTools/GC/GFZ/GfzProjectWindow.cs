@@ -36,7 +36,7 @@ namespace Manifold.EditorTools.GC.GFZ
         }
 
         // Add menu named "My Window" to the Window menu
-        [MenuItem(GfzMenuItems.ProjectWindow.OpenNewWindow, priority = GfzMenuItems.ProjectWindow.OpenNewWindowPriority)]
+        [MenuItem(GfzMenuItems.ProjectWindow.OpenNewWindow, priority = GfzMenuItems.ProjectWindow.Priority.OpenNewWindow)]
         static void OpenNewWindow()
         {
             // Get existing open window or if none, make a new one:

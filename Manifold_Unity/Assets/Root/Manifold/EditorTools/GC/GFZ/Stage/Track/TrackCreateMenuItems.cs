@@ -1,10 +1,4 @@
-﻿using GameCube.GFZ.TPL;
-using Manifold.IO;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Security.Cryptography;
-using System.Text;
+﻿using System;
 using UnityEditor;
 using UnityEngine;
 
@@ -18,7 +12,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         Spiral
     }
 
-    public enum RoadType
+    public enum ShapeType
     {
         Normal,
         CylinderPipe,
@@ -33,21 +27,20 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         const string NamePathLine = "line";
         const string NamePathSpiral = "spiral";
 
-        const string NameRoadNormal = "road";
-        const string NameRoadCylindePipe = "circle";
-        const string NameRoadCupsule = "capsule";
-        const string NameRoadOpenPipeCylinder = "opencircle";
-        const string NameRoadSquareCorner = "square";
+        const string NameShapeNormal = "road";
+        const string NameShapeCylinderPipe = "circle";
+        const string NameShapeCapsule = "capsule";
+        const string NameShapeOpenPipeCylinder = "open-circle";
+        const string NameShapeSquareCorner = "square";
 
         /// <summary>
         ///  Generate GfzTrack component
         /// </summary>
-        [MenuItem(GfzMenuItems.TrackCreate.AddTrack, priority = 1)]
+        [MenuItem(GfzMenuItems.CreateTrackSegment.CreateTrack, priority = GfzMenuItems.CreateTrackSegment.Priority.CreateTrack)]
         public static void GenerateTrack()
         {
             GameObject track = new GameObject("Track");
             Undo.RegisterCreatedObjectUndo(track, "Add Track");
-
             Undo.AddComponent<GfzTrack>(track);
 
             return;
@@ -132,25 +125,25 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         /// <summary>
         /// Add GfzShape component
         /// </summary>
-        /// <param name="roadType"></param>
+        /// <param name="shapeType"></param>
         /// <param name="obj"></param>
-        public static void AddGfzShape(RoadType roadType, GameObject obj)
+        public static void AddGfzShape(ShapeType shapeType, GameObject obj)
         {
-            switch (roadType)
+            switch (shapeType)
             {
-                case RoadType.Normal:
+                case ShapeType.Normal:
                     Undo.AddComponent<GfzShapeRoad>(obj);
                     break;
-                case RoadType.CylinderPipe:
+                case ShapeType.CylinderPipe:
                     Undo.AddComponent<GfzShapePipeCylinder>(obj);
                     break;
-                case RoadType.Capsule:
+                case ShapeType.Capsule:
                     Undo.AddComponent<GfzShapeCapsule>(obj);
                     break;
-                case RoadType.OpenPipeCylinder:
+                case ShapeType.OpenPipeCylinder:
                     Undo.AddComponent<GfzShapeOpenPipeCylinder>(obj);
                     break;
-                case RoadType.SquareCorner:
+                case ShapeType.SquareCorner:
                     Undo.AddComponent<GfzShapeSquareCorner>(obj);
                     break;
             }
@@ -161,8 +154,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         /// Generate GfzPathSegment extended component as child
         /// </summary>
         /// <param name="pathType"></param>
-        /// <param name="roadType"></param>
-        public static void GenerateGfzPath(PathType pathType, RoadType roadType)
+        /// <param name="shapeType"></param>
+        public static void GenerateGfzPath(PathType pathType, ShapeType shapeType)
         {
             int idx = -1;
             GfzTrack track;
@@ -170,7 +163,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             try
             {
                 track = GameObject.FindObjectOfType<GfzTrack>();
-            } catch (Exception e) {
+            }
+            catch (Exception e)
+            {
                 Debug.LogWarning($"GfzTrack object not exist.\r\nAuto Generate Track");
                 Debug.Log($"Actual Exception: {e.Message}");
                 GenerateTrack();
@@ -209,22 +204,22 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             GameObject pathSegment = new GameObject(pathName);
 
             string roadName = "";
-            switch (roadType)
+            switch (shapeType)
             {
-                case RoadType.Normal:
-                    roadName = NameRoadNormal;
+                case ShapeType.Normal:
+                    roadName = NameShapeNormal;
                     break;
-                case RoadType.CylinderPipe:
-                    roadName = NameRoadCylindePipe;
+                case ShapeType.CylinderPipe:
+                    roadName = NameShapeCylinderPipe;
                     break;
-                case RoadType.Capsule:
-                    roadName = NameRoadCupsule;
+                case ShapeType.Capsule:
+                    roadName = NameShapeCapsule;
                     break;
-                case RoadType.OpenPipeCylinder:
-                    roadName = NameRoadOpenPipeCylinder;
+                case ShapeType.OpenPipeCylinder:
+                    roadName = NameShapeOpenPipeCylinder;
                     break;
-                case RoadType.SquareCorner:
-                    roadName = NameRoadSquareCorner;
+                case ShapeType.SquareCorner:
+                    roadName = NameShapeSquareCorner;
                     break;
             }
             GameObject roadShape = new GameObject(roadName);
@@ -240,65 +235,67 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             {
                 AlignPrev(pathType, track, pathSegment);
             }
-            AddGfzShape(roadType, roadShape);
+            AddGfzShape(shapeType, roadShape);
 
             return;
         }
 
 
         // Normal Road
-        [MenuItem(GfzMenuItems.TrackCreate.AddNormalRoad + GfzMenuItems.TrackCreate.AddBezier, priority = 100)]
-        public static void AddPathBezierNormalRoad() => GenerateGfzPath(PathType.Bezier, RoadType.Normal);
+        [MenuItem(GfzMenuItems.CreateTrackSegment.RoadBezier, priority = GfzMenuItems.CreateTrackSegment.Priority.RoadBezier)]
+        public static void AddPathBezierNormalRoad() => GenerateGfzPath(PathType.Bezier, ShapeType.Normal);
 
-        [MenuItem(GfzMenuItems.TrackCreate.AddNormalRoad + GfzMenuItems.TrackCreate.AddLine, priority = 101)]
-        public static void AddPathLineNormalRoad() => GenerateGfzPath(PathType.Line, RoadType.Normal);
+        [MenuItem(GfzMenuItems.CreateTrackSegment.RoadLine, priority = GfzMenuItems.CreateTrackSegment.Priority.RoadLine)]
+        public static void AddPathLineNormalRoad() => GenerateGfzPath(PathType.Line, ShapeType.Normal);
 
-        [MenuItem(GfzMenuItems.TrackCreate.AddNormalRoad + GfzMenuItems.TrackCreate.AddSpiral, priority = 102)]
-        public static void AddPathSprialNormalRoad() => GenerateGfzPath(PathType.Spiral, RoadType.Normal);
+        [MenuItem(GfzMenuItems.CreateTrackSegment.RoadSpiral, priority = GfzMenuItems.CreateTrackSegment.Priority.RoadSpiral)]
+        public static void AddPathSprialNormalRoad() => GenerateGfzPath(PathType.Spiral, ShapeType.Normal);
 
-        [MenuItem(GfzMenuItems.TrackCreate.AddNormalRoad + GfzMenuItems.TrackCreate.AddBezierOld, priority = 999)]
-        public static void AddPathBezierOldNormalRoad() => GenerateGfzPath(PathType.BezierOld, RoadType.Normal);
+        //[MenuItem(GfzMenuItems.TrackCreate.AddNormalRoad + GfzMenuItems.TrackCreate.AddBezierOld, priority = 999)]
+        public static void AddPathBezierOldNormalRoad() => GenerateGfzPath(PathType.BezierOld, ShapeType.Normal);
 
 
         // CylinderPipe Road
-        [MenuItem(GfzMenuItems.TrackCreate.AddCylinderPipeRoad + GfzMenuItems.TrackCreate.AddBezier, priority = 100)]
-        public static void AddPathBezierCylinderPipeRoad() => GenerateGfzPath(PathType.Bezier, RoadType.CylinderPipe);
+        [MenuItem(GfzMenuItems.CreateTrackSegment.PipeCylinderBezier, priority = GfzMenuItems.CreateTrackSegment.Priority.PipeCylinderBezier)]
+        public static void AddPathBezierCylinderPipeRoad() => GenerateGfzPath(PathType.Bezier, ShapeType.CylinderPipe);
 
-        [MenuItem(GfzMenuItems.TrackCreate.AddCylinderPipeRoad + GfzMenuItems.TrackCreate.AddLine, priority = 101)]
-        public static void AddPathLineCylinderPipeRoad() => GenerateGfzPath(PathType.Line, RoadType.CylinderPipe);
+        [MenuItem(GfzMenuItems.CreateTrackSegment.PipeCylinderLine, priority = GfzMenuItems.CreateTrackSegment.Priority.PipeCylinderLine)]
+        public static void AddPathLineCylinderPipeRoad() => GenerateGfzPath(PathType.Line, ShapeType.CylinderPipe);
 
-        [MenuItem(GfzMenuItems.TrackCreate.AddCylinderPipeRoad + GfzMenuItems.TrackCreate.AddSpiral, priority = 102)]
-        public static void AddPathSprialCylinderPipeRoad() => GenerateGfzPath(PathType.Spiral, RoadType.CylinderPipe);
+        [MenuItem(GfzMenuItems.CreateTrackSegment.PipeCylinderSpiral, priority = GfzMenuItems.CreateTrackSegment.Priority.PipeCylinderSpiral)]
+        public static void AddPathSprialCylinderPipeRoad() => GenerateGfzPath(PathType.Spiral, ShapeType.CylinderPipe);
 
-        [MenuItem(GfzMenuItems.TrackCreate.AddCylinderPipeRoad + GfzMenuItems.TrackCreate.AddBezierOld, priority = 999)]
-        public static void AddPathBezierOldCylinderPipeRoad() => GenerateGfzPath(PathType.BezierOld, RoadType.CylinderPipe);
+        //[MenuItem(GfzMenuItems.TrackCreate.AddCylinderPipeRoad + GfzMenuItems.TrackCreate.AddBezierOld, priority = 999)]
+        public static void AddPathBezierOldCylinderPipeRoad() => GenerateGfzPath(PathType.BezierOld, ShapeType.CylinderPipe);
+
+
+        // OpenPipeCylinder Road
+        [MenuItem(GfzMenuItems.CreateTrackSegment.OpenPipeCylinderBezier, priority = GfzMenuItems.CreateTrackSegment.Priority.OpenPipeCylinderBezier)]
+        public static void AddPathBezierOpenPipeCylinderRoad() => GenerateGfzPath(PathType.Bezier, ShapeType.OpenPipeCylinder);
+
+        [MenuItem(GfzMenuItems.CreateTrackSegment.OpenPipeCylinderLine, priority = GfzMenuItems.CreateTrackSegment.Priority.OpenPipeCylinderLine)]
+        public static void AddPathLineOpenPipeCylinderRoad() => GenerateGfzPath(PathType.Line, ShapeType.OpenPipeCylinder);
+
+        [MenuItem(GfzMenuItems.CreateTrackSegment.OpenPipeCylinderSpiral, priority = GfzMenuItems.CreateTrackSegment.Priority.OpenPipeCylinderSpiral)]
+        public static void AddPathSprialOpenPipeCylinderRoad() => GenerateGfzPath(PathType.Spiral, ShapeType.OpenPipeCylinder);
 
 
         // Capsule Road
-        [MenuItem(GfzMenuItems.TrackCreate.AddCapsuleRoad + GfzMenuItems.TrackCreate.AddBezier, priority = 100)]
-        public static void AddPathBezierCapsuleRoad() => GenerateGfzPath(PathType.Bezier, RoadType.Capsule);
+        [MenuItem(GfzMenuItems.CreateTrackSegment.CapsuleBezier, priority = GfzMenuItems.CreateTrackSegment.Priority.CapsuleBezier)]
+        public static void AddPathBezierCapsuleRoad() => GenerateGfzPath(PathType.Bezier, ShapeType.Capsule);
 
-        [MenuItem(GfzMenuItems.TrackCreate.AddCapsuleRoad + GfzMenuItems.TrackCreate.AddLine, priority = 101)]
-        public static void AddPathLineCapsuleRoad() => GenerateGfzPath(PathType.Line, RoadType.Capsule);
+        [MenuItem(GfzMenuItems.CreateTrackSegment.CapsuleLine, priority = GfzMenuItems.CreateTrackSegment.Priority.CapsuleLine)]
+        public static void AddPathLineCapsuleRoad() => GenerateGfzPath(PathType.Line, ShapeType.Capsule);
 
-        [MenuItem(GfzMenuItems.TrackCreate.AddCapsuleRoad + GfzMenuItems.TrackCreate.AddSpiral, priority = 102)]
-        public static void AddPathSprialCapsuleRoad() => GenerateGfzPath(PathType.Spiral, RoadType.Capsule);
+        [MenuItem(GfzMenuItems.CreateTrackSegment.CapsuleSpiral, priority = GfzMenuItems.CreateTrackSegment.Priority.CapsuleSpiral)]
+        public static void AddPathSprialCapsuleRoad() => GenerateGfzPath(PathType.Spiral, ShapeType.Capsule);
 
-        [MenuItem(GfzMenuItems.TrackCreate.AddCapsuleRoad + GfzMenuItems.TrackCreate.AddBezierOld, priority = 999)]
-        public static void AddPathBezierOldCapsuleRoad() => GenerateGfzPath(PathType.BezierOld, RoadType.Capsule);
+        //[MenuItem(GfzMenuItems.TrackCreate.AddCapsuleRoad + GfzMenuItems.TrackCreate.AddBezierOld, priority = 999)]
+        public static void AddPathBezierOldCapsuleRoad() => GenerateGfzPath(PathType.BezierOld, ShapeType.Capsule);
 
-        // OpenPipeCylinder Road
-        [MenuItem(GfzMenuItems.TrackCreate.AddOpenPipeCylinderRoad + GfzMenuItems.TrackCreate.AddBezier, priority = 100)]
-        public static void AddPathBezierOpenPipeCylinderRoad() => GenerateGfzPath(PathType.Bezier, RoadType.OpenPipeCylinder);
 
-        [MenuItem(GfzMenuItems.TrackCreate.AddOpenPipeCylinderRoad + GfzMenuItems.TrackCreate.AddLine, priority = 101)]
-        public static void AddPathLineOpenPipeCylinderRoad() => GenerateGfzPath(PathType.Line, RoadType.OpenPipeCylinder);
-
-        [MenuItem(GfzMenuItems.TrackCreate.AddOpenPipeCylinderRoad + GfzMenuItems.TrackCreate.AddSpiral, priority = 102)]
-        public static void AddPathSprialOpenPipeCylinderRoad() => GenerateGfzPath(PathType.Spiral, RoadType.OpenPipeCylinder);
-
-        [MenuItem(GfzMenuItems.TrackCreate.AddOpenPipeCylinderRoad + GfzMenuItems.TrackCreate.AddBezierOld, priority = 999)]
-        public static void AddPathBezierOldOpenPipeCylinderRoad() => GenerateGfzPath(PathType.BezierOld, RoadType.OpenPipeCylinder);
+        //[MenuItem(GfzMenuItems.TrackCreate.AddOpenPipeCylinderRoad + GfzMenuItems.TrackCreate.AddBezierOld, priority = 999)]
+        public static void AddPathBezierOldOpenPipeCylinderRoad() => GenerateGfzPath(PathType.BezierOld, ShapeType.OpenPipeCylinder);
 
     }
 }
