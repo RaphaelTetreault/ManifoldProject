@@ -447,12 +447,13 @@ namespace Manifold.EditorTools.GC.GFZ
                 var allTristrips = new List<Tristrip>();
                 Vector3 forward = isGfzCoord ? Vector3.back : Vector3.forward;
                 Vector3 back = isGfzCoord ? Vector3.forward : Vector3.back;
+                float angle = isGfzCoord ? -45 : 45;
 
                 if (embed.IncludeTrimStart)
                 {
                     int index0 = 0;
                     var mtx0 = matrices[index0];
-                    var normal0 = Quaternion.Euler(45, 0, 0) * back;
+                    var normal0 = Quaternion.Euler(+angle, 0, 0) * back;
                     var tristrips = Road.StandardTrapezoidEndCapUV(mtx0, 0, -protrusion, kEmbedHeight, 0, normal0, Vector2.one);
                     // Hacky UV fix
                     float texReps = GetTexRepetitions(mtx0.lossyScale.x, texLength);
@@ -468,7 +469,7 @@ namespace Manifold.EditorTools.GC.GFZ
                 {
                     int index1 = matrices.Length - 1;
                     var mtx1 = matrices[index1];
-                    var normal1 = Quaternion.Euler(-45,0,0) * forward;
+                    var normal1 = Quaternion.Euler(-angle,0,0) * forward;
                     var tristrips = Road.StandardTrapezoidEndCapUV(mtx1, 0, -protrusion, kEmbedHeight, 0, normal1, Vector2.one);
                     // Hacky UV fix
                     float texReps = GetTexRepetitions(mtx1.lossyScale.x, texLength);
@@ -768,7 +769,7 @@ namespace Manifold.EditorTools.GC.GFZ
                 var tristrip = new Tristrip();
                 tristrip.positions = positions;
                 tristrip.normals = ArrayUtility.DefaultArray(matrix.rotation * normal, tristrip.VertexCount);
-                tristrip.isBackFacing = Vector3.Dot(Vector3.back, normal) < 0;
+                //tristrip.isBackFacing = Vector3.Dot(Vector3.back, normal) < 0;
 
                 var tristrips = new Tristrip[] { tristrip };
                 return tristrips;
@@ -899,7 +900,7 @@ namespace Manifold.EditorTools.GC.GFZ
                     return tristrips;
                 }
 
-                public static Tristrip[] CreateRoadTrim(Matrix4x4[] matrices, GfzShapeRoad road, float length)
+                public static Tristrip[] CreateRoadTrim(Matrix4x4[] matrices, GfzShapeRoad road, float length, bool isGfzCoordinate)
                 {
                     var allTristrips = new List<Tristrip>();
                     float repetitions = math.ceil(length / kLengthTrim);
@@ -926,19 +927,24 @@ namespace Manifold.EditorTools.GC.GFZ
 
                     // EndCaps
                     {
+                        Vector3 forward = isGfzCoordinate ? Vector3.back : Vector3.forward;
+                        Vector3 back = isGfzCoordinate ? Vector3.forward : Vector3.back;
+
                         GetContinuity(road, out bool isContinuousFrom, out bool isContinuousTo);
                         if (!isContinuousFrom)
                         {
                             var matrix = matrices[0];
                             var uvRepsX = Mathf.Ceil(matrix.lossyScale.x / kLengthTrim);
-                            var endcapFrom = StandardCurbEndCapUV(matrix, kCurbHeight, kCurbSlantOuter, kCurbSlantInner, 0, kThickness, Vector3.back, new Vector2(uvRepsX, 1));
+                            var endcapFrom = StandardCurbEndCapUV(matrix, kCurbHeight, kCurbSlantOuter, kCurbSlantInner, 0, kThickness, back, new Vector2(uvRepsX, 1));
+                            AssignTristripMetadata(endcapFrom, false, false);
                             allTristrips.AddRange(endcapFrom);
                         }
                         if (!isContinuousTo)
                         {
                             var matrix = matrices[matrices.Length - 1];
                             var uvRepsX = Mathf.Ceil(matrix.lossyScale.x / kLengthTrim);
-                            var endcapTo = StandardCurbEndCapUV(matrix, kCurbHeight, kCurbSlantOuter, kCurbSlantInner, 0, kThickness, Vector3.forward, new Vector2(uvRepsX, 1));
+                            var endcapTo = StandardCurbEndCapUV(matrix, kCurbHeight, kCurbSlantOuter, kCurbSlantInner, 0, kThickness, forward, new Vector2(uvRepsX, 1));
+                            AssignTristripMetadata(endcapTo, true, false);
                             allTristrips.AddRange(endcapTo);
                         }
                     }
