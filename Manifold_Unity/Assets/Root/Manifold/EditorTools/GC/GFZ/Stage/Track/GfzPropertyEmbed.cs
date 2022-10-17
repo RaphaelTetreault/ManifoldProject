@@ -243,39 +243,39 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 case SurfaceEmbedType.SlipLight:
                     return new Tristrip[][]
                     {
-                        TristripTemplates.General.CreateTrim(matrices, this),
+                        TristripTemplates.General.CreateTrim(matrices, this, isGfzCoordinateSpace),
                         TristripTemplates.General.CreateSlipLight(matrices, parentMatrices, this),
                     };
                 case SurfaceEmbedType.SlipDarkThin:
                     return new Tristrip[][]
                     {
-                        TristripTemplates.General.CreateTrim(matrices, this),
+                        TristripTemplates.General.CreateTrim(matrices, this, isGfzCoordinateSpace),
                         TristripTemplates.General.CreateSlipDarkThin(matrices, parentMatrices, this),
                     };
                 case SurfaceEmbedType.SlipDarkWide:
                     return new Tristrip[][]
                     {
-                        TristripTemplates.General.CreateTrim(matrices, this),
+                        TristripTemplates.General.CreateTrim(matrices, this, isGfzCoordinateSpace),
                         TristripTemplates.General.CreateSlipDarkWide(matrices, parentMatrices, this),
                     };
                 case SurfaceEmbedType.Dirt:
                     return new Tristrip[][]
                     {
-                        TristripTemplates.General.CreateTrim(matrices, this),
+                        TristripTemplates.General.CreateTrim(matrices, this, isGfzCoordinateSpace),
                         TristripTemplates.General.CreateDirtNoise(matrices, parentMatrices, this),
                         TristripTemplates.General.CreateDirtAlpha(matrices, this),
                     };
                 case SurfaceEmbedType.Lava:
                     return new Tristrip[][]
                     {
-                        TristripTemplates.General.CreateTrim(matrices, this),
+                        TristripTemplates.General.CreateTrim(matrices, this, isGfzCoordinateSpace),
                         TristripTemplates.General.CreateLavaCrag(matrices, parentMatrices, this),
                         TristripTemplates.General.CreateLavaAlpha(matrices, parentMatrices, this),
                     };
                 case SurfaceEmbedType.RecoverLight:
                     return new Tristrip[][]
                     {
-                        TristripTemplates.General.CreateTrim(matrices, this),
+                        TristripTemplates.General.CreateTrim(matrices, this, isGfzCoordinateSpace),
                         TristripTemplates.General.CreateRecoverBase(matrices, this),
                         TristripTemplates.General.CreateRecoverBase(matrices, this),
                         TristripTemplates.General.CreateRecoverAlpha(matrices, this),
@@ -283,7 +283,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 case SurfaceEmbedType.RecoverDark:
                     return new Tristrip[][]
                     {
-                        TristripTemplates.General.CreateTrim(matrices, this),
+                        TristripTemplates.General.CreateTrim(matrices, this, isGfzCoordinateSpace),
                         TristripTemplates.General.CreateRecoverBase(matrices, this),
                         TristripTemplates.General.CreateRecoverAlpha(matrices, this),
                     };
