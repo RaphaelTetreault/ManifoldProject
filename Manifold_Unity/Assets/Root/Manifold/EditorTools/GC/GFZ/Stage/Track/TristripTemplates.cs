@@ -44,7 +44,7 @@ namespace Manifold.EditorTools.GC.GFZ
             Vector3 rotatedNormal = rotation * normal;
             return rotatedNormal;
         }
-        public static Vector3 SurfaceNormalAngle(float angle, Vector3 normal)
+        public static Vector3 SurfaceNormalAngleZ(float angle, Vector3 normal)
         {
             Quaternion rotation = Quaternion.Euler(0, 0, angle);
             Vector3 rotatedNormal = rotation * normal;
@@ -452,7 +452,8 @@ namespace Manifold.EditorTools.GC.GFZ
                 {
                     int index0 = 0;
                     var mtx0 = matrices[index0];
-                    var tristrips = Road.StandardTrapezoidEndCapUV(mtx0, 0, -protrusion, kEmbedHeight, 0, back, Vector2.one);
+                    var normal0 = Quaternion.Euler(45, 0, 0) * back;
+                    var tristrips = Road.StandardTrapezoidEndCapUV(mtx0, 0, -protrusion, kEmbedHeight, 0, normal0, Vector2.one);
                     // Hacky UV fix
                     float texReps = GetTexRepetitions(mtx0.lossyScale.x, texLength);
                     tristrips[0].tex0 = OffsetUV(tristrips[0].tex0, new Vector2(0, 0.5f));
@@ -467,7 +468,8 @@ namespace Manifold.EditorTools.GC.GFZ
                 {
                     int index1 = matrices.Length - 1;
                     var mtx1 = matrices[index1];
-                    var tristrips = Road.StandardTrapezoidEndCapUV(mtx1, 0, -protrusion, kEmbedHeight, 0, forward, Vector2.one);
+                    var normal1 = Quaternion.Euler(-45,0,0) * forward;
+                    var tristrips = Road.StandardTrapezoidEndCapUV(mtx1, 0, -protrusion, kEmbedHeight, 0, normal1, Vector2.one);
                     // Hacky UV fix
                     float texReps = GetTexRepetitions(mtx1.lossyScale.x, texLength);
                     tristrips[0].tex0 = OffsetUV(tristrips[0].tex0, new Vector2(0, 0.5f));
