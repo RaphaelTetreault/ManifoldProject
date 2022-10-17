@@ -234,58 +234,61 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             var max = animKeys[animKeys.Length - 1].time;
             var matrices = TristripGenerator.CreatePathMatrices(this, isGfzCoordinateSpace, lengthDistance, min, max);
             matrices = TristripGenerator.StripHeight(matrices);
-            //
+            // Inset scale so that trim of embeds does not "overflow" collision area
+            var insetMatrices = TristripGenerator.ModifyMatrixScales(matrices, new Vector3(-2f * (TristripTemplates.General.kTrimOffset + 0.05f),0,0));
+            // Matriuces of parent, sometimes required for positioning, etc.
             var parent = GetParent();
             var parentMatrices = TristripGenerator.CreatePathMatrices(parent, isGfzCoordinateSpace, lengthDistance, min, max);
+
 
             switch (type)
             {
                 case SurfaceEmbedType.SlipLight:
                     return new Tristrip[][]
                     {
-                        TristripTemplates.General.CreateTrim(matrices, this, isGfzCoordinateSpace),
-                        TristripTemplates.General.CreateSlipLight(matrices, parentMatrices, this),
+                        TristripTemplates.General.CreateTrim(insetMatrices, this, isGfzCoordinateSpace),
+                        TristripTemplates.General.CreateSlipLight(insetMatrices, parentMatrices, this),
                     };
                 case SurfaceEmbedType.SlipDarkThin:
                     return new Tristrip[][]
                     {
-                        TristripTemplates.General.CreateTrim(matrices, this, isGfzCoordinateSpace),
-                        TristripTemplates.General.CreateSlipDarkThin(matrices, parentMatrices, this),
+                        TristripTemplates.General.CreateTrim(insetMatrices, this, isGfzCoordinateSpace),
+                        TristripTemplates.General.CreateSlipDarkThin(insetMatrices, parentMatrices, this),
                     };
                 case SurfaceEmbedType.SlipDarkWide:
                     return new Tristrip[][]
                     {
-                        TristripTemplates.General.CreateTrim(matrices, this, isGfzCoordinateSpace),
-                        TristripTemplates.General.CreateSlipDarkWide(matrices, parentMatrices, this),
+                        TristripTemplates.General.CreateTrim(insetMatrices, this, isGfzCoordinateSpace),
+                        TristripTemplates.General.CreateSlipDarkWide(insetMatrices, parentMatrices, this),
                     };
                 case SurfaceEmbedType.Dirt:
                     return new Tristrip[][]
                     {
-                        TristripTemplates.General.CreateTrim(matrices, this, isGfzCoordinateSpace),
-                        TristripTemplates.General.CreateDirtNoise(matrices, parentMatrices, this),
-                        TristripTemplates.General.CreateDirtAlpha(matrices, this),
+                        TristripTemplates.General.CreateTrim(insetMatrices, this, isGfzCoordinateSpace),
+                        TristripTemplates.General.CreateDirtNoise(insetMatrices, parentMatrices, this),
+                        TristripTemplates.General.CreateDirtAlpha(insetMatrices, this),
                     };
                 case SurfaceEmbedType.Lava:
                     return new Tristrip[][]
                     {
-                        TristripTemplates.General.CreateTrim(matrices, this, isGfzCoordinateSpace),
-                        TristripTemplates.General.CreateLavaCrag(matrices, parentMatrices, this),
-                        TristripTemplates.General.CreateLavaAlpha(matrices, parentMatrices, this),
+                        TristripTemplates.General.CreateTrim(insetMatrices, this, isGfzCoordinateSpace),
+                        TristripTemplates.General.CreateLavaCrag(insetMatrices, parentMatrices, this),
+                        TristripTemplates.General.CreateLavaAlpha(insetMatrices, parentMatrices, this),
                     };
                 case SurfaceEmbedType.RecoverLight:
                     return new Tristrip[][]
                     {
-                        TristripTemplates.General.CreateTrim(matrices, this, isGfzCoordinateSpace),
-                        TristripTemplates.General.CreateRecoverBase(matrices, this),
-                        TristripTemplates.General.CreateRecoverBase(matrices, this),
-                        TristripTemplates.General.CreateRecoverAlpha(matrices, this),
+                        TristripTemplates.General.CreateTrim(insetMatrices, this, isGfzCoordinateSpace),
+                        TristripTemplates.General.CreateRecoverBase(insetMatrices, this),
+                        TristripTemplates.General.CreateRecoverBase(insetMatrices, this),
+                        TristripTemplates.General.CreateRecoverAlpha(insetMatrices, this),
                     };
                 case SurfaceEmbedType.RecoverDark:
                     return new Tristrip[][]
                     {
-                        TristripTemplates.General.CreateTrim(matrices, this, isGfzCoordinateSpace),
-                        TristripTemplates.General.CreateRecoverBase(matrices, this),
-                        TristripTemplates.General.CreateRecoverAlpha(matrices, this),
+                        TristripTemplates.General.CreateTrim(insetMatrices, this, isGfzCoordinateSpace),
+                        TristripTemplates.General.CreateRecoverBase(insetMatrices, this),
+                        TristripTemplates.General.CreateRecoverAlpha(insetMatrices, this),
                     };
                 default:
                     return new Tristrip[][]

@@ -120,7 +120,7 @@ namespace Manifold.EditorTools.GC.GFZ
             private static readonly Vector3 edgeRight = new Vector3(+0.5f, kEmbedHeight, 0);
             private const float kEmbedHeight = 0.30f;
             private const float kHealHeight = 0.10f;
-            private const float kTrimOffset = 0.75f;
+            public const float kTrimOffset = 0.75f;
             private const float kTrimRepetitions = 64f;
             private const float kEmbedFlashSlipReps = 20f;
             private const float kEmbedFlashLavaReps = 10f;
