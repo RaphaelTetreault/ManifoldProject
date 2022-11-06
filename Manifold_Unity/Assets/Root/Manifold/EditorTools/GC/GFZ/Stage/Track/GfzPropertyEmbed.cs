@@ -237,10 +237,27 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             matrices = TristripGenerator.StripHeight(matrices);
             // Inset scale so that trim of embeds does not "overflow" collision area
             var insetMatrices = TristripGenerator.ModifyMatrixScales(matrices, new Vector3(-2f * (TristripTemplates.General.kTrimOffset + 0.05f),0,0));
-            // Matriuces of parent, sometimes required for positioning, etc.
+            // Matrices of parent, sometimes required for positioning, etc.
             var parent = GetParent();
             var parentMatrices = TristripGenerator.CreatePathMatrices(parent, isGfzCoordinateSpace, lengthDistance, min, max);
 
+            // Inset endcaps if endcap is present. To do this, inset the matrix itself.
+            float inset = TristripTemplates.General.kTrimOffset;
+            if (IncludeTrimStart)
+            {
+                var matrix = insetMatrices[0];
+                var offset = matrix.rotation * TristripGenerator.Forward(isGfzCoordinateSpace) * inset;
+                matrix = Matrix4x4.TRS(matrix.GetPosition() + offset, matrix.rotation, matrix.lossyScale);
+                insetMatrices[0] = matrix;
+            }
+            if (IncludeTrimEnd)
+            {
+                int index = matrices.Length - 1;
+                var matrix = insetMatrices[index];
+                var offset = matrix.rotation * TristripGenerator.Back(isGfzCoordinateSpace) * inset;
+                matrix = Matrix4x4.TRS(matrix.GetPosition() + offset, matrix.rotation, matrix.lossyScale);
+                insetMatrices[index] = matrix;
+            }
 
             switch (type)
             {

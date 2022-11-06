@@ -903,5 +903,17 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return uvs;
         }
 
+
+
+
+        public static Vector3 Forward(bool isGfzCoordinateSpace)
+        {
+            return isGfzCoordinateSpace ? Vector3.back : Vector3.forward;
+        }
+        public static Vector3 Back(bool isGfzCoordinateSpace)
+        {
+            return isGfzCoordinateSpace ? Vector3.forward : Vector3.back;
+        }
+
     }
 }

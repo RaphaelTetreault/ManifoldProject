@@ -442,8 +442,8 @@ namespace Manifold.EditorTools.GC.GFZ
                 if (embed.IncludeTrimRight)
                 {
                     var normal = Quaternion.Euler(0, 0, -angleLeftRight) * Vector3.up;
-                    var leftTristrips = CreateTrimSide(matrices, embed, normal, +1, kTrimOffset, repetitionsAlongLength, isGfzCoordinateSpace);
-                    allTristrips.AddRange(leftTristrips);
+                    var rightTristrips = CreateTrimSide(matrices, embed, normal, +1, kTrimOffset, repetitionsAlongLength, isGfzCoordinateSpace);
+                    allTristrips.AddRange(rightTristrips);
                 }
 
                 var trimEndcapTristrips = CreateTrimEndcaps(matrices, embed, kTrimOffset, kTrimRepetitions, isGfzCoordinateSpace);
@@ -467,13 +467,13 @@ namespace Manifold.EditorTools.GC.GFZ
                 }
 
                 // Make first/last vert protrude outwards a bit, but only do so if we have start/end trim
-                if (node.IncludeTrimEnd)
+                if (node.IncludeTrimStart)
                 {
                     Vector3 back = isGfzCoord ? Vector3.forward : Vector3.back;
                     var mtx0 = matrices[0];
                     tristrips[0].positions[1] += mtx0.rotation * (back * Mathf.Abs(protrusion));
                 }
-                if (node.IncludeTrimStart)
+                if (node.IncludeTrimEnd)
                 {
                     Vector3 forward = isGfzCoord ? Vector3.back : Vector3.forward;
                     var mtx1 = matrices[matrices.Length - 1];
