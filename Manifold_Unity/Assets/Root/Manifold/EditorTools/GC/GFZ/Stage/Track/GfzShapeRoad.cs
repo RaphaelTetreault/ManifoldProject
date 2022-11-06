@@ -6,25 +6,37 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 {
     public class GfzShapeRoad : GfzShape,
         IRailSegment
     {
-        [field: Header("Mesh Properties")]
-        [field: SerializeField] public RoadMeshStyle MeshStyle { get; private set; }
-        [field: SerializeField, Range(1, 32)] public int WidthDivisions { get; private set; } = 4;
-        [field: SerializeField, Min(1f)] public float LengthDistance { get; private set; } = 10f;
-        [field: SerializeField, Min(1f)] public float TexRepeatWidthTop { get; private set; } = 4f;
-        [field: SerializeField, Min(1f)] public float TexRepeatWidthBottom { get; private set; } = 4f;
+        [Header("Mesh Properties")]
+        [SerializeField, FormerlySerializedAs("<MeshStyle>k__BackingField")] private RoadMeshStyle meshStyle;
+        [SerializeField] public EndcapMode endcapModeIn = EndcapMode.Automatic;
+        [SerializeField] public EndcapMode endcapModeOut = EndcapMode.Automatic;
+        [SerializeField, FormerlySerializedAs("<WidthDivisions>k__BackingField"), Range(1, 32)] private int widthDivisions = 4;
+        [SerializeField, FormerlySerializedAs("<LengthDistance>k__BackingField"), Min(1f)] public float lengthDistance  = 10f;
+        // TODO: DEPRECATE
+        [SerializeField, FormerlySerializedAs("<TexRepeatWidthTop>k__BackingField"), Min(1f), HideInInspector] public float TexRepeatWidthTop  = 4f;
+        [SerializeField, FormerlySerializedAs("<TexRepeatWidthBottom>k__BackingField"), Min(1f), HideInInspector] public float TexRepeatWidthBottom  = 4f;
 
-        [field: Header("Road Properties")]
-        [field: SerializeField, Min(0f)] public float RailHeightLeft { get; private set; } = 3f;
-        [field: SerializeField, Min(0f)] public float RailHeightRight { get; private set; } = 3f;
-        [field: SerializeField] public bool HasLaneDividers { get; private set; } = true;
+        [Header("Road Properties")]
+        [SerializeField, FormerlySerializedAs("<RailHeightLeft>k__BackingField"), Min(0f)] public float railHeightLeft  = 3f;
+        [SerializeField, FormerlySerializedAs("<RailHeightRight>k__BackingField"), Min(0f)] public float railHeightRight = 3f;
+        [SerializeField, FormerlySerializedAs("<HasLaneDividers>k__BackingField")] public bool hasLaneDividers = true;
 
         public override ShapeID ShapeIdentifier => ShapeID.road;
+        public override EndcapMode EndcapModeIn => endcapModeIn;
+        public override EndcapMode EndcapModeOut => endcapModeOut;
+        public int WidthDivisions => widthDivisions;
+        public float LengthDistance => lengthDistance;
+        public float RailHeightLeft => railHeightLeft;
+        public float RailHeightRight => railHeightRight;
+        public bool HasLaneDividers => hasLaneDividers;
+
 
         public override AnimationCurveTRS CopyAnimationCurveTRS(bool isGfzCoordinateSpace)
         {
@@ -41,7 +53,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public override GcmfTemplate[] GetGcmfTemplates()
         {
-            switch (MeshStyle)
+            switch (meshStyle)
             {
                 case RoadMeshStyle.MuteCity:
                     return GcmfTemplates.MuteCity.Road();
@@ -75,7 +87,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             var matrices = TristripGenerator.StripHeight(originalMatrice);
             var maxTime = GetRoot().GetMaxTime();
 
-            switch (MeshStyle)
+            switch (meshStyle)
             {
                 case RoadMeshStyle.MuteCity:
                     return new Tristrip[][]

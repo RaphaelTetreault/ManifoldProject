@@ -9,6 +9,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         [SerializeField] private PipeCylinderType type = PipeCylinderType.Pipe;
         [SerializeField] private OpenPipeStyle pipeStyle;
         [SerializeField] private OpenCylinderStyle cylinderStyle;
+        [SerializeField] public EndcapMode endcapModeIn = EndcapMode.Automatic;
+        [SerializeField] public EndcapMode endcapModeOut = EndcapMode.Automatic;
         [SerializeField, Min(2f)] private float subdivisionsPerLength = 20f;
         [SerializeField, Min(8)] private int subdivisionsPipe = 32;
         [SerializeField, Min(6)] private int subdivisionsCylinder = 32;
@@ -47,7 +49,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     return ShapeID.cylinder;
             }
         }
-
+        public override EndcapMode EndcapModeIn => endcapModeIn;
+        public override EndcapMode EndcapModeOut => endcapModeOut;
 
         public override AnimationCurveTRS CopyAnimationCurveTRS(bool isGfzCoordinateSpace)
         {

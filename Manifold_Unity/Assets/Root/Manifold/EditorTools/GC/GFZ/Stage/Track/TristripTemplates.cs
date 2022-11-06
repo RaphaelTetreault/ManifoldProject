@@ -56,10 +56,38 @@ namespace Manifold.EditorTools.GC.GFZ
             return repetitionsAlongLength;
         }
 
-
-        public static void GetContinuity(GfzSegmentNode node, out bool isContinuousFrom, out bool isContinuousTo)
+        private static bool CheckContinuity(EndcapMode endcapMode)
         {
-            var root = node.GetRoot();
+            bool doCheck = endcapMode == EndcapMode.Automatic;
+            return doCheck;
+        }
+        private static bool GetContinuity(EndcapMode endcapMode)
+        {
+            switch (endcapMode)
+            {
+                case EndcapMode.ForceEnable: return false;
+                case EndcapMode.ForceDisable: return true;
+                case EndcapMode.Automatic: throw new ArgumentException();
+                default: throw new ArgumentException();
+            }
+        }
+        private static bool GetContinuity(EndcapMode endcapMode, HierarchichalAnimationCurveTRS from, HierarchichalAnimationCurveTRS to)
+        {
+            bool doCheck = CheckContinuity(endcapMode);
+            if (doCheck)
+            {
+                var isContinuous = CheckpointUtility.IsContinuousBetweenFromTo(from, to);
+                return isContinuous;
+            }
+            else
+            {
+                bool isContinuous = GetContinuity(endcapMode);
+                return isContinuous;
+            }
+        }
+        public static void GetContinuity(GfzShape shapeNode, out bool isContinuousFrom, out bool isContinuousTo)
+        {
+            var root = shapeNode.GetRoot();
             var prev = root.Prev;
             var next = root.Next;
 
@@ -67,8 +95,8 @@ namespace Manifold.EditorTools.GC.GFZ
             var self = root.CreateHierarchichalAnimationCurveTRS(false);
             var to = next.CreateHierarchichalAnimationCurveTRS(false);
 
-            isContinuousFrom = CheckpointUtility.IsContinuousBetweenFromTo(from, self);
-            isContinuousTo = CheckpointUtility.IsContinuousBetweenFromTo(self, to);
+            isContinuousFrom = GetContinuity(shapeNode.EndcapModeIn, from, self);
+            isContinuousTo = GetContinuity(shapeNode.EndcapModeOut, self, to);
 
             var rootShapes = root.GetShapeNodes();
             var prevShapes = prev.GetShapeNodes();
@@ -81,10 +109,16 @@ namespace Manifold.EditorTools.GC.GFZ
                 if (shape.ShapeIdentifier == GfzShape.ShapeID.embed)
                     continue;
 
-                bool canBeContinuousFrom = CompareShapeIDs(shape, prevShapes);
-                bool canBeContinuousTo = CompareShapeIDs(shape, nextShapes);
-                isContinuousFrom &= canBeContinuousFrom;
-                isContinuousTo &= canBeContinuousTo;
+                if (shapeNode.EndcapModeIn == EndcapMode.Automatic)
+                {
+                    bool canBeContinuousFrom = CompareShapeIDs(shape, prevShapes);
+                    isContinuousFrom &= canBeContinuousFrom;
+                }
+                if (shapeNode.EndcapModeIn == EndcapMode.Automatic)
+                {
+                    bool canBeContinuousTo = CompareShapeIDs(shape, nextShapes);
+                    isContinuousTo &= canBeContinuousTo;
+                }
             }
         }
         private static bool CompareShapeIDs(GfzShape selfShape, GfzShape[] shapes)
@@ -436,9 +470,9 @@ namespace Manifold.EditorTools.GC.GFZ
                 Vector3 forward = isGfzCoord ? Vector3.back : Vector3.forward;
                 Vector3 back = isGfzCoord ? Vector3.forward : Vector3.back;
                 var mtx0 = matrices[0];
-                var mtx1 = matrices[matrices.Length-1];
+                var mtx1 = matrices[matrices.Length - 1];
                 tristrips[0].positions[1] += mtx0.rotation * (back * Mathf.Abs(protrusion));
-                tristrips[0].positions[matrices.Length*2-1] += mtx1.rotation * (forward * Mathf.Abs(protrusion));
+                tristrips[0].positions[matrices.Length * 2 - 1] += mtx1.rotation * (forward * Mathf.Abs(protrusion));
 
                 return tristrips;
             }
@@ -469,7 +503,7 @@ namespace Manifold.EditorTools.GC.GFZ
                 {
                     int index1 = matrices.Length - 1;
                     var mtx1 = matrices[index1];
-                    var normal1 = Quaternion.Euler(-angle,0,0) * forward;
+                    var normal1 = Quaternion.Euler(-angle, 0, 0) * forward;
                     var tristrips = Road.StandardTrapezoidEndCapUV(mtx1, 0, -protrusion, kEmbedHeight, 0, normal1, Vector2.one);
                     // Hacky UV fix
                     float texReps = GetTexRepetitions(mtx1.lossyScale.x, texLength);
@@ -976,7 +1010,7 @@ namespace Manifold.EditorTools.GC.GFZ
                     var normalRight = SurfaceNormalTOA(kCurbHeight, kCurbSlantInner - kCurbSlantOuter, Vector3.up, false);
                     var tristripsLeft = GenerateHorizontalLineWithNormals(matricesLeft, leftOuter, leftInner, normalLeft, 1, true);
                     var tristripsRight = GenerateHorizontalLineWithNormals(matricesRight, rightOuter, rightInner, normalRight, 1, false);
-                    
+
                     float repetitions = math.ceil(length / kLengthTrim);
                     int vertexCount = tristripsLeft[0].VertexCount;
                     var uvs0 = UvStripForward(vertexCount, repetitions);
@@ -1951,13 +1985,14 @@ namespace Manifold.EditorTools.GC.GFZ
                 from = math.lerp(baseAngle, angleFrom, ratio);
                 to = math.lerp(baseAngle, angleTo, ratio);
             }
-            public static Tristrip OpenCircleEndCap(Matrix4x4 matrix, int nTristrips, Vector3 normal, float angleFrom, float angleTo, bool isBackFacing)
+            public static Tristrip OpenCircleEndCapTex0(Matrix4x4 matrix, int nTristrips, Vector3 normal, float angleFrom, float angleTo, bool isBackFacing)
             {
                 var vertices = CreateCircleVertices(nTristrips, angleFrom, angleTo);
 
                 var tristrip = new Tristrip();
                 int vertexCount = vertices.Length + 1;
                 tristrip.positions = new Vector3[vertexCount];
+                tristrip.tex0 = ArrayUtility.DefaultArray(new Vector2(0.5f, 0.5f), vertexCount);
                 tristrip.normals = ArrayUtility.DefaultArray(normal, vertexCount);
 
                 for (int i = 0; i < vertexCount; i++)
@@ -1969,8 +2004,10 @@ namespace Manifold.EditorTools.GC.GFZ
                         : halfI;
 
                     Vector3 vertex = vertices[index];
+                    Vector2 tex0 = new Vector2(vertex.x, vertex.y);
                     vertex = matrix.MultiplyPoint(vertex);
                     tristrip.positions[i] = vertex;
+                    tristrip.tex0[i] += tex0;
                 }
 
                 // Make array to assign data
@@ -1995,7 +2032,8 @@ namespace Manifold.EditorTools.GC.GFZ
                 AssignTristripMetadata(tristrips, true, false);
                 return tristrips;
             }
-            public static Tristrip[] GenericOpenCylinderEndCapNoTex(Matrix4x4[] matrices, GfzShapeOpenPipeCylinder open, bool isGfzCoordinateSpace)
+
+            public static Tristrip[] GenericOpenCylinderEndCapTex0(Matrix4x4[] matrices, GfzShapeOpenPipeCylinder open, bool isGfzCoordinateSpace)
             {
                 var allTristrips = new List<Tristrip>();
 
@@ -2005,7 +2043,8 @@ namespace Manifold.EditorTools.GC.GFZ
                 {
                     var matrix = matrices[0];
                     AngleFromTo(open, true, false, out float angleFrom, out float angleTo);
-                    var tristrip = OpenCircleEndCap(matrix, open.SubdivisionsCylinder, Vector3.back, angleFrom, angleTo, true);
+                    var tristrip = OpenCircleEndCapTex0(matrix, open.SubdivisionsCylinder, Vector3.back, angleFrom, angleTo, true);
+                    tristrip.tex0 = ScaleUV(tristrip.tex0, (Vector2)matrix.lossyScale);
                     allTristrips.Add(tristrip);
                 }
 
@@ -2013,7 +2052,8 @@ namespace Manifold.EditorTools.GC.GFZ
                 {
                     var matrix = matrices[matrices.Length - 1];
                     AngleFromTo(open, false, false, out float angleFrom, out float angleTo);
-                    var tristrip = OpenCircleEndCap(matrix, open.SubdivisionsCylinder, Vector3.forward, angleFrom, angleTo, false);
+                    var tristrip = OpenCircleEndCapTex0(matrix, open.SubdivisionsCylinder, Vector3.forward, angleFrom, angleTo, false);
+                    tristrip.tex0 = ScaleUV(tristrip.tex0, (Vector2)matrix.lossyScale);
                     allTristrips.Add(tristrip);
                 }
 
@@ -2037,7 +2077,7 @@ namespace Manifold.EditorTools.GC.GFZ
                 var rightEdgeTristrips = cylinderTristrips[edgeIndexR..];
                 var centerTristrips = cylinderTristrips[edgeIndexL..edgeIndexR];
                 var bottomTristrips = GenericOpenCylinderBottomCapNoTex(matrices, open, isGfzCoordinateSpace);
-                var endcapTristrips = GenericOpenCylinderEndCapNoTex(matrices, open, isGfzCoordinateSpace);
+                var endcapTristrips = GenericOpenCylinderEndCapTex0(matrices, open, isGfzCoordinateSpace);
 
                 ApplyColor0(leftEdgeTristrips, settings.DebugTrackLeft);
                 ApplyColor0(rightEdgeTristrips, settings.DebugTrackRight);
@@ -2047,6 +2087,15 @@ namespace Manifold.EditorTools.GC.GFZ
 
                 var tristripsCollection = new Tristrip[1][];
                 tristripsCollection[0] = ConcatTristrips(cylinderTristrips, bottomTristrips, endcapTristrips);
+
+                // Clear tex
+                foreach (var tristrip in tristripsCollection[0])
+                {
+                    tristrip.tex0 = null;
+                    tristrip.tex1 = null;
+                    tristrip.tex2 = null;
+                }
+
                 return tristripsCollection;
             }
 
@@ -2056,13 +2105,14 @@ namespace Manifold.EditorTools.GC.GFZ
                 {
                     // TODO:
                     // hardcoded 8 for track tex width repetitions
+                    // hardcoded 40 for encap size
 
                     float repetitions = math.ceil(segmentLength / RoadTexStride);
                     var tristrips = GenericOpenCylinderNoTex(matrices, open, isGfzCoordinateSpace);
 
-                    float edge = 0.05f;
+                    float edge = 0.05f; // 5%
                     float min = edge;
-                    float max = 1f - edge;
+                    float max = 1f - edge; // 100% - edge%
                     int edgeIndexL = math.max((int)math.floor(tristrips.Length * min), 1);
                     int edgeIndexR = math.min((int)math.ceil(tristrips.Length * max), tristrips.Length - 1);
 
@@ -2071,13 +2121,14 @@ namespace Manifold.EditorTools.GC.GFZ
                     var edgeTristrips = ConcatTristrips(leftEdgeTristrips, rightEdgeTristrips);
                     var centerTristrips = tristrips[edgeIndexL..edgeIndexR];
                     var bottomTristrips = GenericOpenCylinderBottomCapNoTex(matrices, open, isGfzCoordinateSpace);
-                    var endcapTristrips = GenericOpenCylinderEndCapNoTex(matrices, open, isGfzCoordinateSpace);
+                    var endcapTristrips = GenericOpenCylinderEndCapTex0(matrices, open, isGfzCoordinateSpace);
 
                     ApplyTex0(leftEdgeTristrips, CreateTristripScaledUVs(leftEdgeTristrips, 1, repetitions));
                     ApplyTex0(rightEdgeTristrips, CreateTristripScaledUVs(rightEdgeTristrips, 1, repetitions));
                     ApplyTex1(edgeTristrips, ScaleUV(CopyTex0(edgeTristrips), 2));
-                    ApplyTex0(centerTristrips, CreateTristripScaledUVs(tristrips, 8, repetitions)[edgeIndexL..edgeIndexR]); //...?
+                    ApplyTex0(centerTristrips, CreateTristripScaledUVs(tristrips, 8, repetitions)[edgeIndexL..edgeIndexR]);
                     ApplyTex0(bottomTristrips, ScaleUV(CreateTristripScaledUVs(bottomTristrips, 1, repetitions), new Vector2(2, 1)));
+                    ApplyTex0(endcapTristrips, ScaleUV(CopyTex0(endcapTristrips), new Vector2(2 / 40f, 1 / 40f))); // play with this, play with end cap tex 0 scaling
 
                     var allTristrips = new Tristrip[][]
                     {
@@ -2096,7 +2147,8 @@ namespace Manifold.EditorTools.GC.GFZ
                         GcmfTemplates.MuteCity.RoadEmbelishments(),
                         GcmfTemplates.MuteCityCOM.RoadTopNoDividers(),
                         GcmfTemplates.MuteCity.RoadBottom(),
-                        GcmfTemplates.Debug.CreateUnlitVertexColored(),
+                        GcmfTemplates.MuteCity.RoadBottom(),
+                        //GcmfTemplates.Debug.CreateUnlitVertexColored(),
                     };
                     return materials;
                 }

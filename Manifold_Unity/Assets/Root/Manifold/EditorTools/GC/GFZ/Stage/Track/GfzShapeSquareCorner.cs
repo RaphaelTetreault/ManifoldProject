@@ -24,7 +24,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
 
         public override ShapeID ShapeIdentifier => ShapeID.road;
-
+        public override EndcapMode EndcapModeIn => throw new System.NotImplementedException();
+        public override EndcapMode EndcapModeOut => throw new System.NotImplementedException();
 
         public CornerTurnDirection TurnDirection
         {

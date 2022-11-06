@@ -28,7 +28,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
 
         public override ShapeID ShapeIdentifier => ShapeID.embed;
-
+        public override EndcapMode EndcapModeIn => throw new System.ArgumentException();
+        public override EndcapMode EndcapModeOut => throw new System.ArgumentException();
 
         public SurfaceEmbedType Type { get => type; }
         public int WidthDivisions { get => widthDivisions; }

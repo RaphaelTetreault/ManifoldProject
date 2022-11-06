@@ -21,6 +21,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             embed,
         }
         public abstract ShapeID ShapeIdentifier { get; }
+        public abstract EndcapMode EndcapModeIn { get; }
+        public abstract EndcapMode EndcapModeOut { get; }
 
 
         public virtual Mesh CreateMesh(out int[] materialsCount)
