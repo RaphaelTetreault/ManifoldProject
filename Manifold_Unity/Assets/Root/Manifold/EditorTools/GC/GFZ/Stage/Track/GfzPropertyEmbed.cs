@@ -316,30 +316,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
         }
 
-
-        //public override Mesh CreateMesh(out int[] materialsCount)
-        //{
-        //    var hacTRS = CreateHierarchichalAnimationCurveTRS(false);
-        //    var maxTime = hacTRS.GetRootMaxTime();
-        //    var min = from * maxTime;
-        //    var max = to * maxTime;
-        //    //Debug.Log($"MeshUnity -- Min: {min}, Max: {max}, MaxTime: {maxTime}");
-        //    var matrices = TristripGenerator.GenerateMatrixIntervals(hacTRS, lengthDistance, min, max);
-
-        //    //
-        //    var endpointA = new Vector3(-0.5f, 0.33f, 0f);
-        //    var endpointB = new Vector3(+0.5f, 0.33f, 0f);
-        //    var color0 = GetColor(type);
-        //    var tristrips = TristripGenerator.CreateTristrips(matrices, endpointA, endpointB, widthDivisions, color0, Vector3.up, 0, true);
-        //    var mesh = TristripsToMesh(tristrips);
-        //    materialsCount = new int[1]; // TODO:
-        //    //var tristrips = GetTristrips(Type, false);
-        //    //var mesh = TristripsToMesh(Tristrip.Linearize(tristrips));
-        //    mesh.name = $"Auto Gen - {this.name}";
-
-        //    return mesh;
-        //}
-
         public override TrackSegment CreateTrackSegment()
         {
             //var children = CreateChildTrackSegments();
@@ -359,6 +335,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         public override void UpdateTRS()
         {
             animationCurveTRS = CopyAnimationCurveTRS(false);
+            RenormalizedCurves();
         }
 
         public void SetOffsets(Jusification jusification)
@@ -394,5 +371,16 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 default: throw new System.NotImplementedException();
             }
         }
+
+
+        public void RenormalizedCurves()
+        {
+            var maxTime = GetRoot().GetMaxTime();
+            var widthKeys = widthCurve.GetRenormalizedKeyRangeAndTangents(0, maxTime);
+            var offsetKeys = offsetCurve.GetRenormalizedKeyRangeAndTangents(0, maxTime);
+            widthCurve = new UnityEngine.AnimationCurve(widthKeys);
+            offsetCurve = new UnityEngine.AnimationCurve(offsetKeys);
+        }
+
     }
 }

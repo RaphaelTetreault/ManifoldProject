@@ -154,8 +154,15 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public override void UpdateTRS()
         {
-            // do nothing :)
+            // 
+            RenormalizedOpennessCurve();
         }
 
+        public void RenormalizedOpennessCurve()
+        {
+            var maxTime = GetRoot().GetMaxTime();
+            var keys = opennessCurve.GetRenormalizedKeyRangeAndTangents(0, maxTime);
+            opennessCurve = new UnityEngine.AnimationCurve(keys);
+        }
     }
 }
