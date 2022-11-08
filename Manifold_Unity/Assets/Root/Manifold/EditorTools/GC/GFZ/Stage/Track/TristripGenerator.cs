@@ -330,14 +330,15 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return tristrips;
         }
 
-        public static Tristrip[] GenerateHorizontalLineWithNormals(Matrix4x4[] matrices, Vector3 endpointA, Vector3 endpointB, Vector3 normal, int nTristrips)
+
+        public static Tristrip[] CreateLineFrom(Matrix4x4[] matrices, Vector3[] vertices, bool isGfzCoordinateSpace, bool invertNormals, bool isBackFacing, bool isDoubleSided = false)
         {
-            var vertices = CreateLineVertices(nTristrips, endpointA, endpointB);
-            var normals = ArrayUtility.DefaultArray(normal, vertices.Length);
-            var tristrips = CreateTristrips(matrices, vertices, normals);
+            var tristrips = CreateTristrips(matrices, vertices, new Vector3[vertices.Length]);
+            SetNormalsFromTristripVertices(tristrips, invertNormals, false, isGfzCoordinateSpace);
+            AssignTristripMetadata(tristrips, isBackFacing, isDoubleSided);
+
             return tristrips;
         }
-
 
         public static Tristrip[] GenerateCircle(Matrix4x4[] matrices, bool normalOutwards, int nTristrips, float angleFrom = 0, float angleTo = 360)
         {

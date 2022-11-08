@@ -662,9 +662,7 @@ namespace Manifold.EditorTools.GC.GFZ
             {
                 // Make road width equal to width minus the inset on both sides
                 var matricesInset = ModifyMatrixScales(matrices, new Vector3(inset * -2f, 0, 0));
-                var endpointA = new Vector3(-0.5f, 0, 0); // left
-                var endpointB = new Vector3(+0.5f, 0, 0); // right
-                var tristrips = GenerateHorizontalLineWithNormals(matricesInset, endpointA, endpointB, Vector3.up, widthDivisions, true);
+                var tristrips = GenerateHorizontalLineWithNormals(matricesInset, LineLeft, LineRight, Vector3.up, widthDivisions, true);
                 return tristrips;
             }
             internal static Tristrip[] StandardBottom(Matrix4x4[] matrices, int widthDivisions, float thickness, float inset = 0f)
@@ -899,7 +897,7 @@ namespace Manifold.EditorTools.GC.GFZ
                 return tristrips;
             }
 
-
+            #region Styles
             public static class MuteCity
             {
                 // TODO: embellishments (part with red), adjust verts to match game, fix "end caps"
@@ -1527,7 +1525,56 @@ namespace Manifold.EditorTools.GC.GFZ
             {
 
             }
+            #endregion
+        }
 
+        public static class RoadModulated
+        {
+            public static Vector3[] GetModulatedLine(GfzShapeRoadModulated road, int nVertices)
+            {
+                var vertices = CreateLineVertices(nVertices, LineLeft, LineRight);
+                for (int i = 0; i < vertices.Length; i++)
+                {
+                    float time = i / (vertices.Length - 1f);
+                    float heightOffset = road.WidthCurve.EvaluateNormalized(time);
+                    vertices[i].y += heightOffset;
+                }
+                return vertices;
+            }
+
+            public static Matrix4x4[] GetModulatedMatrices(Matrix4x4[] matrices, GfzShapeRoadModulated road)
+            {
+                for (int i = 0; i < matrices.Length; i++)
+                {
+                    float time = i / (matrices.Length - 1f);
+                    float scaleY = road.LengthCurve.EvaluateNormalized(time);
+                    matrices[i].m11 = scaleY;
+                }
+                return matrices;
+            }
+
+            public static Tristrip[] ModulatedTop(Matrix4x4[] matrices, GfzShapeRoadModulated road, float segmentLength, bool isGfzCoordinateSpace, float inset = 3.75f)
+            {
+                // Make road width equal to width minus the inset on both sides
+                var insetTop = new Vector3(inset * -2f, 0, 0);
+                var matricesInset = ModifyMatrixScales(matrices, insetTop);
+                var matricesModulated = GetModulatedMatrices(matricesInset, road);
+                var vertices = GetModulatedLine(road, road.SubdivisionsTop);
+                var tristrips = CreateLineFrom(matricesModulated, vertices, isGfzCoordinateSpace, false, true, false);
+                var uvs0 = CreateTristripScaledUVs(tristrips, 8, 32);
+                var uvs1 = CreateTristripScaledUVs(tristrips, 2, 16);
+                ApplyTex0(tristrips, uvs0);
+                ApplyTex1(tristrips, uvs1);
+                return tristrips;
+            }
+
+            public static class MuteCity
+            {
+                public static Tristrip[][] RoadModulated(Matrix4x4[] matrices, GfzShapeRoadModulated road, bool isGfzCoordinateSpace)
+                {
+                    throw new NotImplementedException();
+                }
+            }
         }
 
         public static class Pipe
