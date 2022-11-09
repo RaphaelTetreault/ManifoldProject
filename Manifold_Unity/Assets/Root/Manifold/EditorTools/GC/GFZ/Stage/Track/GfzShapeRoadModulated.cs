@@ -43,6 +43,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     return new GcmfTemplate[]
                     {
                         GcmfTemplates.MuteCityCOM.RoadTopEmbeddedDividers(),
+                        GcmfTemplates.MuteCity.RoadSides(),
+                        GcmfTemplates.MuteCity.RoadEmbelishments(),
+                        GcmfTemplates.MuteCity.RoadBottom(),
                     };
 
                 default:
@@ -61,10 +64,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             switch (roadStyle)
             {
                 default:
-                    return new Tristrip[][]
-                    {
-                        TristripTemplates.RoadModulated.ModulatedTop(matrices, this, maxTime, isGfzCoordinateSpace, 0),
-                    };
+                    //return new Tristrip[][]
+                    //{
+                    return TristripTemplates.RoadModulated.MuteCityCOM(matrices, this, maxTime, isGfzCoordinateSpace);
+                    //};
             }
         }
 

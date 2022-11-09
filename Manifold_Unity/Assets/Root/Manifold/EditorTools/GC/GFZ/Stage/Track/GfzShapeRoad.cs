@@ -95,7 +95,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                         TristripTemplates.Road.MuteCity.Top(matrices, this, maxTime),
                         TristripTemplates.Road.MuteCity.CreateRoadBottom(matrices, this, maxTime),
                         TristripTemplates.Road.MuteCity.CreateRoadTrim(matrices, this, maxTime, isGfzCoordinateSpace),
-                        TristripTemplates.Road.MuteCity.CreateRoadEmbellishments(matrices, this, maxTime),
+                        TristripTemplates.Road.MuteCity.CreateRoadEmbellishments(matrices, maxTime),
                         TristripTemplates.Road.MuteCity.CreateLaneDividers(matrices, this, maxTime),
                         TristripTemplates.Road.MuteCity.CreateRails(matrices, this),
                     };
@@ -105,7 +105,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                         TristripTemplates.Road.MuteCityCOM.Top(matrices, this, maxTime),
                         TristripTemplates.Road.MuteCity.CreateRoadBottom(matrices, this, maxTime),
                         TristripTemplates.Road.MuteCity.CreateRoadTrim(matrices, this, maxTime, isGfzCoordinateSpace),
-                        TristripTemplates.Road.MuteCity.CreateRoadEmbellishments(matrices, this, maxTime),
+                        TristripTemplates.Road.MuteCity.CreateRoadEmbellishments(matrices, maxTime),
                         TristripTemplates.Road.MuteCity.CreateRails(matrices, this),
                     };
                 case RoadMeshStyle.OuterSpace:

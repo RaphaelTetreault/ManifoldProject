@@ -101,6 +101,21 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             return modifiedMatrices;
         }
         public static Matrix4x4[] GetNormalizedMatrixWithPositionOffset(Matrix4x4[] matrices, float direction)
+        //{
+        //    var matricesDefaultScale = new Matrix4x4[matrices.Length];
+        //    for (int i = 0; i < matricesDefaultScale.Length; i++)
+        //    {
+        //        var matrix = matrices[i];
+        //        var position = matrix.Position();
+        //        var rotation = matrix.Rotation();
+        //        var scale = matrix.Scale();
+        //        var offset = rotation * new Vector3(scale.x * 0.5f * direction, 0, 0);
+
+        //        matricesDefaultScale[i] = Matrix4x4.TRS(position + offset, rotation, Vector3.one);
+        //    }
+        //    return matricesDefaultScale;
+        //}
+        //public static Matrix4x4[] OffsetPositionByScale(Matrix4x4[] matrices, float direction)
         {
             var matricesDefaultScale = new Matrix4x4[matrices.Length];
             for (int i = 0; i < matricesDefaultScale.Length; i++)
@@ -111,23 +126,18 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 var scale = matrix.Scale();
                 var offset = rotation * new Vector3(scale.x * 0.5f * direction, 0, 0);
 
-                matricesDefaultScale[i] = Matrix4x4.TRS(position + offset, rotation, Vector3.one);
+                matricesDefaultScale[i] = Matrix4x4.TRS(position + offset, rotation, new Vector3(1f, scale.y, scale.z));
             }
             return matricesDefaultScale;
         }
         public static Matrix4x4[] StripHeight(Matrix4x4[] matrices)
         {
-            var matricesDefaultScale = new Matrix4x4[matrices.Length];
-            for (int i = 0; i < matricesDefaultScale.Length; i++)
+            for (int i = 0; i < matrices.Length; i++)
             {
-                var matrix = matrices[i];
-                var position = matrix.Position();
-                var rotation = matrix.Rotation();
-                var scale = matrix.Scale();
-
-                matricesDefaultScale[i] = Matrix4x4.TRS(position, rotation, new Vector3(scale.x, 1f, 1f));
+                matrices[i].m11 = 1f; // scale.y
+                matrices[i].m22 = 1f; // scale.z
             }
-            return matricesDefaultScale;
+            return matrices;
         }
 
         // TODO: deprecate, make simple "unlit" tristrip method
@@ -575,6 +585,14 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 }
             }
         }
+        public static void SetNormalsFromTristripVerticesNoSmooth(Tristrip[] tristrips, bool invertNormals, bool isGfzCoordinateSpace)
+        {
+            foreach (var tristrip in tristrips)
+            {
+                tristrip.normals = GenericNormalsFromTristripVertices(tristrip, invertNormals, isGfzCoordinateSpace);
+            }
+        }
+
 
         public static Vector2[] CreateUVsSideways(int verticesLength)
         {
@@ -843,6 +861,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
             return tristripsConcat;
         }
+
+        public static Tristrip[] ConcatTristrips(params Tristrip[] tristrips)
+        {
+            return tristrips;
+        }
+
 
 
         public static Tristrip[] SelectTristrips(Tristrip[] tristrips, float percentFrom, float percentTo, bool inclusiveFrom, bool inclusiveTo)
