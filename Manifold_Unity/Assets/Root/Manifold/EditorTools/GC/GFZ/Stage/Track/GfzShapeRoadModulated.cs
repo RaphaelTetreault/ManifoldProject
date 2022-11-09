@@ -46,6 +46,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                         GcmfTemplates.MuteCity.RoadSides(),
                         GcmfTemplates.MuteCity.RoadEmbelishments(),
                         GcmfTemplates.MuteCity.RoadBottom(),
+                        GcmfTemplates.MuteCity.RoadSides(),
+                        GcmfTemplates.MuteCity.RoadRails(),
                     };
 
                 default:

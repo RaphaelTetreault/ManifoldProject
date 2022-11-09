@@ -1040,7 +1040,7 @@ namespace Manifold.EditorTools.GC.GFZ
                     railUpperMax = kRailMinHeight + trueRailHeight; // * 1.000f;
                 }
 
-                private static Tristrip[] CreateRailWithUVs(Matrix4x4[] matrices, GfzShapeRoad road, bool isLeftSide)
+                public static Tristrip[] CreateRailWithUVs(Matrix4x4[] matrices, GfzShapeRoad road, bool isLeftSide)
                 {
                     float side = isLeftSide ? -0.5f : 0.5f;
                     float railHeight = isLeftSide ? road.RailHeightLeft : road.RailHeightRight;
@@ -1542,16 +1542,20 @@ namespace Manifold.EditorTools.GC.GFZ
                 return vertices;
             }
 
-            //public static Matrix4x4[] GetModulatedMatrices(Matrix4x4[] matrices, GfzShapeRoadModulated road)
-            //{
-            //    for (int i = 0; i < matrices.Length; i++)
-            //    {
-            //        float time = i / (matrices.Length - 1f);
-            //        float scaleY = road.LengthCurve.EvaluateNormalized(time);
-            //        matrices[i].m11 = scaleY;
-            //    }
-            //    return matrices;
-            //}
+            public static Matrix4x4[] GetModulatedMatrices(Matrix4x4[] matrices, GfzShapeRoadModulated road, float widthTime)
+            {
+                var modulatedMatrices = new Matrix4x4[matrices.Length];
+                for (int i = 0; i < matrices.Length; i++)
+                {
+                    float lengthTime = i / (matrices.Length - 1f);
+                    float scaleY = road.LengthCurve.EvaluateNormalized(lengthTime);
+                    float heightY = road.WidthCurve.EvaluateNormalized(widthTime);
+                    var matrix = matrices[i];
+                    var position = matrix.Position() + matrix.rotation * new Vector3(0, scaleY * heightY, 0);
+                    modulatedMatrices[i] = Matrix4x4.TRS(position, matrix.rotation, matrix.lossyScale);
+                }
+                return modulatedMatrices;
+            }
 
             public static Tristrip[] ModulatedBottomNoTex(Matrix4x4[] matrices, GfzShapeRoadModulated road, bool isGfzCoordinateSpace, float thickness)
             {
@@ -1597,6 +1601,41 @@ namespace Manifold.EditorTools.GC.GFZ
                 return tristrips;
             }
 
+            public static Tristrip ModSide(Matrix4x4[] matrices, float insetTop, float insetBottom, float height, float thickness, float side)
+            {
+                var matricesTop = ModifyMatrixScales(matrices, new Vector3(insetTop * -2f, 0, 0));
+                var matricesBottom = ModifyMatrixScales(matrices, new Vector3(insetBottom * -2f, 0, 0));
+
+                var upper = new Vector3(0.5f * side, height, 0);
+                var lower = new Vector3(0.5f * side, -thickness, 0);
+
+                var opposite = insetTop - insetBottom;
+                var adjacent = height + thickness;
+                var normal = SurfaceNormalTOA(opposite, adjacent, side < 0 ? Vector3.left : Vector3.right, true);
+
+                int vertexCount = matrices.Length * 2;
+                var tristrip = new Tristrip();
+                tristrip.positions = new Vector3[vertexCount];
+                tristrip.normals = new Vector3[vertexCount];
+
+                for (int i = 0; i < matrices.Length; i++)
+                {
+                    var mtxTop = matricesTop[i];
+                    var mtxBot = matricesBottom[i];
+                    int index0 = i * 2;
+                    int index1 = index0 + 1;
+                    tristrip.positions[index0] = mtxTop.MultiplyPoint(upper);
+                    tristrip.positions[index1] = mtxBot.MultiplyPoint(lower);
+                    //
+                    var mtx = matrices[i];
+                    tristrip.normals[index0] = mtx.rotation * normal;
+                    //
+                    tristrip.isBackFacing = side > 0;
+                }
+
+                return tristrip;
+            }
+
             public static Tristrip[] ModulatedTopOneShot(Matrix4x4[] matrices, GfzShapeRoadModulated road)
             {
                 Vector3[][] points = new Vector3[matrices.Length][];
@@ -1630,8 +1669,8 @@ namespace Manifold.EditorTools.GC.GFZ
                     }
                     points[m][0].y += 0.5f;
                     points[m][1].y += 0.5f;
-                    points[m][count-2].y += 0.5f;
-                    points[m][count-1].y += 0.5f;
+                    points[m][count - 2].y += 0.5f;
+                    points[m][count - 1].y += 0.5f;
                 }
 
                 var tristrips = VertexLinesToTristrips(points);
@@ -1643,9 +1682,9 @@ namespace Manifold.EditorTools.GC.GFZ
                 AssignTristripMetadata(tristrips, true, false);
                 int n = tristrips.Length;
 
-                var trimTop = ConcatTristrips(tristrips[0], tristrips[n-1]);
-                var trimSlope =  ConcatTristrips(tristrips[1], tristrips[n-2]);
-                var top = tristrips[3..(n-3)];
+                var trimTop = ConcatTristrips(tristrips[0], tristrips[n - 1]);
+                var trimSlope = ConcatTristrips(tristrips[1], tristrips[n - 2]);
+                var top = tristrips[3..(n - 3)];
 
                 SetNormalsFromTristripVerticesNoSmooth(trimTop, false, isGfzCoordinateSpace);
                 SetNormalsFromTristripVerticesNoSmooth(trimSlope, false, isGfzCoordinateSpace);
@@ -1667,17 +1706,18 @@ namespace Manifold.EditorTools.GC.GFZ
                 var trimSlope = tristripArrays[2];
 
                 float repetitionsRoadTexture = math.ceil(segmentLength / RoadTexStride);
+                float repetitionsSideTexture = math.ceil(segmentLength / RoadTexStride / 2); // CRAP
 
                 var uvs0 = CreateTristripScaledUVs(top, 8, repetitionsRoadTexture);
                 var uvs1 = CreateTristripScaledUVs(top, 2, repetitionsRoadTexture);
                 ApplyTex0(top, uvs0);
                 ApplyTex1(top, uvs1);
 
-                var uvx = CreateTristripScaledUVs(trimTop, 1, repetitionsRoadTexture);
+                var uvx = CreateTristripScaledUVs(trimTop, 2, repetitionsSideTexture);
                 ApplyTex0(trimTop, uvx);
-                
-                var trimSlope_uv0 = CreateTristripScaledUVs(trimSlope, 2, repetitionsRoadTexture);
-                var trimSlope_uv1 = CreateTristripScaledUVs(trimSlope, 4, repetitionsRoadTexture);
+
+                var trimSlope_uv0 = CreateTristripScaledUVs(trimSlope, 2, repetitionsSideTexture);
+                var trimSlope_uv1 = CreateTristripScaledUVs(trimSlope, 4, repetitionsSideTexture);
                 ApplyTex0(trimSlope, trimSlope_uv0);
                 ApplyTex1(trimSlope, trimSlope_uv1);
 
@@ -1693,11 +1733,31 @@ namespace Manifold.EditorTools.GC.GFZ
 
                 // Move to func (2 funcs!)
                 float repetitionsRoadTexture = math.ceil(segmentLength / RoadTexStride);
+                float repetitionsSideTexture = math.ceil(segmentLength / RoadTexStride / 2);
+
                 var bottom = ModulatedBottomNoTex(matrices, road, isGfzCoordinateSpace, 1f);
                 AssignTristripMetadata(bottom, false, false);
-                var uv0 = CreateTristripScaledUVs(bottom, 2, repetitionsRoadTexture);
-                ApplyTex0(bottom, uv0);
+                var bottom_uv0 = CreateTristripScaledUVs(bottom, 2, repetitionsRoadTexture);
+                ApplyTex0(bottom, bottom_uv0);
+                SetNormalsFromTristripVertices(bottom, true, false, isGfzCoordinateSpace);
 
+                // more hacks
+
+                var mtxL = GetModulatedMatrices(matrices, road, 0);
+                var mtxR = GetModulatedMatrices(matrices, road, 1);
+                var sideL = ModSide(mtxL, 0, 0, 0.5f, 1f, -1f);
+                var sideR = ModSide(mtxR, 0, 0, 0.5f, 1f, +1f);
+                var sides = new Tristrip[] { sideL, sideR };
+                var sides_uv0 = CreateTristripScaledUVs(sides, 2, repetitionsSideTexture);
+                ApplyTex0(sides, sides_uv0);
+
+                //
+                var tempRoad = new GfzShapeRoad();
+                tempRoad.railHeightLeft = 6;
+                tempRoad.railHeightRight = 6;
+                var railsL = Road.MuteCity.CreateRailWithUVs(mtxL, tempRoad, true);
+                var railsR = Road.MuteCity.CreateRailWithUVs(mtxR, tempRoad, false);
+                var rails = ConcatTristrips(railsL, railsR);
 
                 var tristripsArray = new Tristrip[][]
                 {
@@ -1705,6 +1765,8 @@ namespace Manifold.EditorTools.GC.GFZ
                     trimTop,
                     trimSlope,
                     bottom,
+                    sides,
+                    rails,
                 };
                 return tristripsArray;
             }
