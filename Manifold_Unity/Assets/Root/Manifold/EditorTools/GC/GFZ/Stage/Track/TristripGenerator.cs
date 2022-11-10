@@ -727,7 +727,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         public static void MutateOffsetUV(Vector2[][] uvs, float offset) => OffsetUV(uvs, new Vector2(offset, offset));
 
 
-
+        public static float GetTexRepetitions(float segmentLength, float texLength)
+        {
+            float repetitionsAlongLength = math.ceil(segmentLength / texLength);
+            return repetitionsAlongLength;
+        }
         public static Vector2[][] CreateTristripScaledUVs(Tristrip[] tristrips, float widthRepeats, float lengthRepeats)
         {
             var allUVs = new Vector2[tristrips.Length][];
@@ -750,6 +754,13 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
             return allUVs;
         }
+        public static Vector2[][] CreateTristripScaledUVs(Tristrip[] tristrips, float widthRepeats, float segmentLength, float texLength)
+        {
+            float repetitionsAlongLength = math.ceil(segmentLength / texLength);
+            var uvs = CreateTristripScaledUVs(tristrips, widthRepeats, repetitionsAlongLength);
+            return uvs;
+        }
+
         public static Vector2[][] SwapUV(Vector2[][] uvs)
         {
             var newUVs = new Vector2[uvs.Length][];
@@ -913,14 +924,14 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 uvs[i] = ArrayUtility.CopyArray(tristrips[i].tex0);
             return uvs;
         }
-        public static Vector2[][] GetTex1(Tristrip[] tristrips)
+        public static Vector2[][] CopyTex1(Tristrip[] tristrips)
         {
             Vector2[][] uvs = new Vector2[tristrips.Length][];
             for (int i = 0; i < uvs.Length; i++)
                 uvs[i] = ArrayUtility.CopyArray(tristrips[i].tex1);
             return uvs;
         }
-        public static Vector2[][] GetTex2(Tristrip[] tristrips)
+        public static Vector2[][] CopyTex2(Tristrip[] tristrips)
         {
             Vector2[][] uvs = new Vector2[tristrips.Length][];
             for (int i = 0; i < uvs.Length; i++)
