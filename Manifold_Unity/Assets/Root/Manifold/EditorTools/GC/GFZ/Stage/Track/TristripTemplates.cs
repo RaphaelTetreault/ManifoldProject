@@ -1492,13 +1492,13 @@ namespace Manifold.EditorTools.GC.GFZ
                 {
                     var tristrips = new Tristrip[][]
                     {
-                        OuterSpace.Top(matrices, road, segmentLength),
-                        OuterSpace.BottomAndSides(matrices, road, segmentLength),
-                        OuterSpace.CurbAndLaneDividerFlat(matrices, road, segmentLength),
-                        OuterSpace.CurbAndLaneDividerSlants(matrices, road, segmentLength),
-                        OuterSpace.RailsAngle(matrices, road, segmentLength),
-                        OuterSpace.RailsLights(matrices, road, segmentLength),
-                        OuterSpace.EndCaps(matrices, road, segmentLength),
+                        Top(matrices, road, segmentLength),
+                        BottomAndSides(matrices, road, segmentLength),
+                        CurbAndLaneDividerFlat(matrices, road, segmentLength),
+                        CurbAndLaneDividerSlants(matrices, road, segmentLength),
+                        RailsAngle(matrices, road, segmentLength),
+                        RailsLights(matrices, road, segmentLength),
+                        EndCaps(matrices, road, segmentLength),
                     };
                     return tristrips;
                 }

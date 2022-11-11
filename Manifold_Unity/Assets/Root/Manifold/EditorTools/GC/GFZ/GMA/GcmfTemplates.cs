@@ -850,7 +850,7 @@ namespace Manifold.EditorTools.GC.GFZ
                     {
                         Unk0x00 = 0,
                         MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
-                        WrapMode = TextureWrapMode.repeatY | TextureWrapMode.unk6 | TextureWrapMode.unk7,
+                        WrapMode = TextureWrapMode.mirrorX | TextureWrapMode.repeatY | TextureWrapMode.unk6 | TextureWrapMode.unk7,
                         LodBias = -10,
                         AnisotropicFilter = GXAnisotropy.GX_ANISO_4,
                         Unk0x0C = 0,
@@ -898,7 +898,7 @@ namespace Manifold.EditorTools.GC.GFZ
                     {
                         Unk0x00 = 0,
                         MipmapSetting = MipmapSetting.ENABLE_MIPMAP | MipmapSetting.UNK_FLAG_1 | MipmapSetting.UNK_FLAG_2,
-                        WrapMode = TextureWrapMode.repeatY | TextureWrapMode.unk6 | TextureWrapMode.unk7,
+                        WrapMode = TextureWrapMode.mirrorX | TextureWrapMode.repeatY | TextureWrapMode.unk6 | TextureWrapMode.unk7,
                         LodBias = -10,
                         AnisotropicFilter = GXAnisotropy.GX_ANISO_4,
                         Unk0x0C = 61,
