@@ -65,11 +65,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
             switch (roadStyle)
             {
+                case RoadMeshStyle.MuteCity:
+                case RoadMeshStyle.MuteCityCom:
+                    return TristripTemplates.RoadModulated.MuteCityCOM.Shape(matrices, this, maxTime, isGfzCoordinateSpace);
+
                 default:
-                    //return new Tristrip[][]
-                    //{
-                    return TristripTemplates.RoadModulated.MuteCityCOM(matrices, this, maxTime, isGfzCoordinateSpace);
-                    //};
+                    return TristripTemplates.RoadModulated.MuteCityCOM.Shape(matrices, this, maxTime, isGfzCoordinateSpace);
             }
         }
 

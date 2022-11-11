@@ -127,6 +127,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public static Tristrip[] CreateTristrips(Matrix4x4[] matrices, Vector3[] vertices, Vector3[] normals)
         {
+            if (vertices.Length != normals.Length)
+                throw new System.ArgumentException($"{nameof(vertices)}.Length != {nameof(normals)}.Length.");
+
             // Get sizes
             int nTriangleStrips = vertices.Length - 1;
             int nVertsPerStrip = matrices.Length * 2;
@@ -221,56 +224,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
             return tristrips;
         }
-        public static Tristrip[] CreateTristripsWithNormals(Matrix4x4[] matrices, Vector3[] vertices, Vector3[] normals)
-        {
-            if (vertices.Length != normals.Length)
-                throw new System.ArgumentException($"{nameof(vertices)}.Length != {nameof(normals)}.Length.");
-
-            var tristrips = CreateTristrips(matrices, vertices);
-            SetTristripsNormals(matrices, tristrips, normals);
-            return tristrips;
-        }
-        public static void SetTristripsNormals(Matrix4x4[] matrices, Tristrip[] tristrips, Vector3[] normals)
-        {
-            // Get sizes
-            int nTriangleStrips = tristrips.Length;
-            int nNormals = matrices.Length * 2;
-            int lastTristripIndex = nTriangleStrips - 1;
-
-            // Init normals
-            for (int i = 0; i < tristrips.Length; i++)
-            {
-                var tristrip = tristrips[i];
-                tristrip.normals = new Vector3[nNormals];
-            }
-
-            // Compute vertex for all tristrips
-            for (int m = 0; m < matrices.Length; m++)
-            {
-                var matrix = matrices[m];
-                // Compute indexes
-                int tristripBaseIndex = m * 2;
-                var index0 = tristripBaseIndex + 0;
-                var index1 = tristripBaseIndex + 1;
-                // Compute first and last
-                var firstNormal = matrix.rotation * normals[0];
-                var lastNormal = matrix.rotation * normals[nNormals - 1];
-                tristrips[0].normals[index0] = firstNormal;
-                tristrips[lastTristripIndex].normals[index1] = lastNormal;
-                // And then everything else in-between. The vertex between 2 tristrips is the same,
-                // so we can copy them to both tristrips, just offset (n+0.prev, n+1.next).
-                for (int t = 0; t < lastTristripIndex; t++)
-                {
-                    int t0 = t + 0;
-                    int t1 = t + 1;
-                    var normal = matrix.rotation * normals[t1];
-                    tristrips[t0].normals[index1] = normal;
-                    tristrips[t1].normals[index0] = normal;
-                }
-            }
-        }
-
-
 
         public static Tristrip[] GenerateHorizontalLineWithNormals(Matrix4x4[] matrices, Vector3 endpointA, Vector3 endpointB, Vector3 normal, int nTristrips, bool isBackFacing, bool isDoubleSided = false)
         {
@@ -703,9 +656,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
 
 
-        public static float[] CreateEvenlySpacedTimes(float min, float max, int count)
+        public static float[] CreateEvenlySpacedTimes(int count, float min = 0, float max = 1)
         {
-            float[] times = new float[count];
+            float[] times = new float[count+1];
             for (int i = 0; i < times.Length; i++)
             {
                 float time = i / (times.Length - 1f);
@@ -743,22 +696,28 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
             return vertices;
         }
-        public static Vector2[][] CreateUVsFromTimes(Tristrip[] tristrips, float[] times, float scaleX, float scaleY, float segmentLength)
+        public static Vector2[][] CreateUVsFromTimes(Tristrip[] tristrips, float[] times, float repsWidth, float repsLength)
         {
-            Assert.IsTrue(tristrips.Length == times.Length + 1);
+            bool isValid = tristrips.Length == times.Length - 1;
+            if (!isValid)
+                throw new System.ArgumentException("Incorrect number of tristrips and times provided.");
 
-            float repsY = GetTexRepetitions(segmentLength, scaleY);
+            // Scale times
+            float[] scaledTimes = new float[times.Length];
+            for (int i = 0; i < times.Length; i++)
+                scaledTimes[i] = times[i] * repsWidth;
 
+            // Gen UVs
             Vector2[][] uvs = new Vector2[times.Length][];
             for (int i = 0; i < tristrips.Length; i++)
             {
                 uvs[i] = new Vector2[tristrips[i].VertexCount];
-                float uv0x = times[i+0] * scaleX;
-                float uv1x = times[i+1] * scaleX;
+                float uv0x = scaledTimes[i + 0];
+                float uv1x = scaledTimes[i + 1];
                 for (int j = 0; j < uvs[i].Length; j += 2)
                 {
                     float lengthTime = j / (uvs[i].Length - 2f);
-                    float uv_y = lengthTime * repsY;
+                    float uv_y = lengthTime * repsLength;
                     Vector2 uv0 = new Vector2(uv0x, uv_y);
                     Vector2 uv1 = new Vector2(uv1x, uv_y);
                     uvs[i][j + 0] = uv0;
@@ -767,7 +726,32 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             }
             return uvs;
         }
+        public static Vector2[][] CreateCustomUVs(Tristrip[] tristrips, float repsLength, params float[] times)
+            => CreateUVsFromTimes(tristrips, times, 1f, repsLength);
+        public static Vector2[][] CreateUVsStrip(Tristrip[] tristrips, float repsLength)
+            => CreateUVsFromTimes(tristrips, new float[] { 0, 1 }, 1f, repsLength);
+        public static Tristrip[] VertexLinesToTristrips(Vector3[][] lines)
+        {
+            int nVertices = lines.Length * 2;
+            int nTristrips = lines[0].Length - 1;
+            var tristrips = new Tristrip[nTristrips];
+            for (int i = 0; i < tristrips.Length; i++)
+            {
+                tristrips[i] = new Tristrip();
+                tristrips[i].positions = new Vector3[nVertices];
+            }
 
+            for (int x = 0; x < nTristrips; x++)
+            {
+                for (int z = 0; z < lines.Length; z++)
+                {
+                    tristrips[x].positions[z * 2 + 0] = lines[z][x + 0];
+                    tristrips[x].positions[z * 2 + 1] = lines[z][x + 1];
+                }
+            }
+
+            return tristrips;
+        }
 
 
 
