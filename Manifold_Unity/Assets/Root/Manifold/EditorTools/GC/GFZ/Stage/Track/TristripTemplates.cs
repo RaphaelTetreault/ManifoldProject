@@ -530,6 +530,18 @@ namespace Manifold.EditorTools.GC.GFZ
 
         public static class Road
         {
+            internal static Tristrip[] TEMP_TopTex0(Matrix4x4[] matrices, int widthDivisions, float inset, float segmentLength, float w, float l)
+            {
+                var matricesInset = ModifyMatrixScales(matrices, new Vector3(inset * -2f, 0, 0));
+                var times = CreateEvenlySpacedTimes(0, 1, widthDivisions);
+                var vertexLine = CreateVertexLineFromTimes(times, LineLeft, LineRight);
+                var normalLine = ArrayUtility.DefaultArray(Vector3.up, vertexLine.Length); 
+                var tristrips = CreateTristripsWithNormals(matricesInset, vertexLine, normalLine);
+                var tex0 = CreateUVsFromTimes(tristrips, times, w, l, segmentLength);
+                ApplyTex0(tristrips, tex0);
+                return tristrips;
+            }
+
             internal static Tristrip[] StandardTop(Matrix4x4[] matrices, int widthDivisions, float inset = 3.75f)
             {
                 // Make road width equal to width minus the inset on both sides
@@ -845,9 +857,14 @@ namespace Manifold.EditorTools.GC.GFZ
 
                 // MC
                 public static Tristrip[] Top(Matrix4x4[] matrices, GfzShapeRoad road, float segmentLength)
-                    => TopTex0(matrices, road.WidthDivisions, kInsetTop, segmentLength, 4, kLengthRoadTop);
+                    //=> TopTex0(matrices, road.WidthDivisions, kInsetTop, segmentLength, 4, kLengthRoadTop);
+                    => TEMP_TopTex0(matrices, road.WidthDivisions, kInsetTop, segmentLength, 4, kLengthRoadTop);
+
                 public static Tristrip[] Bottom(Matrix4x4[] matrices, GfzShapeRoad road, float segmentLength)
                     => BottomTex0(matrices, road.WidthDivisions, 0, 1, segmentLength, 4, kLengthRoadTop);
+
+                // ONCE YOU FINISH THIS SIMPLIFICATION: write out the function to return all at once
+                // CONSIDER: remove the road parameter in the smaller bits, only have on main call
 
 
                 // TODO: further clean borken out parts and combine into logical components
