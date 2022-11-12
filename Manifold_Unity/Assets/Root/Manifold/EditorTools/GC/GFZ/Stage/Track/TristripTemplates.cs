@@ -1525,7 +1525,7 @@ namespace Manifold.EditorTools.GC.GFZ
         {
             public static float[] CreateEdgeSampleTimesAtMatrix(Matrix4x4 matrix, float insetCurbTop, float insetCurbBottom)
             {
-                float width = matrix.m00;
+                float width = matrix.lossyScale.x;
                 float[] edgeTimes = new float[6];
                 edgeTimes[0] = 0;
                 edgeTimes[1] = insetCurbTop / width;
@@ -1572,14 +1572,15 @@ namespace Manifold.EditorTools.GC.GFZ
                 {
                     float lengthTime = matrixIndex / (matrices.Length - 1f);
                     var matrix = matrices[matrixIndex];
+                    var scale = matrix.lossyScale;
                     var allSampleTimes = CreateRoadSampleTimesWithInset(matrix, sampleTimes, insetCurbTop, insetCurbBottom);
                     // length curve and matrix scale.y combine to scale position.y
-                    float scaleY = matrix.m11 * road.LengthCurve.EvaluateNormalized(lengthTime);
+                    float scaleY = scale.y * road.LengthCurve.EvaluateNormalized(lengthTime);
                     vertexLines[matrixIndex] = new Vector3[allSampleTimes.Length];
                     for (int i = 0; i < allSampleTimes.Length; i++)
                     {
                         float widthTime = allSampleTimes[i];
-                        float positionX = (allSampleTimes[i] - 0.5f) * matrix.m00;
+                        float positionX = (allSampleTimes[i] - 0.5f) * scale.x;
                         float positionY = road.WidthCurve.EvaluateNormalized(widthTime);
                         vertexLines[matrixIndex][i] = matrix.rotation * new Vector3(positionX, positionY * scaleY, 0f) + matrix.Position();
                     }
@@ -1639,7 +1640,9 @@ namespace Manifold.EditorTools.GC.GFZ
                 {
                     float lengthTime = m / (matrices.Length - 1f);
                     var matrix = matrices[m];
-                    matrix.m11 *= road.LengthCurve.EvaluateNormalized(lengthTime);
+                    var scale = matrix.lossyScale;
+                    scale.y *= road.LengthCurve.EvaluateNormalized(lengthTime);
+                    matrix = Matrix4x4.TRS(matrix.Position(), matrix.rotation, scale);
                     vertexLines[m] = CreateModulatedVertexLine(road, road.SubdivisionsBottom);
                     //vertexLines[m] = CreateModulatedVertexLinesWithInset(new Matrix4x4[] { matrix, new() }, road, line, 1.5f, 3.75f, 0f)[0];
                     for (int i = 0; i < vertexLines[m].Length; i++)
@@ -1701,8 +1704,8 @@ namespace Manifold.EditorTools.GC.GFZ
             public static Tristrip[] BottomTex0(Matrix4x4[] matrices, GfzShapeRoadModulated road, float[] times, float repsWidth, float repsLength, bool isGfzCoordinateSpace)
             {
                 var bottom = BottomNoTex(matrices, road, 1f);
-                var bottom_uv0 = CreateUVsFromTimes(bottom, times, repsWidth, repsLength);
-                ApplyTex0(bottom, bottom_uv0);
+                var uvs0 = CreateUVsFromTimes(bottom, times, repsWidth, repsLength);
+                ApplyTex0(bottom, uvs0);
                 SetNormalsFromTristripVertices(bottom, true, false, isGfzCoordinateSpace);
                 return bottom;
             }
@@ -1784,10 +1787,13 @@ namespace Manifold.EditorTools.GC.GFZ
                     ApplyTex1(top, top_uvs1);
 
                     var trimTop_uvs0 = CreateCustomUVs(trimTop, repetitionsSideTexture, 0, 1, 2);
+                    trimTop_uvs0 = OffsetUV(trimTop_uvs0, new Vector2(0, 0.5f));
                     ApplyTex0(trimTop, trimTop_uvs0);
 
                     var trimSlope_uv0 = CreateCustomUVs(trimSlope, repetitionsSideTexture, 0, 1, 2);
                     var trimSlope_uv1 = CreateCustomUVs(trimSlope, repetitionsSideTexture, 0, 2, 4);
+                    trimSlope_uv0 = OffsetUV(trimSlope_uv0, new Vector2(0, 0.5f));
+                    trimSlope_uv1 = OffsetUV(trimSlope_uv1, new Vector2(0, 1.0f));
                     ApplyTex0(trimSlope, trimSlope_uv0);
                     ApplyTex1(trimSlope, trimSlope_uv1);
 
@@ -1821,15 +1827,19 @@ namespace Manifold.EditorTools.GC.GFZ
                     var times = CreateEvenlySpacedTimes(road.SubdivisionsBottom);
                     var bottom = BottomTex0(matrices, road, times, 4, repetitionsRoadTexture, isGfzCoordinateSpace);
 
+                    matrices = StripHeight(matrices);
+
+
                     // Sides and Rails
                     var matricesLeft = CreateModulatedMatrices(matrices, road, 0);
                     var matricesRight = CreateModulatedMatrices(matrices, road, 1);
                     var sides = SidesTex0(matricesLeft, matricesRight, repetitionsSideTexture);
+                    foreach (var side in sides)
+                        side.tex0 = OffsetUV(side.tex0, new Vector2(0, 0.5f));
+
                     var rails = Rails(matricesLeft, matricesRight);
 
                     var endcaps = EndcapsTex0(matrices, road, isGfzCoordinateSpace);
-
-
                     sides = ConcatTristrips(sides, endcaps);
 
                     var tristripsArray = new Tristrip[][]

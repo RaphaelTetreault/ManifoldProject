@@ -119,8 +119,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         {
             for (int i = 0; i < matrices.Length; i++)
             {
-                matrices[i].m11 = 1f; // scale.y
-                matrices[i].m22 = 1f; // scale.z
+                var matrix = matrices[i];
+                var position = matrix.Position();
+                var rotation = matrix.rotation;
+                var scale = new Vector3(matrix.lossyScale.x, 1, 1);
+                matrices[i] = Matrix4x4.TRS(position, rotation, scale);
             }
             return matrices;
         }
@@ -708,7 +711,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 scaledTimes[i] = times[i] * repsWidth;
 
             // Gen UVs
-            Vector2[][] uvs = new Vector2[times.Length][];
+            Vector2[][] uvs = new Vector2[tristrips.Length][];
             for (int i = 0; i < tristrips.Length; i++)
             {
                 uvs[i] = new Vector2[tristrips[i].VertexCount];

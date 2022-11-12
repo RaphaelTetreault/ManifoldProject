@@ -97,7 +97,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     return TristripTemplates.Road.OuterSpace.Shape(matrices, this, maxTime);
 
                 default:
-                    throw new System.Exception();
+                    return TristripTemplates.Road.MuteCity.Shape(matrices, this, maxTime, isGfzCoordinateSpace);
             }
         }
 
