@@ -1539,13 +1539,13 @@ namespace Manifold.EditorTools.GC.GFZ
             {
                 float[] edgeTimes = CreateEdgeSampleTimesAtMatrix(matrix, insetCurbTop, insetCurbBottom);
                 int n = edgeTimes.Length / 2;
-                float minTime = edgeTimes[n-1];
+                float minTime = edgeTimes[n - 1];
                 float maxTime = edgeTimes[edgeTimes.Length - n];
                 float range = maxTime - minTime;
                 // two times overlap (first and last), so remove from array copy
-                float[] innerSampleTimes = new float[sampleTimes.Length-2];
+                float[] innerSampleTimes = new float[sampleTimes.Length - 2];
                 for (int i = 0; i < innerSampleTimes.Length; i++)
-                    innerSampleTimes[i] = sampleTimes[i+1] * range + minTime;
+                    innerSampleTimes[i] = sampleTimes[i + 1] * range + minTime;
 
                 float[] times = new float[edgeTimes.Length + innerSampleTimes.Length];
                 Array.Copy(edgeTimes, 0, times, 0, n);
@@ -1641,14 +1641,19 @@ namespace Manifold.EditorTools.GC.GFZ
                     float lengthTime = m / (matrices.Length - 1f);
                     var matrix = matrices[m];
                     var scale = matrix.lossyScale;
-                    scale.y *= road.LengthCurve.EvaluateNormalized(lengthTime);
-                    matrix = Matrix4x4.TRS(matrix.Position(), matrix.rotation, scale);
+                    var scaleY = road.LengthCurve.EvaluateNormalized(lengthTime);
+                    scale.y *= scaleY;
+                    var modulatedMatrix = Matrix4x4.TRS(matrix.Position(), matrix.rotation, scale);
                     vertexLines[m] = CreateModulatedVertexLine(road, road.SubdivisionsBottom);
                     //vertexLines[m] = CreateModulatedVertexLinesWithInset(new Matrix4x4[] { matrix, new() }, road, line, 1.5f, 3.75f, 0f)[0];
                     for (int i = 0; i < vertexLines[m].Length; i++)
                     {
-                        vertexLines[m][i] = matrix.MultiplyPoint(vertexLines[m][i]);
-                        vertexLines[m][i] += matrix.rotation * Vector3.down * thickness;
+                        var vertex = vertexLines[m][i];
+                        // There's a weird bug if I use the modulated matrix when scale.y is < -1
+                        // the verts get all messed up (rotation invertes along y). This works around it.
+                        var offset = matrix.rotation * (Vector3.down * thickness);
+                        vertex = modulatedMatrix.MultiplyPoint(vertex) + offset;
+                        vertexLines[m][i] = vertex;
                     }
                 }
 
@@ -1799,15 +1804,26 @@ namespace Manifold.EditorTools.GC.GFZ
 
                     return tristripArrays;
                 }
-                internal static Tristrip[] Rails(Matrix4x4[] matricesLeft, Matrix4x4[] matricesRight)
+                internal static Tristrip[] Rails(Matrix4x4[] matricesLeft, Matrix4x4[] matricesRight, GfzShapeRoadModulated road)
                 {
+                    var rails = new List<Tristrip>();
+
+                    // A gross hack, you should rafactor so you can use this class or break out important values to pass in
                     var tempRoad = new GfzShapeRoad();
-                    tempRoad.railHeightLeft = 6;
-                    tempRoad.railHeightRight = 6;
-                    var railsL = Road.MuteCity.RailTex2(matricesLeft, tempRoad, true);
-                    var railsR = Road.MuteCity.RailTex2(matricesRight, tempRoad, false);
-                    var rails = ConcatTristrips(railsL, railsR);
-                    return rails;
+                    tempRoad.railHeightLeft = road.OverrideRailHeights ? road.OverrideRailLeftHeight : 6;
+                    tempRoad.railHeightRight = road.OverrideRailHeights ? road.OverrideRailRightHeight : 6;
+
+                    if (road.HasRailLeft)
+                    {
+                        var railsL = Road.MuteCity.RailTex2(matricesLeft, tempRoad, true);
+                        rails.AddRange(railsL);
+                    }
+                    if (road.HasRailRight)
+                    {
+                        var railsR = Road.MuteCity.RailTex2(matricesRight, tempRoad, false);
+                        rails.AddRange(railsR);
+                    }
+                    return rails.ToArray();
                 }
 
                 public static Tristrip[][] Shape(Matrix4x4[] matrices, GfzShapeRoadModulated road, float segmentLength, bool isGfzCoordinateSpace)
@@ -1837,7 +1853,7 @@ namespace Manifold.EditorTools.GC.GFZ
                     foreach (var side in sides)
                         side.tex0 = OffsetUV(side.tex0, new Vector2(0, 0.5f));
 
-                    var rails = Rails(matricesLeft, matricesRight);
+                    var rails = Rails(matricesLeft, matricesRight, road);
 
                     var endcaps = EndcapsTex0(matrices, road, isGfzCoordinateSpace);
                     sides = ConcatTristrips(sides, endcaps);
