@@ -700,7 +700,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         {
             bool isValid = tristrips.Length == times.Length - 1;
             if (!isValid)
-                throw new System.ArgumentException("Incorrect number of tristrips and times provided.");
+                throw new System.ArgumentException($"Incorrect number of tristrips and times provided. {tristrips.Length}/{times.Length}");
 
             // Scale times
             float[] scaledTimes = new float[times.Length];
@@ -752,7 +752,24 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
             return tristrips;
         }
+        public static Tristrip InterleaveVertexLines(Vector3[] vertexLineA, Vector3[] vertexLineB)
+        {
+            bool isValid = vertexLineA.Length == vertexLineB.Length;
+            if (!isValid)
+                throw new System.ArgumentException();
 
+            int singleLineVertexCount = vertexLineA.Length;
+            var vertices = new Vector3[singleLineVertexCount * 2];
+            for (int i = 0; i < singleLineVertexCount; i++)
+            {
+                vertices[i * 2 + 0] = vertexLineA[i];
+                vertices[i * 2 + 1] = vertexLineB[i];
+            }
+
+            var tristrip = new Tristrip();
+            tristrip.positions = vertices;
+            return tristrip;
+        }
 
 
         // Conversion from Unity to GFZ
