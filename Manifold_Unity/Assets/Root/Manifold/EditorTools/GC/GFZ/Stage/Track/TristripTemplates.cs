@@ -1707,7 +1707,7 @@ namespace Manifold.EditorTools.GC.GFZ
                 return bottom;
             }
 
-            public static Tristrip Endcap(Matrix4x4 matrix, GfzShapeRoadModulated road, bool isStart, bool isGfzCoordinateSpace)
+            public static Tristrip EndcapNoTex(Matrix4x4 matrix, GfzShapeRoadModulated road, bool isStart, bool isGfzCoordinateSpace)
             {
                 var sampleTimes = CreateEvenlySpacedTimes(road.SubdivisionsTop);
                 var temp = Matrix4x4.TRS(Vector3.zero, Quaternion.identity, Vector3.one);
@@ -1730,12 +1730,10 @@ namespace Manifold.EditorTools.GC.GFZ
                 var normals = ArrayUtility.DefaultArray(normal, tristrip.VertexCount);
                 tristrip.normals = normals;
 
-                tristrip.tex0 = UvStripForward(tristrip, 3);
-
                 tristrip.isBackFacing = isStart;
                 return tristrip;
             }
-            public static Tristrip[] Endcaps(Matrix4x4[] matrices, GfzShapeRoadModulated road, bool isGfzCoordinateSpace)
+            public static Tristrip[] EndcapsTex0(Matrix4x4[] matrices, GfzShapeRoadModulated road, bool isGfzCoordinateSpace)
             {
                 var allTristrips = new List<Tristrip>();
 
@@ -1746,15 +1744,17 @@ namespace Manifold.EditorTools.GC.GFZ
                 if (!isContinuousFrom)
                 {
                     var matrix = matrices[0];
+                    var endcapFrom = EndcapNoTex(matrix, road, true, isGfzCoordinateSpace);
                     var uvRepsX = GetTexRepetitions(matrix.lossyScale.x, kLengthTrim);
-                    var endcapFrom = Endcap(matrix, road, true, isGfzCoordinateSpace);
+                    endcapFrom.tex0 = UvStripForward(endcapFrom, uvRepsX);
                     allTristrips.Add(endcapFrom);
                 }
                 if (!isContinuousTo)
                 {
                     var matrix = matrices[matrices.Length - 1];
+                    var endcapTo = EndcapNoTex(matrix, road, false, isGfzCoordinateSpace);
                     var uvRepsX = GetTexRepetitions(matrix.lossyScale.x, kLengthTrim);
-                    var endcapTo = Endcap(matrix, road, false, isGfzCoordinateSpace);
+                    endcapTo.tex0 = UvStripForward(endcapTo, uvRepsX);
                     allTristrips.Add(endcapTo);
                 }
 
@@ -1827,7 +1827,7 @@ namespace Manifold.EditorTools.GC.GFZ
                     var sides = SidesTex0(matricesLeft, matricesRight, repetitionsSideTexture);
                     var rails = Rails(matricesLeft, matricesRight);
 
-                    var endcaps = Endcaps(matrices, road, isGfzCoordinateSpace);
+                    var endcaps = EndcapsTex0(matrices, road, isGfzCoordinateSpace);
 
 
                     sides = ConcatTristrips(sides, endcaps);
