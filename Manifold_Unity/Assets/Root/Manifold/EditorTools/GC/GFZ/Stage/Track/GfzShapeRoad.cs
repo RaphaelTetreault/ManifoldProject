@@ -13,6 +13,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
     public class GfzShapeRoad : GfzShape,
         IRailSegment
     {
+        // TODO: add subdiv top bottom separately
+        // TODO: new rail management (break out code from modulate road, make generic)
+
         [Header("Mesh Properties")]
         [SerializeField, FormerlySerializedAs("<MeshStyle>k__BackingField")] private RoadMeshStyle meshStyle;
         [SerializeField] public EndcapMode endcapModeIn = EndcapMode.Automatic;
@@ -90,41 +93,14 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             switch (meshStyle)
             {
                 case RoadMeshStyle.MuteCity:
-                    return new Tristrip[][]
-                    {
-                        TristripTemplates.Road.MuteCity.Top(matrices, this, maxTime),
-                        TristripTemplates.Road.MuteCity.CreateRoadBottom(matrices, this, maxTime),
-                        TristripTemplates.Road.MuteCity.CreateRoadTrim(matrices, this, maxTime, isGfzCoordinateSpace),
-                        TristripTemplates.Road.MuteCity.CreateRoadEmbellishments(matrices, this, maxTime),
-                        TristripTemplates.Road.MuteCity.CreateLaneDividers(matrices, this, maxTime),
-                        TristripTemplates.Road.MuteCity.CreateRails(matrices, this),
-                    };
+                    return TristripTemplates.Road.MuteCity.Shape(matrices, this, maxTime, isGfzCoordinateSpace);
                 case RoadMeshStyle.MuteCityCom:
-                    return new Tristrip[][]
-                    {
-                        TristripTemplates.Road.MuteCityCOM.Top(matrices, this, maxTime),
-                        TristripTemplates.Road.MuteCity.CreateRoadBottom(matrices, this, maxTime),
-                        TristripTemplates.Road.MuteCity.CreateRoadTrim(matrices, this, maxTime, isGfzCoordinateSpace),
-                        TristripTemplates.Road.MuteCity.CreateRoadEmbellishments(matrices, this, maxTime),
-                        TristripTemplates.Road.MuteCity.CreateRails(matrices, this),
-                    };
+                    return TristripTemplates.Road.MuteCityCOM.Shape(matrices, this, maxTime, isGfzCoordinateSpace);
                 case RoadMeshStyle.OuterSpace:
-                    return new Tristrip[][]
-                    {
-                        TristripTemplates.Road.OuterSpace.Top(matrices, this, maxTime),
-                        TristripTemplates.Road.OuterSpace.BottomAndSides(matrices, this, maxTime),
-                        TristripTemplates.Road.OuterSpace.CurbAndLaneDividerFlat(matrices, this, maxTime),
-                        TristripTemplates.Road.OuterSpace.CurbAndLaneDividerSlants(matrices, this, maxTime),
-                        TristripTemplates.Road.OuterSpace.RailsAngle(matrices, this, maxTime),
-                        TristripTemplates.Road.OuterSpace.RailsLights(matrices, this, maxTime),
-                        TristripTemplates.Road.OuterSpace.EndCaps(matrices, this, maxTime),
-                    };
+                    return TristripTemplates.Road.OuterSpace.Shape(matrices, this, maxTime);
 
                 default:
-                    return new Tristrip[][]
-                    {
-                        TristripTemplates.Road.CreateDebug(matrices, this, WidthDivisions, LengthDistance, isGfzCoordinateSpace),
-                    };
+                    return TristripTemplates.Road.MuteCity.Shape(matrices, this, maxTime, isGfzCoordinateSpace);
             }
         }
 
