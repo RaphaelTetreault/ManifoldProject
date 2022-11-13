@@ -164,6 +164,10 @@ namespace Manifold.EditorTools.GC.GFZ
 
         public static class General
         {
+            public const float uvFlashSlipLight = 256;
+            public const float uvFlashSlipDark = 512;
+            public const float uvFlashRecover = -64;
+
             private static void GetNormalizedValues(GfzPropertyEmbed embed, int count, out float[] halfWidth, out float[] offsets, out float[] length)
             {
                 halfWidth = new float[count];
@@ -179,6 +183,20 @@ namespace Manifold.EditorTools.GC.GFZ
                     offsets[i] = embedOffset;
                     length[i] = percentage;
                 }
+            }
+            private static float[] GetDenormalizeLengthsWithPath(GfzPropertyEmbed embed, float repsLength, float[] length)
+            {
+                float segmentLength = embed.GetMaxTime();
+                float embedLength = embed.GetRangeLength();
+                float uvLength = embedLength / repsLength;
+                float embedStart = embed.GetMaxTimeOffset() + embed.From * segmentLength;
+                float uvStart = embedStart / repsLength;
+
+                var newLengths = new float[length.Length];
+                for (int i = 0; i < newLengths.Length; i++)
+                    newLengths[i] = length[i] * uvLength + uvStart;
+
+                return newLengths;
             }
             private static Vector2[][] CreateTrackSpaceUVs(GfzPropertyEmbed embed, Tristrip[] tristrips, float[] halfWidth, float[] offsets, float[] lengths, float offsetOffset = 0f)
             {
@@ -240,19 +258,13 @@ namespace Manifold.EditorTools.GC.GFZ
                 float scaleL = math.ceil(segmentLength / scaleW);
                 // Normalized values used to generate UVs
                 GetNormalizedValues(embed, matrices.Length, out float[] halfWidths, out float[] offsets, out float[] lengths);
+                var pathScaledLengths = GetDenormalizeLengthsWithPath(embed, uvFlashSlipLight, lengths);
                 // Create UVs
                 var uvsNormalized = CreateTrackSpaceUVs(embed, tristrips, halfWidths, offsets, lengths);
                 var uvs0 = ScaleByParentWidthAndCustomLength(uvsNormalized, parentMatrices, 1 / scaleW, scaleL);
-                var uvs1 = CreateTrackSpaceUVs(embed, tristrips, halfWidths, offsets, lengths, 0.5f);
-                // Assign UVS
-                for (int i = 0; i < tristrips.Length; i++)
-                {
-                    tristrips[i].tex0 = uvs0[i]; // blue squares
-
-                    var tex1 = ScaleUVs(uvs1[i], embed.RepeatFlashingUV);
-                    tex1 = OffsetUVs(tex1, embed.RepeatFlashingUVOffset);
-                    tristrips[i].tex1 = tex1; // flashing
-                }
+                var uvs1 = CreateTrackSpaceUVs(embed, tristrips, halfWidths, offsets, pathScaledLengths, 0.5f);
+                ApplyTex0(tristrips, uvs0);
+                ApplyTex1(tristrips, uvs1);
 
                 return tristrips;
             }
@@ -265,18 +277,13 @@ namespace Manifold.EditorTools.GC.GFZ
                 float repetitionsAlongLength = math.ceil(segmentLength / 64f);
                 // Normalized values used to generate UVs
                 GetNormalizedValues(embed, matrices.Length, out float[] halfWidths, out float[] offsets, out float[] lengths);
+                var pathScaledLengths = GetDenormalizeLengthsWithPath(embed, uvFlashSlipDark, lengths);
                 // Create UVs
                 var uvsNormalized = CreateTrackSpaceUVs(embed, tristrips, halfWidths, offsets, lengths);
                 var uvs0 = ScaleByParentWidthAndCustomLength(uvsNormalized, parentMatrices, 1 / 64f, repetitionsAlongLength);
-                var uvs1 = CreateTrackSpaceUVs(embed, tristrips, halfWidths, offsets, lengths, 0.5f);
-                for (int i = 0; i < tristrips.Length; i++)
-                {
-                    tristrips[i].tex0 = uvs0[i]; // blue squares
-
-                    var tex1 = ScaleUVs(uvs1[i], embed.RepeatFlashingUV);
-                    tex1 = OffsetUVs(tex1, embed.RepeatFlashingUVOffset);
-                    tristrips[i].tex1 = tex1; // flashing
-                }
+                var uvs1 = CreateTrackSpaceUVs(embed, tristrips, halfWidths, offsets, pathScaledLengths, 0.5f);
+                ApplyTex0(tristrips, uvs0);
+                ApplyTex1(tristrips, uvs1);
 
                 return tristrips;
             }
@@ -302,28 +309,20 @@ namespace Manifold.EditorTools.GC.GFZ
                 GetNormalizedValues(embed, matrices.Length, out float[] halfWidths, out float[] offsets, out float[] lengths);
                 // Create UVs
                 var uvsNormalized = CreateTrackSpaceUVs(embed, tristrips, halfWidths, offsets, lengths);
-                var uvs = ScaleByParentWidthAndCustomLength(uvsNormalized, parentMatrices, 1 / scaleW, scaleL);
+                var uvs0 = ScaleByParentWidthAndCustomLength(uvsNormalized, parentMatrices, 1 / scaleW, scaleL);
                 Vector2 uvs1Offset = new Vector2(0.5f, 0.33f) * kEmbedFlashDirtReps;
-                // Assign UVS.
-                for (int i = 0; i < tristrips.Length; i++)
-                {
-                    tristrips[i].tex0 = uvs[i]; // noise 1
-                    tristrips[i].tex1 = OffsetUVs(ScaleUVs(uvs[i], -1), uvs1Offset); // noise 2, mirrored, offset
-                }
+                var uvs1 = ScaleUV(uvs0, -1f);
+                uvs1 = OffsetUV(uvs1, uvs1Offset);
+                ApplyTex0(tristrips, uvs0);
+                ApplyTex1(tristrips, uvs1);
 
                 return tristrips;
             }
             public static Tristrip[] CreateDirtAlpha(Matrix4x4[] matrices, GfzPropertyEmbed embed)
             {
                 var tristrips = GenerateHorizontalLineWithNormals(matrices, edgeLeft, edgeRight, Vector3.up, embed.WidthDivisions, true);
-
-                // This layer is just a color, so UVS can be whatever
-                for (int i = 0; i < tristrips.Length; i++)
-                {
-                    int nVertices = tristrips[i].VertexCount;
-                    tristrips[i].tex0 = new Vector2[nVertices];
-                }
-                // ... do you even need UVs?
+                var uvs0 = ArrayUtility.DefaultArray2D(Vector2.zero, tristrips.Length, tristrips[0].VertexCount);
+                ApplyTex0(tristrips, uvs0);
 
                 return tristrips;
             }
@@ -341,11 +340,7 @@ namespace Manifold.EditorTools.GC.GFZ
                 // Create UVs
                 var uvsNormalized = CreateTrackSpaceUVs(embed, tristrips, halfWidths, offsets, lengths);
                 var uvs0 = ScaleByParentWidthAndCustomLength(uvsNormalized, parentMatrices, 1 / scaleW, scaleL);
-                // Assign UVS
-                for (int i = 0; i < tristrips.Length; i++)
-                {
-                    tristrips[i].tex0 = uvs0[i];
-                }
+                ApplyTex0(tristrips, uvs0);
 
                 return tristrips;
             }
@@ -365,15 +360,8 @@ namespace Manifold.EditorTools.GC.GFZ
                 var uvsNormalized = CreateTrackSpaceUVs(embed, tristrips, halfWidths, offsets, lengths);
                 var uvs0 = ScaleByParentWidthAndCustomLength(uvsNormalized, parentMatrices, 1 / scaleW0, scaleL0);
                 var uvs1 = ScaleByParentWidthAndCustomLength(uvsNormalized, parentMatrices, 1 / scaleW1, scaleL1);
-
-                for (int i = 0; i < tristrips.Length; i++)
-                {
-                    tristrips[i].tex0 = uvs0[i]; // red dots
-
-                    var tex1 = ScaleUVs(uvs1[i], embed.RepeatFlashingUV);
-                    tex1 = OffsetUVs(tex1, embed.RepeatFlashingUVOffset);
-                    tristrips[i].tex1 = SwizzleUVs(tex1); // scan line effect
-                }
+                ApplyTex0(tristrips, uvs0);
+                ApplyTex0(tristrips, uvs1);
 
                 return tristrips;
             }
@@ -387,18 +375,13 @@ namespace Manifold.EditorTools.GC.GFZ
                 float repetitionsAlongLength = math.ceil(segmentLength / kEmbedFlashHealReps);
                 // Normalized values used to generate UVs
                 GetNormalizedValues(embed, matrices.Length, out float[] halfWidths, out float[] offsets, out float[] lengths);
+                var pathScaledLengths = GetDenormalizeLengthsWithPath(embed, uvFlashRecover, lengths);
                 // Create UVs
                 var uvs0 = CreateTristripScaledUVs(tristrips, 2f, repetitionsAlongLength);
-                var uvs1 = CreateTrackSpaceUVs(embed, tristrips, halfWidths, offsets, lengths, 0.5f); // flashing white stripe
-                // Assign UVS. Both layers use the same UVs
-                for (int i = 0; i < tristrips.Length; i++)
-                {
-                    tristrips[i].tex0 = uvs0[i];
-
-                    var tex1 = ScaleUVs(uvs1[i], embed.RepeatFlashingUV);
-                    tex1 = OffsetUVs(tex1, embed.RepeatFlashingUVOffset);
-                    tristrips[i].tex1 = SwizzleUVs(tex1);
-                }
+                var uvs1 = CreateTrackSpaceUVs(embed, tristrips, halfWidths, offsets, pathScaledLengths, 0.5f); // flashing white stripe
+                uvs1 = SwizzleUVs(uvs1);
+                ApplyTex0(tristrips, uvs0);
+                ApplyTex1(tristrips, uvs1);
 
                 return tristrips;
             }
@@ -412,17 +395,10 @@ namespace Manifold.EditorTools.GC.GFZ
                 float segmentLength = embed.GetRangeLength();
                 float repetitionsAlongLength = math.ceil(segmentLength / kEmbedFlashSlipReps);
 
-                // TODO: do not hardcode, expose as parameter
+                var uvs0 = ArrayUtility.DefaultArray2D(Vector2.zero, tristrips.Length, tristrips[0].VertexCount);
                 var uvs1 = CreateTristripScaledUVs(tristrips, 1f, repetitionsAlongLength);
-
-                // Assign UVS. Both layers use the same UVs
-                for (int i = 0; i < tristrips.Length; i++)
-                {
-                    // just color
-                    tristrips[i].tex0 = new Vector2[tristrips[i].VertexCount];
-                    // alpha square
-                    tristrips[i].tex1 = uvs1[i];
-                }
+                ApplyTex0(tristrips, uvs0);
+                ApplyTex1(tristrips, uvs1);
 
                 return tristrips;
             }
@@ -463,11 +439,8 @@ namespace Manifold.EditorTools.GC.GFZ
                 bool isBackFacing = directionLR > 0;
                 var tristrips = GenerateHorizontalLineWithNormals(offsetMatrices, innerEdge, outerEdge, defaultNormal, 1, isBackFacing);
 
-                var uvs = CreateTristripScaledUVs(tristrips, 1, repetitionsAlongLength);
-                for (int i = 0; i < tristrips.Length; i++)
-                {
-                    tristrips[i].tex0 = uvs[i];
-                }
+                var uvs0 = CreateTristripScaledUVs(tristrips, 1, repetitionsAlongLength);
+                ApplyTex0(tristrips, uvs0);
 
                 // Make first/last vert protrude outwards a bit, but only do so if we have start/end trim
                 if (node.IncludeTrimStart)

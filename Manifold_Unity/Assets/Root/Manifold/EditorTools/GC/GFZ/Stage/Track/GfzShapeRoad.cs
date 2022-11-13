@@ -13,6 +13,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
     public class GfzShapeRoad : GfzShape,
         IRailSegment
     {
+        // TODO: add subdiv top bottom separately
+        // TODO: new rail management (break out code from modulate road, make generic)
+
         [Header("Mesh Properties")]
         [SerializeField, FormerlySerializedAs("<MeshStyle>k__BackingField")] private RoadMeshStyle meshStyle;
         [SerializeField] public EndcapMode endcapModeIn = EndcapMode.Automatic;

@@ -22,9 +22,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         [SerializeField] private bool includeTrimRight = true;
         [SerializeField] private bool includeTrimStart = true;
         [SerializeField] private bool includeTrimEnd = true;
-        [SerializeField] private Vector2 repeatFlashingUV = Vector2.one;
-        [SerializeField] private Vector2 repeatFlashingUVOffset = Vector2.zero;
-        [SerializeField] private Vector2 scrollSpeed = Vector2.one;
+        [SerializeField, HideInInspector] private Vector2 repeatFlashingUV = Vector2.one;
+        [SerializeField, HideInInspector] private Vector2 repeatFlashingUVOffset = Vector2.zero;
+        [SerializeField, HideInInspector] private Vector2 scrollSpeed = Vector2.one;
 
 
         public override ShapeID ShapeIdentifier => ShapeID.embed;
@@ -43,9 +43,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         public bool IncludeTrimRight { get => includeTrimRight; set => includeTrimRight = value; }
         public bool IncludeTrimStart { get => includeTrimStart; set => includeTrimStart = value; }
         public bool IncludeTrimEnd { get => includeTrimEnd; set => includeTrimEnd = value; }
-        public Vector2 RepeatFlashingUV { get => repeatFlashingUV; set => repeatFlashingUV = value; }
-        public Vector2 RepeatFlashingUVOffset { get => repeatFlashingUVOffset; set => repeatFlashingUVOffset = value; }
-        //public Vector2 RepeatFlashingUVOffsetScaled { get => repeatFlashingUV * repeatFlashingUVOffset; }
 
 
         public float GetRangeLength()
@@ -153,17 +150,17 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public void ScaleTextureScrollFields(GcmfTemplate[] gcmfTemplates)
         {
-            foreach (var gcmfTemplate in gcmfTemplates)
-            {
-                if (gcmfTemplate.TextureScrollFields == null)
-                    continue;
+            //foreach (var gcmfTemplate in gcmfTemplates)
+            //{
+            //    if (gcmfTemplate.TextureScrollFields == null)
+            //        continue;
 
-                foreach (var textureScrollField in gcmfTemplate.TextureScrollFields)
-                {
-                    textureScrollField.u *= scrollSpeed.x;
-                    textureScrollField.v *= scrollSpeed.y;
-                }
-            }
+            //    foreach (var textureScrollField in gcmfTemplate.TextureScrollFields)
+            //    {
+            //        textureScrollField.u *= scrollSpeed.x;
+            //        textureScrollField.v *= scrollSpeed.y;
+            //    }
+            //}
         }
 
         public override GcmfTemplate[] GetGcmfTemplates()

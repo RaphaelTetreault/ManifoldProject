@@ -502,7 +502,7 @@ namespace Manifold.EditorTools.GC.GFZ
                 };
                 var textureScrollFields = new TextureScrollField[]
                 {
-                        new TextureScrollField(0f, -2f),
+                        new TextureScrollField(0f, 2f),
                 };
                 var material = new Material
                 {

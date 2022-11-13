@@ -254,7 +254,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
             // Set triangle facings
             AssignTristripMetadata(tristrips, normalOutwards, false);
-            
+
             // That's it!
             return tristrips;
         }
@@ -268,7 +268,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
             return tristrips;
         }
-        public static Tristrip[] GenerateOpenCircleWithNormals(Matrix4x4[] matrices, UnityEngine.AnimationCurve gapCurve, int nTristrips, bool isPipe,  bool smoothEnds, bool isGfzCoordinateSpace)
+        public static Tristrip[] GenerateOpenCircleWithNormals(Matrix4x4[] matrices, UnityEngine.AnimationCurve gapCurve, int nTristrips, bool isPipe, bool smoothEnds, bool isGfzCoordinateSpace)
         {
             int vertexCount = matrices.Length * 2;
             var tristrips = new Tristrip[nTristrips];
@@ -289,7 +289,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
                 var time = i / (matrices.Length - 1f);
                 var ratio = math.clamp(gapCurve.EvaluateNormalized(time), 0f, 1f);
-                
+
                 float angleFrom = math.lerp(baseAngle, from, ratio);
                 float angleTo = math.lerp(baseAngle, to, ratio);
 
@@ -430,9 +430,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
             // Compute normals for last vertices on tristrip
             {
-                Vector3 vertex0 = tristrip.positions[normals.Length-2];
-                Vector3 vertex1 = tristrip.positions[normals.Length-1];
-                Vector3 vertex2 = tristrip.positions[normals.Length-3];
+                Vector3 vertex0 = tristrip.positions[normals.Length - 2];
+                Vector3 vertex1 = tristrip.positions[normals.Length - 1];
+                Vector3 vertex2 = tristrip.positions[normals.Length - 3];
                 Vector3 dir01 = vertex1 - vertex0;
                 Vector3 dir02 = vertex2 - vertex0;
                 Vector3 normal = doInvertNormals ? math.cross(dir02, dir01) : math.cross(dir01, dir02);
@@ -551,6 +551,15 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             var uvCopy = ArrayUtility.CopyArray(uvs);
             MutateSwizzleUVs(uvCopy);
             return uvCopy;
+        }
+
+        public static Vector2[][] SwizzleUVs(Vector2[][] uvs)
+        {
+            for (int i =0; i < uvs.Length; i++)
+            {
+                uvs[i] = SwizzleUVs(uvs[i]);
+            }
+            return uvs;
         }
 
         public static void MutateScaleUVs(Vector2[] uvs, Vector2 scale)

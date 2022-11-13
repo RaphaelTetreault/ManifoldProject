@@ -51,6 +51,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         {
             return GetRoot().GetMaxTime();
         }
+        public float GetMaxTimeOffset()
+        {
+            var rootNode = GetRoot();
+            float offset = rootNode.GetDistanceOffset();
+            return offset;
+        }
 
         public Mesh TristripsToMesh(Tristrip[] tristrips)
         {
