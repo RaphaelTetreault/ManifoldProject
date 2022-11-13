@@ -24,7 +24,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             var matrices = TristripGenerator.GenerateMatrixIntervals(hacTRS, maxStep, rangeMin, rangeMax);
 
             Vector3 hOffset = horizontaPosition * Vector3.right;
-            var offset = Matrix4x4.TRS(positionOffset, Quaternion.Euler(rotationOffset), scaleOffset);
+            var rOffset = Quaternion.Euler(rotationOffset);
+            var pOffset = rOffset * positionOffset;
+            var offset = Matrix4x4.TRS(pOffset, rOffset, scaleOffset);
 
             int startIndex = removeFirst ? 1 : 0;
             int endIndex = removeLast ? matrices.Length - 2 : matrices.Length - 1;
