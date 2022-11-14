@@ -30,7 +30,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         public const string embedRecoverLightBase = shadergraph_tl_2TexMultiplyAdditive;
         public const string embedRecoverLightSubBase = shadergraph_mt_m_1Tex;
         public const string embedRecoverDarkAlpha = shadergraph_tl_2TexMultiplyAdditive;
-        public const string embedRecoverDarkBase = shadergraph_mt_m_1Tex;
+        public const string embedRecoverDarkBase = shadergraph_mt_m_2TexAdd;
         // DIRT
         public const string embedDirtAlpha = shadergraph_tl_1Tex;
         public const string embedDirtNoise = shadergraph_mt_r_1Tex; // looks better than 2 tex multiply

@@ -294,7 +294,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                     return new Tristrip[][]
                     {
                         TristripTemplates.General.CreateTrim(insetMatrices, this, isGfzCoordinateSpace),
-                        TristripTemplates.General.CreateRecoverBase(insetMatrices, this),
+                        TristripTemplates.General.CreateRecoverLightFloor(insetMatrices, this),
                         TristripTemplates.General.CreateRecoverBase(insetMatrices, this),
                         TristripTemplates.General.CreateRecoverAlpha(insetMatrices, this),
                     };

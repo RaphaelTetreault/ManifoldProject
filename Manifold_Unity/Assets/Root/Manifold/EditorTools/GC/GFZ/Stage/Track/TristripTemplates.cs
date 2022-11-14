@@ -198,6 +198,7 @@ namespace Manifold.EditorTools.GC.GFZ
 
                 return newLengths;
             }
+            // TODO: uv setup is should be optionally ST or TS. Right now it is TS, unintuitive, requires swizzle
             private static Vector2[][] CreateTrackSpaceUVs(GfzPropertyEmbed embed, Tristrip[] tristrips, float[] halfWidth, float[] offsets, float[] lengths, float offsetOffset = 0f)
             {
                 var allUVs = new Vector2[tristrips.Length][];
@@ -366,6 +367,23 @@ namespace Manifold.EditorTools.GC.GFZ
                 return tristrips;
             }
 
+            public static Tristrip[] CreateRecoverLightFloor(Matrix4x4[] matrices, GfzPropertyEmbed embed)
+            {
+                var tristrips = GenerateHorizontalLineWithNormals(matrices, edgeLeft, edgeRight, Vector3.up, embed.WidthDivisions, true);
+
+                // Scaling parameters
+                float segmentLength = embed.GetRangeLength();
+                float repetitionsAlongLength = math.ceil(segmentLength / kEmbedFlashHealReps);
+                // Normalized values used to generate UVs
+                GetNormalizedValues(embed, matrices.Length, out float[] halfWidths, out float[] offsets, out float[] lengths);
+                var pathScaledLengths = GetDenormalizeLengthsWithPath(embed, 48, lengths);
+                // Create UVs
+                var uvs0 = CreateTrackSpaceUVs(embed, tristrips, halfWidths, offsets, pathScaledLengths, 0.5f); // flashing white stripe
+                uvs0 = SwizzleUVs(uvs0);
+                ApplyTex0(tristrips, uvs0);
+
+                return tristrips;
+            }
             public static Tristrip[] CreateRecoverBase(Matrix4x4[] matrices, GfzPropertyEmbed embed)
             {
                 var tristrips = GenerateHorizontalLineWithNormals(matrices, edgeLeft, edgeRight, Vector3.up, embed.WidthDivisions, true);
