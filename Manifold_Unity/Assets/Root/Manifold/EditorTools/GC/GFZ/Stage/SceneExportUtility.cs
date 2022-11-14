@@ -22,55 +22,209 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 {
     public static class SceneExportUtility
     {
-        [MenuItem(GfzMenuItems.Stage.TestPatchEnemyLine + " _F7", priority = GfzMenuItems.Stage.Priority.TestPatchEnemyLine)]
-        public static void TestPatchEnemyLine()
+        private static T FindSingleInstanceOrError<T>() where T : UnityEngine.Object
         {
-            var settings = GfzProjectWindow.GetSettings();
-
-            // ENCRYPTED CALL
-            string encryptedFile = settings.SourceDirectory + "enemy_line/line__.bin";
-            if (File.Exists(encryptedFile))
+            var instances = GameObject.FindObjectsOfType<T>();
+            int count = instances.Length;
+            if (count == 0)
             {
-                EnemyLineUtility.TestPatchEncrypted(encryptedFile);
+                // User message
+                string title = $"Missing Instance {typeof(T).Name}";
+                string message = $"Expected 1 instance of script {typeof(T).Name} in scene but found {count} instances.";
+                string ok = "ok";
+                EditorUtility.DisplayDialog(title, message, ok);
+
+                // Error
+                throw new ArgumentException($"No instances of type {typeof(T).Name} found in scene!");
+            }
+            else if (count > 1)
+            {
+                // User message
+                string title = $"Too Many Instances of {typeof(T).Name}";
+                string message = $"Expected 1 instance of script {typeof(T).Name} in scene but found {count} instances.";
+                string ok = "ok";
+                EditorUtility.DisplayDialog(title, message, ok);
+
+                // Error
+                throw new ArgumentException($"More than one instance of type {typeof(T).Name} found in scene! There must only be 1!");
             }
             else
             {
-                Debug.LogError($"Could not find file: {encryptedFile}");
-            }
-
-            // DECRYPTED CALL
-            string decryptedFile = settings.WorkingFilesDirectory + "enemy_line/line__.rel";
-            if (File.Exists(decryptedFile))
-            {
-                EnemyLineUtility.TestPatchEncrypted(encryptedFile);
-            }
-            else
-            {
-                Debug.LogError($"Could not find file: {decryptedFile}");
+                return instances[0];
             }
         }
-        [MenuItem(GfzMenuItems.Stage.TestDecryptEnemyLine, priority = GfzMenuItems.Stage.Priority.TestDecryptEnemyLine)]
-        public static void TestDecryptEnemyLine()
+
+
+        //[MenuItem(GfzMenuItems.Stage.TestPatchEnemyLine + " _F7", priority = GfzMenuItems.Stage.Priority.TestPatchEnemyLine)]
+        public static void PatchEnemyLineFromSceneParameters()
         {
+            Debug.Log("Abort patching line__.bin. (This is not an issue.)");
+            return;
+
+            var enemyLineInfo = GetEnemyLineInfo();
+            var settings = GfzProjectWindow.GetSettings();
+            string workingFile = Path.Combine(settings.WorkingFilesDirectory, enemyLineInfo.WorkingFile);
+            string destination = Path.Combine(settings.WorkingFilesDirectory, enemyLineInfo.SourceFile);
+
+            // Ensure file integrity
+            switch (enemyLineInfo.GameCode)
+            {
+                case EnemyLineInformation.GameCode.GX_E:
+                case EnemyLineInformation.GameCode.GX_J:
+                case EnemyLineInformation.GameCode.GX_P:
+                    {
+                        // Decrypt file if it does not exist
+                        bool fileExists = File.Exists(workingFile);
+                        if (!fileExists)
+                            DecryptEnemyLine();
+                    }
+                    break;
+
+                case EnemyLineInformation.GameCode.AX:
+                    {
+                        bool fileExists = File.Exists(workingFile);
+                        if (!fileExists)
+                            throw new ArgumentException($"Could not find file {workingFile}");
+                    }
+                    break;
+
+                default:
+                    throw new NotImplementedException($"Unimplemented game code {enemyLineInfo.GameCode}");
+            }
+
+
+            // Patch things!
+            var sceneParameters = FindSingleInstanceOrError<GfzSceneParameters>();
+            using (var file = File.Open(workingFile, FileMode.Open))
+            {
+                // Patch file
+                using (var writer = new EndianBinaryWriter(file, enemyLineInfo.Endianness))
+                {
+                    // do the things!
+                    EnemyLineUtility.PatchCupSlot(writer, enemyLineInfo, sceneParameters.cup, sceneParameters.courseIndex);
+                    EnemyLineUtility.PatchVenueIndex(writer, enemyLineInfo, sceneParameters.courseIndex, sceneParameters._venue);
+                    EnemyLineUtility.PatchDifficultyRatingToSlot(writer, enemyLineInfo, sceneParameters.courseIndex, sceneParameters.difficulty);
+                    // TODO: initialize course names, then call will be valid.
+                    //EnemyLineUtility.PatchCustomCourseName(writer, enemyLineInfo, sceneParameters.courseIndex, sceneParameters.courseName);
+                    // TODO: bgm
+
+                    Debug.Log($"Success! Openned file {workingFile}");
+                }
+
+                // Compress patched file
+                var game = enemyLineInfo.GameCode == EnemyLineInformation.GameCode.AX
+                    ? GameCube.AmusementVision.GxGame.FZeroAX
+                    : GameCube.AmusementVision.GxGame.FZeroGX;
+                var compressed = LzUtility.CompressAvLz(workingFile, game);
+                // Encrypt patched file
+                var encrypted = EnemyLineUtility.Encrypt(compressed, enemyLineInfo);
+                // Save to disk
+                using (var writer = new BinaryWriter(File.Create(destination)))
+                {
+                    writer.Write(encrypted.ToArray());
+                    Debug.Log($"Wrote file {destination}");
+                }
+
+            }
+        }
+
+        [MenuItem(GfzMenuItems.Stage.DecryptEnemyLine, priority = GfzMenuItems.Stage.Priority.TestDecryptEnemyLine)]
+        public static void DecryptEnemyLine()
+        {
+            var enemyLineInfo = GetEnemyLineInfo();
+            var settings = GfzProjectWindow.GetSettings();
+            string encryptedFile = Path.Combine(settings.SourceDirectory, enemyLineInfo.SourceFile);
+
+            switch (enemyLineInfo.GameCode)
+            {
+                case EnemyLineInformation.GameCode.GX_E:
+                case EnemyLineInformation.GameCode.GX_J:
+                case EnemyLineInformation.GameCode.GX_P:
+                    {
+                        // Decrypt file
+                        FileStream line = File.Open(encryptedFile, FileMode.Open);
+                        var decryptedLine = EnemyLineUtility.Decrypt(line, enemyLineInfo);
+                        line.Close();
+
+                        // Save decrypted file (with .lz extension)
+                        string decryptedAndDecompressedFilePath = settings.WorkingFilesDirectory + "enemy_line/line__.rel";
+                        string decryptedFilePath = decryptedAndDecompressedFilePath + ".lz";
+                        using (var writer = new BinaryWriter(File.Create(decryptedFilePath, encryptedFile.Length)))
+                        {
+                            writer.Write(decryptedLine.ToArray());
+                            Debug.Log($"Decrypted '{encryptedFile}' and wrote file '{decryptedFilePath}'");
+                        }
+
+                        // Decompress file
+                        var decompressedFile = new MemoryStream();
+                        using (var inputFile = File.Open(decryptedFilePath, FileMode.Open, FileAccess.Read, FileShare.Read))
+                        {
+                            GameCube.AmusementVision.LZ.Lz.Unpack(inputFile, decompressedFile);
+                        }
+
+                        // Save out decrypted AND decompressed file
+                        using (var writer = new BinaryWriter(File.Create(decryptedAndDecompressedFilePath, (int)decompressedFile.Length)))
+                        {
+                            writer.Write(decompressedFile.ToArray());
+                            Debug.Log($"Decompressed '{decryptedFilePath}' and wrote file '{decryptedAndDecompressedFilePath}'");
+                            decompressedFile.Flush();
+                        }
+                    }
+                    break;
+
+                case EnemyLineInformation.GameCode.AX:
+                    // Nothing to decrypt
+                    break;
+
+                default:
+                    throw new NotImplementedException($"Unimplemented game code {enemyLineInfo.GameCode}");
+            }
+        }
+
+        /// <summary>
+        /// Automatically gets the correct EnemyLineInfo for the current project's 
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
+        public static EnemyLineInformationLookup GetEnemyLineInfo()
+        {
+            // Search for GX line__.bin file
             var settings = GfzProjectWindow.GetSettings();
             string encryptedFile = settings.SourceDirectory + "enemy_line/line__.bin";
-            if (File.Exists(encryptedFile))
-            {
-                var line = File.Open(encryptedFile, FileMode.Open);
-                var decryptedLine = EnemyLineUtility.Decrypt(line);
 
-                string decryptedFile = settings.WorkingFilesDirectory + "enemy_line/line__.rel";
-                using (var writer = new BinaryWriter(File.Create(decryptedFile, encryptedFile.Length)))
+            bool fileExists = File.Exists(encryptedFile);
+            if (fileExists)
+            {
+                // Check for GX line__.bin's hash
+                var md5 = System.Security.Cryptography.MD5.Create();
+                string fileHash = "";
+                using (var reader = new BinaryReader(File.OpenRead(encryptedFile)))
                 {
-                    writer.Write(decryptedLine.ToArray());
-                    Debug.Log($"Decrypted '{encryptedFile}' and wrote file '{decryptedFile}'");
+                    var bytes = reader.ReadBytes((int)reader.BaseStream.Length);
+                    var hash = md5.ComputeHash(bytes);
+                    foreach (var @byte in hash)
+                        fileHash += @byte.ToString("x2");
+                }
+
+                switch (fileHash)
+                {
+                    case EnemyLineInformationLookupGfze01.kFileHashMD5: return EnemyLineInformation.GFZE01;
+                    case EnemyLineInformationLookupGfzj01.kFileHashMD5: return EnemyLineInformation.GFZJ01;
+                    case EnemyLineInformationLookupGfzp01.kFileHashMD5: return EnemyLineInformation.GFZP01;
+                    default:
+                        throw new ArgumentException($"File '{encryptedFile}' found but hash '{fileHash}' does not match.");
                 }
             }
             else
             {
-                Debug.LogError($"Could not find file: {encryptedFile}");
+                // check for AX file
+                // TODO: load main.dol, check hash?
             }
+
+            throw new ArgumentException("Could not locate valid file for 'enemy_line' patching.");
         }
+
+
 
 
         [MenuItem(GfzMenuItems.Stage.ExportActiveScene + " _F8", priority = GfzMenuItems.Stage.Priority.ExportActiveScene)]
@@ -381,7 +535,11 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             }
 
             // User info
-            MessageCheckFileSizes(scene.CourseIndex, gmaFilePath, tplFilePath, sceneFilePath);
+            // TODO: new means of assessing gma/tpl for BG
+            //MessageCheckFileSizes(scene.CourseIndex, gmaFilePath, tplFilePath, sceneFilePath);
+
+            //
+            PatchEnemyLineFromSceneParameters();
         }
 
 
@@ -544,6 +702,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             int totalTriangles = 0;
             foreach (var staticCollider in staticColliders)
             {
+                //staticCollider.CreateColliderOptimized(out ColliderTriangle[] triangles, out ColliderQuad[] quads);
                 var triangles = staticCollider.CreateColliderTriangles();
                 colliderTriangleArrays.Add(triangles);
 
@@ -620,9 +779,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         #endregion
 
-        public static (string gma, string tpl) GetBgGmaTplPaths(int stageID)
+        public static (string gma, string tpl) GetBgGmaTplPaths(GfzSceneParameters sceneParameters)
         {
-            var venueID = CourseUtility.GetVenueID(stageID).ToString().ToLower();
+            //var venueID = CourseUtility.GetVenueID(stageID).ToString().ToLower();
+            VenueID venueID = VenueID.None;
             var bg = $"bg_{venueID}";
 
             var settings = GfzProjectWindow.GetSettings();
@@ -810,9 +970,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             }
         }
 
-        public static void MessageCheckFileSizes(int sceneIndex, params string[] filePaths)
+        public static void MessageCheckFileSizes(GfzSceneParameters sceneParameters, params string[] filePaths)
         {
-            (string bgGmaFilePath, string bgTplFilePath) = GetBgGmaTplPaths(sceneIndex);
+            (string bgGmaFilePath, string bgTplFilePath) = GetBgGmaTplPaths(sceneParameters);
 
             var all = new List<string>();
             all.Add(bgGmaFilePath);

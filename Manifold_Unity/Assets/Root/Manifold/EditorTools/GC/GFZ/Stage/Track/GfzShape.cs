@@ -21,6 +21,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             embed,
         }
         public abstract ShapeID ShapeIdentifier { get; }
+        public abstract EndcapMode EndcapModeIn { get; }
+        public abstract EndcapMode EndcapModeOut { get; }
 
 
         public virtual Mesh CreateMesh(out int[] materialsCount)
@@ -48,6 +50,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         public override float GetMaxTime()
         {
             return GetRoot().GetMaxTime();
+        }
+        public float GetMaxTimeOffset()
+        {
+            var rootNode = GetRoot();
+            float offset = rootNode.GetDistanceOffset();
+            return offset;
         }
 
         public Mesh TristripsToMesh(Tristrip[] tristrips)

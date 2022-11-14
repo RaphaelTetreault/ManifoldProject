@@ -22,13 +22,14 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         [SerializeField] private bool includeTrimRight = true;
         [SerializeField] private bool includeTrimStart = true;
         [SerializeField] private bool includeTrimEnd = true;
-        [SerializeField] private Vector2 repeatFlashingUV = Vector2.one;
-        [SerializeField] private Vector2 repeatFlashingUVOffset = Vector2.zero;
-        [SerializeField] private Vector2 scrollSpeed = Vector2.one;
+        [SerializeField, HideInInspector] private Vector2 repeatFlashingUV = Vector2.one;
+        [SerializeField, HideInInspector] private Vector2 repeatFlashingUVOffset = Vector2.zero;
+        [SerializeField, HideInInspector] private Vector2 scrollSpeed = Vector2.one;
 
 
         public override ShapeID ShapeIdentifier => ShapeID.embed;
-
+        public override EndcapMode EndcapModeIn => throw new System.ArgumentException();
+        public override EndcapMode EndcapModeOut => throw new System.ArgumentException();
 
         public SurfaceEmbedType Type { get => type; }
         public int WidthDivisions { get => widthDivisions; }
@@ -42,9 +43,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         public bool IncludeTrimRight { get => includeTrimRight; set => includeTrimRight = value; }
         public bool IncludeTrimStart { get => includeTrimStart; set => includeTrimStart = value; }
         public bool IncludeTrimEnd { get => includeTrimEnd; set => includeTrimEnd = value; }
-        public Vector2 RepeatFlashingUV { get => repeatFlashingUV; set => repeatFlashingUV = value; }
-        public Vector2 RepeatFlashingUVOffset { get => repeatFlashingUVOffset; set => repeatFlashingUVOffset = value; }
-        //public Vector2 RepeatFlashingUVOffsetScaled { get => repeatFlashingUV * repeatFlashingUVOffset; }
 
 
         public float GetRangeLength()
@@ -152,17 +150,17 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public void ScaleTextureScrollFields(GcmfTemplate[] gcmfTemplates)
         {
-            foreach (var gcmfTemplate in gcmfTemplates)
-            {
-                if (gcmfTemplate.TextureScrollFields == null)
-                    continue;
+            //foreach (var gcmfTemplate in gcmfTemplates)
+            //{
+            //    if (gcmfTemplate.TextureScrollFields == null)
+            //        continue;
 
-                foreach (var textureScrollField in gcmfTemplate.TextureScrollFields)
-                {
-                    textureScrollField.u *= scrollSpeed.x;
-                    textureScrollField.v *= scrollSpeed.y;
-                }
-            }
+            //    foreach (var textureScrollField in gcmfTemplate.TextureScrollFields)
+            //    {
+            //        textureScrollField.u *= scrollSpeed.x;
+            //        textureScrollField.v *= scrollSpeed.y;
+            //    }
+            //}
         }
 
         public override GcmfTemplate[] GetGcmfTemplates()
@@ -234,90 +232,83 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
             var max = animKeys[animKeys.Length - 1].time;
             var matrices = TristripGenerator.CreatePathMatrices(this, isGfzCoordinateSpace, lengthDistance, min, max);
             matrices = TristripGenerator.StripHeight(matrices);
-            //
+            // Inset scale so that trim of embeds does not "overflow" collision area
+            var insetMatrices = TristripGenerator.ModifyMatrixScales(matrices, new Vector3(-2f * (TristripTemplates.kTrimOffset + 0.05f),0,0));
+            // Matrices of parent, sometimes required for positioning, etc.
             var parent = GetParent();
             var parentMatrices = TristripGenerator.CreatePathMatrices(parent, isGfzCoordinateSpace, lengthDistance, min, max);
+
+            // Inset endcaps if endcap is present. To do this, inset the matrix itself.
+            float inset = TristripTemplates.kTrimOffset;
+            if (IncludeTrimStart)
+            {
+                var matrix = insetMatrices[0];
+                var offset = matrix.rotation * TristripGenerator.Forward(isGfzCoordinateSpace) * inset;
+                matrix = Matrix4x4.TRS(matrix.GetPosition() + offset, matrix.rotation, matrix.lossyScale);
+                insetMatrices[0] = matrix;
+            }
+            if (IncludeTrimEnd)
+            {
+                int index = matrices.Length - 1;
+                var matrix = insetMatrices[index];
+                var offset = matrix.rotation * TristripGenerator.Back(isGfzCoordinateSpace) * inset;
+                matrix = Matrix4x4.TRS(matrix.GetPosition() + offset, matrix.rotation, matrix.lossyScale);
+                insetMatrices[index] = matrix;
+            }
 
             switch (type)
             {
                 case SurfaceEmbedType.SlipLight:
                     return new Tristrip[][]
                     {
-                        TristripTemplates.General.CreateTrim(matrices, this),
-                        TristripTemplates.General.CreateSlipLight(matrices, parentMatrices, this),
+                        TristripTemplates.General.CreateTrim(insetMatrices, this, isGfzCoordinateSpace),
+                        TristripTemplates.General.CreateSlipLight(insetMatrices, parentMatrices, this),
                     };
                 case SurfaceEmbedType.SlipDarkThin:
                     return new Tristrip[][]
                     {
-                        TristripTemplates.General.CreateTrim(matrices, this),
-                        TristripTemplates.General.CreateSlipDarkThin(matrices, parentMatrices, this),
+                        TristripTemplates.General.CreateTrim(insetMatrices, this, isGfzCoordinateSpace),
+                        TristripTemplates.General.CreateSlipDarkThin(insetMatrices, parentMatrices, this),
                     };
                 case SurfaceEmbedType.SlipDarkWide:
                     return new Tristrip[][]
                     {
-                        TristripTemplates.General.CreateTrim(matrices, this),
-                        TristripTemplates.General.CreateSlipDarkWide(matrices, parentMatrices, this),
+                        TristripTemplates.General.CreateTrim(insetMatrices, this, isGfzCoordinateSpace),
+                        TristripTemplates.General.CreateSlipDarkWide(insetMatrices, parentMatrices, this),
                     };
                 case SurfaceEmbedType.Dirt:
                     return new Tristrip[][]
                     {
-                        TristripTemplates.General.CreateTrim(matrices, this),
-                        TristripTemplates.General.CreateDirtNoise(matrices, parentMatrices, this),
-                        TristripTemplates.General.CreateDirtAlpha(matrices, this),
+                        TristripTemplates.General.CreateTrim(insetMatrices, this, isGfzCoordinateSpace),
+                        TristripTemplates.General.CreateDirtNoise(insetMatrices, parentMatrices, this),
+                        TristripTemplates.General.CreateDirtAlpha(insetMatrices, this),
                     };
                 case SurfaceEmbedType.Lava:
                     return new Tristrip[][]
                     {
-                        TristripTemplates.General.CreateTrim(matrices, this),
-                        TristripTemplates.General.CreateLavaCrag(matrices, parentMatrices, this),
-                        TristripTemplates.General.CreateLavaAlpha(matrices, parentMatrices, this),
+                        TristripTemplates.General.CreateTrim(insetMatrices, this, isGfzCoordinateSpace),
+                        TristripTemplates.General.CreateLavaCrag(insetMatrices, parentMatrices, this),
+                        TristripTemplates.General.CreateLavaAlpha(insetMatrices, parentMatrices, this),
                     };
                 case SurfaceEmbedType.RecoverLight:
                     return new Tristrip[][]
                     {
-                        TristripTemplates.General.CreateTrim(matrices, this),
-                        TristripTemplates.General.CreateRecoverBase(matrices, this),
-                        TristripTemplates.General.CreateRecoverBase(matrices, this),
-                        TristripTemplates.General.CreateRecoverAlpha(matrices, this),
+                        TristripTemplates.General.CreateTrim(insetMatrices, this, isGfzCoordinateSpace),
+                        TristripTemplates.General.CreateRecoverLightFloor(insetMatrices, this),
+                        TristripTemplates.General.CreateRecoverBase(insetMatrices, this),
+                        TristripTemplates.General.CreateRecoverAlpha(insetMatrices, this),
                     };
                 case SurfaceEmbedType.RecoverDark:
                     return new Tristrip[][]
                     {
-                        TristripTemplates.General.CreateTrim(matrices, this),
-                        TristripTemplates.General.CreateRecoverBase(matrices, this),
-                        TristripTemplates.General.CreateRecoverAlpha(matrices, this),
+                        TristripTemplates.General.CreateTrim(insetMatrices, this, isGfzCoordinateSpace),
+                        TristripTemplates.General.CreateRecoverBase(insetMatrices, this),
+                        TristripTemplates.General.CreateRecoverAlpha(insetMatrices, this),
                     };
                 default:
-                    return new Tristrip[][]
-                    {
-                        TristripTemplates.Road.CreateDebugEmbed(matrices, this, widthDivisions, lengthDistance),
-                    };
+                    throw new System.Exception();
             }
         }
-
-
-        //public override Mesh CreateMesh(out int[] materialsCount)
-        //{
-        //    var hacTRS = CreateHierarchichalAnimationCurveTRS(false);
-        //    var maxTime = hacTRS.GetRootMaxTime();
-        //    var min = from * maxTime;
-        //    var max = to * maxTime;
-        //    //Debug.Log($"MeshUnity -- Min: {min}, Max: {max}, MaxTime: {maxTime}");
-        //    var matrices = TristripGenerator.GenerateMatrixIntervals(hacTRS, lengthDistance, min, max);
-
-        //    //
-        //    var endpointA = new Vector3(-0.5f, 0.33f, 0f);
-        //    var endpointB = new Vector3(+0.5f, 0.33f, 0f);
-        //    var color0 = GetColor(type);
-        //    var tristrips = TristripGenerator.CreateTristrips(matrices, endpointA, endpointB, widthDivisions, color0, Vector3.up, 0, true);
-        //    var mesh = TristripsToMesh(tristrips);
-        //    materialsCount = new int[1]; // TODO:
-        //    //var tristrips = GetTristrips(Type, false);
-        //    //var mesh = TristripsToMesh(Tristrip.Linearize(tristrips));
-        //    mesh.name = $"Auto Gen - {this.name}";
-
-        //    return mesh;
-        //}
 
         public override TrackSegment CreateTrackSegment()
         {
@@ -338,6 +329,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         public override void UpdateTRS()
         {
             animationCurveTRS = CopyAnimationCurveTRS(false);
+            RenormalizedCurves();
         }
 
         public void SetOffsets(Jusification jusification)
@@ -373,5 +365,16 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
                 default: throw new System.NotImplementedException();
             }
         }
+
+
+        public void RenormalizedCurves()
+        {
+            var maxTime = GetRoot().GetMaxTime();
+            var widthKeys = widthCurve.GetRenormalizedKeyRangeAndTangents(0, maxTime);
+            var offsetKeys = offsetCurve.GetRenormalizedKeyRangeAndTangents(0, maxTime);
+            widthCurve = new UnityEngine.AnimationCurve(widthKeys);
+            offsetCurve = new UnityEngine.AnimationCurve(offsetKeys);
+        }
+
     }
 }

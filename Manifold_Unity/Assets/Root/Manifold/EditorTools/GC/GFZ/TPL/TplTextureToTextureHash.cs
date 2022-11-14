@@ -45,5 +45,39 @@ namespace Manifold.EditorTools.GC.GFZ.TPL
             }
             return dictionary;
         }
+
+
+        public void Print()
+        {
+            if (FileNames.Length != Hashes.Length)
+                throw new System.Exception();
+
+            var settings = GfzProjectWindow.GetSettings();
+            var path = settings.AnalysisOutput + $"{typeof(TplTextureToTextureHash).Name}-log.txt";
+
+            using (var writer = new System.IO.StreamWriter(System.IO.File.Create(path)))
+            {
+                int count = FileNames.Length;
+                for (int i = 0; i < count; i++)
+                {
+                    string fileName = FileNames[i];
+                    var hash = Hashes[i];
+
+                    writer.WriteLine(fileName);
+
+                    int nTextureHashes = hash.TextureHashes.Length;
+                    int nPadLeft = nTextureHashes.ToString().Length;
+                    for (int j = 0; j < nTextureHashes; j++)
+                    {
+                        string textureHash = hash.TextureHashes[j];
+                        if (string.IsNullOrEmpty(textureHash))
+                            continue;
+
+                        writer.WriteLine($"[{(j+1).PadLeft(nPadLeft)}/{nTextureHashes}] {textureHash}");
+                    }
+                }
+            }
+        }
+
     }
 }

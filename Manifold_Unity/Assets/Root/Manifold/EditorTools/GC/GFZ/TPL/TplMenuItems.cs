@@ -133,6 +133,9 @@ namespace Manifold.EditorTools.GC.GFZ.TPL
             // Wrap up
             ProgressBar.Clear();
             AssetDatabase.Refresh();
+
+            // Uncomment to print out all hashes in text file
+            //tplTexturesToTextureHash.Print();
         }
 
         [MenuItem("Manifold/TPL/Test - Save textures to select folder (no mipmaps)")]

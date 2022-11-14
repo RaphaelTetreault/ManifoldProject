@@ -10,6 +10,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
     {
         [Header("Capsule")]
         [SerializeField] private CapsuleStyle capsuleStyle = CapsuleStyle.MuteCity;
+        [SerializeField] public EndcapMode endcapModeIn = EndcapMode.Automatic;
+        [SerializeField] public EndcapMode endcapModeOut = EndcapMode.Automatic;
         [SerializeField, Min(2)] private int lengthDistanceInside = 25;
         [SerializeField, Min(2)] private int lengthDistanceOutside = 50;
         [SerializeField, Min(4)] private int subdivideSemiCircleInside = 16;
@@ -29,6 +31,9 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         }
 
         public override ShapeID ShapeIdentifier => ShapeID.pipe;
+        public override EndcapMode EndcapModeIn => endcapModeIn;
+        public override EndcapMode EndcapModeOut => endcapModeOut;
+
 
         public override AnimationCurveTRS CopyAnimationCurveTRS(bool isGfzCoordinateSpace)
         {
