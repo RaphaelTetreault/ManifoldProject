@@ -1587,12 +1587,15 @@ namespace Manifold.EditorTools.GC.GFZ
                 var modulatedMatrices = new Matrix4x4[matrices.Length];
                 for (int i = 0; i < matrices.Length; i++)
                 {
-                    float lengthTime = i / (matrices.Length - 1f);
-                    float scaleY = road.LengthCurve.EvaluateNormalized(lengthTime);
-                    float heightY = road.WidthCurve.EvaluateNormalized(widthTime);
                     var matrix = matrices[i];
-                    var position = matrix.Position() + matrix.rotation * new Vector3(0, scaleY * heightY, 0);
-                    modulatedMatrices[i] = Matrix4x4.TRS(position, matrix.rotation, matrix.lossyScale);
+                    float lengthTime = i / (matrices.Length - 1f);
+                    float scaleY = matrix.lossyScale.y;
+                    float heightY = road.LengthCurve.EvaluateNormalized(lengthTime);
+                    float heightX = road.WidthCurve.EvaluateNormalized(widthTime);
+                    var position = matrix.Position() + matrix.rotation * new Vector3(0, scaleY * heightY * heightX, 0);
+                    var scale = matrix.lossyScale;
+                    scale.y = 1f;
+                    modulatedMatrices[i] = Matrix4x4.TRS(position, matrix.rotation, scale);
                 }
                 return modulatedMatrices;
             }
@@ -1834,7 +1837,7 @@ namespace Manifold.EditorTools.GC.GFZ
                     var times = CreateEvenlySpacedTimes(road.SubdivisionsBottom);
                     var bottom = BottomTex0(matrices, road, times, 4, repetitionsRoadTexture, isGfzCoordinateSpace);
 
-                    matrices = StripHeight(matrices);
+                    //matrices = StripHeight(matrices);
 
 
                     // Sides and Rails
