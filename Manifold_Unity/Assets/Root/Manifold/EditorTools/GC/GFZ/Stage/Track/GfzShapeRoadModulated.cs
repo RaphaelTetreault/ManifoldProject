@@ -130,7 +130,6 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
 
         public override void UpdateTRS()
         {
-            // do nothing :)
             var maxTime = GetMaxTime();
             var lengthKeys = lengthCurve.GetRenormalizedKeyRangeAndTangents(0, maxTime);
             //var widthKeys = widthCurve.GetRenormalizedKeyRangeAndTangents(0, maxTime);

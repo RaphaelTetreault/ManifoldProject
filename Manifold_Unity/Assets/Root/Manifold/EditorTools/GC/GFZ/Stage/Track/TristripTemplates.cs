@@ -151,16 +151,6 @@ namespace Manifold.EditorTools.GC.GFZ
             return true;
         }
 
-        private static float RoundUp(float value, float roundToNearest)
-        {
-            var newValue = math.ceil(value / roundToNearest) * roundToNearest;
-            return newValue;
-        }
-        private static float RoundDown(float value, float roundToNearest)
-        {
-            var newValue = math.floor(value / roundToNearest) * roundToNearest;
-            return newValue;
-        }
 
         public static class General
         {
@@ -1116,8 +1106,14 @@ namespace Manifold.EditorTools.GC.GFZ
                 {
                     // HARD CODED VALUES: 2, 8, 2
                     var repetitionsAlongLength0 = GetTexRepetitions(segmentLength, RoadTexStride);
-                    var repetitionsAlongLength1 = RoundUp(repetitionsAlongLength0, 2); // must be in pairs of 2 along length
+                    var repetitionsAlongLength1 = GetTexRepetitionsRoundUp(segmentLength, TexStrideTrim, 2); // must be in pairs of 2 along length
                     var tristrips = TopTex1(matrices, road.WidthDivisions, kCurbInset, 8, 2, repetitionsAlongLength0, repetitionsAlongLength1);
+                    //
+                    foreach (var tristrip in tristrips)
+                    {
+                        var top_uvs1 = OffsetUV(tristrip.tex1, new Vector2(0, 2 * 0.5f));
+                        tristrip.tex1 = top_uvs1;
+                    }
 
                     return tristrips;
                 }
@@ -1573,12 +1569,14 @@ namespace Manifold.EditorTools.GC.GFZ
                         float widthTime = allSampleTimes[i];
                         float positionX = (allSampleTimes[i] - 0.5f) * scale.x;
                         float positionY = road.WidthCurve.EvaluateNormalized(widthTime);
-                        vertexLines[matrixIndex][i] = matrix.rotation * new Vector3(positionX, positionY * scaleY, 0f) + matrix.Position();
+                        Vector3 vertex = matrix.rotation * new Vector3(positionX, positionY * scaleY, 0f) + matrix.Position();
+                        vertexLines[matrixIndex][i] = vertex;
                     }
-                    vertexLines[matrixIndex][0].y += curbHeight;
-                    vertexLines[matrixIndex][1].y += curbHeight;
-                    vertexLines[matrixIndex][allSampleTimes.Length - 2].y += curbHeight;
-                    vertexLines[matrixIndex][allSampleTimes.Length - 1].y += curbHeight;
+                    Vector3 relativeUp = matrix.rotation * (curbHeight * Vector3.up);
+                    vertexLines[matrixIndex][0] += relativeUp;
+                    vertexLines[matrixIndex][1] += relativeUp;
+                    vertexLines[matrixIndex][allSampleTimes.Length - 2] += relativeUp;
+                    vertexLines[matrixIndex][allSampleTimes.Length - 1] += relativeUp;
                 }
                 return vertexLines;
             }
@@ -1775,13 +1773,14 @@ namespace Manifold.EditorTools.GC.GFZ
                     var trimTop = tristripArrays[1];
                     var trimSlope = tristripArrays[2];
 
-                    float repetitionsRoadTexture = math.ceil(segmentLength / TexStrideRoad);
-                    float repetitionsSideTexture = math.ceil(segmentLength / TexStrideRoad / 2); // CRAP
+                    float repetitionsRoadTexture = GetTexRepetitions(segmentLength, TexStrideRoad);
+                    float repetitionsSideTexture = GetTexRepetitionsRoundUp(segmentLength, TexStrideTrim, 2);
 
                     // in the future you can use more appropriate times
                     var times = CreateEvenlySpacedTimes(road.SubdivisionsTop);
                     var top_uvs0 = CreateUVsFromTimes(top, times, 8, repetitionsRoadTexture);
-                    var top_uvs1 = CreateUVsFromTimes(top, times, 2, repetitionsRoadTexture);
+                    var top_uvs1 = CreateUVsFromTimes(top, times, 2, repetitionsSideTexture);
+                    top_uvs1 = OffsetUV(top_uvs1, new Vector2(0, 1.0f));
                     ApplyTex0(top, top_uvs0);
                     ApplyTex1(top, top_uvs1);
 

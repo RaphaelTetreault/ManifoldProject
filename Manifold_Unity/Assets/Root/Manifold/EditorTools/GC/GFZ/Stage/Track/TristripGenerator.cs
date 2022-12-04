@@ -632,10 +632,26 @@ namespace Manifold.EditorTools.GC.GFZ.Stage.Track
         public static void MutateOffsetUV(Vector2[][] uvs, float offset) => OffsetUV(uvs, new Vector2(offset, offset));
 
 
+        public static float RoundUp(float value, float roundToNearest)
+        {
+            var newValue = math.ceil(value / roundToNearest) * roundToNearest;
+            return newValue;
+        }
+        public static float RoundDown(float value, float roundToNearest)
+        {
+            var newValue = math.floor(value / roundToNearest) * roundToNearest;
+            return newValue;
+        }
         public static float GetTexRepetitions(float segmentLength, float texLength)
         {
             float repetitionsAlongLength = math.ceil(segmentLength / texLength);
             return repetitionsAlongLength;
+        }
+        public static float GetTexRepetitionsRoundUp(float segmentLength, float texLength, int ceiling)
+        {
+            float repetitionsAlongLength = math.ceil(segmentLength / texLength);
+            float repetitionsRounded = RoundUp(repetitionsAlongLength, ceiling);
+            return repetitionsRounded;
         }
         public static Vector2[][] CreateTristripScaledUVs(Tristrip[] tristrips, float widthRepeats, float lengthRepeats)
         {
