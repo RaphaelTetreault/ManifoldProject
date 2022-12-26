@@ -11,11 +11,25 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         [SerializeField] private Mesh colliderMesh;
         [SerializeField] private Color32 gizmosColor = new Color32(255, 64, 64, 128);
         [Header("Other Data")]
-        [SerializeField] private EnumFlags32 unk_0x00; // flags: 13=wall, 15=mine
-        [SerializeField] private GameCube.GFZ.BoundingSphere boundingSphere; // flags
+        [UnityEngine.Serialization.FormerlySerializedAs("unk_0x00")]
+        [SerializeField] private ColliderMeshType collidertype; // flags: 13=wall, 15=mine
+        [SerializeField] private GameCube.GFZ.BoundingSphere boundingSphere;
 
         public Mesh ColliderMesh { get => colliderMesh; set => colliderMesh = value; }
 
+
+
+        public bool IsReferenceEquivilent(GfzColliderMesh other)
+        {
+            bool isNull = other == null;
+            if (isNull)
+                return false;
+
+            bool sameMesh = this.ColliderMesh == other.ColliderMesh;
+            bool sameFlags = this.collidertype == other.collidertype;
+            bool isReferenceEquivilent = sameMesh & sameFlags;
+            return isReferenceEquivilent;
+        }
 
         public ColliderMesh ExportGfz()
         {
@@ -37,7 +51,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
             var colliderMesh = new ColliderMesh
             {
-                Unk_0x00 = (uint)unk_0x00,
+                ColliderType = (uint)collidertype,
                 BoundingSphere = boundingSphere,
                 Tris = triangles,
                 Quads = quads,
@@ -48,7 +62,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
         public void ImportGfz(ColliderMesh colliderMesh)
         {
-            unk_0x00 = (EnumFlags32)colliderMesh.Unk_0x00;
+            collidertype = (EnumFlags32)colliderMesh.ColliderType;
             boundingSphere = colliderMesh.BoundingSphere;
         }
 

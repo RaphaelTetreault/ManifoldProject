@@ -6,8 +6,7 @@ using UnityEngine;
 namespace Manifold.EditorTools.GC.GFZ.Stage
 {
     public class GfzSceneObject : MonoBehaviour,
-        IGfzConvertable<SceneObject>//,
-        //IEquatable<GfzSceneObject>
+        IGfzConvertable<SceneObject>
     {
         [SerializeField] private LodRenderFlags lodRenderFlags;
         [SerializeField] private GfzSceneObjectLODs sceneObjectLODs;

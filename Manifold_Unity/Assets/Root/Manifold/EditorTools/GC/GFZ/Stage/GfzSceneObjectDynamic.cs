@@ -1,12 +1,14 @@
 using GameCube.GFZ.Stage;
 using Manifold.EditorTools.Attributes;
 using UnityEngine;
+using static Manifold.EditorTools.GC.GFZ.Stage.GfzSceneObjectLODs;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage
 {
     public sealed class GfzSceneObjectDynamic : MonoBehaviour,
         IGfzConvertable<SceneObjectDynamic>
     {
+        [Header("Dynamic Data")]
         [SerializeField] private ObjectRenderFlags0x00 unk_0x00;
         [SerializeField] private ObjectRenderFlags0x04 unk_0x04;
         [SerializeField] private GfzSceneObject sceneObject;
@@ -18,6 +20,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         public GfzAnimationClip AnimationClip => animationClip;
         public GfzTextureScroll TextureScroll => textureScroll;
         public GfzSkeletalAnimator SkeletalAnimator => skeletalAnimator;
+
 
         internal void SetSceneObject(GfzSceneObject sceneObject)
         {
