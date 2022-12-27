@@ -9,6 +9,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
     {
         [field: SerializeField] public StaticColliderMeshPropertyFlags ColliderType { get; set; } = StaticColliderMeshPropertyFlags.dash;
         [field: SerializeField] public MeshFilter MeshFilter { get; protected set; }
+        [field: SerializeField] public bool ExportEntireMesh { get; protected set; } = true;
+        [field: SerializeField] public int SubmeshIndex { get; protected set; }
 
 
         public ColliderTriangle[] CreateColliderTriangles()
@@ -113,6 +115,47 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             return matrix;
         }
 
+        public static Color32[] DebugColor => new Color32[]
+        {
+            new Color32(  0,   0,   0, 195), // unhandled
+            new Color32(127, 127, 127, 195), // driveable with camera
+            new Color32( 95,  95,  95, 195), // driveable no camera
+            new Color32(255,  63, 127, 195), // recover
+            new Color32(255,  63,  63, 195), // damage
+            new Color32( 38, 184, 255, 195), // slip
+            new Color32(127,  63,  47, 195), // dirt
+            new Color32(255, 255,  38, 195), // dash
+            new Color32(255, 180,  60, 195), // jump
+            new Color32(194, 114, 255, 195), // out-of-bounds
+            new Color32(173, 129,  75, 195), // death collider
+            new Color32( 44,  38, 142, 195), // death trigger
+            new Color32( 60,  38,  93, 195), // unknown 1
+            new Color32( 65,  38,  59, 195), // unknown and death trigger
+        };
+
+        public Color32 GetDebugColor()
+        {
+            int index = ColliderType switch
+            {
+                StaticColliderMeshPropertyFlags.driveableWithCamera => 1,
+                StaticColliderMeshPropertyFlags.driveableNoCamera => 2,
+                StaticColliderMeshPropertyFlags.recover => 3,
+                StaticColliderMeshPropertyFlags.damage => 4,
+                StaticColliderMeshPropertyFlags.slip => 5,
+                StaticColliderMeshPropertyFlags.dirt => 6,
+                StaticColliderMeshPropertyFlags.dash => 7,
+                StaticColliderMeshPropertyFlags.jump => 8,
+                StaticColliderMeshPropertyFlags.outOfBounds => 9,
+                StaticColliderMeshPropertyFlags.deathCollider => 10,
+                StaticColliderMeshPropertyFlags.deathTrigger => 11,
+                StaticColliderMeshPropertyFlags.unknown => 12,
+                StaticColliderMeshPropertyFlags.unknownAndDeathTrigger => 13,
+                _ => 0,
+            };
+
+            var color = DebugColor[index];
+            return color;
+        }
 
         private void Reset()
         {
@@ -123,7 +166,27 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         {
             if (MeshFilter == null)
                 MeshFilter = GetComponent<MeshFilter>();
+
+            // Maintain appropriate index
+            if (MeshFilter != null)
+                if (SubmeshIndex > MeshFilter.sharedMesh.subMeshCount)
+                    SubmeshIndex = MeshFilter.sharedMesh.subMeshCount - 1;
+            if (SubmeshIndex < 0)
+                SubmeshIndex = 0;
         }
 
+        private void OnDrawGizmos()
+        {
+            Gizmos.color = GetDebugColor();
+
+            if (ExportEntireMesh)
+            {
+                Gizmos.DrawMesh(MeshFilter.sharedMesh, transform.position, transform.rotation, transform.localScale);
+            }
+            else
+            {
+                Gizmos.DrawMesh(MeshFilter.sharedMesh, SubmeshIndex, transform.position, transform.rotation, transform.localScale);
+            }
+        }
     }
 }
