@@ -1,12 +1,14 @@
 using GameCube.GFZ.Stage;
 using Manifold.EditorTools.Attributes;
 using UnityEngine;
+using static Manifold.EditorTools.GC.GFZ.Stage.GfzSceneObjectLODs;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage
 {
     public sealed class GfzSceneObjectDynamic : MonoBehaviour,
         IGfzConvertable<SceneObjectDynamic>
     {
+        [Header("Dynamic Data")]
         [SerializeField] private ObjectRenderFlags0x00 unk_0x00;
         [SerializeField] private ObjectRenderFlags0x04 unk_0x04;
         [SerializeField] private GfzSceneObject sceneObject;
@@ -19,6 +21,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         public GfzTextureScroll TextureScroll => textureScroll;
         public GfzSkeletalAnimator SkeletalAnimator => skeletalAnimator;
 
+
         internal void SetSceneObject(GfzSceneObject sceneObject)
         {
             this.sceneObject = sceneObject;
@@ -29,8 +32,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             var dynamicSceneObject = new SceneObjectDynamic();
 
             // Data from this structure
-            dynamicSceneObject.Unk0x00 = unk_0x00;
-            dynamicSceneObject.Unk0x04 = unk_0x04;
+            dynamicSceneObject.ObjectRenderFlags0x00 = unk_0x00;
+            dynamicSceneObject.ObjectRenderFlags0x04 = unk_0x04;
             dynamicSceneObject.TransformTRXS = TransformConverter.ToGfzTransformTRXS(transform, Space.World);
 
             // Values from pointed classes
@@ -59,8 +62,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         {
             // SCENE OBJECT DYNAMIC
             {
-                unk_0x00 = dynamicSceneObject.Unk0x00;
-                unk_0x04 = dynamicSceneObject.Unk0x04;
+                unk_0x00 = dynamicSceneObject.ObjectRenderFlags0x00;
+                unk_0x04 = dynamicSceneObject.ObjectRenderFlags0x04;
 
                 // TRANSFORM
                 // Copy most reliable transform if available

@@ -173,7 +173,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             CreateGlobalParams(scene);
             CreateFogParams(scene);
 
-            var rootTransforms = CreateAllSceneObjects(scene, searchFolders);
+            //var rootTransforms = CreateAllSceneObjects(scene, searchFolders);
+            var scneObjects = CreateCompleteSceneObjects(scene, searchFolders);
 
             CreateTrackTransformHierarchy(scene);
             CreateTrackIndexChains(scene);
@@ -1064,9 +1065,61 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
             var rootStatics = CreateStaticSceneObjects(scene, sceneObjectDict, searchFolders);
             var rootDynamics = CreateDynamicSceneObjects(scene, sceneObjectDict, searchFolders);
-
-            //
             return new Transform[] { sceneObjectRoot.transform, rootStatics, rootDynamics };
+        }
+
+        public static Transform CreateCompleteSceneObjects(Scene scene, params string[] searchFolders)
+        {
+            // Get some metadata from the number of scene objects
+            var dynamicSceneObjects = scene.dynamicSceneObjects;
+
+            // Create a string format from the highest index number used
+            var digitsFormat = WidthFormat(dynamicSceneObjects);
+            int count = 0;
+            int total = dynamicSceneObjects.Length;
+            // Create root for all scene objects
+            var root = new GameObject($"Scene Objects").transform;
+
+            // Find all scene objects, add them to scene
+            foreach (var dynamicSceneObject in dynamicSceneObjects)
+            {
+                // Generate the names of the objects we want
+                var objectName = dynamicSceneObject.Name;
+                var prefabName = $"pf_{objectName}";
+                var displayName = $"[{count.ToString(digitsFormat)}] {objectName}";
+
+                // Progress bar update
+                var title = $"Generating Scene ({scene.FileName})";
+                var info = $"[{count.ToString(digitsFormat)}/{total}] {objectName}";
+                var progress = (float)count / total;
+                var cancel = EditorUtility.DisplayCancelableProgressBar(title, info, progress);
+                count++;
+
+                // Find the asset path from database
+                var assetPath = GetAssetPath(prefabName, searchFolders);
+                // Create asset
+                GameObject assetInstance = string.IsNullOrEmpty(assetPath)
+                    ? CreateNoMeshObject()
+                    : CreateInstanceFromDatabase(assetPath);
+                // Assign name and set parent
+                assetInstance.name = displayName;
+                assetInstance.transform.parent = root;
+
+                //// Tack data of object onto Unity GameObject for inspection
+                var script = assetInstance.AddComponent<GfzCompleteSceneObject>();
+                script.ImportGfz_DynamicSceneObject(dynamicSceneObject);
+
+                // Set mesh on collider if it exists
+                if (script.ColliderMesh != null)
+                {
+                    var colliderName = $"coli_{objectName}";
+                    var colliderPath = GetAssetPath(colliderName, searchFolders);
+                    var colliderMesh = AssetDatabase.LoadAssetAtPath<Mesh>(colliderPath);
+                    script.ColliderMesh.ColliderMesh = colliderMesh;
+                }
+            }
+
+            return root;
         }
 
         public static Transform CreateDynamicSceneObjects(Scene scene, Dictionary<SceneObject, GfzSceneObject> sceneObjectDict, params string[] searchFolders)

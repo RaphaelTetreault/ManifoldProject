@@ -265,7 +265,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             var compressFormat = GetCompressFormat(scene.Format);
             var tplTextureContainer = new TplTextureContainer();
             var modelList = new List<Model>();
-            var gfzSceneObjectsList = new List<GfzSceneObject>();
+            //var gfzSceneObjectsList = new List<GfzSceneObject>();
             var sceneObjectsList = new List<SceneObject>();
             var sceneObjectDynamicsList = new List<SceneObjectDynamic>();
 
@@ -332,36 +332,17 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
             // Scene Objects
             {
-                var gfzDynamicSceneObjects = GameObject.FindObjectsOfType<GfzSceneObjectDynamic>(false).Reverse().ToArray();
-                var gfzStaticSceneObjects = GameObject.FindObjectsOfType<GfzSceneObjectStatic>(false).Reverse().ToArray();
-                var gfzSceneObjects = GameObject.FindObjectsOfType<GfzSceneObject>(true).Reverse().ToArray();
-                var gfzSceneObjectLODs = GameObject.FindObjectsOfType<GfzSceneObjectLODs>(true).Reverse().ToArray();
+                GfzCompleteSceneObject.InitSharedSceneObjects();
 
-                // Init shared references before copying values out.
-                foreach (var gfzSceneObject in gfzSceneObjects)
-                    gfzSceneObject.InitSharedReference();
-
-                // Get dynamic scene objects
-                var dynamicSceneObjects = GetGfzValues(gfzDynamicSceneObjects);
-                sceneObjectDynamicsList.AddRange(dynamicSceneObjects);
-                // Get their scene object reference
-                foreach (var gfzDynamicSceneObject in gfzDynamicSceneObjects)
+                var completeSceneObjects = GameObject.FindObjectsOfType<GfzCompleteSceneObject>();
+                foreach (var obj in completeSceneObjects.Reverse())
                 {
-                    var gfzSceneObject = gfzDynamicSceneObject.GfzSceneObject;
-                    if (gfzSceneObject == null)
-                    {
-                        throw new Exception($"SceneObject reference is null! {gfzDynamicSceneObject.name}");
-                    }
-
-                    // Only add items once
-                    bool containsSceneObject = gfzSceneObjectsList.Contains(gfzSceneObject);
-                    if (!containsSceneObject)
-                    {
-                        var sceneObject = gfzSceneObject.ExportGfz();
-                        sceneObjectsList.Add(sceneObject);
-                        gfzSceneObjectsList.Add(gfzSceneObject);
-                    }
+                    var dynamicSceneObject = obj.ExportGfz_SceneObjectDynamic();
+                    sceneObjectDynamicsList.Add(dynamicSceneObject);
                 }
+
+                var allSceneObjects = GfzCompleteSceneObject.GetAllSharedSceneObjects;
+                sceneObjectsList.AddRange(allSceneObjects);
 
                 // Collect and insert models wanted into the gma.
                 var missingModels = RecoverMissingModelsFromStageGma(scene.CourseIndex, tplTextureContainer);
@@ -633,14 +614,14 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         {
             var dynamicSceneObject = new SceneObjectDynamic()
             {
-                Unk0x00 =
+                ObjectRenderFlags0x00 =
                     ObjectRenderFlags0x00.renderObject |
                     ObjectRenderFlags0x00.unk_RenderObject1 |
                     ObjectRenderFlags0x00.unk_RenderObject2 |
                     ObjectRenderFlags0x00.unk_RenderObject3 |
                     ObjectRenderFlags0x00.ReceiveEfbShadow,
 
-                Unk0x04 = ObjectRenderFlags0x04._NULL,
+                ObjectRenderFlags0x04 = ObjectRenderFlags0x04._NULL,
             };
             return dynamicSceneObject;
         }

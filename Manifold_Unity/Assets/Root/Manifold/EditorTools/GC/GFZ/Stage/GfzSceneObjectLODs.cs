@@ -9,7 +9,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         IEquatable<GfzSceneObjectLODs>
     {
         [System.Serializable]
-        internal struct GfzLOD : IEquatable<GfzLOD>
+        public struct GfzLOD : IEquatable<GfzLOD>
         {
             //public MeshFilter model; // <-- ideal to have at some point?
             public string modelName;
