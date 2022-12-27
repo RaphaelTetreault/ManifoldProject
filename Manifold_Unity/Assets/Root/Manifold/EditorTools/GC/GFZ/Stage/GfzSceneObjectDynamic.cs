@@ -32,8 +32,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             var dynamicSceneObject = new SceneObjectDynamic();
 
             // Data from this structure
-            dynamicSceneObject.Unk0x00 = unk_0x00;
-            dynamicSceneObject.Unk0x04 = unk_0x04;
+            dynamicSceneObject.ObjectRenderFlags0x00 = unk_0x00;
+            dynamicSceneObject.ObjectRenderFlags0x04 = unk_0x04;
             dynamicSceneObject.TransformTRXS = TransformConverter.ToGfzTransformTRXS(transform, Space.World);
 
             // Values from pointed classes
@@ -62,8 +62,8 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         {
             // SCENE OBJECT DYNAMIC
             {
-                unk_0x00 = dynamicSceneObject.Unk0x00;
-                unk_0x04 = dynamicSceneObject.Unk0x04;
+                unk_0x00 = dynamicSceneObject.ObjectRenderFlags0x00;
+                unk_0x04 = dynamicSceneObject.ObjectRenderFlags0x04;
 
                 // TRANSFORM
                 // Copy most reliable transform if available

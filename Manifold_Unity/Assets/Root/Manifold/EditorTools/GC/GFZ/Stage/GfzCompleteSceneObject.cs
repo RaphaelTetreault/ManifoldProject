@@ -6,63 +6,74 @@ using static Manifold.EditorTools.GC.GFZ.Stage.GfzSceneObjectLODs;
 
 namespace Manifold.EditorTools.GC.GFZ.Stage
 {
-    public sealed class GfzCompleteSceneObject : MonoBehaviour,
-        //IGfzConvertable<SceneObjectDynamic>
-        //IGfzConvertable<SceneObjectDynamic>,
-        //IGfzConvertable<SceneObject>,
-        //IGfzConvertable<SceneObjectLOD[]>
+    public sealed class GfzCompleteSceneObject : MonoBehaviour
     {
-        [Header("Dynamic Data")]
-        [SerializeField] private ObjectRenderFlags0x00 unk_0x00;
-        [SerializeField] private ObjectRenderFlags0x04 unk_0x04;
+        [SerializeField] private ObjectRenderFlags0x00 objectRenderFlags_0x00;
+        [SerializeField] private ObjectRenderFlags0x04 objectRenderFlags_0x04;
+        [SerializeField] private LodRenderFlags lodRenderFlags;
+        [SerializeField] private GfzLOD[] levelsOfDetail;
+
+        [Header("Optional Components")]
         [SerializeField] private GfzAnimationClip animationClip;
         [SerializeField] private GfzTextureScroll textureScroll;
         [SerializeField] private GfzSkeletalAnimator skeletalAnimator;
-        [Header("SceneObject Data")]
-        [SerializeField] private LodRenderFlags lodRenderFlags;
-        [SerializeField] private GfzLOD[] levelsOfDetail;
         [SerializeField] private GfzColliderMesh colliderMesh;
-        [Header("Metadata")]
-        [SerializeField, ReadOnlyGUI] private string assetSource;
 
         public GfzAnimationClip AnimationClip => animationClip;
         public GfzTextureScroll TextureScroll => textureScroll;
         public GfzSkeletalAnimator SkeletalAnimator => skeletalAnimator;
         public GfzColliderMesh ColliderMesh => colliderMesh;
-
         public LodRenderFlags LodRenderFlags => lodRenderFlags;
         public GfzLOD[] LODs => levelsOfDetail;
 
-
-        public static Dictionary<GfzCompleteSceneObject, SceneObject> SceneObjectsDict => new Dictionary<GfzCompleteSceneObject, SceneObject>();
-        public static SceneObject[] GetSceneObjects => SceneObjectsDict.Values.ToArray();
+        #region MANAGE EXPORT
+        public static readonly Dictionary<GfzCompleteSceneObject, SceneObject> SceneObjectsDict = new Dictionary<GfzCompleteSceneObject, SceneObject>();
+        public static readonly Dictionary<GfzColliderMesh, ColliderMesh> ColliderMeshesDict = new Dictionary<GfzColliderMesh, ColliderMesh>();
+        public static SceneObject[] GetAllSharedSceneObjects => SceneObjectsDict.Values.ToArray();
         public static void InitSharedSceneObjects()
         {
             SceneObjectsDict.Clear();
+            ColliderMeshesDict.Clear();
         }
-        public static SceneObject GetSharedSceneObjectReference(GfzCompleteSceneObject unityObject)
+        public static SceneObject GetSharedSceneObjectReference(GfzCompleteSceneObject completeSceneObject)
         {
-            foreach (var kvp in SceneObjectsDict)
+            foreach (var sceneObjectKVP in SceneObjectsDict)
             {
-                var key = kvp.Key;
-                bool isEquivilent = unityObject.IsSceneObjectReferenceEquivilent(key);
+                var key = sceneObjectKVP.Key;
+                bool isEquivilent = completeSceneObject.IsSceneObjectReferenceEquivilent(key);
                 if (isEquivilent)
-                    return kvp.Value;
+                    return sceneObjectKVP.Value;
             }
 
             // Not in list. Make one and return that.
-            SceneObject sceneObject = unityObject.ExportGfz_SceneObject();
-            SceneObjectsDict.Add(unityObject, sceneObject);
+            SceneObject sceneObject = completeSceneObject.ExportGfz_SceneObject();
+            SceneObjectsDict.Add(completeSceneObject, sceneObject);
             return sceneObject;
         }
+        public static ColliderMesh GetSharedColliderMeshReference(GfzColliderMesh gfzColliderMesh)
+        {
+            foreach (var colliderMeshesKVP in ColliderMeshesDict)
+            {
+                var key = colliderMeshesKVP.Key;
+                bool isEquivilent = gfzColliderMesh.IsReferenceEquivilent(key);
+                if (isEquivilent)
+                    return colliderMeshesKVP.Value;
+            }
+
+            // Not in list. Make one and return that.
+            var colliderMesh = gfzColliderMesh.ExportGfz();
+            ColliderMeshesDict.Add(gfzColliderMesh, colliderMesh);
+            return colliderMesh;
+        }
+        #endregion
 
         public SceneObjectDynamic ExportGfz_SceneObjectDynamic()
         {
             var dynamicSceneObject = new SceneObjectDynamic();
 
             // Data from this structure
-            dynamicSceneObject.Unk0x00 = unk_0x00;
-            dynamicSceneObject.Unk0x04 = unk_0x04;
+            dynamicSceneObject.ObjectRenderFlags0x00 = objectRenderFlags_0x00;
+            dynamicSceneObject.ObjectRenderFlags0x04 = objectRenderFlags_0x04;
             dynamicSceneObject.TransformTRXS = TransformConverter.ToGfzTransformTRXS(transform, Space.World);
 
             // Values from pointed classes
@@ -105,17 +116,20 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             };
 
             if (colliderMesh != null)
-                sceneObject.ColliderMesh = colliderMesh.ExportGfz();
+            {
+                var nativeColliderMesh = GetSharedColliderMeshReference(colliderMesh);
+                sceneObject.ColliderMesh = nativeColliderMesh;
+            }
 
             return sceneObject;
         }
 
-        public void ImportGfz(SceneObjectDynamic dynamicSceneObject)
+        public void ImportGfz_DynamicSceneObject(SceneObjectDynamic dynamicSceneObject)
         {
             // SCENE OBJECT DYNAMIC
             {
-                unk_0x00 = dynamicSceneObject.Unk0x00;
-                unk_0x04 = dynamicSceneObject.Unk0x04;
+                objectRenderFlags_0x00 = dynamicSceneObject.ObjectRenderFlags0x00;
+                objectRenderFlags_0x04 = dynamicSceneObject.ObjectRenderFlags0x04;
 
                 // TRANSFORM
                 // Copy most reliable transform if available
@@ -151,7 +165,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             // Transform Matrix 3x4 is handled above and does not need a component'
 
 
-            //
+            // Copy over 'SceneObject' data
             var sceneObject = dynamicSceneObject.SceneObject;
             var sceneObjectLODs = sceneObject.LODs;
             IO.Assert.IsTrue(sceneObjectLODs.Length > 0);
@@ -174,7 +188,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             {
                 colliderMesh = this.gameObject.AddComponent<GfzColliderMesh>();
                 colliderMesh.ImportGfz(sceneObject.ColliderMesh);
-                // NOTE: let dynamics assign mesh... convoluted otherwise
+                // NOTE: mesh is assigned by importing script
             }
         }
 
@@ -182,11 +196,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         {
             bool sameFlags = this.LodRenderFlags == other.LodRenderFlags;
             bool sameLODs = HasSameLODs(other.levelsOfDetail);
-            bool sameCollider = ColliderMesh.IsReferenceEquivilent(other.ColliderMesh);
+            bool sameCollider = HasSameColliderMesh(other.ColliderMesh);
             bool isSame = sameFlags && sameLODs && sameCollider;
             return isSame;
         }
-
         public bool HasSameLODs(GfzLOD[] otherLODs)
         {
             bool sameLODsLength = this.LODs.Length == otherLODs.Length;
@@ -207,17 +220,31 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             // else is true
             return true;
         }
+        public bool HasSameColliderMesh(GfzColliderMesh other)
+        {
+            // Weeds out when one or the other is null
+            bool isNotSame = this.ColliderMesh == null ^ other == null;
+            if (isNotSame)
+                return false;
+
+            // Case 1: both are null. Check for null, if so, both are null, means they are the same.
+            if (this.ColliderMesh == null)
+                return true;
+
+            // Case 2: both are instances. Compare instances.
+            bool isEquivilent = ColliderMesh.IsReferenceEquivilent(other);
+            return isEquivilent;
+        }
 
 
         public void OnDrawGizmosSelected()
         {
             if (ColliderMesh != null)
             {
-                ColliderMesh.OnDrawGizmosSelected();
+                //ColliderMesh.OnDrawGizmosSelected();
                 ColliderMesh.DrawMesh(transform);
             }
         }
-
         private void Reset()
         {
             OnValidate();
@@ -229,6 +256,12 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
 
             if (textureScroll == null)
                 textureScroll = GetComponent<GfzTextureScroll>();
+
+            if (skeletalAnimator == null)
+                skeletalAnimator = GetComponent<GfzSkeletalAnimator>();
+
+            if (colliderMesh == null)
+                colliderMesh = GetComponent<GfzColliderMesh>();
         }
 
     }
