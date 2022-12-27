@@ -129,7 +129,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             new Color32(194, 114, 255, 195), // out-of-bounds
             new Color32(173, 129,  75, 195), // death collider
             new Color32( 44,  38, 142, 195), // death trigger
-            new Color32( 60,  38,  93, 195), // unknown 1
+            new Color32( 60,  38,  93, 195), // unknown
             new Color32( 65,  38,  59, 195), // unknown and death trigger
         };
 

@@ -13,7 +13,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         {
             //public MeshFilter model; // <-- ideal to have at some point?
             public string modelName;
-            public float lodDistance;
+            public float lodDistance; // in units of 10
 
             public bool Equals(GfzLOD other)
             {

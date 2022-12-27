@@ -19,6 +19,10 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
         [SerializeField] private GfzSkeletalAnimator skeletalAnimator;
         [SerializeField] private GfzColliderMesh colliderMesh;
 
+        [Header("Debug")]
+        [SerializeField] private bool previewLodRadius = false;
+
+
         public GfzAnimationClip AnimationClip => animationClip;
         public GfzTextureScroll TextureScroll => textureScroll;
         public GfzSkeletalAnimator SkeletalAnimator => skeletalAnimator;
@@ -243,6 +247,19 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             {
                 //ColliderMesh.OnDrawGizmosSelected();
                 ColliderMesh.DrawMesh(transform);
+            }
+
+            if (previewLodRadius)
+            {
+                Gizmos.color = new Color32(255, 0, 0, 127);
+                float radius = 0f;
+                for (int i = 0; i < LODs.Length; i++)
+                {
+                    var lod = LODs[i];
+                    radius += lod.lodDistance * 10;
+                    Gizmos.DrawWireSphere(transform.position, radius);
+                }
+                Gizmos.DrawSphere(transform.position, radius);
             }
         }
         private void Reset()
