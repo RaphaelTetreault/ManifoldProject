@@ -152,6 +152,7 @@ namespace Manifold.EditorTools.GC.GFZ
             private const string PipeCylinderShape = Menu + "Pipe or Cylinder/";
             private const string OpenPipeCylinderShape = Menu + "Pipe or Cylinder (Open)/";
             private const string CapsuleShape = Menu + "Capsule/";
+            private const string ModulatedShape = Menu + "Modulated/";
             // Paths
             private const string BezierPath = "Beziér Path";
             private const string LinePath = "Line Path";
@@ -172,6 +173,10 @@ namespace Manifold.EditorTools.GC.GFZ
             public const string CapsuleBezier = CapsuleShape + BezierPath;
             public const string CapsuleLine = CapsuleShape + LinePath;
             public const string CapsuleSpiral = CapsuleShape + SpiralPath;
+            //
+            public const string ModulatedBezier = ModulatedShape + BezierPath;
+            public const string ModulatedLine = ModulatedShape + LinePath;
+            public const string ModulatedSpiral = ModulatedShape + SpiralPath;
             // Embeds
             public const string PropertyEmbed = Menu + "Property Embed";
 
@@ -197,8 +202,35 @@ namespace Manifold.EditorTools.GC.GFZ
                 public const int CapsuleLine = CapsuleBase + 2;
                 public const int CapsuleSpiral = CapsuleBase + 3;
                 //
+                private const int ModulatedBase = CapsuleSpiral;
+                public const int ModulatedBezier = ModulatedBase + 1;
+                public const int ModulatedLine = ModulatedBase + 2;
+                public const int ModulatedSpiral = ModulatedBase + 3;
+                //
                 public const int CreateTrack = PriorityBase + 100;
             }
+        }
+
+        public static class TrackCreate
+        {
+            public const string Menu = Const.Menu.Manifold + "Track Create/";
+            public const string AddTrack = Menu + "Add Track";
+
+            public const string AddNormalRoad = Menu + "Road/";
+            public const string AddCylinderPipeRoad = Menu + "Pipe or Cylinde/";
+            public const string AddCapsuleRoad = Menu + "Capsule/";
+            public const string AddOpenPipeCylinderRoad = Menu + "Pipe or Cylinder (Open)/";
+            public const string AddModulatedRoad = Menu + "Modulated/";
+
+
+            public const string AddBezier = "Add Bezier";
+            public const string AddLine = "Add Line";
+            public const string AddSpiral = "Add Spiral";
+            public const string AddBezierOld = "Add Bezier (Legacy)"; // Legacy
+
+
+            public const string AddPropertyEmbed = Menu + "Add Property Embed";
+
         }
 
     }
