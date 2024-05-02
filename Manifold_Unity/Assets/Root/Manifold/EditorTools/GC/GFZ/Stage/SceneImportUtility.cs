@@ -806,7 +806,7 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
                     //}
                     //else
                     //{
-                        childAnimationMatrix = GetMatrixRecursive(child, timeNormalized, selfMaxTime);
+                    childAnimationMatrix = GetMatrixRecursive(child, timeNormalized, selfMaxTime);
                     //}
 
                     return selfAnimationMtx * childAnimationMatrix;
@@ -970,31 +970,81 @@ namespace Manifold.EditorTools.GC.GFZ.Stage
             return root.transform;
         }
 
+        //public static Transform CreateTrackIndexChains(Scene scene)
+        //{
+        //    var root = new GameObject();
+        //    root.name = $"Track Index Chains";
+
+        //    int chainIndex = 0;
+        //    var trackNodes = scene.trackNodes;
+        //    foreach (var indexList in scene.trackCheckpointGrid.IndexLists)
+        //    {
+        //        var chain = new GameObject().transform;
+        //        chain.name = $"Chain {chainIndex++}";
+        //        chain.parent = root.transform;
+
+        //        for (int i = 0; i < indexList.Length; i++)
+        //        {
+        //            int index = indexList.Indexes[i];
+        //            var node = trackNodes[index];
+
+        //            for (int j = 0; j < node.Checkpoints.Length; j++)
+        //            {
+        //                var position = node.Checkpoints[j].PlaneStart.origin;
+        //                var orientation = Quaternion.LookRotation(node.Checkpoints[j].PlaneStart.normal, Vector3.up);
+        //                var instance = CreatePrimitive(PrimitiveType.Cube, $"{index}.{j}", chain);
+        //                instance.transform.position = TransformConverter.MirrorPosition(position);
+        //                instance.transform.rotation = TransformConverter.MirrorRotation(orientation);
+        //                instance.transform.localScale = Vector3.one * 5f;
+        //            }
+        //        }
+        //    }
+        //    return root.transform;
+        //}
+
         public static Transform CreateTrackIndexChains(Scene scene)
         {
             var root = new GameObject();
-            root.name = $"Track Index Chains";
+            root.name = $"Track Checkpoints";
 
-            int chainIndex = 0;
-            var trackNodes = scene.trackNodes;
-            foreach (var indexList in scene.trackCheckpointGrid.IndexLists)
+            int trackSegmentIndex = 0;
+            foreach (var trackSegment in scene.RootTrackSegments)
             {
-                var chain = new GameObject().transform;
-                chain.name = $"Chain {chainIndex++}";
-                chain.parent = root.transform;
+                var segmentCheckpoints = new GameObject().transform;
+                segmentCheckpoints.name = $"Segment {trackSegmentIndex++} Checkpoints";
+                segmentCheckpoints.parent = root.transform;
 
-                for (int i = 0; i < indexList.Length; i++)
+                int trackNodeIndex = 0;
+                foreach (var trackNode in scene.trackNodes)
                 {
-                    int index = indexList.Indexes[i];
-                    var node = trackNodes[index];
-
-                    for (int j = 0; j < node.Checkpoints.Length; j++)
+                    if (trackNode.RootSegment != trackSegment)
                     {
-                        var position = node.Checkpoints[j].PlaneStart.origin;
-                        var instance = CreatePrimitive(PrimitiveType.Sphere, $"{index}.{j}", chain);
+                        trackNodeIndex++;
+                        continue;
+                    }
+
+                    for (int i = 0; i < trackNode.Checkpoints.Length; i++)
+                    {
+                        var position = trackNode.Checkpoints[i].PlaneStart.origin;
+                        var normal = trackNode.Checkpoints[i].PlaneStart.normal;
+                        normal.z = -normal.z;
+                        var orientation = Quaternion.LookRotation(normal, Vector3.up);
+                        var instance = CreatePrimitive(PrimitiveType.Cube, $"{trackNodeIndex}.{i}.start", segmentCheckpoints);
                         instance.transform.position = TransformConverter.MirrorPosition(position);
+                        instance.transform.rotation = orientation;// TransformConverter.MirrorRotation(orientation);
+                        instance.transform.localScale = Vector3.one * 10f;
+
+                        position = trackNode.Checkpoints[i].PlaneEnd.origin;
+                        normal = trackNode.Checkpoints[i].PlaneEnd.normal;
+                        normal.z = -normal.z;
+                        orientation = Quaternion.LookRotation(normal, Vector3.up);
+                        instance = CreatePrimitive(PrimitiveType.Cube, $"{trackNodeIndex}.{i}.end", segmentCheckpoints);
+                        instance.transform.position = TransformConverter.MirrorPosition(position);
+                        instance.transform.rotation = orientation; // TransformConverter.MirrorRotation(orientation);
                         instance.transform.localScale = Vector3.one * 5f;
                     }
+
+                    trackNodeIndex++;
                 }
             }
             return root.transform;
